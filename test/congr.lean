@@ -19,14 +19,12 @@ theorem ex4 (a b : Nat) : Fin (a + b) = Fin (b + a) := by
   apply Nat.add_comm
 
 theorem ex5 : ((a : Nat) → Fin (a + 1)) = ((a : Nat) → Fin (1 + a)) := by
-  congr!  2
-  rename_i a
+  congr! 2 with a
   guard_target = a + 1 = 1 + a
   apply Nat.add_comm
 
 theorem ex6 : ((a : Nat) × Fin (a + 1)) = ((a : Nat) × Fin (1 + a)) := by
-  congr! 3
-  rename_i a
+  congr! 3 with a
   guard_target = a + 1 = 1 + a
   apply Nat.add_comm
 
@@ -60,6 +58,13 @@ theorem ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : H
     guard_target = HEq (f n) z
     rw [h]
     exact hz.symm
+
+theorem ex15 (p q : Nat → Prop) :
+    (∀ ε > 0, p ε) ↔ ∀ ε > 0, q ε := by
+  congr! 2 with ε hε
+  guard_hyp hε : ε > 0
+  guard_target = p ε ↔ q ε
+  sorry
 
 /-- Generating type equalities is OK if it's possible they're the same type. -/
 example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
@@ -130,7 +135,7 @@ example : partiallyApplied (True ∧ True) = partiallyApplied True := by
   decide
 
 inductive walk (α : Type) : α → α → Type
-| nil (n : α) : walk α n n
+  | nil (n : α) : walk α n n
 
 def walk.map (f : α → β) (w : walk α x y) : walk β (f x) (f y) :=
   match x, y, w with
@@ -145,6 +150,16 @@ example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (
   -- get x = y and y = y' in context for `HEq w w'` goal.
   have : x = x' := by assumption
   have : y = y' := by assumption
+  guard_target = HEq w w'
+  sorry
+
+example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (w'.map f) := by
+  congr! with rfl rfl
+  guard_target = x = x'
+  sorry
+  guard_target = y = y'
+  sorry
+  guard_target = w = w'
   sorry
 
 def MySet (α : Type _) := α → Prop
@@ -182,15 +197,13 @@ example {α β} {F : _ → β} {f g : {f : α → β // f = f} }
 example {ls : List ℕ} :
     ls.map (fun x => (ls.map (fun y => 1 + y)).sum + 1) =
       ls.map (fun x => (ls.map (fun y => Nat.succ y)).sum + 1) := by
-  congr! 6
-  rename_i y
+  congr! 6 with - y
   guard_target = 1 + y = y.succ
   rw [Nat.add_comm]
 
 example {ls : List ℕ} {f g : ℕ → ℕ} {h : ∀ x, f x = g x} :
     ls.map (fun x => f x + 3) = ls.map (fun x => g x + 3) := by
-  congr! 3 -- it's a little too powerful and will get to `f = g`
-  rename_i x
+  congr! 3 with x -- it's a little too powerful and will get to `f = g`
   exact h x
 
 -- succeed when either `ext` or `congr` can close the goal
@@ -224,3 +237,31 @@ example (Fintype : Type → Type) [∀ γ, Subsingleton (Fintype γ)]
   congr! (config := { typeEqs := true })
   guard_target = α = β
   sorry
+
+example : n = m → 3 + n = m + 3 := by
+  congr! 0 with rfl
+  guard_target = 3 + n = n + 3
+  apply add_comm
+
+example (x y x' y' : Nat) (hx : x = x') (hy : y = y') : x + y = x' + y' := by
+  congr! (config := { closePre := false, closePost := false })
+  exact hx
+  exact hy
+
+example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
+  congr!
+
+example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
+  congr! (config := { closePost := false })
+  exact hx
+
+example : { f : Nat → Nat // f = id } :=
+  ⟨?_, by
+    -- prevents `rfl` from solving for `?m` in `?m = id`:
+    congr! (config := { closePre := false, closePost := false })
+    ext x
+    exact Nat.zero_add x⟩
+
+-- Regression test. From fixing a "declaration has metavariables" bug
+example (h : z = y) : (x = y ∨ x = z) → x = y := by
+  congr! with (rfl|rfl)

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.metric_space.equicontinuity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.UniformSpace.Equicontinuity
+
+#align_import topology.metric_space.equicontinuity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Equicontinuity in metric spaces
@@ -115,8 +112,7 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricS
     _ ≤ |b (dist x y)| := (le_abs_self _)
     _ = dist (b (dist x y)) 0 := by simp [Real.dist_eq]
     _ < ε := hδ (by simpa only [Real.dist_eq, tsub_zero, abs_dist] using hxy)
-#align metric.uniform_equicontinuous_of_continuity_modulus
-  Metric.uniformEquicontinuous_of_continuity_modulus
+#align metric.uniform_equicontinuous_of_continuity_modulus Metric.uniformEquicontinuous_of_continuity_modulus
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
 equicontinuity is to show that all of the functions share a common *global* continuity modulus. -/

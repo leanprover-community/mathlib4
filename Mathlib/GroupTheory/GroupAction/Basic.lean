@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.basic
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.group_action.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
 /-!
 # Basic properties of group actions
@@ -124,11 +121,11 @@ def fixedBy (g : α) : Set β :=
 #align add_action.fixed_by AddAction.fixedBy
 
 @[to_additive]
-theorem fixed_eq_interᵢ_fixedBy : fixedPoints α β = ⋂ g : α, fixedBy α β g :=
+theorem fixed_eq_iInter_fixedBy : fixedPoints α β = ⋂ g : α, fixedBy α β g :=
   Set.ext fun _ =>
-    ⟨fun hx => Set.mem_interᵢ.2 fun g => hx g, fun hx g => (Set.mem_interᵢ.1 hx g : _)⟩
-#align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_interᵢ_fixedBy
-#align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_interᵢ_fixedBy
+    ⟨fun hx => Set.mem_iInter.2 fun g => hx g, fun hx g => (Set.mem_iInter.1 hx g : _)⟩
+#align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_iInter_fixedBy
+#align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_iInter_fixedBy
 
 variable {α}
 
@@ -190,7 +187,6 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : β} [Fintype (orbit α a)] :
     calc
       x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
       _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
-
 #align mul_action.mem_fixed_points_iff_card_orbit_eq_one MulAction.mem_fixedPoints_iff_card_orbit_eq_one
 #align add_action.mem_fixed_points_iff_card_orbit_eq_zero AddAction.mem_fixedPoints_iff_card_orbit_eq_zero
 
@@ -227,7 +223,6 @@ theorem smul_orbit (a : α) (b : β) : a • orbit α b = orbit α b :=
     calc
       orbit α b = a • a⁻¹ • orbit α b := (smul_inv_smul _ _).symm
       _ ⊆ a • orbit α b := Set.image_subset _ (smul_orbit_subset _ _)
-
 #align mul_action.smul_orbit MulAction.smul_orbit
 #align add_action.vadd_orbit AddAction.vadd_orbit
 
@@ -237,7 +232,6 @@ theorem orbit_smul (a : α) (b : β) : orbit α (a • b) = orbit α b :=
     calc
       orbit α b = orbit α (a⁻¹ • a • b) := by rw [inv_smul_smul]
       _ ⊆ orbit α (a • b) := orbit_smul_subset _ _
-
 #align mul_action.orbit_smul MulAction.orbit_smul
 #align add_action.orbit_vadd AddAction.orbit_vadd
 
@@ -282,9 +276,13 @@ def orbitRel : Setoid β where
 #align mul_action.orbit_rel MulAction.orbitRel
 #align add_action.orbit_rel AddAction.orbitRel
 
-attribute [local instance] orbitRel
-
 variable {α} {β}
+
+@[to_additive]
+theorem orbitRel_apply {x y : β} : (orbitRel α β).Rel x y ↔ x ∈ orbit α y :=
+  Iff.rfl
+#align mul_action.orbit_rel_apply MulAction.orbitRel_apply
+#align add_action.orbit_rel_apply AddAction.orbitRel_apply
 
 /-- When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `α`. -/
@@ -292,16 +290,18 @@ of the orbit of `U` under `α`. -/
       "When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the
       union of the orbit of `U` under `α`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set β) :
+    letI := orbitRel α β
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ a : α, (· • ·) a '' U := by
+  letI := orbitRel α β
   set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk'
   ext x
   constructor
   · rintro ⟨y, hy, hxy⟩
     obtain ⟨a, rfl⟩ := Quotient.exact hxy
-    rw [Set.mem_unionᵢ]
+    rw [Set.mem_iUnion]
     exact ⟨a⁻¹, a • x, hy, inv_smul_smul a x⟩
   · intro hx
-    rw [Set.mem_unionᵢ] at hx
+    rw [Set.mem_iUnion] at hx
     obtain ⟨a, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image_iff_bex]
     refine' ⟨a⁻¹ • x, _, by simp only [Quotient.eq']; use a⁻¹⟩
@@ -313,7 +313,9 @@ theorem quotient_preimage_image_eq_union_mul (U : Set β) :
 
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set β} :
+    letI := orbitRel α β
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V := by
+  letI := orbitRel α β
   set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk'
   refine'
     ⟨fun h x x_in_U a a_in_V =>
@@ -329,6 +331,7 @@ theorem disjoint_image_image_iff {U V : Set β} :
 
 @[to_additive]
 theorem image_inter_image_iff (U V : Set β) :
+    letI := orbitRel α β
     Quotient.mk' '' U ∩ Quotient.mk' '' V = ∅ ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V :=
   Set.disjoint_iff_inter_eq_empty.symm.trans disjoint_image_image_iff
 #align mul_action.image_inter_image_iff MulAction.image_inter_image_iff
@@ -372,7 +375,7 @@ theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
 /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
 @[to_additive "Note that `hφ = quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient α β)
-    {φ : orbitRel.Quotient α β → β} (hφ : RightInverse φ Quotient.mk') :
+    {φ : orbitRel.Quotient α β → β} (hφ : letI := orbitRel α β; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit α (φ x) := by
   conv_lhs => rw [← hφ x]
 #align mul_action.orbit_rel.quotient.orbit_eq_orbit_out MulAction.orbitRel.Quotient.orbit_eq_orbit_out
@@ -393,12 +396,12 @@ This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instea
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
       `AddAction.orbit`, to avoid mentioning `Quotient.out'`. "]
 def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
+  letI := orbitRel α β
   calc
     β ≃ Σω : Ω, { b // Quotient.mk' b = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
     _ ≃ Σω : Ω, ω.orbit :=
       Equiv.sigmaCongrRight fun _ =>
         Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
-
 #align mul_action.self_equiv_sigma_orbits' MulAction.selfEquivSigmaOrbits'
 #align add_action.self_equiv_sigma_orbits' AddAction.selfEquivSigmaOrbits'
 

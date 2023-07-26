@@ -2,13 +2,10 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.uniform_space.equicontinuity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+#align_import topology.uniform_space.equicontinuity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Equicontinuity of a family of functions
@@ -54,12 +51,12 @@ Throughout this file, we use :
 
 We choose to express equicontinuity as a properties of indexed families of functions rather
 than sets of functions for the following reasons:
-- it is really easy to express equicontinuity of `H : set (X → α)` using our setup: it is just
+- it is really easy to express equicontinuity of `H : Set (X → α)` using our setup: it is just
   equicontinuity of the family `(↑) : ↥H → (X → α)`. On the other hand, going the other way around
   would require working with the range of the family, which is always annoying because it
   introduces useless existentials.
 - in most applications, one doesn't work with bare functions but with a more specific hom type
-  `hom`. Equicontinuity of a set `H : set hom` would then have to be expressed as equicontinuity
+  `hom`. Equicontinuity of a set `H : Set hom` would then have to be expressed as equicontinuity
   of `coe_fn '' H`, which is super annoying to work with. This is much simpler with families,
   because equicontinuity of a family `𝓕 : ι → hom` would simply be expressed as equicontinuity
   of `coe_fn ∘ 𝓕`, which doesn't introduce any nasty existentials.
@@ -86,9 +83,7 @@ equicontinuity, uniform convergence, ascoli
 
 section
 
-open UniformSpace Filter Set
-
-open Uniformity Topology UniformConvergence
+open UniformSpace Filter Set Uniformity Topology UniformConvergence
 
 variable {ι κ X Y Z α β γ 𝓕 : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   [UniformSpace α] [UniformSpace β] [UniformSpace γ]
@@ -100,7 +95,7 @@ def EquicontinuousAt (F : ι → X → α) (x₀ : X) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ U
 #align equicontinuous_at EquicontinuousAt
 
-/-- We say that a set `H : set (X → α)` of functions is equicontinuous at a point if the family
+/-- We say that a set `H : Set (X → α)` of functions is equicontinuous at a point if the family
 `(↑) : ↥H → (X → α)` is equicontinuous at that point. -/
 protected abbrev Set.EquicontinuousAt (H : Set <| X → α) (x₀ : X) : Prop :=
   EquicontinuousAt ((↑) : H → X → α) x₀
@@ -112,7 +107,7 @@ def Equicontinuous (F : ι → X → α) : Prop :=
   ∀ x₀, EquicontinuousAt F x₀
 #align equicontinuous Equicontinuous
 
-/-- We say that a set `H : set (X → α)` of functions is equicontinuous if the family
+/-- We say that a set `H : Set (X → α)` of functions is equicontinuous if the family
 `(↑) : ↥H → (X → α)` is equicontinuous. -/
 protected abbrev Set.Equicontinuous (H : Set <| X → α) : Prop :=
   Equicontinuous ((↑) : H → X → α)
@@ -125,7 +120,7 @@ def UniformEquicontinuous (F : ι → β → α) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ U
 #align uniform_equicontinuous UniformEquicontinuous
 
-/-- We say that a set `H : set (X → α)` of functions is uniformly equicontinuous if the family
+/-- We say that a set `H : Set (X → α)` of functions is uniformly equicontinuous if the family
 `(↑) : ↥H → (X → α)` is uniformly equicontinuous. -/
 protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
   UniformEquicontinuous ((↑) : H → β → α)
@@ -220,8 +215,8 @@ protected theorem Set.UniformEquicontinuous.mono {H H' : Set <| β → α} (h : 
 i.e the family `(↑) : range F → X → α` is equicontinuous at `x₀`. -/
 theorem equicontinuousAt_iff_range {F : ι → X → α} {x₀ : X} :
     EquicontinuousAt F x₀ ↔ EquicontinuousAt ((↑) : range F → X → α) x₀ :=
-  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
-    h.comp (rangeFactorization F)⟩
+  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _,
+   fun h => h.comp (rangeFactorization F)⟩
 #align equicontinuous_at_iff_range equicontinuousAt_iff_range
 
 /-- A family `𝓕 : ι → X → α` is equicontinuous iff `range 𝓕` is equicontinuous,
@@ -373,7 +368,7 @@ theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α
 
 /-- A version of `EquicontinuousAt.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `fun_like` types where
+embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
 the coercion is injective. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :
@@ -382,9 +377,7 @@ theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
   filter_upwards [hA V hV]with x hx
   rw [SetCoe.forall] at *
-  have hx : A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V := hx
-  -- Porting note: was
-  -- change A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V at hx
+  change A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V at hx
   refine' (closure_minimal hx <| hVclosed.preimage <| _).trans (preimage_mono hVU)
   exact Continuous.prod_mk ((continuous_apply x₀).comp hu) ((continuous_apply x).comp hu)
 #align equicontinuous_at.closure' EquicontinuousAt.closure'
@@ -407,7 +400,7 @@ theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot
 
 /-- A version of `Equicontinuous.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `fun_like` types where
+embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
 the coercion is injective. -/
 theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
     (hA : Equicontinuous (u ∘ (↑) : A → X → α)) (hu : Continuous u) :
@@ -429,7 +422,7 @@ theorem Filter.Tendsto.continuous_of_equicontinuous_at {l : Filter ι} [l.NeBot]
 
 /-- A version of `UniformEquicontinuous.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
-on the embedding than continuity, but in practice this will mostly be applied to `fun_like` types
+on the embedding than continuity, but in practice this will mostly be applied to `FunLike` types
 where the coercion is injective. -/
 theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
     (hA : UniformEquicontinuous (u ∘ (↑) : A → β → α)) (hu : Continuous u) :
@@ -439,9 +432,7 @@ theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
   filter_upwards [hA V hV]
   rintro ⟨x, y⟩ hxy
   rw [SetCoe.forall] at *
-  have hxy : A ⊆ (fun f => (u f x, u f y)) ⁻¹' V := hxy
-  -- Porting note: was
-  -- change A ⊆ (fun f => (u f x, u f y)) ⁻¹' V at hxy
+  change A ⊆ (fun f => (u f x, u f y)) ⁻¹' V at hxy
   refine' (closure_minimal hxy <| hVclosed.preimage <| _).trans (preimage_mono hVU)
   exact Continuous.prod_mk ((continuous_apply x).comp hu) ((continuous_apply y).comp hu)
 #align uniform_equicontinuous.closure' UniformEquicontinuous.closure'

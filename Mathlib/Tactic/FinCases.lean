@@ -53,18 +53,15 @@ partial def unfoldCases (g : MVarId) (h : FVarId) : MetaM (List MVarId) := do
 
 /-- Implementation of the `fin_cases` tactic. -/
 partial def finCasesAt (g : MVarId) (hyp : FVarId) : MetaM (List MVarId) := g.withContext do
-  let lDecl ←
-    match (← getLCtx).find? hyp with
-    | none => throwError m!"hypothesis not found"
-    | some lDecl => pure lDecl
-  match ← getMemType lDecl.type with
+  let type ← hyp.getType >>= instantiateMVars
+  match ← getMemType type with
   | some _ => unfoldCases g hyp
   | none =>
     -- Deal with `x : A`, where `[Fintype A]` is available:
-    let inst ← synthInstance (← mkAppM ``Fintype #[lDecl.type])
-    let elems ← mkAppOptM ``Fintype.elems #[lDecl.type, inst]
-    let t ← mkAppM ``Membership.mem #[lDecl.toExpr, elems]
-    let v ← mkAppOptM ``Fintype.complete #[lDecl.type, inst, lDecl.toExpr]
+    let inst ← synthInstance (← mkAppM ``Fintype #[type])
+    let elems ← mkAppOptM ``Fintype.elems #[type, inst]
+    let t ← mkAppM ``Membership.mem #[.fvar hyp, elems]
+    let v ← mkAppOptM ``Fintype.complete #[type, inst, Expr.fvar hyp]
     let (fvar, g) ← (← g.assert `this t v).intro1P
     finCasesAt g fvar
 
@@ -110,7 +107,7 @@ These hypotheses can be given a name using `fin_cases a using ha`.
 
 For example,
 ```
-example (f : ℕ → fin 3) : true := by
+example (f : ℕ → Fin 3) : True := by
   let a := f 3
   fin_cases a using ha
 ```

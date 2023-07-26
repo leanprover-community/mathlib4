@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.denoms_clearable
-! leanprover-community/mathlib commit 85d9f2189d9489f9983c0d01536575b0233bd305
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.denoms_clearable from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
 
 /-!
 # Denominators of evaluation of polynomials at ratios
@@ -40,7 +37,7 @@ element `bi = 1 / i b` of `K` such that clearing the denominators of
 the fraction equals `i D`.
 -/
 def DenomsClearable (a b : R) (N : ℕ) (f : R[X]) (i : R →+* K) : Prop :=
-  ∃ (D : R)(bi : K), bi * i b = 1 ∧ i D = i b ^ N * eval (i a * bi) (f.map i)
+  ∃ (D : R) (bi : K), bi * i b = 1 ∧ i D = i b ^ N * eval (i a * bi) (f.map i)
 #align denoms_clearable DenomsClearable
 
 theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=
@@ -62,8 +59,7 @@ set_option linter.uppercaseLean3 false in
 theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
     DenomsClearable a b N f i → DenomsClearable a b N g i → DenomsClearable a b N (f + g) i :=
   fun ⟨Df, bf, bfu, Hf⟩ ⟨Dg, bg, bgu, Hg⟩ =>
-  ⟨Df + Dg, bf, bfu,
-    by
+  ⟨Df + Dg, bf, bfu, by
     rw [RingHom.map_add, Polynomial.map_add, eval_add, mul_add, Hf, Hg]
     congr
     refine' @inv_unique K _ (i b) bg bf _ _ <;> rwa [mul_comm]⟩
@@ -87,8 +83,6 @@ end DenomsClearable
 
 open RingHom
 
---Porting note: `etaExperiment` is required to synthesize the `RingHomClass (ℤ →+* K) ℤ K` instance
-set_option synthInstance.etaExperiment true in
 /-- Evaluating a polynomial with integer coefficients at a rational number and clearing
 denominators, yields a number greater than or equal to one.  The target can be any
 `LinearOrderedField K`.

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.congruence
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
+
+#align_import ring_theory.congruence from "leanprover-community/mathlib"@"2f39bcbc98f8255490f8d4562762c9467694c809"
 
 /-!
 # Congruence relations on rings
@@ -33,7 +30,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`, such as:
   * The `CompleteLattice` structure.
   * The `conGen_eq` lemma, stating that
-    `ringConGen r = infₛ {s : RingCon M | ∀ x y, r x y → s x y}`.
+    `ringConGen r = sInf {s : RingCon M | ∀ x y, r x y → s x y}`.
 -/
 
 
@@ -79,7 +76,7 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-/-- Every `ring_con` is also an `AddCon` -/
+/-- Every `RingCon` is also an `AddCon` -/
 def toAddCon : AddCon R :=
   { c with }
 #align ring_con.to_add_con RingCon.toAddCon
@@ -335,7 +332,7 @@ end Data
 
 /-! ### Algebraic structure
 
-The operations above on the quotient by `c : RingCon R` preseverse the algebraic structure of `R`.
+The operations above on the quotient by `c : RingCon R` preserve the algebraic structure of `R`.
 -/
 
 
@@ -384,12 +381,28 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
+instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
+    (c : RingCon R) : IsScalarTower α c.Quotient c.Quotient where
+  smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
+#align ring_con.is_scalar_tower_right RingCon.isScalarTower_right
+
+instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
+    [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
+  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
+#align ring_con.smul_comm_class RingCon.smulCommClass
+
+instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
+    [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
+  haveI := SMulCommClass.symm R α R
+  SMulCommClass.symm _ _ _
+#align ring_con.smul_comm_class' RingCon.smulCommClass'
+
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=
   { c.toCon.mulAction with
     smul := (· • ·)
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
-    smul_add := fun _ => Quotient.ind₂' fun _ _  => congr_arg toQuotient <| smul_add _ _ _ }
+    smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient :=

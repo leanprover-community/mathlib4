@@ -2,11 +2,6 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.uniform_group
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
@@ -14,6 +9,8 @@ import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Tactic.Abel
+
+#align_import topology.algebra.uniform_group from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Uniform structure on topological groups
@@ -203,10 +200,12 @@ end MulOpposite
 namespace Subgroup
 
 @[to_additive]
-instance (S : Subgroup α) : UniformGroup S :=
+instance uniformGroup (S : Subgroup α) : UniformGroup S :=
   ⟨uniformContinuous_comap'
       (uniformContinuous_div.comp <|
         uniformContinuous_subtype_val.prod_map uniformContinuous_subtype_val)⟩
+#align subgroup.uniform_group Subgroup.uniformGroup
+#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
 
 end Subgroup
 
@@ -215,28 +214,28 @@ section LatticeOps
 variable [Group β]
 
 @[to_additive]
-theorem uniformGroup_infₛ {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
-    @UniformGroup β (infₛ us) _ :=
-  -- Porting note: {_} does not find `infₛ us` instance, see `continuousSMul_infₛ`
-  @UniformGroup.mk β (_) _  <|
-    uniformContinuous_infₛ_rng fun u hu =>
-      uniformContinuous_infₛ_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
-#align uniform_group_Inf uniformGroup_infₛ
-#align uniform_add_group_Inf uniformAddGroup_infₛ
+theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
+    @UniformGroup β (sInf us) _ :=
+  -- Porting note: {_} does not find `sInf us` instance, see `continuousSMul_sInf`
+  @UniformGroup.mk β (_) _ <|
+    uniformContinuous_sInf_rng fun u hu =>
+      uniformContinuous_sInf_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
+#align uniform_group_Inf uniformGroup_sInf
+#align uniform_add_group_Inf uniformAddGroup_sInf
 
 @[to_additive]
-theorem uniformGroup_infᵢ {ι : Sort _} {us' : ι → UniformSpace β}
+theorem uniformGroup_iInf {ι : Sort _} {us' : ι → UniformSpace β}
     (h' : ∀ i, @UniformGroup β (us' i) _) : @UniformGroup β (⨅ i, us' i) _ := by
-  rw [← infₛ_range]
-  exact uniformGroup_infₛ (Set.forall_range_iff.mpr h')
-#align uniform_group_infi uniformGroup_infᵢ
-#align uniform_add_group_infi uniformAddGroup_infᵢ
+  rw [← sInf_range]
+  exact uniformGroup_sInf (Set.forall_range_iff.mpr h')
+#align uniform_group_infi uniformGroup_iInf
+#align uniform_add_group_infi uniformAddGroup_iInf
 
 @[to_additive]
 theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β u₁ _)
     (h₂ : @UniformGroup β u₂ _) : @UniformGroup β (u₁ ⊓ u₂) _ := by
-  rw [inf_eq_infᵢ]
-  refine' uniformGroup_infᵢ fun b => _
+  rw [inf_eq_iInf]
+  refine' uniformGroup_iInf fun b => _
   cases b <;> assumption
 #align uniform_group_inf uniformGroup_inf
 #align uniform_add_group_inf uniformAddGroup_inf
@@ -244,7 +243,7 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
 @[to_additive]
 theorem uniformGroup_comap {γ : Type _} [Group γ] {u : UniformSpace γ} [UniformGroup γ] {F : Type _}
     [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  -- Porting note: {_} does not find `u.comap f` instance, see `continuousSMul_infₛ`
+  -- Porting note: {_} does not find `u.comap f` instance, see `continuousSMul_sInf`
   @UniformGroup.mk β (_) _ <| by
     letI : UniformSpace β := u.comap f
     refine' uniformContinuous_comap' _
@@ -335,8 +334,8 @@ end
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.2 / x.1 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.2 / x.1 ∈ U i } := by
   rw [uniformity_eq_comap_nhds_one]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one Filter.HasBasis.uniformity_of_nhds_one
@@ -344,8 +343,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one {ι} {p : ι → Prop} {U : ι �
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.1⁻¹ * x.2 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.1⁻¹ * x.2 ∈ U i } := by
   rw [uniformity_eq_comap_inv_mul_nhds_one]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_inv_mul Filter.HasBasis.uniformity_of_nhds_one_inv_mul
@@ -353,8 +352,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul {ι} {p : ι → Prop} {U
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_swapped {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.1 / x.2 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.1 / x.2 ∈ U i } := by
   rw [uniformity_eq_comap_nhds_one_swapped]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_swapped Filter.HasBasis.uniformity_of_nhds_one_swapped
@@ -362,8 +361,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_swapped {ι} {p : ι → Prop} {U
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.2⁻¹ * x.1 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.2⁻¹ * x.1 ∈ U i } := by
   rw [uniformity_eq_comap_inv_mul_nhds_one_swapped]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_inv_mul_swapped Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped
@@ -372,9 +371,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → 
 @[to_additive]
 theorem group_separationRel (x y : α) : (x, y) ∈ separationRel α ↔ x / y ∈ closure ({1} : Set α) :=
   have : Embedding fun a => a * (y / x) := (uniformEmbedding_translate_mul (y / x)).embedding
-  show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α)
-    by
-    rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, interₛ_comap_sets]
+  show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α) by
+    rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, sInter_comap_sets]
     simp [mem_closure_iff_nhds, inter_singleton_nonempty, sub_eq_add_neg, add_assoc]
 #align group_separation_rel group_separationRel
 #align add_group_separation_rel addGroup_separationRel
@@ -464,12 +462,12 @@ theorem CauchySeq.inv {ι : Type _} [SemilatticeSup ι] {u : ι → α} (h : Cau
 #align cauchy_seq.neg CauchySeq.neg
 
 @[to_additive]
-theorem totallyBounded_iff_subset_finite_unionᵢ_nhds_one {s : Set α} :
+theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
     TotallyBounded s ↔ ∀ U ∈ 𝓝 (1 : α), ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, y • U :=
   (𝓝 (1 : α)).basis_sets.uniformity_of_nhds_one_inv_mul_swapped.totallyBounded_iff.trans <| by
     simp [← preimage_smul_inv, preimage]
-#align totally_bounded_iff_subset_finite_Union_nhds_one totallyBounded_iff_subset_finite_unionᵢ_nhds_one
-#align totally_bounded_iff_subset_finite_Union_nhds_zero totallyBounded_iff_subset_finite_unionᵢ_nhds_zero
+#align totally_bounded_iff_subset_finite_Union_nhds_one totallyBounded_iff_subset_finite_iUnion_nhds_one
+#align totally_bounded_iff_subset_finite_Union_nhds_zero totallyBounded_iff_subset_finite_iUnion_nhds_zero
 
 section UniformConvergence
 
@@ -556,53 +554,20 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `UniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for compact
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
-def TopologicalGroup.toUniformSpace : UniformSpace G
-    where
+def TopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
-  refl := by
-    refine' map_le_iff_le_comap.1 (le_trans _ (pure_le_nhds 1));
-      simp (config := { contextual := true }) [Set.subset_def]
+  refl := (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
   symm :=
-    by
-    suffices
-      Tendsto (fun p : G × G => (p.2 / p.1)⁻¹) (comap (fun p : G × G => p.2 / p.1) (𝓝 1)) (𝓝 1⁻¹)
-      by simpa [tendsto_comap_iff]
-    exact tendsto_id.inv.comp tendsto_comap
-  comp := by
-    intro D H
-    rw [mem_lift'_sets]
-    · rcases H with ⟨U, U_nhds, U_sub⟩
-      rcases exists_nhds_one_split U_nhds with ⟨V, ⟨V_nhds, V_sum⟩⟩
-      exists (fun p : G × G => p.2 / p.1) ⁻¹' V
-      have H :
-        (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) := by
-        exists V, V_nhds
-      exists H
-      have comp_rel_sub :
-        compRel ((fun p : G × G => p.2 / p.1) ⁻¹' V) ((fun p => p.2 / p.1) ⁻¹' V) ⊆
-          (fun p : G × G => p.2 / p.1) ⁻¹' U :=
-        by
-        intro p p_comp_rel
-        rcases p_comp_rel with ⟨z, ⟨Hz1, Hz2⟩⟩
-        simpa using V_sum _ Hz2 _ Hz1
-      exact Set.Subset.trans comp_rel_sub U_sub
-    · exact monotone_id.compRel monotone_id
-  isOpen_uniformity := by
-    intro S
-    let S' x := { p : G × G | p.1 = x → p.2 ∈ S }
-    show IsOpen S ↔ ∀ x : G, x ∈ S → S' x ∈ comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G))
-    rw [isOpen_iff_mem_nhds]
-    refine' forall₂_congr fun a ha => _
-    rw [← nhds_translation_div, mem_comap, mem_comap]
-    refine exists_congr fun t => (and_congr_right fun _ => ?_)
-    -- Porting note: was
-    --refine' exists₂_congr fun t ht => _
-    show (fun y : G => y / a) ⁻¹' t ⊆ S ↔ (fun p : G × G => p.snd / p.fst) ⁻¹' t ⊆ S' a
-    constructor
-    · rintro h ⟨x, y⟩ hx rfl
-      exact h hx
-    · rintro h x hx
-      exact @h (a, x) hx rfl
+    have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
+      (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
+    by simpa [tendsto_comap_iff]
+  comp := Tendsto.le_comap <| fun U H ↦ by
+    rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
+    refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
+    rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
+    simpa using V_mul _ hz₂ _ hz₁
+  isOpen_uniformity S := by
+    simp only [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, comap_comap, (· ∘ ·), nhds_translation_div]
 #align topological_group.to_uniform_space TopologicalGroup.toUniformSpace
 #align topological_add_group.to_uniform_space TopologicalAddGroup.toUniformSpace
 
@@ -712,8 +677,8 @@ theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
   rw [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff, uniformity_eq_comap_nhds_one' G,
     tendsto_comap_iff, prod_comap_comap_eq]
   simp only [Function.comp, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
-  simp [mul_inv_cancel, ←mul_assoc] at this
-  simp_rw [←mul_assoc, ←mul_assoc, mul_comm]
+  simp only [inv_one, mul_one, ← mul_assoc] at this
+  simp_rw [←mul_assoc, mul_comm]
   assumption
 #align topological_comm_group_is_uniform comm_topologicalGroup_is_uniform
 #align topological_add_comm_group_is_uniform comm_topologicalAddGroup_is_uniform
@@ -788,10 +753,8 @@ variable [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
 theorem tendsto_div_comap_self (x₀ : α) :
     Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
       (𝓝 1) := by
-  have comm :
-    ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
-      e ∘ fun t : β × β => t.2 / t.1 :=
-    by
+  have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
+      e ∘ fun t : β × β => t.2 / t.1 := by
     ext t
     change e t.2 / e t.1 = e (t.2 / t.1)
     rw [← map_div e t.2 t.1]
@@ -835,11 +798,10 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
     (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
-  have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁)) (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) :=
-    by
-    have :=
-      Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
-        (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
+  have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
+      (comap e Nx ×ˢ comap e Nx) (𝓝 (0, y₁)) := by
+    have := Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
+      (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this : _)
   have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by
@@ -859,12 +821,10 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
     simpa using hφ.tendsto (0, 0)
   have lim_φ_sub_sub :
     Tendsto (fun p : (β × β) × δ × δ => (fun p : β × δ => φ p.1 p.2) (p.1.2 - p.1.1, p.2.2 - p.2.1))
-      ((comap ee <| 𝓝 (x₀, x₀)) ×ᶠ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) :=
-    by
+      ((comap ee <| 𝓝 (x₀, x₀)) ×ˢ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) := by
     have lim_sub_sub :
       Tendsto (fun p : (β × β) × δ × δ => (p.1.2 - p.1.1, p.2.2 - p.2.1))
-        (comap ee (𝓝 (x₀, x₀)) ×ᶠ comap ff (𝓝 (y₀, y₀))) (𝓝 0 ×ᶠ 𝓝 0) :=
-      by
+        (comap ee (𝓝 (x₀, x₀)) ×ˢ comap ff (𝓝 (y₀, y₀))) (𝓝 0 ×ˢ 𝓝 0) := by
       have := Filter.prod_mono (tendsto_sub_comap_self de x₀) (tendsto_sub_comap_self df y₀)
       rwa [prod_map_map_eq] at this
     rw [← nhds_prod_eq] at lim_sub_sub
@@ -883,8 +843,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   rcases this with ⟨U₁, U₁_nhd, V₁, V₁_nhd, H⟩
   obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhd
   obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhd
-  have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 :=
-    by
+  have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
     show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
   rcases extend_Z_bilin_aux de hφ W_nhd x₀ y₁ with ⟨U₂, U₂_nhd, HU⟩
@@ -920,7 +879,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ
   · suffices map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 -
       (fun p : β × δ => φ p.1 p.2) p.1)
         (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
-        (𝓝 (x₀, y₀) ×ᶠ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
+        (𝓝 (x₀, y₀) ×ˢ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
       rwa [uniformity_eq_comap_nhds_zero G, prod_map_map_eq, ← map_le_iff_le_comap, Filter.map_map,
         prod_comap_comap_eq]
     intro W' W'_nhd
@@ -984,11 +943,8 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   refine' UniformSpace.complete_of_cauchySeq_tendsto fun x hx => _
   /- Given `n : ℕ`, for sufficiently large `a b : ℕ`, given any lift of `x b`, we can find a lift
     of `x a` such that the quotient of the lifts lies in `u n`. -/
-  have key₀ :
-    ∀ i j : ℕ,
-      ∃ M : ℕ,
-        j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b → ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' :=
-    by
+  have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
+      ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ (↑) '' u i } :=
       by simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
@@ -1027,8 +983,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     (choose_spec <| (hφ n).2 _ _ (hφ (n + 1)).1.le le_rfl (x' n).fst (x' n).snd).1
   /- The sequence `x'` is Cauchy. This is where we exploit the condition on `u`. The key idea
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
-  have x'_cauchy : CauchySeq fun n => (x' n).fst :=
-    by
+  have x'_cauchy : CauchySeq fun n => (x' n).fst := by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
       simpa [uniformity_eq_comap_nhds_one'] using hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
@@ -1052,7 +1007,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
 #align quotient_add_group.complete_space' QuotientAddGroup.completeSpace'
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
-is itself complete. In constrast to `QuotientGroup.completeSpace'`, in this version `G` is
+is itself complete. In contrast to `QuotientGroup.completeSpace'`, in this version `G` is
 already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
@@ -1062,7 +1017,7 @@ In the most common use cases, this coincides (definitionally) with the uniform s
 quotient obtained via other means.  -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. In constrast to `QuotientAddGroup.completeSpace'`, in this version
+subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version
 `G` is already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 

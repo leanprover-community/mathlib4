@@ -2,16 +2,14 @@
 Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
-
-! This file was ported from Lean 3 source module data.tree
-! leanprover-community/mathlib commit ed989ff568099019c6533a4d94b27d852a5710d8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Data.RBMap
 import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Util.CompileInductive
+
+#align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
 /-!
 # Binary tree
@@ -151,25 +149,7 @@ def right : Tree α → Tree α
 scoped infixr:65 " △ " => Tree.node ()
 
 -- porting note: workaround for leanprover/lean4#2049
-section recursor_workarounds
-
-/-- A computable version of `Tree.recOn`. Workaround until Lean has native support for this. -/
-def recOnC {α} {motive : Tree α → Sort u} (t : Tree α) (base : motive Tree.nil)
-  (ind : (a : α) → (l : Tree α) → (r : Tree α) → motive l → motive r → motive (Tree.node a l r))
-  : motive t :=
-  match t with
-  | nil => base
-  | Tree.node a l r => ind a l r (recOnC l base ind) (recOnC r base ind)
-
-@[csimp]
-lemma recOn_Unit_eq_recOnC : @Tree.recOn = @Tree.recOnC := by
-  ext α motive t base ind
-  induction t with
-  | nil => rfl
-  | node a l r ihl ihr =>
-    rw [Tree.recOnC, ←ihl, ←ihr]
-
-end recursor_workarounds
+compile_inductive% Tree
 
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)

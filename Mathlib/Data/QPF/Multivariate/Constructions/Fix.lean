@@ -2,20 +2,17 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.constructions.fix
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.W
 import Mathlib.Data.QPF.Multivariate.Basic
 
+#align_import data.qpf.multivariate.constructions.fix from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
+
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.
 
-For a `(n+1)`-ary QPF `F (α₀,..,αₙ)`, we take the least fixed point of `F` with
-regards to its last argument `αₙ`. The result is a `n`-ary functor: `Fix F (α₀,..,αₙ₋₁)`.
+For an `(n+1)`-ary QPF `F (α₀,..,αₙ)`, we take the least fixed point of `F` with
+regards to its last argument `αₙ`. The result is an `n`-ary functor: `Fix F (α₀,..,αₙ₋₁)`.
 Making `Fix F` into a functor allows us to take the fixed point, compose with other functors
 and take a fixed point again.
 
@@ -244,8 +241,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
 
 theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
     Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦q.P.wMk a f' f⟧ := by
-  have : Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦wrepr (q.P.wMk a f' f)⟧ :=
-    by
+  have : Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦wrepr (q.P.wMk a f' f)⟧ := by
     apply Quot.sound; apply wEquiv.abs'
     rw [MvPFunctor.wDest'_wMk', abs_map, abs_repr, ← abs_map, MvPFunctor.map_eq]
     conv =>
@@ -274,8 +270,7 @@ theorem Fix.ind_rec {β : Type _} (g₁ g₂ : Fix F α → β)
   rw [← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
   congr 2
   rw [MvPFunctor.appendContents, appendFun, appendFun, ← splitFun_comp, ← splitFun_comp]
-  have : (g₁ ∘ fun x => ⟦f x⟧) = g₂ ∘ fun x => ⟦f x⟧ :=
-    by
+  have : (g₁ ∘ fun x => ⟦f x⟧) = g₂ ∘ fun x => ⟦f x⟧ := by
     ext x
     exact ih x
   rw [this]
@@ -307,7 +302,7 @@ theorem Fix.dest_mk (x : F (append1 α (Fix F α))) : Fix.dest (Fix.mk x) = x :=
     rw [← MvFunctor.id_map x]
   rw [← appendFun_comp, id_comp]
   have : Fix.mk ∘ Fix.dest = _root_.id := by
-    ext (x: Fix F α)
+    ext (x : Fix F α)
     apply Fix.mk_dest
   rw [this, appendFun_id_id]
 #align mvqpf.fix.dest_mk MvQPF.Fix.dest_mk
@@ -364,7 +359,6 @@ def Fix.drec {β : Fix F α → Type u}
     rw [MvFunctor.map_map, ← appendFun_comp, id_comp]
     simp only [Function.comp]
   cast (by rw [this]) y.2
-
 #align mvqpf.fix.drec MvQPF.Fix.drec
 
 end MvQPF

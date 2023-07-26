@@ -2,14 +2,11 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module order.countable_dense_linear_order
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Data.Finset.Lattice
+
+#align_import order.countable_dense_linear_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -41,7 +38,7 @@ open Classical
 namespace Order
 
 /-- Suppose `α` is a nonempty dense linear order without endpoints, and
-    suppose `lo`, `hi`, are finite subssets with all of `lo` strictly
+    suppose `lo`, `hi`, are finite subsets with all of `lo` strictly
     before `hi`. Then there is an element of `α` strictly between `lo`
     and `hi`. -/
 theorem exists_between_finsets {α : Type _} [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
@@ -95,8 +92,8 @@ the domain of `f` is `b`'s relation to the image of `f`.
 Thus, if `a` is not already in `f`, then we can extend `f` by sending `a` to `b`.
 -/
 theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β]
-    (f : PartialIso α β) (a : α) : ∃ b : β, ∀ p ∈ f.val, cmp (Prod.fst p) a = cmp (Prod.snd p) b :=
-  by
+    (f : PartialIso α β) (a : α) :
+    ∃ b : β, ∀ p ∈ f.val, cmp (Prod.fst p) a = cmp (Prod.snd p) b := by
   by_cases h : ∃ b, (a, b) ∈ f.val
   · cases' h with b hb
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩

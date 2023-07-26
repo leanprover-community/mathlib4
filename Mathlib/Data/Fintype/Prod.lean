@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.prod
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Prod
+
+#align_import data.fintype.prod from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # fintype instance for the product of two fintypes.
@@ -32,7 +29,7 @@ namespace Set
 variable {s t : Set α}
 
 theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
-    (s ×ˢ t).toFinset = s.toFinset ×ᶠ t.toFinset := by
+    (s ×ˢ t).toFinset = s.toFinset ×ˢ t.toFinset := by
   ext
   simp
 #align set.to_finset_prod Set.toFinset_prod
@@ -45,11 +42,11 @@ theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.o
 end Set
 
 instance (α β : Type _) [Fintype α] [Fintype β] : Fintype (α × β) :=
-  ⟨univ ×ᶠ univ, fun ⟨a, b⟩ => by simp⟩
+  ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
 @[simp]
 theorem Finset.univ_product_univ {α β : Type _} [Fintype α] [Fintype β] :
-    (univ : Finset α) ×ᶠ (univ : Finset β) = univ :=
+    (univ : Finset α) ×ˢ (univ : Finset β) = univ :=
   rfl
 #align finset.univ_product_univ Finset.univ_product_univ
 

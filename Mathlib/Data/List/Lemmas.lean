@@ -2,14 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.list.lemmas
-! leanprover-community/mathlib commit 975c8c329887c50db6f3556a5f382292ee152ff9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.List.Basic
+import Mathlib.Init.Data.List.Lemmas
+
+#align_import data.list.lemmas from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
 
 /-! # Some lemmas about lists involving sets
 
@@ -22,30 +20,6 @@ open List
 variable {α β γ : Type _}
 
 namespace List
-
-theorem range_map (f : α → β) : Set.range (map f) = { l | ∀ x ∈ l, x ∈ Set.range f } := by
-  refine'
-    Set.Subset.antisymm
-      (Set.range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => Set.mem_range_self _)
-      fun l hl => _
-  induction' l with a l ihl; · exact ⟨[], rfl⟩
-  rcases ihl fun x hx => hl x <| subset_cons _ _ hx with ⟨l, rfl⟩
-  rcases hl a (mem_cons_self _ _) with ⟨a, rfl⟩
-  exact ⟨a :: l, map_cons _ _ _⟩
-#align list.range_map List.range_map
-
-theorem range_map_coe (s : Set α) : Set.range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
-  rw [range_map, Subtype.range_coe]
-#align list.range_map_coe List.range_map_coe
-
-/-- If each element of a list can be lifted to some type, then the whole list can be
-lifted to this type. -/
-instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
-  prf l H := by
-    rw [← Set.mem_range, range_map]
-    exact fun a ha => CanLift.prf a (H a ha)
-#align list.can_lift List.canLift
 
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
@@ -105,5 +79,37 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
   (foldl_range_subset_of_range_subset hfg.le a).antisymm
     (foldl_range_subset_of_range_subset hfg.ge a)
 #align list.foldl_range_eq_of_range_eq List.foldl_range_eq_of_range_eq
+
+
+
+/-!
+  ### MapAccumr and Foldr
+  Some lemmas relation `mapAccumr` and `foldr`
+-/
+section MapAccumr
+
+theorem mapAccumr_eq_foldr (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
+    mapAccumr f as s = List.foldr (fun a s =>
+                                    let r := f a s.1
+                                    (r.1, r.2 :: s.2)
+                                  ) (s, []) as
+  | [], s => rfl
+  | a :: as, s => by
+    simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
+
+theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) :
+    ∀ (as : List α) (bs : List β) (s : σ),
+    mapAccumr₂ f as bs s = foldr (fun ab s =>
+                              let r := f ab.1 ab.2 s.1
+                              (r.1, r.2 :: s.2)
+                            ) (s, []) (as.zip bs)
+  | [], [], s => rfl
+  | a :: as, [], s => rfl
+  | [], b :: bs, s => rfl
+  | a :: as, b :: bs, s => by
+    simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
+    rfl
+
+end MapAccumr
 
 end List

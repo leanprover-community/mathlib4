@@ -2,11 +2,6 @@
 Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
-
-! This file was ported from Lean 3 source module algebra.periodic
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Opposite
@@ -14,8 +9,10 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.periodic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Periodicity
@@ -194,7 +191,7 @@ theorem Periodic.const_sub [AddCommGroup α] (h : Periodic f c) (a : α) :
 #align function.periodic.const_sub Function.Periodic.const_sub
 
 theorem Periodic.sub_const [AddCommGroup α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (x - a)) c :=  by
+    Periodic (fun x => f (x - a)) c := by
   simpa only [sub_eq_add_neg] using h.add_const (-a)
 #align function.periodic.sub_const Function.Periodic.sub_const
 
@@ -308,7 +305,7 @@ theorem Periodic.exists_mem_Ioc [LinearOrderedAddCommGroup α] [Archimedean α] 
 
 theorem Periodic.image_Ioc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (a : α) : f '' Ioc a (a + c) = range f :=
-  (image_subset_range _ _).antisymm <|range_subset_iff.2 fun x =>
+  (image_subset_range _ _).antisymm <| range_subset_iff.2 fun x =>
     let ⟨y, hy, hyx⟩ := h.exists_mem_Ioc hc x a
     ⟨y, hy, hyx.symm⟩
 #align function.periodic.image_Ioc Function.Periodic.image_Ioc

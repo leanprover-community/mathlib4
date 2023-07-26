@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.noetherian_space
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Topology.Sets.Closeds
+
+#align_import topology.noetherian_space from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Noetherian space
@@ -34,7 +31,7 @@ of a noetherian scheme (e.g., the spectrum of a noetherian ring) is noetherian.
   spaces.
 - `TopologicalSpace.NoetherianSpace.range`: The image of a noetherian space under a continuous map
   is noetherian.
-- `TopologicalSpace.NoetherianSpace.unionᵢ`: The finite union of noetherian spaces is noetherian.
+- `TopologicalSpace.NoetherianSpace.iUnion`: The finite union of noetherian spaces is noetherian.
 - `TopologicalSpace.NoetherianSpace.discrete`: A noetherian and Hausdorff space is discrete.
 - `TopologicalSpace.NoetherianSpace.exists_finset_irreducible` : Every closed subset of a noetherian
   space is a finite union of irreducible closed subsets.
@@ -69,7 +66,7 @@ variable {α β}
 /-- In a Noetherian space, all sets are compact. -/
 protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : IsCompact s := by
   refine isCompact_iff_finite_subcover.2 fun U hUo hs => ?_
-  rcases ((noetherianSpace_iff_opens α).mp ‹_› ⟨⋃ i, U i, isOpen_unionᵢ hUo⟩).elim_finite_subcover U
+  rcases ((noetherianSpace_iff_opens α).mp ‹_› ⟨⋃ i, U i, isOpen_iUnion hUo⟩).elim_finite_subcover U
     hUo Set.Subset.rfl with ⟨t, ht⟩
   exact ⟨t, hs.trans ht⟩
 #align topological_space.noetherian_space.is_compact TopologicalSpace.NoetherianSpace.isCompact
@@ -150,13 +147,13 @@ theorem noetherian_univ_iff : NoetherianSpace (Set.univ : Set α) ↔ Noetherian
   noetherianSpace_iff_of_homeomorph (Homeomorph.Set.univ α)
 #align topological_space.noetherian_univ_iff TopologicalSpace.noetherian_univ_iff
 
-theorem NoetherianSpace.unionᵢ {ι : Type _} (f : ι → Set α) [Finite ι]
+theorem NoetherianSpace.iUnion {ι : Type _} (f : ι → Set α) [Finite ι]
     [hf : ∀ i, NoetherianSpace (f i)] : NoetherianSpace (⋃ i, f i) := by
   simp_rw [noetherianSpace_set_iff] at hf ⊢
   intro t ht
-  rw [← Set.inter_eq_left_iff_subset.mpr ht, Set.inter_unionᵢ]
-  exact isCompact_unionᵢ fun i => hf i _ (Set.inter_subset_right _ _)
-#align topological_space.noetherian_space.Union TopologicalSpace.NoetherianSpace.unionᵢ
+  rw [← Set.inter_eq_left_iff_subset.mpr ht, Set.inter_iUnion]
+  exact isCompact_iUnion fun i => hf i _ (Set.inter_subset_right _ _)
+#align topological_space.noetherian_space.Union TopologicalSpace.NoetherianSpace.iUnion
 
 -- This is not an instance since it makes a loop with `t2_space_discrete`.
 theorem NoetherianSpace.discrete [NoetherianSpace α] [T2Space α] : DiscreteTopology α :=
@@ -176,7 +173,7 @@ instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpa
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace α] (s : Closeds α) :
-    ∃ S : Set (Closeds α), S.Finite ∧ (∀ t ∈ S, IsIrreducible (t : Set α)) ∧ s = supₛ S := by
+    ∃ S : Set (Closeds α), S.Finite ∧ (∀ t ∈ S, IsIrreducible (t : Set α)) ∧ s = sSup S := by
   apply wellFounded_closeds.induction s; clear s
   intro s H
   rcases eq_or_ne s ⊥ with rfl | h₀
@@ -191,7 +188,7 @@ theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace �
       rcases H (s ⊓ z₁) (inf_lt_left.2 hz₁') with ⟨S₁, hSf₁, hS₁, h₁⟩
       rcases H (s ⊓ z₂) (inf_lt_left.2 hz₂') with ⟨S₂, hSf₂, hS₂, h₂⟩
       refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, Set.union_subset_iff.2 ⟨hS₁, hS₂⟩, ?_⟩
-      rwa [supₛ_union, ← h₁, ← h₂, ← inf_sup_left, left_eq_inf]
+      rwa [sSup_union, ← h₁, ← h₂, ← inf_sup_left, left_eq_inf]
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_isClosed_irreducible [NoetherianSpace α]
@@ -201,22 +198,22 @@ theorem NoetherianSpace.exists_finite_set_isClosed_irreducible [NoetherianSpace 
   rcases NoetherianSpace.exists_finite_set_closeds_irreducible s with ⟨S, hSf, hS, rfl⟩
   refine ⟨(↑) '' S, hSf.image _, Set.ball_image_iff.2 fun S _ => S.2, Set.ball_image_iff.2 hS, ?_⟩
   lift S to Finset (Closeds α) using hSf
-  simp [← Finset.sup_id_eq_supₛ, Closeds.coe_finset_sup]
+  simp [← Finset.sup_id_eq_sSup, Closeds.coe_finset_sup]
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finset_irreducible [NoetherianSpace α] (s : Closeds α) :
     ∃ S : Finset (Closeds α), (∀ k : S, IsIrreducible (k : Set α)) ∧ s = S.sup id := by
-  simpa [Set.exists_finite_iff_finset, Finset.sup_id_eq_supₛ]
+  simpa [Set.exists_finite_iff_finset, Finset.sup_id_eq_sSup]
     using NoetherianSpace.exists_finite_set_closeds_irreducible s
 #align topological_space.noetherian_space.exists_finset_irreducible TopologicalSpace.NoetherianSpace.exists_finset_irreducible
 
 theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
   obtain ⟨S : Set (Set α), hSf, hSc, hSi, hSU⟩ :=
-    NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ
+    NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ (α := α)
   refine hSf.subset fun s hs => ?_
   lift S to Finset (Set α) using hSf
-  rcases isIrreducible_iff_unionₛ_closed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
+  rcases isIrreducible_iff_sUnion_closed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]
 #align topological_space.noetherian_space.finite_irreducible_components TopologicalSpace.NoetherianSpace.finite_irreducibleComponents
 

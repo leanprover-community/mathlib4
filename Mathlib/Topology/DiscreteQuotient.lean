@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
-
-! This file was ported from Lean 3 source module topology.discrete_quotient
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.LocallyConstant.Basic
+
+#align_import topology.discrete_quotient from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
 /-!
 
@@ -35,17 +32,17 @@ quotients as setoids whose equivalence classes are clopen.
 The type `DiscreteQuotient X` is endowed with an instance of a `SemilatticeInf` with `OrderTop`.
 The partial ordering `A ≤ B` mathematically means that `B.proj` factors through `A.proj`.
 The top element `⊤` is the trivial quotient, meaning that every element of `X` is collapsed
-to a point. Given `h : A ≤ B`, the map `A → B` is `DiscreteQuotient.ofLe h`.
+to a point. Given `h : A ≤ B`, the map `A → B` is `DiscreteQuotient.ofLE h`.
 
 Whenever `X` is a locally connected space, the type `DiscreteQuotient X` is also endowed with an
-instance of a `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
+instance of an `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
 i.e., `x ~ y` means that `x` and `y` belong to the same connected component. In particular, if `X`
 is a discrete topological space, then `x ~ y` is equivalent (propositionally, not definitionally) to
 `x = y`.
 
-Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LeComap f A B` for `A :
-DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`.  If
-`cond : DiscreteQuotient.LeComap h A B`, the function `A → B` is obtained by
+Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
+`A : DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`. If
+`cond : DiscreteQuotient.LEComap h A B`, the function `A → B` is obtained by
 `DiscreteQuotient.map f cond`.
 
 ## Theorems
@@ -58,7 +55,7 @@ The two main results proved in this file are:
 
 2. `DiscreteQuotient.exists_of_compat` which states that when `X` is compact, then any
   system of elements of `Q` as `Q : DiscreteQuotient X` varies, which is compatible with
-  respect to `DiscreteQuotient.ofLe`, must arise from some element of `X`.
+  respect to `DiscreteQuotient.ofLE`, must arise from some element of `X`.
 
 ## Remarks
 The constructions in this file will be used to show that any profinite space is a limit
@@ -87,7 +84,7 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
 
 /-- Construct a discrete quotient from a clopen set. -/
 def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
-  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl,  Iff.symm,  Iff.trans⟩
+  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
 #align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
 
@@ -203,51 +200,51 @@ theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.co
 
 end Comap
 
-section OfLe
+section OfLE
 
 variable {A B C : DiscreteQuotient X}
 
 /-- The map induced by a refinement of a discrete quotient. -/
-def ofLe (h : A ≤ B) : A → B :=
+def ofLE (h : A ≤ B) : A → B :=
   Quotient.map' (fun x => x) h
-#align discrete_quotient.of_le DiscreteQuotient.ofLe
+#align discrete_quotient.of_le DiscreteQuotient.ofLE
 
 @[simp]
-theorem ofLe_refl : ofLe (le_refl A) = id := by
+theorem ofLE_refl : ofLE (le_refl A) = id := by
   ext ⟨⟩
   rfl
-#align discrete_quotient.of_le_refl DiscreteQuotient.ofLe_refl
+#align discrete_quotient.of_le_refl DiscreteQuotient.ofLE_refl
 
-theorem ofLe_refl_apply (a : A) : ofLe (le_refl A) a = a := by simp
-#align discrete_quotient.of_le_refl_apply DiscreteQuotient.ofLe_refl_apply
+theorem ofLE_refl_apply (a : A) : ofLE (le_refl A) a = a := by simp
+#align discrete_quotient.of_le_refl_apply DiscreteQuotient.ofLE_refl_apply
 
 @[simp]
-theorem ofLe_ofLe (h₁ : A ≤ B) (h₂ : B ≤ C) (x : A) : ofLe h₂ (ofLe h₁ x) = ofLe (h₁.trans h₂) x :=
-  by
+theorem ofLE_ofLE (h₁ : A ≤ B) (h₂ : B ≤ C) (x : A) :
+    ofLE h₂ (ofLE h₁ x) = ofLE (h₁.trans h₂) x := by
   rcases x with ⟨⟩
   rfl
-#align discrete_quotient.of_le_of_le DiscreteQuotient.ofLe_ofLe
+#align discrete_quotient.of_le_of_le DiscreteQuotient.ofLE_ofLE
 
 @[simp]
-theorem ofLe_comp_ofLe (h₁ : A ≤ B) (h₂ : B ≤ C) : ofLe h₂ ∘ ofLe h₁ = ofLe (le_trans h₁ h₂) :=
-  funext <| ofLe_ofLe _ _
-#align discrete_quotient.of_le_comp_of_le DiscreteQuotient.ofLe_comp_ofLe
+theorem ofLE_comp_ofLE (h₁ : A ≤ B) (h₂ : B ≤ C) : ofLE h₂ ∘ ofLE h₁ = ofLE (le_trans h₁ h₂) :=
+  funext <| ofLE_ofLE _ _
+#align discrete_quotient.of_le_comp_of_le DiscreteQuotient.ofLE_comp_ofLE
 
-theorem ofLe_continuous (h : A ≤ B) : Continuous (ofLe h) :=
+theorem ofLE_continuous (h : A ≤ B) : Continuous (ofLE h) :=
   continuous_of_discreteTopology
-#align discrete_quotient.of_le_continuous DiscreteQuotient.ofLe_continuous
+#align discrete_quotient.of_le_continuous DiscreteQuotient.ofLE_continuous
 
 @[simp]
-theorem ofLe_proj (h : A ≤ B) (x : X) : ofLe h (A.proj x) = B.proj x :=
+theorem ofLE_proj (h : A ≤ B) (x : X) : ofLE h (A.proj x) = B.proj x :=
   Quotient.sound' (B.refl _)
-#align discrete_quotient.of_le_proj DiscreteQuotient.ofLe_proj
+#align discrete_quotient.of_le_proj DiscreteQuotient.ofLE_proj
 
 @[simp]
-theorem ofLe_comp_proj (h : A ≤ B) : ofLe h ∘ A.proj = B.proj :=
-  funext <| ofLe_proj _
-#align discrete_quotient.of_le_comp_proj DiscreteQuotient.ofLe_comp_proj
+theorem ofLE_comp_proj (h : A ≤ B) : ofLE h ∘ A.proj = B.proj :=
+  funext <| ofLE_proj _
+#align discrete_quotient.of_le_comp_proj DiscreteQuotient.ofLE_comp_proj
 
-end OfLe
+end OfLE
 
 /-- When `X` is a locally connected space, there is an `OrderBot` instance on
 `DiscreteQuotient X`. The bottom element is given by `connectedComponentSetoid X`
@@ -283,45 +280,45 @@ section Map
 
 variable (f : C(X, Y)) (A A' : DiscreteQuotient X) (B B' : DiscreteQuotient Y)
 
-/-- Given `f : C(X, Y)`, `DiscreteQuotient.LeComap f A B` is defined as
+/-- Given `f : C(X, Y)`, `DiscreteQuotient.LEComap f A B` is defined as
 `A ≤ B.comap f`. Mathematically this means that `f` descends to a morphism `A → B`. -/
-def LeComap : Prop :=
+def LEComap : Prop :=
   A ≤ B.comap f
-#align discrete_quotient.le_comap DiscreteQuotient.LeComap
+#align discrete_quotient.le_comap DiscreteQuotient.LEComap
 
-theorem leComap_id : LeComap (.id X) A A := le_rfl
+theorem leComap_id : LEComap (.id X) A A := le_rfl
 #align discrete_quotient.le_comap_id DiscreteQuotient.leComap_id
 
 variable {A A' B B'} {f} {g : C(Y, Z)} {C : DiscreteQuotient Z}
 
 @[simp]
-theorem leComap_id_iff : LeComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
+theorem leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
   Iff.rfl
 #align discrete_quotient.le_comap_id_iff DiscreteQuotient.leComap_id_iff
 
-theorem LeComap.comp : LeComap g B C → LeComap f A B → LeComap (g.comp f) A C := by tauto
-#align discrete_quotient.le_comap.comp DiscreteQuotient.LeComap.comp
+theorem LEComap.comp : LEComap g B C → LEComap f A B → LEComap (g.comp f) A C := by tauto
+#align discrete_quotient.le_comap.comp DiscreteQuotient.LEComap.comp
 
 @[mono]
-theorem LeComap.mono (h : LeComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LeComap f A' B' :=
+theorem LEComap.mono (h : LEComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LEComap f A' B' :=
   hA.trans <| h.trans <| comap_mono _ hB
-#align discrete_quotient.le_comap.mono DiscreteQuotient.LeComap.mono
+#align discrete_quotient.le_comap.mono DiscreteQuotient.LEComap.mono
 
 /-- Map a discrete quotient along a continuous map. -/
-def map (f : C(X, Y)) (cond : LeComap f A B) : A → B := Quotient.map' f cond
+def map (f : C(X, Y)) (cond : LEComap f A B) : A → B := Quotient.map' f cond
 #align discrete_quotient.map DiscreteQuotient.map
 
-theorem map_continuous (cond : LeComap f A B) : Continuous (map f cond) :=
+theorem map_continuous (cond : LEComap f A B) : Continuous (map f cond) :=
   continuous_of_discreteTopology
 #align discrete_quotient.map_continuous DiscreteQuotient.map_continuous
 
 @[simp]
-theorem map_comp_proj (cond : LeComap f A B) : map f cond ∘ A.proj = B.proj ∘ f :=
+theorem map_comp_proj (cond : LEComap f A B) : map f cond ∘ A.proj = B.proj ∘ f :=
   rfl
 #align discrete_quotient.map_comp_proj DiscreteQuotient.map_comp_proj
 
 @[simp]
-theorem map_proj (cond : LeComap f A B) (x : X) : map f cond (A.proj x) = B.proj (f x) :=
+theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj (f x) :=
   rfl
 #align discrete_quotient.map_proj DiscreteQuotient.map_proj
 
@@ -330,67 +327,67 @@ theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
 -- porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
-theorem map_comp (h1 : LeComap g B C) (h2 : LeComap f A B) :
+theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
   rfl
 #align discrete_quotient.map_comp DiscreteQuotient.map_comp
 
 @[simp]
-theorem ofLe_map (cond : LeComap f A B) (h : B ≤ B') (a : A) :
-    ofLe h (map f cond a) = map f (cond.mono le_rfl h) a := by
+theorem ofLE_map (cond : LEComap f A B) (h : B ≤ B') (a : A) :
+    ofLE h (map f cond a) = map f (cond.mono le_rfl h) a := by
   rcases a with ⟨⟩
   rfl
-#align discrete_quotient.of_le_map DiscreteQuotient.ofLe_map
+#align discrete_quotient.of_le_map DiscreteQuotient.ofLE_map
 
 @[simp]
-theorem ofLe_comp_map (cond : LeComap f A B) (h : B ≤ B') :
-    ofLe h ∘ map f cond = map f (cond.mono le_rfl h) :=
-  funext <| ofLe_map cond h
-#align discrete_quotient.of_le_comp_map DiscreteQuotient.ofLe_comp_map
+theorem ofLE_comp_map (cond : LEComap f A B) (h : B ≤ B') :
+    ofLE h ∘ map f cond = map f (cond.mono le_rfl h) :=
+  funext <| ofLE_map cond h
+#align discrete_quotient.of_le_comp_map DiscreteQuotient.ofLE_comp_map
 
 @[simp]
-theorem map_ofLe (cond : LeComap f A B) (h : A' ≤ A) (c : A') :
-    map f cond (ofLe h c) = map f (cond.mono h le_rfl) c := by
+theorem map_ofLE (cond : LEComap f A B) (h : A' ≤ A) (c : A') :
+    map f cond (ofLE h c) = map f (cond.mono h le_rfl) c := by
   rcases c with ⟨⟩
   rfl
-#align discrete_quotient.map_of_le DiscreteQuotient.map_ofLe
+#align discrete_quotient.map_of_le DiscreteQuotient.map_ofLE
 
 @[simp]
-theorem map_comp_ofLe (cond : LeComap f A B) (h : A' ≤ A) :
-    map f cond ∘ ofLe h = map f (cond.mono h le_rfl) :=
-  funext <| map_ofLe cond h
-#align discrete_quotient.map_comp_of_le DiscreteQuotient.map_comp_ofLe
+theorem map_comp_ofLE (cond : LEComap f A B) (h : A' ≤ A) :
+    map f cond ∘ ofLE h = map f (cond.mono h le_rfl) :=
+  funext <| map_ofLE cond h
+#align discrete_quotient.map_comp_of_le DiscreteQuotient.map_comp_ofLE
 
 end Map
 
 theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
     {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y := by
-  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_interᵢ_clopen,
-    mem_interᵢ]
+  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_clopen,
+    mem_iInter]
   rintro ⟨U, hU1, hU2⟩
   exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
-theorem fiber_subset_ofLe {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
-    A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLe h a} := by
+theorem fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
+    A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLE h a} := by
   rcases A.proj_surjective a with ⟨a, rfl⟩
-  rw [fiber_eq, ofLe_proj, fiber_eq]
+  rw [fiber_eq, ofLE_proj, fiber_eq]
   exact fun _ h' => h h'
-#align discrete_quotient.fiber_subset_of_le DiscreteQuotient.fiber_subset_ofLe
+#align discrete_quotient.fiber_subset_of_le DiscreteQuotient.fiber_subset_ofLE
 
 theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
-    (compat : ∀ (A B : DiscreteQuotient X) (h : A ≤ B), ofLe h (Qs _) = Qs _) :
+    (compat : ∀ (A B : DiscreteQuotient X) (h : A ≤ B), ofLE h (Qs _) = Qs _) :
     ∃ x : X, ∀ Q : DiscreteQuotient X, Q.proj x = Qs _ := by
   have H₁ : ∀ Q₁ Q₂, Q₁ ≤ Q₂ → proj Q₁ ⁻¹' {Qs Q₁} ⊆ proj Q₂ ⁻¹' {Qs Q₂} := fun _ _ h => by
     rw [← compat _ _ h]
-    exact fiber_subset_ofLe _ _
+    exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
-    IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed
+    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
       (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_inf H₁)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
-  exact ⟨x, mem_interᵢ.1 hx⟩
+  exact ⟨x, mem_iInter.1 hx⟩
 #align discrete_quotient.exists_of_compat DiscreteQuotient.exists_of_compat
 
 /-- If `X` is a compact space, then any discrete quotient of `X` is finite. -/

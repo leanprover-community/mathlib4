@@ -2,15 +2,12 @@
 Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.star.self_adjoint
-! leanprover-community/mathlib commit 9abfa6f0727d5adc99067e325e15d1a9de17fd8e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Init.Data.Subtype.Basic
+
+#align_import algebra.star.self_adjoint from "leanprover-community/mathlib"@"a6ece35404f60597c651689c1b46ead86de5ac1b"
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
@@ -99,6 +96,12 @@ theorem starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S] {x
     (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 #align is_self_adjoint.star_hom_apply IsSelfAdjoint.starHom_apply
+
+/- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
+instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
+theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S]
+    [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
+  (IsSelfAdjoint.all x).starHom_apply f
 
 section AddMonoid
 
@@ -252,7 +255,6 @@ end DivisionRing
 
 section Semifield
 
--- porting note: generalize to `Semifield` to fix lean4#2074-related errors
 variable [Semifield R] [StarRing R]
 
 theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
@@ -315,6 +317,10 @@ instance : Inhabited (selfAdjoint R) :=
 
 end AddGroup
 
+instance isStarNormal [NonUnitalRing R] [StarRing R] (x : selfAdjoint R) :
+    IsStarNormal (x : R) :=
+  x.prop.isStarNormal
+
 section Ring
 
 variable [Ring R] [StarRing R]
@@ -331,8 +337,7 @@ instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
 instance : NatCast (selfAdjoint R) where
-  -- porting note: `(_)` works around lean4#2074
-  natCast n := ⟨n, @isSelfAdjoint_natCast _ _ (_) n⟩
+  natCast n := ⟨n, isSelfAdjoint_natCast _⟩
 
 instance : IntCast (selfAdjoint R) where
   intCast n := ⟨n, isSelfAdjoint_intCast _⟩
@@ -378,8 +383,7 @@ section Field
 variable [Field R] [StarRing R]
 
 instance : Inv (selfAdjoint R) where
-  -- porting note: `(_)` works around lean4#2074
-  inv x := ⟨x.val⁻¹, @IsSelfAdjoint.inv _ _ (_) _ x.prop⟩
+  inv x := ⟨x.val⁻¹, x.prop.inv⟩
 
 @[simp, norm_cast]
 theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
@@ -387,8 +391,7 @@ theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
 #align self_adjoint.coe_inv selfAdjoint.val_inv
 
 instance : Div (selfAdjoint R) where
-  -- porting note: `(_)` works around lean4#2074
-  div x y := ⟨x / y, @IsSelfAdjoint.div _ _ (_) _ _ x.prop y.prop⟩
+  div x y := ⟨x / y, x.prop.div y.prop⟩
 
 @[simp, norm_cast]
 theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
@@ -396,8 +399,7 @@ theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
 #align self_adjoint.coe_div selfAdjoint.val_div
 
 instance : Pow (selfAdjoint R) ℤ where
-  -- porting note: `(_)` works around lean4#2074
-  pow x z := ⟨(x : R) ^ z, @IsSelfAdjoint.zpow _ _ (_) _ x.prop z⟩
+  pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
 
 @[simp, norm_cast]
 theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=

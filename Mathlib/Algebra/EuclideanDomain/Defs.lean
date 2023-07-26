@@ -2,16 +2,13 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.euclidean_domain.defs
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
+
+#align_import algebra.euclidean_domain.defs from "leanprover-community/mathlib"@"ee7b9f9a9ac2a8d9f04ea39bbfe6b1a3be053b38"
 
 /-!
 # Euclidean domains
@@ -34,10 +31,10 @@ don't satisfy the classical notion were provided independently by Hiblot and Nag
 
 ## Main statements
 
-See `Algebra.EuclideanDomain.Basic` for most of the theorems about Eucliean domains,
+See `Algebra.EuclideanDomain.Basic` for most of the theorems about Euclidean domains,
 including Bézout's lemma.
 
-See `Algebra.EuclideanDomain.Instances` for the facts that `ℤ` is a Euclidean domain,
+See `Algebra.EuclideanDomain.Instances` for the fact that `ℤ` is a Euclidean domain,
 as is any field.
 
 ## Notation
@@ -69,7 +66,7 @@ Euclidean domain, transfinite Euclidean domain, Bézout's lemma
 
 universe u
 
-/-- A `EuclideanDomain` is an non-trivial commutative ring with a division and a remainder,
+/-- A `EuclideanDomain` is a non-trivial commutative ring with a division and a remainder,
   satisfying `b * (a / b) + a % b = a`.
   The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
   This definition is slightly generalised to include a well founded relation
@@ -112,6 +109,9 @@ variable {R : Type u} [EuclideanDomain R]
 
 /-- Abbreviated notation for the well-founded relation `r` in a Euclidean domain. -/
 local infixl:50 " ≺ " => EuclideanDomain.r
+
+local instance wellFoundedRelation : WellFoundedRelation R where
+  wf := r_wellFounded
 
 -- see Note [lower instance priority]
 instance (priority := 70) : Div R :=
@@ -177,18 +177,17 @@ section
 open Classical
 
 @[elab_as_elim]
-theorem GCD.induction {P : R → R → Prop} :
-    ∀ a b : R, (H0 : ∀ x, P 0 x) → (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) → P a b
-  | a => fun b H0 H1 =>
-    if a0 : a = 0 then by
-      -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
-      -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unnecessarily.20tombstoned.20argument/near/314573315
-      change P a b
-      exact a0.symm ▸ H0 b
-    else
-      have _ := mod_lt b a0
-      H1 _ _ a0 (GCD.induction (b % a) a H0 H1)
-  termination_by' ⟨_, r_wellFounded⟩
+theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
+    (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) : P a b :=
+  if a0 : a = 0 then by
+    -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
+    -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unnecessarily.20tombstoned.20argument/near/314573315
+    change P a b
+    exact a0.symm ▸ H0 b
+  else
+    have _ := mod_lt b a0
+    H1 _ _ a0 (GCD.induction (b % a) a H0 H1)
+termination_by _ => a
 #align euclidean_domain.gcd.induction EuclideanDomain.GCD.induction
 
 end
@@ -199,13 +198,12 @@ variable [DecidableEq R]
 
 /-- `gcd a b` is a (non-unique) element such that `gcd a b ∣ a` `gcd a b ∣ b`, and for
   any element `c` such that `c ∣ a` and `c ∣ b`, then `c ∣ gcd a b` -/
-def gcd : R → R → R
-  | a => fun b =>
-    if a0 : a = 0 then b
-    else
-      have _ := mod_lt b a0
-      gcd (b % a) a
-  termination_by' ⟨_, r_wellFounded⟩
+def gcd (a b : R) : R :=
+  if a0 : a = 0 then b
+  else
+    have _ := mod_lt b a0
+    gcd (b % a) a
+termination_by _ => a
 #align euclidean_domain.gcd EuclideanDomain.gcd
 
 @[simp]
@@ -223,14 +221,13 @@ The function `xgcdAux` takes in two triples, and from these recursively computes
 xgcdAux (r, s, t) (r', s', t') = xgcdAux (r' % r, s' - (r' / r) * s, t' - (r' / r) * t) (r, s, t)
 ```
 -/
-def xgcdAux : R → R → R → R → R → R → R × R × R
-  | r => fun s t r' s' t' =>
-    if _hr : r = 0 then (r', s', t')
-    else
-      let q := r' / r
-      xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
-  termination_by' ⟨_, r_wellFounded⟩
-  decreasing_by (exact mod_lt _ _hr)
+def xgcdAux (r s t r' s' t' : R) : R × R × R :=
+  if _hr : r = 0 then (r', s', t')
+  else
+    let q := r' / r
+    have _ := mod_lt r' _hr
+    xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
+termination_by _ => r
 #align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
 
 @[simp]

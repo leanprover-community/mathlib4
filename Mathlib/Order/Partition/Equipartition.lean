@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module order.partition.equipartition
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Equitable
 import Mathlib.Order.Partition.Finpartition
+
+#align_import order.partition.equipartition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Finite equipartitions
@@ -39,8 +36,7 @@ theorem isEquipartition_iff_card_parts_eq_average :
       ∀ a : Finset α,
         a ∈ P.parts → a.card = s.card / P.parts.card ∨ a.card = s.card / P.parts.card + 1 :=
   by simp_rw [IsEquipartition, Finset.equitableOn_iff, P.sum_card_parts]
-#align finpartition.is_equipartition_iff_card_parts_eq_average
-    Finpartition.isEquipartition_iff_card_parts_eq_average
+#align finpartition.is_equipartition_iff_card_parts_eq_average Finpartition.isEquipartition_iff_card_parts_eq_average
 
 variable {P}
 

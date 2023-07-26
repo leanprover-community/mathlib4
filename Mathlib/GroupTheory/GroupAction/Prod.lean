@@ -2,13 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
-! This file was ported from Lean 3 source module group_theory.group_action.prod
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.prod from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
 /-!
 # Prod instances for additive and multiplicative actions
@@ -89,12 +87,12 @@ instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
 #align prod.has_smul Prod.smul
 
-@[to_additive existing (attr := simp) (reorder := 6) smul_fst]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_fst]
 theorem pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c :=
   rfl
 #align prod.pow_fst Prod.pow_fst
 
-@[to_additive existing (attr := simp) (reorder := 6) smul_snd]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_snd]
 theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
   rfl
 #align prod.pow_snd Prod.pow_snd
@@ -102,17 +100,17 @@ theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
 /- Note that the `c` arguments to this lemmas cannot be in the more natural right-most positions due
 to limitations in `to_additive` and `to_additive_reorder`, which will silently fail to reorder more
 than two adjacent arguments -/
-@[to_additive existing (attr := simp) (reorder := 6) smul_mk]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_mk]
 theorem pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) :=
   rfl
 #align prod.pow_mk Prod.pow_mk
 
-@[to_additive existing (reorder := 6) smul_def]
+@[to_additive existing (reorder := 6 7) smul_def]
 theorem pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) :=
   rfl
 #align prod.pow_def Prod.pow_def
 
-@[to_additive existing (attr := simp) (reorder := 6) smul_swap]
+@[to_additive existing (attr := simp) (reorder := 6 7) smul_swap]
 theorem pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c :=
   rfl
 #align prod.pow_swap Prod.pow_swap
@@ -165,7 +163,7 @@ instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower 
 #align prod.is_scalar_tower_both Prod.isScalarTowerBoth
 
 @[to_additive]
-instance mulAction {_ : Monoid M} [MulAction M α] [MulAction M β] : MulAction M (α × β) where
+instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
   mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
   one_smul := fun ⟨_, _⟩ => mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
 
@@ -176,11 +174,11 @@ instance distribSMul {R M N : Type _} [AddZeroClass M] [AddZeroClass N] [Distrib
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 
-instance distribMulAction {R M N : Type _} {_ : Monoid R} [AddMonoid M] [AddMonoid N]
+instance distribMulAction [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
   { Prod.mulAction, Prod.distribSMul with }
 
-instance mulDistribMulAction {R M N : Type _} {_ : Monoid R} [Monoid M] [Monoid N]
+instance mulDistribMulAction [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
   smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
   smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩

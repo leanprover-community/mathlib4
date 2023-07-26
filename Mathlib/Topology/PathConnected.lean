@@ -2,16 +2,13 @@
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.path_connected
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UnitInterval
+
+#align_import topology.path_connected from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Path connectedness
@@ -57,7 +54,7 @@ For locally path connected spaces, we have
 
 By default, all paths have `I` as their source and `X` as their target, but there is an
 operation `Set.IccExtend` that will extend any continuous map `γ : I → X` into a continuous map
-`Icc_extend zero_le_one γ : ℝ → X` that is constant before `0` and after `1`.
+`IccExtend zero_le_one γ : ℝ → X` that is constant before `0` and after `1`.
 
 This is used to define `Path.extend` that turns `γ : Path x y` into a continuous map
 `γ.extend : ℝ → X` whose restriction to `I` is the original `γ`, and is equal to `x`
@@ -67,9 +64,7 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 noncomputable section
 
-open Classical Topology Filter unitInterval
-
-open Filter Set Function unitInterval
+open Classical Topology Filter unitInterval Set Function
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type _}
 
@@ -112,7 +107,7 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk_mk
--- porting note: the name `Path.coe_mk` better refes to a new lemma below
+-- porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 
@@ -253,8 +248,8 @@ theorem continuous_extend : Continuous γ.extend :=
 
 theorem _root_.Filter.Tendsto.path_extend {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
-    (hγ : Tendsto (↿γ) (𝓝 y ×ᶠ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
-    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ᶠ l₁) l₂ :=
+    (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
+    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 #align filter.tendsto.path_extend Filter.Tendsto.path_extend
 
@@ -279,7 +274,7 @@ theorem extend_one : γ.extend 1 = y := by simp
 @[simp]
 theorem extend_extends' {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
-  Icc_extend_coe _ γ t
+  IccExtend_val _ γ t
 #align path.extend_extends' Path.extend_extends'
 
 @[simp]
@@ -304,8 +299,7 @@ theorem refl_extend {X : Type _} [TopologicalSpace X] {a : X} : (Path.refl a).ex
 #align path.refl_extend Path.refl_extend
 
 /-- The path obtained from a map defined on `ℝ` by restriction to the unit interval. -/
-def ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) : Path x y
-    where
+def ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) : Path x y where
   toFun := f ∘ ((↑) : unitInterval → ℝ)
   continuous_toFun := hf.comp_continuous continuous_subtype_val Subtype.prop
   source' := h₀
@@ -321,18 +315,13 @@ attribute [local simp] Iic_def
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
-def trans (γ : Path x y) (γ' : Path y z) : Path x z
-    where
+def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine'
       (Continuous.if_le _ _ continuous_id continuous_const (by norm_num)).comp
         continuous_subtype_val <;>
-    -- TODO: the following are provable by `continuity` but it is too slow
-    -- porting note: the new `continuity` succeeds and it isn't too slow!
     continuity
-    --exacts[γ.continuous_extend.comp (continuous_const.mul continuous_id),
-     -- γ'.continuous_extend.comp ((continuous_const.mul continuous_id).sub continuous_const)]
   source' := by norm_num
   target' := by norm_num
 #align path.trans Path.trans
@@ -356,6 +345,8 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
       exact h
     -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
     -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
+    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
+    -- find `LinearOrder X`.
     simp_rw [unitInterval.symm, ht]
     norm_num
   · refine' congr_arg _ (Subtype.ext _)
@@ -364,12 +355,14 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   · refine' congr_arg _ (Subtype.ext _)
     norm_num [mul_sub, h]
     ring
-  · exfalso
+  · -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
+    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
+    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
+    -- find `LinearOrder X`.
+    exfalso
     rw [sub_le_comm] at h
     norm_num at h h₂
     exact (h.trans h₂).ne rfl
-    -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
-    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
 #align path.trans_symm Path.trans_symm
 
 @[simp]
@@ -387,48 +380,31 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
   · rintro x ⟨⟨t, ht0, ht1⟩, hxt⟩
     by_cases h : t ≤ 1 / 2
     · left
-      refine' ⟨⟨2 * t, ⟨by positivity, (le_div_iff' <| by norm_num).mp h⟩⟩, _⟩
-      -- porting note: was `use 2 * t, ⟨by linarith, by linarith⟩`
-      -- https://github.com/leanprover-community/mathlib4/issues/2714
+      use ⟨2 * t, ⟨by linarith, by linarith⟩⟩
       rw [← γ₁.extend_extends]
       rwa [coe_mk_mk, Function.comp_apply, if_pos h] at hxt
     · right
-      refine' ⟨⟨2 * t - 1, ⟨_, by norm_num; exact ht1⟩⟩, _⟩
-      -- porting note: was `use 2 * t - 1, ⟨by linarith, by linarith⟩`
-      -- https://github.com/leanprover-community/mathlib4/issues/2714
-      · rw [not_le, div_lt_iff (zero_lt_two : (0 : ℝ) < 2)] at h
-        norm_num
-        exact mul_comm t 2 ▸ h.le
+      use ⟨2 * t - 1, ⟨by linarith, by linarith⟩⟩
       rw [← γ₂.extend_extends]
       rwa [coe_mk_mk, Function.comp_apply, if_neg h] at hxt
   · rintro x (⟨⟨t, ht0, ht1⟩, hxt⟩ | ⟨⟨t, ht0, ht1⟩, hxt⟩)
-    · refine' ⟨⟨t / 2, ⟨by positivity,
-        (div_le_iff <| by norm_num).mpr <| ht1.trans (by norm_num)⟩⟩, _⟩
-      -- porting note: was `use ⟨t / 2, ⟨by linarith, by linarith⟩⟩`
-      -- https://github.com/leanprover-community/mathlib4/issues/2714
+    · use ⟨t / 2, ⟨by linarith, by linarith⟩⟩
       have : t / 2 ≤ 1 / 2 := (div_le_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
       rw [coe_mk_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
       ring_nf
       rwa [γ₁.extend_extends]
     · by_cases h : t = 0
-      · refine' ⟨⟨1 / 2, ⟨by positivity, by norm_num⟩⟩, _⟩
-        -- porting note: was `use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩`
-        -- https://github.com/leanprover-community/mathlib4/issues/2714
+      · use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩
         rw [coe_mk_mk, Function.comp_apply, if_pos le_rfl, Subtype.coe_mk,
           mul_one_div_cancel (two_ne_zero' ℝ)]
         rw [γ₁.extend_one]
         rwa [← γ₂.extend_extends, h, γ₂.extend_zero] at hxt
-      · refine' ⟨⟨(t + 1) / 2, ⟨by positivity, _⟩⟩, _⟩
-        -- porting note: was `use ⟨(t + 1) / 2, ⟨by linarith, by linarith⟩⟩`
-        -- https://github.com/leanprover-community/mathlib4/issues/2714
-        · exact (div_le_iff <| by norm_num).mpr <| (add_le_add_right ht1 1).trans (by norm_num)
+      · use ⟨(t + 1) / 2, ⟨by linarith, by linarith⟩⟩
         replace h : t ≠ 0 := h
         have ht0 := lt_of_le_of_ne ht0 h.symm
         have : ¬(t + 1) / 2 ≤ 1 / 2 := by
           rw [not_le]
-          exact (div_lt_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr (by norm_num; exact ht0)
-          -- porting note: was `linarith`
-          -- https://github.com/leanprover-community/mathlib4/issues/2714
+          linarith
         rw [coe_mk_mk, Function.comp_apply, Subtype.coe_mk, if_neg this]
         ring_nf
         rwa [γ₂.extend_extends]
@@ -479,8 +455,7 @@ theorem map_map (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {Z : Type _} [
 #align path.map_map Path.map_map
 
 /-- Casting a path from `x` to `y` to a path from `x'` to `y'` when `x' = x` and `y' = y` -/
-def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y'
-    where
+def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   toFun := γ
   continuous_toFun := γ.continuous
   source' := by simp [hx]
@@ -523,7 +498,6 @@ theorem continuous_uncurry_extend_of_continuous_family {X ι : Type _} [Topologi
     Continuous ↿fun t => (γ t).extend := by
   refine' h.comp (continuous_id.prod_map continuous_projIcc)
   exact zero_le_one
-
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
 @[continuity]
@@ -570,8 +544,7 @@ variable {a₁ a₂ a₃ : X} {b₁ b₂ b₃ : Y}
 
 /-- Given a path in `X` and a path in `Y`, we can take their pointwise product to get a path in
 `X × Y`. -/
-protected def prod (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) : Path (a₁, b₁) (a₂, b₂)
-    where
+protected def prod (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) : Path (a₁, b₁) (a₂, b₂) where
   toContinuousMap := ContinuousMap.prodMk γ₁.toContinuousMap γ₂.toContinuousMap
   source' := by simp
   target' := by simp
@@ -601,8 +574,7 @@ variable {χ : ι → Type _} [∀ i, TopologicalSpace (χ i)] {as bs cs : ∀ i
 
 /-- Given a family of paths, one in each Xᵢ, we take their pointwise product to get a path in
 Π i, Xᵢ. -/
-protected def pi (γ : ∀ i, Path (as i) (bs i)) : Path as bs
-    where
+protected def pi (γ : ∀ i, Path (as i) (bs i)) : Path as bs where
   toContinuousMap := ContinuousMap.pi fun i => (γ i).toContinuousMap
   source' := by simp
   target' := by simp
@@ -616,7 +588,7 @@ theorem pi_coe (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => �
 /-- Path composition commutes with products -/
 theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i, Path (bs i) (cs i)) :
     (Path.pi γ₀).trans (Path.pi γ₁) = Path.pi fun i => (γ₀ i).trans (γ₁ i) := by
-  ext (t i)
+  ext t i
   unfold Path.trans
   simp only [Path.coe_mk_mk, Function.comp_apply, pi_coe]
   split_ifs <;> rfl
@@ -649,8 +621,7 @@ protected theorem mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} 
 /-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the
   time interval `[t₀, t₁]` and stays still otherwise. -/
 def truncate {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t₁ : ℝ) :
-    Path (γ.extend <| min t₀ t₁) (γ.extend t₁)
-    where
+    Path (γ.extend <| min t₀ t₁) (γ.extend t₁) where
   toFun s := γ.extend (min (max s t₀) t₁)
   continuous_toFun :=
     γ.continuous_extend.comp ((continuous_subtype_val.max continuous_const).min continuous_const)
@@ -675,12 +646,12 @@ def truncate {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t
     · rfl
 #align path.truncate Path.truncate
 
-/-- `γ.truncateOfLe t₀ t₁ h`, where `h : t₀ ≤ t₁` is `γ.truncate t₀ t₁`
+/-- `γ.truncateOfLE t₀ t₁ h`, where `h : t₀ ≤ t₁` is `γ.truncate t₀ t₁`
   casted as a path from `γ.extend t₀` to `γ.extend t₁`. -/
-def truncateOfLe {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
+def truncateOfLE {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
     (h : t₀ ≤ t₁) : Path (γ.extend t₀) (γ.extend t₁) :=
   (γ.truncate t₀ t₁).cast (by rw [min_eq_left h]) rfl
-#align path.truncate_of_le Path.truncateOfLe
+#align path.truncate_of_le Path.truncateOfLE
 
 theorem truncate_range {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
     range (γ.truncate t₀ t₁) ⊆ range γ := by
@@ -700,22 +671,11 @@ theorem truncate_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (
       (continuous_fst.comp continuous_snd))
 #align path.truncate_continuous_family Path.truncate_continuous_family
 
-/-
-  porting note: I'm not sure this would work with the new continuity because it doesn't leave side
-  goals.
-
-  TODO : When `continuity` gets quicker, change the proof back to :
-    `begin`
-      `simp only [CoeFun.coe, coe_fn, Path.truncate],`
-      `continuity,`
-      `exact continuous_subtype_val`
-    `end` -/
 @[continuity]
 theorem truncate_const_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
-  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) :=
-    continuous_const.prod_mk continuous_id
-  convert γ.truncate_continuous_family.comp key
+  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
+  exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
 
 @[simp]
@@ -783,13 +743,10 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
     intro t
     have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
-    · rw [IccExtend_left, IccExtend_right] at this
-      change Icc (f 0) (f 1) ⊆ _ at this
-      rw [hf₀, hf₁] at this
+    · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩
       rw [IccExtend_of_mem _ _ hw₁] at hw₂
-      use ⟨w, hw₁⟩
-      exact hw₂
+      exact ⟨_, hw₂⟩
   rw [range_comp, this, image_univ]
 #align path.range_reparam Path.range_reparam
 
@@ -964,7 +921,7 @@ theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = path
     rw [pathComponent_symm]
     exact (h.trans h').symm
   · intro h'
-    rw [pathComponent_symm] at h'⊢
+    rw [pathComponent_symm] at h' ⊢
     exact h'.trans h
 #align path_component_congr pathComponent_congr
 
@@ -1057,8 +1014,7 @@ theorem IsPathConnected.exists_path_through_family {X : Type _} [TopologicalSpac
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ γ : Path (p 0) (p n), range γ ⊆ s ∧ ∀ i, p i ∈ range γ := by
   let p' : ℕ → X := fun k => if h : k < n + 1 then p ⟨k, h⟩ else p ⟨0, n.zero_lt_succ⟩
-  obtain ⟨γ, hγ⟩ : ∃ γ : Path (p' 0) (p' n), (∀ i ≤ n, p' i ∈ range γ) ∧ range γ ⊆ s :=
-    by
+  obtain ⟨γ, hγ⟩ : ∃ γ : Path (p' 0) (p' n), (∀ i ≤ n, p' i ∈ range γ) ∧ range γ ⊆ s := by
     have hp' : ∀ i ≤ n, p' i ∈ s := by
       intro i hi
       simp [Nat.lt_succ_of_le hi, hp]
@@ -1112,7 +1068,7 @@ theorem IsPathConnected.exists_path_through_family {X : Type _} [TopologicalSpac
 
 theorem IsPathConnected.exists_path_through_family' {X : Type _} [TopologicalSpace X] {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
-    ∃ (γ : Path (p 0) (p n))(t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
+    ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
   rcases h.exists_path_through_family p hp with ⟨γ, hγ⟩
   rcases hγ with ⟨h₁, h₂⟩
   simp only [range, mem_setOf_eq] at h₂
@@ -1186,6 +1142,29 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
     exact ⟨⟨x⟩, by simpa using h'⟩
 #align path_connected_space_iff_univ pathConnectedSpace_iff_univ
 
+theorem isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
+  pathConnectedSpace_iff_univ.mp inferInstance
+
+theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continuous f) :
+    IsPathConnected (range f) := by
+  rw [← image_univ]
+  exact isPathConnected_univ.image hf
+
+theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
+  {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
+  rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
+  exact isPathConnected_range hf'
+
+instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
+    PathConnectedSpace (Quotient s) :=
+  (surjective_quotient_mk X).pathConnectedSpace continuous_coinduced_rng
+
+/-- This is a special case of `NormedSpace.path_connected` (and
+`TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
+instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
+  Nonempty := inferInstance
+  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]
 #align path_connected_space_iff_eq pathConnectedSpace_iff_eq
@@ -1218,7 +1197,7 @@ theorem exists_path_through_family {n : ℕ} (p : Fin (n + 1) → X) :
 #align path_connected_space.exists_path_through_family PathConnectedSpace.exists_path_through_family
 
 theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
-    ∃ (γ : Path (p 0) (p n))(t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
+    ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
   have : IsPathConnected (univ : Set X) := pathConnectedSpace_iff_univ.mp (by infer_instance)
   rcases this.exists_path_through_family' p fun _i => True.intro with ⟨γ, t, -, h⟩
   exact ⟨γ, t, h⟩

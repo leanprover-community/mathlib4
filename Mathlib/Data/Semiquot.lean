@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.semiquot
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
+
+#align_import data.semiquot from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
 /-! # Semiquotients
 
@@ -49,7 +46,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine' ⟨congr_arg _, fun h => _⟩
-  cases' q₁ with _ v₁ ; cases' q₂ with _ v₂ ; congr
+  cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 #align semiquot.ext_s Semiquot.ext_s
 
@@ -91,7 +88,7 @@ def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
 #align semiquot.blur Semiquot.blur
 
 theorem blur_eq_blur' (q : Semiquot α) (s : Set α) (h : q.s ⊆ s) : blur s q = blur' q h := by
-  unfold blur ; congr ; exact Set.union_eq_self_of_subset_right h
+  unfold blur; congr; exact Set.union_eq_self_of_subset_right h
 #align semiquot.blur_eq_blur' Semiquot.blur_eq_blur'
 
 @[simp]
@@ -121,7 +118,7 @@ def liftOn (q : Semiquot α) (f : α → β) (h : ∀ (a) (_ : a ∈ q) (b) (_ :
 warning: expanding binder collection (a b «expr ∈ » q) -/
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a :=
-  by revert h ; rw [eq_mk_of_mem aq] ; intro ; rfl
+  by revert h; rw [eq_mk_of_mem aq]; intro; rfl
 #align semiquot.lift_on_of_mem Semiquot.liftOn_ofMem
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
@@ -136,12 +133,12 @@ theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ �
 
 /-- Apply a function returning a `Semiquot` to a `Semiquot`. -/
 def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
-  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_bunionᵢ a.2 b.2⟩⟩
+  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
 #align semiquot.bind Semiquot.bind
 
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
-  by simp_rw [← exists_prop]; exact Set.mem_unionᵢ₂
+  by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
 instance : Monad Semiquot where
@@ -177,10 +174,9 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (pure_bind := fun {α β} x f => ext.2 <| by simp)
   (bind_assoc := fun {α β} γ s f g =>
     ext.2 <| by
-    simp only [bind_def, mem_bind] ;
-     exact fun c =>
-          ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩, fun ⟨a, as, b, bf, cg⟩ =>
-            ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
+    simp only [bind_def, mem_bind]
+    exact fun c => ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩,
+      fun ⟨a, as, b, bf, cg⟩ => ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
   (id_map := fun {α} q => ext.2 <| by simp)
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
 
@@ -212,18 +208,18 @@ def IsPure (q : Semiquot α) : Prop :=
   ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), a = b
 #align semiquot.is_pure Semiquot.IsPure
 
-/-- Extract the value from a `IsPure` semiquotient. -/
+/-- Extract the value from an `IsPure` semiquotient. -/
 def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 #align semiquot.get Semiquot.get
 
 theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   let ⟨a, h⟩ := exists_mem q
-  unfold get ; rw [liftOn_ofMem q _ _ a h] ; exact h
+  unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
 #align semiquot.get_mem Semiquot.get_mem
 
 theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
-  ext.2 fun a => by simp ; exact ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
+  ext.2 fun a => by simp; exact ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
 #align semiquot.eq_pure Semiquot.eq_pure
 
 @[simp]
@@ -244,7 +240,7 @@ theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by
-      rw [eq_pure h, eq_pure (h.mono st)] ; simp ; exact h _ (get_mem _) _ (st <| get_mem _),
+      rw [eq_pure h, eq_pure (h.mono st)]; simp; exact h _ (get_mem _) _ (st <| get_mem _),
     le_of_eq⟩
 #align semiquot.is_pure.min Semiquot.IsPure.min
 

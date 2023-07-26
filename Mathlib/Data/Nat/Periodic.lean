@@ -2,15 +2,12 @@
 Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
-
-! This file was ported from Lean 3 source module data.nat.periodic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.Interval
+
+#align_import data.nat.periodic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Periodic Functions on ℕ
@@ -36,10 +33,10 @@ theorem periodic_mod (a : ℕ) : Periodic (fun n => n % a) a := by
   simp only [forall_const, eq_self_iff_true, add_mod_right, Periodic]
 #align nat.periodic_mod Nat.periodic_mod
 
-theorem Function.Periodic.map_mod_nat {α : Type _} {f : ℕ → α} {a : ℕ} (hf : Periodic f a) :
+theorem _root_.Function.Periodic.map_mod_nat {α : Type _} {f : ℕ → α} {a : ℕ} (hf : Periodic f a) :
     ∀ n, f (n % a) = f n := fun n => by
   conv_rhs => rw [← Nat.mod_add_div n a, mul_comm, ← Nat.nsmul_eq_mul, hf.nsmul]
-#align function.periodic.map_mod_nat Nat.Function.Periodic.map_mod_nat
+#align function.periodic.map_mod_nat Function.Periodic.map_mod_nat
 
 section Multiset
 
@@ -72,4 +69,3 @@ theorem filter_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [Decidable
 end Finset
 
 end Nat
-

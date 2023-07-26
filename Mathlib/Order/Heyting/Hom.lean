@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.hom
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Lattice
+
+#align_import order.heyting.hom from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Heyting algebra morphisms
@@ -22,14 +19,14 @@ be satisfied by itself and all stricter types.
 ## Types of morphisms
 
 * `HeytingHom`: Heyting homomorphisms.
-* `Coheytinghom`: Co-Heyting homomorphisms.
+* `CoheytingHom`: Co-Heyting homomorphisms.
 * `BiheytingHom`: Bi-Heyting homomorphisms.
 
 ## Typeclasses
 
 * `HeytingHomClass`
-* `CoheytinghomClass`
-* `BiheytinghomClass`
+* `CoheytingHomClass`
+* `BiheytingHomClass`
 -/
 
 
@@ -39,35 +36,32 @@ variable {F α β γ δ : Type _}
 
 /-- The type of Heyting homomorphisms from `α` to `β`. Bounded lattice homomorphisms that preserve
 Heyting implication. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 structure HeytingHom (α β : Type _) [HeytingAlgebra α] [HeytingAlgebra β] extends
   LatticeHom α β where
   /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
-  map_bot' : toFun ⊥ = ⊥
+  protected map_bot' : toFun ⊥ = ⊥
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
-  map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
+  protected map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
 #align heyting_hom HeytingHom
 
 /-- The type of co-Heyting homomorphisms from `α` to `β`. Bounded lattice homomorphisms that
 preserve difference. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 structure CoheytingHom (α β : Type _) [CoheytingAlgebra α] [CoheytingAlgebra β] extends
   LatticeHom α β where
   /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
-  map_top' : toFun ⊤ = ⊤
+  protected map_top' : toFun ⊤ = ⊤
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
-  map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
+  protected map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
 #align coheyting_hom CoheytingHom
 
 /-- The type of bi-Heyting homomorphisms from `α` to `β`. Bounded lattice homomorphisms that
 preserve Heyting implication and difference. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 structure BiheytingHom (α β : Type _) [BiheytingAlgebra α] [BiheytingAlgebra β] extends
   LatticeHom α β where
   /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
-  map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
+  protected map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
-  map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
+  protected map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
 #align biheyting_hom BiheytingHom
 
 /-- `HeytingHomClass F α β` states that `F` is a type of Heyting homomorphisms.
@@ -112,35 +106,35 @@ attribute [simp] map_himp map_sdiff
 /- Porting note: `[HeytingAlgebra α, β]` -> `{ _ : HeytingAlgebra α, β}` as a dangerous instance fix
 similar for Coheyting & Biheyting instances -/
 -- See note [lower instance priority]
-instance (priority := 100) HeytingHomClass.toBoundedLatticeHomClass {_ : HeytingAlgebra α}
+instance (priority := 100) HeytingHomClass.toBoundedLatticeHomClass [HeytingAlgebra α]
     { _ : HeytingAlgebra β} [HeytingHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹HeytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 #align heyting_hom_class.to_bounded_lattice_hom_class HeytingHomClass.toBoundedLatticeHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) CoheytingHomClass.toBoundedLatticeHomClass {_ : CoheytingAlgebra α}
+instance (priority := 100) CoheytingHomClass.toBoundedLatticeHomClass [CoheytingAlgebra α]
     { _ : CoheytingAlgebra β} [CoheytingHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹CoheytingHomClass F α β› with
     map_bot := fun f => by rw [← @sdiff_self α _ ⊤, ← sdiff_self, map_sdiff] }
 #align coheyting_hom_class.to_bounded_lattice_hom_class CoheytingHomClass.toBoundedLatticeHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BiheytingHomClass.toHeytingHomClass {_ : BiheytingAlgebra α}
+instance (priority := 100) BiheytingHomClass.toHeytingHomClass [BiheytingAlgebra α]
     { _ : BiheytingAlgebra β} [BiheytingHomClass F α β] : HeytingHomClass F α β :=
   { ‹BiheytingHomClass F α β› with
     map_bot := fun f => by rw [← @sdiff_self α _ ⊤, ← sdiff_self, BiheytingHomClass.map_sdiff] }
 #align biheyting_hom_class.to_heyting_hom_class BiheytingHomClass.toHeytingHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BiheytingHomClass.toCoheytingHomClass {_ : BiheytingAlgebra α}
-    { _ : BiheytingAlgebra β}  [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
+instance (priority := 100) BiheytingHomClass.toCoheytingHomClass [BiheytingAlgebra α]
+    { _ : BiheytingAlgebra β} [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
   { ‹BiheytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 #align biheyting_hom_class.to_coheyting_hom_class BiheytingHomClass.toCoheytingHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toHeytingHomClass {_ : HeytingAlgebra α}
+instance (priority := 100) OrderIsoClass.toHeytingHomClass [HeytingAlgebra α]
     { _ : HeytingAlgebra β} [OrderIsoClass F α β] : HeytingHomClass F α β :=
   { OrderIsoClass.toBoundedLatticeHomClass with
     map_himp := fun f a b =>
@@ -151,7 +145,7 @@ instance (priority := 100) OrderIsoClass.toHeytingHomClass {_ : HeytingAlgebra �
 #align order_iso_class.to_heyting_hom_class OrderIsoClass.toHeytingHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toCoheytingHomClass {_ : CoheytingAlgebra α}
+instance (priority := 100) OrderIsoClass.toCoheytingHomClass [CoheytingAlgebra α]
     { _ : CoheytingAlgebra β} [OrderIsoClass F α β] : CoheytingHomClass F α β :=
   { OrderIsoClass.toBoundedLatticeHomClass with
     map_sdiff := fun f a b =>
@@ -162,7 +156,7 @@ instance (priority := 100) OrderIsoClass.toCoheytingHomClass {_ : CoheytingAlgeb
 #align order_iso_class.to_coheyting_hom_class OrderIsoClass.toCoheytingHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBiheytingHomClass {_ : BiheytingAlgebra α}
+instance (priority := 100) OrderIsoClass.toBiheytingHomClass [BiheytingAlgebra α]
     { _ : BiheytingAlgebra β} [OrderIsoClass F α β] : BiheytingHomClass F α β :=
   { OrderIsoClass.toLatticeHomClass with
     map_himp := fun f a b =>
@@ -193,7 +187,7 @@ section HeytingAlgebra
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
 @[simp]
-theorem map_compl (a : α) : f (aᶜ) = f aᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
+theorem map_compl (a : α) : f aᶜ = (f a)ᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
 #align map_compl map_compl
 
 @[simp]
@@ -247,7 +241,7 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
-instance : HeytingHomClass (HeytingHom α β) α β where
+instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
   map_sup f := f.map_sup'
@@ -422,7 +416,7 @@ theorem copy_eq (f : CoheytingHom α β) (f' : α → β) (h : f' = f) : f.copy 
 
 variable (α)
 
-/-- `id` as a `Coheytinghom`. -/
+/-- `id` as a `CoheytingHom`. -/
 protected def id : CoheytingHom α α :=
   { TopHom.id _ with
     toLatticeHom := LatticeHom.id _

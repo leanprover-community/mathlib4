@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.int.log
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Nat.Log
+
+#align_import data.int.log from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # Integer logarithms in a field with respect to a natural base
@@ -33,7 +30,7 @@ import Data.Fin.VecNotation
 import Mathlib.Data.Rat.Floor
 
 def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
-⌊q * ((b : ℚ) ^ (n - Int.log b q))⌋₊ % b
+  ⌊q * ((b : ℚ) ^ (n - Int.log b q))⌋₊ % b
 
 #eval digits 10 (1/7) ∘ ((↑) : Fin 8 → ℕ)
 -- ![1, 4, 2, 8, 5, 7, 1, 4]

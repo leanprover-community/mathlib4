@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.group.min_max
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.MinMax
+
+#align_import algebra.order.group.min_max from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # `min` and `max` in linearly ordered groups.
@@ -18,7 +15,7 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 
 section
 
-variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (. * .) (. ≤ .)]
+variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive (attr := simp)]
 theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a := by
@@ -86,21 +83,19 @@ theorem max_sub_max_le_max (a b c d : α) : max a b - max c d ≤ max (a - c) (b
   calc
     a = a - c + c := (sub_add_cancel a c).symm
     _ ≤ max (a - c) (b - d) + max c d := add_le_add (le_max_left _ _) (le_max_left _ _)
-
   calc
     b = b - d + d := (sub_add_cancel b d).symm
     _ ≤ max (a - c) (b - d) + max c d := add_le_add (le_max_right _ _) (le_max_right _ _)
-
 #align max_sub_max_le_max max_sub_max_le_max
 
-theorem abs_max_sub_max_le_max (a b c d : α) : |max a b - max c d| ≤ max (|a - c|) (|b - d|) := by
+theorem abs_max_sub_max_le_max (a b c d : α) : |max a b - max c d| ≤ max |a - c| |b - d| := by
   refine' abs_sub_le_iff.2 ⟨_, _⟩
   · exact (max_sub_max_le_max _ _ _ _).trans (max_le_max (le_abs_self _) (le_abs_self _))
   · rw [abs_sub_comm a c, abs_sub_comm b d]
     exact (max_sub_max_le_max _ _ _ _).trans (max_le_max (le_abs_self _) (le_abs_self _))
 #align abs_max_sub_max_le_max abs_max_sub_max_le_max
 
-theorem abs_min_sub_min_le_max (a b c d : α) : |min a b - min c d| ≤ max (|a - c|) (|b - d|) := by
+theorem abs_min_sub_min_le_max (a b c d : α) : |min a b - min c d| ≤ max |a - c| |b - d| := by
   simpa only [max_neg_neg, neg_sub_neg, abs_sub_comm] using
     abs_max_sub_max_le_max (-a) (-b) (-c) (-d)
 #align abs_min_sub_min_le_max abs_min_sub_min_le_max

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.functor.category
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Iso
+
+#align_import category_theory.functor.category from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # The category of functors and natural transformations between two fixed categories.
@@ -57,7 +54,7 @@ namespace NatTrans
 -- Porting note: the behaviour of `ext` has changed here.
 -- We need to provide a copy of the `NatTrans.ext` lemma,
 -- written in terms of `F ⟶ G` rather than `NatTrans F G`,
--- or the `ext` will not retrieve it from the cache.
+-- or `ext` will not retrieve it from the cache.
 @[ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
 
@@ -139,7 +136,7 @@ open NatTrans
 
 namespace Functor
 
-/-- Flip the arguments of a bifunctor. See also `currying.lean`. -/
+/-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
 @[simps]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=

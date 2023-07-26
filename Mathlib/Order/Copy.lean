@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.copy
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+#align_import order.copy from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Tooling to make copies of lattice structures
@@ -78,7 +75,6 @@ def DistribLattice.copy (c : DistribLattice α)
   · intros; simp [eq_le, eq_inf]
   · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
   · intros; simp [eq_le, eq_inf, eq_sup, le_sup_inf]
-
 #align distrib_lattice.copy DistribLattice.copy
 
 --Porting note: original proof uses
@@ -91,15 +87,15 @@ def CompleteLattice.copy (c : CompleteLattice α)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
-    (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
-    (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) :
+    (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
+    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     CompleteLattice α := by
   refine' { Lattice.copy (@CompleteLattice.toLattice α c) le eq_le sup eq_sup inf eq_inf with
-    le := le, top := top, bot := bot, sup := sup, inf := inf, supₛ := supₛ, infₛ := infₛ.. }
-  · intro _ _ h; simp [eq_le, eq_supₛ, le_supₛ _ _ h]
-  · intro _ _ h; simpa [eq_le, eq_supₛ] using h
-  · intro _ _ h; simp [eq_le, eq_infₛ, infₛ_le _ _ h]
-  · intro _ _ h; simpa [eq_le, eq_infₛ] using h
+    le := le, top := top, bot := bot, sup := sup, inf := inf, sSup := sSup, sInf := sInf.. }
+  · intro _ _ h; simp [eq_le, eq_sSup, le_sSup _ _ h]
+  · intro _ _ h; simpa [eq_le, eq_sSup] using h
+  · intro _ _ h; simp [eq_le, eq_sInf, sInf_le _ _ h]
+  · intro _ _ h; simpa [eq_le, eq_sInf] using h
   · intros; simp [eq_le, eq_top]
   · intros; simp [eq_le, eq_bot]
 #align complete_lattice.copy CompleteLattice.copy
@@ -113,12 +109,12 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
-    (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
-    (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) : Frame α :=
+    (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
+    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Frame α :=
   { CompleteLattice.copy (@Frame.toCompleteLattice α c) le eq_le top eq_top bot eq_bot
-      sup eq_sup inf eq_inf supₛ eq_supₛ infₛ eq_infₛ with
-    inf_supₛ_le_supᵢ_inf := fun a s => by
-      simp [eq_le, eq_sup, eq_inf, eq_supₛ, @Order.Frame.inf_supₛ_le_supᵢ_inf α _ a s] }
+      sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf with
+    inf_sSup_le_iSup_inf := fun a s => by
+      simp [eq_le, eq_sup, eq_inf, eq_sSup, @Order.Frame.inf_sSup_le_iSup_inf α _ a s] }
 #align frame.copy Frame.copy
 
 --Porting note: original proof uses
@@ -130,12 +126,12 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
-    (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
-    (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) : Coframe α :=
+    (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
+    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Coframe α :=
   { CompleteLattice.copy (@Coframe.toCompleteLattice α c) le eq_le top eq_top bot eq_bot sup
-        eq_sup inf eq_inf supₛ eq_supₛ infₛ eq_infₛ with
-    infᵢ_sup_le_sup_infₛ := fun a s => by
-      simp [eq_le, eq_sup, eq_inf, eq_infₛ, @Order.Coframe.infᵢ_sup_le_sup_infₛ α _ a s] }
+        eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf with
+    iInf_sup_le_sup_sInf := fun a s => by
+      simp [eq_le, eq_sup, eq_inf, eq_sInf, @Order.Coframe.iInf_sup_le_sup_sInf α _ a s] }
 #align coframe.copy Coframe.copy
 
 /-- A function to create a provable equal copy of a complete distributive lattice
@@ -146,13 +142,13 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
-    (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
-    (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) :
+    (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
+    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     CompleteDistribLattice α :=
   { Frame.copy (@CompleteDistribLattice.toFrame α c) le eq_le top eq_top bot eq_bot sup eq_sup inf
-      eq_inf supₛ eq_supₛ infₛ eq_infₛ,
+      eq_inf sSup eq_sSup sInf eq_sInf,
     Coframe.copy (@CompleteDistribLattice.toCoframe α c) le eq_le top eq_top bot eq_bot sup eq_sup
-      inf eq_inf supₛ eq_supₛ infₛ eq_infₛ with }
+      inf eq_inf sSup eq_sSup sInf eq_sInf with }
 #align complete_distrib_lattice.copy CompleteDistribLattice.copy
 
 --Porting note: original proof uses
@@ -163,10 +159,10 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
-    (supₛ : Set α → α) (eq_supₛ : supₛ = (by infer_instance : SupSet α).supₛ)
-    (infₛ : Set α → α) (eq_infₛ : infₛ = (by infer_instance : InfSet α).infₛ) :
+    (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
+    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     ConditionallyCompleteLattice α := by
-  refine' { le := le, sup := sup, inf := inf, supₛ := supₛ, infₛ := infₛ.. }
+  refine' { le := le, sup := sup, inf := inf, sSup := sSup, sInf := sInf.. }
   · intro a b; exact le a b ∧ ¬ le b a
   · intros; simp [eq_le]
   · intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
@@ -178,9 +174,8 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
   · intros; simp [eq_le, eq_inf]
   · intros; simp [eq_le, eq_inf]
   · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
-  · intro _ _ hb h; subst_vars; exact le_csupₛ _ _ hb h
-  · intro _ _ hb h; subst_vars; exact csupₛ_le _ _ hb h
-  · intro _ _ hb h; subst_vars; exact cinfₛ_le _ _ hb h
-  · intro _ _ hb h; subst_vars; exact le_cinfₛ _ _ hb h
-
+  · intro _ _ hb h; subst_vars; exact le_csSup _ _ hb h
+  · intro _ _ hb h; subst_vars; exact csSup_le _ _ hb h
+  · intro _ _ hb h; subst_vars; exact csInf_le _ _ hb h
+  · intro _ _ hb h; subst_vars; exact le_csInf _ _ hb h
 #align conditionally_complete_lattice.copy ConditionallyCompleteLattice.copy

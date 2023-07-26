@@ -27,14 +27,9 @@ by field_simp
 
 /-
 Combining `eq_divp_iff_mul_eq` and `divp_eq_iff_mul_eq`.
-
-This example is currently commented out because it is weirdly slow.
-See https://github.com/leanprover/lean4/issues/2055.
-
-It works with `set_option maxHeartbeats 300000`.
 -/
---example : a /ₚ u₁ = b /ₚ u₂ ↔ a * u₂ = b * u₁ :=
---by field_simp
+example : a /ₚ u₁ = b /ₚ u₂ ↔ a * u₂ = b * u₁ :=
+by field_simp
 
 /--
 Making sure inverses of units are rewritten properly.
@@ -64,3 +59,7 @@ example (x : ℚ) (h₀ : x ≠ 0) :
     (4 / x)⁻¹ * ((3 * x^3) / x)^2 * ((1 / (2 * x))⁻¹)^3 = 18 * x^8 := by
   field_simp
   ring
+
+example {x y z w : ℚ} (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * w = z * y := by
+  field_simp at h
+  assumption

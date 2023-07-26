@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.monoidal
-! leanprover-community/mathlib commit 0caf3701139ef2e69c215717665361cda205a90b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Functor.InvIsos
+
+#align_import category_theory.closed.monoidal from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
 /-!
 # Closed monoidal categories
@@ -45,7 +42,7 @@ class MonoidalClosed (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] wher
   closed : ∀ X : C, Closed X
 #align category_theory.monoidal_closed CategoryTheory.MonoidalClosed
 
-attribute [instance] MonoidalClosed.closed
+attribute [instance 100] MonoidalClosed.closed
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
@@ -64,8 +61,8 @@ def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) wh
 This isn't an instance because most of the time we'll prove closedness for all objects at once,
 rather than just for this one.
 -/
-def unitClosed : Closed (𝟙_ C)
-    where isAdj :=
+def unitClosed : Closed (𝟙_ C) where
+  isAdj :=
     { right := 𝟭 C
       adj :=
         Adjunction.mkOfHomEquiv

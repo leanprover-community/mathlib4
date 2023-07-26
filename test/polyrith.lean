@@ -16,7 +16,7 @@ A full test suite is provided at the bottom of the file.
 -/
 
 /-!
-## Set up testing infrastructre
+## Set up testing infrastructure
 -/
 
 -- section tactic
@@ -93,7 +93,7 @@ A full test suite is provided at the bottom of the file.
 -- end tactic
 
 -- /-!
--- ## SageCell communcation tests
+-- ## SageCell communication tests
 -- -/
 
 -- example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
@@ -711,3 +711,6 @@ by create_polyrith_test
 -- example (a : ℕ) : a = 0 := by
 --   have := True.intro
 --   polyrith -- polyrith did not find any relevant hypotheses and the goal is not provable by ring
+
+-- example (y a : ℤ) (k : ℕ) (h : a ^ k = 0) : a ^ k * y = 0 := by
+--   polyrith

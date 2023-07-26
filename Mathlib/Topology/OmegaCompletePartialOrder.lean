@@ -2,14 +2,11 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module topology.omega_complete_partial_order
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
+
+#align_import topology.omega_complete_partial_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Scott Topological Spaces
@@ -61,12 +58,12 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
   CompleteLattice.inf_continuous'
 #align Scott.is_open.inter Scott.IsOpen.inter
 
-theorem isOpen_unionₛ (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
-  simp only [IsOpen] at hs⊢
-  convert CompleteLattice.supₛ_continuous' (setOf ⁻¹' s) hs
-  simp only [supₛ_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
-    SetCoe.exists, supᵢ_Prop_eq, mem_setOf_eq, mem_unionₛ]
-#align Scott.is_open_sUnion Scott.isOpen_unionₛ
+theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
+  simp only [IsOpen] at hs ⊢
+  convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
+  simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
+    SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
+#align Scott.is_open_sUnion Scott.isOpen_sUnion
 
 end Scott
 
@@ -82,7 +79,7 @@ instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
   IsOpen := Scott.IsOpen α
   isOpen_univ := Scott.isOpen_univ α
   isOpen_inter := Scott.IsOpen.inter α
-  isOpen_unionₛ := Scott.isOpen_unionₛ α
+  isOpen_sUnion := Scott.isOpen_sUnion α
 #align Scott.topological_space Scott.topologicalSpace
 
 section notBelow
@@ -143,7 +140,7 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
   specialize hf_h c
   simp only [notBelow, eq_iff_iff, mem_setOf_eq] at hf_h
   rw [← not_iff_not]
-  simp only [ωSup_le_iff, hf_h, ωSup, supᵢ, supₛ, mem_range, Chain.map_coe, Function.comp_apply,
+  simp only [ωSup_le_iff, hf_h, ωSup, iSup, sSup, mem_range, Chain.map_coe, Function.comp_apply,
     eq_iff_iff, not_forall]
   tauto
 #align Scott_continuous_of_continuous scottContinuous_of_continuous

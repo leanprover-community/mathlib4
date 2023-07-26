@@ -3,14 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.divisibility
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Divisibility.Units
+
+#align_import algebra.group_with_zero.divisibility from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Divisibility in groups with zero.
@@ -108,3 +105,36 @@ theorem ne_zero_of_dvd_ne_zero {p q : α} (h₁ : q ≠ 0) (h₂ : p ∣ q) : p 
 #align ne_zero_of_dvd_ne_zero ne_zero_of_dvd_ne_zero
 
 end MonoidWithZero
+
+section CancelCommMonoidWithZero
+
+variable [CancelCommMonoidWithZero α] [Subsingleton αˣ] {a b : α}
+
+theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
+  rintro ⟨c, rfl⟩ ⟨d, hcd⟩
+  rw [mul_assoc, eq_comm, mul_right_eq_self₀, mul_eq_one] at hcd
+  obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
+#align dvd_antisymm dvd_antisymm
+
+-- porting note: `attribute [protected]` is currently unsupported
+-- attribute [protected] Nat.dvd_antisymm --This lemma is in core, so we protect it here
+
+theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
+  flip dvd_antisymm
+#align dvd_antisymm' dvd_antisymm'
+
+alias dvd_antisymm ← Dvd.dvd.antisymm
+#align has_dvd.dvd.antisymm Dvd.dvd.antisymm
+
+alias dvd_antisymm' ← Dvd.dvd.antisymm'
+#align has_dvd.dvd.antisymm' Dvd.dvd.antisymm'
+
+theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
+  ((h _).2 dvd_rfl).antisymm <| (h _).1 dvd_rfl
+#align eq_of_forall_dvd eq_of_forall_dvd
+
+theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
+  ((h _).1 dvd_rfl).antisymm <| (h _).2 dvd_rfl
+#align eq_of_forall_dvd' eq_of_forall_dvd'
+
+end CancelCommMonoidWithZero

@@ -2,20 +2,18 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton, Simon Hudon, Kenny Lau
-
-! This file was ported from Lean 3 source module data.opposite
-! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
+
+#align_import data.opposite from "leanprover-community/mathlib"@"99e8971dc62f1f7ecf693d75e75fbbabd55849de"
 
 /-!
 # Opposites
 
-In this file we define a type synonym `Opposite α := α`, denoted by `αᵒᵖ` and two synonyms for the
-identity map, `op : α → αᵒᵖ` and `unop : αᵒᵖ → α`. If `α` is a category, then `αᵒᵖ` is the opposite
-category, with all arrows reversed.
+In this file we define a structure `Opposite α` containing a single field of type `α` and
+two bijections `op : α → αᵒᵖ` and `unop : αᵒᵖ → α`. If `α` is a category, then `αᵒᵖ` is the
+opposite category, with all arrows reversed.
+
 -/
 
 
@@ -24,31 +22,21 @@ universe v u
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable (α : Sort u)
 
+-- porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
+-- the same in Lean4, one could write problematic definitions like:
+-- example (X : C) : Cᵒᵖ := X
+-- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
 /-- The type of objects of the opposite of `α`; used to define the opposite category.
 
-  In order to avoid confusion between `α` and its opposite type, we
-  set up the type of objects `Opposite α` using the following pattern,
-  which will be repeated later for the morphisms.
+  Now that Lean 4 supports definitional eta equality for records,
+  both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
 
-  1. Define `Opposite α := α`.
-  2. Define the isomorphisms `op : α → Opposite α`, `unop : Opposite α → α`.
-  3. Make the definition `Opposite` irreducible.
-
-  This has the following consequences.
-
-  * `Opposite α` and `α` are distinct types in the elaborator, so you
-    must use `op` and `unop` explicitly to convert between them.
-  * Both `unop (op X) = X` and `op (unop X) = X` are definitional
-    equalities. Notably, every object of the opposite category is
-    definitionally of the form `op X`, which greatly simplifies the
-    definition of the structure of the opposite category, for example.
-
-  (Now that Lean 4 supports definitional eta equality for records, we could
-  achieve the same goals using a structure with one field.)
 -/
-def Opposite : Sort u :=
-  α
+structure Opposite :=
+  /-- The canonical map `αᵒᵖ → α`. -/
+  unop : α
 #align opposite Opposite
+#align opposite.unop Opposite.unop
 
 @[inherit_doc]
 notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
@@ -62,21 +50,13 @@ variable {α}
 /-- The canonical map `α → αᵒᵖ`. -/
 -- Porting note: pp_nodot has not been implemented.
 --@[pp_nodot]
-def op : α → αᵒᵖ :=
-  id
+def op (x : α) : αᵒᵖ := ⟨x⟩
 #align opposite.op Opposite.op
 
-/-- The canonical map `αᵒᵖ → α`. -/
--- Porting note: pp_nodot has not been implemented.
---@[pp_nodot]
-def unop : αᵒᵖ → α :=
-  id
-#align opposite.unop Opposite.unop
-
-theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => id
+theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => congr_arg Opposite.unop
 #align opposite.op_injective Opposite.op_injective
 
-theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun _ _ => id
+theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
 #align opposite.unop_injective Opposite.unop_injective
 
 @[simp]
@@ -130,9 +110,11 @@ theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
 instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
 
-/-- A recursor for `Opposite`. Use as `induction x using Opposite.rec`. -/
-@[simp]
-protected def rec {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
-#align opposite.rec Opposite.rec
+/-- A recursor for `Opposite`.
+The `@[eliminator]` attribute makes it the default induction principle for `Opposite`
+so you don't need to use `induction x using Opposite.rec'`. -/
+@[simp, eliminator]
+protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+#align opposite.rec Opposite.rec'
 
 end Opposite

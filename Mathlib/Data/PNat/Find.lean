@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.pnat.find
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Basic
+
+#align_import data.pnat.find from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Explicit least witnesses to existentials on positive natural numbers
@@ -22,7 +19,7 @@ namespace PNat
 
 variable {p q : ℕ+ → Prop} [DecidablePred p] [DecidablePred q] (h : ∃ n, p n)
 
-instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+)(_ : n' = n), p n :=
+instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (_ : n' = n), p n :=
   fun n' =>
   decidable_of_iff' (∃ h : 0 < n', p ⟨n', h⟩) <|
     Subtype.exists.trans <| by
@@ -33,7 +30,7 @@ instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+)(_
 
 /-- The `PNat` version of `Nat.findX` -/
 protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
-  have : ∃ (n' : ℕ)(n : ℕ+)(_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
+  have : ∃ (n' : ℕ) (n : ℕ+) (_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
   have n := Nat.findX this
   refine' ⟨⟨n, _⟩, _, fun m hm pm => _⟩
   · obtain ⟨n', hn', -⟩ := n.prop.1
@@ -106,7 +103,7 @@ theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
 theorem find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]
 #align pnat.find_eq_one PNat.find_eq_one
 
--- porting notes: deleted `@[simp]` to satisfy the linter becuase `le_find_iff` is more general
+-- porting notes: deleted `@[simp]` to satisfy the linter because `le_find_iff` is more general
 theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 :=
   not_iff_not.mp <| by simp
 #align pnat.one_le_find PNat.one_le_find

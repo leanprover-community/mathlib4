@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.path_category
-! leanprover-community/mathlib commit c6dd521ebdce53bb372c527569dd7c25de53a08b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.Combinatorics.Quiver.Path
+
+#align_import category_theory.path_category from "leanprover-community/mathlib"@"c6dd521ebdce53bb372c527569dd7c25de53a08b"
 
 /-!
 # The category paths on a quiver.
@@ -142,7 +139,7 @@ end Paths
 
 variable (W : Type u₂) [Quiver.{v₂ + 1} W]
 
--- A restatement of `prefunctor.map_path_comp` using `f ≫ g` instead of `f.comp g`.
+-- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
 theorem Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.mapPath (f ≫ g) = (F.mapPath f).comp (F.mapPath g) :=
@@ -204,7 +201,7 @@ def pathComposition : Paths C ⥤ C where
 #align category_theory.path_composition CategoryTheory.pathComposition
 
 -- TODO: This, and what follows, should be generalized to
--- the `hom_rel` for the kernel of any functor.
+-- the `HomRel` for the kernel of any functor.
 -- Indeed, this should be part of an equivalence between congruence relations on a category `C`
 -- and full, essentially surjective functors out of `C`.
 /-- The canonical relation on the path category of a category:

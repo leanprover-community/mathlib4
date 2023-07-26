@@ -2,15 +2,13 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module algebra.free_algebra
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Free
+
+#align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Free Algebras
@@ -162,23 +160,31 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSmul
 
-instance : Semiring (FreeAlgebra R X) where
-  add := Quot.map₂ (· + ·) (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
-  add_assoc := by
-    rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound Rel.add_assoc
-  zero := Quot.mk _ 0
-  zero_add := by
-    rintro ⟨⟩
-    exact Quot.sound Rel.zero_add
-  add_zero := by
-    rintro ⟨⟩
-    change Quot.mk _ _ = _
-    rw [Quot.sound Rel.add_comm, Quot.sound Rel.zero_add]
-  add_comm := by
-    rintro ⟨⟩ ⟨⟩
-    exact Quot.sound Rel.add_comm
-  mul := Quot.map₂ (· * ·) (fun _ _ _ ↦ Rel.mul_compat_right) fun _ _ _ ↦ Rel.mul_compat_left
+/-! Define the basic operations-/
+
+instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
+  smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
+
+instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
+
+instance instOne : One (FreeAlgebra R X) where one := Quot.mk _ 1
+
+instance instAdd : Add (FreeAlgebra R X) where
+  add := Quot.map₂ HAdd.hAdd (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
+
+instance instMul : Mul (FreeAlgebra R X) where
+  mul := Quot.map₂ HMul.hMul (fun _ _ _ ↦ Rel.mul_compat_right) fun _ _ _ ↦ Rel.mul_compat_left
+
+-- `Quot.mk` is an implementation detail of `FreeAlgebra`, so this lemma is private
+private theorem mk_mul (x y : Pre R X) :
+    Quot.mk (Rel R X) (x * y) = (HMul.hMul (self := instHMul (α := FreeAlgebra R X))
+    (Quot.mk (Rel R X) x) (Quot.mk (Rel R X) y)) :=
+  rfl
+
+/-! Build the semiring structure. We do this one piece at a time as this is convenient for proving
+the `nsmul` fields. -/
+
+instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
   mul_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.mul_assoc
@@ -189,12 +195,6 @@ instance : Semiring (FreeAlgebra R X) where
   mul_one := by
     rintro ⟨⟩
     exact Quot.sound Rel.mul_one
-  left_distrib := by
-    rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound Rel.left_distrib
-  right_distrib := by
-    rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound Rel.right_distrib
   zero_mul := by
     rintro ⟨⟩
     exact Quot.sound Rel.MulZeroClass.zero_mul
@@ -202,25 +202,90 @@ instance : Semiring (FreeAlgebra R X) where
     rintro ⟨⟩
     exact Quot.sound Rel.MulZeroClass.mul_zero
 
+instance instDistrib : Distrib (FreeAlgebra R X) where
+  left_distrib := by
+    rintro ⟨⟩ ⟨⟩ ⟨⟩
+    exact Quot.sound Rel.left_distrib
+  right_distrib := by
+    rintro ⟨⟩ ⟨⟩ ⟨⟩
+    exact Quot.sound Rel.right_distrib
+
+instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
+  add_assoc := by
+    rintro ⟨⟩ ⟨⟩ ⟨⟩
+    exact Quot.sound Rel.add_assoc
+  zero_add := by
+    rintro ⟨⟩
+    exact Quot.sound Rel.zero_add
+  add_zero := by
+    rintro ⟨⟩
+    change Quot.mk _ _ = _
+    rw [Quot.sound Rel.add_comm, Quot.sound Rel.zero_add]
+  add_comm := by
+    rintro ⟨⟩ ⟨⟩
+    exact Quot.sound Rel.add_comm
+  nsmul := (· • ·)
+  nsmul_zero := by
+    rintro ⟨⟩
+    change Quot.mk _ (_ * _) = _
+    rw [map_zero]
+    exact Quot.sound Rel.MulZeroClass.zero_mul
+  nsmul_succ n := by
+    rintro ⟨a⟩
+    dsimp only [HSMul.hSMul, instSMul, Quot.map]
+    rw [map_add, map_one, add_comm, mk_mul, mk_mul, ←one_add_mul (_ : FreeAlgebra R X)]
+    congr 1
+    exact Quot.sound Rel.add_scalar
+
+instance : Semiring (FreeAlgebra R X) where
+  __ := instMonoidWithZero R X
+  __ := instAddCommMonoid R X
+  __ := instDistrib R X
+  natCast n := Quot.mk _ (n : R)
+  natCast_zero := by simp; rfl
+  natCast_succ n := by simp; exact Quot.sound Rel.add_scalar
+
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance : SMul R (FreeAlgebra R X) where
-  smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
-
-instance : Algebra R (FreeAlgebra R X) where
-  toFun r := Quot.mk _ r
-  map_one' := rfl
-  map_mul' _ _ := Quot.sound Rel.mul_scalar
-  map_zero' := rfl
-  map_add' _ _ := Quot.sound Rel.add_scalar
+instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
+  toRingHom := ({
+      toFun := fun r => Quot.mk _ r
+      map_one' := rfl
+      map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
+      map_zero' := rfl
+      map_add' := fun _ _ => Quot.sound Rel.add_scalar } : A →+* FreeAlgebra A X).comp
+      (algebraMap R A)
   commutes' _ := by
     rintro ⟨⟩
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
 
+-- verify there is no diamond
+variable (S : Type) [CommSemiring S] in
+example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+    [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
+    IsScalarTower R S (FreeAlgebra A X) where
+  smul_assoc r s x := by
+    change algebraMap S A (r • s) • x = algebraMap R A _ • (algebraMap S A _ • x)
+    rw [←smul_assoc]
+    congr
+    simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
+    rw [smul_assoc, ←smul_one_mul]
+
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+    [Algebra R A] [Algebra S A] [SMulCommClass R S A] :
+    SMulCommClass R S (FreeAlgebra A X) where
+  smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
+
 instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
+
+-- verify there is no diamond
+variable (S : Type) [CommRing S] in
+example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
 
@@ -238,8 +303,7 @@ variable {A : Type _} [Semiring A] [Algebra R A]
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
-    Quot.liftOn a (liftFun _ _ f) fun a b h ↦
-      by
+    Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
       induction' h
       · exact (algebraMap R A).map_add _ _
       · exact (algebraMap R A).map_mul _ _
@@ -265,7 +329,7 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
       · change _ * algebraMap _ _ _ = algebraMap _ _ _
         simp
       repeat
-        change liftFun R X f _ + liftFun R X f _ =  _
+        change liftFun R X f _ + liftFun R X f _ = _
         simp only [*]
         rfl
       repeat
@@ -310,7 +374,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
       case add a b ha hb =>
-        -- Porting note: it is necessary to declare fa and fb explicitely otherwise Lean refuses
+        -- Porting note: it is necessary to declare fa and fb explicitly otherwise Lean refuses
         -- to consider `Quot.mk (Rel R X) ·` as element of FreeAlgebra R X
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
@@ -367,8 +431,8 @@ as a quotient of an inductive type as completely hidden. -/
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
 -- For now, we avoid this by not marking it irreducible.
 @[simp]
-theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) : lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g :=
-  by
+theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
+    lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g := by
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
 #align free_algebra.lift_comp_ι FreeAlgebra.lift_comp_ι
@@ -498,8 +562,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
       algebraMap_mem' := h_grade0 }
   let of : X → s := Subtype.coind (ι R) h_grade1
   -- the mapping through the subalgebra is the identity
-  have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) :=
-    by
+  have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
     simp [Subtype.coind]
   -- finding a proof is finding an element of the subalgebra

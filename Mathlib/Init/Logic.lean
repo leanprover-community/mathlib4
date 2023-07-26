@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
 import Std.Logic
+import Std.WF
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Relation.Rfl
@@ -219,7 +220,7 @@ theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
 open Lean TSyntax.Compat in
-macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
+macro "∃!" xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
 /-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
     for `Exists`. -/
@@ -304,7 +305,11 @@ alias instDecidableOr ← Or.decidable
 alias instDecidableAnd ← And.decidable
 alias instDecidableNot ← Not.decidable
 alias instDecidableIff ← Iff.decidable
+alias instDecidableTrue ← decidableTrue
+alias instDecidableFalse ← decidableFalse
 
+#align decidable.true decidableTrue
+#align decidable.false decidableFalse
 #align or.decidable Or.decidable
 #align and.decidable And.decidable
 #align not.decidable Not.decidable
@@ -470,7 +475,7 @@ lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Refle
 
 lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := λ _ _ => h.symm
 
-lemma Equivalence.transitive  {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
+lemma Equivalence.transitive {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
   λ _ _ _ => h.trans
 
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
@@ -538,18 +543,6 @@ theorem right_comm : Commutative f → Associative f → RightCommutative f :=
       _ = (a*c)*b := Eq.symm (hassoc a c b)
 
 end Binary
-
-namespace WellFounded
-
-variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
-
-unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
-  F x fun y _ ↦ impl hwf F y
-
-@[implemented_by fix'.impl]
-def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
-
-end WellFounded
 
 #align not.elim Not.elim
 #align not.imp Not.imp

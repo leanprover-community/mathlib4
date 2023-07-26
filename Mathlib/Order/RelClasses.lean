@@ -2,15 +2,12 @@
 Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module order.rel_classes
-! leanprover-community/mathlib commit bc7d81beddb3d6c66f71449c5bc76c38cb77cf9e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Order.Basic
 import Mathlib.Logic.IsEmpty
-import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Logic.Relation
+import Mathlib.Order.Basic
+
+#align_import order.rel_classes from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
 /-!
 # Unbundled relation classes
@@ -184,7 +181,7 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
     <| irrefl b
 #align extensional_of_trichotomous_of_irrefl extensional_of_trichotomous_of_irrefl
 
-/-- Construct a partial order from a `isStrictOrder` relation.
+/-- Construct a partial order from an `isStrictOrder` relation.
 
 See note [reducible non-instances]. -/
 @[reducible]
@@ -225,7 +222,7 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidable_le := hD }
+    decidableLE := hD }
 set_option linter.uppercaseLean3 false in
 #align linear_order_of_STO linearOrderOfSTO
 
@@ -283,7 +280,9 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 #align has_well_founded WellFoundedRelation
 set_option linter.uppercaseLean3 false in
 #align has_well_founded.R WellFoundedRelation.rel
-instance [h : WellFoundedRelation α] : IsWellFounded α WellFoundedRelation.rel :=
+
+instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
+    IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
 theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a b : α} :
@@ -310,10 +309,8 @@ theorem apply : ∀ a, Acc r a :=
   wf.apply
 #align is_well_founded.apply IsWellFounded.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as less under a well-founded
 relation. See also `IsWellFounded.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
   wf.fix
 #align is_well_founded.fix IsWellFounded.fix
@@ -342,6 +339,9 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsy
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
   IsAsymm.isIrrefl
+
+instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
+  ⟨i.wf.transGen⟩
 
 /-- A class for a well founded relation `<`. -/
 @[reducible]
@@ -410,10 +410,8 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
   IsWellFounded.apply _
 #align well_founded_lt.apply WellFoundedLT.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as lesser. See also
 `WellFoundedLT.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· < ·)
 #align well_founded_lt.fix WellFoundedLT.fix
@@ -444,10 +442,8 @@ theorem apply : ∀ a : α, Acc (· > ·) a :=
   IsWellFounded.apply _
 #align well_founded_gt.apply WellFoundedGT.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as greater. See also
 `WellFoundedGT.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, x < y → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· > ·)
 #align well_founded_gt.fix WellFoundedGT.fix
@@ -470,7 +466,7 @@ noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder 
   linearOrderOfSTO r
 #align is_well_order.linear_order IsWellOrder.linearOrder
 
-/-- Derive a `WellFoundedRelation` instance from a `IsWellOrder` instance. -/
+/-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
 def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
   rel := (· < ·)
   wf := hwo.wf
@@ -514,13 +510,31 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
-instance (f : α → ℕ) : IsWellFounded _ (Measure f) :=
+instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
   ⟨(measure f).wf⟩
 
 theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 #align subrelation.is_well_founded Subrelation.isWellFounded
+
+instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
+    rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
+    simp only [Prod.mk_lt_mk] at w
+    rcases eq_or_ne a₁ a₂ with rfl | ha
+    · right
+      simpa using w
+    · left
+      rcases w with ⟨a_lt, _⟩ | ⟨a_le, _⟩
+      · assumption
+      · exact Ne.lt_of_le ha a_le
+
+instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+    WellFoundedGT (α × β) :=
+  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
 
 namespace Set
 
@@ -574,7 +588,7 @@ end Prod
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
 strict relation `s`. Compare `Preorder.lt_iff_le_not_le`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
-class IsNonstrictStrictOrder (α : Type _) (r s : α → α → Prop) where
+class IsNonstrictStrictOrder (α : Type _) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) where
   /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a
 #align is_nonstrict_strict_order IsNonstrictStrictOrder
@@ -590,9 +604,6 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
   right_iff_left_not_left
 #align right_iff_left_not_left_of right_iff_left_not_left_of
 
--- The free parameter `r` is strictly speaking not uniquely determined by `s`, but in practice it
--- always has a unique instance, so this is not dangerous.
-@[nolint dangerousInstance]
 instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 
@@ -866,7 +877,7 @@ instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
 instance [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
 
-instance [LinearOrder α] : IsTotal α (· ≤ ·) :=
+instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
   ⟨le_total⟩
 
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=

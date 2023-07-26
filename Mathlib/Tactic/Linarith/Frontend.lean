@@ -2,8 +2,8 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
+import Mathlib.Control.Basic
 import Mathlib.Data.HashMap
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
@@ -57,8 +57,8 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 ## Fourier-Motzkin elimination
 
 The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transorms a set of inequalities in `n` variables to an equisatisfiable set in `n - 1`
-variables. Once all variables have been eliminated, we conclude that the original set was
+This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
 unsatisfiable iff the comparison `0 < 0` is in the resulting set.
 
 While performing this elimination, we track the history of each derived comparison. This allows us
@@ -201,43 +201,40 @@ prove `false` by calling `linarith` on each list in succession. It will stop at 
 -/
 def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
     MetaM Expr :=
-  ls.firstM (fun L => proveFalseByLinarith cfg g L)
-    <|> throwError "linarith failed to find a contradiction"
+  try
+    ls.firstM (fun L => proveFalseByLinarith cfg g L)
+  catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
 
 
 /--
-Given a list `hyps` of proofs of comparisons, `runLinarith cfg hyps pref_type`
+Given a list `hyps` of proofs of comparisons, `runLinarith cfg hyps prefType`
 preprocesses `hyps` according to the list of preprocessors in `cfg`.
 This results in a list of branches (typically only one),
 each of which must succeed in order to close the goal.
 
 In each branch, we partition the list of hypotheses by type, and run `linarith` on each class
 in the partition; one of these must succeed in order for `linarith` to succeed on this branch.
-If `pref_type` is given, it will first use the class of proofs of comparisons over that type.
+If `prefType` is given, it will first use the class of proofs of comparisons over that type.
 -/
 -- If it succeeds, the passed metavariable should have been assigned.
-def runLinarith (cfg : LinarithConfig) (pref_type : Option Expr) (g : MVarId)
-    (hyps : List Expr) : MetaM Unit :=
-let single_process : MVarId → List Expr → MetaM Expr :=
-  fun (g : MVarId) (hyps : List Expr) => do
-   linarithTraceProofs
-     ("after preprocessing, linarith has " ++ toString hyps.length ++ " facts:") hyps
-   let hyp_set ← partitionByType hyps
-   trace[linarith] m!"hypotheses appear in {hyp_set.size} different types"
-    if let some t := pref_type then
-      let (i, vs) ← hyp_set.find t
-      proveFalseByLinarith cfg g vs <|>
-      findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
-    else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
-let preprocessors :=
-  (if cfg.split_hypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
-  cfg.preprocessors.getD defaultPreprocessors
--- TODO restore when the `removeNe` preprocessor is implemented
--- let preprocessors := if cfg.split_ne then Linarith.removeNe::preprocessors else preprocessors
-do
+def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
+    (hyps : List Expr) : MetaM Unit := do
+  let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := do
+    linarithTraceProofs s!"after preprocessing, linarith has {hyps.length} facts:" hyps
+    let hyp_set ← partitionByType hyps
+    trace[linarith] "hypotheses appear in {hyp_set.size} different types"
+      if let some t := prefType then
+        let (i, vs) ← hyp_set.find t
+        proveFalseByLinarith cfg g vs <|>
+        findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
+      else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
+  let preprocessors :=
+    (if cfg.splitHypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
+    cfg.preprocessors.getD defaultPreprocessors
+  let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
   let branches ← preprocess preprocessors g hyps
   for (g, es) in branches do
-    let r ← single_process g es
+    let r ← singleProcess g es
     g.assign r
   -- Verify that we closed the goal. Failure here should only result from a bad `Preprocessor`.
   (Expr.mvar g).ensureHasNoMVars
@@ -266,12 +263,12 @@ if it does not succeed at doing this.
 partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig := {})
     (g : MVarId) : MetaM Unit := do
   -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
-  if (← whnfR (← instantiateMVars (← g.getType))).isEq then do
+  if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
-    let [g₁, g₂] ← g.apply (← mkConst' ``eq_of_not_lt_of_not_gt) | failure
-    linarith only_on hyps cfg g₁
-    linarith only_on hyps cfg g₂
-    return ()
+    if let some [g₁, g₂] ← try? (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
+      linarith only_on hyps cfg g₁
+      linarith only_on hyps cfg g₂
+      return
 
   /- If we are proving a comparison goal (and not just `false`), we consider the type of the
     elements in the comparison to be the "preferred" type. That is, if we find comparison
@@ -282,7 +279,7 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
 
   let (g, target_type, new_var) ← match ← applyContrLemma g with
   | (none, g) =>
-    if cfg.exfalso then do
+    if cfg.exfalso then
       trace[linarith] "using exfalso"
       pure (← g.exfalso, none, none)
     else
@@ -291,8 +288,8 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
 
   g.withContext do
   -- set up the list of hypotheses, considering the `only_on` and `restrict_type` options
-    let hyps ← (if only_on then do return new_var.toList ++ hyps
-      else do return (← getLocalHyps).toList ++ hyps)
+    let hyps ← (if only_on then return new_var.toList ++ hyps
+      else return (← getLocalHyps).toList ++ hyps)
 
     -- TODO in mathlib3 we could specify a restriction to a single type.
     -- I haven't done that here because I don't know how to store a `Type` in `LinarithConfig`.
@@ -301,7 +298,6 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
 
     linarithTraceProofs "linarith is running on the following hypotheses:" hyps
     runLinarith cfg target_type g hyps
-  return ()
 
 end Linarith
 
@@ -314,17 +310,17 @@ syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
-Equivalently, it can prove a linear inequality by assuming its negation and proving `false`.
+Equivalently, it can prove a linear inequality by assuming its negation and proving `False`.
 
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
-the rationals. While there is some special handling for non-dense orders like `nat` and `int`,
+the rationals. While there is some special handling for non-dense orders like `Nat` and `Int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
 goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 
 An example:
 ```lean
-example (x y z : ℚ) (h1 : 2*x  < 3*y) (h2 : -4*x + 2*z < 0)
-        (h3 : 12*y - 4* z < 0)  : false :=
+example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
+        (h3 : 12*y - 4* z < 0)  : False :=
 by linarith
 ```
 

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.algebra.tower
-! leanprover-community/mathlib commit 71150516f28d9826c7341f8815b31f7d8770c212
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.LinearAlgebra.Span
+
+#align_import algebra.algebra.tower from "leanprover-community/mathlib"@"71150516f28d9826c7341f8815b31f7d8770c212"
 
 /-!
 # Towers of algebras
@@ -131,23 +128,24 @@ theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
 #align is_scalar_tower.coe_to_alg_hom IsScalarTower.coe_toAlgHom
 
 @[simp]
-theorem coe_to_alg_hom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
-#align is_scalar_tower.coe_to_alg_hom' IsScalarTower.coe_to_alg_hom'
+theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
+#align is_scalar_tower.coe_to_alg_hom' IsScalarTower.coe_toAlgHom'
 
 variable {R S A B}
 
 @[simp]
-theorem AlgHom.map_algebraMap (f : A →ₐ[S] B) (r : R) : f (algebraMap R A r) = algebraMap R B r :=
+theorem _root_.AlgHom.map_algebraMap (f : A →ₐ[S] B) (r : R) :
+    f (algebraMap R A r) = algebraMap R B r :=
   by rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
-#align alg_hom.map_algebra_map IsScalarTower.AlgHom.map_algebraMap
+#align alg_hom.map_algebra_map AlgHom.map_algebraMap
 
 variable (R)
 
 @[simp]
-theorem AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
+theorem _root_.AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
     (f : A →+* B).comp (algebraMap R A) = algebraMap R B :=
-  RingHom.ext (map_algebraMap f)
-#align alg_hom.comp_algebra_map_of_tower IsScalarTower.AlgHom.comp_algebraMap_of_tower
+  RingHom.ext (AlgHom.map_algebraMap f)
+#align alg_hom.comp_algebra_map_of_tower AlgHom.comp_algebraMap_of_tower
 
 -- conflicts with IsScalarTower.Subalgebra
 instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A :=
@@ -155,8 +153,8 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
 -- Porting note: @[nolint instance_priority]
-instance of_ring_hom {R A B : Type _} [CommSemiring R] [CommSemiring A] [CommSemiring B]
-    [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
+instance (priority := 999) of_ring_hom {R A B : Type _} [CommSemiring R] [CommSemiring A]
+    [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
   letI := (f : A →+* B).toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
@@ -198,8 +196,8 @@ theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+*
 #align alg_hom.coe_restrict_scalars AlgHom.coe_restrictScalars
 
 @[simp]
-theorem coe_restrict_scalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
-#align alg_hom.coe_restrict_scalars' AlgHom.coe_restrict_scalars'
+theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+#align alg_hom.coe_restrict_scalars' AlgHom.coe_restrictScalars'
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
@@ -226,8 +224,8 @@ theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+*
 #align alg_equiv.coe_restrict_scalars AlgEquiv.coe_restrictScalars
 
 @[simp]
-theorem coe_restrict_scalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
-#align alg_equiv.coe_restrict_scalars' AlgEquiv.coe_restrict_scalars'
+theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+#align alg_equiv.coe_restrict_scalars' AlgEquiv.coe_restrictScalars'
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>

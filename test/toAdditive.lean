@@ -22,16 +22,16 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
 class my_has_pow (α : Type u) (β : Type v) :=
-(pow : α → β → α)
+  (pow : α → β → α)
 
 instance : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
 
 class my_has_scalar (M : Type u) (α : Type v) :=
-(smul : M → α → α)
+  (smul : M → α → α)
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
-attribute [to_additive (reorder := 1) my_has_scalar] my_has_pow
-attribute [to_additive (reorder := 1 4)] my_has_pow.pow
+attribute [to_additive (reorder := 1 2) my_has_scalar] my_has_pow
+attribute [to_additive (reorder := 1 2, 4 5)] my_has_pow.pow
 
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
@@ -47,13 +47,13 @@ instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
 theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
-theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * 5 := by decide
+theorem bar2_works : bar2 2 3 (PLift.up 2) = 2 * 5 := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
 
 theorem foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
-theorem bar3_works : bar3 2 3 =  2 * 3 := by decide
+theorem bar3_works : bar3 2 3 = 2 * 3 := by decide
 
 @[to_additive bar4]
 def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
@@ -72,7 +72,7 @@ def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ 
 -- def foo7 := @my_has_pow.pow
 
 -- theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
--- theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
+-- theorem bar7_works : bar7 2 3 = 2 * 3 := by decide
 
 /-- Check that we don't additivize `Nat` expressions. -/
 @[to_additive bar8]
@@ -99,16 +99,16 @@ theorem bar11_works : bar11 = foo11 := by rfl
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
 
-@[to_additive (reorder := 1 4) bar13]
+@[to_additive (reorder := 1 2, 4 5) bar13]
 lemma foo13 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : x ^ y = x ^ y := rfl
 
-@[to_additive (reorder := 1 4) bar14]
+@[to_additive (reorder := 1 2, 4 5) bar14]
 def foo14 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : α := (x ^ y) ^ y
 
-@[to_additive (reorder := 1 4) bar15]
+@[to_additive (reorder := 1 2, 4 5) bar15]
 lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := rfl
 
-@[to_additive (reorder := 1 4) bar16]
+@[to_additive (reorder := 1 2, 4 5) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
 
 initialize testExt : SimpExtension ←
@@ -182,18 +182,18 @@ run_cmd do
 
 @[to_additive addFixedNumeralTest]
 def fixedNumeralTest {α} [One α] :=
-@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 _
+  @OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 _
 
 @[to_additive addFixedNumeralTest2]
 def fixedNumeralTest2 {α} [One α] :=
-@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
+  @OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
 def some_def.in_namespace : Bool := false
 
 def some_def {α : Type u} [Mul α] (x : α) : α :=
-if some_def.in_namespace then x * x else x
+  if some_def.in_namespace then x * x else x
 
 def myFin (_ : ℕ) := ℕ
 
@@ -205,9 +205,9 @@ def myFin.foo : myFin (n+1) := 1
 /-- We can pattern-match with `1`, which creates a term with a pure nat literal. See #2046 -/
 @[to_additive]
 def mul_foo {α} [Monoid α] (a : α) : ℕ → α
-| 0 => 1
-| 1 => 1
-| (_ + 2) => a
+  | 0 => 1
+  | 1 => 1
+  | (_ + 2) => a
 
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
@@ -313,9 +313,16 @@ theorem isUnit'_iff_exists_inv [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, a *
 theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b * a = 1 := by
   simp [isUnit'_iff_exists_inv, mul_comm]
 
+/-! Test a permutation with a cycle of length > 2. -/
+@[to_additive (reorder := 3 4 5)]
+def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
+example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
+
+
 def Ones : ℕ → Q(Nat)
-| 0     => q(1)
-| (n+1) => q($(Ones n) + $(Ones n))
+  | 0     => q(1)
+  | (n+1) => q($(Ones n) + $(Ones n))
 
 
 -- this test just exists to see if this finishes in finite time. It should take <100ms.

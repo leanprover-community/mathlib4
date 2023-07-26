@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.list.forall2
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Infix
+
+#align_import data.list.forall2 from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # Double universal quantification on a list
@@ -118,7 +115,6 @@ theorem forall₂_and_left {p : α → Prop} :
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
     simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
-
 #align list.forall₂_and_left List.forall₂_and_left
 
 @[simp]
@@ -197,15 +193,14 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
 
 theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
-  ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h =>
-    by
+  ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     cases' h with h₁ h₂
     induction' l₁ with a l₁ IH generalizing l₂
     · cases length_eq_zero.1 h₁.symm
       constructor
     · cases' l₂ with b l₂
-      . simp at h₁
-      . simp only [length_cons, succ.injEq] at h₁
+      · simp at h₁
+      · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
           (IH h₁ <| fun h => h₂ <| by
             simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
@@ -250,15 +245,14 @@ theorem rel_map : ((R ⇒ P) ⇒ Forall₂ R ⇒ Forall₂ P) map map
   | _, _, h, _ :: _, _ :: _, Forall₂.cons h₁ h₂ => Forall₂.cons (h h₁) (rel_map (@h) h₂)
 #align list.rel_map List.rel_map
 
-theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (. ++ .) (. ++ .)
+theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (· ++ ·) (· ++ ·)
   | [], [], _, _, _, hl => hl
   | _, _, Forall₂.cons h₁ h₂, _, _, hl => Forall₂.cons h₁ (rel_append h₂ hl)
 #align list.rel_append List.rel_append
 
 theorem rel_reverse : (Forall₂ R ⇒ Forall₂ R) reverse reverse
   | [], [], Forall₂.nil => Forall₂.nil
-  | _, _, Forall₂.cons h₁ h₂ =>
-    by
+  | _, _, Forall₂.cons h₁ h₂ => by
     simp only [reverse_cons]
     exact rel_append (rel_reverse h₂) (Forall₂.cons h₁ Forall₂.nil)
 #align list.rel_reverse List.rel_reverse

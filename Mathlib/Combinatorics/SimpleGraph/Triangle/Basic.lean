@@ -2,13 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.triangle.basic
-! leanprover-community/mathlib commit cd7f0626a0b04be1dda223a26123313514a55fb4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Tactic.GCongr
+
+#align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"cd7f0626a0b04be1dda223a26123313514a55fb4"
 
 /-!
 # Triangles in graphs
@@ -54,7 +52,7 @@ alias farFromTriangleFree_iff ↔ farFromTriangleFree.le_card_sub_card _
 #align simple_graph.far_from_triangle_free.le_card_sub_card SimpleGraph.farFromTriangleFree.le_card_sub_card
 
 theorem farFromTriangleFree.mono (hε : G.FarFromTriangleFree ε) (h : δ ≤ ε) :
-    G.FarFromTriangleFree δ := hε.mono <| mul_le_mul_of_nonneg_right h <| cast_nonneg _
+    G.FarFromTriangleFree δ := hε.mono <| by gcongr
 #align simple_graph.far_from_triangle_free.mono SimpleGraph.farFromTriangleFree.mono
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFromTriangleFree ε)
@@ -66,8 +64,8 @@ theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFro
 
 variable [Nonempty α]
 
-theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) : ε ≤ 0 :=
-  by
+theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
+    ε ≤ 0 := by
   have := h₀ (empty_subset _)
   rw [coe_empty, Finset.card_empty, cast_zero, deleteEdges_empty_eq] at this
   exact nonpos_of_mul_nonpos_left (this h₁) (cast_pos.2 <| sq_pos_of_pos Fintype.card_pos)
@@ -87,4 +85,3 @@ theorem FarFromTriangleFree.cliqueFinset_nonempty (hG : G.FarFromTriangleFree ε
 #align simple_graph.far_from_triangle_free.clique_finset_nonempty SimpleGraph.FarFromTriangleFree.cliqueFinset_nonempty
 
 end SimpleGraph
-

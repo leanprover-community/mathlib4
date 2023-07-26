@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.algebra.order.upper_lower
-! leanprover-community/mathlib commit 992efbda6f85a5c9074375d3c7cb9764c64d8f72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Basic
+
+#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -44,16 +41,13 @@ variable {α : Type _} [TopologicalSpace α]
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedCommGroup α]
-    [ContinuousConstSMul α α] : HasUpperLowerClosure α
-    where
+    [ContinuousConstSMul α α] : HasUpperLowerClosure α where
   isUpperSet_closure s h x y hxy hx :=
-    closure_mono (h.smul_subset <| one_le_div'.2 hxy) <|
-      by
+    closure_mono (h.smul_subset <| one_le_div'.2 hxy) <| by
       rw [closure_smul]
       exact ⟨x, hx, div_mul_cancel' _ _⟩
   isLowerSet_closure s h x y hxy hx :=
-    closure_mono (h.smul_subset <| div_le_one'.2 hxy) <|
-      by
+    closure_mono (h.smul_subset <| div_le_one'.2 hxy) <| by
       rw [closure_smul]
       exact ⟨x, hx, div_mul_cancel' _ _⟩
   isOpen_upperClosure s hs := by

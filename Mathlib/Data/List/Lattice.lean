@@ -3,15 +3,12 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Scott Morrison
-
-! This file was ported from Lean 3 source module data.list.lattice
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Infix
 import Mathlib.Algebra.Order.Monoid.MinMax
+
+#align_import data.list.lattice from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Lattice structure of lists
@@ -38,7 +35,7 @@ namespace List
 
 variable {α : Type _} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 
-/-! ### `disjoint` -/
+/-! ### `Disjoint` -/
 
 
 section Disjoint
@@ -85,7 +82,6 @@ theorem mem_union : a ∈ l₁ ∪ l₂ ↔ a ∈ l₁ ∨ a ∈ l₂ := by
   induction l₁
   · simp only [not_mem_nil, false_or_iff, instUnionList, nil_union]
   · simp only [find?, mem_cons, or_assoc, instUnionList, cons_union, mem_union_iff, mem_insert_iff]
-
 #align list.mem_union List.mem_union
 
 theorem mem_union_left (h : a ∈ l₁) (l₂ : List α) : a ∈ l₁ ∪ l₂ :=
@@ -267,8 +263,7 @@ theorem count_bagInter {a : α} :
 
 theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp
-  | b :: l₁, l₂ =>
-    by
+  | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
     · exact (bagInter_sublist_left _ _).cons_cons _
     · apply sublist_cons_of_sublist

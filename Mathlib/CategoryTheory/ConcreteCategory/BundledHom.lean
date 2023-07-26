@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.bundled_hom
-! leanprover-community/mathlib commit 77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+
+#align_import category_theory.concrete_category.bundled_hom from "leanprover-community/mathlib"@"77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8"
 
 /-!
 # Category instances for algebraic structures that use bundled homs.
@@ -60,11 +57,12 @@ variable [𝒞 : BundledHom hom]
 -- porting note: include not needed
 -- include 𝒞
 
+set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
-This instance generates the type-class problem `BundledHom ?m` (which is why this is marked as
-`[nolint]`). Currently that is not a problem, as there are almost no instances of `BundledHom`. -/
-@[nolint dangerousInstance]
+This instance generates the type-class problem `BundledHom ?m`.
+Currently that is not a problem, as there are almost no instances of `BundledHom`.
+-/
 instance category : Category (Bundled c) := by
   refine' { Hom := fun X Y => @hom X Y X.str Y.str
             id := fun X => @BundledHom.id c hom 𝒞 X X.str
@@ -75,14 +73,10 @@ instance category : Category (Bundled c) := by
     aesop_cat
 #align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
-/-- A category given by `BundledHom` is a concrete category.
-
-This instance generates the type-class problem `BundledHom ?m` (which is why this is marked as
-`[nolint]`). Currently that is not a problem, as there are almost no instances of `BundledHom`. -/
-@[nolint dangerousInstance]
+/-- A category given by `BundledHom` is a concrete category. -/
 instance concreteCategory : ConcreteCategory.{u} (Bundled c)
     where
-  Forget :=
+  forget :=
     { obj := fun X => X
       map := @fun X Y f => 𝒞.toFun X.str Y.str f
       map_id := fun X => 𝒞.id_toFun X.str
@@ -92,7 +86,7 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
 
 variable {hom}
 
-attribute [local instance] ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.funLike
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}
@@ -102,7 +96,7 @@ def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ 
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
     intros X Y f
-    rw [heq_eq_eq, h_map])
+    rw [heq_eq_eq, forget_map_eq_coe, forget_map_eq_coe, h_map f])
 #align category_theory.bundled_hom.mk_has_forget₂ CategoryTheory.BundledHom.mkHasForget₂
 
 variable {d : Type u → Type u}
@@ -116,7 +110,7 @@ section
 
 /-- The `hom` corresponding to first forgetting along `F`, then taking the `hom` associated to `c`.
 
-For typical usage, see the construction of `CommMon` from `Mon`.
+For typical usage, see the construction of `CommMonCat` from `MonCat`.
 -/
 @[reducible]
 def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u :=
@@ -126,7 +120,7 @@ def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (
 end
 
 /-- Construct the `CategoryTheory.BundledHom` induced by a map between type classes.
-This is useful for building categories such as `CommMon` from `Mon`.
+This is useful for building categories such as `CommMonCat` from `MonCat`.
 -/
 def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
     where
@@ -144,8 +138,8 @@ section
 /-- We use the empty `ParentProjection` class to label functions like `CommMonoid.toMonoid`,
 which we would like to use to automatically construct `BundledHom` instances from.
 
-Once we've set up `Mon` as the category of bundled monoids,
-this allows us to set up `CommMon` by defining an instance
+Once we've set up `MonCat` as the category of bundled monoids,
+this allows us to set up `CommMonCat` by defining an instance
 ```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
 -/
 class ParentProjection (F : ∀ {α}, d α → c α)

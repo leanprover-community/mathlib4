@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.group.ulift
-! leanprover-community/mathlib commit 13e18cfa070ea337ea960176414f5ae3a1534aae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.InjSurj
+
+#align_import algebra.group.ulift from "leanprover-community/mathlib"@"564bcc44d2b394a50c0cd6340c14a6b02a50a99a"
 
 /-!
 # `ULift` instances for groups and monoids
@@ -89,23 +86,22 @@ theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a 
 #align ulift.smul_down ULift.smul_down
 #align ulift.vadd_down ULift.vadd_down
 
-@[to_additive existing (reorder := 1) smul]
+@[to_additive existing (reorder := 1 2) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 #align ulift.has_pow ULift.pow
 
-@[to_additive existing (attr := simp) (reorder := 1) smul_down]
+@[to_additive existing (attr := simp) (reorder := 1 2) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 #align ulift.pow_down ULift.pow_down
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
 -/
--- porting note: below errors: to_additive: can't transport `ULift.MulEquiv.ulift` to itself.
--- @[to_additive "The additive equivalence between `ULift α` and `α`."]
-def MulEquiv.ulift [Mul α] : ULift α ≃* α :=
+@[to_additive "The additive equivalence between `ULift α` and `α`."]
+def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
-#align mul_equiv.ulift ULift.MulEquiv.ulift
+#align mul_equiv.ulift MulEquiv.ulift
 
 -- porting notes: below failed due to error above, manually added
 --@[to_additive]

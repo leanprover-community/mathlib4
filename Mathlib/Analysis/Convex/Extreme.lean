@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.extreme
-! leanprover-community/mathlib commit c5773405394e073885e2a144c9ca14637e8eb963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
+
+#align_import analysis.convex.extreme from "leanprover-community/mathlib"@"c5773405394e073885e2a144c9ca14637e8eb963"
 
 /-!
 # Extreme sets
@@ -42,7 +39,7 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 Prove lemmas relating extreme sets and points to the intrinsic frontier.
 
-More not-yet-PRed stuff is available on the branch `sperner_again`.
+More not-yet-PRed stuff is available on the mathlib3 branch `sperner_again`.
 -/
 
 
@@ -63,7 +60,7 @@ def IsExtreme (A B : Set E) : Prop :=
 #align is_extreme IsExtreme
 
 /-- A point `x` is an extreme point of a set `A` if `x` belongs to no open segment with ends in
-`A`, except for the obvious `open_segment x x`. -/
+`A`, except for the obvious `openSegment x x`. -/
 def Set.extremePoints (A : Set E) : Set E :=
   { x ∈ A | ∀ ⦃x₁⦄, x₁ ∈ A → ∀ ⦃x₂⦄, x₂ ∈ A → x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x }
 #align set.extreme_points Set.extremePoints
@@ -110,29 +107,29 @@ protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB
   ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.2 (hBA hx₁B) (hBA hx₂B) hxC hx⟩
 #align is_extreme.mono IsExtreme.mono
 
-theorem isExtreme_interᵢ {ι : Sort _} [Nonempty ι] {F : ι → Set E}
+theorem isExtreme_iInter {ι : Sort _} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
-  refine' ⟨interᵢ_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
-  simp_rw [mem_interᵢ] at hxF⊢
+  refine' ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
+  simp_rw [mem_iInter] at hxF ⊢
   have h := fun i ↦ (hAF i).2 hx₁A hx₂A (hxF i) hx
   exact ⟨fun i ↦ (h i).1, fun i ↦ (h i).2⟩
-#align is_extreme_Inter isExtreme_interᵢ
+#align is_extreme_Inter isExtreme_iInter
 
-theorem isExtreme_binterᵢ {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
+theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂ B ∈ F, B) := by
   haveI := hF.to_subtype
-  simpa only [interᵢ_subtype] using isExtreme_interᵢ fun i : F ↦ hA _ i.2
-#align is_extreme_bInter isExtreme_binterᵢ
+  simpa only [iInter_subtype] using isExtreme_iInter fun i : F ↦ hA _ i.2
+#align is_extreme_bInter isExtreme_biInter
 
-theorem isExtreme_interₛ {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
+theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂₀ F) := by
   obtain ⟨B, hB⟩ := hF
-  refine' ⟨(interₛ_subset_of_mem hB).trans (hAF B hB).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
-  simp_rw [mem_interₛ] at hxF⊢
+  refine' ⟨(sInter_subset_of_mem hB).trans (hAF B hB).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
+  simp_rw [mem_sInter] at hxF ⊢
   have h := fun B hB ↦ (hAF B hB).2 hx₁A hx₂A (hxF B hB) hx
   exact ⟨fun B hB ↦ (h B hB).1, fun B hB ↦ (h B hB).2⟩
-#align is_extreme_sInter isExtreme_interₛ
+#align is_extreme_sInter isExtreme_sInter
 
 theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=

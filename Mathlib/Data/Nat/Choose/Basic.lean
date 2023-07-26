@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
-
-! This file was ported from Lean 3 source module data.nat.choose.basic
-! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Factorial.Basic
+
+#align_import data.nat.choose.basic from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
 /-!
 # Binomial coefficients
@@ -100,7 +97,7 @@ theorem triangle_succ (n : ℕ) : (n + 1) * (n + 1 - 1) / 2 = n * (n - 1) / 2 + 
 /-- `choose n 2` is the `n`-th triangle number. -/
 theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
   induction' n with n ih
-  . simp
+  · simp
   · rw [triangle_succ n, choose, ih]
     simp [add_comm]
 #align nat.choose_two_right Nat.choose_two_right
@@ -109,8 +106,8 @@ theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
   | 0, _, hk => by rw [Nat.eq_zero_of_le_zero hk]; decide
   | n + 1, 0, _ => by simp
   | n + 1, k + 1, hk => by
-    rw [choose_succ_succ];
-      exact add_pos_of_pos_of_nonneg (choose_pos (le_of_succ_le_succ hk)) (Nat.zero_le _)
+    rw [choose_succ_succ]
+    exact add_pos_of_pos_of_nonneg (choose_pos (le_of_succ_le_succ hk)) (Nat.zero_le _)
 #align nat.choose_pos Nat.choose_pos
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
@@ -132,13 +129,13 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
   | n + 1, succ k, hk => by
     cases' lt_or_eq_of_le hk with hk₁ hk₁
     · have h : choose n k * k.succ ! * (n - k)! = (k + 1) * n ! := by
-        rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)];
-          simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
+        rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)]
+        simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
       have h₁ : (n - k)! = (n - k) * (n - k.succ)! := by
         rw [← succ_sub_succ, succ_sub (le_of_lt_succ hk₁), factorial_succ]
       have h₂ : choose n (succ k) * k.succ ! * ((n - k) * (n - k.succ)!) = (n - k) * n ! := by
-        rw [← choose_mul_factorial_mul_factorial (le_of_lt_succ hk₁)];
-          simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
+        rw [← choose_mul_factorial_mul_factorial (le_of_lt_succ hk₁)]
+        simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
       have h₃ : k * n ! ≤ n * n ! := Nat.mul_le_mul_right _ (le_of_succ_le_succ hk)
       rw [choose_succ_succ, add_mul, add_mul, succ_sub_succ, h, h₁, h₂, add_mul, tsub_mul,
         factorial_succ, ← add_tsub_assoc_of_le h₃, add_assoc, ← add_mul, add_tsub_cancel_left,
@@ -163,7 +160,6 @@ theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) :=
       by rw [tsub_tsub_tsub_cancel_right hsk, mul_assoc, mul_left_comm s !, mul_assoc,
         mul_comm (k - s)!, mul_comm s !, mul_right_comm, ← mul_assoc]
-
 #align nat.choose_mul Nat.choose_mul
 
 theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :
@@ -188,7 +184,7 @@ theorem factorial_mul_factorial_dvd_factorial {n k : ℕ} (hk : k ≤ n) : k ! *
 
 theorem factorial_mul_factorial_dvd_factorial_add (i j : ℕ) : i ! * j ! ∣ (i + j)! := by
   suffices : i ! * (i + j - i) ! ∣ (i + j)!
-  . rwa [add_tsub_cancel_left i j] at this
+  · rwa [add_tsub_cancel_left i j] at this
   exact factorial_mul_factorial_dvd_factorial (Nat.le_add_right _ _)
 #align nat.factorial_mul_factorial_dvd_factorial_add Nat.factorial_mul_factorial_dvd_factorial_add
 
@@ -200,7 +196,7 @@ theorem choose_symm {n k : ℕ} (hk : k ≤ n) : choose n (n - k) = choose n k :
 
 theorem choose_symm_of_eq_add {n a b : ℕ} (h : n = a + b) : Nat.choose n a = Nat.choose n b := by
   suffices : choose n (n - b) = choose n b
-  . rw [h, add_tsub_cancel_right] at this; rwa [h]
+  · rw [h, add_tsub_cancel_right] at this; rwa [h]
   exact choose_symm (h ▸ le_add_left _ _)
 #align nat.choose_symm_of_eq_add Nat.choose_symm_of_eq_add
 
@@ -273,6 +269,14 @@ theorem choose_eq_descFactorial_div_factorial (n k : ℕ) : n.choose k = n.descF
   rw [← descFactorial_eq_factorial_mul_choose]
   exact (Nat.mul_div_cancel' <| factorial_dvd_descFactorial _ _).symm
 #align nat.choose_eq_desc_factorial_div_factorial Nat.choose_eq_descFactorial_div_factorial
+
+/-- A faster implementation of `choose`, to be used during bytecode evaluation
+and in compiled code. -/
+def fast_choose n k := Nat.descFactorial n k / Nat.factorial k
+
+@[csimp] lemma choose_eq_fast_choose : Nat.choose = fast_choose :=
+  funext (fun _ => funext (Nat.choose_eq_descFactorial_div_factorial _))
+
 
 /-! ### Inequalities -/
 

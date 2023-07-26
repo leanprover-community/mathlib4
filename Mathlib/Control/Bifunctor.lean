@@ -2,16 +2,12 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.bifunctor
-! leanprover-community/mathlib commit dc1525fb3ef6eb4348fb1749c302d8abc303d34a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Aesop
 import Mathlib.Control.Functor
 import Mathlib.Data.Sum.Basic
-import Mathlib.Tactic.HigherOrder
+import Mathlib.Tactic.Common
+
+#align_import control.bifunctor from "leanprover-community/mathlib"@"dc1525fb3ef6eb4348fb1749c302d8abc303d34a"
 
 /-!
 # Functors with two arguments

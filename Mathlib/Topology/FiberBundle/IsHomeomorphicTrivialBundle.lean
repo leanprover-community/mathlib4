@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.fiber_bundle.is_homeomorphic_trivial_bundle
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.fiber_bundle.is_homeomorphic_trivial_bundle from "leanprover-community/mathlib"@"be2c24f56783935652cefffb4bfca7e4b25d167e"
 
 /-!
 # Maps equivariantly-homeomorphic to projection in a product
@@ -18,7 +15,7 @@ map `p : Z → B` between topological spaces is a "trivial fiber bundle" in the 
 exists a homeomorphism `h : Z ≃ₜ B × F` such that `proj x = (h x).1`.  This is an abstraction which
 is occasionally convenient in showing that a map is open, a quotient map, etc.
 
-This material was formerly linked to the main definition of fibre bundles, but after a series of
+This material was formerly linked to the main definition of fiber bundles, but after a series of
 refactors, there is no longer a direct connection.
 -/
 
@@ -28,7 +25,7 @@ variable {B : Type _} (F : Type _) {Z : Type _} [TopologicalSpace B] [Topologica
 
 /-- A trivial fiber bundle with fiber `F` over a base `B` is a space `Z`
 projecting on `B` for which there exists a homeomorphism to `B × F` that sends `proj`
-to `prod.fst`. -/
+to `Prod.fst`. -/
 def IsHomeomorphicTrivialFiberBundle (proj : Z → B) : Prop :=
   ∃ e : Z ≃ₜ B × F, ∀ x, (e x).1 = proj x
 #align is_homeomorphic_trivial_fiber_bundle IsHomeomorphicTrivialFiberBundle
@@ -78,4 +75,3 @@ theorem isHomeomorphicTrivialFiberBundle_snd :
     IsHomeomorphicTrivialFiberBundle F (Prod.snd : F × B → B) :=
   ⟨Homeomorph.prodComm _ _, fun _x => rfl⟩
 #align is_homeomorphic_trivial_fiber_bundle_snd isHomeomorphicTrivialFiberBundle_snd
-

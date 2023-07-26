@@ -2,17 +2,14 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.pointwise
-! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
+
+#align_import data.finset.pointwise from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"
 
 /-!
 # Pointwise operations of finsets
@@ -57,7 +54,7 @@ pointwise subtraction
 -/
 
 
-open Function
+open Function MulOpposite
 
 open BigOperators Pointwise
 
@@ -236,9 +233,11 @@ theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty :=
 #align finset.inv_nonempty_iff Finset.inv_nonempty_iff
 #align finset.neg_nonempty_iff Finset.neg_nonempty_iff
 
-alias inv_nonempty_iff ↔ nonempty.inv nonempty.of_inv
-#align finset.nonempty.inv Finset.nonempty.inv
-#align finset.nonempty.of_inv Finset.nonempty.of_inv
+alias inv_nonempty_iff ↔ Nonempty.of_inv Nonempty.inv
+#align finset.nonempty.of_inv Finset.Nonempty.of_inv
+#align finset.nonempty.inv Finset.Nonempty.inv
+
+attribute [to_additive] Nonempty.inv Nonempty.of_inv
 
 @[to_additive (attr := mono)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
@@ -307,13 +306,13 @@ protected def mul : Mul (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.mul Finset.add
 
 @[to_additive]
-theorem mul_def : s * t = (s ×ᶠ t).image fun p : α × α => p.1 * p.2 :=
+theorem mul_def : s * t = (s ×ˢ t).image fun p : α × α => p.1 * p.2 :=
   rfl
 #align finset.mul_def Finset.mul_def
 #align finset.add_def Finset.add_def
 
 @[to_additive]
-theorem image_mul_product : ((s ×ᶠ t).image fun x : α × α => x.fst * x.snd) = s * t :=
+theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd) = s * t :=
   rfl
 #align finset.image_mul_product Finset.image_mul_product
 #align finset.image_add_product Finset.image_add_product
@@ -457,6 +456,18 @@ theorem mul_inter_subset : s * (t₁ ∩ t₂) ⊆ s * t₁ ∩ (s * t₂) :=
 #align finset.mul_inter_subset Finset.mul_inter_subset
 #align finset.add_inter_subset Finset.add_inter_subset
 
+@[to_additive]
+theorem inter_mul_union_subset_union : s₁ ∩ s₂ * (t₁ ∪ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
+  image₂_inter_union_subset_union
+#align finset.inter_mul_union_subset_union Finset.inter_mul_union_subset_union
+#align finset.inter_add_union_subset_union Finset.inter_add_union_subset_union
+
+@[to_additive]
+theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
+  image₂_union_inter_subset_union
+#align finset.union_mul_inter_subset_union Finset.union_mul_inter_subset_union
+#align finset.union_add_inter_subset_union Finset.union_add_inter_subset_union
+
 /-- If a finset `u` is contained in the product of two sets `s * t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' * t'`. -/
 @[to_additive
@@ -510,7 +521,7 @@ section Div
 
 variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
-/-- The pointwise division of sfinets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
+/-- The pointwise division of finsets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
 @[to_additive
       "The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
@@ -523,13 +534,13 @@ protected def div : Div (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.div Finset.sub
 
 @[to_additive]
-theorem div_def : s / t = (s ×ᶠ t).image fun p : α × α => p.1 / p.2 :=
+theorem div_def : s / t = (s ×ˢ t).image fun p : α × α => p.1 / p.2 :=
   rfl
 #align finset.div_def Finset.div_def
 #align finset.sub_def Finset.sub_def
 
 @[to_additive add_image_prod]
-theorem image_div_prod : ((s ×ᶠ t).image fun x : α × α => x.fst / x.snd) = s / t :=
+theorem image_div_prod : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd) = s / t :=
   rfl
 #align finset.image_div_prod Finset.image_div_prod
 #align finset.add_image_prod Finset.add_image_prod
@@ -667,6 +678,18 @@ theorem div_inter_subset : s / (t₁ ∩ t₂) ⊆ s / t₁ ∩ (s / t₂) :=
 #align finset.div_inter_subset Finset.div_inter_subset
 #align finset.sub_inter_subset Finset.sub_inter_subset
 
+@[to_additive]
+theorem inter_div_union_subset_union : s₁ ∩ s₂ / (t₁ ∪ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
+  image₂_inter_union_subset_union
+#align finset.inter_div_union_subset_union Finset.inter_div_union_subset_union
+#align finset.inter_sub_union_subset_union Finset.inter_sub_union_subset_union
+
+@[to_additive]
+theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
+  image₂_union_inter_subset_union
+#align finset.union_div_inter_subset_union Finset.union_div_inter_subset_union
+#align finset.union_sub_inter_subset_union Finset.union_sub_inter_subset_union
+
 /-- If a finset `u` is contained in the product of two sets `s / t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' / t'`. -/
 @[to_additive
@@ -796,7 +819,7 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 #align finset.singleton_monoid_hom_apply Finset.singletonMonoidHom_apply
 #align finset.singleton_add_monoid_hom_apply Finset.singletonAddMonoidHom_apply
 
-/-- The coercion from `Finset` to `set` as a `MonoidHom`. -/
+/-- The coercion from `Finset` to `Set` as a `MonoidHom`. -/
 @[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
   toFun := CoeTC.coe
@@ -831,7 +854,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s: Set α) ^ n  := by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -966,7 +989,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
-theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s: Set α) ^ n
+theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
     refine' (coe_inv _).trans _
@@ -1239,13 +1262,13 @@ protected def smul : SMul (Finset α) (Finset β) :=
 scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
 
 @[to_additive]
-theorem smul_def : s • t = (s ×ᶠ t).image fun p : α × β => p.1 • p.2 :=
+theorem smul_def : s • t = (s ×ˢ t).image fun p : α × β => p.1 • p.2 :=
   rfl
 #align finset.smul_def Finset.smul_def
 #align finset.vadd_def Finset.vadd_def
 
 @[to_additive]
-theorem image_smul_product : ((s ×ᶠ t).image fun x : α × β => x.fst • x.snd) = s • t :=
+theorem image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.snd) = s • t :=
   rfl
 #align finset.image_smul_product Finset.image_smul_product
 #align finset.image_vadd_product Finset.image_vadd_product
@@ -1376,13 +1399,25 @@ theorem smul_inter_subset : s • (t₁ ∩ t₂) ⊆ s • t₁ ∩ s • t₂ 
 #align finset.smul_inter_subset Finset.smul_inter_subset
 #align finset.vadd_inter_subset Finset.vadd_inter_subset
 
+@[to_additive]
+theorem inter_smul_union_subset_union [DecidableEq α] : (s₁ ∩ s₂) • (t₁ ∪ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image₂_inter_union_subset_union
+#align finset.inter_smul_union_subset_union Finset.inter_smul_union_subset_union
+#align finset.inter_vadd_union_subset_union Finset.inter_vadd_union_subset_union
+
+@[to_additive]
+theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t₁ ∩ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image₂_union_inter_subset_union
+#align finset.union_smul_inter_subset_union Finset.union_smul_inter_subset_union
+#align finset.union_vadd_inter_subset_union Finset.union_vadd_inter_subset_union
+
 /-- If a finset `u` is contained in the scalar product of two sets `s • t`, we can find two finsets
 `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' • t'`. -/
 @[to_additive
       "If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
-    ↑u ⊆ s • t → ∃ (s' : Finset α)(t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
+    ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
   subset_image₂
 #align finset.subset_smul Finset.subset_smul
 #align finset.subset_vadd Finset.subset_vadd
@@ -1561,16 +1596,16 @@ theorem mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y 
 #align finset.mem_vadd_finset Finset.mem_vadd_finset
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s)  = a • (↑s : Set β) :=
+theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) :=
   coe_image
 #align finset.coe_smul_finset Finset.coe_smul_finset
 #align finset.coe_vadd_finset Finset.coe_vadd_finset
 
 @[to_additive]
-theorem smul_finset_mem_smul_finset : b ∈ s → a • b ∈ a • s :=
+theorem smul_mem_smul_finset : b ∈ s → a • b ∈ a • s :=
   mem_image_of_mem _
-#align finset.smul_finset_mem_smul_finset Finset.smul_finset_mem_smul_finset
-#align finset.vadd_finset_mem_vadd_finset Finset.vadd_finset_mem_vadd_finset
+#align finset.smul_mem_smul_finset Finset.smul_mem_smul_finset
+#align finset.vadd_mem_vadd_finset Finset.vadd_mem_vadd_finset
 
 @[to_additive]
 theorem smul_finset_card_le : (a • s).card ≤ s.card :=
@@ -1632,10 +1667,17 @@ theorem smul_finset_inter_subset : a • (s₁ ∩ s₂) ⊆ a • s₁ ∩ a �
 #align finset.smul_finset_inter_subset Finset.smul_finset_inter_subset
 #align finset.vadd_finset_inter_subset Finset.vadd_finset_inter_subset
 
-@[simp]
-theorem bunionᵢ_smul_finset (s : Finset α) (t : Finset β) : s.bunionᵢ (· • t) = s • t :=
-  bunionᵢ_image_left
-#align finset.bUnion_smul_finset Finset.bunionᵢ_smul_finset
+@[to_additive]
+theorem smul_finset_subset_smul {s : Finset α} : a ∈ s → a • t ⊆ s • t :=
+  image_subset_image₂_right
+#align finset.smul_finset_subset_smul Finset.smul_finset_subset_smul
+#align finset.vadd_finset_subset_vadd Finset.vadd_finset_subset_vadd
+
+@[to_additive (attr := simp)]
+theorem biUnion_smul_finset (s : Finset α) (t : Finset β) : s.biUnion (· • t) = s • t :=
+  biUnion_image_left
+#align finset.bUnion_smul_finset Finset.biUnion_smul_finset
+#align finset.bUnion_vadd_finset Finset.biUnion_vadd_finset
 
 end SMul
 
@@ -1697,10 +1739,12 @@ instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower �
 #align finset.is_scalar_tower'' Finset.isScalarTower''
 #align finset.vadd_assoc_class'' Finset.vaddAssocClass''
 
+@[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Finset β) :=
   ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, coe_smul, op_smul_eq_smul]⟩
 #align finset.is_central_scalar Finset.isCentralScalar
+#align finset.is_central_vadd Finset.isCentralVAdd
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Finset α` on `Finset β`. -/
@@ -1735,7 +1779,7 @@ protected def distribMulActionFinset [Monoid α] [AddMonoid β] [DistribMulActio
   Function.Injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_injective coe_smul_finset
 #align finset.distrib_mul_action_finset Finset.distribMulActionFinset
 
-/-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `set β`. -/
+/-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
 protected def mulDistribMulActionFinset [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Finset β) :=
   Function.Injective.mulDistribMulAction ⟨⟨(↑), coe_one⟩, coe_mul⟩ coe_injective coe_smul_finset
@@ -1766,6 +1810,64 @@ instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulD
 #align finset.no_zero_smul_divisors_finset Finset.noZeroSMulDivisors_finset
 
 end Instances
+
+section SMul
+
+variable [DecidableEq β] [DecidableEq γ] [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
+
+-- TODO: replace hypothesis and conclusion with a typeclass
+@[to_additive]
+theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Finset γ)
+    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
+  ext
+  simp [mem_smul, mem_smul_finset, h]
+#align finset.op_smul_finset_smul_eq_smul_smul_finset Finset.op_smul_finset_smul_eq_smul_smul_finset
+#align finset.op_vadd_finset_vadd_eq_vadd_vadd_finset Finset.op_vadd_finset_vadd_eq_vadd_vadd_finset
+
+end SMul
+
+section Mul
+
+variable [Mul α] [DecidableEq α] {s t u : Finset α} {a : α}
+
+@[to_additive]
+theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
+  image_subset_image₂_left
+#align finset.op_smul_finset_subset_mul Finset.op_smul_finset_subset_mul
+#align finset.op_vadd_finset_subset_add Finset.op_vadd_finset_subset_add
+
+@[to_additive (attr := simp)]
+theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a => op a • s) = s * t :=
+  biUnion_image_right
+#align finset.bUnion_op_smul_finset Finset.biUnion_op_smul_finset
+#align finset.bUnion_op_vadd_finset Finset.biUnion_op_vadd_finset
+
+@[to_additive]
+theorem mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
+  image₂_subset_iff_left
+#align finset.mul_subset_iff_left Finset.mul_subset_iff_left
+#align finset.add_subset_iff_left Finset.add_subset_iff_left
+
+@[to_additive]
+theorem mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
+  image₂_subset_iff_right
+#align finset.mul_subset_iff_right Finset.mul_subset_iff_right
+#align finset.add_subset_iff_right Finset.add_subset_iff_right
+
+end Mul
+
+section Semigroup
+
+variable [Semigroup α] [DecidableEq α]
+
+@[to_additive]
+theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Finset α) :
+    op a • s * t = s * a • t :=
+  op_smul_finset_smul_eq_smul_smul_finset _ _ _ fun _ _ _ => mul_assoc _ _ _
+#align finset.op_smul_finset_mul_eq_mul_smul_finset Finset.op_smul_finset_mul_eq_mul_smul_finset
+#align finset.op_vadd_finset_add_eq_add_vadd_finset Finset.op_vadd_finset_add_eq_add_vadd_finset
+
+end Semigroup
 
 section LeftCancelSemigroup
 
@@ -1882,11 +1984,74 @@ theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
 #align finset.subset_smul_finset_iff Finset.subset_smul_finset_iff
 #align finset.subset_vadd_finset_iff Finset.subset_vadd_finset_iff
 
+@[to_additive]
+theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
+  image_inter _ _ <| MulAction.injective a
+#align finset.smul_finset_inter Finset.smul_finset_inter
+#align finset.vadd_finset_inter Finset.vadd_finset_inter
+
+@[to_additive]
+theorem smul_finset_sdiff : a • (s \ t) = a • s \ a • t :=
+  image_sdiff _ _ <| MulAction.injective a
+#align finset.smul_finset_sdiff Finset.smul_finset_sdiff
+#align finset.vadd_finset_sdiff Finset.vadd_finset_sdiff
+
+@[to_additive]
+theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
+  image_symmDiff _ _ <| MulAction.injective a
+#align finset.smul_finset_symm_diff Finset.smul_finset_symmDiff
+#align finset.vadd_finset_symm_diff Finset.vadd_finset_symmDiff
+
+@[to_additive (attr := simp)]
+theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
+  image_univ_of_surjective <| MulAction.surjective a
+#align finset.smul_finset_univ Finset.smul_finset_univ
+#align finset.vadd_finset_univ Finset.vadd_finset_univ
+
+@[to_additive (attr := simp)]
+theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=
+  coe_injective <| by
+    push_cast
+    exact Set.smul_univ hs
+#align finset.smul_univ Finset.smul_univ
+#align finset.vadd_univ Finset.vadd_univ
+
 @[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ <| MulAction.injective _
 #align finset.card_smul_finset Finset.card_smul_finset
 #align finset.card_vadd_finset Finset.card_vadd_finset
+
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s • t`. -/
+@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
+theorem card_dvd_card_smul_right {s : Finset α} :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
+  card_dvd_card_image₂_right fun _ _ => MulAction.injective _
+#align finset.card_dvd_card_smul_right Finset.card_dvd_card_smul_right
+#align finset.card_dvd_card_vadd_right Finset.card_dvd_card_vadd_right
+
+variable [DecidableEq α]
+
+/-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily distinct!), then
+the size of `s` divides the size of `s * t`. -/
+@[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
+distinct!), then the size of `s` divides the size of `s + t`."]
+theorem card_dvd_card_mul_left {s t : Finset α} :
+    ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
+      s.card ∣ (s * t).card :=
+  card_dvd_card_image₂_left fun _ _ => mul_left_injective _
+#align finset.card_dvd_card_mul_left Finset.card_dvd_card_mul_left
+#align finset.card_dvd_card_add_left Finset.card_dvd_card_add_left
+
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s * t`. -/
+@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s + t`."]
+theorem card_dvd_card_mul_right {s t : Finset α} :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
+  card_dvd_card_image₂_right fun _ _ => mul_right_injective _
 
 end Group
 
@@ -1907,7 +2072,7 @@ theorem mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a •
   show _ ∈ (Units.mk0 a ha)⁻¹ • _ ↔ _ from mem_inv_smul_finset_iff
 #align finset.mem_inv_smul_finset_iff₀ Finset.mem_inv_smul_finset_iff₀
 
--- @[simp] -- Porting note: `simpNF` linter times out
+@[simp]
 theorem smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
 #align finset.smul_finset_subset_smul_finset_iff₀ Finset.smul_finset_subset_smul_finset_iff₀
@@ -1920,10 +2085,22 @@ theorem subset_smul_finset_iff₀ (ha : a ≠ 0) : s ⊆ a • t ↔ a⁻¹ • 
   show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_finset_iff
 #align finset.subset_smul_finset_iff₀ Finset.subset_smul_finset_iff₀
 
+theorem smul_finset_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
+  image_inter _ _ <| MulAction.injective₀ ha
+#align finset.smul_finset_inter₀ Finset.smul_finset_inter₀
+
+theorem smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
+  image_sdiff _ _ <| MulAction.injective₀ ha
+#align finset.smul_finset_sdiff₀ Finset.smul_finset_sdiff₀
+
+theorem smul_finset_symm_diff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
+  image_symmDiff _ _ <| MulAction.injective₀ ha
+#align finset.smul_finset_symm_diff₀ Finset.smul_finset_symm_diff₀
+
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     rw [← coe_subset] at hs
-    push_cast at hs⊢
+    push_cast at hs ⊢
     exact Set.smul_univ₀ hs
 #align finset.smul_univ₀ Finset.smul_univ₀
 

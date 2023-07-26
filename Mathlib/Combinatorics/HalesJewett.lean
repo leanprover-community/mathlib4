@@ -2,16 +2,13 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module combinatorics.hales_jewett
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import combinatorics.hales_jewett from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # The Hales-Jewett theorem
@@ -54,7 +51,7 @@ coordinates needed.
 
 ## Tags
 
-combinatorial line, Ramsey theory, arithmetic progession
+combinatorial line, Ramsey theory, arithmetic progression
 
 ### References
 
@@ -194,7 +191,6 @@ theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFu
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply, Line.map, Option.getD_map]
   rfl
-
 #align combinatorics.line.map_apply Combinatorics.Line.map_apply
 
 @[simp]
@@ -220,7 +216,7 @@ theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
 
 @[simp]
 theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
-  simp_rw [Line.apply, Line.diagonal, Option.getD_none]
+  simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
 /-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
@@ -261,7 +257,7 @@ private theorem exists_mono_in_high_dimension' :
     -- `r` color focused lines or a monochromatic line.
     suffices key :
       ∀ r : ℕ,
-        ∃ (ι : Type)(_ : Fintype ι),
+        ∃ (ι : Type) (_ : Fintype ι),
           ∀ C : (ι → Option α) → κ,
             (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l
     -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
@@ -341,21 +337,19 @@ theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [F
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
-#align
-  combinatorics.line.exists_mono_in_high_dimension
-  Combinatorics.Line.exists_mono_in_high_dimension
+#align combinatorics.line.exists_mono_in_high_dimension Combinatorics.Line.exists_mono_in_high_dimension
 
 end Line
 
 /-- A generalization of Van der Waerden's theorem: if `M` is a finitely colored commutative
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
 theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finset M) [Finite κ]
-    (C : M → κ) : ∃ a > 0, ∃ (b : M)(c : κ), ∀ s ∈ S, C (a • s + b) = c := by
+    (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   skip
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι :=  Finset.univ.filter (fun i => l.idxFun i = none ) with hs
+  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none ) with hs
   refine'
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
       c, _⟩
@@ -376,7 +370,7 @@ theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finse
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp_rw [Line.apply, ← hy, Option.map_some', Option.getD]
+    simp_rw [← hy, Option.map_some', Option.getD]
 #align combinatorics.exists_mono_homothetic_copy Combinatorics.exists_mono_homothetic_copy
 
 end Combinatorics

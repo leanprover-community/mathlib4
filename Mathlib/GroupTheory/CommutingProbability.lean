@@ -2,17 +2,14 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.commuting_probability
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Index
+
+#align_import group_theory.commuting_probability from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Commuting Probability
@@ -85,7 +82,6 @@ theorem card_comm_eq_card_conjClasses_mul_card :
     (Setoid.ext fun g h ↦ (Setoid.comm' _).trans isConj_iff.symm :
       MulAction.orbitRel (ConjAct G) G = IsConj.setoid G),
     @card_congr' (Quotient (IsConj.setoid G)) (ConjClasses G) _ _ rfl]
-
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by

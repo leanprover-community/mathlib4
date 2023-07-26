@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.big_operators.ring
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Powerset
+
+#align_import algebra.big_operators.ring from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
 /-!
 # Results about big operators with values in a (semi)ring
@@ -38,7 +35,7 @@ variable [CommMonoid β]
 open Classical
 
 theorem prod_pow_eq_pow_sum {x : β} {f : α → ℕ} :
-    ∀ {s : Finset α}, (∏ i in s, x ^ f i) = x ^ ∑ x in s, f x := by
+    ∀ {s : Finset α}, ∏ i in s, x ^ f i = x ^ ∑ x in s, f x := by
   apply Finset.induction
   · simp
   · intro a s has H
@@ -61,7 +58,7 @@ theorem mul_sum : (b * ∑ x in s, f x) = ∑ x in s, b * f x :=
 
 theorem sum_mul_sum {ι₁ : Type _} {ι₂ : Type _} (s₁ : Finset ι₁) (s₂ : Finset ι₂) (f₁ : ι₁ → β)
     (f₂ : ι₂ → β) :
-    ((∑ x₁ in s₁, f₁ x₁) * ∑ x₂ in s₂, f₂ x₂) = ∑ p in s₁ ×ᶠ s₂, f₁ p.1 * f₂ p.2 := by
+    ((∑ x₁ in s₁, f₁ x₁) * ∑ x₂ in s₂, f₂ x₂) = ∑ p in s₁ ×ˢ s₂, f₁ p.1 * f₂ p.2 := by
   rw [sum_product, sum_mul, sum_congr rfl]
   intros
   rw [mul_sum]
@@ -108,10 +105,10 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
         by rw [eq₂, eq₃, eq]
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
-    rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_bunionᵢ h₁]
+    rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
     refine' sum_congr rfl fun b _ => _
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
-      fun p₁ _ p₂ _ eq => pi_cons_injective ha eq
+      fun p₁ _ p₂ _ eq => Pi.cons_injective ha eq
     rw [sum_image h₂, mul_sum]
     refine' sum_congr rfl fun g _ => _
     rw [attach_insert, prod_insert, prod_image]
@@ -152,7 +149,7 @@ theorem prod_add (f g : α → β) (s : Finset α) :
             (fun a _ => a.1) (by simp) (by simp)
             (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp))
-        (fun t _ a  _ => a ∈ t)
+        (fun t _ a _ => a ∈ t)
         (by simp [Classical.em])
         (by simp [Function.funext_iff]; tauto)
         (by simp [Finset.ext_iff, @mem_filter _ _ (id _)]; tauto)
@@ -227,8 +224,7 @@ section CommRing
 variable {R : Type _} [CommRing R]
 
 theorem prod_range_cast_nat_sub (n k : ℕ) :
-    ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) :=
-  by
+    ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
   cases' le_or_lt k n with hkn hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
@@ -265,8 +261,8 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
       "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
       `card s = k`, for `k = 1, ..., card s`"]
 theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
-    (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
-  rw [powerset_card_disjUnionᵢ, prod_disjUnionᵢ]
+    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
+  rw [powerset_card_disjiUnion, prod_disjiUnion]
 #align finset.prod_powerset Finset.prod_powerset
 #align finset.sum_powerset Finset.sum_powerset
 

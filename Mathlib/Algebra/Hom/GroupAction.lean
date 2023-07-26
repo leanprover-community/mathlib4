@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.hom.group_action
-! leanprover-community/mathlib commit e7bab9a85e92cf46c02cb4725a7be2f04691e3a7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Basic
+
+#align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
 
 /-!
 # Equivariant homomorphisms
@@ -39,8 +36,7 @@ The above types have corresponding classes:
 
 -/
 
---Porting note: assert_not_exists is not yet implemented
---assert_not_exists Submonoid
+assert_not_exists Submonoid
 
 variable (M' : Type _)
 variable (X : Type _) [SMul M' X]
@@ -186,10 +182,17 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
 #align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
-
 #align mul_action_hom.inverse MulActionHom.inverse
 
 end MulActionHom
+
+/-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
+homomorphism. -/
+@[simps]
+def SMulCommClass.toMulActionHom {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
+    (c : M) : α →[N] α where
+  toFun := (c • ·)
+  map_smul' := smul_comm _
 
 /-- Equivariant additive monoid homomorphisms. -/
 structure DistribMulActionHom extends A →[M] B, A →+ B
@@ -257,7 +260,7 @@ see also Algebra.Hom.Group -/
 @[coe]
 def _root_.DistribMulActionHomClass.toDistribMulActionHom [DistribMulActionHomClass F M A B]
   (f : F) : A →+[M] B :=
-  { (f : A →+ B),  (f : A →[M] B) with }
+  { (f : A →+ B), (f : A →[M] B) with }
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
@@ -265,7 +268,7 @@ instance [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
 @[simp]
-theorem toFun_eq_coe (f : A →+[M] B): f.toFun = f := rfl
+theorem toFun_eq_coe (f : A →+[M] B) : f.toFun = f := rfl
 #align distrib_mul_action_hom.to_fun_eq_coe DistribMulActionHom.toFun_eq_coe
 
 @[norm_cast]
@@ -297,8 +300,7 @@ theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g 
   exact MulActionHom.congr_fun h a
 #align distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
 
-theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g :=
-  by
+theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
   exact FunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
@@ -398,8 +400,7 @@ variable {R M'}
 variable [AddMonoid M'] [DistribMulAction R M']
 
 @[ext]
-theorem ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g :=
-  by
+theorem ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smul, g.map_smul, h]
 #align distrib_mul_action_hom.ext_ring DistribMulActionHom.ext_ring
@@ -411,6 +412,14 @@ theorem ext_ring_iff {f g : R →+[R] M'} : f = g ↔ f 1 = g 1 :=
 end Semiring
 
 end DistribMulActionHom
+
+/-- If `DistribMulAction` of `M` and `N` on `A` commute, then for each `c : M`, `(c • ·)` is an
+`N`-action additive homomorphism. -/
+@[simps]
+def SMulCommClass.toDistribMulActionHom {M} (N A : Type _) [Monoid N] [AddMonoid A]
+    [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →+[N] A :=
+  { SMulCommClass.toMulActionHom N A c, DistribSMul.toAddMonoidHom _ c with
+    toFun := (c • ·) }
 
 /-- Equivariant ring homomorphisms. -/
 -- Porting note: This linter does not exist yet
@@ -486,7 +495,7 @@ see also Algebra.Hom.Group -/
 @[coe]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [MulSemiringActionHomClass F M R S]
   (f : F) : R →+*[M] S :=
- { (f : R →+* S),  (f : R →+[M] S) with }
+ { (f : R →+* S), (f : R →+[M] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/

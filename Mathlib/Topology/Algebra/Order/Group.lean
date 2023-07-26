@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.group
-! leanprover-community/mathlib commit 84dc0bd6619acaea625086d6f53cb35cdd554219
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Algebra.Group.Basic
+
+#align_import topology.algebra.order.group from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
 /-!
 # Topology on a linear ordered additive commutative group
@@ -45,10 +42,8 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
         |x - a + (y - b)| ≤ |x - a| + |y - b| := abs_add _ _
         _ < δ + (ε - δ) := add_lt_add hx hy
         _ = ε := add_sub_cancel'_right _ _
-
     · -- Otherwise `ε`-nhd of each point `a` is `{a}`
-      have hε : ∀ {x y}, |x - y| < ε → x = y :=
-        by
+      have hε : ∀ {x y}, |x - y| < ε → x = y := by
         intro x y h
         simpa [sub_eq_zero] using h₂ _ h
       filter_upwards [(eventually_abs_sub_lt a ε0).prod_nhds (eventually_abs_sub_lt b ε0)]
@@ -66,7 +61,7 @@ theorem continuous_abs : Continuous (abs : G → G) :=
 #align continuous_abs continuous_abs
 
 protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun x => |f x|) l (𝓝 (|a|)) :=
+    Tendsto (fun x => |f x|) l (𝓝 |a|) :=
   (continuous_abs.tendsto _).comp h
 #align filter.tendsto.abs Filter.Tendsto.abs
 

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.preadditive
-! leanprover-community/mathlib commit 986c4d5761f938b2e1c43c01f001b6d9d88c2055
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Monoidal.Functor
+
+#align_import category_theory.monoidal.preadditive from "leanprover-community/mathlib"@"986c4d5761f938b2e1c43c01f001b6d9d88c2055"
 
 /-!
 # Preadditive monoidal categories
@@ -48,14 +45,6 @@ class MonoidalPreadditive : Prop where
   add_tensor : ∀ {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z), (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
     aesop_cat
 #align category_theory.monoidal_preadditive CategoryTheory.MonoidalPreadditive
-
---restate_axiom monoidal_preadditive.tensor_zero'
---
---restate_axiom monoidal_preadditive.zero_tensor'
---
---restate_axiom monoidal_preadditive.tensor_add'
---
---restate_axiom monoidal_preadditive.add_tensor'
 
 attribute [simp] MonoidalPreadditive.tensor_zero MonoidalPreadditive.zero_tensor
 

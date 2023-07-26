@@ -2,15 +2,12 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.order.pi
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # Pi instances for ordered groups and monoids
@@ -180,7 +177,7 @@ end Function
 --   const_pos.2
 -- #align tactic.function_const_pos tactic.function_const_pos
 
--- /-- Extension for the `positivity` tactic: `function.const` is positive/nonnegative/nonzero if
+-- /-- Extension for the `positivity` tactic: `Function.const` is positive/nonnegative/nonzero if
 -- its input is. -/
 -- @[positivity]
 -- unsafe def positivity_const : expr → tactic strictness
@@ -193,7 +190,7 @@ end Function
 --       | nonnegative p => nonnegative <$> to_expr ``(const_nonneg_of_nonneg $(ι) $(p))
 --       | nonzero p => nonzero <$> to_expr ``(function_const_ne_zero $(ι) $(p))
 --   | e =>
---     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `function.const ι a`"
+--     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `Function.const ι a`"
 -- #align tactic.positivity_const tactic.positivity_const
 
 -- end Tactic

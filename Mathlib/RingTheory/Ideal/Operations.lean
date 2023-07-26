@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.ideal.operations
-! leanprover-community/mathlib commit e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Ring.Equiv
@@ -16,13 +11,11 @@ import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.NonZeroDivisors
 
+#align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
+
 /-!
 # More operations on modules and ideals
 -/
-
-
--- Porting note: TODO Erase this line, lean#2074
-attribute [-instance] Ring.toNonAssocRing
 
 universe u v w x
 
@@ -38,9 +31,9 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open Pointwise
 
-instance hasSmul' : SMul (Ideal R) (Submodule R M) :=
+instance hasSMul' : SMul (Ideal R) (Submodule R M) :=
   ⟨Submodule.map₂ (LinearMap.lsmul R M)⟩
-#align submodule.has_smul' Submodule.hasSmul'
+#align submodule.has_smul' Submodule.hasSMul'
 
 /-- This duplicates the global `smul_eq_mul`, but doesn't have to unfold anywhere near as much to
 apply. -/
@@ -100,14 +93,14 @@ theorem annihilator_mono (h : N ≤ P) : P.annihilator ≤ N.annihilator := fun 
   mem_annihilator.2 fun n hn => mem_annihilator.1 hrp n <| h hn
 #align submodule.annihilator_mono Submodule.annihilator_mono
 
-theorem annihilator_supᵢ (ι : Sort w) (f : ι → Submodule R M) :
+theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
     annihilator (⨆ i, f i) = ⨅ i, annihilator (f i) :=
-  le_antisymm (le_infᵢ fun _ => annihilator_mono <| le_supᵢ _ _) fun _ H =>
+  le_antisymm (le_iInf fun _ => annihilator_mono <| le_iSup _ _) fun _ H =>
     mem_annihilator'.2 <|
-      supᵢ_le fun i =>
-        have := (mem_infᵢ _).1 H i
+      iSup_le fun i =>
+        have := (mem_iInf _).1 H i
         mem_annihilator'.1 this
-#align submodule.annihilator_supr Submodule.annihilator_supᵢ
+#align submodule.annihilator_supr Submodule.annihilator_iSup
 
 theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
   apply_mem_map₂ _ hr hn
@@ -121,7 +114,7 @@ theorem smul_le {P : Submodule R M} : I • N ≤ P ↔ ∀ r ∈ I, ∀ n ∈ N
 theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (Hb : ∀ r ∈ I, ∀ n ∈ N, p (r • n))
     (H1 : ∀ x y, p x → p y → p (x + y)) : p x := by
   have H0 : p 0 := by simpa only [zero_smul] using Hb 0 I.zero_mem 0 N.zero_mem
-  refine Submodule.supᵢ_induction (x := x) _ H ?_ H0 H1
+  refine Submodule.iSup_induction (x := x) _ H ?_ H0 H1
   rintro ⟨i, hi⟩ m ⟨j, hj, hj'⟩
   rw [← hj']
   exact Hb _ hi _ hj
@@ -229,35 +222,33 @@ theorem smul_inf_le (M₁ M₂ : Submodule R M) : I • (M₁ ⊓ M₂) ≤ I �
   le_inf (Submodule.smul_mono_right inf_le_left) (Submodule.smul_mono_right inf_le_right)
 #align submodule.smul_inf_le Submodule.smul_inf_le
 
-theorem smul_supᵢ {ι : Sort _} {I : Ideal R} {t : ι → Submodule R M} : I • supᵢ t = ⨆ i, I • t i :=
-  map₂_supᵢ_right _ _ _
-#align submodule.smul_supr Submodule.smul_supᵢ
+theorem smul_iSup {ι : Sort _} {I : Ideal R} {t : ι → Submodule R M} : I • iSup t = ⨆ i, I • t i :=
+  map₂_iSup_right _ _ _
+#align submodule.smul_supr Submodule.smul_iSup
 
-theorem smul_infᵢ_le {ι : Sort _} {I : Ideal R} {t : ι → Submodule R M} :
-    I • infᵢ t ≤ ⨅ i, I • t i :=
-  le_infᵢ fun _ => smul_mono_right (infᵢ_le _ _)
-#align submodule.smul_infi_le Submodule.smul_infᵢ_le
+theorem smul_iInf_le {ι : Sort _} {I : Ideal R} {t : ι → Submodule R M} :
+    I • iInf t ≤ ⨅ i, I • t i :=
+  le_iInf fun _ => smul_mono_right (iInf_le _ _)
+#align submodule.smul_infi_le Submodule.smul_iInf_le
 
 variable (S : Set R) (T : Set M)
 
 theorem span_smul_span : Ideal.span S • span R T = span R (⋃ (s ∈ S) (t ∈ T), {s • t}) :=
-  (map₂_span_span _ _ _ _).trans <| congr_arg _ <| Set.image2_eq_unionᵢ _ _ _
+  (map₂_span_span _ _ _ _).trans <| congr_arg _ <| Set.image2_eq_iUnion _ _ _
 #align submodule.span_smul_span Submodule.span_smul_span
 
 theorem ideal_span_singleton_smul (r : R) (N : Submodule R M) :
     (Ideal.span {r} : Ideal R) • N = r • N := by
-  have : span R (⋃ (t : M) (_x : t ∈ N), {r • t}) = r • N :=
-    by
+  have : span R (⋃ (t : M) (_ : t ∈ N), {r • t}) = r • N := by
     convert span_eq (r • N)
-    exact (Set.image_eq_unionᵢ _ (N : Set M)).symm
+    exact (Set.image_eq_iUnion _ (N : Set M)).symm
   conv_lhs => rw [← span_eq N, span_smul_span]
   simpa
 #align submodule.ideal_span_singleton_smul Submodule.ideal_span_singleton_smul
 
 theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
     (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
-  suffices (⊤ : Ideal R) • span R ({x} : Set M) ≤ M'
-    by
+  suffices (⊤ : Ideal R) • span R ({x} : Set M) ≤ M' by
     rw [top_smul] at this
     exact this (subset_span (Set.mem_singleton x))
   rw [← hs, span_smul_span, span_le]
@@ -312,7 +303,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type _} (f : ι → M) (x : M) 
   · rintro ⟨a, ha, rfl⟩
     exact Submodule.sum_mem _ fun c _ => smul_mem_smul (ha c) <| subset_span <| Set.mem_range_self _
   refine' fun hx => span_induction (mem_smul_span.mp hx) _ _ _ _
-  · simp only [Set.mem_unionᵢ, Set.mem_range, Set.mem_singleton_iff]
+  · simp only [Set.mem_iUnion, Set.mem_range, Set.mem_singleton_iff]
     rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
     refine' ⟨Finsupp.single i y, fun j => _, _⟩
     · letI := Classical.decEq ι
@@ -349,7 +340,7 @@ theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
 theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : Ideal R) :
     I • S.comap f ≤ (I • S).comap f := by
   refine' Submodule.smul_le.mpr fun r hr x hx => _
-  rw [Submodule.mem_comap] at hx⊢
+  rw [Submodule.mem_comap] at hx ⊢
   rw [f.map_smul]
   exact Submodule.smul_mem_smul hr hx
 #align submodule.smul_comap_le_comap_smul Submodule.smul_comap_le_comap_smul
@@ -381,19 +372,19 @@ theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ �
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
 #align submodule.colon_mono Submodule.colon_mono
 
-theorem infᵢ_colon_supᵢ (ι₁ : Sort w) (f : ι₁ → Submodule R M) (ι₂ : Sort x)
+theorem iInf_colon_iSup (ι₁ : Sort w) (f : ι₁ → Submodule R M) (ι₂ : Sort x)
     (g : ι₂ → Submodule R M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) :=
-  le_antisymm (le_infᵢ fun _ => le_infᵢ fun _ => colon_mono (infᵢ_le _ _) (le_supᵢ _ _)) fun _ H =>
+  le_antisymm (le_iInf fun _ => le_iInf fun _ => colon_mono (iInf_le _ _) (le_iSup _ _)) fun _ H =>
     mem_colon'.2 <|
-      supᵢ_le fun j =>
+      iSup_le fun j =>
         map_le_iff_le_comap.1 <|
-          le_infᵢ fun i =>
+          le_iInf fun i =>
             map_le_iff_le_comap.2 <|
               mem_colon'.1 <|
-                have := (mem_infᵢ _).1 H i
-                have := (mem_infᵢ _).1 this j
+                have := (mem_iInf _).1 H i
+                have := (mem_iInf _).1 this j
                 this
-#align submodule.infi_colon_supr Submodule.infᵢ_colon_supᵢ
+#align submodule.infi_colon_supr Submodule.iInf_colon_iSup
 
 @[simp]
 theorem mem_colon_singleton {N : Submodule R M} {x : M} {r : R} :
@@ -402,7 +393,6 @@ theorem mem_colon_singleton {N : Submodule R M} {x : M} {r : R} :
     r ∈ N.colon (Submodule.span R {x}) ↔ ∀ a : R, r • a • x ∈ N := by
       simp [Submodule.mem_colon, Submodule.mem_span_singleton]
     _ ↔ r • x ∈ N := by simp_rw [fun (a : R) ↦ smul_comm r a x]; exact SetLike.forall_smul_mem_iff
-
 #align submodule.mem_colon_singleton Submodule.mem_colon_singleton
 
 @[simp]
@@ -556,8 +546,8 @@ theorem le_span_singleton_mul_iff {x : R} {I J : Ideal R} :
     simp only [mem_span_singleton_mul]
 #align ideal.le_span_singleton_mul_iff Ideal.le_span_singleton_mul_iff
 
-theorem span_singleton_mul_le_iff {x : R} {I J : Ideal R} : span {x} * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J :=
-  by
+theorem span_singleton_mul_le_iff {x : R} {I J : Ideal R} :
+    span {x} * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
   simp only [mul_le, mem_span_singleton_mul, mem_span_singleton]
   constructor
   · intro h zI hzI
@@ -574,7 +564,7 @@ theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
 
 theorem span_singleton_mul_right_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I ≤ span {x} * J ↔ I ≤ J := by
-  simp_rw [span_singleton_mul_le_span_singleton_mul, mul_right_inj' hx, exists_prop,
+  simp_rw [span_singleton_mul_le_span_singleton_mul, mul_right_inj' hx,
     exists_eq_right', SetLike.le_def]
 #align ideal.span_singleton_mul_right_mono Ideal.span_singleton_mul_right_mono
 
@@ -639,12 +629,12 @@ theorem finset_inf_span_singleton {ι : Type _} (s : Finset ι) (I : ι → R)
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
 #align ideal.finset_inf_span_singleton Ideal.finset_inf_span_singleton
 
-theorem infᵢ_span_singleton {ι : Type _} [Fintype ι] (I : ι → R)
+theorem iInf_span_singleton {ι : Type _} [Fintype ι] (I : ι → R)
     (hI : ∀ (i j) (_ : i ≠ j), IsCoprime (I i) (I j)) :
-    (⨅ i, Ideal.span ({I i} : Set R)) = Ideal.span {∏ i, I i} := by
-  rw [← Finset.inf_univ_eq_infᵢ, finset_inf_span_singleton]
+    ⨅ i, Ideal.span ({I i} : Set R) = Ideal.span {∏ i, I i} := by
+  rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
   rwa [Finset.coe_univ, Set.pairwise_univ]
-#align ideal.infi_span_singleton Ideal.infᵢ_span_singleton
+#align ideal.infi_span_singleton Ideal.iInf_span_singleton
 
 theorem sup_eq_top_iff_isCoprime {R : Type _} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
@@ -654,8 +644,7 @@ theorem sup_eq_top_iff_isCoprime {R : Type _} [CommSemiring R] (x y : R) :
     rw [mem_span_singleton'] at hu hv
     rw [← hu.choose_spec, ← hv.choose_spec] at h1
     exact ⟨_, _, h1⟩
-  ·
-    exact fun ⟨u, v, h1⟩ =>
+  · exact fun ⟨u, v, h1⟩ =>
       ⟨_, mem_span_singleton'.mpr ⟨_, rfl⟩, _, mem_span_singleton'.mpr ⟨_, rfl⟩, h1⟩
 #align ideal.sup_eq_top_iff_is_coprime Ideal.sup_eq_top_iff_isCoprime
 
@@ -686,9 +675,8 @@ theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
 #align ideal.mul_eq_inf_of_coprime Ideal.mul_eq_inf_of_coprime
 
 theorem sup_mul_eq_of_coprime_left (h : I ⊔ J = ⊤) : I ⊔ J * K = I ⊔ K :=
-  le_antisymm (sup_le_sup_left mul_le_left _) fun i hi =>
-    by
-    rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi⊢
+  le_antisymm (sup_le_sup_left mul_le_left _) fun i hi => by
+    rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi ⊢
     obtain ⟨i1, hi1, j, hj, h⟩ := h; obtain ⟨i', hi', k, hk, hi⟩ := hi
     refine' ⟨_, add_mem hi' (mul_mem_right k _ hi1), _, mul_mem_mul hj hk, _⟩
     rw [add_assoc, ← add_mul, h, one_mul, hi]
@@ -716,22 +704,22 @@ theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
     (by simp_rw [one_eq_top, sup_top_eq]) h
 #align ideal.sup_prod_eq_top Ideal.sup_prod_eq_top
 
-theorem sup_infᵢ_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
+theorem sup_iInf_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ⨅ i ∈ s, J i) = ⊤ :=
   eq_top_iff.mpr <|
     le_of_eq_of_le (sup_prod_eq_top h).symm <|
-      sup_le_sup_left (le_of_le_of_eq prod_le_inf <| Finset.inf_eq_infᵢ _ _) _
-#align ideal.sup_infi_eq_top Ideal.sup_infᵢ_eq_top
+      sup_le_sup_left (le_of_le_of_eq prod_le_inf <| Finset.inf_eq_iInf _ _) _
+#align ideal.sup_infi_eq_top Ideal.sup_iInf_eq_top
 
 theorem prod_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
     (∏ i in s, J i) ⊔ I = ⊤ :=
   sup_comm.trans (sup_prod_eq_top fun i hi => sup_comm.trans <| h i hi)
 #align ideal.prod_sup_eq_top Ideal.prod_sup_eq_top
 
-theorem infᵢ_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
+theorem iInf_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
     (⨅ i ∈ s, J i) ⊔ I = ⊤ :=
-  sup_comm.trans (sup_infᵢ_eq_top fun i hi => sup_comm.trans <| h i hi)
-#align ideal.infi_sup_eq_top Ideal.infᵢ_sup_eq_top
+  sup_comm.trans (sup_iInf_eq_top fun i hi => sup_comm.trans <| h i hi)
+#align ideal.infi_sup_eq_top Ideal.iInf_sup_eq_top
 
 theorem sup_pow_eq_top {n : ℕ} (h : I ⊔ J = ⊤) : I ⊔ J ^ n = ⊤ := by
   rw [← Finset.card_range n, ← Finset.prod_const]
@@ -803,7 +791,6 @@ theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
   calc
     I ^ n ≤ I ^ 1 := pow_le_pow (Nat.pos_of_ne_zero hn)
     _ = I := pow_one _
-
 #align ideal.pow_le_self Ideal.pow_le_self
 
 theorem pow_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
@@ -839,7 +826,7 @@ theorem span_pair_mul_span_pair (w x y z : R) :
 #align ideal.span_pair_mul_span_pair Ideal.span_pair_mul_span_pair
 
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
-def radical  (I : Ideal R) : Ideal R where
+def radical (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
   zero_mem' := ⟨1, (pow_one (0 : R)).symm ▸ I.zero_mem⟩
   add_mem' :=
@@ -954,16 +941,16 @@ theorem IsPrime.radical_le_iff (hJ : IsPrime J) : I.radical ≤ J ↔ I ≤ J :=
   IsRadical.radical_le_iff hJ.isRadical
 #align ideal.is_prime.radical_le_iff Ideal.IsPrime.radical_le_iff
 
-theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } :=
-  le_antisymm (le_infₛ fun J hJ ↦ hJ.2.radical_le_iff.2 hJ.1) fun r hr ↦
+theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J ∧ IsPrime J } :=
+  le_antisymm (le_sInf fun J hJ ↦ hJ.2.radical_le_iff.2 hJ.1) fun r hr ↦
     by_contradiction fun hri ↦
       let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
         zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
           (fun c hc hcc y hyc =>
-            ⟨supₛ c, fun ⟨n, hrnc⟩ =>
-              let ⟨y, hyc, hrny⟩ := (Submodule.mem_supₛ_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
+            ⟨sSup c, fun ⟨n, hrnc⟩ =>
+              let ⟨y, hyc, hrny⟩ := (Submodule.mem_sSup_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
               hc hyc ⟨n, hrny⟩,
-              fun z => le_supₛ⟩)
+              fun z => le_sSup⟩)
           I hri
       have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
         by_contradiction fun hrmx =>
@@ -988,8 +975,8 @@ theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I �
                       m.add_mem (m.mul_mem_right _ hpm)
                         (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|
-      this.radical.symm ▸ (infₛ_le ⟨him, this⟩ : infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
-#align ideal.radical_eq_Inf Ideal.radical_eq_infₛ
+      this.radical.symm ▸ (sInf_le ⟨him, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
+#align ideal.radical_eq_Inf Ideal.radical_eq_sInf
 
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
     (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => pow_eq_zero hn
@@ -1020,8 +1007,7 @@ theorem radical_pow (n : ℕ) (H : n > 0) : radical (I ^ n) = radical I :=
       Or.casesOn (lt_or_eq_of_le <| Nat.le_of_lt_succ H)
         (fun H =>
           calc
-            radical (I ^ (n + 1)) = radical I ⊓ radical (I ^ n) :=
-              by
+            radical (I ^ (n + 1)) = radical I ⊓ radical (I ^ n) := by
               rw [pow_succ]
               exact radical_mul _ _
             _ = radical I ⊓ radical I := by rw [ih H]
@@ -1069,7 +1055,7 @@ theorem IsPrime.multiset_prod_le {s : Multiset (Ideal R)} {P : Ideal R} (hp : Is
 theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P : Ideal R}
     (hp : IsPrime P) (hne : s ≠ 0) : (s.map f).prod ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
   rw [hp.multiset_prod_le (mt Multiset.map_eq_zero.mp hne)]
-  simp_rw [exists_prop, Multiset.mem_map, exists_exists_and_eq_and]
+  simp_rw [Multiset.mem_map, exists_exists_and_eq_and]
 #align ideal.is_prime.multiset_prod_map_le Ideal.IsPrime.multiset_prod_map_le
 
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P)
@@ -1083,7 +1069,7 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     le_trans (Finset.inf_le his) hip⟩
 #align ideal.is_prime.inf_le' Ideal.IsPrime.inf_le'
 
--- Porting note: needed to add explicit coerecions (· : Set R).
+-- Porting note: needed to add explicit coercions (· : Set R).
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   ⟨fun h =>
@@ -1098,8 +1084,6 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
       Set.Subset.trans h <| Set.subset_union_right (J : Set R) K ⟩
 #align ideal.subset_union Ideal.subset_union
 
-
--- Porting note: Replaced `specialize` calls with `have ih := ih ...`
 theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} {a b : ι}
     (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
@@ -1117,16 +1101,16 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
               Set.Subset.trans (Set.subset_union_right _ _) (Set.subset_union_left _ _))
           fun ⟨i, his, hi⟩ => by
           refine' Set.Subset.trans hi <| Set.Subset.trans _ <| Set.subset_union_right _ _;
-            exact Set.subset_bunionᵢ_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
+            exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
   induction' n with n ih generalizing a b s
   · clear hp
     rw [Finset.card_eq_zero] at hn
     subst hn
-    rw [Finset.coe_empty, Set.bunionᵢ_empty, Set.union_empty, subset_union] at h
+    rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
     simpa only [exists_prop, Finset.not_mem_empty, false_and_iff, exists_false, or_false_iff]
   classical
-    replace hn : ∃ (i : ι)(t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
+    replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
       Finset.card_eq_succ.1 hn
     rcases hn with ⟨i, t, hit, rfl, hn⟩
     replace hp : IsPrime (f i) ∧ ∀ x ∈ t, IsPrime (f x) := (t.forall_mem_insert _ _).1 hp
@@ -1134,35 +1118,31 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     · obtain ⟨j, hjt, hfji⟩ : ∃ j ∈ t, f j ≤ f i := Ht
       obtain ⟨u, hju, rfl⟩ : ∃ u, j ∉ u ∧ insert j u = t :=
         ⟨t.erase j, t.not_mem_erase j, Finset.insert_erase hjt⟩
-      have hp' : ∀ k ∈ insert i u, IsPrime (f k) :=
-        by
+      have hp' : ∀ k ∈ insert i u, IsPrime (f k) := by
         rw [Finset.forall_mem_insert] at hp ⊢
         exact ⟨hp.1, hp.2.2⟩
       have hiu : i ∉ u := mt Finset.mem_insert_of_mem hit
-      have hn' : (insert i u).card = n :=
-        by
-        rwa [Finset.card_insert_of_not_mem] at hn⊢
-        exacts[hiu, hju]
-      have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k :=
-        by
+      have hn' : (insert i u).card = n := by
+        rwa [Finset.card_insert_of_not_mem] at hn ⊢
+        exacts [hiu, hju]
+      have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k := by
         rw [Finset.coe_insert] at h ⊢
         rw [Finset.coe_insert] at h
-        simp only [Set.bunionᵢ_insert] at h ⊢
+        simp only [Set.biUnion_insert] at h ⊢
         rw [← Set.union_assoc (f i : Set R)] at h
         erw [Set.union_eq_self_of_subset_right hfji] at h
         exact h
-      have ih := ih hp' hn' h'
+      specialize ih hp' hn' h'
       refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
       simp only [exists_prop]
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
     by_cases Ha : f a ≤ f i
-    · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j :=
-        by
-        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_assoc,
+    · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
+        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
           Set.union_right_comm (f a : Set R)] at h
         erw [Set.union_eq_self_of_subset_left Ha] at h
         exact h
-      have ih := ih hp.2 hn h'
+      specialize ih hp.2 hn h'
       right
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
       · exact Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩
@@ -1170,19 +1150,18 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
       · exact Or.inr ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
     by_cases Hb : f b ≤ f i
     · have h' : (I : Set R) ⊆ f a ∪ f i ∪ ⋃ j ∈ (↑t : Set ι), f j := by
-        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_assoc,
+        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
           Set.union_assoc (f a : Set R)] at h
         erw [Set.union_eq_self_of_subset_left Hb] at h
         exact h
-      have ih := ih hp.2 hn h'
+      specialize ih hp.2 hn h'
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
       · exact Or.inl ih
       · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩)
       · exact Or.inr (Or.inr ⟨k, Finset.mem_insert_of_mem hkt, ih⟩)
     by_cases Hi : I ≤ f i
     · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, Hi⟩)
-    have : ¬I ⊓ f a ⊓ f b ⊓ t.inf f ≤ f i :=
-      by
+    have : ¬I ⊓ f a ⊓ f b ⊓ t.inf f ≤ f i := by
       rcases t.eq_empty_or_nonempty with (rfl | hsne)
       · rw [Finset.inf_empty, inf_top_eq, hp.1.inf_le, hp.1.inf_le, not_or, not_or]
         exact ⟨⟨Hi, Ha⟩, Hb⟩
@@ -1202,16 +1181,16 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         exact ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
     exfalso
     rcases Set.not_subset.1 HI with ⟨s, hsI, hs⟩
-    rw [Finset.coe_insert, Set.bunionᵢ_insert] at h
+    rw [Finset.coe_insert, Set.biUnion_insert] at h
     have hsi : s ∈ f i := ((h hsI).resolve_left (mt Or.inl hs)).resolve_right (mt Or.inr hs)
     rcases h (I.add_mem hrI hsI) with (⟨ha | hb⟩ | hi | ht)
     · exact hs (Or.inl <| Or.inl <| add_sub_cancel' r s ▸ (f a).sub_mem ha hra)
     · exact hs (Or.inl <| Or.inr <| add_sub_cancel' r s ▸ (f b).sub_mem hb hrb)
     · exact hri (add_sub_cancel r s ▸ (f i).sub_mem hi hsi)
-    · rw [Set.mem_unionᵢ₂] at ht
+    · rw [Set.mem_iUnion₂] at ht
       rcases ht with ⟨j, hjt, hj⟩
-      simp only [Finset.inf_eq_infᵢ, SetLike.mem_coe, Submodule.mem_infᵢ] at hr
-      exact hs (Or.inr <| Set.mem_bunionᵢ hjt <| add_sub_cancel' r s ▸ (f j).sub_mem hj <| hr j hjt)
+      simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
+      exact hs (Or.inr <| Set.mem_biUnion hjt <| add_sub_cancel' r s ▸ (f j).sub_mem hj <| hr j hjt)
 #align ideal.subset_union_prime' Ideal.subset_union_prime'
 
 /-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/
@@ -1222,7 +1201,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
     have aux := fun h => (bex_def.2 <| this h)
     simp_rw [exists_prop] at aux
     refine ⟨aux, fun ⟨i, his, hi⟩ ↦ Set.Subset.trans hi ?_⟩
-    apply Set.subset_bunionᵢ_of_mem (show i ∈ (↑s : Set ι) from his)
+    apply Set.subset_biUnion_of_mem (show i ∈ (↑s : Set ι) from his)
   fun h : (I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i => by
   classical
     by_cases has : a ∈ s
@@ -1236,14 +1215,14 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           refine' hp i (Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hiu)) _ _ <;>
               rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Finset.coe_insert, Set.bunionᵢ_insert, Set.bunionᵢ_insert, ←
+        rw [Finset.coe_insert, Finset.coe_insert, Set.biUnion_insert, Set.biUnion_insert, ←
           Set.union_assoc, subset_union_prime' hp'] at h
         rwa [Finset.exists_mem_insert, Finset.exists_mem_insert]
       · have hp' : ∀ j ∈ t, IsPrime (f j) := by
           intro j hj
           refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_self (f a : Set R),
+        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f a : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
     · by_cases hbs : b ∈ s
@@ -1253,12 +1232,12 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           intro j hj
           refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_self (f b : Set R),
+        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
       cases' s.eq_empty_or_nonempty with hse hsne
       · subst hse
-        rw [Finset.coe_empty, Set.bunionᵢ_empty, Set.subset_empty_iff] at h
+        rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
         exact absurd h this
       · cases' hsne.bex with i his
@@ -1268,7 +1247,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           intro j hj
           refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_self (f i : Set R),
+        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f i : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
 #align ideal.subset_union_prime Ideal.subset_union_prime
@@ -1289,8 +1268,7 @@ theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
       ⟨fun h => eq_top_iff.mpr (Ideal.le_of_dvd h), fun h => ⟨⊤, by rw [mul_top, h]⟩⟩)
 #align ideal.is_unit_iff Ideal.isUnit_iff
 
-instance uniqueUnits : Unique (Ideal R)ˣ
-    where
+instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
   uniq u := Units.ext (show (u : Ideal R) = 1 by rw [isUnit_iff.mp u.isUnit, one_eq_top])
 #align ideal.unique_units Ideal.uniqueUnits
@@ -1326,8 +1304,7 @@ def comap (I : Ideal S) : Ideal R where
     simp only [Set.mem_preimage, SetLike.mem_coe, map_add] at hx hy ⊢
     exact add_mem hx hy
   zero_mem' := by simp only [Set.mem_preimage, map_zero, SetLike.mem_coe, Submodule.zero_mem]
-  smul_mem' c x hx :=
-    by
+  smul_mem' c x hx := by
     simp only [smul_eq_mul, Set.mem_preimage, map_mul, SetLike.mem_coe] at *
     exact mul_mem_left I _ hx
 #align ideal.comap Ideal.comap
@@ -1493,25 +1470,25 @@ theorem comap_inf : comap f (K ⊓ L) = comap f K ⊓ comap f L :=
 
 variable {ι : Sort _}
 
-theorem map_supᵢ (K : ι → Ideal R) : (supᵢ K).map f = ⨆ i, (K i).map f :=
-  (gc_map_comap f : GaloisConnection (map f) (comap f)).l_supᵢ
-#align ideal.map_supr Ideal.map_supᵢ
+theorem map_iSup (K : ι → Ideal R) : (iSup K).map f = ⨆ i, (K i).map f :=
+  (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
+#align ideal.map_supr Ideal.map_iSup
 
-theorem comap_infᵢ (K : ι → Ideal S) : (infᵢ K).comap f = ⨅ i, (K i).comap f :=
-  (gc_map_comap f : GaloisConnection (map f) (comap f)).u_infᵢ
-#align ideal.comap_infi Ideal.comap_infᵢ
+theorem comap_iInf (K : ι → Ideal S) : (iInf K).comap f = ⨅ i, (K i).comap f :=
+  (gc_map_comap f : GaloisConnection (map f) (comap f)).u_iInf
+#align ideal.comap_infi Ideal.comap_iInf
 
-theorem map_supₛ (s : Set (Ideal R)) : (supₛ s).map f = ⨆ I ∈ s, (I : Ideal R).map f :=
-  (gc_map_comap f : GaloisConnection (map f) (comap f)).l_supₛ
-#align ideal.map_Sup Ideal.map_supₛ
+theorem map_sSup (s : Set (Ideal R)) : (sSup s).map f = ⨆ I ∈ s, (I : Ideal R).map f :=
+  (gc_map_comap f : GaloisConnection (map f) (comap f)).l_sSup
+#align ideal.map_Sup Ideal.map_sSup
 
-theorem comap_infₛ (s : Set (Ideal S)) : (infₛ s).comap f = ⨅ I ∈ s, (I : Ideal S).comap f :=
-  (gc_map_comap f : GaloisConnection (map f) (comap f)).u_infₛ
-#align ideal.comap_Inf Ideal.comap_infₛ
+theorem comap_sInf (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ s, (I : Ideal S).comap f :=
+  (gc_map_comap f : GaloisConnection (map f) (comap f)).u_sInf
+#align ideal.comap_Inf Ideal.comap_sInf
 
-theorem comap_Inf' (s : Set (Ideal S)) : (infₛ s).comap f = ⨅ I ∈ comap f '' s, I :=
-  _root_.trans (comap_infₛ f s) (by rw [infᵢ_image])
-#align ideal.comap_Inf' Ideal.comap_Inf'
+theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '' s, I :=
+  _root_.trans (comap_sInf f s) (by rw [iInf_image])
+#align ideal.comap_Inf' Ideal.comap_sInf'
 
 theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
   ⟨comap_ne_top f H.ne_top, fun {x y} h => H.mem_or_mem <| by rwa [mem_comap, map_mul] at h⟩
@@ -1600,17 +1577,17 @@ theorem map_sup_comap_of_surjective (I J : Ideal S) : (I.comap f ⊔ J.comap f).
   (giMapComap f hf).l_sup_u _ _
 #align ideal.map_sup_comap_of_surjective Ideal.map_sup_comap_of_surjective
 
-theorem map_supᵢ_comap_of_surjective (K : ι → Ideal S) : (⨆ i, (K i).comap f).map f = supᵢ K :=
-  (giMapComap f hf).l_supᵢ_u _
-#align ideal.map_supr_comap_of_surjective Ideal.map_supᵢ_comap_of_surjective
+theorem map_iSup_comap_of_surjective (K : ι → Ideal S) : (⨆ i, (K i).comap f).map f = iSup K :=
+  (giMapComap f hf).l_iSup_u _
+#align ideal.map_supr_comap_of_surjective Ideal.map_iSup_comap_of_surjective
 
 theorem map_inf_comap_of_surjective (I J : Ideal S) : (I.comap f ⊓ J.comap f).map f = I ⊓ J :=
   (giMapComap f hf).l_inf_u _ _
 #align ideal.map_inf_comap_of_surjective Ideal.map_inf_comap_of_surjective
 
-theorem map_infᵢ_comap_of_surjective (K : ι → Ideal S) : (⨅ i, (K i).comap f).map f = infᵢ K :=
-  (giMapComap f hf).l_infᵢ_u _
-#align ideal.map_infi_comap_of_surjective Ideal.map_infᵢ_comap_of_surjective
+theorem map_iInf_comap_of_surjective (K : ι → Ideal S) : (⨅ i, (K i).comap f).map f = iInf K :=
+  (giMapComap f hf).l_iInf_u _
+#align ideal.map_infi_comap_of_surjective Ideal.map_iInf_comap_of_surjective
 
 theorem mem_image_of_mem_map_of_surjective {I : Ideal R} {y} (H : y ∈ map f I) : y ∈ f '' I :=
   Submodule.span_induction H (fun _ => id) ⟨0, I.zero_mem, map_zero f⟩
@@ -1676,8 +1653,7 @@ theorem comap_map_of_surjective (I : Ideal R) : comap f (map f I) = I ⊔ comap 
 #align ideal.comap_map_of_surjective Ideal.comap_map_of_surjective
 
 /-- Correspondence theorem -/
-def relIsoOfSurjective : Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p }
-    where
+def relIsoOfSurjective : Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p } where
   toFun J := ⟨comap f J, comap_mono bot_le⟩
   invFun I := map f I.1
   left_inv J := map_comap_of_surjective f hf J
@@ -1731,14 +1707,16 @@ end Surjective
 @[simp]
 theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
     (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
-  simp [← RingEquiv.toRingHom_eq_coe, map_map]
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
 #align ideal.map_of_equiv Ideal.map_of_equiv
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm (comap f) = I`. -/
 @[simp]
 theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
     (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
-  simp [← RingEquiv.toRingHom_eq_coe, comap_comap]
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
 #align ideal.comap_of_equiv Ideal.comap_of_equiv
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
@@ -1752,8 +1730,7 @@ section Bijective
 variable (hf : Function.Bijective f)
 
 /-- Special case of the correspondence theorem for isomorphic rings -/
-def relIsoOfBijective : Ideal S ≃o Ideal R
-    where
+def relIsoOfBijective : Ideal S ≃o Ideal R where
   toFun := comap f
   invFun := map f
   left_inv := (relIsoOfSurjective f hf.right).left_inv
@@ -1770,13 +1747,11 @@ theorem comap_le_iff_le_map {I : Ideal R} {K : Ideal S} : comap f K ≤ I ↔ K 
 
 theorem map.isMaximal {I : Ideal R} (H : IsMaximal I) : IsMaximal (map f I) := by
   refine'
-      or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h =>
-        H.1.1 _;
-    calc
-      I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
-      _ = comap f ⊤ := by rw [h]
-      _ = ⊤ := by rw [comap_top]
-
+    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 _
+  calc
+    I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
+    _ = comap f ⊤ := by rw [h]
+    _ = ⊤ := by rw [comap_top]
 #align ideal.map.is_maximal Ideal.map.isMaximal
 
 end Bijective
@@ -1808,8 +1783,8 @@ theorem map_mul : map f (I * J) = map f I * map f J :=
         show (f (r * s)) ∈ map f I * map f J by
           rw [_root_.map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
     (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
-      Set.unionᵢ₂_subset fun i ⟨r, hri, hfri⟩ =>
-        Set.unionᵢ₂_subset fun j ⟨s, hsj, hfsj⟩ =>
+      Set.iUnion₂_subset fun i ⟨r, hri, hfri⟩ =>
+        Set.iUnion₂_subset fun j ⟨s, hsj, hfsj⟩ =>
           Set.singleton_subset_iff.2 <|
             hfri ▸ hfsj ▸ by rw [← _root_.map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 #align ideal.map_mul Ideal.map_mul
@@ -1882,8 +1857,8 @@ theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ r
 #align ideal.mem_radical_of_pow_mem Ideal.mem_radical_of_pow_mem
 
 theorem isPrime_radical {I : Ideal R} (hi : IsPrimary I) : IsPrime (radical I) :=
-  ⟨mt radical_eq_top.1 hi.1, fun {x y} ⟨m, hxy⟩ =>
-    by
+  ⟨mt radical_eq_top.1 hi.1,
+   fun {x y} ⟨m, hxy⟩ => by
     rw [mul_pow] at hxy; cases' hi.2 hxy with h h
     · exact Or.inl ⟨m, h⟩
     · exact Or.inr (mem_radical_of_pow_mem h)⟩
@@ -1891,8 +1866,8 @@ theorem isPrime_radical {I : Ideal R} (hi : IsPrimary I) : IsPrime (radical I) :
 
 theorem isPrimary_inf {I J : Ideal R} (hi : IsPrimary I) (hj : IsPrimary J)
     (hij : radical I = radical J) : IsPrimary (I ⊓ J) :=
-  ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1), fun {x y} ⟨hxyi, hxyj⟩ =>
-    by
+  ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1),
+   fun {x y} ⟨hxyi, hxyj⟩ => by
     rw [radical_inf, hij, inf_idem]
     cases' hi.2 hxyi with hxi hyi; cases' hj.2 hxyj with hxj hyj
     · exact Or.inl ⟨hxi, hxj⟩
@@ -1920,8 +1895,8 @@ noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
 
 variable {ι M v}
 
-theorem finsuppTotal_apply (f : ι →₀ I) : finsuppTotal ι M I v f = f.sum fun i x => (x : R) • v i :=
-  by
+theorem finsuppTotal_apply (f : ι →₀ I) :
+    finsuppTotal ι M I v f = f.sum fun i x => (x : R) • v i := by
   dsimp [finsuppTotal]
   rw [Finsupp.total_apply, Finsupp.sum_mapRange_index]
   exact fun _ => zero_smul _ _
@@ -1954,14 +1929,11 @@ section Basis
 
 variable {ι R S : Type _} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R S]
 
--- Porting note: Needed to add the following line
-private instance : Module R S := Algebra.toModule
-
 /-- A basis on `S` gives a basis on `Ideal.span {x}`, by multiplying everything by `x`. -/
 noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
     Basis ι R (span ({x} : Set S)) :=
   b.map <|
-    LinearEquiv.ofInjective (LinearMap.Algebra.lmul R S x) (LinearMap.mul_injective hx) ≪≫ₗ
+    LinearEquiv.ofInjective (Algebra.lmul R S x) (LinearMap.mul_injective hx) ≪≫ₗ
         LinearEquiv.ofEq _ _
           (by
             ext
@@ -1974,13 +1946,13 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
     (basisSpanSingleton b hx i : S) = x * b i := by
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
-    LinearEquiv.restrictScalars_apply, LinearMap.Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
+    LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
 @[simp]
 theorem constr_basisSpanSingleton {N : Type _} [Semiring N] [Module N S] [SMulCommClass R N S]
     (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
-    (b.constr N).toFun (((↑) : _ → S) ∘ (basisSpanSingleton b hx)) = LinearMap.Algebra.lmul R S x :=
+    (b.constr N).toFun (((↑) : _ → S) ∘ (basisSpanSingleton b hx)) = Algebra.lmul R S x :=
   b.ext fun i => by
     erw [Basis.constr_basis, Function.comp_apply, basisSpanSingleton_apply, LinearMap.mul_apply']
 #align ideal.constr_basis_span_singleton Ideal.constr_basisSpanSingleton
@@ -2005,7 +1977,7 @@ theorem Basis.mem_ideal_iff {ι R S : Type _} [CommRing R] [CommRing S] [Algebra
 /-- If `I : Ideal S` has a finite basis over `R`,
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff' {ι R S : Type _} [Fintype ι] [CommRing R] [CommRing S] [Algebra R S]
-    {I : Ideal S} (b : Basis ι R I) {x : S} : x ∈ I ↔ ∃ c : ι → R, x = ∑ i, c i • b i :=
+    {I : Ideal S} (b : Basis ι R I) {x : S} : x ∈ I ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : S) :=
   (b.map ((I.restrictScalarsEquiv R _ _).restrictScalars R).symm).mem_submodule_iff'
 #align basis.mem_ideal_iff' Basis.mem_ideal_iff'
 
@@ -2091,7 +2063,8 @@ theorem ker_isPrime {F : Type _} [Ring R] [Ring S] [IsDomain S] [RingHomClass F 
     (ker f).IsPrime :=
   ⟨by
     rw [Ne.def, Ideal.eq_top_iff_one]
-    exact not_one_mem_ker f, fun {x y} => by
+    exact not_one_mem_ker f,
+   fun {x y} => by
     simpa only [mem_ker, map_mul] using @eq_zero_or_eq_zero_of_mul_eq_zero S _ _ _ _ _⟩
 #align ring_hom.ker_is_prime RingHom.ker_isPrime
 
@@ -2133,26 +2106,26 @@ section Ring
 
 variable [Ring R] [Ring S] [rc : RingHomClass F R S]
 
-theorem map_infₛ {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
-    (∀ J ∈ A, RingHom.ker f ≤ J) → map f (infₛ A) = infₛ (map f '' A) := by
-  refine' fun h => le_antisymm (le_infₛ _) _
+theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
+    (∀ J ∈ A, RingHom.ker f ≤ J) → map f (sInf A) = sInf (map f '' A) := by
+  refine' fun h => le_antisymm (le_sInf _) _
   · intro j hj y hy
     cases' (mem_map_iff_of_surjective f hf).1 hy with x hx
     cases' (Set.mem_image _ _ _).mp hj with J hJ
     rw [← hJ.right, ← hx.right]
-    exact mem_map_of_mem f (infₛ_le_of_le hJ.left (le_of_eq rfl) hx.left)
+    exact mem_map_of_mem f (sInf_le_of_le hJ.left (le_of_eq rfl) hx.left)
   · intro y hy
     cases' hf y with x hx
     refine' hx ▸ mem_map_of_mem f _
     have : ∀ I ∈ A, y ∈ map f I := by simpa using hy
-    rw [Submodule.mem_infₛ]
+    rw [Submodule.mem_sInf]
     intro J hJ
-    rcases(mem_map_iff_of_surjective f hf).1 (this J hJ) with ⟨x', hx', rfl⟩
+    rcases (mem_map_iff_of_surjective f hf).1 (this J hJ) with ⟨x', hx', rfl⟩
     have : x - x' ∈ J := by
       apply h J hJ
       rw [RingHom.mem_ker, map_sub, hx, sub_self]
     simpa only [sub_add_cancel] using J.add_mem this hx'
-#align ideal.map_Inf Ideal.map_infₛ
+#align ideal.map_Inf Ideal.map_sInf
 
 theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
     (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
@@ -2164,8 +2137,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     rw [← ha, ← hb, ← _root_.map_mul f, mem_map_iff_of_surjective _ hf] at hxy
     rcases hxy with ⟨c, hc, hc'⟩
     rw [← sub_eq_zero, ← map_sub] at hc'
-    have : a * b ∈ I :=
-      by
+    have : a * b ∈ I := by
       convert I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
       abel
     exact
@@ -2196,9 +2168,9 @@ theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
 
 theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {I : Ideal R}
     (h : RingHom.ker f ≤ I) : map f I.radical = (map f I).radical := by
-  rw [radical_eq_infₛ, radical_eq_infₛ]
+  rw [radical_eq_sInf, radical_eq_sInf]
   have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
-  convert map_infₛ hf this
+  convert map_sInf hf this
   refine' funext fun j => propext ⟨_, _⟩
   · rintro ⟨hj, hj'⟩
     haveI : j.IsPrime := hj'
@@ -2220,8 +2192,7 @@ variable {R : Type u} {M : Type v}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 -- TODO: show `[Algebra R A] : Algebra (Ideal R) A` too
-instance moduleSubmodule : Module (Ideal R) (Submodule R M)
-    where
+instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
   add_smul := sup_smul
   mul_smul := Submodule.smul_assoc
@@ -2242,9 +2213,7 @@ variable (f : A →+* B) (f_inv : B → A)
 def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C)
     (hg : RingHom.ker f ≤ RingHom.ker g) :
     B →+* C :=
-  {
-    AddMonoidHom.liftOfRightInverse f.toAddMonoidHom f_inv hf
-      ⟨g.toAddMonoidHom, hg⟩ with
+  { AddMonoidHom.liftOfRightInverse f.toAddMonoidHom f_inv hf ⟨g.toAddMonoidHom, hg⟩ with
     toFun := fun b => g (f_inv b)
     map_one' := by
       rw [← map_one g, ← sub_eq_zero, ← map_sub g, ← mem_ker g]
@@ -2269,7 +2238,7 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
 /-- `liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
 
 * such that `φ.comp f = g` (`RingHom.liftOfRightInverse_comp`),
-* where `f : A →+* B` is has a right_inverse `f_inv` (`hf`),
+* where `f : A →+* B` has a right_inverse `f_inv` (`hf`),
 * and `g : B →+* C` satisfies `hg : f.ker ≤ g.ker`.
 
 See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
@@ -2285,8 +2254,7 @@ See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
 ```
 -/
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
-    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C)
-    where
+    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) where
   toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
   invFun φ := ⟨φ.comp f, fun x hx => (mem_ker _).mpr <| by simp [(mem_ker _).mp hx]⟩
   left_inv g := by

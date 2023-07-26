@@ -2,11 +2,6 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.basic
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
@@ -14,7 +9,8 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.NthRewrite
+
+#align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Modules over a ring
@@ -29,7 +25,7 @@ In this file we define
 ## Implementation notes
 
 In typical mathematical usage, our definition of `Module` corresponds to "semimodule", and the
-word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `AddCommGroup`.
+word "module" is reserved for `Module R M` where `R` is a `Ring` and `M` an `AddCommGroup`.
 If `R` is a `Field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector space.
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
 without changing the axioms in `Module`, mathlib calls everything a `Module`.
@@ -112,10 +108,10 @@ set_option linter.deprecated false in
 #align two_smul' two_smul'
 
 @[simp]
-theorem inv_of_two_smul_add_inv_of_two_smul [Invertible (2 : R)] (x : M) :
+theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
-#align inv_of_two_smul_add_inv_of_two_smul inv_of_two_smul_add_inv_of_two_smul
+#align inv_of_two_smul_add_inv_of_two_smul invOf_two_smul_add_invOf_two_smul
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/
@@ -213,22 +209,6 @@ theorem smul_add_one_sub_smul {R : Type _} [Ring R] [Module R M] {r : R} {m : M}
 
 end AddCommMonoid
 
-variable (R)
-
-/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
-structure.
-See note [reducible non-instances]. -/
-@[reducible]
-def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
-  { (inferInstance : AddCommMonoid M) with
-    neg := fun a => (-1 : R) • a
-    add_left_neg := fun a =>
-      show (-1 : R) • a + a = 0 by
-        nth_rw 2 [← one_smul R a]
-        rw [← add_smul, add_left_neg, zero_smul] }
-#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
-
-variable {R}
 
 section AddCommGroup
 
@@ -281,7 +261,6 @@ theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b
   calc
     a • x + b • y = b • y - b • x + (a • x + b • x) := by abel
     _ = b • (y - x) + x := by rw [smul_sub, Convex.combo_self h]
-
 #align convex.combo_eq_smul_sub_add Convex.combo_eq_smul_sub_add
 
 end AddCommGroup
@@ -326,6 +305,27 @@ theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
 #align sub_smul sub_smul
 
 end Module
+
+variable (R)
+
+/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
+structure.
+See note [reducible non-instances]. -/
+@[reducible]
+def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
+  { (inferInstance : AddCommMonoid M) with
+    neg := fun a => (-1 : R) • a
+    add_left_neg := fun a =>
+      show (-1 : R) • a + a = 0 by
+        nth_rw 2 [← one_smul R a]
+        rw [← add_smul, add_left_neg, zero_smul]
+    zsmul := fun z a => (z : R) • a
+    zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
+    zsmul_succ' := fun z a => by simp [add_comm, add_smul]
+    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
+
+variable {R}
 
 /-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
 as an instance because Lean has no way to guess `R`. -/
@@ -577,7 +577,7 @@ for the vanishing of elements (especially in modules over division rings).
 
 
 /-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
-This a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
+This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
 
 The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
 is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.
@@ -769,5 +769,4 @@ theorem Int.smul_one_eq_coe {R : Type _} [Ring R] (m : ℤ) : m • (1 : R) = �
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 
--- Porting note: `assert_not_exists` not implemented yet
--- assert_not_exists multiset
+assert_not_exists Multiset

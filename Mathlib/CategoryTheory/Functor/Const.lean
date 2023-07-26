@@ -2,13 +2,10 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.functor.const
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Opposites
+
+#align_import category_theory.functor.const from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # The constant functor
@@ -50,7 +47,7 @@ open Opposite
 
 variable {J}
 
-/-- The contant functor `Jᵒᵖ ⥤ Cᵒᵖ` sending everything to `op X`
+/-- The constant functor `Jᵒᵖ ⥤ Cᵒᵖ` sending everything to `op X`
 is (naturally isomorphic to) the opposite of the constant functor `J ⥤ C` sending everything to `X`.
 -/
 @[simps]
@@ -60,7 +57,7 @@ def opObjOp (X : C) : (const Jᵒᵖ).obj (op X) ≅ ((const J).obj X).op
   inv := { app := fun j => 𝟙 _ }
 #align category_theory.functor.const.op_obj_op CategoryTheory.Functor.const.opObjOp
 
-/-- The contant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
+/-- The constant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
 is (naturally isomorphic to) the opposite of
 the constant functor `J ⥤ Cᵒᵖ` sending everything to `X`.
 -/

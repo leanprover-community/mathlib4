@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.hom.non_unital_alg
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Hom
+
+#align_import algebra.hom.non_unital_alg from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
 /-!
 # Morphisms of non-unital algebras
@@ -78,17 +75,17 @@ class NonUnitalAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (T
 
 namespace NonUnitalAlgHomClass
 
--- Porting note: Made following instance non-dangerous through [...] -> {_ : ...} replacement
+-- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass {F R A B : Type _}
-    {_ : Monoid R} {_ : NonUnitalNonAssocSemiring A} {_ : DistribMulAction R A}
-    {_ : NonUnitalNonAssocSemiring B} {_ : DistribMulAction R B}
+    [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [NonUnitalAlgHomClass F R A B] : NonUnitalRingHomClass F A B :=
   { ‹NonUnitalAlgHomClass F R A B› with coe := (⇑) }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
-variable {_ : Semiring R} {_ : NonUnitalNonAssocSemiring A} {_ : Module R A}
-  {_ : NonUnitalNonAssocSemiring B} {_ : Module R B}
+variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+  [NonUnitalNonAssocSemiring B] [Module R B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) {F : Type _} [NonUnitalAlgHomClass F R A B] : LinearMapClass F R A B :=
@@ -169,7 +166,7 @@ theorem congr_fun {f g : A →ₙₐ[R] B} (h : f = g) (x : A) : f x = g x :=
 #align non_unital_alg_hom.congr_fun NonUnitalAlgHom.congr_fun
 
 @[simp]
-theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B)  = f :=
+theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_mk NonUnitalAlgHom.coe_mk
 
@@ -247,11 +244,22 @@ protected theorem map_zero (f : A →ₙₐ[R] B) : f 0 = 0 :=
   map_zero _
 #align non_unital_alg_hom.map_zero NonUnitalAlgHom.map_zero
 
+/-- The identity map as a `NonUnitalAlgHom`. -/
+protected def id (R A : Type _) [Monoid R] [NonUnitalNonAssocSemiring A]
+    [DistribMulAction R A] : A →ₙₐ[R] A :=
+  { NonUnitalRingHom.id A with
+    toFun := id
+    map_smul' := fun _ _ => rfl }
+
+@[simp]
+theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
+  rfl
+
 instance : Zero (A →ₙₐ[R] B) :=
   ⟨{ (0 : A →+[R] B) with map_mul' := by simp }⟩
 
 instance : One (A →ₙₐ[R] A) :=
-  ⟨{ (1 : A →+[R] A) with map_mul' := by simp }⟩
+  ⟨NonUnitalAlgHom.id R A⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : A →ₙₐ[R] B) = 0 :=
@@ -409,16 +417,16 @@ end Prod
 
 end NonUnitalAlgHom
 
-/-! ### Interaction with `alg_hom` -/
+/-! ### Interaction with `AlgHom` -/
 
 
 namespace AlgHom
 
-variable {R A B} {_ : CommSemiring R} {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A}
-  {_ : Algebra R B}
+variable {R A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+  [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type _} [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
+instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smul := map_smul }
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/

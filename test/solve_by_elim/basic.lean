@@ -9,6 +9,7 @@ import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Util.DummyLabelAttr
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
@@ -73,12 +74,11 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
   fail_if_success solve_by_elim (config := .noBackTracking)
   solve_by_elim
 
-example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
-by
+example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y := by
   fail_if_success solve_by_elim (config := {symm := false})
   solve_by_elim
 
-example (P : True → False) : 3 = 7 :=  by
+example (P : True → False) : 3 = 7 := by
   fail_if_success solve_by_elim (config := {exfalso := false})
   solve_by_elim
 

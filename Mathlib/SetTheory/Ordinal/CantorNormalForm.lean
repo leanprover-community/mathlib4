@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.ordinal.cantor_normal_form
-! leanprover-community/mathlib commit f1e061e3caef3022f0daa99d670ecf2c30e0b5c6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
+
+#align_import set_theory.ordinal.cantor_normal_form from "leanprover-community/mathlib"@"991ff3b5269848f6dd942ae8e9dd3c946035dc8b"
 
 /-!
 # Cantor Normal Form
@@ -38,7 +35,7 @@ noncomputable section
 
 universe u
 
-open Order
+open List
 
 namespace Ordinal
 
@@ -116,17 +113,17 @@ set_option linter.uppercaseLean3 false in
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
 theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o :=
   CNFRec b (by rw [CNF_zero]; rfl)
-    (fun o ho IH ↦ by rw [CNF_ne_zero ho, List.foldr_cons, IH, div_add_mod]) o
+    (fun o ho IH ↦ by rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]) o
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_foldr Ordinal.CNF_foldr
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
-theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → x.1 ≤ log b o :=
-  by
+theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
+    x ∈ CNF b o → x.1 ≤ log b o := by
   refine' CNFRec b _ (fun o ho H ↦ _) o
   · rw [CNF_zero]
     intro contra; contradiction
-  · rw [CNF_ne_zero ho, List.mem_cons]
+  · rw [CNF_ne_zero ho, mem_cons]
     rintro (rfl | h)
     · exact le_rfl
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
@@ -141,19 +138,11 @@ set_option linter.uppercaseLean3 false in
 
 /-- Every coefficient in a Cantor normal form is positive. -/
 theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
-  refine' CNFRec b _ (fun o ho IH ↦ _) o
-  · simp only [CNF_zero, List.not_mem_nil, IsEmpty.forall_iff]
-  · rcases eq_zero_or_pos b with (rfl | hb)
-    · rw [zero_CNF ho, List.mem_singleton]
-      rintro rfl
-      exact Ordinal.pos_iff_ne_zero.2 ho
-    · rw [CNF_ne_zero ho]
-      intro h
-      cases' (List.mem_cons.mp h) with h h
-      · rw [h]; rw [div_pos]
-        · exact opow_log_le_self _ ho
-        · exact (opow_pos _ hb).ne'
-      · exact IH h
+  refine' CNFRec b (by simp) (fun o ho IH ↦ _) o
+  rw [CNF_ne_zero ho]
+  rintro (h | ⟨_, h⟩)
+  · exact div_opow_log_pos b ho
+  · exact IH h
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_lt_snd Ordinal.CNF_lt_snd
 
@@ -161,10 +150,10 @@ set_option linter.uppercaseLean3 false in
 theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.2 < b := by
   refine' CNFRec b _ (fun o ho IH ↦ _) o
-  · simp only [CNF_zero, List.not_mem_nil, IsEmpty.forall_iff]
+  · simp only [CNF_zero, not_mem_nil, IsEmpty.forall_iff]
   · rw [CNF_ne_zero ho]
     intro h
-    cases' (List.mem_cons.mp h) with h h
+    cases' (mem_cons.mp h) with h h
     · rw [h]; simpa only using div_opow_log_lt o hb
     · exact IH h
 set_option linter.uppercaseLean3 false in
@@ -175,12 +164,12 @@ theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :
   refine' CNFRec b _ (fun o ho IH ↦ _) o
   · simp only [CNF_zero]
   · cases' le_or_lt b 1 with hb hb
-    · simp only [CNF_of_le_one hb ho, List.map]
+    · simp only [CNF_of_le_one hb ho, map]
     · cases' lt_or_le o b with hob hbo
-      · simp only [CNF_of_lt ho hob, List.map]
-      · rw [CNF_ne_zero ho, List.map_cons, List.sorted_cons]
+      · simp only [CNF_of_lt ho hob, map]
+      · rw [CNF_ne_zero ho, map_cons, sorted_cons]
         refine' ⟨fun a H ↦ _, IH⟩
-        rw [List.mem_map] at H
+        rw [mem_map] at H
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
         exact (CNF_fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb ho hbo)
 set_option linter.uppercaseLean3 false in

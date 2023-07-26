@@ -2,14 +2,11 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.char_p.invertible
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.CharP.Basic
+
+#align_import algebra.char_p.invertible from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Invertibility of elements given a characteristic
@@ -27,7 +24,7 @@ section Field
 
 variable [Field K]
 
-/-- A natural number `t` is invertible in a field `K` if the charactistic of `K` does not divide
+/-- A natural number `t` is invertible in a field `K` if the characteristic of `K` does not divide
 `t`. -/
 def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
@@ -38,7 +35,7 @@ theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringCh
   exact nonzero_of_invertible (t : K)
 #align not_ring_char_dvd_of_invertible not_ringChar_dvd_of_invertible
 
-/-- A natural number `t` is invertible in a field `K` of charactistic `p` if `p` does not divide
+/-- A natural number `t` is invertible in a field `K` of characteristic `p` if `p` does not divide
 `t`. -/
 def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K p t).mp h)

@@ -2,17 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module data.set.intervals.group
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.GroupPower.Lemmas
+
+#align_import data.set.intervals.group from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
 
@@ -186,13 +182,11 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
 
 @[to_additive]
 theorem pairwise_disjoint_Ico_mul_zpow :
-    Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) :=
-  by
+    Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by
   simp_rw [Function.onFun, Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn
-  have hb : 1 < b :=
-    by
+  have hb : 1 < b := by
     have : a * b ^ m < a * b ^ (m + 1) := hx.1.1.trans_lt hx.1.2
     rwa [mul_lt_mul_iff_left, ← mul_one (b ^ m), zpow_add_one, mul_lt_mul_iff_left] at this
   have i1 := hx.1.1.trans_lt hx.2.2

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.polynomial.taylor
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.HasseDeriv
 import Mathlib.Data.Polynomial.Degree.Lemmas
+
+#align_import data.polynomial.taylor from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Taylor expansions of polynomials
@@ -102,7 +99,7 @@ theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree
   refine' map_natDegree_eq_natDegree _ _
   nontriviality R
   intro n c c0
-  simp [taylor_monomial, natDegree_c_mul_eq_of_mul_ne_zero, natDegree_pow_X_add_c, c0]
+  simp [taylor_monomial, natDegree_C_mul_eq_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
 #align polynomial.nat_degree_taylor Polynomial.natDegree_taylor
 
 @[simp]

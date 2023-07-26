@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Yury Kudryashov
-
-! This file was ported from Lean 3 source module combinatorics.pigeonhole
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
+
+#align_import combinatorics.pigeonhole from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Pigeonhole principles
@@ -46,7 +43,7 @@ The versions vary by:
 * in case when we count pigeons by some weight function `w` and consider a function `f` between
   `Finset`s `s` and `t`, we can either assume that each pigeon is in one of the pigeonholes
   (`∀ x ∈ s, f x ∈ t`), or assume that for `y ∉ t`, the total weight of the pigeons in this
-  pigeonhole `∑ x in s.filter (λ x, f x = y), w x` is nonpositive or nonnegative depending on
+  pigeonhole `∑ x in s.filter (fun x ↦ f x = y), w x` is nonpositive or nonnegative depending on
   the inequality we are proving.
 
 Lemma names follow `mathlib` convention (e.g.,
@@ -57,8 +54,8 @@ docstrings instead of the names.
 
 * `Ordinal.infinite_pigeonhole`: pigeonhole principle for cardinals, formulated using cofinality;
 
-* `measure_theory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure`,
-  `measure_theory.exists_nonempty_inter_of_measure_univ_lt_sum_measure`: pigeonhole principle in a
+* `MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure`,
+  `MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_sum_measure`: pigeonhole principle in a
   measure space.
 
 ## Tags
@@ -97,7 +94,7 @@ There are a few bits we can change in this theorem:
 
 * reverse all inequalities, with obvious adjustments to the name;
 * replace the assumption `∀ a ∈ s, f a ∈ t` with
-  `∀ y ∉ t, (∑ x in s.filter (λ x, f x = y), w x) ≤ 0`,
+  `∀ y ∉ t, (∑ x in s.filter (fun x ↦ f x = y), w x) ≤ 0`,
   and replace `of_maps_to` with `of_sum_fiber_nonpos` in the name;
 * use non-strict inequalities assuming `t` is nonempty.
 
@@ -127,7 +124,7 @@ if the total weight of a finite set of pigeons is less than `n • b`, and they 
 pigeonholes, then for some pigeonhole, the total weight of the pigeons in this pigeonhole is less
 than `b`. -/
 theorem exists_sum_fiber_lt_of_maps_to_of_sum_lt_nsmul (hf : ∀ a ∈ s, f a ∈ t)
-    (hb : (∑ x in s, w x) < t.card • b) : ∃ y ∈ t, (∑ x in s.filter fun x => f x = y, w x) < b :=
+    (hb : ∑ x in s, w x < t.card • b) : ∃ y ∈ t, ∑ x in s.filter fun x => f x = y, w x < b :=
   @exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum α β Mᵒᵈ _ _ _ _ _ _ _ hf hb
 #align finset.exists_sum_fiber_lt_of_maps_to_of_sum_lt_nsmul Finset.exists_sum_fiber_lt_of_maps_to_of_sum_lt_nsmul
 
@@ -137,14 +134,13 @@ pigeonholes, and for all but `n` pigeonholes the total weight of the pigeons the
 then for at least one of these `n` pigeonholes, the total weight of the pigeons in this pigeonhole
 is greater than `b`. -/
 theorem exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
-    (ht : ∀ (y) (_ : y ∉ t), (∑ x in s.filter fun x => f x = y, w x) ≤ 0)
+    (ht : ∀ (y) (_ : y ∉ t), ∑ x in s.filter fun x => f x = y, w x ≤ 0)
     (hb : t.card • b < ∑ x in s, w x) : ∃ y ∈ t, b < ∑ x in s.filter fun x => f x = y, w x :=
   exists_lt_of_sum_lt <|
     calc
-      (∑ _y in t, b) < ∑ x in s, w x := by simpa
+      ∑ _y in t, b < ∑ x in s, w x := by simpa
       _ ≤ ∑ y in t, ∑ x in s.filter fun x => f x = y, w x :=
         sum_le_sum_fiberwise_of_sum_fiber_nonpos ht
-
 #align finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum Finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, strict inequality version:
@@ -154,7 +150,7 @@ then for at least one of these `n` pigeonholes, the total weight of the pigeons 
 is less than `b`. -/
 theorem exists_sum_fiber_lt_of_sum_fiber_nonneg_of_sum_lt_nsmul
     (ht : ∀ (y) (_ : y ∉ t), (0 : M) ≤ ∑ x in s.filter fun x => f x = y, w x)
-    (hb : (∑ x in s, w x) < t.card • b) : ∃ y ∈ t, (∑ x in s.filter fun x => f x = y, w x) < b :=
+    (hb : ∑ x in s, w x < t.card • b) : ∃ y ∈ t, ∑ x in s.filter fun x => f x = y, w x < b :=
   @exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum α β Mᵒᵈ _ _ _ _ _ _ _ ht hb
 #align finset.exists_sum_fiber_lt_of_sum_fiber_nonneg_of_sum_lt_nsmul Finset.exists_sum_fiber_lt_of_sum_fiber_nonneg_of_sum_lt_nsmul
 
@@ -177,7 +173,7 @@ version: if the total weight of a finite set of pigeons is less than or equal to
 are sorted into `n > 0` pigeonholes, then for some pigeonhole, the total weight of the pigeons in
 this pigeonhole is less than or equal to `b`. -/
 theorem exists_sum_fiber_le_of_maps_to_of_sum_le_nsmul (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Nonempty)
-    (hb : (∑ x in s, w x) ≤ t.card • b) : ∃ y ∈ t, (∑ x in s.filter fun x => f x = y, w x) ≤ b :=
+    (hb : ∑ x in s, w x ≤ t.card • b) : ∃ y ∈ t, ∑ x in s.filter fun x => f x = y, w x ≤ b :=
   @exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum α β Mᵒᵈ _ _ _ _ _ _ _ hf ht hb
 #align finset.exists_sum_fiber_le_of_maps_to_of_sum_le_nsmul Finset.exists_sum_fiber_le_of_maps_to_of_sum_le_nsmul
 
@@ -187,14 +183,13 @@ are sorted into some pigeonholes, and for all but `n > 0` pigeonholes the total 
 pigeons there is nonpositive, then for at least one of these `n` pigeonholes, the total weight of
 the pigeons in this pigeonhole is greater than or equal to `b`. -/
 theorem exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum
-    (hf : ∀ (y) (_ : y ∉ t), (∑ x in s.filter fun x => f x = y, w x) ≤ 0) (ht : t.Nonempty)
+    (hf : ∀ (y) (_ : y ∉ t), ∑ x in s.filter fun x => f x = y, w x ≤ 0) (ht : t.Nonempty)
     (hb : t.card • b ≤ ∑ x in s, w x) : ∃ y ∈ t, b ≤ ∑ x in s.filter fun x => f x = y, w x :=
   exists_le_of_sum_le ht <|
     calc
-      (∑ _y in t, b) ≤ ∑ x in s, w x := by simpa
+      ∑ _y in t, b ≤ ∑ x in s, w x := by simpa
       _ ≤ ∑ y in t, ∑ x in s.filter fun x => f x = y, w x :=
         sum_le_sum_fiberwise_of_sum_fiber_nonpos hf
-
 #align finset.exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum Finset.exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, non-strict inequality
@@ -204,7 +199,7 @@ there is nonnegative, then for at least one of these `n` pigeonholes, the total 
 pigeons in this pigeonhole is less than or equal to `b`. -/
 theorem exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul
     (hf : ∀ (y) (_ : y ∉ t), (0 : M) ≤ ∑ x in s.filter fun x => f x = y, w x) (ht : t.Nonempty)
-    (hb : (∑ x in s, w x) ≤ t.card • b) : ∃ y ∈ t, (∑ x in s.filter fun x => f x = y, w x) ≤ b :=
+    (hb : ∑ x in s, w x ≤ t.card • b) : ∃ y ∈ t, ∑ x in s.filter fun x => f x = y, w x ≤ b :=
   @exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum α β Mᵒᵈ _ _ _ _ _ _ _ hf ht hb
 #align finset.exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul Finset.exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul
 
@@ -234,7 +229,7 @@ So, we prove four theorems: `Finset.exists_lt_card_fiber_of_maps_to_of_mul_lt_ca
 at least as many pigeons as the ceiling of the average number of pigeons across all pigeonholes. -/
 theorem exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to (hf : ∀ a ∈ s, f a ∈ t)
     (ht : t.card • b < s.card) : ∃ y ∈ t, b < (s.filter fun x => f x = y).card := by
-  simp_rw [cast_card] at ht⊢
+  simp_rw [cast_card] at ht ⊢
   exact exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum hf ht
 #align finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to
 
@@ -254,7 +249,7 @@ theorem exists_lt_card_fiber_of_mul_lt_card_of_maps_to (hf : ∀ a ∈ s, f a �
 at most as many pigeons as the floor of the average number of pigeons across all pigeonholes. -/
 theorem exists_card_fiber_lt_of_card_lt_nsmul (ht : ↑s.card < t.card • b) :
     ∃ y ∈ t, ↑(s.filter fun x => f x = y).card < b := by
-  simp_rw [cast_card] at ht⊢
+  simp_rw [cast_card] at ht ⊢
   exact
     exists_sum_fiber_lt_of_sum_fiber_nonneg_of_sum_lt_nsmul
       (fun _ _ => sum_nonneg fun _ _ => zero_le_one) ht
@@ -278,7 +273,7 @@ that its preimage in `s` has at least `b` elements.
 See also `Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to` for a stronger statement. -/
 theorem exists_le_card_fiber_of_nsmul_le_card_of_maps_to (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Nonempty)
     (hb : t.card • b ≤ s.card) : ∃ y ∈ t, b ≤ (s.filter fun x => f x = y).card := by
-  simp_rw [cast_card] at hb⊢
+  simp_rw [cast_card] at hb ⊢
   exact exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum hf ht hb
 #align finset.exists_le_card_fiber_of_nsmul_le_card_of_maps_to Finset.exists_le_card_fiber_of_nsmul_le_card_of_maps_to
 
@@ -297,7 +292,7 @@ that its preimage in `s` has no more than `b` elements.
 See also `Finset.exists_card_fiber_lt_of_card_lt_nsmul` for a stronger statement. -/
 theorem exists_card_fiber_le_of_card_le_nsmul (ht : t.Nonempty) (hb : ↑s.card ≤ t.card • b) :
     ∃ y ∈ t, ↑(s.filter fun x => f x = y).card ≤ b := by
-  simp_rw [cast_card] at hb⊢
+  simp_rw [cast_card] at hb ⊢
   refine'
     exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul
       (fun _ _ => sum_nonneg fun _ _ => zero_le_one) ht hb
@@ -355,8 +350,8 @@ theorem exists_le_sum_fiber_of_nsmul_le_sum [Nonempty β] (hb : card β • b �
 /-- The pigeonhole principle for finitely many pigeons of different weights, strict inequality
 version: there is a pigeonhole with the total weight of pigeons in it less than `b` provided that
 the total number of pigeonholes times `b` is greater than the total weight of all pigeons. -/
-theorem exists_sum_fiber_lt_of_sum_lt_nsmul (hb : (∑ x, w x) < card β • b) :
-    ∃ y, (∑ x in univ.filter fun x => f x = y, w x) < b :=
+theorem exists_sum_fiber_lt_of_sum_lt_nsmul (hb : ∑ x, w x < card β • b) :
+    ∃ y, ∑ x in univ.filter fun x => f x = y, w x < b :=
   @exists_lt_sum_fiber_of_nsmul_lt_sum α β Mᵒᵈ _ _ _ _ _ _ _ hb
 #align fintype.exists_sum_fiber_lt_of_sum_lt_nsmul Fintype.exists_sum_fiber_lt_of_sum_lt_nsmul
 
@@ -364,8 +359,8 @@ theorem exists_sum_fiber_lt_of_sum_lt_nsmul (hb : (∑ x, w x) < card β • b) 
 version: there is a pigeonhole with the total weight of pigeons in it less than or equal to `b`
 provided that the total number of pigeonholes times `b` is greater than or equal to the total weight
 of all pigeons. -/
-theorem exists_sum_fiber_le_of_sum_le_nsmul [Nonempty β] (hb : (∑ x, w x) ≤ card β • b) :
-    ∃ y, (∑ x in univ.filter fun x => f x = y, w x) ≤ b :=
+theorem exists_sum_fiber_le_of_sum_le_nsmul [Nonempty β] (hb : ∑ x, w x ≤ card β • b) :
+    ∃ y, ∑ x in univ.filter fun x => f x = y, w x ≤ b :=
   @exists_le_sum_fiber_of_nsmul_le_sum α β Mᵒᵈ _ _ _ _ _ _ _ _ hb
 #align fintype.exists_sum_fiber_le_of_sum_le_nsmul Fintype.exists_sum_fiber_le_of_sum_le_nsmul
 

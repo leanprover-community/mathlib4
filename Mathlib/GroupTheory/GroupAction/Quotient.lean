@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.group_action.quotient
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Fintype.BigOperators
@@ -14,6 +9,8 @@ import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Coset
+
+#align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Properties of group actions involving quotient groups
@@ -158,7 +155,6 @@ def ofQuotientStabilizer (g : α ⧸ MulAction.stabilizer α x) : β :=
     calc
       g1 • x = g1 • (g1⁻¹ * g2) • x := congr_arg _ (leftRel_apply.mp H).symm
       _ = g2 • x := by rw [smul_smul, mul_inv_cancel_left]
-
 #align mul_action.of_quotient_stabilizer MulAction.ofQuotientStabilizer
 #align add_action.of_quotient_stabilizer AddAction.ofQuotientStabilizer
 
@@ -273,11 +269,8 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
     [∀ b : β, Fintype <| stabilizer α b] {φ : Ω → β} (hφ : LeftInverse Quotient.mk'' φ) :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) := by
   classical
-    have :
-      ∀ ω : Ω,
-        Fintype.card α / Fintype.card (stabilizer α (φ ω)) =
-          Fintype.card (α ⧸ stabilizer α (φ ω)) :=
-      by
+    have : ∀ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) =
+        Fintype.card (α ⧸ stabilizer α (φ ω)) := by
       intro ω
       rw [Fintype.card_congr (@Subgroup.groupEquivQuotientProdSubgroup α _ (stabilizer α <| φ ω)),
         Fintype.card_prod, Nat.mul_div_cancel]
@@ -398,7 +391,7 @@ of commutators. -/
 noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
     G ⧸ center G ↪ S → commutatorSet G :=
   (quotientEquivOfEq (center_eq_infi' S hS)).toEmbedding.trans
-    ((quotientInfᵢEmbedding _).trans
+    ((quotientiInfEmbedding _).trans
       (Function.Embedding.piCongrRight fun g => quotientCentralizerEmbedding (g : G)))
 #align subgroup.quotient_center_embedding Subgroup.quotientCenterEmbedding
 

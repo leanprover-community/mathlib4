@@ -2,15 +2,11 @@
 Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.units
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Group.Units
+
+#align_import algebra.hom.units from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
 /-!
 # Monoid homomorphisms and units
@@ -20,8 +16,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 
 ## Main declarations
 
-* `Units.map`: Turn an homomorphism from `α` to `β` monoids into an homomorphism from `αˣ` to `βˣ`.
-* `MonoidHom.toHomUnits`: Turn an homomorphism from a group `α` to `β` into an homomorphism from
+* `Units.map`: Turn a homomorphism from `α` to `β` monoids into a homomorphism from `αˣ` to `βˣ`.
+* `MonoidHom.toHomUnits`: Turn a homomorphism from a group `α` to `β` into a homomorphism from
   `α` to `βˣ`.
 
 ## TODO
@@ -437,7 +433,8 @@ protected theorem div_eq_one_iff_eq (h : IsUnit b) : a / b = 1 ↔ a = b :=
 #align is_unit.div_eq_one_iff_eq IsUnit.div_eq_one_iff_eq
 #align is_add_unit.sub_eq_zero_iff_eq IsAddUnit.sub_eq_zero_iff_eq
 
-@[to_additive]
+/-- The `Group` version of this lemma is `div_mul_cancel'''` -/
+@[to_additive "The `AddGroup` version of this lemma is `sub_add_cancel''`"]
 protected theorem div_mul_left (h : IsUnit b) : b / (a * b) = 1 / a := by
   rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left, one_div]
 #align is_unit.div_mul_left IsUnit.div_mul_left

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.connectivity
-! leanprover-community/mathlib commit 13cd3e89b30352d5b1b7349f5537ea18ba878e40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
+
+#align_import combinatorics.simple_graph.connectivity from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
 /-!
 
@@ -166,7 +163,7 @@ theorem cons_copy {u v w v' w'} (h : G.Adj u v) (p : G.Walk v' w') (hv : v' = v)
 #align simple_graph.walk.cons_copy SimpleGraph.Walk.cons_copy
 
 theorem exists_eq_cons_of_ne {u v : V} (hne : u ≠ v) :
-    ∀ (p : G.Walk u v), ∃ (w : V)(h : G.Adj u w)(p' : G.Walk w v), p = cons h p'
+    ∀ (p : G.Walk u v), ∃ (w : V) (h : G.Adj u w) (p' : G.Walk w v), p = cons h p'
   | nil => (hne rfl).elim
   | cons h p' => ⟨_, h, p', rfl⟩
 #align simple_graph.walk.exists_eq_cons_of_ne SimpleGraph.Walk.exists_eq_cons_of_ne
@@ -300,7 +297,7 @@ theorem concat_append {u v w x : V} (p : G.Walk u v) (h : G.Adj v w) (q : G.Walk
 
 /-- A non-trivial `cons` walk is representable as a `concat` walk. -/
 theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    ∃ (x : V)(q : G.Walk u x)(h' : G.Adj x w), cons h p = q.concat h' := by
+    ∃ (x : V) (q : G.Walk u x) (h' : G.Adj x w), cons h p = q.concat h' := by
   induction p generalizing u with
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
@@ -312,7 +309,7 @@ theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 /-- A non-trivial `concat` walk is representable as a `cons` walk. -/
 theorem exists_concat_eq_cons {u v w : V} :
     ∀ (p : G.Walk u v) (h : G.Adj v w),
-      ∃ (x : V)(h' : G.Adj u x)(q : G.Walk x w), p.concat h = cons h' q
+      ∃ (x : V) (h' : G.Adj u x) (q : G.Walk x w), p.concat h = cons h' q
   | nil, h => ⟨_, h, nil, rfl⟩
   | cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
 #align simple_graph.walk.exists_concat_eq_cons SimpleGraph.Walk.exists_concat_eq_cons
@@ -671,7 +668,7 @@ theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Dar
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
 theorem edges_subset_edgeSet {u v : V} :
     ∀ (p : G.Walk u v) ⦃e : Sym2 V⦄, e ∈ p.edges → e ∈ G.edgeSet
-  | cons h' p', e, h  => by
+  | cons h' p', e, h => by
     cases h
     · exact h'
     next h' => exact edges_subset_edgeSet p' h'
@@ -1072,7 +1069,7 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 #align simple_graph.walk.take_spec SimpleGraph.Walk.take_spec
 
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
-    {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w)(r : G.Walk w v), p = q.append r := by
+    {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
   classical
   constructor
   · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
@@ -1484,7 +1481,7 @@ theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
 #align simple_graph.walk.map_map SimpleGraph.Walk.map_map
 
 /-- Unlike categories, for graphs vertex equality is an important notion, so needing to be able to
-to work with equality of graph homomorphisms is a necessary evil. -/
+work with equality of graph homomorphisms is a necessary evil. -/
 theorem map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
     p.map f = (p.map f').copy (h ▸ rfl) (h ▸ rfl) := by
   subst_vars
@@ -1699,7 +1696,7 @@ theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
 #align simple_graph.walk.edges_transfer SimpleGraph.Walk.edges_transfer
 
 @[simp]
-theorem support_transfer  (hp) : (p.transfer H hp).support = p.support := by
+theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
   induction p <;> simp [*]
 #align simple_graph.walk.support_transfer SimpleGraph.Walk.support_transfer
 
@@ -1887,8 +1884,8 @@ protected theorem Reachable.trans {u v w : V} (huv : G.Reachable u v) (hvw : G.R
   huv.elim fun puv => hvw.elim fun pvw => ⟨puv.append pvw⟩
 #align simple_graph.reachable.trans SimpleGraph.Reachable.trans
 
-theorem reachable_iff_reflTransGen (u v : V) : G.Reachable u v ↔ Relation.ReflTransGen G.Adj u v :=
-  by
+theorem reachable_iff_reflTransGen (u v : V) :
+    G.Reachable u v ↔ Relation.ReflTransGen G.Adj u v := by
   constructor
   · rintro ⟨h⟩
     induction h with
@@ -1904,6 +1901,16 @@ protected theorem Reachable.map {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
 #align simple_graph.reachable.map SimpleGraph.Reachable.map
+
+theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
+    G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
+  ⟨fun r => φ.left_inv u ▸ φ.left_inv v ▸ r.map φ.symm.toHom, Reachable.map φ.toHom⟩
+#align simple_graph.iso.reachable_iff SimpleGraph.Iso.reachable_iff
+
+theorem Iso.symm_apply_reachable {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u : V}
+    {v : V'} : G.Reachable (φ.symm v) u ↔ G'.Reachable v (φ u) := by
+  rw [← Iso.reachable_iff, RelIso.apply_symm_apply]
+#align simple_graph.iso.symm_apply_reachable SimpleGraph.Iso.symm_apply_reachable
 
 variable (G)
 
@@ -1963,104 +1970,208 @@ def ConnectedComponent := Quot G.Reachable
 def connectedComponentMk (v : V) : G.ConnectedComponent := Quot.mk G.Reachable v
 #align simple_graph.connected_component_mk SimpleGraph.connectedComponentMk
 
+variable {G G' G''}
+
+namespace ConnectedComponent
+
 @[simps]
-instance ConnectedComponent.inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
+instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
   ⟨G.connectedComponentMk default⟩
 #align simple_graph.connected_component.inhabited SimpleGraph.ConnectedComponent.inhabited
 
-section connectedComponent
-
-variable {G}
-
 @[elab_as_elim]
-protected theorem ConnectedComponent.ind {β : G.ConnectedComponent → Prop}
+protected theorem ind {β : G.ConnectedComponent → Prop}
     (h : ∀ v : V, β (G.connectedComponentMk v)) (c : G.ConnectedComponent) : β c :=
   Quot.ind h c
 #align simple_graph.connected_component.ind SimpleGraph.ConnectedComponent.ind
 
 @[elab_as_elim]
-protected theorem ConnectedComponent.ind₂ {β : G.ConnectedComponent → G.ConnectedComponent → Prop}
+protected theorem ind₂ {β : G.ConnectedComponent → G.ConnectedComponent → Prop}
     (h : ∀ v w : V, β (G.connectedComponentMk v) (G.connectedComponentMk w))
     (c d : G.ConnectedComponent) : β c d :=
   Quot.induction_on₂ c d h
 #align simple_graph.connected_component.ind₂ SimpleGraph.ConnectedComponent.ind₂
 
-protected theorem ConnectedComponent.sound {v w : V} :
+protected theorem sound {v w : V} :
     G.Reachable v w → G.connectedComponentMk v = G.connectedComponentMk w :=
   Quot.sound
 #align simple_graph.connected_component.sound SimpleGraph.ConnectedComponent.sound
 
-protected theorem ConnectedComponent.exact {v w : V} :
+protected theorem exact {v w : V} :
     G.connectedComponentMk v = G.connectedComponentMk w → G.Reachable v w :=
   @Quotient.exact _ G.reachableSetoid _ _
 #align simple_graph.connected_component.exact SimpleGraph.ConnectedComponent.exact
 
 @[simp]
-protected theorem ConnectedComponent.eq {v w : V} :
+protected theorem eq {v w : V} :
     G.connectedComponentMk v = G.connectedComponentMk w ↔ G.Reachable v w :=
   @Quotient.eq' _ G.reachableSetoid _ _
 #align simple_graph.connected_component.eq SimpleGraph.ConnectedComponent.eq
 
+theorem connectedComponentMk_eq_of_adj {v w : V} (a : G.Adj v w) :
+    G.connectedComponentMk v = G.connectedComponentMk w :=
+  ConnectedComponent.sound a.reachable
+#align simple_graph.connected_component.connected_component_mk_eq_of_adj SimpleGraph.ConnectedComponent.connectedComponentMk_eq_of_adj
+
 /-- The `ConnectedComponent` specialization of `Quot.lift`. Provides the stronger
 assumption that the vertices are connected by a path. -/
-protected def ConnectedComponent.lift {β : Sort _} (f : V → β)
+protected def lift {β : Sort _} (f : V → β)
     (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
   Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
 #align simple_graph.connected_component.lift SimpleGraph.ConnectedComponent.lift
 
 @[simp]
-protected theorem ConnectedComponent.lift_mk {β : Sort _} {f : V → β}
+protected theorem lift_mk {β : Sort _} {f : V → β}
     {h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w} {v : V} :
     ConnectedComponent.lift f h (G.connectedComponentMk v) = f v :=
   rfl
 #align simple_graph.connected_component.lift_mk SimpleGraph.ConnectedComponent.lift_mk
 
-protected theorem ConnectedComponent.exists {p : G.ConnectedComponent → Prop} :
+protected theorem «exists» {p : G.ConnectedComponent → Prop} :
     (∃ c : G.ConnectedComponent, p c) ↔ ∃ v, p (G.connectedComponentMk v) :=
   (surjective_quot_mk G.Reachable).exists
 #align simple_graph.connected_component.exists SimpleGraph.ConnectedComponent.exists
 
-protected theorem ConnectedComponent.forall {p : G.ConnectedComponent → Prop} :
+protected theorem «forall» {p : G.ConnectedComponent → Prop} :
     (∀ c : G.ConnectedComponent, p c) ↔ ∀ v, p (G.connectedComponentMk v) :=
   (surjective_quot_mk G.Reachable).forall
 #align simple_graph.connected_component.forall SimpleGraph.ConnectedComponent.forall
 
-theorem Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
+theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
     Subsingleton G.ConnectedComponent :=
   ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
 #align simple_graph.preconnected.subsingleton_connected_component SimpleGraph.Preconnected.subsingleton_connectedComponent
 
 /-- The map on connected components induced by a graph homomorphism. -/
-def ConnectedComponent.map {V : Type _} {G : SimpleGraph V} {V' : Type _} {G' : SimpleGraph V'}
-    (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
+def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
   C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
     ConnectedComponent.eq.mpr (p.map φ).reachable
 #align simple_graph.connected_component.map SimpleGraph.ConnectedComponent.map
 
 @[simp]
-theorem ConnectedComponent.map_mk {V : Type _} {G : SimpleGraph V} {V' : Type _}
-    {G' : SimpleGraph V'} (φ : G →g G') (v : V) :
+theorem map_mk (φ : G →g G') (v : V) :
     (G.connectedComponentMk v).map φ = G'.connectedComponentMk (φ v) :=
   rfl
 #align simple_graph.connected_component.map_mk SimpleGraph.ConnectedComponent.map_mk
 
 @[simp]
-theorem ConnectedComponent.map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
+theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
   refine' C.ind _
   exact fun _ => rfl
 #align simple_graph.connected_component.map_id SimpleGraph.ConnectedComponent.map_id
 
 @[simp]
-theorem ConnectedComponent.map_comp {V' : Type _} {G' : SimpleGraph V'} {V'' : Type _}
-    {G'' : SimpleGraph V''} (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
+theorem map_comp (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
     (C.map φ).map ψ = C.map (ψ.comp φ) := by
   refine' C.ind _
   exact fun _ => rfl
 #align simple_graph.connected_component.map_comp SimpleGraph.ConnectedComponent.map_comp
 
-end connectedComponent
+variable {φ : G ≃g G'} {v : V} {v' : V'}
 
-variable {G}
+@[simp]
+theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
+    G'.connectedComponentMk (φ v) = C.map ↑(↑φ : G ↪g G') ↔ G.connectedComponentMk v = C := by
+  refine' C.ind fun u => _
+  simp only [Iso.reachable_iff, ConnectedComponent.map_mk, RelEmbedding.coe_toRelHom,
+    RelIso.coe_toRelEmbedding, ConnectedComponent.eq]
+#align simple_graph.connected_component.iso_image_comp_eq_map_iff_eq_comp SimpleGraph.ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp
+
+@[simp]
+theorem iso_inv_image_comp_eq_iff_eq_map {C : G.ConnectedComponent} :
+    G.connectedComponentMk (φ.symm v') = C ↔ G'.connectedComponentMk v' = C.map φ := by
+  refine' C.ind fun u => _
+  simp only [Iso.symm_apply_reachable, ConnectedComponent.eq, ConnectedComponent.map_mk,
+    RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding]
+#align simple_graph.connected_component.iso_inv_image_comp_eq_iff_eq_map SimpleGraph.ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map
+
+end ConnectedComponent
+
+namespace Iso
+
+/-- An isomorphism of graphs induces a bijection of connected components. -/
+@[simps]
+def connectedComponentEquiv (φ : G ≃g G') : G.ConnectedComponent ≃ G'.ConnectedComponent where
+  toFun := ConnectedComponent.map φ
+  invFun := ConnectedComponent.map φ.symm
+  left_inv C := ConnectedComponent.ind
+    (fun v => congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v)) C
+  right_inv C := ConnectedComponent.ind
+    (fun v => congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v)) C
+#align simple_graph.iso.connected_component_equiv SimpleGraph.Iso.connectedComponentEquiv
+
+@[simp]
+theorem connectedComponentEquiv_refl :
+    (Iso.refl : G ≃g G).connectedComponentEquiv = Equiv.refl _ := by
+  ext ⟨v⟩
+  rfl
+#align simple_graph.iso.connected_component_equiv_refl SimpleGraph.Iso.connectedComponentEquiv_refl
+
+@[simp]
+theorem connectedComponentEquiv_symm (φ : G ≃g G') :
+    φ.symm.connectedComponentEquiv = φ.connectedComponentEquiv.symm := by
+  ext ⟨_⟩
+  rfl
+#align simple_graph.iso.connected_component_equiv_symm SimpleGraph.Iso.connectedComponentEquiv_symm
+
+@[simp]
+theorem connectedComponentEquiv_trans (φ : G ≃g G') (φ' : G' ≃g G'') :
+    connectedComponentEquiv (φ.trans φ') =
+    φ.connectedComponentEquiv.trans φ'.connectedComponentEquiv := by
+  ext ⟨_⟩
+  rfl
+#align simple_graph.iso.connected_component_equiv_trans SimpleGraph.Iso.connectedComponentEquiv_trans
+
+end Iso
+
+namespace ConnectedComponent
+
+/-- The set of vertices in a connected component of a graph. -/
+def supp (C : G.ConnectedComponent) :=
+  { v | G.connectedComponentMk v = C }
+#align simple_graph.connected_component.supp SimpleGraph.ConnectedComponent.supp
+
+@[ext]
+theorem supp_injective :
+    Function.Injective (ConnectedComponent.supp : G.ConnectedComponent → Set V) := by
+  refine' ConnectedComponent.ind₂ _
+  intro v w
+  simp only [ConnectedComponent.supp, Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq]
+  intro h
+  rw [reachable_comm, h]
+#align simple_graph.connected_component.supp_injective SimpleGraph.ConnectedComponent.supp_injective
+
+@[simp]
+theorem supp_inj {C D : G.ConnectedComponent} : C.supp = D.supp ↔ C = D :=
+  ConnectedComponent.supp_injective.eq_iff
+#align simple_graph.connected_component.supp_inj SimpleGraph.ConnectedComponent.supp_inj
+
+instance : SetLike G.ConnectedComponent V where
+  coe := ConnectedComponent.supp
+  coe_injective' := ConnectedComponent.supp_injective
+
+@[simp]
+theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
+    v ∈ C.supp ↔ G.connectedComponentMk v = C :=
+  Iff.rfl
+#align simple_graph.connected_component.mem_supp_iff SimpleGraph.ConnectedComponent.mem_supp_iff
+
+theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
+  rfl
+#align simple_graph.connected_component.connected_component_mk_mem SimpleGraph.ConnectedComponent.connectedComponentMk_mem
+
+/-- The equivalence between connected components, induced by an isomorphism of graphs,
+itself defines an equivalence on the supports of each connected component.
+-/
+def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
+    C.supp ≃ (φ.connectedComponentEquiv C).supp where
+  toFun v := ⟨φ v, ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp.mpr v.prop⟩
+  invFun v' := ⟨φ.symm v', ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map.mpr v'.prop⟩
+  left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)
+  right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
+#align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
+
+end ConnectedComponent
 
 /-- A subgraph is connected if it is connected as a simple graph. -/
 abbrev Subgraph.Connected (H : G.Subgraph) : Prop :=
@@ -2100,7 +2211,7 @@ theorem Connected.set_univ_walk_nonempty (hconn : G.Connected) (u v : V) :
 
 namespace Walk
 
-variable {G'} {u v w : V}
+variable {u v w : V}
 
 /-- The subgraph consisting of the vertices and edges of the walk. -/
 @[simp]
@@ -2201,7 +2312,7 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
   cases' p with _ _ w _ huw pwv
   · simp [eq_comm]
   · simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
-      Set.mem_unionᵢ, Set.mem_image, exists_prop]
+      Set.mem_iUnion, Set.mem_image, exists_prop]
     constructor
     · rintro rfl
       exact ⟨w, huw, pwv, rfl, rfl⟩
@@ -2229,7 +2340,7 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       exact {Walk.nil}
     else ∅
   | n + 1 =>
-    Finset.univ.bunionᵢ fun (w : G.neighborSet u) =>
+    Finset.univ.biUnion fun (w : G.neighborSet u) =>
       (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
 #align simple_graph.finset_walk_length SimpleGraph.finsetWalkLength
 
@@ -2237,11 +2348,11 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
   induction' n with n ih generalizing u v
   · obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
-  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_bunionᵢ, Finset.mem_coe,
-      Finset.mem_univ, Set.unionᵢ_true]
+  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
+      Finset.mem_univ, Set.iUnion_true]
     ext p
-    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.unionᵢ_coe_set,
-      Set.mem_unionᵢ, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
+    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,
+      Set.mem_iUnion, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
     congr!
     rename_i w _ q
     have := Set.ext_iff.mp (ih w v) q
@@ -2384,7 +2495,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
 -- porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     G.Adj v w ∧ (G \ fromEdgeSet {⟦(v, w)⟧}).Reachable v w ↔
-      ∃ (u : V)(p : G.Walk u u), p.IsCycle ∧ ⟦(v, w)⟧ ∈ p.edges := by
+      ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ ⟦(v, w)⟧ ∈ p.edges := by
   classical
   rw [reachable_delete_edges_iff_exists_walk]
   constructor
@@ -2407,9 +2518,8 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 #align simple_graph.adj_and_reachable_delete_edges_iff_exists_cycle SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle
 
-theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} :
-    G.IsBridge ⟦(v, w)⟧ ↔ G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → ⟦(v, w)⟧ ∉ p.edges :=
-  by
+theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge ⟦(v, w)⟧ ↔
+    G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → ⟦(v, w)⟧ ∉ p.edges := by
   rw [isBridge_iff, and_congr_right_iff]
   intro h
   rw [← not_iff_not]

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.hom.basic
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
-import Mathlib.Tactic.Positivity
-import Mathlib.Data.FunLike.Basic
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Tactic.Positivity.Basic
+
+#align_import algebra.order.hom.basic from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
 /-!
 # Algebraic order homomorphism classes
@@ -155,17 +152,19 @@ theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAd
 #align le_map_div_add_map_div le_map_div_add_map_div
 -- #align le_map_sub_add_map_sub le_map_sub_add_map_sub -- Porting note: TODO: `to_additive` clashes
 
---namespace Mathlib.Meta.Positivity
+namespace Mathlib.Meta.Positivity
 
---Porting note: tactic extension commented as decided in the weekly porting meeting
--- /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
--- @[positivity _ _]
--- unsafe def positivity_map : expr → tactic strictness
---   | expr.app (quote.1 ⇑(%%f)) (quote.1 (%%ₓa)) => nonnegative <$> mk_app `` map_nonneg [f, a]
---   | _ => failed
--- #align tactic.positivity_map tactic.positivity_map
+open Lean Meta Qq Function
 
---end Mathlib.Meta.Positivity
+/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
+@[positivity FunLike.coe _ _]
+def evalMap : PositivityExt where eval {_ β} _ _ e := do
+  let .app (.app _ f) a ← whnfR e
+    | throwError "not ↑f · where f is of NonnegHomClass"
+  let pa ← mkAppOptM ``map_nonneg #[none, none, β, none, none, none, f, a]
+  pure (.nonnegative pa)
+
+end Mathlib.Meta.Positivity
 
 /-! ### Group (semi)norms -/
 
@@ -231,8 +230,8 @@ attribute [simp] map_inv_eq_map -- porting note: `to_additive` translation alrea
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) AddGroupSeminormClass.toZeroHomClass {_ : AddGroup α}
-    {_ : OrderedAddCommMonoid β} [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
+instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
+    [OrderedAddCommMonoid β] [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
   { ‹AddGroupSeminormClass F α β› with }
 #align add_group_seminorm_class.to_zero_hom_class AddGroupSeminormClass.toZeroHomClass
 
@@ -241,8 +240,7 @@ section GroupSeminormClass
 variable [Group α] [OrderedAddCommMonoid β] [GroupSeminormClass F α β] (f : F) (x y : α)
 
 @[to_additive]
-theorem map_div_le_add : f (x / y) ≤ f x + f y :=
-  by
+theorem map_div_le_add : f (x / y) ≤ f x + f y := by
   rw [div_eq_mul_inv, ← map_inv_eq_map f y]
   exact map_mul_le_add _ _ _
 #align map_div_le_add map_div_le_add
@@ -266,8 +264,7 @@ example [OrderedAddCommGroup β] : OrderedAddCommMonoid β :=
 
 @[to_additive]
 theorem abs_sub_map_le_div [Group α] [LinearOrderedAddCommGroup β] [GroupSeminormClass F α β]
-    (f : F) (x y : α) : |f x - f y| ≤ f (x / y) :=
-  by
+    (f : F) (x y : α) : |f x - f y| ≤ f (x / y) := by
   rw [abs_sub_le_iff, sub_le_iff_le_add', sub_le_iff_le_add']
   exact ⟨le_map_add_map_div _ _ _, le_map_add_map_div' _ _ _⟩
 #align abs_sub_map_le_div abs_sub_map_le_div
@@ -275,12 +272,11 @@ theorem abs_sub_map_le_div [Group α] [LinearOrderedAddCommGroup β] [GroupSemin
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) GroupSeminormClass.toNonnegHomClass {_ : Group α}
-    {_ : LinearOrderedAddCommMonoid β} [GroupSeminormClass F α β] : NonnegHomClass F α β :=
+instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
+    [LinearOrderedAddCommMonoid β] [GroupSeminormClass F α β] : NonnegHomClass F α β :=
   { ‹GroupSeminormClass F α β› with
     map_nonneg := fun f a =>
-      (nsmul_nonneg_iff two_ne_zero).1 <|
-        by
+      (nsmul_nonneg_iff two_ne_zero).1 <| by
         rw [two_nsmul, ← map_one_eq_zero f, ← div_self' a]
         exact map_div_le_add _ _ _ }
 #align group_seminorm_class.to_nonneg_hom_class GroupSeminormClass.toNonnegHomClass
@@ -348,19 +344,19 @@ class MulRingNormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRing �
 
 -- See note [out-param inheritance]
 -- See note [lower instance priority]
-instance (priority := 100) RingSeminormClass.toNonnegHomClass {_ : NonUnitalNonAssocRing α}
-    {_ : LinearOrderedSemiring β} [RingSeminormClass F α β] : NonnegHomClass F α β :=
+instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssocRing α]
+    [LinearOrderedSemiring β] [RingSeminormClass F α β] : NonnegHomClass F α β :=
   AddGroupSeminormClass.toNonnegHomClass
 #align ring_seminorm_class.to_nonneg_hom_class RingSeminormClass.toNonnegHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) MulRingSeminormClass.toRingSeminormClass {_ : NonAssocRing α}
-    {_ : OrderedSemiring β} [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
+instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
+    [OrderedSemiring β] [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
   { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun f a b => (map_mul _ _ _).le }
 #align mul_ring_seminorm_class.to_ring_seminorm_class MulRingSeminormClass.toRingSeminormClass
 
 -- See note [lower instance priority]
-instance (priority := 100) MulRingNormClass.toRingNormClass {_ : NonAssocRing α}
-    {_ : OrderedSemiring β} [MulRingNormClass F α β] : RingNormClass F α β :=
+instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]
+    [OrderedSemiring β] [MulRingNormClass F α β] : RingNormClass F α β :=
   { ‹MulRingNormClass F α β›, MulRingSeminormClass.toRingSeminormClass with }
 #align mul_ring_norm_class.to_ring_norm_class MulRingNormClass.toRingNormClass

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.sets.closeds
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.sets.closeds from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Closed sets
@@ -97,11 +94,11 @@ instance : CompleteLattice (Closeds α) :=
     (funext fun s => funext fun t => SetLike.coe_injective (s.2.union t.2).closure_eq.symm)
     -- inf
     (fun s t => ⟨s ∩ t, s.2.inter t.2⟩) rfl
-    -- supₛ
+    -- sSup
     _ rfl
-    -- infₛ
-    (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_binterᵢ fun s _ => s.2⟩)
-    (funext fun _ => SetLike.coe_injective infₛ_image.symm)
+    -- sInf
+    (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_biInter fun s _ => s.2⟩)
+    (funext fun _ => SetLike.coe_injective sInf_image.symm)
 
 /-- The type of closed sets is inhabited, with default element the empty set. -/
 instance : Inhabited (Closeds α) :=
@@ -139,9 +136,9 @@ theorem coe_nonempty {s : Closeds α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
   nonempty_iff_ne_empty.trans coe_eq_empty.not
 
 @[simp, norm_cast]
-theorem coe_infₛ {S : Set (Closeds α)} : (↑(infₛ S) : Set α) = ⋂ i ∈ S, ↑i :=
+theorem coe_sInf {S : Set (Closeds α)} : (↑(sInf S) : Set α) = ⋂ i ∈ S, ↑i :=
   rfl
-#align topological_space.closeds.coe_Inf TopologicalSpace.Closeds.coe_infₛ
+#align topological_space.closeds.coe_Inf TopologicalSpace.Closeds.coe_sInf
 
 @[simp, norm_cast]
 theorem coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :
@@ -158,33 +155,33 @@ theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
 -- porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
 
 @[simp]
-theorem mem_infₛ {S : Set (Closeds α)} {x : α} : x ∈ infₛ S ↔ ∀ s ∈ S, x ∈ s := mem_interᵢ₂
-#align topological_space.closeds.mem_Inf TopologicalSpace.Closeds.mem_infₛ
+theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := mem_iInter₂
+#align topological_space.closeds.mem_Inf TopologicalSpace.Closeds.mem_sInf
 
 @[simp]
-theorem mem_infᵢ {ι} {x : α} {s : ι → Closeds α} : x ∈ infᵢ s ↔ ∀ i, x ∈ s i := by simp [infᵢ]
-#align topological_space.closeds.mem_infi TopologicalSpace.Closeds.mem_infᵢ
+theorem mem_iInf {ι} {x : α} {s : ι → Closeds α} : x ∈ iInf s ↔ ∀ i, x ∈ s i := by simp [iInf]
+#align topological_space.closeds.mem_infi TopologicalSpace.Closeds.mem_iInf
 
 @[simp, norm_cast]
-theorem coe_infᵢ {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set α) = ⋂ i, s i := by
+theorem coe_iInf {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set α) = ⋂ i, s i := by
   ext; simp
-#align topological_space.closeds.coe_infi TopologicalSpace.Closeds.coe_infᵢ
+#align topological_space.closeds.coe_infi TopologicalSpace.Closeds.coe_iInf
 
-theorem infᵢ_def {ι} (s : ι → Closeds α) :
-    (⨅ i, s i) = ⟨⋂ i, s i, isClosed_interᵢ fun i => (s i).2⟩ := by ext1; simp
-#align topological_space.closeds.infi_def TopologicalSpace.Closeds.infᵢ_def
+theorem iInf_def {ι} (s : ι → Closeds α) :
+    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
+#align topological_space.closeds.infi_def TopologicalSpace.Closeds.iInf_def
 
 @[simp]
-theorem infᵢ_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
-    (⨅ i, ⟨s i, h i⟩ : Closeds α) = ⟨⋂ i, s i, isClosed_interᵢ h⟩ :=
-  infᵢ_def _
-#align topological_space.closeds.infi_mk TopologicalSpace.Closeds.infᵢ_mk
+theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
+    (⨅ i, ⟨s i, h i⟩ : Closeds α) = ⟨⋂ i, s i, isClosed_iInter h⟩ :=
+  iInf_def _
+#align topological_space.closeds.infi_mk TopologicalSpace.Closeds.iInf_mk
 
 instance : Coframe (Closeds α) :=
   { inferInstanceAs (CompleteLattice (Closeds α)) with
-    infₛ := infₛ
-    infᵢ_sup_le_sup_infₛ := fun a s =>
-      (SetLike.coe_injective <| by simp only [coe_sup, coe_infᵢ, coe_infₛ, Set.union_interᵢ₂]).le }
+    sInf := sInf
+    iInf_sup_le_sup_sInf := fun a s =>
+      (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
 
 /-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
 @[simps]
@@ -338,7 +335,7 @@ instance : BooleanAlgebra (Clopens α) :=
 @[simp] theorem coe_sdiff (s t : Clopens α) : (↑(s \ t) : Set α) = ↑s \ ↑t := rfl
 #align topological_space.clopens.coe_sdiff TopologicalSpace.Clopens.coe_sdiff
 
-@[simp] theorem coe_compl (s : Clopens α) : (↑(sᶜ) : Set α) = ↑sᶜ := rfl
+@[simp] theorem coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩

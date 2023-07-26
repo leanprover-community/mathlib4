@@ -22,15 +22,18 @@ With `sym = true`, reverses the equality in `v`, and uses `Eq.mpr v e` instead.
 With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max recursion depth.
 -/
 def Lean.MVarId.convert (e : Expr) (sym : Bool)
-    (depth : Option Nat := none) (config : Congr!.Config := {}) (g : MVarId) :
+    (depth : Option Nat := none) (config : Congr!.Config := {})
+    (patterns : List (TSyntax `rcasesPat) := []) (g : MVarId) :
     MetaM (List MVarId) := do
   let src ← inferType e
   let tgt ← g.getType
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try m.congrN! depth config
+  try m.congrN! depth config patterns
   catch _ => return [m]
+
+namespace Mathlib.Tactic
 
 /--
 The `exact e` and `refine e` tactics require a term `e` whose type is
@@ -42,8 +45,8 @@ For example, in the proof state
 
 ```lean
 n : ℕ,
-e : prime (2 * n + 1)
-⊢ prime (n + n + 1)
+e : Prime (2 * n + 1)
+⊢ Prime (n + n + 1)
 ```
 
 the tactic `convert e using 2` will change the goal to
@@ -85,20 +88,27 @@ Refer to the `congr!` tactic to understand the congruence operations. One of its
 features is that if `x y : t` and an instance `Subsingleton t` is in scope,
 then any goals of the form `x = y` are solved automatically.
 
+Like `congr!`, `convert` takes an optional `with` clause of `rintro` patterns,
+for example `convert e using n with x y z`.
+
 The `convert` tactic also takes a configuration option, for example
 ```lean
 convert (config := {transparency := .default}) h
 ```
 These are passed to `congr!`. See `Congr!.Config` for options.
 -/
-syntax (name := convert) "convert" (Parser.Tactic.config)? "← "? term (" using " num)? : tactic
+syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]?) => withMainContext do
-  let config ← Congr!.elabConfig (mkOptionalNode cfg)
-  let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
-    (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag)
-  liftMetaTactic fun g ↦ return (← g.convert e sym.isSome (n.map (·.getNat)) config) ++ gs
+| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+  withMainContext do
+    let config ← Congr!.elabConfig (mkOptionalNode cfg)
+    let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+    let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
+      (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) `convert
+    liftMetaTactic fun g ↦
+      return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
 -- FIXME restore when `add_tactic_doc` is ported.
 -- add_tactic_doc
@@ -118,10 +128,13 @@ That is, `convert_to g using n` is equivalent to `convert (?_ : g) using n`.
 The syntax for `convert_to` is the same as for `convert`, and it has variations such as
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? "← "? term (" using " num)? : tactic
+syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
-| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term) =>
-  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1)
-| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n) =>
-  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n)
+| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
+  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
+| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
+  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
+
+end Mathlib.Tactic

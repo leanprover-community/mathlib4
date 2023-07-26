@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.non_unital_non_assoc_algebra
-! leanprover-community/mathlib commit 841ac1a3d9162bf51c6327812ecb6e5e71883ac4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Lie.Basic
+
+#align_import algebra.lie.non_unital_non_assoc_algebra from "leanprover-community/mathlib"@"841ac1a3d9162bf51c6327812ecb6e5e71883ac4"
 
 /-!
 # Lie algebras as non-unital, non-associative algebras
@@ -77,9 +74,9 @@ instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) :
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocSemiring`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/
-instance sMulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) :=
+instance smulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) :=
   ⟨fun t x y => (lie_smul t x y).symm⟩
-#align lie_algebra.smul_comm_class LieAlgebra.sMulCommClass
+#align lie_algebra.smul_comm_class LieAlgebra.smulCommClass
 
 end LieAlgebra
 

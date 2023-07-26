@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.natural_isomorphism
-! leanprover-community/mathlib commit 6eb334bd8f3433d5b08ba156b8ec3e6af47e1904
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Iso
+
+#align_import category_theory.natural_isomorphism from "leanprover-community/mathlib"@"6eb334bd8f3433d5b08ba156b8ec3e6af47e1904"
 
 /-!
 # Natural isomorphisms
@@ -52,7 +49,7 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps]
+@[simps, pp_dot]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
@@ -62,15 +59,6 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 #align category_theory.iso.app CategoryTheory.Iso.app
 #align category_theory.iso.app_hom CategoryTheory.Iso.app_hom
 #align category_theory.iso.app_inv CategoryTheory.Iso.app_inv
-
-/--
-This unexpander will pretty print `η.app X` properly.
-Without this, we would have `Iso.app η X`.
--/
-@[app_unexpander Iso.app] def
-  unexpandIsoApp : Lean.PrettyPrinter.Unexpander
-  | `($_ $η $(X)*)  => set_option hygiene false in `($(η).app $(X)*)
-  | _            => throw ()
 
 @[reassoc (attr := simp)]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
@@ -185,12 +173,12 @@ theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫
   simp
 #align category_theory.nat_iso.naturality_2 CategoryTheory.NatIso.naturality_2
 
-theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app X)] :
+theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
     inv (α.app X) ≫ F.map f ≫ α.app Y = G.map f := by simp
 #align category_theory.nat_iso.naturality_1' CategoryTheory.NatIso.naturality_1'
 
 @[reassoc (attr := simp)]
-theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app Y)] :
+theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
     α.app X ≫ G.map f ≫ inv (α.app Y) = F.map f := by
   rw [← Category.assoc, ← naturality, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
 #align category_theory.nat_iso.naturality_2' CategoryTheory.NatIso.naturality_2'
@@ -205,7 +193,7 @@ instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
 #align category_theory.nat_iso.is_iso_app_of_is_iso CategoryTheory.NatIso.isIso_app_of_isIso
 
 @[simp]
-theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.app X) := by
+theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by
   -- Porting note: the next lemma used to be in `ext`, but that is no longer allowed.
   -- We've added an aesop apply rule;
   -- it would be nice to have a hook to run those without aesop warning it didn't close the goal.
@@ -225,7 +213,8 @@ and checking naturality only in the forward direction.
 -/
 @[simps]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
-    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f) :
+    (naturality : ∀ {X Y : C} (f : X ⟶ Y),
+      F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by aesop_cat) :
     F ≅ G where
   hom := { app := fun X => (app X).hom }
   inv :=

@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module logic.unique
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Common
+
+#align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Types with a unique term
@@ -30,7 +27,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
   would lead to loops in typeclass inference.
 
 * `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
-  codomain is `unique` as well.
+  codomain is `Unique` as well.
 
 * `Function.Injective.subsingleton`: if the codomain of an injective function is `Subsingleton`,
   then its domain is `Subsingleton` as well.
@@ -101,7 +98,6 @@ instance PUnit.unique : Unique PUnit.{u} where
 @[simp, nolint simpNF]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
-
 #align punit.default_eq_star PUnit.default_eq_unit
 
 /-- Every provable proposition is unique, as all proofs are equal. -/

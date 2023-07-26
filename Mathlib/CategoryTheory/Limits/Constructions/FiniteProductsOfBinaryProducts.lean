@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.finite_products_of_binary_products
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Logic.Equiv.Fin
+
+#align_import category_theory.limits.constructions.finite_products_of_binary_products from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Constructing finite products from binary products and terminal.
@@ -112,7 +109,7 @@ theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
   letI := hasProduct_fin n fun n => K.obj ⟨n⟩
   let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-  apply @hasLimitOfIso  _ _ _ _ _ _ this that
+  apply @hasLimitOfIso _ _ _ _ _ _ this that
 #align category_theory.has_finite_products_of_has_binary_and_terminal CategoryTheory.hasFiniteProducts_of_has_binary_and_terminal
 
 end
@@ -153,7 +150,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
     refine' Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
     · rintro i _
-      dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π]
+      dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π_app]
       rw [Fin.cases_succ, Fin.cases_succ]
       change F.map _ ≫ _ = 𝟙 _ ≫ _
       simp only [id_comp, ← F.map_comp]
@@ -240,21 +237,20 @@ If `C` has an initial object and binary coproducts, then it has a coproduct for 
 This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is more general
 than this.
 -/
-private theorem has_coproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
-  | 0 => fun f =>
-    by
+private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
+  | 0 => fun f => by
     letI : HasColimitsOfShape (Discrete (Fin 0)) C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
     infer_instance
   | n + 1 => fun f => by
-    haveI := has_coproduct_fin n
+    haveI := hasCoproduct_fin n
     apply
       HasColimit.mk ⟨_, extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)⟩
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
-  letI := has_coproduct_fin n fun n => K.obj ⟨n⟩
+  letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
   let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨i⟩ => Iso.refl _
   apply @hasColimitOfIso _ _ _ _ _ _ this that
 #align category_theory.has_finite_coproducts_of_has_binary_and_initial CategoryTheory.hasFiniteCoproducts_of_has_binary_and_initial
@@ -298,7 +294,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
     refine' Fin.inductionOn j ?_ ?_
     · apply Category.comp_id
     · rintro i _
-      dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι]
+      dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
       rw [Fin.cases_succ, Fin.cases_succ, comp_id, ← F.map_comp]
 #align category_theory.preserves_fin_of_preserves_binary_and_initial CategoryTheory.preservesFinOfPreservesBinaryAndInitialₓ  -- Porting note: order of universes changed
 

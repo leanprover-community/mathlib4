@@ -2,19 +2,16 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.ring.order_synonym
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.OrderSynonym
 
+#align_import algebra.ring.order_synonym from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
+
 /-!
 # Ring structure on the order type synonyms
 
-Transfer algebraic instances from `α` to `αᵒᵈ` and `lex α`.
+Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
 
 

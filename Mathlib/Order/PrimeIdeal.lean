@@ -2,14 +2,11 @@
 Copyright (c) 2021 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
-
-! This file was ported from Lean 3 source module order.prime_ideal
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Order.PFilter
+
+#align_import order.prime_ideal from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Prime ideals
@@ -19,9 +16,9 @@ import Mathlib.Order.PFilter
 Throughout this file, `P` is at least a preorder, but some sections require more
 structure, such as a bottom element, a top element, or a join-semilattice structure.
 
-- `Order.Ideal.PrimePair`: A pair of an `ideal` and a `pfilter` which form a partition of `P`.
-  This is useful as giving the data of a prime ideal is the same as giving the data of a prime
-  filter.
+- `Order.Ideal.PrimePair`: A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition
+  of `P`.  This is useful as giving the data of a prime ideal is the same as giving the data of a
+  prime filter.
 - `Order.Ideal.IsPrime`: a predicate for prime ideals. Dual to the notion of a prime filter.
 - `Order.PFilter.IsPrime`: a predicate for prime filters. Dual to the notion of a prime ideal.
 
@@ -44,7 +41,7 @@ variable {P : Type _}
 
 namespace Ideal
 
-/-- A pair of an `ideal` and a `pfilter` which form a partition of `P`.
+/-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
 -- porting note: no attr @[nolint has_nonempty_instance]
 structure PrimePair (P : Type _) [Preorder P] where
@@ -75,7 +72,7 @@ set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.I_is_proper Order.Ideal.PrimePair.I_isProper
 
 protected theorem disjoint : Disjoint (IF.I : Set P) IF.F :=
-  IF.isCompl_I_F.Disjoint
+  IF.isCompl_I_F.disjoint
 #align order.ideal.prime_pair.disjoint Order.Ideal.PrimePair.disjoint
 
 theorem I_union_F : (IF.I : Set P) ∪ IF.F = Set.univ :=
@@ -94,7 +91,7 @@ end PrimePair
 -/
 @[mk_iff]
 class IsPrime [Preorder P] (I : Ideal P) extends IsProper I : Prop where
-  compl_filter : IsPFilter ((I : Set P)ᶜ)
+  compl_filter : IsPFilter (I : Set P)ᶜ
 #align order.ideal.is_prime Order.Ideal.IsPrime
 
 section Preorder
@@ -220,7 +217,7 @@ variable [Preorder P]
 -/
 @[mk_iff]
 class IsPrime (F : PFilter P) : Prop where
-  compl_ideal : IsIdeal ((F : Set P)ᶜ)
+  compl_ideal : IsIdeal (F : Set P)ᶜ
 #align order.pfilter.is_prime Order.PFilter.IsPrime
 
 /-- Create an element of type `Order.Ideal.PrimePair` from a filter satisfying the predicate
@@ -242,4 +239,3 @@ set_option linter.uppercaseLean3 false in
 end PFilter
 
 end Order
-

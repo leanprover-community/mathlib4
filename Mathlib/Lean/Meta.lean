@@ -7,12 +7,18 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
+import Std.Data.List.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
 open Lean Meta
 
 namespace Lean.MVarId
+
+/-- Solve a goal by synthesizing an instance. -/
+-- FIXME: probably can just be `g.inferInstance` once lean4#2054 is fixed
+def synthInstance (g : MVarId) : MetaM Unit := do
+  g.assign (← Lean.Meta.synthInstance (← g.getType))
 
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
@@ -47,6 +53,15 @@ def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
   (← g.assert h (← t.getDM (inferType v)) v).intro1P
 
+/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
+def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+    MetaM (FVarId × MVarId) := do
+  (← g.define h (← t.getDM (inferType v)) v).intro1P
+
+/-- Short-hand for applying a constant to the goal. -/
+def applyConst (mvar : MVarId) (c : Name) (cfg : ApplyConfig := {}) : MetaM (List MVarId) := do
+  mvar.apply (← mkConstWithFreshMVarLevels c) cfg
+
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
@@ -73,16 +88,54 @@ partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   catch _ =>
     pure (acc, g)
 
+/-- Check if a goal is of a subsingleton type. -/
+def subsingleton? (g : MVarId) : MetaM Bool := do
+  try
+    _ ← Lean.Meta.synthInstance (← mkAppM `Subsingleton #[← g.getType])
+    return true
+  catch _ =>
+    return false
+
+/--
+Check if a goal is "independent" of a list of other goals.
+We say a goal is independent of other goals if assigning a value to it
+can not change the solvability of the other goals.
+
+This function only calculates an approximation of this condition
+-/
+def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
+  let t ← instantiateMVars (← g.getType)
+  if t.hasExprMVar then
+    -- If the goal's type contains other meta-variables,
+    -- we conservatively say that `g` is not independent.
+    return false
+  if t.isProp then
+    -- If the goal is propositional,
+    -- proof-irrelevance should ensure it is independent of any other goals.
+    return true
+  if ← g.subsingleton? then
+    -- If the goal is a subsingleton, it should be independent of any other goals.
+    return true
+  -- Finally, we check if the goal `g` appears in the type of any of the goals `L`.
+  L.allM fun g' => do
+    let t' ← instantiateMVars (← g'.getType)
+    pure <| !(← exprDependsOn' t' (.mvar g))
+
 end Lean.MVarId
 
 namespace Lean.Meta
 
 /-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
-def getLocalHyps : MetaM (Array Expr) := do
+def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
   let mut hs := #[]
   for d in ← getLCtx do
     if !d.isImplementationDetail then hs := hs.push d.toExpr
   return hs
+
+/-- Count how many local hypotheses appear in an expression. -/
+def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
+  let e' ← instantiateMVars e
+  return (← getLocalHyps).toList.countp fun h => h.occurs e'
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,
@@ -100,6 +153,12 @@ and then builds the lambda telescope term for the new term.
 -/
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
+
+
+/-- Get the type the given metavariable after instantiating metavariables and cleaning up
+annotations. -/
+def _root_.Lean.MVarId.getType'' (mvarId : MVarId) : MetaM Expr :=
+  return (← instantiateMVars (← mvarId.getType)).cleanupAnnotations
 
 end Lean.Meta
 

@@ -2,19 +2,16 @@
 Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
-
-! This file was ported from Lean 3 source module order.filter.curry
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Prod
+
+#align_import order.filter.curry from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Curried Filters
 
-This file provides an operation (`filter.curry`) on filters which provides the equivalence
-`∀ᶠ a in l, ∀ᶠ b in l', p (a, b) ↔ ∀ᶠ c in (l.curry l'), p c` (see `filter.eventually_curry_iff`).
+This file provides an operation (`Filter.curry`) on filters which provides the equivalence
+`∀ᶠ a in l, ∀ᶠ b in l', p (a, b) ↔ ∀ᶠ c in (l.curry l'), p c` (see `Filter.eventually_curry_iff`).
 
 To understand when this operation might arise, it is helpful to think of `∀ᶠ` as a combination of
 the quantifiers `∃ ∀`. For instance, `∀ᶠ n in at_top, p n ↔ ∃ N, ∀ n ≥ N, p n`. A curried filter
@@ -22,9 +19,9 @@ yields the quantifier order `∃ ∀ ∃ ∀`. For instance,
 `∀ᶠ n in at_top.curry at_top, p n ↔ ∃ M, ∀ m ≥ M, ∃ N, ∀ n ≥ N, p (m, n)`.
 
 This is different from a product filter, which instead yields a quantifier order `∃ ∃ ∀ ∀`. For
-instance, `∀ᶠ n in at_top ×ᶠ at_top, p n ↔ ∃ M, ∃ N, ∀ m ≥ M, ∀ n ≥ N, p (m, n)`. This makes it
+instance, `∀ᶠ n in at_top ×ˢ at_top, p n ↔ ∃ M, ∃ N, ∀ m ≥ M, ∀ n ≥ N, p (m, n)`. This makes it
 clear that if something eventually occurs on the product filter, it eventually occurs on the curried
-filter (see `filter.curry_le_prod` and `filter.eventually.curry`), but the converse is not true.
+filter (see `Filter.curry_le_prod` and `Filter.eventually.curry`), but the converse is not true.
 
 Another way to think about the curried versus the product filter is that tending to some limit on
 the product filter is a version of uniform convergence (see `tendsto_prod_filter_iff`) whereas
@@ -74,7 +71,7 @@ theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.prod g :
 
 theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ}
     (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto (↿f) (la.curry lb) lc :=
-  fun _s hs => h.mono fun _a ha =>  ha hs
+  fun _s hs => h.mono fun _a ha => ha hs
 #align filter.tendsto.curry Filter.Tendsto.curry
 
 end Filter

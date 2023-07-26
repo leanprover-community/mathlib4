@@ -44,8 +44,11 @@ ERR_SAV = 4 # ᾰ
 ERR_RNT = 5 # reserved notation
 ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
-ERR_TAC = 9 # imported tactic{,.omega,.observe}
+ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_UNF = 10 # unfreeze_local_instances
+ERR_IBY = 11 # isolated by
+ERR_DOT = 12 # isolated or low focusing dot
+ERR_SEM = 13 # the substring " ;"
 
 exceptions = []
 
@@ -82,6 +85,8 @@ new_exceptions = False
 def skip_comments(enumerate_lines):
     in_comment = False
     for line_nr, line in enumerate_lines:
+        if line.startswith("--"):
+            continue
         if "/-" in line:
             in_comment = True
         if "-/" in line:
@@ -160,6 +165,8 @@ def import_only_check(lines, path):
         imports = line.split()
         if imports[0] == "--":
             continue
+        if imports[0] == "#align_import":
+            continue
         if imports[0] != "import":
             import_only_file = False
             break
@@ -207,25 +214,41 @@ def regular_check(lines, path):
         if copy_done and line == "\n":
             continue
         words = line.split()
-        if words[0] != "import" and words[0] != "/-!":
+        if words[0] != "import" and words[0] != "/-!" and words[0] != "#align_import":
             errors += [(ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
             break
         # final case: words[0] == "import"
-        if len(words) > 2:
+        if words[0] == "import" and len(words) > 2:
             if words[2] != "--":
                 errors += [(ERR_IMP, line_nr, path)]
     return errors
 
-def import_omega_check(lines, path):
+def banned_import_check(lines, path):
     errors = []
     for line_nr, line in skip_comments(enumerate(lines, 1)):
         imports = line.split()
         if imports[0] != "import":
             break
-        if imports[1] in ["tactic", "tactic.omega", "tactic.observe"]:
+        if imports[1] in ["Mathlib.Tactic"]:
             errors += [(ERR_TAC, line_nr, path)]
+    return errors
+
+def isolated_by_dot_semicolon_check(lines, path):
+    errors = []
+    for line_nr, line in enumerate(lines, 1):
+        if line.strip() == "by":
+            # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
+            # should not be used in the second or later arguments of a tuple/anonymous constructor
+            # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
+            prev_line = lines[line_nr - 2].rstrip()
+            if not prev_line.endswith(",") and not re.search(", fun [^,]* =>$", prev_line):
+                errors += [(ERR_IBY, line_nr, path)]
+        if line.lstrip().startswith(". ") or line.strip() in (".", "·"):
+            errors += [(ERR_DOT, line_nr, path)]
+        if " ;" in line:
+            errors += [(ERR_SEM, line_nr, path)]
     return errors
 
 def output_message(path, line_nr, code, msg):
@@ -265,12 +288,20 @@ def format_errors(errors):
         if errno == ERR_AUT:
             output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder, nor tactic.omega or tactic.observe")
+            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
+        if errno == ERR_IBY:
+            output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
+        if errno == ERR_DOT:
+            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
+        if errno == ERR_SEM:
+            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
 
 def lint(path):
     with path.open(encoding="utf-8") as f:
         lines = f.readlines()
         errs = long_lines_check(lines, path)
+        format_errors(errs)
+        errs = isolated_by_dot_semicolon_check(lines, path)
         format_errors(errs)
         (b, errs) = import_only_check(lines, path)
         if b:
@@ -284,7 +315,7 @@ def lint(path):
         format_errors(errs)
         errs = set_option_check(lines, path)
         format_errors(errs)
-        errs = import_omega_check(lines, path)
+        errs = banned_import_check(lines, path)
         format_errors(errs)
 
 for filename in sys.argv[1:]:

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module data.holor
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import data.holor from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Basic properties of holors
@@ -179,7 +176,6 @@ def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ 
   x t.take * y t.drop
 #align holor.mul Holor.mul
 
--- mathport name: «expr ⊗ »
 local infixl:70 " ⊗ " => mul
 
 theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
@@ -263,12 +259,12 @@ theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x 
         _ = y ⟨i :: is, _⟩ := congr_arg (fun t => y t) (Subtype.eq rfl)
 #align holor.slice_eq Holor.slice_eq
 
-theorem slice_unit_vec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
+theorem slice_unitVec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
   funext fun t : HolorIndex ds =>
     if h : i = j then by simp [slice, mul, HolorIndex.take, unitVec, HolorIndex.drop, h]
     else by simp [slice, mul, HolorIndex.take, unitVec, HolorIndex.drop, h]; rfl
-#align holor.slice_unit_vec_mul Holor.slice_unit_vec_mul
+#align holor.slice_unit_vec_mul Holor.slice_unitVec_mul
 
 theorem slice_add [Add α] (i : ℕ) (hid : i < d) (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) :
     slice x i hid + slice y i hid = slice (x + y) i hid :=
@@ -291,23 +287,23 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
 /-- The original holor can be recovered from its slices by multiplying with unit vectors and
 summing up. -/
 @[simp]
-theorem sum_unit_vec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
+theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
     (∑ i in (Finset.range d).attach,
         unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
   apply slice_eq _ _ _
-  ext (i hid)
+  ext i hid
   rw [← slice_sum]
-  simp only [slice_unit_vec_mul hid]
+  simp only [slice_unitVec_mul hid]
   rw [Finset.sum_eq_single (Subtype.mk i <| Finset.mem_range.2 hid)]
   · simp
-  · intro (b : { x // x ∈ Finset.range d }) (_ : b ∈ (Finset.range d).attach)(hbi : b ≠ ⟨i, _⟩)
+  · intro (b : { x // x ∈ Finset.range d }) (_ : b ∈ (Finset.range d).attach) (hbi : b ≠ ⟨i, _⟩)
     have hbi' : i ≠ b := by simpa only [Ne.def, Subtype.ext_iff, Subtype.coe_mk] using hbi.symm
     simp [hbi']
   · intro (hid' : Subtype.mk i _ ∉ Finset.attach (Finset.range d))
     exfalso
     exact absurd (Finset.mem_attach _ _) hid'
-#align holor.sum_unit_vec_mul_slice Holor.sum_unit_vec_mul_slice
+#align holor.sum_unit_vec_mul_slice Holor.sum_unitVec_mul_slice
 
 -- CP rank
 /-- `CPRankMax1 x` means `x` has CP rank at most 1, that is,
@@ -347,7 +343,7 @@ theorem cprankMax_add [Monoid α] [AddMonoid α] :
     apply CPRankMax.succ
     · assumption
     · -- Porting note: Single line is added.
-      simp [add_zero, add_comm n m]
+      simp only [Nat.add_eq, add_zero, add_comm n m]
       exact cprankMax_add hx₂ hy
 #align holor.cprank_max_add Holor.cprankMax_add
 
@@ -373,7 +369,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
       simp only [Nat.one_mul, Nat.add_comm]
       have ih' : CPRankMax (Finset.card s * n) (∑ x in s, f x) := by
         apply ih
-        intro (x : β)(h_x_in_s : x ∈ s)
+        intro (x : β) (h_x_in_s : x ∈ s)
         simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
       exact cprankMax_add (h_cprank x (Finset.mem_insert_self x s)) ih')
 #align holor.cprank_max_sum Holor.cprankMax_sum
@@ -396,7 +392,7 @@ theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankM
       CPRankMax (Finset.card (Finset.range d) * prod ds)
         (∑ i in Finset.attach (Finset.range d),
           unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) := by rwa [Finset.card_attach] at this
-    rw [← sum_unit_vec_mul_slice x]
+    rw [← sum_unitVec_mul_slice x]
     rw [h_dds_prod]
     exact h_cprankMax_sum
 #align holor.cprank_max_upper_bound Holor.cprankMax_upper_bound

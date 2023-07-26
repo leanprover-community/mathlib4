@@ -2,13 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fun_like.embedding
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Basic
+
+#align_import data.fun_like.embedding from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ↪ B`
@@ -20,9 +17,9 @@ This typeclass is primarily for use by embeddings such as `RelEmbedding`.
 A typical type of embeddings should be declared as:
 ```
 structure MyEmbedding (A B : Type _) [MyClass A] [MyClass B] :=
-(toFun : A → B)
-(injective' : Function.Injective toFun)
-(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
+  (toFun : A → B)
+  (injective' : Function.Injective toFun)
+  (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyEmbedding
 
@@ -30,9 +27,9 @@ variables (A B : Type _) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Embedding class" design below:
 instance : EmbeddingLike (MyEmbedding A B) A B :=
-{ coe := MyEmbedding.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := MyEmbedding.injective' }
+  { coe := MyEmbedding.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    injective' := MyEmbedding.injective' }
 
 /-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
 instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
@@ -42,9 +39,9 @@ instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyEmbedding A B) (f' : A → B) (h : f' = ⇑f) : MyEmbedding A B :=
-{ toFun := f',
-  injective' := h.symm ▸ f.injective',
-  map_op' := h.symm ▸ f.map_op' }
+  { toFun := f',
+    injective' := h.symm ▸ f.injective',
+    map_op' := h.symm ▸ f.map_op' }
 
 end MyEmbedding
 ```
@@ -76,10 +73,10 @@ MyEmbeddingClass.map_op
 
 -- You can replace `MyEmbedding.EmbeddingLike` with the below instance:
 instance : MyEmbeddingClass (MyEmbedding A B) A B :=
-{ coe := MyEmbedding.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := MyEmbedding.injective',
-  map_op := MyEmbedding.map_op' }
+  { coe := MyEmbedding.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    injective' := MyEmbedding.injective',
+    map_op := MyEmbedding.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -108,11 +105,11 @@ MyEmbeddingClass.map_op
 
 -- You can also replace `MyEmbedding.EmbeddingLike` with the below instance:
 instance : CoolerEmbeddingClass (CoolerEmbedding A B) A B :=
-{ coe := CoolerEmbedding.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := MyEmbedding.injective',
-  map_op := CoolerEmbedding.map_op',
-  map_cool := CoolerEmbedding.map_cool' }
+  { coe := CoolerEmbedding.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    injective' := MyEmbedding.injective',
+    map_op := CoolerEmbedding.map_op',
+    map_cool := CoolerEmbedding.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```

@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.hom
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
+
+#align_import algebra.algebra.hom from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -65,11 +62,8 @@ namespace AlgHomClass
 variable {R : Type _} {A : Type _} {B : Type _} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 -- see Note [lower instance priority]
-instance (priority := 100) linearMapClass {_ : CommSemiring R} {_ : Semiring A} {_ : Semiring B}
-    {_ : Algebra R A} {_ : Algebra R B} {F : Type _} [AlgHomClass F R A B] :
-    LinearMapClass F R A B :=
+instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
@@ -80,9 +74,9 @@ instance (priority := 100) linearMapClass {_ : CommSemiring R} {_ : Semiring A} 
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def toAlgHom {F : Type _} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-{ (f : A →+* B) with
-    toFun := f
-    commutes' := AlgHomClass.commutes f }
+  { (f : A →+* B) with
+      toFun := f
+      commutes' := AlgHomClass.commutes f }
 
 instance coeTC {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -498,9 +492,6 @@ end AlgHom
 
 namespace RingHom
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 variable {R S : Type _}
 
 /-- Reinterpret a `RingHom` as an `ℕ`-algebra homomorphism. -/
@@ -512,18 +503,7 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with
-    commutes' := fun n => by
-      -- Porting note: TODO Erase these `have`s.
-      --               Needed because we don't have η for classes. (lean4#2074)
-      have e₁ : algebraMap ℤ R n = n :=
-        @eq_intCast _ R Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ R) n
-      have e₂ : algebraMap ℤ S n = n :=
-        @eq_intCast _ S Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ S) n
-      have e₃ : f n = n :=
-        @map_intCast _ R S Ring.toNonAssocRing Ring.toNonAssocRing RingHom.instRingHomClassRingHom
-          f n
-      simp [e₁, e₂, e₃] }
+  { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
@@ -541,9 +521,6 @@ theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] 
 end RingHom
 
 section
-
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 variable {R S : Type _}
 
@@ -590,7 +567,7 @@ variable {M G : Type _} (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R 
 
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
-/-- Each element of the monoid defines a algebra homomorphism.
+/-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
 `DistribMulAction.toLinearMap`. -/

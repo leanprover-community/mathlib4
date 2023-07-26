@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.embedding.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Logic.Equiv.Basic
+
+#align_import logic.embedding.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Injective functions
@@ -246,7 +243,7 @@ theorem coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
   rfl
 #align function.embedding.coe_quotient_out Function.Embedding.coe_quotientOut
 
-/-- Choosing an element `b : β` gives an embedding of `punit` into `β`. -/
+/-- Choosing an element `b : β` gives an embedding of `PUnit` into `β`. -/
 def punit {β : Sort _} (b : β) : PUnit ↪ β :=
   ⟨fun _ => b, by
     rintro ⟨⟩ ⟨⟩ _
@@ -278,7 +275,7 @@ theorem coe_prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ)
   rfl
 #align function.embedding.coe_prod_map Function.Embedding.coe_prodMap
 
-/-- If `e₁` and `e₂` are embeddings, then so is `λ ⟨a, b⟩, ⟨e₁ a, e₂ b⟩ : pprod α γ → pprod β δ`. -/
+/-- If `e₁` and `e₂` are embeddings, then so is `λ ⟨a, b⟩, ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
 def pprodMap {α β γ δ : Sort _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
   ⟨fun x => ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
 #align function.embedding.pprod_map Function.Embedding.pprodMap
@@ -287,7 +284,7 @@ section Sum
 
 open Sum
 
-/-- If `e₁` and `e₂` are embeddings, then so is `sum.map e₁ e₂`. -/
+/-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
 def sumMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α γ ↪ Sum β δ :=
   ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
 #align function.embedding.sum_map Function.Embedding.sumMap
@@ -317,7 +314,7 @@ section Sigma
 
 variable {α α' : Type _} {β : α → Type _} {β' : α' → Type _}
 
-/-- `Sigma.mk` as an `Function.Embedding`. -/
+/-- `Sigma.mk` as a `Function.Embedding`. -/
 @[simps apply]
 def sigmaMk (a : α) : β a ↪ Σx, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
@@ -335,7 +332,7 @@ def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σa, β a) ↪ 
 end Sigma
 
 /-- Define an embedding `(Π a : α, β a) ↪ (Π a : α, γ a)` from a family of embeddings
-`e : Π a, (β a ↪ γ a)`. This embedding sends `f` to `λ a, e a (f a)`. -/
+`e : Π a, (β a ↪ γ a)`. This embedding sends `f` to `fun a ↦ e a (f a)`. -/
 @[simps]
 def piCongrRight {α : Sort _} {β γ : α → Sort _} (e : ∀ a, β a ↪ γ a) : (∀ a, β a) ↪ ∀ a, γ a :=
   ⟨fun f a => e a (f a), fun _ _ h => funext fun a => (e a).injective (congr_fun h a)⟩

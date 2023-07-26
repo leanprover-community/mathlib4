@@ -2,22 +2,19 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.single_obj
-! leanprover-community/mathlib commit 56adee5b5eef9e734d82272918300fca4f3e7cef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Combinatorics.Quiver.SingleObj
 
+#align_import category_theory.single_obj from "leanprover-community/mathlib"@"56adee5b5eef9e734d82272918300fca4f3e7cef"
+
 /-!
 # Single-object category
 
 Single object category with a given monoid of endomorphisms.
-It is defined to facilitate transfering some definitions and lemmas (e.g., conjugacy etc.)
+It is defined to facilitate transferring some definitions and lemmas (e.g., conjugacy etc.)
 from category theory to monoids and groups.
 
 ## Main definitions
@@ -119,8 +116,8 @@ theorem toEnd_def [Monoid α] (x : α) : toEnd α x = x :=
 See <https://stacks.math.columbia.edu/tag/001F> --
 although we do not characterize when the functor is full or faithful.
 -/
-def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] : (α →* β) ≃ SingleObj α ⥤ SingleObj β
-    where
+def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] :
+    (α →* β) ≃ SingleObj α ⥤ SingleObj β where
   toFun f :=
     { obj := id
       map := ⇑f
@@ -168,7 +165,7 @@ open CategoryTheory
 namespace MonoidHom
 
 /-- Reinterpret a monoid homomorphism `f : α → β` as a functor `(single_obj α) ⥤ (single_obj β)`.
-See also `category_theory.single_obj.map_hom` for an equivalence between these types. -/
+See also `CategoryTheory.SingleObj.mapHom` for an equivalence between these types. -/
 @[reducible]
 def toFunctor {α : Type u} {β : Type v} [Monoid α] [Monoid β] (f : α →* β) :
     SingleObj α ⥤ SingleObj β :=

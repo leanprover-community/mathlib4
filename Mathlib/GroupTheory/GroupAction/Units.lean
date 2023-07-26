@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.group_action.units
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.units from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
 /-! # Group actions on and by `Mˣ`
 
@@ -93,7 +90,7 @@ instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
 
 
 /-- If an action `G` associates and commutes with multiplication on `M`, then it lifts to an
-action on `Mˣ`. Notably, this provides `mul_action Mˣ Nˣ` under suitable
+action on `Mˣ`. Notably, this provides `MulAction Mˣ Nˣ` under suitable
 conditions.
 -/
 instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]

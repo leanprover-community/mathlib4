@@ -2,17 +2,14 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.affine_map
-! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
+
+#align_import linear_algebra.affine_space.affine_map from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
 /-!
 # Affine maps
@@ -32,7 +29,7 @@ This file defines affine maps.
 
 ## Implementation notes
 
-`out_param` is used in the definition of `[AddTorsor V P]` to make `V` an implicit argument
+`outParam` is used in the definition of `[AddTorsor V P]` to make `V` an implicit argument
 (deduced from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by
 `P` or `V`.
 
@@ -45,9 +42,6 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
-
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 open Affine
 
@@ -121,7 +115,7 @@ theorem coe_mk (f : P1 → P2) (linear add) : ((mk f linear add : P1 →ᵃ[k] P
   rfl
 #align affine_map.coe_mk AffineMap.coe_mk
 
-/-- `to_fun` is the same as the result of coercing to a function. -/
+/-- `toFun` is the same as the result of coercing to a function. -/
 @[simp]
 theorem toFun_eq_coe (f : P1 →ᵃ[k] P2) : f.toFun = ⇑f :=
   rfl
@@ -171,7 +165,9 @@ variable (k P1)
 def const (p : P2) : P1 →ᵃ[k] P2 where
   toFun := Function.const P1 p
   linear := 0
-  map_vadd' _ _ := by simp
+  map_vadd' _ _ :=
+    letI : AddAction V2 P2 := inferInstance
+    by simp
 #align affine_map.const AffineMap.const
 
 @[simp]
@@ -190,8 +186,8 @@ theorem const_linear (p : P2) : (const k P1 p).linear = 0 :=
 
 variable {k P1}
 
-theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) : f.linear = 0 ↔ ∃ q, f = const k P1 q :=
-  by
+theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
+    f.linear = 0 ↔ ∃ q, f = const k P1 q := by
   refine' ⟨fun h => _, fun h => _⟩
   · use f (Classical.arbitrary P1)
     ext
@@ -244,10 +240,6 @@ theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
 theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.linear :=
   rfl
 #align affine_map.smul_linear AffineMap.smul_linear
-
--- Porting note: Workaround for lean4#2074
-instance [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] : SMulCommClass k Rᵐᵒᵖ V2 :=
-SMulCommClass.op_right
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
   IsCentralScalar R (P1 →ᵃ[k] V2) where
@@ -321,6 +313,7 @@ instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
     ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
       -- porting note: `simp` needs lemmas to be expressions
+      letI : AddAction V2 P2 := inferInstance
       fun p v => by simp [vadd_vadd, add_right_comm, (map_vadd)]⟩
   zero_vadd f := ext fun p => zero_vadd _ (f p)
   add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
@@ -472,8 +465,7 @@ def linearHom : (P1 →ᵃ[k] P1) →* V1 →ₗ[k] V1 where
 theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
     Function.Injective f.linear ↔ Function.Injective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
-  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
-    by
+  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_injective, Equiv.injective_comp]
@@ -483,8 +475,7 @@ theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
 theorem linear_surjective_iff (f : P1 →ᵃ[k] P2) :
     Function.Surjective f.linear ↔ Function.Surjective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
-  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
-    by
+  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_surjective, Equiv.surjective_comp]
@@ -510,9 +501,6 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 #align affine_map.image_vsub_image AffineMap.image_vsub_image
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
-
--- Porting note: Workaround for lean4#2074
-instance : Module k k := Semiring.toModule
 
 /-- The affine map from `k` to `P1` sending `0` to `p₀` and `1` to `p₁`. -/
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
@@ -554,6 +542,7 @@ theorem lineMap_linear (p₀ p₁ : P1) :
 #align affine_map.line_map_linear AffineMap.lineMap_linear
 
 theorem lineMap_same_apply (p : P1) (c : k) : lineMap p p c = p := by
+  letI : AddAction V1 P1 := inferInstance
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply), (vsub_self)]
 #align affine_map.line_map_same_apply AffineMap.lineMap_same_apply
@@ -565,6 +554,7 @@ theorem lineMap_same (p : P1) : lineMap p p = const k k p :=
 
 @[simp]
 theorem lineMap_apply_zero (p₀ p₁ : P1) : lineMap p₀ p₁ (0 : k) = p₀ := by
+  letI : AddAction V1 P1 := inferInstance
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply)]
 #align affine_map.line_map_apply_zero AffineMap.lineMap_apply_zero
@@ -675,7 +665,6 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
   calc
     f x = f.linear x +ᵥ f 0 := by rw [← f.map_vadd, vadd_eq_add, add_zero]
     _ = (f.linear + fun _ : V1 => f 0) x := rfl
-
 #align affine_map.decomp AffineMap.decomp
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
@@ -700,9 +689,6 @@ section
 
 variable {ι : Type _} {V : ∀ _ : ι, Type _} {P : ∀ _ : ι, Type _} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
-
--- Workaround for lean4#2074
-instance : AffineSpace (∀ i : ι, (V i)) (∀ i : ι, P i) := Pi.instAddTorsorForAllForAllAddGroup
 
 /-- Evaluation at a point as an affine map. -/
 def proj (i : ι) : (∀ i : ι, P i) →ᵃ[k] P i where
@@ -763,12 +749,6 @@ instance : Module R (P1 →ᵃ[k] V2) :=
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }
 
 variable (R)
-
--- Porting note: Workarounds for lean4#2074
-instance : AddCommMonoid (V1 →ₗ[k] V2) := LinearMap.addCommMonoid
-instance : AddCommMonoid (V2 × (V1 →ₗ[k] V2)) := Prod.instAddCommMonoidSum
-instance : Module R (V1 →ₗ[k] V2) := LinearMap.instModuleLinearMapAddCommMonoid
-instance : Module R (V2 × (V1 →ₗ[k] V2)) := Prod.module
 
 /-- The space of affine maps between two modules is linearly equivalent to the product of the
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the

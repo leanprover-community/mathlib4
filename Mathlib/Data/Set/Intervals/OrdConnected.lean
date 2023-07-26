@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.ord_connected
-! leanprover-community/mathlib commit 76de8ae01554c3b37d66544866659ff174e66e1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Antichain
+
+#align_import data.set.intervals.ord_connected from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
 /-!
 # Order-connected sets
@@ -63,7 +60,7 @@ theorem ordConnected_of_Ioo {α : Type _} [PartialOrder α] {s : Set α}
   intro x hx y hy hxy
   rcases eq_or_lt_of_le hxy with (rfl | hxy'); · simpa
   rw [← Ioc_insert_left hxy, ← Ioo_insert_right hxy']
-  exact insert_subset.2 ⟨hx, insert_subset.2 ⟨hy, hs x hx y hy hxy'⟩⟩
+  exact insert_subset_iff.2 ⟨hx, insert_subset_iff.2 ⟨hy, hs x hx y hy hxy'⟩⟩
 #align set.ord_connected_of_Ioo Set.ordConnected_of_Ioo
 
 theorem OrdConnected.preimage_mono {f : β → α} (hs : OrdConnected s) (hf : Monotone f) :
@@ -100,26 +97,26 @@ theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s
   ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
 #align set.ord_connected_dual Set.ordConnected_dual
 
-theorem ordConnected_interₛ {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
+theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
-  ⟨fun _ hx _ hy => subset_interₛ fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
-#align set.ord_connected_sInter Set.ordConnected_interₛ
+  ⟨fun _ hx _ hy => subset_sInter fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
+#align set.ord_connected_sInter Set.ordConnected_sInter
 
-theorem ordConnected_interᵢ {ι : Sort _} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
+theorem ordConnected_iInter {ι : Sort _} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
     OrdConnected (⋂ i, s i) :=
-  ordConnected_interₛ <| forall_range_iff.2 hs
-#align set.ord_connected_Inter Set.ordConnected_interᵢ
+  ordConnected_sInter <| forall_range_iff.2 hs
+#align set.ord_connected_Inter Set.ordConnected_iInter
 
-instance ordConnected_interᵢ' {ι : Sort _} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
+instance ordConnected_iInter' {ι : Sort _} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
     OrdConnected (⋂ i, s i) :=
-  ordConnected_interᵢ ‹_›
-#align set.ord_connected_Inter' Set.ordConnected_interᵢ'
+  ordConnected_iInter ‹_›
+#align set.ord_connected_Inter' Set.ordConnected_iInter'
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem ordConnected_binterᵢ  {ι : Sort _} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
+theorem ordConnected_biInter {ι : Sort _} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
     (hs : ∀ i hi, OrdConnected (s i hi)) : OrdConnected (⋂ (i) (hi), s i hi) :=
-  ordConnected_interᵢ fun i => ordConnected_interᵢ <| hs i
-#align set.ord_connected_bInter Set.ordConnected_binterᵢ
+  ordConnected_iInter fun i => ordConnected_iInter <| hs i
+#align set.ord_connected_bInter Set.ordConnected_biInter
 
 theorem ordConnected_pi {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (h : ∀ i ∈ s, OrdConnected (t i)) : OrdConnected (s.pi t) :=

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.locally_finite
-! leanprover-community/mathlib commit f24cc2891c0e328f0ee8c57387103aa462c44b5e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
+
+#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Intervals as finsets
@@ -19,7 +16,7 @@ This file provides basic results about all the `Finset.Ixx`, which are defined i
 
 ## TODO
 
-This file was originally only about `finset.Ico a b` where `a b : ℕ`. No care has yet been taken to
+This file was originally only about `Finset.Ico a b` where `a b : ℕ`. No care has yet been taken to
 generalize these lemmas properly and many lemmas about `Icc`, `Ioc`, `Ioo` are missing. In general,
 what's to do is taking the lemmas in `Data.X.Intervals` and abstract away the concrete structure.
 
@@ -464,6 +461,10 @@ theorem _root_.BddBelow.finite {s : Set α} (hs : BddBelow s) : s.Finite :=
   (Ici a).finite_toSet.subset fun _ hx => mem_Ici.2 <| ha hx
 #align bdd_below.finite BddBelow.finite
 
+theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelow s :=
+  mt BddBelow.finite
+#align set.infinite.not_bdd_below Set.Infinite.not_bddBelow
+
 variable [Fintype α]
 
 theorem filter_lt_eq_Ioi [DecidablePred ((· < ·) a)] : univ.filter ((· < ·) a) = Ioi a := by
@@ -489,6 +490,10 @@ theorem Iio_subset_Iic_self : Iio a ⊆ Iic a := by
 theorem _root_.BddAbove.finite {s : Set α} (hs : BddAbove s) : s.Finite :=
   hs.dual.finite
 #align bdd_above.finite BddAbove.finite
+
+theorem _root_.Set.Infinite.not_bddAbove {s : Set α} : s.Infinite → ¬BddAbove s :=
+  mt BddAbove.finite
+#align set.infinite.not_bdd_above Set.Infinite.not_bddAbove
 
 variable [Fintype α]
 
@@ -824,6 +829,32 @@ theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) :=
 #align finset.Ico_diff_Ico_right Finset.Ico_diff_Ico_right
 
 end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α] {s : Set α}
+
+theorem _root_.Set.Infinite.exists_gt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, a < b :=
+  not_bddAbove_iff.1 hs.not_bddAbove
+#align set.infinite.exists_gt Set.Infinite.exists_gt
+
+theorem _root_.Set.infinite_iff_exists_gt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, a < b :=
+  ⟨Set.Infinite.exists_gt, Set.infinite_of_forall_exists_gt⟩
+#align set.infinite_iff_exists_gt Set.infinite_iff_exists_gt
+
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTop
+variable [LocallyFiniteOrderTop α] {s : Set α}
+
+theorem _root_.Set.Infinite.exists_lt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, b < a :=
+  not_bddBelow_iff.1 hs.not_bddBelow
+#align set.infinite.exists_lt Set.Infinite.exists_lt
+
+theorem _root_.Set.infinite_iff_exists_lt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, b < a :=
+  ⟨Set.Infinite.exists_lt, Set.infinite_of_forall_exists_lt⟩
+#align set.infinite_iff_exists_lt Set.infinite_iff_exists_lt
+
+end LocallyFiniteOrderTop
 
 variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 

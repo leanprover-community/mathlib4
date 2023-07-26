@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.analysis.topology
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Topology.Bases
 import Mathlib.Topology.LocallyFinite
+
+#align_import data.analysis.topology from "leanprover-community/mathlib"@"55d771df074d0dd020139ee1cd4b95521422df9f"
 
 /-!
 # Computational realization of topological spaces (experimental)
@@ -80,7 +77,7 @@ def ofEquiv (E : σ ≃ τ) : Ctop α σ → Ctop α τ
 
 @[simp]
 theorem ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
-  cases F ; rfl
+  cases F; rfl
 #align ctop.of_equiv_val Ctop.ofEquiv_val
 
 end
@@ -129,12 +126,12 @@ namespace Ctop.Realizer
 
 protected theorem is_basis [T : TopologicalSpace α] (F : Realizer α) :
     TopologicalSpace.IsTopologicalBasis (Set.range F.F.f) := by
-  have := toTopsp_isTopologicalBasis F.F ; rwa [F.eq] at this
+  have := toTopsp_isTopologicalBasis F.F; rwa [F.eq] at this
 #align ctop.realizer.is_basis Ctop.Realizer.is_basis
 
 protected theorem mem_nhds [T : TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
   s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
-  have := @mem_nhds_toTopsp _ _ F.F s a ; rwa [F.eq] at this
+  have := @mem_nhds_toTopsp _ _ F.F s a; rwa [F.eq] at this
 #align ctop.realizer.mem_nhds Ctop.Realizer.mem_nhds
 
 theorem isOpen_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
@@ -148,8 +145,8 @@ theorem isClosed_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
     F.isOpen_iff.trans <|
       forall_congr' fun a ↦
         show (a ∉ s → ∃ b : F.σ, a ∈ F.F b ∧ ∀ z ∈ F.F b, z ∉ s) ↔ _ by
-          haveI := Classical.propDecidable ; rw [not_imp_comm] ;
-            simp [not_exists, not_and, not_forall, and_comm]; trivial
+          haveI := Classical.propDecidable; rw [not_imp_comm]
+          simp [not_exists, not_and, not_forall, and_comm]
 #align ctop.realizer.is_closed_iff Ctop.Realizer.isClosed_iff
 
 theorem mem_interior_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
@@ -205,7 +202,7 @@ theorem ofEquiv_σ (F : Realizer α) (E : F.σ ≃ τ) : (F.ofEquiv E).σ = τ :
 
 @[simp]
 theorem ofEquiv_F (F : Realizer α) (E : F.σ ≃ τ) (s : τ) : (F.ofEquiv E).F s = F.F (E.symm s) := by
-  delta ofEquiv ; simp
+  delta ofEquiv; simp
 set_option linter.uppercaseLean3 false in
 #align ctop.realizer.of_equiv_F Ctop.Realizer.ofEquiv_F
 
@@ -240,7 +237,7 @@ theorem tendsto_nhds_iff {m : β → α} {f : Filter β} (F : f.Realizer) (R : R
 
 end Ctop.Realizer
 
-/-- A `locally_finite.realizer F f` is a realization that `f` is locally finite, namely it is a
+/-- A `LocallyFinite.Realizer F f` is a realization that `f` is locally finite, namely it is a
 choice of open sets from the basis of `F` such that they intersect only finitely many of the values
 of `f`.  -/
 structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f : β → Set α) where
@@ -281,6 +278,6 @@ def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
 
 instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
-    suffices : f = ⊥ ; exact absurd this h
+    suffices : f = ⊥; exact absurd this h
     rw [← F.eq, eq_bot_iff]
     exact λ s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩

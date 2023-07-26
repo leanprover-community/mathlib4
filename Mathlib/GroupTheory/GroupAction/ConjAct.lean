@@ -2,15 +2,12 @@
 Copyright (c) 2021 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.conj_act
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.Algebra.GroupRingAction.Basic
+
+#align_import group_theory.group_action.conj_act from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
 /-!
 # Conjugation action of a group on itself
@@ -306,6 +303,15 @@ theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
   ext x
   simp [mem_center_iff, smul_def, mul_inv_eq_iff_eq_mul]
 #align conj_act.fixed_points_eq_center ConjAct.fixedPoints_eq_center
+
+@[simp]
+theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
+  rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
+#align conj_act.mem_orbit_conj_act ConjAct.mem_orbit_conjAct
+
+theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
+  funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
+#align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
 
 theorem stabilizer_eq_centralizer (g : G) : stabilizer (ConjAct G) g = (zpowers g).centralizer :=
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>

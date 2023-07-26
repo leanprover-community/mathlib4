@@ -2,16 +2,13 @@
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.uniform_space.compact
-! leanprover-community/mathlib commit 735b22f8f9ff9792cf4212d7cb051c4c994bc685
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Support
+
+#align_import topology.uniform_space.compact from "leanprover-community/mathlib"@"735b22f8f9ff9792cf4212d7cb051c4c994bc685"
 
 /-!
 # Compact separated uniform spaces
@@ -39,9 +36,7 @@ uniform space, uniform continuity, compact space
 -/
 
 
-open Classical Uniformity Topology Filter
-
-open Filter UniformSpace Set
+open Classical Uniformity Topology Filter UniformSpace Set
 
 variable {α β γ : Type _} [UniformSpace α] [UniformSpace β]
 
@@ -56,12 +51,11 @@ theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) 
   refine' nhdsSet_diagonal_le_uniformity.antisymm _
   have :
     (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
-      (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U :=
-    by
+      (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
     rw [uniformity_prod_eq_comap_prod]
     exact (𝓤 α).basis_sets.prod_self.comap _
   refine' (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => _
-  exact mem_of_superset hU fun ⟨x, y⟩ hxy => mem_unionᵢ₂.2
+  exact mem_of_superset hU fun ⟨x, y⟩ hxy => mem_iUnion₂.2
     ⟨(x, x), rfl, refl_mem_uniformity hU, hxy⟩
 #align nhds_set_diagonal_eq_uniformity nhdsSet_diagonal_eq_uniformity
 
@@ -86,8 +80,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
   uniformity := 𝓝ˢ (diagonal γ)
   refl := principal_le_nhdsSet
   symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
-  comp :=
-    by
+  comp := by
     /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
         -/
@@ -99,22 +92,21 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     rw [le_iff_forall_inf_principal_compl]
     intro V V_in
     by_contra H
-    haveI : NeBot (F ⊓ 𝓟 (Vᶜ)) := ⟨H⟩
+    haveI : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
     -- Hence compactness would give us a cluster point (x, y) for F ⊓ 𝓟 Vᶜ
-    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 (Vᶜ)) := cluster_point_of_compact _
+    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := cluster_point_of_compact _
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,
     -- and a fortiori not in Δ, so x ≠ y
     have clV : ClusterPt (x, y) (𝓟 <| Vᶜ) := hxy.of_inf_right
-    have : (x, y) ∉ interior V :=
-      by
-      have : (x, y) ∈ closure (Vᶜ) := by rwa [mem_closure_iff_clusterPt]
+    have : (x, y) ∉ interior V := by
+      have : (x, y) ∈ closure Vᶜ := by rwa [mem_closure_iff_clusterPt]
       rwa [closure_compl] at this
     have diag_subset : diagonal γ ⊆ interior V := subset_interior_iff_mem_nhdsSet.2 V_in
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this
     -- Since γ is compact and Hausdorff, it is normal, hence T₃.
     haveI : NormalSpace γ := normalOfCompactT2
-    -- So there are closed neighboords V₁ and V₂ of x and y contained in disjoint open neighborhoods
-    -- U₁ and U₂.
+    -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
+    -- disjoint open neighborhoods U₁ and U₂.
     obtain
       ⟨U₁, _, V₁, V₁_in, U₂, _, V₂, V₂_in, V₁_cl, V₂_cl, U₁_op, U₂_op, VU₁, VU₂, hU₁₂⟩ :=
       disjoint_nested_nhds x_ne_y
@@ -151,17 +143,15 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- Hence w ∈ U₁ ∩ U₂ which is empty.
     -- So we have a contradiction
     exact hU₁₂.le_bot ⟨uw_in.2, wv_in.1⟩
-  isOpen_uniformity :=
-    by
+  isOpen_uniformity := by
     -- Here we need to prove the topology induced by the constructed uniformity is the
     -- topology we started with.
-    suffices ∀ x : γ, Filter.comap (Prod.mk x) (𝓝ˢ (diagonal γ)) = 𝓝 x
-      by
+    suffices ∀ x : γ, Filter.comap (Prod.mk x) (𝓝ˢ (diagonal γ)) = 𝓝 x by
       intro s
-      simp_rw [isOpen_fold, isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
+      simp_rw [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
     intro x
-    simp_rw [nhdsSet_diagonal, comap_supᵢ, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
-    rw [supᵢ_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
+    simp_rw [nhdsSet_diagonal, comap_iSup, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
+    rw [iSup_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
     suffices ∀ (y) (_ : y ≠ x), comap (fun _ : γ => x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
     intro y hxy
     simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (Classical.not_not.2 rfl)]
@@ -176,9 +166,10 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
 continuous. -/
 theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α → β}
     (h : Continuous f) : UniformContinuous f :=
-  have : Tendsto (Prod.map f f) (𝓝ˢ (diagonal α)) (𝓝ˢ (diagonal β)) :=
-    (h.prod_map h).tendsto_nhdsSet mapsTo_prod_map_diagonal
-  (this.mono_left nhdsSet_diagonal_eq_uniformity.ge).mono_right nhdsSet_diagonal_le_uniformity
+calc map (Prod.map f f) (𝓤 α)
+   = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
+ _ ≤ 𝓝ˢ (diagonal β)                      := (h.prod_map h).tendsto_nhdsSet mapsTo_prod_map_diagonal
+ _ ≤ 𝓤 β                                  := nhdsSet_diagonal_le_uniformity
 #align compact_space.uniform_continuous_of_continuous CompactSpace.uniformContinuous_of_continuous
 
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly
@@ -188,7 +179,6 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
   rw [uniformContinuousOn_iff_restrict]
   rw [isCompact_iff_compactSpace] at hs
   rw [continuousOn_iff_continuous_restrict] at hf
-  skip
   exact CompactSpace.uniformContinuous_of_continuous hf
 #align is_compact.uniform_continuous_on_of_continuous IsCompact.uniformContinuousOn_of_continuous
 
@@ -203,18 +193,17 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   choose U hU T hT hb using fun a ha =>
     exists_mem_nhds_ball_subset_of_mem_nhds ((hf a ha).preimage_mem_nhds <| mem_nhds_left _ ht)
   obtain ⟨fs, hsU⟩ := hs.elim_nhds_subcover' U hU
-  apply mem_of_superset ((binterᵢ_finset_mem fs).2 fun a _ => hT a a.2)
+  apply mem_of_superset ((biInter_finset_mem fs).2 fun a _ => hT a a.2)
   rintro ⟨a₁, a₂⟩ h h₁
-  obtain ⟨a, ha, haU⟩ := Set.mem_unionᵢ₂.1 (hsU h₁)
+  obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
   refine' ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU _), hb _ _ _ haU _⟩
-  exacts[mem_ball_self _ (hT a a.2), mem_interᵢ₂.1 h a ha]
+  exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 #align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
     (h_cont : Continuous f) (hx : Tendsto f (cocompact α) (𝓝 x)) : UniformContinuous f :=
-  uniformContinuous_def.2 fun r hr =>
-    by
+  uniformContinuous_def.2 fun r hr => by
     obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
     obtain ⟨s, hs, hst⟩ := mem_cocompact.1 (hx <| mem_nhds_left _ ht)
     apply

@@ -2,12 +2,10 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-! This file was ported from Lean 3 source module order.lattice_intervals
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Bounds.Basic
+
+#align_import order.lattice_intervals from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Intervals in Lattices
@@ -172,7 +170,7 @@ protected def orderTop [Preorder α] {a b : α} (h : a ≤ b) : OrderTop (Icc a 
   (isGreatest_Icc h).orderTop
 #align set.Icc.order_top Set.Icc.orderTop
 
-/-- `Icc a b` is a `bounded_order` whenever `a ≤ b`. -/
+/-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
 @[reducible]
 protected def boundedOrder [Preorder α] {a b : α} (h : a ≤ b) : BoundedOrder (Icc a b) :=
   { Icc.orderTop h, Icc.orderBot h with }

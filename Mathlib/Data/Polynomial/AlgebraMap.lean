@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.algebra_map
-! leanprover-community/mathlib commit e064a7bf82ad94c3c17b5128bbd860d1ec34874e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.algebra_map from "leanprover-community/mathlib"@"e064a7bf82ad94c3c17b5128bbd860d1ec34874e"
 
 /-!
 # Theory of univariate polynomials
@@ -44,14 +41,12 @@ variable [Semiring A] [Algebra R A]
 instance algebraOfAlgebra : Algebra R A[X]
     where
   smul_def' r p :=
-    toFinsupp_injective <|
-      by
+    toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       rw [toFinsupp_smul, toFinsupp_mul, toFinsupp_C]
       exact Algebra.smul_def' _ _
   commutes' r p :=
-    toFinsupp_injective <|
-      by
+    toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
       convert Algebra.commutes' r p.toFinsupp
@@ -64,8 +59,7 @@ theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
 
 @[simp]
 theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
-  show toFinsupp (C (algebraMap _ _ r)) = _
-    by
+  show toFinsupp (C (algebraMap _ _ r)) = _ by
     rw [toFinsupp_C]
     rfl
 #align polynomial.to_finsupp_algebra_map Polynomial.toFinsupp_algebraMap
@@ -84,7 +78,7 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
--- porting note: removed `variable` because of redunant binder update annotation
+-- porting note: removed `variable` because of redundant binder update annotation
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
@@ -338,7 +332,7 @@ theorem map_aeval_eq_aeval_map {S T U : Type _} [CommSemiring S] [CommSemiring T
 
 theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
-  rw [aeval_def, ← eval_map] at h₂⊢
+  rw [aeval_def, ← eval_map] at h₂ ⊢
   exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
 #align polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero Polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero
 
@@ -435,7 +429,7 @@ theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom
 
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
-  ext s p
+  ext s
   simp only [eval_X, aevalTower_X, coe_aeval_eq_eval]
 #align polynomial.aeval_tower_id Polynomial.aevalTower_id
 
@@ -512,10 +506,6 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.not_is_unit_X_sub_C Polynomial.not_isUnit_X_sub_C
 
 end Ring
-
--- porting note: workaround lean4#2074, this declaration works with
--- `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
 
 theorem aeval_endomorphism {M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by

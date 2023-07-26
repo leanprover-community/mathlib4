@@ -2,13 +2,10 @@
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.finite.defs
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Basic
+
+#align_import data.finite.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Definition of the `Finite` typeclass
@@ -36,7 +33,7 @@ instead.
 
 ## Implementation notes
 
-The definition of `Finite α` is not just `NonEmpty (Fintype α)` since `Fintype` requires
+The definition of `Finite α` is not just `Nonempty (Fintype α)` since `Fintype` requires
 that `α : Type _`, and the definition in this module allows for `α : Sort*`. This means
 we can write the instance `Finite.prop`.
 
@@ -55,7 +52,7 @@ variable {α β : Sort _}
 /-- A type is `Finite` if it is in bijective correspondence to some
 `Fin n`.
 
-While this could be defined as `NonEmpty (Fintype α)`, it is defined
+While this could be defined as `Nonempty (Fintype α)`, it is defined
 in this way to allow there to be `Finite` instances for propositions.
 -/
 class inductive Finite (α : Sort _) : Prop

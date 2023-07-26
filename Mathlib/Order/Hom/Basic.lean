@@ -2,18 +2,15 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.hom.basic
-! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.Replace
+import Mathlib.Util.AssertExists
+
+#align_import order.hom.basic from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
 /-!
 # Order homomorphisms
@@ -48,13 +45,13 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.prodIso`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
 * `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
 * `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
-* `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
-* `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
+* `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
+* `OrderHom.snd`: projection `Prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
 * `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
 * `OrderHom.coeFnHom`: coercion to function as a bundled monotone map;
-* `OrderHom.apply`: application of a `OrderHom` at a point as a bundled monotone map;
+* `OrderHom.apply`: application of an `OrderHom` at a point as a bundled monotone map;
 * `OrderHom.pi`: combine a family of monotone maps `f i : α →o π i` into a monotone map
   `α →o Π i, π i`;
 * `OrderHom.piIso`: order isomorphism between `α →o Π i, π i` and `Π i, α →o π i`;
@@ -81,7 +78,7 @@ variable {F α β γ δ : Type _}
 
 /-- Bundled monotone (aka, increasing) function -/
 structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
-  /-- The underlying funcrion of an `OrderHom`. -/
+  /-- The underlying function of an `OrderHom`. -/
   toFun : α → β
   /-- The underlying function of an `OrderHom` is monotone. -/
   monotone' : Monotone toFun
@@ -135,16 +132,16 @@ attribute [simp] map_le_map_iff
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
 @[coe]
-def OrderIsoClass.toOrderIso {_ : LE α} {_ : LE β} [OrderIsoClass F α β] (f : F) : α ≃o β :=
-{ EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
+def OrderIsoClass.toOrderIso [LE α] [LE β] [OrderIsoClass F α β] (f : F) : α ≃o β :=
+  { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
 `OrderIsoClass.toOrderIso`. -/
-instance {_ : LE α} {_ : LE β} [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
+instance [LE α] [LE β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
   ⟨OrderIsoClass.toOrderIso⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toOrderHomClass {_ : LE α} {_ : LE β}
+instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
     [OrderIsoClass F α β] : OrderHomClass F α β :=
   { EquivLike.toEmbeddingLike with
     map_rel := fun f _ _ => (map_le_map_iff f).2 }
@@ -335,7 +332,7 @@ def curry : (α × β →o γ) ≃o (α →o β →o γ) where
     ext ⟨x, y⟩
     rfl
   right_inv f := by
-    ext (x y)
+    ext x y
     rfl
   map_rel_iff' := by simp [le_def]
 #align order_hom.curry OrderHom.curry
@@ -381,11 +378,11 @@ theorem id_comp (f : α →o β) : comp id f = f := by
   rfl
 #align order_hom.id_comp OrderHom.id_comp
 
-/-- Constant function bundled as a `OrderHom`. -/
+/-- Constant function bundled as an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
-  monotone' _ _  h _ := h
+  monotone' _ _ h _ := h
 #align order_hom.const OrderHom.const
 #align order_hom.const_coe_coe OrderHom.const_coe_coe
 
@@ -426,7 +423,7 @@ def prodₘ : (α →o β) →o (α →o γ) →o α →o β × γ :=
 #align order_hom.prodₘ OrderHom.prodₘ
 #align order_hom.prodₘ_coe_coe_coe OrderHom.prodₘ_coe_coe_coe
 
-/-- Diagonal embedding of `α` into `α × α` as a `OrderHom`. -/
+/-- Diagonal embedding of `α` into `α × α` as an `OrderHom`. -/
 @[simps!]
 def diag : α →o α × α :=
   id.prod id
@@ -440,14 +437,14 @@ def onDiag (f : α →o α →o β) : α →o β :=
 #align order_hom.on_diag OrderHom.onDiag
 #align order_hom.on_diag_coe OrderHom.onDiag_coe
 
-/-- `Prod.fst` as a `OrderHom`. -/
+/-- `Prod.fst` as an `OrderHom`. -/
 @[simps]
 def fst : α × β →o α :=
   ⟨Prod.fst, fun _ _ h => h.1⟩
 #align order_hom.fst OrderHom.fst
 #align order_hom.fst_coe OrderHom.fst_coe
 
-/-- `Prod.snd` as a `OrderHom`. -/
+/-- `Prod.snd` as an `OrderHom`. -/
 @[simps]
 def snd : α × β →o β :=
   ⟨Prod.snd, fun _ _ h => h.2⟩
@@ -483,7 +480,7 @@ def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
 #align order_hom.prod_iso_apply OrderHom.prodIso_apply
 #align order_hom.prod_iso_symm_apply OrderHom.prodIso_symm_apply
 
-/-- `Prod.map` of two `OrderHom`s as a `OrderHom`. -/
+/-- `Prod.map` of two `OrderHom`s as an `OrderHom`. -/
 @[simps]
 def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
   ⟨Prod.map f g, fun _ _ h => ⟨f.mono h.1, g.mono h.2⟩⟩
@@ -492,7 +489,7 @@ def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
 
 variable {ι : Type _} {π : ι → Type _} [∀ i, Preorder (π i)]
 
-/-- Evaluation of an unbundled function at a point (`Function.eval`) as a `OrderHom`. -/
+/-- Evaluation of an unbundled function at a point (`Function.eval`) as an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def _root_.Pi.evalOrderHom (i : ι) : (∀ j, π j) →o π i :=
   ⟨Function.eval i, Function.monotone_eval i⟩
@@ -531,10 +528,10 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
   left_inv f := by
-    ext (x i)
+    ext x i
     rfl
   right_inv f := by
-    ext (x i)
+    ext x i
     rfl
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
@@ -652,14 +649,12 @@ theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 #align order_embedding.le_iff_le OrderEmbedding.le_iff_le
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 #align order_embedding.lt_iff_lt OrderEmbedding.lt_iff_lt
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
@@ -688,6 +683,15 @@ protected theorem isWellOrder [IsWellOrder β (· < ·)] : IsWellOrder α (· < 
 protected def dual : αᵒᵈ ↪o βᵒᵈ :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 #align order_embedding.dual OrderEmbedding.dual
+
+/-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
+protected theorem wellFoundedLT [WellFoundedLT β] : WellFoundedLT α where
+  wf := f.wellFounded IsWellFounded.wf
+
+/-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
+also has `(· > ·)` well-founded. -/
+protected theorem wellFoundedGT [WellFoundedGT β] : WellFoundedGT α :=
+  @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ f.dual _
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[simps (config := { fullyApplied := false })]
@@ -737,7 +741,7 @@ def subtype (p : α → Prop) : Subtype p ↪o α :=
 #align order_embedding.subtype OrderEmbedding.subtype
 #align order_embedding.subtype_apply OrderEmbedding.subtype_apply
 
-/-- Convert an `OrderEmbedding` to a `OrderHom`. -/
+/-- Convert an `OrderEmbedding` to an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def toOrderHom {X Y : Type _} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
   toFun := f
@@ -983,7 +987,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-@[simp]
+--@[simp] porting note: simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 #align order_iso.le_iff_le OrderIso.le_iff_le
@@ -1031,7 +1035,7 @@ theorem toRelIsoLT_symm (e : α ≃o β) : e.toRelIsoLT.symm = e.symm.toRelIsoLT
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
 def ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
     (e : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop)) : α ≃o β :=
-  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff]⟩
+  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff, e.injective.eq_iff]⟩
 #align order_iso.of_rel_iso_lt OrderIso.ofRelIsoLT
 
 @[simp]
@@ -1391,6 +1395,5 @@ end BoundedOrder
 
 end LatticeIsos
 
--- Developments relating order homs and sets belong in `order.hom.set` or later.
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists set.range
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range

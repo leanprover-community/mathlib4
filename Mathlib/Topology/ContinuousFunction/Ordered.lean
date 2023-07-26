@@ -2,15 +2,12 @@
 Copyright © 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam
-
-! This file was ported from Lean 3 source module topology.continuous_function.ordered
-! leanprover-community/mathlib commit 84dc0bd6619acaea625086d6f53cb35cdd554219
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.continuous_function.ordered from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology
@@ -37,7 +34,7 @@ instance (priority := 100) : Abs C(α, β) :=
   ⟨fun f => abs f⟩
 
 @[simp]
-theorem abs_apply (f : C(α, β)) (x : α) : (|f|) x = |f x| :=
+theorem abs_apply (f : C(α, β)) (x : α) : |f| x = |f x| :=
   rfl
 #align continuous_map.abs_apply ContinuousMap.abs_apply
 
@@ -155,7 +152,7 @@ section Extend
 
 variable [LinearOrder α] [OrderTopology α] {a b : α} (h : a ≤ b)
 
-/-- Extend a continuous function `f : C(set.Icc a b, β)` to a function `f : C(α, β)`.  -/
+/-- Extend a continuous function `f : C(Set.Icc a b, β)` to a function `f : C(α, β)`.  -/
 def IccExtend (f : C(Set.Icc a b, β)) : C(α, β) where
   toFun := Set.IccExtend h f
 #align continuous_map.Icc_extend ContinuousMap.IccExtend

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.discrete
-! leanprover-community/mathlib commit 8a0e71287eb4c80e87f72e8c174835f360a6ddd9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+
+#align_import category_theory.monoidal.discrete from "leanprover-community/mathlib"@"8a0e71287eb4c80e87f72e8c174835f360a6ddd9"
 
 /-!
 # Monoids as discrete monoidal categories
@@ -22,15 +19,13 @@ Multiplicative morphisms induced monoidal functors.
 
 universe u
 
-open CategoryTheory
-
-open CategoryTheory.Discrete
+open CategoryTheory Discrete MonoidalCategory
 
 variable (M : Type u) [Monoid M]
 
 namespace CategoryTheory
 
-@[to_additive (attr := simps tensorObj_as) Discrete.addMonoidal]
+@[to_additive (attr := simps tensorObj_as leftUnitor rightUnitor associator) Discrete.addMonoidal]
 instance Discrete.monoidal : MonoidalCategory (Discrete M)
     where
   tensorUnit' := Discrete.mk 1

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.localization.construction
-! leanprover-community/mathlib commit 1a5e56f2166e4e9d0964c71f4273b1d39227678d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Category.QuivCat
+
+#align_import category_theory.localization.construction from "leanprover-community/mathlib"@"1a5e56f2166e4e9d0964c71f4273b1d39227678d"
 
 /-!
 
@@ -158,8 +155,8 @@ def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
       map := by
         intros X Y
         rintro (f | ⟨g, hg⟩)
-        . exact G.map f
-        . haveI := hG g hg
+        · exact G.map f
+        · haveI := hG g hg
           exact inv (G.map g) }
 #align category_theory.localization.construction.lift_to_path_category CategoryTheory.Localization.Construction.liftToPathCategory
 
@@ -171,8 +168,8 @@ def lift : W.Localization ⥤ D :=
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
       --Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
-      . aesop_cat
-      . aesop_cat
+      · aesop_cat
+      · aesop_cat
       all_goals
         dsimp
         haveI := hG f hf
@@ -237,26 +234,24 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
   funext X Y f
   ext
   constructor
-  . intro
+  · intro
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
     haveI : Full G := Quotient.fullFunctor _
-    suffices
-      ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f)
-      by
+    suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
       simpa only [Functor.image_preimage] using this _ _ (G.preimage f)
     intros X₁ X₂ p
     induction' p with X₂ X₃ p g hp
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
-    . let p' : X₁ ⟶X₂ := p
+    · let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine' hP₃ _ _ hp _
       rcases g with (g | ⟨g, hg⟩)
-      . apply hP₁
-      . apply hP₂
+      · apply hP₁
+      · apply hP₂
 #align category_theory.localization.construction.morphism_property_is_top CategoryTheory.Localization.Construction.morphismProperty_is_top
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
@@ -297,8 +292,7 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     where
   app := NatTransExtension.app τ
   naturality := by
-    suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤
-      by
+    suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
       intro X Y f
       simpa only [← this] using MorphismProperty.top_apply f
     refine' morphismProperty_is_top'
@@ -385,8 +379,7 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
         ext
         exact fac G hG
       · rintro ⟨G₁, hG₁⟩ ⟨G₂, hG₂⟩ f
-        apply NatTrans.ext
-        ext1
+        ext
         apply NatTransExtension.app_eq)
 #align category_theory.localization.construction.whiskering_left_equivalence.counit_iso CategoryTheory.Localization.Construction.WhiskeringLeftEquivalence.counitIso
 
@@ -401,8 +394,7 @@ def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D
   unitIso := WhiskeringLeftEquivalence.unitIso W D
   counitIso := WhiskeringLeftEquivalence.counitIso W D
   functor_unitIso_comp F := by
-    apply NatTrans.ext
-    ext1
+    ext
     simp only [WhiskeringLeftEquivalence.unitIso_hom, eqToHom_app, eqToHom_refl,
       WhiskeringLeftEquivalence.counitIso_hom, eqToHom_map, eqToHom_trans]
     rfl

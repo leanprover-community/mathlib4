@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.sums.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
+
+#align_import category_theory.sums.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Binary disjoint unions of categories
@@ -40,8 +37,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
 /-- `sum C D` gives the direct sum of two categories.
 -/
-instance sum : Category.{v₁} (Sum C D)
-    where
+instance sum : Category.{v₁} (Sum C D) where
   Hom X Y :=
     match X, Y with
     | inl X, inl Y => X ⟶ Y
@@ -103,8 +99,7 @@ def inr_ : D ⥤ Sum C D where
 but `map_id` was ok. -/
 
 /-- The functor exchanging two direct summand categories. -/
-def swap : Sum C D ⥤ Sum D C
-    where
+def swap : Sum C D ⥤ Sum D C where
   obj X :=
     match X with
     | inl X => inr X
@@ -147,9 +142,9 @@ namespace Swap
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-    (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
+      (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-    (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
+      (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
 instance isEquivalence : IsEquivalence (swap C D) :=

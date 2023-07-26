@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.affine_equiv
-! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Invertible
+
+#align_import linear_algebra.affine_space.affine_equiv from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
 /-!
 # Affine equivalences
@@ -40,9 +37,6 @@ affine space, affine equivalence
 open Function Set
 
 open Affine
-
--- Porting note: this is needed because of lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An affine equivalence is an equivalence between affine spaces such that both forward
 and inverse maps are affine.
@@ -106,8 +100,7 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
 instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
   FunLike.hasCoeToFun
 
-@[nolint dangerousInstance] -- Porting note: this was not a problem in Lean 3
-instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
+instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
 
 @[simp]
@@ -221,11 +214,11 @@ def Simps.apply (e : P₁ ≃ᵃ[k] P₂) : P₁ → P₂ :=
 #align affine_equiv.simps.apply AffineEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : P₁ ≃ᵃ[k] P₂) : P₂ → P₁ :=
+def Simps.symm_apply (e : P₁ ≃ᵃ[k] P₂) : P₂ → P₁ :=
   e.symm
-#align affine_equiv.simps.symm_apply AffineEquiv.Simps.symmApply
+#align affine_equiv.simps.symm_apply AffineEquiv.Simps.symm_apply
 
-initialize_simps_projections AffineEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply,
+initialize_simps_projections AffineEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
   linear → linear, as_prefix linear, -toEquiv)
 
 protected theorem bijective (e : P₁ ≃ᵃ[k] P₂) : Bijective e :=
@@ -452,7 +445,7 @@ variable (k)
 
 /-- The map `v ↦ v +ᵥ b` as an affine equivalence between a module `V` and an affine space `P` with
 tangent space `V`. -/
-@[simps! linear apply]
+@[simps! linear apply symm_apply]
 def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
   toEquiv := Equiv.vaddConst b
   linear := LinearEquiv.refl _ _

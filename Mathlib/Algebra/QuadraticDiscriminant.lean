@@ -2,16 +2,13 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module algebra.quadratic_discriminant
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
+
+#align_import algebra.quadratic_discriminant from "leanprover-community/mathlib"@"e085d1df33274f4b32f611f483aae678ba0b42df"
 
 /-!
 # Quadratic discriminants and roots of a quadratic
@@ -89,7 +86,6 @@ variable {K : Type _} [Field K] [NeZero (2 : K)] {a b c x : K}
 theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
     a * x * x + b * x + c = 0 ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
   rw [quadratic_eq_zero_iff_discrim_eq_sq ha, h, sq, mul_self_eq_mul_self_iff]
-  have ne : 2 * a ≠ 0 := mul_ne_zero (NeZero.ne _) ha
   field_simp
   apply or_congr
   · constructor <;> intro h' <;> linear_combination -h'
@@ -149,11 +145,10 @@ lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * x * x + b * x + c ≤ 0) : d
 /-- If a polynomial of degree 2 is always positive, then its discriminant is negative,
 at least when the coefficient of the quadratic term is nonzero.
 -/
-theorem discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * x * x + b * x + c) : discrim a b c < 0 :=
-  by
+theorem discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * x * x + b * x + c) :
+    discrim a b c < 0 := by
   have : ∀ x : K, 0 ≤ a * x * x + b * x + c := fun x => le_of_lt (h x)
-  refine' lt_of_le_of_ne (discrim_le_zero this) _
-  intro h'
+  refine lt_of_le_of_ne (discrim_le_zero this) fun h' ↦ ?_
   have := h (-b / (2 * a))
   have : a * (-b / (2 * a)) * (-b / (2 * a)) + b * (-b / (2 * a)) + c = 0 := by
     rw [quadratic_eq_zero_iff_of_discrim_eq_zero ha h' (-b / (2 * a))]

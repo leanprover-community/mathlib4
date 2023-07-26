@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.free_monoid.count
-! leanprover-community/mathlib commit a2d2e18906e2b62627646b5d5be856e6a642062f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Data.List.Count
+
+#align_import algebra.free_monoid.count from "leanprover-community/mathlib"@"a2d2e18906e2b62627646b5d5be856e6a642062f"
 
 /-!
 # `List.count` as a bundled homomorphism
@@ -32,7 +29,7 @@ def countp : FreeAddMonoid α →+ ℕ where
   map_add' := List.countp_append _
 #align free_add_monoid.countp FreeAddMonoid.countp
 
-theorem countp_of (x : α): countp p (of x) = if p x = true then 1 else 0 := by
+theorem countp_of (x : α) : countp p (of x) = if p x = true then 1 else 0 := by
   simp [countp, List.countp, List.countp.go]
 #align free_add_monoid.countp_of FreeAddMonoid.countp_of
 
@@ -57,7 +54,7 @@ end FreeAddMonoid
 
 namespace FreeMonoid
 
-/-- `list.countp` as a bundled multiplicative monoid homomorphism. -/
+/-- `List.countp` as a bundled multiplicative monoid homomorphism. -/
 def countp : FreeMonoid α →* Multiplicative ℕ :=
     AddMonoidHom.toMultiplicative (FreeAddMonoid.countp p)
 #align free_monoid.countp FreeMonoid.countp

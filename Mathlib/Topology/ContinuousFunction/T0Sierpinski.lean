@@ -2,15 +2,12 @@
 Copyright (c) 2022 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
-
-! This file was ported from Lean 3 source module topology.continuous_function.t0_sierpinski
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.continuous_function.t0_sierpinski from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
@@ -31,12 +28,12 @@ namespace TopologicalSpace
 theorem eq_induced_by_maps_to_sierpinski (X : Type _) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
-  · rw [le_infᵢ_iff]
+  · rw [le_iInf_iff]
     exact fun u => Continuous.le_induced (isOpen_iff_continuous_mem.mp u.2)
   · intro u h
-    rw [← generateFrom_unionᵢ_isOpen]
+    rw [← generateFrom_iUnion_isOpen]
     apply isOpen_generateFrom_of_mem
-    simp only [Set.mem_unionᵢ, Set.mem_setOf_eq, isOpen_induced_iff]
+    simp only [Set.mem_iUnion, Set.mem_setOf_eq, isOpen_induced_iff]
     exact ⟨⟨u, h⟩, {True}, isOpen_singleton_true, by simp [Set.preimage]⟩
 #align topological_space.eq_induced_by_maps_to_sierpinski TopologicalSpace.eq_induced_by_maps_to_sierpinski
 
@@ -51,7 +48,7 @@ def productOfMemOpens : C(X, Opens X → Prop) where
 #align topological_space.product_of_mem_opens TopologicalSpace.productOfMemOpens
 
 theorem productOfMemOpens_inducing : Inducing (productOfMemOpens X) := by
-  convert inducing_infᵢ_to_pi fun (u : Opens X) (x : X) => x ∈ u
+  convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 #align topological_space.product_of_mem_opens_inducing TopologicalSpace.productOfMemOpens_inducing
 
@@ -66,4 +63,3 @@ theorem productOfMemOpens_embedding [T0Space X] : Embedding (productOfMemOpens X
 #align topological_space.product_of_mem_opens_embedding TopologicalSpace.productOfMemOpens_embedding
 
 end TopologicalSpace
-

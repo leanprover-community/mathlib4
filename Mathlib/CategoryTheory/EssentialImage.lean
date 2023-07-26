@@ -2,15 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.essential_image
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.FullSubcategory
+
+#align_import category_theory.essential_image from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Essential image of a functor
@@ -22,7 +18,7 @@ functor rather than a subtype, preserving the principle of equivalence. For exam
 define exponential ideals.
 
 The essential image can also be seen as a subcategory of the target category, and witnesses that
-a functor decomposes into a essentially surjective functor and a fully faithful functor.
+a functor decomposes into an essentially surjective functor and a fully faithful functor.
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
 
@@ -56,7 +52,7 @@ def essImage.getIso {Y : D} (h : Y ∈ F.essImage) : F.obj (essImage.witness h) 
   Classical.choice h.choose_spec
 #align category_theory.functor.ess_image.get_iso CategoryTheory.Functor.essImage.getIso
 
-/-- Being in the essential image is a "hygenic" property: it is preserved under isomorphism. -/
+/-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
 theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : Y ∈ essImage F) : Y' ∈ essImage F :=
   hY.imp fun _ => Nonempty.map (· ≪≫ h)
 #align category_theory.functor.ess_image.of_iso CategoryTheory.Functor.essImage.ofIso
@@ -138,9 +134,8 @@ class EssSurj (F : C ⥤ D) : Prop where
   mem_essImage (Y : D) : Y ∈ F.essImage
 #align category_theory.ess_surj CategoryTheory.EssSurj
 
-instance :
-    EssSurj
-      F.toEssImage where mem_essImage := fun ⟨_, hY⟩ =>
+instance EssSurj.toEssImage : EssSurj F.toEssImage where
+  mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
 variable (F) [EssSurj F]
@@ -168,5 +163,11 @@ instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
   haveI := Full.ofIso F.toEssImageCompEssentialImageInclusion.symm
   Full.ofCompFaithful F.toEssImage F.essImageInclusion
 #align category_theory.full.to_ess_image CategoryTheory.Full.toEssImage
+
+instance instEssSurjId : EssSurj (𝟭 C) where
+  mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
+
+theorem Iso.map_essSurj {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
+  mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
 
 end CategoryTheory

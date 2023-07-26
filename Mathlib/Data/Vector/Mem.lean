@@ -2,13 +2,10 @@
 Copyright (c) 2022 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module data.vector.mem
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector.Basic
+
+#align_import data.vector.mem from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Theorems about membership of elements in vectors
@@ -16,7 +13,7 @@ import Mathlib.Data.Vector.Basic
 This file contains theorems for membership in a `v.toList` for a vector `v`.
 Having the length available in the type allows some of the lemmas to be
   simpler and more general than the original version for lists.
-In particular we can avoid some assumptions about types being `inhabited`,
+In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 

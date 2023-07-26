@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.kleitman
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 import Mathlib.Combinatorics.SetFamily.Intersecting
+
+#align_import combinatorics.set_family.kleitman from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Kleitman's bound on the size of intersecting families
@@ -21,7 +18,7 @@ Kleitman's bound stipulates that `k` intersecting families cover at most `2ⁿ -
 
 ## Main declarations
 
-* `Finset.card_bunionᵢ_le_of_intersecting`: Kleitman's theorem.
+* `Finset.card_biUnion_le_of_intersecting`: Kleitman's theorem.
 
 ## References
 
@@ -37,15 +34,15 @@ variable {ι α : Type _} [Fintype α] [DecidableEq α] [Nonempty α]
 
 /-- **Kleitman's theorem**. An intersecting family on `n` elements contains at most `2ⁿ⁻¹` sets, and
 each further intersecting family takes at most half of the sets that are in no previous family. -/
-theorem Finset.card_bunionᵢ_le_of_intersecting (s : Finset ι) (f : ι → Finset (Finset α))
+theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finset (Finset α))
     (hf : ∀ i ∈ s, (f i : Set (Finset α)).Intersecting) :
-    (s.bunionᵢ f).card ≤ 2 ^ Fintype.card α - 2 ^ (Fintype.card α - s.card) := by
+    (s.biUnion f).card ≤ 2 ^ Fintype.card α - 2 ^ (Fintype.card α - s.card) := by
   have : DecidableEq ι := by
     classical
     infer_instance
   obtain hs | hs := le_total (Fintype.card α) s.card
   · rw [tsub_eq_zero_of_le hs, pow_zero]
-    refine' (card_le_of_subset <| bunionᵢ_subset.2 fun i hi a ha ↦
+    refine' (card_le_of_subset <| biUnion_subset.2 fun i hi a ha ↦
       mem_compl.2 <| not_mem_singleton.2 <| (hf _ hi).ne_bot ha).trans_eq _
     rw [card_compl, Fintype.card_finset, card_singleton]
   induction' s using Finset.cons_induction with i s hi ih generalizing f
@@ -61,9 +58,9 @@ theorem Finset.card_bunionᵢ_le_of_intersecting (s : Finset ι) (f : ι → Fin
     refine' fun j hj ↦ (hf₁ _ hj).2.2.isUpperSet' ((hf₁ _ hj).2.2.is_max_iff_card_eq.2 _)
     rw [Fintype.card_finset]
     exact (hf₁ _ hj).2.1
-  refine' (card_le_of_subset <| bunionᵢ_mono fun j hj ↦ (hf₁ _ hj).1).trans _
+  refine' (card_le_of_subset <| biUnion_mono fun j hj ↦ (hf₁ _ hj).1).trans _
   nth_rw 1 [cons_eq_insert i]
-  rw [bunionᵢ_insert]
+  rw [biUnion_insert]
   refine' (card_mono <| @le_sup_sdiff _ _ _ <| f' i).trans ((card_union_le _ _).trans _)
   rw [union_sdiff_left, sdiff_eq_inter_compl]
   refine' le_of_mul_le_mul_left _ (pow_pos (zero_lt_two' ℕ) <| Fintype.card α + 1)
@@ -72,8 +69,8 @@ theorem Finset.card_bunionᵢ_le_of_intersecting (s : Finset ι) (f : ι → Fin
       ((mul_le_mul_left <| pow_pos (zero_lt_two' ℕ) _).2
       (hf₁ _ <| mem_cons_self _ _).2.2.card_le) <|
       (mul_le_mul_left <| zero_lt_two' ℕ).2 <| IsUpperSet.card_inter_le_finset _ _).trans _
-  · rw [coe_bunionᵢ]
-    exact isUpperSet_unionᵢ₂ fun i hi ↦ hf₂ _ <| subset_cons _ hi
+  · rw [coe_biUnion]
+    exact isUpperSet_iUnion₂ fun i hi ↦ hf₂ _ <| subset_cons _ hi
   · rw [coe_compl]
     exact (hf₂ _ <| mem_cons_self _ _).compl
   rw [mul_tsub, card_compl, Fintype.card_finset, mul_left_comm, mul_tsub,
@@ -86,4 +83,4 @@ theorem Finset.card_bunionᵢ_le_of_intersecting (s : Finset ι) (f : ι → Fin
   rw [mul_tsub, two_mul, ← pow_succ,
     ← add_tsub_assoc_of_le (pow_le_pow' (one_le_two : (1 : ℕ) ≤ 2) tsub_le_self),
     tsub_add_eq_add_tsub hs, card_cons, add_tsub_add_eq_tsub_right]
-#align finset.card_bUnion_le_of_intersecting Finset.card_bunionᵢ_le_of_intersecting
+#align finset.card_bUnion_le_of_intersecting Finset.card_biUnion_le_of_intersecting

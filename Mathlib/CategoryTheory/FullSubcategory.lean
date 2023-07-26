@@ -2,14 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton
-
-! This file was ported from Lean 3 source module category_theory.full_subcategory
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Std.Tactic.Lint.Basic
+
+#align_import category_theory.full_subcategory from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Induced categories and full subcategories
@@ -35,7 +31,7 @@ form of `D`. This is used to set up several algebraic categories like
 
   def CommMon : Type (u+1) := InducedCategory Mon (Bundled.map @CommMonoid.toMonoid)
   -- not `InducedCategory (Bundled Monoid) (Bundled.map @CommMonoid.toMonoid)`,
-  -- even though `Mon = Bundled Monoid`!
+  -- even though `MonCat = Bundled Monoid`!
 -/
 
 
@@ -55,7 +51,7 @@ in `D` from `F X` to `F Y`.
 -/
 -- Porting note: @[nolint has_nonempty_instance unused_arguments]
 @[nolint unusedArguments]
-def InducedCategory (_F: C → D): Type u₁ :=
+def InducedCategory (_F : C → D) : Type u₁ :=
   C
 #align category_theory.induced_category CategoryTheory.InducedCategory
 
@@ -185,7 +181,7 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSub
     `fullSubcategoryInclusion_obj_lift_obj` and `fullSubcategoryInclusion_map_lift_map`. -/
 def FullSubcategory.lift_comp_inclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by simp)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.full_subcategory.lift_comp_inclusion CategoryTheory.FullSubcategory.lift_comp_inclusion
 
 @[simp]

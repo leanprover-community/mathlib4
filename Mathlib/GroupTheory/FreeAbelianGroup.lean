@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module group_theory.free_abelian_group
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.Algebra.Module.Basic
+
+#align_import group_theory.free_abelian_group from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Free abelian groups
@@ -79,6 +76,8 @@ def FreeAbelianGroup : Type u :=
   Additive <| Abelianization <| FreeGroup α
 #align free_abelian_group FreeAbelianGroup
 
+-- FIXME: this is super broken, because the functions have type `Additive .. → ..`
+-- instead of `FreeAbelianGroup α → ..` and those are not defeq!
 instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
   @Additive.addCommGroup _ <| Abelianization.commGroup _
 
@@ -120,7 +119,7 @@ protected theorem unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x)
 #align free_abelian_group.lift.unique FreeAbelianGroup.lift.unique
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 protected theorem ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H
 #align free_abelian_group.lift.ext FreeAbelianGroup.lift.ext
@@ -421,8 +420,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 #align free_abelian_group.of_mul FreeAbelianGroup.of_mul
 
 instance distrib : Distrib (FreeAbelianGroup α) :=
-  { FreeAbelianGroup.mul _ with
-    add := (· + ·)
+  { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
     left_distrib := fun x y z ↦ (lift _).map_add _ _
     right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift.add'] }
 

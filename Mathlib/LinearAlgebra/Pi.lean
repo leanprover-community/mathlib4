@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.pi
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Logic.Equiv.Fin
+
+#align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Pi types of modules
@@ -100,13 +97,13 @@ theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp 
   ext fun _ => rfl
 #align linear_map.proj_pi LinearMap.proj_pi
 
-theorem infᵢ_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
+theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
   bot_unique <|
     SetLike.le_def.2 fun a h => by
-      simp only [mem_infᵢ, mem_ker, proj_apply] at h
+      simp only [mem_iInf, mem_ker, proj_apply] at h
       exact (mem_bot _).2 (funext fun i => h i)
-#align linear_map.infi_ker_proj LinearMap.infᵢ_ker_proj
+#align linear_map.infi_ker_proj LinearMap.iInf_ker_proj
 
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`
 between `M₂` and `M₃`. -/
@@ -148,7 +145,7 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
   map_add' f g := by simp only [Pi.add_apply, add_comp, Finset.sum_add_distrib]
   map_smul' c f := by simp only [Pi.smul_apply, smul_comp, Finset.smul_sum, RingHom.id_apply]
   left_inv f := by
-    ext (i x)
+    ext i x
     simp [apply_single]
   right_inv f := by
     ext x
@@ -204,7 +201,7 @@ variable (R φ)
 
 /-- If `I` and `J` are disjoint index sets, the product of the kernels of the `J`th projections of
 `φ` is linearly equivalent to the product over `I`. -/
-def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) ≃ₗ[R] (i : I) → φ i := by
@@ -212,12 +209,12 @@ def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Dis
     LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
       (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) _) _ _
   · intro b
-    simp only [mem_infᵢ, mem_ker, funext_iff, proj_apply, pi_apply]
+    simp only [mem_iInf, mem_ker, funext_iff, proj_apply, pi_apply]
     intro j hjJ
     have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
     rw [dif_neg this, zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
-    ext (b⟨j, hj⟩)
+    ext b ⟨j, hj⟩
     simp only [dif_pos, Function.comp_apply, Function.eval_apply, LinearMap.codRestrict_apply,
       LinearMap.coe_comp, LinearMap.coe_proj, LinearMap.pi_apply, Submodule.subtype_apply,
       Subtype.coe_prop]
@@ -226,12 +223,12 @@ def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Dis
     apply Subtype.ext
     ext j
     have hb : ∀ i ∈ J, b i = 0 := by
-      simpa only [mem_infᵢ, mem_ker, proj_apply] using (mem_infᵢ _).1 hb
+      simpa only [mem_iInf, mem_ker, proj_apply] using (mem_iInf _).1 hb
     simp only [comp_apply, pi_apply, id_apply, proj_apply, subtype_apply, codRestrict_apply]
     split_ifs with h
     · rfl
     · exact (hb _ <| (hu trivial).resolve_left h).symm
-#align linear_map.infi_ker_proj_equiv LinearMap.infᵢKerProjEquiv
+#align linear_map.infi_ker_proj_equiv LinearMap.iInfKerProjEquiv
 
 end
 
@@ -297,28 +294,28 @@ theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q 
   Set.pi_mono h
 #align submodule.pi_mono Submodule.pi_mono
 
-theorem binfᵢ_comap_proj :
-    (⨅ i ∈ I, comap (proj i : ((i : ι) →  φ i) →ₗ[R] φ i) (p i)) = pi I p := by
+theorem biInf_comap_proj :
+    ⨅ i ∈ I, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i) = pi I p := by
   ext x
   simp
-#align submodule.binfi_comap_proj Submodule.binfᵢ_comap_proj
+#align submodule.binfi_comap_proj Submodule.biInf_comap_proj
 
-theorem infᵢ_comap_proj :
-    (⨅ i, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i)) = pi Set.univ p := by
+theorem iInf_comap_proj :
+    ⨅ i, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i) = pi Set.univ p := by
   ext x
   simp
-#align submodule.infi_comap_proj Submodule.infᵢ_comap_proj
+#align submodule.infi_comap_proj Submodule.iInf_comap_proj
 
-theorem supᵢ_map_single [DecidableEq ι] [Finite ι] :
-    (⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i)) = pi Set.univ p := by
+theorem iSup_map_single [DecidableEq ι] [Finite ι] :
+    ⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine' (supᵢ_le fun i => _).antisymm _
+  refine' (iSup_le fun i => _).antisymm _
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
     rcases em (j = i) with (rfl | hj) <;> simp [*]
   · intro x hx
     rw [← Finset.univ_sum_single x]
-    exact sum_mem_supᵢ fun i => mem_map_of_mem (hx i trivial)
-#align submodule.supr_map_single Submodule.supᵢ_map_single
+    exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
+#align submodule.supr_map_single Submodule.iSup_map_single
 
 theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {i} :
     p i ≤ Submodule.comap (LinearMap.single i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
@@ -489,7 +486,7 @@ theorem funUnique_apply (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoi
 
 variable (R M)
 
-/-- Linear equivalence between dependent functions `(i : fin 2) → M i` and `M 0 × M 1`. -/
+/-- Linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`. -/
 @[simps (config :=
       { simpRhs := true
         fullyApplied := false }) symm_apply]
@@ -508,7 +505,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
     (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
 #align linear_equiv.pi_fin_two_apply LinearEquiv.piFinTwo_apply
 
-/-- Linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
+/-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
 @[simps! (config := .asFn)]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }

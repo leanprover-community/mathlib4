@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.maps
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order
 import Mathlib.Topology.NhdsSet
+
+#align_import topology.maps from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
 /-!
 # Specific classes of maps between topological spaces
@@ -57,8 +54,8 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 section Inducing
 
 /-- A function `f : α → β` between topological spaces is inducing if the topology on `α` is induced
-by the topology on `β` through `f`, meaning that a set `s : set α` is open iff it is the preimage
-under `f` of some open set `t : set β`. -/
+by the topology on `β` through `f`, meaning that a set `s : Set α` is open iff it is the preimage
+under `f` of some open set `t : Set β`. -/
 @[mk_iff inducing_iff]
 structure Inducing [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : α → β) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
@@ -69,7 +66,7 @@ structure Inducing [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
 theorem inducing_induced (f : α → β) : @Inducing α β (TopologicalSpace.induced f ‹_›) _ f :=
-  @Inducing.mk  _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
+  @Inducing.mk _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
 
 theorem inducing_id : Inducing (@id α) :=
   ⟨induced_id.symm⟩
@@ -98,7 +95,7 @@ theorem Inducing.nhds_eq_comap {f : α → β} (hf : Inducing f) : ∀ a : α, �
 
 theorem Inducing.nhdsSet_eq_comap {f : α → β} (hf : Inducing f) (s : Set α) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
-  simp only [nhdsSet, supₛ_image, comap_supᵢ, hf.nhds_eq_comap, supᵢ_image]
+  simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
 #align inducing.nhds_set_eq_comap Inducing.nhdsSet_eq_comap
 
 theorem Inducing.map_nhds_eq {f : α → β} (hf : Inducing f) (a : α) : (𝓝 a).map f = 𝓝[range f] f a :=
@@ -175,6 +172,10 @@ theorem Inducing.isOpen_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsOpen s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s := by rw [hf.induced, isOpen_induced_iff]
 #align inducing.is_open_iff Inducing.isOpen_iff
 
+theorem Inducing.setOf_isOpen {f : α → β} (hf : Inducing f) :
+    {s : Set α | IsOpen s} = preimage f '' {t | IsOpen t} :=
+  Set.ext fun _ ↦ hf.isOpen_iff
+
 theorem Inducing.dense_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
   simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
@@ -185,7 +186,7 @@ end Inducing
 section Embedding
 
 /-- A function between topological spaces is an embedding if it is injective,
-  and for all `s : set α`, `s` is open iff it is the preimage of an open set. -/
+  and for all `s : Set α`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff embedding_iff]
 structure Embedding [TopologicalSpace α] [TopologicalSpace β] (f : α → β) extends
   Inducing f : Prop where
@@ -267,16 +268,22 @@ theorem Embedding.discreteTopology {X Y : Type _} [TopologicalSpace X] [tY : Top
 end Embedding
 
 /-- A function between topological spaces is a quotient map if it is surjective,
-  and for all `s : set β`, `s` is open iff its preimage is an open set. -/
+  and for all `s : Set β`, `s` is open iff its preimage is an open set. -/
 def QuotientMap {α : Type _} {β : Type _} [tα : TopologicalSpace α] [tβ : TopologicalSpace β]
     (f : α → β) : Prop :=
   Surjective f ∧ tβ = tα.coinduced f
 #align quotient_map QuotientMap
 
-theorem quotientMap_iff {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+theorem quotientMap_iff [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
     QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
   and_congr Iff.rfl topologicalSpace_eq_iff
 #align quotient_map_iff quotientMap_iff
+
+theorem quotientMap_iff_closed [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+    QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
+  quotientMap_iff.trans <| Iff.rfl.and <| compl_surjective.forall.trans <| by
+    simp only [isOpen_compl_iff, preimage_compl]
+#align quotient_map_iff_closed quotientMap_iff_closed
 
 namespace QuotientMap
 
@@ -321,13 +328,13 @@ protected theorem isOpen_preimage (hf : QuotientMap f) {s : Set β} : IsOpen (f 
 #align quotient_map.is_open_preimage QuotientMap.isOpen_preimage
 
 protected theorem isClosed_preimage (hf : QuotientMap f) {s : Set β} :
-    IsClosed (f ⁻¹' s) ↔ IsClosed s := by
-  simp only [← isOpen_compl_iff, ← preimage_compl, hf.isOpen_preimage]
+    IsClosed (f ⁻¹' s) ↔ IsClosed s :=
+  ((quotientMap_iff_closed.1 hf).2 s).symm
 #align quotient_map.is_closed_preimage QuotientMap.isClosed_preimage
 
 end QuotientMap
 
-/-- A map `f : α → β` is said to be an *open map*, if the image of any open `U : set α`
+/-- A map `f : α → β` is said to be an *open map*, if the image of any open `U : Set α`
 is open in `β`. -/
 def IsOpenMap [TopologicalSpace α] [TopologicalSpace β] (f : α → β) :=
   ∀ U : Set α, IsOpen U → IsOpen (f '' U)
@@ -385,7 +392,6 @@ theorem of_sections {f : α → β}
       𝓝 (f x) = map f (map g (𝓝 (f x))) := by rw [map_map, hgf.comp_eq_id, map_id]
       _ ≤ map f (𝓝 (g (f x))) := map_mono hgc
       _ = map f (𝓝 x) := by rw [hgx]
-
 #align is_open_map.of_sections IsOpenMap.of_sections
 
 theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')
@@ -461,7 +467,7 @@ section IsClosedMap
 
 variable [TopologicalSpace α] [TopologicalSpace β]
 
-/-- A map `f : α → β` is said to be a *closed map*, if the image of any closed `U : set α`
+/-- A map `f : α → β` is said to be a *closed map*, if the image of any closed `U : Set α`
 is closed in `β`. -/
 def IsClosedMap (f : α → β) :=
   ∀ U : Set α, IsClosed U → IsClosed (f '' U)
@@ -507,6 +513,12 @@ theorem closed_range {f : α → β} (hf : IsClosedMap f) : IsClosed (range f) :
   @image_univ _ _ f ▸ hf _ isClosed_univ
 #align is_closed_map.closed_range IsClosedMap.closed_range
 
+theorem to_quotientMap {f : α → β} (hcl : IsClosedMap f) (hcont : Continuous f)
+    (hsurj : Surjective f) : QuotientMap f :=
+  quotientMap_iff_closed.2 ⟨hsurj, fun s =>
+    ⟨fun hs => hs.preimage hcont, fun hs => hsurj.image_preimage s ▸ hcl _ hs⟩⟩
+#align is_closed_map.to_quotient_map IsClosedMap.to_quotientMap
+
 end IsClosedMap
 
 theorem Inducing.isClosedMap [TopologicalSpace α] [TopologicalSpace β] {f : α → β} (hf : Inducing f)
@@ -526,6 +538,11 @@ theorem isClosedMap_iff_closure_image [TopologicalSpace α] [TopologicalSpace β
         _ = f '' c := by rw [hc.closure_eq]⟩
 #align is_closed_map_iff_closure_image isClosedMap_iff_closure_image
 
+theorem isClosedMap_iff_clusterPt [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+    IsClosedMap f ↔ ∀ s y, MapClusterPt y (𝓟 s) f → ∃ x, f x = y ∧ ClusterPt x (𝓟 s) := by
+  simp [MapClusterPt, isClosedMap_iff_closure_image, subset_def, mem_closure_iff_clusterPt,
+    and_comm]
+
 section OpenEmbedding
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
@@ -536,7 +553,7 @@ structure OpenEmbedding (f : α → β) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   open_range : IsOpen <| range f
 #align open_embedding OpenEmbedding
-#align open_embedding_iff  openEmbedding_iff
+#align open_embedding_iff openEmbedding_iff
 
 theorem OpenEmbedding.isOpenMap {f : α → β} (hf : OpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.open_range

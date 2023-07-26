@@ -2,15 +2,12 @@
 Copyright (c) 2021 Ashwin Iyengar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Ashwin Iyengar, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.nonarchimedean.basic
-! leanprover-community/mathlib commit 83f81aea33931a1edb94ce0f32b9a5d484de6978
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Algebra.Ring.Basic
+
+#align_import topology.algebra.nonarchimedean.basic from "leanprover-community/mathlib"@"83f81aea33931a1edb94ce0f32b9a5d484de6978"
 
 /-!
 # Nonarchimedean Topology
@@ -33,7 +30,7 @@ group is nonarchimedean.
 
 open Pointwise
 
-/-- An topological additive group is nonarchimedean if every neighborhood of 0
+/-- A topological additive group is nonarchimedean if every neighborhood of 0
   contains an open subgroup. -/
 class NonarchimedeanAddGroup (G : Type _) [AddGroup G] [TopologicalSpace G] extends
   TopologicalAddGroup G : Prop where
@@ -47,7 +44,7 @@ class NonarchimedeanGroup (G : Type _) [Group G] [TopologicalSpace G] extends To
   is_nonarchimedean : ∀ U ∈ nhds (1 : G), ∃ V : OpenSubgroup G, (V : Set G) ⊆ U
 #align nonarchimedean_group NonarchimedeanGroup
 
-/-- An topological ring is nonarchimedean if its underlying topological additive
+/-- A topological ring is nonarchimedean if its underlying topological additive
   group is nonarchimedean. -/
 class NonarchimedeanRing (R : Type _) [Ring R] [TopologicalSpace R] extends TopologicalRing R :
   Prop where
@@ -72,10 +69,8 @@ variable {K : Type _} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
 @[to_additive]
 theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : NonarchimedeanGroup H :=
-  {
-    is_nonarchimedean := fun U hU =>
-      have h₁ : f ⁻¹' U ∈ nhds (1 : G) :=
-        by
+  { is_nonarchimedean := fun U hU =>
+      have h₁ : f ⁻¹' U ∈ nhds (1 : G) := by
         apply emb.continuous.tendsto
         rwa [f.map_one]
       let ⟨V, hV⟩ := is_nonarchimedean (f ⁻¹' U) h₁
@@ -89,7 +84,7 @@ contains the cartesian product of an open neighborhood in each group. -/
 the cartesian product of two nonarchimedean groups contains the cartesian product of
 an open neighborhood in each group."]
 theorem prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
-    ∃ (V : OpenSubgroup G)(W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
+    ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
   cases' is_nonarchimedean _ hU₁ with V hV

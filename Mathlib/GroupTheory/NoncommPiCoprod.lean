@@ -2,17 +2,14 @@
 Copyright (c) 2022 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
-
-! This file was ported from Lean 3 source module group_theory.noncomm_pi_coprod
-! leanprover-community/mathlib commit 6f9f36364eae3f42368b04858fd66d6d9ae730d8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Order.SupIndep
+
+#align_import group_theory.noncomm_pi_coprod from "leanprover-community/mathlib"@"6f9f36364eae3f42368b04858fd66d6d9ae730d8"
 
 /-!
 # Canonical homomorphism from a finite family of monoids
@@ -66,23 +63,21 @@ theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type _} (s : Finset ι
     · simp
     · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
-      have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i :=
-        by
+      have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i := by
         refine' Subgroup.noncommProd_mem _ _ _
         intro x hx
-        have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_supᵢ₂ (f := fun i _ => K i) x hx
+        have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_iSup₂ (f := fun i _ => K i) x hx
         exact this (hmem.2 x hx)
       intro heq1
       rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hnmem] at heq1
       have hnmem' : i ∉ (s : Set ι) := by simpa
       obtain ⟨heq1i : f i = 1, heq1S : s.noncommProd f _ = 1⟩ :=
-        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_bsupᵢ hnmem') hmem.1 hmem_bsupr heq1
+        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnmem') hmem.1 hmem_bsupr heq1
       intro i h
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)
       · exact heq1i
       · refine' ih hcomm hmem.2 heq1S _ h
-
 #align subgroup.eq_one_of_noncomm_prod_eq_one_of_independent Subgroup.eq_one_of_noncommProd_eq_one_of_independent
 #align add_subgroup.eq_zero_of_noncomm_sum_eq_zero_of_independent AddSubgroup.eq_zero_of_noncommSum_eq_zero_of_independent
 
@@ -173,10 +168,10 @@ theorem noncommPiCoprod_mrange :
     apply le_antisymm
     · rintro x ⟨f, rfl⟩
       refine Submonoid.noncommProd_mem _ _ _ (fun _ _ _ _ h => hcomm h _ _) (fun i _ => ?_)
-      apply Submonoid.mem_supₛ_of_mem
+      apply Submonoid.mem_sSup_of_mem
       · use i
       simp
-    · refine' supᵢ_le _
+    · refine' iSup_le _
       rintro i x ⟨y, rfl⟩
       refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_mrange MonoidHom.noncommPiCoprod_mrange
@@ -211,10 +206,10 @@ theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (
     · rintro x ⟨f, rfl⟩
       refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm _ _ h _ _) ?_
       intro i _hi
-      apply Subgroup.mem_supₛ_of_mem
+      apply Subgroup.mem_sSup_of_mem
       · use i
       simp
-    · refine' supᵢ_le _
+    · refine' iSup_le _
       rintro i x ⟨y, rfl⟩
       refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_range MonoidHom.noncommPiCoprod_range
@@ -249,19 +244,17 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     rw [disjoint_iff_inf_le]
     rintro f ⟨hxi, hxp⟩
     dsimp at hxi hxp
-    rw [supᵢ_subtype', ← noncommPiCoprod_range] at hxp
+    rw [iSup_subtype', ← noncommPiCoprod_range] at hxp
     rotate_left
     · intro _ _ hj
       apply hcomm
       exact hj ∘ Subtype.ext
     cases' hxp with g hgf
     cases' hxi with g' hg'f
-    have hxi : orderOf f ∣ Fintype.card (H i) :=
-      by
+    have hxi : orderOf f ∣ Fintype.card (H i) := by
       rw [← hg'f]
       exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
-    have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) :=
-      by
+    have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) := by
       rw [← hgf, ← Fintype.card_pi]
       exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
     change f = 1
@@ -285,7 +278,7 @@ end FamilyOfGroups
 
 namespace Subgroup
 
--- We have an family of subgroups
+-- We have a family of subgroups
 variable {G : Type _} [Group G]
 
 variable {ι : Type _} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}

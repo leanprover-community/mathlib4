@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.partition
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Composition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.ApplyFun
+
+#align_import combinatorics.partition from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Partitions
@@ -96,9 +93,8 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n
   parts_pos {i} hi := Nat.pos_of_ne_zero <| by apply of_mem_filter hi
   parts_sum := by
     have lt : l.filter (· = 0) + l.filter (· ≠ 0) = l := filter_add_not _ l
-    apply_fun Multiset.sum  at lt
-    have lz : (l.filter (· = 0)).sum = 0 :=
-      by
+    apply_fun Multiset.sum at lt
+    have lz : (l.filter (· = 0)).sum = 0 := by
       rw [Multiset.sum_eq_zero_iff]
       simp
     rwa [sum_add (filter (fun x => x = 0) l) (filter (fun x => ¬x = 0) l),lz,hl, zero_add] at lt

@@ -2,14 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.circular
-! leanprover-community/mathlib commit a2d2e18906e2b62627646b5d5be856e6a642062f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Set
+
+#align_import order.circular from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
 /-!
 # Circular order hierarchy
@@ -73,7 +69,7 @@ What is the correct generality of "rolling the necklace" open? At least, this wo
 `β × α` where `α` is a circular order and `β` is a linear order.
 
 What's next is to define circular groups and provide instances for `ZMod n`, the usual circle group
-`Circle`, `Real.Angle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
+`Circle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
 to work?
 
 We should have circular order homomorphisms. The typical example is
@@ -165,8 +161,8 @@ theorem btw_rfl {a : α} : btw a a a :=
   btw_refl _
 #align btw_rfl btw_rfl
 
--- TODO: `alias` creates a def instead of a lemma.
--- alias btw_cyclic_left        ← has_btw.btw.cyclic_left
+-- TODO: `alias` creates a def instead of a lemma (because `btw_cyclic_left` is a def).
+-- alias btw_cyclic_left        ← Btw.btw.cyclic_left
 theorem Btw.btw.cyclic_left {a b c : α} (h : btw a b c) : btw b c a :=
   btw_cyclic_left h
 #align has_btw.btw.cyclic_left Btw.btw.cyclic_left
@@ -178,8 +174,8 @@ theorem btw_cyclic_right {a b c : α} (h : btw a b c) : btw c a b :=
 alias btw_cyclic_right ← Btw.btw.cyclic_right
 #align has_btw.btw.cyclic_right Btw.btw.cyclic_right
 
-/-- The order of the `↔` has been chosen so that `rw btw_cyclic` cycles to the right while
-`rw ←btw_cyclic` cycles to the left (thus following the prepended arrow). -/
+/-- The order of the `↔` has been chosen so that `rw [btw_cyclic]` cycles to the right while
+`rw [← btw_cyclic]` cycles to the left (thus following the prepended arrow). -/
 theorem btw_cyclic {a b c : α} : btw a b c ↔ btw c a b :=
   ⟨btw_cyclic_right, btw_cyclic_left⟩
 #align btw_cyclic btw_cyclic
@@ -229,14 +225,14 @@ theorem sbtw_cyclic_right {a b c : α} (h : sbtw a b c) : sbtw c a b :=
 alias sbtw_cyclic_right ← SBtw.sbtw.cyclic_right
 #align has_sbtw.sbtw.cyclic_right SBtw.sbtw.cyclic_right
 
-/-- The order of the `↔` has been chosen so that `rw sbtw_cyclic` cycles to the right while
-`rw ←sbtw_cyclic` cycles to the left (thus following the prepended arrow). -/
+/-- The order of the `↔` has been chosen so that `rw [sbtw_cyclic]` cycles to the right while
+`rw [← sbtw_cyclic]` cycles to the left (thus following the prepended arrow). -/
 theorem sbtw_cyclic {a b c : α} : sbtw a b c ↔ sbtw c a b :=
   ⟨sbtw_cyclic_right, sbtw_cyclic_left⟩
 #align sbtw_cyclic sbtw_cyclic
 
--- TODO: `alias` creates a def instead of a lemma.
--- alias btw_trans_left        ← has_btw.btw.trans_left
+-- TODO: `alias` creates a def instead of a lemma (because `sbtw_trans_left` is a def).
+-- alias btw_trans_left        ← SBtw.sbtw.trans_left
 theorem SBtw.sbtw.trans_left {a b c d : α} (h : sbtw a b c) : sbtw b d c → sbtw a d c :=
   sbtw_trans_left h
 #align has_sbtw.sbtw.trans_left SBtw.sbtw.trans_left
@@ -277,8 +273,8 @@ section CircularPartialOrder
 
 variable {α : Type _} [CircularPartialOrder α]
 
--- TODO: `alias` creates a def instead of a lemma.
--- alias btw_antisymm        ← has_btw.btw.antisymm
+-- TODO: `alias` creates a def instead of a lemma (because `btw_antisymm` is a def).
+-- alias btw_antisymm        ← Btw.btw.antisymm
 theorem Btw.btw.antisymm {a b c : α} (h : btw a b c) : btw c b a → a = b ∨ b = c ∨ c = a :=
   btw_antisymm h
 #align has_btw.btw.antisymm Btw.btw.antisymm
@@ -370,16 +366,14 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
   btw_rfl_right
 #align set.right_mem_cIcc Set.right_mem_cIcc
 
-theorem compl_cIcc {a b : α} : cIcc a bᶜ = cIoo b a := by
+theorem compl_cIcc {a b : α} : (cIcc a b)ᶜ = cIoo b a := by
   ext
-  rw [Set.mem_cIoo, sbtw_iff_not_btw]
-  rfl
+  rw [Set.mem_cIoo, sbtw_iff_not_btw, cIcc, mem_compl_iff, mem_setOf]
 #align set.compl_cIcc Set.compl_cIcc
 
-theorem compl_cIoo {a b : α} : cIoo a bᶜ = cIcc b a := by
+theorem compl_cIoo {a b : α} : (cIoo a b)ᶜ = cIcc b a := by
   ext
-  rw [Set.mem_cIcc, btw_iff_not_sbtw]
-  rfl
+  rw [Set.mem_cIcc, btw_iff_not_sbtw, cIoo, mem_compl_iff, mem_setOf]
 #align set.compl_cIoo Set.compl_cIoo
 
 end CircularOrder
@@ -426,10 +420,17 @@ def Preorder.toCircularPreorder (α : Type _) [Preorder α] : CircularPreorder �
     · exact Or.inr (Or.inr ⟨hca, hab.trans hbd⟩)
   sbtw_iff_btw_not_btw {a b c} := by
     simp_rw [lt_iff_le_not_le]
-    have := le_trans a b c
-    have := le_trans b c a
-    have := le_trans c a b
-    tauto
+    have h1 := le_trans a b c
+    have h2 := le_trans b c a
+    have h3 := le_trans c a b
+    -- Porting note: was `tauto`, but this is a much faster tactic proof
+    revert h1 h2 h3
+    generalize (a ≤ b) = p1
+    generalize (b ≤ a) = p2
+    generalize (a ≤ c) = p3
+    generalize (c ≤ a) = p4
+    generalize (b ≤ c) = p5
+    by_cases p1 <;> by_cases p2 <;> by_cases p3 <;> by_cases p4 <;> by_cases p5 <;> simp [*]
 #align preorder.to_circular_preorder Preorder.toCircularPreorder
 
 /-- The circular partial order obtained from "looping around" a partial order.

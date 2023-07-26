@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
-
-! This file was ported from Lean 3 source module data.list.sigma
-! leanprover-community/mathlib commit f808feb6c18afddb25e66a71d317643cf7fb5fbb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sigma from "leanprover-community/mathlib"@"f808feb6c18afddb25e66a71d317643cf7fb5fbb"
 
 /-!
 # Utilities for lists of sigmas
@@ -17,7 +14,7 @@ import Mathlib.Data.List.Perm
 This file includes several ways of interacting with `List (Sigma β)`, treated as a key-value store.
 
 If `α : Type _` and `β : α → Type _`, then we regard `s : Sigma β` as having key `s.1 : α` and value
-`s.2 : β s.1`. Hence, `list (sigma β)` behaves like a key-value store.
+`s.2 : β s.1`. Hence, `List (Sigma β)` behaves like a key-value store.
 
 ## Main Definitions
 
@@ -285,8 +282,8 @@ theorem head?_lookupAll (a : α) : ∀ l : List (Sigma β), head? (lookupAll a l
   | [] => by simp
   | ⟨a', b⟩ :: l => by
     by_cases h : a = a'
-    . subst h; simp
-    . rw [lookupAll_cons_ne, dlookup_cons_ne, head?_lookupAll a l] <;> assumption
+    · subst h; simp
+    · rw [lookupAll_cons_ne, dlookup_cons_ne, head?_lookupAll a l] <;> assumption
 #align list.head_lookup_all List.head?_lookupAll
 
 theorem mem_lookupAll {a : α} {b : β a} :
@@ -296,7 +293,7 @@ theorem mem_lookupAll {a : α} {b : β a} :
     by_cases h : a = a'
     · subst h
       simp [*, mem_lookupAll]
-    . simp [*, mem_lookupAll]
+    · simp [*, mem_lookupAll]
 #align list.mem_lookup_all List.mem_lookupAll
 
 theorem lookupAll_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).map (Sigma.mk a) <+ l
@@ -348,7 +345,7 @@ theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
     rintro ⟨a', b'⟩ h; dsimp; split_ifs
     · subst a'
       exact H _ h
-    . rfl
+    · rfl
 #align list.kreplace_of_forall_not List.kreplace_of_forall_not
 
 theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys l)
@@ -383,7 +380,7 @@ theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l�
   perm_lookmap _ <| by
     refine' nd.pairwise_ne.imp _
     intro x y h z h₁ w h₂
-    split_ifs  at h₁ h₂ with h_2 h_1 <;> cases h₁ <;> cases h₂
+    split_ifs at h₁ h₂ with h_2 h_1 <;> cases h₁ <;> cases h₂
     exact (h (h_2.symm.trans h_1)).elim
 #align list.perm.kreplace List.Perm.kreplace
 
@@ -412,9 +409,7 @@ theorem kerase_cons_ne {a} {s : Sigma β} {l : List (Sigma β)} (h : a ≠ s.1) 
 
 @[simp]
 theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
-  induction' l with _ _ ih <;> [rfl,
-    · simp [not_or] at h
-      simp [h.1, ih h.2]]
+  induction' l with _ _ ih <;> [rfl; (simp [not_or] at h; simp [h.1, ih h.2])]
 #align list.kerase_of_not_mem_keys List.kerase_of_not_mem_keys
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
@@ -431,7 +426,7 @@ theorem mem_keys_of_mem_keys_kerase {a₁ a₂} {l : List (Sigma β)} :
 #align list.mem_keys_of_mem_keys_kerase List.mem_keys_of_mem_keys_kerase
 
 theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
-    ∃ (b : β a)(l₁ l₂ : List (Sigma β)),
+    ∃ (b : β a) (l₁ l₂ : List (Sigma β)),
       a ∉ l₁.keys ∧ l = l₁ ++ ⟨a, b⟩ :: l₂ ∧ kerase a l = l₁ ++ l₂ := by
   induction l
   case nil => cases h
@@ -523,10 +518,9 @@ theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
 theorem kerase_append_left {a} :
     ∀ {l₁ l₂ : List (Sigma β)}, a ∈ l₁.keys → kerase a (l₁ ++ l₂) = kerase a l₁ ++ l₂
   | [], _, h => by cases h
-  | s :: l₁, l₂, h₁ =>
-    if h₂ : a = s.1 then by simp [h₂]
-    else by simp at h₁; cases' h₁ with h₁ h₁ <;>
-    [exact absurd h₁ h₂, simp [h₂, kerase_append_left h₁]]
+  | s :: l₁, l₂, h₁ => by
+    if h₂ : a = s.1 then simp [h₂]
+    else simp at h₁; cases' h₁ with h₁ h₁ <;> [exact absurd h₁ h₂; simp [h₂, kerase_append_left h₁]]
 #align list.kerase_append_left List.kerase_append_left
 
 theorem kerase_append_right {a} :
@@ -600,7 +594,7 @@ theorem dlookup_kinsert_ne {a a'} {b' : β a'} {l : List (Sigma β)} (h : a ≠ 
 /-! ### `kextract` -/
 
 
-/-- Finds the first entry with a given key `a` and returns its value (as an `option` because there
+/-- Finds the first entry with a given key `a` and returns its value (as an `Option` because there
 might be no entry with key `a`) alongside with the rest of the entries. -/
 def kextract (a : α) : List (Sigma β) → Option (β a) × List (Sigma β)
   | [] => (none, [])
@@ -625,7 +619,7 @@ theorem kextract_eq_dlookup_kerase (a : α) :
 /-! ### `dedupKeys` -/
 
 
-/-- Remove entries with duplicate keys from `l : list (sigma β)`. -/
+/-- Remove entries with duplicate keys from `l : List (Sigma β)`. -/
 def dedupKeys : List (Sigma β) → List (Sigma β) :=
   List.foldr (fun x => kinsert x.1 x.2) []
 #align list.dedupkeys List.dedupKeys
@@ -706,7 +700,7 @@ theorem mem_keys_kunion {a} {l₁ l₂ : List (Sigma β)} :
     a ∈ (kunion l₁ l₂).keys ↔ a ∈ l₁.keys ∨ a ∈ l₂.keys := by
   induction l₁ generalizing l₂
   case nil => simp
-  case cons s l₁ ih => by_cases h : a = s.1 <;> [simp [h], simp [h, ih]]
+  case cons s l₁ ih => by_cases h : a = s.1 <;> [simp [h]; simp [h, ih]]
 #align list.mem_keys_kunion List.mem_keys_kunion
 
 @[simp]

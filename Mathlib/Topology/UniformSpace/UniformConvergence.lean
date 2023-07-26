@@ -2,15 +2,12 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.uniform_space.uniform_convergence
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
+
+#align_import topology.uniform_space.uniform_convergence from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Uniform convergence
@@ -84,19 +81,19 @@ We define uniform convergence and locally uniform convergence, on a set or in th
 
 /-- A sequence of functions `Fₙ` converges uniformly on a filter `p'` to a limiting function `f`
 with respect to the filter `p` if, for any entourage of the diagonal `u`, one has
-`p ×ᶠ p'`-eventually `(f x, Fₙ x) ∈ u`. -/
+`p ×ˢ p'`-eventually `(f x, Fₙ x) ∈ u`. -/
 def TendstoUniformlyOnFilter (F : ι → α → β) (f : α → β) (p : Filter ι) (p' : Filter α) :=
-  ∀ u ∈ 𝓤 β, ∀ᶠ n : ι × α in p ×ᶠ p', (f n.snd, F n.fst n.snd) ∈ u
+  ∀ u ∈ 𝓤 β, ∀ᶠ n : ι × α in p ×ˢ p', (f n.snd, F n.fst n.snd) ∈ u
 #align tendsto_uniformly_on_filter TendstoUniformlyOnFilter
 
 /--
 A sequence of functions `Fₙ` converges uniformly on a filter `p'` to a limiting function `f` w.r.t.
-filter `p` iff the function `(n, x) ↦ (f x, Fₙ x)` converges along `p ×ᶠ p'` to the uniformity.
+filter `p` iff the function `(n, x) ↦ (f x, Fₙ x)` converges along `p ×ˢ p'` to the uniformity.
 In other words: one knows nothing about the behavior of `x` in this limit besides it being in `p'`.
 -/
 theorem tendstoUniformlyOnFilter_iff_tendsto :
     TendstoUniformlyOnFilter F f p p' ↔
-      Tendsto (fun q : ι × α => (f q.2, F q.1 q.2)) (p ×ᶠ p') (𝓤 β) :=
+      Tendsto (fun q : ι × α => (f q.2, F q.1 q.2)) (p ×ˢ p') (𝓤 β) :=
   Iff.rfl
 #align tendsto_uniformly_on_filter_iff_tendsto tendstoUniformlyOnFilter_iff_tendsto
 
@@ -121,11 +118,11 @@ alias tendstoUniformlyOn_iff_tendstoUniformlyOnFilter ↔
 #align tendsto_uniformly_on_filter.tendsto_uniformly_on TendstoUniformlyOnFilter.tendstoUniformlyOn
 
 /-- A sequence of functions `Fₙ` converges uniformly on a set `s` to a limiting function `f` w.r.t.
-filter `p` iff the function `(n, x) ↦ (f x, Fₙ x)` converges along `p ×ᶠ 𝓟 s` to the uniformity.
+filter `p` iff the function `(n, x) ↦ (f x, Fₙ x)` converges along `p ×ˢ 𝓟 s` to the uniformity.
 In other words: one knows nothing about the behavior of `x` in this limit besides it being in `s`.
 -/
 theorem tendstoUniformlyOn_iff_tendsto {F : ι → α → β} {f : α → β} {p : Filter ι} {s : Set α} :
-    TendstoUniformlyOn F f p s ↔ Tendsto (fun q : ι × α => (f q.2, F q.1 q.2)) (p ×ᶠ 𝓟 s) (𝓤 β) :=
+    TendstoUniformlyOn F f p s ↔ Tendsto (fun q : ι × α => (f q.2, F q.1 q.2)) (p ×ˢ 𝓟 s) (𝓤 β) :=
   by simp [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter, tendstoUniformlyOnFilter_iff_tendsto]
 #align tendsto_uniformly_on_iff_tendsto tendstoUniformlyOn_iff_tendsto
 
@@ -156,11 +153,11 @@ theorem tendstoUniformlyOn_iff_tendstoUniformly_comp_coe :
 #align tendsto_uniformly_on_iff_tendsto_uniformly_comp_coe tendstoUniformlyOn_iff_tendstoUniformly_comp_coe
 
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` w.r.t.
-filter `p` iff the function `(n, x) ↦ (f x, Fₙ x)` converges along `p ×ᶠ ⊤` to the uniformity.
+filter `p` iff the function `(n, x) ↦ (f x, Fₙ x)` converges along `p ×ˢ ⊤` to the uniformity.
 In other words: one knows nothing about the behavior of `x` in this limit.
 -/
 theorem tendstoUniformly_iff_tendsto {F : ι → α → β} {f : α → β} {p : Filter ι} :
-    TendstoUniformly F f p ↔ Tendsto (fun q : ι × α => (f q.2, F q.1 q.2)) (p ×ᶠ ⊤) (𝓤 β) := by
+    TendstoUniformly F f p ↔ Tendsto (fun q : ι × α => (f q.2, F q.1 q.2)) (p ×ˢ ⊤) (𝓤 β) := by
   simp [tendstoUniformly_iff_tendstoUniformlyOnFilter, tendstoUniformlyOnFilter_iff_tendsto]
 #align tendsto_uniformly_iff_tendsto tendstoUniformly_iff_tendsto
 
@@ -205,7 +202,7 @@ theorem TendstoUniformlyOn.mono {s' : Set α} (h : TendstoUniformlyOn F f p s) (
 #align tendsto_uniformly_on.mono TendstoUniformlyOn.mono
 
 theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUniformlyOnFilter F f p p')
-    (hff' : ∀ᶠ n : ι × α in p ×ᶠ p', F n.fst n.snd = F' n.fst n.snd) :
+    (hff' : ∀ᶠ n : ι × α in p ×ˢ p', F n.fst n.snd = F' n.fst n.snd) :
     TendstoUniformlyOnFilter F' f p p' := by
   refine' fun u hu => ((hf u hu).and hff').mono fun n h => _
   rw [← h.right]
@@ -214,9 +211,9 @@ theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUnif
 
 theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyOn F f p s)
     (hff' : ∀ᶠ n in p, Set.EqOn (F n) (F' n) s) : TendstoUniformlyOn F' f p s := by
-  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at hf⊢
+  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at hf ⊢
   refine' hf.congr _
-  rw [eventually_iff] at hff'⊢
+  rw [eventually_iff] at hff' ⊢
   simp only [Set.EqOn] at hff'
   simp only [mem_prod_principal, hff', mem_setOf_eq]
 #align tendsto_uniformly_on.congr TendstoUniformlyOn.congr
@@ -241,14 +238,14 @@ theorem TendstoUniformlyOnFilter.comp (h : TendstoUniformlyOnFilter F f p p') (g
 /-- Composing on the right by a function preserves uniform convergence on a set -/
 theorem TendstoUniformlyOn.comp (h : TendstoUniformlyOn F f p s) (g : γ → α) :
     TendstoUniformlyOn (fun n => F n ∘ g) (f ∘ g) p (g ⁻¹' s) := by
-  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at h⊢
+  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at h ⊢
   simpa [TendstoUniformlyOn, comap_principal] using TendstoUniformlyOnFilter.comp h g
 #align tendsto_uniformly_on.comp TendstoUniformlyOn.comp
 
 /-- Composing on the right by a function preserves uniform convergence -/
 theorem TendstoUniformly.comp (h : TendstoUniformly F f p) (g : γ → α) :
     TendstoUniformly (fun n => F n ∘ g) (f ∘ g) p := by
-  rw [tendstoUniformly_iff_tendstoUniformlyOnFilter] at h⊢
+  rw [tendstoUniformly_iff_tendstoUniformlyOnFilter] at h ⊢
   simpa [principal_univ, comap_principal] using h.comp g
 #align tendsto_uniformly.comp TendstoUniformly.comp
 
@@ -276,7 +273,7 @@ theorem TendstoUniformlyOnFilter.prod_map {ι' α' β' : Type _} [UniformSpace �
     {f' : α' → β'} {q : Filter ι'} {q' : Filter α'} (h : TendstoUniformlyOnFilter F f p p')
     (h' : TendstoUniformlyOnFilter F' f' q q') :
     TendstoUniformlyOnFilter (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f')
-      (p ×ᶠ q) (p' ×ᶠ q') := by
+      (p ×ˢ q) (p' ×ˢ q') := by
   rw [tendstoUniformlyOnFilter_iff_tendsto] at h h' ⊢
   rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff, ← map_swap4_prod, tendsto_map'_iff]
   convert h.prod_map h' -- seems to be faster than `exact` here
@@ -285,15 +282,15 @@ theorem TendstoUniformlyOnFilter.prod_map {ι' α' β' : Type _} [UniformSpace �
 theorem TendstoUniformlyOn.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {p' : Filter ι'} {s' : Set α'} (h : TendstoUniformlyOn F f p s)
     (h' : TendstoUniformlyOn F' f' p' s') :
-    TendstoUniformlyOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p ×ᶠ p')
+    TendstoUniformlyOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p ×ˢ p')
       (s ×ˢ s') := by
-  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at h h'⊢
+  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at h h' ⊢
   simpa only [prod_principal_principal] using h.prod_map h'
 #align tendsto_uniformly_on.prod_map TendstoUniformlyOn.prod_map
 
 theorem TendstoUniformly.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
-    TendstoUniformly (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p ×ᶠ p') := by
+    TendstoUniformly (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p ×ˢ p') := by
   rw [← tendstoUniformlyOn_univ, ← univ_prod_univ] at *
   exact h.prod_map h'
 #align tendsto_uniformly.prod_map TendstoUniformly.prod_map
@@ -302,7 +299,7 @@ theorem TendstoUniformlyOnFilter.prod {ι' β' : Type _} [UniformSpace β'] {F' 
     {f' : α → β'} {q : Filter ι'} (h : TendstoUniformlyOnFilter F f p p')
     (h' : TendstoUniformlyOnFilter F' f' q p') :
     TendstoUniformlyOnFilter (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a))
-      (p ×ᶠ q) p' :=
+      (p ×ˢ q) p' :=
   fun u hu => ((h.prod_map h') u hu).diag_of_prod_right
 #align tendsto_uniformly_on_filter.prod TendstoUniformlyOnFilter.prod
 
@@ -316,29 +313,29 @@ theorem TendstoUniformlyOn.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' 
 theorem TendstoUniformly.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
     TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a))
-      (p ×ᶠ p') :=
+      (p ×ˢ p') :=
   (h.prod_map h').comp fun a => (a, a)
 #align tendsto_uniformly.prod TendstoUniformly.prod
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
-`p ×ᶠ p'`. -/
+`p ×ˢ p'`. -/
 theorem tendsto_prod_filter_iff {c : β} :
-    Tendsto (↿F) (p ×ᶠ p') (𝓝 c) ↔ TendstoUniformlyOnFilter F (fun _ => c) p p' := by
-  simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff, map_map, le_def, mem_map]
+    Tendsto (↿F) (p ×ˢ p') (𝓝 c) ↔ TendstoUniformlyOnFilter F (fun _ => c) p p' := by
+  simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff]
   rfl
 #align tendsto_prod_filter_iff tendsto_prod_filter_iff
 
 /-- Uniform convergence on a set `s` to a constant function is equivalent to convergence in
-`p ×ᶠ 𝓟 s`. -/
+`p ×ˢ 𝓟 s`. -/
 theorem tendsto_prod_principal_iff {c : β} :
-    Tendsto (↿F) (p ×ᶠ 𝓟 s) (𝓝 c) ↔ TendstoUniformlyOn F (fun _ => c) p s := by
+    Tendsto (↿F) (p ×ˢ 𝓟 s) (𝓝 c) ↔ TendstoUniformlyOn F (fun _ => c) p s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter]
   exact tendsto_prod_filter_iff
 #align tendsto_prod_principal_iff tendsto_prod_principal_iff
 
-/-- Uniform convergence to a constant function is equivalent to convergence in `p ×ᶠ ⊤`. -/
+/-- Uniform convergence to a constant function is equivalent to convergence in `p ×ˢ ⊤`. -/
 theorem tendsto_prod_top_iff {c : β} :
-    Tendsto (↿F) (p ×ᶠ ⊤) (𝓝 c) ↔ TendstoUniformly F (fun _ => c) p := by
+    Tendsto (↿F) (p ×ˢ ⊤) (𝓝 c) ↔ TendstoUniformly F (fun _ => c) p := by
   rw [tendstoUniformly_iff_tendstoUniformlyOnFilter]
   exact tendsto_prod_filter_iff
 #align tendsto_prod_top_iff tendsto_prod_top_iff
@@ -355,7 +352,7 @@ theorem tendstoUniformlyOn_singleton_iff_tendsto :
 #align tendsto_uniformly_on_singleton_iff_tendsto tendstoUniformlyOn_singleton_iff_tendsto
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
-`λ n, λ a, g n` converges to the constant function `λ a, b` on any set `s` -/
+`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s` -/
 theorem Filter.Tendsto.tendstoUniformlyOnFilter_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (p' : Filter α) :
     TendstoUniformlyOnFilter (fun n : ι => fun _ : α => g n) (fun _ : α => b) p p' := by
@@ -363,7 +360,7 @@ theorem Filter.Tendsto.tendstoUniformlyOnFilter_const {g : ι → β} {b : β} (
 #align filter.tendsto.tendsto_uniformly_on_filter_const Filter.Tendsto.tendstoUniformlyOnFilter_const
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
-`λ n, λ a, g n` converges to the constant function `λ a, b` on any set `s` -/
+`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s` -/
 theorem Filter.Tendsto.tendstoUniformlyOn_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (s : Set α) : TendstoUniformlyOn (fun n : ι => fun _ : α => g n) (fun _ : α => b) p s :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr (hg.tendstoUniformlyOnFilter_const (𝓟 s))
@@ -375,8 +372,9 @@ theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace �
     TendstoUniformlyOn F (F x) (𝓝[U] x) V := by
   set φ := fun q : α × β => ((x, q.2), q)
   rw [tendstoUniformlyOn_iff_tendsto]
-  change Tendsto (Prod.map (↿F) ↿F ∘ φ) (𝓝[U] x ×ᶠ 𝓟 V) (𝓤 γ)
-  simp only [nhdsWithin, Filter.prod, comap_inf, inf_assoc, comap_principal, inf_principal]
+  change Tendsto (Prod.map (↿F) ↿F ∘ φ) (𝓝[U] x ×ˢ 𝓟 V) (𝓤 γ)
+  simp only [nhdsWithin, SProd.sprod, Filter.prod, comap_inf, inf_assoc, comap_principal,
+    inf_principal]
   refine hF.comp (Tendsto.inf ?_ <| tendsto_principal_principal.2 <| fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
   simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff, (· ∘ ·),
     nhds_eq_comap_uniformity, comap_comap]
@@ -397,13 +395,13 @@ theorem UniformContinuous₂.tendstoUniformly [UniformSpace α] [UniformSpace γ
 /-- A sequence is uniformly Cauchy if eventually all of its pairwise differences are
 uniformly bounded -/
 def UniformCauchySeqOnFilter (F : ι → α → β) (p : Filter ι) (p' : Filter α) : Prop :=
-  ∀ u ∈ 𝓤 β, ∀ᶠ m : (ι × ι) × α in (p ×ᶠ p) ×ᶠ p', (F m.fst.fst m.snd, F m.fst.snd m.snd) ∈ u
+  ∀ u ∈ 𝓤 β, ∀ᶠ m : (ι × ι) × α in (p ×ˢ p) ×ˢ p', (F m.fst.fst m.snd, F m.fst.snd m.snd) ∈ u
 #align uniform_cauchy_seq_on_filter UniformCauchySeqOnFilter
 
 /-- A sequence is uniformly Cauchy if eventually all of its pairwise differences are
 uniformly bounded -/
 def UniformCauchySeqOn (F : ι → α → β) (p : Filter ι) (s : Set α) : Prop :=
-  ∀ u ∈ 𝓤 β, ∀ᶠ m : ι × ι in p ×ᶠ p, ∀ x : α, x ∈ s → (F m.fst x, F m.snd x) ∈ u
+  ∀ u ∈ 𝓤 β, ∀ᶠ m : ι × ι in p ×ˢ p, ∀ x : α, x ∈ s → (F m.fst x, F m.snd x) ∈ u
 #align uniform_cauchy_seq_on UniformCauchySeqOn
 
 theorem uniformCauchySeqOn_iff_uniformCauchySeqOnFilter :
@@ -448,7 +446,7 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
   rcases comp_symm_of_uniformity hu with ⟨t, ht, htsymm, htmem⟩
   -- We will choose n, x, and m simultaneously. n and x come from hF. m comes from hF'
   -- But we need to promote hF' to the full product filter to use it
-  have hmc : ∀ᶠ x in (p ×ᶠ p) ×ᶠ p', Tendsto (fun n : ι => F n x.snd) p (𝓝 (f x.snd)) := by
+  have hmc : ∀ᶠ x in (p ×ˢ p) ×ˢ p', Tendsto (fun n : ι => F n x.snd) p (𝓝 (f x.snd)) := by
     rw [eventually_prod_iff]
     refine' ⟨fun _ => True, by simp, _, hF', by simp⟩
   -- To apply filter operations we'll need to do some order manipulation
@@ -482,13 +480,13 @@ theorem UniformCauchySeqOnFilter.mono_left {p'' : Filter ι} (hf : UniformCauchy
 
 theorem UniformCauchySeqOnFilter.mono_right {p'' : Filter α} (hf : UniformCauchySeqOnFilter F p p')
     (hp : p'' ≤ p') : UniformCauchySeqOnFilter F p p'' := fun u hu =>
-  have := (hf u hu).filter_mono ((p ×ᶠ p).prod_mono_right hp)
+  have := (hf u hu).filter_mono ((p ×ˢ p).prod_mono_right hp)
   this.mono (by simp)
 #align uniform_cauchy_seq_on_filter.mono_right UniformCauchySeqOnFilter.mono_right
 
 theorem UniformCauchySeqOn.mono {s' : Set α} (hf : UniformCauchySeqOn F p s) (hss' : s' ⊆ s) :
     UniformCauchySeqOn F p s' := by
-  rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf⊢
+  rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf ⊢
   exact hf.mono_right (le_principal_iff.mpr <| mem_principal.mpr hss')
 #align uniform_cauchy_seq_on.mono UniformCauchySeqOn.mono
 
@@ -504,7 +502,7 @@ theorem UniformCauchySeqOnFilter.comp {γ : Type _} (hf : UniformCauchySeqOnFilt
 /-- Composing on the right by a function preserves uniform Cauchy sequences -/
 theorem UniformCauchySeqOn.comp {γ : Type _} (hf : UniformCauchySeqOn F p s) (g : γ → α) :
     UniformCauchySeqOn (fun n => F n ∘ g) p (g ⁻¹' s) := by
-  rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf⊢
+  rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf ⊢
   simpa only [UniformCauchySeqOn, comap_principal] using hf.comp g
 #align uniform_cauchy_seq_on.comp UniformCauchySeqOn.comp
 
@@ -518,7 +516,7 @@ theorem UniformContinuous.comp_uniformCauchySeqOn [UniformSpace γ] {g : β → 
 theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F' : ι' → α' → β'}
     {p' : Filter ι'} {s' : Set α'} (h : UniformCauchySeqOn F p s)
     (h' : UniformCauchySeqOn F' p' s') :
-    UniformCauchySeqOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (p ×ᶠ p') (s ×ˢ s') := by
+    UniformCauchySeqOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (p ×ˢ p') (s ×ˢ s') := by
   intro u hu
   rw [uniformity_prod_eq_prod, mem_map, mem_prod_iff] at hu
   obtain ⟨v, hv, w, hw, hvw⟩ := hu
@@ -531,14 +529,14 @@ theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F
 
 theorem UniformCauchySeqOn.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' → α → β'}
     {p' : Filter ι'} (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p' s) :
-    UniformCauchySeqOn (fun (i : ι × ι') a => (F i.fst a, F' i.snd a)) (p ×ᶠ p') s :=
+    UniformCauchySeqOn (fun (i : ι × ι') a => (F i.fst a, F' i.snd a)) (p ×ˢ p') s :=
   (congr_arg _ s.inter_self).mp ((h.prod_map h').comp fun a => (a, a))
 #align uniform_cauchy_seq_on.prod UniformCauchySeqOn.prod
 
 theorem UniformCauchySeqOn.prod' {β' : Type _} [UniformSpace β'] {F' : ι → α → β'}
     (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p s) :
     UniformCauchySeqOn (fun (i : ι) a => (F i a, F' i a)) p s := fun u hu =>
-  have hh : Tendsto (fun x : ι => (x, x)) p (p ×ᶠ p) := tendsto_diag
+  have hh : Tendsto (fun x : ι => (x, x)) p (p ×ˢ p) := tendsto_diag
   (hh.prod_map hh).eventually ((h.prod h') u hu)
 #align uniform_cauchy_seq_on.prod' UniformCauchySeqOn.prod'
 
@@ -567,7 +565,7 @@ theorem tendstoUniformlyOn_of_seq_tendstoUniformlyOn {l : Filter ι} [l.IsCounta
 
 theorem TendstoUniformlyOn.seq_tendstoUniformlyOn {l : Filter ι} (h : TendstoUniformlyOn F f l s)
     (u : ℕ → ι) (hu : Tendsto u atTop l) : TendstoUniformlyOn (fun n => F (u n)) f atTop s := by
-  rw [tendstoUniformlyOn_iff_tendsto] at h⊢
+  rw [tendstoUniformlyOn_iff_tendsto] at h ⊢
   exact h.comp ((hu.comp tendsto_fst).prod_mk tendsto_snd)
 #align tendsto_uniformly_on.seq_tendsto_uniformly_on TendstoUniformlyOn.seq_tendstoUniformlyOn
 
@@ -610,19 +608,19 @@ theorem tendstoLocallyUniformlyOn_univ :
 -- porting note: new lemma
 theorem tendstoLocallyUniformlyOn_iff_forall_tendsto :
     TendstoLocallyUniformlyOn F f p s ↔
-      ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ᶠ 𝓝[s] x) (𝓤 β) :=
+      ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ˢ 𝓝[s] x) (𝓤 β) :=
   forall₂_swap.trans <| forall₄_congr fun _ _ _ _ => by
     rw [mem_map, mem_prod_iff_right]; rfl
 
 nonrec theorem IsOpen.tendstoLocallyUniformlyOn_iff_forall_tendsto (hs : IsOpen s) :
     TendstoLocallyUniformlyOn F f p s ↔
-      ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ᶠ 𝓝 x) (𝓤 β) :=
+      ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ˢ 𝓝 x) (𝓤 β) :=
   tendstoLocallyUniformlyOn_iff_forall_tendsto.trans <| forall₂_congr fun x hx => by
     rw [hs.nhdsWithin_eq hx]
 
 theorem tendstoLocallyUniformly_iff_forall_tendsto :
     TendstoLocallyUniformly F f p ↔
-      ∀ x, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ᶠ 𝓝 x) (𝓤 β) := by
+      ∀ x, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ˢ 𝓝 x) (𝓤 β) := by
   simp [← tendstoLocallyUniformlyOn_univ, isOpen_univ.tendstoLocallyUniformlyOn_iff_forall_tendsto]
 #align tendsto_locally_uniformly_iff_forall_tendsto tendstoLocallyUniformly_iff_forall_tendsto
 
@@ -650,32 +648,32 @@ theorem TendstoLocallyUniformlyOn.mono (h : TendstoLocallyUniformlyOn F f p s) (
 #align tendsto_locally_uniformly_on.mono TendstoLocallyUniformlyOn.mono
 
 -- porting note: generalized from `Type` to `Sort`
-theorem tendstoLocallyUniformlyOn_unionᵢ {ι' : Sort _} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
+theorem tendstoLocallyUniformlyOn_iUnion {ι' : Sort _} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
     (h : ∀ i, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i, S i) :=
-  (isOpen_unionᵢ hS).tendstoLocallyUniformlyOn_iff_forall_tendsto.2 $ fun _x hx =>
-    let ⟨i, hi⟩ := mem_unionᵢ.1 hx
+  (isOpen_iUnion hS).tendstoLocallyUniformlyOn_iff_forall_tendsto.2 $ fun _x hx =>
+    let ⟨i, hi⟩ := mem_iUnion.1 hx
     (hS i).tendstoLocallyUniformlyOn_iff_forall_tendsto.1 (h i) _ hi
-#align tendsto_locally_uniformly_on_Union tendstoLocallyUniformlyOn_unionᵢ
+#align tendsto_locally_uniformly_on_Union tendstoLocallyUniformlyOn_iUnion
 
-theorem tendstoLocallyUniformlyOn_bunionᵢ {s : Set γ} {S : γ → Set α} (hS : ∀ i ∈ s, IsOpen (S i))
+theorem tendstoLocallyUniformlyOn_biUnion {s : Set γ} {S : γ → Set α} (hS : ∀ i ∈ s, IsOpen (S i))
     (h : ∀ i ∈ s, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i ∈ s, S i) :=
-  tendstoLocallyUniformlyOn_unionᵢ (fun i => isOpen_unionᵢ (hS i)) fun i =>
-   tendstoLocallyUniformlyOn_unionᵢ (hS i) (h i)
-#align tendsto_locally_uniformly_on_bUnion tendstoLocallyUniformlyOn_bunionᵢ
+  tendstoLocallyUniformlyOn_iUnion (fun i => isOpen_iUnion (hS i)) fun i =>
+   tendstoLocallyUniformlyOn_iUnion (hS i) (h i)
+#align tendsto_locally_uniformly_on_bUnion tendstoLocallyUniformlyOn_biUnion
 
-theorem tendstoLocallyUniformlyOn_unionₛ (S : Set (Set α)) (hS : ∀ s ∈ S, IsOpen s)
+theorem tendstoLocallyUniformlyOn_sUnion (S : Set (Set α)) (hS : ∀ s ∈ S, IsOpen s)
     (h : ∀ s ∈ S, TendstoLocallyUniformlyOn F f p s) : TendstoLocallyUniformlyOn F f p (⋃₀ S) := by
-  rw [unionₛ_eq_bunionᵢ]
-  exact tendstoLocallyUniformlyOn_bunionᵢ hS h
-#align tendsto_locally_uniformly_on_sUnion tendstoLocallyUniformlyOn_unionₛ
+  rw [sUnion_eq_biUnion]
+  exact tendstoLocallyUniformlyOn_biUnion hS h
+#align tendsto_locally_uniformly_on_sUnion tendstoLocallyUniformlyOn_sUnion
 
 theorem TendstoLocallyUniformlyOn.union {s₁ s₂ : Set α} (hs₁ : IsOpen s₁) (hs₂ : IsOpen s₂)
     (h₁ : TendstoLocallyUniformlyOn F f p s₁) (h₂ : TendstoLocallyUniformlyOn F f p s₂) :
     TendstoLocallyUniformlyOn F f p (s₁ ∪ s₂) := by
-  rw [← unionₛ_pair]
-  refine' tendstoLocallyUniformlyOn_unionₛ _ _ _ <;> simp [*]
+  rw [← sUnion_pair]
+  refine' tendstoLocallyUniformlyOn_sUnion _ _ _ <;> simp [*]
 #align tendsto_locally_uniformly_on.union TendstoLocallyUniformlyOn.union
 
 -- porting note: tendstoLocallyUniformlyOn_univ moved up
@@ -695,7 +693,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
   rw [← eventually_all] at hU
   refine' hU.mono fun i hi x => _
   specialize ht (mem_univ x)
-  simp only [exists_prop, mem_unionᵢ, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
+  simp only [exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
   obtain ⟨y, ⟨hy₁, hy₂⟩, hy₃⟩ := ht
   exact hi ⟨⟨y, hy₁⟩, hy₂⟩ x hy₃
 #align tendsto_locally_uniformly_iff_tendsto_uniformly_of_compact_space tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace
@@ -716,32 +714,35 @@ theorem TendstoLocallyUniformlyOn.comp [TopologicalSpace γ] {t : Set γ}
   intro u hu x hx
   rcases h u hu (g x) (hg hx) with ⟨a, ha, H⟩
   have : g ⁻¹' a ∈ 𝓝[t] x :=
-    (cg x hx).preimage_mem_nhds_within' (nhdsWithin_mono (g x) hg.image_subset ha)
+    (cg x hx).preimage_mem_nhdsWithin' (nhdsWithin_mono (g x) hg.image_subset ha)
   exact ⟨g ⁻¹' a, this, H.mono fun n hn y hy => hn _ hy⟩
 #align tendsto_locally_uniformly_on.comp TendstoLocallyUniformlyOn.comp
 
 theorem TendstoLocallyUniformly.comp [TopologicalSpace γ] (h : TendstoLocallyUniformly F f p)
     (g : γ → α) (cg : Continuous g) : TendstoLocallyUniformly (fun n => F n ∘ g) (f ∘ g) p := by
-  rw [← tendstoLocallyUniformlyOn_univ] at h⊢
+  rw [← tendstoLocallyUniformlyOn_univ] at h ⊢
   rw [continuous_iff_continuousOn_univ] at cg
   exact h.comp _ (mapsTo_univ _ _) cg
 #align tendsto_locally_uniformly.comp TendstoLocallyUniformly.comp
 
-open List in
 theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
     (p : Filter ι) (hs : IsOpen s) :
-    TFAE [TendstoLocallyUniformlyOn G g p s,
-          ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
-          ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] -- porting note: todo: use `tfae_have` or not?
-  · exact fun h K hKs hKc =>
-      (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hKc).mp (h.mono hKs)
+    List.TFAE [
+      TendstoLocallyUniformlyOn G g p s,
+      ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
+      ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
+  tfae_have 1 → 2
+  · rintro h K hK1 hK2
+    exact (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2).mp (h.mono hK1)
+  tfae_have 2 → 3
   · rintro h x hx
-    obtain ⟨K, ⟨hK1, hK2⟩ ,hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
-    refine' ⟨K, nhdsWithin_le_nhds hK1 , h K hK3 hK2 ⟩
+    obtain ⟨K, ⟨hK1, hK2⟩, hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
+    refine' ⟨K, nhdsWithin_le_nhds hK1, h K hK3 hK2⟩
+  tfae_have 3 → 1
   · rintro h u hu x hx
     obtain ⟨v, hv1, hv2⟩ := h x hx
     exact ⟨v, hv1, hv2 u hu⟩
+  tfae_finish
 #align tendsto_locally_uniformly_on_tfae tendstoLocallyUniformlyOn_TFAE
 
 theorem tendstoLocallyUniformlyOn_iff_forall_isCompact [LocallyCompactSpace α] (hs : IsOpen s) :

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.linear.basic
-! leanprover-community/mathlib commit 3dec44d0b621a174c56e994da4aae15ba60110a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Algebra.Basic
+
+#align_import category_theory.linear.basic from "leanprover-community/mathlib"@"3dec44d0b621a174c56e994da4aae15ba60110a2"
 
 /-!
 # Linear categories
@@ -140,14 +137,12 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z
 #align category_theory.linear.right_comp CategoryTheory.Linear.rightComp
 
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
-  ⟨fun g g' H =>
-    by
+  ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
     simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
 
 instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
-  ⟨fun g g' H =>
-    by
+  ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
     simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
 

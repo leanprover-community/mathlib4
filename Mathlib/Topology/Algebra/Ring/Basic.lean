@@ -2,15 +2,12 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.ring.basic
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.Topology.Algebra.Group.Basic
+
+#align_import topology.algebra.ring.basic from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 
@@ -95,7 +92,8 @@ variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
 
 namespace Subsemiring
 
-instance (S : Subsemiring α) : TopologicalSemiring S :=
+-- Porting note: named instance because generated name was huge
+instance topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
 end Subsemiring
@@ -151,13 +149,15 @@ instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing 
 
 end
 
-instance {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
+instance Pi.instTopologicalSemiring {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, TopologicalSemiring (C b)] :
     TopologicalSemiring (∀ b, C b) where
+#align pi.topological_semiring Pi.instTopologicalSemiring
 
-instance {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
+instance Pi.instTopologicalRing {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, TopologicalRing (C b)] :
     TopologicalRing (∀ b, C b) := ⟨⟩
+#align pi.topological_ring Pi.instTopologicalRing
 
 section MulOpposite
 
@@ -199,7 +199,7 @@ section
 variable {R : Type _} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 
 theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
-    (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ᶠ 𝓝 0) <| 𝓝 0)
+    (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R where
   continuous_mul := by
@@ -208,9 +208,9 @@ theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
 #align topological_ring.of_add_group_of_nhds_zero TopologicalRing.of_addGroup_of_nhds_zero
 
 theorem TopologicalRing.of_nhds_zero
-    (hadd : Tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ᶠ 𝓝 0) <| 𝓝 0)
+    (hadd : Tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hneg : Tendsto (fun x => -x : R → R) (𝓝 0) (𝓝 0))
-    (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ᶠ 𝓝 0) <| 𝓝 0)
+    (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0)
     (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0)) : TopologicalRing R :=
@@ -240,7 +240,7 @@ end
 
 variable [Ring α] [TopologicalRing α]
 
-instance (S : Subring α) : TopologicalRing S :=
+instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological-space) closure of a subring of a topological ring is
@@ -314,13 +314,13 @@ theorem ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
 instance : PartialOrder (RingTopology α) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
-private def def_infₛ (S : Set (RingTopology α)) : RingTopology α :=
-  let _ := infₛ (toTopologicalSpace '' S)
-  { toContinuousAdd := continuousAdd_infₛ <| ball_image_iff.2 fun t _ =>
+private def def_sInf (S : Set (RingTopology α)) : RingTopology α :=
+  let _ := sInf (toTopologicalSpace '' S)
+  { toContinuousAdd := continuousAdd_sInf <| ball_image_iff.2 fun t _ =>
       let _ := t.1; t.toContinuousAdd
-    toContinuousMul := continuousMul_infₛ <| ball_image_iff.2 fun t _ =>
+    toContinuousMul := continuousMul_sInf <| ball_image_iff.2 fun t _ =>
       let _ := t.1; t.toContinuousMul
-    toContinuousNeg := continuousNeg_infₛ <| ball_image_iff.2 fun t _ =>
+    toContinuousNeg := continuousNeg_sInf <| ball_image_iff.2 fun t _ =>
       let _ := t.1; t.toContinuousNeg }
 
 /-- Ring topologies on `α` form a complete lattice, with `⊥` the discrete topology and `⊤` the
@@ -332,9 +332,9 @@ The infimum of a collection of ring topologies is the topology generated by all 
 The supremum of two ring topologies `s` and `t` is the infimum of the family of all ring topologies
 contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (RingTopology α) where
-  infₛ := def_infₛ
-  infₛ_le := fun _ a haS => infₛ_le (α := TopologicalSpace α) ⟨a, ⟨haS, rfl⟩⟩
-  le_infₛ := fun _ _ h => le_infₛ (α := TopologicalSpace α) <| ball_image_iff.2 h
+  sInf := def_sInf
+  sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace α) ⟨a, ⟨haS, rfl⟩⟩
+  le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace α) <| ball_image_iff.2 h
 
 instance : CompleteLattice (RingTopology α) :=
   completeLatticeOfCompleteSemilatticeInf _
@@ -342,12 +342,12 @@ instance : CompleteLattice (RingTopology α) :=
 /-- Given `f : α → β` and a topology on `α`, the coinduced ring topology on `β` is the finest
 topology such that `f` is continuous and `β` is a topological ring. -/
 def coinduced {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → β) : RingTopology β :=
-  infₛ { b : RingTopology β | t.coinduced f ≤ b.toTopologicalSpace }
+  sInf { b : RingTopology β | t.coinduced f ≤ b.toTopologicalSpace }
 #align ring_topology.coinduced RingTopology.coinduced
 
 theorem coinduced_continuous {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → β) :
     Continuous[t, (coinduced f).toTopologicalSpace] f :=
-  continuous_infₛ_rng.2 <| ball_image_iff.2 fun _ => continuous_iff_coinduced_le.2
+  continuous_sInf_rng.2 <| ball_image_iff.2 fun _ => continuous_iff_coinduced_le.2
 #align ring_topology.coinduced_continuous RingTopology.coinduced_continuous
 
 /-- The forgetful functor from ring topologies on `a` to additive group topologies on `a`. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.mv_polynomial.division
-! leanprover-community/mathlib commit 72c366d0475675f1309d3027d3d7d47ee4423951
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Data.MvPolynomial.Basic
+
+#align_import data.mv_polynomial.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
 /-!
 # Division of `MvPolynomial` by monomials
@@ -161,44 +158,44 @@ local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
 local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
-theorem x_mul_divMonomial (i : σ) (x : MvPolynomial σ R) :
+theorem X_mul_divMonomial (i : σ) (x : MvPolynomial σ R) :
     X i * x /ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = x :=
   divMonomial_monomial_mul _ _
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.X_mul_div_monomial MvPolynomial.x_mul_divMonomial
+#align mv_polynomial.X_mul_div_monomial MvPolynomial.X_mul_divMonomial
 
 @[simp]
-theorem x_divMonomial (i : σ) : (X i : MvPolynomial σ R) /ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 1 :=
+theorem X_divMonomial (i : σ) : (X i : MvPolynomial σ R) /ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 1 :=
   divMonomial_monomial (Finsupp.single i 1)
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.X_div_monomial MvPolynomial.x_divMonomial
+#align mv_polynomial.X_div_monomial MvPolynomial.X_divMonomial
 
 @[simp]
-theorem mul_x_divMonomial (x : MvPolynomial σ R) (i : σ) :
+theorem mul_X_divMonomial (x : MvPolynomial σ R) (i : σ) :
     x * X i /ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = x :=
   divMonomial_mul_monomial _ _
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.mul_X_div_monomial MvPolynomial.mul_x_divMonomial
+#align mv_polynomial.mul_X_div_monomial MvPolynomial.mul_X_divMonomial
 
 @[simp]
-theorem x_mul_modMonomial (i : σ) (x : MvPolynomial σ R) :
+theorem X_mul_modMonomial (i : σ) (x : MvPolynomial σ R) :
     X i * x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 0 :=
   monomial_mul_modMonomial _ _
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.X_mul_mod_monomial MvPolynomial.x_mul_modMonomial
+#align mv_polynomial.X_mul_mod_monomial MvPolynomial.X_mul_modMonomial
 
 @[simp]
-theorem mul_x_modMonomial (x : MvPolynomial σ R) (i : σ) :
+theorem mul_X_modMonomial (x : MvPolynomial σ R) (i : σ) :
     x * X i %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 0 :=
   mul_monomial_modMonomial _ _
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.mul_X_mod_monomial MvPolynomial.mul_x_modMonomial
+#align mv_polynomial.mul_X_mod_monomial MvPolynomial.mul_X_modMonomial
 
 @[simp]
-theorem modMonomial_x (i : σ) : (X i : MvPolynomial σ R) %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 0 :=
+theorem modMonomial_X (i : σ) : (X i : MvPolynomial σ R) %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 0 :=
   monomial_modMonomial _
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.mod_monomial_X MvPolynomial.modMonomial_x
+#align mv_polynomial.mod_monomial_X MvPolynomial.modMonomial_X
 
 theorem divMonomial_add_modMonomial_single (x : MvPolynomial σ R) (i : σ) :
     X i * (x /ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) + x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = x :=
@@ -210,11 +207,11 @@ theorem modMonomial_add_divMonomial_single (x : MvPolynomial σ R) (i : σ) :
   modMonomial_add_divMonomial _ _
 #align mv_polynomial.mod_monomial_add_div_monomial_single MvPolynomial.modMonomial_add_divMonomial_single
 
-theorem x_dvd_iff_modMonomial_eq_zero {i : σ} {x : MvPolynomial σ R} :
+theorem X_dvd_iff_modMonomial_eq_zero {i : σ} {x : MvPolynomial σ R} :
     X i ∣ x ↔ x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 0 :=
   monomial_one_dvd_iff_modMonomial_eq_zero
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.X_dvd_iff_mod_monomial_eq_zero MvPolynomial.x_dvd_iff_modMonomial_eq_zero
+#align mv_polynomial.X_dvd_iff_mod_monomial_eq_zero MvPolynomial.X_dvd_iff_modMonomial_eq_zero
 
 end XLemmas
 
@@ -230,8 +227,8 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     have hi := hx i
     classical
       simp_rw [coeff_monomial, if_pos] at hj hi
-      simp_rw [coeff_monomial_mul', if_pos] at hi hj
-      split_ifs  at hi hj with hi hi
+      simp_rw [coeff_monomial_mul'] at hi hj
+      split_ifs at hi hj with hi hi
       · exact ⟨Or.inr hi, _, hj⟩
       · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
     -- Porting note: two goals remain at this point in Lean 4
@@ -251,20 +248,20 @@ theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
 #align mv_polynomial.monomial_one_dvd_monomial_one MvPolynomial.monomial_one_dvd_monomial_one
 
 @[simp]
-theorem x_dvd_x [Nontrivial R] {i j : σ} :
+theorem X_dvd_X [Nontrivial R] {i j : σ} :
     (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
   refine' monomial_one_dvd_monomial_one.trans _
-  simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero, Ne.def,
-    one_ne_zero, not_false_iff, and_true_iff]
+  simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero,
+    and_true_iff]
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.X_dvd_X MvPolynomial.x_dvd_x
+#align mv_polynomial.X_dvd_X MvPolynomial.X_dvd_X
 
 @[simp]
-theorem x_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
+theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
     (X i : MvPolynomial σ R) ∣ monomial j r ↔ r = 0 ∨ j i ≠ 0 := by
   refine' monomial_dvd_monomial.trans _
   simp_rw [one_dvd, and_true_iff, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.X_dvd_monomial MvPolynomial.x_dvd_monomial
+#align mv_polynomial.X_dvd_monomial MvPolynomial.X_dvd_monomial
 
 end MvPolynomial

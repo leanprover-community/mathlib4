@@ -2,13 +2,10 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.rat.denumerable
-! leanprover-community/mathlib commit dde670c9a3f503647fd5bfdf1037bad526d3397a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Basic
+
+#align_import data.rat.denumerable from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
 /-!
 # Denumerability of ℚ
@@ -35,7 +32,7 @@ private def denumerable_aux : ℚ ≃ { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs
 instance : Denumerable ℚ := by
   let T := { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs.coprime x.2 }
   letI : Infinite T := Infinite.of_injective _ denumerable_aux.injective
-  letI : Encodable T := Encodable.Subtype.encodable
+  letI : Encodable T := Subtype.encodable
   letI : Denumerable T := ofEncodableOfInfinite T
   exact Denumerable.ofEquiv T denumerable_aux
 
@@ -43,6 +40,5 @@ end Rat
 
 open Cardinal
 
-theorem Cardinal.mkRat : (#ℚ) = ℵ₀ := by simp only [mk_eq_aleph0]
+theorem Cardinal.mkRat : #ℚ = ℵ₀ := by simp only [mk_eq_aleph0]
 #align cardinal.mk_rat Cardinal.mkRat
-

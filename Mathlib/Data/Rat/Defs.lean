@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.defs
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
@@ -14,6 +9,8 @@ import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.PNat.Defs
+
+#align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Basics for the Rational Numbers
@@ -86,7 +83,6 @@ private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
   rw [←zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
-
 #align rat.mk_eq_zero Rat.divInt_eq_zero
 
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
@@ -118,7 +114,7 @@ numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
 @[elab_as_elim]
 def numDenCasesOn.{u} {C : ℚ → Sort u} :
     ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).coprime d → C (n /. d)), C a
-  | ⟨n, d, h, c⟩, H => by rw [num_den'] ; exact H n d (Nat.pos_of_ne_zero h) c
+  | ⟨n, d, h, c⟩, H => by rw [num_den']; exact H n d (Nat.pos_of_ne_zero h) c
 #align rat.num_denom_cases_on Rat.numDenCasesOn
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
@@ -157,7 +153,6 @@ theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
 
 #align rat.add_def Rat.add_def''
-
 #align rat.neg Rat.neg
 
 -- Porting note: there's already an instance for `Neg ℚ` is in Std.
@@ -240,7 +235,6 @@ theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
     simp
-    rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
 @[simp]
@@ -248,8 +242,16 @@ theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
     simp
-    rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
+
+theorem divInt_one (n : ℤ) : n /. 1 = n :=
+  show divInt _ _ = _ by
+    rw [divInt]
+    simp [mkRat, normalize]
+    rfl
+
+theorem mkRat_one {n : ℤ} : mkRat n 1 = n := by
+  simp [Rat.mkRat_eq, Rat.divInt_one]
 
 #align rat.mul_one Rat.mul_one
 #align rat.one_mul Rat.one_mul
@@ -267,7 +269,7 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
         simp [h₁, h₂, h₃, mul_ne_zero]
-        rw [←  divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
+        rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul
 
@@ -459,7 +461,6 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
       _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
-
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts
@@ -541,8 +542,18 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 
 end Casts
 
+theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
+  simp [mkRat]
+  by_cases d = 0
+  · simp [h]
+  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+    unfold Rat.inv
+    have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
+    have h₂ : ¬ (d : ℤ) < 0 := by simp
+    simp [h, h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
+      Rat.mkRat_mul_mkRat]
+
 end Rat
 
--- Porting note: `assert_not_exists` is not implemented yet.
 -- Guard against import creep.
--- assert_not_exists field
+assert_not_exists Field

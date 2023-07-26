@@ -2,19 +2,16 @@
 Copyright (c) 2015 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.prod_sigma
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
+
+#align_import data.list.prod_sigma from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Lists in product and sigma types
 
 This file proves basic properties of `List.product` and `List.sigma`, which are list constructions
-living in `prod` and `sigma` types respectively. Their definitions can be found in
+living in `Prod` and `Sigma` types respectively. Their definitions can be found in
 [`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
 
@@ -27,31 +24,31 @@ namespace List
 
 
 @[simp]
-theorem nil_product (l : List β) : product (@nil α) l = [] :=
+theorem nil_product (l : List β) : (@nil α) ×ˢ l = [] :=
   rfl
 #align list.nil_product List.nil_product
 
 @[simp]
 theorem product_cons (a : α) (l₁ : List α) (l₂ : List β) :
-    product (a :: l₁) l₂ = map (fun b => (a, b)) l₂ ++ product l₁ l₂ :=
+    (a :: l₁) ×ˢ l₂ = map (fun b => (a, b)) l₂ ++ (l₁ ×ˢ l₂) :=
   rfl
 #align list.product_cons List.product_cons
 
 @[simp]
-theorem product_nil : ∀ l : List α, product l (@nil β) = []
+theorem product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
   | [] => rfl
   | _ :: l => by simp [product_cons, product_nil]
 #align list.product_nil List.product_nil
 
 @[simp]
 theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
-    (a, b) ∈ product l₁ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
-  simp_all [product, mem_bind, mem_map, Prod.ext_iff, exists_prop, and_left_comm, exists_and_left,
-    exists_eq_left, exists_eq_right]
+    (a, b) ∈ l₁ ×ˢ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
+  simp_all [SProd.sprod, product, mem_bind, mem_map, Prod.ext_iff, exists_prop, and_left_comm,
+    exists_and_left, exists_eq_left, exists_eq_right]
 #align list.mem_product List.mem_product
 
 theorem length_product (l₁ : List α) (l₂ : List β) :
-    length (product l₁ l₂) = length l₁ * length l₂ := by
+    length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
   induction' l₁ with x l₁ IH
   · exact (zero_mul _).symm
   · simp only [length, product_cons, length_append, IH, right_distrib, one_mul, length_map,

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.continuous_function.cocompact_map
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.continuous_function.cocompact_map from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Cocompact continuous maps
@@ -198,14 +195,13 @@ end Basics
 
 end CocompactMap
 
-/-- A homemomorphism is a cocompact map. -/
+/-- A homeomorphism is a cocompact map. -/
 @[simps]
 def Homeomorph.toCocompactMap {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     (f : α ≃ₜ β) : CocompactMap α β where
   toFun := f
   continuous_toFun := f.continuous
-  cocompact_tendsto' :=
-    by
+  cocompact_tendsto' := by
     refine' CocompactMap.tendsto_of_forall_preimage fun K hK => _
     erw [K.preimage_equiv_eq_image_symm]
     exact hK.image f.symm.continuous

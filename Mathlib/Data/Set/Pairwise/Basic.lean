@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.set.pairwise.basic
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Pairwise
+
+#align_import data.set.pairwise.basic from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
 /-!
 # Relations holding pairwise
@@ -33,7 +30,7 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 -/
 
 
-open Set Function
+open Function Order Set
 
 variable {α β γ ι ι' : Type _} {r p q : α → α → Prop}
 
@@ -345,6 +342,8 @@ end SemilatticeInfBot
 
 /-! ### Pairwise disjoint set of sets -/
 
+variable {s : Set ι} {t : Set ι'}
+
 theorem pairwiseDisjoint_range_singleton :
     (range (singleton : ι → Set ι)).PairwiseDisjoint id := by
   rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
@@ -360,6 +359,24 @@ theorem PairwiseDisjoint.elim_set {s : Set ι} {f : ι → Set α} (hs : s.Pairw
     (hi : i ∈ s) (hj : j ∈ s) (a : α) (hai : a ∈ f i) (haj : a ∈ f j) : i = j :=
   hs.elim hi hj <| not_disjoint_iff.2 ⟨a, hai, haj⟩
 #align set.pairwise_disjoint.elim_set Set.PairwiseDisjoint.elim_set
+
+theorem PairwiseDisjoint.prod {f : ι → Set α} {g : ι' → Set β} (hs : s.PairwiseDisjoint f)
+    (ht : t.PairwiseDisjoint g) :
+    (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint fun i => f i.1 ×ˢ g i.2 :=
+  fun ⟨_, _⟩ ⟨hi, hi'⟩ ⟨_, _⟩ ⟨hj, hj'⟩ hij =>
+  disjoint_left.2 fun ⟨_, _⟩ ⟨hai, hbi⟩ ⟨haj, hbj⟩ =>
+    hij <| Prod.ext (hs.elim_set hi hj _ hai haj) <| ht.elim_set hi' hj' _ hbi hbj
+#align set.pairwise_disjoint.prod Set.PairwiseDisjoint.prod
+
+theorem pairwiseDisjoint_pi {ι' α : ι → Type _} {s : ∀ i, Set (ι' i)} {f : ∀ i, ι' i → Set (α i)}
+    (hs : ∀ i, (s i).PairwiseDisjoint (f i)) :
+    ((univ : Set ι).pi s).PairwiseDisjoint fun I => (univ : Set ι).pi fun i => f _ (I i) :=
+  fun _ hI _ hJ hIJ =>
+  disjoint_left.2 fun a haI haJ =>
+    hIJ <|
+      funext fun i =>
+        (hs i).elim_set (hI i trivial) (hJ i trivial) (a i) (haI i trivial) (haJ i trivial)
+#align set.pairwise_disjoint_pi Set.pairwiseDisjoint_pi
 
 /-- The partial images of a binary function `f` whose partial evaluations are injective are pairwise
 disjoint iff `f` is injective . -/
@@ -391,7 +408,40 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
     exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab)
 #align set.pairwise_disjoint_image_left_iff Set.pairwiseDisjoint_image_left_iff
 
+lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
+    {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
+    ∃ i ∈ s, ∃ j ∈ s, ∃ (_hij : i ≠ j) (x : α), x ∈ f i ∩ f j := by
+  change ¬ ∀ i, i ∈ s → ∀ j, j ∈ s → i ≠ j → ∀ t, t ≤ f i → t ≤ f j → t ≤ ⊥ at h
+  simp only [not_forall] at h
+  obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
+  replace ht : t.Nonempty := by
+    rwa [le_bot_iff, bot_eq_empty, ← Ne.def, ← nonempty_iff_ne_empty] at ht
+  obtain ⟨x, hx⟩ := ht
+  exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
+
+lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
+    {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
+    ∃ i ∈ s, ∃ j ∈ s, ∃ (_hij : i < j) (x : α), x ∈ f i ∩ f j := by
+  obtain ⟨i, hi, j, hj, hne, x, hx₁, hx₂⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
+  cases' lt_or_lt_iff_ne.mpr hne with h_lt h_lt
+  · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
+  · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
+
 end Set
+
+lemma exists_ne_mem_inter_of_not_pairwise_disjoint
+    {f : ι → Set α} (h : ¬ Pairwise (Disjoint on f)) :
+    ∃ (i j : ι) (_hij : i ≠ j) (x : α), x ∈ f i ∩ f j := by
+  rw [← pairwise_univ] at h
+  obtain ⟨i, _hi, j, _hj, h⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
+  exact ⟨i, j, h⟩
+
+lemma exists_lt_mem_inter_of_not_pairwise_disjoint [LinearOrder ι]
+    {f : ι → Set α} (h : ¬ Pairwise (Disjoint on f)) :
+    ∃ (i j : ι) (_ : i < j) (x : α), x ∈ f i ∩ f j := by
+  rw [← pairwise_univ] at h
+  obtain ⟨i, _hi, j, _hj, h⟩ := exists_lt_mem_inter_of_not_pairwiseDisjoint h
+  exact ⟨i, j, h⟩
 
 theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α => f ⁻¹' {a}) :=
   pairwise_univ.1 <| Set.pairwiseDisjoint_fiber f univ

@@ -2,14 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.finsupp.antidiagonal
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Multiset.Antidiagonal
+import Mathlib.Init.IteSimp
+
+#align_import data.finsupp.antidiagonal from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # The `Finsupp` counterpart of `Multiset.antidiagonal`.
@@ -61,10 +59,8 @@ theorem antidiagonal_filter_fst_eq (f g : α →₀ ℕ)
     ((antidiagonal f).filter fun p ↦ p.1 = g) = if g ≤ f then {(g, f - g)} else ∅ := by
   ext ⟨a, b⟩
   suffices a = g → (a + b = f ↔ g ≤ f ∧ b = f - g) by
-    have h₁ : (if g ≤ f then a = g ∧ b = f - g else False) ↔ g ≤ f ∧ a = g ∧ b = f - g := by
-      by_cases h : g ≤ f <;> simp [h]
     simpa [apply_ite (fun f ↦ (a, b) ∈ f), mem_filter, mem_antidiagonal, mem_singleton,
-      Prod.mk.inj_iff, h₁, ← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
+      Prod.mk.inj_iff, ← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
   rintro rfl
   constructor
   · rintro rfl
@@ -78,10 +74,8 @@ theorem antidiagonal_filter_snd_eq (f g : α →₀ ℕ)
     ((antidiagonal f).filter fun p ↦ p.2 = g) = if g ≤ f then {(f - g, g)} else ∅ := by
   ext ⟨a, b⟩
   suffices b = g → (a + b = f ↔ g ≤ f ∧ a = f - g) by
-    have h₁ : (if g ≤ f then a = f - g ∧ b = g else False) ↔ g ≤ f ∧ a = f - g ∧ b = g := by
-      by_cases h : g ≤ f <;> simp [h]
     simpa [apply_ite (fun f ↦ (a, b) ∈ f), mem_filter, mem_antidiagonal, mem_singleton,
-      Prod.mk.inj_iff, h₁, ← and_assoc, and_congr_left_iff]
+      Prod.mk.inj_iff, ← and_assoc, and_congr_left_iff]
   rintro rfl
   constructor
   · rintro rfl
@@ -98,7 +92,7 @@ theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) 
 @[to_additive]
 theorem prod_antidiagonal_swap {M : Type _} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
-    (∏ p in antidiagonal n, f p.1 p.2) = ∏ p in antidiagonal n, f p.2 p.1 :=
+    ∏ p in antidiagonal n, f p.1 p.2 = ∏ p in antidiagonal n, f p.2 p.1 :=
   Finset.prod_bij (fun p _hp ↦ p.swap) (fun _p ↦ swap_mem_antidiagonal.2) (fun _p _hp ↦ rfl)
     (fun _p₁ _p₂ _ _ h ↦ Prod.swap_injective h) fun p hp ↦
     ⟨p.swap, swap_mem_antidiagonal.2 hp, p.swap_swap.symm⟩
