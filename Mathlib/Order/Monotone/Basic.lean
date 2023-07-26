@@ -246,6 +246,16 @@ protected theorem Antitone.dual (hf : Antitone f) : Antitone (toDual ∘ f ∘ o
   swap hf
 #align antitone.dual Antitone.dual
 
+protected theorem Monotone.dual_iff : Monotone f ↔ Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
+  constructor
+  · exact Monotone.dual
+  · exact Monotone.dual
+
+protected theorem Antitone.dual_iff : Antitone f ↔ Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
+  constructor
+  · exact Antitone.dual
+  · exact Antitone.dual
+
 protected theorem MonotoneOn.dual (hf : MonotoneOn f s) :
     MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
   swap₂ hf
