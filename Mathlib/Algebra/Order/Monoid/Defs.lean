@@ -95,7 +95,7 @@ set_option linter.deprecated false in
 /-- A linearly ordered additive commutative monoid. -/
 class LinearOrderedAddCommMonoid (α : Type _) extends LinearOrder α, OrderedAddCommMonoid α
 #align linear_ordered_add_comm_monoid LinearOrderedAddCommMonoid
-attribute [instance 180] LinearOrderedAddCommMonoid.toOrderedAddCommMonoid
+attribute [instance 200] LinearOrderedAddCommMonoid.toOrderedAddCommMonoid
 attribute [instance 200] LinearOrderedAddCommMonoid.toAddCommMonoid
 attribute [instance 200] LinearOrderedAddCommMonoid.toLinearOrder
 
@@ -105,7 +105,7 @@ class LinearOrderedCommMonoid (α : Type _) extends LinearOrder α, OrderedCommM
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
 attribute [instance 200] LinearOrderedCommMonoid.toLinearOrder
 attribute [instance 200] LinearOrderedCommMonoid.toCommMonoid
-attribute [instance 180] LinearOrderedCommMonoid.toOrderedCommMonoid
+attribute [instance 200] LinearOrderedCommMonoid.toOrderedCommMonoid
 
 attribute [to_additive existing] LinearOrderedCommMonoid.toOrderedCommMonoid
 
@@ -118,7 +118,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type _) extends LinearOrderedAddCo
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
-attribute [instance 180] LinearOrderedAddCommMonoid.toOrderedAddCommMonoid
+attribute [instance 200] LinearOrderedAddCommMonoid.toOrderedAddCommMonoid
 attribute [instance 200] LinearOrderedAddCommMonoidWithTop.toLinearOrderedAddCommMonoid
 attribute [instance 200] LinearOrderedAddCommMonoidWithTop.toTop
 attribute [instance 200] LinearOrderedAddCommMonoid.toAddCommMonoid

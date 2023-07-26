@@ -591,7 +591,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
 #align add_monoid AddMonoid
 attribute [instance 200] AddMonoid.toZero
 attribute [instance 200] AddMonoid.toAddSemigroup
-attribute [instance 180] AddMonoid.toAddZeroClass
+attribute [instance 200] AddMonoid.toAddZeroClass
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
@@ -609,7 +609,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
 #align monoid Monoid
-attribute [instance 180] Monoid.toMulOneClass
+attribute [instance 200] Monoid.toMulOneClass
 attribute [instance 200] Monoid.toOne
 attribute [instance 200] Monoid.toSemigroup
 
@@ -669,7 +669,7 @@ end Monoid
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 #align add_comm_monoid AddCommMonoid
-attribute [instance 180] AddCommMonoid.toAddCommSemigroup
+attribute [instance 200] AddCommMonoid.toAddCommSemigroup
 attribute [instance 200] AddCommMonoid.toAddMonoid
 
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
@@ -677,7 +677,7 @@ attribute [instance 200] AddCommMonoid.toAddMonoid
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 #align comm_monoid CommMonoid
 attribute [instance 200] CommMonoid.toMonoid
-attribute [instance 180] CommMonoid.toCommSemigroup
+attribute [instance 200] CommMonoid.toCommSemigroup
 
 attribute [to_additive existing] CommMonoid.toCommSemigroup
 
@@ -689,7 +689,7 @@ is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is n
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 #align add_left_cancel_monoid AddLeftCancelMonoid
 attribute [instance 200] AddLeftCancelMonoid.toAddLeftCancelSemigroup
-attribute [instance 180] AddLeftCancelMonoid.toAddMonoid
+attribute [instance 200] AddLeftCancelMonoid.toAddMonoid
 attribute [instance 200] AddLeftCancelMonoid.toZero
 
 /-- A monoid in which multiplication is left-cancellative. -/
@@ -697,7 +697,7 @@ attribute [instance 200] AddLeftCancelMonoid.toZero
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 #align left_cancel_monoid LeftCancelMonoid
 attribute [instance 200] LeftCancelMonoid.toOne
-attribute [instance 180] LeftCancelMonoid.toMonoid
+attribute [instance 200] LeftCancelMonoid.toMonoid
 attribute [instance 200] LeftCancelMonoid.toLeftCancelSemigroup
 
 attribute [to_additive existing] LeftCancelMonoid.toMonoid
@@ -711,7 +711,7 @@ Main examples are `ℕ` and groups. This is the right typeclass for many sum lem
 is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 #align add_right_cancel_monoid AddRightCancelMonoid
-attribute [instance 180] AddRightCancelMonoid.toAddMonoid
+attribute [instance 200] AddRightCancelMonoid.toAddMonoid
 attribute [instance 200] AddRightCancelMonoid.toAddRightCancelSemigroup
 attribute [instance 200] AddRightCancelMonoid.toZero
 
@@ -721,7 +721,7 @@ class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 #align right_cancel_monoid RightCancelMonoid
 attribute [instance 200] RightCancelMonoid.toOne
 attribute [instance 200] RightCancelMonoid.toRightCancelSemigroup
-attribute [instance 180] RightCancelMonoid.toMonoid
+attribute [instance 200] RightCancelMonoid.toMonoid
 
 attribute [to_additive existing] RightCancelMonoid.toMonoid
 
@@ -734,14 +734,14 @@ Main examples are `ℕ` and groups. This is the right typeclass for many sum lem
 is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not enough. -/
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 #align add_cancel_monoid AddCancelMonoid
-attribute [instance 180] AddCancelMonoid.toAddRightCancelMonoid
+attribute [instance 200] AddCancelMonoid.toAddRightCancelMonoid
 attribute [instance 200] AddCancelMonoid.toAddLeftCancelMonoid
 
 /-- A monoid in which multiplication is cancellative. -/
 @[to_additive]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 #align cancel_monoid CancelMonoid
-attribute [instance 180] CancelMonoid.toRightCancelMonoid
+attribute [instance 200] CancelMonoid.toRightCancelMonoid
 attribute [instance 200] CancelMonoid.toLeftCancelMonoid
 
 attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
@@ -749,14 +749,14 @@ attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 /-- Commutative version of `AddCancelMonoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
 #align add_cancel_comm_monoid AddCancelCommMonoid
-attribute [instance 180] AddCancelCommMonoid.toAddCommMonoid
+attribute [instance 200] AddCancelCommMonoid.toAddCommMonoid
 attribute [instance 200] AddCancelCommMonoid.toAddLeftCancelMonoid
 
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 #align cancel_comm_monoid CancelCommMonoid
-attribute [instance 180] CancelCommMonoid.toCommMonoid
+attribute [instance 200] CancelCommMonoid.toCommMonoid
 attribute [instance 200] CancelCommMonoid.toLeftCancelMonoid
 
 attribute [to_additive existing] CancelCommMonoid.toCommMonoid
@@ -1021,7 +1021,7 @@ attribute [instance 200] NegZeroClass.toNeg
 class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
 #align sub_neg_zero_monoid SubNegZeroMonoid
 attribute [instance 200] SubNegZeroMonoid.toSubNegMonoid
-attribute [instance 180] SubNegZeroMonoid.toNegZeroClass
+attribute [instance 200] SubNegZeroMonoid.toNegZeroClass
 
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
 @[to_additive]
@@ -1036,7 +1036,7 @@ attribute [instance 200] InvOneClass.toOne
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 #align div_inv_one_monoid DivInvOneMonoid
 attribute [instance 200] DivInvOneMonoid.toDivInvMonoid
-attribute [instance 180] DivInvOneMonoid.toInvOneClass
+attribute [instance 200] DivInvOneMonoid.toInvOneClass
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
 attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
@@ -1060,7 +1060,7 @@ class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G whe
   neg_eq_of_add (a b : G) : a + b = 0 → -a = b
 #align subtraction_monoid SubtractionMonoid
 attribute [instance 200] SubtractionMonoid.toSubNegMonoid
-attribute [instance 180] SubtractionMonoid.toInvolutiveNeg
+attribute [instance 200] SubtractionMonoid.toInvolutiveNeg
 
 /-- A `DivisionMonoid` is a `DivInvMonoid` with involutive inversion and such that
 `(a * b)⁻¹ = b⁻¹ * a⁻¹` and `a * b = 1 → a⁻¹ = b`.
@@ -1073,7 +1073,7 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   involutivity of inversion. -/
   inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 #align division_monoid DivisionMonoid
-attribute [instance 180] DivisionMonoid.toInvolutiveInv
+attribute [instance 200] DivisionMonoid.toInvolutiveInv
 attribute [instance 200] DivisionMonoid.toDivInvMonoid
 
 attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
@@ -1100,7 +1100,7 @@ end DivisionMonoid
 class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
 #align subtraction_comm_monoid SubtractionCommMonoid
 attribute [instance 200] SubtractionCommMonoid.toSubtractionMonoid
-attribute [instance 180] SubtractionCommMonoid.toAddCommMonoid
+attribute [instance 200] SubtractionCommMonoid.toAddCommMonoid
 
 /-- Commutative `DivisionMonoid`.
 
@@ -1108,7 +1108,7 @@ This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 #align division_comm_monoid DivisionCommMonoid
-attribute [instance 180] DivisionCommMonoid.toCommMonoid
+attribute [instance 200] DivisionCommMonoid.toCommMonoid
 attribute [instance 200] DivisionCommMonoid.toDivisionMonoid
 
 attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
@@ -1217,13 +1217,13 @@ theorem Group.toDivInvMonoid_injective {G : Type _} :
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 #align add_comm_group AddCommGroup
 attribute [instance 200] AddCommGroup.toAddGroup
-attribute [instance 180] AddCommGroup.toAddCommMonoid
+attribute [instance 200] AddCommGroup.toAddCommMonoid
 
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 #align comm_group CommGroup
-attribute [instance 180] CommGroup.toCommMonoid
+attribute [instance 200] CommGroup.toCommMonoid
 attribute [instance 200] CommGroup.toGroup
 
 attribute [to_additive existing] CommGroup.toCommMonoid

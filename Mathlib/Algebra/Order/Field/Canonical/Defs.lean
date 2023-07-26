@@ -23,7 +23,7 @@ class CanonicallyLinearOrderedSemifield (α : Type _) extends CanonicallyOrdered
 #align canonically_linear_ordered_semifield CanonicallyLinearOrderedSemifield
 attribute [instance 200] CanonicallyLinearOrderedSemifield.toInv
 attribute [instance 200] CanonicallyLinearOrderedSemifield.toMin
-attribute [instance 180] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
 attribute [instance 200] CanonicallyLinearOrderedSemifield.toOrd
 attribute [instance 200] CanonicallyLinearOrderedSemifield.toNontrivial
 attribute [instance 200] CanonicallyLinearOrderedSemifield.toMax

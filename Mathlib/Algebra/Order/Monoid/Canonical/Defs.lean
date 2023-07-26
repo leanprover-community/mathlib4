@@ -340,7 +340,7 @@ class CanonicallyLinearOrderedAddMonoid (α : Type _)
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddMonoid
 attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toMin
 attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toOrd
-attribute [instance 180] CanonicallyLinearOrderedAddMonoid.toLinearOrder
+attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toLinearOrder
 attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toMax
 attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toCanonicallyOrderedAddMonoid
 
@@ -351,7 +351,7 @@ class CanonicallyLinearOrderedMonoid (α : Type _) extends CanonicallyOrderedMon
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedMonoid
 attribute [instance 200] CanonicallyLinearOrderedMonoid.toOrd
 attribute [instance 200] CanonicallyLinearOrderedMonoid.toMax
-attribute [instance 180] CanonicallyLinearOrderedMonoid.toLinearOrder
+attribute [instance 200] CanonicallyLinearOrderedMonoid.toLinearOrder
 attribute [instance 200] CanonicallyLinearOrderedMonoid.toCanonicallyOrderedMonoid
 attribute [instance 200] CanonicallyLinearOrderedMonoid.toMin
 

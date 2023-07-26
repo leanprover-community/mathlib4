@@ -268,12 +268,12 @@ class CompleteLattice (α : Type _) extends Lattice α, CompleteSemilatticeSup �
   protected bot_le : ∀ x : α, ⊥ ≤ x
 #align complete_lattice CompleteLattice
 attribute [instance 200] CompleteLattice.toSupSet
-attribute [instance 180] CompleteLattice.toCompleteSemilatticeInf
+attribute [instance 200] CompleteLattice.toCompleteSemilatticeInf
 attribute [instance 200] CompleteLattice.toTop
 attribute [instance 200] CompleteLattice.toInfSet
 attribute [instance 200] CompleteLattice.toLattice
 attribute [instance 200] CompleteLattice.toBot
-attribute [instance 180] CompleteLattice.toCompleteSemilatticeSup
+attribute [instance 200] CompleteLattice.toCompleteSemilatticeSup
 
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice α] :

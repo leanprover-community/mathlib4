@@ -116,13 +116,13 @@ and right absorbing. -/
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 #align semigroup_with_zero SemigroupWithZero
 attribute [instance 200] SemigroupWithZero.toSemigroup
-attribute [instance 180] SemigroupWithZero.toMulZeroClass
+attribute [instance 200] SemigroupWithZero.toMulZeroClass
 attribute [instance 200] SemigroupWithZero.toZero
 
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 #align mul_zero_one_class MulZeroOneClass
-attribute [instance 180] MulZeroOneClass.toMulZeroClass
+attribute [instance 200] MulZeroOneClass.toMulZeroClass
 attribute [instance 200] MulZeroOneClass.toZero
 attribute [instance 200] MulZeroOneClass.toMulOneClass
 
@@ -131,22 +131,22 @@ and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 #align monoid_with_zero MonoidWithZero
 attribute [instance 200] MonoidWithZero.toZero
-attribute [instance 180] MonoidWithZero.toSemigroupWithZero
+attribute [instance 200] MonoidWithZero.toSemigroupWithZero
 attribute [instance 200] MonoidWithZero.toMonoid
-attribute [instance 180] MonoidWithZero.toMulZeroOneClass
+attribute [instance 200] MonoidWithZero.toMulZeroOneClass
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
 class CancelMonoidWithZero (M₀ : Type _) extends MonoidWithZero M₀, IsCancelMulZero M₀
 #align cancel_monoid_with_zero CancelMonoidWithZero
-attribute [instance 200] CancelMonoidWithZero.toMonoidWithZero
-attribute [instance 200] CancelMonoidWithZero.toIsCancelMulZero
+attribute [instance 160] CancelMonoidWithZero.toMonoidWithZero
+attribute [instance 160] CancelMonoidWithZero.toIsCancelMulZero
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type _) extends CommMonoid M₀, MonoidWithZero M₀
 #align comm_monoid_with_zero CommMonoidWithZero
-attribute [instance 180] CommMonoidWithZero.toMonoidWithZero
+attribute [instance 200] CommMonoidWithZero.toMonoidWithZero
 attribute [instance 200] CommMonoidWithZero.toCommMonoid
 attribute [instance 200] CommMonoidWithZero.toZero
 
@@ -206,7 +206,7 @@ attribute [instance 200] GroupWithZero.toInv
 attribute [instance 200] GroupWithZero.toNontrivial
 attribute [instance 200] GroupWithZero.toDiv
 attribute [instance 200] GroupWithZero.toMonoidWithZero
-attribute [instance 180] GroupWithZero.toDivInvMonoid
+attribute [instance 200] GroupWithZero.toDivInvMonoid
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
@@ -225,7 +225,7 @@ attribute [instance 200] CommGroupWithZero.toDiv
 attribute [instance 200] CommGroupWithZero.toNontrivial
 attribute [instance 200] CommGroupWithZero.toCommMonoidWithZero
 attribute [instance 200] CommGroupWithZero.toInv
-attribute [instance 180] CommGroupWithZero.toGroupWithZero
+attribute [instance 200] CommGroupWithZero.toGroupWithZero
 
 section NeZero
 

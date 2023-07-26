@@ -620,7 +620,7 @@ class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 #align lattice Lattice
 attribute [instance 200] Lattice.toSemilatticeSup
 attribute [instance 200] Lattice.toInf
-attribute [instance 180] Lattice.toSemilatticeInf
+attribute [instance 200] Lattice.toSemilatticeInf
 
 instance OrderDual.lattice (α) [Lattice α] : Lattice αᵒᵈ :=
   { OrderDual.semilatticeSup α, OrderDual.semilatticeInf α with }

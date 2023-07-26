@@ -38,7 +38,7 @@ class NumberField (K : Type _) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
 #align number_field NumberField
-attribute [instance 180] NumberField.to_charZero
+attribute [instance 200] NumberField.to_charZero
 
 open Function Module
 

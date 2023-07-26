@@ -37,14 +37,14 @@ class LinearOrderedSemifield (α : Type _) extends LinearOrderedCommSemiring α,
 attribute [instance 200] LinearOrderedSemifield.toDiv
 attribute [instance 200] LinearOrderedSemifield.toLinearOrderedCommSemiring
 attribute [instance 200] LinearOrderedSemifield.toInv
-attribute [instance 180] LinearOrderedSemifield.toSemifield
+attribute [instance 200] LinearOrderedSemifield.toSemifield
 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
 class LinearOrderedField (α : Type _) extends LinearOrderedCommRing α, Field α
 #align linear_ordered_field LinearOrderedField
 attribute [instance 200] LinearOrderedField.toInv
 attribute [instance 200] LinearOrderedField.toRatCast
-attribute [instance 180] LinearOrderedField.toField
+attribute [instance 200] LinearOrderedField.toField
 attribute [instance 200] LinearOrderedField.toDiv
 attribute [instance 200] LinearOrderedField.toLinearOrderedCommRing
 

@@ -238,7 +238,7 @@ class ConditionallyCompleteLinearOrderBot (α : Type _) extends ConditionallyCom
 #align conditionally_complete_linear_order_bot ConditionallyCompleteLinearOrderBot
 attribute [instance 200] ConditionallyCompleteLinearOrder.toConditionallyCompleteLattice
 attribute [instance 200] ConditionallyCompleteLinearOrderBot.toBot
-attribute [instance 180] instLinearOrder
+attribute [instance 200] instLinearOrder
 attribute [instance 200] ConditionallyCompleteLinearOrderBot.toConditionallyCompleteLinearOrder
 
 -- see Note [lower instance priority]

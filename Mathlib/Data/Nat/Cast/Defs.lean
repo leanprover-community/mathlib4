@@ -83,7 +83,7 @@ class AddCommMonoidWithOne (R : Type _) extends AddMonoidWithOne R, AddCommMonoi
 #align add_comm_monoid_with_one AddCommMonoidWithOne
 #align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
 #align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
-attribute [instance 180] AddCommMonoidWithOne.toAddCommMonoid
+attribute [instance 200] AddCommMonoidWithOne.toAddCommMonoid
 attribute [instance 200] AddCommMonoidWithOne.toAddMonoidWithOne
 
 library_note "coercion into rings"

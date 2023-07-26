@@ -74,7 +74,7 @@ addition is idempotent. -/
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
 attribute [instance 200] IdemCommSemiring.toCommSemiring
-attribute [instance 180] IdemCommSemiring.toIdemSemiring
+attribute [instance 200] IdemCommSemiring.toIdemSemiring
 attribute [instance 200] IdemCommSemiring.toSemilatticeSup
 
 /-- Notation typeclass for the Kleene star `∗`. -/

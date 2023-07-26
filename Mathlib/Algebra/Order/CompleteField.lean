@@ -64,7 +64,7 @@ attribute [instance 200] ConditionallyCompleteLinearOrderedField.toInfSet
 attribute [instance 200] ConditionallyCompleteLinearOrderedField.toSup
 attribute [instance 200] ConditionallyCompleteLinearOrderedField.toInf
 attribute [instance 200] ConditionallyCompleteLinearOrderedField.toSupSet
-attribute [instance 180] ConditionallyCompleteLinearOrderedField.toConditionallyCompleteLinearOrder
+attribute [instance 200] ConditionallyCompleteLinearOrderedField.toConditionallyCompleteLinearOrder
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/

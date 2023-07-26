@@ -26,7 +26,7 @@ class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMon
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 attribute [instance 200] LinearOrderedCommMonoidWithZero.toLinearOrderedCommMonoid
 attribute [instance 200] LinearOrderedCommMonoidWithZero.toZero
-attribute [instance 180] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+attribute [instance 200] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
     [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
@@ -34,7 +34,7 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 #align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 attribute [instance 200] LinearOrderedCommMonoidWithZero.toLinearOrderedCommMonoid
 attribute [instance 200] LinearOrderedCommMonoidWithZero.toZero
-attribute [instance 180] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+attribute [instance 200] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
 
 instance (priority := 100) CanonicallyOrderedAddMonoid.toZeroLeOneClass
     [CanonicallyOrderedAddMonoid α] [One α] : ZeroLEOneClass α :=

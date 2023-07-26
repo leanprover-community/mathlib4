@@ -32,7 +32,7 @@ class NonemptyFinLinOrd (α : Type _) extends Fintype α, LinearOrder α where
   Nonempty : Nonempty α := by infer_instance
 #align nonempty_fin_lin_ord NonemptyFinLinOrd
 attribute [instance 200] NonemptyFinLinOrd.toFintype
-attribute [instance 180] NonemptyFinLinOrd.Nonempty
+attribute [instance 200] NonemptyFinLinOrd.Nonempty
 attribute [instance 200] NonemptyFinLinOrd.toLinearOrder
 
 instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type _) [NonemptyFinLinOrd α] :

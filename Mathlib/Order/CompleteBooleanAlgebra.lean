@@ -421,7 +421,7 @@ It is only completely distributive if it is also atomic.
 class CompleteBooleanAlgebra (α) extends BooleanAlgebra α, CompleteDistribLattice α
 #align complete_boolean_algebra CompleteBooleanAlgebra
 attribute [instance 200] CompleteBooleanAlgebra.toInfSet
-attribute [instance 180] CompleteBooleanAlgebra.toCompleteDistribLattice
+attribute [instance 200] CompleteBooleanAlgebra.toCompleteDistribLattice
 attribute [instance 200] CompleteBooleanAlgebra.toSupSet
 attribute [instance 200] CompleteBooleanAlgebra.toBooleanAlgebra
 
@@ -487,7 +487,7 @@ attribute [instance 200] CompleteAtomicBooleanAlgebra.toSDiff
 attribute [instance 200] CompleteAtomicBooleanAlgebra.toCompletelyDistribLattice
 attribute [instance 200] CompleteAtomicBooleanAlgebra.toHasCompl
 attribute [instance 200] CompleteAtomicBooleanAlgebra.toHImp
-attribute [instance 180] CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
+attribute [instance 200] CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
 
 instance Prod.completeAtomicBooleanAlgebra (α β)
     [CompleteAtomicBooleanAlgebra α] [CompleteAtomicBooleanAlgebra β] :

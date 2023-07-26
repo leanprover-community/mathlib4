@@ -109,7 +109,7 @@ in which addition is cancellative and monotone. -/
 class LinearOrderedCancelAddCommMonoid (α : Type u) extends OrderedCancelAddCommMonoid α,
     LinearOrderedAddCommMonoid α
 #align linear_ordered_cancel_add_comm_monoid LinearOrderedCancelAddCommMonoid
-attribute [instance 180] LinearOrderedCancelAddCommMonoid.toLinearOrderedAddCommMonoid
+attribute [instance 200] LinearOrderedCancelAddCommMonoid.toLinearOrderedAddCommMonoid
 attribute [instance 200] LinearOrderedCancelAddCommMonoid.toMin
 attribute [instance 200] LinearOrderedCancelAddCommMonoid.toOrderedCancelAddCommMonoid
 attribute [instance 200] LinearOrderedCancelAddCommMonoid.toMax
@@ -122,7 +122,7 @@ class LinearOrderedCancelCommMonoid (α : Type u) extends OrderedCancelCommMonoi
     LinearOrderedCommMonoid α
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 attribute [instance 200] LinearOrderedCancelCommMonoid.toOrd
-attribute [instance 180] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
+attribute [instance 200] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
 attribute [instance 200] LinearOrderedCancelCommMonoid.toMin
 attribute [instance 200] LinearOrderedCancelCommMonoid.toMax
 attribute [instance 200] LinearOrderedCancelCommMonoid.toOrderedCancelCommMonoid
