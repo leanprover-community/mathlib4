@@ -12,7 +12,10 @@ import Mathlib.FieldTheory.Normal
 In this file we define the normal closure of an `IntermediateField`.
 If `K` is an intermediate field of `L/F` (in mathlib this means that `K` is both a subfield of `L`
 and an `F`-subalgebra of `L`), then `K.normalClosure` is the smallest intermediate field of `L/F`
-that contains the image of every `F`-algebra embedding `K →ₐ[F] L`.
+that contains the image of every `F`-algebra embedding `K →ₐ[F] L`. This is the same as the
+absolute normal closure (`normal_closure` in the root namespace), but with the benefit of being a
+function `IntermediateField F L → IntermediateField F L`. In particular, the normal closure
+definined in this file will mesh nicely with the Galois correspondence.
 
 ## Main Definitions
 
