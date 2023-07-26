@@ -50,7 +50,6 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
 #align mul_zero_class MulZeroClass
 attribute [instance 200] MulZeroClass.toZero
 attribute [instance 200] MulZeroClass.toMul
-attribute [instance 180] ExteriorAlgebra.instZero
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where

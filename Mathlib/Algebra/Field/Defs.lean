@@ -110,7 +110,6 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ra
 #align division_ring.rat_cast_mk DivisionRing.ratCast_mk
 attribute [instance 200] DivisionRing.toDiv
 attribute [instance 180] DivisionRing.toDivInvMonoid
-attribute [instance 180] DivisionRing.toOfScientific
 attribute [instance 200] DivisionRing.toInv
 attribute [instance 200] DivisionRing.toRatCast
 attribute [instance 200] DivisionRing.toNontrivial
@@ -183,7 +182,7 @@ end DivisionRing
 
 section OfScientific
 
-instance DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
+instance (priority := 180) DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
 
 end OfScientific

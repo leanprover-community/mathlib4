@@ -41,7 +41,6 @@ class CharZero (R) [AddMonoidWithOne R] : Prop where
   injective. -/
   cast_injective : Function.Injective (Nat.cast : ℕ → R)
 #align char_zero CharZero
-attribute [instance 180] instNontrivial
 
 theorem charZero_of_inj_zero [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) :
     CharZero R :=

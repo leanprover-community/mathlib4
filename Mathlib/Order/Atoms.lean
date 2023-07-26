@@ -512,7 +512,6 @@ class IsSimpleOrder (α : Type _) [LE α] [BoundedOrder α] extends Nontrivial �
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
 #align is_simple_order IsSimpleOrder
 attribute [instance 200] IsSimpleOrder.toNontrivial
-attribute [instance 180] IsSimpleOrder.instIsCoatomistic
 
 export IsSimpleOrder (eq_bot_or_eq_top)
 
@@ -741,7 +740,7 @@ instance (priority := 100) : IsAtomistic α :=
       ⟨{⊤}, h.trans sSup_singleton.symm, fun _ ha =>
         (Set.mem_singleton_iff.1 ha).symm ▸ isAtom_top⟩⟩
 
-instance : IsCoatomistic α :=
+instance (priority := 180) : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
 
 end IsSimpleOrder
