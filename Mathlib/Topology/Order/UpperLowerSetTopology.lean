@@ -413,6 +413,7 @@ lemma isClosed_isUpper {s : Set α} : IsClosed s → IsUpperSet s := fun h =>
 
 lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
   UpperSetTopology.closure_eq_lowerClosure (α := αᵒᵈ)
+
 /--
 The closure of a singleton `{a}` in the lower set topology is the right-closed left-infinite
 interval (-∞,a].
