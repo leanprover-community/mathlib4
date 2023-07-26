@@ -45,7 +45,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
 -- synthesize 0 in the next theorem
-instance (α : Type _) [MulZeroClass α] : Zero α := MulZeroClass.toZero
+instance (priority := 180) (α : Type _) [MulZeroClass α] : Zero α := MulZeroClass.toZero
 
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]

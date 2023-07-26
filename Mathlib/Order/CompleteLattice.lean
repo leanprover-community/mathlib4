@@ -20,9 +20,9 @@ import Mathlib.Mathport.Notation
 * `sSup` and `sInf` are the supremum and the infimum of a set;
 * `iSup (f : ι → α)` and `iInf (f : ι → α)` are indexed supremum and infimum of a function,
   defined as `sSup` and `sInf` of the range of this function;
-* `class CompleteLattice`: a bounded lattice such that `sSup s` is always the least upper boundary
+* class `CompleteLattice`: a bounded lattice such that `sSup s` is always the least upper boundary
   of `s` and `sInf s` is always the greatest lower boundary of `s`;
-* `class CompleteLinearOrder`: a linear ordered complete lattice.
+* class `CompleteLinearOrder`: a linear ordered complete lattice.
 
 ## Naming conventions
 
@@ -114,7 +114,8 @@ instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
 instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
   ⟨(sSup : Set α → α)⟩
 
-/-- Note that we rarely use `CompleteSemilatticeSup`
+/-- Note that we rarely use `CompleteSemilatticeSup`attribute [instance 200] CompleteLattice.toSupSet
+
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
@@ -382,7 +383,8 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
     @decidableLTOfDecidableLE _ _ decidableLE
 #align complete_linear_order CompleteLinearOrder
 
-instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
+instance (priority := 180) CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] :
+    LinearOrder α :=
   { i with
     min := Inf.inf
     max := Sup.sup

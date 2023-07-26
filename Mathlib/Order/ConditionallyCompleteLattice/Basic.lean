@@ -201,7 +201,7 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
     @decidableLTOfDecidableLE _ _ decidableLE
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
-instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
+instance (priority := 180) (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
   { ‹ConditionallyCompleteLinearOrder α› with
     max := Sup.sup, min := Inf.inf,
     min_def := fun a b ↦ by

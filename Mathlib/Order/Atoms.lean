@@ -739,7 +739,7 @@ instance (priority := 100) : IsAtomistic α :=
       ⟨{⊤}, h.trans sSup_singleton.symm, fun _ ha =>
         (Set.mem_singleton_iff.1 ha).symm ▸ isAtom_top⟩⟩
 
-instance : IsCoatomistic α :=
+instance (priority := 180) : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
 
 end IsSimpleOrder
