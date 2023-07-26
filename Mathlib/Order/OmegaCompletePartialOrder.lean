@@ -470,7 +470,8 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
     simp only [iSup_le_iff, OrderHom.coe_fun_mk] at hs ⊢; intro i; apply hs i
   le_ωSup := fun ⟨c, _⟩ i => by simp only [OrderHom.coe_fun_mk]; apply le_iSup_of_le i; rfl
 
-variable {α} {β : Type v} [OmegaCompletePartialOrder α] [CompleteLattice β]
+variable {α}
+variable {β : Type v} [OmegaCompletePartialOrder α] [CompleteLattice β]
 
 theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) := by
   intro c

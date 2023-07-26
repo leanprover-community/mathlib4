@@ -65,7 +65,8 @@ namespace HomologicalComplex
 
 attribute [simp] shape
 
-variable {V} {c : ComplexShape ι}
+variable {V}
+variable {c : ComplexShape ι}
 
 @[reassoc (attr := simp)]
 theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k = 0 := by
@@ -609,7 +610,8 @@ namespace ChainComplex
 
 section Of
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V}
+variable {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
@@ -648,7 +650,8 @@ end Of
 
 section OfHom
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V}
+variable {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
@@ -876,7 +879,8 @@ namespace CochainComplex
 
 section Of
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V}
+variable {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
@@ -919,7 +923,8 @@ end Of
 
 section OfHom
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V}
+variable {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)

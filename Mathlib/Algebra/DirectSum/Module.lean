@@ -128,7 +128,8 @@ theorem toModule.unique (f : ⨁ i, M i) : ψ f = toModule R ι N (fun i ↦ ψ.
   toAddMonoid.unique ψ.toAddMonoidHom f
 #align direct_sum.to_module.unique DirectSum.toModule.unique
 
-variable {ψ} {ψ' : (⨁ i, M i) →ₗ[R] N}
+variable {ψ}
+variable {ψ' : (⨁ i, M i) →ₗ[R] N}
 
 /-- Two `LinearMap`s out of a direct sum are equal if they agree on the generators.
 

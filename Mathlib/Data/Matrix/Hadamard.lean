@@ -143,7 +143,9 @@ section trace
 
 variable [Fintype m] [Fintype n]
 
-variable (R) [Semiring α] [Semiring R] [Module R α]
+variable (R)
+
+variable [Semiring α] [Semiring R] [Module R α]
 
 theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A ⬝ Bᵀ) :=
   rfl

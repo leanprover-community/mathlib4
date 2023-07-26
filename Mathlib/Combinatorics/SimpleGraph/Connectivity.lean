@@ -1340,7 +1340,9 @@ end Path
 
 namespace Walk
 
-variable {G} [DecidableEq V]
+variable {G}
+
+variable [DecidableEq V]
 
 /-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
 The result is a path, as shown in `SimpleGraph.Walk.bypass_isPath`.
@@ -2320,7 +2322,9 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
       rfl
 #align simple_graph.set_walk_length_succ_eq SimpleGraph.set_walk_length_succ_eq
 
-variable (G) [DecidableEq V]
+variable (G)
+
+variable [DecidableEq V]
 
 section LocallyFinite
 

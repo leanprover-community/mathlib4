@@ -96,7 +96,8 @@ structure MorphComponents (n : ℕ) (Z : C) where
 
 namespace MorphComponents
 
-variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h : Z ⟶ Z')
+variable {X}
+variable {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h : Z ⟶ Z')
 
 /-- The morphism `X _[n+1] ⟶ Z ` associated to `f : MorphComponents X n Z`. -/
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=

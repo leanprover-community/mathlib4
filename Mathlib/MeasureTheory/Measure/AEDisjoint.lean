@@ -27,7 +27,8 @@ def AEDisjoint (s t : Set α) :=
   μ (s ∩ t) = 0
 #align measure_theory.ae_disjoint MeasureTheory.AEDisjoint
 
-variable {μ} {s t u v : Set α}
+variable {μ}
+variable {s t u v : Set α}
 
 /-- If `s : ι → Set α` is a countable family of pairwise a.e. disjoint sets, then there exists a
 family of measurable null sets `t i` such that `s i \ t i` are pairwise disjoint. -/

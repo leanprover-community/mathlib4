@@ -122,7 +122,8 @@ def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex.obj AlgebraicTopology.NormalizedMooreComplex.obj
 
-variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
+variable {X}
+variable {Y : SimplicialObject C} (f : X ⟶ Y)
 
 /-- The normalized Moore complex functor, on morphisms.
 -/

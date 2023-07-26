@@ -127,7 +127,8 @@ theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
 
 end Derivation
 
-variable {I} {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _}
+variable {I}
+variable {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _}
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _} [TopologicalSpace M']
   [ChartedSpace H' M']
 

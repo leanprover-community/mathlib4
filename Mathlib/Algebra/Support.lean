@@ -306,7 +306,9 @@ end DivisionMonoid
 
 section ZeroOne
 
-variable (R) [Zero R] [One R] [NeZero (1 : R)]
+variable (R)
+
+variable [Zero R] [One R] [NeZero (1 : R)]
 
 @[simp]
 theorem support_one : support (1 : α → R) = univ :=

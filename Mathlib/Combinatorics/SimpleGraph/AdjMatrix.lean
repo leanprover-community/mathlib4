@@ -193,7 +193,9 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
   apply Classical.not_not
 #align simple_graph.to_graph_adj_matrix_eq SimpleGraph.toGraph_adjMatrix_eq
 
-variable {α} [Fintype V]
+variable {α}
+
+variable [Fintype V]
 
 @[simp]
 theorem adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :

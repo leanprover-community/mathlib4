@@ -36,7 +36,8 @@ open FirstOrder Cardinal
 
 namespace Equiv
 
-variable (L) {M : Type w}
+variable (L)
+variable {M : Type w}
 variable [L.Structure M] {N : Type w'} (g : M ≃ N)
 
 /-- A type bundled with the structure induced by an equivalence. -/

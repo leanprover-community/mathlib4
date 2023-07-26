@@ -578,7 +578,8 @@ instance (ι : Type _) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
 
 namespace VectorBundleCore
 
-variable {R B F} {ι : Type _}
+variable {R B F}
+variable {ι : Type _}
 variable (Z : VectorBundleCore R B F ι)
 
 /-- Natural identification to a `FiberBundleCore`. -/

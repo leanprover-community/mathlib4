@@ -32,7 +32,8 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 attribute [local simp] vcomp_app
 
-variable {C D} {E : Type u₃} [Category.{v₃} E]
+variable {C D}
+variable {E : Type u₃} [Category.{v₃} E]
 variable {F G H I : C ⥤ D}
 
 /-- `Functor.category C D` gives the category structure on functors and natural transformations

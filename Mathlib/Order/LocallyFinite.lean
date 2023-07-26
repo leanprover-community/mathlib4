@@ -1031,7 +1031,9 @@ Adding a `⊥` to a locally finite `OrderBot` keeps it locally finite.
 
 namespace WithTop
 
-variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
+variable (α)
+
+variable [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
 -- Porting note: removed attribute [local match_pattern] coe
 
@@ -1148,7 +1150,9 @@ end WithTop
 
 namespace WithBot
 
-variable (α) [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α]
+variable (α)
+
+variable [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α]
 
 instance : LocallyFiniteOrder (WithBot α) :=
   OrderDual.locallyFiniteOrder (α := WithTop αᵒᵈ)

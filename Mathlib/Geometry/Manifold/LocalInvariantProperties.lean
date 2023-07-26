@@ -76,7 +76,8 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
     e' ∈ G' → s ⊆ f ⁻¹' e'.source → f x ∈ e'.source → P f s x → P (e' ∘ f) s x
 #align structure_groupoid.local_invariant_prop StructureGroupoid.LocalInvariantProp
 
-variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
+variable {G G'}
+variable {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
 
 variable (hG : G.LocalInvariantProp G' P)
 

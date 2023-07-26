@@ -296,7 +296,9 @@ theorem lift_comp_of : (lift i a h).comp (of f) = i :=
   RingHom.ext fun _ => @lift_of _ _ _ _ _ _ _ h _
 #align adjoin_root.lift_comp_of AdjoinRoot.lift_comp_of
 
-variable (f) [Algebra R S]
+variable (f)
+
+variable [Algebra R S]
 
 /-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
 a root of `f` in `S`. -/
@@ -693,7 +695,8 @@ end Equiv'
 
 section Field
 
-variable (K) (L F : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+variable (K)
+variable (L F : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
 
 variable (pb : PowerBasis F K)
 

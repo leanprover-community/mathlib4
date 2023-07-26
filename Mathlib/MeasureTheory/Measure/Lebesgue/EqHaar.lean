@@ -365,7 +365,8 @@ theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
   rw [addHaar_smul, abs_pow, abs_of_nonneg hr]
 #align measure_theory.measure.add_haar_smul_of_nonneg MeasureTheory.Measure.addHaar_smul_of_nonneg
 
-variable {μ} {s : Set E}
+variable {μ}
+variable {s : Set E}
 
 -- Note: We might want to rename this once we acquire the lemma corresponding to
 -- `MeasurableSet.const_smul`

@@ -896,7 +896,8 @@ theorem comap_eq {f : N →* M} : comap f f.map_mul c = ker (c.mk'.comp f) :=
 #align con.comap_eq Con.comap_eq
 #align add_con.comap_eq AddCon.comap_eq
 
-variable (c) (f : M →* P)
+variable (c)
+variable (f : M →* P)
 
 /-- The homomorphism on the quotient of a monoid by a congruence relation `c` induced by a
     homomorphism constant on `c`'s equivalence classes. -/

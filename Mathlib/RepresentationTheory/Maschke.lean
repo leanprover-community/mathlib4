@@ -86,7 +86,9 @@ theorem conjugate_i (g : G) (v : V) : (conjugate π g : W → V) (i v) = v := by
 
 end
 
-variable (G) [Fintype G]
+variable (G)
+
+variable [Fintype G]
 
 /-- The sum of the conjugates of `π` by each element `g : G`, as a `k`-linear map.
 

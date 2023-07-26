@@ -201,7 +201,8 @@ end UnitaryGroup
 
 section OrthogonalGroup
 
-variable (n) (β : Type v) [CommRing β]
+variable (n)
+variable (β : Type v) [CommRing β]
 
 -- Porting note: todo: will lemmas about `Matrix.orthogonalGroup` work without making
 -- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
@@ -228,4 +229,3 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
 end OrthogonalGroup
 
 end Matrix
-

@@ -46,7 +46,9 @@ variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β]
 
 section SMul
 
-variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 α] [SMul 𝕜 β] (s : Set E) (f : E → β) {g : β → α}
+variable (𝕜)
+
+variable [SMul 𝕜 E] [SMul 𝕜 α] [SMul 𝕜 β] (s : Set E) (f : E → β) {g : β → α}
 
 /-- Convexity of functions -/
 def ConvexOn : Prop :=

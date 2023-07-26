@@ -208,7 +208,8 @@ def IsSubordinate (f : SmoothPartitionOfUnity ι I M s) (U : ι → Set M) :=
   ∀ i, tsupport (f i) ⊆ U i
 #align smooth_partition_of_unity.is_subordinate SmoothPartitionOfUnity.IsSubordinate
 
-variable {f} {U : ι → Set M}
+variable {f}
+variable {U : ι → Set M}
 
 @[simp]
 theorem isSubordinate_toPartitionOfUnity :

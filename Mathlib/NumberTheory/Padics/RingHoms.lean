@@ -52,7 +52,8 @@ section RingHoms
 /-! ### Ring homomorphisms to `ZMod p` and `ZMod (p ^ n)` -/
 
 
-variable (p) (r : ℚ)
+variable (p)
+variable (r : ℚ)
 
 /-- `modPart p r` is an integer that satisfies
 `‖(r - modPart p r : ℚ_[p])‖ < 1` when `‖(r : ℚ_[p])‖ ≤ 1`,

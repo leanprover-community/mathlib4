@@ -406,7 +406,8 @@ instance (V : Type u) : Inhabited (SimpleGraph V) :=
 
 section Decidable
 
-variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
+variable (V)
+variable (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ => False
@@ -1342,7 +1343,9 @@ We define `G.neighborFinset v` to be the `Finset` version of `G.neighborSet v`.
 Use `neighborFinset_eq_filter` to rewrite this definition as a `Finset.filter` expression.
 -/
 
-variable (v) [Fintype (G.neighborSet v)]
+variable (v)
+
+variable [Fintype (G.neighborSet v)]
 
 /-- `G.neighbors v` is the `Finset` version of `G.Adj v` in case `G` is
 locally finite at `v`. -/
@@ -1679,7 +1682,8 @@ infixl:50 " ≃g " => Iso
 
 namespace Hom
 
-variable {G G'} (f : G →g G')
+variable {G G'}
+variable (f : G →g G')
 
 /-- The identity homomorphism from a graph to itself. -/
 abbrev id : G →g G :=
@@ -1766,7 +1770,8 @@ end Hom
 
 namespace Embedding
 
-variable {G G'} (f : G ↪g G')
+variable {G G'}
+variable (f : G ↪g G')
 
 /-- The identity embedding from a graph to itself. -/
 abbrev refl : G ↪g G :=
@@ -1870,7 +1875,8 @@ end Embedding
 
 section InduceHom
 
-variable {G G'} {G'' : SimpleGraph X} {s : Set V} {t : Set W} {r : Set X}
+variable {G G'}
+variable {G'' : SimpleGraph X} {s : Set V} {t : Set W} {r : Set X}
          (φ : G →g G') (φst : Set.MapsTo φ s t) (ψ : G' →g G'') (ψtr : Set.MapsTo ψ t r)
 
 /-- The restriction of a morphism of graphs to induced subgraphs. -/
@@ -1899,7 +1905,8 @@ end InduceHom
 
 namespace Iso
 
-variable {G G'} (f : G ≃g G')
+variable {G G'}
+variable (f : G ≃g G')
 
 /-- The identity isomorphism of a graph with itself. -/
 abbrev refl : G ≃g G :=

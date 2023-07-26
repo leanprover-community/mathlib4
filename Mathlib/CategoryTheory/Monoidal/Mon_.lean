@@ -196,7 +196,8 @@ end Mon_
 
 namespace CategoryTheory.LaxMonoidalFunctor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+variable {C}
+variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.

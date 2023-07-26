@@ -465,7 +465,9 @@ section PrincipalOfPrime
 
 open Set Ideal
 
-variable (R) [CommRing R]
+variable (R)
+
+variable [CommRing R]
 
 /-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
 def nonPrincipals :=

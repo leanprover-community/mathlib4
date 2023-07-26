@@ -100,7 +100,8 @@ def id : OplaxNatTrans F F where
 instance : Inhabited (OplaxNatTrans F F) :=
   ⟨id F⟩
 
-variable {F} {G H : OplaxFunctor B C} (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H)
+variable {F}
+variable {G H : OplaxFunctor B C} (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H)
 
 section
 

@@ -140,7 +140,9 @@ theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
 
 end
 
-variable (K) [Field K] [Fintype K]
+variable (K)
+
+variable [Field K] [Fintype K]
 
 theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime K p⟩

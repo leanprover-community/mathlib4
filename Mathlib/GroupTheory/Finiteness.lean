@@ -397,7 +397,8 @@ theorem Group.rank_le [h : Group.FG G] {S : Finset G} (hS : Subgroup.closure (S 
 #align group.rank_le Group.rank_le
 #align add_group.rank_le AddGroup.rank_le
 
-variable {G} {G' : Type _} [Group G']
+variable {G}
+variable {G' : Type _} [Group G']
 
 @[to_additive]
 theorem Group.rank_le_of_surjective [Group.FG G] [Group.FG G'] (f : G →* G')

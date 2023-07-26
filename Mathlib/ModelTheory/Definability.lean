@@ -46,7 +46,8 @@ def Definable (s : Set (α → M)) : Prop :=
   ∃ φ : L[[A]].Formula α, s = setOf φ.Realize
 #align set.definable Set.Definable
 
-variable {L} {A} {B : Set M} {s : Set (α → M)}
+variable {L} {A}
+variable {B : Set M} {s : Set (α → M)}
 
 theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h : A.Definable L s)
     (φ : L →ᴸ L') [φ.IsExpansionOn M] : A.Definable L' s := by
@@ -267,7 +268,8 @@ def DefinableSet :=
 
 namespace DefinableSet
 
-variable {L A α} {s t : L.DefinableSet A α} {x : α → M}
+variable {L A α}
+variable {s t : L.DefinableSet A α} {x : α → M}
 
 instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val

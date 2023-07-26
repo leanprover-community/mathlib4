@@ -66,7 +66,8 @@ theorem integer.integers : v.Integers v.integer :=
 
 namespace Integers
 
-variable {v O} [CommRing O] [Algebra O R] (hv : Integers v O)
+variable {v O}
+variable [CommRing O] [Algebra O R] (hv : Integers v O)
 
 
 theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=

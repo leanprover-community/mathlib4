@@ -25,7 +25,9 @@ namespace minpoly
 
 variable {A B : Type _}
 
-variable (A) [Field A]
+variable (A)
+
+variable [Field A]
 
 section Ring
 
@@ -201,7 +203,9 @@ noncomputable instance AlgHom.fintype : Fintype (E →ₐ[F] K) :=
 
 end AlgHomFintype
 
-variable (B) [Nontrivial B]
+variable (B)
+
+variable [Nontrivial B]
 
 /-- If `B/K` is a nontrivial algebra over a field, and `x` is an element of `K`,
 then the minimal polynomial of `algebraMap K B x` is `X - C x`. -/
@@ -235,7 +239,8 @@ section IsDomain
 
 variable [Ring B] [IsDomain B] [Algebra A B]
 
-variable {A} {x : B}
+variable {A}
+variable {x : B}
 
 /-- A minimal polynomial is prime. -/
 theorem prime (hx : IsIntegral A x) : Prime (minpoly A x) := by

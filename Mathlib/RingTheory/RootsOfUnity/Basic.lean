@@ -263,7 +263,9 @@ end IsDomain
 
 section Reduced
 
-variable (R) [CommRing R] [IsReduced R]
+variable (R)
+
+variable [CommRing R] [IsReduced R]
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 

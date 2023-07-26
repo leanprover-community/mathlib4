@@ -306,7 +306,9 @@ end GroupCohomology.Resolution
 
 namespace Rep
 
-variable (n) [Group G] (A : Rep k G)
+variable (n)
+
+variable [Group G] (A : Rep k G)
 
 open GroupCohomology.Resolution
 

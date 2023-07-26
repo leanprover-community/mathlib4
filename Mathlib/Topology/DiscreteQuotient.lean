@@ -289,7 +289,8 @@ def LEComap : Prop :=
 theorem leComap_id : LEComap (.id X) A A := le_rfl
 #align discrete_quotient.le_comap_id DiscreteQuotient.leComap_id
 
-variable {A A' B B'} {f} {g : C(Y, Z)} {C : DiscreteQuotient Z}
+variable {A A' B B'} {f}
+variable {g : C(Y, Z)} {C : DiscreteQuotient Z}
 
 @[simp]
 theorem leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=

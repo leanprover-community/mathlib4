@@ -241,7 +241,9 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
 
 section FiniteOrderPoints
 
-variable {p} [hp : Fact (0 < p)]
+variable {p}
+
+variable [hp : Fact (0 < p)]
 
 theorem norm_div_nat_cast {m n : ℕ} :
     ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) := by

@@ -53,7 +53,9 @@ variable {ι α : Type _} [Fintype ι] [Fintype α]
 
 section Nonempty
 
-variable (α) [Nonempty α]
+variable (α)
+
+variable [Nonempty α]
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊥` of a finite nonempty `SemilatticeInf`. -/
@@ -157,7 +159,9 @@ end BoundedOrder
 
 section Nonempty
 
-variable (α) [Nonempty α]
+variable (α)
+
+variable [Nonempty α]
 
 -- See note [reducible non-instances]
 /-- A nonempty finite lattice is complete. If the lattice is already a `BoundedOrder`, then use

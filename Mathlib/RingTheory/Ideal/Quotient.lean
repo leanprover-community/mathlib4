@@ -55,7 +55,8 @@ instance : HasQuotient R (Ideal R) :=
 
 namespace Quotient
 
-variable {I} {x y : R}
+variable {I}
+variable {x y : R}
 
 instance one (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩

@@ -540,7 +540,8 @@ theorem ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g
 
 section
 
-variable (𝒜) (𝔭 : Ideal A) [Ideal.IsPrime 𝔭]
+variable (𝒜)
+variable (𝔭 : Ideal A) [Ideal.IsPrime 𝔭]
 
 /-- Localizing a ring homogeneously at a prime ideal. -/
 abbrev AtPrime :=
@@ -610,7 +611,8 @@ end
 
 section
 
-variable (𝒜) (f : A)
+variable (𝒜)
+variable (f : A)
 
 /-- Localizing away from powers of `f` homogeneously. -/
 abbrev Away :=

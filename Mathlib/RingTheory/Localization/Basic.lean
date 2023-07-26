@@ -1194,7 +1194,8 @@ theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDiv
   · exact IsLocalization.injective S hM
 #align is_localization.sec_fst_ne_zero IsLocalization.sec_fst_ne_zero
 
-variable (S M) (Q : Type _) [CommRing Q] {g : R →+* P} [Algebra P Q]
+variable (S M)
+variable (Q : Type _) [CommRing Q] {g : R →+* P} [Algebra P Q]
 
 /-- Injectivity of a map descends to the map induced on localizations. -/
 theorem map_injective_of_injective (hg : Function.Injective g)
@@ -1287,7 +1288,8 @@ theorem Field.localization_map_bijective {K Kₘ : Type _} [Field K] [CommRing K
 -- way round causes issues with defeq of instances, so this is actually easier.
 section Algebra
 
-variable {S} {Rₘ Sₘ : Type _} [CommRing Rₘ] [CommRing Sₘ]
+variable {S}
+variable {Rₘ Sₘ : Type _} [CommRing Rₘ] [CommRing Sₘ]
 
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 

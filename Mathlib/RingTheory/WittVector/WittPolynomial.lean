@@ -113,7 +113,8 @@ If we map the coefficients through a ring homomorphism, we obtain the correspond
 over the target ring. -/
 section
 
-variable {R} {S : Type _} [CommRing S]
+variable {R}
+variable {S : Type _} [CommRing S]
 
 @[simp]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by

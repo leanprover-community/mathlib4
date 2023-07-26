@@ -126,7 +126,8 @@ def falling : Finset (Finset α) :=
   𝒜.sup <| powersetLen k
 #align finset.falling Finset.falling
 
-variable {𝒜 k} {s : Finset α}
+variable {𝒜 k}
+variable {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
   simp_rw [falling, mem_sup, mem_powersetLen]

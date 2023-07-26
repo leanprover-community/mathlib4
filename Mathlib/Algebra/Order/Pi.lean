@@ -117,7 +117,8 @@ end Pi
 
 namespace Function
 
-variable (β) [One α] [Preorder α] {a : α}
+variable (β)
+variable [One α] [Preorder α] {a : α}
 
 @[to_additive const_nonneg_of_nonneg]
 theorem one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
@@ -129,7 +130,8 @@ theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
 #align function.const_le_one_of_le_one Function.const_le_one_of_le_one
 #align function.const_nonpos_of_nonpos Function.const_nonpos_of_nonpos
 
-variable {β} [Nonempty β]
+variable {β}
+variable [Nonempty β]
 
 @[to_additive (attr := simp) const_nonneg]
 theorem one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
@@ -161,7 +163,9 @@ end Function
 
 -- open Function
 
--- variable (ι) [Zero α] {a : α}
+-- variable (ι)
+
+variable [Zero α] {a : α}
 
 -- private theorem function_const_nonneg_of_pos [Preorder α] (ha : 0 < a) : 0 ≤ const ι a :=
 --   const_nonneg_of_nonneg _ ha.le

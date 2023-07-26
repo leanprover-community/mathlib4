@@ -505,7 +505,8 @@ end ContinuousLinearEquiv
 
 namespace ModelWithCorners
 
-variable (I) (e : E ≃ₘ[𝕜] E')
+variable (I)
+variable (e : E ≃ₘ[𝕜] E')
 
 /-- Apply a diffeomorphism (e.g., a continuous linear equivalence) to the model vector space. -/
 def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : ModelWithCorners 𝕜 E' H where

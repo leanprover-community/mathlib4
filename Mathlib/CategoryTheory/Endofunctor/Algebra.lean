@@ -222,7 +222,8 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
 
 namespace Initial
 
-variable {A} (h : @Limits.IsInitial (Algebra F) _ A)
+variable {A}
+variable (h : @Limits.IsInitial (Algebra F) _ A)
 /-- The inverse of the structure map of an initial algebra -/
 @[simp]
 def strInv : A.1 ⟶ F.obj A.1 :=

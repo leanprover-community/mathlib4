@@ -170,7 +170,8 @@ instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] 
     coe := fun f ↦ (f : M → M₂)
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
-variable {F} (f : F) [i : SemilinearMapClass F σ M M₃]
+variable {F}
+variable (f : F) [i : SemilinearMapClass F σ M M₃]
 
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp
@@ -352,7 +353,8 @@ section Pointwise
 
 open Pointwise
 
-variable (M M₃ σ) {F : Type _} (h : F)
+variable (M M₃ σ)
+variable {F : Type _} (h : F)
 
 @[simp]
 theorem _root_.image_smul_setₛₗ [SemilinearMapClass F σ M M₃] (c : R) (s : Set M) :
@@ -555,7 +557,8 @@ theorem id_comp : id.comp f = f :=
   LinearMap.ext fun _ ↦ rfl
 #align linear_map.id_comp LinearMap.id_comp
 
-variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁₂] M₂}
+variable {f g}
+variable {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁₂] M₂}
 
 theorem cancel_right (hg : Function.Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
   ⟨fun h ↦ ext <| hg.forall.2 (ext_iff.1 h), fun h ↦ h ▸ rfl⟩

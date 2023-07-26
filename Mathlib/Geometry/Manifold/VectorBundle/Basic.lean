@@ -250,7 +250,9 @@ theorem smoothWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
   Bundle.contMDiffWithinAt_proj E
 #align bundle.smooth_within_at_proj Bundle.smoothWithinAt_proj
 
-variable (𝕜) [∀ x, AddCommMonoid (E x)]
+variable (𝕜)
+
+variable [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
 theorem smooth_zeroSection : Smooth IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) := fun x ↦ by

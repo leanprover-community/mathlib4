@@ -74,7 +74,8 @@ end IsScalarTower
 
 section AlgebraMapCoeffs
 
-variable {R} {ι M : Type _} [CommSemiring R] [Semiring A] [AddCommMonoid M]
+variable {R}
+variable {ι M : Type _} [CommSemiring R] [Semiring A] [AddCommMonoid M]
 
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
 
@@ -183,7 +184,8 @@ end Ring
 
 section AlgHomTower
 
-variable {A} {C D : Type _} [CommSemiring A] [CommSemiring C] [CommSemiring D] [Algebra A C]
+variable {A}
+variable {C D : Type _} [CommSemiring A] [CommSemiring C] [CommSemiring D] [Algebra A C]
   [Algebra A D]
 
 variable (f : C →ₐ[A] D) [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C]

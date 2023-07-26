@@ -1185,7 +1185,9 @@ theorem hasCoequalizers_of_hasColimit_parallelPair
 section
 
 -- In this section we show that a split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
-variable {C} [IsSplitMono f]
+variable {C}
+
+variable [IsSplitMono f]
 
 /-- A split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
 Here we build the cone, and show in `isSplitMonoEqualizes` that it is a limit cone.
@@ -1267,7 +1269,9 @@ noncomputable def splitMonoOfIdempotentEqualizer {X : C} {f : X ⟶ X} (hf : f �
 section
 
 -- In this section we show that a split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
-variable {C} [IsSplitEpi f]
+variable {C}
+
+variable [IsSplitEpi f]
 
 /-- A split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
 Here we build the cocone, and show in `isSplitEpiCoequalizes` that it is a colimit cocone.

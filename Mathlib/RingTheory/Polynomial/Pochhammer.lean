@@ -61,7 +61,8 @@ theorem pochhammer_succ_left (n : ℕ) : pochhammer S (n + 1) = X * (pochhammer 
 
 section
 
-variable {S} {T : Type v} [Semiring T]
+variable {S}
+variable {T : Type v} [Semiring T]
 
 @[simp]
 theorem pochhammer_map (f : S →+* T) (n : ℕ) : (pochhammer S n).map f = pochhammer T n := by

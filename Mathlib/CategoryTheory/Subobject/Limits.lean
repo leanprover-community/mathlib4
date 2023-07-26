@@ -145,7 +145,8 @@ theorem factorThruKernelSubobject_comp_kernelSubobjectIso {W : C} (h : W ⟶ X) 
 
 section
 
-variable {f} {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
+variable {f}
+variable {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
 
 /-- A commuting square induces a morphism between the kernel subobjects. -/
 def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :

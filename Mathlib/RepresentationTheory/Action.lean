@@ -936,7 +936,8 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {V} {W : Type (u + 1)} [LargeCategory W]
+variable {V}
+variable {W : Type (u + 1)} [LargeCategory W]
 
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/

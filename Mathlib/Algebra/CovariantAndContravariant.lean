@@ -205,7 +205,8 @@ end Covariant
 --  Lemma with 4 elements.
 section MEqN
 
-variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
+variable {M N μ r}
+variable {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
   [i' : CovariantClass N N (swap mu) r] {a b c d : N}
 
 theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=

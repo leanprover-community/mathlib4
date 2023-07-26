@@ -226,7 +226,9 @@ instance : CanonicallyOrderedAddMonoid (Π₀ i, α i) :=
       exact (add_tsub_cancel_of_le <| h i).symm
     le_self_add := fun _ _ _ ↦ le_self_add }
 
-variable {α} [DecidableEq ι]
+variable {α}
+
+variable [DecidableEq ι]
 
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by

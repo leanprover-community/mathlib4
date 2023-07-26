@@ -1118,7 +1118,8 @@ end Convex
 
 section RestrictScalars
 
-variable (𝕜) {𝕜' : Type _} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜)
+variable {𝕜' : Type _} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
@@ -1364,7 +1365,8 @@ end Seminorm
 
 section normSeminorm
 
-variable (𝕜) (E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+variable (𝕜) (E)
+variable [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
 
 /-- The norm of a seminormed group as a seminorm. -/
 def normSeminorm : Seminorm 𝕜 E :=
@@ -1382,7 +1384,8 @@ theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball := by
   simp only [Seminorm.mem_ball, Metric.mem_ball, coe_normSeminorm, dist_eq_norm]
 #align ball_norm_seminorm ball_normSeminorm
 
-variable {𝕜 E} {x : E}
+variable {𝕜 E}
+variable {x : E}
 
 /-- Balls at the origin are absorbent. -/
 theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) := by

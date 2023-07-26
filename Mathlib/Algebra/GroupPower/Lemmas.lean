@@ -1072,7 +1072,8 @@ theorem cast_nat_mul_cast_nat_mul (h : Commute a b)
   SemiconjBy.cast_nat_mul_cast_nat_mul h m n
 #align commute.cast_nat_mul_cast_nat_mul Commute.cast_nat_mul_cast_nat_mul
 
-variable (a) (m n : ℕ)
+variable (a)
+variable (m n : ℕ)
 
 /- Porting note: `simp` attribute removed as linter reports:
 simp can prove this:
@@ -1137,7 +1138,8 @@ theorem cast_int_mul_cast_int_mul (h : Commute a b)
   SemiconjBy.cast_int_mul_cast_int_mul h m n
 #align commute.cast_int_mul_cast_int_mul Commute.cast_int_mul_cast_int_mul
 
-variable (a) (m n : ℤ)
+variable (a)
+variable (m n : ℤ)
 
 @[simp]
 theorem cast_int_left : Commute (m : R) a := Int.cast_commute _ _

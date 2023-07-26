@@ -1635,7 +1635,9 @@ instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃]
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 #align continuous_linear_map.is_central_scalar ContinuousLinearMap.isCentralScalar
 
-variable (S) [ContinuousAdd N₃]
+variable (S)
+
+variable [ContinuousAdd N₃]
 
 /-- `ContinuousLinearMap.prod` as a `LinearEquiv`. -/
 @[simps apply]
@@ -2248,7 +2250,8 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
     exact f.left_inv x
 #align continuous_linear_equiv.automorphism_group ContinuousLinearEquiv.automorphismGroup
 
-variable {M₁} {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
+variable {M₁}
+variable {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 
@@ -2402,7 +2405,9 @@ end
 
 section
 
-variable (R) [TopologicalSpace R]
+variable (R)
+
+variable [TopologicalSpace R]
 variable [ContinuousMul R]
 
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/

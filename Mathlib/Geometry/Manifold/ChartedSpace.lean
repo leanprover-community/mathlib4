@@ -535,7 +535,9 @@ theorem chartAt_self_eq {H : Type _} [TopologicalSpace H] {x : H} :
 
 section
 
-variable (H) [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
+variable (H)
+
+variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
 -- Porting note: Added `(H := H)` to avoid typeclass instance problem.
 theorem mem_chart_target (x : M) : chartAt H x x ∈ (chartAt H x).target :=
@@ -906,7 +908,8 @@ instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) :
 
 section MaximalAtlas
 
-variable (M) (G : StructureGroupoid H)
+variable (M)
+variable (G : StructureGroupoid H)
 
 /-- Given a charted space admitting a structure groupoid, the maximal atlas associated to this
 structure groupoid is the set of all local charts that are compatible with the atlas, i.e., such

@@ -527,7 +527,9 @@ end IsFundamentalDomain
 
 section MeasurableSpace
 
-variable (G) [Group G] [MulAction G α] (s : Set α) {x : α}
+variable (G)
+
+variable [Group G] [MulAction G α] (s : Set α) {x : α}
 
 /-- The boundary of a fundamental domain, those points of the domain that also lie in a nontrivial
 translate. -/

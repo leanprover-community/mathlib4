@@ -66,7 +66,8 @@ This is also known as a proper coloring.
 abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
 #align simple_graph.coloring SimpleGraph.Coloring
 
-variable {G} {α : Type v} (C : G.Coloring α)
+variable {G}
+variable {α : Type v} (C : G.Coloring α)
 
 theorem Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
   C.map_rel h

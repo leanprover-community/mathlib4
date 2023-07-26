@@ -122,7 +122,8 @@ def IsExtrOn : Prop :=
   IsExtrFilter f (𝓟 s) a
 #align is_extr_on IsExtrOn
 
-variable {f s a l} {t : Set α} {l' : Filter α}
+variable {f s a l}
+variable {t : Set α} {l' : Filter α}
 
 theorem IsExtrOn.elim {p : Prop} : IsExtrOn f s a → (IsMinOn f s a → p) → (IsMaxOn f s a → p) → p :=
   Or.elim

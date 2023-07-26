@@ -165,7 +165,8 @@ theorem tendsto_indicator_ge (f : α → β) (x : α) :
   norm_cast
 #align measure_theory.tendsto_indicator_ge MeasureTheory.tendsto_indicator_ge
 
-variable (μ) {p : ℝ≥0∞}
+variable (μ)
+variable {p : ℝ≥0∞}
 
 section
 

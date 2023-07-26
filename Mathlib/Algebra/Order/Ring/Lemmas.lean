@@ -119,7 +119,8 @@ abbrev MulPosMonoRev : Prop :=
 
 end Abbreviations
 
-variable {α} {a b c d : α}
+variable {α}
+variable {a b c d : α}
 
 section MulZero
 

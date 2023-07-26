@@ -925,7 +925,9 @@ instance (priority := 100) hasZeroObject_of_hasFiniteBiproducts [HasFiniteBiprod
 
 section
 
-variable {C} [Unique J] (f : J → C)
+variable {C}
+
+variable [Unique J] (f : J → C)
 
 /-- The limit bicone for the biproduct over an index type with exactly one term. -/
 @[simps]

@@ -63,7 +63,8 @@ theorem map_inl_disjUnion_map_inr :
   rfl
 #align finset.map_inl_disj_union_map_inr Finset.map_inl_disjUnion_map_inr
 
-variable {s t} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} {a : α} {b : β} {x : Sum α β}
+variable {s t}
+variable {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} {a : α} {b : β} {x : Sum α β}
 
 theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x :=
   Multiset.mem_disjSum

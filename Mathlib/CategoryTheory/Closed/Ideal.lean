@@ -40,7 +40,9 @@ section Ideal
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D] {i : D ⥤ C}
 
-variable (i) [HasFiniteProducts C] [CartesianClosed C]
+variable (i)
+
+variable [HasFiniteProducts C] [CartesianClosed C]
 
 /-- The subcategory `D` of `C` expressed as an inclusion functor is an *exponential ideal* if
 `B ∈ D` implies `A ⟹ B ∈ D` for all `A`.

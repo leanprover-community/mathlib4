@@ -339,7 +339,8 @@ variable [Algebra K F] [IsScalarTower K L F]
 
 open Algebra IntermediateField
 
-variable (F) (E : Type _) [Field E] [Algebra K E]
+variable (F)
+variable (E : Type _) [Field E] [Algebra K E]
 
 theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : (minpoly K pb.gen).Separable) :
@@ -537,7 +538,8 @@ theorem embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
 
 section Field
 
-variable (K) (E : Type z) [Field E]
+variable (K)
+variable (E : Type z) [Field E]
 
 variable [Algebra K E]
 

@@ -86,7 +86,8 @@ theorem biUnion_star_subset_nonuniformWitness :
   biUnion_subset_iff_forall_subset.2 fun _ hA => (mem_filter.1 hA).2
 #align szemeredi_regularity.bUnion_star_subset_nonuniform_witness SzemerediRegularity.biUnion_star_subset_nonuniformWitness
 
-variable {hP G ε hU V} {𝒜 : Finset (Finset α)} {s : Finset α}
+variable {hP G ε hU V}
+variable {𝒜 : Finset (Finset α)} {s : Finset α}
 
 theorem star_subset_chunk : star hP G ε hU V ⊆ (chunk hP G ε hU).parts :=
   filter_subset _ _

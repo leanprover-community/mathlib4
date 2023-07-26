@@ -898,9 +898,8 @@ theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
 section lift
 
 -- porting note: `R` and `A` were redundant binder updates
-variable (B) {S : Type _} [CommRing S] [Algebra R S]
--- split from above, since otherwise it does not synthesize `Semiring S`
-variable [Algebra S B] [IsScalarTower R S B]
+variable (B)
+variable {S : Type _} [CommRing S] [Algebra R S] [Algebra S B] [IsScalarTower R S B]
 
 variable [Algebra R A] [IsScalarTower R A B] (h : Algebra.IsIntegral R S)
 

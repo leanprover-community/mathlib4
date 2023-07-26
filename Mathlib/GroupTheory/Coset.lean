@@ -543,7 +543,8 @@ theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
 #align quotient_group.mk_out'_eq_mul QuotientGroup.mk_out'_eq_mul
 #align quotient_add_group.mk_out'_eq_mul QuotientAddGroup.mk_out'_eq_mul
 
-variable {s} {a b : α}
+variable {s}
+variable {a b : α}
 
 @[to_additive (attr := simp)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by

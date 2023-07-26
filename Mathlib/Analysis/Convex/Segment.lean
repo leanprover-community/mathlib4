@@ -44,7 +44,9 @@ variable [OrderedSemiring 𝕜] [AddCommMonoid E]
 
 section SMul
 
-variable (𝕜) [SMul 𝕜 E] {s : Set E} {x y : E}
+variable (𝕜)
+
+variable [SMul 𝕜 E] {s : Set E} {x y : E}
 
 /-- Segments in a vector space. -/
 def segment (x y : E) : Set E :=
@@ -168,7 +170,9 @@ open Convex
 
 section OrderedRing
 
-variable (𝕜) [OrderedRing 𝕜] [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [Module 𝕜 E]
+variable (𝕜)
+
+variable [OrderedRing 𝕜] [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [Module 𝕜 E]
   [Module 𝕜 F]
 
 section DenselyOrdered

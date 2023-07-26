@@ -103,7 +103,8 @@ theorem map_smul : map (c • ·) μ = μ :=
 
 end MeasurableSMul
 
-variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpace G]
+variable (G)
+variable {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpace G]
   [MeasurableSMul G α] (c : G) (μ : Measure α)
 
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.

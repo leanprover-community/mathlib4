@@ -811,7 +811,9 @@ end LocallyConvexSpace
 
 section NormedSpace
 
-variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddCommGroup E]
+variable (𝕜)
+
+variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddCommGroup E]
 
 /-- Not an instance since `𝕜` can't be inferred. See `NormedSpace.toLocallyConvexSpace` for a
 slightly weaker instance version. -/

@@ -70,7 +70,8 @@ def IsFinitelySatisfiable : Prop :=
   ∀ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T → IsSatisfiable (T0 : L.Theory)
 #align first_order.language.Theory.is_finitely_satisfiable FirstOrder.Language.Theory.IsFinitelySatisfiable
 
-variable {T} {T' : L.Theory}
+variable {T}
+variable {T' : L.Theory}
 
 theorem Model.isSatisfiable (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] :
     T.IsSatisfiable :=
@@ -491,7 +492,8 @@ end Theory
 
 namespace completeTheory
 
-variable (L) (M : Type w)
+variable (L)
+variable (M : Type w)
 variable [L.Structure M]
 
 theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=

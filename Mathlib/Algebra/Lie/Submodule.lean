@@ -572,7 +572,8 @@ theorem incl_eq_val : (N.incl : N → M) = Subtype.val :=
   rfl
 #align lie_submodule.incl_eq_val LieSubmodule.incl_eq_val
 
-variable {N N'} (h : N ≤ N')
+variable {N N'}
+variable (h : N ≤ N')
 
 /-- Given two nested Lie submodules `N ⊆ N'`, the inclusion `N ↪ N'` is a morphism of Lie modules.-/
 def homOfLe : N →ₗ⁅R,L⁆ N' :=
@@ -596,7 +597,8 @@ end InclusionMaps
 
 section LieSpan
 
-variable (R L) (s : Set M)
+variable (R L)
+variable (s : Set M)
 
 /-- The `lieSpan` of a set `s ⊆ M` is the smallest Lie submodule of `M` that contains `s`. -/
 def lieSpan : LieSubmodule R L M :=

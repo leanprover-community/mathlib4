@@ -65,7 +65,8 @@ def subchain : Set (List α) :=
 theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ fun.⟩
 #align set.nil_mem_subchain Set.nil_mem_subchain
 
-variable {s} {l : List α} {a : α}
+variable {s}
+variable {l : List α} {a : α}
 
 theorem cons_mem_subchain_iff :
     (a::l) ∈ s.subchain ↔ a ∈ s ∧ l ∈ s.subchain ∧ ∀ b ∈ l.head?, a < b := by

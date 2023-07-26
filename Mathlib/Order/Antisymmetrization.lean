@@ -78,7 +78,8 @@ end Relation
 
 section IsPreorder
 
-variable (α) (r : α → α → Prop) [IsPreorder α r]
+variable (α)
+variable (r : α → α → Prop) [IsPreorder α r]
 
 /-- The antisymmetrization relation as an equivalence relation. -/
 @[simps]

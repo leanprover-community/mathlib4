@@ -68,7 +68,8 @@ variable {K F R : Type _} [DivisionRing K]
 
 section
 
-variable (F R) (Γ₀ : Type _) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+variable (F R)
+variable (Γ₀ : Type _) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
 --porting note: removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
@@ -593,7 +594,9 @@ end Valuation
 
 section AddMonoid
 
-variable (R) [Ring R] (Γ₀ : Type _) [LinearOrderedAddCommMonoidWithTop Γ₀]
+variable (R)
+
+variable [Ring R] (Γ₀ : Type _) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
 -- porting note: removed @[nolint has_nonempty_instance]
@@ -635,7 +638,8 @@ def of : AddValuation R Γ₀ where
   map_mul' := hmul
 #align add_valuation.of AddValuation.of
 
-variable {h0} {h1} {hadd} {hmul} {r : R}
+variable {h0} {h1} {hadd} {hmul}
+variable {r : R}
 
 @[simp]
 theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl

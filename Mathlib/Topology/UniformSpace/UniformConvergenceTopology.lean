@@ -522,7 +522,8 @@ protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃
 #align uniform_fun.uniform_equiv_prod_arrow UniformFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
-variable (α) (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
+variable (α)
+variable (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
 
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ (Π i, δ i)` and `Π i, α →ᵤ δ i`. -/
@@ -602,7 +603,8 @@ protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : Di
         ⟨fun x hx => (hV₁₂₃ <| H x <| hU₁₃ hx).1, fun x hx => (hV₁₂₃ <| H x <| hU₂₃ hx).2⟩⟩⟩⟩
 #align uniform_on_fun.is_basis_gen UniformOnFun.isBasis_gen
 
-variable (α β) [UniformSpace β] (𝔖 : Set (Set α))
+variable (α β)
+variable [UniformSpace β] (𝔖 : Set (Set α))
 
 /-- Uniform structure of `𝔖`-convergence, i.e uniform convergence on the elements of `𝔖`,
 declared as an instance on `α →ᵤ[𝔖] β`. It is defined as the infimum, for `S ∈ 𝔖`, of the pullback
@@ -903,7 +905,8 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
 #align uniform_on_fun.uniform_equiv_prod_arrow UniformOnFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
-variable (𝔖) (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
+variable (𝔖)
+variable (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
 
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/

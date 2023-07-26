@@ -492,7 +492,8 @@ theorem zpow_zpow (h : Commute a b) (m n : ℤ) : Commute (a ^ m) (b ^ n) :=
 #align commute.zpow_zpow Commute.zpow_zpow
 #align add_commute.zsmul_zsmul AddCommute.zsmul_zsmul
 
-variable (a) (m n : ℤ)
+variable (a)
+variable (m n : ℤ)
 
 @[to_additive]
 theorem self_zpow : Commute a (a ^ n) :=

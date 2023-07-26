@@ -95,7 +95,8 @@ set_option linter.uppercaseLean3 false in
 
 namespace Module.Baer
 
-variable {R Q} {M N : Type max u v} [AddCommGroup M] [AddCommGroup N]
+variable {R Q}
+variable {M N : Type max u v} [AddCommGroup M] [AddCommGroup N]
 
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 

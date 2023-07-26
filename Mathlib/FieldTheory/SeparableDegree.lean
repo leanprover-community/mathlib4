@@ -57,7 +57,8 @@ def HasSeparableContraction (f : F[X]) : Prop :=
   ∃ g : F[X], IsSeparableContraction q f g
 #align polynomial.has_separable_contraction Polynomial.HasSeparableContraction
 
-variable {q} {f : F[X]} (hf : HasSeparableContraction q f)
+variable {q}
+variable {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- A choice of a separable contraction. -/
 def HasSeparableContraction.contraction : F[X] :=

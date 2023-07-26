@@ -51,7 +51,8 @@ structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with SimpleGraph.IsSRGWith
 
-variable {G} {n k ℓ μ : ℕ}
+variable {G}
+variable {n k ℓ μ : ℕ}
 
 /-- Empty graphs are strongly regular. Note that `ℓ` can take any value
 for empty graphs, since there are no pairs of adjacent vertices. -/

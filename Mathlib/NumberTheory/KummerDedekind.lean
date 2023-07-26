@@ -68,7 +68,8 @@ def conductor (x : S) : Ideal S where
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 #align conductor conductor
 
-variable {R} {x : S}
+variable {R}
+variable {x : S}
 
 theorem conductor_eq_of_eq {y : S} (h : (R<x> : Set S) = R<y>) : conductor R x = conductor R y :=
   Ideal.ext fun _ => forall_congr' fun _ => Set.ext_iff.mp h _

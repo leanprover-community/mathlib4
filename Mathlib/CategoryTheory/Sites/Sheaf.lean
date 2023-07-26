@@ -97,7 +97,8 @@ def conesEquivSieveCompatibleFamily :
   right_inv x := rfl
 #align category_theory.presheaf.cones_equiv_sieve_compatible_family CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily
 
-variable {P S E} {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
+variable {P S E}
+variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
 
 /-- The cone corresponding to a sieve_compatible family of elements, dot notation enabled. -/
 @[simp]

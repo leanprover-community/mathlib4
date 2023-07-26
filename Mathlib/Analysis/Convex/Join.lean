@@ -24,7 +24,9 @@ variable {ι : Sort _} {𝕜 E : Type _}
 
 section OrderedSemiring
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] {s t s₁ s₂ t₁ t₂ u : Set E}
+variable (𝕜)
+
+variable [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] {s t s₁ s₂ t₁ t₂ u : Set E}
   {x y : E}
 
 /-- The join of two sets is the union of the segments joining them. This can be interpreted as the

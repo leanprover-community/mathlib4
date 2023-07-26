@@ -401,7 +401,8 @@ def piOptionEquivProd {ι : Type _} {M : Option ι → Type _} [(i : Option ι) 
     map_smul' := by simp [Function.funext_iff] }
 #align linear_equiv.pi_option_equiv_prod LinearEquiv.piOptionEquivProd
 
-variable (ι M) (S : Type _) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
+variable (ι M)
+variable (S : Type _) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
   [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- Linear equivalence between linear functions `Rⁿ → M` and `Mⁿ`. The spaces `Rⁿ` and `Mⁿ`
@@ -515,7 +516,8 @@ end LinearEquiv
 
 section Extend
 
-variable (R) {η : Type x} [Semiring R] (s : ι → η)
+variable (R)
+variable {η : Type x} [Semiring R] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
 @[simps]

@@ -1276,7 +1276,9 @@ end Semiring
 
 section Algebra
 
-variable (R) [CommSemiring R] {A : Type _} [Semiring A] [Algebra R A]
+variable (R)
+
+variable [CommSemiring R] {A : Type _} [Semiring A] [Algebra R A]
 
 /-- The `R`-algebra `HahnSeries ℕ A` is isomorphic to `PowerSeries A`. -/
 @[simps!]
@@ -1292,7 +1294,9 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
         rw [PowerSeries.coeff_C, if_neg n.succ_ne_zero] }
 #align hahn_series.to_power_series_alg HahnSeries.toPowerSeriesAlg
 
-variable (Γ) [StrictOrderedSemiring Γ]
+variable (Γ)
+
+variable [StrictOrderedSemiring Γ]
 
 /-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/

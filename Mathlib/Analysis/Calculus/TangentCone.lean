@@ -78,7 +78,8 @@ variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {G : Type _} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
-variable {𝕜} {x y : E} {s t : Set E}
+variable {𝕜}
+variable {x y : E} {s t : Set E}
 
 section TangentCone
 

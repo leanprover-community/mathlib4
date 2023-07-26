@@ -806,7 +806,8 @@ infixl:51
   " ⊨ " =>-- input using \|= or \vDash, but not using \models
   Theory.Model
 
-variable {M} (T : L.Theory)
+variable {M}
+variable (T : L.Theory)
 
 @[simp default-10]
 theorem Theory.model_iff : M ⊨ T ↔ ∀ φ ∈ T, M ⊨ φ :=

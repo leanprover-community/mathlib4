@@ -324,7 +324,8 @@ def embedding : C ⥤ Free R C where
     rw [single_comp_single, one_mul]
 #align category_theory.Free.embedding CategoryTheory.Free.embedding
 
-variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]
+variable {C}
+variable {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]
 
 open Preadditive Linear
 

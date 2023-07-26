@@ -138,7 +138,8 @@ theorem default_eq_empty : (default : Finpartition (⊥ : α)) = Finpartition.em
   rfl
 #align finpartition.default_eq_empty Finpartition.default_eq_empty
 
-variable {α} {a : α}
+variable {α}
+variable {a : α}
 
 /-- The finpartition in one part, aka indiscrete finpartition. -/
 @[simps]

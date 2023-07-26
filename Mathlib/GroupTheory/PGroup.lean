@@ -175,7 +175,9 @@ theorem card_orbit (a : α) [Fintype (orbit G a)] : ∃ n : ℕ, card (orbit G a
   exact hG.index (stabilizer G a)
 #align is_p_group.card_orbit IsPGroup.card_orbit
 
-variable (α) [Fintype α]
+variable (α)
+
+variable [Fintype α]
 
 /-- If `G` is a `p`-group acting on a finite set `α`, then the number of fixed points
   of the action is congruent mod `p` to the cardinality of `α` -/
@@ -409,4 +411,3 @@ theorem commutative_of_card_eq_prime_sq (hG : card G = p ^ 2) : ∀ a b : G, a *
 end P2comm
 
 end IsPGroup
-

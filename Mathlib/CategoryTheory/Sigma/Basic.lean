@@ -203,7 +203,8 @@ end
 
 section
 
-variable (C) {J : Type w₂} (g : J → I)
+variable (C)
+variable {J : Type w₂} (g : J → I)
 
 /-- A function `J → I` induces a functor `Σ j, C (g j) ⥤ Σ i, C i`. -/
 def map : (Σj : J, C (g j)) ⥤ Σi : I, C i :=
@@ -236,7 +237,8 @@ def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
   natIso fun i => NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.sigma.map_id CategoryTheory.Sigma.mapId
 
-variable {I} {K : Type w₃}
+variable {I}
+variable {K : Type w₃}
 
 -- Porting note: Had to expand (G ∘ g) to (fun i => C (g i)) in lemma statement
 -- so that the suitable category instances could be found

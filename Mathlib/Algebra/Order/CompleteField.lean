@@ -96,7 +96,9 @@ variable [LinearOrderedField α]
 
 section DivisionRing
 
-variable (β) [DivisionRing β] {a a₁ a₂ : α} {b : β} {q : ℚ}
+variable (β)
+
+variable [DivisionRing β] {a a₁ a₂ : α} {b : β} {q : ℚ}
 
 /-- The lower cut of rationals inside a linear ordered field that are less than a given element of
 another linear ordered field. -/
@@ -129,7 +131,9 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 
 end DivisionRing
 
-variable (β) [LinearOrderedField β] {a a₁ a₂ : α} {b : β} {q : ℚ}
+variable (β)
+
+variable [LinearOrderedField β] {a a₁ a₂ : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]
@@ -206,7 +210,8 @@ theorem inducedMap_zero : inducedMap α β 0 = 0 := by exact_mod_cast inducedMap
 theorem inducedMap_one : inducedMap α β 1 = 1 := by exact_mod_cast inducedMap_rat α β 1
 #align linear_ordered_field.induced_map_one LinearOrderedField.inducedMap_one
 
-variable {α β} {a : α} {b : β} {q : ℚ}
+variable {α β}
+variable {a : α} {b : β} {q : ℚ}
 
 theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a :=
   (inducedMap_zero α _).ge.trans <| inducedMap_mono _ _ ha

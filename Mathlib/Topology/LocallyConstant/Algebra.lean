@@ -96,7 +96,9 @@ instance [MulZeroOneClass Y] : MulZeroOneClass (LocallyConstant X Y) :=
 
 section CharFn
 
-variable (Y) [MulZeroOneClass Y] {U V : Set X}
+variable (Y)
+
+variable [MulZeroOneClass Y] {U V : Set X}
 
 /-- Characteristic functions are locally constant functions taking `x : X` to `1` if `x ∈ U`,
   where `U` is a clopen set, and `0` otherwise. -/

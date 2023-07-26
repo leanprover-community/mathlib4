@@ -139,7 +139,9 @@ namespace Subsemigroup
 
 section
 
-variable (M) [Semigroup M]
+variable (M)
+
+variable [Semigroup M]
 
 /-- The center of a semigroup `M` is the set of elements that commute with everything in `M` -/
 @[to_additive
@@ -179,7 +181,9 @@ end
 
 section
 
-variable (M) [CommSemigroup M]
+variable (M)
+
+variable [CommSemigroup M]
 
 @[to_additive (attr := simp)]
 theorem center_eq_top : center M = ⊤ :=

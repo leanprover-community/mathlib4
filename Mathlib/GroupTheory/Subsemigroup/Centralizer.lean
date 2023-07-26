@@ -63,7 +63,8 @@ theorem zero_mem_centralizer [MulZeroClass M] : (0 : M) ∈ centralizer S := by
   simp [mem_centralizer_iff]
 #align set.zero_mem_centralizer Set.zero_mem_centralizer
 
-variable {S} {a b : M}
+variable {S}
+variable {a b : M}
 
 @[to_additive (attr := simp) add_mem_addCentralizer]
 theorem mul_mem_centralizer [Semigroup M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :

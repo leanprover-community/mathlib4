@@ -41,7 +41,9 @@ attribute [reducible] AddAut
 
 namespace MulAut
 
-variable (M) [Mul M]
+variable (M)
+
+variable [Mul M]
 
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
@@ -168,7 +170,9 @@ end MulAut
 
 namespace AddAut
 
-variable (A) [Add A]
+variable (A)
+
+variable [Add A]
 
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.

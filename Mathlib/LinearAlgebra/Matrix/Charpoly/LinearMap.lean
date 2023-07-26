@@ -79,7 +79,9 @@ theorem PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤)
 
 section
 
-variable {R} [DecidableEq ι]
+variable {R}
+
+variable [DecidableEq ι]
 
 /-- We say that a matrix represents an endomorphism of `M` if the matrix acting on `ι → R` is
 equal to `f` via the projection `(ι → R) →ₗ[R] M` given by a fixed (spanning) set.  -/

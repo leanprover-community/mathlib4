@@ -214,7 +214,9 @@ end
 
 section
 
-variable (F) [HasLimitsOfShape J C] [HasLimitsOfShape K C]
+variable (F)
+
+variable [HasLimitsOfShape J C] [HasLimitsOfShape K C]
 
 -- With only moderate effort these could be derived if needed:
 variable [HasLimitsOfShape (J × K) C] [HasLimitsOfShape (K × J) C]

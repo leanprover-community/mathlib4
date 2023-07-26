@@ -43,7 +43,9 @@ variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
-variable (𝕜) [NormedSpace ℝ E]
+variable (𝕜)
+
+variable [NormedSpace ℝ E]
 
 /-- Derivative of the inner product. -/
 def fderivInnerClm (p : E × E) : E × E →L[ℝ] 𝕜 :=
@@ -394,4 +396,3 @@ theorem contDiffOn_homeomorphUnitBall_symm {f : E → E}
 #align cont_diff_on_homeomorph_unit_ball_symm contDiffOn_homeomorphUnitBall_symm
 
 end DiffeomorphUnitBall
-

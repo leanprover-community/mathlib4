@@ -436,7 +436,8 @@ noncomputable def slope : F :=
   else (y₁ - y₂) / (x₁ - x₂)
 #align weierstrass_curve.slope WeierstrassCurve.slope
 
-variable {W x₁ x₂ y₁ y₂} (h₁ : W.nonsingular x₁ y₁) (h₂ : W.nonsingular x₂ y₂)
+variable {W x₁ x₂ y₁ y₂}
+variable (h₁ : W.nonsingular x₁ y₁) (h₂ : W.nonsingular x₂ y₂)
   (h₁' : W.equation x₁ y₁) (h₂' : W.equation x₂ y₂)
 
 @[simp]

@@ -199,7 +199,8 @@ theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a →
   rfl
 #align function.iterate.rec_zero Function.Iterate.rec_zero
 
-variable {f} {m n : ℕ} {a : α}
+variable {f}
+variable {m n : ℕ} {a : α}
 
 theorem LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :
     LeftInverse g^[n] f^[n] :=

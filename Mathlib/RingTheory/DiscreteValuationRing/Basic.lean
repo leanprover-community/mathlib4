@@ -165,7 +165,9 @@ def HasUnitMulPowIrreducibleFactorization [CommRing R] : Prop :=
 
 namespace HasUnitMulPowIrreducibleFactorization
 
-variable {R} [CommRing R] (hR : HasUnitMulPowIrreducibleFactorization R)
+variable {R}
+
+variable [CommRing R] (hR : HasUnitMulPowIrreducibleFactorization R)
 
 theorem unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by

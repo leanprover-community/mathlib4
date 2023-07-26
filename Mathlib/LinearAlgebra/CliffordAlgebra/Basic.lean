@@ -95,7 +95,8 @@ theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
   rfl
 #align clifford_algebra.ι_sq_scalar CliffordAlgebra.ι_sq_scalar
 
-variable {Q} {A : Type _} [Semiring A] [Algebra R A]
+variable {Q}
+variable {A : Type _} [Semiring A] [Algebra R A]
 
 @[simp]
 theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :

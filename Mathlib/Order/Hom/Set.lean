@@ -135,7 +135,9 @@ end StrictMono
 
 section BooleanAlgebra
 
-variable (α) [BooleanAlgebra α]
+variable (α)
+
+variable [BooleanAlgebra α]
 
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps]

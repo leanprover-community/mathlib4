@@ -123,7 +123,8 @@ end CommMon_
 
 namespace CategoryTheory.LaxBraidedFunctor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory.{v₂} D]
+variable {C}
+variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory.{v₂} D]
 
 /-- A lax braided functor takes commutative monoid objects to commutative monoid objects.
 

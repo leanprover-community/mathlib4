@@ -480,7 +480,8 @@ end
 
 section
 
-variable {f} {f' : X ⟶ Y} [HasImage f] [HasImage f']
+variable {f}
+variable {f' : X ⟶ Y} [HasImage f] [HasImage f']
 
 /-- An equation between morphisms gives a comparison map between the images
 (which momentarily we prove is an iso).
@@ -846,7 +847,9 @@ end HasImageMap
 
 section
 
-variable (C) [Category.{v} C] [HasImages C]
+variable (C)
+
+variable [Category.{v} C] [HasImages C]
 
 /-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps where
@@ -928,7 +931,9 @@ end StrongEpiMonoFactorisation
 
 section HasStrongEpiImages
 
-variable (C) [Category.{v} C] [HasImages C]
+variable (C)
+
+variable [Category.{v} C] [HasImages C]
 
 /-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
     epimorphism for all `f`. -/

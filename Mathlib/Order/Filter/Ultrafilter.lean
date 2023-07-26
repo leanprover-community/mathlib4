@@ -464,7 +464,9 @@ theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monot
 
 section Hyperfilter
 
-variable (α) [Infinite α]
+variable (α)
+
+variable [Infinite α]
 
 /-- The ultrafilter extending the cofinite filter. -/
 noncomputable def hyperfilter : Ultrafilter α :=

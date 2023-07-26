@@ -114,7 +114,8 @@ instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSu
 
 end
 
-variable {P} {P' : C → Prop} [MonoidalPredicate P']
+variable {P}
+variable {P' : C → Prop} [MonoidalPredicate P']
 
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
@@ -137,7 +138,9 @@ instance fullMonoidalSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
 
 section Braided
 
-variable (P) [BraidedCategory C]
+variable (P)
+
+variable [BraidedCategory C]
 
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
@@ -190,7 +193,9 @@ end Braided
 
 section Symmetric
 
-variable (P) [SymmetricCategory C]
+variable (P)
+
+variable [SymmetricCategory C]
 
 instance fullSymmetricSubcategory : SymmetricCategory (FullSubcategory P) :=
   symmetricCategoryOfFaithful (fullBraidedSubcategoryInclusion P)
@@ -200,7 +205,9 @@ end Symmetric
 
 section Closed
 
-variable (P) [MonoidalClosed C]
+variable (P)
+
+variable [MonoidalClosed C]
 
 /-- A property `C → Prop` is a closed predicate if it is closed under taking internal homs
 -/

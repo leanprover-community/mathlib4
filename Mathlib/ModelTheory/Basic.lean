@@ -166,7 +166,8 @@ class IsAlgebraic : Prop where
   empty_relations : ∀ n, IsEmpty (L.Relations n)
 #align first_order.language.is_algebraic FirstOrder.Language.IsAlgebraic
 
-variable {L} {L' : Language.{u', v'}}
+variable {L}
+variable {L' : Language.{u', v'}}
 
 theorem card_eq_card_functions_add_card_relations :
     L.card =
@@ -276,7 +277,8 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
   simp [card_eq_card_functions_add_card_relations, add_assoc]
 #align first_order.language.card_mk₂ FirstOrder.Language.card_mk₂
 
-variable (L) (M : Type w)
+variable (L)
+variable (M : Type w)
 
 /-- A first-order structure on a type `M` consists of interpretations of all the symbols in a given
   language. Each function of arity `n` is interpreted as a function sending tuples of length `n`
@@ -360,7 +362,8 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 
 -- Porting note: was [L.Structure P] and [L.Structure Q]
 -- The former reported an error.
-variable {L M N} {P : Type _} [Structure L P] {Q : Type _} [Structure L Q]
+variable {L M N}
+variable {P : Type _} [Structure L P] {Q : Type _} [Structure L Q]
 
 --Porting note: new definition
 /-- Interpretation of a constant symbol -/

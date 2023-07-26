@@ -69,7 +69,8 @@ scoped[SetFamily] attribute [instance] Set.hasSups
 -- instance
 open SetFamily
 
-variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
+variable {s s₁ s₂ t t₁ t₂ u}
+variable {a b c : α}
 
 @[simp]
 theorem mem_sups : c ∈ s ⊻ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊔ b = c := by simp [(· ⊻ ·)]
@@ -224,7 +225,8 @@ scoped[SetFamily] attribute [instance] Set.hasInfs
 -- instance
 open SetFamily
 
-variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
+variable {s s₁ s₂ t t₁ t₂ u}
+variable {a b c : α}
 
 @[simp]
 theorem mem_infs : c ∈ s ⊼ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊓ b = c := by simp [(· ⊼ ·)]

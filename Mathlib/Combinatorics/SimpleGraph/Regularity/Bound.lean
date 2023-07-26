@@ -178,7 +178,8 @@ theorem pow_mul_m_le_card_part (hP : P.IsEquipartition) (hu : u ∈ P.parts) :
   exact (Nat.mul_div_le _ _).trans (hP.average_le_card_part hu)
 #align szemeredi_regularity.pow_mul_m_le_card_part SzemerediRegularity.pow_mul_m_le_card_part
 
-variable (P ε) (l : ℕ)
+variable (P ε)
+variable (l : ℕ)
 
 /-- Auxiliary function for Szemerédi's regularity lemma. The size of the partition by which we start
 blowing. -/

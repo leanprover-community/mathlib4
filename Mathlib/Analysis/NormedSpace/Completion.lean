@@ -79,7 +79,8 @@ set_option linter.uppercaseLean3 false in
 
 section Algebra
 
-variable (𝕜) (A : Type _)
+variable (𝕜)
+variable (A : Type _)
 
 instance [SeminormedRing A] : NormedRing (Completion A) :=
   { Completion.ring,

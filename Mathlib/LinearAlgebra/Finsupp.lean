@@ -386,7 +386,9 @@ end LSum
 
 section
 
-variable (M) (R) (X : Type _) (S)
+variable (M) (R)
+variable (X : Type _)
+variable (S)
 variable [Module S M] [SMulCommClass R S M]
 
 /-- A slight rearrangement from `lsum` gives us
@@ -530,7 +532,8 @@ end LComapDomain
 
 section Total
 
-variable (α) {α' : Type _} (M) {M' : Type _} (R) [Semiring R] [AddCommMonoid M'] [AddCommMonoid M]
+variable (α) (M)
+variable {α' : Type _} {M' : Type _} (R) [Semiring R] [AddCommMonoid M'] [AddCommMonoid M]
   [Module R M'] [Module R M] (v : α → M) {v' : α' → M'}
 
 /-- Interprets (l : α →₀ R) as linear combination of the elements in the family (v : α → M) and
@@ -1099,7 +1102,8 @@ theorem Fintype.range_total :
 
 section SpanRange
 
-variable {v} {x : M}
+variable {v}
+variable {x : M}
 
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/

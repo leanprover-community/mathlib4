@@ -1304,7 +1304,9 @@ section End
 
 namespace Monoid
 
-variable (M) [MulOneClass M]
+variable (M)
+
+variable [MulOneClass M]
 
 /-- The monoid of endomorphisms. -/
 protected def End := M →* M

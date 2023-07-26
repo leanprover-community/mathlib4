@@ -145,7 +145,8 @@ theorem mk_mul_mk [Add ι] [GMul A] {i j} (a : A i) (b : A j) :
 
 namespace GMonoid
 
-variable {A} [AddMonoid ι] [GMul A] [GOne A]
+variable {A}
+variable [AddMonoid ι] [GMul A] [GOne A]
 
 /-- A default implementation of power on a graded monoid, like `npowRec`.
 `GMonoid.gnpow` should be used instead. -/
@@ -428,7 +429,8 @@ end DProd
 
 section
 
-variable (ι) {R : Type _}
+variable (ι)
+variable {R : Type _}
 
 @[simps one]
 instance One.gOne [Zero ι] [One R] : GradedMonoid.GOne fun _ : ι => R where one := 1

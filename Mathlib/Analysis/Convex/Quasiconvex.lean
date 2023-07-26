@@ -43,7 +43,9 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 
 section OrderedAddCommMonoid
 
-variable (𝕜) [OrderedAddCommMonoid β] [SMul 𝕜 E] (s : Set E) (f : E → β)
+variable (𝕜)
+
+variable [OrderedAddCommMonoid β] [SMul 𝕜 E] (s : Set E) (f : E → β)
 
 /-- A function is quasiconvex if all its sublevels are convex.
 This means that, for all `r`, `{x ∈ s | f x ≤ r}` is `𝕜`-convex. -/

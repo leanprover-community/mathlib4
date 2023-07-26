@@ -108,7 +108,8 @@ protected def ofIsEmpty [L.IsAlgebraic] [L.IsRelational] : L →ᴸ L' :=
   ⟨fun n => (IsRelational.empty_functions n).elim, fun n => (IsAlgebraic.empty_relations n).elim⟩
 #align first_order.language.Lhom.of_is_empty FirstOrder.Language.LHom.ofIsEmpty
 
-variable {L L'} {L'' : Language}
+variable {L L'}
+variable {L'' : Language}
 
 @[ext]
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
@@ -501,7 +502,8 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
     exact _root_.trans (congr rfl (Subsingleton.elim _ _)) LHom.sumElim_inl_inr
 #align first_order.lanugage.Lequiv.add_empty_constants FirstOrder.Language.LEquiv.addEmptyConstants
 
-variable {α} {β : Type _}
+variable {α}
+variable {β : Type _}
 
 @[simp]
 theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
@@ -573,14 +575,16 @@ theorem withConstants_funMap_sum_inr {a : α} {x : Fin 0 → M} :
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
 #align first_order.language.with_constants_fun_map_sum_inr FirstOrder.Language.withConstants_funMap_sum_inr
 
-variable {α} (A : Set M)
+variable {α}
+variable (A : Set M)
 
 @[simp]
 theorem coe_con {a : A} : (L.con a : M) = a :=
   rfl
 #align first_order.language.coe_con FirstOrder.Language.coe_con
 
-variable {A} {B : Set M} (h : A ⊆ B)
+variable {A}
+variable {B : Set M} (h : A ⊆ B)
 
 instance constantsOnMap_inclusion_isExpansionOn :
     (LHom.constantsOnMap (Set.inclusion h)).IsExpansionOn M :=

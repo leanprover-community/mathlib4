@@ -109,7 +109,8 @@ instance [Inhabited X] : Inhabited (ActionCategory M X) :=
 instance [Nonempty X] : Nonempty (ActionCategory M X) :=
   Nonempty.map (objEquiv M X) inferInstance
 
-variable {X} (x : X)
+variable {X}
+variable (x : X)
 
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/

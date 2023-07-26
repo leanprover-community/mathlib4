@@ -153,7 +153,9 @@ instance : IsHausdorff I (Hausdorffification I M) :=
       rw [← this, map_smul'', mem_comap, Submodule.map_top, range_mkQ, ← SModEq.zero]
       exact hx n⟩
 
-variable {M} [h : IsHausdorff I N]
+variable {M}
+
+variable [h : IsHausdorff I N]
 
 /-- Universal property of Hausdorffification: any linear map to a Hausdorff module extends to a
 unique map from the Hausdorffification. -/

@@ -227,7 +227,8 @@ end InnerProductSpace
 
 section IndicatorConstLp
 
-variable (𝕜) {s : Set α}
+variable (𝕜)
+variable {s : Set α}
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ ∂μ`. -/

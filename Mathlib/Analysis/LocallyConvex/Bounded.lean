@@ -236,7 +236,9 @@ end Bornology
 
 section UniformAddGroup
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜)
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
 

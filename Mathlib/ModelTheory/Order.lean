@@ -114,7 +114,9 @@ instance sum.instIsOrdered : IsOrdered (L.sum Language.order) :=
 
 section
 
-variable (L) [IsOrdered L]
+variable (L)
+
+variable [IsOrdered L]
 
 /-- The theory of preorders. -/
 def preorderTheory : L.Theory :=

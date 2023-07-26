@@ -182,7 +182,8 @@ def typeOf (v : α → M) : T.CompleteType α :=
 
 namespace CompleteType
 
-variable {T} {v : α → M}
+variable {T}
+variable {v : α → M}
 
 @[simp]
 theorem mem_typeOf {φ : L[[α]].Sentence} :

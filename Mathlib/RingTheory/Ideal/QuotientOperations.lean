@@ -669,7 +669,8 @@ end Algebra
 
 section AlgebraQuotient
 
-variable (R) {A : Type _} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
+variable (R)
+variable {A : Type _} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
 
 /-- The natural algebra homomorphism `A / I → A / (I ⊔ J)`. -/
 def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
