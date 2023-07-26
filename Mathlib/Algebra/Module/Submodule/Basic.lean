@@ -350,12 +350,18 @@ instance addCommMonoid : AddCommMonoid p :=
 #align submodule.add_comm_monoid Submodule.addCommMonoid
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
-  { (show MulAction S p from p.toSubMulAction.mulAction') with
-    smul := (· • ·)
-    smul_zero := fun a => by ext; simp
-    zero_smul := fun a => by ext; simp
+  { toDistribMulAction :=
+    { toMulAction := p.toSubMulAction.mulAction'
+      smul_zero := fun a => by ext; simp
+      smul_add := fun a x y => by ext; simp [smul_add] }
     add_smul := fun a b x => by ext; simp [add_smul]
-    smul_add := fun a x y => by ext; simp [smul_add] }
+    zero_smul := fun a => by ext; simp }
+  -- { (show MulAction S p from p.toSubMulAction.mulAction') with
+  --   smul := (· • ·)
+  --   smul_zero := fun a => by ext; simp
+  --   zero_smul := fun a => by ext; simp
+  --   add_smul := fun a b x => by ext; simp [add_smul]
+  --   smul_add := fun a x y => by ext; simp [smul_add] }
 #align submodule.module' Submodule.module'
 
 instance module : Module R p :=
