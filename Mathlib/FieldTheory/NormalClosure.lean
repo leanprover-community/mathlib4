@@ -96,14 +96,14 @@ K.normalClosure.normalClosure_of_normal
 
 lemma normalClosure_def' : K.normalClosure = ⨆ f : L →ₐ[F] L, K.map f := by
   refine' K.normalClosure_def.trans (le_antisymm (iSup_le (fun f ↦ _)) (iSup_le (fun f ↦ _)))
-  . exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.2, h ▸ f.liftNormal_commutes L a⟩)
-  . exact le_iSup_of_le (f.comp K.val) (fun b ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩)
+  · exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.2, h ▸ f.liftNormal_commutes L a⟩)
+  · exact le_iSup_of_le (f.comp K.val) (fun b ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩)
 
 lemma normalClosure_def'' : K.normalClosure = ⨆ f : L ≃ₐ[F] L, K.map f := by
   refine' K.normalClosure_def'.trans (le_antisymm (iSup_le (fun f ↦ _)) (iSup_le (fun f ↦ _)))
-  . exact le_iSup_of_le (f.restrictNormal' L)
+  · exact le_iSup_of_le (f.restrictNormal' L)
       (fun b ⟨a, h⟩ ↦ ⟨a, h.1, h.2 ▸ f.restrictNormal_commutes L a⟩)
-  . exact le_iSup_of_le f le_rfl
+  · exact le_iSup_of_le f le_rfl
 
 variable {K}
 
