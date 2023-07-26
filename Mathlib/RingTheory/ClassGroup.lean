@@ -385,7 +385,6 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
     show (algebraMap R _ a)⁻¹ * algebraMap R _ y ∈ (I : FractionalIdeal R⁰ (FractionRing R))
     rwa [hy, Algebra.smul_def, ← mul_assoc, inv_mul_cancel fa_ne_zero, one_mul]
 
--- Porting note: This proof needs some extra heartbeats to complete
 theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
     Function.Surjective (ClassGroup.mk0 : (Ideal R)⁰ → ClassGroup R) := by
   rintro ⟨I⟩
