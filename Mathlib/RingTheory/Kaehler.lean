@@ -389,51 +389,39 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
 -- (After) Porting note : These 5 instances are found automatically in Lean 3
-local instance instS : Module S (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) :=
-  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
+  @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ IsScalarTower.right
 
-local instance instR : Module R (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) :=
-  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
+  @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ IsScalarTower.right
 
-local instance instSS : Module (S ⊗[R] S) (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) :=
-  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
+  @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ IsScalarTower.right
 
-local instance : @IsScalarTower R S (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+local instance : @IsScalarTower R S (KaehlerDifferential.ideal R S).cotangentIdeal
     _ (instS R S).toSMul (instR R S).toSMul :=
-  @Submodule.isScalarTower' R _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+  @Submodule.isScalarTower' R _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
 
-local instance : @IsScalarTower S (S ⊗[R] S) (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+local instance : @IsScalarTower S (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal
     _ (instSS R S).toSMul (instS R S).toSMul :=
-  @Submodule.isScalarTower' S _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+  @Submodule.isScalarTower' S _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
 
-local instance : @LinearMap.CompatibleSMul (Ω[S⁄R]) (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+local instance : @LinearMap.CompatibleSMul (Ω[S⁄R]) (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ S (S ⊗[R] S) _ _ _ (instS R S).toSMul _ :=
   @LinearMap.IsScalarTower.compatibleSMul (Ω[S⁄R]) _ _ _ S (S ⊗[R] S)
     _ _ _ _ _ (instS R S).toSMul _ _
 
--- set_option maxHeartbeats 4400000 in
--- Porting note: extra heartbeats are needed to infer the instance
--- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
--- set_option synthInstance.maxHeartbeats 500000 in
--- This has type
--- `Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
--- But lean times-out if this is given explicitly.
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
-noncomputable def KaehlerDifferential.endEquivDerivation' : (Derivation R S (Ω[S⁄R])) ≃ₗ[R]
-    (Derivation R S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }) :=
+noncomputable def KaehlerDifferential.endEquivDerivation' :
+    Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
   LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 #align kaehler_differential.End_equiv_derivation' KaehlerDifferential.endEquivDerivation'
--- noncomputable def KaehlerDifferential.endEquivDerivation' : @LinearEquiv _ _ _ _ (RingHom.id R) _ _ _ (@Derivation R S _ _ _ (Ω[S⁄R]) _ _ _)
---     (@Derivation R S _ _ _ { x // x ∈ Ideal.cotangentIdeal (ideal R S) } _ _ _) _ _ Derivation.instModule Derivation.instModule :=
---   @LinearEquiv.compDer R _ S _ _ (Ω[S⁄R]) _ _ (_) (KaehlerDifferential.ideal R S).cotangentIdeal
---     _ (_) (_) _ _ (@LinearEquiv.restrictScalars S _ _ _ _ _ _ _ (_) (_) (_) (_) _ (KaehlerDifferential.ideal R S).cotangentEquivIdeal)
--- #align kaehler_differential.End_equiv_derivation' KaehlerDifferential.endEquivDerivation'
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
 Used in `KaehlerDifferential.endEquiv`. -/
