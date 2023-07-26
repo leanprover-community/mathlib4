@@ -3559,6 +3559,18 @@ instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] 
   refine' @sum.sigmaFinite _ _ _ _ _ (Bool.rec _ _) <;> simpa
 #align measure_theory.add.sigma_finite MeasureTheory.Add.sigmaFinite
 
+instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
+    MeasureTheory.SigmaFinite (c • μ) where
+  out' :=
+  ⟨{  set := spanningSets μ
+      set_mem := fun _ ↦ trivial
+      finite := by
+        intro i
+        simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
+          nnreal_smul_coe_apply]
+        exact ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_spanningSets_lt_top μ i).ne
+      spanning := iUnion_spanningSets μ }⟩
+
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=
   ⟨⟨⟨fun n => f ⁻¹' spanningSets (μ.map f) n, fun _ => trivial, fun n => by
