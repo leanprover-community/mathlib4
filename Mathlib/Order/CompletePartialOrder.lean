@@ -68,7 +68,7 @@ def Set.ToDirectedSet (s : Set α) : DirectedSet α := {
 }
 
 lemma Set_subseteq_DirectedSet {s : Set α} :
-    s ⊆ (Set.ToDirectedSet s).set := by
+    s ⊆ ↑(Set.ToDirectedSet s).set := by
   intro a ha
   rw [Set.ToDirectedSet]
   simp only [id_eq, exists_and_left, Set.mem_setOf_eq]
@@ -110,6 +110,26 @@ lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u 
       rw [← Set_DirectedSet_upperBounds] at hv
       exact Iff.mpr (isLUB_le_iff h) hv
 
+instance (dSup : DirectedSet α → α)
+    (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) : CompleteSemilatticeSup α where
+  sSup := fun s => dSup (Set.ToDirectedSet s)
+  le_sSup := by
+    intros s a ha
+    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
+      rw [← Set_DirectedSet_LUB]
+      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
+    simp only [ge_iff_le]
+    rw [IsLUB, IsLeast] at e1
+    exact e1.1 (Set_subseteq_DirectedSet ha)
+  sSup_le := by
+    intros s a ha
+    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
+      rw [← Set_DirectedSet_LUB]
+      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
+    simp only [ge_iff_le]
+    rw [isLUB_le_iff e1, Set_DirectedSet_upperBounds]
+    exact ha
+
 end SemilatticeSup
 
 class CompletePartialOrder (α : Type _) extends PartialOrder α where
@@ -124,15 +144,6 @@ lemma CompletePartialOrder.le_dSup [CompletePartialOrder α] (d : DirectedSet α
 lemma CompletePartialOrder.dSup_le [CompletePartialOrder α] (d : DirectedSet α) (x : α) :
     (∀ a ∈ d.set, a  ≤ x) → dSup d ≤ x := fun h => (is_LUB d).2 h
 
--- def lowerBounds (s : Set α) : Set α :=
---  { x | ∀ ⦃a⦄, a ∈ s → x ≤ a }
-
--- def IsLeast (s : Set α) (a : α) : Prop :=
---  a ∈ s ∧ a ∈ lowerBounds s
-
--- def IsLUB (s : Set α) : α → Prop :=
---  IsLeast (upperBounds s)
-
 /-
 A complete lattice is a complete partial order
 -/
@@ -145,8 +156,29 @@ instance [CompleteLattice α] : CompletePartialOrder α := {
     · exact fun x a ↦ sSup_le a
 }
 
+/-
+Scott continuity takes on a simpler form in complete partial orders
+-/
+lemma CompletePartialOrder.ScottContinuous [CompletePartialOrder α] [Preorder β] {f : α → β} :
+    ScottContinuous f ↔
+    ∀ ⦃d : DirectedSet α⦄, d.set.Nonempty → IsLUB (f '' d.set) (f (dSup d)) := by
+  constructor
+  · intros h d hd
+    apply h hd d.directed (is_LUB d)
+  · intro h
+    rw [_root_.ScottContinuous]
+    intros d hne hd a hda
+    let D := DirectedSet.mk d hd
+    have e1: a = (dSup D) := by apply IsLUB.unique hda (is_LUB D)
+    rw [e1]
+    apply h
+    apply hne
+
 open OmegaCompletePartialOrder
 
+/--
+Every chain in a partial order gives rise to a directed set
+-/
 def Chain.to_DirectedSet [PartialOrder α] (c : Chain α) : DirectedSet α := {
   set := Set.range c,
   directed := by
@@ -184,23 +216,3 @@ instance [CompletePartialOrder α] : OmegaCompletePartialOrder α where
     obtain ⟨i,hi⟩:= ha
     rw [← hi]
     exact h i
-
-instance [SemilatticeSup α] (dSup : DirectedSet α → α)
-    (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) : CompleteSemilatticeSup α where
-  sSup := fun s => dSup (Set.ToDirectedSet s)
-  le_sSup := by
-    intros s a ha
-    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
-      rw [← Set_DirectedSet_LUB]
-      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
-    simp only [ge_iff_le]
-    rw [IsLUB, IsLeast] at e1
-    exact e1.1 (Set_subseteq_DirectedSet ha)
-  sSup_le := by
-    intros s a ha
-    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
-      rw [← Set_DirectedSet_LUB]
-      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
-    simp only [ge_iff_le]
-    rw [isLUB_le_iff e1, Set_DirectedSet_upperBounds]
-    exact ha
