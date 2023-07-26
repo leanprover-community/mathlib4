@@ -1,5 +1,25 @@
+/-
+Copyright (c) 2023 Amelia Livingston. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Amelia Livingston
+
+-/
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Invariants
+
+/-!
+# The low-degree cocycles and coboundaries of a `k`-linear `G`-representation
+
+Let `k` be a commutative ring and `G` a group. This file gives simple expressions for
+the cocycles and coboundaries of a `k`-linear `G`-representatio
+
+## Main definitions
+
+## Implementation notes
+
+## TODO
+
+-/
 
 universe v u
 
@@ -169,19 +189,6 @@ theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
 
 end Differentials
 
-
-/-theorem range_dZero_le_ker_dOne :
-  LinearMap.range (dZero A) ≤ LinearMap.ker (dOne A) :=
-LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A)-/
-
-/-variable {A}
-
-theorem dZero_apply_mem_ker_dOne (x : A) :
-  dZero A x ∈ LinearMap.ker (dOne A) :=
-LinearMap.ext_iff.1 (dOne_comp_dZero A) x
-
-variable (A) -/
-
 section Cocycles
 
 /-- The 1-cocycles `Z¹(G, A)` of `A : Rep k G`, defined as the kernel of the map
@@ -193,21 +200,8 @@ def oneCocycles : Submodule k (G → A) := LinearMap.ker (dOne A)
 `(f, (g₁, g₂, g₃)) ↦ ρ_A(g₁)(f(g₂, g₃)) - f(g₁g₂, g₃) + f(g₁, g₂g₃) - f(g₁, g₂).` -/
 def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A)
 
-instance Subtype.funLike (F : Sort _) (α : outParam (Sort _)) (β : outParam (α → Sort _))
-  [FunLike F α β] (p : F → Prop) : FunLike (Subtype p) α β :=
-{ coe := FunLike.coe ∘ subtypeCoe.coe,
-  coe_injective' := Function.Injective.comp FunLike.coe_injective' Subtype.coe_injective }
-
-instance Subtype.funLike' (α : Sort _) (β : α → Sort _) (p : ((x : α) → β x) → Prop) :
-  FunLike (Subtype p) α β :=
-{ coe := fun S x => (S : (x : α) → β x) x
-  coe_injective' := fun _ _ h => by ext; exact Function.funext_iff.1 h _ }
-/- maybe while we're at it we should resurrect & port
-https://github.com/leanprover-community/mathlib/pull/12349. -/
-
 variable {A}
-/- I don't know how much API to make about `f : G → A` which is `∈ oneCocycles A` and
-how much API to make about `f : oneCocycles A`. -/
+
 theorem mem_oneCocycles (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g : G × G, A.ρ g.1 (f g.2) - f (g.1 * g.2) + f g.1 = 0 :=
   LinearMap.mem_ker.trans Function.funext_iff
@@ -216,14 +210,14 @@ theorem mem_oneCocycles_iff (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g : G × G, f (g.1 * g.2) = A.ρ g.1 (f g.2) + f g.1 := by
   simp_rw [mem_oneCocycles, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
-theorem oneCocycles_map_one (f : oneCocycles A) : f 1 = 0 := by
-  have := (mem_oneCocycles f).1 f.2 (1, 1)
+theorem oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
+  have := (mem_oneCocycles f.1).1 f.2 (1, 1)
   simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
 
 theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
-    A.ρ g (f g⁻¹) = - f g := by
+    A.ρ g (f.1 g⁻¹) = - f.1 g := by
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_self g,
-    (mem_oneCocycles_iff f).1 f.2 (g, g⁻¹)]
+    (mem_oneCocycles_iff f.1).1 f.2 (g, g⁻¹)]
 
 theorem mem_twoCocycles (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g : G × G × G,
@@ -237,6 +231,16 @@ theorem mem_twoCocycles_iff (f : G × G → A) :
         A.ρ g.1 (f (g.2.1, g.2.2)) + f (g.1, g.2.1 * g.2.2) := by
   simp_rw [mem_twoCocycles, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
     add_comm (f (Prod.fst _, _))]
+
+theorem twoCocycles_map_one_fst (g : G) (f : twoCocycles A) :
+    f.1 (1, g) = f.1 (1, 1) := by
+  have := ((mem_twoCocycles_iff f.1).1 f.2 (1, (1, g))).symm
+  simpa only [map_one, LinearMap.one_apply, one_mul, add_right_inj, this]
+
+theorem twoCocycles_map_one_snd (g : G) (f : twoCocycles A) :
+    f.1 (g, 1) = A.ρ g (f.1 (1, 1)) := by
+  have := (mem_twoCocycles_iff f.1).1 f.2 (g, (1, 1))
+  simpa only [mul_one, add_left_inj, this]
 
 end Cocycles
 section Coboundaries
@@ -263,9 +267,8 @@ theorem mem_oneCoboundaries_of_mem_range (f : G → A) (h : f ∈ LinearMap.rang
     ⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩ ∈ oneCoboundaries A := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
--- is this best? given that I can't coerce `f` to a term of `G → A` anymore
 theorem mem_range_of_mem_oneCoboundaries (f : oneCocycles A) (h : f ∈ oneCoboundaries A) :
-    (oneCocycles A).subtype f ∈ LinearMap.range (dZero A) := by
+    f.1 ∈ LinearMap.range (dZero A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
 theorem mem_twoCoboundaries_of_dOne_apply (x : G → A) :
