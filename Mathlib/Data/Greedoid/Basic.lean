@@ -59,6 +59,24 @@ decreasing_by
   rw [Finset.card_sdiff (Finset.singleton_subset_iff.mpr hx₁), Finset.card_singleton]
   simp only [Nat.sub_lt (Finset.card_pos.mpr ⟨x, hx₁⟩)]
 
+theorem construction_of_accessible {α : Type _} [DecidableEq α]
+  {Sys : Finset (Finset α)} (hSys : ∅ ∈ Sys ∧ accessibleProperty Sys)
+  {s : Finset α} (hs₀ : s ∈ Sys) :
+    ∃ l : List α, l.Nodup ∧ l.toFinset = s ∧ ∀ l' ∈ l.tails, l'.toFinset ∈ Sys := by
+  apply induction_on_accessible hSys.2 hs₀
+  . exists []; simp [hSys.1]
+  . simp only [List.mem_tails, forall_exists_index, and_imp]
+    intro a s ha hs₁ hs₂ l hl₁ hl₂ hl₃
+    exists a :: l
+    simp only [List.nodup_cons, hl₁, and_true, List.toFinset_cons, hl₂, true_and]
+    have : a ∉ l := by simp only [← hl₂, List.mem_toFinset] at ha ; exact ha
+    simp [this]
+    intro l' hl'
+    rw [List.suffix_cons_iff] at hl'
+    apply hl'.elim <;> intro hl'
+    . simp only [hl', List.toFinset_cons, hl₂, hs₂]
+    . exact hl₃ _ hl'
+
 structure Greedoid (α : Type _) [DecidableEq α] [Fintype α] where
   feasibleSet : Finset (Finset α)
   containsEmpty : ∅ ∈ feasibleSet
@@ -321,6 +339,15 @@ theorem bases_of_card_eq (h : b.card = s.card) : b = s := by
   rw [← subset_iff_eq_of_card_le (h ▸ (le_refl _))]
   exact hb.2.1
 
+theorem bases_of_feasible_eq_singleton (hs : s ∈ G) : G.bases s = {s} := by
+  ext t; constructor <;> intro h
+  . rw [Finset.mem_singleton]
+    rw [mem_bases_self_iff] at hs
+    exact eq_of_subset_of_card_le (basis_subset h) (by simp only [bases_card_eq h hs, le_refl])
+  . rw [Finset.mem_singleton] at h
+    rw [mem_bases_self_iff] at hs
+    exact h ▸ hs
+
 end Bases
 
 /-- A cardinality of largest feasible subset of `s` in `G`. -/
@@ -439,31 +466,17 @@ theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
   apply this
   simp only [h, le_refl]
 
-theorem rank_insert_eq_append_basis (ht : t ∈ G.bases s) :
-    G.rank (insert x t) = G.rank (insert x s) := by
-  sorry
-
 theorem local_submodularity
   (h₁ : G.rank s = G.rank (insert x s))
   (h₂ : G.rank s = G.rank (insert y s)) :
     G.rank (insert x (insert y s)) = G.rank s := by
+  have h : G.rank s ≤ G.rank (insert x (insert y s)) :=
+    rank_le_of_subset (subset_trans (subset_insert y _) (subset_insert _ _))
+  have h := le_iff_lt_or_eq.mp h
   by_contra' h'
-  have h₃ := Nat.lt_of_le_of_ne
-    (rank_le_of_subset (Finset.Subset.trans (Finset.subset_insert y s) (Finset.subset_insert x _)))
-    h'.symm
-  have ⟨bs, hbs⟩ : Nonempty (G.bases s) := G.bases_nonempty
-  have ⟨bt, hbt⟩ : Nonempty (G.bases (insert x (insert y s))) := G.bases_nonempty
-  have hbs' := rank_eq_bases_card hbs
-  have h : bs.card < bt.card := hbs' ▸ (rank_eq_bases_card hbt) ▸ h₃
-  have ⟨z, hz₁, hz₂⟩ := G.exchangeProperty (basis_mem_feasible hbt) (basis_mem_feasible hbs) h
-  simp only [mem_sdiff, system_feasible_set_mem_mem] at hz₁ hz₂
-  have hzbr : G.rank (insert z bs) = G.rank s + 1 := by
-    rw [rank_of_feasible hz₂]
-    simp only [hz₁, card_insert_of_not_mem, hbs']
-  have hzr : G.rank (insert z bs) = G.rank (insert z s) := rank_insert_eq_append_basis hbs
-  have hzxy : z = x ∨ z = y := by
-    sorry
-  apply hzxy.elim <;> intro hzxy <;> simp_all only [mem_insert, ne_eq, add_right_eq_self, h₂]
+  simp [h'.symm] at h; clear h'
+
+  sorry
 
 theorem stronger_local_submodularity_left
   (h₁ : G.rank s = G.rank (s ∩ t))
