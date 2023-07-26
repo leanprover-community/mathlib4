@@ -77,6 +77,9 @@ class NormedLatticeAddCommGroup (α : Type _) extends NormedAddCommGroup α, Lat
   where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
+attribute [instance 200] NormedLatticeAddCommGroup.toHasSolidNorm
+attribute [instance 200] NormedLatticeAddCommGroup.toNormedAddCommGroup
+attribute [instance 200] NormedLatticeAddCommGroup.toLattice
 
 instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
   add_le_add_left _ _ h _ := add_le_add le_rfl h

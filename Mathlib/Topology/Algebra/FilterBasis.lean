@@ -276,6 +276,7 @@ class RingFilterBasis (R : Type u) [Ring R] extends AddGroupFilterBasis R where
   mul_left' : ∀ (x₀ : R) {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ * x) ⁻¹' U
   mul_right' : ∀ (x₀ : R) {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x * x₀) ⁻¹' U
 #align ring_filter_basis RingFilterBasis
+attribute [instance 200] RingFilterBasis.toAddGroupFilterBasis
 
 namespace RingFilterBasis
 

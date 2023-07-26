@@ -1842,6 +1842,7 @@ and where there is no non-trivial pair of disjoint opens. -/
 class IrreducibleSpace (α : Type u) [TopologicalSpace α] extends PreirreducibleSpace α : Prop where
   toNonempty : Nonempty α
 #align irreducible_space IrreducibleSpace
+attribute [instance 200] IrreducibleSpace.toPreirreducibleSpace
 
 -- see Note [lower instance priority]
 attribute [instance 50] IrreducibleSpace.toNonempty

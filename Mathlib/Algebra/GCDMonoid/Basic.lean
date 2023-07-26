@@ -301,6 +301,8 @@ class NormalizedGCDMonoid (α : Type _) [CancelCommMonoidWithZero α] extends No
   /-- The LCM is normalized to itself. -/
   normalize_lcm : ∀ a b, normalize (lcm a b) = lcm a b
 #align normalized_gcd_monoid NormalizedGCDMonoid
+attribute [instance 200] NormalizedGCDMonoid.toGCDMonoid
+attribute [instance 200] NormalizedGCDMonoid.toNormalizationMonoid
 
 export GCDMonoid (gcd lcm gcd_dvd_left gcd_dvd_right dvd_gcd lcm_zero_left lcm_zero_right)
 

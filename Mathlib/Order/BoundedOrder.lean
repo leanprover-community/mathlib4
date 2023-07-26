@@ -75,6 +75,7 @@ class OrderTop (α : Type u) [LE α] extends Top α where
   /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
 #align order_top OrderTop
+attribute [instance 200] OrderTop.toTop
 
 section OrderTop
 
@@ -241,6 +242,7 @@ class OrderBot (α : Type u) [LE α] extends Bot α where
   /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
 #align order_bot OrderBot
+attribute [instance 200] OrderBot.toBot
 
 section OrderBot
 
@@ -524,6 +526,8 @@ end SemilatticeInfBot
   denoted `⊤` and `⊥` respectively. -/
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 #align bounded_order BoundedOrder
+attribute [instance 200] BoundedOrder.toOrderBot
+attribute [instance 200] BoundedOrder.toOrderTop
 
 instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
   __ := inferInstanceAs (OrderTop αᵒᵈ)

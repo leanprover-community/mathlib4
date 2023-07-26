@@ -23,6 +23,15 @@ import Mathlib.Mathport.Notation
 * `class CompleteLattice`: a bounded lattice such that `sSup s` is always the least upper boundary
   of `s` and `sInf s` is always the greatest lower boundary of `s`;
 * `class CompleteLinearOrder`: a linear ordered complete lattice.
+attribute [instance 200] CompleteLattice.toSupSet
+attribute [instance 180] CompleteLattice.toCompleteSemilatticeInf
+attribute [instance 200] CompleteLinearOrder.toCompleteLattice
+attribute [instance 200] CompleteLattice.toTop
+attribute [instance 200] CompleteLattice.toInfSet
+attribute [instance 200] CompleteLattice.toLattice
+attribute [instance 200] CompleteLattice.toBot
+attribute [instance 180] CompleteLattice.toCompleteSemilatticeSup
+attribute [instance 180] CompleteLinearOrder.toLinearOrder
 
 ## Naming conventions
 
@@ -125,6 +134,8 @@ class CompleteSemilatticeSup (α : Type _) extends PartialOrder α, SupSet α wh
   /-- Any upper bound is more than the set supremum. -/
   sSup_le : ∀ s a, (∀ b ∈ s, b ≤ a) → sSup s ≤ a
 #align complete_semilattice_Sup CompleteSemilatticeSup
+attribute [instance 200] CompleteSemilatticeSup.toPartialOrder
+attribute [instance 200] CompleteSemilatticeSup.toSupSet
 
 section
 
@@ -194,6 +205,8 @@ class CompleteSemilatticeInf (α : Type _) extends PartialOrder α, InfSet α wh
   /-- Any lower bound is less than the set infimum. -/
   le_sInf : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ sInf s
 #align complete_semilattice_Inf CompleteSemilatticeInf
+attribute [instance 200] CompleteSemilatticeInf.toInfSet
+attribute [instance 200] CompleteSemilatticeInf.toPartialOrder
 
 section
 
@@ -262,6 +275,13 @@ class CompleteLattice (α : Type _) extends Lattice α, CompleteSemilatticeSup �
   /-- Any element is more than the bottom one. -/
   protected bot_le : ∀ x : α, ⊥ ≤ x
 #align complete_lattice CompleteLattice
+attribute [instance 200] CompleteLattice.toSupSet
+attribute [instance 180] CompleteLattice.toCompleteSemilatticeInf
+attribute [instance 200] CompleteLattice.toTop
+attribute [instance 200] CompleteLattice.toInfSet
+attribute [instance 200] CompleteLattice.toLattice
+attribute [instance 200] CompleteLattice.toBot
+attribute [instance 180] CompleteLattice.toCompleteSemilatticeSup
 
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice α] :
@@ -381,6 +401,8 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
   decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
 #align complete_linear_order CompleteLinearOrder
+attribute [instance 200] CompleteLinearOrder.toCompleteLattice
+attribute [instance 180] CompleteLinearOrder.toLinearOrder
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
   { i with

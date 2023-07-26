@@ -55,6 +55,8 @@ class DiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R]
     extends IsPrincipalIdealRing R, LocalRing R : Prop where
   not_a_field' : maximalIdeal R ≠ ⊥
 #align discrete_valuation_ring DiscreteValuationRing
+attribute [instance 200] DiscreteValuationRing.toIsPrincipalIdealRing
+attribute [instance 200] DiscreteValuationRing.toLocalRing
 
 namespace DiscreteValuationRing
 

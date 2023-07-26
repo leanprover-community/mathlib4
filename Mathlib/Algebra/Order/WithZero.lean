@@ -35,6 +35,11 @@ in another file. However, the lemmas about it are stated here.
 class LinearOrderedCommGroupWithZero (α : Type _) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
+attribute [instance 180] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+attribute [instance 200] LinearOrderedCommGroupWithZero.toDiv
+attribute [instance 200] LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero
+attribute [instance 200] LinearOrderedCommGroupWithZero.toNontrivial
+attribute [instance 200] LinearOrderedCommGroupWithZero.toInv
 
 variable {α : Type _}
 

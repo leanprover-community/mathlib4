@@ -175,6 +175,7 @@ class OmegaCompletePartialOrder (α : Type _) extends PartialOrder α where
   /-- `ωSup` is a lower bound of the set of upper bounds of the increasing sequence -/
   ωSup_le : ∀ (c : Chain α) (x), (∀ i, c i ≤ x) → ωSup c ≤ x
 #align omega_complete_partial_order OmegaCompletePartialOrder
+attribute [instance 200] OmegaCompletePartialOrder.toPartialOrder
 
 namespace OmegaCompletePartialOrder
 

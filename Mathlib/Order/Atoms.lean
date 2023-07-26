@@ -511,6 +511,8 @@ class IsSimpleOrder (α : Type _) [LE α] [BoundedOrder α] extends Nontrivial �
   /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
 #align is_simple_order IsSimpleOrder
+attribute [instance 200] IsSimpleOrder.toNontrivial
+attribute [instance 180] IsSimpleOrder.instIsCoatomistic
 
 export IsSimpleOrder (eq_bot_or_eq_top)
 

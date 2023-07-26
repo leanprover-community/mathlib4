@@ -36,6 +36,7 @@ class NonarchimedeanAddGroup (G : Type _) [AddGroup G] [TopologicalSpace G] exte
   TopologicalAddGroup G : Prop where
   is_nonarchimedean : ∀ U ∈ nhds (0 : G), ∃ V : OpenAddSubgroup G, (V : Set G) ⊆ U
 #align nonarchimedean_add_group NonarchimedeanAddGroup
+attribute [instance 200] NonarchimedeanAddGroup.toTopologicalAddGroup
 
 /-- A topological group is nonarchimedean if every neighborhood of 1 contains an open subgroup. -/
 @[to_additive]
@@ -43,6 +44,7 @@ class NonarchimedeanGroup (G : Type _) [Group G] [TopologicalSpace G] extends To
   Prop where
   is_nonarchimedean : ∀ U ∈ nhds (1 : G), ∃ V : OpenSubgroup G, (V : Set G) ⊆ U
 #align nonarchimedean_group NonarchimedeanGroup
+attribute [instance 200] NonarchimedeanGroup.toTopologicalGroup
 
 /-- A topological ring is nonarchimedean if its underlying topological additive
   group is nonarchimedean. -/
@@ -50,6 +52,7 @@ class NonarchimedeanRing (R : Type _) [Ring R] [TopologicalSpace R] extends Topo
   Prop where
   is_nonarchimedean : ∀ U ∈ nhds (0 : R), ∃ V : OpenAddSubgroup R, (V : Set R) ⊆ U
 #align nonarchimedean_ring NonarchimedeanRing
+attribute [instance 200] NonarchimedeanRing.toTopologicalRing
 
 -- see Note [lower instance priority]
 /-- Every nonarchimedean ring is naturally a nonarchimedean additive group. -/

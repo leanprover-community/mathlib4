@@ -36,12 +36,14 @@ class IsSimpleGroup extends Nontrivial G : Prop where
   /-- Any normal subgroup is either `⊥` or `⊤` -/
   eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤
 #align is_simple_group IsSimpleGroup
+attribute [instance 200] IsSimpleGroup.toNontrivial
 
 /-- An `AddGroup` is simple when it has exactly two normal `AddSubgroup`s. -/
 class IsSimpleAddGroup extends Nontrivial A : Prop where
   /-- Any normal additive subgroup is either `⊥` or `⊤` -/
   eq_bot_or_eq_top_of_normal : ∀ H : AddSubgroup A, H.Normal → H = ⊥ ∨ H = ⊤
 #align is_simple_add_group IsSimpleAddGroup
+attribute [instance 200] IsSimpleAddGroup.toNontrivial
 
 attribute [to_additive] IsSimpleGroup
 

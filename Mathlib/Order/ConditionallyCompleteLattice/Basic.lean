@@ -178,6 +178,9 @@ class ConditionallyCompleteLattice (α : Type _) extends Lattice α, SupSet α, 
   /-- `a ≤ sInf s` for all `a ∈ lowerBounds s`. -/
   le_csInf : ∀ s a, Set.Nonempty s → a ∈ lowerBounds s → a ≤ sInf s
 #align conditionally_complete_lattice ConditionallyCompleteLattice
+attribute [instance 200] ConditionallyCompleteLattice.toSupSet
+attribute [instance 200] ConditionallyCompleteLattice.toInfSet
+attribute [instance 200] ConditionallyCompleteLattice.toLattice
 
 -- Porting note: mathlib3 used `renaming`
 /-- A conditionally complete linear order is a linear order in which
@@ -200,6 +203,8 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
   decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
+attribute [instance 200] ConditionallyCompleteLinearOrder.toConditionallyCompleteLattice
+attribute [instance 180] instLinearOrder
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
   { ‹ConditionallyCompleteLinearOrder α› with
@@ -232,6 +237,10 @@ class ConditionallyCompleteLinearOrderBot (α : Type _) extends ConditionallyCom
   /-- The supremum of the empty set is `⊥` -/
   csSup_empty : sSup ∅ = ⊥
 #align conditionally_complete_linear_order_bot ConditionallyCompleteLinearOrderBot
+attribute [instance 200] ConditionallyCompleteLinearOrder.toConditionallyCompleteLattice
+attribute [instance 200] ConditionallyCompleteLinearOrderBot.toBot
+attribute [instance 180] instLinearOrder
+attribute [instance 200] ConditionallyCompleteLinearOrderBot.toConditionallyCompleteLinearOrder
 
 -- see Note [lower instance priority]
 instance (priority := 100) ConditionallyCompleteLinearOrderBot.toOrderBot

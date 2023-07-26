@@ -107,6 +107,8 @@ class UnitalShelf (α : Type u) extends Shelf α, One α :=
 (one_act : ∀ a : α, act 1 a = a)
 (act_one : ∀ a : α, act a 1 = a)
 #align unital_shelf UnitalShelf
+attribute [instance 200] UnitalShelf.toOne
+attribute [instance 200] UnitalShelf.toShelf
 
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.
@@ -136,6 +138,7 @@ class Rack (α : Type u) extends Shelf α where
   /-- Proof of right inverse -/
   right_inv : ∀ x, Function.RightInverse (invAct x) (act x)
 #align rack Rack
+attribute [instance 200] Rack.toShelf
 
 /-- Action of a Shelf-/
 scoped[Quandles] infixr:65 " ◃ " => Shelf.act
@@ -402,6 +405,7 @@ class Quandle (α : Type _) extends Rack α where
   /-- The fixing property of a Quandle -/
   fix : ∀ {x : α}, act x x = x
 #align quandle Quandle
+attribute [instance 200] Quandle.toRack
 
 namespace Quandle
 

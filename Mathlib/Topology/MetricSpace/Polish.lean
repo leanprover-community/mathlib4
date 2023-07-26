@@ -74,6 +74,9 @@ space with a complete metric. -/
 class UpgradedPolishSpace (α : Type _) extends MetricSpace α, SecondCountableTopology α,
   CompleteSpace α
 #align upgraded_polish_space UpgradedPolishSpace
+attribute [instance 200] UpgradedPolishSpace.toCompleteSpace
+attribute [instance 200] UpgradedPolishSpace.toMetricSpace
+attribute [instance 200] UpgradedPolishSpace.toSecondCountableTopology
 
 instance (priority := 100) polishSpace_of_complete_second_countable [m : MetricSpace α]
     [h : SecondCountableTopology α] [h' : CompleteSpace α] : PolishSpace α where

@@ -44,6 +44,8 @@ mathematically equivalent (see `TopologicalSemiring.continuousNeg_of_mul` or
 class TopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
   ContinuousAdd α, ContinuousMul α : Prop
 #align topological_semiring TopologicalSemiring
+attribute [instance 200] TopologicalSemiring.toContinuousAdd
+attribute [instance 200] TopologicalSemiring.toContinuousMul
 
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
@@ -54,6 +56,8 @@ multiplication as it is multiplication with `-1`. (See
 class TopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] extends TopologicalSemiring α,
   ContinuousNeg α : Prop
 #align topological_ring TopologicalRing
+attribute [instance 200] TopologicalRing.toTopologicalSemiring
+attribute [instance 200] TopologicalRing.toContinuousNeg
 
 variable {α}
 

@@ -103,6 +103,8 @@ class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α,
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddMonoid
+attribute [instance 200] CanonicallyOrderedAddMonoid.toBot
+attribute [instance 200] CanonicallyOrderedAddMonoid.toOrderedAddCommMonoid
 
 
 -- see Note [lower instance priority]
@@ -129,6 +131,8 @@ class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot �
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 #align canonically_ordered_monoid CanonicallyOrderedMonoid
+attribute [instance 200] CanonicallyOrderedMonoid.toOrderedCommMonoid
+attribute [instance 200] CanonicallyOrderedMonoid.toBot
 
 -- see Note [lower instance priority]
 @[to_additive existing]
@@ -334,12 +338,22 @@ end NeZero
 class CanonicallyLinearOrderedAddMonoid (α : Type _)
   extends CanonicallyOrderedAddMonoid α, LinearOrder α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddMonoid
+attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toMin
+attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toOrd
+attribute [instance 180] CanonicallyLinearOrderedAddMonoid.toLinearOrder
+attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toMax
+attribute [instance 200] CanonicallyLinearOrderedAddMonoid.toCanonicallyOrderedAddMonoid
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
 class CanonicallyLinearOrderedMonoid (α : Type _) extends CanonicallyOrderedMonoid α, LinearOrder α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedMonoid
+attribute [instance 200] CanonicallyLinearOrderedMonoid.toOrd
+attribute [instance 200] CanonicallyLinearOrderedMonoid.toMax
+attribute [instance 180] CanonicallyLinearOrderedMonoid.toLinearOrder
+attribute [instance 200] CanonicallyLinearOrderedMonoid.toCanonicallyOrderedMonoid
+attribute [instance 200] CanonicallyLinearOrderedMonoid.toMin
 
 section CanonicallyLinearOrderedMonoid
 

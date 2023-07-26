@@ -44,6 +44,7 @@ class LocalRing (R : Type u) [Semiring R] extends Nontrivial R : Prop where
     word, for every `a : R`, either `a` is a unit or `1 - a` is a unit. -/
   isUnit_or_isUnit_of_add_one {a b : R} (h : a + b = 1) : IsUnit a ∨ IsUnit b
 #align local_ring LocalRing
+attribute [instance 200] LocalRing.toNontrivial
 
 section CommSemiring
 

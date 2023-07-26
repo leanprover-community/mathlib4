@@ -40,6 +40,7 @@ sense of `ω`-complete partial orders, which excludes the example because it is 
 class LawfulFix (α : Type _) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α →o α}, Continuous f → Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
+attribute [instance 200] LawfulFix.toFix
 
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
     (hf : Continuous' f) : Fix.fix f = f (Fix.fix f) :=

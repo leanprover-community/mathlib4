@@ -28,6 +28,8 @@ class OrderedCancelAddCommMonoid (α : Type u) extends AddCommMonoid α, Partial
     commutative monoid. -/
   protected le_of_add_le_add_left : ∀ a b c : α, a + b ≤ a + c → b ≤ c
 #align ordered_cancel_add_comm_monoid OrderedCancelAddCommMonoid
+attribute [instance 200] OrderedCancelAddCommMonoid.toAddCommMonoid
+attribute [instance 200] OrderedCancelAddCommMonoid.toPartialOrder
 
 /-- An ordered cancellative commutative monoid
 is a commutative monoid with a partial order,
@@ -38,6 +40,8 @@ class OrderedCancelCommMonoid (α : Type u) extends CommMonoid α, PartialOrder 
   /-- Cancellation is compatible with the order in an ordered cancellative commutative monoid. -/
   protected le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
 #align ordered_cancel_comm_monoid OrderedCancelCommMonoid
+attribute [instance 200] OrderedCancelCommMonoid.toCommMonoid
+attribute [instance 200] OrderedCancelCommMonoid.toPartialOrder
 
 attribute [to_additive OrderedCancelAddCommMonoid] OrderedCancelCommMonoid
 
@@ -105,6 +109,11 @@ in which addition is cancellative and monotone. -/
 class LinearOrderedCancelAddCommMonoid (α : Type u) extends OrderedCancelAddCommMonoid α,
     LinearOrderedAddCommMonoid α
 #align linear_ordered_cancel_add_comm_monoid LinearOrderedCancelAddCommMonoid
+attribute [instance 180] LinearOrderedCancelAddCommMonoid.toLinearOrderedAddCommMonoid
+attribute [instance 200] LinearOrderedCancelAddCommMonoid.toMin
+attribute [instance 200] LinearOrderedCancelAddCommMonoid.toOrderedCancelAddCommMonoid
+attribute [instance 200] LinearOrderedCancelAddCommMonoid.toMax
+attribute [instance 200] LinearOrderedCancelAddCommMonoid.toOrd
 
 /-- A linearly ordered cancellative commutative monoid
 is a commutative monoid with a linear order
@@ -112,6 +121,11 @@ in which multiplication is cancellative and monotone. -/
 class LinearOrderedCancelCommMonoid (α : Type u) extends OrderedCancelCommMonoid α,
     LinearOrderedCommMonoid α
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
+attribute [instance 200] LinearOrderedCancelCommMonoid.toOrd
+attribute [instance 180] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
+attribute [instance 200] LinearOrderedCancelCommMonoid.toMin
+attribute [instance 200] LinearOrderedCancelCommMonoid.toMax
+attribute [instance 200] LinearOrderedCancelCommMonoid.toOrderedCancelCommMonoid
 
 attribute [to_additive LinearOrderedCancelAddCommMonoid] LinearOrderedCancelCommMonoid
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid

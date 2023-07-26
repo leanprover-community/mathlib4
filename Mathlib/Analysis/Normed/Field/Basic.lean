@@ -32,6 +32,9 @@ class NonUnitalSeminormedRing (α : Type _) extends Norm α, NonUnitalRing α,
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align non_unital_semi_normed_ring NonUnitalSeminormedRing
+attribute [instance 200] NonUnitalSeminormedRing.toPseudoMetricSpace
+attribute [instance 200] NonUnitalSeminormedRing.toNonUnitalRing
+attribute [instance 200] NonUnitalSeminormedRing.toNorm
 
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -41,6 +44,9 @@ class SeminormedRing (α : Type _) extends Norm α, Ring α, PseudoMetricSpace �
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align semi_normed_ring SeminormedRing
+attribute [instance 200] SeminormedRing.toNorm
+attribute [instance 200] SeminormedRing.toRing
+attribute [instance 200] SeminormedRing.toPseudoMetricSpace
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a non-unital seminormed ring. -/
@@ -57,6 +63,9 @@ class NonUnitalNormedRing (α : Type _) extends Norm α, NonUnitalRing α, Metri
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align non_unital_normed_ring NonUnitalNormedRing
+attribute [instance 200] NonUnitalNormedRing.toNorm
+attribute [instance 200] NonUnitalNormedRing.toNonUnitalRing
+attribute [instance 200] NonUnitalNormedRing.toMetricSpace
 
 -- see Note [lower instance priority]
 /-- A non-unital normed ring is a non-unital seminormed ring. -/
@@ -72,6 +81,9 @@ class NormedRing (α : Type _) extends Norm α, Ring α, MetricSpace α where
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align normed_ring NormedRing
+attribute [instance 200] NormedRing.toRing
+attribute [instance 200] NormedRing.toMetricSpace
+attribute [instance 200] NormedRing.toNorm
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
@@ -81,6 +93,9 @@ class NormedDivisionRing (α : Type _) extends Norm α, DivisionRing α, MetricS
   /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
 #align normed_division_ring NormedDivisionRing
+attribute [instance 200] NormedDivisionRing.toMetricSpace
+attribute [instance 200] NormedDivisionRing.toDivisionRing
+attribute [instance 200] NormedDivisionRing.toNorm
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
@@ -108,6 +123,7 @@ class SeminormedCommRing (α : Type _) extends SeminormedRing α where
   /-- Multiplication is commutative. -/
   mul_comm : ∀ x y : α, x * y = y * x
 #align semi_normed_comm_ring SeminormedCommRing
+attribute [instance 200] SeminormedCommRing.toSeminormedRing
 
 /-- A normed commutative ring is a commutative ring endowed with a norm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -115,6 +131,7 @@ class NormedCommRing (α : Type _) extends NormedRing α where
   /-- Multiplication is commutative. -/
   mul_comm : ∀ x y : α, x * y = y * x
 #align normed_comm_ring NormedCommRing
+attribute [instance 200] NormedCommRing.toNormedRing
 
 -- see Note [lower instance priority]
 /-- A normed commutative ring is a seminormed commutative ring. -/
@@ -508,6 +525,9 @@ theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
 instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α :=
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
 #align normed_division_ring.to_norm_one_class NormedDivisionRing.to_normOneClass
+attribute [instance 200] NormedDivisionRing.toMetricSpace
+attribute [instance 200] NormedDivisionRing.toDivisionRing
+attribute [instance 200] NormedDivisionRing.toNorm
 
 instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
     where
@@ -661,6 +681,9 @@ class NormedField (α : Type _) extends Norm α, Field α, MetricSpace α where
   /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
 #align normed_field NormedField
+attribute [instance 200] NormedField.toField
+attribute [instance 200] NormedField.toNorm
+attribute [instance 200] NormedField.toMetricSpace
 
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
@@ -669,6 +692,7 @@ class NontriviallyNormedField (α : Type _) extends NormedField α where
   /-- The norm attains a value exceeding 1. -/
   non_trivial : ∃ x : α, 1 < ‖x‖
 #align nontrivially_normed_field NontriviallyNormedField
+attribute [instance 200] NontriviallyNormedField.toNormedField
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
@@ -677,6 +701,7 @@ class DenselyNormedField (α : Type _) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
 #align densely_normed_field DenselyNormedField
+attribute [instance 200] DenselyNormedField.toNormedField
 
 section NormedField
 

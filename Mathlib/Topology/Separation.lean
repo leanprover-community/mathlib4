@@ -1679,6 +1679,8 @@ section T3
 a T₂.₅ space.  -/
 class T3Space (α : Type u) [TopologicalSpace α] extends T0Space α, RegularSpace α : Prop
 #align t3_space T3Space
+attribute [instance 200] T3Space.toRegularSpace
+attribute [instance 200] T3Space.toT0Space
 
 -- see Note [lower instance priority]
 instance (priority := 100) T3Space.t25Space [T3Space α] : T25Space α := by
@@ -1738,6 +1740,7 @@ class NormalSpace (α : Type u) [TopologicalSpace α] extends T1Space α : Prop 
   /-- Two disjoint sets in a normal space admit disjoint neighbourhoods. -/
   normal : ∀ s t : Set α, IsClosed s → IsClosed t → Disjoint s t → SeparatedNhds s t
 #align normal_space NormalSpace
+attribute [instance 200] NormalSpace.toT1Space
 
 theorem normal_separation [NormalSpace α] {s t : Set α} (H1 : IsClosed s) (H2 : IsClosed t)
     (H3 : Disjoint s t) : SeparatedNhds s t :=

@@ -66,11 +66,16 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
   protected bot : α := 0
   protected bot_le : ∀ a, bot ≤ a
 #align idem_semiring IdemSemiring
+attribute [instance 200] IdemSemiring.toSemilatticeSup
+attribute [instance 200] IdemSemiring.toSemiring
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
+attribute [instance 200] IdemCommSemiring.toCommSemiring
+attribute [instance 180] IdemCommSemiring.toIdemSemiring
+attribute [instance 200] IdemCommSemiring.toSemilatticeSup
 
 /-- Notation typeclass for the Kleene star `∗`. -/
 class KStar (α : Type _) where
@@ -95,6 +100,8 @@ class KleeneAlgebra (α : Type _) extends IdemSemiring α, KStar α where
   protected mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
   protected kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
 #align kleene_algebra KleeneAlgebra
+attribute [instance 200] KleeneAlgebra.toIdemSemiring
+attribute [instance 200] KleeneAlgebra.toKStar
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot α :=

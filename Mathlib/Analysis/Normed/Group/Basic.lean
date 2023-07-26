@@ -83,6 +83,9 @@ class SeminormedAddGroup (E : Type _) extends Norm E, AddGroup E, PseudoMetricSp
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align seminormed_add_group SeminormedAddGroup
+attribute [instance 200] SeminormedAddGroup.toAddGroup
+attribute [instance 200] SeminormedAddGroup.toNorm
+attribute [instance 200] SeminormedAddGroup.toPseudoMetricSpace
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a
 pseudometric space structure. -/
@@ -92,6 +95,9 @@ class SeminormedGroup (E : Type _) extends Norm E, Group E, PseudoMetricSpace E 
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align seminormed_group SeminormedGroup
+attribute [instance 200] SeminormedGroup.toNorm
+attribute [instance 200] SeminormedGroup.toPseudoMetricSpace
+attribute [instance 200] SeminormedGroup.toGroup
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
@@ -100,6 +106,9 @@ class NormedAddGroup (E : Type _) extends Norm E, AddGroup E, MetricSpace E wher
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_add_group NormedAddGroup
+attribute [instance 200] NormedAddGroup.toMetricSpace
+attribute [instance 200] NormedAddGroup.toAddGroup
+attribute [instance 200] NormedAddGroup.toNorm
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
@@ -109,6 +118,9 @@ class NormedGroup (E : Type _) extends Norm E, Group E, MetricSpace E where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_group NormedGroup
+attribute [instance 200] NormedGroup.toGroup
+attribute [instance 200] NormedGroup.toMetricSpace
+attribute [instance 200] NormedGroup.toNorm
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -118,6 +130,9 @@ class SeminormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E,
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align seminormed_add_comm_group SeminormedAddCommGroup
+attribute [instance 200] SeminormedAddCommGroup.toNorm
+attribute [instance 200] SeminormedAddCommGroup.toAddCommGroup
+attribute [instance 200] SeminormedAddCommGroup.toPseudoMetricSpace
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖`
 defines a pseudometric space structure. -/
@@ -127,6 +142,9 @@ class SeminormedCommGroup (E : Type _) extends Norm E, CommGroup E, PseudoMetric
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align seminormed_comm_group SeminormedCommGroup
+attribute [instance 200] SeminormedCommGroup.toNorm
+attribute [instance 200] SeminormedCommGroup.toCommGroup
+attribute [instance 200] SeminormedCommGroup.toPseudoMetricSpace
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
@@ -135,6 +153,9 @@ class NormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E, MetricSpac
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_add_comm_group NormedAddCommGroup
+attribute [instance 200] NormedAddCommGroup.toNorm
+attribute [instance 200] NormedAddCommGroup.toMetricSpace
+attribute [instance 200] NormedAddCommGroup.toAddCommGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
@@ -144,6 +165,9 @@ class NormedCommGroup (E : Type _) extends Norm E, CommGroup E, MetricSpace E wh
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_comm_group NormedCommGroup
+attribute [instance 200] NormedCommGroup.toNorm
+attribute [instance 200] NormedCommGroup.toCommGroup
+attribute [instance 200] NormedCommGroup.toMetricSpace
 
 -- See note [lower instance priority]
 @[to_additive]

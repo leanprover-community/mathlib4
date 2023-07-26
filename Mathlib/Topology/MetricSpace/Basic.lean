@@ -2888,6 +2888,7 @@ theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter
 class MetricSpace (α : Type u) extends PseudoMetricSpace α : Type u where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 #align metric_space MetricSpace
+attribute [instance 200] MetricSpace.toPseudoMetricSpace
 
 /-- Two metric space structures with the same distance coincide. -/
 @[ext]

@@ -55,6 +55,11 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
 #align add_group_with_one.to_add_group AddGroupWithOne.toAddGroup
 #align add_group_with_one.int_cast_of_nat AddGroupWithOne.intCast_ofNat
 #align add_group_with_one.int_cast_neg_succ_of_nat AddGroupWithOne.intCast_negSucc
+attribute [instance 180] AddGroupWithOne.toAddGroup
+attribute [instance 200] AddGroupWithOne.toNeg
+attribute [instance 200] AddGroupWithOne.toIntCast
+attribute [instance 200] AddGroupWithOne.toSub
+attribute [instance 200] AddGroupWithOne.toAddMonoidWithOne
 
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u)
@@ -63,5 +68,11 @@ class AddCommGroupWithOne (R : Type u)
 #align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
 #align add_comm_group_with_one.to_add_comm_monoid_with_one AddCommGroupWithOne.toAddCommMonoidWithOne
+attribute [instance 180] AddCommGroupWithOne.toAddGroupWithOne
+attribute [instance 200] AddCommGroupWithOne.toOne
+attribute [instance 200] AddCommGroupWithOne.toNatCast
+attribute [instance 200] AddCommGroupWithOne.toAddCommGroup
+attribute [instance 180] AddCommGroupWithOne.toAddCommMonoidWithOne
+attribute [instance 200] AddCommGroupWithOne.toIntCast
 
 open Nat

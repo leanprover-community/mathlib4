@@ -998,6 +998,7 @@ end EMetric
 class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 #align emetric_space EMetricSpace
+attribute [instance 200] EMetricSpace.toPseudoEMetricSpace
 
 variable {γ : Type w} [EMetricSpace γ]
 

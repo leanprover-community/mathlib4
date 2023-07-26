@@ -64,6 +64,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
   /-- A Lie ring bracket satisfies a Leibniz / Jacobi identity. -/
   protected leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
 #align lie_ring LieRing
+attribute [instance 200] LieRing.toAddCommGroup
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
@@ -86,6 +87,7 @@ class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] exten
   /-- A Lie ring module bracket satisfies a Leibniz / Jacobi identity. -/
   protected leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 #align lie_ring_module LieRingModule
+attribute [instance 200] LieRing.toAddCommGroup
 
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/

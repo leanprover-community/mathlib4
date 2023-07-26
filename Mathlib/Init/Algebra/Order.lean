@@ -43,6 +43,8 @@ class Preorder (α : Type u) extends LE α, LT α where
 #align preorder Preorder
 #align preorder.to_has_le Preorder.toLE
 #align preorder.to_has_lt Preorder.toLT
+attribute [instance 200] Preorder.toLT
+attribute [instance 200] Preorder.toLE
 
 variable [Preorder α]
 
@@ -183,6 +185,7 @@ section PartialOrder
 class PartialOrder (α : Type u) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 #align partial_order PartialOrder
+attribute [instance 200] PartialOrder.toPreorder
 
 variable [PartialOrder α]
 
@@ -288,6 +291,10 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
 #align linear_order LinearOrder
+attribute [instance 200] LinearOrder.toPartialOrder
+attribute [instance 200] LinearOrder.toMin
+attribute [instance 200] LinearOrder.toMax
+attribute [instance 200] LinearOrder.toOrd
 
 variable [LinearOrder α]
 

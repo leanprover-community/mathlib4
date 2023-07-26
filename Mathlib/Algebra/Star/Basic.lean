@@ -76,6 +76,7 @@ class InvolutiveStar (R : Type u) extends Star R where
   /-- Involutive condition. -/
   star_involutive : Function.Involutive star
 #align has_involutive_star InvolutiveStar
+attribute [instance 200] InvolutiveStar.toStar
 
 export InvolutiveStar (star_involutive)
 
@@ -128,6 +129,7 @@ class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
   /-- `star` skew-distributes over multiplication. -/
   star_mul : ∀ r s : R, star (r * s) = star s * star r
 #align star_semigroup StarSemigroup
+attribute [instance 200] StarSemigroup.toInvolutiveStar
 
 export StarSemigroup (star_mul)
 
@@ -250,6 +252,7 @@ class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_add_monoid StarAddMonoid
+attribute [instance 200] StarAddMonoid.toInvolutiveStar
 
 export StarAddMonoid (star_add)
 
@@ -309,6 +312,7 @@ class StarRing (R : Type u) [NonUnitalSemiring R] extends StarSemigroup R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_ring StarRing
+attribute [instance 200] StarRing.toStarSemigroup
 
 instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalSemiring R] [StarRing R] :
     StarAddMonoid R where

@@ -427,6 +427,8 @@ continuous. -/
 class TopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
   ContinuousAdd G, ContinuousNeg G : Prop
 #align topological_add_group TopologicalAddGroup
+attribute [instance 200] TopologicalAddGroup.toContinuousAdd
+attribute [instance 200] TopologicalAddGroup.toContinuousNeg
 
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
@@ -440,6 +442,8 @@ class TopologicalGroup (G : Type _) [TopologicalSpace G] [Group G] extends Conti
   ContinuousInv G : Prop
 #align topological_group TopologicalGroup
 --#align topological_add_group TopologicalAddGroup
+attribute [instance 200] TopologicalGroup.toContinuousMul
+attribute [instance 200] TopologicalGroup.toContinuousInv
 
 section Conj
 

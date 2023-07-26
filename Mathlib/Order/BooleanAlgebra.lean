@@ -86,6 +86,9 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
   /-- For any `a`, `b`, `(a ⊓ b) ⊓ (a / b) = ⊥` -/
   inf_inf_sdiff : ∀ a b : α, a ⊓ b ⊓ a \ b = ⊥
 #align generalized_boolean_algebra GeneralizedBooleanAlgebra
+attribute [instance 200] GeneralizedBooleanAlgebra.toBot
+attribute [instance 200] GeneralizedBooleanAlgebra.toDistribLattice
+attribute [instance 200] GeneralizedBooleanAlgebra.toSDiff
 
 -- We might want an `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
 -- however we'd need another type class for lattices with bot, and all the API for that.
@@ -527,6 +530,12 @@ class BooleanAlgebra (α : Type u) extends
   /-- `x ⇨ y` is equal to `y ⊔ xᶜ` -/
   himp_eq : ∀ x y : α, x ⇨ y = y ⊔ xᶜ := by aesop
 #align boolean_algebra BooleanAlgebra
+attribute [instance 200] BooleanAlgebra.toTop
+attribute [instance 200] BooleanAlgebra.toDistribLattice
+attribute [instance 200] BooleanAlgebra.toSDiff
+attribute [instance 200] BooleanAlgebra.toHImp
+attribute [instance 200] BooleanAlgebra.toBot
+attribute [instance 200] BooleanAlgebra.toHasCompl
 
 -- see Note [lower instance priority]
 instance (priority := 100) BooleanAlgebra.toBoundedOrder [h : BooleanAlgebra α] : BoundedOrder α :=

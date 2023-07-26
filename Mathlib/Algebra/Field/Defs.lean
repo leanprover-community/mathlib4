@@ -73,6 +73,11 @@ def qsmulRec (coe : ℚ → K) [Mul K] (a : ℚ) (x : K) : K :=
 /-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements. -/
 class DivisionSemiring (α : Type _) extends Semiring α, GroupWithZero α
 #align division_semiring DivisionSemiring
+attribute [instance 200] DivisionSemiring.toInv
+attribute [instance 200] DivisionSemiring.toNontrivial
+attribute [instance 200] DivisionSemiring.toSemiring
+attribute [instance 200] DivisionSemiring.toDiv
+attribute [instance 180] DivisionSemiring.toGroupWithZero
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 
@@ -103,6 +108,13 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ra
     rfl
 #align division_ring DivisionRing
 #align division_ring.rat_cast_mk DivisionRing.ratCast_mk
+attribute [instance 200] DivisionRing.toDiv
+attribute [instance 180] DivisionRing.toDivInvMonoid
+attribute [instance 180] DivisionRing.toOfScientific
+attribute [instance 200] DivisionRing.toInv
+attribute [instance 200] DivisionRing.toRatCast
+attribute [instance 200] DivisionRing.toNontrivial
+attribute [instance 200] DivisionRing.toRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
@@ -112,6 +124,12 @@ instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : D
 /-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements. -/
 class Semifield (α : Type _) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 #align semifield Semifield
+attribute [instance 200] Semifield.toDiv
+attribute [instance 180] Semifield.toDivisionSemiring
+attribute [instance 200] Semifield.toNontrivial
+attribute [instance 200] Semifield.toInv
+attribute [instance 180] Semifield.toCommGroupWithZero
+attribute [instance 200] Semifield.toCommSemiring
 
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
@@ -125,6 +143,12 @@ See also Note [forgetful inheritance].
 -/
 class Field (K : Type u) extends CommRing K, DivisionRing K
 #align field Field
+attribute [instance 180] Field.toDivisionRing
+attribute [instance 200] Field.toDiv
+attribute [instance 200] Field.toCommRing
+attribute [instance 200] Field.toRatCast
+attribute [instance 200] Field.toInv
+attribute [instance 200] Field.toNontrivial
 
 section DivisionRing
 

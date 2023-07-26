@@ -21,6 +21,14 @@ variable {α : Type _}
 class CanonicallyLinearOrderedSemifield (α : Type _) extends CanonicallyOrderedCommSemiring α,
   LinearOrderedSemifield α
 #align canonically_linear_ordered_semifield CanonicallyLinearOrderedSemifield
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toInv
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toMin
+attribute [instance 180] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toOrd
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toNontrivial
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toMax
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toDiv
+attribute [instance 200] CanonicallyLinearOrderedSemifield.toCanonicallyOrderedCommSemiring
 
 -- See note [lower instance priority]
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero

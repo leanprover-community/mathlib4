@@ -175,6 +175,7 @@ class UniqueFactorizationMonoid (α : Type _) [CancelCommMonoidWithZero α] exte
   Prop where
   irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 #align unique_factorization_monoid UniqueFactorizationMonoid
+attribute [instance 200] UniqueFactorizationMonoid.toWfDvdMonoid
 
 /-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
 @[reducible]

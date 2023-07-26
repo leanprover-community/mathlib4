@@ -74,12 +74,17 @@ class AddMonoidWithOne (R : Type u) extends NatCast R, AddMonoid R, One R where
 #align add_monoid_with_one.to_has_one AddMonoidWithOne.toOne
 #align add_monoid_with_one.nat_cast_zero AddMonoidWithOne.natCast_zero
 #align add_monoid_with_one.nat_cast_succ AddMonoidWithOne.natCast_succ
+attribute [instance 200] AddMonoidWithOne.toOne
+attribute [instance 200] AddMonoidWithOne.toNatCast
+attribute [instance 200] AddMonoidWithOne.toAddMonoid
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
 class AddCommMonoidWithOne (R : Type _) extends AddMonoidWithOne R, AddCommMonoid R
 #align add_comm_monoid_with_one AddCommMonoidWithOne
 #align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
 #align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
+attribute [instance 180] AddCommMonoidWithOne.toAddCommMonoid
+attribute [instance 200] AddCommMonoidWithOne.toAddMonoidWithOne
 
 library_note "coercion into rings"
 /--

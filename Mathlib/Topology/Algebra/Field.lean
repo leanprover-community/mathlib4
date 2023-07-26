@@ -40,6 +40,8 @@ variable (K)
     continuous, including inversion. -/
 class TopologicalDivisionRing extends TopologicalRing K, HasContinuousInv₀ K : Prop
 #align topological_division_ring TopologicalDivisionRing
+attribute [instance 200] TopologicalDivisionRing.toTopologicalRing
+attribute [instance 200] TopologicalDivisionRing.toHasContinuousInv₀
 
 section Subfield
 

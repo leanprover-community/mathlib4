@@ -65,6 +65,8 @@ Then `L` is said to be a *topological lattice*.
 class TopologicalLattice (L : Type _) [TopologicalSpace L] [Lattice L] extends ContinuousInf L,
   ContinuousSup L
 #align topological_lattice TopologicalLattice
+attribute [instance 200] TopologicalLattice.toContinuousSup
+attribute [instance 200] TopologicalLattice.toContinuousInf
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderDual.topologicalLattice (L : Type _) [TopologicalSpace L]

@@ -34,6 +34,8 @@ class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α
   /-- Addition is monotone in an ordered additive commutative group. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
+attribute [instance 200] OrderedAddCommGroup.toAddCommGroup
+attribute [instance 200] OrderedAddCommGroup.toPartialOrder
 
 /-- An ordered commutative group is a commutative group
 with a partial order in which multiplication is strictly monotone. -/
@@ -41,6 +43,8 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
+attribute [instance 200] OrderedCommGroup.toPartialOrder
+attribute [instance 200] OrderedCommGroup.toCommGroup
 
 attribute [to_additive] OrderedCommGroup
 
@@ -1085,6 +1089,11 @@ additive commutative group with a linear order in which
 addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
+attribute [instance 200] LinearOrderedAddCommGroup.toMax
+attribute [instance 200] LinearOrderedAddCommGroup.toMin
+attribute [instance 180] LinearOrderedAddCommGroup.toLinearOrder
+attribute [instance 200] LinearOrderedAddCommGroup.toOrd
+attribute [instance 200] LinearOrderedAddCommGroup.toOrderedAddCommGroup
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
@@ -1093,6 +1102,16 @@ class LinearOrderedAddCommGroupWithTop (α : Type _) extends LinearOrderedAddCom
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
+attribute [instance 200] LinearOrderedAddCommGroupWithTop.toLinearOrderedAddCommMonoidWithTop
+attribute [instance 200] LinearOrderedAddCommGroup.toMax
+attribute [instance 200] LinearOrderedAddCommGroup.toMin
+attribute [instance 180] LinearOrderedAddCommGroup.toLinearOrder
+attribute [instance 200] LinearOrderedAddCommGroup.toOrd
+attribute [instance 200] LinearOrderedAddCommGroupWithTop.toNontrivial
+attribute [instance 200] LinearOrderedAddCommGroupWithTop.toNeg
+attribute [instance 180] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+attribute [instance 200] LinearOrderedAddCommGroup.toOrderedAddCommGroup
+attribute [instance 200] LinearOrderedAddCommGroupWithTop.toSub
 
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
@@ -1100,6 +1119,11 @@ multiplication is monotone. -/
 @[to_additive]
 class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
 #align linear_ordered_comm_group LinearOrderedCommGroup
+attribute [instance 200] LinearOrderedCommGroup.toMin
+attribute [instance 180] LinearOrderedCommGroup.toLinearOrder
+attribute [instance 200] LinearOrderedCommGroup.toOrderedCommGroup
+attribute [instance 200] LinearOrderedCommGroup.toOrd
+attribute [instance 200] LinearOrderedCommGroup.toMax
 
 section LinearOrderedCommGroup
 

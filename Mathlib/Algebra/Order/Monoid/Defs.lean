@@ -29,6 +29,8 @@ class OrderedCommMonoid (α : Type _) extends CommMonoid α, PartialOrder α whe
   /-- Multiplication is monotone in an `OrderedCommMonoid`. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_monoid OrderedCommMonoid
+attribute [instance 200] OrderedCommMonoid.toPartialOrder
+attribute [instance 200] OrderedCommMonoid.toCommMonoid
 
 /-- An ordered (additive) commutative monoid is a commutative monoid
   with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone)
@@ -37,6 +39,8 @@ class OrderedAddCommMonoid (α : Type _) extends AddCommMonoid α, PartialOrder 
   /-- Addition is monotone in an `OrderedAddCommMonoid`. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_monoid OrderedAddCommMonoid
+attribute [instance 200] OrderedAddCommMonoid.toAddCommMonoid
+attribute [instance 200] OrderedAddCommMonoid.toPartialOrder
 
 attribute [to_additive] OrderedCommMonoid
 
@@ -91,11 +95,17 @@ set_option linter.deprecated false in
 /-- A linearly ordered additive commutative monoid. -/
 class LinearOrderedAddCommMonoid (α : Type _) extends LinearOrder α, OrderedAddCommMonoid α
 #align linear_ordered_add_comm_monoid LinearOrderedAddCommMonoid
+attribute [instance 180] LinearOrderedAddCommMonoid.toOrderedAddCommMonoid
+attribute [instance 200] LinearOrderedAddCommMonoid.toAddCommMonoid
+attribute [instance 200] LinearOrderedAddCommMonoid.toLinearOrder
 
 /-- A linearly ordered commutative monoid. -/
 @[to_additive]
 class LinearOrderedCommMonoid (α : Type _) extends LinearOrder α, OrderedCommMonoid α
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
+attribute [instance 200] LinearOrderedCommMonoid.toLinearOrder
+attribute [instance 200] LinearOrderedCommMonoid.toCommMonoid
+attribute [instance 180] LinearOrderedCommMonoid.toOrderedCommMonoid
 
 attribute [to_additive existing] LinearOrderedCommMonoid.toOrderedCommMonoid
 
@@ -108,6 +118,11 @@ class LinearOrderedAddCommMonoidWithTop (α : Type _) extends LinearOrderedAddCo
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
+attribute [instance 180] LinearOrderedAddCommMonoid.toOrderedAddCommMonoid
+attribute [instance 200] LinearOrderedAddCommMonoidWithTop.toLinearOrderedAddCommMonoid
+attribute [instance 200] LinearOrderedAddCommMonoidWithTop.toTop
+attribute [instance 200] LinearOrderedAddCommMonoid.toAddCommMonoid
+attribute [instance 200] LinearOrderedAddCommMonoid.toLinearOrder
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedAddCommMonoidWithTop.toOrderTop (α : Type u)

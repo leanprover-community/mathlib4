@@ -116,6 +116,8 @@ class CircularPreorder (α : Type _) extends Btw α, SBtw α where
   btw_cyclic_left {a b c : α} : btw a b c → btw b c a
   sbtw := fun a b c => btw a b c ∧ ¬btw c b a
   /-- Strict betweenness is given by betweenness in one direction and non-betweenness in the other.
+attribute [instance 200] CircularPreorder.toSBtw
+attribute [instance 200] CircularPreorder.toBtw
 
   I.e., if `b` is between `a` and `c` but not between `c` and `a`, then we say `b` is strictly
   between `a` and `c`. -/
@@ -137,6 +139,7 @@ class CircularPartialOrder (α : Type _) extends CircularPreorder α where
   among `a`, `b`, `c` are identical. -/
   btw_antisymm {a b c : α} : btw a b c → btw c b a → a = b ∨ b = c ∨ c = a
 #align circular_partial_order CircularPartialOrder
+attribute [instance 200] CircularPartialOrder.toCircularPreorder
 
 export CircularPartialOrder (btw_antisymm)
 
@@ -147,6 +150,7 @@ class CircularOrder (α : Type _) extends CircularPartialOrder α where
   /-- For any triple of points, the second is between the other two one way or another. -/
   btw_total : ∀ a b c : α, btw a b c ∨ btw c b a
 #align circular_order CircularOrder
+attribute [instance 200] CircularOrder.toCircularPartialOrder
 
 export CircularOrder (btw_total)
 

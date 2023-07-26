@@ -185,6 +185,9 @@ class GeneralizedHeytingAlgebra (α : Type _) extends Lattice α, Top α, HImp �
   /-- `a ⇨` is right adjoint to `a ⊓` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 #align generalized_heyting_algebra GeneralizedHeytingAlgebra
+attribute [instance 200] GeneralizedHeytingAlgebra.toLattice
+attribute [instance 200] GeneralizedHeytingAlgebra.toTop
+attribute [instance 200] GeneralizedHeytingAlgebra.toHImp
 
 /-- A generalized co-Heyting algebra is a lattice with an additional binary
 difference operation `\` such that `\ a` is right adjoint to `⊔ a`.
@@ -196,6 +199,9 @@ class GeneralizedCoheytingAlgebra (α : Type _) extends Lattice α, Bot α, SDif
   /-- `\ a` is right adjoint to `⊔ a` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
 #align generalized_coheyting_algebra GeneralizedCoheytingAlgebra
+attribute [instance 200] GeneralizedCoheytingAlgebra.toLattice
+attribute [instance 200] GeneralizedCoheytingAlgebra.toBot
+attribute [instance 200] GeneralizedCoheytingAlgebra.toSDiff
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
 implication such that `a ⇨` is right adjoint to `a ⊓`. -/
@@ -205,6 +211,9 @@ class HeytingAlgebra (α : Type _) extends GeneralizedHeytingAlgebra α, Bot α,
   /-- `a ⇨` is right adjoint to `a ⊓` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 #align heyting_algebra HeytingAlgebra
+attribute [instance 200] HeytingAlgebra.toHasCompl
+attribute [instance 200] HeytingAlgebra.toGeneralizedHeytingAlgebra
+attribute [instance 200] HeytingAlgebra.toBot
 
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `\ a` is right adjoint to `⊔ a`. -/
@@ -214,6 +223,9 @@ class CoheytingAlgebra (α : Type _) extends GeneralizedCoheytingAlgebra α, Top
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 #align coheyting_algebra CoheytingAlgebra
+attribute [instance 200] CoheytingAlgebra.toHNot
+attribute [instance 200] CoheytingAlgebra.toGeneralizedCoheytingAlgebra
+attribute [instance 200] CoheytingAlgebra.toTop
 
 /-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
 class BiheytingAlgebra (α : Type _) extends HeytingAlgebra α, SDiff α, HNot α where
@@ -222,6 +234,9 @@ class BiheytingAlgebra (α : Type _) extends HeytingAlgebra α, SDiff α, HNot �
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 #align biheyting_algebra BiheytingAlgebra
+attribute [instance 200] BiheytingAlgebra.toHNot
+attribute [instance 200] BiheytingAlgebra.toHeytingAlgebra
+attribute [instance 200] BiheytingAlgebra.toSDiff
 
 -- See note [lower instance priority]
 instance (priority := 100) GeneralizedHeytingAlgebra.toOrderTop [GeneralizedHeytingAlgebra α] :

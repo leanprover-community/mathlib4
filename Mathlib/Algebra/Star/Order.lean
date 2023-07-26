@@ -51,6 +51,7 @@ class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] extend
   le_iff :
     ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
 #align star_ordered_ring StarOrderedRing
+attribute [instance 200] StarOrderedRing.toStarRing
 
 namespace StarOrderedRing
 

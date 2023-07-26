@@ -51,6 +51,8 @@ class Distrib (R : Type _) extends Mul R, Add R where
   /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align distrib Distrib
+attribute [instance 200] Distrib.toMul
+attribute [instance 200] Distrib.toAdd
 
 /-- A typeclass stating that multiplication is left distributive over addition. -/
 class LeftDistribClass (R : Type _) [Mul R] [Add R] where
@@ -68,12 +70,16 @@ class RightDistribClass (R : Type _) [Mul R] [Add R] where
 instance (priority := 100) Distrib.leftDistribClass (R : Type _) [Distrib R] : LeftDistribClass R :=
   ⟨Distrib.left_distrib⟩
 #align distrib.left_distrib_class Distrib.leftDistribClass
+attribute [instance 200] Distrib.toMul
+attribute [instance 200] Distrib.toAdd
 
 -- see Note [lower instance priority]
 instance (priority := 100) Distrib.rightDistribClass (R : Type _) [Distrib R] :
     RightDistribClass R :=
   ⟨Distrib.right_distrib⟩
 #align distrib.right_distrib_class Distrib.rightDistribClass
+attribute [instance 200] Distrib.toMul
+attribute [instance 200] Distrib.toAdd
 
 theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
     a * (b + c) = a * b + a * c :=
@@ -112,36 +118,69 @@ TODO: clean this once lean4#2115 is fixed
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
+attribute [instance 200] NonUnitalNonAssocSemiring.toAddCommMonoid
+attribute [instance 180] NonUnitalNonAssocSemiring.toDistrib
+attribute [instance 200] NonUnitalNonAssocSemiring.toMul
+attribute [instance 180] NonUnitalNonAssocSemiring.toMulZeroClass
 
 /-- An associative but not-necessarily unital semiring. -/
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 #align non_unital_semiring NonUnitalSemiring
+attribute [instance 200] NonUnitalSemiring.toNonUnitalNonAssocSemiring
+attribute [instance 180] NonUnitalSemiring.toSemigroupWithZero
 
 /-- A unital but not-necessarily-associative semiring. -/
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
+attribute [instance 200] NonAssocSemiring.toNatCast
+attribute [instance 200] NonAssocSemiring.toOne
+attribute [instance 200] NonAssocSemiring.toNonUnitalNonAssocSemiring
+attribute [instance 180] NonAssocSemiring.toMulZeroOneClass
+attribute [instance 180] NonAssocSemiring.toAddCommMonoidWithOne
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
+attribute [instance 200] NonUnitalNonAssocRing.toAddCommGroup
+attribute [instance 180] NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring
+attribute [instance 200] NonUnitalNonAssocRing.toMul
 
 -- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
 -- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
 /-- An associative but not-necessarily unital ring. -/
 class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
 #align non_unital_ring NonUnitalRing
+attribute [instance 200] NonUnitalRing.toNonUnitalNonAssocRing
+attribute [instance 180] NonUnitalRing.toNonUnitalSemiring
 
 /-- A unital but not-necessarily-associative ring. -/
 class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
+attribute [instance 180] NonAssocRing.toNonAssocSemiring
+attribute [instance 200] NonAssocRing.toNatCast
+attribute [instance 200] NonAssocRing.toIntCast
+attribute [instance 200] NonAssocRing.toOne
+attribute [instance 200] NonAssocRing.toNonUnitalNonAssocRing
+attribute [instance 180] NonAssocRing.toAddCommGroupWithOne
 
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
+attribute [instance 180] Semiring.toNonAssocSemiring
+attribute [instance 200] Semiring.toOne
+attribute [instance 200] Semiring.toNatCast
+attribute [instance 180] Semiring.toMonoidWithZero
+attribute [instance 200] Semiring.toNonUnitalSemiring
 
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
+attribute [instance 180] Ring.toAddCommGroup
+attribute [instance 200] Ring.toSub
+attribute [instance 200] Ring.toIntCast
+attribute [instance 200] Ring.toNeg
+attribute [instance 200] Ring.toSemiring
+attribute [instance 180] Ring.toAddGroupWithOne
 
 /-!
 ### Semirings
@@ -242,9 +281,13 @@ In other words, it is a type with the following structures: additive commutative
 multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
+attribute [instance 200] NonUnitalCommSemiring.toNonUnitalSemiring
+attribute [instance 180] NonUnitalCommSemiring.toCommSemigroup
 
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
+attribute [instance 180] CommSemiring.toCommMonoid
+attribute [instance 200] CommSemiring.toSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
@@ -280,6 +323,7 @@ class HasDistribNeg (α : Type _) [Mul α] extends InvolutiveNeg α where
   /-- Negation is right distributive over multiplication -/
   mul_neg : ∀ x y : α, x * -y = -(x * y)
 #align has_distrib_neg HasDistribNeg
+attribute [instance 200] HasDistribNeg.toInvolutiveNeg
 
 section Mul
 
@@ -451,6 +495,8 @@ end Ring
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
 #align non_unital_comm_ring NonUnitalCommRing
+attribute [instance 180] NonUnitalCommRing.toCommSemigroup
+attribute [instance 200] NonUnitalCommRing.toNonUnitalRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
@@ -460,6 +506,8 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
+attribute [instance 200] CommRing.toRing
+attribute [instance 180] CommRing.toCommMonoid
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }

@@ -305,6 +305,7 @@ class UniformSpace (α : Type u) extends TopologicalSpace α, UniformSpace.Core 
   isOpen_uniformity :
     ∀ s, IsOpen[toTopologicalSpace] s ↔ ∀ x ∈ s, { p : α × α | p.1 = x → p.2 ∈ s } ∈ uniformity
 #align uniform_space UniformSpace
+attribute [instance 200] UniformSpace.toTopologicalSpace
 
 /-- Alternative constructor for `UniformSpace α` when a topology is already given. -/
 @[match_pattern, reducible]

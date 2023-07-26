@@ -110,6 +110,7 @@ class HenselianLocalRing (R : Type _) [CommRing R] extends LocalRing R : Prop wh
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ maximalIdeal R)
       (_ : IsUnit (f.derivative.eval a₀)), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R
 #align henselian_local_ring HenselianLocalRing
+attribute [instance 200] HenselianLocalRing.toLocalRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.henselian (K : Type _) [Field K] : HenselianLocalRing K where

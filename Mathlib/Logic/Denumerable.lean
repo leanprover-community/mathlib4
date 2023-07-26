@@ -31,6 +31,7 @@ class Denumerable (α : Type _) extends Encodable α where
   /-- `decode` and `encode` are inverses. -/
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 #align denumerable Denumerable
+attribute [instance 200] Denumerable.toEncodable
 
 open Nat
 

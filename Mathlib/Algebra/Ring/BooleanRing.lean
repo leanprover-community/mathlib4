@@ -48,6 +48,7 @@ class BooleanRing (α) extends Ring α where
   /-- Multiplication in a boolean ring is idempotent. -/
   mul_self : ∀ a : α, a * a = a
 #align boolean_ring BooleanRing
+attribute [instance 200] BooleanRing.toRing
 
 section BooleanRing
 

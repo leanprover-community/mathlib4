@@ -38,6 +38,11 @@ class CanonicallyOrderedCommSemiring (α : Type _) extends CanonicallyOrderedAdd
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
+attribute [instance 180] CanonicallyOrderedCommSemiring.toCommSemiring
+attribute [instance 200] CanonicallyOrderedCommSemiring.toOne
+attribute [instance 200] CanonicallyOrderedCommSemiring.toNatCast
+attribute [instance 200] CanonicallyOrderedCommSemiring.toCanonicallyOrderedAddMonoid
+attribute [instance 200] CanonicallyOrderedCommSemiring.toMul
 
 section StrictOrderedSemiring
 

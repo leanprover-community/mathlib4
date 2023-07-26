@@ -88,6 +88,8 @@ class SemilatticeSup (α : Type u) extends Sup α, PartialOrder α where
   /-- The supremum is the *least* upper bound -/
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 #align semilattice_sup SemilatticeSup
+attribute [instance 200] SemilatticeSup.toPartialOrder
+attribute [instance 200] SemilatticeSup.toSup
 
 /--
 A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
@@ -359,6 +361,8 @@ class SemilatticeInf (α : Type u) extends Inf α, PartialOrder α where
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 #align semilattice_inf SemilatticeInf
+attribute [instance 200] SemilatticeInf.toPartialOrder
+attribute [instance 200] SemilatticeInf.toInf
 
 instance OrderDual.semilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
@@ -614,6 +618,9 @@ def SemilatticeInf.mk' {α : Type _} [Inf α] (inf_comm : ∀ a b : α, a ⊓ b 
 /-- A lattice is a join-semilattice which is also a meet-semilattice. -/
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 #align lattice Lattice
+attribute [instance 200] Lattice.toSemilatticeSup
+attribute [instance 200] Lattice.toInf
+attribute [instance 180] Lattice.toSemilatticeInf
 
 instance OrderDual.lattice (α) [Lattice α] : Lattice αᵒᵈ :=
   { OrderDual.semilatticeSup α, OrderDual.semilatticeInf α with }
@@ -752,6 +759,7 @@ class DistribLattice (α) extends Lattice α where
   /-- The infimum distributes over the supremum -/
   protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
 #align distrib_lattice DistribLattice
+attribute [instance 200] DistribLattice.toLattice
 
 section DistribLattice
 

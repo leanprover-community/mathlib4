@@ -61,6 +61,7 @@ variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 class Order.Frame (α : Type _) extends CompleteLattice α where
   inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 #align order.frame Order.Frame
+attribute [instance 200] Order.Frame.toCompleteLattice
 
 /-- In a frame, `⊓` distributes over `⨆`. -/
 add_decl_doc Order.Frame.inf_sSup_le_iSup_inf
@@ -70,6 +71,7 @@ whose `⊔` distributes over `⨅`. -/
 class Order.Coframe (α : Type _) extends CompleteLattice α where
   iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 #align order.coframe Order.Coframe
+attribute [instance 200] Order.Coframe.toCompleteLattice
 
 /-- In a coframe, `⊔` distributes over `⨅`. -/
 add_decl_doc Order.Coframe.iInf_sup_le_sup_sInf
@@ -81,6 +83,7 @@ distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type _) extends Frame α where
   iInf_sup_le_sup_sInf : ∀ a s, ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 #align complete_distrib_lattice CompleteDistribLattice
+attribute [instance 200] CompleteDistribLattice.toFrame
 
 /-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
 add_decl_doc CompleteDistribLattice.iInf_sup_le_sup_sInf
@@ -96,6 +99,7 @@ distribute over each other. -/
 class CompletelyDistribLattice (α : Type u) extends CompleteLattice α where
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
+attribute [instance 200] CompletelyDistribLattice.toCompleteLattice
 
 theorem le_iInf_iSup [CompleteLattice α] {f : ∀ a, κ a → α} :
     (⨆ g : ∀ a, κ a, ⨅ a, f a (g a)) ≤ ⨅ a, ⨆ b, f a b :=
@@ -416,6 +420,10 @@ It is only completely distributive if it is also atomic.
 -/
 class CompleteBooleanAlgebra (α) extends BooleanAlgebra α, CompleteDistribLattice α
 #align complete_boolean_algebra CompleteBooleanAlgebra
+attribute [instance 200] CompleteBooleanAlgebra.toInfSet
+attribute [instance 180] CompleteBooleanAlgebra.toCompleteDistribLattice
+attribute [instance 200] CompleteBooleanAlgebra.toSupSet
+attribute [instance 200] CompleteBooleanAlgebra.toBooleanAlgebra
 
 instance Prod.completeBooleanAlgebra (α β)
     [CompleteBooleanAlgebra α] [CompleteBooleanAlgebra β] :
@@ -475,6 +483,13 @@ class CompleteAtomicBooleanAlgebra (α : Type u) extends
     CompletelyDistribLattice α, CompleteBooleanAlgebra α where
   iInf_sup_le_sup_sInf := CompletelyDistribLattice.toCompleteDistribLattice.iInf_sup_le_sup_sInf
   inf_sSup_le_iSup_inf := CompletelyDistribLattice.toCompleteDistribLattice.inf_sSup_le_iSup_inf
+attribute [instance 200] CompleteAtomicBooleanAlgebra.toSDiff
+attribute [instance 180] CompleteAtomicBooleanAlgebra.instIsCoatomisticToCompleteLatticeToCompletelyDistribLattice
+attribute [instance 180] CompleteAtomicBooleanAlgebra.instIsAtomisticToCompleteLatticeToCompletelyDistribLattice
+attribute [instance 200] CompleteAtomicBooleanAlgebra.toCompletelyDistribLattice
+attribute [instance 200] CompleteAtomicBooleanAlgebra.toHasCompl
+attribute [instance 200] CompleteAtomicBooleanAlgebra.toHImp
+attribute [instance 180] CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
 
 instance Prod.completeAtomicBooleanAlgebra (α β)
     [CompleteAtomicBooleanAlgebra α] [CompleteAtomicBooleanAlgebra β] :

@@ -73,6 +73,7 @@ variable (R)
 class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
   principal : ∀ S : Ideal R, S.IsPrincipal
 #align is_principal_ideal_ring IsPrincipalIdealRing
+attribute [instance 180] Ring.DimensionLEOne.principal_ideal_ring
 
 attribute [instance] IsPrincipalIdealRing.principal
 

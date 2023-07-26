@@ -158,6 +158,7 @@ class Primcodable (α : Type _) extends Encodable α where
   -- This means that `prim` does not take the type explicitly in Lean 4
   prim : Nat.Primrec fun n => Encodable.encode (decode n)
 #align primcodable Primcodable
+attribute [instance 200] Primcodable.toEncodable
 
 namespace Primcodable
 

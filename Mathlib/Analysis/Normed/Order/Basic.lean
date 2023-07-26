@@ -29,6 +29,9 @@ class NormedOrderedAddGroup (α : Type _) extends OrderedAddCommGroup α, Norm �
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_ordered_add_group NormedOrderedAddGroup
+attribute [instance 200] NormedOrderedAddGroup.toMetricSpace
+attribute [instance 200] NormedOrderedAddGroup.toOrderedAddCommGroup
+attribute [instance 200] NormedOrderedAddGroup.toNorm
 
 /-- A `NormedOrderedGroup` is a group that is both a `NormedCommGroup` and an
 `OrderedCommGroup`. This class is necessary to avoid diamonds caused by both classes
@@ -38,6 +41,9 @@ class NormedOrderedGroup (α : Type _) extends OrderedCommGroup α, Norm α, Met
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_ordered_group NormedOrderedGroup
+attribute [instance 200] NormedOrderedGroup.toOrderedCommGroup
+attribute [instance 200] NormedOrderedGroup.toNorm
+attribute [instance 200] NormedOrderedGroup.toMetricSpace
 
 /-- A `NormedLinearOrderedAddGroup` is an additive group that is both a `NormedAddCommGroup`
 and a `LinearOrderedAddCommGroup`. This class is necessary to avoid diamonds caused by both
@@ -47,6 +53,9 @@ class NormedLinearOrderedAddGroup (α : Type _) extends LinearOrderedAddCommGrou
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_linear_ordered_add_group NormedLinearOrderedAddGroup
+attribute [instance 200] NormedLinearOrderedAddGroup.toMetricSpace
+attribute [instance 200] NormedLinearOrderedAddGroup.toLinearOrderedAddCommGroup
+attribute [instance 200] NormedLinearOrderedAddGroup.toNorm
 
 /-- A `NormedLinearOrderedGroup` is a group that is both a `NormedCommGroup` and a
 `LinearOrderedCommGroup`. This class is necessary to avoid diamonds caused by both classes
@@ -57,6 +66,9 @@ class NormedLinearOrderedGroup (α : Type _) extends LinearOrderedCommGroup α, 
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_linear_ordered_group NormedLinearOrderedGroup
+attribute [instance 200] NormedLinearOrderedGroup.toMetricSpace
+attribute [instance 200] NormedLinearOrderedGroup.toLinearOrderedCommGroup
+attribute [instance 200] NormedLinearOrderedGroup.toNorm
 
 /-- A `NormedLinearOrderedField` is a field that is both a `NormedField` and a
     `LinearOrderedField`. This class is necessary to avoid diamonds. -/
@@ -67,6 +79,9 @@ class NormedLinearOrderedField (α : Type _) extends LinearOrderedField α, Norm
   /-- The norm is multiplicative. -/
   norm_mul' : ∀ x y : α, ‖x * y‖ = ‖x‖ * ‖y‖
 #align normed_linear_ordered_field NormedLinearOrderedField
+attribute [instance 200] NormedLinearOrderedField.toMetricSpace
+attribute [instance 200] NormedLinearOrderedField.toLinearOrderedField
+attribute [instance 200] NormedLinearOrderedField.toNorm
 
 @[to_additive]
 instance (priority := 100) NormedOrderedGroup.toNormedCommGroup [NormedOrderedGroup α] :
