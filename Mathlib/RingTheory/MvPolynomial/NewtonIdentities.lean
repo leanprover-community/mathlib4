@@ -22,11 +22,12 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 
 * `MvPolynomial.psum`
 
-* `MvPolynomial.esymm_recurrence` encapsulating the primary result
+* `MvPolynomial.NewtonIdentities.esymm_recurrence` encapsulating the primary result
 
 ## Notation
 
-+ `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`.
++ `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
+  `(X i)^n` over `i ∈ σ`.
 
 As in other polynomial files, we typically use the notation:
 
@@ -51,8 +52,6 @@ open BigOperators MvPolynomial
 
 noncomputable section
 
-section PowerSum
-
 namespace Multiset
 
 variable {R : Type _} [CommSemiring R]
@@ -61,6 +60,10 @@ variable {R : Type _} [CommSemiring R]
 def psum (s : Multiset R) (n : ℕ) : R := (s.map (fun (x : R) ↦ x ^ n)).sum
 
 end Multiset
+
+namespace MvPolynomial
+
+section PowerSum
 
 open Finset
 
@@ -82,8 +85,6 @@ theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := by
 
 end PowerSum
 
-namespace MvPolynomial
-
 namespace NewtonIdentities
 
 open Finset Nat
@@ -91,7 +92,7 @@ open Finset Nat
 variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [NoZeroDivisors R]
   [CharZero R]
 
--- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
+/- The following proof is from [zeilberger1984] -/
 def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (fun t => card t.fst ≤ k ∧ ((card t.fst = k) → t.snd ∈ t.fst))
 
