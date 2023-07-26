@@ -140,7 +140,7 @@ class NonAssocRing (α : Type _) extends FlatHack α, NonUnitalNonAssocRing α, 
 class Semiring (α : Type u) extends FlatHack α, NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
-class Ring (R : Type u) extends FlatHack α, Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends FlatHack R, Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
 
 /-!
