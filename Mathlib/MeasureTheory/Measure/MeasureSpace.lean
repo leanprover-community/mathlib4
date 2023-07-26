@@ -3559,7 +3559,7 @@ instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] 
   refine' @sum.sigmaFinite _ _ _ _ _ (Bool.rec _ _) <;> simpa
 #align measure_theory.add.sigma_finite MeasureTheory.Add.sigmaFinite
 
-theorem SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
+instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
     MeasureTheory.SigmaFinite (c • μ) where
   out' :=
   ⟨{  set := spanningSets μ
