@@ -294,7 +294,8 @@ def pseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
 
 attribute [local instance] ProdLp.pseudoMetricAux
 
-theorem lipschitzWith_equiv_aux : LipschitzWith 1 (PiLp.equiv p β) := by
+theorem lipschitzWith_equiv_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+    LipschitzWith 1 (ProdLp.equiv p α β) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
   · simpa only [ENNReal.coe_one, one_mul, edist_eq_iSup, edist, Finset.sup_le_iff, Finset.mem_univ,
@@ -310,10 +311,9 @@ theorem lipschitzWith_equiv_aux : LipschitzWith 1 (PiLp.equiv p β) := by
       _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans h)
         exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
-#align pi_Lp.lipschitz_with_equiv_aux PiLp.lipschitzWith_equiv_aux
 
-theorem antilipschitzWith_equiv_aux :
-    AntilipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (PiLp.equiv p β) := by
+theorem antilipschitzWith_equiv_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+    AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (ProdLp.equiv p α β) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
   · simp only [edist_eq_iSup, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero,
@@ -341,24 +341,24 @@ theorem antilipschitzWith_equiv_aux :
         have : (Fintype.card ι : ℝ≥0∞) = (Fintype.card ι : ℝ≥0) :=
           (ENNReal.coe_nat (Fintype.card ι)).symm
         rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
-#align pi_Lp.antilipschitz_with_equiv_aux PiLp.antilipschitzWith_equiv_aux
 
-theorem aux_uniformity_eq : 𝓤 (PiLp p β) = 𝓤[Pi.uniformSpace _] := by
-  have A : UniformInducing (PiLp.equiv p β) :=
-    (antilipschitzWith_equiv_aux p β).uniformInducing
-      (lipschitzWith_equiv_aux p β).uniformContinuous
-  have : (fun x : PiLp p β × PiLp p β => ((PiLp.equiv p β) x.fst, (PiLp.equiv p β) x.snd)) = id :=
+theorem aux_uniformity_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
+    𝓤 (ProdLp p α β) = 𝓤[instUniformSpaceProd] := by
+  have A : UniformInducing (ProdLp.equiv p α β) :=
+    (antilipschitzWith_equiv_aux p α β).uniformInducing
+      (lipschitzWith_equiv_aux p α β).uniformContinuous
+  have : (fun x : ProdLp p α β × ProdLp p α β =>
+    ((ProdLp.equiv p α β) x.fst, (ProdLp.equiv p α β) x.snd)) = id :=
     by ext i <;> rfl
   rw [← A.comap_uniformity, this, comap_id]
-#align pi_Lp.aux_uniformity_eq PiLp.aux_uniformity_eq
 
-theorem aux_cobounded_eq : cobounded (PiLp p α) = @cobounded _ Pi.instBornology :=
+theorem aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
+    cobounded (ProdLp p α β) = @cobounded _ Prod.instBornology :=
   calc
-    cobounded (PiLp p α) = comap (PiLp.equiv p α) (cobounded _) :=
-      le_antisymm (antilipschitzWith_equiv_aux p α).tendsto_cobounded.le_comap
-        (lipschitzWith_equiv_aux p α).comap_cobounded_le
+    cobounded (ProdLp p α β) = comap (ProdLp.equiv p α β) (cobounded _) :=
+      le_antisymm (antilipschitzWith_equiv_aux p α β).tendsto_cobounded.le_comap
+        (lipschitzWith_equiv_aux p α β).comap_cobounded_le
     _ = _ := comap_id
-#align pi_Lp.aux_cobounded_eq PiLp.aux_cobounded_eq
 
 end Aux
 
@@ -394,20 +394,20 @@ variable [Fact (1 ≤ p)]
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance [PseudoEMetricSpace α] [PseudoEMetricSpace β] : PseudoEMetricSpace (ProdLp p α β) :=
-  (pseudoEmetricAux p α β).replaceUniformity (aux_uniformity_eq p β).symm
+  (pseudoEmetricAux p α β).replaceUniformity (aux_uniformity_eq p α β).symm
 
 /-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
 instance [EMetricSpace α] [EMetricSpace β] : EMetricSpace (ProdLp p α β) :=
-  @EMetricSpace.ofT0PseudoEMetricSpace (ProdLp p α β) _ Prod.instT0Space
+  @EMetricSpace.ofT0PseudoEMetricSpace (ProdLp p α β) _ instT0SpaceProdInstTopologicalSpaceProd
 
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
-  ((pseudoMetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm).replaceBornology fun s =>
-    Filter.ext_iff.1 (aux_cobounded_eq p β).symm sᶜ
+instance [PseudoMetricSpace α] [PseudoMetricSpace β] : PseudoMetricSpace (ProdLp p α β) :=
+  ((pseudoMetricAux p α β).replaceUniformity (aux_uniformity_eq p α β).symm).replaceBornology
+    fun s => Filter.ext_iff.1 (aux_cobounded_eq p α β).symm sᶜ
 
 /-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
+instance [MetricSpace α] [MetricSpace β] : MetricSpace (ProdLp p α β) :=
   MetricSpace.ofT0PseudoMetricSpace _
