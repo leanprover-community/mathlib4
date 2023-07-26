@@ -316,6 +316,11 @@ theorem mem_bases_self_iff : s ∈ G ↔ s ∈ G.bases s := by
   simp only [bases, system_feasible_set_mem_mem, Finset.mem_filter, Finset.Subset.refl, true_and, h]
   intro _ h _; exact h
 
+theorem bases_of_card_eq (h : b.card = s.card) : b = s := by
+  rw [basis_def] at hb
+  rw [← subset_iff_eq_of_card_le (h ▸ (le_refl _))]
+  exact hb.2.1
+
 end Bases
 
 /-- A cardinality of largest feasible subset of `s` in `G`. -/
@@ -421,9 +426,9 @@ theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card :=
 theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := by
   apply lt_of_le_of_ne rank_le_card
   intro h
-  apply hs; clear hs
-  simp only [rank, system_feasible_set_mem_mem] at h
-  sorry
+  apply hs
+  have ⟨_, hb⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  exact mem_bases_self_iff.mpr (bases_of_card_eq hb (rank_eq_bases_card hb ▸ h) ▸ hb)
 
 @[simp]
 theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
