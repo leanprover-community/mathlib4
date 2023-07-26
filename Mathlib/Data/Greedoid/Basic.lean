@@ -515,7 +515,8 @@ theorem local_submodularity
 theorem stronger_local_submodularity_left
   (h₁ : G.rank s = G.rank (s ∩ t))
   (h₂ : G.rank t = G.rank (s ∩ t)) :
-    G.rank s = G.rank (s ∪ t) := sorry
+    G.rank s = G.rank (s ∪ t) := by
+  sorry
 
 theorem stronger_local_submodularity_right
   (h₁ : G.rank s = G.rank (s ∩ t))
@@ -533,17 +534,130 @@ theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.ran
 
 /-- List of axioms for rank of greedoid. -/
 def greedoidRankAxioms (r : Finset α → ℕ) :=
-  (r ∅ = 0) ∧ (∀ s, r s ≤ s.card) ∧ (∀ s t, s ⊆ t → r s ≤ r t) ∧
-  (∀ s x y, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
-
-theorem greedoidRankAxioms_unique_greedoid {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
-    ∃! G : Greedoid α, G.rank = r := sorry
+  (r ∅ = 0) ∧ (∀ {s}, r s ≤ s.card) ∧ (∀ {s t}, s ⊆ t → r s ≤ r t) ∧
+  (∀ {s x y}, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
 
 /-- Rank function satisfying `greedoidRankAxioms` generates a unique greedoid. -/
 protected def rank.toGreedoid (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Greedoid α :=
-  Fintype.choose (fun G => G.rank = r) (greedoidRankAxioms_unique_greedoid hr)
+  ⟨univ.filter fun s => r s = s.card, by
+    simp only [mem_univ, Finset.mem_filter, hr.1, card_empty], by
+    intro s hs₁ hs₂
+    simp only [mem_univ, Finset.mem_filter, true_and] at *
+    by_contra' h'
+    have ⟨x, hx₁, y, hy₁, h₁⟩ : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ r (s \ {x}) = r (s \ {y}) := sorry
+    have h₂ : r (s \ {x, y}) = r (s \ {x}) := sorry
+    have h₃ := hr.2.2.2
+      (sorry : r (s \ {x, y}) = r (insert x (s \ {x, y})))
+      (sorry : r (s \ {x, y}) = r (insert y (s \ {x, y})))
+    rw [h₂] at h₃
+    have h₄ : r (s \ {x}) = r s := sorry -- by pigeonhole principle?
+    rw [hs₁] at h₄
+    have h₅ : r (s \ {x}) < s.card := by
+      apply lt_of_le_of_lt hr.2.1
+      simp [hx₁, card_sdiff]
+      exact sub_lt (card_pos.mpr (nonempty_of_ne_empty hs₂)) (by decide : 0 < 1)
+    simp only [h₄, lt_self_iff_false] at h₅, by
+    sorry⟩
+
+theorem greedoidRankAxioms_unique_greedoid {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
+    ∃! G : Greedoid α, G.rank = r := by
+  sorry
+
+-- /-- Rank function satisfying `greedoidRankAxioms` generates a unique greedoid. -/
+-- protected def rank.toGreedoid (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Greedoid α :=
+--   Fintype.choose (fun G => G.rank = r) (greedoidRankAxioms_unique_greedoid hr)
 
 end rank
 
+/-- Closure of `s` is the largest set which contains `s` and have the same rank with `s`. -/
+def closure (G : Greedoid α) (s : Finset α) : Finset α :=
+  univ.filter fun x => G.rank (insert x s) = G.rank s
+
+def feasible_continuations (G : Greedoid α) (s : Finset α) := univ \ G.closure s
+
+section closure
+
+variable {s t : Finset α} {x y : α}
+
+theorem self_subset_closure : s ⊆ G.closure s := by
+  simp [closure]
+  intro x hx
+  have hx : {x} ⊆ s := by simp only [singleton_subset_iff, hx]
+  simp [Finset.union_eq_left_iff_subset.mpr hx]
+
+@[simp]
+theorem rank_closure_eq_rank_self : G.rank (G.closure s) = G.rank s := by
+  simp only [closure, mem_univ, forall_true_left]
+  rw [stronger_local_submodularity_left]
+  sorry
+
+theorem feasible_iff_elem_notin_closure_minus_elem :
+    s ∈ G ↔ ∀ x ∈ s, x ∉ G.closure (s \ {x}) := by
+  sorry
+
+theorem closure_eq_of_subset_adj_closure (hst : s ⊆ G.closure t) (hts : t ⊆ G.closure s) :
+    G.closure s = G.closure t := sorry
+
+theorem closure_idempotent : G.closure (G.closure s) = G.closure s :=
+  closure_eq_of_subset_adj_closure (by simp)
+    (Finset.Subset.trans self_subset_closure self_subset_closure)
+
+theorem closure_exchange_property
+  (hx : x ∉ s) (hy : y ∉ s) (hs : s ∪ {x} ∈ G)
+  (h : x ∈ G.closure (s ∪ {y})) :
+    y ∈ G.closure (s ∪ {x}) := sorry
+
+/-- `cospanning` is an equivalence relation in `2^E`. -/
+def cospanning (G : Greedoid α) (s t : Finset α) := G.closure s = G.closure t
+
+section cospanning
+
+theorem cospanning_refl : ∀ s, G.cospanning s s := by simp [cospanning]
+
+theorem cospanning_symm (h : G.cospanning s t) : G.cospanning t s := by
+  simp only [cospanning] at h; simp only [cospanning, h]
+
+theorem cospanning_comm : G.cospanning s t ↔ G.cospanning t s :=
+  ⟨cospanning_symm, cospanning_symm⟩
+
+theorem cospanning_trans {s t u : Finset α}
+  (hst : G.cospanning s t) (htu : G.cospanning t u) :
+    G.cospanning s u := by
+  simp only [cospanning] at hst htu; simp only [cospanning, hst, htu]
+
+theorem cospanning_eqv : Equivalence (G.cospanning) :=
+  ⟨cospanning_refl, cospanning_symm, cospanning_trans⟩
+
+theorem cospanning_rel_left_union (h : G.cospanning s t) : G.cospanning s (s ∪ t) := sorry
+
+theorem cospanning_rel_right_union (h : G.cospanning s t) : G.cospanning (s ∪ t) t :=
+  cospanning_trans (cospanning_symm (cospanning_rel_left_union h)) h
+
+theorem cospanning_rel_between_subset_left {s t u : Finset α}
+  (hst : s ⊆ t) (htu : t ⊆ u) (hsu : G.cospanning s u) :
+    G.cospanning s t := sorry
+
+theorem cospanning_rel_between_subset_right {s t u : Finset α}
+  (hst : s ⊆ t) (htu : t ⊆ u) (hsu : G.cospanning s u) :
+    G.cospanning t u :=
+  G.cospanning_trans (cospanning_symm (cospanning_rel_between_subset_left hst htu hsu)) hsu
+
+theorem cospanning_rel_ex
+  (h₁ : G.cospanning (s ∪ {y}) (s ∪ {x, y}))
+  (h₂ : ¬ G.cospanning (s ∪ {x}) (s ∪ {x, y})) :
+    ∃ z ∈ s ∪ {x}, G.cospanning ((s ∪ {x}) \ {z}) (s ∪ {x}) := sorry
+
+theorem cospanning_rel_ex'
+  (h₁ : G.cospanning (s ∪ {y}) (s ∪ {x, y}))
+  (h₂ : ¬ G.cospanning (s ∪ {x}) (s ∪ {x, y})) :
+    ∃ z ∈ s ∪ {x}, G.cospanning (s ∪ {x}) ((s ∪ {x}) \ {z}) :=
+  let ⟨z, hz⟩ := cospanning_rel_ex h₁ h₂
+  ⟨z, hz.1, G.cospanning_symm hz.2⟩
+
+end cospanning
+
+end closure
+
 end Greedoid
+
 #lint
