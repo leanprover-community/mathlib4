@@ -691,6 +691,9 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero := 0
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
+  nsmul := nsmulRec
+  nsmul_zero := fun _n => rfl
+  nsmul_succ := fun _n _x => rfl
   __ := Fin.addCommSemigroup n
 #align fin.add_comm_monoid Fin.addCommMonoid
 
@@ -1932,7 +1935,11 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
           exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
-    sub := Fin.sub }
+    sub := Fin.sub
+    zsmul := zsmulRec
+    zsmul_zero' := fun _n => rfl
+    zsmul_succ' := fun _n _x => rfl
+    zsmul_neg' := fun _n _x => rfl }
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
 instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where

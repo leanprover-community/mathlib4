@@ -569,11 +569,11 @@ need right away.
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number. -/
-  nsmul : ℕ → M → M := nsmulRec
+  nsmul : ℕ → M → M
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
-  nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  nsmul_zero : ∀ x, nsmul 0 x = 0
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
-  nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
+  nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x
 #align add_monoid AddMonoid
 
 attribute [instance 150] AddSemigroup.toAdd
@@ -882,11 +882,10 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   sub := SubNegMonoid.sub'
   sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  zsmul : ℤ → G → G := zsmulRec
-  zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
-  zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
-    intros; rfl
-  zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
+  zsmul : ℤ → G → G
+  zsmul_zero' : ∀ a : G, zsmul 0 a = 0
+  zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a
+  zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a
 #align sub_neg_monoid SubNegMonoid
 
 attribute [to_additive SubNegMonoid] DivInvMonoid

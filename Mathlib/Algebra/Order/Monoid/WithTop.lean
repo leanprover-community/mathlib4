@@ -335,7 +335,10 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
     add_zero := Option.map₂_right_identity add_zero }
 
 instance addMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
-  { WithTop.addSemigroup, WithTop.addZeroClass with }
+  { WithTop.addSemigroup, WithTop.addZeroClass with
+    nsmul := nsmulRec
+    nsmul_zero := fun _n => rfl
+    nsmul_succ := fun _n _x => rfl }
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
