@@ -1,8 +1,8 @@
 /-
-Copyright (c) 2023 Amelia Livingston,Jonas van der Schaaf. All rights
+Copyright (c) 2023 Jonas van der Schaaf, Amelia Livingston. All rights
 reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston, Jonas van der Schaaf
+Authors: Jonas van der Schaaf, Amelia Livingston
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Scheme
