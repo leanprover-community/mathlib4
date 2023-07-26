@@ -479,27 +479,21 @@ theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x
 
 theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (hz : z < 0) :
     x ^ z < y ^ z := by
-  have hz' : 0 < -z := neg_pos_of_neg hz
-  have hx : 0 < x := calc
-    0 < y   := hy
-    _ < x   := hxy
+  have hx : 0 < x := hy.trans hxy
   rw [←neg_neg z, Real.rpow_neg (le_of_lt hx) (-z), Real.rpow_neg (le_of_lt hy) (-z),
       inv_lt_inv (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
-  exact Real.rpow_lt_rpow (by positivity) hxy hz'
+  exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
 
 theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
     x ^ z ≤ y ^ z := by
-  by_cases hz_zero : z = 0
-  case pos => simp_all [hz_zero]
-  case neg =>
-    push_neg at hz_zero
-    by_cases hxy' : x = y
-    case pos => simp [hxy']
-    case neg =>
-      push_neg at hxy'
-      have : y < x := Ne.lt_of_le (id (Ne.symm hxy')) hxy
+  rcases ne_or_eq z 0 with hz_zero | rfl
+  case inl =>
+    rcases ne_or_eq x y with hxy' | rfl
+    case inl =>
       exact le_of_lt <| rpow_lt_rpow_of_exponent_neg hy (Ne.lt_of_le (id (Ne.symm hxy')) hxy)
         (Ne.lt_of_le hz_zero hz)
+    case inr => simp
+  case inr => simp
 
 @[simp]
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
