@@ -115,8 +115,28 @@ structure Lean.Meta.ExtCongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
       and the conclusion is a heterogeneous equality. -/
   heqResult : Bool := false
-  /-- If `heqTheorem` is true, then lemma was created using `mkHCongrTheorem`. -/
-  heqTheorem : Bool := false
+  /-- If `hcongrTheorem` is true, then lemma was created using `mkHCongrWithArity`. -/
+  hcongrTheorem : Bool := false
+
+/-- Automatically generated congruence lemma based on heterogeneous equality. -/
+def Lean.Meta.mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
+    MetaM (Option ExtCongrTheorem) := do
+  let eqCongr ← try mkHCongrWithArity fn nargs catch _ => return none
+  let type := eqCongr.type
+  forallTelescope type fun _ type => do
+    guard (type.isEq || type.isHEq)
+    let res₁ : ExtCongrTheorem :=
+      { congrTheorem := eqCongr
+        heqResult := type.isHEq
+        hcongrTheorem := true }
+    return some res₁
+
+structure Lean.Meta.ExtCongrTheoremKey where
+  fn : Expr
+  nargs : Nat
+  deriving BEq, Hashable
+
+abbrev Lean.Meta.ExtCongrTheoremCache := Std.HashMap ExtCongrTheoremKey (Option ExtCongrTheorem)
 
 def Lean.Expr.isNot : Expr → Bool × Expr
   | .app (.const ``Not []) a => (true, a)
@@ -3168,6 +3188,7 @@ structure CC where
   todo : Array TodoEntry := #[]
   normalizer : Option CCNormalizer := none
   phandler : Option CCPropagationHandler := none
+  cache : ExtCongrTheoremCache := ∅
   /- Porting note: `congruence_closure` in Mathlib3 has more member variables but they're almost
      the copies from `tactic_state`. We translate methods of `congruence_closure` using `MetaM` so
      they are not needed. -/
@@ -3189,12 +3210,20 @@ def modifyTodo (f : Array TodoEntry → Array TodoEntry) : CCM Unit :=
   modify fun cc => { cc with todo := f cc.todo }
 
 @[inline]
+def modifyCache (f : ExtCongrTheoremCache → ExtCongrTheoremCache) : CCM Unit :=
+  modify fun cc => { cc with cache := f cc.cache }
+
+@[inline]
 def getState : CCM CCState := do
   return (← get).state
 
 @[inline]
 def getTodo : CCM (Array TodoEntry) := do
   return (← get).todo
+
+@[inline]
+def getCache : CCM ExtCongrTheoremCache := do
+  return (← get).cache
 
 def getEntry (e : Expr) : CCM (Option Entry) := do
   return (← getState).entries.find? e
@@ -3253,7 +3282,26 @@ def addCongruenceTable (e : Expr) : CCM Unit := sorry
 
 def addSymmCongruenceTable (e : Expr) : CCM Unit := sorry
 
-def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := sorry
+def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := do
+  let fn := e.getAppFn
+  let nargs := e.getAppNumArgs
+  let cache ← getCache
+
+  -- Check if `{ fn, nargs }` is in the cache
+  let key₁ : ExtCongrTheoremKey := { fn, nargs }
+  if let some it₁ := cache.findEntry? key₁ then
+    return it₁.2
+
+  -- Try automatically generated congruence lemma with support for heterogeneous equality.
+  let lemm ← mkExtHCongrWithArity fn nargs
+
+  if let some lemm := lemm then
+    modifyCache fun ccc => ccc.insert key₁ (some lemm)
+    return lemm
+
+  -- cache failure
+  modifyCache fun ccc => ccc.insert key₁ none
+  return none
 
 def propagateInstImplicit (e : Expr) : CCM Unit := sorry
 
