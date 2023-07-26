@@ -75,6 +75,69 @@ def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
 def Lean.Expr.quickCmp (a b : Expr) : Ordering :=
   if Expr.quickLt a b then .lt else if a.eqv b then .eq else .gt
 
+/-
+```c++
+/** Given (h_not_ex : not ex) where ex is of the form (exists x, p x),
+    return a (forall x, not p x) and a proof for it.
+
+    This function handles nested existentials. */
+expr_pair congruence_closure::to_forall_not(expr const & ex, expr const & h_not_ex) {
+    lean_assert(is_exists(ex));
+    expr A, p;
+    lean_verify(is_exists(ex, A, p));
+    type_context_old::tmp_locals locals(m_ctx);
+    level lvl         = get_level(m_ctx, A);
+    expr x            = locals.push_local("_x", A);
+    expr px           = head_beta_reduce(mk_app(p, x));
+    expr not_px       = mk_not(px);
+    expr h_all_not_px = mk_app({mk_constant(get_forall_not_of_not_exists_name(), {lvl}), A, p, h_not_ex});
+    if (is_exists(px)) {
+        expr h_not_px = locals.push_local("_h", not_px);
+        auto p               = to_forall_not(px, h_not_px);
+        expr qx              = p.first;
+        expr all_qx          = m_ctx.mk_pi(x, qx);
+        expr h_qx            = p.second;
+        expr h_not_px_imp_qx = m_ctx.mk_lambda(h_not_px, h_qx);
+        expr h_all_qx        = m_ctx.mk_lambda({x}, mk_app(h_not_px_imp_qx, mk_app(h_all_not_px, x)));
+        return mk_pair(all_qx, h_all_qx);
+    } else {
+        expr all_not_px      = m_ctx.mk_pi(x, not_px);
+        return mk_pair(all_not_px, h_all_not_px);
+    }
+}
+```
+-/
+
+/-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
+    return a `forall x, Not (p x)` and a proof for it.
+
+    This function handles nested existentials. -/
+partial def Lean.Meta.toForallNotAux (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
+  let xn ← mkFreshUserName `x
+  withLocalDeclD xn A fun x => do
+    let px := p.beta #[x]
+    let notPx := mkNot px
+    let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx
+    if let .app (.app (.const ``Exists [lvl']) A') p' := px then
+      let hNotPxN ← mkFreshUserName `h
+      withLocalDeclD hNotPxN notPx fun hNotPx => do
+        let (qx, hQx) ← toForallNotAux lvl' A' p' hNotPx
+        let allQx ← mkForallFVars #[x] qx
+        let hNotPxImpQx ← mkLambdaFVars #[hNotPx] hQx
+        let hAllQx ← mkLambdaFVars #[x] (.app hNotPxImpQx (.app hAllNotPx x))
+        return (allQx, hAllQx)
+    else
+      let allNotPx ← mkForallFVars #[x] notPx
+      return (allNotPx, hAllNotPx)
+
+/-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
+    return a `forall x, Not (p x)` and a proof for it.
+
+    This function handles nested existentials. -/
+def Lean.Meta.toForallNot (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
+  let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
+  toForallNotAux lvl A p hNotEx
+
 abbrev RBExprMap (α : Type u) := Std.RBMap Expr α Expr.quickCmp
 
 abbrev RBExprSet := Std.RBSet Expr Expr.quickCmp
@@ -102,7 +165,10 @@ def Lean.Expr.isNotOrNe : Expr → Bool × Expr
 
 namespace Mathlib.Tactic.CC
 
-initialize registerTraceClass `Debug.Meta.Tactic.cc
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 abbrev UInt64Map (α : Type u) := Std.RBMap UInt64 α compare
 
@@ -3061,9 +3127,9 @@ structure CCState where
 #align cc_state.inconsistent Mathlib.Tactic.CC.CCState.inconsistent
 #align cc_state.gmt Mathlib.Tactic.CC.CCState.gmt
 
-def CCState.mkEntryCore (s : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool)
+def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool)
     (gen : Nat) : CCState :=
-  assert! s.entries.find? e |>.isNone
+  assert! ccs.entries.find? e |>.isNone
   let n : Entry :=
     { next := e
       root := e
@@ -3074,55 +3140,78 @@ def CCState.mkEntryCore (s : CCState) (e : Expr) (interpreted : Bool) (construct
       constructor
       hasLambdas := e.isLambda
       heqProofs := false
-      mt := s.gmt
+      mt := ccs.gmt
       fo := false
       generation := gen }
-  { s with entries := s.entries.insert e n }
+  { ccs with entries := ccs.entries.insert e n }
 
 namespace CCState
 
 /-- Get the root representative of the given expression. -/
-def root (s : CCState) (e : Expr) : Expr :=
-  match s.entries.find? e with
+def root (ccs : CCState) (e : Expr) : Expr :=
+  match ccs.entries.find? e with
   | some n => n.root
   | none => e
 #align cc_state.root Mathlib.Tactic.CC.CCState.root
 
 /-- Get the next element in the equivalence class.
 Note that if the given `Expr` `e` is not in the graph then it will just return `e`. -/
-def next (s : CCState) (e : Expr) : Expr :=
-  match s.entries.find? e with
+def next (ccs : CCState) (e : Expr) : Expr :=
+  match ccs.entries.find? e with
   | some n => n.next
   | none => e
 #align cc_state.next Mathlib.Tactic.CC.CCState.next
 
 /-- Check if `e` is the root of the congruence class. -/
-def isCgRoot (s : CCState) (e : Expr) : Bool :=
-  match s.entries.find? e with
+def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
+  match ccs.entries.find? e with
   | some n => e == n.cgRoot
   | none => true
 #align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
 
+/-- Pretty print the entry associated with the given expression. -/
+def ppEqc : CCState → Expr → MessageData := sorry
+#align cc_state.pp_eqc Mathlib.Tactic.CC.CCState.ppEqc
+
+def ppEqcs (ccs : CCState) : MessageData := sorry
+
+def ppParentOccs (ccs : CCState) : MessageData := sorry
+
+/-- Pretty print the entire cc graph.
+If the bool argument is set to true then singleton equivalence classes will be omitted. -/
+def ppCore : CCState → Bool → MessageData := sorry
+#align cc_state.pp_core Mathlib.Tactic.CC.CCState.ppCore
+
 end CCState
+
+/-- The congruence_closure module (optionally) uses a normalizer.
+    The idea is to use it (if available) to normalize auxiliary expressions
+    produced by internal propagation rules (e.g., subsingleton propagator).  -/
+structure CCNormalizer where
+  normalize : Expr → MetaM Expr
+
+structure CCPropagationHandler where
+  propagated : Array Expr → MetaM Unit
+  /-- Congruence closure module invokes the following method when
+      a new auxiliary term is created during propagation. -/
+  newAuxCCTerm : Expr → MetaM Unit
 
 structure CC where
   state : CCState
   todo : Array TodoEntry := #[]
-  /-- The congruence_closure module (optionally) uses a normalizer.
-      The idea is to use it (if available) to normalize auxiliary expressions
-      produced by internal propagation rules (e.g., subsingleton propagator).  -/
-  normalizer : Option (Expr → TacticM Expr) := none
+  normalizer : Option CCNormalizer := none
+  phandler : Option CCPropagationHandler := none
   /- Porting note: `congruence_closure` in Mathlib3 has more member variables but they're almost
-     the copies from `tactic_state`. We translate methods of `congruence_closure` using `TacticM` so
+     the copies from `tactic_state`. We translate methods of `congruence_closure` using `MetaM` so
      they are not needed. -/
   deriving Inhabited
 
-abbrev CCM := StateRefT CC TacticM
+abbrev CCM := StateRefT CC MetaM
 
 namespace CCM
 
 @[inline]
-def run {α : Type} (x : CCM α) (c : CC) : TacticM (α × CC) := StateRefT'.run x c
+def run {α : Type} (x : CCM α) (c : CC) : MetaM (α × CC) := StateRefT'.run x c
 
 @[inline]
 def modifyState (f : CCState → CCState) : CCM Unit :=
@@ -3150,8 +3239,8 @@ def getGenerationOf (e : Expr) : CCM Nat := do
     return 0
 
 def normalize (e : Expr) : CCM Expr := do
-  if let some normalize := (← get).normalizer then
-    normalize e
+  if let some normalizer := (← get).normalizer then
+    normalizer.normalize e
   else
     return e
 
@@ -3679,7 +3768,7 @@ def propagateNotUp (e : Expr) : CCM Unit := do
     let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
     pushEq (.const ``True []) (.const ``False []) H
 
-def propagateITEUp (e : Expr) : CCM Unit := do
+def propagateIteUp (e : Expr) : CCM Unit := do
   let .app (.app (.app (.app (.app (.const ``ite [lvl]) A) c) d) a) b := e | failure
   if ← isEqTrue c then
     -- `c = True  → (ite c a b) = a`
@@ -3739,14 +3828,62 @@ def propagateUp (e : Expr) : CCM Unit := do
     propagateAndUp e
   else if e.isAppOfArity ``Or 2 then
     propagateOrUp e
-  else if e.isAppOf ``Not then
+  else if e.isAppOfArity ``Not 1 then
     propagateNotUp e
   else if e.isArrow then
     propagateImpUp e
   else if e.isIte then
-    propagateITEUp e
+    propagateIteUp e
   else if e.isEq then
     propagateEqUp e
+
+def propagateAndDown (e : Expr) : CCM Unit := do
+  if ← isEqTrue e then
+    let some (a, b) := e.and? | failure
+    let h ← getEqTrueProof e
+    pushEq a (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_left []) a b h)
+    pushEq b (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_right []) a b h)
+
+def propagateOrDown (e : Expr) : CCM Unit := do
+  if ← isEqFalse e then
+    let some (a, b) := e.app2? ``Or | failure
+    let h ← getEqFalseProof e
+    pushEq a (.const ``False []) (mkApp3 (.const ``eq_false_of_or_eq_false_left []) a b h)
+    pushEq b (.const ``False []) (mkApp3 (.const ``eq_false_of_or_eq_false_right []) a b h)
+
+def propagateNotDown (e : Expr) : CCM Unit := do
+  if ← isEqTrue e then
+    let some a := e.not? | failure
+    pushEq a (.const ``False [])
+      (mkApp2 (.const ``eq_false_of_not_eq_true []) a (← getEqTrueProof e))
+  else if (← getState).config.em && (← isEqFalse e) then
+    let some a := e.not? | failure
+    pushEq a (.const ``True [])
+      (mkApp2 (.const ``eq_true_of_not_eq_false []) a (← getEqFalseProof e))
+
+def propagateEqDown (e : Expr) : CCM Unit := do
+  if ← isEqTrue e then
+    let some (a, b) := e.eqOrIff? | failure
+    pushEq a b (← mkAppM ``of_eq_true #[← getEqTrueProof e])
+
+def propagateExistsDown (e : Expr) : CCM Unit := do
+  if ← isEqFalse e then
+    let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
+    let (all, hAll) ← toForallNot e hNotE
+    internalizeCore all none (← getGenerationOf e)
+    pushEq all (.const ``True []) (← mkAppM ``eq_true_intro #[hAll])
+
+def propagateDown (e : Expr) : CCM Unit := do
+  if e.isAppOfArity ``And 2 then
+    propagateAndDown e
+  else if e.isAppOfArity ``Or 2 then
+    propagateOrDown e
+  else if e.isAppOfArity ``Not 1 then
+    propagateNotDown e
+  else if e.isEq || e.isAppOfArity ``Iff 2 then
+    propagateEqDown e
+  else if e.isAppOfArity ``Exists 2 then
+    propagateExistsDown e
 
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
@@ -3882,34 +4019,20 @@ where
       for p in parentsToPropagate do
         propagateUp p
 
-    /-
-    ```c++
-    if (!m_state.m_inconsistent && !to_propagate.empty()) {
-        for (expr const & e : to_propagate)
-            propagate_down(e);
-        if (m_phandler)
-            m_phandler->propagated(to_propagate);
-    }
+    if !(← getState).inconsistent && !toPropagate.isEmpty then
+      for e in toPropagate do
+        propagateDown e
+      if let some phandler := (← get).phandler then
+        phandler.propagated toPropagate
 
-    if (!m_state.m_inconsistent) {
-        for (expr const & e : lambda_apps_to_internalize) {
-            internalize_core(e, none_expr(), get_generation_of(e));
-        }
-    }
+    if !(← getState).inconsistent then
+      for e in lambdaAppsToInternalize do
+        internalizeCore e none (← getGenerationOf e)
 
-    lean_trace(name({"cc", "merge"}), scope_trace_env scope(m_ctx.env(), m_ctx);
-            tout() << e1_root << " = " << e2_root << "\n";);
-    lean_trace(name({"debug", "cc"}), scope_trace_env scope(m_ctx.env(), m_ctx);
-            auto out = tout();
-            auto fmt = out.get_formatter();
-            out << "merged: " << e1_root << " = " << e2_root << "\n";
-            out << m_state.pp_eqcs(fmt) << "\n";
-            if (is_trace_class_enabled(name{"debug", "cc", "parent_occs"}))
-                out << m_state.pp_parent_occs(fmt) << "\n";
-            out << "--------\n";);
-    ```
-    -/
-    sorry
+    let ccs ← getState
+    trace[Meta.Tactic.cc.merge] "{e₁Root} = {e₂Root}"
+    trace[Debug.Meta.Tactic.cc] "merged: {e₁Root} = {e₂Root}\n{ccs.ppEqcs}"
+    trace[Debug.Meta.Tactic.cc.parentOccs] ccs.ppParentOccs
 
 def processTodo : CCM Unit := do
   repeat
@@ -3976,7 +4099,7 @@ def mkCore (config : CCConfig) : CCState :=
 #align cc_state.mk_core Mathlib.Tactic.CC.CCState.mkCore
 
 /-- Create a congruence closure state object using the hypotheses in the current goal. -/
-def mkUsingHsCore (cfg : CCConfig) : TacticM CCState := do
+def mkUsingHsCore (cfg : CCConfig) : MetaM CCState := do
   let ctx ← getLCtx
   let ctx ← instantiateLCtxMVars ctx
   let (_, c) ← CCM.run (ctx.forM fun dcl => do
@@ -4005,22 +4128,13 @@ def incGMT (ccs : CCState) : CCState :=
   { ccs with gmt := ccs.gmt + 1 }
 #align cc_state.inc_gmt Mathlib.Tactic.CC.CCState.incGMT
 
-/-- Pretty print the entry associated with the given expression. -/
-def ppEqc : CCState → Expr → MessageData := sorry
-#align cc_state.pp_eqc Mathlib.Tactic.CC.CCState.ppEqc
-
-/-- Pretty print the entire cc graph.
-If the bool argument is set to true then singleton equivalence classes will be omitted. -/
-def ppCore : CCState → Bool → MessageData := sorry
-#align cc_state.pp_core Mathlib.Tactic.CC.CCState.ppCore
-
 /-- Add the given expression to the graph. -/
-def internalize : CCState → Expr → TacticM CCState := sorry
+def internalize : CCState → Expr → MetaM CCState := sorry
 #align cc_state.internalize Mathlib.Tactic.CC.CCState.internalize
 
 /-- Add the given proof term as a new rule.
 The proof term `H` must be an `Eq _ _`, `HEq _ _`, `Iff _ _`, or a negation of these. -/
-def add (ccs : CCState) (H : Expr) : TacticM CCState := do
+def add (ccs : CCState) (H : Expr) : MetaM CCState := do
   let type ← inferType H
   unless ← isProp type do
     throwError "CCState.add failed, given expression is not a proof term"
@@ -4029,24 +4143,24 @@ def add (ccs : CCState) (H : Expr) : TacticM CCState := do
 #align cc_state.add Mathlib.Tactic.CC.CCState.add
 
 /-- Check whether two expressions are in the same equivalence class. -/
-def isEqv (ccs : CCState) (e₁ e₂ : Expr) : TacticM Bool := do
+def isEqv (ccs : CCState) (e₁ e₂ : Expr) : MetaM Bool := do
   let (b, _) ← CCM.run (CCM.isEqv e₁ e₂) { state := ccs }
   return b
 #align cc_state.is_eqv Mathlib.Tactic.CC.CCState.isEqv
 
 /-- Check whether two expressions are not in the same equivalence class. -/
-def isNotEqv : CCState → Expr → Expr → TacticM Bool := sorry
+def isNotEqv : CCState → Expr → Expr → MetaM Bool := sorry
 #align cc_state.is_not_eqv Mathlib.Tactic.CC.CCState.isNotEqv
 
 /-- Returns a proof term that the given terms are equivalent in the given `CCState` -/
-def eqvProof (ccs : CCState) (e₁ e₂ : Expr) : TacticM Expr := do
+def eqvProof (ccs : CCState) (e₁ e₂ : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e₁ e₂) { state := ccs }
     | throwError "CCState.eqvProof failed to build proof"
   return r
 #align cc_state.eqv_proof Mathlib.Tactic.CC.CCState.eqvProof
 
 /-- `proofFor cc e` constructs a proof for e if it is equivalent to true in `CCState` -/
-def proofFor (ccs : CCState) (e : Expr) : TacticM Expr := do
+def proofFor (ccs : CCState) (e : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``True [])) { state := ccs }
     | throwError "CCState.proofFor failed to build proof"
   mkAppM ``of_eq_true #[r]
@@ -4054,21 +4168,21 @@ def proofFor (ccs : CCState) (e : Expr) : TacticM Expr := do
 
 /-- `refutationFor cc e` constructs a proof for `Not e` if it is equivalent to `False` in `CCState`
 -/
-def refutationFor (ccs : CCState) (e : Expr) : TacticM Expr := do
+def refutationFor (ccs : CCState) (e : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { state := ccs }
     | throwError "CCState.refutationFor failed to build proof"
   mkAppM ``not_of_eq_false #[r]
 #align cc_state.refutation_for Mathlib.Tactic.CC.CCState.refutationFor
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
-def proofForFalse : CCState → TacticM Expr := sorry
+def proofForFalse : CCState → MetaM Expr := sorry
 #align cc_state.proof_for_false Mathlib.Tactic.CC.CCState.proofForFalse
 
 def mk' : CCState :=
   CCState.mkCore {}
 #align cc_state.mk Mathlib.Tactic.CC.CCState.mk'
 
-def mkUsingHs : TacticM CCState :=
+def mkUsingHs : MetaM CCState :=
   CCState.mkUsingHsCore {}
 #align cc_state.mk_using_hs Mathlib.Tactic.CC.CCState.mkUsingHs
 
