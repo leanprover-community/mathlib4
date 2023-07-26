@@ -24,13 +24,13 @@ Linter that checks whether a structure should be in Prop.
   errorsFound := "FOUND STRUCTURES THAT SHOULD BE IN PROP."
   test declName := do
     unless isStructure (← getEnv) declName do return none
+    -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always?)
+    -- recognize predicates as propositional.
     let isProp ← forallTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
       fun _ ty => return ty == .sort .zero
     if isProp then return none
     let projs := (getStructureInfo? (← getEnv) declName).get!.fieldNames
-    if projs.isEmpty then return none
-    let allProofs ← projs.allM fun proj => do
-      let cnst ← mkConstWithLevelParams (declName ++ proj)
-      isProof cnst
+    if projs.isEmpty then return none -- don't flag empty structures
+    let allProofs ← projs.allM (do isProof <| ← mkConstWithLevelParams <| declName ++ ·)
     unless allProofs do return none
     return m!"all fields are propositional but the structure isn't."
