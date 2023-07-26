@@ -2,15 +2,12 @@
 Copyright © 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam
-
-! This file was ported from Lean 3 source module topology.continuous_function.ordered
-! leanprover-community/mathlib commit 84dc0bd6619acaea625086d6f53cb35cdd554219
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.continuous_function.ordered from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology

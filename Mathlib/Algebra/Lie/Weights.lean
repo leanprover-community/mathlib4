@@ -2,11 +2,6 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.weights
-! leanprover-community/mathlib commit 6b0169218d01f2837d79ea2784882009a0da1aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.TensorProduct
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.RingTheory.TensorProduct
+
+#align_import algebra.lie.weights from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # Weights and roots of Lie modules and Lie algebras
@@ -84,7 +81,7 @@ def preWeightSpace (χ : L → R) : Submodule R M :=
 theorem mem_preWeightSpace (χ : L → R) (m : M) :
     m ∈ preWeightSpace M χ ↔
     ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • ↑1) ^ k) m = 0 := by
-  simp [preWeightSpace, -LinearMap.pow_apply]
+  simp [preWeightSpace]
 #align lie_module.mem_pre_weight_space LieModule.mem_preWeightSpace
 
 variable (R)

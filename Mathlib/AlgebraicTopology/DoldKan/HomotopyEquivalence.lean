@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.homotopy_equivalence
-! leanprover-community/mathlib commit f951e201d416fb50cc7826171d80aa510ec20747
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Normalized
+
+#align_import algebraic_topology.dold_kan.homotopy_equivalence from "leanprover-community/mathlib"@"f951e201d416fb50cc7826171d80aa510ec20747"
 
 /-!
 

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.continuous_function.weierstrass
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
+
+#align_import topology.continuous_function.weierstrass from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`
@@ -56,7 +53,7 @@ so we may as well get this done first.)
 -/
 theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
-  by_cases h : a < b
+  cases' lt_or_le a b with h h
   -- (Otherwise it's easy; we'll deal with that later.)
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.
@@ -78,11 +75,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- 🎉
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
-    -- so all subalgebras are the same anyway.
-    haveI : Subsingleton (Set.Icc a b) :=
-      ⟨fun x y =>
-        le_antisymm ((x.2.2.trans (not_lt.mp h)).trans y.2.1)
-          ((y.2.2.trans (not_lt.mp h)).trans x.2.1)⟩
+    have : Subsingleton (Set.Icc a b) := (Set.subsingleton_coe _).mpr $ Set.subsingleton_Icc_of_ge h
     apply Subsingleton.elim
 #align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
 

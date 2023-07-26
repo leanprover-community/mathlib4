@@ -2,15 +2,12 @@
 Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.monoidal.free.coherence
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.DiscreteCategory
+
+#align_import category_theory.monoidal.free.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # The monoidal coherence theorem
@@ -117,7 +114,7 @@ open Hom
 @[simp]
 def normalizeMapAux :
     ∀ {X Y : F C}, (X ⟶ᵐ Y) →
-      ((Discrete.functor (normalizeObj X) : _ ⥤  N C) ⟶ Discrete.functor (normalizeObj Y))
+      ((Discrete.functor (normalizeObj X) : _ ⥤ N C) ⟶ Discrete.functor (normalizeObj Y))
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
@@ -128,7 +125,7 @@ def normalizeMapAux :
   | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) => by
     dsimp
-    exact Discrete.natTrans (fun ⟨X⟩  => (normalizeMapAux g).app (normalizeObj T X) ≫
+    exact Discrete.natTrans (fun ⟨X⟩ => (normalizeMapAux g).app (normalizeObj T X) ≫
       (Discrete.functor (normalizeObj W) : _ ⥤ N C).map ((normalizeMapAux f).app ⟨X⟩))
 #align category_theory.free_monoidal_category.normalize_map_aux CategoryTheory.FreeMonoidalCategory.normalizeMapAux
 

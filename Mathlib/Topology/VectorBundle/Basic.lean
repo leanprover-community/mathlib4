@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sebastien Gouezel, Heather Macbeth, Patrick Massot, Floris van Doorn
-
-! This file was ported from Lean 3 source module topology.vector_bundle.basic
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.Topology.FiberBundle.Basic
+
+#align_import topology.vector_bundle.basic from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # Vector bundles
@@ -1025,7 +1022,7 @@ definition, instead of `Trivialization.continuousLinearEquivAt`, so that
 This is the (second component of the) underlying function of a trivialization of the hom-bundle
 (see `hom_trivialization_at_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
 defined even when `x` and `y` live in different base sets.
-Therefore, it is is also convenient when working with the hom-bundle between pulled back bundles.
+Therefore, it is also convenient when working with the hom-bundle between pulled back bundles.
 -/
 def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL[σ] F' :=
   ((trivializationAt F' E' y₀).continuousLinearMapAt 𝕜₂ y).comp <|
