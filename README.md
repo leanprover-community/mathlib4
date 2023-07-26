@@ -104,6 +104,8 @@ Please refer to
 
 ## Maintainers:
 
+For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
+
 * Anne Baanen (@Vierkantor): algebra, number theory, tactics
 * Reid Barton (@rwbarton): category theory, topology
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
