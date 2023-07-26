@@ -726,7 +726,7 @@ algEquivOfLinearEquivTensorProduct f (fun x₁ x₂ c₁ c₂ => by
   · intros a b ab₁ ab₂ h₁ h₂
     rw [h₁, h₂]
   · intros ab₁ ab₂ _ _ x y hx hy
-    rw [add_add_add_comm, hx, hy]; ac_rfl)--, map_add, map_add, mul_add, mul_add, add_mul, mul_add])
+    rw [add_add_add_comm, hx, hy, add_add_add_comm])
   w₂
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
 

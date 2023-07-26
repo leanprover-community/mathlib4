@@ -143,8 +143,9 @@ theorem invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := b
   simp only [invFun, eval₂_add]
 #align poly_equiv_tensor.inv_fun_add PolyEquivTensor.invFun_add
 
-theorem invFun_monomial (n : ℕ) (a : A) : invFun R A (monomial n a) =
-    includeLeft (R := R) (A := A) (B := R[X]) a * (1 : A) ⊗ₜ[R] (X : R[X]) ^ n :=
+theorem invFun_monomial (n : ℕ) (a : A) :
+    invFun R A (monomial n a) =
+      includeLeft (R := R) (A := A) (B := R[X]) a * (1 : A) ⊗ₜ[R] (X : R[X]) ^ n :=
   eval₂_monomial _ _
 #align poly_equiv_tensor.inv_fun_monomial PolyEquivTensor.invFun_monomial
 
