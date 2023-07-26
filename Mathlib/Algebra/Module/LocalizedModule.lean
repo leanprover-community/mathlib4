@@ -1081,7 +1081,8 @@ theorem mkOfAlgebra {R S S' : Type _} [CommRing R] [CommRing S] [CommRing S'] [A
 
 end Algebra
 
-variable { A } [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
+variable {A : Type _}
+  [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
 
 
 /-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
@@ -1089,24 +1090,18 @@ variable { A } [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [
 bilinear map).
 In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
 given by `m/s ↦ (1/s) ⊗ₜ m`.
---/
+-/
 theorem isBaseChange : IsBaseChange A f := by
-  apply IsBaseChange.of_lift_unique
-  intros Q _ _ _ _ g
+  refine' IsBaseChange.of_lift_unique _ (fun Q _ _ _ _ g ↦ _)
   have := IsLocalizedModule.is_universal S f g <| by
-      intro s
-      rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique]
-      intro q
-      use (IsLocalization.mk' _ 1 s : A) • q
-      dsimp only
-      constructor
-      on_goal 1 => rw [Module.algebraMap_end_apply]
-      on_goal 2 =>
-        intro q' h
-        rw [Module.algebraMap_end_apply] at h
-        rw [← h, smul_comm]
-      all_goals
-        rw [← smul_assoc, Algebra.smul_def, mul_comm, IsLocalization.mk'_spec, map_one, one_smul]
+    intro s
+    simp_rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique,
+      Module.algebraMap_end_apply]
+    intro q
+    refine' ⟨(IsLocalization.mk' _ 1 s : A) • q, _, _⟩
+    · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
+    · rintro q rfl
+      simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
   rcases this with ⟨ℓ, h₁, h₂⟩
   -- Should this be refactored into a `linear_map.extend_scalars` lemma? If so, what would the
   -- predicate have to be? Just `map_smul'`?
