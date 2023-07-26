@@ -1883,6 +1883,12 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type _} [NormedAddCommG
     simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
 #align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
 
+lemma aestronglyMeasurable_of_absolutelyContinuous {α β : Type _} [MeasurableSpace α]
+    [TopologicalSpace β] {μ ν : Measure α} (h : ν ≪ μ) (g : α → β)
+    (hμ : AEStronglyMeasurable g μ) : AEStronglyMeasurable g ν := by
+  obtain ⟨g₁, hg₁, hg₁'⟩ := hμ
+  refine ⟨g₁, hg₁, h.ae_eq hg₁'⟩
+
 end AEStronglyMeasurable
 
 /-! ## Almost everywhere finitely strongly measurable functions -/
