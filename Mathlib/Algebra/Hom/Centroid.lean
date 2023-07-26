@@ -492,7 +492,7 @@ theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
 
-instance ring : Ring (CentroidHom α) :=
+instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
     toEnd_nsmul toEnd_zsmul toEnd_pow toEnd_nat_cast toEnd_int_cast
 
@@ -507,7 +507,7 @@ variable [NonUnitalRing α]
 /-- A prime associative ring has commutative centroid. -/
 @[reducible]
 def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
-  { CentroidHom.ring with
+  { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
       refine' sub_eq_zero.1 ((or_self_iff _).1 <| (h _ _) fun r ↦ _)
