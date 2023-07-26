@@ -3156,6 +3156,32 @@ def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
   | none => true
 #align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
 
+/--
+"Modification Time". The field `mt` is used to implement the mod-time optimization introduce by the
+Simplify theorem prover. The basic idea is to introduce a counter `gmt` that records the number of
+heuristic instantiation that have occurred in the current branch. It is incremented after each round
+of heuristic instantiation. The field `mt` records the last time any proper descendant of of thie
+entry was involved in a merge. -/
+def mt (ccs : CCState) (e : Expr) : Nat :=
+  match ccs.entries.find? e with
+  | some n => n.mt
+  | none => ccs.gmt
+#align cc_state.mt Mathlib.Tactic.CC.CCState.mt
+
+def inSingletonEqc (ccs : CCState) (e : Expr) : Bool :=
+  match ccs.entries.find? e with
+  | some it => it.next == e
+  | none => true
+#align cc_state.in_singlenton_eqc Mathlib.Tactic.CC.CCState.inSingletonEqc
+
+def getRoots (ccs : CCState) (roots : Array Expr) (nonsingletonOnly : Bool) : Array Expr :=
+  Id.run do
+    let mut roots := roots
+    for (k, n) in ccs.entries do
+      if k == n.root && (!nonsingletonOnly || !ccs.inSingletonEqc k) then
+        roots := roots.push k
+    return roots
+
 /-- Pretty print the entry associated with the given expression. -/
 def ppEqc : CCState → Expr → MessageData := sorry
 #align cc_state.pp_eqc Mathlib.Tactic.CC.CCState.ppEqc
@@ -3335,6 +3361,12 @@ def isEqv (e₁ e₂ : Expr) : CCM Bool := do
   let some n₂ ← getEntry e₂ | return false
   return n₁.root == n₂.root
 
+def isNotEqv (e₁ e₂ : Expr) : CCM Bool := do
+  let tmp ← mkEq e₁ e₂
+  if ← isEqv tmp (.const ``False []) then return true
+  let tmp ← mkHEq e₁ e₂
+  isEqv tmp (.const ``False [])
+
 def isEqTrue (e : Expr) : CCM Bool :=
   isEqv e (.const ``True [])
 
@@ -3356,12 +3388,19 @@ def getPropEqProof (a b : Expr) : CCM Expr := do
   let some p ← getEqProof a b | failure
   return p
 
+def getInconsistencyProof : CCM (Option Expr) := do
+  guard !(← getState).frozePartitions
+  if let some p ← getEqProof (.const ``True []) (.const ``False []) then
+    return some (← mkAppM ``false_of_true_eq_false #[p])
+  else
+    return none
+
 def pushSubsingletonEq (a b : Expr) : CCM Unit := do
   -- Remark: we must use normalize here because we have use it before
   -- internalizing the types of `a` and `b`.
   let A ← normalize (← inferType a)
   let B ← normalize (← inferType b)
-  if (← withNewMCtxDepth <| withTransparency .default <| isDefEq A B) then
+  if ← withNewMCtxDepth <| withTransparency .default <| isDefEq A B then
     let proof ← mkAppM ``Subsingleton.elim #[a, b]
     pushEq a b proof
   else
@@ -3496,7 +3535,7 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
     match e with
     | .bvar _ => unreachable!
     | .sort _ => pure ()
-    | .const _ _ | .mvar _ | .proj _ _ _ => mkEntry e false gen
+    | .const _ _ | .mvar _ => mkEntry e false gen
     | .lam _ _ _ _ | .letE _ _ _ _ _ => mkEntry e false gen
     | .fvar f =>
       mkEntry e false gen
@@ -3516,6 +3555,11 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
       if ← isProp e then
         mkEntry e false gen
     | .app _ _ | .lit _ => internalizeApp e gen
+    | .proj sn i pe =>
+      mkEntry e false gen
+      let some fn := (getStructureFields (← getEnv) sn)[i]? | failure
+      let e' ← pe.mkDirectProjection fn
+      pushReflEq e e'
 
 partial def propagateIffUp (e : Expr) : CCM Unit := do
   let some (a, b) := e.iff? | failure
@@ -3705,7 +3749,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     internalizeCore newE none (← getGenerationOf e)
     pushReflEq e newE
 
-  if let some r ← reduceProj? e then
+  if let some r ← reduceProjOf? e (fun _ => true) then
     pushReflEq e r
 
   let fn := e.getAppFn
@@ -3777,21 +3821,17 @@ The transitivity proof eventually reaches the root of the equivalence class.
 This method "inverts" the proof. That is, the `target` goes from `e.root` to e after
 we execute it.
 -/
-partial def invertTransAux (e : Expr) (newFlipped : Bool) (newTarget : Option Expr)
-    (newProof : Option EntryExpr) : CCM Unit := do
+partial def invertTrans (e : Expr) (newFlipped : Bool := false) (newTarget : Option Expr := none)
+    (newProof : Option EntryExpr := none) : CCM Unit := do
   let some n ← getEntry e | failure
   if let some t := n.target then
-    invertTransAux t (!n.flipped) (some e) n.proof
+    invertTrans t (!n.flipped) (some e) n.proof
   let newN : Entry :=
     { n with
       flipped := newFlipped
       target := newTarget
       proof := newProof }
   modifyState fun ccs => { ccs with entries := ccs.entries.insert e newN }
-
-@[inline, inherit_doc invertTransAux]
-def invertTrans (e : Expr) : CCM Unit :=
-  invertTransAux e false none none
 
 /-- Traverse the `root`'s equivalence class, and collect the function's equivalence class roots. -/
 def collectFnRoots (root : Expr) (fnRoots : Array Expr) : CCM (Array Expr) := do
@@ -3848,12 +3888,31 @@ def propagateBetaToEqc (fnRoots lambdas newLambdaApps : Array Expr) : CCM (Array
   return newLambdaApps
 
 /--
-Given `c` a constructor application, if `p` is a projection application such that major premise is
+Given `c` a constructor application, if `p` is a projection application (not `.proj _ _ _`, but
+`.app (.const projName _) _`) such that major premise is
 equal to `c`, then propagate new equality.
 
-Example: if `p` is of the form `b.1`, `c` is of the form `(x, y)`, and `b = c`, we add the
-equality `(x, y).1 = x` -/
-def propagateProjectionConstructor (p c : Expr) : CCM Unit := sorry
+Example: if `p` is of the form `b.fst`, `c` is of the form `(x, y)`, and `b = c`, we add the
+equality `(x, y).fst = x` -/
+def propagateProjectionConstructor (p c : Expr) : CCM Unit := do
+  let env ← getEnv
+  guard (c.isConstructorApp env)
+  let pFn := p.getAppFn
+  let some pFnN := pFn.constName? | return
+  let some info ← getProjectionFnInfo? pFnN | return
+  let pArgs := p.getAppArgs
+  let mkidx := info.numParams + info.i
+  if h : mkidx < pArgs.size then
+    unless ← isEqv (pArgs[mkidx]'h) c do return
+    unless ← withNewMCtxDepth <| withTransparency .default <|
+        isDefEq (← inferType (pArgs[mkidx]'h)) (← inferType c) do return
+    /- Create new projection application using c (e.g., `(x, y).fst`), and internalize it.
+       The internalizer will add the new equality. -/
+    let pArgs := pArgs.set ⟨mkidx, h⟩ c
+    let newP := mkAppN pFn pArgs
+    internalizeCore newP none (← getGenerationOf p)
+  else
+    return
 
 /--
 Given a new equality `e₁ = e₂`, where `e₁` and `e₂` are constructor applications.
@@ -4116,6 +4175,10 @@ def processTodo : CCM Unit := do
     modifyTodo Array.pop
     addEqvStep lhs rhs H heqProof
 
+def internalize (e : Expr) (gen : Nat) : CCM Unit := do
+  internalizeCore e none gen
+  processTodo
+
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
   pushTodo lhs rhs H heqProof
   processTodo
@@ -4182,17 +4245,9 @@ def mkUsingHsCore (cfg : CCConfig) : MetaM CCState := do
 
 /-- Returns the root expression for each equivalence class in the graph.
 If the `Bool` argument is set to `true` then it only returns roots of non-singleton classes. -/
-def rootsCore : CCState → Bool → List Expr := sorry
+def rootsCore (ccs : CCState) (nonsingleton : Bool) : List Expr :=
+  ccs.getRoots #[] nonsingleton |>.toList
 #align cc_state.roots_core Mathlib.Tactic.CC.CCState.rootsCore
-
-/--
-"Modification Time". The field m_mt is used to implement the mod-time optimization introduce by the
-Simplify theorem prover. The basic idea is to introduce a counter gmt that records the number of
-heuristic instantiation that have occurred in the current branch. It is incremented after each round
-of heuristic instantiation. The field m_mt records the last time any proper descendant of of thie
-entry was involved in a merge. -/
-def mt : CCState → Expr → Nat := sorry
-#align cc_state.mt Mathlib.Tactic.CC.CCState.mt
 
 /-- Increment the Global Modification time. -/
 def incGMT (ccs : CCState) : CCState :=
@@ -4200,7 +4255,9 @@ def incGMT (ccs : CCState) : CCState :=
 #align cc_state.inc_gmt Mathlib.Tactic.CC.CCState.incGMT
 
 /-- Add the given expression to the graph. -/
-def internalize : CCState → Expr → MetaM CCState := sorry
+def internalize (ccs : CCState) (e : Expr) : MetaM CCState := do
+  let (_, c) ← CCM.run (CCM.internalize e 0) { state := ccs }
+  return c.state
 #align cc_state.internalize Mathlib.Tactic.CC.CCState.internalize
 
 /-- Add the given proof term as a new rule.
@@ -4220,7 +4277,9 @@ def isEqv (ccs : CCState) (e₁ e₂ : Expr) : MetaM Bool := do
 #align cc_state.is_eqv Mathlib.Tactic.CC.CCState.isEqv
 
 /-- Check whether two expressions are not in the same equivalence class. -/
-def isNotEqv : CCState → Expr → Expr → MetaM Bool := sorry
+def isNotEqv (ccs : CCState) (e₁ e₂ : Expr) : MetaM Bool := do
+  let (b, _) ← CCM.run (CCM.isNotEqv e₁ e₂) { state := ccs }
+  return b
 #align cc_state.is_not_eqv Mathlib.Tactic.CC.CCState.isNotEqv
 
 /-- Returns a proof term that the given terms are equivalent in the given `CCState` -/
@@ -4246,7 +4305,10 @@ def refutationFor (ccs : CCState) (e : Expr) : MetaM Expr := do
 #align cc_state.refutation_for Mathlib.Tactic.CC.CCState.refutationFor
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
-def proofForFalse : CCState → MetaM Expr := sorry
+def proofForFalse (ccs : CCState) : MetaM Expr := do
+  let (some pr, _) ← CCM.run CCM.getInconsistencyProof { state := ccs }
+    | throwError "CCState.proofForFalse failed, state is not inconsistent"
+  return pr
 #align cc_state.proof_for_false Mathlib.Tactic.CC.CCState.proofForFalse
 
 def mk' : CCState :=
@@ -4272,10 +4334,6 @@ partial def eqcOfCore (s : CCState) (e : Expr) (f : Expr) (r : List Expr) : List
 def eqcOf (s : CCState) (e : Expr) : List Expr :=
   s.eqcOfCore e e []
 #align cc_state.eqc_of Mathlib.Tactic.CC.CCState.eqcOf
-
-def inSingletonEqc (s : CCState) (e : Expr) : Bool :=
-  s.next e == e
-#align cc_state.in_singlenton_eqc Mathlib.Tactic.CC.CCState.inSingletonEqc
 
 def eqcSize (s : CCState) (e : Expr) : Nat :=
   s.eqcOf e |>.length
