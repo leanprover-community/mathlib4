@@ -41,16 +41,6 @@ section AuxLemmas
 
 variable {Ω F : Type _} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → F}
 
--- Porting note: todo: move to `MeasureTheory/MeasurableSpace`, after `Measurable.mono`
-theorem measurable_id'' (hm : m ≤ mΩ) : @Measurable Ω Ω mΩ m id :=
-  measurable_id.mono le_rfl hm
-#align probability_theory.measurable_id'' ProbabilityTheory.measurable_id''
-
--- Porting note: todo: move to `MeasureTheory/MeasurableSpace`, after `Measurable.mono`
-theorem aemeasurable_id'' (μ : Measure Ω) (hm : m ≤ mΩ) : @AEMeasurable Ω Ω m mΩ id μ :=
-  @Measurable.aemeasurable Ω Ω mΩ m id μ (measurable_id'' hm)
-#align probability_theory.ae_measurable_id'' ProbabilityTheory.aemeasurable_id''
-
 theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [TopologicalSpace F]
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) (m.prod mΩ) mΩ (fun ω => (id ω, id ω)) μ) := by
