@@ -820,6 +820,43 @@ theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
   rw [iteratedFDerivWithin_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.norm_map]
 #align norm_fderiv_within_iterated_fderiv_within norm_fderivWithin_iteratedFDerivWithin
 
+set_option trace.Meta.isDefEq true in
+instance (priority := high) NormedSpace.continuousConstSMul [NormedField α]
+    [SeminormedAddCommGroup β] [NormedSpace α β] : ContinuousConstSMul α β :=
+  inferInstance
+
+#check ContinuousLinearMap.addCommMonoid
+
+set_option trace.Meta.isDefEq true in
+set_option profiler true in
+set_option synthInstance.maxHeartbeats 30000 in
+theorem norm_iteratedFDerivWithin_iteratedFDerivWithin {m n : ℕ} :
+    ‖iteratedFDerivWithin 𝕜 m (iteratedFDerivWithin 𝕜 n f s) s x‖ =
+      ‖iteratedFDerivWithin 𝕜 (m + n) f s x‖ := by
+  let _ : ∀ m n, Module 𝕜 (E [×m]→L[𝕜] E [×n]→L[𝕜] F) := fun m n ↦ inferInstance
+  rw [add_comm] -- We want to use the defeq `n + 0 = n`!
+  suffices : ∃ φ : (E [×m]→L[𝕜] E [×n]→L[𝕜] F) ≃ₗᵢ[𝕜] E [×(n+m)]→L[𝕜] F,
+      φ (iteratedFDerivWithin 𝕜 m (iteratedFDerivWithin 𝕜 n f s) s x) =
+      iteratedFDerivWithin 𝕜 (n + m) f s x
+  · rcases this with ⟨φ, hφ⟩
+    rw [← hφ, φ.norm_map _]
+  induction' m with m hm
+  · exact ⟨continuousMultilinearCurryFin0 𝕜 E (E [×n]→L[𝕜] F),
+      continuousMultilinearCurryFin0_apply _⟩
+  · rw [Nat.add_succ]
+    rcases hm with ⟨φ, hφ⟩
+    let cφ /-: (E →L[𝕜] E [×m]→L[𝕜] E [×n]→L[𝕜] F) ≃ₗᵢ[𝕜] (E →L[𝕜] E [×(n+m)]→L[𝕜] F)-/ :=
+      (LinearIsometryEquiv.refl 𝕜 E).arrowCongrSL (σ₁₃ := RingHom.id 𝕜) φ
+    let A := continuousMultilinearCurryLeftEquiv 𝕜 (fun (_ : Fin m.succ) ↦ E) (E [×n]→L[𝕜] F)
+    let B := continuousMultilinearCurryLeftEquiv 𝕜 (fun (_ : Fin (n+m).succ) ↦ E) F
+    use A.symm.trans (cφ.trans B)
+    ext
+    sorry
+    --use (continuousMultilinearCurryLeftEquiv 𝕜 (fun (_ : Fin m.succ) ↦ E) (E [×m]→L[𝕜] F)).symm.trans <| cφ.trans <|
+    --  continuousMultilinearCurryLeftEquiv 𝕜 (fun (_ : Fin (n+m).succ) ↦ E) F
+
+#exit
+
 theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     (m : Fin (n + 1) → E) :
     (iteratedFDerivWithin 𝕜 (n + 1) f s x : (Fin (n + 1) → E) → F) m =

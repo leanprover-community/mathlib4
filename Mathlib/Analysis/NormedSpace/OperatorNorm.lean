@@ -1794,17 +1794,27 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ] (c : 𝕜)
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-variable {𝕜₂' : Type _} [NontriviallyNormedField 𝕜₂'] {F' : Type _} [NormedAddCommGroup F']
-  [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
-  [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
-  [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
-  [RingHomIsometric σ₂''] [RingHomIsometric σ₂₃']
+section arrowCongrSL
+
+variable {𝕜₄ : Type _} [NontriviallyNormedField 𝕜₄] {H : Type _} [NormedAddCommGroup H]
+  [NormedSpace 𝕜₄ H] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₁₃ : 𝕜 →+* 𝕜₃} {σ₁₄ : 𝕜 →+* 𝕜₄} {σ₂₄ : 𝕜₂ →+* 𝕜₄}
+  {σ₂₁ : 𝕜₂ →+* 𝕜} {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₄ σ₄₃]
+  [RingHomInvPair σ₄₃ σ₃₄] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+  [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
+  [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
+  [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] [RingHomIsometric σ₁₄]
+  [RingHomIsometric σ₂₁] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂₄]
+  --{σ₄₂ : 𝕜₄ →+* 𝕜₂} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃}
+  --[RingHomInvPair σ₄₂ σ₂₄] [RingHomInvPair σ₂₄ σ₄₂] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+  --[RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₄₂]
+  --[RingHomIsometric σ₂₄] [RingHomIsometric σ₄₃]
 
 /-- Precomposition with a linear isometry preserves the operator norm. -/
-theorem op_norm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛₗᵢ[σ₂'] F) :
+theorem op_norm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖f.comp g.toLinearIsometry.toContinuousLinearMap‖ = ‖f‖ := by
-  cases subsingleton_or_nontrivial F'
-  · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
+  cases subsingleton_or_nontrivial E
+  · have := g.symm.toLinearEquiv.toEquiv.subsingleton
     simp
   refine' le_antisymm _ _
   · convert f.op_norm_comp_le g.toLinearIsometry.toContinuousLinearMap
@@ -1816,6 +1826,17 @@ theorem op_norm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃�
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 #align continuous_linear_map.op_norm_comp_linear_isometry_equiv ContinuousLinearMap.op_norm_comp_linearIsometryEquiv
+
+def _root_.LinearIsometryEquiv.arrowCongrSL (e₁₂ : E ≃ₛₗᵢ[σ₁₂] F) (e₄₃ : H ≃ₛₗᵢ[σ₄₃] G) :
+    (E →SL[σ₁₄] H) ≃ₛₗᵢ[σ₄₃] (F →SL[σ₂₃] G) :=
+  { ContinuousLinearEquiv.arrowCongrSL e₁₂.toContinuousLinearEquiv e₄₃.toContinuousLinearEquiv with
+    norm_map' := by
+      intro f
+      change ‖e₄₃.toLinearIsometry.toContinuousLinearMap.comp
+        (f.comp e₁₂.symm.toLinearIsometry.toContinuousLinearMap)‖ = ‖f‖
+      rw [LinearIsometry.norm_toContinuousLinearMap_comp, op_norm_comp_linearIsometryEquiv] }
+
+end arrowCongrSL
 
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
 is the product of the norms. -/

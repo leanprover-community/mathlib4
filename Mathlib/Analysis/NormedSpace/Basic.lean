@@ -45,6 +45,8 @@ class NormedSpace (α : Type _) (β : Type _) [NormedField α] [SeminormedAddCom
   norm_smul_le : ∀ (a : α) (b : β), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 #align normed_space NormedSpace
 
+attribute [instance 920] NormedSpace.toModule
+
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
 end Prio

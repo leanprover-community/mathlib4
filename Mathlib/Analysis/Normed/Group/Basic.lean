@@ -300,14 +300,16 @@ creates bad definitional equalities (e.g., it does not take into account a possi
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`)."]
-def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
-  dist x y := f (x / y)
-  norm := f
-  dist_eq x y := rfl
-  dist_self x := by simp only [div_self', map_one_eq_zero]
-  dist_triangle := le_map_div_add_map_div f
-  dist_comm := map_div_rev f
-  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
+def GroupSeminorm.toSeminormedGroup [g : Group E] (f : GroupSeminorm E) : SeminormedGroup E :=
+  { toGroup := g
+    dist := fun x y ↦ f (x / y)
+    norm := f
+    dist_eq := fun _ _ ↦ rfl
+    dist_self := fun _ ↦ by simp only [div_self', map_one_eq_zero]
+    dist_triangle := le_map_div_add_map_div f
+    dist_comm := map_div_rev f
+    edist_dist := fun _ _ ↦ by exact ENNReal.coe_nnreal_eq _ }
+
   -- porting note: how did `mathlib3` solve this automatically?
 #align group_seminorm.to_seminormed_group GroupSeminorm.toSeminormedGroup
 #align add_group_seminorm.to_seminormed_add_group AddGroupSeminorm.toSeminormedAddGroup
@@ -320,10 +322,11 @@ creates bad definitional equalities (e.g., it does not take into account a possi
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`)."]
-def GroupSeminorm.toSeminormedCommGroup [CommGroup E] (f : GroupSeminorm E) :
+def GroupSeminorm.toSeminormedCommGroup [g : CommGroup E] (f : GroupSeminorm E) :
     SeminormedCommGroup E :=
   { f.toSeminormedGroup with
-    mul_comm := mul_comm }
+    toCommGroup := g }
+
 #align group_seminorm.to_seminormed_comm_group GroupSeminorm.toSeminormedCommGroup
 #align add_group_seminorm.to_seminormed_add_comm_group AddGroupSeminorm.toSeminormedAddCommGroup
 
@@ -335,8 +338,9 @@ equalities (e.g., it does not take into account a possibly existing `UniformSpac
 space structure from the norm properties. Note that in most cases this instance creates bad
 definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`)."]
-def GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
+def GroupNorm.toNormedGroup [g : Group E] (f : GroupNorm E) : NormedGroup E :=
   { f.toGroupSeminorm.toSeminormedGroup with
+    toGroup := g
     eq_of_dist_eq_zero := fun h => div_eq_one.1 <| eq_one_of_map_eq_zero f h }
 #align group_norm.to_normed_group GroupNorm.toNormedGroup
 #align add_group_norm.to_normed_add_group AddGroupNorm.toNormedAddGroup
@@ -349,9 +353,10 @@ equalities (e.g., it does not take into account a possibly existing `UniformSpac
 space structure from the norm properties. Note that in most cases this instance creates bad
 definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`)."]
-def GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGroup E :=
+def GroupNorm.toNormedCommGroup [g : CommGroup E] (f : GroupNorm E) : NormedCommGroup E :=
   { f.toNormedGroup with
-    mul_comm := mul_comm }
+    toCommGroup := g }
+#print AddGroupNorm.toNormedAddCommGroup
 #align group_norm.to_normed_comm_group GroupNorm.toNormedCommGroup
 #align add_group_norm.to_normed_add_comm_group AddGroupNorm.toNormedAddCommGroup
 
