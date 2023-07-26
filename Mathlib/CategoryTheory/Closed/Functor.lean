@@ -123,7 +123,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
 /-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
 `exp_comparison F A` is an isomorphism
 -/
-class CartesianClosedFunctor where
+class CartesianClosedFunctor : Prop where
   comparison_iso : ∀ A, IsIso (expComparison F A)
 #align category_theory.cartesian_closed_functor CategoryTheory.CartesianClosedFunctor
 

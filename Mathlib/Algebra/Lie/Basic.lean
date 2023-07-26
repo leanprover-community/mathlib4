@@ -90,7 +90,7 @@ class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] exten
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/
 class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] where
+  [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop where
   /-- A Lie module bracket is compatible with scalar multiplication in its first argument. -/
   protected smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
   /-- A Lie module bracket is compatible with scalar multiplication in its second argument. -/

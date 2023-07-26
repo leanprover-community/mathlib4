@@ -247,7 +247,7 @@ send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
+class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t :
     Type (u + 1) where
   /-- `traverse` plays well with `pure` of the identity monad-/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x

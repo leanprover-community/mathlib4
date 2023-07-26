@@ -107,7 +107,7 @@ def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + 
 
 /-- This is a simple type class inference prover for proof obligations
   of the form `m < n` where `m n : ℕ`. -/
-class IsLT (m n : ℕ) where
+class IsLT (m n : ℕ) : Prop where
   /-- The unique field of `Fin2.IsLT`, a proof that `m < n`. -/
   h : m < n
 #align fin2.is_lt Fin2.IsLT

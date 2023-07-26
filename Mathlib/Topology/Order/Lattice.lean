@@ -62,8 +62,8 @@ instance (priority := 100) OrderDual.continuousInf (L : Type _) [TopologicalSpac
 /-- Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.
 Then `L` is said to be a *topological lattice*.
 -/
-class TopologicalLattice (L : Type _) [TopologicalSpace L] [Lattice L] extends ContinuousInf L,
-  ContinuousSup L
+class TopologicalLattice (L : Type _) [TopologicalSpace L] [Lattice L] : Prop
+  extends ContinuousInf L, ContinuousSup L
 #align topological_lattice TopologicalLattice
 
 -- see Note [lower instance priority]

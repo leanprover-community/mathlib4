@@ -124,6 +124,7 @@ def distribNot : TacticM Unit := withMainContext do
   liftMetaTactic' (distribNotAux fvars)
 
 /-- Config for the `tauto` tactic. Currently empty. TODO: add `closer` option. -/
+@[nolint structureInType]
 structure Config
 
 /-- Function elaborating `Config`. -/
