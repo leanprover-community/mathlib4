@@ -59,6 +59,18 @@ def NameMap.insert2 [Singleton γ β] [Insert γ β] (t : NameMap β)
     (x : Name) (y : γ) : NameMap β :=
   RBMap.insert2 t x y
 
+/-- Turn a file name into a path, relative from the root of the appropriate project.
+Assumes `/` as directory seprator. -/
+def Name.toPath (module : Name) : String :=
+  go module ++ ".lean"
+where
+  go : Name → String
+  | .anonymous => ""
+  | .str .anonymous s => s
+  | .num .anonymous n => toString n
+  | .str nm s => go nm ++ "/" ++ s
+  | .num nm n => go nm ++ "/" ++ toString n
+
 end Lean
 
 /-- this instance causes a cycle -/
@@ -91,8 +103,8 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
   let argumentGraph : NameMap NameSet := classes.foldl (init := {}) fun r (src, tgts) =>
     r.insert src <| .ofList tgts
   let classSet : NameSet := .ofList <| classes.map (·.1)
-  let instances := instanceExtension.getState env |>.instanceNames.toList.map (·.1)
-  let instances : List (Name × List Name × Name) ← instances.filterMapM fun nm => do
+  let rawInstances := instanceExtension.getState env |>.instanceNames.toList.map (·.1)
+  let instances : List (Name × List Name × Name) ← rawInstances.filterMapM fun nm => do
     forallTelescope (← inferType (← mkConstWithLevelParams nm)) fun args ty => do
       unless args.size ≥ 2 do return none
       unless full || args.size == 2 do return none
@@ -111,6 +123,27 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
         dupes := dupes ++ (argumentGraph.find? sourceClass).get!
       let sources := srcs.filter (!dupes.contains ·)
       return (nm, sources, targetClass)
+  let instanceSet : NameSet := .ofList <| instances.map (·.1)
+  let instances2 : List (Name × Name) ← rawInstances.filterMapM fun nm => do
+    forallTelescope (← inferType (← mkConstWithLevelParams nm)) fun args ty => do
+      if instanceSet.contains nm then return none
+      let prio := (← getInstancePriority? nm).get!
+      if prio < 1000 then return none
+      let (targetClass, targetClassArgs) := ty.getAppFnArgs
+      let outParams := getOutParamPositions? env targetClass
+      let relevantArgs : Array (Option Expr) ←
+        forallTelescope (← inferType (← mkConstWithLevelParams targetClass)) fun clArgs _ => do
+          let bis ← clArgs.mapM (·.fvarId!.getBinderInfo)
+          if bis.size != targetClassArgs.size then logInfo m!"{nm}"; return #[]
+          return (targetClassArgs.zip bis).mapIdx fun i (e, bi) =>
+            if outParams.isSome && outParams.get!.contains (i : ℕ) then none else
+              if bi == BinderInfo.instImplicit then none else some e
+      let relevantArgs := relevantArgs.reduceOption
+      if relevantArgs.any (!·.isFVar) then return none
+      let relevantArgs := relevantArgs.toList.map (·.fvarId!.name)
+      if !relevantArgs.Nodup then return none
+      return some (nm, targetClass)
+
   let instanceGraph : NameMap NameSet := instances.foldl (init := {}) fun r (_, src, tgt) =>
     if src.length == 1 then r.insert2 src.head! tgt else r
   let realParents : NameSet := .ofList <| .join <| classes.map fun (cl, _) => Id.run do
@@ -119,14 +152,25 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
     let fields := fields.filter fun nm => isSubobjectField? env cl nm |>.isSome
     let fields := fields.map (cl ++ ·)
     return fields
-  let prios ← instances.filterMapM fun (inst, _, _) => do
+  let prios ← instances.filterMapM fun (inst, src, _) => do
     let prio := (← getInstancePriority? inst).get!
     if prio < 1000 then return none
     let newPrio := if realParents.contains inst then 200 else 180
-    return some s!"attribute [instance {newPrio}] {inst}"
+    let src := src[0]!
+    let file := (env.getModuleFor? src).get!.toPath
+    return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
+  let cmds : String := prios.foldl (· ++ ·) ""
+  let prios2 ← instances2.filterMapM fun (inst, src) => do
+    let newPrio := 200
+    let file := (env.getModuleFor? src).get!.toPath
+    return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
+  let cmds2 : String := prios2.foldl (· ++ ·) ""
   -- logInfo m!"{realParents.toList}"
   --find . -type f -print0 | xargs -0 sed -i -E 'H;1h;$!d;x; s/(class NonemptyFinLinOrd(.|\n.)*\n)\n/\1test\n\n/g' test.txt
-  logInfo m!"{prios}"
+  -- logInfo m!"{instances2}"
+  -- logInfo m!"{cmds}"
+  logInfo m!"{cmds2}"
+  -- logInfo m!"{prios}"
   logInfo m!"classes with 1 type parameter: {classSet.size}"
   logInfo m!"instances between these classes: {instances.length}"
   -- logInfo m!"classes: {classes}"
