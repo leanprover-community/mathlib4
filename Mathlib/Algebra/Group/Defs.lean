@@ -363,6 +363,14 @@ class LeftCancelSemigroup (G : Type u) extends Semigroup G where
 #align left_cancel_semigroup.ext_iff LeftCancelSemigroup.ext_iff
 #align left_cancel_semigroup.ext LeftCancelSemigroup.ext
 
+library_note "lower cancel priority" /--
+We lower the priority of inheriting from cancellative structures.
+This attemts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
+since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
+Zulip discussion: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Why.20is.20.60simpNF.60.20complaining.20here.3F
+-/
+attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cancel priority]
+
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
 `a + b = a + c` implies `b = c`. -/
 @[ext]
@@ -371,6 +379,8 @@ class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
 #align add_left_cancel_semigroup AddLeftCancelSemigroup
 #align add_left_cancel_semigroup.ext AddLeftCancelSemigroup.ext
 #align add_left_cancel_semigroup.ext_iff AddLeftCancelSemigroup.ext_iff
+
+attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
 attribute [to_additive] LeftCancelSemigroup
 
@@ -391,6 +401,8 @@ class RightCancelSemigroup (G : Type u) extends Semigroup G where
 #align right_cancel_semigroup.ext_iff RightCancelSemigroup.ext_iff
 #align right_cancel_semigroup.ext RightCancelSemigroup.ext
 
+attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower cancel priority]
+
 /-- An `AddRightCancelSemigroup` is an additive semigroup such that
 `a + b = c + b` implies `a = c`. -/
 @[ext]
@@ -399,6 +411,8 @@ class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
 #align add_right_cancel_semigroup AddRightCancelSemigroup
 #align add_right_cancel_semigroup.ext_iff AddRightCancelSemigroup.ext_iff
 #align add_right_cancel_semigroup.ext AddRightCancelSemigroup.ext
+
+attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
 attribute [to_additive] RightCancelSemigroup
 
@@ -665,10 +679,14 @@ is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is n
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 #align add_left_cancel_monoid AddLeftCancelMonoid
 
+attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cancel priority]
+
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 #align left_cancel_monoid LeftCancelMonoid
+
+attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lower cancel priority]
 
 attribute [to_additive existing] LeftCancelMonoid.toMonoid
 
@@ -682,10 +700,14 @@ is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is 
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 #align add_right_cancel_monoid AddRightCancelMonoid
 
+attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower cancel priority]
+
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 #align right_cancel_monoid RightCancelMonoid
+
+attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
 
 attribute [to_additive existing] RightCancelMonoid.toMonoid
 
@@ -710,10 +732,14 @@ attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
 #align add_cancel_comm_monoid AddCancelCommMonoid
 
+attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
+
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 #align cancel_comm_monoid CancelCommMonoid
+
+attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
 
 attribute [to_additive existing] CancelCommMonoid.toCommMonoid
 
