@@ -5031,29 +5031,19 @@ lemma Nobeling.embedding' : ClosedEmbedding (Nobeling.ι' S) := by
     apply decide_eq_true
     exact h₁.1
 
-def Nobeling.I₁ (T : Profinite.{u}) : Type u :=
-  {C : Set T // IsClopen C}
+def Nobeling.index : Type u := Σ (C : Set S), (C → C → Prop)
 
-def Nobeling.index₁ : Type u := {C : Set S // IsClosed C}
+def Nobeling.I : Type u := Σ (i : index S), Set (Quot i.snd)
 
-def Nobeling.index₂ : Type u := S → S → Prop
-
--- TODO: define I by this instead.
-
-def Nobeling.I₂ (T : Profinite.{u}) (f : S ⟶ T) (_ : Function.Surjective f) : Type u :=
-  {C : Set T // IsClopen C}
-
-def Nobeling.I : Type (u + 1) := Σ (T : Profinite.{u}), I₁ T
-
-def Nobeling.setι : {C : Set S // IsClopen C} → I := fun C ↦ ⟨S, ⟨C.val, C.prop⟩⟩
+def Nobeling.setι : {C : Set S // IsClopen C} → I S := fun C ↦ ⟨⟨C.val, fun a b ↦ a = b⟩, Set.univ⟩
 
 noncomputable
-def Nobeling.ι₂ : ({C : Set S // IsClopen C} → Bool) → (I → Bool) := by
+def Nobeling.ι₂ : ({C : Set S // IsClopen C} → Bool) → (I S → Bool) := by
   intro f i
-  exact if h : i.fst = S then by subst h ; exact f ⟨i.snd.val, i.snd.prop⟩ else false
+  exact if h : IsClopen i.fst.fst then f ⟨i.fst.fst, h⟩ else false
 
 noncomputable
-def Nobeling.ι : S → (I → Bool) := Nobeling.ι₂ S ∘ Nobeling.ι' S
+def Nobeling.ι : S → (I S → Bool) := Nobeling.ι₂ S ∘ Nobeling.ι' S
 
 lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   refine' ClosedEmbedding.comp _ (embedding' S)
@@ -5072,69 +5062,98 @@ lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     · exact hh
     · dsimp [setι] at h'
       exfalso
-      exact h' rfl
-
-lemma FibresClopen (T : Profinite) (f : LocallyConstant T ℤ) (n : ℤ) : IsClopen (f ⁻¹' {n}) := by
-  sorry
-
-def Fibres (T : Profinite) (f : LocallyConstant T ℤ) : Set {C : Set T // IsClopen C} :=
-  Set.range (fun (n : Set.range f) ↦ ⟨f ⁻¹' {n.val}, FibresClopen T f n⟩)
-
-instance (T : Profinite) (f : LocallyConstant T ℤ) : Fintype (Fibres T f) := sorry
-
-def ClopenFibres (T : Profinite) (f : LocallyConstant T ℤ) : Finset {C : Set T // IsClopen C} :=
-  (Fibres T f).toFinset
-
-def Coeffs (T : Profinite) (f : LocallyConstant T ℤ) : ClopenFibres T f → ℤ := by
-  rintro ⟨⟨C, hC⟩,h⟩
-  simp only [ClopenFibres, Set.mem_toFinset] at h
-  sorry
-
-lemma Coeffs_val (T : Profinite) (f : LocallyConstant T ℤ) :
-    ∀ (C : ClopenFibres T f) (x : T), x ∈ C.val.val → f x = Coeffs T f C := sorry
+      exact h' x.prop
 
 noncomputable
-instance : LinearOrder Nobeling.I := IsWellOrder.linearOrder WellOrderingRel
-
-noncomputable
-def Nobeling.ClopenFibresProducts (T : Profinite) (f : LocallyConstant T ℤ) :
-    Finset (NobelingProof.Products (WithTop I)) :=
-  Finset.image (fun x ↦ ⟨[(setι T x)], List.chain'_singleton _⟩) (ClopenFibres T f)
-
-noncomputable
-def Nobeling.CoeffsFinsuppAux (T : Profinite) (f : LocallyConstant T ℤ) :
-    {C : Set T // IsClopen C} →₀ ℤ where
-  support := ClopenFibres T f
-  toFun := fun C ↦ if h : C ∈ ClopenFibres T f then Coeffs T f ⟨C, h⟩ else 0
-  mem_support_toFun := by
-    sorry
-
-noncomputable
-def Nobeling.CoeffsFinsupp (T : Profinite) (f : LocallyConstant T ℤ) :
-    NobelingProof.Products (WithTop I) →₀ ℤ :=
-  (CoeffsFinsuppAux T f).mapDomain (fun x ↦ ⟨[(setι T x)], List.chain'_singleton _⟩)
-  --   where
-  -- support := ClopenFibresProducts T f
-  -- toFun := fun l ↦ if (h : l ∈ ClopenFibresProducts T f) then
-  -- mem_support_toFun := sorry
+instance : LinearOrder (Nobeling.I S) := IsWellOrder.linearOrder WellOrderingRel
 
 open NobelingProof GoodProducts in
-lemma Nobeling.T : @NobelingProof.T I (IsWellOrder.linearOrder WellOrderingRel)
-    ((NobelingProof.r I '' Set.range (ι S))) :=
-  letI : LinearOrder I := IsWellOrder.linearOrder WellOrderingRel
-    by
+lemma Nobeling.T : @NobelingProof.T (I S) (IsWellOrder.linearOrder WellOrderingRel)
+    ((NobelingProof.r (I S) '' Set.range (ι S))) := by
   intro V hsV hCV W π hcπ hsπ hW
   rw [span_iff_products]
   intro f _
-  haveI : CompactSpace W := sorry
-  let T : Profinite := Profinite.of W
-  let g : T → W := fun t ↦ t
-  have hg : Continuous g := continuous_id'
-  let f' : LocallyConstant T ℤ := f.comap g
+  let i : S → (WithTop (I S) → Bool) := r (I S) ∘ (ι S)
+  let C : Set S := i ⁻¹' V
+  have hmem : ∀ (a : C), i a.val ∈ V := by simp
+  let r : C → C → Prop := fun a b ↦ π ⟨i a.val, hmem a⟩  = π ⟨i b.val, hmem b⟩
+  let a : index S := ⟨C, r⟩
+  let c' : C → W := fun a ↦ π ⟨i a.val, hmem a⟩
+  let c : Quot r → W := Quot.lift c' (fun _ _ h ↦ h)
+  haveI : Fintype (Set.range f) := sorry
+  let b : (Set.range f).toFinset → Set (Quot r) := (fun s ↦ c ⁻¹' s) ∘ (fun n ↦ f ⁻¹' {n.val})
+  let d : (Set.range f).toFinset → WithTop (I S) := fun n ↦ some ⟨a, b n⟩
+  let p : (Set.range f).toFinset → Products (WithTop (I S)) :=
+      fun n ↦ ⟨[(d n)], List.chain'_singleton _⟩
+  have hp : p.Injective
+  · intro x y h
+    rw [Subtype.ext_iff, List.cons_eq_cons, Option.some_inj] at h
+    suffices : b.Injective
+    · have h' := h.1
+      apply_fun Sigma.snd at h'
+      exact this h'
+    intro X Y H
+    sorry
+  let g : Products (WithTop (I S)) → ℤ :=
+    fun l ↦ if h : l ∈ Set.range p then (Equiv.ofInjective p hp).symm ⟨l, h⟩ else 0
+  have hg : ∀ l, g l ≠ 0 → l ∈ Finset.image p Finset.univ := sorry
+  let q := Finsupp.onFinset (Finset.image p Finset.univ) g hg
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
-  sorry
+  refine' ⟨q, _⟩
+  ext x
+  have hhh : ∀ α (map : α → LocallyConstant {i // i ∈ W} ℤ) (d : α →₀ ℤ),
+      (d.sum (fun i (a : ℤ) ↦ a • map i)) x = d.sum (fun i a ↦ a • map i x) :=
+    fun _ _ _ ↦ map_finsupp_sum (LocconstEval W x) _ _
+  rw [hhh, Finsupp.sum]
+  have hfr : f x ∈ (Set.range f).toFinset := by simp
+  have haf : ⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ ∈ q.support := sorry
+  have hz := (add_zero (f x)).symm
+  rw [hz, ← Finset.add_sum_erase _ _ haf]
+  congr
+  · set l := (⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ : Products (WithTop (I S)) ) with hl
+    have hpl : Products.eval W l x = 1
+    · rw [Products.eval_eq]
+      split_ifs with hh
+      · rfl
+      · exfalso
+        push_neg at hh
+        simp only [Function.comp_apply, List.mem_singleton, ne_eq, Bool.not_eq_true,
+          exists_eq_left] at hh
+        rw [← Bool.not_eq_true] at hh
+        apply hh
+        sorry
+    suffices : q l = f x
+    · rw [this, hpl]
+      simp only [smul_eq_mul, mul_one]
+    simp only [Function.comp_apply, Finset.univ_eq_attach, Set.mem_range, Subtype.exists,
+      Set.mem_toFinset, Eq.ndrec, id_eq, exists_prop, Finsupp.onFinset_apply]
+    split_ifs with hh
+    · sorry
+    · sorry
+  · apply Finset.sum_eq_zero
+    intro l hl
+    simp only [smul_eq_mul, mul_eq_zero]
+    right
+    rw [Products.eval_eq]
+    split_ifs with hh
+    · exfalso
+      sorry
+    · rfl
+  -- have hQ : (Quot.mk r : C → Quot r).Surjective
+  -- · intro a
+  --   obtain ⟨a', h'⟩ := hsπ (c a)
+  -- have hci : c.Injective
+  -- · intro a b h
+  --   sorry
+
+  -- haveI : CompactSpace W := sorry
+  -- let T : Profinite := Profinite.of W
+  -- let g : T → W := fun t ↦ t
+  -- have hg : Continuous g := continuous_id'
+  -- let f' : LocallyConstant T ℤ := f.comap g
+
   -- use CoeffsFinsupp T f' --  universe issues...?
 
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
-@NobelingProof.Nobeling Nobeling.I (IsWellOrder.linearOrder WellOrderingRel)
+@NobelingProof.Nobeling (Nobeling.I S) (IsWellOrder.linearOrder WellOrderingRel)
   WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S) (Nobeling.T.{u} S)
