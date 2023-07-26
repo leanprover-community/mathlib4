@@ -63,16 +63,25 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
     let mut graph := env.importGraph
     if let .some f := from? then
       graph := graph.dependenciesOf (NameSet.empty.insert f)
-    if args.hasFlag "noDep" then
-      let p := getModule to
-      graph := graph.filter (isPrefixOf p) (.filter (isPrefixOf p))
     if args.hasFlag "excludeMeta" then
-      let filterNoTactics : Name → Bool := fun n => (not <|
+      let filterMeta : Name → Bool := fun n => (
         isPrefixOf `Mathlib.Tactic n ∨
         isPrefixOf `Mathlib.Lean n ∨
         isPrefixOf `Mathlib.Util n)
-      graph := graph.filter filterNoTactics (.filter filterNoTactics)
-    if args.hasFlag "reduce" then
+      -- create a list of all files imported by any of the filtered files
+      -- and remove all imports starting with `Mathlib` to avoid loops
+      let mut tacticImports := graph.toList.bind
+        (fun ⟨n, i⟩ => if filterMeta n then i.toList else [])
+        |>.eraseDup |>.filter (not <| isPrefixOf `Mathlib ·) |>.toArray
+      graph := graph.filter (fun x => not <| filterMeta x)
+        (fun arr => (arr.map (fun n => if filterMeta n then `Mathlib.Tactics else n))
+          |>.toList.eraseDup.toArray)
+      -- insert a single node `Mathlib.Tactics` that only takes imports from outside Mathlib
+      graph := graph.insert `Mathlib.Tactics tacticImports
+    if args.hasFlag "noDep" then
+      let p := getModule to
+      graph := graph.filter (isPrefixOf p) (.filter (isPrefixOf p))
+          if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
   match args.variableArgsAs! String with
