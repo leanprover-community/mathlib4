@@ -652,29 +652,29 @@ theorem rpow_nat_inv_pow_nat {x : ℝ} (hx : 0 ≤ x) {n : ℕ} (hn : n ≠ 0) :
   rw [← rpow_nat_cast, ← rpow_mul hx, inv_mul_cancel hn0, rpow_one]
 #align real.rpow_nat_inv_pow_nat Real.rpow_nat_inv_pow_nat
 
-lemma rpow_strictMono_of_base_gt_one {b : ℝ} (hb : 1 < b) :
+lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
     StrictMono (rpow b) := by
   show StrictMono (fun (x:ℝ) => b ^ x)
   simp_rw [Real.rpow_def_of_pos (zero_lt_one.trans hb)]
   exact exp_strictMono.comp <| StrictMono.const_mul strictMono_id <| Real.log_pos hb
 
-lemma rpow_monotone_of_base_ge_one {b : ℝ} (hb : 1 ≤ b) :
+lemma monotone_rpow_of_base_ge_one {b : ℝ} (hb : 1 ≤ b) :
     Monotone (rpow b) := by
   rcases lt_or_eq_of_le hb with hb | rfl
-  case inl => exact (rpow_strictMono_of_base_gt_one hb).monotone
+  case inl => exact (strictMono_rpow_of_base_gt_one hb).monotone
   case inr => intro _ _ _; simp
 
-lemma rpow_strictAnti_of_base_lt_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b < 1) :
+lemma strictAnti_rpow_of_base_lt_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b < 1) :
     StrictAnti (rpow b) := by
   show StrictAnti (fun (x:ℝ) => b ^ x)
   simp_rw [Real.rpow_def_of_pos hb₀]
   exact exp_strictMono.comp_strictAnti <| StrictMono.const_mul_of_neg strictMono_id
       <| Real.log_neg hb₀ hb₁
 
-lemma rpow_antitone_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
+lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
     Antitone (rpow b) := by
   rcases lt_or_eq_of_le hb₁ with hb₁ | rfl
-  case inl => exact (rpow_strictAnti_of_base_lt_one hb₀ hb₁).antitone
+  case inl => exact (strictAnti_rpow_of_base_lt_one hb₀ hb₁).antitone
   case inr => intro _ _ _; simp
 
 end Real
