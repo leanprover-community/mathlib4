@@ -84,7 +84,7 @@ variable {R : Type _}
 section semiring
 variable [Semiring R]
 
-theorem natDegree_C_le /-(n : ℕ)-/ (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le --.trans n.zero_le
+theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
 
 theorem natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
