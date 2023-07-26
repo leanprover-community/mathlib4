@@ -197,7 +197,7 @@ theorem mk_eq_div' (p q : K[X]) :
     RatFunc.mk p q = ofFractionRing (algebraMap _ _ p / algebraMap _ _ q) := by rw [RatFunc.mk]
 #align ratfunc.mk_eq_div' RatFunc.mk_eq_div'
 
-theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing 0 := by
+theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing (0 : FractionRing K[X]) := by
   rw [mk_eq_div', RingHom.map_zero, div_zero]
 #align ratfunc.mk_zero RatFunc.mk_zero
 
