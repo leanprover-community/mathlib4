@@ -451,16 +451,16 @@ end IsGalois
 
 end GaloisEquivalentDefinitions
 
-section normalClosure'
+section normalClosure
 
 variable (k K F : Type _) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
   [IsScalarTower k K F] [IsGalois k F]
 
-instance IsGalois.normalClosure' : IsGalois k (normalClosure' k K F)
+instance IsGalois.normalClosure : IsGalois k (normalClosure k K F)
     where to_isSeparable := isSeparable_tower_bot_of_isSeparable k _ F
-#align is_galois.normal_closure IsGalois.normalClosure'
+#align is_galois.normal_closure IsGalois.normalClosure
 
-end normalClosure'
+end normalClosure
 
 section IsAlgClosure
 

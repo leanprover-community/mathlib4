@@ -19,15 +19,17 @@ that contains the image of every `F`-algebra embedding `K →ₐ[F] L`.
 - `IntermediateField.normalClosure K` for `K : IntermediateField F L`.
 -/
 
-namespace IntermediateField
+
 
 open BigOperators Polynomial
 
 variable {F L : Type _} [Field F] [Field L] [Algebra F L] (K : IntermediateField F L)
 
 /-- The normal closure of `K` in `L`. -/
-def normalClosure : IntermediateField F L :=
-  (normalClosure' F K L).restrictScalars F
+def IntermediateField.normalClosure' : IntermediateField F L :=
+  (normalClosure F K L).restrictScalars F
+
+namespace IntermediateField
 
 lemma normalClosure_def : K.normalClosure = ⨆ f : K →ₐ[F] L, f.fieldRange :=
   rfl
