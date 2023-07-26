@@ -484,18 +484,18 @@ variable [Algebra F K]
 variable (L : Type _) [Field L] [Algebra F L] [Algebra K L] [IsScalarTower F K L]
 
 /-- The normal closure of `K` in `L`. -/
-noncomputable def normalClosure : IntermediateField K L :=
+noncomputable def normalClosure' : IntermediateField K L :=
   { (⨆ f : K →ₐ[F] L, f.fieldRange).toSubfield with
     -- Porting note: could not inherit neg_mem
     neg_mem' := fun _ hx => Subfield.neg_mem (⨆ f : K →ₐ[F] L, f.fieldRange).toSubfield hx
     algebraMap_mem' := fun r =>
       le_iSup (fun f : K →ₐ[F] L => f.fieldRange) (IsScalarTower.toAlgHom F K L) ⟨r, rfl⟩ }
-#align normal_closure normalClosure
+#align normal_closure normalClosure'
 
-namespace normalClosure
+namespace normalClosure'
 
 theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
-    (normalClosure F K L).restrictScalars F = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
+    (normalClosure' F K L).restrictScalars F = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
   refine' le_antisymm (iSup_le _) (iSup_le fun x => adjoin_le_iff.mpr fun y hy => _)
   · rintro f _ ⟨x, rfl⟩
     refine'
@@ -527,9 +527,9 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     exact minpoly_gen ((isIntegral_algebraMap_iff (algebraMap K L).injective).mp
       (h.isIntegral (algebraMap K L x)))
 
-#align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure.restrictScalars_eq_iSup_adjoin
+#align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure'.restrictScalars_eq_iSup_adjoin
 
-instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
+instance normal [h : Normal F L] : Normal F (normalClosure' F K L) := by
   let ϕ := algebraMap K L
   rw [← IntermediateField.restrictScalars_normal, restrictScalars_eq_iSup_adjoin]
   -- Porting note: use the `(_)` trick to obtain an instance by unification.
@@ -542,21 +542,21 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
       ((minpoly.eq_of_algebraMap_eq ϕ.injective
             ((isIntegral_algebraMap_iff ϕ.injective).mp (h.isIntegral (ϕ x))) rfl).symm ▸
         h.splits _)
-#align normal_closure.normal normalClosure.normal
+#align normal_closure.normal normalClosure'.normal
 
 instance is_finiteDimensional [FiniteDimensional F K] :
-    FiniteDimensional F (normalClosure F K L) := by
+    FiniteDimensional F (normalClosure' F K L) := by
   haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f =>
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
-#align normal_closure.is_finite_dimensional normalClosure.is_finiteDimensional
+#align normal_closure.is_finite_dimensional normalClosure'.is_finiteDimensional
 
-instance isScalarTower : IsScalarTower F (normalClosure F K L) L :=
+instance isScalarTower : IsScalarTower F (normalClosure' F K L) L :=
   -- Porting note: the last argument here `(⨆ (f : K →ₐ[F] L), f.fieldRange).toSubalgebra`
   -- was just written as `_` in mathlib3.
   IsScalarTower.subalgebra' F L L (⨆ (f : K →ₐ[F] L), f.fieldRange).toSubalgebra
-#align normal_closure.is_scalar_tower normalClosure.isScalarTower
+#align normal_closure.is_scalar_tower normalClosure'.isScalarTower
 
-end normalClosure
+end normalClosure'
 
 end normalClosure

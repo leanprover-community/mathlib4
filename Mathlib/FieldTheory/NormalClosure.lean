@@ -27,7 +27,7 @@ variable {F L : Type _} [Field F] [Field L] [Algebra F L] (K : IntermediateField
 
 /-- The normal closure of `K` in `L`. -/
 def normalClosure : IntermediateField F L :=
-  (normalClosure F K L).restrictScalars F
+  (normalClosure' F K L).restrictScalars F
 
 lemma normalClosure_def : K.normalClosure = ⨆ f : K →ₐ[F] L, f.fieldRange :=
   rfl
