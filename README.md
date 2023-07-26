@@ -131,6 +131,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Chris Hughes (@ChrisHughes24): algebra
 * Yury G. Kudryashov (@urkud): analysis, topology, measure theory
 * Robert Y. Lewis (@robertylewis): tactics, documentation
+* Jireh Loreaux (@j-loreaux): analysis, topology, operator algebras
 * Heather Macbeth (@hrmacbeth): geometry, analysis
 * Patrick Massot (@patrickmassot): documentation, topology, geometry
 * Bhavik Mehta (@b-mehta): category theory, combinatorics
