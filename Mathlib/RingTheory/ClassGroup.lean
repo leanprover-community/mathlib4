@@ -112,7 +112,7 @@ noncomputable def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :
     (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)))
 #align class_group.mk ClassGroup.mk
 
-@[simp]
+-- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk I := by
   rw [ClassGroup.mk, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
@@ -320,7 +320,7 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
 #align class_group.mk0_eq_mk0_iff ClassGroup.mk0_eq_mk0_iff
 
 /-- Maps a nonzero fractional ideal to an integral representative in the class group. -/
-noncomputable def ClassGroup.integralRep [IsDedekindDomain R]
+noncomputable def ClassGroup.integralRep
     (I : FractionalIdeal R⁰ (FractionRing R)) :
     Ideal R :=
   let a := I.2.choose
@@ -338,7 +338,7 @@ noncomputable def ClassGroup.integralRep [IsDedekindDomain R]
       rw [← Algebra.smul_def c]
       exact Submodule.smul_mem _ c hb }
 
-theorem ClassGroup.integralRep_mem_nonZeroDivisors [IsDedekindDomain R]
+theorem ClassGroup.integralRep_mem_nonZeroDivisors
     {I} (hI : I ≠ 0) :
     ClassGroup.integralRep I ∈ (Ideal R)⁰ := by
   let a := I.2.choose
