@@ -3307,17 +3307,6 @@ partial def updateMT (e : Expr) : CCM Unit := do
       updateMT p.expr
 
 /--
-This method is invoked during internalization and eagerly apply basic equivalences for term `e`
-Examples:
-- If `e := cast H e'`, then it merges the equivalence classes of `cast H e'` and `e'`
-
-In principle, we could mark theorems such as `cast_eq` as simplification rules, but this creates
-problems with the builtin support for cast-introduction in the ematching module.
-
-Eagerly merging the equivalence classes is also more efficient. -/
-def applySimpleEqvs (e : Expr) : CCM Unit := sorry
-
-/--
 If `asHEq` is `true`, then build a proof for `HEq e₁ e₂`.
 Otherwise, build a proof for `e₁ = e₂`.
 The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
@@ -3374,6 +3363,50 @@ def checkNewSubsingletonEq (oldRoot newRoot : Expr) : CCM Unit := do
   else
     modifyState fun ccs =>
       { ccs with subsingletonReprs := ccs.subsingletonReprs.insert newRoot it₁ }
+
+def getEqcLambdas (e : Expr) (r : Array Expr) : CCM (Array Expr) := do
+  guard ((← getRoot e) == e)
+  let mut r := r
+  let some ee ← getEntry e | failure
+  unless ee.hasLambdas do return r
+  let mut it := e
+  repeat
+    if it.isLambda then
+      r := r.push it
+    let some itN ← getEntry it | failure
+    it := itN.next
+  until it != e
+  return r
+
+def propagateBeta (fn : Expr) (revArgs : Array Expr) (lambdas newLambdaApps : Array Expr) :
+    CCM (Array Expr) := do
+  let mut newLambdaApps := newLambdaApps
+  for lambda in lambdas do
+    guard lambda.isLambda
+    if fn != lambda then
+      if (← withNewMCtxDepth <| withTransparency .default <|
+          isDefEq (← inferType fn) (← inferType lambda)) then
+        let newApp := mkAppRev lambda revArgs
+        newLambdaApps := newLambdaApps.push newApp
+  return newLambdaApps
+
+def mkNeOfEqOfNe (a a₁ a₁NeB : Expr) : CCM (Option Expr) := do
+  guard (← isEqv a a₁)
+  if a == a₁ then
+    return some a₁NeB
+  let aEqA₁ ← getEqProof a a₁
+  match aEqA₁ with
+  | none => return none -- failed to build proof
+  | some aEqA₁ => mkAppM ``ne_of_eq_of_ne #[aEqA₁, a₁NeB]
+
+def mkNeOfNeOfEq (aNeB₁ b₁ b : Expr) : CCM (Option Expr) := do
+  guard (← isEqv b b₁)
+  if b == b₁ then
+    return some aNeB₁
+  let b₁EqB ← getEqProof b b₁
+  match b₁EqB with
+  | none => return none -- failed to build proof
+  | some b₁EqB => mkAppM ``ne_of_ne_of_eq #[aNeB₁, b₁EqB]
 
 mutual
 partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
@@ -3469,6 +3502,74 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
         mkEntry e false gen
     | .app _ _ | .lit _ => internalizeApp e gen
 
+partial def propagateIffUp (e : Expr) : CCM Unit := do
+  let some (a, b) := e.iff? | failure
+  if ← isEqTrue a then
+    -- `a = True  → (Iff a b) = b`
+    pushEq e b (mkApp3 (.const ``iff_eq_of_eq_true_left []) a b (← getEqTrueProof a))
+  else if ← isEqTrue b then
+    -- `b = True  → (Iff a b) = a`
+    pushEq e a (mkApp3 (.const ``iff_eq_of_eq_true_right []) a b (← getEqTrueProof b))
+  else if ← isEqv a b then
+    -- `a = b     → (Iff a b) = True`
+    pushEq e (.const ``True []) (mkApp3 (.const ``iff_eq_true_of_eq []) a b (← getPropEqProof a b))
+
+partial def propagateAndUp (e : Expr) : CCM Unit := do
+  let some (a, b) := e.and? | failure
+  if ← isEqTrue a then
+    -- `a = True  → (And a b) = b`
+    pushEq e b (mkApp3 (.const ``and_eq_of_eq_true_left []) a b (← getEqTrueProof a))
+  else if ← isEqTrue b then
+    -- `b = True  → (And a b) = a`
+    pushEq e a (mkApp3 (.const ``and_eq_of_eq_true_right []) a b (← getEqTrueProof b))
+  else if ← isEqFalse a then
+    -- `a = False → (And a b) = False`
+    pushEq e (.const ``False [])
+      (mkApp3 (.const ``and_eq_of_eq_false_left []) a b (← getEqFalseProof a))
+  else if ← isEqFalse b then
+    -- `b = False → (And a b) = False`
+    pushEq e (.const ``False [])
+      (mkApp3 (.const ``and_eq_of_eq_false_right []) a b (← getEqFalseProof b))
+  else if ← isEqv a b then
+    -- `a = b     → (And a b) = a`
+    pushEq e a (mkApp3 (.const ``and_eq_of_eq []) a b (← getPropEqProof a b))
+  -- We may also add `a = Not b -> (And a b) = False`
+
+partial def propagateOrUp (e : Expr) : CCM Unit := do
+  let some (a, b) := e.app2? ``Or | failure
+  if ← isEqTrue a then
+    -- `a = True  → (Or a b) = True`
+    pushEq e (.const ``True [])
+      (mkApp3 (.const ``or_eq_of_eq_true_left []) a b (← getEqTrueProof a))
+  else if ← isEqTrue b then
+    -- `b = True  → (Or a b) = True`
+    pushEq e (.const ``True [])
+      (mkApp3 (.const ``or_eq_of_eq_true_right []) a b (← getEqTrueProof b))
+  else if ← isEqFalse a then
+    -- `a = False → (Or a b) = b`
+    pushEq e b (mkApp3 (.const ``or_eq_of_eq_false_left []) a b (← getEqFalseProof a))
+  else if ← isEqFalse b then
+    -- `b = False → (Or a b) = a`
+    pushEq e a (mkApp3 (.const ``or_eq_of_eq_false_right []) a b (← getEqFalseProof b))
+  else if ← isEqv a b then
+    -- `a = b     → (Or a b) = a`
+    pushEq e a (mkApp3 (.const ``or_eq_of_eq []) a b (← getPropEqProof a b))
+  -- We may also add `a = Not b -> (Or a b) = True`
+
+partial def propagateNotUp (e : Expr) : CCM Unit := do
+  let some a := e.not? | failure
+  if ← isEqTrue a then
+    -- `a = True  → Not a = False`
+    pushEq e (.const ``False []) (mkApp2 (.const ``not_eq_of_eq_true []) a (← getEqTrueProof a))
+  else if ← isEqFalse a then
+    -- `a = False → Not a = True`
+    pushEq e (.const ``True []) (mkApp2 (.const ``not_eq_of_eq_false []) a (← getEqFalseProof a))
+  else if ← isEqv a e then
+    let falsePr := mkApp2 (.const ``false_of_a_eq_not_a []) a (← getPropEqProof a e)
+    let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
+    pushEq (.const ``True []) (.const ``False []) H
+
+
 partial def propagateImpUp (e : Expr) : CCM Unit := do
   guard e.isArrow
   let .forallE _ a b _ := e | unreachable!
@@ -3498,6 +3599,123 @@ partial def propagateImpUp (e : Expr) : CCM Unit := do
   else if ← isEqv a b then
     pushEq e (.const ``True [])
       (mkApp3 (.const ``imp_eq_true_of_eq []) a b (← getPropEqProof a b))
+
+partial def propagateIteUp (e : Expr) : CCM Unit := do
+  let .app (.app (.app (.app (.app (.const ``ite [lvl]) A) c) d) a) b := e | failure
+  if ← isEqTrue c then
+    -- `c = True  → (ite c a b) = a`
+    pushEq e a (mkApp6 (.const ``if_eq_of_eq_true [lvl]) c d A a b (← getEqTrueProof c))
+  else if ← isEqFalse c then
+    -- `c = False → (ite c a b) = b`
+    pushEq e b (mkApp6 (.const ``if_eq_of_eq_false [lvl]) c d A a b (← getEqFalseProof c))
+  else if ← isEqv a b then
+    -- `a = b     → (ite c a b) = a`
+    pushEq e a (mkApp6 (.const ``if_eq_of_eq [lvl]) c d A a b (← getPropEqProof a b))
+
+partial def propagateEqUp (e : Expr) : CCM Unit := do
+  -- Remark: the positive case is implemented at `checkEqTrue` for any reflexive relation.
+  let some (_, a, b) := e.eq? | failure
+  let ra ← getRoot a
+  let rb ← getRoot b
+  if ra != rb then
+    let mut raNeRb : Option Expr := none
+    if ← isInterpretedValue ra <&&> isInterpretedValue rb then
+      raNeRb := some
+        (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
+    else
+      let env ← getEnv
+      if let some c₁ := ra.isConstructorApp? env then
+      if let some c₂ := rb.isConstructorApp? env then
+      if c₁.name != c₂.name then
+        raNeRb ← withLocalDeclD `h (← mkEq ra rb) fun h => do
+          mkLambdaFVars #[h] (← mkNoConfusion (.const ``False []) h)
+    if let some raNeRb' := raNeRb then
+    if let some aNeRb ← mkNeOfEqOfNe a ra raNeRb' then
+    if let some aNeB ← mkNeOfNeOfEq aNeRb rb b then
+      pushEq e (.const ``False []) (← mkAppM ``eq_false_intro #[aNeB])
+
+partial def propagateUp (e : Expr) : CCM Unit := do
+  if (← getState).inconsistent then return
+  if e.isAppOfArity ``Iff 2 then
+    propagateIffUp e
+  else if e.isAppOfArity ``And 2 then
+    propagateAndUp e
+  else if e.isAppOfArity ``Or 2 then
+    propagateOrUp e
+  else if e.isAppOfArity ``Not 1 then
+    propagateNotUp e
+  else if e.isArrow then
+    propagateImpUp e
+  else if e.isIte then
+    propagateIteUp e
+  else if e.isEq then
+    propagateEqUp e
+
+/--
+This method is invoked during internalization and eagerly apply basic equivalences for term `e`
+Examples:
+- If `e := cast H e'`, then it merges the equivalence classes of `cast H e'` and `e'`
+
+In principle, we could mark theorems such as `cast_eq` as simplification rules, but this creates
+problems with the builtin support for cast-introduction in the ematching module.
+
+Eagerly merging the equivalence classes is also more efficient. -/
+partial def applySimpleEqvs (e : Expr) : CCM Unit := do
+  if let .app (.app (.app (.app (.const ``cast [l₁]) A) B) H) a := e then
+    /-
+    ```
+    HEq (cast H a) a
+
+    theorem cast_heq : ∀ {A B : Type.{l_1}} (H : A = B) (a : A), HEq (@cast.{l_1} A B H a) a
+    ```
+    -/
+    let proof := mkApp4 (.const ``cast_heq [l₁]) A B H a
+    pushHEq e a proof
+
+  if let .app (.app (.app (.app (.app (.app (.const ``Eq.recOn [l₁, l₂]) A) a) P) a') H) p := e then
+    /-
+    ```
+    HEq (Eq.recOn H p) p
+
+    theorem eq_rec_heq : ∀ {A : Type.{l_1}} {P : A → Type.{l_2}} {a a' : A} (H : a = a')
+      (p : P a), HEq (@Eq.recOn.{l_2 l_1} A a P a' H p) p
+    ```
+    -/
+    let proof := mkApp6 (.const ``eq_rec_heq [l₁, l₂]) A P a a' H p
+    pushHEq e p proof
+
+  if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then
+    -- `(a ≠ b) = (Not (a = b))`
+    let newE := Expr.app (.const ``Not []) (mkApp3 (.const ``Eq [l₁]) α a b)
+    internalizeCore newE none (← getGenerationOf e)
+    pushReflEq e newE
+
+  if let some r ← reduceProj? e then
+    pushReflEq e r
+
+  let fn := e.getAppFn
+  if fn.isLambda then
+    let reducedE := e.headBeta
+    if let some phandler := (← get).phandler then
+      phandler.newAuxCCTerm reducedE
+    internalizeCore reducedE none (← getGenerationOf e)
+    pushReflEq e reducedE
+
+  let mut revArgs : Array Expr := #[]
+  let mut it := e
+  while it.isApp do
+    revArgs := revArgs.push it.appArg!
+    let fn := it.appFn!
+    let rootFn ← getRoot fn
+    let en ← getEntry rootFn
+    if en.any Entry.hasLambdas then
+      let lambdas ← getEqcLambdas rootFn #[]
+      let newLambdaApps ← propagateBeta fn revArgs lambdas #[]
+      for newApp in newLambdaApps do
+        internalizeCore newApp none (← getGenerationOf e)
+    it := fn
+
+  propagateUp e
 
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
@@ -3560,20 +3778,6 @@ partial def invertTransAux (e : Expr) (newFlipped : Bool) (newTarget : Option Ex
 def invertTrans (e : Expr) : CCM Unit :=
   invertTransAux e false none none
 
-def getEqcLambdas (e : Expr) (r : Array Expr) : CCM (Array Expr) := do
-  guard ((← getRoot e) == e)
-  let mut r := r
-  let some ee ← getEntry e | failure
-  unless ee.hasLambdas do return r
-  let mut it := e
-  repeat
-    if it.isLambda then
-      r := r.push it
-    let some itN ← getEntry it | failure
-    it := itN.next
-  until it != e
-  return r
-
 /-- Traverse the `root`'s equivalence class, and collect the function's equivalence class roots. -/
 def collectFnRoots (root : Expr) (fnRoots : Array Expr) : CCM (Array Expr) := do
   guard ((← getRoot root) == root)
@@ -3601,18 +3805,6 @@ def reinsertParents (e : Expr) : CCM Unit := do
         addCongruenceTable p.expr
 
 def checkInvariant : CCM Bool := sorry
-
-def propagateBeta (fn : Expr) (revArgs : Array Expr) (lambdas newLambdaApps : Array Expr) :
-    CCM (Array Expr) := do
-  let mut newLambdaApps := newLambdaApps
-  for lambda in lambdas do
-    guard lambda.isLambda
-    if fn != lambda then
-      if (← withNewMCtxDepth <| withTransparency .default <|
-          isDefEq (← inferType fn) (← inferType lambda)) then
-        let newApp := mkAppRev lambda revArgs
-        newLambdaApps := newLambdaApps.push newApp
-  return newLambdaApps
 
 /--
 For each `fnRoot` in `fnRoots` traverse its parents, and look for a parent prefix that is
@@ -3700,142 +3892,6 @@ def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   let trueEqFalse ← mkEq (.const ``True []) (.const ``False [])
   let H ← mkAbsurd trueEqFalse eqProof neProof
   pushEq (.const ``True []) (.const ``False []) H
-
-def propagateIffUp (e : Expr) : CCM Unit := do
-  let some (a, b) := e.iff? | failure
-  if ← isEqTrue a then
-    -- `a = True  → (Iff a b) = b`
-    pushEq e b (mkApp3 (.const ``iff_eq_of_eq_true_left []) a b (← getEqTrueProof a))
-  else if ← isEqTrue b then
-    -- `b = True  → (Iff a b) = a`
-    pushEq e a (mkApp3 (.const ``iff_eq_of_eq_true_right []) a b (← getEqTrueProof b))
-  else if ← isEqv a b then
-    -- `a = b     → (Iff a b) = True`
-    pushEq e (.const ``True []) (mkApp3 (.const ``iff_eq_true_of_eq []) a b (← getPropEqProof a b))
-
-def propagateAndUp (e : Expr) : CCM Unit := do
-  let some (a, b) := e.and? | failure
-  if ← isEqTrue a then
-    -- `a = True  → (And a b) = b`
-    pushEq e b (mkApp3 (.const ``and_eq_of_eq_true_left []) a b (← getEqTrueProof a))
-  else if ← isEqTrue b then
-    -- `b = True  → (And a b) = a`
-    pushEq e a (mkApp3 (.const ``and_eq_of_eq_true_right []) a b (← getEqTrueProof b))
-  else if ← isEqFalse a then
-    -- `a = False → (And a b) = False`
-    pushEq e (.const ``False [])
-      (mkApp3 (.const ``and_eq_of_eq_false_left []) a b (← getEqFalseProof a))
-  else if ← isEqFalse b then
-    -- `b = False → (And a b) = False`
-    pushEq e (.const ``False [])
-      (mkApp3 (.const ``and_eq_of_eq_false_right []) a b (← getEqFalseProof b))
-  else if ← isEqv a b then
-    -- `a = b     → (And a b) = a`
-    pushEq e a (mkApp3 (.const ``and_eq_of_eq []) a b (← getPropEqProof a b))
-  -- We may also add `a = Not b -> (And a b) = False`
-
-def propagateOrUp (e : Expr) : CCM Unit := do
-  let some (a, b) := e.app2? ``Or | failure
-  if ← isEqTrue a then
-    -- `a = True  → (Or a b) = True`
-    pushEq e (.const ``True [])
-      (mkApp3 (.const ``or_eq_of_eq_true_left []) a b (← getEqTrueProof a))
-  else if ← isEqTrue b then
-    -- `b = True  → (Or a b) = True`
-    pushEq e (.const ``True [])
-      (mkApp3 (.const ``or_eq_of_eq_true_right []) a b (← getEqTrueProof b))
-  else if ← isEqFalse a then
-    -- `a = False → (Or a b) = b`
-    pushEq e b (mkApp3 (.const ``or_eq_of_eq_false_left []) a b (← getEqFalseProof a))
-  else if ← isEqFalse b then
-    -- `b = False → (Or a b) = a`
-    pushEq e a (mkApp3 (.const ``or_eq_of_eq_false_right []) a b (← getEqFalseProof b))
-  else if ← isEqv a b then
-    -- `a = b     → (Or a b) = a`
-    pushEq e a (mkApp3 (.const ``or_eq_of_eq []) a b (← getPropEqProof a b))
-  -- We may also add `a = Not b -> (Or a b) = True`
-
-def propagateNotUp (e : Expr) : CCM Unit := do
-  let some a := e.not? | failure
-  if ← isEqTrue a then
-    -- `a = True  → Not a = False`
-    pushEq e (.const ``False []) (mkApp2 (.const ``not_eq_of_eq_true []) a (← getEqTrueProof a))
-  else if ← isEqFalse a then
-    -- `a = False → Not a = True`
-    pushEq e (.const ``True []) (mkApp2 (.const ``not_eq_of_eq_false []) a (← getEqFalseProof a))
-  else if ← isEqv a e then
-    let falsePr := mkApp2 (.const ``false_of_a_eq_not_a []) a (← getPropEqProof a e)
-    let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
-    pushEq (.const ``True []) (.const ``False []) H
-
-def propagateIteUp (e : Expr) : CCM Unit := do
-  let .app (.app (.app (.app (.app (.const ``ite [lvl]) A) c) d) a) b := e | failure
-  if ← isEqTrue c then
-    -- `c = True  → (ite c a b) = a`
-    pushEq e a (mkApp6 (.const ``if_eq_of_eq_true [lvl]) c d A a b (← getEqTrueProof c))
-  else if ← isEqFalse c then
-    -- `c = False → (ite c a b) = b`
-    pushEq e b (mkApp6 (.const ``if_eq_of_eq_false [lvl]) c d A a b (← getEqFalseProof c))
-  else if ← isEqv a b then
-    -- `a = b     → (ite c a b) = a`
-    pushEq e a (mkApp6 (.const ``if_eq_of_eq [lvl]) c d A a b (← getPropEqProof a b))
-
-def mkNeOfEqOfNe (a a₁ a₁NeB : Expr) : CCM (Option Expr) := do
-  guard (← isEqv a a₁)
-  if a == a₁ then
-    return some a₁NeB
-  let aEqA₁ ← getEqProof a a₁
-  match aEqA₁ with
-  | none => return none -- failed to build proof
-  | some aEqA₁ => mkAppM ``ne_of_eq_of_ne #[aEqA₁, a₁NeB]
-
-def mkNeOfNeOfEq (aNeB₁ b₁ b : Expr) : CCM (Option Expr) := do
-  guard (← isEqv b b₁)
-  if b == b₁ then
-    return some aNeB₁
-  let b₁EqB ← getEqProof b b₁
-  match b₁EqB with
-  | none => return none -- failed to build proof
-  | some b₁EqB => mkAppM ``ne_of_ne_of_eq #[aNeB₁, b₁EqB]
-
-def propagateEqUp (e : Expr) : CCM Unit := do
-  -- Remark: the positive case is implemented at `checkEqTrue` for any reflexive relation.
-  let some (_, a, b) := e.eq? | failure
-  let ra ← getRoot a
-  let rb ← getRoot b
-  if ra != rb then
-    let mut raNeRb : Option Expr := none
-    if ← isInterpretedValue ra <&&> isInterpretedValue rb then
-      raNeRb := some
-        (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
-    else
-      let env ← getEnv
-      if let some c₁ := ra.isConstructorApp? env then
-      if let some c₂ := rb.isConstructorApp? env then
-      if c₁.name != c₂.name then
-        raNeRb ← withLocalDeclD `h (← mkEq ra rb) fun h => do
-          mkLambdaFVars #[h] (← mkNoConfusion (.const ``False []) h)
-    if let some raNeRb' := raNeRb then
-    if let some aNeRb ← mkNeOfEqOfNe a ra raNeRb' then
-    if let some aNeB ← mkNeOfNeOfEq aNeRb rb b then
-      pushEq e (.const ``False []) (← mkAppM ``eq_false_intro #[aNeB])
-
-def propagateUp (e : Expr) : CCM Unit := do
-  if (← getState).inconsistent then return
-  if e.isAppOfArity ``Iff 2 then
-    propagateIffUp e
-  else if e.isAppOfArity ``And 2 then
-    propagateAndUp e
-  else if e.isAppOfArity ``Or 2 then
-    propagateOrUp e
-  else if e.isAppOfArity ``Not 1 then
-    propagateNotUp e
-  else if e.isArrow then
-    propagateImpUp e
-  else if e.isIte then
-    propagateIteUp e
-  else if e.isEq then
-    propagateEqUp e
 
 def propagateAndDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
