@@ -484,7 +484,7 @@ end IsCoatomistic
 
 namespace CompleteAtomicBooleanAlgebra
 
-instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
+instance (priority := 100) {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
   eq_sSup_atoms b := by
     inhabit α
     refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
@@ -499,7 +499,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
     nontriviality α
     cases g c <;> simp
 
-instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
+instance (priority := 100) {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
 
 end CompleteAtomicBooleanAlgebra

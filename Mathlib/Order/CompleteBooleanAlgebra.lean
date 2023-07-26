@@ -484,8 +484,6 @@ class CompleteAtomicBooleanAlgebra (α : Type u) extends
   iInf_sup_le_sup_sInf := CompletelyDistribLattice.toCompleteDistribLattice.iInf_sup_le_sup_sInf
   inf_sSup_le_iSup_inf := CompletelyDistribLattice.toCompleteDistribLattice.inf_sSup_le_iSup_inf
 attribute [instance 200] CompleteAtomicBooleanAlgebra.toSDiff
-attribute [instance 180] CompleteAtomicBooleanAlgebra.instIsCoatomisticToCompleteLatticeToCompletelyDistribLattice
-attribute [instance 180] CompleteAtomicBooleanAlgebra.instIsAtomisticToCompleteLatticeToCompletelyDistribLattice
 attribute [instance 200] CompleteAtomicBooleanAlgebra.toCompletelyDistribLattice
 attribute [instance 200] CompleteAtomicBooleanAlgebra.toHasCompl
 attribute [instance 200] CompleteAtomicBooleanAlgebra.toHImp
