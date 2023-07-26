@@ -855,7 +855,7 @@ theorem finite_pure (a : α) : (pure a : Set α).Finite :=
 
 @[simp]
 protected -- Porting note: added
-theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite := by
+protected theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite := by
   cases hs
   apply toFinite
 #align set.finite.insert Set.Finite.insert
