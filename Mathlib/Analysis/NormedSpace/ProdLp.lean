@@ -21,7 +21,8 @@ different distances. -/
 def ProdLp (_p : ℝ≥0∞) (α β : Type _) : Type _ :=
   α × β
 
-instance (p : ℝ≥0∞) (α β : Type _) [Inhabited α] [Inhabited β] : Inhabited (ProdLp p α β) :=
+instance ProdLp.instInhabited (p : ℝ≥0∞) (α β : Type _) [Inhabited α] [Inhabited β] :
+    Inhabited (ProdLp p α β) :=
   ⟨default, default⟩
 
 @[ext]
@@ -70,7 +71,7 @@ separate from `ProdLp.instPseudoEMetric` since the latter requires the type clas
 Registering this separately allows for a future emetric-like structure on `ProdLp p α β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance : EDist (ProdLp p α β) where
+instance instEDist : EDist (ProdLp p α β) where
   edist f g :=
     -- Porting note: can we drop the `_hp` entirely?
     if _hp : p = 0 then 0
@@ -131,7 +132,7 @@ separate from `pi_Lp.pseudo_metric` since the latter requires the type class hyp
 Registering this separately allows for a future metric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance : Dist (ProdLp p α β) where
+instance instDist : Dist (ProdLp p α β) where
   dist f g :=
     if _hp : p = 0 then 0 --{ i | f i ≠ g i }.toFinite.toFinset.card
     else
@@ -269,7 +270,7 @@ def pseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       · exact sup_edist_ne_top_aux f g
       · rw [edist_eq_add (zero_lt_one.trans_le h)]
         refine
-          ENNReal.rpow_ne_top_of_nonneg (one_div_nonneg.2 (zero_le_one.trans h)) (ne_of_lt ?_)
+          ENNReal.rpow_ne_top_of_nonneg (by positivity) (ne_of_lt ?_)
         simp [ENNReal.add_lt_top, ENNReal.rpow_lt_top_of_nonneg, edist_ne_top] )
     fun f g => by
     rcases p.dichotomy with (rfl | h)
@@ -283,8 +284,7 @@ def pseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
         exact le_sup_right
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
         · simp only [ge_iff_le, le_sup_iff, dist_nonneg]
-        · change PseudoMetricSpace.edist _ _ ⊔ PseudoMetricSpace.edist _ _ ≤ _
-          simp [PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
+        · simp [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
     · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ :=
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
       have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ :=
@@ -294,55 +294,58 @@ def pseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
 
 attribute [local instance] ProdLp.pseudoMetricAux
 
-theorem lipschitzWith_equiv_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+theorem lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (ProdLp.equiv p α β) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
-  · simpa only [ENNReal.coe_one, one_mul, edist_eq_iSup, edist, Finset.sup_le_iff, Finset.mem_univ,
-      forall_true_left] using le_iSup fun i => edist (x i) (y i)
+  · simp only [equiv_apply, coe_one, one_mul, le_refl]
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le h).ne'
-    rw [edist_eq_sum (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, Finset.mem_univ, Finset.sup_le_iff,
-      ENNReal.coe_one]
-    intro i
-    calc
-      edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
-        simp [← ENNReal.rpow_mul, cancel, -one_div]
-      _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
-        apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans h)
-        exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
+    rw [edist_eq_add (zero_lt_one.trans_le h)]
+    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, equiv_apply, ge_iff_le,
+      sup_le_iff]
+    constructor
+    · calc
+        edist x.fst y.fst ≤ (edist x.fst y.fst ^ p.toReal) ^ (1 / p.toReal) := by
+          simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
+        _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
+          apply ENNReal.rpow_le_rpow _ (by positivity)
+          simp only [self_le_add_right]
+    · calc
+        edist x.snd y.snd ≤ (edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
+          simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
+        _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
+          apply ENNReal.rpow_le_rpow _ (by positivity)
+          simp only [self_le_add_left]
 
-theorem antilipschitzWith_equiv_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+example (a : ENNReal) : a + a = 2*a := by exact Eq.symm (two_mul a)
+
+theorem antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (ProdLp.equiv p α β) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
-  · simp only [edist_eq_iSup, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero,
-      ENNReal.coe_one, one_mul, iSup_le_iff]
-    -- Porting note: `Finset.le_sup` needed some help
-    exact fun i => Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
-  · have pos : 0 < p.toReal := zero_lt_one.trans_le h
-    have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
+  · simp [edist]
+  · have pos : 0 < p.toReal := by positivity
+    have nonneg : 0 ≤ 1 / p.toReal := by positivity
     have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (ne_of_gt pos)
-    rw [edist_eq_sum pos, ENNReal.toReal_div 1 p]
+    rw [edist_eq_add pos, ENNReal.toReal_div 1 p]
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
-      (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
-          (∑ _i, edist (PiLp.equiv p β x) (PiLp.equiv p β y) ^ p.toReal) ^ (1 / p.toReal) := by
-        refine ENNReal.rpow_le_rpow ?_ nonneg
-        swap
-        refine Finset.sum_le_sum fun i _ => ?_
-        apply ENNReal.rpow_le_rpow _ (le_of_lt pos)
-        exact Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
+      (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) ≤
+          (edist (ProdLp.equiv p α β x) (ProdLp.equiv p α β y) ^ p.toReal +
+          edist (ProdLp.equiv p α β x) (ProdLp.equiv p α β y) ^ p.toReal) ^ (1 / p.toReal) := by
+        refine ENNReal.rpow_le_rpow (add_le_add ?_ ?_) nonneg
+        · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
+          simp [edist]
+        · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
+          simp [edist]
       _ =
-          ((Fintype.card ι : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
-            edist (PiLp.equiv p β x) (PiLp.equiv p β y) := by
-        simp only [nsmul_eq_mul, Finset.card_univ, ENNReal.rpow_one, Finset.sum_const,
-          ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel]
-        have : (Fintype.card ι : ℝ≥0∞) = (Fintype.card ι : ℝ≥0) :=
-          (ENNReal.coe_nat (Fintype.card ι)).symm
-        rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
+          ((2 : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
+            edist (ProdLp.equiv p α β x) (ProdLp.equiv p α β y) := by
+        simp only [equiv_apply, ← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg,
+          ← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg,
+          coe_ofNat]
 
-theorem aux_uniformity_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
+theorem aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (ProdLp p α β) = 𝓤[instUniformSpaceProd] := by
   have A : UniformInducing (ProdLp.equiv p α β) :=
     (antilipschitzWith_equiv_aux p α β).uniformInducing
@@ -411,3 +414,38 @@ instance [PseudoMetricSpace α] [PseudoMetricSpace β] : PseudoMetricSpace (Prod
 and having as uniformity the product uniformity. -/
 instance [MetricSpace α] [MetricSpace β] : MetricSpace (ProdLp p α β) :=
   MetricSpace.ofT0PseudoMetricSpace _
+
+variable {p α β}
+
+theorem nndist_eq_sum [PseudoMetricSpace α] [PseudoMetricSpace β]
+    (hp : p ≠ ∞) (x y : ProdLp p α β) :
+    nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
+  -- Porting note: was `Subtype.ext`
+  NNReal.eq <| by
+    push_cast
+    exact dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
+
+theorem nndist_eq_iSup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : ProdLp ∞ α β) :
+    nndist x y = nndist x.fst y.fst ⊔ nndist x.snd y.snd :=
+  -- Porting note: was `Subtype.ext`
+  NNReal.eq <| by
+    push_cast
+    exact dist_eq_sup _ _
+
+variable (p α β)
+
+theorem lipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    LipschitzWith 1 (ProdLp.equiv p α β) :=
+  lipschitzWith_equiv_aux p α β
+
+theorem antilipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (ProdLp.equiv p α β) :=
+  antilipschitzWith_equiv_aux p α β
+
+theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    Isometry (ProdLp.equiv ∞ α β) :=
+  fun x y =>
+  le_antisymm (by simpa only [ENNReal.coe_one, one_mul] using lipschitzWith_equiv ∞ α β x y)
+    (by
+      simpa only [ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero, ENNReal.coe_one,
+        one_mul] using antilipschitzWith_equiv ∞ α β x y)
