@@ -42,14 +42,12 @@ theorem eq_iSup_adjoin [h : Normal F L] :
   · rintro f _ ⟨x, rfl⟩
     refine' le_iSup (fun x ↦ adjoin F ((minpoly F x).rootSet L)) x
       (subset_adjoin F ((minpoly F x).rootSet L) _)
-    rw [mem_rootSet_of_ne, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom,
+    rw [mem_rootSet_of_ne (minpoly.ne_zero (hi x)), AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
       Polynomial.aeval_algHom_apply, minpoly.aeval, map_zero]
-    exact minpoly.ne_zero (hi x)
   · rw [Polynomial.rootSet, Finset.mem_coe, Multiset.mem_toFinset] at hy
     let g := (algHomAdjoinIntegralEquiv F (hi x)).symm ⟨y, hy⟩
     refine' le_iSup AlgHom.fieldRange ((g.liftNormal L).comp (IsScalarTower.toAlgHom F K L))
       ⟨x, (g.liftNormal_commutes L (AdjoinSimple.gen F x)).trans _⟩
-    rw [Algebra.id.map_eq_id, RingHom.id_apply]
     -- Porting note: in mathlib3 this next `apply` closed the goal.
     -- Now it can't find a proof by unification, so we have to do it ourselves.
     apply PowerBasis.lift_gen
