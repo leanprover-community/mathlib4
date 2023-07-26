@@ -127,8 +127,8 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
 /-- Pushforward a `Module` structure along a surjective additive monoid homomorphism. -/
 protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
-  { hf.distribMulAction f smul with
-    smul := (· • ·)
+  { toDistribMulAction := hf.distribMulAction f smul
+    -- smul := (· • ·)
     add_smul := fun c₁ c₂ x => by
       rcases hf x with ⟨x, rfl⟩
       simp only [add_smul, ← smul, ← f.map_add]
