@@ -65,6 +65,16 @@ Instead write permission for non-master branches should be requested on [Zulip](
 by introducing yourself, providing your GitHub handle and what contribution you are planning on doing.
 You may want to subscribe to the `mathlib4` stream
 
+* To obtain precompiled `olean` files, run `lake exe cache get`. (Skipping this step means the next step will be very slow.)
+* To build `mathlib4` run `lake build`.
+* To build and run all tests, run `make`.
+* You can use `lake build Mathlib.Import.Path` to build a particular file, e.g. `lake build Mathlib.Algebra.Group.Defs`.
+* If you added a new file, run the following command to update `Mathlib.lean`
+
+  ```shell
+  find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+  ```
+
 ### Guidelines
 
 Mathlib has the following guidelines and conventions that must be followed
