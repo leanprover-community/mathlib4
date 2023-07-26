@@ -109,7 +109,7 @@ section SMulActionHom
 variable {M : Type u} {α : Type v} {β : Type w}
   [MeasurableSpace M] [MeasurableSpace α] [MeasurableSpace β]
 
-theorem SMulInvariantMeasure_map [SMul M α] [SMul M β] [MeasurableSMul M α] [MeasurableSMul M β]
+theorem SMulInvariantMeasure_map [SMul M α] [SMul M β] [MeasurableSMul M β]
   (μ : Measure α) [SMulInvariantMeasure M α μ] (f : α →[M] β)
   (hf: Measurable f)  : SMulInvariantMeasure M β (map f μ) := by
   refine' ⟨fun m S hS => _⟩
