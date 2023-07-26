@@ -339,6 +339,7 @@ theorem bases_of_card_eq (h : b.card = s.card) : b = s := by
   rw [← subset_iff_eq_of_card_le (h ▸ (le_refl _))]
   exact hb.2.1
 
+@[simp]
 theorem bases_of_feasible_eq_singleton (hs : s ∈ G) : G.bases s = {s} := by
   ext t; constructor <;> intro h
   . rw [Finset.mem_singleton]
@@ -474,9 +475,42 @@ theorem local_submodularity
     rank_le_of_subset (subset_trans (subset_insert y _) (subset_insert _ _))
   have h := le_iff_lt_or_eq.mp h
   by_contra' h'
-  simp [h'.symm] at h; clear h'
-
-  sorry
+  simp only [mem_insert, h'.symm, or_false] at h; clear h'
+  have ⟨b₁, hb₁₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have hb₁₂ := rank_eq_bases_card hb₁₁
+  have hb₁₃ := basis_mem_feasible hb₁₁
+  have ⟨b₂, hb₂₁⟩ : Nonempty (G.bases (insert x (insert y s))) := G.bases_nonempty
+  have hb₂₂ := rank_eq_bases_card hb₂₁
+  have hb₂₃ := basis_mem_feasible hb₂₁
+  rw [hb₁₂, hb₂₂] at h
+  have ⟨a, ha₁, ha₂⟩ := G.exchangeProperty hb₂₃ hb₁₃ h
+  rw [system_feasible_set_mem_mem] at ha₂
+  rw [mem_sdiff] at ha₁
+  by_cases h₃ : a ∈ s
+  . exact ha₁.2 (basis_maximal hb₁₁ h₃ ha₂)
+  . have h₄ : a = x ∨ a = y := by
+      have : a ∈ insert x (insert y s) := basis_subset hb₂₁ ha₁.1
+      simp only [mem_insert, h₃, or_false] at this
+      exact this
+    apply h₄.elim <;> intro h₄ <;> rw [h₄] at ha₁ ha₂
+    . have h₅ : (insert x b₁).card ≤ G.rank (insert x s) := by
+        rw [← rank_of_feasible ha₂]
+        apply rank_le_of_subset
+        intro e; simp only [mem_insert]; intro he
+        exact he.elim (fun h => Or.inl h) (fun h => Or.inr ((basis_subset hb₁₁) h))
+      have h₆ : G.rank s < (insert x b₁).card := by
+        simp only [hb₁₂, ha₁, card_insert_of_not_mem, lt_add_iff_pos_right]
+      have h₇ := lt_of_lt_of_le h₆ h₅
+      simp only [h₁, lt_self_iff_false] at h₇
+    . have h₅ : (insert y b₁).card ≤ G.rank (insert y s) := by
+        rw [← rank_of_feasible ha₂]
+        apply rank_le_of_subset
+        intro e; simp only [mem_insert]; intro he
+        exact he.elim (fun h => Or.inl h) (fun h => Or.inr ((basis_subset hb₁₁) h))
+      have h₆ : G.rank s < (insert y b₁).card := by
+        simp only [hb₁₂, ha₁, card_insert_of_not_mem, lt_add_iff_pos_right]
+      have h₇ := lt_of_lt_of_le h₆ h₅
+      simp only [h₂, lt_self_iff_false] at h₇
 
 theorem stronger_local_submodularity_left
   (h₁ : G.rank s = G.rank (s ∩ t))
@@ -512,3 +546,4 @@ protected def rank.toGreedoid (r : Finset α → ℕ) (hr : greedoidRankAxioms r
 end rank
 
 end Greedoid
+#lint
