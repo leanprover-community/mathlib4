@@ -303,6 +303,8 @@ theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function
   (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ
 #align alg_hom.bijective AlgHom.bijective
 
+variable (K L)
+
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 @[simps]
 noncomputable def Algebra.IsAlgebraic.algEquivEquivAlgHom (ha : Algebra.IsAlgebraic K L) :
@@ -317,6 +319,13 @@ noncomputable def Algebra.IsAlgebraic.algEquivEquivAlgHom (ha : Algebra.IsAlgebr
     rfl
   map_mul' _ _ := rfl
 #align algebra.is_algebraic.alg_equiv_equiv_alg_hom Algebra.IsAlgebraic.algEquivEquivAlgHom
+
+/-- Bijection between algebra equivalences and algebra homomorphisms -/
+@[reducible]
+noncomputable def algEquivEquivAlgHom [FiniteDimensional K L] :
+    (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
+  (Algebra.isAlgebraic_of_finite K L).algEquivEquivAlgHom K L
+#align alg_equiv_equiv_alg_hom algEquivEquivAlgHom
 
 end Field
 
