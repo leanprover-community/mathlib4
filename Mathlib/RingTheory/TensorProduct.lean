@@ -437,8 +437,10 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
 -- providing this instance separately makes some downstream code substantially faster
-instance instMul : Mul (A ⊗[R] B) := ⟨fun a b ↦ mul a b⟩
+instance instMul : Mul (A ⊗[R] B) where
+  mul a b := mul a b
 
+-- and this separately seems to improve things slightly
 instance : NonUnitalNonAssocSemiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
