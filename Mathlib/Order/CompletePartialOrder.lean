@@ -10,6 +10,28 @@ import Mathlib.Data.Finset.Basic
 
 /-!
 # Complete Partial Order
+
+This file begins by showing that each set `s` in a join-semilattice generates a directed set `d`
+such that:
+
+- `s` is a subset of `d`
+- `s` and `d` share the same upper bounds
+- `u` is the least upper bound of `s` if and only if it is the least upper bound of `d`
+
+It follows that if every directed set in a join-semilattice has a least upper bound then the join is
+complete.
+
+The second part of this file considers complete partial orders (sometimes called directedly complete
+partial orders). These are partial orders for which every directed set has a least upper bound.
+
+## References
+
+- [B. A. Davey and H. A. Priestley, Introduction to lattices and order][davey_priestley]
+
+## Tags
+
+complete partial order, directedly complete partial order
+
 -/
 
 section SemilatticeSup
@@ -110,7 +132,10 @@ lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u 
       rw [← Set_DirectedSet_upperBounds] at hv
       exact Iff.mpr (isLUB_le_iff h) hv
 
-instance (dSup : DirectedSet α → α)
+/--
+A join semi-lattice where every directed subset has a least upper bound is automatically complete
+-/
+def SemilatticeSup.toCompleteSemilatticeSup (dSup : DirectedSet α → α)
     (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) : CompleteSemilatticeSup α where
   sSup := fun s => dSup (Set.ToDirectedSet s)
   le_sSup := by
