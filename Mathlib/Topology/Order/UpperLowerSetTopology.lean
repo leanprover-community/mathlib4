@@ -428,30 +428,21 @@ section maps
 variable [Preorder α] [Preorder β]
 
 open Topology
+open OrderDual
 
 protected lemma monotone_iff_continuous [TopologicalSpace α] [LowerSetTopology α]
     [TopologicalSpace β] [LowerSetTopology β] {f : α → β} :
     Monotone f ↔ Continuous f := by
-  constructor
-  · intro hf
-    simp_rw [continuous_def, IsOpen_iff_IsLowerSet]
-    exact fun _ hs ↦ IsLowerSet.preimage hs hf
-  · intro hf a b hab
-    rw [← mem_Ici, ← closure_singleton, ← mem_preimage]
-    apply Continuous.closure_preimage_subset hf
-    rw [← mem_Ici, ← closure_singleton] at hab
-    apply mem_of_mem_of_subset hab
-    apply closure_mono
-    rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
+  rw [Monotone.dual_iff]
+  exact UpperSetTopology.monotone_iff_continuous (α := αᵒᵈ) (β := βᵒᵈ)
+    (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
 
 lemma Monotone_to_LowerTopology_Continuous [TopologicalSpace α]
     [LowerSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
-  rw [continuous_def]
-  intro s hs
-  rw [IsOpen_iff_IsLowerSet]
-  apply IsLowerSet.preimage _ hf
-  apply LowerTopology.isLowerSet_of_isOpen hs
+  apply UpperSetTopology.Monotone_to_UpperTopology_Continuous (α := αᵒᵈ) (β := βᵒᵈ)
+    (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
+  exact Iff.mp Monotone.dual_iff hf
 
 lemma LowerSetLELower {t₁ : TopologicalSpace α} [@LowerSetTopology α t₁ _]
     {t₂ : TopologicalSpace α} [@LowerTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
