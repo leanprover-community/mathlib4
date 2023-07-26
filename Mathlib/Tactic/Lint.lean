@@ -28,6 +28,7 @@ Linter that checks whether a structure should be in Prop.
       fun _ ty => return ty == .sort .zero
     if isProp then return none
     let projs := (getStructureInfo? (← getEnv) declName).get!.fieldNames
+    if projs.isEmpty then return none
     let allProofs ← projs.allM fun proj => do
       let cnst ← mkConstWithLevelParams (declName ++ proj)
       isProof cnst
