@@ -12,52 +12,18 @@ import Mathlib.Data.Finset.Basic
 # Complete Partial Order
 -/
 
+section SemilatticeSup
+
 structure DirectedSet (α : Type _) [PartialOrder α] where
   set : Set α
   directed : DirectedOn (. ≤ .) set
 
+variable [SemilatticeSup α]
 
-
-class CompletePartialOrder (α : Type _) extends PartialOrder α where
-  /-- The supremum of an increasing sequence -/
-  dSup : DirectedSet α → α
-  /-- `dSup` is an upper bound of the increasing sequence -/
-  le_dSup : ∀ d : DirectedSet α, ∀ a ∈ d.set, a ≤ dSup d
-  /-- `dSup` is a lower bound of the set of upper bounds of the increasing sequence -/
-  dSup_le : ∀ (d : DirectedSet α) (x), (∀ a ∈ d.set, a  ≤ x) → dSup d ≤ x
-
-/-
-A complete lattice is a complete partial order
+/--
+Every subset of a join-semilattice generates a directed set
 -/
-instance [CompleteLattice α] : CompletePartialOrder α := {
-  dSup := fun d => sSup d.set,
-  le_dSup := fun _ _ ha => le_sSup ha
-  dSup_le := fun _ _ h => sSup_le_iff.mpr h
-}
-
-open OmegaCompletePartialOrder
-
-def Chain.to_DirectedSet [PartialOrder α] (c : Chain α) : DirectedSet α := {
-  set := Set.range c,
-  directed := by
-    intros x hx y hy
-    obtain ⟨n,cn⟩ := Set.mem_range.mp hx
-    obtain ⟨m,cm⟩ := Set.mem_range.mp hy
-    cases' le_or_gt n m with hnm hmn
-    · use y
-      constructor
-      · exact hy
-      · simp only [le_refl, and_true]
-        rw [← cn, ← cm]
-        apply (c.monotone' hnm)
-    · use x
-      constructor
-      · exact hx
-      · simp
-        rw [← cn, ← cm]
-        apply (c.monotone' (Nat.le_of_lt hmn)) }
-
-def Set.ToDirectedSet [SemilatticeSup α] (s : Set α) : DirectedSet α := {
+def Set.ToDirectedSet (s : Set α) : DirectedSet α := {
   set := { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   },
   directed := by classical
     intros a ha b hb
@@ -101,9 +67,7 @@ def Set.ToDirectedSet [SemilatticeSup α] (s : Set α) : DirectedSet α := {
       · exact le_sup_right
 }
 
-lemma Chain_Set [PartialOrder α] (c : Chain α) : (Chain.to_DirectedSet c).set = Set.range c := rfl
-
-lemma Set_subseteq_DirectedSet [SemilatticeSup α] {s : Set α} :
+lemma Set_subseteq_DirectedSet {s : Set α} :
     s ⊆ (Set.ToDirectedSet s).set := by
   intro a ha
   rw [Set.ToDirectedSet]
@@ -114,7 +78,7 @@ lemma Set_subseteq_DirectedSet [SemilatticeSup α] {s : Set α} :
   · use (Finset.singleton_nonempty a)
     rfl
 
-lemma Set_DirectedSet_upperBounds [SemilatticeSup α] {s : Set α} :
+lemma Set_DirectedSet_upperBounds {s : Set α} :
     upperBounds (Set.ToDirectedSet s).set = upperBounds s := by
   rw [subset_antisymm_iff]
   constructor
@@ -145,6 +109,65 @@ lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u 
     · intro v hv
       rw [← Set_DirectedSet_upperBounds] at hv
       exact Iff.mpr (isLUB_le_iff h) hv
+
+end SemilatticeSup
+
+class CompletePartialOrder (α : Type _) extends PartialOrder α where
+  /-- The supremum of an increasing sequence -/
+  dSup : DirectedSet α → α
+  /-- For each directed set `d`, `dSup d` is the least upper bound of `d` -/
+  is_LUB: ∀ d : DirectedSet α, IsLUB d.set (dSup d)
+
+lemma CompletePartialOrder.le_dSup [CompletePartialOrder α] (d : DirectedSet α) :
+    ∀ a ∈ d.set, a ≤ dSup d := fun _ ha => (is_LUB d).1 ha
+
+lemma CompletePartialOrder.dSup_le [CompletePartialOrder α] (d : DirectedSet α) (x : α) :
+    (∀ a ∈ d.set, a  ≤ x) → dSup d ≤ x := fun h => (is_LUB d).2 h
+
+-- def lowerBounds (s : Set α) : Set α :=
+--  { x | ∀ ⦃a⦄, a ∈ s → x ≤ a }
+
+-- def IsLeast (s : Set α) (a : α) : Prop :=
+--  a ∈ s ∧ a ∈ lowerBounds s
+
+-- def IsLUB (s : Set α) : α → Prop :=
+--  IsLeast (upperBounds s)
+
+/-
+A complete lattice is a complete partial order
+-/
+instance [CompleteLattice α] : CompletePartialOrder α := {
+  dSup := fun d => sSup d.set,
+  is_LUB := fun d => by
+    simp
+    constructor
+    · exact fun _ ↦ le_sSup
+    · exact fun x a ↦ sSup_le a
+}
+
+open OmegaCompletePartialOrder
+
+def Chain.to_DirectedSet [PartialOrder α] (c : Chain α) : DirectedSet α := {
+  set := Set.range c,
+  directed := by
+    intros x hx y hy
+    obtain ⟨n,cn⟩ := Set.mem_range.mp hx
+    obtain ⟨m,cm⟩ := Set.mem_range.mp hy
+    cases' le_or_gt n m with hnm hmn
+    · use y
+      constructor
+      · exact hy
+      · simp only [le_refl, and_true]
+        rw [← cn, ← cm]
+        apply (c.monotone' hnm)
+    · use x
+      constructor
+      · exact hx
+      · simp
+        rw [← cn, ← cm]
+        apply (c.monotone' (Nat.le_of_lt hmn)) }
+
+lemma Chain_Set [PartialOrder α] (c : Chain α) : (Chain.to_DirectedSet c).set = Set.range c := rfl
 
 /-
 A complete partial order is a ω-complete partial order
