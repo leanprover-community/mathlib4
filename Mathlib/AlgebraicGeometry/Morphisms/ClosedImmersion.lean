@@ -1,93 +1,104 @@
 /-
-Copyright (c) 2023 Jonas van der Schaaf, Amelia Livingston. All rights
+Copyright (c) 2023 Jonas van der Schaaf. All rights
 reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jonas van der Schaaf, Amelia Livingston
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.Stalks
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.RingTheory.LocalProperties
-import Mathlib.Topology.Maps
+
+/-!
+# Closed immersions of presheafed spaces
+
+## Main definitions
+
+## Implementation notes
+
+## TODO
+
+-/
 universe v u
-open CategoryTheory
-open AlgebraicGeometry
+
+open CategoryTheory CategoryTheory.Limits
 
 namespace AlgebraicGeometry
 
-/- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
-   topological map is a closed embedding and the induced stalkmaps are
-   surjective.
--/
-class Scheme.IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
-  base_closed_emb: ClosedEmbedding f.1.base
-  surj_on_stalks: ∀ x : X, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
+variable {C : Type u} [Category.{v} C] [ConcreteCategory C] [HasColimits C]
 
-example {X : Scheme} : Scheme.IsClosedImmersion (𝟙 X) := by
+/-- A morphism of presheafed spaces `X ⟶ Y` is a closed immersion if the underlying
+topological map is a closed embedding and the induced stalk maps are surjective. -/
+class PresheafedSpace.IsClosedImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : Prop where
+  base_closed : ClosedEmbedding f.base
+  surj_on_stalks : ∀ x : X, Function.Surjective (PresheafedSpace.stalkMap f x)
+
+abbrev SheafedSpace.IsClosedImmersion {X Y : SheafedSpace C} (f : X ⟶ Y) : Prop :=
+  PresheafedSpace.IsClosedImmersion f
+
+abbrev LocallyRingedSpace.IsClosedImmersion {X Y : LocallyRingedSpace} (f : X ⟶ Y) : Prop :=
+  SheafedSpace.IsClosedImmersion f.1
+
+namespace PresheafedSpace.IsClosedImmersion
+
+open PresheafedSpace
+
+local notation "IsClosedImmersion" => PresheafedSpace.IsClosedImmersion
+
+instance id {X : PresheafedSpace C} : IsClosedImmersion (𝟙 X) := by
   constructor
-
-  . rw [Scheme.id_val_base]
-    apply closedEmbedding_id
-
+  . apply closedEmbedding_id
   . intro x r
     use r
-    erw [PresheafedSpace.stalkMap.id]
-    rfl
+    rw [PresheafedSpace.stalkMap.id]
+    exact Function.funext_iff.1 coe_id _
 
-/- Suppose we have scheme maps `f : X ⟶ Y` and `g : Y ⟶ Z` which are both
-   closed immersions, then their composition `f ≫ g : X ⟶ Z` should also be a
-   closed immersion.
--/
-lemma isClosedImmersion_stableUnderComposition :
-  MorphismProperty.StableUnderComposition @Scheme.IsClosedImmersion := by
-    rintro X Y Z f g ⟨hf_closed, hf_surj⟩ ⟨hg_closed, hg_surj⟩
-    constructor
+/- The file `OpenImmersion.Basic` doesn't use this `MorphismProperty` stuff,
+but `Morphisms.FiniteType` does. I've emulated the latter for now, but maybe
+emulating open immersions is more appropriate since they're initially defined for
+presheafed spaces rather than schemes too. Will think tomorrow.
+Also at the moment the naming/namespacing is a mix of those two files... - Amelia -/
 
-    . exact hg_closed.comp hf_closed
-
-    . intro x
-      erw [PresheafedSpace.stalkMap.comp]
-      have hf_surj_x := hf_surj x
-      have hg_surj_fx := hg_surj (f.val.base x)
-      exact hf_surj_x.comp hg_surj_fx
-
-/- Isomorphisms are closed immersions.
--/
-lemma iso_is_closed_immersion {X Y : Scheme} {f: X ⟶ Y} [hf: IsIso f] :
-    Scheme.IsClosedImmersion f := by
+/-- Suppose we have maps of presheafed spaces `f : X ⟶ Y` and `g : Y ⟶ Z` which are both
+closed immersions. Then their composition `f ≫ g : X ⟶ Z` should also be a
+closed immersion. -/
+theorem isClosedImmersion_stableUnderComposition :
+    MorphismProperty.StableUnderComposition (@PresheafedSpace.IsClosedImmersion C _ _ _) := by
+  rintro X Y Z f g ⟨hf_closed, hf_surj⟩ ⟨hg_closed, hg_surj⟩
   constructor
-
-  . have := PresheafedSpace.base_isIso_of_iso f.val
-    let f_top_iso := TopCat.homeoOfIso (asIso f.val.base)
-    exact Homeomorph.closedEmbedding f_top_iso
-
+  . exact hg_closed.comp hf_closed
   . intro x
-    have := PresheafedSpace.stalkMap.isIso f.val x
-    apply @And.right (Function.Injective ↑(PresheafedSpace.stalkMap f.val x)) _
-    apply ConcreteCategory.bijective_of_isIso
+    rw [PresheafedSpace.stalkMap.comp]
+    convert (hf_surj x).comp (hg_surj (f x))
+    exact coe_comp _ _
 
--- Now proving the identity is a closed immersion is a one-liner.
-example {X : Scheme} : Scheme.IsClosedImmersion (𝟙 X) := by
-  apply iso_is_closed_immersion
+instance isClosedImmersionComp {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z)
+  [hf : IsClosedImmersion f] [hg : IsClosedImmersion g] :
+    IsClosedImmersion (f ≫ g) :=
+  isClosedImmersion_stableUnderComposition f g hf hg
+
+/-- Isomorphisms are closed immersions. -/
+instance ofIsIso {X Y : PresheafedSpace C} (f : X ⟶ Y) [hf : IsIso f] :
+    IsClosedImmersion f := by
+  constructor
+  . let f_top_iso := TopCat.homeoOfIso (asIso f.base)
+    exact Homeomorph.closedEmbedding f_top_iso
+  . intro x
+    apply (ConcreteCategory.bijective_of_isIso _).2
 
 variable (R : CommRingCat) (M : Submonoid R)
 
-/- Composition with an iso preserves closed embeddings. This is a direct
-   corollary from `iso_is_closed_immersion` and
-   `isClosedImmersion_stableUnderComposition`.
--/
+/-- Composition with an iso preserves closed embeddings. This is a direct
+corollary from `iso_is_closed_immersion` and
+`isClosedImmersion_stableUnderComposition`. -/
 lemma isClosedImmersion_respectsIso :
-  MorphismProperty.RespectsIso @Scheme.IsClosedImmersion := by
-    constructor <;> intro X Y Z e f hf <;> apply isClosedImmersion_stableUnderComposition
+    MorphismProperty.RespectsIso (@PresheafedSpace.IsClosedImmersion C _ _ _) := by
+  constructor <;> intro X Y Z e f hf <;> apply isClosedImmersion_stableUnderComposition
+  <;> infer_instance -- not sure of formatting convention here
 
-    . apply iso_is_closed_immersion
+end PresheafedSpace.IsClosedImmersion
 
-    . assumption
-    assumption
-    exact iso_is_closed_immersion
-
+-- This needs moving to different file
 /- A surjective hom `R →+* S` induces a surjective hom `R_{f⁻¹(P)} →+* S_P`.
 This is just an application of `localizationPreserves_surjective`, modulo the fact that
 `IsLocalization f((f⁻¹(P))ᶜ) R_P`, since `f((f⁻¹(P))ᶜ)` is just `Pᶜ`... -/
@@ -99,38 +110,34 @@ lemma surjective_localRingHom_of_surjective {R S : Type u}
     (Localization.AtPrime (P.comap f)) (Localization.AtPrime P) _ _ _ _ _
     ((Submonoid.map_comap_eq_of_surjective h P.primeCompl).symm ▸ Localization.isLocalization) h
 
-/- Given two commutative rings `R S : CommRingCat` and a surjective morphism
-   `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
-   closed immersion.
--/
-lemma spec_of_surjective_is_closed_immersion {R S : CommRingCat} (f : R ⟶ S)
-  (h : Function.Surjective f)
-  : Scheme.IsClosedImmersion (Scheme.specMap (CommRingCat.ofHom f)) := by
+/- This should probably be in a new file, a la `OpenImmersion.Scheme` - Amelia -/
+
+abbrev Scheme.IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop :=
+  LocallyRingedSpace.IsClosedImmersion f
+
+-- will check naming convention - Amelia
+/-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
+`f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
+closed immersion. -/
+lemma spec_of_surjective_isClosedImmersion {R S : CommRingCat} (f : R ⟶ S)
+    (h : Function.Surjective f) :
+    Scheme.IsClosedImmersion (Scheme.specMap (CommRingCat.ofHom f)) := by
   constructor
-
-  . apply PrimeSpectrum.closedEmbedding_comap_of_surjective
-    exact h
-
+  . apply PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
   . intro x
     erw [←localRingHom_comp_stalkIso, CommRingCat.coe_comp, CommRingCat.coe_comp]
     show Function.Surjective (_ ∘ _)
-    apply Function.Surjective.comp
-    apply Function.Surjective.comp
-
+    apply Function.Surjective.comp (Function.Surjective.comp _ _) _
     . let stalk_iso := (StructureSheaf.stalkIso S x).inv
-      apply @And.right (Function.Injective stalk_iso) _
-      apply ConcreteCategory.bijective_of_isIso
-
+      exact (ConcreteCategory.bijective_of_isIso stalk_iso).2
     . exact surjective_localRingHom_of_surjective f h x.asIdeal
-
     . let stalk_iso := (StructureSheaf.stalkIso ((CommRingCat.of R))
         ((PrimeSpectrum.comap (CommRingCat.ofHom f)) x)).hom
-      apply @And.right (Function.Injective stalk_iso) _
-      apply ConcreteCategory.bijective_of_isIso
+      exact (ConcreteCategory.bijective_of_isIso stalk_iso).2
 
-lemma spec_of_mk_is_closed_immersion {R : CommRingCat.{u}} (I : Ideal R) :
+instance spec_of_mk_isClosedImmersion {R : CommRingCat.{u}} (I : Ideal R) :
   Scheme.IsClosedImmersion (Scheme.specMap (CommRingCat.ofHom (Ideal.Quotient.mk I))) :=
-spec_of_surjective_is_closed_immersion (CommRingCat.ofHom (Ideal.Quotient.mk I))
+spec_of_surjective_isClosedImmersion (CommRingCat.ofHom (Ideal.Quotient.mk I))
   Ideal.Quotient.mk_surjective
 
 end AlgebraicGeometry
