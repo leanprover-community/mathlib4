@@ -34,7 +34,7 @@ open EuclideanGeometry
 
 section DotNotation
 
-variable {c x : E → F} {R : E → ℝ} {s : Set E} {a : E} {n}
+variable {c x : E → F} {R : E → ℝ} {s : Set E} {a : E} {n : ℕ∞}
 
 protected theorem ContDiffWithinAt.inversion (hc : ContDiffWithinAt ℝ n c s a)
     (hR : ContDiffWithinAt ℝ n R s a) (hx : ContDiffWithinAt ℝ n x s a) (hne : x a ≠ c a) :
