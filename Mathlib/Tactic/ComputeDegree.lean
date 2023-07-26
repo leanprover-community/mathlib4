@@ -95,7 +95,7 @@ theorem coeff_nat_cast_ite {n a : ℕ} : (Nat.cast a : R[X]).coeff n = ite (n = 
 
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
     (hf : f.coeff n = a) (hg : g.coeff n = b) :
-    (f + g).coeff n = a + b := by subst ‹_› ‹_› ; apply coeff_add
+    (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply coeff_add
 
 theorem coeff_mul_add_of_le_natDegree_of_eq {df dg : ℕ} {f g : R[X]}
     (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
