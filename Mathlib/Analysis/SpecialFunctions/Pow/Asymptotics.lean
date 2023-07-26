@@ -51,31 +51,62 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
     (tendsto_rpow_atTop hy).inv_tendsto_atTop
 #align tendsto_rpow_neg_at_top tendsto_rpow_neg_atTop
 
-lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : 
+open Asymptotics in
+lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
   show Tendsto (fun z => b^z) atTop (nhds 0)
-  simp_rw [Real.rpow_def_of_pos hb₀]
-  have h₁ : log b < 0 := by rw [log_neg_iff hb₀]; exact hb₁
-  refine Tendsto.exp_atBot ?_
-  rw [tendsto_const_mul_atBot_of_neg h₁]
-  show atTop ≤ atTop    -- come on...
-  rfl
+  rcases le_or_gt b 0 with hb | hb
+  case inl =>   -- b ≤ 0
+    simp_rw [Real.rpow_def_of_nonpos hb]
+    rcases lt_or_eq_of_le hb with hb | rfl
+    case inl =>  -- b < 0
+      have hb_ne : b ≠ 0 := by aesop
+      simp only [hb_ne, ite_false]
+      rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero]
+      have H : (1:ℝ) = 1 * 1 := by simp
+      rw [H]
+      refine IsLittleO.mul_isBigO ?exp ?cos
+      case exp =>
+        rw [isLittleO_const_iff one_ne_zero]
+        have h₀ : log b = log (- -b) := by simp
+        rw [h₀, log_neg_eq_log]
+        have hb' : 0 < -b := by linarith
+        have h₁ : log (-b) < 0 := by rw [log_neg_iff hb']; linarith
+        refine tendsto_exp_atBot.comp ?_
+        rw [tendsto_const_mul_atBot_of_neg h₁]
+        show atTop ≤ atTop
+        rfl
+      case cos =>
+        rw [isBigO_iff]
+        exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
+    case inr =>  -- b = 0
+      simp only [log_zero, zero_mul, exp_zero, one_mul, ite_true]
+      refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
+      rw [tendsto_pure]
+      filter_upwards [eventually_ne_atTop 0] with _ hx
+      simp [hx]
+  case inr =>   -- b > 0
+    simp_rw [Real.rpow_def_of_pos hb]
+    have h₁ : log b < 0 := by rw [log_neg_iff hb]; exact hb₁
+    refine tendsto_exp_atBot.comp ?_
+    rw [tendsto_const_mul_atBot_of_neg h₁]
+    show atTop ≤ atTop
+    rfl
 
-lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) : 
+lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
   show Tendsto (fun z => b^z) atBot (nhds 0)
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine Tendsto.exp_atBot ?_
+  refine tendsto_exp_atBot.comp ?_
   have h₁ : 0 < log b := by rw [log_pos_iff (by positivity)]; aesop
   rw [tendsto_const_mul_atBot_of_pos h₁]
   show atBot ≤ atBot
   rfl
 
-lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : 
-    Tendsto (rpow b) atBot atTop := by
+lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : Tendsto (rpow b) atBot atTop := by
   show Tendsto (fun z => b^z) atBot atTop
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine Tendsto.exp_atTop ?_
+  refine tendsto_exp_atTop.comp ?_
   have h₁ : log b < 0 := by rw [log_neg_iff hb₀]; exact hb₁
   rw [tendsto_const_mul_atTop_iff_neg (by show atBot ≤ atBot; simp)]
   exact h₁
@@ -83,7 +114,7 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 0) := by
   show Tendsto (fun z => b^z) atBot (𝓝 0)
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine Tendsto.exp_atBot ?_
+  refine tendsto_exp_atBot.comp ?_
   have h₁ : 0 < log b := by rw [log_pos_iff (by positivity)]; aesop
   rw [tendsto_const_mul_atBot_iff_pos (by show atBot ≤ atBot; simp)]
   exact h₁
