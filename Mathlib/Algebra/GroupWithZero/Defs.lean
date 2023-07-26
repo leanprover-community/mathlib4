@@ -165,6 +165,8 @@ end CommSemigroup
 class CancelCommMonoidWithZero (M₀ : Type _) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 #align cancel_comm_monoid_with_zero CancelCommMonoidWithZero
 
+attribute [instance 75] CancelCommMonoidWithZero.toCommMonoidWithZero -- See note [lower cancel priority]
+
 instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
 { IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }
