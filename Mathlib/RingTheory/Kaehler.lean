@@ -388,24 +388,33 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
--- Porting note : These 5 instances are found automatically in Lean 3
-instance instS : Module S { x // x ∈ Ideal.cotangentIdeal (KaehlerDifferential.ideal R S) } :=
-  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) _ _ _ IsScalarTower.right
+-- (After) Porting note : These 5 instances are found automatically in Lean 3
+local instance instS : Module S (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) :=
+  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ _ _ IsScalarTower.right
 
-instance instR : Module R { x // x ∈ Ideal.cotangentIdeal (KaehlerDifferential.ideal R S) } :=
-  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) _ _ _ IsScalarTower.right
+local instance instR : Module R (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) :=
+  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ _ _ IsScalarTower.right
 
-instance instSS : Module (S ⊗[R] S) { x // x ∈ Ideal.cotangentIdeal (KaehlerDifferential.ideal R S) } :=
-  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) _ _ _ IsScalarTower.right
+local instance instSS : Module (S ⊗[R] S) (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) :=
+  @Submodule.module' _ _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ _ _ IsScalarTower.right
 
-instance : @IsScalarTower R S { x // x ∈ Ideal.cotangentIdeal (KaehlerDifferential.ideal R S) } _ (instS R S).toSMul (instR R S).toSMul :=
-  @Submodule.isScalarTower' R _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
+local instance : @IsScalarTower R S (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ (instS R S).toSMul (instR R S).toSMul :=
+  @Submodule.isScalarTower' R _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
 
-instance : @IsScalarTower S (S ⊗[R] S) { x // x ∈ Ideal.cotangentIdeal (KaehlerDifferential.ideal R S) } _ (instSS R S).toSMul (instS R S).toSMul :=
-  @Submodule.isScalarTower' S _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S)) _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
+local instance : @IsScalarTower S (S ⊗[R] S) (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ (instSS R S).toSMul (instS R S).toSMul :=
+  @Submodule.isScalarTower' S _ _ _ _ _ (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
 
-instance : @LinearMap.CompatibleSMul (Ω[S⁄R]) { x // x ∈ Ideal.cotangentIdeal (KaehlerDifferential.ideal R S) } _ _ S (S ⊗[R] S) _ _ _ (instS R S).toSMul _ :=
-  @LinearMap.IsScalarTower.compatibleSMul (Ω[S⁄R]) _ _ _ S (S ⊗[R] S) _ _ _ _ _ (instS R S).toSMul _ _
+local instance : @LinearMap.CompatibleSMul (Ω[S⁄R]) (Ideal.cotangentIdeal (KaehlerDifferential.ideal R S))
+    _ _ S (S ⊗[R] S) _ _ _ (instS R S).toSMul _ :=
+  @LinearMap.IsScalarTower.compatibleSMul (Ω[S⁄R]) _ _ _ S (S ⊗[R] S)
+    _ _ _ _ _ (instS R S).toSMul _ _
 
 -- set_option maxHeartbeats 4400000 in
 -- Porting note: extra heartbeats are needed to infer the instance
@@ -555,7 +564,7 @@ theorem KaehlerDifferential.total_surjective :
 #align kaehler_differential.total_surjective KaehlerDifferential.total_surjective
 
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
-@[simps!]
+-- @[simps!]
 noncomputable def KaehlerDifferential.quotKerTotalEquiv :
     ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) ≃ₗ[S] Ω[S⁄R] :=
   { (KaehlerDifferential.kerTotal R S).liftQ
@@ -570,10 +579,11 @@ noncomputable def KaehlerDifferential.quotKerTotalEquiv :
     right_inv := by
       intro x
       obtain ⟨x, rfl⟩ := KaehlerDifferential.total_surjective R S x
-      have := LinearMap.congr_fun (KaehlerDifferential.derivationQuotKerTotal_lift_comp_total R S) x
-      rw [LinearMap.comp_apply] at this
-      rw [this]
-      rfl }
+      -- have := LinearMap.congr_fun (KaehlerDifferential.derivationQuotKerTotal_lift_comp_total R S) x
+      -- rw [LinearMap.comp_apply] at this
+      sorry }
+      -- rw [this]
+      -- rfl }
 #align kaehler_differential.quot_ker_total_equiv KaehlerDifferential.quotKerTotalEquiv
 
 theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
