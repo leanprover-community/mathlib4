@@ -39,7 +39,7 @@ a `Finite s` term in the cases where `s` is a set in a `Finite` type.
 Often, where there are two set arguments `s` and `t`, the Finiteness of one follows from the other
 in the context of the theorem, in which case we only include the ones that are needed, and derive
 the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
-finiteness arguments; they are are true by coincidence due to junk values.
+finiteness arguments; they are true by coincidence due to junk values.
 -/
 
 open BigOperators

@@ -436,28 +436,20 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
-instance : Semiring (A ⊗[R] B) :=
-  { (by infer_instance : AddMonoidWithOne (A ⊗[R] B)),
-    (by infer_instance : AddCommMonoid (A ⊗[R] B)) with
-    zero := 0
-    add := (· + ·)
-    one := 1
-    mul := fun a b => mul a b
-    one_mul := Algebra.TensorProduct.one_mul
-    mul_one := Algebra.TensorProduct.mul_one
-    mul_assoc := Algebra.TensorProduct.mul_assoc
-    add_assoc := add_assoc
-    zero_add := zero_add
-    add_zero := add_zero
-    add_comm := add_comm
-    nsmul_succ := AddMonoid.nsmul_succ
-    natCast_succ := AddMonoidWithOne.natCast_succ
-    zero_mul := fun a => show mul 0 a = 0 by rw [map_zero, LinearMap.zero_apply]
-    mul_zero := fun a => show mul a 0 = 0 by rw [map_zero]
-    -- port note : `left_distrib` and `right_distrib` are proved by `simp` in mathlib3
-    left_distrib := fun a b c => show mul a (b + c) = mul a b + mul a c by rw [map_add]
-    right_distrib := fun a b c => show mul (a + b) c = mul a c + mul b c
-      by rw [map_add, LinearMap.add_apply] }
+-- providing this instance separately makes some downstream code substantially faster
+instance instMul : Mul (A ⊗[R] B) where
+  mul a b := mul a b
+
+-- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
+-- appears to help performance.
+instance instSemiring : Semiring (A ⊗[R] B) where
+  left_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  right_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  zero_mul a := by simp [HMul.hMul, Mul.mul]
+  mul_zero a := by simp [HMul.hMul, Mul.mul]
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+  one_mul := Algebra.TensorProduct.one_mul
+  mul_one := Algebra.TensorProduct.mul_one
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
@@ -535,7 +527,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
-instance : Algebra R (A ⊗[R] B) :=
+instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
@@ -602,8 +594,8 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance : Ring (A ⊗[R] B) :=
-  { (by infer_instance : Semiring (A ⊗[R] B)) with
+instance instRing : Ring (A ⊗[R] B) :=
+  { toSemiring := inferInstance
     add_left_neg := add_left_neg }
 
 end Ring
@@ -616,8 +608,8 @@ variable {A : Type v₁} [CommRing A] [Algebra R A]
 
 variable {B : Type v₂} [CommRing B] [Algebra R B]
 
-instance : CommRing (A ⊗[R] B) :=
-  { (by infer_instance : Ring (A ⊗[R] B)) with
+instance instCommRing : CommRing (A ⊗[R] B) :=
+  { toRing := inferInstance
     mul_comm := fun x y => by
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp
@@ -749,11 +741,11 @@ algEquivOfLinearEquivTensorProduct f (fun x₁ x₂ c₁ c₂ => by
     intros
     trivial
   · intros ab₁ ab₂ h₁ h₂ a b
-    rw [mul_add, add_tmul, map_add, h₁, h₂, map_add, mul_add]
+    rw [h₁, h₂]
   · intros a b ab₁ ab₂ h₁ h₂
-    rw [add_mul, add_tmul, map_add, h₁, h₂, map_add, add_mul]
+    rw [h₁, h₂]
   · intros ab₁ ab₂ _ _ x y hx hy
-    rw [add_mul, add_tmul, map_add, hx, hy, map_add, map_add, mul_add, mul_add, add_mul, mul_add])
+    rw [add_add_add_comm, hx, hy, add_add_add_comm])
   w₂
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
 
@@ -958,7 +950,7 @@ theorem lmul'_toLinearMap : (lmul' R : _ →ₐ[R] S).toLinearMap = LinearMap.mu
 #align algebra.tensor_product.lmul'_to_linear_map Algebra.TensorProduct.lmul'_toLinearMap
 
 @[simp]
-theorem lmul'_apply_tmul (a b : S) : lmul' R (a ⊗ₜ[R] b) = a * b :=
+theorem lmul'_apply_tmul (a b : S) : lmul' (S := S) R (a ⊗ₜ[R] b) = a * b :=
   rfl
 #align algebra.tensor_product.lmul'_apply_tmul Algebra.TensorProduct.lmul'_apply_tmul
 
@@ -994,7 +986,8 @@ theorem productMap_left : (productMap f g).comp includeLeft = f :=
   AlgHom.ext <| by simp
 #align algebra.tensor_product.product_map_left Algebra.TensorProduct.productMap_left
 
-theorem productMap_right_apply (b : B) : productMap f g (includeRight b) = g b := by simp
+theorem productMap_right_apply (b : B) :
+    productMap f g (includeRight (R := R) (A := A) (B := B) b) = g b := by simp
 #align algebra.tensor_product.product_map_right_apply Algebra.TensorProduct.productMap_right_apply
 
 @[simp]
@@ -1115,7 +1108,7 @@ def endTensorEndAlgHom : End R M ⊗[R] End R N →ₐ[R] End R (M ⊗[R] N) := 
 #align module.End_tensor_End_alg_hom Module.endTensorEndAlgHom
 
 theorem endTensorEndAlgHom_apply (f : End R M) (g : End R N) :
-    endTensorEndAlgHom (f ⊗ₜ[R] g) = TensorProduct.map f g := by
+    endTensorEndAlgHom (R := R) (M := M) (N := N) (f ⊗ₜ[R] g) = TensorProduct.map f g := by
   simp only [endTensorEndAlgHom, Algebra.TensorProduct.algHomOfLinearMapTensorProduct_apply,
     homTensorHomMap_apply]
 #align module.End_tensor_End_alg_hom_apply Module.endTensorEndAlgHom_apply
@@ -1208,11 +1201,7 @@ protected def module : Module (A ⊗[R] B) M where
       simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw
-      -- porting note: again I can't get `simp only` to do this
-      -- and I changed `map_add` to `LinearMap.map_add` here (and above)
       simp only [(· • ·), LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
-      rw [add_mul, LinearMap.map_add]
-      simp only [(· • ·), add_mul, LinearMap.add_apply, hz, hw]
     · intro u v _ _ z w hz hw
       simp only [(· • ·)] at hz hw
       -- porting note: no idea why this is such a struggle
