@@ -2,44 +2,14 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.bump_function_findim
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Series
-import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.Data.Set.Pointwise.Support
-
-open LinearMap Set
-
-open BigOperators Classical Convex Pointwise
-
-
-#exit
-
-
-lemma foo {E : Type _} [AddCommGroup E] [Module ℝ E] (x y : E) (h : LinearIndependent ℝ ![x, y])
-    (s t : ℝ) (hs : s ≠ t) : [x -[ℝ]- t • y] ∩ [x -[ℝ]- s • y] ⊆ {x} := by
-  intro z ⟨hzt, hzs⟩
-  rw [segment_eq_image, mem_image] at hzt hzs
-  rcases hzt with ⟨p, ⟨p0, p1⟩, rfl⟩
-  rcases hzs with ⟨q, ⟨q0, q1⟩, H⟩
-  have : (p - q) • x + (p * t - q * s) • y = 0 := by
-    rw [← sub_eq_zero_of_eq H, ← sub_eq_zero]
-    simp [sub_smul, smul_smul]
-    abel
-
-
-
-  simp [sub_smul] at T
-
-#exit
-
-
+#align_import analysis.calculus.bump_function_findim from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Bump functions in finite-dimensional vector spaces

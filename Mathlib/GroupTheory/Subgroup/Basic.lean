@@ -2,11 +2,6 @@
 Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module group_theory.subgroup.basic
-! leanprover-community/mathlib commit d30d31261cdb4d2f5e612eabc3c4bf45556350d5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Module.Basic
@@ -16,6 +11,8 @@ import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
+
+#align_import group_theory.subgroup.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
 /-!
 # Subgroups
@@ -3457,7 +3454,7 @@ def subgroupCongr (h : H = K) : H ≃* K :=
 /-- A subgroup is isomorphic to its image under an isomorphism. If you only have an injective map,
 use `Subgroup.equiv_map_of_injective`. -/
 @[to_additive
-      "An additive subgroup is isomorphic to its image under an an isomorphism. If you only
+      "An additive subgroup is isomorphic to its image under an isomorphism. If you only
       have an injective map, use `AddSubgroup.equiv_map_of_injective`."]
 def subgroupMap (e : G ≃* G') (H : Subgroup G) : H ≃* H.map (e : G →* G') :=
   MulEquiv.submonoidMap (e : G ≃* G') H.toSubmonoid

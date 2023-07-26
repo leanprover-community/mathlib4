@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.presheaf_of_functions
-! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.ContinuousFunction.Algebra
+
+#align_import topology.sheaves.presheaf_of_functions from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Presheaves of functions

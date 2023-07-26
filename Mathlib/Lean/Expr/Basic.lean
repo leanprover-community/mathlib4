@@ -94,7 +94,7 @@ Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/le
 def isInternal' (declName : Name) : Bool :=
   declName.isInternal ||
   match declName with
-  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s
   | _        => true
 
 
@@ -281,7 +281,7 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
   modifyAppArgM (M := Id) modifier
 
-def modifyRevArg (modifier : Expr → Expr) : Nat → Expr  → Expr
+def modifyRevArg (modifier : Expr → Expr) : Nat → Expr → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 
@@ -401,8 +401,30 @@ def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
 /-- Return the name of the module in which a declaration was defined. -/
 def Environment.getModuleFor? (env : Environment) (declName : Name) : Option Name :=
   match env.getModuleIdxFor? declName with
-  | none => none
+  | none =>
+    if env.constants.map₂.contains declName then
+      env.header.mainModule
+    else
+      none
   | some idx => env.header.moduleNames[idx.toNat]!
+
+/--
+Return the names of the modules in which constants used in the specified declaration were defined.
+
+Note that this will *not* account for tactics and syntax used in the declaration,
+so the results may not suffice as imports.
+-/
+def Name.requiredModules (n : Name) : CoreM NameSet := do
+  let env ← getEnv
+  let mut requiredModules : NameSet := {}
+  let ci ← getConstInfo n
+  for n in ci.getUsedConstants do
+    match env.getModuleFor? n with
+    | some m =>
+      if ¬ (`Init).isPrefixOf m then
+        requiredModules := requiredModules.insert m
+    | none => pure ()
+  return requiredModules
 
 /--
 Return the names of the modules in which constants used in the current file were defined.

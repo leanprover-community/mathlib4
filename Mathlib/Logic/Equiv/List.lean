@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.list
-! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Denumerable
+
+#align_import logic.equiv.list from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
 /-!
 # Equivalences involving `List`-like types
@@ -113,7 +110,7 @@ def encodeMultiset (s : Multiset α) : ℕ :=
 
 /-- Explicit decoding function for `Multiset α` -/
 def decodeMultiset (n : ℕ) : Option (Multiset α) :=
-  ((↑) : List α →  Multiset α) <$> decode (α := List α) n
+  ((↑) : List α → Multiset α) <$> decode (α := List α) n
 #align encodable.decode_multiset Encodable.decodeMultiset
 
 /-- If `α` is encodable, then so is `Multiset α`. -/

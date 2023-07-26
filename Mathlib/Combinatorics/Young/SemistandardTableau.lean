@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
-
-! This file was ported from Lean 3 source module combinatorics.young.semistandard_tableau
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Young.YoungDiagram
+
+#align_import combinatorics.young.semistandard_tableau from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Semistandard Young tableaux

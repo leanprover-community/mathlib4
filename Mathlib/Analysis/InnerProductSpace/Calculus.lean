@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.calculus
-! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+
+#align_import analysis.inner_product_space.calculus from "leanprover-community/mathlib"@"f9dd3204df14a0749cd456fac1e6849dfe7d2b88"
 
 /-!
 # Calculus in inner product spaces
@@ -228,6 +225,14 @@ theorem hasStrictFDerivAt_norm_sq (x : F) :
   ext y
   simp [two_smul, real_inner_comm]
 #align has_strict_fderiv_at_norm_sq hasStrictFDerivAt_norm_sqₓ
+
+theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt f f' x) :
+    HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=
+  (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp x hf
+
+theorem HasFDerivWithinAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivWithinAt f f' s x) :
+    HasFDerivWithinAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') s x :=
+  (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp_hasFDerivWithinAt x hf
 
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=

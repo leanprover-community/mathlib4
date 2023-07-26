@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.string.basic
-! leanprover-community/mathlib commit d13b3a4a392ea7273dfa4727dbd1892e26cfd518
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
+
+#align_import data.string.basic from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 
 /-!
 # Strings
