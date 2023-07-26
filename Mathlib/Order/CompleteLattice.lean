@@ -114,8 +114,7 @@ instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
 instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
   ⟨(sSup : Set α → α)⟩
 
-/-- Note that we rarely use `CompleteSemilatticeSup`attribute [instance 200] CompleteLattice.toSupSet
-
+/-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
