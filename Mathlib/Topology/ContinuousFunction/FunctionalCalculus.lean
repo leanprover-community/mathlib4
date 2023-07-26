@@ -1,4 +1,8 @@
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Topology.ContinuousFunction.Polynomial
+import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 
 open Polynomial
 
@@ -69,3 +73,27 @@ noncomputable instance {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A
     simp only [fc_polynomial_def, aeval_algHom, AlgHom.coe_comp, Function.comp_apply, forall_const]
 
 end FunctionalCalculus
+
+open FunctionalCalculus
+
+class MapsSpectrum {H F R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
+    [FunLike H F (fun _ ↦ A)] (f : F) (a : A) [FunctionalCalculus H f a] (im : F → Set R) where
+  maps_spectrum : ∀ g : F, spectrum R (fc f a g) = im g
+
+class UniqueFunctionalCalculus {H F A : Type _} [FunLike H F (fun _ ↦ A)]
+    {f : F} {a : A} (p : FunctionalCalculus H f a → Prop) where
+  fc_eq : ∀ fc₁ fc₂ : FunctionalCalculus H f a,
+    p fc₁ → p fc₂ → @fc _ _ _ _ _ _ fc₁ = @fc _ _ _ _ _ _ fc₂
+
+variable {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] [TopologicalSpace A]
+    [StarModule 𝕜 A]
+
+/-- A continuous functional calculus (over either `ℝ` or `ℂ`) for an element with compact
+spectrum is unique. This utilizes the Stone-Weierstrass theorem. -/
+instance {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] [TopologicalSpace A]
+    [StarModule 𝕜 A] [T2Space A] {a : A} [CompactSpace (spectrum 𝕜 a)] :
+    UniqueFunctionalCalculus
+      (fun φ : FunctionalCalculus (C(spectrum 𝕜 a, 𝕜) →⋆ₐ[𝕜] A)
+        (Polynomial.toContinuousMapOnAlgHom (spectrum 𝕜 a) (X : 𝕜[X])) a ↦ Continuous φ.toHom) where
+  fc_eq := fun fc₁ fc₂ h₁ h₂ ↦
+    ContinuousMap.starAlgHom_ext_map_X h₁ h₂ <| fc₁.map_point'.trans fc₂.map_point'.symm
