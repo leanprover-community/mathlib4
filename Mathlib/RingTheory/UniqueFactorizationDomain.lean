@@ -2010,11 +2010,13 @@ theorem factorization_eq_count {n p : α} :
 #align factorization_eq_count factorization_eq_count
 
 @[simp]
-theorem factorization_zero : factorization (0 : α) = 0 := by simp [factorization]
+theorem factorization_zero : factorization (0 : α) = 0 := by
+  simp [factorization, map_zero Multiset.toFinsupp]
 #align factorization_zero factorization_zero
 
 @[simp]
-theorem factorization_one : factorization (1 : α) = 0 := by simp [factorization]
+theorem factorization_one : factorization (1 : α) = 0 := by
+  simp [factorization, map_zero Multiset.toFinsupp]
 #align factorization_one factorization_one
 
 /-- The support of `factorization n` is exactly the Finset of normalized factors -/
