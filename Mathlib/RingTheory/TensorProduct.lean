@@ -437,17 +437,21 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
 -- providing this instance separately makes some downstream code substantially faster
-instance instMul : Mul (A ⊗[R] B) where
-  mul a b := mul a b
+instance instMul : Mul (A ⊗[R] B) := ⟨fun a b ↦ mul a b⟩
 
--- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
--- appears to help performance.
-instance instSemiring : Semiring (A ⊗[R] B) where
-  left_distrib a b c := by simp [HMul.hMul, Mul.mul]
-  right_distrib a b c := by simp [HMul.hMul, Mul.mul]
-  zero_mul a := by simp [HMul.hMul, Mul.mul]
-  mul_zero a := by simp [HMul.hMul, Mul.mul]
+instance : NonUnitalNonAssocSemiring (A ⊗[R] B) where
+  -- porting note : `left_distrib` and `right_distrib` are proved by `simp` in mathlib3
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
+  -- Probably because `mul` is defined to be bi-R-linear and then coerced to function?
+  left_distrib a b c := show mul a (b + c) = mul a b + mul a c by simp
+  right_distrib a b c := show mul (a + b) c = mul a c + mul b c by simp
+  zero_mul a := show mul 0 a = 0 by simp
+  mul_zero a := show mul a 0 = 0 by simp
+
+instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := mul_assoc
+
+instance instSemiring : Semiring (A ⊗[R] B) where
   one_mul := one_mul
   mul_one := mul_one
 

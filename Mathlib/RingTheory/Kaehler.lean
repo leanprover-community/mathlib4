@@ -564,7 +564,7 @@ theorem KaehlerDifferential.total_surjective :
 #align kaehler_differential.total_surjective KaehlerDifferential.total_surjective
 
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
--- @[simps!]
+@[simps!]
 noncomputable def KaehlerDifferential.quotKerTotalEquiv :
     ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) ≃ₗ[S] Ω[S⁄R] :=
   { (KaehlerDifferential.kerTotal R S).liftQ
@@ -579,11 +579,10 @@ noncomputable def KaehlerDifferential.quotKerTotalEquiv :
     right_inv := by
       intro x
       obtain ⟨x, rfl⟩ := KaehlerDifferential.total_surjective R S x
-      -- have := LinearMap.congr_fun (KaehlerDifferential.derivationQuotKerTotal_lift_comp_total R S) x
-      -- rw [LinearMap.comp_apply] at this
-      sorry }
-      -- rw [this]
-      -- rfl }
+      have := LinearMap.congr_fun (KaehlerDifferential.derivationQuotKerTotal_lift_comp_total R S) x
+      rw [LinearMap.comp_apply] at this
+      rw [this]
+      rfl }
 #align kaehler_differential.quot_ker_total_equiv KaehlerDifferential.quotKerTotalEquiv
 
 theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
