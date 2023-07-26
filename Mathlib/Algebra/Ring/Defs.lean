@@ -45,7 +45,7 @@ open Function
 
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/
-class Distrib (R : Type _) extends FlatHack, Mul R, Add R where
+class Distrib (R : Type _) extends FlatHack R, Mul R, Add R where
   /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
   /-- Multiplication is right distributive over addition -/
@@ -110,37 +110,37 @@ TODO: clean this once lean4#2115 is fixed
 -/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
-class NonUnitalNonAssocSemiring (α : Type u) extends FlatHack, AddCommMonoid α, Distrib α, MulZeroClass α
+class NonUnitalNonAssocSemiring (α : Type u) extends FlatHack α, AddCommMonoid α, Distrib α, MulZeroClass α
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
 
 /-- An associative but not-necessarily unital semiring. -/
-class NonUnitalSemiring (α : Type u) extends FlatHack, NonUnitalNonAssocSemiring α, SemigroupWithZero α
+class NonUnitalSemiring (α : Type u) extends FlatHack α, NonUnitalNonAssocSemiring α, SemigroupWithZero α
 #align non_unital_semiring NonUnitalSemiring
 
 /-- A unital but not-necessarily-associative semiring. -/
-class NonAssocSemiring (α : Type u) extends FlatHack, NonUnitalNonAssocSemiring α, MulZeroOneClass α,
+class NonAssocSemiring (α : Type u) extends FlatHack α, NonUnitalNonAssocSemiring α, MulZeroOneClass α,
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
-class NonUnitalNonAssocRing (α : Type u) extends FlatHack, AddCommGroup α, NonUnitalNonAssocSemiring α
+class NonUnitalNonAssocRing (α : Type u) extends FlatHack α, AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
 -- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
 -- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
 /-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type _) extends FlatHack, NonUnitalNonAssocRing α, NonUnitalSemiring α
+class NonUnitalRing (α : Type _) extends FlatHack α, NonUnitalNonAssocRing α, NonUnitalSemiring α
 #align non_unital_ring NonUnitalRing
 
 /-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type _) extends FlatHack, NonUnitalNonAssocRing α, NonAssocSemiring α,
+class NonAssocRing (α : Type _) extends FlatHack α, NonUnitalNonAssocRing α, NonAssocSemiring α,
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
-class Semiring (α : Type u) extends FlatHack, NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+class Semiring (α : Type u) extends FlatHack α, NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
-class Ring (R : Type u) extends FlatHack, Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends FlatHack α, Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
 
 /-!
@@ -240,10 +240,10 @@ theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable
 In other words, it is a type with the following structures: additive commutative monoid
 (`AddCommMonoid`), commutative semigroup (`CommSemigroup`), distributive laws (`Distrib`), and
 multiplication by zero law (`MulZeroClass`). -/
-class NonUnitalCommSemiring (α : Type u) extends FlatHack, NonUnitalSemiring α, CommSemigroup α
+class NonUnitalCommSemiring (α : Type u) extends FlatHack α, NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
-class CommSemiring (R : Type u) extends FlatHack, Semiring R, CommMonoid R
+class CommSemiring (R : Type u) extends FlatHack R, Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
 
 -- see Note [lower instance priority]
@@ -274,7 +274,7 @@ section HasDistribNeg
 
 This is useful for dealing with submonoids of a ring that contain `-1` without having to duplicate
 lemmas. -/
-class HasDistribNeg (α : Type _) [Mul α] extends FlatHack, InvolutiveNeg α where
+class HasDistribNeg (α : Type _) [Mul α] extends FlatHack α, InvolutiveNeg α where
   /-- Negation is left distributive over multiplication -/
   neg_mul : ∀ x y : α, -x * y = -(x * y)
   /-- Negation is right distributive over multiplication -/
@@ -449,7 +449,7 @@ instance (priority := 200) : Semiring α :=
 end Ring
 
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends FlatHack, NonUnitalRing α, CommSemigroup α
+class NonUnitalCommRing (α : Type u) extends FlatHack α, NonUnitalRing α, CommSemigroup α
 #align non_unital_comm_ring NonUnitalCommRing
 
 -- see Note [lower instance priority]
@@ -458,7 +458,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 #align non_unital_comm_ring.to_non_unital_comm_semiring NonUnitalCommRing.toNonUnitalCommSemiring
 
-class CommRing (α : Type u) extends FlatHack, Ring α, CommMonoid α
+class CommRing (α : Type u) extends FlatHack α, Ring α, CommMonoid α
 #align comm_ring CommRing
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
@@ -482,5 +482,5 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
 
   This is implemented as a mixin for `Semiring α`.
   To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
-class IsDomain (α : Type u) [Semiring α] extends FlatHack, IsCancelMulZero α, Nontrivial α : Prop
+class IsDomain (α : Type u) [Semiring α] extends FlatHack α, IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain

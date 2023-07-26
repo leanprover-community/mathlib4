@@ -71,7 +71,7 @@ def qsmulRec (coe : ℚ → K) [Mul K] (a : ℚ) (x : K) : K :=
 #align qsmul_rec qsmulRec
 
 /-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements. -/
-class DivisionSemiring (α : Type _) extends FlatHack, Semiring α, GroupWithZero α
+class DivisionSemiring (α : Type _) extends FlatHack α, Semiring α, GroupWithZero α
 #align division_semiring DivisionSemiring
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
@@ -84,7 +84,7 @@ The fields `ratCast` and `qsmul` are needed to implement the
 definitions for some special cases of `K` (in particular `K = ℚ` itself).
 See also Note [forgetful inheritance].
 -/
-class DivisionRing (K : Type u) extends FlatHack, Ring K, DivInvMonoid K, Nontrivial K, RatCast K where
+class DivisionRing (K : Type u) extends FlatHack K, Ring K, DivInvMonoid K, Nontrivial K, RatCast K where
   /-- For a nonzero `a`, `a⁻¹` is a right multiplicative inverse. -/
   protected mul_inv_cancel : ∀ (a : K), a ≠ 0 → a * a⁻¹ = 1
   /-- We define the inverse of `0` to be `0`. -/
@@ -110,7 +110,7 @@ instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : D
 #align division_ring.to_division_semiring DivisionRing.toDivisionSemiring
 
 /-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements. -/
-class Semifield (α : Type _) extends FlatHack, CommSemiring α, DivisionSemiring α, CommGroupWithZero α
+class Semifield (α : Type _) extends FlatHack α, CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 #align semifield Semifield
 
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
@@ -123,7 +123,7 @@ The fields `ratCast` and `qsmul` are needed to implement the
 definitions for some special cases of `K` (in particular `K = ℚ` itself).
 See also Note [forgetful inheritance].
 -/
-class Field (K : Type u) extends FlatHack, CommRing K, DivisionRing K
+class Field (K : Type u) extends FlatHack K, CommRing K, DivisionRing K
 #align field Field
 
 section DivisionRing
