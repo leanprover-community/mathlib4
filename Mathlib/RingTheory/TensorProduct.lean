@@ -436,6 +436,9 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
+instance instMul : Mul (A ⊗[R] B) where
+  mul := fun a b ↦ mul a b
+
 -- note: we deliberately do not provide any fields that overlap with base class fields
 instance instSemiring : Semiring (A ⊗[R] B) where
   -- porting note : `left_distrib` and `right_distrib` are proved by `simp` in mathlib3
@@ -448,7 +451,6 @@ instance instSemiring : Semiring (A ⊗[R] B) where
   mul_assoc := mul_assoc
   one_mul := one_mul
   mul_one := mul_one
-  mul := fun a b ↦ mul a b
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
