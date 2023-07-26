@@ -70,18 +70,12 @@ open Finset
 variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
 
 /-- The degree-`n` power sum -/
-def psum (n : ℕ) : MvPolynomial σ R := ∑ i, (X i) ^ n
+def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
-  calc
-    rename e (psum σ R n) = ∑ i, (X (e i)) ^ n := by
-      simp_rw [psum, map_sum, map_pow, rename_X]
-    _ = ∑ i in univ.map e.toEmbedding, (X i) ^ n := by simp [-map_univ_equiv]
-    _ = ∑ i, (X i) ^ n := by rw [map_univ_equiv]
+  simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
 
-theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := by
-  intro
-  rw [rename_psum]
+theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n
 
 end PowerSum
 
@@ -94,15 +88,15 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [
 
 /- The following proof is from [zeilberger1984] -/
 def pairs (k : ℕ) : Finset (Finset σ × σ) :=
-  Finset.univ.filter (fun t => card t.fst ≤ k ∧ ((card t.fst = k) → t.snd ∈ t.fst))
+  Finset.univ.filter (fun t => card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
 
 def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
-  (-1) ^ (card t.fst) * ((∏ a in t.fst, X a) * (X t.snd) ^ (k - card t.fst) : MvPolynomial σ R)
+  (-1) ^ card t.fst * ((∏ a in t.fst, X a) * X t.snd ^ (k - card t.fst))
 
 def T_map (t : Finset σ × σ) : Finset σ × σ :=
   if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (cons t.snd t.fst h, t.snd)
 
-theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map σ t ∈ pairs σ k := by
+theorem T_map_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map σ t ∈ pairs σ k := by
   rw [pairs, mem_filter, T_map] at *
   simp only [mem_univ, true_and] at h
   split_ifs with h1
@@ -121,7 +115,7 @@ theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map σ t ∈
     simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
     exact Or.resolve_left (le_iff_eq_or_lt.mp h.1) h.2
 
-theorem T_map_invol (t : Finset σ × σ) : T_map σ (T_map σ t) = t := by
+@[simp] theorem T_map_T_map (t : Finset σ × σ) : T_map σ (T_map σ t) = t := by
   rw [T_map, T_map]
   split_ifs with h1 h2 h3
   · simp at h2
@@ -130,7 +124,7 @@ theorem T_map_invol (t : Finset σ × σ) : T_map σ (T_map σ t) = t := by
   · simp at h3
 
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
-    (weight σ R k t) + weight σ R k (T_map σ t) = 0 := by
+    weight σ R k t + weight σ R k (T_map σ t) = 0 := by
   rw [T_map, weight, weight]
   rw [pairs, mem_filter] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
@@ -158,8 +152,8 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst)), h2]
     simp
 
-theorem weight_zero_for_fixed_by_T' (t : Finset σ × σ) (h : t ∈ pairs σ k)
-    (h2 : T_map σ t = t) : weight σ R k t = 0 := by
+theorem weight_zero_for_fixed_by_T' (t : Finset σ × σ) (h : t ∈ pairs σ k) (h2 : T_map σ t = t) :
+    weight σ R k t = 0 := by
   have h3 := weight_compose_T σ R t h
   rw [h2, ← two_mul, _root_.mul_eq_zero] at h3
   exact h3.resolve_left two_ne_zero
@@ -170,7 +164,7 @@ theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
   sum_involution (fun t _ => T_map σ t) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
-    (T_map_pair σ) (fun t _ => T_map_invol σ t)
+    (T_map_mem_pairs σ) (fun t _ => T_map_T_map σ t)
 
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
