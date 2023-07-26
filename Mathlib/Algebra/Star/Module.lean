@@ -174,21 +174,12 @@ variable (A)
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
 -- Porting note: This attribute causes a `timeout at 'whnf'`.
-@[simps!]
+-- @[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  ext <;> sorry
-  -- · simp only [LinearMap.coe_comp, LinearMap.coe_inl, Function.comp_apply, LinearMap.coprod_apply,
-  -- Submodule.coeSubtype, map_zero, add_zero, LinearMap.prod_apply, Pi.prod, selfAdjointPart_apply_coe,
-  -- selfAdjoint.star_val_eq, smul_add, invOf_two_smul_add_invOf_two_smul, LinearMap.id_comp]
-  --   erw [selfAdjoint.star_val_eq, Submodule.coeSubtype]; simp
-  --   sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry --<;> simp [Submodule.coeSubtype, map_zero, add_zero, LinearMap.prod_apply, Pi.prod, selfAdjointPart_apply_coe,
-  -- selfAdjoint.star_val_eq, smul_add, invOf_two_smul_add_invOf_two_smul, LinearMap.id_comp]
+  ext <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]
