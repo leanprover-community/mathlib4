@@ -59,6 +59,18 @@ def NameMap.insert2 [Singleton γ β] [Insert γ β] (t : NameMap β)
     (x : Name) (y : γ) : NameMap β :=
   RBMap.insert2 t x y
 
+/-- Turn a file name into a path, relative from the root of the appropriate project.
+Assumes `/` as directory seprator. -/
+def Name.toPath (module : Name) : String :=
+  go module ++ ".lean"
+where
+  go : Name → String
+  | .anonymous => ""
+  | .str .anonymous s => s
+  | .num .anonymous n => toString n
+  | .str nm s => go nm ++ "/" ++ s
+  | .num nm n => go nm ++ "/" ++ toString n
+
 end Lean
 
 /-- this instance causes a cycle -/
@@ -119,14 +131,16 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
     let fields := fields.filter fun nm => isSubobjectField? env cl nm |>.isSome
     let fields := fields.map (cl ++ ·)
     return fields
-  let prios ← instances.filterMapM fun (inst, _, _) => do
+  let prios ← instances.filterMapM fun (inst, src, _) => do
     let prio := (← getInstancePriority? inst).get!
     if prio < 1000 then return none
     let newPrio := if realParents.contains inst then 200 else 180
-    return some s!"attribute [instance {newPrio}] {inst}"
-  -- logInfo m!"{realParents.toList}"
-  --find . -type f -print0 | xargs -0 sed -i -E 'H;1h;$!d;x; s/(class NonemptyFinLinOrd(.|\n.)*\n)\n/\1test\n\n/g' test.txt
-  logInfo m!"{prios}"
+    let src := src[0]!
+    let file := (env.getModuleFor? src).get!.toPath
+    return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
+  let cmds : String := prios.foldl (· ++ ·) ""
+  --sed -i -E 'H;1h;$!d;x; s/(class NonemptyFinLinOrd([^\n]|\n[^\n])*\n)\n/\1attribute [instance 200] NonemptyFinLinOrd.toFintype\n\n/g' Mathlib/Order/Category/NonemptyFinLinOrdCat.lean
+  logInfo m!"{cmds}"
   logInfo m!"classes with 1 type parameter: {classSet.size}"
   logInfo m!"instances between these classes: {instances.length}"
   -- logInfo m!"classes: {classes}"
