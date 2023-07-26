@@ -10,7 +10,7 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Order.Atoms.Finite
 
-#align_import group_theory.sylow from "leanprover-community/mathlib"@"bd365b1a4901dbd878e86cb146c2bd86533df468"
+#align_import group_theory.sylow from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # Sylow theorems
@@ -370,11 +370,11 @@ theorem Sylow.stabilizer_eq_normalizer (P : Sylow p G) :
 #align sylow.stabilizer_eq_normalizer Sylow.stabilizer_eq_normalizer
 
 theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite (Sylow p G)]
-    (P : Sylow p G) (x g : G) (hx : x ∈ (P : Subgroup G).centralizer)
-    (hy : g⁻¹ * x * g ∈ (P : Subgroup G).centralizer) :
+    (P : Sylow p G) (x g : G) (hx : x ∈ centralizer (P : Set G))
+    (hy : g⁻¹ * x * g ∈ centralizer (P : Set G)) :
     ∃ n ∈ (P : Subgroup G).normalizer, g⁻¹ * x * g = n⁻¹ * x * n := by
-  have h1 : ↑P ≤ (zpowers x).centralizer := by rwa [le_centralizer_iff, zpowers_le]
-  have h2 : ↑(g • P) ≤ (zpowers x).centralizer := by
+  have h1 : ↑P ≤ centralizer (zpowers x : Set G) := by rwa [le_centralizer_iff, zpowers_le]
+  have h2 : ↑(g • P) ≤ centralizer (zpowers x : Set G) := by
     rw [le_centralizer_iff, zpowers_le]
     rintro - ⟨z, hz, rfl⟩
     specialize hy z hz
