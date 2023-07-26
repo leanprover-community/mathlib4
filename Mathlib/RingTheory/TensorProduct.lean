@@ -436,27 +436,20 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
-instance instMul : Mul (A ⊗[R] B) := ⟨fun a b ↦ mul a b⟩
+-- providing this instance separately makes some downstream code substantially faster
+instance instMul : Mul (A ⊗[R] B) where
+  mul a b := mul a b
 
-instance : NonUnitalNonAssocSemiring (A ⊗[R] B) := {
-  -- porting note : `left_distrib` and `right_distrib` are proved by `simp` in mathlib3
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  -- Probably because `mul` is defined to be bi-R-linear and then coerced to function?
-  left_distrib := fun a b c => show mul a (b + c) = mul a b + mul a c by simp
-  right_distrib := fun a b c => show mul (a + b) c = mul a c + mul b c by simp
-  zero_mul := fun a => show mul 0 a = 0 by simp
-  mul_zero := fun a => show mul a 0 = 0 by simp
-}
-
-instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) := {
+-- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
+-- appears to help performance.
+instance instSemiring : Semiring (A ⊗[R] B) where
+  left_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  right_distrib a b c := by simp [HMul.hMul, Mul.mul]
+  zero_mul a := by simp [HMul.hMul, Mul.mul]
+  mul_zero a := by simp [HMul.hMul, Mul.mul]
   mul_assoc := mul_assoc
-}
-
-instance instSemiring : Semiring (A ⊗[R] B) :=
-  { one_mul := one_mul
-    mul_one := mul_one
-    natCast_succ := AddMonoidWithOne.natCast_succ
-  }
+  one_mul := one_mul
+  mul_one := mul_one
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
@@ -732,7 +725,7 @@ algEquivOfLinearEquivTensorProduct f (fun x₁ x₂ c₁ c₂ => by
   · intros a b ab₁ ab₂ h₁ h₂
     rw [h₁, h₂]
   · intros ab₁ ab₂ _ _ x y hx hy
-    rw [add_add_add_comm, hx, hy]; ac_rfl)--, map_add, map_add, mul_add, mul_add, add_mul, mul_add])
+    rw [add_add_add_comm, hx, hy, add_add_add_comm])
   w₂
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
 
