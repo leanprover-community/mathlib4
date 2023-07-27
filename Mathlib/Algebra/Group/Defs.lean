@@ -1213,8 +1213,7 @@ def Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
     mul_left_inv := mul_left_inv,
     one_mul := fun a => by
       rw [← mul_right_inv a, assoc, mul_left_inv, mul_one] }
-#print AddGroup.ofLeftAxioms
-#print Group.ofLeftAxioms
+
 section CommGroup
 
 variable [CommGroup G]
