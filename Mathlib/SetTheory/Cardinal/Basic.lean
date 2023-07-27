@@ -23,7 +23,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main definitions
 
-* `Cardinal` the type of cardinal numbers (in a given universe).
+* `Cardinal` is the type of cardinal numbers (in a given universe).
 * `Cardinal.mk α` or `#α` is the cardinality of `α`. The notation `#` lives in the locale
   `Cardinal`.
 * Addition `c₁ + c₂` is defined by `Cardinal.add_def α β : #α + #β = #(α ⊕ β)`.
@@ -2402,10 +2402,9 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 #align cardinal.zero_powerlt Cardinal.zero_powerlt
 
 @[simp]
-theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 :=
-  -- Porting note: used to expect that `convert` would leave an instance argument as a goal
-  @Cardinal.iSup_of_empty _ _
-    (Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt)
+theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
+  convert Cardinal.iSup_of_empty _
+  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
 
 end Cardinal

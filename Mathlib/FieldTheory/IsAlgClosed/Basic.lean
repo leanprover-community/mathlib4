@@ -309,7 +309,7 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier =
   letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
   obtain ⟨y, hy⟩ := IsAlgClosed.exists_aeval_eq_zero M (minpoly N x) <|
     (minpoly.degree_pos
-      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ _ hL x))).ne'
+      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ hL x))).ne'
   let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
   letI : Algebra N O := Subalgebra.algebra O
   -- Porting note: there are some tricky unfolds going on here:
@@ -549,7 +549,7 @@ theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [F
   haveI : IsScalarTower F Fx A := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ a ha)
   haveI : IsScalarTower F Fx K := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ x hx)
   haveI : Fact (Irreducible <| minpoly F x) := ⟨minpoly.irreducible <| hFK x⟩
-  let ψ₀ : K →ₐ[Fx] A := IsAlgClosed.lift (Algebra.isAlgebraic_of_larger_base F Fx hK)
+  let ψ₀ : K →ₐ[Fx] A := IsAlgClosed.lift (Algebra.isAlgebraic_of_larger_base Fx hK)
   exact
     ⟨ψ₀.restrictScalars F,
       (congr_arg ψ₀ (AdjoinRoot.lift_root hx).symm).trans <|

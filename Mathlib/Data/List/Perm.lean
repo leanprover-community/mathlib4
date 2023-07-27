@@ -957,7 +957,7 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
 #align list.perm.dedup List.Perm.dedup
 
 -- attribute [congr]
-theorem Perm.insert (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.insert a ~ l₂.insert a :=
+protected theorem Perm.insert (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.insert a ~ l₂.insert a :=
   if h : a ∈ l₁ then by simpa [h, p.subset h] using p
   else by simpa [h, mt p.mem_iff.2 h] using p.cons a
 #align list.perm.insert List.Perm.insert
@@ -1155,7 +1155,7 @@ theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
 theorem Perm.take_inter {α : Type _} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
-  exact Perm.trans (show xs.take n ~ xs.filter (. ∈ xs.take n) by
+  exact Perm.trans (show xs.take n ~ xs.filter (· ∈ xs.take n) by
       conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
     (Perm.filter _ h)
 #align list.perm.take_inter List.Perm.take_inter
