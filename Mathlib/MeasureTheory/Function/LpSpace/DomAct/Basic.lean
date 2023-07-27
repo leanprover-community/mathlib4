@@ -8,6 +8,10 @@ import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 
 /-!
 # Action of `Mᵈᵐᵃ` on `Lᵖ` spaces
+
+In this file we define action of `Mᵈᵐᵃ` on `MeasureTheory.Lp E p μ`
+given by `mk c • ⟨⟨f, _⟩, _⟩ = ⟨⟨(f <| c • ·), _⟩, _⟩`.
+We also prove basic properties of this action.
 -/
 
 open MeasureTheory Filter
@@ -35,7 +39,8 @@ theorem smul_Lp_ae_eq (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • f =ᵐ[μ] (f <| 
 
 @[to_additive]
 theorem mk_smul_toLp (c : M) {f : α → E} (hf : Memℒp f p μ) :
-    mk c • hf.toLp _ = (hf.comp_measurePreserving <| measurePreserving_smul c μ).toLp _ :=
+    mk c • hf.toLp f =
+      (hf.comp_measurePreserving <| measurePreserving_smul c μ).toLp (f <| c • ·) :=
   rfl
 
 @[to_additive (attr := simp)]
