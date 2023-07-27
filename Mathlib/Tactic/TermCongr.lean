@@ -6,10 +6,10 @@ Authors: Kyle Miller
 import Lean
 import Mathlib.Lean.Meta.Simp
 
-/-! # `congr%` term elaborator
+/-! # `congr(...)` term elaborator
 
 This module defines a term elaborator for generating congruence lemmas according to a pattern.
-Rather than using `congr_arg` or `congr_fun`, one can write `congr% c(hf) c(hx)` with
+Rather than using `congr_arg` or `congr_fun`, one can write `congr($hf $hx)` with
 `hf : f = f'` and `hx : x = x'` to get `f x = f' x'`. This is also more general, since
 `f` could have implicit arguments and complicated dependent types.
 -/
@@ -20,32 +20,23 @@ open Lean Elab Meta
 initialize registerTraceClass `Tactic.congr
 
 /--
-`congr% expr` generates an congruence where `expr` is an expression containing
-congruence holes of the form `c(h)`. In these congruence holes, `h : a = b` indicates
-that, in the generated congruence, on the left-hand side `a` is substituted for `c(h)`
-and on the right-hand side `b` is substituted.
+`congr(expr)` generates an congruence where `expr` is an expression containing
+congruence holes of the form `$h`. In these congruence holes, `h : a = b` indicates
+that, in the generated congruence, on the left-hand side `a` is substituted for `$h`
+and on the right-hand side `b` is substituted for `$h`.
 
-For example, if `h : a = b` then `congr% 1 + c(h) : 1 + a = 1 + b`.
+For example, if `h : a = b` then `congr(1 + $h) : 1 + a = 1 + b`.
 -/
-syntax (name := termCongr) "congr% " term : term
+syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")" : term
 
-/--
-`c(h)` is a hole in a `congr%` expression, where `h` is an equality or iff.
--/
--- Copying the `paren` parser but with `c` in front.
-syntax (name := termCongrEq)
-  "c(" withoutPosition(withoutForbidden(ppDedentIfGrouped(term))) ")" : term
-
-elab_rules : term
-  | `(c($_)) =>
-    throwError "invalid occurrence of `c(...)` notation; it must appear in a `congr%` expression"
+#check Lean.Syntax.antiquotKind?
 
 /-- Extracts the LHS of an equality while holding onto the equality for later use.
-The `c(..)` notation is replaced by this during elaboration of `congr%`. -/
+The antiquotations in `congr(...)` are replaced by this during elaboration of `congr(...)`. -/
 @[reducible] def c_lhs {α : Sort _} {x y : α} (_ : x = y) : α := x
 
 /-- Ensures the expected type is an equality. Returns the equality along with the type
-being equated, the lhs, and the rhs. -/
+of the terms being equated, the lhs, and the rhs. -/
 private def mkEqForExpectedType (expectedType? : Option Expr) :
     Term.TermElabM (Expr × Expr × Expr × Expr) := do
   let ty ← Meta.mkFreshTypeMVar
@@ -71,9 +62,9 @@ def elabEnsureEq : Term.TermElab := fun stx expectedType? => do
     Term.ensureHasType eq e
   | _ => throwUnsupportedSyntax
 
-/-- (Internal for `congr%`)
-Helper to expand `c(..)` into a `c_lhs` expression. Produces an annotated term
-to ensure `c_lhs` always regarded as having exactly four arguments. -/
+/-- (Internal for `congr(...)`)
+Helper to expand antiquotations into `c_lhs` expressions. Produces an annotated term
+to ensure `c_lhs` is always regarded as having exactly four arguments. -/
 syntax (name := congrCExpand) "congr_c_expand% " term : term
 
 @[term_elab congrCExpand]
@@ -100,26 +91,24 @@ def elabEqLhsRhsTerm : Term.TermElab := fun stx expectedType? => do
     | `(eq_lhs% $t) => pure (true, t)
     | `(eq_rhs% $t) => pure (false, t)
     | _ => throwUnsupportedSyntax
-  let (eq, _) ← mkEqForExpectedType expectedType?
-  let h ← Term.elabTerm term eq
-  let some (_, lhs, rhs) := (← whnfR (← inferType h)).eq?
-    | throwError "Term {← mkHasTypeButIsExpectedMsg (← inferType h) eq}"
-  if isLhs then
-    return lhs
-  else
-    return rhs
+  let (eq, _, lhs, rhs) ← mkEqForExpectedType expectedType?
+  discard <| Term.elabTermEnsuringType term eq
+  return if isLhs then lhs else rhs
 
 @[term_elab termCongr]
 def elabTermCongr : Term.TermElab := fun stx expectedType? => do
   match stx with
-  | `(congr% $t) =>
+  | `(congr($t)) =>
     let (expEq, expTy, _) ← mkEqForExpectedType expectedType?
     -- Use `c_lhs` to store the equalities in the terms. Makes sure to annotate the
-    -- terms to ensure that if `c(h)` is used as a function, `simp` still sees `c_lhs`
+    -- terms to ensure that if `$h` is used as a function, `simp` still sees `c_lhs`
     -- as a four-argument function.
-    let left ← t.raw.replaceM fun
-      | `(c($h)) => ``(congr_c_expand% $h)
-      | _ => pure none
+    let left ← t.raw.replaceM fun s => do
+      if s.isAntiquots then
+        let h ← s.getAntiquotTerm
+        `(congr_c_expand% $h)
+      else
+        pure none
     let preLeft ← Term.withoutErrToSorry do
       try
         Term.elabTermEnsuringType left expTy
