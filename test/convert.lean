@@ -103,3 +103,14 @@ example : True := by
   all_goals try infer_instance
   · simp
   · simp
+
+example [Fintype α] [Fintype β] : Fintype.card α = Fintype.card β := by
+  congr!
+  guard_target = Fintype.card α = Fintype.card β
+  congr! (config := {typeEqs := true})
+  · guard_target = α = β
+    sorry
+  · rename_i inst1 inst2 h
+    guard_target = HEq inst1 inst2
+    have : Subsingleton (Fintype α) := sorry
+    congr!
