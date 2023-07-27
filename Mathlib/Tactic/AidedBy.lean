@@ -6,22 +6,33 @@ Authors: Siddhartha Gadgil, Scott Morrison, Kimball Leisinger, Leo de Moura
 import Lean
 import Std.Tactic.TryThis
 import Aesop
+/-!
+# AidedBy tactic combinator: asynchronous tactic execution
+
+This implements a tactic combinator `aided_by` that automatically runs a tactic in the background.
+The syntax is essentially `"aided_by" tacticSeq "do" (tacticSeq)?`,
+with the first tactic sequence to be run in the background (e.g. `aesop?`)
+while the second tactic sequence is intractively entered.
+We also provide the sytax `"by!" tacticSeq` as a shorthand for `"aided_by" aesop? "do" tacticSeq`.
+
+When elaborating each tactic in the (second) tactic sequence:
+
+* We launch a tactic in a separate thread,
+which on completion caches the resulting proof state if successful.
+* We wait briefly (50 ms by default) and then
+look for a proof state in the cache that matches the current goal and local context.
+* If we find a matching proof state,
+we use it to complete the proof with a `TryThis` action.
+* Otherwise the user continues proving interactively.
+* Observe that as the user works interactively,
+the tactic sequence is re-evaluated,
+and hence we check if the background task completed the proof at some stage.
+-/
+
 
 open Lean Meta Elab Term Tactic Core Parser Tactic
 open Std.Tactic
 
-/-!
-# AidedBy tactic combinator: asynchronous tactic execution
-
-This implements a tactic combinator `aided_by` that automatically runs a tactic in the background. The syntax is essentially `"aided_by" tacticSeq "do" (tacticSeq)?`, with the first tactic sequence to be run in the background (e.g. `aesop?`) while the second tactic sequence is intractively entered. We also provide the sytax `"by!" tacticSeq` as a shorthand for `"aided_by" aesop? "do" tacticSeq`.
-
-When elaborating each tactic in the (second) tactic sequence:
-* We launch a tactic in a separate thread, which on completion caches the resulting proof state if successful.
-* We wait briefly (50 ms by default) and then look for a proof state in the cache that matches the current goal and local context.
-* If we find a matching proof state, we use it to complete the proof with a `TryThis` action.
-* Otherwise the user continues proving interactively.
-* Observe that as the user works interactively, the tactic sequence is re-evaluated, and hence we check if the background task completed the proof at some stage.
--/
 
 /--
 Helper for running to `IO` from `EIO`.
@@ -38,6 +49,7 @@ namespace Mathlib.Tactic.AidedBy
 
 /--
 Extracting an array of tactics from a `tacticSeq`.
+(code due to Leo de Moura)
 -/
 def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   match s with
@@ -151,7 +163,8 @@ end Caches
 /--
 Parses (if possible) a string as a `tacticSeq`.
 
-Note: This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
+Note: This is a slight modification of `Parser.runParserCategory`
+due to Scott Morrison/Kim Liesinger. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
     Except String (TSyntax ``tacticSeq) :=
   let p := andthenFn whitespace Tactic.tacticSeq.fn
@@ -165,9 +178,12 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
 
 /--
-Extract a tactic from a message if there is a message beginning with "Try this:". Otherwise return a default tactic.
+Extract a tactic from a message
+if there is a message beginning with "Try this:".
+Otherwise return a default tactic.
 -/
-def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| (TSyntax ``tacticSeq) × (List Message) := do
+def getMsgTacticD (default : TSyntax ``tacticSeq)  :
+    CoreM <| (TSyntax ``tacticSeq) × (List Message) := do
   let msgLog ← Core.getMessageLog
   let msgs := msgLog.toList
   let mut tac : TSyntax ``tacticSeq := default
@@ -190,7 +206,8 @@ def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| (TSyntax ``tacticS
   return (tac, msgs)
 
 /--
-Run a tactic in `Meta` and cache the resulting proof state if the tactic is successful and finishing.
+Run a tactic in `Meta` and cache the resulting proof state
+if the tactic is successful and finishing.
 -/
 def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
   (goal: MVarId) (target : Expr)  : MetaM Unit :=
@@ -220,11 +237,13 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
     set meta₀
 
 /--
-Run a tactic in `IO` and cache the resulting proof state if the tactic is successful and finishing.
+Run a tactic in `IO` and cache the resulting proof state
+if the tactic is successful and finishing.
 -/
-def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Expr)
-  (mctx : Meta.Context) (ms : Meta.State)
-  (cctx : Core.Context) (cs: Core.State) : IO Unit :=
+def runAndCacheIO (tacticCode : TSyntax ``tacticSeq)
+    (goal: MVarId) (target : Expr)
+    (mctx : Meta.Context) (ms : Meta.State)
+    (cctx : Core.Context) (cs: Core.State) : IO Unit :=
   let eio :=
   (runAndCacheM tacticCode goal target).run' mctx ms |>.run' cctx cs
   let res := eio.runToIO
@@ -238,7 +257,8 @@ def fetchProof  : TacticM ProofState :=
   let key ← GoalKey.get
   let goal ← getMainGoal
   match (← getState key) with
-  | none => throwTacticEx `fetch goal  m!"No cached result found for the goal : {← ppExpr <| key.goal }."
+  | none =>
+    throwTacticEx `fetch goal  m!"No cached result found for the goal : {← ppExpr <| key.goal }."
   | some s => do
     return s
 
