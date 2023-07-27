@@ -1160,6 +1160,50 @@ theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGrou
 #align comm_group.to_group_injective CommGroup.toGroup_injective
 #align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective
 
+/-- Define a Group structure on a Type by proving `∀ a, 1 * a = a` and
+`∀ a, a⁻¹ * a = 1`.
+See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)]
+def Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
+    (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
+    (one_mul : ∀ a : G, 1 * a = a)
+    (mul_left_inv : ∀ a : G, a⁻¹ * a = 1) : Group G :=
+  { mul_assoc := assoc,
+    one_mul := one_mul,
+    mul_left_inv := mul_left_inv,
+    mul_one := fun a => by
+      have mul_right_inv : ∀ a, a * a⁻¹ = 1 := fun a =>
+        calc a * a⁻¹ = 1 * (a * a⁻¹) := (one_mul _).symm
+          _ = ((a * a⁻¹)⁻¹ * (a * a⁻¹)) * (a * a⁻¹) := by
+            rw [mul_left_inv]
+          _ = (a * a⁻¹)⁻¹ * (a * ((a⁻¹ * a) * a⁻¹)) := by
+            simp only [assoc]
+          _ = 1 := by
+            rw [mul_left_inv, one_mul, mul_left_inv]
+      rw [← mul_left_inv a, ← assoc, mul_right_inv a, one_mul] }
+
+/-- Define a Group structure on a Type by proving `∀ a, a * 1 = a` and
+`∀ a, a * a⁻¹ = 1`.
+See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)]
+def Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
+    (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
+    (mul_one : ∀ a : G, a * 1 = a)
+    (mul_right_inv : ∀ a : G, a * a⁻¹ = 1) : Group G :=
+  have mul_left_inv : ∀ a, a⁻¹ * a = 1 := fun a =>
+    calc a⁻¹ * a = (a⁻¹ * a) * 1 := (mul_one _).symm
+      _ = (a⁻¹ * a) * ((a⁻¹ * a) * (a⁻¹ * a)⁻¹) := by
+        rw [mul_right_inv]
+      _ = ((a⁻¹ * (a * a⁻¹)) * a) * (a⁻¹ * a)⁻¹ := by
+        simp only [assoc]
+      _ = 1 := by
+        rw [mul_right_inv, mul_one, mul_right_inv]
+  { mul_assoc := assoc,
+    mul_one := mul_one,
+    mul_left_inv := mul_left_inv,
+    one_mul := fun a => by
+      rw [← mul_right_inv a, assoc, mul_left_inv, mul_one] }
+
 section CommGroup
 
 variable [CommGroup G]
