@@ -126,6 +126,7 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
   let instanceSet : NameSet := .ofList <| instances.map (·.1)
   let instances2 : List (Name × Name) ← rawInstances.filterMapM fun nm => do
     forallTelescope (← inferType (← mkConstWithLevelParams nm)) fun args ty => do
+      unless args.size ≥ 1 do return none
       if instanceSet.contains nm then return none
       let prio := (← getInstancePriority? nm).get!
       if prio < 1000 then return none
@@ -142,7 +143,10 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
       if relevantArgs.any (!·.isFVar) then return none
       let relevantArgs := relevantArgs.toList.map (·.fvarId!.name)
       if !relevantArgs.Nodup then return none
-      return some (nm, targetClass)
+      let lastArg ← args[args.size - 1]!.fvarId!.getDecl
+      unless lastArg.binderInfo == .instImplicit do return none
+      let (sourceClass, _) := ty.getAppFnArgs
+      return some (nm, sourceClass)
 
   let instanceGraph : NameMap NameSet := instances.foldl (init := {}) fun r (_, src, tgt) =>
     if src.length == 1 then r.insert2 src.head! tgt else r
@@ -158,11 +162,13 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
     let newPrio := if realParents.contains inst then 200 else 180
     let src := src[0]!
     let file := (env.getModuleFor? src).get!.toPath
+    unless file.startsWith "Mathlib" do return none
     return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
   let cmds : String := prios.foldl (· ++ ·) ""
   let prios2 ← instances2.filterMapM fun (inst, src) => do
     let newPrio := 200
     let file := (env.getModuleFor? src).get!.toPath
+    unless file.startsWith "Mathlib" do return none
     return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
   let cmds2 : String := prios2.foldl (· ++ ·) ""
   -- logInfo m!"{realParents.toList}"
