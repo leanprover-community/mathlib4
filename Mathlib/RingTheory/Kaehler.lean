@@ -388,7 +388,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-count_heartbeats in
+set_option maxHeartbeats 700000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
 set_option synthInstance.maxHeartbeats 2000000 in
