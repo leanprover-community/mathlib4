@@ -43,6 +43,7 @@ The heterobasic definitions below such as:
  * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
  * `TensorProduct.AlgebraTensorModule.assoc`
  * `TensorProduct.AlgebraTensorModule.leftComm`
+ * `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
 
 are just more general versions of the definitions already in `LinearAlgebra/TensorProduct`. We
 could thus consider replacing the less general definitions with these ones. If we do this, we
@@ -285,7 +286,7 @@ theorem mapBilinear_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : mapBilinear 
 
 variable (R A M N P Q)
 
-/- Heterobasic version of `TensorProduct.homTensorHomMap` -/
+/-- Heterobasic version of `TensorProduct.homTensorHomMap` -/
 def homTensorHomMap : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[A] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   lift <| mapBilinear R A M N P Q
 
@@ -295,35 +296,46 @@ variable {R A M N P Q}
     homTensorHomMap R A M N P Q (f ⊗ₜ g) = map f g :=
   rfl
 
-variable (R A M N P Q)
+variable (R A B M N P Q)
 
 attribute [local ext high] TensorProduct.ext
+
+section assoc
+variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
 
 Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
-def assoc : (M ⊗[A] P) ⊗[R] N ≃ₗ[A] M ⊗[A] P ⊗[R] N :=
+def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear
-    (lift <|
-      TensorProduct.uncurry A _ _ _ <| comp (lcurry R A A _ _ _) <| TensorProduct.mk A M (P ⊗[R] N))
-    (TensorProduct.uncurry A _ _ _ <|
-      comp (uncurry R A A _ _ _) <| by
-        apply TensorProduct.curry
-        exact mk R A _ _)
-    (by
-      ext
-      rfl)
-    (by
-      ext
-      -- porting note: was `simp only [...]`
-      rfl)
-#align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assoc
+    (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
+    (lift <| uncurry R A B P Q _ ∘ₗ curry (mk R B _ Q))
+    (by ext; rfl)
+    (by ext; rfl)
+-- porting note: new `B` argument
+#align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assocₓ
+
+variable {M P N Q}
+
+@[simp]
+theorem assoc_tmul (m : M) (p : P) (q : Q) :
+    assoc R A B M P Q ((m ⊗ₜ p) ⊗ₜ q) = m ⊗ₜ (p ⊗ₜ q) :=
+  rfl
+
+@[simp]
+theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
+    (assoc R A B M P Q).symm (m ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ q :=
+  rfl
+
+end assoc
+
+section leftComm
 
 /-- Heterobasic version of `TensorProduct.leftComm` -/
 def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
-  let e₁ := (assoc R A M Q P).symm
+  let e₁ := (assoc R A A M P Q).symm
   let e₂ := congr (TensorProduct.comm A M P) (1 : Q ≃ₗ[R] Q)
-  let e₃ := (assoc R A P Q M)
+  let e₃ := (assoc R A A P M Q)
   e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
 
 variable {M N P Q}
@@ -337,6 +349,62 @@ theorem leftComm_tmul (m : M) (p : P) (q : Q) :
 theorem leftComm_symm_tmul (m : M) (p : P) (q : Q):
     (leftComm R A M P Q).symm (p ⊗ₜ (m ⊗ₜ q)) = m ⊗ₜ (p ⊗ₜ q) :=
   rfl
+
+end leftComm
+
+section rightComm
+
+/-- A tensor product analogue of `mul_right_comm`. -/
+def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
+  LinearEquiv.ofLinear
+    (lift <| TensorProduct.lift <| LinearMap.flip <|
+      lcurry R A A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
+    (TensorProduct.lift <| lift <| LinearMap.flip <|
+      (TensorProduct.lcurry A M P ((M ⊗[A] P) ⊗[R] Q)).restrictScalars R
+        ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
+    (by
+      refine (TensorProduct.ext <| ext <| fun m q => LinearMap.ext <| fun p => ?_)
+      exact Eq.refl ((m ⊗ₜ[R] q) ⊗ₜ[A] p))
+    (by
+      refine (curry_injective <| TensorProduct.ext' <| fun m p => LinearMap.ext <| fun q => ?_)
+      exact Eq.refl ((m ⊗ₜ[A] p) ⊗ₜ[R] q))
+
+variable {M N P Q}
+
+@[simp]
+theorem rightComm_tmul (m : M) (p : P) (q : Q) :
+    rightComm R A M P Q ((m ⊗ₜ p) ⊗ₜ q) = (m ⊗ₜ q) ⊗ₜ p :=
+  rfl
+
+@[simp]
+theorem rightComm_symm_tmul (m : M) (p : P) (q : Q):
+    (rightComm R A M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
+  rfl
+
+end rightComm
+
+section tensorTensorTensorComm
+
+/-- Heterobasic version of `tensorTensorTensorComm`. -/
+def tensorTensorTensorComm :
+  (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
+(assoc R A A (M ⊗[R] N) P Q).symm
+  ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
+  ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q
+
+variable {M N P Q}
+
+@[simp]
+theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
+    tensorTensorTensorComm R A M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
+  rfl
+
+@[simp]
+theorem tensorTensorTensorComm_symm_tmul (m : M) (p : P) (q : Q):
+    (tensorTensorTensorComm R A M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
+  rfl
+
+end tensorTensorTensorComm
 
 end CommSemiring
 
@@ -662,15 +730,14 @@ theorem ext {g h : A ⊗[R] B →ₐ[R] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a �
   ext
   simp [H]
 #align algebra.tensor_product.ext Algebra.TensorProduct.ext
-
--- TODO: with `SMulCommClass R S A` we can have this as an `S`-algebra morphism
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
-def includeLeft : A →ₐ[R] A ⊗[R] B :=
+def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
 #align algebra.tensor_product.include_left Algebra.TensorProduct.includeLeft
 
 @[simp]
-theorem includeLeft_apply (a : A) : (includeLeft : A →ₐ[R] A ⊗[R] B) a = a ⊗ₜ 1 :=
+theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
+    (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 #align algebra.tensor_product.include_left_apply Algebra.TensorProduct.includeLeft_apply
 
@@ -696,7 +763,7 @@ theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b =
 
 theorem includeLeft_comp_algebraMap {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] :
-    (includeLeft.toRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
+    (includeLeftRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
       includeRight.toRingHom.comp (algebraMap R T) := by
   ext
   simp
@@ -1107,7 +1174,8 @@ theorem productMap_apply_tmul (a : A) (b : B) : productMap f g (a ⊗ₜ b) = f 
   simp
 #align algebra.tensor_product.product_map_apply_tmul Algebra.TensorProduct.productMap_apply_tmul
 
-theorem productMap_left_apply (a : A) : productMap f g ((includeLeft : A →ₐ[R] A ⊗ B) a) = f a := by
+theorem productMap_left_apply (a : A) :
+    productMap f g (a ⊗ₜ 1) = f a := by
   simp
 #align algebra.tensor_product.product_map_left_apply Algebra.TensorProduct.productMap_left_apply
 
@@ -1117,7 +1185,7 @@ theorem productMap_left : (productMap f g).comp includeLeft = f :=
 #align algebra.tensor_product.product_map_left Algebra.TensorProduct.productMap_left
 
 theorem productMap_right_apply (b : B) :
-    productMap f g (includeRight (R := R) (A := A) (B := B) b) = g b := by simp
+    productMap f g (1 ⊗ₜ b) = g b := by simp
 #align algebra.tensor_product.product_map_right_apply Algebra.TensorProduct.productMap_right_apply
 
 @[simp]
