@@ -3,44 +3,6 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 open MeasureTheory Set Filter BoundedContinuousFunction Topology ENNReal NNReal BigOperators
 
-section minor_updates
-
-open Metric
-
--- NOTE: The only difference to existing lemmas is:
---  `[PseudoMetricSpace α]` -> `[PseudoEMetricSpace α]`
--- TODO: Just PR the obvious generalization.
-variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-
-#check tendsto_measure_cthickening
-
-/-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
-thickenings converges to the measure of its closure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening'  {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
-  have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
-    rw [closure_eq_iInter_cthickening]
-    exact
-      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
-        (fun i j _ ij => cthickening_mono ij _) hs
-  have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
-    apply Tendsto.congr' _ tendsto_const_nhds
-    filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
-    rw [cthickening_of_nonpos hr]
-  convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
-
-/-- If a closed set has a closed thickening with finite measure, then the measure of its `r`-closed
-thickenings converges to its measure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening_of_isClosed' {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
-  convert tendsto_measure_cthickening' hs
-  exact h's.closure_eq.symm
-
-end minor_updates
-
 
 
 section borel_imp
@@ -176,7 +138,7 @@ lemma borel_condition_implies_closed_condition
   have key := fun (n : ℕ) ↦ h' (Fthicks_open n).measurableSet (rs_null n)
   apply ENNReal.le_of_forall_pos_le_add
   intros ε ε_pos μF_finite
-  have keyB := @tendsto_measure_cthickening_of_isClosed' α _ _ _ μ F
+  have keyB := @tendsto_measure_cthickening_of_isClosed α _ _ _ μ F
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
   have nhd : Iio ((μ : Measure α) F + ε) ∈ 𝓝 ((μ : Measure α) F) := by
     apply Iio_mem_nhds
