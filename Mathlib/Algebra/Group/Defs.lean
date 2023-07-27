@@ -1194,7 +1194,7 @@ See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
 "Define an `AddGroup` structure on a Type by proving `∀ a, a + 0 = a` and
 `∀ a, a + -a = 0`.
-Note that this uses the default definitions for `nsmul`, `zsmul` and `neg`.
+Note that this uses the default definitions for `nsmul`, `zsmul` and `sub`.
 See note [reducible non-instances]."]
 def Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
     (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
