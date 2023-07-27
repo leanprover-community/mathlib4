@@ -29,20 +29,36 @@ def invFunction : Language.field.Functions 1 := true
 instance (α : Type _) : Zero (Language.field.Term α) :=
 { zero := Constants.term 0 }
 
+theorem zero_def (α : Type _) : (0 : Language.field.Term α) = Constants.term 0 := rfl
+
 instance (α : Type _) : One (Language.field.Term α) :=
 { one := Constants.term 1 }
+
+theorem one_def (α : Type _) : (1 : Language.field.Term α) = Constants.term 1 := rfl
 
 instance (α : Type _) : Add (Language.field.Term α) :=
 { add := addFunction.apply₂ }
 
+theorem add_def (α : Type _) (t₁ t₂ : Language.field.Term α) :
+    t₁ + t₂ = addFunction.apply₂ t₁ t₂ := rfl
+
 instance (α : Type _) : Mul (Language.field.Term α) :=
 { mul := mulFunction.apply₂ }
+
+theorem mul_def (α : Type _) (t₁ t₂ : Language.field.Term α) :
+    t₁ * t₂ = mulFunction.apply₂ t₁ t₂ := rfl
 
 instance (α : Type _) : Neg (Language.field.Term α) :=
 { neg := negFunction.apply₁ }
 
+theorem neg_def (α : Type _) (t : Language.field.Term α) :
+    -t = negFunction.apply₁ t := rfl
+
 instance (α : Type _) : Inv (Language.field.Term α) :=
 { inv := invFunction.apply₁ }
+
+theorem inv_def (α : Type _) (t : Language.field.Term α) :
+    t⁻¹ = invFunction.apply₁ t := rfl
 
 open BoundedFormula
 
@@ -63,8 +79,8 @@ show Set Language.field.Sentence from
   mulFunction.leftNeZeroInv invFunction 0 1,
   mulFunction.rightNeZeroInv invFunction 0 1,
   invFunction.apply₁ 0 =' 0,
-  (0 =' 1).not}
-#print Sentence.Realize
+  (Term.equal 0 1).not}
+
 set_option maxHeartbeats 20000000 in
 def fieldOfModelField {K : Type _} [Language.field.Structure K]
     [Theory.field.Model K] : Field K :=
@@ -124,12 +140,8 @@ def fieldOfModelField {K : Type _} [Language.field.Structure K]
     constantMap (L := Language.field) (M := K) 0,
     constantMap (L := Language.field) (M := K) 1, by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show ∼ (0 =' 1) ∈ Theory.field by simp [Theory.field])
-    rw [Sentence.realize_not] at h
-
-
-
-    ⟩
+      (show (Term.equal 0 1).not ∈ Theory.field by simp [Theory.field])
+    simpa [Sentence.Realize, zero_def, one_def] using h⟩
   mul_inv_cancel := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show mulFunction.rightNeZeroInv invFunction 0 1 ∈ Theory.field by simp [Theory.field])
@@ -137,7 +149,7 @@ def fieldOfModelField {K : Type _} [Language.field.Structure K]
   inv_zero := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show invFunction.apply₁ 0 =' 0 ∈ Theory.field by simp [Theory.field])
-    rwa [Functions.realize_apply₁] at h }
+    simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h }
 
 end field
 
