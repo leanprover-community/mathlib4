@@ -185,6 +185,8 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     pure (.nonzero q(nz_of_isNegNat $p $p'))
   | .isRat _i q n d p =>
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
+    -- make sure we get the zero via LinearOrderedRing instead of DivisionRing
+    have : $zα =Q by clear! $_i $zα; infer_instance := ⟨⟩
     assumeInstancesCommute
     have p : Q(NormNum.IsRat $e $n $d) := p
     if 0 < q then
