@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
-#align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"69b2e97a276619372b19cf80fc1e91b05ae2baa4"
+#align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
 /-!
 # The tensor product of R-algebras
@@ -413,7 +413,7 @@ theorem mul_assoc' (mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B)
     simp only [LinearMap.map_add, *, LinearMap.add_apply]
 #align algebra.tensor_product.mul_assoc' Algebra.TensorProduct.mul_assoc'
 
-nonrec theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
+protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
   mul_assoc' mul
     (by
       intros
@@ -421,24 +421,38 @@ nonrec theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z
     x y z
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
-theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
+protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
 
-theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
+protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
 instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 
-instance : AddMonoidWithOne (A ⊗[R] B) :=
-  AddMonoidWithOne.unary
+theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
+  rfl
+#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
+
+instance : AddMonoidWithOne (A ⊗[R] B) where
+  natCast n := n ⊗ₜ 1
+  natCast_zero := by simp
+  natCast_succ n := by simp [add_tmul, one_def]
+
+theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
 -- providing this instance separately makes some downstream code substantially faster
 instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
+
+@[simp]
+theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
+    a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
+  rfl
+#align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
 -- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
 -- appears to help performance.
@@ -447,19 +461,11 @@ instance instSemiring : Semiring (A ⊗[R] B) where
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
   mul_zero a := by simp [HMul.hMul, Mul.mul]
-  mul_assoc := mul_assoc
-  one_mul := one_mul
-  mul_one := mul_one
-
-theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
-  rfl
-#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
-
-@[simp]
-theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
-    a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
-  rfl
-#align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+  one_mul := Algebra.TensorProduct.one_mul
+  mul_one := Algebra.TensorProduct.mul_one
+  natCast_zero := AddMonoidWithOne.natCast_zero
+  natCast_succ := AddMonoidWithOne.natCast_succ
 
 @[simp]
 theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
@@ -478,32 +484,54 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
   map_mul' := by simp
 #align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
-variable {S : Type _} [CommSemiring S] [Algebra S A]
+variable {S : Type _}
+
+-- we want `isScalarTower_right` to take priority since it's better for unification elsewhere
+instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
+    [IsScalarTower S A A] [SMulCommClass R S A] : IsScalarTower S (A ⊗[R] B) (A ⊗[R] B) where
+  smul_assoc r x y := by
+    change r • x * y = r • (x * y)
+    induction y using TensorProduct.induction_on with
+    | C0 => simp [smul_zero]
+    | C1 a b => induction x using TensorProduct.induction_on with
+      | C0 => simp [smul_zero]
+      | C1 a' b' =>
+        dsimp
+        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, smul_mul_assoc]
+      | Cp x y hx hy => simp [smul_add, add_mul _, *]
+    | Cp x y hx hy => simp [smul_add, mul_add _, *]
+#align algebra.tensor_product.is_scalar_tower_right Algebra.TensorProduct.isScalarTower_right
+
+-- we want `Algebra.to_smulCommClass` to take priority since it's better for unification elsewhere
+instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
+    [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
+  smul_comm r x y := by
+    change r • (x * y) = x * r • y
+    induction y using TensorProduct.induction_on with
+    | C0 => simp [smul_zero]
+    | C1 a b => induction x using TensorProduct.induction_on with
+      | C0 => simp [smul_zero]
+      | C1 a' b' =>
+        dsimp
+        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
+      | Cp x y hx hy => simp [smul_add, add_mul _, *]
+    | Cp x y hx hy => simp [smul_add, mul_add _, *]
+#align algebra.tensor_product.smul_comm_class_right Algebra.TensorProduct.sMulCommClass_right
+
+variable [CommSemiring S] [Algebra S A]
 
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
-  { TensorProduct.includeLeftRingHom.comp (algebraMap S A),
-    (by infer_instance : Module S (A ⊗[R] B)) with
-    commutes' := fun r x => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp
-      · intro a b
-        dsimp
-        rw [Algebra.commutes, _root_.mul_one, _root_.one_mul]
-      · intro y y' h h'
-        dsimp at h h' ⊢
-        rw [mul_add, add_mul,h, h'] -- porting note: was `simp [mul_add...]` but this
-        -- no longer works for some reason
+  { commutes' := fun r x => by
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
+      rw [algebraMap_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
+        one_mul]
     smul_def' := fun r x => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp [smul_zero]
-      · intro a b
-        dsimp
-        rw [TensorProduct.smul_tmul', Algebra.smul_def r a, _root_.one_mul]
-      · intros
-        dsimp
-        rw [smul_add, mul_add] -- porting note: these were in the `simp` call in lean 3
-        simp [*] }
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
+      rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
+    toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 #align algebra.tensor_product.left_algebra Algebra.TensorProduct.leftAlgebra
+
+example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
@@ -574,9 +602,21 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance instRing : Ring (A ⊗[R] B) :=
-  { toSemiring := inferInstance
-    add_left_neg := add_left_neg }
+instance instRing : Ring (A ⊗[R] B) where
+  zsmul := SubNegMonoid.zsmul
+  zsmul_zero' := SubNegMonoid.zsmul_zero'
+  zsmul_succ' := SubNegMonoid.zsmul_succ'
+  zsmul_neg' := SubNegMonoid.zsmul_neg'
+  intCast z := z ⊗ₜ (1 : B)
+  intCast_ofNat n := by simp [natCast_def]
+  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
+  add_left_neg := add_left_neg
+
+theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+
+-- verify there are no diamonds
+example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
+example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
 
