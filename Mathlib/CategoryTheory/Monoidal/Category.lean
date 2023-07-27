@@ -188,7 +188,7 @@ def tensorIso {C : Type u} {X Y X' Y' : C} [Category.{v} C] [MonoidalCategory.{v
 #align category_theory.tensor_iso CategoryTheory.tensorIso
 
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
-infixr:70 " ⊗ " => tensorIso
+scoped infixr:70 " ⊗ " => tensorIso
 
 namespace MonoidalCategory
 
