@@ -7,7 +7,6 @@ import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
 import Std.Logic
 import Std.WF
-import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
