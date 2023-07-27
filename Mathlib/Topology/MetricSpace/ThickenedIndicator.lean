@@ -254,9 +254,10 @@ section indicator
 
 variable {α : Type _} [PseudoEMetricSpace α] {β : Type _} [One β]
 
-/-- Pointwise, the (mul)indicators of δ-thickenings of a set eventually coincide with the
-(mul)indicator of the set as δ>0 tends to zero. -/
-@[to_additive]
+/-- Pointwise, the multiplicative indicators of δ-thickenings of a set eventually coincide
+with the multiplicative indicator of the set as δ>0 tends to zero. -/
+@[to_additive "Pointwise, the indicators of δ-thickenings of a set eventually coincide
+with the indicator of the set as δ>0 tends to zero."]
 lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β) (E : Set α) (x : α) :
     ∀ᶠ δ in 𝓝[>] (0 : ℝ),
       (Metric.thickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
@@ -264,16 +265,14 @@ lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β)
   · filter_upwards [self_mem_nhdsWithin] with δ δ_pos
     simp only [closure_subset_thickening δ_pos E x_mem_closure, mulIndicator_of_mem, x_mem_closure]
   · have obs := eventually_not_mem_thickening_of_infEdist_pos x_mem_closure
-    filter_upwards [inter_mem (mem_nhdsWithin_of_mem_nhds obs) self_mem_nhdsWithin]
-      with δ ⟨x_notin_thE, δ_pos⟩
-    simp only [mem_setOf_eq] at x_notin_thE
-    have x_notin_clE : x ∉ closure E :=
-      fun con ↦ x_notin_thE (closure_subset_thickening δ_pos E con)
-    simp only [x_notin_thE, not_false_eq_true, mulIndicator_of_not_mem, x_notin_clE]
+    filter_upwards [mem_nhdsWithin_of_mem_nhds obs, self_mem_nhdsWithin]
+      with δ x_notin_thE _
+    simp only [x_notin_thE, not_false_eq_true, mulIndicator_of_not_mem, x_mem_closure]
 
-/-- Pointwise, the (mul)indicators of closed δ-thickenings of a set eventually coincide with the
-(mul)indicator of the set as δ tends to zero. -/
-@[to_additive]
+/-- Pointwise, the multiplicative indicators of closed δ-thickenings of a set eventually coincide
+with the multiplicative indicator of the set as δ tends to zero. -/
+@[to_additive "Pointwise, the indicators of closed δ-thickenings of a set eventually coincide
+with the indicator of the set as δ tends to zero."]
 lemma mulIndicator_cthickening_eventually_eq_mulIndicator_closure (f : α → β) (E : Set α) (x : α) :
     ∀ᶠ δ in 𝓝 (0 : ℝ),
       (Metric.cthickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
@@ -282,14 +281,14 @@ lemma mulIndicator_cthickening_eventually_eq_mulIndicator_closure (f : α → β
     have obs : x ∈ cthickening δ E := closure_subset_cthickening δ E x_mem_closure
     rw [mulIndicator_of_mem obs f, mulIndicator_of_mem x_mem_closure f]
   · filter_upwards [eventually_not_mem_cthickening_of_infEdist_pos x_mem_closure] with δ hδ
-    have x_notin_clE : x ∉ closure E := fun con ↦ hδ (closure_subset_cthickening δ E con)
-    simp only [hδ, not_false_eq_true, mulIndicator_of_not_mem, x_notin_clE]
+    simp only [hδ, not_false_eq_true, mulIndicator_of_not_mem, x_mem_closure]
 
 variable [TopologicalSpace β]
 
-/-- The (mul)indicators of δ-thickenings of a set tend pointwise to the (mul)-indicator of
-the set, as δ>0 tends to zero. -/
-@[to_additive]
+/-- The multiplicative indicators of δ-thickenings of a set tend pointwise to the multiplicative
+indicator of the set, as δ>0 tends to zero. -/
+@[to_additive "The indicators of δ-thickenings of a set tend pointwise to the indicator of the
+set, as δ>0 tends to zero."]
 lemma tendsto_mulIndicator_thickening_mulIndicator_closure (f : α → β) (E : Set α) :
     Tendsto (fun δ ↦ (Metric.thickening δ E).mulIndicator f) (𝓝[>] 0)
       (𝓝 ((closure E).mulIndicator f)) := by
@@ -298,9 +297,10 @@ lemma tendsto_mulIndicator_thickening_mulIndicator_closure (f : α → β) (E : 
   rw [tendsto_congr' (mulIndicator_thickening_eventually_eq_mulIndicator_closure f E x)]
   apply tendsto_const_nhds
 
-/-- The (mul)indicators of closed δ-thickenings of a set tend pointwise to the
-(mul)-indicator of the set, as δ tends to zero. -/
-@[to_additive]
+/-- The multiplicative indicators of closed δ-thickenings of a set tend pointwise to the
+multiplicative indicator of the set, as δ tends to zero. -/
+@[to_additive "The indicators of closed δ-thickenings of a set tend pointwise to the indicator
+of the set, as δ tends to zero."]
 lemma tendsto_mulIndicator_cthickening_mulIndicator_closure (f : α → β) (E : Set α) :
     Tendsto (fun δ ↦ (Metric.cthickening δ E).mulIndicator f) (𝓝 0)
       (𝓝 ((closure E).mulIndicator f)) := by

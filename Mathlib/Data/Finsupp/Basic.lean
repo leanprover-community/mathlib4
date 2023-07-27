@@ -121,9 +121,6 @@ theorem graph_eq_empty {f : α →₀ M} : f.graph = ∅ ↔ f = 0 :=
   (graph_injective α M).eq_iff' graph_zero
 #align finsupp.graph_eq_empty Finsupp.graph_eq_empty
 
-instance [Countable α] [Countable M] :
-    Countable (α →₀ M) := Function.Injective.countable (Finsupp.graph_injective α M)
-
 end Graph
 
 end Finsupp
