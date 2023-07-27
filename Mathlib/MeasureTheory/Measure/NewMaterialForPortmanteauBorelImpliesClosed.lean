@@ -57,18 +57,6 @@ lemma ProbabilityMeasure.coe_null_iff (μ : ProbabilityMeasure α) (E : Set α) 
 
 variable [TopologicalSpace α]
 
-/-
--- NOTE: Exists! (`MeasureTheory.lintegral_indicator_one`)
-lemma lintegral_indicator_one {α : Type _} [MeasurableSpace α] (μ : Measure α)
-    {s : Set α} (s_mble : MeasurableSet s) :
-    ∫⁻ x, (s.indicator (fun _ ↦ (1 : ℝ≥0∞)) x) ∂μ = μ s := by
-  --exact MeasureTheory.lintegral_indicator_one s_mble
-  simp [lintegral_indicator _ s_mble]
-
-#check lintegral_indicator_const
-#check lintegral_indicator_one
- -/
-
 -- NOTE: Missing?
 /-- If `μ` is a finite measure and the indicators of measurable sets `As i` tend pointwise to
 the indicator of a set `A` (along a countably generated filter), then the measures `μ (As i)`
@@ -88,6 +76,7 @@ lemma tendsto_measure_of_tendsto_indicator
   · rw [lintegral_one]
     exact (measure_lt_top μ univ).ne
 
+/-
 /-- If `μ` is a finite measure (on an `OpensMeasurableSpace`), then for any set `E`,
 the measures of the δ-thickenings of `E` tend to the measure of the closure of `E`
 as δ>0 tends to zero. -/
@@ -145,7 +134,7 @@ lemma tendsto_measure_cthickening_of_isClosed''
     Tendsto (fun δ ↦ μ (Metric.cthickening δ F)) (𝓝 (0 : ℝ)) (𝓝 (μ F)) := by
   convert tendsto_measure_cthickening_nhds_measure_closure μ
   exact F_closed.closure_eq.symm
-
+ -/
 
 
 
