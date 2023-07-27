@@ -105,8 +105,17 @@ elab_rules : tactic
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
-    let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
-      (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) `convert
+    let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
+    let (e, gs) ←
+      withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+        -- Allow typeclass inference failures since these will be inferred by unification
+        -- or else become new goals
+        withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
+          let t ← elabTermEnsuringType (mayPostpone := true) term expectedType
+          -- Process everything so that tactics get run, but again allow TC failures
+          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+          -- Use a type hint to ensure we collect goals from the type too
+          mkExpectedTypeHint t (← inferType t)
     liftMetaTactic fun g ↦
       return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 

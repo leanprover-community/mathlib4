@@ -603,8 +603,7 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
     Disjoint (s.image f) (t.image f) ↔ Disjoint s t := by
-  -- Porting note: was `convert`
-  rw [←disjoint_map ⟨_, hf⟩]
+  convert disjoint_map ⟨_, hf⟩ using 1
   simp [map_eq_image]
 #align finset.disjoint_image Finset.disjoint_image
 
