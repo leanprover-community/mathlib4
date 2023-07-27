@@ -125,6 +125,7 @@ class SemilinearMapClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [Se
   See also `_root_.map_smul` for the case where `σ` is the identity. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_map_class SemilinearMapClass
+attribute [instance 200] SemilinearMapClass.toAddHomClass
 
 end
 

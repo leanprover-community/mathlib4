@@ -118,6 +118,7 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
   smul_def' : ∀ r x, r • x = toRingHom r * x
 #align algebra Algebra
+attribute [instance 200] Algebra.toSMul
 
 end Prio
 

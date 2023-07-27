@@ -99,6 +99,7 @@ class ZeroHomClass (F : Type _) (M N : outParam (Type _)) [Zero M] [Zero N]
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass
 #align zero_hom_class.map_zero ZeroHomClass.map_zero
+attribute [instance 200] ZeroHomClass.toFunLike
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end Zero
@@ -143,6 +144,7 @@ class AddHomClass (F : Type _) (M N : outParam (Type _)) [Add M] [Add N]
   /-- The proposition that the function preserves addition -/
   map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
 #align add_hom_class AddHomClass
+attribute [instance 200] AddHomClass.toFunLike
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end Add
@@ -176,6 +178,8 @@ You should also extend this typeclass when you extend `AddMonoidHom`.
 class AddMonoidHomClass (F : Type _) (M N : outParam (Type _)) [AddZeroClass M] [AddZeroClass N]
   extends AddHomClass F M N, ZeroHomClass F M N
 #align add_monoid_hom_class AddMonoidHomClass
+attribute [instance 200] AddMonoidHomClass.toAddHomClass
+attribute [instance 200] AddMonoidHomClass.toZeroHomClass
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -208,6 +212,7 @@ class OneHomClass (F : Type _) (M N : outParam (Type _)) [One M] [One N]
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 #align one_hom_class OneHomClass
+attribute [instance 200] OneHomClass.toFunLike
 
 @[to_additive]
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
@@ -296,6 +301,7 @@ class MulHomClass (F : Type _) (M N : outParam (Type _)) [Mul M] [Mul N]
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
+attribute [instance 200] MulHomClass.toFunLike
 
 /-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive "`AddHom` is a type of addition-preserving homomorphisms"]
@@ -366,6 +372,8 @@ You should also extend this typeclass when you extend `MonoidHom`. -/
 class MonoidHomClass (F : Type _) (M N : outParam (Type _)) [MulOneClass M] [MulOneClass N]
   extends MulHomClass F M N, OneHomClass F M N
 #align monoid_hom_class MonoidHomClass
+attribute [instance 200] MonoidHomClass.toOneHomClass
+attribute [instance 200] MonoidHomClass.toMulHomClass
 
 @[to_additive]
 instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
@@ -498,6 +506,8 @@ You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 class MonoidWithZeroHomClass (F : Type _) (M N : outParam (Type _)) [MulZeroOneClass M]
   [MulZeroOneClass N] extends MonoidHomClass F M N, ZeroHomClass F M N
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
+attribute [instance 200] MonoidWithZeroHomClass.toZeroHomClass
+attribute [instance 200] MonoidWithZeroHomClass.toMonoidHomClass
 
 instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
   coe f := f.toFun

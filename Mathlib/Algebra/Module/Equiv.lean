@@ -98,6 +98,7 @@ class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x ` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
+attribute [instance 200] SemilinearEquivClass.toAddEquivClass
 
 -- `R, S, σ, σ'` become metavars, but it's OK since they are outparams.
 

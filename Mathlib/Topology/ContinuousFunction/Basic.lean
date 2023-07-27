@@ -46,6 +46,7 @@ class ContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalS
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
 #align continuous_map_class ContinuousMapClass
+attribute [instance 200] ContinuousMapClass.toFunLike
 
 end
 

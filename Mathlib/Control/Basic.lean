@@ -248,6 +248,7 @@ class CommApplicative (m : Type u → Type v) [Applicative m] extends LawfulAppl
   commutative_prod : ∀ {α β} (a : m α) (b : m β),
     Prod.mk <$> a <*> b = (fun (b : β) a => (a, b)) <$> b <*> a
 #align is_comm_applicative CommApplicative
+attribute [instance 200] CommApplicative.toLawfulApplicative
 
 open Functor
 

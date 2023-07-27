@@ -41,6 +41,7 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 /-- A type class for natural numbers which are greater than or equal to `2`. -/
 class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
+attribute [instance 200] instOfNat
 
 instance : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _

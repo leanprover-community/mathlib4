@@ -102,6 +102,7 @@ class AddAction (G : Type _) (P : Type _) [AddMonoid G] extends VAdd G P where
   /-- Associativity of `+` and `+ᵥ` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
 #align add_action AddAction
+attribute [instance 200] AddAction.toVAdd
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[to_additive (attr := ext)]
@@ -115,6 +116,7 @@ class MulAction (α : Type _) (β : Type _) [Monoid α] extends SMul α β where
 #align add_action.ext_iff AddAction.ext_iff
 #align mul_action.ext_iff MulAction.ext_iff
 #align add_action.ext AddAction.ext
+attribute [instance 200] MulAction.toSMul
 
 /-!
 ### (Pre)transitive action
@@ -135,6 +137,7 @@ class AddAction.IsPretransitive (M α : Type _) [VAdd M α] : Prop where
   /-- There is `g` such that `g +ᵥ x = y`. -/
   exists_vadd_eq : ∀ x y : α, ∃ g : M, g +ᵥ x = y
 #align add_action.is_pretransitive AddAction.IsPretransitive
+attribute [instance 200] AddAction.toVAdd
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
   A transitive action should furthermore have `α` nonempty. -/
@@ -143,6 +146,7 @@ class MulAction.IsPretransitive (M α : Type _) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
 #align mul_action.is_pretransitive MulAction.IsPretransitive
+attribute [instance 200] MulAction.toSMul
 
 namespace MulAction
 
@@ -703,6 +707,7 @@ class SMulZeroClass (M A : Type _) [Zero A] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
 #align smul_zero_class SMulZeroClass
+attribute [instance 200] SMulZeroClass.toSMul
 
 section smul_zero
 
@@ -780,6 +785,7 @@ class DistribSMul (M A : Type _) [AddZeroClass A] extends SMulZeroClass M A wher
 #align distrib_smul DistribSMul
 #align distrib_smul.ext DistribSMul.ext
 #align distrib_smul.ext_iff DistribSMul.ext_iff
+attribute [instance 200] DistribSMul.toSMulZeroClass
 
 section DistribSMul
 
@@ -864,6 +870,7 @@ class DistribMulAction (M A : Type _) [Monoid M] [AddMonoid A] extends MulAction
 #align distrib_mul_action DistribMulAction
 #align distrib_mul_action.ext DistribMulAction.ext
 #align distrib_mul_action.ext_iff DistribMulAction.ext_iff
+attribute [instance 200] DistribMulAction.toMulAction
 
 section
 
@@ -988,6 +995,7 @@ class MulDistribMulAction (M : Type _) (A : Type _) [Monoid M] [Monoid A] extend
 #align mul_distrib_mul_action MulDistribMulAction
 #align mul_distrib_mul_action.ext MulDistribMulAction.ext
 #align mul_distrib_mul_action.ext_iff MulDistribMulAction.ext_iff
+attribute [instance 200] MulDistribMulAction.toMulAction
 
 export MulDistribMulAction (smul_one)
 

@@ -80,6 +80,8 @@ section NonUnitalSubringClass
 are both a multiplicative submonoid and an additive subgroup. -/
 class NonUnitalSubringClass (S : Type _) (R : Type u) [NonUnitalNonAssocRing R]
     [SetLike S R] extends NonUnitalSubsemiringClass S R, NegMemClass S R : Prop where
+attribute [instance 200] NonUnitalSubringClass.toNegMemClass
+attribute [instance 200] NonUnitalSubringClass.toNonUnitalSubsemiringClass
 
 -- See note [lower instance priority]
 instance (priority := 100) NonUnitalSubringClass.addSubgroupClass (S : Type _) (R : Type u)

@@ -50,6 +50,8 @@ class IsPrecomplete : Prop where
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
 class IsAdicComplete extends IsHausdorff I M, IsPrecomplete I M : Prop
 #align is_adic_complete IsAdicComplete
+attribute [instance 200] IsAdicComplete.toIsPrecomplete
+attribute [instance 200] IsAdicComplete.toIsHausdorff
 
 variable {I M}
 

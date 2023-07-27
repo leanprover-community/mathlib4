@@ -114,7 +114,7 @@ instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
 instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
   ⟨(sSup : Set α → α)⟩
 
-/-- Note that we rarely use `CompleteSemilatticeSup`attribute [instance 200] CompleteLattice.toSupSet
+/-- Note that we rarely use `CompleteSemilatticeSup`
 
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
@@ -263,6 +263,7 @@ class CompleteLattice (α : Type _) extends Lattice α, CompleteSemilatticeSup �
   /-- Any element is more than the bottom one. -/
   protected bot_le : ∀ x : α, ⊥ ≤ x
 #align complete_lattice CompleteLattice
+attribute [instance 200] CompleteLattice.toSupSet
 
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice α] :

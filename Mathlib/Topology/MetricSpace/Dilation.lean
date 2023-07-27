@@ -74,6 +74,7 @@ class DilationClass (F : Type _) (α β : outParam <| Type _) [PseudoEMetricSpac
     [PseudoEMetricSpace β] extends FunLike F α fun _ => β where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y
 #align dilation_class DilationClass
+attribute [instance 200] DilationClass.toFunLike
 
 end Defs
 

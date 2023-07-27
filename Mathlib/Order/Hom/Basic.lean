@@ -122,6 +122,7 @@ class OrderIsoClass (F : Type _) (α β : outParam (Type _)) [LE α] [LE β] ext
   /-- An order isomorphism respects `≤`. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 #align order_iso_class OrderIsoClass
+attribute [instance 200] OrderIsoClass.toEquivLike
 
 end
 

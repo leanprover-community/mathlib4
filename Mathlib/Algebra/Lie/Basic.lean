@@ -69,6 +69,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
 class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
+attribute [instance 200] LieAlgebra.toModule
 
   The compatibility in the first argument is not a class property, but follows since every
   Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
@@ -86,6 +87,7 @@ class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] exten
   /-- A Lie ring module bracket satisfies a Leibniz / Jacobi identity. -/
   protected leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 #align lie_ring_module LieRingModule
+attribute [instance 200] LieRingModule.toBracket
 
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/

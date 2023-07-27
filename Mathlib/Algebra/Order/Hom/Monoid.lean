@@ -88,6 +88,7 @@ class OrderAddMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_add_monoid_hom_class OrderAddMonoidHomClass
+attribute [instance 200] OrderAddMonoidHomClass.toAddMonoidHomClass
 
 end
 
@@ -125,6 +126,7 @@ class OrderMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
+attribute [instance 200] OrderMonoidHomClass.toMonoidHomClass
 
 end
 
@@ -188,6 +190,7 @@ class OrderMonoidWithZeroHomClass (F : Type _) (α β : outParam <| Type _) [Pre
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
+attribute [instance 200] OrderMonoidWithZeroHomClass.toMonoidWithZeroHomClass
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidWithZeroHomClass F α β` into an actual
 `OrderMonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →+*₀o β`. -/

@@ -131,6 +131,7 @@ class NonarchAddGroupSeminormClass (F : Type _) (α : outParam <| Type _) [AddGr
   /-- The seminorm is invariant under negation. -/
   protected map_neg_eq_map' (f : F) (a : α) : f (-a) = f a
 #align nonarch_add_group_seminorm_class NonarchAddGroupSeminormClass
+attribute [instance 200] NonarchAddGroupSeminormClass.toNonarchimedeanHomClass
 
 /-- `NonarchAddGroupNormClass F α` states that `F` is a type of nonarchimedean norms on the
 additive group `α`.
@@ -141,6 +142,7 @@ class NonarchAddGroupNormClass (F : Type _) (α : outParam <| Type _) [AddGroup 
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 #align nonarch_add_group_norm_class NonarchAddGroupNormClass
+attribute [instance 200] NonarchAddGroupNormClass.toNonarchAddGroupSeminormClass
 
 section NonarchAddGroupSeminormClass
 

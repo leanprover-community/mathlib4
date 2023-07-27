@@ -46,6 +46,7 @@ class CocompactMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSp
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
 #align cocompact_map_class CocompactMapClass
+attribute [instance 200] CocompactMapClass.toContinuousMapClass
 
 end
 

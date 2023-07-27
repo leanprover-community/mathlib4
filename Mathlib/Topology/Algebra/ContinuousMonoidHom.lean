@@ -63,6 +63,7 @@ class ContinuousAddMonoidHomClass (A B : outParam (Type _)) [AddMonoid A] [AddMo
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
+attribute [instance 200] ContinuousAddMonoidHomClass.toAddMonoidHomClass
 
 /-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
 homomorphisms.
@@ -75,6 +76,7 @@ class ContinuousMonoidHomClass (A B : outParam (Type _)) [Monoid A] [Monoid B]
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
+attribute [instance 200] ContinuousMonoidHomClass.toMonoidHomClass
 
 end
 

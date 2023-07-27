@@ -50,6 +50,7 @@ class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 #align smul_with_zero SMulWithZero
+attribute [instance 200] SMulWithZero.toSMulZeroClass
 
 instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
   smul := (· * ·)
@@ -145,6 +146,7 @@ class MulActionWithZero extends MulAction R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 #align mul_action_with_zero MulActionWithZero
+attribute [instance 200] MulActionWithZero.toMulAction
 
 -- see Note [lower instance priority]
 instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :

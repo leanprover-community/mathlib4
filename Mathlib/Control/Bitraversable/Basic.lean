@@ -48,6 +48,7 @@ class Bitraversable (t : Type u → Type u → Type u) extends Bifunctor t where
     ∀ {m : Type u → Type u} [Applicative m] {α α' β β'},
       (α → m α') → (β → m β') → t α β → m (t α' β')
 #align bitraversable Bitraversable
+attribute [instance 200] Bitraversable.toBifunctor
 
 export Bitraversable (bitraverse)
 
@@ -76,6 +77,7 @@ class LawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] e
       (η : ApplicativeTransformation F G) {α α' β β'} (f : α → F β) (f' : α' → F β') (x : t α α'),
       η (bitraverse f f' x) = bitraverse (@η _ ∘ f) (@η _ ∘ f') x
 #align is_lawful_bitraversable LawfulBitraversable
+attribute [instance 200] LawfulBitraversable.toLawfulBifunctor
 
 export LawfulBitraversable (id_bitraverse comp_bitraverse bitraverse_eq_bimap_id)
 

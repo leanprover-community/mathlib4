@@ -75,7 +75,7 @@ class IsCommutative (α : Type u) (op : α → α → α) : Prop where
   comm : ∀ a b, op a b = op b a
 #align is_commutative IsCommutative
 
-instance {op} [IsCommutative α op] : Lean.IsCommutative op where
+instance (priority := 200) {op} [IsCommutative α op] : Lean.IsCommutative op where
   comm := IsCommutative.comm
 
 instance (priority := 100) isSymmOp_of_isCommutative (α : Type u) (op : α → α → α)
@@ -87,7 +87,7 @@ class IsAssociative (α : Type u) (op : α → α → α) : Prop where
   assoc : ∀ a b c, op (op a b) c = op a (op b c)
 #align is_associative IsAssociative
 
-instance {op} [IsAssociative α op] : Lean.IsAssociative op where
+instance (priority := 00) {op} [IsAssociative α op] : Lean.IsAssociative op where
   assoc := IsAssociative.assoc
 
 /-- A binary operation with a left identity. -/
@@ -100,7 +100,7 @@ class IsRightId (α : Type u) (op : α → α → α) (o : outParam α) : Prop w
   right_id : ∀ a, op a o = a
 #align is_right_id IsRightId
 
-instance {op} [IsLeftId α op o] [IsRightId α op o] : Lean.IsNeutral op o where
+instance (priority := 200) {op} [IsLeftId α op o] [IsRightId α op o] : Lean.IsNeutral op o where
   left_neutral := IsLeftId.left_id
   right_neutral := IsRightId.right_id
 
@@ -124,7 +124,7 @@ class IsIdempotent (α : Type u) (op : α → α → α) : Prop where
   idempotent : ∀ a, op a a = a
 #align is_idempotent IsIdempotent
 
-instance {op} [IsIdempotent α op] : Lean.IsIdempotent op where
+instance (priority := 200) {op} [IsIdempotent α op] : Lean.IsIdempotent op where
   idempotent := IsIdempotent.idempotent
 
 -- class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
@@ -222,14 +222,18 @@ class IsTotal (α : Type u) (r : α → α → Prop) : Prop where
 and transitive. -/
 class IsPreorder (α : Type u) (r : α → α → Prop) extends IsRefl α r, IsTrans α r : Prop
 #align is_preorder IsPreorder
+attribute [instance 200] IsPreorder.toIsTrans
+attribute [instance 200] IsPreorder.toIsRefl
 
 /-- `IsTotalPreorder X r` means that the binary relation `r` on `X` is total and a preorder. -/
 class IsTotalPreorder (α : Type u) (r : α → α → Prop) extends IsTrans α r, IsTotal α r : Prop
 #align is_total_preorder IsTotalPreorder
+attribute [instance 200] IsTotalPreorder.toIsTrans
+attribute [instance 200] IsTotalPreorder.toIsTotal
 
 /-- Every total pre-order is a pre-order. -/
-instance isTotalPreorder_isPreorder (α : Type u) (r : α → α → Prop) [s : IsTotalPreorder α r] :
-    IsPreorder α r where
+instance (priority := 200) isTotalPreorder_isPreorder (α : Type u) (r : α → α → Prop)
+    [s : IsTotalPreorder α r] : IsPreorder α r where
   trans := s.trans
   refl a := Or.elim (@IsTotal.total _ r _ a a) id id
 #align is_total_preorder_is_preorder isTotalPreorder_isPreorder
@@ -238,16 +242,22 @@ instance isTotalPreorder_isPreorder (α : Type u) (r : α → α → Prop) [s : 
 `IsPreorder X r` and `IsAntisymm X r`. -/
 class IsPartialOrder (α : Type u) (r : α → α → Prop) extends IsPreorder α r, IsAntisymm α r : Prop
 #align is_partial_order IsPartialOrder
+attribute [instance 200] IsPartialOrder.toIsPreorder
+attribute [instance 200] IsPartialOrder.toIsAntisymm
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
 class IsLinearOrder (α : Type u) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
 #align is_linear_order IsLinearOrder
+attribute [instance 200] IsLinearOrder.toIsTotal
+attribute [instance 200] IsLinearOrder.toIsPartialOrder
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
 class IsEquiv (α : Type u) (r : α → α → Prop) extends IsPreorder α r, IsSymm α r : Prop
 #align is_equiv IsEquiv
+attribute [instance 200] IsEquiv.toIsSymm
+attribute [instance 200] IsEquiv.toIsPreorder
 
 -- /-- `IsPer X r` means that the binary relation `r` on `X` is a partial equivalence relation, that
 -- is, `IsSymm X r` and `IsTrans X r`. -/
@@ -258,6 +268,8 @@ class IsEquiv (α : Type u) (r : α → α → Prop) extends IsPreorder α r, Is
 `IsIrrefl X r` and `IsTrans X r`. -/
 class IsStrictOrder (α : Type u) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
 #align is_strict_order IsStrictOrder
+attribute [instance 200] IsStrictOrder.toIsIrrefl
+attribute [instance 200] IsStrictOrder.toIsTrans
 
 /-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
 `fun a b => ¬ lt a b ∧ ¬ lt b a` is transitive. -/
@@ -270,6 +282,8 @@ that is, `IsStrictOrder X lt` and `IsIncompTrans X lt`. -/
 class IsStrictWeakOrder (α : Type u) (lt : α → α → Prop) extends IsStrictOrder α lt,
     IsIncompTrans α lt : Prop
 #align is_strict_weak_order IsStrictWeakOrder
+attribute [instance 200] IsStrictWeakOrder.toIsIncompTrans
+attribute [instance 200] IsStrictWeakOrder.toIsStrictOrder
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
 either `lt a b` or `a = b` or `lt b a` for any `a` and `b`. -/
@@ -282,6 +296,8 @@ that is, `IsTrichotomous X lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Type u) (lt : α → α → Prop) extends IsTrichotomous α lt,
     IsStrictOrder α lt : Prop
 #align is_strict_total_order IsStrictTotalOrder
+attribute [instance 200] IsStrictTotalOrder.toIsTrichotomous
+attribute [instance 200] IsStrictTotalOrder.toIsStrictOrder
 
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Type u) : IsEquiv α (· = ·) where

@@ -135,6 +135,7 @@ class EmbeddingLike (F : Sort _) (α β : outParam (Sort _)) extends FunLike F �
   /-- The coercion to functions must produce injective functions. -/
   injective' : ∀ f : F, @Function.Injective α β (coe f)
 #align embedding_like EmbeddingLike
+attribute [instance 200] EmbeddingLike.toFunLike
 
 namespace EmbeddingLike
 

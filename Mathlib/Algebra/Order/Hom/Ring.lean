@@ -82,6 +82,7 @@ class OrderRingHomClass (F : Type _) (α β : outParam <| Type _) [NonAssocSemir
   /-- The proposition that the function preserves the order. -/
   monotone (f : F) : Monotone f
 #align order_ring_hom_class OrderRingHomClass
+attribute [instance 200] OrderRingHomClass.toRingHomClass
 
 /-- `OrderRingIsoClass F α β` states that `F` is a type of ordered semiring isomorphisms.
 You should extend this class when you extend `OrderRingIso`. -/
@@ -90,6 +91,7 @@ class OrderRingIsoClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Add �
   /-- The proposition that the function preserves the order bijectively. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 #align order_ring_iso_class OrderRingIsoClass
+attribute [instance 200] OrderRingIsoClass.toRingEquivClass
 
 -- See note [lower priority instance]
 instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass [NonAssocSemiring α]

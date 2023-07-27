@@ -375,6 +375,9 @@ theorem wellFoundedLT_dual_iff (α : Type _) [LT α] : WellFoundedLT αᵒᵈ �
 class IsWellOrder (α : Type u) (r : α → α → Prop) extends
   IsTrichotomous α r, IsTrans α r, IsWellFounded α r : Prop
 #align is_well_order IsWellOrder
+attribute [instance 200] IsWellOrder.toIsWellFounded
+attribute [instance 200] IsWellOrder.toIsTrichotomous
+attribute [instance 200] IsWellOrder.toIsTrans
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
@@ -592,6 +595,7 @@ class IsNonstrictStrictOrder (α : Type _) (r : semiOutParam (α → α → Prop
   /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a
 #align is_nonstrict_strict_order IsNonstrictStrictOrder
+attribute [instance 200] instIsIrrefl_2
 
 theorem right_iff_left_not_left {r s : α → α → Prop} [IsNonstrictStrictOrder α r s] {a b : α} :
     s a b ↔ r a b ∧ ¬r b a :=

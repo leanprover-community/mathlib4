@@ -71,6 +71,8 @@ class NonUnitalStarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outPara
   [NonUnitalNonAssocSemiring B] [DistribMulAction R A] [DistribMulAction R B] extends
   NonUnitalAlgHomClass F R A B, StarHomClass F A B
 #align non_unital_star_alg_hom_class NonUnitalStarAlgHomClass
+attribute [instance 200] NonUnitalStarAlgHomClass.toStarHomClass
+attribute [instance 200] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
 
 -- Porting note: no longer needed
 ---- `R` becomes a metavariable but that's fine because it's an `outParam`
@@ -317,6 +319,8 @@ class StarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _
   (B : outParam (Type _)) [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] extends AlgHomClass F R A B, StarHomClass F A B
 #align star_alg_hom_class StarAlgHomClass
+attribute [instance 200] StarAlgHomClass.toAlgHomClass
+attribute [instance 200] StarAlgHomClass.toStarHomClass
 
 -- Porting note: no longer needed
 ---- `R` becomes a metavariable but that's fine because it's an `outParam`
@@ -700,6 +704,7 @@ class StarAlgEquivClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type
   /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
   map_smul : ∀ (f : F) (r : R) (a : A), f (r • a) = r • f a
 #align star_alg_equiv_class StarAlgEquivClass
+attribute [instance 200] StarAlgEquivClass.toRingEquivClass
 
 -- Porting note: no longer needed
 ---- `R` becomes a metavariable but that's fine because it's an `outParam`

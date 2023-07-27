@@ -46,6 +46,7 @@ class ContinuousOpenMapClass (F : Type _) (α β : outParam <| Type _) [Topologi
   [TopologicalSpace β] extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
 #align continuous_open_map_class ContinuousOpenMapClass
+attribute [instance 200] ContinuousOpenMapClass.toContinuousMapClass
 
 end
 

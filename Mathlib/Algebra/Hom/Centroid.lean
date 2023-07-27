@@ -65,6 +65,7 @@ class CentroidHomClass (F : Type _) (α : outParam <| Type _) [NonUnitalNonAssoc
   /-- Commutativity of centroid homomorphims with right multiplication. -/
   map_mul_right (f : F) (a b : α) : f (a * b) = f a * b
 #align centroid_hom_class CentroidHomClass
+attribute [instance 200] CentroidHomClass.toAddMonoidHomClass
 
 
 export CentroidHomClass (map_mul_left map_mul_right)

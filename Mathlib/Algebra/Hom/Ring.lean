@@ -82,6 +82,8 @@ homomorphisms. You should extend this class when you extend `NonUnitalRingHom`. 
 class NonUnitalRingHomClass (F : Type _) (α β : outParam (Type _)) [NonUnitalNonAssocSemiring α]
   [NonUnitalNonAssocSemiring β] extends MulHomClass F α β, AddMonoidHomClass F α β
 #align non_unital_ring_hom_class NonUnitalRingHomClass
+attribute [instance 200] NonUnitalRingHomClass.toAddMonoidHomClass
+attribute [instance 200] NonUnitalRingHomClass.toMulHomClass
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
 
@@ -377,6 +379,9 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
   [NonAssocSemiring β] extends MonoidHomClass F α β, AddMonoidHomClass F α β,
   MonoidWithZeroHomClass F α β
 #align ring_hom_class RingHomClass
+attribute [instance 200] RingHomClass.toMonoidWithZeroHomClass
+attribute [instance 200] RingHomClass.toMonoidHomClass
+attribute [instance 200] RingHomClass.toAddMonoidHomClass
 
 set_option linter.deprecated false in
 /-- Ring homomorphisms preserve `bit1`. -/

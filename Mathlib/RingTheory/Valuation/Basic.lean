@@ -87,6 +87,7 @@ class ValuationClass (F) (R Γ₀ : outParam (Type _)) [LinearOrderedCommMonoidW
   /-- The valuation of a a sum is less that the sum of the valuations -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
 #align valuation_class ValuationClass
+attribute [instance 200] ValuationClass.toMonoidWithZeroHomClass
 
 export ValuationClass (map_add_le_max)
 

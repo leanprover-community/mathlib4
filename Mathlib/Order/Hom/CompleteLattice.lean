@@ -88,6 +88,7 @@ class sSupHomClass (F : Type _) (α β : outParam <| Type _) [SupSet α] [SupSet
   /-- The proposition that members of `sSupHomClass`s commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align Sup_hom_class sSupHomClass
+attribute [instance 200] sSupHomClass.toFunLike
 
 /-- `sInfHomClass F α β` states that `F` is a type of `⨅`-preserving morphisms.
 
@@ -97,6 +98,7 @@ class sInfHomClass (F : Type _) (α β : outParam <| Type _) [InfSet α] [InfSet
   /-- The proposition that members of `sInfHomClass`s commute with arbitrary infima/meets. -/
   map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
 #align Inf_hom_class sInfHomClass
+attribute [instance 200] sInfHomClass.toFunLike
 
 /-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
@@ -106,6 +108,7 @@ class FrameHomClass (F : Type _) (α β : outParam <| Type _) [CompleteLattice �
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align frame_hom_class FrameHomClass
+attribute [instance 200] FrameHomClass.toInfTopHomClass
 
 /-- `CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
 
@@ -116,6 +119,7 @@ class CompleteLatticeHomClass (F : Type _) (α β : outParam <| Type _) [Complet
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align complete_lattice_hom_class CompleteLatticeHomClass
+attribute [instance 200] CompleteLatticeHomClass.tosInfHomClass
 
 end
 

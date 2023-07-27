@@ -253,6 +253,8 @@ class ContinuousSemilinearMapClass (F : Type _) {R S : outParam (Type _)} [Semir
     (M₂ : outParam (Type _)) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂
 #align continuous_semilinear_map_class ContinuousSemilinearMapClass
+attribute [instance 200] ContinuousSemilinearMapClass.toContinuousMapClass
+attribute [instance 200] ContinuousSemilinearMapClass.toSemilinearMapClass
 
 -- `σ`, `R` and `S` become metavariables, but they are all outparams so it's OK
 -- porting note: was attribute [nolint dangerous_instance]
@@ -304,6 +306,7 @@ class ContinuousSemilinearEquivClass (F : Type _) {R : outParam (Type _)} {S : o
   map_continuous : ∀ f : F, Continuous f := by continuity
   inv_continuous : ∀ f : F, Continuous (inv f) := by continuity
 #align continuous_semilinear_equiv_class ContinuousSemilinearEquivClass
+attribute [instance 200] ContinuousSemilinearEquivClass.toSemilinearEquivClass
 
 attribute [inherit_doc ContinuousSemilinearEquivClass]
 ContinuousSemilinearEquivClass.map_continuous

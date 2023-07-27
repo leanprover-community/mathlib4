@@ -69,6 +69,7 @@ class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] ex
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align top_hom_class TopHomClass
+attribute [instance 200] TopHomClass.toFunLike
 
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
@@ -78,6 +79,7 @@ class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] ex
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align bot_hom_class BotHomClass
+attribute [instance 200] BotHomClass.toFunLike
 
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
@@ -89,6 +91,7 @@ class BoundedOrderHomClass (F : Type _) (α β : outParam <| Type _) [LE α] [LE
   /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align bounded_order_hom_class BoundedOrderHomClass
+attribute [instance 200] BoundedOrderHomClass.toRelHomClass
 
 end
 

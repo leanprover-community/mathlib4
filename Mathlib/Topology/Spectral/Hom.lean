@@ -80,6 +80,7 @@ class SpectralMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpa
   /-- statement that `F` is a type of spectral maps-/
   map_spectral (f : F) : IsSpectralMap f
 #align spectral_map_class SpectralMapClass
+attribute [instance 200] SpectralMapClass.toFunLike
 
 end
 

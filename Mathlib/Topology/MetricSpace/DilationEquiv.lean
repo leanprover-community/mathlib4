@@ -31,6 +31,7 @@ variable (F : Type _) (X Y : outParam (Type _)) [PseudoEMetricSpace X] [PseudoEM
 dilations. -/
 class DilationEquivClass extends EquivLike F X Y where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
+attribute [instance 200] DilationEquivClass.toEquivLike
 
 instance (priority := 100) [DilationEquivClass F X Y] : DilationClass F X Y :=
   { inferInstanceAs (FunLike F X fun _ ↦ Y), ‹DilationEquivClass F X Y› with }

@@ -74,6 +74,7 @@ class HeytingHomClass (F : Type _) (α β : outParam <| Type _) [HeytingAlgebra 
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
 #align heyting_hom_class HeytingHomClass
+attribute [instance 200] HeytingHomClass.toLatticeHomClass
 
 /-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
@@ -85,6 +86,7 @@ class CoheytingHomClass (F : Type _) (α β : outParam <| Type _) [CoheytingAlge
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 #align coheyting_hom_class CoheytingHomClass
+attribute [instance 200] CoheytingHomClass.toLatticeHomClass
 
 /-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
@@ -96,6 +98,7 @@ class BiheytingHomClass (F : Type _) (α β : outParam <| Type _) [BiheytingAlge
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 #align biheyting_hom_class BiheytingHomClass
+attribute [instance 200] BiheytingHomClass.toLatticeHomClass
 
 export HeytingHomClass (map_himp)
 

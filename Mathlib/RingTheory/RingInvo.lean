@@ -47,6 +47,7 @@ class RingInvoClass (F : Type _) (R : outParam (Type _)) [Semiring R] extends
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x
 #align ring_invo_class RingInvoClass
+attribute [instance 200] RingInvoClass.toRingEquivClass
 
 /-- Turn an element of a type `F` satisfying `RingInvoClass F R` into an actual
 `RingInvo`. This is declared as the default coercion from `F` to `RingInvo R`. -/

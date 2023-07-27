@@ -49,6 +49,7 @@ class LocallyBoundedMapClass (F : Type _) (α β : outParam <| Type _) [Bornolog
   cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
   comap_cobounded_le (f : F) : (cobounded β).comap f ≤ cobounded α
 #align locally_bounded_map_class LocallyBoundedMapClass
+attribute [instance 200] LocallyBoundedMapClass.toFunLike
 
 end
 

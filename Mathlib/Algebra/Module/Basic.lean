@@ -61,6 +61,7 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
 #align module Module
 #align module.ext Module.ext
 #align module.ext_iff Module.ext_iff
+attribute [instance 200] Module.toDistribMulAction
 
 section AddCommMonoid
 

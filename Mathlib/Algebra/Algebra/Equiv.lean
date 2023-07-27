@@ -48,6 +48,7 @@ class AlgEquivClass (F : Type _) (R A B : outParam (Type _)) [CommSemiring R] [S
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_equiv_class AlgEquivClass
+attribute [instance 200] AlgEquivClass.toRingEquivClass
 
 -- Porting note: Removed nolint dangerousInstance from AlgEquivClass.toRingEquivClass
 

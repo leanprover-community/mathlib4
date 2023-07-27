@@ -49,6 +49,7 @@ under the `SlashAction`. -/
 class SlashInvariantFormClass extends FunLike F ℍ fun _ => ℂ where
   slash_action_eq : ∀ (f : F) (γ : Γ), (f : ℍ → ℂ) ∣[k] γ = f
 #align slash_invariant_form_class SlashInvariantFormClass
+attribute [instance 200] SlashInvariantFormClass.toFunLike
 
 instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
     SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where

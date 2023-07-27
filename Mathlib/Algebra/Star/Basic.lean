@@ -507,6 +507,7 @@ class StarHomClass (F : Type _) (R S : outParam (Type _)) [Star R] [Star S] exte
   /-- the maps preserve star -/
   map_star : ∀ (f : F) (r : R), f (star r) = star (f r)
 #align star_hom_class StarHomClass
+attribute [instance 200] StarHomClass.toFunLike
 
 export StarHomClass (map_star)
 

@@ -80,6 +80,7 @@ class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]
   [CommMonoidWithZero R'] extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 #align mul_char_class MulCharClass
+attribute [instance 200] MulCharClass.toMonoidHomClass
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
 

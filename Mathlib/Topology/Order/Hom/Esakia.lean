@@ -57,6 +57,7 @@ class PseudoEpimorphismClass (F : Type _) (α β : outParam <| Type _) [Preorder
     extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align pseudo_epimorphism_class PseudoEpimorphismClass
+attribute [instance 200] PseudoEpimorphismClass.toRelHomClass
 
 /-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
 
@@ -65,6 +66,7 @@ class EsakiaHomClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace
     [TopologicalSpace β] [Preorder β] extends ContinuousOrderHomClass F α β where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align esakia_hom_class EsakiaHomClass
+attribute [instance 200] EsakiaHomClass.toContinuousOrderHomClass
 
 end
 

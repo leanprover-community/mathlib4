@@ -34,6 +34,8 @@ and are closed under `(+)` -/
 class AddSubmonoidWithOneClass (S R : Type _) [AddMonoidWithOne R]
   [SetLike S R] extends AddSubmonoidClass S R, OneMemClass S R : Prop
 #align add_submonoid_with_one_class AddSubmonoidWithOneClass
+attribute [instance 200] AddSubmonoidWithOneClass.toOneMemClass
+attribute [instance 200] AddSubmonoidWithOneClass.toAddSubmonoidClass
 
 variable {S R : Type _} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
@@ -61,6 +63,8 @@ are both a multiplicative and an additive submonoid. -/
 class SubsemiringClass (S : Type _) (R : Type u) [NonAssocSemiring R]
   [SetLike S R] extends SubmonoidClass S R, AddSubmonoidClass S R : Prop
 #align subsemiring_class SubsemiringClass
+attribute [instance 200] SubsemiringClass.toSubmonoidClass
+attribute [instance 200] SubsemiringClass.toAddSubmonoidClass
 
 -- See note [lower instance priority]
 instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type _)

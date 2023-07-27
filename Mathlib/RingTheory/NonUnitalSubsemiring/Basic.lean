@@ -33,6 +33,7 @@ class NonUnitalSubsemiringClass (S : Type _) (R : Type u) [NonUnitalNonAssocSemi
   [SetLike S R] extends AddSubmonoidClass S R : Prop where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 #align non_unital_subsemiring_class NonUnitalSubsemiringClass
+attribute [instance 200] NonUnitalSubsemiringClass.toAddSubmonoidClass
 
 -- See note [lower instance priority]
 instance (priority := 100) NonUnitalSubsemiringClass.mulMemClass (S : Type _) (R : Type u)

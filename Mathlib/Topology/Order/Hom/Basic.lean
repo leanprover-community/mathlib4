@@ -52,6 +52,7 @@ class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorde
     ContinuousMapClass F α β where
   map_monotone (f : F) : Monotone f
 #align continuous_order_hom_class ContinuousOrderHomClass
+attribute [instance 200] ContinuousOrderHomClass.toContinuousMapClass
 
 -- Porting note: namespaced these results since there are more than 3 now
 namespace ContinuousOrderHomClass

@@ -50,6 +50,7 @@ class AlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
   [Algebra R B] extends RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
+attribute [instance 200] AlgHomClass.toRingHomClass
 
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass

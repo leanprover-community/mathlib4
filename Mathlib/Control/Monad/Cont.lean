@@ -40,6 +40,7 @@ class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] extends La
     (callCC fun f : Label α m β => goto f x >>= dead f) = pure x
   callCC_dummy {α β} (dummy : m α) : (callCC fun _ : Label α m β => dummy) = dummy
 #align is_lawful_monad_cont LawfulMonadCont
+attribute [instance 200] LawfulMonadCont.toLawfulMonad
 
 export LawfulMonadCont (callCC_bind_right callCC_bind_left callCC_dummy)
 

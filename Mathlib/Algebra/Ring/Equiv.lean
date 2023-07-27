@@ -85,6 +85,7 @@ class RingEquivClass (F : Type _) (R S : outParam (Type _)) [Mul R] [Add R] [Mul
   /-- By definition, a ring isomorphism preserves the additive structure. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align ring_equiv_class RingEquivClass
+attribute [instance 200] RingEquivClass.toMulEquivClass
 
 namespace RingEquivClass
 

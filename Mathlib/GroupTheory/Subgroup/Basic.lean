@@ -115,12 +115,16 @@ export NegMemClass (neg_mem)
 class SubgroupClass (S G : Type _) [DivInvMonoid G] [SetLike S G] extends SubmonoidClass S G,
   InvMemClass S G : Prop
 #align subgroup_class SubgroupClass
+attribute [instance 200] SubgroupClass.toInvMemClass
+attribute [instance 200] SubgroupClass.toSubmonoidClass
 
 /-- `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are
 additive subgroups of `G`. -/
 class AddSubgroupClass (S G : Type _) [SubNegMonoid G] [SetLike S G] extends AddSubmonoidClass S G,
   NegMemClass S G : Prop
 #align add_subgroup_class AddSubgroupClass
+attribute [instance 200] AddSubgroupClass.toNegMemClass
+attribute [instance 200] AddSubgroupClass.toAddSubmonoidClass
 
 attribute [to_additive] InvMemClass SubgroupClass
 

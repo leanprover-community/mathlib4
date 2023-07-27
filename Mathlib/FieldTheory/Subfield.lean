@@ -71,6 +71,8 @@ variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Field M]
 class SubfieldClass (S K : Type _) [Field K] [SetLike S K] extends SubringClass S K,
   InvMemClass S K : Prop
 #align subfield_class SubfieldClass
+attribute [instance 200] SubfieldClass.toInvMemClass
+attribute [instance 200] SubfieldClass.toSubringClass
 
 namespace SubfieldClass
 

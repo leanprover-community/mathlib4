@@ -67,6 +67,7 @@ class RelHomClass (F : Type _) {α β : outParam <| Type _} (r : outParam <| α 
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
 #align rel_hom_class RelHomClass
+attribute [instance 200] RelHomClass.toFunLike
 
 export RelHomClass (map_rel)
 

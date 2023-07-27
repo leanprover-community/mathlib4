@@ -78,6 +78,7 @@ class SMulHomClass (F : Type _) (M X Y : outParam <| Type _) [SMul M X] [SMul M 
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass
+attribute [instance 200] SMulHomClass.toFunLike
 
 /- porting note: Removed a @[nolint dangerousInstance] for SMulHomClass
  not dangerous due to outParam -/
@@ -220,6 +221,8 @@ class DistribMulActionHomClass (F : Type _) (M A B : outParam <| Type _) [Monoid
   [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SMulHomClass F M A B,
   AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
+attribute [instance 200] DistribMulActionHomClass.toAddMonoidHomClass
+attribute [instance 200] DistribMulActionHomClass.toSMulHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for
 DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
@@ -449,6 +452,8 @@ class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoi
   [Semiring S] [DistribMulAction M R] [DistribMulAction M S] extends
   DistribMulActionHomClass F M R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
+attribute [instance 200] MulSemiringActionHomClass.toDistribMulActionHomClass
+attribute [instance 200] MulSemiringActionHomClass.toRingHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
  not dangerous due to outParam -/

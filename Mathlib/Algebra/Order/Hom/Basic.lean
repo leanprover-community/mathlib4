@@ -81,6 +81,7 @@ class NonnegHomClass (F : Type _) (α β : outParam (Type _)) [Zero β] [LE β] 
   /-- the image of any element is non negative. -/
   map_nonneg (f : F) : ∀ a, 0 ≤ f a
 #align nonneg_hom_class NonnegHomClass
+attribute [instance 200] NonnegHomClass.toFunLike
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 class SubadditiveHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [Add β] [LE β] extends
@@ -88,6 +89,7 @@ class SubadditiveHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [Add
   /-- the image of a sum is less or equal than the sum of the images. -/
   map_add_le_add (f : F) : ∀ a b, f (a + b) ≤ f a + f b
 #align subadditive_hom_class SubadditiveHomClass
+attribute [instance 200] SubadditiveHomClass.toFunLike
 
 /-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive SubadditiveHomClass]
@@ -96,6 +98,7 @@ class SubmultiplicativeHomClass (F : Type _) (α β : outParam (Type _)) [Mul α
   /-- the image of a product is less or equal than the product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
 #align submultiplicative_hom_class SubmultiplicativeHomClass
+attribute [instance 200] SubmultiplicativeHomClass.toFunLike
 
 /-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 @[to_additive SubadditiveHomClass]
@@ -104,6 +107,7 @@ class MulLEAddHomClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Add β
   /-- the image of a product is less or equal than the sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 #align mul_le_add_hom_class MulLEAddHomClass
+attribute [instance 200] MulLEAddHomClass.toFunLike
 
 /-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
 class NonarchimedeanHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [LinearOrder β]
@@ -111,6 +115,7 @@ class NonarchimedeanHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [
   /-- the image of a sum is less or equal than the maximum of the images. -/
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
 #align nonarchimedean_hom_class NonarchimedeanHomClass
+attribute [instance 200] NonarchimedeanHomClass.toFunLike
 
 export NonnegHomClass (map_nonneg)
 
@@ -180,6 +185,8 @@ class AddGroupSeminormClass (F : Type _) (α β : outParam <| Type _) [AddGroup 
   /-- The map is invariant under negation of its argument. -/
   map_neg_eq_map (f : F) (a : α) : f (-a) = f a
 #align add_group_seminorm_class AddGroupSeminormClass
+attribute [instance 200] AddGroupSeminormClass.toAddLEAddHomClass
+attribute [instance 200] AddGroupSeminormClass.toSubadditiveHomClass
 
 /-- `GroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
 
@@ -192,6 +199,7 @@ class GroupSeminormClass (F : Type _) (α β : outParam <| Type _) [Group α]
   /-- The map is invariant under inversion of its argument. -/
   map_inv_eq_map (f : F) (a : α) : f a⁻¹ = f a
 #align group_seminorm_class GroupSeminormClass
+attribute [instance 200] GroupSeminormClass.toMulLEAddHomClass
 
 /-- `AddGroupNormClass F α` states that `F` is a type of `β`-valued norms on the additive group
 `α`.
@@ -202,6 +210,7 @@ class AddGroupNormClass (F : Type _) (α β : outParam <| Type _) [AddGroup α]
   /-- The argument is zero if its image under the map is zero. -/
   eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 #align add_group_norm_class AddGroupNormClass
+attribute [instance 200] AddGroupNormClass.toAddGroupSeminormClass
 
 /-- `GroupNormClass F α` states that `F` is a type of `β`-valued norms on the group `α`.
 
@@ -212,6 +221,7 @@ class GroupNormClass (F : Type _) (α β : outParam <| Type _) [Group α]
   /-- The argument is one if its image under the map is zero. -/
   eq_one_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 1
 #align group_norm_class GroupNormClass
+attribute [instance 200] GroupNormClass.toGroupSeminormClass
 
 export AddGroupSeminormClass (map_neg_eq_map)
 
@@ -318,6 +328,8 @@ You should extend this class when you extend `RingSeminorm`. -/
 class RingSeminormClass (F : Type _) (α β : outParam <| Type _) [NonUnitalNonAssocRing α]
   [OrderedSemiring β] extends AddGroupSeminormClass F α β, SubmultiplicativeHomClass F α β
 #align ring_seminorm_class RingSeminormClass
+attribute [instance 200] RingSeminormClass.toAddGroupSeminormClass
+attribute [instance 200] RingSeminormClass.toSubmultiplicativeHomClass
 
 /-- `RingNormClass F α` states that `F` is a type of `β`-valued norms on the ring `α`.
 
@@ -325,6 +337,8 @@ You should extend this class when you extend `RingNorm`. -/
 class RingNormClass (F : Type _) (α β : outParam <| Type _) [NonUnitalNonAssocRing α]
   [OrderedSemiring β] extends RingSeminormClass F α β, AddGroupNormClass F α β
 #align ring_norm_class RingNormClass
+attribute [instance 200] RingNormClass.toRingSeminormClass
+attribute [instance 200] RingNormClass.toAddGroupNormClass
 
 /-- `MulRingSeminormClass F α` states that `F` is a type of `β`-valued multiplicative seminorms
 on the ring `α`.
@@ -333,6 +347,8 @@ You should extend this class when you extend `MulRingSeminorm`. -/
 class MulRingSeminormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRing α]
   [OrderedSemiring β] extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β
 #align mul_ring_seminorm_class MulRingSeminormClass
+attribute [instance 200] MulRingSeminormClass.toMonoidWithZeroHomClass
+attribute [instance 200] MulRingSeminormClass.toAddGroupSeminormClass
 
 /-- `MulRingNormClass F α` states that `F` is a type of `β`-valued multiplicative norms on the
 ring `α`.
@@ -341,6 +357,8 @@ You should extend this class when you extend `MulRingNorm`. -/
 class MulRingNormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRing α]
   [OrderedSemiring β] extends MulRingSeminormClass F α β, AddGroupNormClass F α β
 #align mul_ring_norm_class MulRingNormClass
+attribute [instance 200] MulRingNormClass.toMulRingSeminormClass
+attribute [instance 200] MulRingNormClass.toAddGroupNormClass
 
 -- See note [out-param inheritance]
 -- See note [lower instance priority]

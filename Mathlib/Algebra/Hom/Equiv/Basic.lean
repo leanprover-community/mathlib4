@@ -80,6 +80,7 @@ class AddEquivClass (F : Type _) (A B : outParam (Type _)) [Add A] [Add B]
   /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align add_equiv_class AddEquivClass
+attribute [instance 200] AddEquivClass.toEquivLike
 
 /-- The `Equiv` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toEquiv
@@ -113,6 +114,7 @@ class MulEquivClass (F : Type _) (A B : outParam (Type _)) [Mul A] [Mul B] exten
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
+attribute [instance 200] MulEquivClass.toEquivLike
 
 /-- Notation for a `MulEquiv`. -/
 infixl:25 " ≃* " => MulEquiv

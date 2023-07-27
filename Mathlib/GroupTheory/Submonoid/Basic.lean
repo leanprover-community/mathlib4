@@ -104,6 +104,8 @@ and are closed under `(*)` -/
 class SubmonoidClass (S : Type _) (M : Type _) [MulOneClass M] [SetLike S M] extends
   MulMemClass S M, OneMemClass S M : Prop
 #align submonoid_class SubmonoidClass
+attribute [instance 200] SubmonoidClass.toMulMemClass
+attribute [instance 200] SubmonoidClass.toOneMemClass
 
 section
 
@@ -126,6 +128,8 @@ and are closed under `(+)` -/
 class AddSubmonoidClass (S : Type _) (M : Type _) [AddZeroClass M] [SetLike S M] extends
   AddMemClass S M, ZeroMemClass S M : Prop
 #align add_submonoid_class AddSubmonoidClass
+attribute [instance 200] AddSubmonoidClass.toZeroMemClass
+attribute [instance 200] AddSubmonoidClass.toAddMemClass
 
 attribute [to_additive] Submonoid SubmonoidClass
 

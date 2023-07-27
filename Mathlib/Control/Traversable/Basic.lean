@@ -219,6 +219,7 @@ class Traversable (t : Type u → Type u) extends Functor t where
   /-- The function commuting a traversable functor `t` with an arbitrary applicative functor `m`. -/
   traverse : ∀ {m : Type u → Type u} [Applicative m] {α β}, (α → m β) → t α → m (t β)
 #align traversable Traversable
+attribute [instance 200] Traversable.toFunctor
 
 open Functor
 
@@ -266,6 +267,7 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFu
       (η : ApplicativeTransformation F G) {α β} (f : α → F β) (x : t α),
       η (traverse f x) = traverse (@η _ ∘ f) x
 #align is_lawful_traversable LawfulTraversable
+attribute [instance 200] LawfulTraversable.toLawfulFunctor
 
 instance : Traversable Id :=
   ⟨id⟩

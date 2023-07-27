@@ -104,6 +104,7 @@ class SupHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β] ex
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
 #align sup_hom_class SupHomClass
+attribute [instance 200] SupHomClass.toFunLike
 
 /-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
@@ -113,6 +114,7 @@ class InfHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β] ex
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align inf_hom_class InfHomClass
+attribute [instance 200] InfHomClass.toFunLike
 
 /-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
@@ -122,6 +124,7 @@ class SupBotHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β]
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align sup_bot_hom_class SupBotHomClass
+attribute [instance 200] SupBotHomClass.toSupHomClass
 
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
@@ -131,6 +134,7 @@ class InfTopHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β]
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align inf_top_hom_class InfTopHomClass
+attribute [instance 200] InfTopHomClass.toInfHomClass
 
 /-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
@@ -140,6 +144,7 @@ class LatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [La
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align lattice_hom_class LatticeHomClass
+attribute [instance 200] LatticeHomClass.toSupHomClass
 
 /-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 
@@ -151,6 +156,7 @@ class BoundedLatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice 
   /-- A `BoundedLatticeHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align bounded_lattice_hom_class BoundedLatticeHomClass
+attribute [instance 200] BoundedLatticeHomClass.toLatticeHomClass
 
 end
 

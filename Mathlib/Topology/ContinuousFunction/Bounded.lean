@@ -56,6 +56,7 @@ class BoundedContinuousMapClass (F : Type _) (α β : outParam <| Type _) [Topol
     [PseudoMetricSpace β] extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 #align bounded_continuous_map_class BoundedContinuousMapClass
+attribute [instance 200] BoundedContinuousMapClass.toContinuousMapClass
 
 end
 
