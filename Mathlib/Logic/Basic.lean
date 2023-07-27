@@ -2,11 +2,6 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module logic.basic
-! leanprover-community/mathlib commit 1c521b4fb909320eca16b2bb6f8b5b0490b1cb5e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
@@ -15,6 +10,8 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.LeftRight
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
+
+#align_import logic.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Basic logic properties
@@ -244,11 +241,6 @@ it is better to use explicitly introduced ones rather than allowing Lean to auto
 classical ones, as these may cause instance mismatch errors later.
 -/
 
-/-- The Double Negation Theorem: `¬ ¬ P` is equivalent to `P`.
-The left-to-right direction, double negation elimination (DNE),
-is classically true but not constructively. -/
-add_decl_doc Classical.not_not -- TODO: move to Std
-
 export Classical (not_not)
 attribute [simp] not_not
 #align not_not Classical.not_not
@@ -278,13 +270,15 @@ theorem Imp.swap : a → b → c ↔ b → a → c := ⟨Function.swap, Function
 #align imp.swap Imp.swap
 
 alias not_congr ← Iff.not
-theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
-theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
-#align iff.not_right Iff.not_right
-#align iff.not_left Iff.not_left
 #align iff.not Iff.not
 
-/-! ### Declarations about `xor` -/
+theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
+#align iff.not_left Iff.not_left
+
+theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
+#align iff.not_right Iff.not_right
+
+/-! ### Declarations about `Xor'` -/
 
 @[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
 #align xor_true xor_true
@@ -298,29 +292,33 @@ theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm
 instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
 
 @[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
-@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
-@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
-theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
-protected theorem xor.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
-#align xor.or xor.or
-#align xor_not_not xor_not_not
-#align xor_not_right xor_not_right
-#align xor_not_left xor_not_left
 #align xor_self xor_self
+
+@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
+#align xor_not_left xor_not_left
+
+@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
+#align xor_not_right xor_not_right
+
+theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
+#align xor_not_not xor_not_not
+
+protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
+#align xor.or Xor'.or
 
 /-! ### Declarations about `and` -/
 
 alias and_congr ← Iff.and
+#align iff.and Iff.and
 #align and_congr_left and_congr_leftₓ -- reorder implicits
 #align and_congr_right' and_congr_right'ₓ -- reorder implicits
 #align and.right_comm and_right_comm
 #align and_and_distrib_left and_and_left
 #align and_and_distrib_right and_and_right
 alias and_rotate ↔ And.rotate _
+#align and.rotate And.rotate
 #align and.congr_right_iff and_congr_right_iff
 #align and.congr_left_iff and_congr_left_iffₓ -- reorder implicits
-#align and.rotate And.rotate
-#align iff.and Iff.and
 
 theorem and_symm_right (a b : α) (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]
 theorem and_symm_left (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]
@@ -328,12 +326,12 @@ theorem and_symm_left (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by 
 /-! ### Declarations about `or` -/
 
 alias or_congr ← Iff.or
+#align iff.or Iff.or
 #align or_congr_left' or_congr_left
 #align or_congr_right' or_congr_rightₓ -- reorder implicits
 #align or.right_comm or_right_comm
 alias or_rotate ↔ Or.rotate _
 #align or.rotate Or.rotate
-#align iff.or Iff.or
 
 @[deprecated Or.imp]
 theorem or_of_or_of_imp_of_imp (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → d) : c ∨ d := Or.imp h₂ h₃ h₁
@@ -482,18 +480,23 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_no
 #align not_xor not_xor
 
 theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
+#align xor_iff_not_iff xor_iff_not_iff
+
 theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+#align xor_iff_iff_not xor_iff_iff_not
+
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 #align xor_iff_not_iff' xor_iff_not_iff'
-#align xor_iff_iff_not xor_iff_iff_not
-#align xor_iff_not_iff xor_iff_not_iff
 
 end Propositional
 
 /-! ### Declarations about equality -/
 
-alias ne_of_mem_of_not_mem ← Membership.Mem.ne_of_not_mem
-alias ne_of_mem_of_not_mem' ← Membership.Mem.ne_of_not_mem'
+alias ne_of_mem_of_not_mem ← Membership.mem.ne_of_not_mem
+alias ne_of_mem_of_not_mem' ← Membership.mem.ne_of_not_mem'
+
+#align has_mem.mem.ne_of_not_mem Membership.mem.ne_of_not_mem
+#align has_mem.mem.ne_of_not_mem' Membership.mem.ne_of_not_mem'
 
 section Equality
 
@@ -565,8 +568,16 @@ theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → S
   by subst t; rfl
 
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
-    HEq (@Eq.ndrec α a C x b e) y := by subst e; exact h
+    HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
+
+theorem rec_heq_iff_heq {C : α → Sort _} {x : C a} {y : β} {e : a = b} :
+    HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
+#align rec_heq_iff_heq rec_heq_iff_heq
+
+theorem heq_rec_iff_heq {C : α → Sort _} {x : β} {y : C a} {e : a = b} :
+    HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
+#align heq_rec_iff_heq heq_rec_iff_heq
 
 protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
   subst h₁; subst h₂; rfl
@@ -661,9 +672,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
   ⟨fun ⟨x, y, h⟩ ↦ ⟨y, x, h⟩, fun ⟨y, x, h⟩ ↦ ⟨x, y, h⟩⟩
 #align exists_swap exists_swap
 
-@[simp] theorem forall_exists_index {q : (∃ x, p x) → Prop} :
-    (∀ h, q h) ↔ ∀ x (h : p x), q ⟨x, h⟩ :=
-  ⟨fun h x hpx ↦ h ⟨x, hpx⟩, fun h ⟨x, hpx⟩ ↦ h x hpx⟩
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
@@ -707,6 +715,7 @@ theorem forall_imp_iff_exists_imp [ha : Nonempty α] : (∀ x, p x) → b ↔ �
   exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (not_imp.1 (h' x)).1
 #align forall_imp_iff_exists_imp forall_imp_iff_exists_imp
 
+@[mfld_simps]
 theorem forall_true_iff : (α → True) ↔ True := imp_true_iff _
 #align forall_true_iff forall_true_iff
 
@@ -820,8 +829,6 @@ theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
 @[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
 #align exists_eq_right' exists_eq_right'
 
-theorem exists_comm {p : α → β → Prop} : (∃ a b, p a b) ↔ ∃ b a, p a b :=
-  ⟨fun ⟨a, b, h⟩ ↦ ⟨b, a, h⟩, fun ⟨b, a, h⟩ ↦ ⟨a, b, h⟩⟩
 #align exists_comm exists_comm
 
 theorem exists₂_comm {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
@@ -870,6 +877,13 @@ theorem Exists.snd {b : Prop} {p : b → Prop} : ∀ h : Exists p, p h.fst
   | ⟨_, h⟩ => h
 #align Exists.snd Exists.snd
 
+theorem Prop.exists_iff {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
+  ⟨fun ⟨h₁, h₂⟩ ↦ by_cases (fun H : h₁ ↦ .inr <| by simpa only [H] using h₂)
+    (fun H ↦ .inl <| by simpa only [H] using h₂), fun h ↦ h.elim (.intro _) (.intro _)⟩
+
+theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
+  ⟨fun H ↦ ⟨H _, H _⟩, fun ⟨h₁, h₂⟩ h ↦ by by_cases H : h <;> simpa only [H]⟩
+
 theorem exists_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃ h' : p, q h') ↔ q h :=
   @exists_const (q h) p ⟨h⟩
 #align exists_prop_of_true exists_prop_of_true
@@ -902,7 +916,7 @@ theorem exists_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
   propext (exists_prop_congr hq hp)
 #align exists_prop_congr' exists_prop_congr'
 
-/-- See `IsEmpty.exists_iff` for the `false` version. -/
+/-- See `IsEmpty.exists_iff` for the `False` version. -/
 @[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=
   exists_prop_of_true _
 #align exists_true_left exists_true_left
@@ -921,7 +935,7 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
   propext (forall_prop_congr hq hp)
 #align forall_prop_congr' forall_prop_congr'
 
-/-- See `IsEmpty.forall_iff` for the `false` version. -/
+/-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
 #align forall_true_left forall_true_left
@@ -1132,7 +1146,7 @@ theorem ite_eq_iff : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c :=
 #align ite_eq_iff ite_eq_iff
 
 theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
-eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
+  eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
 
 theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
   ⟨fun he ↦ ⟨fun h ↦ (dif_pos h).symm.trans he, fun h ↦ (dif_neg h).symm.trans he⟩, fun he ↦
@@ -1151,9 +1165,10 @@ theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dit
 #align dite_eq_right_iff dite_eq_right_iff
 
 @[simp] theorem ite_eq_left_iff : ite P a b = a ↔ ¬P → b = a := dite_eq_left_iff
+#align ite_eq_left_iff ite_eq_left_iff
+
 @[simp] theorem ite_eq_right_iff : ite P a b = b ↔ P → a = b := dite_eq_right_iff
 #align ite_eq_right_iff ite_eq_right_iff
-#align ite_eq_left_iff ite_eq_left_iff
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
   rw [Ne.def, dite_eq_left_iff, not_forall]

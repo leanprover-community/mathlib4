@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.option
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Option
+
+#align_import data.fintype.option from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # fintype instances for option
@@ -58,8 +55,7 @@ that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α] [DecidableEq α], P α → P (Option α))
     (α : Type u) [Fintype α] [DecidableEq α] : Trunc (P α) := by
-  suffices ∀ n : ℕ, Trunc (P (ULift <| Fin n))
-    by
+  suffices ∀ n : ℕ, Trunc (P (ULift <| Fin n)) by
     apply Trunc.bind (this (Fintype.card α))
     intro h
     apply Trunc.map _ (Fintype.truncEquivFin α)
@@ -87,20 +83,22 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
           refine' of_equiv e (h_option ih)
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
 
+-- Porting note: due to instance inference issues in `SetTheory.Cardinal.Basic`
+-- I had to explicitly name `h_fintype` in order to access it manually.
+-- was `[Fintype α]`
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 @[elab_as_elim]
 theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
-    [Fintype α] : P α := by
+    [h_fintype : Fintype α] : P α := by
   obtain ⟨p⟩ :=
-    let f_empty := (fun i => by convert h_empty; simp)
+    let f_empty := fun i => by convert h_empty
     let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
           (∀ (h : Fintype α), P α) → ∀ (h : Fintype (Option α)), P (Option α)  := by
       rintro α hα - Pα hα'
       convert h_option α (Pα _)
-      simp
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   · exact p _
@@ -116,5 +114,5 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
     [Finite α] : P α := by
   cases nonempty_fintype α
   refine' Fintype.induction_empty_option _ _ _ α
-  exacts[fun α β _ => of_equiv, h_empty, @h_option]
+  exacts [fun α β _ => of_equiv, h_empty, @h_option]
 #align finite.induction_empty_option Finite.induction_empty_option

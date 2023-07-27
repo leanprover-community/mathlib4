@@ -2,14 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.nat.factorial.basic
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Pow
+import Mathlib.Tactic.GCongr.Core
+
+#align_import data.nat.factorial.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Factorial and variants
@@ -87,7 +85,7 @@ theorem dvd_factorial : ∀ {m n}, 0 < m → m ≤ n → m ∣ n !
   | succ _, _, _, h => dvd_of_mul_right_dvd (factorial_dvd_factorial h)
 #align nat.dvd_factorial Nat.dvd_factorial
 
--- Porting note: `mono` not yet implemented @[mono]
+@[mono]
 theorem factorial_le {m n} (h : m ≤ n) : m ! ≤ n ! :=
   le_of_dvd (factorial_pos _) (factorial_dvd_factorial h)
 #align nat.factorial_le Nat.factorial_le
@@ -106,6 +104,9 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * m.succ ^ n ≤ (
 theorem monotone_factorial : Monotone factorial := fun _ _ => factorial_le
 #align nat.monotone_factorial Nat.monotone_factorial
 
+@[gcongr]
+lemma factorial_le_of_le {m n : ℕ} (h : n ≤ m) : n ! ≤ m ! := monotone_factorial h
+
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
   refine' ⟨fun h => not_le.mp fun hmn => not_le_of_lt h (factorial_le hmn), fun h => _⟩
   have : ∀ {n}, 0 < n → n ! < n.succ ! := by
@@ -116,6 +117,9 @@ theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
   · exact this hn
   · exact (ih hn).trans (this <| hn.trans <| lt_of_succ_le hnk)
 #align nat.factorial_lt Nat.factorial_lt
+
+@[gcongr]
+lemma factorial_lt_of_lt {m n : ℕ} (hn : 0 < n) (h : n < m) : n ! < m ! := (factorial_lt hn).mpr h
 
 theorem one_lt_factorial : 1 < n ! ↔ 1 < n :=
   factorial_lt one_pos

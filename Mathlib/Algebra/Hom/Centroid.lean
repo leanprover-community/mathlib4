@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
-
-! This file was ported from Lean 3 source module algebra.hom.centroid
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Hom.GroupInstances
+
+#align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Centroid homomorphisms
@@ -88,8 +85,7 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-instance : CentroidHomClass (CentroidHom α) α
-    where
+instance : CentroidHomClass (CentroidHom α) α where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -109,9 +105,10 @@ mismatch, so I used `library_search`. -/
 instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
   inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
 
-/- Porting note:
-`theorem to_fun_eq_coe {f : CentroidHom α} : f.toFun = (f : α → α) := rfl`
-removed because it is now a tautology -/
+-- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
+-- the LHS simplifies to the RHS anyway.)
+theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
+#align centroid_hom.to_fun_eq_coe CentroidHom.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
@@ -272,9 +269,7 @@ instance hasNsmul : SMul ℕ (CentroidHom α) :=
 
 instance hasNpowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
-    { (f.toEnd ^ n :
-        AddMonoid.End
-          α) with
+    { (f.toEnd ^ n : AddMonoid.End α) with
       map_mul_left' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
@@ -431,10 +426,7 @@ instance : Sub (CentroidHom α) :=
 
 instance hasZsmul : SMul ℤ (CentroidHom α) :=
   ⟨fun n f ↦
-    {
-      (SMul.smul n f :
-        α →+
-          α) with
+    { (SMul.smul n f : α →+ α) with
       map_mul_left' := fun a b ↦ by
         change n • f (a * b) = a * n • f b
         rw [map_mul_left f, ← mul_smul_comm]
@@ -470,8 +462,7 @@ theorem toEnd_zsmul (x : CentroidHom α) (n : ℤ) : (n • x).toEnd = n • x.t
 #align centroid_hom.to_End_zsmul CentroidHom.toEnd_zsmul
 
 instance : AddCommGroup (CentroidHom α) :=
-  toEnd_injective.addCommGroup _ toEnd_zero toEnd_add toEnd_neg toEnd_sub toEnd_nsmul
-    toEnd_zsmul
+  toEnd_injective.addCommGroup _ toEnd_zero toEnd_add toEnd_neg toEnd_sub toEnd_nsmul toEnd_zsmul
 
 @[simp, norm_cast]
 theorem coe_neg (f : CentroidHom α) : ⇑(-f) = -f :=
@@ -498,8 +489,7 @@ theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
 
-set_option maxHeartbeats 1000000 in
-instance : Ring (CentroidHom α) :=
+instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
     toEnd_nsmul toEnd_zsmul toEnd_pow toEnd_nat_cast toEnd_int_cast
 
@@ -514,7 +504,7 @@ variable [NonUnitalRing α]
 /-- A prime associative ring has commutative centroid. -/
 @[reducible]
 def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
-  { CentroidHom.instRingCentroidHomToNonUnitalNonAssocSemiring with
+  { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
       refine' sub_eq_zero.1 ((or_self_iff _).1 <| (h _ _) fun r ↦ _)

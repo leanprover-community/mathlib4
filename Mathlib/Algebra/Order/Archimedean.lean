@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.order.archimedean
-! leanprover-community/mathlib commit e001509c11c4d0f549d91d89da95b4a0b43c714f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
 import Mathlib.Algebra.Order.Field.Power
+
+#align_import algebra.order.archimedean from "leanprover-community/mathlib"@"6f413f3f7330b94c92a5a27488fdc74e6d483a78"
 
 /-!
 # Archimedean groups and fields.
@@ -82,6 +79,12 @@ theorem existsUnique_zsmul_near_of_pos' {a : α} (ha : 0 < a) (g : α) :
     existsUnique_zsmul_near_of_pos ha g
 #align exists_unique_zsmul_near_of_pos' existsUnique_zsmul_near_of_pos'
 
+theorem existsUnique_sub_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
+    ∃! m : ℤ, b - m • a ∈ Set.Ico c (c + a) := by
+  simpa only [mem_Ico, le_sub_iff_add_le, zero_add, add_comm c, sub_lt_iff_lt_add', add_assoc] using
+    existsUnique_zsmul_near_of_pos' ha (b - c)
+#align exists_unique_sub_zsmul_mem_Ico existsUnique_sub_zsmul_mem_Ico
+
 theorem existsUnique_add_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ico c (c + a) :=
   (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
@@ -96,6 +99,13 @@ theorem existsUnique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
       Equiv.coe_addRight, one_zsmul, add_le_add_iff_right] using
       existsUnique_zsmul_near_of_pos ha (c - b)
 #align exists_unique_add_zsmul_mem_Ioc existsUnique_add_zsmul_mem_Ioc
+
+theorem existsUnique_sub_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
+    ∃! m : ℤ, b - m • a ∈ Set.Ioc c (c + a) :=
+  (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
+    simpa only [Equiv.neg_apply, neg_zsmul, sub_neg_eq_add] using
+      existsUnique_add_zsmul_mem_Ioc ha b c
+#align exists_unique_sub_zsmul_mem_Ioc existsUnique_sub_zsmul_mem_Ioc
 
 end LinearOrderedAddCommGroup
 

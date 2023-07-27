@@ -2,13 +2,10 @@
 Copyright (c) 2014 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.nat.dist
-! leanprover-community/mathlib commit 318fa77a2ba140a221a5b6cabae466ba855c2ffc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import data.nat.dist from "leanprover-community/mathlib"@"d50b12ae8e2bd910d08a94823976adae9825718b"
 
 /-!
 #  Distance function on ℕ
@@ -78,9 +75,8 @@ theorem dist_zero_left (n : ℕ) : dist 0 n = n :=
 theorem dist_add_add_right (n k m : ℕ) : dist (n + k) (m + k) = dist n m :=
   calc
     dist (n + k) (m + k) = n + k - (m + k) + (m + k - (n + k)) := rfl
-    _ = n - m + (m + k - (n + k)) := by rw [add_tsub_add_eq_tsub_right]
-    _ = n - m + (m - n) := by rw [add_tsub_add_eq_tsub_right]
-
+    _ = n - m + (m + k - (n + k)) := by rw [@add_tsub_add_eq_tsub_right]
+    _ = n - m + (m - n) := by rw [@add_tsub_add_eq_tsub_right]
 #align nat.dist_add_add_right Nat.dist_add_add_right
 
 theorem dist_add_add_left (k n m : ℕ) : dist (k + n) (k + m) = dist n m := by
@@ -92,7 +88,6 @@ theorem dist_eq_intro {n m k l : ℕ} (h : n + m = k + l) : dist n k = dist l m 
     dist n k = dist (n + m) (k + m) := by rw [dist_add_add_right]
     _ = dist (k + l) (k + m) := by rw [h]
     _ = dist l m := by rw [dist_add_add_left]
-
 #align nat.dist_eq_intro Nat.dist_eq_intro
 
 theorem dist.triangle_inequality (n m k : ℕ) : dist n k ≤ dist n m + dist m k := by
@@ -120,7 +115,7 @@ theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
 #align nat.dist_succ_succ Nat.dist_succ_succ
 
 theorem dist_pos_of_ne {i j : Nat} : i ≠ j → 0 < dist i j := fun hne =>
-  Nat.lt_by_cases
+  Nat.ltByCases
     (fun h : i < j => by rw [dist_eq_sub_of_le (le_of_lt h)]; apply tsub_pos_of_lt h)
     (fun h : i = j => by contradiction) fun h : i > j => by
     rw [dist_eq_sub_of_le_right (le_of_lt h)]; apply tsub_pos_of_lt h

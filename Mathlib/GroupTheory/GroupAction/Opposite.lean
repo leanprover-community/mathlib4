@@ -2,14 +2,11 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.group_action.opposite
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.opposite from "leanprover-community/mathlib"@"4330aae21f538b862f8aead371cfb6ee556398f1"
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -17,7 +14,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 This file defines the actions on the opposite type `SMul R Mᵐᵒᵖ`, and actions by the opposite
 type, `SMul Rᵐᵒᵖ M`.
 
-Note that `MulOpposite.instSMulMulOpposite` is provided in an earlier file as it is needed to
+Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
 provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
 -/
 
@@ -126,9 +123,11 @@ instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α α�
 #align semigroup.opposite_smul_comm_class' Semigroup.opposite_smulCommClass'
 #align add_semigroup.opposite_vadd_comm_class' AddSemigroup.opposite_vaddCommClass'
 
+@[to_additive]
 instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α :=
   ⟨fun _ _ => mul_comm _ _⟩
 #align comm_semigroup.is_central_scalar CommSemigroup.isCentralScalar
+#align add_comm_semigroup.is_central_scalar AddCommSemigroup.isCentralVAdd
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive "Like `AddMonoid.toAddAction`, but adds on the right."]
@@ -151,7 +150,7 @@ instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N 
 instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N N] :
     SMulCommClass M Nᵐᵒᵖ N :=
   ⟨fun x y z => by
-    induction y using MulOpposite.rec
+    induction y using MulOpposite.rec'
     simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]⟩
 #align smul_comm_class.opposite_mid SMulCommClass.opposite_mid
 #align vadd_comm_class.opposite_mid VAddCommClass.opposite_mid

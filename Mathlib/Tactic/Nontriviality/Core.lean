@@ -12,11 +12,6 @@ import Mathlib.Tactic.SolveByElim
 namespace Mathlib.Tactic.Nontriviality
 open Lean Elab Meta Tactic Linter Std.Linter UnreachableTactic Qq
 
-/-- The `@[nontriviality]` simp set is used by the `nontriviality` tactic to automatically
-discharge theorems about the trivial case (where we know `Subsingleton α` and many theorems
-in e.g. groups are trivially true). -/
-register_simp_attr nontriviality
-
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
   (subsingleton_or_nontrivial α).elim @h₁ @h₂
@@ -29,24 +24,25 @@ including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
 def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
   let p : Q(Prop) ← g.getType
-  guard (← inferType p).isProp
-  let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
-  let (_, g₁') ← g₁.mvarId!.intro1
-  g₁'.withContext try
-    -- FIXME: restore after lean4#2054 is fixed
-    -- g₁'.inferInstance <|> do
-    (do g₁'.assign (← synthInstance (← g₁'.getType))) <|> do
-      let simpArgs := simpArgs.push (Unhygienic.run `(Parser.Tactic.simpLemma| nontriviality))
-      let stx := open TSyntax.Compat in Unhygienic.run `(tactic| simp [$simpArgs,*])
-      let ([], _) ← runTactic g₁' stx | failure
-  catch _ => throwError
-    "Could not prove goal assuming `{q(Subsingleton $α)}`\n{MessageData.ofGoal g₁'}"
-  let g₂ : Q(Nontrivial $α → $p) ← mkFreshExprMVarQ q(Nontrivial $α → $p)
-  g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
-  pure g₂.mvarId!
+  guard (←instantiateMVars (← inferType p)).isProp
+  g.withContext do
+    let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
+    let (_, g₁') ← g₁.mvarId!.intro1
+    g₁'.withContext try
+      -- FIXME: restore after lean4#2054 is fixed
+      -- g₁'.inferInstance <|> do
+      (do g₁'.assign (← synthInstance (← g₁'.getType))) <|> do
+        let simpArgs := simpArgs.push (Unhygienic.run `(Parser.Tactic.simpLemma| nontriviality))
+        let stx := open TSyntax.Compat in Unhygienic.run `(tactic| simp [$simpArgs,*])
+        let ([], _) ← runTactic g₁' stx | failure
+    catch _ => throwError
+      "Could not prove goal assuming `{q(Subsingleton $α)}`\n{MessageData.ofGoal g₁'}"
+    let g₂ : Q(Nontrivial $α → $p) ← mkFreshExprMVarQ q(Nontrivial $α → $p)
+    g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
+    pure g₂.mvarId!
 
 /--
-Tries to generate a `nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
+Tries to generate a `Nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
 and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
@@ -96,7 +92,7 @@ example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   assumption
 ```
 -/
-syntax (name := nontriviality) "nontriviality" (ppSpace (colGt term))?
+syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
   (" using " Parser.Tactic.simpArg,+)? : tactic
 
 /-- Elaborator for the `nontriviality` tactic. -/
@@ -112,8 +108,9 @@ syntax (name := nontriviality) "nontriviality" (ppSpace (colGt term))?
       if let some (α, _) := tgt.app4? ``LT.lt then return α
       throwError "The goal is not an (in)equality, so you'll need to specify the desired {""
         }`Nontrivial α` instance by invoking `nontriviality α`.")
-    let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-    let α : Q(Type u) := α
+    let .sort u ← whnf (← inferType α) | unreachable!
+    let some v := u.dec | throwError "not a type{indentExpr α}"
+    let α : Q(Type v) := α
     let tac := do
       let ty := q(Nontrivial $α)
       let m ← mkFreshExprMVar (some ty)

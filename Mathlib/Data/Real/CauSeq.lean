@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.real.cau_seq
-! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.AbsoluteValue
@@ -14,8 +9,10 @@ import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Set
+
+#align_import data.real.cau_seq from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
 /-!
 # Cauchy sequences
@@ -66,9 +63,9 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
   refine' ⟨_, εK, fun {a₁ a₂ b₁ b₂} ha₁ hb₂ h₁ h₂ => _⟩
   replace ha₁ := lt_of_lt_of_le ha₁ (le_trans (le_max_left _ K₂) (le_max_right 1 _))
   replace hb₂ := lt_of_lt_of_le hb₂ (le_trans (le_max_right K₁ _) (le_max_right 1 _))
-  have :=
-    add_lt_add (mul_lt_mul' (le_of_lt h₁) hb₂ (abv_nonneg abv _) εK)
-      (mul_lt_mul' (le_of_lt h₂) ha₁ (abv_nonneg abv _) εK)
+  set M := max 1 (max K₁ K₂)
+  have : abv (a₁ - b₁) * abv b₂ + abv (a₂ - b₂) * abv a₁ < ε / 2 / M * M + ε / 2 / M * M
+  · gcongr
   rw [← abv_mul abv, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul abv, add_halves] at this
   simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using
     lt_of_le_of_lt (abv_add abv _ _) this
@@ -85,7 +82,7 @@ theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → �
   refine' lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right _ b0.le) a0.le
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
   refine' h.trans_le _
-  exact mul_le_mul (mul_le_mul ha le_rfl ε0.le a0.le) hb K0.le (mul_nonneg a0.le ε0.le)
+  gcongr
 #align rat_inv_continuous_lemma rat_inv_continuous_lemma
 
 end
@@ -553,9 +550,7 @@ theorem mul_not_equiv_zero {f g : CauSeq _ abv} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0
   apply not_le_of_lt hN'
   change _ ≤ abv (_ * _)
   rw [abv_mul abv]
-  apply mul_le_mul <;> try assumption
-  · exact le_of_lt ha2
-  · exact abv_nonneg abv _
+  gcongr
 #align cau_seq.mul_not_equiv_zero CauSeq.mul_not_equiv_zero
 
 theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
@@ -728,9 +723,8 @@ instance : LE (CauSeq α abs) :=
 
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
   show Pos (h - f) by
-    convert pos_add_limZero fg (neg_limZero gh)
+    convert pos_add_limZero fg (neg_limZero gh) using 1
     simp
-
 #align cau_seq.lt_of_lt_of_eq CauSeq.lt_of_lt_of_eq
 
 theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f < h := by
@@ -740,7 +734,7 @@ theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f <
 
 theorem lt_trans {f g h : CauSeq α abs} (fg : f < g) (gh : g < h) : f < h :=
   show Pos (h - f) by
-    convert add_pos fg gh
+    convert add_pos fg gh using 1
     simp
 #align cau_seq.lt_trans CauSeq.lt_trans
 
@@ -824,14 +818,14 @@ theorem rat_inf_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
   (abs_min_sub_min_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
 #align rat_inf_continuous_lemma CauSeq.rat_inf_continuous_lemma
 
-instance : HasSup (CauSeq α abs) :=
+instance : Sup (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_sup_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-instance : HasInf (CauSeq α abs) :=
+instance : Inf (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊓ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
@@ -852,7 +846,7 @@ theorem sup_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : Li
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
-      rw [abs_lt] at H₁ H₂⊢
+      rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_sup_iff.mpr (Or.inl H₁.1), sup_lt_iff.mpr ⟨H₁.2, H₂.2⟩⟩
 #align cau_seq.sup_lim_zero CauSeq.sup_limZero
 
@@ -860,7 +854,7 @@ theorem inf_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : Li
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
-      rw [abs_lt] at H₁ H₂⊢
+      rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_inf_iff.mpr ⟨H₁.1, H₂.1⟩, inf_lt_iff.mpr (Or.inl H₁.2)⟩
 #align cau_seq.inf_lim_zero CauSeq.inf_limZero
 
@@ -929,7 +923,6 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
     exact ε0.le.trans (h _ hj)
   · refine' Setoid.trans (sup_equiv_sup h (Setoid.refl _)) _
     rw [CauSeq.sup_idem]
-    exact Setoid.refl _
 #align cau_seq.sup_eq_right CauSeq.sup_eq_right
 
 protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈ b := by
@@ -942,7 +935,6 @@ protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈
     exact ε0.le.trans (h _ hj)
   · refine' Setoid.trans (inf_equiv_inf (Setoid.symm h) (Setoid.refl _)) _
     rw [CauSeq.inf_idem]
-    exact Setoid.refl _
 #align cau_seq.inf_eq_right CauSeq.inf_eq_right
 
 protected theorem sup_eq_left {a b : CauSeq α abs} (h : b ≤ a) : a ⊔ b ≈ a := by

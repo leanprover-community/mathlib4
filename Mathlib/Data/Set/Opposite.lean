@@ -2,15 +2,11 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module data.set.opposite
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
 import Mathlib.Data.Set.Image
+
+#align_import data.set.opposite from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # The opposite of a set
@@ -77,19 +73,35 @@ def opEquiv : Set α ≃ Set αᵒᵖ :=
 #align set.op_equiv_apply Set.opEquiv_apply
 
 @[simp]
-theorem singleton_op (x : α) : ({x} : Set α).op = {op x} := rfl
+theorem singleton_op (x : α) : ({x} : Set α).op = {op x} := by
+  ext
+  constructor
+  · apply unop_injective
+  · apply op_injective
 #align set.singleton_op Set.singleton_op
 
 @[simp]
-theorem singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := rfl
+theorem singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := by
+  ext
+  constructor
+  · apply op_injective
+  · apply unop_injective
 #align set.singleton_unop Set.singleton_unop
 
-@[simp]
-theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := rfl
+@[simp 1100]
+theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
+  ext
+  constructor
+  · apply op_injective
+  · apply unop_injective
 #align set.singleton_op_unop Set.singleton_op_unop
 
-@[simp]
-theorem singleton_unop_op (x : αᵒᵖ) : ({unop x} : Set α).op = {x} := rfl
+@[simp 1100]
+theorem singleton_unop_op (x : αᵒᵖ) : ({unop x} : Set α).op = {x} := by
+  ext
+  constructor
+  · apply unop_injective
+  · apply op_injective
 #align set.singleton_unop_op Set.singleton_unop_op
 
 end Set

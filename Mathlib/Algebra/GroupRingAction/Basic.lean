@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.group_ring_action.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Field.Defs
 import Mathlib.GroupTheory.GroupAction.Group
+
+#align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Group action on rings
@@ -41,7 +38,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   DistribMulAction M R where
   /-- Multipliying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
-  /-- Scalara multiplication distributes across multiplication -/
+  /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 #align mul_semiring_action MulSemiringAction
 
@@ -58,7 +55,7 @@ instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemir
 #align mul_semiring_action.to_mul_distrib_mul_action MulSemiringAction.toMulDistribMulAction
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
-@[simps]
+@[simps!]
 def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
   { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
 #align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
@@ -70,11 +67,11 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
 #align to_ring_hom_injective toRingHom_injective
 
 /-- Each element of the group defines a semiring isomorphism. -/
-@[simps]
+@[simps!]
 def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
   { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
 #align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
-#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symmApply
+#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symm_apply
 #align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
 
 section

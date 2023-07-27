@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 Some proofs and docs came from `algebra/commute` (c) Neil Strickland
-
-! This file was ported from Lean 3 source module algebra.group.semiconj
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Units
+
+#align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Semiconjugate elements of a semigroup
@@ -104,7 +101,7 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a monoid (or, more
 generally, on `MulOneClass` type) is reflexive. -/
 @[to_additive "The relation “there exists an element that semiconjugates `a` to `b`” on an additive
-monoid (or, more generally, on a `AddZeroClass` type) is reflexive."]
+monoid (or, more generally, on an `AddZeroClass` type) is reflexive."]
 protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
   | a => ⟨1, one_left a⟩
 #align semiconj_by.reflexive SemiconjBy.reflexive
@@ -120,7 +117,6 @@ variable [Monoid M]
 @[to_additive "If `a` semiconjugates an additive unit `x` to an additive unit `y`, then it
 semiconjugates `-x` to `-y`."]
 theorem units_inv_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy a ↑x⁻¹ ↑y⁻¹ :=
-  show _ = _ from -- lean4#2073
   calc
     a * ↑x⁻¹ = ↑y⁻¹ * (y * a) * ↑x⁻¹ := by rw [Units.inv_mul_cancel_left]
     _        = ↑y⁻¹ * a              := by rw [← h.eq, mul_assoc, Units.mul_inv_cancel_right]
@@ -137,7 +133,6 @@ theorem units_inv_right_iff {a : M} {x y : Mˣ} : SemiconjBy a ↑x⁻¹ ↑y⁻
 @[to_additive "If an additive unit `a` semiconjugates `x` to `y`, then `-a` semiconjugates `y` to
 `x`."]
 theorem units_inv_symm_left {a : Mˣ} {x y : M} (h : SemiconjBy (↑a) x y) : SemiconjBy (↑a⁻¹) y x :=
-  show _ = _ from -- lean4#2073
   calc
     ↑a⁻¹ * y = ↑a⁻¹ * (y * a * ↑a⁻¹) := by rw [Units.mul_inv_cancel_right]
     _ = x * ↑a⁻¹ := by rw [← h.eq, ← mul_assoc, Units.inv_mul_cancel_left]

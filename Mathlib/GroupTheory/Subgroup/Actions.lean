@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.subgroup.actions
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.subgroup.actions from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Actions by `Subgroup`s
@@ -30,7 +27,7 @@ variable {α β : Type _}
 /-- The action by a subgroup is the action by the underlying group. -/
 @[to_additive "The additive action by an add_subgroup is the action by the underlying `AddGroup`. "]
 instance [MulAction G α] (S : Subgroup G) : MulAction S α :=
-  show MulAction S.toSubmonoid α by infer_instance
+  inferInstanceAs (MulAction S.toSubmonoid α)
 
 @[to_additive]
 theorem smul_def [MulAction G α] {S : Subgroup G} (g : S) (m : α) : g • m = (g : G) • m :=
@@ -55,18 +52,18 @@ instance smulCommClass_right [SMul α β] [MulAction G β] [SMulCommClass α G �
 /-- Note that this provides `IsScalarTower S G G` which is needed by `smul_mul_assoc`. -/
 instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] (S : Subgroup G) :
     IsScalarTower S α β :=
-  show IsScalarTower S.toSubmonoid α β by infer_instance
+  inferInstanceAs (IsScalarTower S.toSubmonoid α β)
 
 instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
-  show FaithfulSMul S.toSubmonoid α by infer_instance
+  inferInstanceAs (FaithfulSMul S.toSubmonoid α)
 
 /-- The action by a subgroup is the action by the underlying group. -/
 instance [AddMonoid α] [DistribMulAction G α] (S : Subgroup G) : DistribMulAction S α :=
-  show DistribMulAction S.toSubmonoid α by infer_instance
+  inferInstanceAs (DistribMulAction S.toSubmonoid α)
 
 /-- The action by a subgroup is the action by the underlying group. -/
 instance [Monoid α] [MulDistribMulAction G α] (S : Subgroup G) : MulDistribMulAction S α :=
-  show MulDistribMulAction S.toSubmonoid α by infer_instance
+  inferInstanceAs (MulDistribMulAction S.toSubmonoid α)
 
 /-- The center of a group acts commutatively on that group. -/
 instance center.smulCommClass_left : SMulCommClass (center G) G G :=

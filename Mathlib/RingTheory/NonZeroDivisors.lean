@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma
-
-! This file was ported from Lean 3 source module ring_theory.non_zero_divisors
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Non-zero divisors
@@ -29,8 +26,7 @@ Use the statement `open nonZeroDivisors` to access this notation in your own cod
 section nonZeroDivisors
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
-def nonZeroDivisors (R : Type _) [MonoidWithZero R] : Submonoid R
-    where
+def nonZeroDivisors (R : Type _) [MonoidWithZero R] : Submonoid R where
   carrier := { x | ∀ z, z * x = 0 → z = 0 }
   one_mem' _ hz := by rwa [mul_one] at hz
   mul_mem' hx₁ hx₂ _ hz := by
@@ -38,7 +34,6 @@ def nonZeroDivisors (R : Type _) [MonoidWithZero R] : Submonoid R
     exact hx₁ _ (hx₂ _ hz)
 #align non_zero_divisors nonZeroDivisors
 
--- mathport name: non_zero_divisors
 /-- The notation for the submonoid of non-zerodivisors. -/
 scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
 
@@ -67,24 +62,23 @@ theorem mul_left_coe_nonZeroDivisors_eq_zero_iff {c : M₁⁰} {x : M₁} : (c :
   mul_left_mem_nonZeroDivisors_eq_zero_iff c.prop
 #align mul_left_coe_non_zero_divisors_eq_zero_iff mul_left_coe_nonZeroDivisors_eq_zero_iff
 
-theorem mul_cancel_right_mem_non_zero_divisor {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y :=
-  by
+theorem mul_cancel_right_mem_nonZeroDivisors {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y := by
   refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
   rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hr, sub_mul, h, sub_self]
-#align mul_cancel_right_mem_non_zero_divisor mul_cancel_right_mem_non_zero_divisor
+#align mul_cancel_right_mem_non_zero_divisor mul_cancel_right_mem_nonZeroDivisors
 
-theorem mul_cancel_right_coe_non_zero_divisor {x y : R} {c : R⁰} : x * c = y * c ↔ x = y :=
-  mul_cancel_right_mem_non_zero_divisor c.prop
-#align mul_cancel_right_coe_non_zero_divisor mul_cancel_right_coe_non_zero_divisor
+theorem mul_cancel_right_coe_nonZeroDivisors {x y : R} {c : R⁰} : x * c = y * c ↔ x = y :=
+  mul_cancel_right_mem_nonZeroDivisors c.prop
+#align mul_cancel_right_coe_non_zero_divisor mul_cancel_right_coe_nonZeroDivisors
 
 @[simp]
-theorem mul_cancel_left_mem_non_zero_divisor {x y r : R'} (hr : r ∈ R'⁰) : r * x = r * y ↔ x = y :=
-  by simp_rw [mul_comm r, mul_cancel_right_mem_non_zero_divisor hr]
-#align mul_cancel_left_mem_non_zero_divisor mul_cancel_left_mem_non_zero_divisor
+theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x = r * y ↔ x = y :=
+  by simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
+#align mul_cancel_left_mem_non_zero_divisor mul_cancel_left_mem_nonZeroDivisors
 
-theorem mul_cancel_left_coe_non_zero_divisor {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=
-  mul_cancel_left_mem_non_zero_divisor c.prop
-#align mul_cancel_left_coe_non_zero_divisor mul_cancel_left_coe_non_zero_divisor
+theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=
+  mul_cancel_left_mem_nonZeroDivisors c.prop
+#align mul_cancel_left_coe_non_zero_divisor mul_cancel_left_coe_nonZeroDivisors
 
 theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 := fun h ↦
   one_ne_zero (hx _ <| (one_mul _).trans h)
@@ -163,11 +157,10 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroH
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M']
     [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M⁰ ≤ M'⁰.comap f :=
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
-#align non_zero_divisors_le_comap_non_zero_divisors_of_injective
-  nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
+#align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
 
 theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
-    s.prod = 0 ↔ ∃ (r : M₁)(_ : r ∈ s), r = 0 := by
+    s.prod = 0 ↔ ∃ (r : M₁) (_ : r ∈ s), r = 0 := by
   constructor; swap
   · rintro ⟨r, hrs, rfl⟩
     exact Multiset.prod_eq_zero hrs

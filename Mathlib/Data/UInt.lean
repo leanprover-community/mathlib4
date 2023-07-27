@@ -23,7 +23,7 @@ instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
 
 instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
 
-instance USize.neZero : NeZero  USize.size := NeZero.of_pos usize_size_gt_zero
+instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
@@ -32,11 +32,32 @@ run_cmd
   for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
-      instance : Inhabited (Fin size) where
+      instance : Inhabited $typeName where
         default := 0
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
+
+      instance : Pow $typeName ℕ where
+        pow a n := mk (a.val ^ n)
+
+      instance : SMul ℕ $typeName where
+        smul n a := mk (n • a.val)
+
+      instance : SMul ℤ $typeName where
+        smul z a := mk (z • a.val)
+
+      instance : NatCast $typeName where
+        natCast n := mk n
+
+      instance : IntCast $typeName where
+        intCast z := mk z
+
+      lemma zero_def : (0 : $typeName) = ⟨0⟩ := rfl
+
+      lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
+
+      lemma neg_def (a : $typeName) : -a = ⟨-a.val⟩ := rfl
 
       lemma sub_def (a b : $typeName) : a - b = ⟨a.val - b.val⟩ := rfl
 
@@ -46,8 +67,20 @@ run_cmd
 
       lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
 
+      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ⟨a.val ^ n⟩ := rfl
+
+      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ⟨n • a.val⟩ := rfl
+
+      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨z • a.val⟩ := rfl
+
+      lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
+
+      lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
+
       lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
       | ⟨_⟩, ⟨_⟩, h => congrArg mk h
+
+      lemma val_injective : Function.Injective val := @eq_of_val_eq
 
       lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
       | ⟨_⟩, ⟨_⟩, h => congrArg val h
@@ -55,54 +88,10 @@ run_cmd
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
 
-      lemma zero_def : (0 : $typeName) = ⟨0⟩ := rfl
-
-      lemma neg_def (a : $typeName) : -a = ⟨-a.val⟩ := rfl
-
-      lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
-
-      instance : AddSemigroup $typeName where
-        add_assoc _ _ _ := congrArg mk (add_assoc _ _ _)
-
-      instance : AddCommSemigroup $typeName where
-        add_comm _ _ := congrArg mk (add_comm _ _)
-
-      instance : Semigroup $typeName where
-        mul_assoc _ _ _ := congrArg mk (mul_assoc _ _ _)
-
-      instance : Semiring $typeName where
-        add_zero _ := congrArg mk (add_zero _)
-        zero_add _ := congrArg mk (zero_add _)
-        add_comm _ _:= congrArg mk (add_comm _ _)
-        mul_one _ := congrArg mk (mul_one _)
-        one_mul _ := congrArg mk (one_mul _)
-        nsmul n a := ⟨AddMonoid.nsmul n a.val⟩
-        nsmul_zero x := congrArg mk (AddMonoid.nsmul_zero x.val)
-        nsmul_succ n a := congrArg mk (AddMonoid.nsmul_succ n a.val)
-        zero_mul _ := congrArg mk (zero_mul _)
-        mul_zero _ := congrArg mk (mul_zero _)
-        npow_zero := fun _ ↦ rfl
-        npow_succ := fun _ _ ↦ rfl
-        right_distrib a b c := congrArg mk (right_distrib _ _ _)
-        left_distrib a b c := congrArg mk (left_distrib _ _ _)
-        natCast n := ⟨n⟩
-        natCast_zero := rfl
-        natCast_succ _ := congrArg mk (Nat.cast_succ _)
-        __ := inferInstanceAs (AddCommSemigroup $typeName)
-        __ := inferInstanceAs (Semigroup $typeName)
-
-      instance : Ring $typeName where
-        sub_eq_add_neg _ _ := congrArg mk (sub_eq_add_neg _ _)
-        add_left_neg _ := congrArg mk (add_left_neg _)
-        intCast n := ⟨n⟩
-        intCast_ofNat _ := rfl
-        intCast_negSucc _ := rfl
-
-      instance : CommRing $typeName where
-        mul_comm := fun _ _ ↦ by
-          apply eq_of_val_eq
-          simp [mul_def, zero_def]
-          exact mul_comm _ _
+      instance : CommRing $typeName :=
+        Function.Injective.commRing val val_injective
+          rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+          (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
     end $typeName
   ))

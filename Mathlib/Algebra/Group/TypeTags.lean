@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.group.type_tags
-! leanprover-community/mathlib commit 6eb334bd8f3433d5b08ba156b8ec3e6af47e1904
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Finite.Defs
+
+#align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
@@ -460,7 +457,7 @@ def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
 #align add_monoid_hom.to_multiplicative'_symm_apply_apply AddMonoidHom.toMultiplicative'_symm_apply_apply
 
 /-- Reinterpret `α →* Multiplicative β` as `Additive α →+ β`. -/
-@[simps]
+@[simps!]
 def MonoidHom.toAdditive' [MulOneClass α] [AddZeroClass β] :
     (α →* Multiplicative β) ≃ (Additive α →+ β) :=
   AddMonoidHom.toMultiplicative'.symm
@@ -489,7 +486,7 @@ def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
 #align add_monoid_hom.to_multiplicative''_apply_apply AddMonoidHom.toMultiplicative''_apply_apply
 
 /-- Reinterpret `Multiplicative α →* β` as `α →+ Additive β`. -/
-@[simps]
+@[simps!]
 def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
     (Multiplicative α →* β) ≃ (α →+ Additive β) :=
   AddMonoidHom.toMultiplicative''.symm

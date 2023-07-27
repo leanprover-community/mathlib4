@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.ord_connected_component
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
-import Mathlib.Tactic.SwapVar
+
+#align_import data.set.intervals.ord_connected_component from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
+
 /-!
 # Order connected components of a set
 
@@ -32,17 +29,15 @@ def ordConnectedComponent (s : Set α) (x : α) : Set α :=
   { y | [[x, y]] ⊆ s }
 #align set.ord_connected_component Set.ordConnectedComponent
 
-theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔  [[x, y]] ⊆ s :=
+theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]] ⊆ s :=
   Iff.rfl
 #align set.mem_ord_connected_component Set.mem_ordConnectedComponent
 
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
-  ext <|
-      (Surjective.forall toDual.surjective).2 fun x =>
-      by
-      rw [mem_ordConnectedComponent, dual_uIcc]
-      rfl
+  ext <| (Surjective.forall toDual.surjective).2 fun x => by
+    rw [mem_ordConnectedComponent, dual_uIcc]
+    rfl
 #align set.dual_ord_connected_component Set.dual_ordConnectedComponent
 
 theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy =>
@@ -90,11 +85,9 @@ theorem mem_ordConnectedComponent_comm :
 
 theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
     (hyz : z ∈ ordConnectedComponent s y) : z ∈ ordConnectedComponent s x :=
-  show _ ⊆ _ from -- lean4#2073
   calc
     [[x, z]] ⊆ [[x, y]] ∪ [[y, z]] := uIcc_subset_uIcc_union_uIcc
     _ ⊆ s := union_subset hxy hyz
-
 #align set.mem_ord_connected_component_trans Set.mem_ordConnectedComponent_trans
 
 theorem ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
@@ -151,7 +144,6 @@ theorem dual_ordConnectedSection (s : Set α) :
   ext x
   simp [dual_ordConnectedComponent]
   tauto
-
 #align set.dual_ord_connected_section Set.dual_ordConnectedSection
 
 theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
@@ -166,15 +158,14 @@ theorem eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSec
       (mem_ordConnectedComponent_trans
         (mem_ordConnectedComponent_trans (ordConnectedProj_mem_ordConnectedComponent _ _) h)
         (mem_ordConnectedComponent_ordConnectedProj _ _))
-#align set.eq_of_mem_ord_connected_section_of_uIcc_subset
-  Set.eq_of_mem_ordConnectedSection_of_uIcc_subset
+#align set.eq_of_mem_ord_connected_section_of_uIcc_subset Set.eq_of_mem_ordConnectedSection_of_uIcc_subset
 
 /-- Given two sets `s t : Set α`, the set `Set.orderSeparatingSet s t` is the set of points that
 belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some
 `Set.ordConnectedComponent sᶜ x`, `x ∈ t`. In the case of two disjoint closed sets, this is the
 union of all open intervals $(a, b)$ such that their endpoints belong to different sets. -/
 def ordSeparatingSet (s t : Set α) : Set α :=
-  (⋃ x ∈ s, ordConnectedComponent (tᶜ) x) ∩ ⋃ x ∈ t, ordConnectedComponent (sᶜ) x
+  (⋃ x ∈ s, ordConnectedComponent tᶜ x) ∩ ⋃ x ∈ t, ordConnectedComponent sᶜ x
 #align set.ord_separating_set Set.ordSeparatingSet
 
 theorem ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparatingSet t s :=
@@ -183,7 +174,7 @@ theorem ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparat
 
 theorem disjoint_left_ordSeparatingSet : Disjoint s (ordSeparatingSet s t) :=
   Disjoint.inter_right' _ <|
-    disjoint_unionᵢ₂_right.2 fun _ _ =>
+    disjoint_iUnion₂_right.2 fun _ _ =>
       disjoint_compl_right.mono_right <| ordConnectedComponent_subset
 #align set.disjoint_left_ord_separating_set Set.disjoint_left_ordSeparatingSet
 
@@ -193,8 +184,8 @@ theorem disjoint_right_ordSeparatingSet : Disjoint t (ordSeparatingSet s t) :=
 
 theorem dual_ordSeparatingSet :
     ordSeparatingSet (ofDual ⁻¹' s) (ofDual ⁻¹' t) = ofDual ⁻¹' ordSeparatingSet s t := by
-  simp only [ordSeparatingSet, mem_preimage, ← toDual.surjective.unionᵢ_comp, ofDual_toDual,
-    dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_unionᵢ]
+  simp only [ordSeparatingSet, mem_preimage, ← toDual.surjective.iUnion_comp, ofDual_toDual,
+    dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_iUnion]
 #align set.dual_ord_separating_set Set.dual_ordSeparatingSet
 
 /-- An auxiliary neighborhood that will be used in the proof of `OrderTopology.t5Space`. -/
@@ -205,9 +196,9 @@ def ordT5Nhd (s t : Set α) : Set α :=
 theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   rw [disjoint_iff_inf_le]
   rintro x ⟨hx₁, hx₂⟩
-  rcases mem_unionᵢ₂.1 hx₁ with ⟨a, has, ha⟩
+  rcases mem_iUnion₂.1 hx₁ with ⟨a, has, ha⟩
   clear hx₁
-  rcases mem_unionᵢ₂.1 hx₂ with ⟨b, hbt, hb⟩
+  rcases mem_iUnion₂.1 hx₂ with ⟨b, hbt, hb⟩
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
   cases' le_total a b with hab hab
@@ -217,8 +208,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
 -- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s
     cases' ha with ha ha'
     cases' hb with hb hb'
-    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
-      by
+    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by
       rw [ordSeparatingSet_comm, uIcc_comm] at hb'
       calc
         [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := uIcc_subset_uIcc_union_uIcc
@@ -228,7 +218,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
     · exact hb (Icc_subset_uIcc' ⟨hxa, hab⟩) has
     cases' le_total b x with hbx hxb
     · exact ha (Icc_subset_uIcc ⟨hab, hbx⟩) hbt
-    have h' : x ∈ ordSeparatingSet s t := ⟨mem_unionᵢ₂.2 ⟨a, has, ha⟩, mem_unionᵢ₂.2 ⟨b, hbt, hb⟩⟩
+    have h' : x ∈ ordSeparatingSet s t := ⟨mem_iUnion₂.2 ⟨a, has, ha⟩, mem_iUnion₂.2 ⟨b, hbt, hb⟩⟩
     -- porting note: lift not implemented yet
     -- lift x to ordSeparatingSet s t using this
     suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]]

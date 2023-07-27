@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module group_theory.subgroup.finite
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import group_theory.subgroup.finite from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Subgroups
@@ -129,14 +126,23 @@ theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup
 #align add_subgroup.card_bot AddSubgroup.card_bot
 
 @[to_additive]
-theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) : H = ⊤ :=
-  by
+theorem card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
+  rw [Fintype.card_eq]
+  exact Nonempty.intro Subgroup.topEquiv.toEquiv
+
+@[to_additive]
+theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
+    H = ⊤ := by
   letI : Fintype (H : Set G) := ‹Fintype H›
   rw [SetLike.ext'_iff, coe_top, ← Finset.coe_univ, ← (H : Set G).coe_toFinset, Finset.coe_inj, ←
     Finset.card_eq_iff_eq_univ, ← h, Set.toFinset_card]
   congr
 #align subgroup.eq_top_of_card_eq Subgroup.eq_top_of_card_eq
 #align add_subgroup.eq_top_of_card_eq AddSubgroup.eq_top_of_card_eq
+
+@[to_additive (attr := simp)]
+theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
+  Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
 
 @[to_additive]
 theorem eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
@@ -158,20 +164,24 @@ theorem eq_bot_of_card_eq [Fintype H] (h : Fintype.card H = 1) : H = ⊥ :=
 #align subgroup.eq_bot_of_card_eq Subgroup.eq_bot_of_card_eq
 #align add_subgroup.eq_bot_of_card_eq AddSubgroup.eq_bot_of_card_eq
 
-@[to_additive]
+@[to_additive card_le_one_iff_eq_bot]
 theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
   ⟨fun h =>
     (eq_bot_iff_forall _).2 fun x hx => by
       simpa [Subtype.ext_iff] using Fintype.card_le_one_iff.1 h ⟨x, hx⟩ 1,
     fun h => by simp [h]⟩
 #align subgroup.card_le_one_iff_eq_bot Subgroup.card_le_one_iff_eq_bot
-#align add_subgroup.card_nonpos_iff_eq_bot AddSubgroup.card_nonpos_iff_eq_bot
+#align add_subgroup.card_nonpos_iff_eq_bot AddSubgroup.card_le_one_iff_eq_bot
 
-@[to_additive]
+@[to_additive one_lt_card_iff_ne_bot]
 theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
   lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
 #align subgroup.one_lt_card_iff_ne_bot Subgroup.one_lt_card_iff_ne_bot
-#align add_subgroup.pos_card_iff_ne_bot AddSubgroup.pos_card_iff_ne_bot
+#align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
+
+@[to_additive]
+theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G :=
+  Fintype.card_le_of_injective _ Subtype.coe_injective
 
 end Subgroup
 
@@ -191,8 +201,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
   · convert one_mem H
     ext i
     exact h1 i (Finset.not_mem_empty i)
-  · have : x = Function.update x i 1 * Pi.mulSingle i (x i) :=
-      by
+  · have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
       ext j
       by_cases heq : j = i
       · subst heq

@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
-
-! This file was ported from Lean 3 source module data.rat.floor
-! leanprover-community/mathlib commit 134625f523e737f650a6ea7f0c82a6177e45e622
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast
-import Mathlib.Tactic.Set
+import Mathlib.Tactic.FieldSimp
+
+#align_import data.rat.floor from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
 
 /-!
 # Floor Function for Rational Numbers
@@ -36,8 +33,8 @@ variable {α : Type _} [LinearOrderedField α] [FloorRing α]
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]
   split
-  . next h => simp [h]
-  . next => rfl
+  · next h => simp [h]
+  · next => rfl
 
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
@@ -61,8 +58,7 @@ theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d :
   obtain rfl | hd := @eq_zero_or_pos _ _ d
   · simp
   set q := (n : ℚ) / d with q_eq
-  obtain ⟨c, n_eq_c_mul_num, d_eq_c_mul_denom⟩ : ∃ c, n = c * q.num ∧ (d : ℤ) = c * q.den :=
-    by
+  obtain ⟨c, n_eq_c_mul_num, d_eq_c_mul_denom⟩ : ∃ c, n = c * q.num ∧ (d : ℤ) = c * q.den := by
     rw [q_eq]
     exact_mod_cast @Rat.exists_eq_mul_div_num_and_eq_mul_div_den n d (by exact_mod_cast hd.ne')
   rw [n_eq_c_mul_num, d_eq_c_mul_denom]
@@ -141,10 +137,7 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
   have q_inv_eq : q⁻¹ = q_inv := Rat.inv_def''
   suffices (q_inv - ⌊q_inv⌋).num < q.num by rwa [q_inv_eq]
   suffices ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num < q.num by
-    have hq : (q.num : ℚ) ≠ 0 := by exact_mod_cast ne_of_gt q_num_pos
-    rwa [div_sub' _ _ _ hq]
-    -- Porting note: was
-    -- field_simp [this, ne_of_gt q_num_pos]
+    field_simp [this, ne_of_gt q_num_pos]
   suffices (q.den : ℤ) - q.num * ⌊q_inv⌋ < q.num by
     -- use that `q.num` and `q.den` are coprime to show that the numerator stays unreduced
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by

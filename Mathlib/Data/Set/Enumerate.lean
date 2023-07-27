@@ -2,15 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.set.enumerate
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.SwapVar
+
+#align_import data.set.enumerate from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Set enumeration
@@ -76,7 +72,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
 
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
-  /- porting note : The `rcase, on_goal, all_goals` has been used instead of 
+  /- porting note : The `rcase, on_goal, all_goals` has been used instead of
      the not-yet-ported `wlog` -/
   rcases le_total n₁ n₂ with (hn|hn)
   on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂

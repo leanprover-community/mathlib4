@@ -2,19 +2,16 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
-
-! This file was ported from Lean 3 source module data.pnat.prime
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.PNat.Basic
 
+#align_import data.pnat.prime from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
+
 /-!
 # Primality and GCD on pnat
 
-This file extends the theory of `ℕ+` with `gcd`, `lcm` and `prime` functions, analogous to those on
+This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, analogous to those on
 `Nat`.
 -/
 
@@ -172,7 +169,6 @@ theorem coprime_coe {m n : ℕ+} : Nat.coprime ↑m ↑n ↔ m.Coprime n := by
   unfold coprime Coprime
   rw [← coe_inj]
   simp
-  rfl
 #align pnat.coprime_coe PNat.coprime_coe
 
 theorem Coprime.mul {k m n : ℕ+} : m.Coprime k → n.Coprime k → (m * n).Coprime k := by

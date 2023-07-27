@@ -2,14 +2,11 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.local_extr
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Extr
 import Mathlib.Topology.ContinuousOn
+
+#align_import topology.local_extr from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Local extrema of functions on topological spaces
@@ -550,10 +547,10 @@ section Eventually
 
 variable [Preorder β] {s : Set α}
 
-theorem Filter.EventuallyLe.isLocalMaxOn {f g : α → β} {a : α} (hle : g ≤ᶠ[𝓝[s] a] f)
+theorem Filter.EventuallyLE.isLocalMaxOn {f g : α → β} {a : α} (hle : g ≤ᶠ[𝓝[s] a] f)
     (hfga : f a = g a) (h : IsLocalMaxOn f s a) : IsLocalMaxOn g s a :=
   hle.isMaxFilter hfga h
-#align filter.eventually_le.is_local_max_on Filter.EventuallyLe.isLocalMaxOn
+#align filter.eventually_le.is_local_max_on Filter.EventuallyLE.isLocalMaxOn
 
 nonrec theorem IsLocalMaxOn.congr {f g : α → β} {a : α} (h : IsLocalMaxOn f s a)
     (heq : f =ᶠ[𝓝[s] a] g) (hmem : a ∈ s) : IsLocalMaxOn g s a :=
@@ -565,10 +562,10 @@ theorem Filter.EventuallyEq.isLocalMaxOn_iff {f g : α → β} {a : α} (heq : f
   heq.isMaxFilter_iff <| heq.eq_of_nhdsWithin hmem
 #align filter.eventually_eq.is_local_max_on_iff Filter.EventuallyEq.isLocalMaxOn_iff
 
-theorem Filter.EventuallyLe.isLocalMinOn {f g : α → β} {a : α} (hle : f ≤ᶠ[𝓝[s] a] g)
+theorem Filter.EventuallyLE.isLocalMinOn {f g : α → β} {a : α} (hle : f ≤ᶠ[𝓝[s] a] g)
     (hfga : f a = g a) (h : IsLocalMinOn f s a) : IsLocalMinOn g s a :=
   hle.isMinFilter hfga h
-#align filter.eventually_le.is_local_min_on Filter.EventuallyLe.isLocalMinOn
+#align filter.eventually_le.is_local_min_on Filter.EventuallyLE.isLocalMinOn
 
 nonrec theorem IsLocalMinOn.congr {f g : α → β} {a : α} (h : IsLocalMinOn f s a)
     (heq : f =ᶠ[𝓝[s] a] g) (hmem : a ∈ s) : IsLocalMinOn g s a :=
@@ -590,10 +587,10 @@ theorem Filter.EventuallyEq.isLocalExtrOn_iff {f g : α → β} {a : α} (heq : 
   heq.isExtrFilter_iff <| heq.eq_of_nhdsWithin hmem
 #align filter.eventually_eq.is_local_extr_on_iff Filter.EventuallyEq.isLocalExtrOn_iff
 
-theorem Filter.EventuallyLe.isLocalMax {f g : α → β} {a : α} (hle : g ≤ᶠ[𝓝 a] f) (hfga : f a = g a)
+theorem Filter.EventuallyLE.isLocalMax {f g : α → β} {a : α} (hle : g ≤ᶠ[𝓝 a] f) (hfga : f a = g a)
     (h : IsLocalMax f a) : IsLocalMax g a :=
   hle.isMaxFilter hfga h
-#align filter.eventually_le.is_local_max Filter.EventuallyLe.isLocalMax
+#align filter.eventually_le.is_local_max Filter.EventuallyLE.isLocalMax
 
 nonrec theorem IsLocalMax.congr {f g : α → β} {a : α} (h : IsLocalMax f a) (heq : f =ᶠ[𝓝 a] g) :
     IsLocalMax g a :=
@@ -605,10 +602,10 @@ theorem Filter.EventuallyEq.isLocalMax_iff {f g : α → β} {a : α} (heq : f =
   heq.isMaxFilter_iff heq.eq_of_nhds
 #align filter.eventually_eq.is_local_max_iff Filter.EventuallyEq.isLocalMax_iff
 
-theorem Filter.EventuallyLe.isLocalMin {f g : α → β} {a : α} (hle : f ≤ᶠ[𝓝 a] g) (hfga : f a = g a)
+theorem Filter.EventuallyLE.isLocalMin {f g : α → β} {a : α} (hle : f ≤ᶠ[𝓝 a] g) (hfga : f a = g a)
     (h : IsLocalMin f a) : IsLocalMin g a :=
   hle.isMinFilter hfga h
-#align filter.eventually_le.is_local_min Filter.EventuallyLe.isLocalMin
+#align filter.eventually_le.is_local_min Filter.EventuallyLE.isLocalMin
 
 nonrec theorem IsLocalMin.congr {f g : α → β} {a : α} (h : IsLocalMin f a) (heq : f =ᶠ[𝓝 a] g) :
     IsLocalMin g a :=

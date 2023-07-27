@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.locally_finite
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
+
+#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Intervals as finsets
@@ -19,7 +16,7 @@ This file provides basic results about all the `Finset.Ixx`, which are defined i
 
 ## TODO
 
-This file was originally only about `finset.Ico a b` where `a b : ℕ`. No care has yet been taken to
+This file was originally only about `Finset.Ico a b` where `a b : ℕ`. No care has yet been taken to
 generalize these lemmas properly and many lemmas about `Icc`, `Ioc`, `Ioo` are missing. In general,
 what's to do is taking the lemmas in `Data.X.Intervals` and abstract away the concrete structure.
 
@@ -263,17 +260,17 @@ theorem Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioc a₂ b
 #align finset.Icc_subset_Ioc_iff Finset.Icc_subset_Ioc_iff
 
 --TODO: `Ico_subset_Ioo_iff`, `Ioc_subset_Ioo_iff`
-theorem Icc_sSubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) :
+theorem Icc_ssubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ := by
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_left hI ha hb
-#align finset.Icc_ssubset_Icc_left Finset.Icc_sSubset_Icc_left
+#align finset.Icc_ssubset_Icc_left Finset.Icc_ssubset_Icc_left
 
-theorem Icc_sSubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
+theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ := by
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
-#align finset.Icc_ssubset_Icc_right Finset.Icc_sSubset_Icc_right
+#align finset.Icc_ssubset_Icc_right Finset.Icc_ssubset_Icc_right
 
 variable (a)
 
@@ -464,6 +461,10 @@ theorem _root_.BddBelow.finite {s : Set α} (hs : BddBelow s) : s.Finite :=
   (Ici a).finite_toSet.subset fun _ hx => mem_Ici.2 <| ha hx
 #align bdd_below.finite BddBelow.finite
 
+theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelow s :=
+  mt BddBelow.finite
+#align set.infinite.not_bdd_below Set.Infinite.not_bddBelow
+
 variable [Fintype α]
 
 theorem filter_lt_eq_Ioi [DecidablePred ((· < ·) a)] : univ.filter ((· < ·) a) = Ioi a := by
@@ -489,6 +490,10 @@ theorem Iio_subset_Iic_self : Iio a ⊆ Iic a := by
 theorem _root_.BddAbove.finite {s : Set α} (hs : BddAbove s) : s.Finite :=
   hs.dual.finite
 #align bdd_above.finite BddAbove.finite
+
+theorem _root_.Set.Infinite.not_bddAbove {s : Set α} : s.Infinite → ¬BddAbove s :=
+  mt BddAbove.finite
+#align set.infinite.not_bdd_above Set.Infinite.not_bddAbove
 
 variable [Fintype α]
 
@@ -601,13 +606,26 @@ theorem Ico_inter_Ico_consecutive (a b c : α) : Ico a b ∩ Ico b c = ∅ :=
 end DecidableEq
 
 -- Those lemmas are purposefully the other way around
+
+/-- `Finset.cons` version of `Finset.Ico_insert_right`. -/
 theorem Icc_eq_cons_Ico (h : a ≤ b) : Icc a b = (Ico a b).cons b right_not_mem_Ico := by
   classical rw [cons_eq_insert, Ico_insert_right h]
 #align finset.Icc_eq_cons_Ico Finset.Icc_eq_cons_Ico
 
+/-- `Finset.cons` version of `Finset.Ioc_insert_left`. -/
 theorem Icc_eq_cons_Ioc (h : a ≤ b) : Icc a b = (Ioc a b).cons a left_not_mem_Ioc := by
   classical rw [cons_eq_insert, Ioc_insert_left h]
 #align finset.Icc_eq_cons_Ioc Finset.Icc_eq_cons_Ioc
+
+/-- `Finset.cons` version of `Finset.Ioo_insert_right`. -/
+theorem Ioc_eq_cons_Ioo (h : a < b) : Ioc a b = (Ioo a b).cons b right_not_mem_Ioo := by
+  classical rw [cons_eq_insert, Ioo_insert_right h]
+#align finset.Ioc_eq_cons_Ioo Finset.Ioc_eq_cons_Ioo
+
+/-- `Finset.cons` version of `Finset.Ioo_insert_left`. -/
+theorem Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_not_mem_Ioo := by
+  classical rw [cons_eq_insert, Ioo_insert_left h]
+#align finset.Ico_eq_cons_Ioo Finset.Ico_eq_cons_Ioo
 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
     ((Ico a b).filter fun x => x ≤ a) = {a} := by
@@ -619,7 +637,7 @@ theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).card - 1 := by
   classical
     by_cases h : a ≤ b
-    · rw [← Ico_insert_right h, card_insert_of_not_mem right_not_mem_Ico]
+    · rw [Icc_eq_cons_Ico h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
     · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, zero_tsub]
 #align finset.card_Ico_eq_card_Icc_sub_one Finset.card_Ico_eq_card_Icc_sub_one
@@ -630,12 +648,10 @@ theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : (Ioc a b).card = (Icc a b).car
 
 theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).card - 1 := by
   classical
-    by_cases h : a ≤ b
-    · obtain rfl | h' := h.eq_or_lt
-      · rw [Ioo_self, Ico_self, card_empty]
-      rw [← Ioo_insert_left h', card_insert_of_not_mem left_not_mem_Ioo]
+    by_cases h : a < b
+    · rw [Ico_eq_cons_Ioo h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ioo_eq_empty fun h' => h h'.le, Ico_eq_empty fun h' => h h'.le, card_empty, zero_tsub]
+    · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, zero_tsub]
 #align finset.card_Ioo_eq_card_Ico_sub_one Finset.card_Ioo_eq_card_Ico_sub_one
 
 theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : (Ioo a b).card = (Ioc a b).card - 1 :=
@@ -675,6 +691,7 @@ theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi
 #align finset.not_mem_Ioi_self Finset.not_mem_Ioi_self
 
 -- Purposefully written the other way around
+/-- `Finset.cons` version of `Finset.Ioi_insert`. -/
 theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a not_mem_Ioi_self := by
   classical rw [cons_eq_insert, Ioi_insert]
 #align finset.Ici_eq_cons_Ioi Finset.Ici_eq_cons_Ioi
@@ -707,6 +724,7 @@ theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio
 #align finset.not_mem_Iio_self Finset.not_mem_Iio_self
 
 -- Purposefully written the other way around
+/-- `Finset.cons` version of `Finset.Iio_insert`. -/
 theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b not_mem_Iio_self := by
   classical rw [cons_eq_insert, Iio_insert]
 #align finset.Iic_eq_cons_Iio Finset.Iic_eq_cons_Iio
@@ -811,6 +829,32 @@ theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) :=
 #align finset.Ico_diff_Ico_right Finset.Ico_diff_Ico_right
 
 end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α] {s : Set α}
+
+theorem _root_.Set.Infinite.exists_gt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, a < b :=
+  not_bddAbove_iff.1 hs.not_bddAbove
+#align set.infinite.exists_gt Set.Infinite.exists_gt
+
+theorem _root_.Set.infinite_iff_exists_gt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, a < b :=
+  ⟨Set.Infinite.exists_gt, Set.infinite_of_forall_exists_gt⟩
+#align set.infinite_iff_exists_gt Set.infinite_iff_exists_gt
+
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTop
+variable [LocallyFiniteOrderTop α] {s : Set α}
+
+theorem _root_.Set.Infinite.exists_lt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, b < a :=
+  not_bddBelow_iff.1 hs.not_bddBelow
+#align set.infinite.exists_lt Set.Infinite.exists_lt
+
+theorem _root_.Set.infinite_iff_exists_lt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, b < a :=
+  ⟨Set.Infinite.exists_lt, Set.infinite_of_forall_exists_lt⟩
+#align set.infinite_iff_exists_lt Set.infinite_iff_exists_lt
+
+end LocallyFiniteOrderTop
 
 variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 

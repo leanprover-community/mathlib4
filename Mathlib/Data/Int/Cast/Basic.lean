@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
-
-! This file was ported from Lean 3 source module data.int.cast.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
+
+#align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Cast of integers (additional theorems)
@@ -69,6 +66,11 @@ theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
 #align int.cast_coe_nat Int.cast_ofNatₓ
 -- expected `n` to be implicit, and `HasLiftT`
 #align int.cast_of_nat Int.cast_ofNatₓ
+
+@[simp, norm_cast]
+theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
+  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by

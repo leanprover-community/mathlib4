@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.prop_instances
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
+
+#align_import order.prop_instances from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 
@@ -50,8 +47,7 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 #align Prop.top_eq_true Prop.top_eq_true
 
 instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
-  ⟨fun p q => by
-    by_cases p <;> by_cases q <;> simp [h]⟩
+  ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 #align Prop.le_is_total Prop.le_isTotal
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by
@@ -84,7 +80,6 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     · exact bot_le
   · intro h x hf hg i
     apply h i (hf i) (hg i)
-
 #align pi.disjoint_iff Pi.disjoint_iff
 
 theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
@@ -114,3 +109,17 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   rw [_root_.isCompl_iff, Prop.disjoint_iff, Prop.codisjoint_iff, not_iff]
   by_cases P <;> by_cases Q <;> simp [*]
 #align Prop.is_compl_iff Prop.isCompl_iff
+
+-- porting note: Lean 3 would unfold these for us, but we need to do it manually now
+section decidable_instances
+variable {α : Type u}
+
+instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse
+
+instance Prop.decidablePredTop : DecidablePred (⊤ : α → Prop) := fun _ => instDecidableTrue
+
+instance Prop.decidableRelBot : DecidableRel (⊥ : α → α → Prop) := fun _ _ => instDecidableFalse
+
+instance Prop.decidableRelTop : DecidableRel (⊤ : α → α → Prop) := fun _ _ => instDecidableTrue
+
+end decidable_instances

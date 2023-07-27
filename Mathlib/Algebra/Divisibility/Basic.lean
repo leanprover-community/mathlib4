@@ -3,14 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
-Ported by: Matej Penciak
-
-! This file was ported from Lean 3 source module algebra.divisibility.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
+
+#align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Divisibility
@@ -58,6 +54,11 @@ alias Dvd.intro ← dvd_of_mul_right_eq
 theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
   h
 #align exists_eq_mul_right_of_dvd exists_eq_mul_right_of_dvd
+
+theorem dvd_def : a ∣ b ↔ ∃ c, b = a * c :=
+  Iff.rfl
+
+alias dvd_def ← dvd_iff_exists_eq_mul_right
 
 theorem Dvd.elim {P : Prop} {a b : α} (H₁ : a ∣ b) (H₂ : ∀ c, b = a * c → P) : P :=
   Exists.elim H₁ H₂
@@ -113,7 +114,7 @@ end Semigroup
 
 section Monoid
 
-variable [Monoid α]
+variable [Monoid α] {a b : α}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -129,6 +130,12 @@ instance : IsRefl α (· ∣ ·) :=
 theorem one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)
 #align one_dvd one_dvd
+
+theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
+#align dvd_of_eq dvd_of_eq
+
+alias dvd_of_eq ← Eq.dvd
+#align eq.dvd Eq.dvd
 
 end Monoid
 

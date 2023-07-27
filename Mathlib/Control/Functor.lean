@@ -2,15 +2,12 @@
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.functor
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
 import Std.Tactic.Lint
+
+#align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Functors
@@ -30,9 +27,6 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
-
-attribute [functor_norm] seq_assoc pure_seq map_pure seq_map_assoc map_seq
-
 universe u v w
 
 section Functor
@@ -43,7 +37,7 @@ variable {α β γ : Type u}
 
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by apply funext <;> apply id_map
+theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
@@ -123,7 +117,7 @@ instance {α β} [Inhabited α] : Inhabited (Const α β) :=
 end Const
 
 /-- `AddConst α` is a synonym for constant functor `Const α`, mapping
-every type to `α`. When `α` has a additive monoid structure,
+every type to `α`. When `α` has an additive monoid structure,
 `AddConst α` has an `Applicative` instance. (If `α` has a
 multiplicative monoid structure, see `Functor.Const`.) -/
 def AddConst (α : Type _) :=

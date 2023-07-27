@@ -2,15 +2,13 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-! This file was ported from Lean 3 source module algebra.order.ring.with_top
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Std.Data.Option.Lemmas
+
+#align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
 The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
@@ -20,9 +18,6 @@ The main results of this section are `WithTop.canonicallyOrderedCommSemiring` an
 variable {α : Type _}
 
 namespace WithTop
-
-instance [Nonempty α] : Nontrivial (WithTop α) :=
-  Option.nontrivial
 
 variable [DecidableEq α]
 
@@ -48,13 +43,35 @@ theorem mul_def {a b : WithTop α} :
 theorem top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := by simp [mul_def]; rfl
 #align with_top.top_mul_top WithTop.top_mul_top
 
-@[simp]
-theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
+theorem mul_top' (a : WithTop α) : a * ⊤ = if a = 0 then 0 else ⊤ := by
+  induction a using recTopCoe <;> simp [mul_def] <;> rfl
+#align with_top.mul_top' WithTop.mul_top'
+
+@[simp] theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', if_neg h]
 #align with_top.mul_top WithTop.mul_top
 
-@[simp]
-theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
+theorem top_mul' (a : WithTop α) : ⊤ * a = if a = 0 then 0 else ⊤ := by
+  induction a using recTopCoe <;> simp [mul_def] <;> rfl
+#align with_top.top_mul' WithTop.top_mul'
+
+@[simp] theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by rw [top_mul', if_neg h]
 #align with_top.top_mul WithTop.top_mul
+
+theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by
+  rw [mul_def, ite_eq_iff, ← none_eq_top, Option.map₂_eq_none_iff]
+  have ha : a = 0 → a ≠ none := fun h => h.symm ▸ zero_ne_top
+  have hb : b = 0 → b ≠ none := fun h => h.symm ▸ zero_ne_top
+  tauto
+#align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
+
+theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
+  rw [WithTop.lt_top_iff_ne_top] at *
+  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, false_or]
+#align with_top.mul_lt_top' WithTop.mul_lt_top'
+
+theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
+  mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
+#align with_top.mul_lt_top WithTop.mul_lt_top
 
 instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
@@ -68,7 +85,7 @@ section MulZeroClass
 
 variable [MulZeroClass α]
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_mul {a b : α} : (↑(a * b) : WithTop α) = a * b := by
   by_cases ha : a = 0
   · simp [ha]
@@ -86,23 +103,6 @@ theorem mul_coe {b : α} (hb : b ≠ 0) : ∀ {a : WithTop α},
     rw [some_eq_coe, ← coe_mul]
     rfl
 #align with_top.mul_coe WithTop.mul_coe
-
-@[simp]
-theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by
-  match a with
-  | none => match b with
-    | none => simp [none_eq_top]
-    | Option.some b => by_cases hb : b = 0 <;> simp [none_eq_top, some_eq_coe, hb]
-  | Option.some a => match b with
-    | none => by_cases ha : a = 0 <;> simp [none_eq_top, some_eq_coe, ha]
-    | Option.some b => simp [some_eq_coe, ← coe_mul]
-#align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
-
-theorem mul_lt_top [Preorder α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ := by
-  lift a to α using ha
-  lift b to α using hb
-  simp only [← coe_mul, coe_lt_top]
-#align with_top.mul_lt_top WithTop.mul_lt_top
 
 @[simp]
 theorem untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.untop' 0 := by
@@ -131,7 +131,7 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
+protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
   { f.toZeroHom.withTopMap, f.toMonoidHom.toOneHom.withTopMap with
@@ -148,8 +148,9 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
       induction' y using WithTop.recTopCoe with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · simp [← coe_mul, map_coe] }
-#align monoid_with_zero_hom.with_top_map WithTop.MonoidWithZeroHom.withTopMap
+      · -- porting note: todo: `simp [← coe_mul]` times out
+        simp only [map_coe, ← coe_mul, map_mul] }
+#align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
@@ -206,18 +207,15 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R] [DecidableEq R]
-    [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S] (f : R →+* S)
-    (hf : Function.Injective f) : WithTop R →+* WithTop S :=
+protected def _root_.RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R]
+    [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
+    (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
-#align ring_hom.with_top_map WithTop.RingHom.withTopMap
+#align ring_hom.with_top_map RingHom.withTopMap
 
 end WithTop
 
 namespace WithBot
-
-instance [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
 
 variable [DecidableEq α]
 
@@ -250,13 +248,25 @@ theorem bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ :=
   WithTop.top_mul_top
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot
 
+theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 :=
+  WithTop.mul_eq_top_iff
+#align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
+
+theorem bot_lt_mul' [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
+  WithTop.mul_lt_top' (α := αᵒᵈ) ha hb
+#align with_bot.bot_lt_mul' WithBot.bot_lt_mul'
+
+theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : ⊥ < a * b :=
+  WithTop.mul_lt_top (α := αᵒᵈ) ha hb
+#align with_bot.bot_lt_mul WithBot.bot_lt_mul
+
 end Mul
 
 section MulZeroClass
 
 variable [MulZeroClass α]
 
-@[norm_cast]
+@[simp, norm_cast] -- porting note: added `simp`
 theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b :=
   WithTop.coe_mul
 #align with_bot.coe_mul WithBot.coe_mul
@@ -265,17 +275,6 @@ theorem mul_coe {b : α} (hb : b ≠ 0) {a : WithBot α} :
     a * (b : WithBot α) = a.bind fun a : α => ↑(a * b) :=
   WithTop.mul_coe hb
 #align with_bot.mul_coe WithBot.mul_coe
-
-@[simp]
-theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 :=
-  WithTop.mul_eq_top_iff
-#align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
-
-theorem bot_lt_mul [Preorder α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b := by
-  lift a to α using ne_bot_of_gt ha
-  lift b to α using ne_bot_of_gt hb
-  simp only [← coe_mul, bot_lt_coe]
-#align with_bot.bot_lt_mul WithBot.bot_lt_mul
 
 end MulZeroClass
 
@@ -304,10 +303,15 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
-    rcases eq_or_ne x 0 with rfl | x0'; simp
-    lift x to α; { rintro rfl; exact (WithBot.bot_lt_coe (0 : α)).not_le x0 }
-    induction a using WithBot.recBotCoe; { simp_rw [mul_bot x0', bot_le] }
-    induction b using WithBot.recBotCoe; { exact absurd h (bot_lt_coe _).not_le }
+    rcases eq_or_ne x 0 with rfl | x0'
+    · simp
+    lift x to α
+    · rintro rfl
+      exact (WithBot.bot_lt_coe (0 : α)).not_le x0
+    induction a using WithBot.recBotCoe
+    · simp_rw [mul_bot x0', bot_le]
+    induction b using WithBot.recBotCoe
+    · exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
     exact mul_le_mul_of_nonneg_left h x0 ⟩
@@ -316,10 +320,15 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
-    rcases eq_or_ne x 0 with rfl | x0'; simp
-    lift x to α; { rintro rfl; exact (WithBot.bot_lt_coe (0 : α)).not_le x0 }
-    induction a using WithBot.recBotCoe; { simp_rw [bot_mul x0', bot_le] }
-    induction b using WithBot.recBotCoe; { exact absurd h (bot_lt_coe _).not_le }
+    rcases eq_or_ne x 0 with rfl | x0'
+    · simp
+    lift x to α
+    · rintro rfl
+      exact (WithBot.bot_lt_coe (0 : α)).not_le x0
+    induction a using WithBot.recBotCoe
+    · simp_rw [bot_mul x0', bot_le]
+    induction b using WithBot.recBotCoe
+    · exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
     exact mul_le_mul_of_nonneg_right h x0 ⟩
@@ -329,8 +338,10 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
     lift x to α using x0.ne_bot
-    induction b using WithBot.recBotCoe; { exact absurd h not_lt_bot }
-    induction a using WithBot.recBotCoe; { simp_rw [mul_bot x0.ne.symm, ← coe_mul, bot_lt_coe] }
+    induction b using WithBot.recBotCoe
+    · exact absurd h not_lt_bot
+    induction a using WithBot.recBotCoe
+    · simp_rw [mul_bot x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
     exact mul_lt_mul_of_pos_left h x0 ⟩
@@ -340,8 +351,10 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
     lift x to α using x0.ne_bot
-    induction b using WithBot.recBotCoe; { exact absurd h not_lt_bot }
-    induction a using WithBot.recBotCoe; { simp_rw [bot_mul x0.ne.symm, ← coe_mul, bot_lt_coe] }
+    induction b using WithBot.recBotCoe
+    · exact absurd h not_lt_bot
+    induction a using WithBot.recBotCoe
+    · simp_rw [bot_mul x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
     exact mul_lt_mul_of_pos_right h x0 ⟩
@@ -350,10 +363,16 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
-    rcases eq_or_ne x 0 with rfl | x0'; { simp at h }
-    lift x to α; { rintro rfl; exact (WithBot.bot_lt_coe (0 : α)).not_le x0 }
-    induction b using WithBot.recBotCoe; { rw [mul_bot x0'] at h; exact absurd h bot_le.not_lt }
-    induction a using WithBot.recBotCoe; { exact WithBot.bot_lt_coe _ }
+    rcases eq_or_ne x 0 with rfl | x0'
+    · simp at h
+    lift x to α
+    · rintro rfl
+      exact (WithBot.bot_lt_coe (0 : α)).not_le x0
+    induction b using WithBot.recBotCoe
+    · rw [mul_bot x0'] at h
+      exact absurd h bot_le.not_lt
+    induction a using WithBot.recBotCoe
+    · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
     exact lt_of_mul_lt_mul_left h x0 ⟩
@@ -362,10 +381,16 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
-    rcases eq_or_ne x 0 with rfl | x0'; { simp at h }
-    lift x to α; { rintro rfl; exact (WithBot.bot_lt_coe (0 : α)).not_le x0 }
-    induction b using WithBot.recBotCoe; { rw [bot_mul x0'] at h; exact absurd h bot_le.not_lt }
-    induction a using WithBot.recBotCoe; { exact WithBot.bot_lt_coe _ }
+    rcases eq_or_ne x 0 with rfl | x0'
+    · simp at h
+    lift x to α
+    · rintro rfl
+      exact (WithBot.bot_lt_coe (0 : α)).not_le x0
+    induction b using WithBot.recBotCoe
+    · rw [bot_mul x0'] at h
+      exact absurd h bot_le.not_lt
+    induction a using WithBot.recBotCoe
+    · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
     exact lt_of_mul_lt_mul_right h x0 ⟩
@@ -375,9 +400,11 @@ instance [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (Wit
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
     lift x to α using x0.ne_bot
-    induction a using WithBot.recBotCoe; { exact bot_le }
+    induction a using WithBot.recBotCoe
+    · exact bot_le
     induction b using WithBot.recBotCoe
-    · rw [mul_bot x0.ne.symm, ← coe_mul] at h; exact absurd h (bot_lt_coe _).not_le
+    · rw [mul_bot x0.ne.symm, ← coe_mul] at h
+      exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
     exact le_of_mul_le_mul_left h x0 ⟩
@@ -387,17 +414,19 @@ instance [MulZeroClass α] [Preorder α] [MulPosMonoRev α] : MulPosMonoRev (Wit
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
     lift x to α using x0.ne_bot
-    induction a using WithBot.recBotCoe; { exact bot_le }
+    induction a using WithBot.recBotCoe
+    · exact bot_le
     induction b using WithBot.recBotCoe
-    · rw [bot_mul x0.ne.symm, ← coe_mul] at h; exact absurd h (bot_lt_coe _).not_le
+    · rw [bot_mul x0.ne.symm, ← coe_mul] at h
+      exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0 ⟩
 
 instance orderedCommSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
-  OrderedCommSemiring (WithBot α) :=
+    OrderedCommSemiring (WithBot α) :=
   { WithBot.zeroLEOneClass, WithBot.orderedAddCommMonoid, WithBot.commSemiring with
-    mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left,
-    mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right, }
+    mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
+    mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right }
 
 end WithBot

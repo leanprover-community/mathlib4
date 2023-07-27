@@ -2,20 +2,20 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.antichain
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Directed
+import Mathlib.Order.Hom.Set
+
+#align_import order.antichain from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-!
 # Antichains
 
 This file defines antichains. An antichain is a set where any two distinct elements are not related.
 If the relation is `(≤)`, this corresponds to incomparability and usual order antichains. If the
-relation is `G.adj` for `G : simple_graph α`, this corresponds to independent sets of `G`.
+relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
 
 ## Definitions
 
@@ -30,15 +30,15 @@ open Function Set
 
 section General
 
-variable {α β : Type _} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a : α}
+variable {α β : Type _} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
-protected theorem Symmetric.compl (h : Symmetric r) : Symmetric (rᶜ) := fun _ _ hr hr' =>
+protected theorem Symmetric.compl (h : Symmetric r) : Symmetric rᶜ := fun _ _ hr hr' =>
   hr <| h hr'
 #align symmetric.compl Symmetric.compl
 
 /-- An antichain is a set such that no two distinct elements are related. -/
 def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
-  s.Pairwise (rᶜ)
+  s.Pairwise rᶜ
 #align is_antichain IsAntichain
 
 namespace IsAntichain
@@ -214,6 +214,10 @@ section Preorder
 
 variable [Preorder α]
 
+theorem IsAntichain.not_lt (hs : IsAntichain (· ≤ ·) s) (ha : a ∈ s) (hb : b ∈ s) : ¬a < b :=
+  fun h => hs ha hb h.ne h.le
+#align is_antichain.not_lt IsAntichain.not_lt
+
 theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun b hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
@@ -251,6 +255,17 @@ theorem IsAntichain.top_mem_iff [OrderTop α] (hs : IsAntichain (· ≤ ·) s) :
 #align is_antichain.top_mem_iff IsAntichain.top_mem_iff
 
 end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α]
+
+theorem isAntichain_iff_forall_not_lt :
+    IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
+  ⟨fun hs _ ha _ => hs.not_lt ha, fun hs _ ha _ hb h h' => hs ha hb <| h'.lt_of_ne h⟩
+#align is_antichain_iff_forall_not_lt isAntichain_iff_forall_not_lt
+
+end PartialOrder
 
 /-! ### Strong antichains -/
 

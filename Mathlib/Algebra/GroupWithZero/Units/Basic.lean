@@ -2,17 +2,13 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.units.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
+import Mathlib.Util.AssertExists
+
+#align_import algebra.group_with_zero.units.basic from "leanprover-community/mathlib"@"df5e9937a06fdd349fc60106f54b84d47b1434f0"
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -95,8 +91,7 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
-  simp only [Units.isUnit, inverse, dif_pos]
-  exact Units.inv_unique rfl
+  rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 #align ring.inverse_unit Ring.inverse_unit
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -167,9 +162,6 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
-      -- Porting note:
-      -- This is needed due to a regression in `convert` noted in https://github.com/leanprover-community/mathlib4/issues/739
-      exact Subsingleton.elim _ _
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero
@@ -223,7 +215,7 @@ theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Un
 #align units.mk0_inj Units.mk0_inj
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/
-theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀)(hg : g ≠ 0), p (Units.mk0 g hg) :=
+theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀) (hg : g ≠ 0), p (Units.mk0 g hg) :=
   ⟨fun ⟨g, pg⟩ => ⟨g, g.ne_zero, (g.mk0_val g.ne_zero).symm ▸ pg⟩,
   fun ⟨g, hg, pg⟩ => ⟨Units.mk0 g hg, pg⟩⟩
 #align units.exists0 Units.exists0
@@ -231,7 +223,7 @@ theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀)
 /-- An alternative version of `Units.exists0`. This one is useful if Lean cannot
 figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
-    (∃ (g : G₀)(hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
+    (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
   -- porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
@@ -246,7 +238,6 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
     exact h
   · right
     simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
-
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units
@@ -277,15 +268,6 @@ instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
       contrapose! h
       exact (Units.mk0 a h.1 * Units.mk0 b h.2).ne_zero }
 #align group_with_zero.no_zero_divisors GroupWithZero.noZeroDivisors
-
--- see Note [lower instance priority]
-instance (priority := 10) GroupWithZero.cancelMonoidWithZero : CancelMonoidWithZero G₀ :=
-  { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero := @fun x y z hx h => by
-      rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero := @fun x y z hy h => by
-      rw [← mul_inv_cancel_right₀ hy x, h, mul_inv_cancel_right₀ hy z] }
-#align group_with_zero.cancel_monoid_with_zero GroupWithZero.cancelMonoidWithZero
 
 -- Can't be put next to the other `mk0` lemmas because it depends on the
 -- `NoZeroDivisors` instance, which depends on `mk0`.
@@ -328,11 +310,11 @@ section CommGroupWithZero
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
 -- see Note [lower instance priority]
-instance (priority := 10) CommGroupWithZero.cancelCommMonoidWithZero :
+instance (priority := 10) CommGroupWithZero.toCancelCommMonoidWithZero :
     CancelCommMonoidWithZero G₀ :=
-  { GroupWithZero.cancelMonoidWithZero,
+  { GroupWithZero.toCancelMonoidWithZero,
     CommGroupWithZero.toCommMonoidWithZero with }
-#align comm_group_with_zero.cancel_comm_monoid_with_zero CommGroupWithZero.cancelCommMonoidWithZero
+#align comm_group_with_zero.to_cancel_comm_monoid_with_zero CommGroupWithZero.toCancelCommMonoidWithZero
 
 -- See note [lower instance priority]
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid : DivisionCommMonoid G₀ :=
@@ -370,5 +352,4 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 end NoncomputableDefs
 
 -- Guard against import creep
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists multiplicative
+assert_not_exists Multiplicative

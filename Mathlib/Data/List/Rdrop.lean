@@ -2,21 +2,18 @@
 Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.rdrop
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Infix
+
+#align_import data.list.rdrop from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
 /-!
 
 # Dropping or taking from lists on the right
 
 Taking or removing element from the tail end of a list
 
-## Main defintions
+## Main definitions
 
 - `rdrop n`: drop `n : ℕ` elements from the tail
 - `rtake n`: take `n : ℕ` elements from the tail
@@ -181,7 +178,6 @@ variable (p) (l)
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
   exact fun h => dropWhile_nthLe_zero_not p l h
-
 #align list.drop_while_idempotent List.dropWhile_idempotent
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
@@ -242,7 +238,6 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx
   exact mem_takeWhile_imp hx
-
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
 
 variable (p) (l)

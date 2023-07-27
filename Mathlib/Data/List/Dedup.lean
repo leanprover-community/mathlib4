@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.dedup
-! leanprover-community/mathlib commit 6133ae2da6ae6693248bb5451de703f1ef154cc8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
+
+#align_import data.list.dedup from "leanprover-community/mathlib"@"d9e96a3e3e0894e93e10aff5244f4c96655bac1c"
 
 /-!
 # Erasure of duplicates in a list
@@ -49,7 +46,6 @@ theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
   simpa only [dedup, forall_mem_ne, not_not] using this
   intros x y z xz
   exact not_and_or.1 <| mt (fun h ↦ h.1.trans h.2) xz
-
 #align list.mem_dedup List.mem_dedup
 
 @[simp]
@@ -77,9 +73,45 @@ theorem nodup_dedup : ∀ l : List α, Nodup (dedup l) :=
   pairwise_pwFilter
 #align list.nodup_dedup List.nodup_dedup
 
+theorem headI_dedup [Inhabited α] (l : List α) :
+    l.dedup.headI = if l.headI ∈ l.tail then l.tail.dedup.headI else l.headI :=
+  match l with
+  | [] => rfl
+  | a :: l => by by_cases ha : a ∈ l <;> simp [ha, List.dedup_cons_of_mem]
+#align list.head_dedup List.headI_dedup
+
+theorem tail_dedup [Inhabited α] (l : List α) :
+    l.dedup.tail = if l.headI ∈ l.tail then l.tail.dedup.tail else l.tail.dedup :=
+  match l with
+  | [] => rfl
+  | a :: l => by by_cases ha : a ∈ l <;> simp [ha, List.dedup_cons_of_mem]
+#align list.tail_dedup List.tail_dedup
+
 theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
   pwFilter_eq_self
 #align list.dedup_eq_self List.dedup_eq_self
+
+theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
+    l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
+  refine' ⟨fun h => _, fun h => _⟩
+  · refine' ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => _, by rw [h, tail_cons]⟩
+    have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
+    rw [h, count_cons_self, add_le_iff_nonpos_left] at this
+    exact not_le_of_lt (count_pos.2 ha) this
+  · have := @List.cons_head!_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
+    have hal : a ∈ l.dedup := mem_dedup.2 h.1
+    rw [← this, mem_cons, or_iff_not_imp_right] at hal
+    exact this ▸ h.2.2.symm ▸ cons_eq_cons.2 ⟨(hal (h.2.2.symm ▸ h.2.1)).symm, rfl⟩
+#align list.dedup_eq_cons List.dedup_eq_cons
+
+@[simp]
+theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
+  induction' l with a l hl
+  · exact Iff.rfl
+  · by_cases h : a ∈ l
+    · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h]
+    · simp only [List.dedup_cons_of_not_mem h, List.cons_ne_nil]
+#align list.dedup_eq_nil List.dedup_eq_nil
 
 protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
   List.dedup_eq_self.2 h
@@ -93,10 +125,10 @@ theorem dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl
   simp only [instUnionList, cons_union] at *
-  rw [← IH]
-  show dedup (a :: (l₁ ++ l₂)) = List.insert a (dedup (l₁ ++ l₂))
-  by_cases a ∈ dedup (l₁ ++ l₂) <;> [rw [dedup_cons_of_mem' h, insert_of_mem h],
-    rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]]
+  rw [← IH, cons_append]
+  by_cases h : a ∈ dedup (l₁ ++ l₂)
+  · rw [dedup_cons_of_mem' h, insert_of_mem h]
+  · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
 #align list.dedup_append List.dedup_append
 
 theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
@@ -129,7 +161,7 @@ theorem sum_map_count_dedup_filter_eq_countp (p : α → Bool) (l : List α) :
       · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
         simp [hp, count_dedup]
       · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map'.1 hn
+        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
         · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
             and_false, false_and] at ha'

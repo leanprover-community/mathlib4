@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.sum.order
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
+
+#align_import data.sum.order from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
 /-!
 # Orders on a sum type
@@ -75,7 +72,7 @@ variable (r : α → α → Prop) (s : β → β → Prop)
 instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (Lex r s) :=
   ⟨by
     rintro (a | a)
-    exacts[Lex.inl (refl _), Lex.inr (refl _)]⟩
+    exacts [Lex.inl (refl _), Lex.inr (refl _)]⟩
 
 instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
@@ -83,7 +80,7 @@ instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
 instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hbc⟩ | ⟨hbc⟩)
-    exacts[.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
+    exacts [.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
 
 instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
@@ -201,7 +198,7 @@ end Preorder
 
 instance [PartialOrder α] [PartialOrder β] : PartialOrder (Sum α β) :=
   { instPreorderSum with
-    le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm  }
+    le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm }
 
 instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (Sum α β) :=
   ⟨fun a =>
@@ -302,13 +299,13 @@ namespace Lex
 notation:30 α " ⊕ₗ " β:29 => _root_.Lex (Sum α β)
 
 --TODO: Can we make `inlₗ`, `inrₗ` `local notation`?
-/-- Lexicographical `sum.inl`. Only used for pattern matching. -/
+/-- Lexicographical `Sum.inl`. Only used for pattern matching. -/
 @[match_pattern]
 abbrev _root_.Sum.inlₗ (x : α) : α ⊕ₗ β :=
   toLex (Sum.inl x)
 #align sum.inlₗ Sum.inlₗ
 
-/-- Lexicographical `sum.inr`. Only used for pattern matching. -/
+/-- Lexicographical `Sum.inr`. Only used for pattern matching. -/
 @[match_pattern]
 abbrev _root_.Sum.inrₗ (x : β) : α ⊕ₗ β :=
   toLex (Sum.inr x)
@@ -427,8 +424,8 @@ instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
   { Lex.partialOrder with
     le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
-    decidable_le := instDecidableRelSumLex,
-    decidable_eq := instDecidableEqSum }
+    decidableLE := instDecidableRelSumLex,
+    decidableEq := instDecidableEqSum }
 #align sum.lex.linear_order Sum.Lex.linearOrder
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
@@ -549,7 +546,7 @@ namespace OrderIso
 variable [LE α] [LE β] [LE γ] (a : α) (b : β) (c : γ)
 
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
-@[simps apply]
+@[simps! apply]
 def sumComm (α β : Type _) [LE α] [LE β] : Sum α β ≃o Sum β α :=
   { Equiv.sumComm α β with map_rel_iff' := swap_le_swap_iff }
 #align order_iso.sum_comm OrderIso.sumComm
@@ -736,7 +733,7 @@ variable [LE α]
 
 namespace WithBot
 
-/-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `unit` and `↑a` to
+/-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
@@ -770,7 +767,7 @@ end WithBot
 
 namespace WithTop
 
-/-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `unit` and `↑a` to
+/-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by

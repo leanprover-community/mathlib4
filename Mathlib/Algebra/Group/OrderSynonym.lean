@@ -2,19 +2,16 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.group.order_synonym
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Synonym
 
+#align_import algebra.group.order_synonym from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
+
 /-!
 # Group structure on the order type synonyms
 
-Transfer algebraic instances from `α` to `αᵒᵈ` and `lex α`.
+Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
 
 
@@ -37,12 +34,12 @@ instance [h : Inv α] : Inv αᵒᵈ := h
 @[to_additive]
 instance [h : Div α] : Div αᵒᵈ := h
 
-@[to_additive (reorder := 1) instSMulOrderDual]
+@[to_additive (attr := to_additive) (reorder := 1 2) instSMulOrderDual]
 instance [h : Pow α β] : Pow αᵒᵈ β := h
 #align order_dual.has_pow instPowOrderDual
 #align order_dual.has_smul instSMulOrderDual
 
-@[to_additive (reorder := 1) instSMulOrderDual']
+@[to_additive (attr := to_additive) (reorder := 1 2) instSMulOrderDual']
 instance instPowOrderDual' [h : Pow α β] : Pow α βᵒᵈ := h
 #align order_dual.has_pow' instPowOrderDual'
 #align order_dual.has_smul' instSMulOrderDual'
@@ -140,25 +137,29 @@ theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDua
 #align of_dual_div ofDual_div
 #align of_dual_sub ofDual_sub
 
-@[to_additive (attr := simp) (reorder := 1 4) toDual_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 #align to_dual_pow toDual_pow
 #align to_dual_smul toDual_smul
+#align to_dual_vadd toDual_vadd
 
-@[to_additive (attr := simp) (reorder := 1 4) ofDual_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 #align of_dual_pow ofDual_pow
 #align of_dual_smul ofDual_smul
+#align of_dual_vadd ofDual_vadd
 
-@[to_additive (attr := simp) (reorder := 1 4) toDual_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 #align pow_to_dual pow_toDual
 #align to_dual_smul' toDual_smul'
+#align to_dual_vadd' toDual_vadd'
 
-@[to_additive (attr := simp) (reorder := 1 4) ofDual_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 #align pow_of_dual pow_ofDual
 #align of_dual_smul' ofDual_smul'
+#align of_dual_vadd' ofDual_vadd'
 
 /-! ### Lexicographical order -/
 
@@ -175,12 +176,12 @@ instance [h : Inv α] : Inv (Lex α) := h
 @[to_additive]
 instance [h : Div α] : Div (Lex α) := h
 
-@[to_additive (reorder := 1) instSMulLex]
+@[to_additive (attr := to_additive) (reorder := 1 2) instSMulLex]
 instance [h : Pow α β] : Pow (Lex α) β := h
 #align lex.has_pow instPowLex
 #align lex.has_smul instSMulLex
 
-@[to_additive (reorder := 1) instSMulLex']
+@[to_additive (attr := to_additive) (reorder := 1 2) instSMulLex']
 instance instPowLex' [h : Pow α β] : Pow α (Lex β) := h
 #align lex.has_pow' instPowLex'
 #align lex.has_smul' instSMulLex'
@@ -224,10 +225,10 @@ instance [h : InvolutiveInv α] : InvolutiveInv (Lex α) := h
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
 
-@[to_additive OrderDual.subtractionMonoid]
+@[to_additive existing OrderDual.subtractionMonoid]
 instance [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
 
-@[to_additive OrderDual.subtractionCommMonoid]
+@[to_additive existing OrderDual.subtractionCommMonoid]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Lex α) := h
 
 @[to_additive]
@@ -276,38 +277,26 @@ theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b :=
 #align of_lex_div ofLex_div
 #align of_lex_sub ofLex_sub
 
-@[to_additive (attr := simp) (reorder := 1 4) toLex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
 #align to_lex_pow toLex_pow
 #align to_lex_smul toLex_smul
+#align to_lex_vadd toLex_vadd
 
-@[to_additive (attr := simp) (reorder := 1 4) ofLex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 #align of_lex_pow ofLex_pow
 #align of_lex_smul ofLex_smul
+#align of_lex_vadd ofLex_vadd
 
-@[to_additive (attr := simp) (reorder := 1 4) toLex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 #align pow_to_lex pow_toLex
--- Porting note: Duplicate to_additive name in Lean 3 => no lemma?
 #align to_lex_smul' toLex_smul'
+#align to_lex_vadd' toLex_vadd'
 
-@[to_additive (attr := simp) (reorder := 1 4) ofLex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
--- Porting note: Duplicate to_additive name in Lean 3 => no lemma?
 #align of_lex_smul' ofLex_smul'
-
-attribute [to_additive] instSMulOrderDual instSMulOrderDual' instSMulLex instSMulLex'
-attribute [to_additive (attr := simp)]
-  toDual_smul ofDual_smul toDual_smul' ofDual_smul'
-  toLex_smul ofLex_smul toLex_smul' ofLex_smul'
-
-#align to_dual_vadd toDual_vadd
-#align of_dual_vadd ofDual_vadd
-#align to_dual_vadd' toDual_vadd'
-#align of_dual_vadd' ofDual_vadd'
-#align to_lex_vadd toLex_vadd
-#align of_lex_vadd ofLex_vadd
-#align to_lex_vadd' toLex_vadd'
 #align of_lex_vadd' ofLex_vadd'

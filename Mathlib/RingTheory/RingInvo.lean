@@ -2,14 +2,11 @@
 Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.ring_invo
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Opposite
+
+#align_import ring_theory.ring_invo from "leanprover-community/mathlib"@"ec2dfcae3677bcdc0d8e906831b1d251dfcbc0f1"
 
 /-!
 # Ring involutions
@@ -35,7 +32,7 @@ variable (R : Type _)
 
 /-- A ring involution -/
 structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
-/-- The requirement that the ring homomorphism is its own inverse -/
+  /-- The requirement that the ring homomorphism is its own inverse -/
   involution' : ∀ x, (toFun (toFun x).unop).unop = x
 #align ring_invo RingInvo
 
@@ -46,7 +43,7 @@ add_decl_doc RingInvo.toRingEquiv
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
 class RingInvoClass (F : Type _) (R : outParam (Type _)) [Semiring R] extends
-  RingEquivClass F R Rᵐᵒᵖ  where
+    RingEquivClass F R Rᵐᵒᵖ where
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x
 #align ring_invo_class RingInvoClass

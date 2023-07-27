@@ -20,6 +20,10 @@ notation "ℤ" => Int
 
 namespace Int
 
+protected theorem coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
+  rfl
+#align int.coe_nat_eq Int.coe_nat_eq
+
 /-- The number `0 : ℤ`, as a standalone definition. -/
 @[deprecated] protected def zero : ℤ := ofNat 0
 
@@ -129,7 +133,7 @@ theorem natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_p
 #align int.to_nat_sub Int.toNat_sub
 
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
-def natMod (m n : ℤ) : ℕ := (m.emod n).toNat
+def natMod (m n : ℤ) : ℕ := (m % n).toNat
 #align int.nat_mod Int.natMod
 
 #align int.sign_mul_nat_abs Int.sign_mul_natAbs

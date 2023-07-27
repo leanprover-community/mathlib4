@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.pointwise
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import algebra.star.pointwise from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Pointwise star operation on sets
@@ -84,23 +81,21 @@ theorem union_star [Star α] : (s ∪ t)⋆ = s⋆ ∪ t⋆ := preimage_union
 #align set.union_star Set.union_star
 
 @[simp]
-theorem interᵢ_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋂ i, s i)⋆ = ⋂ i, (s i)⋆ :=
-  preimage_interᵢ
-#align set.Inter_star Set.interᵢ_star
+theorem iInter_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋂ i, s i)⋆ = ⋂ i, (s i)⋆ :=
+  preimage_iInter
+#align set.Inter_star Set.iInter_star
 
 @[simp]
-theorem unionᵢ_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆ = ⋃ i, (s i)⋆ :=
-  preimage_unionᵢ
-#align set.Union_star Set.unionᵢ_star
+theorem iUnion_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆ = ⋃ i, (s i)⋆ :=
+  preimage_iUnion
+#align set.Union_star Set.iUnion_star
 
 @[simp]
-theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ := preimage_compl
+theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
--- Porting note: add noncomputable to instance
 @[simp]
-noncomputable instance [InvolutiveStar α] : InvolutiveStar (Set α)
-    where
+instance [InvolutiveStar α] : InvolutiveStar (Set α) where
   star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
 
@@ -144,9 +139,16 @@ protected theorem star_inv [Group α] [StarSemigroup α] (s : Set α) : s⁻¹�
   simp only [mem_star, mem_inv, star_inv]
 #align set.star_inv Set.star_inv
 
-protected theorem star_inv' [DivisionRing α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
+protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
   simp only [mem_star, mem_inv, star_inv']
 #align set.star_inv' Set.star_inv'
 
 end Set
+
+@[simp]
+lemma StarMemClass.star_coe_eq {S α : Type _} [InvolutiveStar α] [SetLike S α]
+    [StarMemClass S α] (s : S) : star (s : Set α) = s := by
+  ext x
+  simp only [Set.mem_star, SetLike.mem_coe]
+  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩

@@ -2,14 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.range
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.List.Range
+
+#align_import data.multiset.range from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 
@@ -62,21 +59,19 @@ theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   List.self_mem_range_succ n
 #align multiset.self_mem_range_succ Multiset.self_mem_range_succ
 
-theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + .) :=
+theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + ·) :=
   congr_arg ((↑) : List ℕ → Multiset ℕ) (List.range_add _ _)
 #align multiset.range_add Multiset.range_add
 
 theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
-    (range a).Disjoint (m.map (a + .)) :=
-  by
+    (range a).Disjoint (m.map (a + ·)) := by
   intro x hxa hxb
   rw [range, mem_coe, List.mem_range] at hxa
   obtain ⟨c, _, rfl⟩ := mem_map.1 hxb
   exact (self_le_add_right _ _).not_lt hxa
 #align multiset.range_disjoint_map_add Multiset.range_disjoint_map_add
 
-theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).map (a + .) :=
-  by
+theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).map (a + ·) := by
   rw [range_add, add_eq_union_iff_disjoint]
   apply range_disjoint_map_add
 #align multiset.range_add_eq_union Multiset.range_add_eq_union

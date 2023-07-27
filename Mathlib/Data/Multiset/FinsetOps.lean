@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.finset_ops
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Dedup
+
+#align_import data.multiset.finset_ops from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-!
 # Preparations for defining operations on `Finset`.
@@ -84,7 +81,7 @@ theorem length_ndinsert_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) :
 #align multiset.length_ndinsert_of_not_mem Multiset.length_ndinsert_of_not_mem
 
 theorem dedup_cons {a : α} {s : Multiset α} : dedup (a ::ₘ s) = ndinsert a (dedup s) := by
-  by_cases a ∈ s <;> simp [h]
+  by_cases h : a ∈ s <;> simp [h]
 #align multiset.dedup_cons Multiset.dedup_cons
 
 theorem Nodup.ndinsert (a : α) : Nodup s → Nodup (ndinsert a s) :=
@@ -107,14 +104,10 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
     ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
     fun h => funext fun p => Subtype.eq rfl
-  have :
-    ∀ (t) (eq : s.ndinsert a = t),
-      t.attach =
-        ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
-          (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) :=
-    by
+  have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
+      (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
-    by_cases a ∈ s
+    by_cases h : a ∈ s
     · rw [ndinsert_of_mem h] at ht
       subst ht
       rw [eq, map_id, ndinsert_of_mem (mem_attach _ _)]
@@ -287,3 +280,7 @@ theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ D
 #align multiset.ndinter_eq_zero_iff_disjoint Multiset.ndinter_eq_zero_iff_disjoint
 
 end Multiset
+
+-- Assert that we define `Finset` without the material on the set lattice.
+-- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
+assert_not_exists Set.sInter

@@ -2,18 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.relation
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Use
 import Mathlib.Init.Data.Quot
-import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Common
+
+#align_import logic.relation from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relation closures
@@ -442,7 +437,7 @@ theorem _root_.Acc.TransGen (h : Acc r a) : Acc (TransGen r) a := by
   induction' h with x _ H
   refine' Acc.intro x fun y hy ↦ _
   cases' hy with _ hyx z _ hyz hzx
-  exacts[H y hyx, (H z hzx).inv hyz]
+  exacts [H y hyx, (H z hzx).inv hyz]
 #align acc.trans_gen Acc.TransGen
 
 theorem _root_.acc_transGen_iff : Acc (TransGen r) a ↔ Acc r a :=
@@ -451,7 +446,6 @@ theorem _root_.acc_transGen_iff : Acc (TransGen r) a ↔ Acc r a :=
 
 theorem _root_.WellFounded.transGen (h : WellFounded r) : WellFounded (TransGen r) :=
   ⟨fun a ↦ (h.apply a).TransGen⟩
-
 #align well_founded.trans_gen WellFounded.transGen
 
 section TransGen
@@ -589,7 +583,7 @@ pairs of terms are related if there is a third term they are both
 related to.  For example, if `r` is a relation representing rewrites
 in a term rewriting system, then *confluence* is the property that if
 `a` rewrites to both `b` and `c`, then `join r` relates `b` and `c`
-(see `relation.church_rosser`).
+(see `Relation.church_rosser`).
 -/
 def Join (r : α → α → Prop) : α → α → Prop := fun a b ↦ ∃ c, r a c ∧ r b c
 #align relation.join Relation.Join

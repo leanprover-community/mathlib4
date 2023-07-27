@@ -2,18 +2,13 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.order.absolute_value
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Regular
+
+#align_import algebra.order.absolute_value from "leanprover-community/mathlib"@"0013240bce820e3096cebb7ccf6d17e3f35f77ca"
 
 /-!
 # Absolute values
@@ -44,10 +39,7 @@ structure AbsoluteValue (R S : Type _) [Semiring R] [OrderedSemiring S] extends 
 
 namespace AbsoluteValue
 
--- Porting note: Removing nolints.
--- attribute [nolint doc_blame] AbsoluteValue.toMulHom
-
--- initialize_simps_projections AbsoluteValue (to_mul_hom_to_fun → apply)
+attribute [nolint docBlame] AbsoluteValue.toMulHom
 
 section OrderedSemiring
 
@@ -57,10 +49,7 @@ variable {R S : Type _} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R 
 
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   coe f := f.toFun
-  coe_injective' f g h := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
-    congr
+  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
   map_zero f := (f.eq_zero' _).2 rfl
 #align absolute_value.zero_hom_class AbsoluteValue.zeroHomClass
 
@@ -86,15 +75,20 @@ theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
   FunLike.ext _ _
 #align absolute_value.ext AbsoluteValue.ext
 
--- Porting note:
--- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
--- directly. -/
--- instance : CoeFun (AbsoluteValue R S) fun f => R → S :=
---   FunLike.hasCoeToFun
+/-- See Note [custom simps projection]. -/
+def Simps.apply (f : AbsoluteValue R S) : R → S :=
+  f
+#align absolute_value.simps.apply AbsoluteValue.Simps.apply
+
+initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
+
+/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+directly. -/
+instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
+  FunLike.hasCoeToFun
 
 @[simp]
-theorem coe_toMulHom : abv.toMulHom = abv :=
+theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
   rfl
 #align absolute_value.coe_to_mul_hom AbsoluteValue.coe_toMulHom
 
@@ -111,11 +105,10 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 #align absolute_value.add_le AbsoluteValue.add_le
 
--- Porting note: Removed since `map_mul` proves the theorem
---@[simp]
---protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y := map_mul _ _ _
-  --abv.map_mul' x y
-#align absolute_value.map_mul map_mul
+-- porting note: was `@[simp]` but `simp` can prove it
+protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
+  abv.map_mul' x y
+#align absolute_value.map_mul AbsoluteValue.map_mul
 
 protected theorem ne_zero_iff {x : R} : abv x ≠ 0 ↔ x ≠ 0 :=
   abv.eq_zero.not
@@ -135,14 +128,13 @@ protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
 #align absolute_value.ne_zero AbsoluteValue.ne_zero
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
-  h <| by simp [← map_mul]
+  h <| by simp [← abv.map_mul]
 #align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
--- Porting note: Removed since `map_zero` proves the theorem
---@[simp]
---protected theorem map_zero : abv 0 = 0 := map_zero _
-  --abv.eq_zero.2 rfl
-#align absolute_value.map_zero map_zero
+-- porting note: was `@[simp]` but `simp` can prove it
+protected theorem map_zero : abv 0 = 0 :=
+  abv.eq_zero.2 rfl
+#align absolute_value.map_zero AbsoluteValue.map_zero
 
 end Semiring
 
@@ -154,7 +146,7 @@ protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c)
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
-@[simp (high)]
+@[simp high] -- porting note: added `high` to apply it before `abv.eq_zero`
 theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
   abv.eq_zero.trans sub_eq_zero
 #align absolute_value.map_sub_eq_zero_iff AbsoluteValue.map_sub_eq_zero_iff
@@ -175,13 +167,15 @@ variable {R S : Type _} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
 variable [IsDomain S] [Nontrivial R]
 
-@[simp (high)]
+-- porting note: was `@[simp]` but `simp` can prove it
 protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
 
-instance : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.mulHomClass with map_zero := fun f => map_zero f, map_one := fun f => f.map_one }
+instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
+  { AbsoluteValue.mulHomClass with
+    map_zero := fun f => f.map_zero
+    map_one := fun f => f.map_one }
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
 def toMonoidWithZeroHom : R →*₀ S :=
@@ -203,11 +197,10 @@ theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
--- Porting note: Removed since `map_zero` proves the theorem
---@[simp]
---protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n := map_pow _ _ _
-  --abv.toMonoidHom.map_pow a n
-#align absolute_value.map_pow map_pow
+-- porting note: was `@[simp]` but `simp` can prove it
+protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
+  abv.toMonoidHom.map_pow a n
+#align absolute_value.map_pow AbsoluteValue.map_pow
 
 end IsDomain
 
@@ -235,7 +228,7 @@ variable [NoZeroDivisors S]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine'
-    (mul_self_eq_mul_self_iff.mp (by rw [← map_mul abv, neg_mul_neg, map_mul abv])).resolve_right _
+    (mul_self_eq_mul_self_iff.mp (by rw [← abv.map_mul, neg_mul_neg, abv.map_mul])).resolve_right _
   exact ((neg_lt_zero.mpr (abv.pos ha)).trans (abv.pos (neg_ne_zero.mpr ha))).ne'
 #align absolute_value.map_neg AbsoluteValue.map_neg
 
@@ -244,12 +237,19 @@ protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← ne
 
 end OrderedCommRing
 
+instance {R S : Type _} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S] :
+    MulRingNormClass (AbsoluteValue R S) R S :=
+  { AbsoluteValue.subadditiveHomClass,
+    AbsoluteValue.monoidWithZeroHomClass with
+    map_neg_eq_map := fun f => f.map_neg
+    eq_zero_of_map_eq_zero := fun f _ => f.eq_zero.1 }
+
 section LinearOrderedRing
 
 variable {R S : Type _} [Semiring R] [LinearOrderedRing S] (abv : AbsoluteValue R S)
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
---@[simps] -- Porting note: Removed simps lemma
+@[simps]
 protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
@@ -257,6 +257,8 @@ protected def abs : AbsoluteValue S S where
   add_le' := abs_add
   map_mul' := abs_mul
 #align absolute_value.abs AbsoluteValue.abs
+#align absolute_value.abs_apply AbsoluteValue.abs_apply
+#align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_apply
 
 instance : Inhabited (AbsoluteValue S S) :=
   ⟨AbsoluteValue.abs⟩
@@ -280,6 +282,7 @@ end AbsoluteValue
 
 /-- A function `f` is an absolute value if it is nonnegative, zero only at 0, additive, and
 multiplicative.
+
 See also the type `AbsoluteValue` which represents a bundled version of absolute values.
 -/
 class IsAbsoluteValue {S} [OrderedSemiring S] {R} [Semiring R] (f : R → S) : Prop where
@@ -304,6 +307,14 @@ variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 #align is_absolute_value.abv_nonneg IsAbsoluteValue.abv_nonneg
 
+open Lean Meta Mathlib Meta Positivity Qq in
+/-- The `positivity` extension which identifies expressions of the form `abv a`. -/
+@[positivity (_ : α)]
+def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+  let (.app f a) ← whnfR e | throwError "not abv ·"
+  let pa' ← mkAppM ``abv_nonneg #[f, a]
+  pure (.nonnegative pa')
+
 lemma abv_eq_zero {x} : abv x = 0 ↔ x = 0 := abv_eq_zero'
 #align is_absolute_value.abv_eq_zero IsAbsoluteValue.abv_eq_zero
 
@@ -314,8 +325,7 @@ lemma abv_mul (x y) : abv (x * y) = abv x * abv y := abv_mul' x y
 #align is_absolute_value.abv_mul IsAbsoluteValue.abv_mul
 
 /-- A bundled absolute value is an absolute value. -/
-instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) :
-    IsAbsoluteValue abv where
+instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) : IsAbsoluteValue abv where
   abv_nonneg' := abv.nonneg
   abv_eq_zero' := abv.eq_zero
   abv_add' := abv.add_le
@@ -323,7 +333,7 @@ instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) :
 #align absolute_value.is_absolute_value AbsoluteValue.isAbsoluteValue
 
 /-- Convert an unbundled `IsAbsoluteValue` to a bundled `AbsoluteValue`. -/
---@[simps] -- Porting note: Removed simps lemma
+@[simps]
 def toAbsoluteValue : AbsoluteValue R S where
   toFun := abv
   add_le' := abv_add'
@@ -331,9 +341,11 @@ def toAbsoluteValue : AbsoluteValue R S where
   nonneg' := abv_nonneg'
   map_mul' := abv_mul'
 #align is_absolute_value.to_absolute_value IsAbsoluteValue.toAbsoluteValue
+#align is_absolute_value.to_absolute_value_apply IsAbsoluteValue.toAbsoluteValue_apply
+#align is_absolute_value.to_absolute_value_to_mul_hom_apply IsAbsoluteValue.toAbsoluteValue_apply
 
 theorem abv_zero : abv 0 = 0 :=
-  map_zero (toAbsoluteValue abv)
+  (toAbsoluteValue abv).map_zero
 #align is_absolute_value.abv_zero IsAbsoluteValue.abv_zero
 
 theorem abv_pos {a : R} : 0 < abv a ↔ a ≠ 0 :=
@@ -373,7 +385,7 @@ def abvHom [Nontrivial R] : R →*₀ S :=
 
 theorem abv_pow [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv] (a : R) (n : ℕ) :
     abv (a ^ n) = abv a ^ n :=
-  map_pow (toAbsoluteValue abv) a n
+  (toAbsoluteValue abv).map_pow a n
 #align is_absolute_value.abv_pow IsAbsoluteValue.abv_pow
 
 end Semiring

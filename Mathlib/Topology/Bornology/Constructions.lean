@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.bornology.constructions
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Bornology.Basic
+
+#align_import topology.bornology.constructions from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Bornology structure on products and subtypes
@@ -26,16 +23,16 @@ open Filter
 variable {α β ι : Type _} {π : ι → Type _} [Fintype ι] [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
-instance : Bornology (α × β)
-    where
+instance Prod.instBornology : Bornology (α × β) where
   cobounded' := (cobounded α).coprod (cobounded β)
   le_cofinite' :=
     @coprod_cofinite α β ▸ coprod_mono ‹Bornology α›.le_cofinite ‹Bornology β›.le_cofinite
+#align prod.bornology Prod.instBornology
 
-instance : Bornology (∀ i, π i)
-    where
+instance Pi.instBornology : Bornology (∀ i, π i) where
   cobounded' := Filter.coprodᵢ fun i => cobounded (π i)
   le_cofinite' := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun _ => Bornology.le_cofinite _
+#align pi.bornology Pi.instBornology
 
 /-- Inverse image of a bornology. -/
 @[reducible]

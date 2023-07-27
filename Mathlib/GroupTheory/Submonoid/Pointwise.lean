@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.submonoid.pointwise
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Order.WellFoundedSet
+
+#align_import group_theory.submonoid.pointwise from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-! # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
 
@@ -24,21 +21,21 @@ and the actions
 * `Submonoid.pointwiseMulAction`
 * `AddSubmonoid.pointwiseMulAction`
 
-which matches the action of `mul_action_set`.
+which matches the action of `Set.mulActionSet`.
 
 These are all available in the `pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
-* `add_submonoid.has_one`
-* `add_submonoid.has_mul`
-* `add_submonoid.mul_one_class`
-* `add_submonoid.semigroup`
-* `add_submonoid.monoid`
-which is available globally to match the monoid structure implied by `submodule.semiring`.
+* `AddSubmonoid.one`
+* `AddSubmonoid.mul`
+* `AddSubmonoid.mulOneClass`
+* `AddSubmonoid.semigroup`
+* `AddSubmonoid.monoid`
+which is available globally to match the monoid structure implied by `Submodule.idemSemiring`.
 
 ## Implementation notes
 
-Most of the lemmas in this file are direct copies of lemmas from `algebra/pointwise.lean`.
+Most of the lemmas in this file are direct copies of lemmas from `Algebra/Pointwise.lean`.
 While the statements of these lemmas are defeq, we repeat them here due to them not being
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
@@ -83,7 +80,7 @@ theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
-  infₛ_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
+  sInf_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 #align submonoid.closure_mul_le Submonoid.closure_mul_le
@@ -116,8 +113,8 @@ variable [Group G]
 
 /-- The submonoid with every element inverted. -/
 @[to_additive " The additive submonoid with every element negated. "]
-protected def inv : Inv (Submonoid G)
-    where inv S :=
+protected def inv : Inv (Submonoid G) where
+  inv S :=
     { carrier := (S : Set G)⁻¹
       mul_mem' := fun ha hb => by rw [mem_inv, mul_inv_rev]; exact mul_mem hb ha
       one_mem' := mem_inv.2 <| by rw [inv_one]; exact S.one_mem' }
@@ -158,7 +155,7 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
 #align add_submonoid.neg_le AddSubmonoid.neg_le
 
 /-- Pointwise inversion of submonoids as an order isomorphism. -/
-@[to_additive " Pointwise negation of additive submonoids as an order isomorphism ", simps]
+@[to_additive (attr := simps!) "Pointwise negation of additive submonoids as an order isomorphism"]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
   map_rel_iff' := inv_le_inv _ _
@@ -200,16 +197,16 @@ theorem inv_top : (⊤ : Submonoid G)⁻¹ = ⊤ :=
 #align add_submonoid.neg_top AddSubmonoid.neg_top
 
 @[to_additive (attr := simp)]
-theorem inv_infᵢ {ι : Sort _} (S : ι → Submonoid G) : (⨅ i, S i)⁻¹ = ⨅ i, (S i)⁻¹ :=
-  (invOrderIso : Submonoid G ≃o Submonoid G).map_infᵢ _
-#align submonoid.inv_infi Submonoid.inv_infᵢ
-#align add_submonoid.neg_infi AddSubmonoid.neg_infᵢ
+theorem inv_iInf {ι : Sort _} (S : ι → Submonoid G) : (⨅ i, S i)⁻¹ = ⨅ i, (S i)⁻¹ :=
+  (invOrderIso : Submonoid G ≃o Submonoid G).map_iInf _
+#align submonoid.inv_infi Submonoid.inv_iInf
+#align add_submonoid.neg_infi AddSubmonoid.neg_iInf
 
 @[to_additive (attr := simp)]
-theorem inv_supᵢ {ι : Sort _} (S : ι → Submonoid G) : (⨆ i, S i)⁻¹ = ⨆ i, (S i)⁻¹ :=
-  (invOrderIso : Submonoid G ≃o Submonoid G).map_supᵢ _
-#align submonoid.inv_supr Submonoid.inv_supᵢ
-#align add_submonoid.neg_supr AddSubmonoid.neg_supᵢ
+theorem inv_iSup {ι : Sort _} (S : ι → Submonoid G) : (⨆ i, S i)⁻¹ = ⨆ i, (S i)⁻¹ :=
+  (invOrderIso : Submonoid G ≃o Submonoid G).map_iSup _
+#align submonoid.inv_supr Submonoid.inv_iSup
+#align add_submonoid.neg_supr AddSubmonoid.neg_iSup
 
 end Submonoid
 
@@ -262,12 +259,12 @@ theorem smul_closure (a : α) (s : Set M) : a • closure s = closure (a • s) 
   MonoidHom.map_mclosure _ _
 #align submonoid.smul_closure Submonoid.smul_closure
 
-lemma pointwise_central_scalar [MulDistribMulAction αᵐᵒᵖ M] [IsCentralScalar α M] :
+lemma pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ M] [IsCentralScalar α M] :
     IsCentralScalar α (Submonoid M) :=
   ⟨fun _ S => (congr_arg fun f : Monoid.End M => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
-#align submonoid.pointwise_central_scalar Submonoid.pointwise_central_scalar
+#align submonoid.pointwise_central_scalar Submonoid.pointwise_isCentralScalar
 
-scoped[Pointwise] attribute [instance] Submonoid.pointwise_central_scalar
+scoped[Pointwise] attribute [instance] Submonoid.pointwise_isCentralScalar
 
 end Monoid
 
@@ -357,8 +354,7 @@ variable [Monoid α] [DistribMulAction α A]
 /-- The action on an additive submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction α (AddSubmonoid A)
-    where
+protected def pointwiseMulAction : MulAction α (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_one _)).trans S.map_id
@@ -397,13 +393,13 @@ theorem smul_closure (a : α) (s : Set A) : a • closure s = closure (a • s) 
   AddMonoidHom.map_mclosure _ _
 #align add_submonoid.smul_closure AddSubmonoid.smul_closure
 
-lemma pointwise_central_scalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
+lemma pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
     IsCentralScalar α (AddSubmonoid A) :=
   ⟨fun _ S =>
     (congr_arg fun f : AddMonoid.End A => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
-#align add_submonoid.pointwise_central_scalar AddSubmonoid.pointwise_central_scalar
+#align add_submonoid.pointwise_central_scalar AddSubmonoid.pointwise_isCentralScalar
 
-scoped[Pointwise] attribute [instance] AddSubmonoid.pointwise_central_scalar
+scoped[Pointwise] attribute [instance] AddSubmonoid.pointwise_isCentralScalar
 
 end Monoid
 
@@ -502,9 +498,9 @@ theorem one_eq_mrange : (1 : AddSubmonoid R) = AddMonoidHom.mrange (Nat.castAddM
   rfl
 #align add_submonoid.one_eq_mrange AddSubmonoid.one_eq_mrange
 
-theorem nat_cast_mem_one (n : ℕ) : (n : R) ∈ (1 : AddSubmonoid R) :=
+theorem natCast_mem_one (n : ℕ) : (n : R) ∈ (1 : AddSubmonoid R) :=
   ⟨_, rfl⟩
-#align add_submonoid.nat_cast_mem_one AddSubmonoid.nat_cast_mem_one
+#align add_submonoid.nat_cast_mem_one AddSubmonoid.natCast_mem_one
 
 @[simp]
 theorem mem_one {x : R} : x ∈ (1 : AddSubmonoid R) ↔ ∃ n : ℕ, ↑n = x :=
@@ -513,7 +509,8 @@ theorem mem_one {x : R} : x ∈ (1 : AddSubmonoid R) ↔ ∃ n : ℕ, ↑n = x :
 
 theorem one_eq_closure : (1 : AddSubmonoid R) = closure {1} := by
   rw [closure_singleton_eq, one_eq_mrange]
-  congr 1 with n
+  congr 1
+  ext
   simp
 #align add_submonoid.one_eq_closure AddSubmonoid.one_eq_closure
 
@@ -530,16 +527,16 @@ variable [NonUnitalNonAssocSemiring R]
 /-- Multiplication of additive submonoids of a semiring R. The additive submonoid `S * T` is the
 smallest R-submodule of `R` containing the elements `s * t` for `s ∈ S` and `t ∈ T`. -/
 protected def mul : Mul (AddSubmonoid R) :=
-  ⟨fun M N => ⨆ s : M, N.map <| AddMonoidHom.mul s.1⟩
+  ⟨fun M N => ⨆ s : M, N.map (AddMonoidHom.mul s.1)⟩
 scoped[Pointwise] attribute [instance] AddSubmonoid.mul
 
 theorem mul_mem_mul {M N : AddSubmonoid R} {m n : R} (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
-  (le_supᵢ _ ⟨m, hm⟩ : _ ≤ M * N) ⟨n, hn, by rfl⟩
+  (le_iSup _ ⟨m, hm⟩ : _ ≤ M * N) ⟨n, hn, by rfl⟩
 #align add_submonoid.mul_mem_mul AddSubmonoid.mul_mem_mul
 
 theorem mul_le {M N P : AddSubmonoid R} : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
   ⟨fun H _m hm _n hn => H <| mul_mem_mul hm hn, fun H =>
-    supᵢ_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
+    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
 #align add_submonoid.mul_le AddSubmonoid.mul_le
 
 @[elab_as_elim]
@@ -554,7 +551,7 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · refine mul_le.2 fun a ha b hb => ?_
-    rw [← AddMonoidHom.mul_right_apply, ← AddSubmonoid.mem_comap]
+    rw [← AddMonoidHom.mulRight_apply, ← AddSubmonoid.mem_comap]
     refine (closure_le.2 fun a' ha' => ?_) ha
     change b ∈ (closure (S * T)).comap (AddMonoidHom.mulLeft a')
     refine (closure_le.2 fun b' hb' => ?_) hb
@@ -582,7 +579,7 @@ theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 #align add_submonoid.bot_mul AddSubmonoid.bot_mul
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem mul_le_mul {M N P Q : AddSubmonoid R} (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
   mul_le.2 fun _m hm _n hn => mul_mem_mul (hmp hm) (hnq hn)
 #align add_submonoid.mul_le_mul AddSubmonoid.mul_le_mul

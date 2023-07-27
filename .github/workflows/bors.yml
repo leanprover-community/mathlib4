@@ -35,17 +35,27 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Install bibtool
+        if: ${{ 'bors' == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bibtool
 
       - name: install Python
         if: ${{ 'bors' == 'ubuntu-latest' }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
       - name: lint
         run: |
           ./scripts/lint-style.sh
+
+      - name: lint references.bib
+        run: |
+          ./scripts/lint-bib.sh
 
   check_imported:
     if: github.repository == 'leanprover-community/mathlib4'
@@ -56,11 +66,27 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: update Mathlib.lean
         run: |
-          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+
+      - name: update MathlibExtras.lean
+        run: |
+          git ls-files 'MathlibExtras/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
+
+      - name: update Mathlib/Tactic.lean
+        run: |
+          git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
+
+      - name: update Counterexamples.lean
+        run: |
+          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
+
+      - name: update Archive.lean
+        run: |
+          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
       - name: check that all files are imported
         run: git diff --exit-code
@@ -68,7 +94,7 @@ jobs:
   build:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: bors
     steps:
       - name: cleanup
         run: |
@@ -81,7 +107,7 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # We update `Mathlib.lean` as a convenience here,
       # but verify that this didn't change anything in the `check_imported` job.
@@ -90,10 +116,23 @@ jobs:
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: get cache
-        run: lake exe cache get
+        run: |
+          lake exe cache clean
+          lake exe cache get
 
       - name: build mathlib
-        run: lake build
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
+
+      - name: check for noisy stdout lines
+        run: |
+          ! grep "stdout:" stdout.log
+
+      - name: build library_search cache
+        run: lake build -KCI MathlibExtras
 
       - name: upload cache
         if: always()
@@ -103,8 +142,48 @@ jobs:
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
+      - name: build archive
+        run: lake build Archive
+
+      - name: build counterexamples
+        run: lake build Counterexamples
+
+      - name: check declarations in db files
+        run: |
+          python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
+          build/bin/checkYaml
+
       - name: test mathlib
         run: make -j 8 test
 
       - name: lint mathlib
-        run: make lint
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 make lint
+
+  final:
+    name: Post-CI job
+    if: github.repository == 'leanprover-community/mathlib4'
+    needs: [style_lint, build, check_imported]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: PR
+        uses: 8BitJonny/gh-get-current-pr@2.2.0
+        # TODO: this may not work properly if the same commit is pushed to multiple branches:
+        # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Only return if PR is still open
+          filterOutClosed: true
+
+      - id: remove_labels
+        name: Remove "awaiting-CI"
+        # we use curl rather than octokit/request-action so that the job won't fail
+        # (and send an annoying email) if the labels don't exist
+        run: |
+          curl --request DELETE \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'

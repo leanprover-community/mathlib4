@@ -2,16 +2,13 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.group_action.sub_mul_action
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
+
+#align_import group_theory.group_action.sub_mul_action from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
 /-!
 
@@ -42,14 +39,21 @@ universe u u' u'' v
 variable {S : Type u'} {T : Type u''} {R : Type u} {M : Type v}
 
 /-- `SMulMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
-scalar action of `R` on `M`. -/
+scalar action of `R` on `M`.
+
+Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
+class instead.
+-/
 class SMulMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [SMul R M] [SetLike S M] where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
 #align smul_mem_class SMulMemClass
 
 /-- `VAddMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
-additive action of `R` on `M`. -/
+additive action of `R` on `M`.
+
+Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
+class instead. -/
 class VAddMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [VAdd R M] [SetLike S M] where
   /-- Addition by a scalar with an element of the set remains in the set. -/
   vadd_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r +ᵥ m ∈ s
@@ -70,6 +74,13 @@ instance (priority := 900) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 #align set_like.has_smul SetLike.smul
 #align set_like.has_vadd SetLike.vadd
+
+/-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
+this to manually derive `SMulMemClass` on specific types. -/
+def _root_.SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [SMul M N]
+  [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+  SMulMemClass S M α :=
+{ smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 -- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf

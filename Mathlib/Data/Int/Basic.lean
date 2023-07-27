@@ -2,18 +2,14 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Logic.Nontrivial
+
+#align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
 /-!
 # Basic operations on the integers
@@ -80,12 +76,9 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 @[norm_cast]
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
--- TODO restore @[to_additive coe_nat_zsmul]
-@[simp, norm_cast]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
-@[simp]
-theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
-attribute [to_additive coe_nat_zsmul] zpow_coe_nat
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
+  zpow_ofNat ..
 #align coe_nat_zsmul coe_nat_zsmul
 
 /-! ### Extra instances to short-circuit type class resolution
@@ -130,6 +123,16 @@ theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc
 
+@[simp]
+theorem sign_coe_add_one (n : ℕ) : Int.sign (n + 1) = 1 :=
+  rfl
+#align int.sign_coe_add_one Int.sign_coe_add_one
+
+@[simp]
+theorem sign_negSucc (n : ℕ) : Int.sign -[n+1] = -1 :=
+  rfl
+#align int.sign_neg_succ_of_nat Int.sign_negSucc
+
 /-! ### succ and pred -/
 
 /-- Immediate successor of an integer: `succ n = n + 1` -/
@@ -156,7 +159,7 @@ theorem succ_neg_succ (a : ℤ) : succ (-succ a) = -a := by rw [neg_succ, succ_p
 #align int.succ_neg_succ Int.succ_neg_succ
 
 theorem neg_pred (a : ℤ) : -pred a = succ (-a) := by
-  rw [eq_neg_of_eq_neg (neg_succ (-a)).symm, neg_neg]
+  rw [neg_eq_iff_eq_neg.mp (neg_succ (-a)), neg_neg]
 #align int.neg_pred Int.neg_pred
 
 theorem pred_neg_pred (a : ℤ) : pred (-pred a) = -a := by rw [neg_pred, pred_succ]
@@ -190,6 +193,9 @@ theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 #align int.induction_on Int.induction_on
 
 /-! ### nat abs -/
+
+theorem natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
+#align int.nat_abs_surjective Int.natAbs_surjective
 
 #align int.nat_abs_add_le Int.natAbs_add_le
 #align int.nat_abs_sub_le Int.natAbs_sub_le

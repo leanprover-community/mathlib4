@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
-
-! This file was ported from Lean 3 source module algebra.ring.units
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Group.Units
+
+#align_import algebra.ring.units from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
 /-!
 # Units in semirings and rings
@@ -58,12 +55,14 @@ section Ring
 
 variable [Ring α] {a b : α}
 
-@[field_simps]
+-- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
+@[field_simps 1010]
 theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
   simp only [divp, add_mul]
 #align units.divp_add_divp_same Units.divp_add_divp_same
 
-@[field_simps]
+-- Needs to have higher simp priority than divp_sub_divp. 1000 is the default priority.
+@[field_simps 1010]
 theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 #align units.divp_sub_divp_same Units.divp_sub_divp_same

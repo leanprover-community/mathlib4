@@ -3,18 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.group
-! leanprover-community/mathlib commit 8c53048add6ffacdda0b36c4917bfe37e209b0ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Init.CcLemmas
+import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.FunLike.Basic
+
+#align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Monoid and group homomorphisms
@@ -23,7 +19,7 @@ This file defines the bundled structures for monoid and group homomorphisms. Nam
 `MonoidHom` (resp., `AddMonoidHom`) to be bundled homomorphisms between multiplicative (resp.,
 additive) monoids or groups.
 
-We also define coercion to a function, and  usual operations: composition, identity homomorphism,
+We also define coercion to a function, and usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
 
 This file also defines the lesser-used (and notation-less) homomorphism types which are used as
@@ -221,10 +217,6 @@ instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
 #align one_hom.one_hom_class OneHom.oneHomClass
 #align zero_hom.zero_hom_class ZeroHom.zeroHomClass
 
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
-def OneHom.Simps.apply (f : OneHom M N) : M → N := f
-
 @[to_additive (attr := simp)]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
@@ -305,7 +297,7 @@ class MulHomClass (F : Type _) (M N : outParam (Type _)) [Mul M] [Mul N]
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
 
-/-- `MulHom` is a type of multiplication-preseving homomorphisms -/
+/-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive "`AddHom` is a type of addition-preserving homomorphisms"]
 instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
   coe := MulHom.toFun
@@ -313,10 +305,6 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
   map_mul := MulHom.map_mul'
 #align mul_hom.mul_hom_class MulHom.mulHomClass
 #align add_hom.add_hom_class AddHom.addHomClass
-
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
-def MulHom.Simps.apply (f : M →ₙ* N) : M → N := f
 
 @[to_additive (attr := simp)]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
@@ -333,7 +321,7 @@ def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
   toFun := f
   map_mul' := map_mul f
 
-/-- Any type satisfying `MulHomCLass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
+/-- Any type satisfying `MulHomClass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
 @[to_additive "Any type satisfying `AddHomClass` can be cast into `AddHom` via
 `AddHomClass.toAddHom`."]
 instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
@@ -364,7 +352,7 @@ structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] ex
 #align monoid_hom MonoidHom
 -- Porting note: remove once `to_additive` is updated
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive] MonoidHom.toMulHom
+attribute [to_additive existing] MonoidHom.toMulHom
 
 attribute [nolint docBlame] MonoidHom.toMulHom
 attribute [nolint docBlame] MonoidHom.toOneHom
@@ -393,13 +381,9 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 #align add_monoid_hom.add_monoid_hom_class AddMonoidHom.addMonoidHomClass
 
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
-def MonoidHom.Simps.apply (f : M →* N) : M → N := f
-
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive] MonoidHomClass.toOneHomClass
+attribute [to_additive existing] MonoidHomClass.toOneHomClass
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
@@ -407,7 +391,7 @@ attribute [to_additive] MonoidHomClass.toOneHomClass
 "Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
 actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`."]
 def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
-{ (f : M →ₙ* N), (f : OneHom M N) with }
+  { (f : M →ₙ* N), (f : OneHom M N) with }
 
 /-- Any type satisfying `MonoidHomClass` can be cast into `MonoidHom` via
 `MonoidHomClass.toMonoidHom`. -/
@@ -456,7 +440,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
-@[to_additive (attr := simp) (reorder := 8) map_nsmul]
+@[to_additive (attr := simp) (reorder := 8 9)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -473,7 +457,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zsmul' map_zsmul'
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive (attr := simp) (reorder := 8)
+@[to_additive (attr := simp) (reorder := 8 9)
 "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
@@ -528,14 +512,11 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
 
-/-- See Note [custom simps projection] -/
-def MonoidWithZeroHom.Simps.apply (f : M →*₀ N) : M → N := f
-
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F M N` into an actual
 `MonoidWithZeroHom`. This is declared as the default coercion from `F` to `M →*₀ N`. -/
 @[coe]
 def MonoidWithZeroHomClass.toMonoidWithZeroHom [MonoidWithZeroHomClass F M N] (f : F) : M →*₀ N :=
-{ (f : M →* N), (f : ZeroHom M N) with }
+  { (f : M →* N), (f : ZeroHom M N) with }
 
 /-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
 `MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
@@ -559,7 +540,7 @@ attribute [coe] AddMonoidHom.toZeroHom
 
 /-- `MonoidHom` down-cast to a `OneHom`, forgetting the multiplicative property. -/
 @[to_additive "`AddMonoidHom` down-cast to a `ZeroHom`, forgetting the additive property"]
-instance MonoidHom.coeToOneHom {_ : MulOneClass M} {_ : MulOneClass N} :
+instance MonoidHom.coeToOneHom [MulOneClass M] [MulOneClass N] :
   Coe (M →* N) (OneHom M N) := ⟨MonoidHom.toOneHom⟩
 #align monoid_hom.has_coe_to_one_hom MonoidHom.coeToOneHom
 #align add_monoid_hom.has_coe_to_zero_hom AddMonoidHom.coeToZeroHom
@@ -569,7 +550,7 @@ attribute [coe] AddMonoidHom.toAddHom
 
 /-- `MonoidHom` down-cast to a `MulHom`, forgetting the 1-preserving property. -/
 @[to_additive "`AddMonoidHom` down-cast to an `AddHom`, forgetting the 0-preserving property."]
-instance MonoidHom.coeToMulHom {_ : MulOneClass M} {_ : MulOneClass N} :
+instance MonoidHom.coeToMulHom [MulOneClass M] [MulOneClass N] :
   Coe (M →* N) (M →ₙ* N) := ⟨MonoidHom.toMulHom⟩
 #align monoid_hom.has_coe_to_mul_hom MonoidHom.coeToMulHom
 #align add_monoid_hom.has_coe_to_add_hom AddMonoidHom.coeToAddHom
@@ -577,34 +558,25 @@ instance MonoidHom.coeToMulHom {_ : MulOneClass M} {_ : MulOneClass N} :
 attribute [coe] MonoidWithZeroHom.toMonoidHom
 
 /-- `MonoidWithZeroHom` down-cast to a `MonoidHom`, forgetting the 0-preserving property. -/
-instance MonoidWithZeroHom.coeToMonoidHom {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} :
+instance MonoidWithZeroHom.coeToMonoidHom [MulZeroOneClass M] [MulZeroOneClass N] :
   Coe (M →*₀ N) (M →* N) := ⟨MonoidWithZeroHom.toMonoidHom⟩
 #align monoid_with_zero_hom.has_coe_to_monoid_hom MonoidWithZeroHom.coeToMonoidHom
 
 attribute [coe] MonoidWithZeroHom.toZeroHom
 
 /-- `MonoidWithZeroHom` down-cast to a `ZeroHom`, forgetting the monoidal property. -/
-instance MonoidWithZeroHom.coeToZeroHom {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} :
+instance MonoidWithZeroHom.coeToZeroHom [MulZeroOneClass M] [MulZeroOneClass N] :
   Coe (M →*₀ N) (ZeroHom M N) := ⟨MonoidWithZeroHom.toZeroHom⟩
 #align monoid_with_zero_hom.has_coe_to_zero_hom MonoidWithZeroHom.coeToZeroHom
-
--- Porting note: several `coe_eq_xxx` lemmas removed due to new `coe` in Lean4
-
-attribute [coe] OneHom.toFun
-attribute [coe] ZeroHom.toFun
-attribute [coe] MulHom.toFun
-attribute [coe] AddHom.toFun
 
 -- these must come after the coe_toFun definitions
 initialize_simps_projections ZeroHom (toFun → apply)
 initialize_simps_projections AddHom (toFun → apply)
-initialize_simps_projections AddMonoidHom (toZeroHom_toFun → apply, -toZeroHom)
+initialize_simps_projections AddMonoidHom (toFun → apply)
 initialize_simps_projections OneHom (toFun → apply)
 initialize_simps_projections MulHom (toFun → apply)
-initialize_simps_projections MonoidHom (toOneHom_toFun → apply, -toOneHom)
-initialize_simps_projections MonoidWithZeroHom (toZeroHom_toFun → apply, -toZeroHom)
-
--- Porting note: removed several `toFun_eq_coe` lemmas due to new Coe in Lean4
+initialize_simps_projections MonoidHom (toFun → apply)
+initialize_simps_projections MonoidWithZeroHom (toFun → apply)
 
 @[to_additive (attr := simp)]
 theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M → N) = f := rfl
@@ -612,20 +584,25 @@ theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M �
 #align zero_hom.coe_mk ZeroHom.coe_mk
 
 @[to_additive (attr := simp)]
+theorem OneHom.toFun_eq_coe [One M] [One N] (f : OneHom M N) : f.toFun = f := rfl
+#align one_hom.to_fun_eq_coe OneHom.toFun_eq_coe
+#align zero_hom.to_fun_eq_coe ZeroHom.toFun_eq_coe
+
+@[to_additive (attr := simp)]
 theorem MulHom.coe_mk [Mul M] [Mul N] (f : M → N) (hmul) : (MulHom.mk f hmul : M → N) = f := rfl
 #align mul_hom.coe_mk MulHom.coe_mk
 #align add_hom.coe_mk AddHom.coe_mk
+
+@[to_additive (attr := simp)]
+theorem MulHom.toFun_eq_coe [Mul M] [Mul N] (f : M →ₙ* N) : f.toFun = f := rfl
+#align mul_hom.to_fun_eq_coe MulHom.toFun_eq_coe
+#align add_hom.to_fun_eq_coe AddHom.toFun_eq_coe
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.coe_mk [MulOneClass M] [MulOneClass N] (f hmul) :
   (MonoidHom.mk f hmul : M → N) = f := rfl
 #align monoid_hom.coe_mk MonoidHom.coe_mk
 #align add_monoid_hom.coe_mk AddMonoidHom.coe_mk
-
-@[simp]
-theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f h1 hmul) :
-  (MonoidWithZeroHom.mk f h1 hmul : M → N) = (f : M → N) := rfl
-#align monoid_with_zero_hom.coe_mk MonoidWithZeroHom.coe_mk
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.toOneHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
@@ -639,12 +616,21 @@ theorem MonoidHom.toMulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
 #align monoid_hom.to_mul_hom_coe MonoidHom.toMulHom_coe
 #align add_monoid_hom.to_add_hom_coe AddMonoidHom.toAddHom_coe
 
+@[to_additive]
+theorem MonoidHom.toFun_eq_coe [MulOneClass M] [MulOneClass N] (f : M →* N) : f.toFun = f := rfl
+#align monoid_hom.to_fun_eq_coe MonoidHom.toFun_eq_coe
+#align add_monoid_hom.to_fun_eq_coe AddMonoidHom.toFun_eq_coe
+
+@[simp]
+theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f h1 hmul) :
+  (MonoidWithZeroHom.mk f h1 hmul : M → N) = (f : M → N) := rfl
+#align monoid_with_zero_hom.coe_mk MonoidWithZeroHom.coe_mk
+
 @[simp]
 theorem MonoidWithZeroHom.toZeroHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
   (f.toZeroHom : M → N) = f := rfl
 #align monoid_with_zero_hom.to_zero_hom_coe MonoidWithZeroHom.toZeroHom_coe
 
-@[simp]
 theorem MonoidWithZeroHom.toMonoidHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
   f.toMonoidHom.toFun = f := rfl
 #align monoid_with_zero_hom.to_monoid_hom_coe MonoidWithZeroHom.toMonoidHom_coe
@@ -814,42 +800,95 @@ equalities. -/
 @[to_additive
   "Copy of a `ZeroHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
-protected def OneHom.copy {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
+protected def OneHom.copy [One M] [One N] (f : OneHom M N) (f' : M → N) (h : f' = f) :
   OneHom M N where
   toFun := f'
   map_one' := h.symm ▸ f.map_one'
 #align one_hom.copy OneHom.copy
 #align zero_hom.copy ZeroHom.copy
 
+@[to_additive (attr := simp)]
+theorem OneHom.coe_copy {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
+    (f.copy f' h) = f' :=
+  rfl
+#align one_hom.coe_copy OneHom.coe_copy
+#align zero_hom.coe_copy ZeroHom.coe_copy
+
+@[to_additive]
+theorem OneHom.coe_copy_eq {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
+    f.copy f' h = f :=
+  FunLike.ext' h
+#align one_hom.coe_copy_eq OneHom.coe_copy_eq
+#align zero_hom.coe_copy_eq ZeroHom.coe_copy_eq
+
 /-- Copy of a `MulHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 @[to_additive
   "Copy of an `AddHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
-protected def MulHom.copy {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
+protected def MulHom.copy [Mul M] [Mul N] (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
   M →ₙ* N where
   toFun := f'
   map_mul' := h.symm ▸ f.map_mul'
 #align mul_hom.copy MulHom.copy
 #align add_hom.copy AddHom.copy
 
+@[to_additive (attr := simp)]
+theorem MulHom.coe_copy {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
+    (f.copy f' h) = f' :=
+  rfl
+#align mul_hom.coe_copy MulHom.coe_copy
+#align add_hom.coe_copy AddHom.coe_copy
+
+@[to_additive]
+theorem MulHom.coe_copy_eq {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
+    f.copy f' h = f :=
+  FunLike.ext' h
+#align mul_hom.coe_copy_eq MulHom.coe_copy_eq
+#align add_hom.coe_copy_eq AddHom.coe_copy_eq
+
 /-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 @[to_additive
   "Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
-protected def MonoidHom.copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
+protected def MonoidHom.copy [MulOneClass M] [MulOneClass N] (f : M →* N) (f' : M → N)
   (h : f' = f) : M →* N :=
   { f.toOneHom.copy f' h, f.toMulHom.copy f' h with }
 #align monoid_hom.copy MonoidHom.copy
 #align add_monoid_hom.copy AddMonoidHom.copy
 
+@[to_additive (attr := simp)]
+theorem MonoidHom.coe_copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
+    (h : f' = f) : (f.copy f' h) = f' :=
+  rfl
+#align monoid_hom.coe_copy MonoidHom.coe_copy
+#align add_monoid_hom.coe_copy AddMonoidHom.coe_copy
+
+@[to_additive]
+theorem MonoidHom.copy_eq {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
+    (h : f' = f) : f.copy f' h = f :=
+  FunLike.ext' h
+#align monoid_hom.copy_eq MonoidHom.copy_eq
+#align add_monoid_hom.copy_eq AddMonoidHom.copy_eq
+
 /-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def MonoidWithZeroHom.copy {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} (f : M →*₀ N)
+protected def MonoidWithZeroHom.copy [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N)
   (f' : M → N) (h : f' = f) : M →* N :=
   { f.toZeroHom.copy f' h, f.toMonoidHom.copy f' h with }
 #align monoid_with_zero_hom.copy MonoidWithZeroHom.copy
+
+@[simp]
+theorem MonoidWithZeroHom.coe_copy {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} (f : M →*₀ N)
+    (f' : M → N) (h : f' = f) : (f.copy f' h) = f' :=
+  rfl
+#align monoid_with_zero_hom.coe_copy MonoidWithZeroHom.coe_copy
+
+theorem MonoidWithZeroHom.copy_eq {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} (f : M →*₀ N)
+    (f' : M → N) (h : f' = f) : f.copy f' h = f :=
+  FunLike.ext' h
+#align monoid_with_zero_hom.copy_eq MonoidWithZeroHom.copy_eq
 
 @[to_additive]
 protected theorem OneHom.map_one [One M] [One N] (f : OneHom M N) : f 1 = 1 :=
@@ -897,7 +936,7 @@ add_decl_doc AddMonoidHom.map_add
 
 namespace MonoidHom
 
-variable {_ : MulOneClass M} {_ : MulOneClass N} [MonoidHomClass F M N]
+variable [MulOneClass M] [MulOneClass N] [MonoidHomClass F M N]
 
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a right inverse,
 then `f x` has a right inverse too. For elements invertible on both sides see `IsUnit.map`. -/
@@ -989,10 +1028,10 @@ def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
 #align monoid_with_zero_hom.id MonoidWithZeroHom.id
 #align monoid_with_zero_hom.id_apply MonoidWithZeroHom.id_apply
 
-/-- The identity map from an type with zero to itself. -/
+/-- The identity map from a type with zero to itself. -/
 add_decl_doc ZeroHom.id
 
-/-- The identity map from an type with addition to itself. -/
+/-- The identity map from a type with addition to itself. -/
 add_decl_doc AddHom.id
 
 /-- The identity map from an additive monoid to itself. -/
@@ -1036,7 +1075,7 @@ def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneCl
 /-- Composition of `ZeroHom`s as a `ZeroHom`. -/
 add_decl_doc ZeroHom.comp
 
-/-- Composition of `AddHom`s as a `AddHom`. -/
+/-- Composition of `AddHom`s as an `AddHom`. -/
 add_decl_doc AddHom.comp
 
 /-- Composition of additive monoid morphisms as an additive monoid morphism. -/
@@ -1248,7 +1287,7 @@ theorem MonoidWithZeroHom.id_comp [MulZeroOneClass M] [MulZeroOneClass N] (f : M
   (MonoidWithZeroHom.id N).comp f = f := MonoidWithZeroHom.ext fun _ => rfl
 #align monoid_with_zero_hom.id_comp MonoidWithZeroHom.id_comp
 
-@[to_additive AddMonoidHom.map_nsmul]
+@[to_additive]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
   f (a ^ n) = f a ^ n := map_pow f a n
 #align monoid_hom.map_pow MonoidHom.map_pow
@@ -1414,7 +1453,7 @@ additive morphism sending `x` to `f x + g x`. -/
 add_decl_doc AddHom.instAddAddHomToAddToAddSemigroup
 
 @[to_additive (attr := simp)]
-theorem mul_apply {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) (x : M) :
+theorem mul_apply {M N} [Mul M] [CommSemigroup N] (f g : M →ₙ* N) (x : M) :
   (f * g) x = f x * g x := rfl
 #align mul_hom.mul_apply MulHom.mul_apply
 #align add_hom.add_apply AddHom.add_apply
@@ -1442,7 +1481,7 @@ variable [Group G] [CommGroup H]
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
 @[to_additive]
-instance mul {M N} {_ : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
+instance mul {M N} [MulOneClass M] [CommMonoid N] : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_one' := show f 1 * g 1 = 1 by simp,
@@ -1456,7 +1495,7 @@ instance mul {M N} {_ : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
 add_decl_doc AddMonoidHom.add
 
 @[to_additive (attr := simp)]
-theorem mul_apply {M N} {_ : MulOneClass M} {_ : CommMonoid N} (f g : M →* N) (x : M) :
+theorem mul_apply {M N} [MulOneClass M] [CommMonoid N] (f g : M →* N) (x : M) :
   (f * g) x = f x * g x := rfl
 #align monoid_hom.mul_apply MonoidHom.mul_apply
 #align add_monoid_hom.add_apply AddMonoidHom.add_apply
@@ -1574,7 +1613,6 @@ def ofMapMulInv {H : Type _} [Group H] (f : G → H)
       _ = f x * f y := by
         { simp only [map_div]
           simp only [mul_right_inv, one_mul, inv_inv] }
-
 #align monoid_hom.of_map_mul_inv MonoidHom.ofMapMulInv
 #align add_monoid_hom.of_map_add_neg AddMonoidHom.ofMapAddNeg
 
@@ -1609,13 +1647,13 @@ homomorphism sending `x` to `-(f x)`. -/
 add_decl_doc AddMonoidHom.instNegAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[to_additive (attr := simp)]
-theorem inv_apply {M G} {_ : MulOneClass M} {_ : CommGroup G} (f : M →* G) (x : M) :
+theorem inv_apply {M G} [MulOneClass M] [CommGroup G] (f : M →* G) (x : M) :
   f⁻¹ x = (f x)⁻¹ := rfl
 #align monoid_hom.inv_apply MonoidHom.inv_apply
 #align add_monoid_hom.neg_apply AddMonoidHom.neg_apply
 
 @[to_additive (attr := simp)]
-theorem inv_comp {M N A} {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommGroup A}
+theorem inv_comp {M N A} [MulOneClass M] [MulOneClass N] [CommGroup A]
   (φ : N →* A) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, coe_comp]
@@ -1623,7 +1661,7 @@ theorem inv_comp {M N A} {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommGroup 
 #align add_monoid_hom.neg_comp AddMonoidHom.neg_comp
 
 @[to_additive (attr := simp)]
-theorem comp_inv {M A B} {_ : MulOneClass M} {_ : CommGroup A} {_ : CommGroup B}
+theorem comp_inv {M A B} [MulOneClass M] [CommGroup A] [CommGroup B]
   (φ : A →* B) (ψ : M →* A) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, map_inv, coe_comp]
@@ -1642,7 +1680,7 @@ is the homomorphism sending `x` to `(f x) - (g x)`. -/
 add_decl_doc AddMonoidHom.instSubAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[to_additive (attr := simp)]
-theorem div_apply {M G} {_ : MulOneClass M} {_ : CommGroup G} (f g : M →* G) (x : M) :
+theorem div_apply {M G} [MulOneClass M] [CommGroup G] (f g : M →* G) (x : M) :
   (f / g) x = f x / g x := rfl
 #align monoid_hom.div_apply MonoidHom.div_apply
 #align add_monoid_hom.sub_apply AddMonoidHom.sub_apply
@@ -1651,7 +1689,7 @@ end MonoidHom
 
 /-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
 with zero morphism sending `x` to `f x * g x`. -/
-instance {M N} {_ : MulZeroOneClass M} [CommMonoidWithZero N] : Mul (M →*₀ N) :=
+instance [MulZeroOneClass M] [CommMonoidWithZero N] : Mul (M →*₀ N) :=
   ⟨fun f g => { (f * g : M →* N) with
     toFun := fun a => f a * g a,
     map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩

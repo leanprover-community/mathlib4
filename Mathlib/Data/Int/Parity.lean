@@ -2,14 +2,11 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
-
-! This file was ported from Lean 3 source module data.int.parity
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Abel
+
+#align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Parity of integers
@@ -68,14 +65,8 @@ theorem even_or_odd (n : ℤ) : Even n ∨ Odd n :=
   Or.imp_right odd_iff_not_even.2 <| em <| Even n
 #align int.even_or_odd Int.even_or_odd
 
--- Porting note: TODO. I'm struggling that `Even` uses `k + k` while Odd uses `2 * k`,
--- does this proof need golfing?
--- mathlib3 port: `simpa only [← two_mul, exists_or, ← Odd, ← Even] using even_or_odd n`
 theorem even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
-  rw [exists_or]
-  convert even_or_odd n
-  funext i
-  rw [two_mul]
+  simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 #align int.even_or_odd' Int.even_or_odd'
 
 theorem even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
@@ -171,6 +162,13 @@ theorem even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m :=
 #align int.even_pow' Int.even_pow'
 
 @[parity_simps]
+theorem odd_pow {n : ℕ} : Odd (m ^ n) ↔ Odd m ∨ n = 0 := by
+  rw [← not_iff_not, ← Int.even_iff_not_odd, not_or, ← Int.even_iff_not_odd, Int.even_pow]
+
+theorem odd_pow' {n : ℕ} (h : n ≠ 0) : Odd (m ^ n) ↔ Odd m :=
+  odd_pow.trans <| or_iff_left h
+
+@[parity_simps]
 theorem odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
   rw [odd_iff_not_even, even_add, not_iff, odd_iff_not_even]
 #align int.odd_add Int.odd_add
@@ -193,9 +191,7 @@ theorem odd_sub' : Odd (m - n) ↔ (Odd n ↔ Even m) := by
 #align int.odd_sub' Int.odd_sub'
 
 theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
-  rw [even_mul]
-  convert n.even_or_odd
-  simp [parity_simps]
+  simpa [even_mul, parity_simps] using n.even_or_odd
 #align int.even_mul_succ_self Int.even_mul_succ_self
 
 @[simp, norm_cast]
@@ -238,12 +234,12 @@ theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
   · right
     rw [Int.even_add, ← Int.even_sub] at h
     obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 k
+    convert dvd_mul_right 4 k using 1
     rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel, ← two_mul, ← mul_assoc]
     rfl
   · left
     obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 (k + 1)
+    convert dvd_mul_right 4 (k + 1) using 1
     rw [eq_sub_of_add_eq hk, add_right_comm, ← add_sub, mul_add, mul_sub, add_assoc, add_assoc,
       sub_add, add_assoc, ← sub_sub (2 * n), sub_self, zero_sub, sub_neg_eq_add, ← mul_assoc,
       mul_add]

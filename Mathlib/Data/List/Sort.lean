@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.list.sort
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sorting algorithms on lists
@@ -44,6 +41,14 @@ def Sorted :=
 instance decidableSorted [DecidableRel r] (l : List α) : Decidable (Sorted r l) :=
   List.instDecidablePairwise _
 #align list.decidable_sorted List.decidableSorted
+
+protected theorem Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· < ·)) :
+    l.Sorted (· ≤ ·) :=
+  h.imp le_of_lt
+
+protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
+    (h₂ : l.Nodup) : l.Sorted (· < ·) :=
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
 @[simp]
 theorem sorted_nil : Sorted r [] :=
@@ -102,17 +107,23 @@ theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
 #align list.sorted_singleton List.sorted_singleton
 
+theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
+    r (l.get a) (l.get b) :=
+  List.pairwise_iff_get.1 h _ _ hab
+
 theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
     (hb : b < l.length) (hab : a < b) : r (l.nthLe a ha) (l.nthLe b hb) :=
   List.pairwise_iff_get.1 h ⟨a, ha⟩ ⟨b, hb⟩ hab
 #align list.sorted.rel_nth_le_of_lt List.Sorted.rel_nthLe_of_lt
 
+theorem Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : Fin l.length}
+    (hab : a ≤ b) : r (l.get a) (l.get b) := by
+  rcases hab.eq_or_lt with (rfl | hlt)
+  exacts [refl _, h.rel_get_of_lt hlt]
+
 theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
-    (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) := by
-  cases' eq_or_lt_of_le hab with H H
-  · subst H
-    exact refl _
-  · exact h.rel_nthLe_of_lt _ _ H
+    (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) :=
+  h.rel_get_of_le hab
 #align list.sorted.rel_nth_le_of_le List.Sorted.rel_nthLe_of_le
 
 theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
@@ -130,17 +141,26 @@ section Monotone
 
 variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
+theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
+  simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
+  exact Iff.symm (Fin.castIso _).surjective.forall₂
+
+/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
+strictly monotone. -/
+@[simp] theorem sorted_lt_ofFn_iff : (ofFn f).Sorted (· < ·) ↔ StrictMono f := sorted_ofFn_iff
+
+/-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
+@[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
+  sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
+
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := by
-  simp_rw [Sorted, pairwise_iff_get, length_ofFn, get_ofFn, monotone_iff_forall_lt]
-  refine ⟨fun h i j hij => h <| Fin.mk_lt_mk.mpr hij, fun h ⟨i, hi⟩ ⟨j, hj⟩ hij => ?_⟩
-  exact h ⟨i, (length_ofFn f).symm ▸ hi⟩ ⟨j, (length_ofFn f).symm ▸ hj⟩ hij
+@[deprecated sorted_le_ofFn_iff]
+theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
-theorem Monotone.ofFn_sorted (h : Monotone f) : (ofFn f).Sorted (· ≤ ·) :=
-  monotone_iff_ofFn_sorted.1 h
-#align list.monotone.of_fn_sorted List.Monotone.ofFn_sorted
+alias sorted_le_ofFn_iff ↔ _ _root_.Monotone.ofFn_sorted
+#align list.monotone.of_fn_sorted Monotone.ofFn_sorted
 
 end Monotone
 
@@ -232,7 +252,7 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionS
   | [a], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts[rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
 section TotalAndTransitive
@@ -356,7 +376,7 @@ theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
   | [], b :: l' => by simp [merge]
   | a :: l, [] => by simp [merge]
   | a :: l, b :: l' => by
-    by_cases a ≼ b
+    by_cases h : a ≼ b
     · simpa [merge, h] using perm_merge _ _
     · suffices b :: merge r (a :: l) l' ~ a :: (l ++ b :: l') by simpa [merge, h]
       exact ((perm_merge _ _).cons _).trans ((swap _ _ _).trans (perm_middle.symm.cons _))
@@ -412,7 +432,6 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
       · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
   termination_by Sorted.merge l₁ l₂ _ _ => length l₁ + length l₂
-
 #align list.sorted.merge List.Sorted.merge
 
 variable (r)

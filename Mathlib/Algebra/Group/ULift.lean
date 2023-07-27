@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.group.ulift
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.InjSurj
+
+#align_import algebra.group.ulift from "leanprover-community/mathlib"@"564bcc44d2b394a50c0cd6340c14a6b02a50a99a"
 
 /-!
 # `ULift` instances for groups and monoids
@@ -89,23 +86,22 @@ theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a 
 #align ulift.smul_down ULift.smul_down
 #align ulift.vadd_down ULift.vadd_down
 
-@[to_additive (reorder := 1) smul]
+@[to_additive existing (reorder := 1 2) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 #align ulift.has_pow ULift.pow
 
-@[to_additive (attr := simp) (reorder := 1) smul_down]
+@[to_additive existing (attr := simp) (reorder := 1 2) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 #align ulift.pow_down ULift.pow_down
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
 -/
--- porting note: below errors: to_additive: can't transport `ULift.MulEquiv.ulift` to itself.
--- @[to_additive "The additive equivalence between `ULift α` and `α`."]
-def MulEquiv.ulift [Mul α] : ULift α ≃* α :=
+@[to_additive "The additive equivalence between `ULift α` and `α`."]
+def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
-#align mul_equiv.ulift ULift.MulEquiv.ulift
+#align mul_equiv.ulift MulEquiv.ulift
 
 -- porting notes: below failed due to error above, manually added
 --@[to_additive]
@@ -140,6 +136,37 @@ instance monoid [Monoid α] : Monoid (ULift α) :=
 #align ulift.monoid ULift.monoid
 #align ulift.add_monoid ULift.addMonoid
 
+@[to_additive]
+instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
+  Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+#align ulift.comm_monoid ULift.commMonoid
+#align ulift.add_comm_monoid ULift.addCommMonoid
+
+instance natCast [NatCast α] : NatCast (ULift α) := ⟨λ a ↦ up a⟩
+#align ulift.has_nat_cast ULift.natCast
+instance intCast [IntCast α] : IntCast (ULift α) := ⟨λ a ↦ up a⟩
+#align ulift.has_int_cast ULift.intCast
+
+@[simp, norm_cast]
+theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
+  rfl
+#align ulift.up_nat_cast ULift.up_natCast
+
+@[simp, norm_cast]
+theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
+  rfl
+#align ulift.up_int_cast ULift.up_intCast
+
+@[simp, norm_cast]
+theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
+  rfl
+#align ulift.down_nat_cast ULift.down_natCast
+
+@[simp, norm_cast]
+theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
+  rfl
+#align ulift.down_int_cast ULift.down_intCast
+
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
   { ULift.one, ULift.addMonoid with
       natCast := fun n => ⟨n⟩
@@ -147,16 +174,9 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
       natCast_succ := fun _ => congr_arg ULift.up (Nat.cast_succ _) }
 #align ulift.add_monoid_with_one ULift.addMonoidWithOne
 
-@[simp]
-theorem nat_cast_down [AddMonoidWithOne α] (n : ℕ) : (n : ULift α).down = n :=
-  rfl
-#align ulift.nat_cast_down ULift.nat_cast_down
-
-@[to_additive]
-instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
-  Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
-#align ulift.comm_monoid ULift.commMonoid
-#align ulift.add_comm_monoid ULift.addCommMonoid
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (ULift α) :=
+  { ULift.addMonoidWithOne, ULift.addCommMonoid with }
+#align ulift.add_comm_monoid_with_one ULift.addCommMonoidWithOne
 
 instance monoidWithZero [MonoidWithZero α] : MonoidWithZero (ULift α) :=
   Equiv.ulift.injective.monoidWithZero _ rfl rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -180,6 +200,13 @@ instance group [Group α] : Group (ULift α) :=
 #align ulift.group ULift.group
 #align ulift.add_group ULift.addGroup
 
+@[to_additive]
+instance commGroup [CommGroup α] : CommGroup (ULift α) :=
+  Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
+#align ulift.comm_group ULift.commGroup
+#align ulift.add_comm_group ULift.addCommGroup
+
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
   { ULift.addMonoidWithOne, ULift.addGroup with
       intCast := fun n => ⟨n⟩,
@@ -187,17 +214,9 @@ instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
       intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
 #align ulift.add_group_with_one ULift.addGroupWithOne
 
-@[simp]
-theorem int_cast_down [AddGroupWithOne α] (n : ℤ) : (n : ULift α).down = n :=
-  rfl
-#align ulift.int_cast_down ULift.int_cast_down
-
-@[to_additive]
-instance commGroup [CommGroup α] : CommGroup (ULift α) :=
-  Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align ulift.comm_group ULift.commGroup
-#align ulift.add_comm_group ULift.addCommGroup
+instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne (ULift α) :=
+  { ULift.addGroupWithOne, ULift.addCommGroup with }
+#align ulift.add_comm_group_with_one ULift.addCommGroupWithOne
 
 instance groupWithZero [GroupWithZero α] : GroupWithZero (ULift α) :=
   Equiv.ulift.injective.groupWithZero _ rfl rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)

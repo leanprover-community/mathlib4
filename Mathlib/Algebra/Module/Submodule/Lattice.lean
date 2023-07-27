@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.module.submodule.lattice
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances
+
+#align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # The lattice structure on `Submodule`s
@@ -95,7 +92,7 @@ protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = 
     fun h ↦ eq_bot_iff.mpr fun x hx ↦ (mem_bot R).mpr (h x hx)⟩
 #align submodule.eq_bot_iff Submodule.eq_bot_iff
 
-@[ext]
+@[ext high]
 protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
   rcases x with ⟨x, xm⟩; rcases y with ⟨y, ym⟩; congr
   rw [(Submodule.eq_bot_iff _).mp rfl x xm]
@@ -116,16 +113,16 @@ theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b
   ⟨b, hb₁, hb₂⟩
 #align submodule.exists_mem_ne_zero_of_ne_bot Submodule.exists_mem_ne_zero_of_ne_bot
 
+-- FIXME: we default PUnit to PUnit.{1} here without the explicit universe annotation
 /-- The bottom submodule is linearly equivalent to punit as an `R`-module. -/
 @[simps]
-def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
-    where
+def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
   toFun _ := PUnit.unit
   invFun _ := 0
-  map_add' := fun _ _ ↦ rfl
-  map_smul' := fun _ _ ↦ rfl
-  left_inv := by intro ; simp only [eq_iff_true_of_subsingleton]
-  right_inv := fun _ ↦ rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := rfl
 #align submodule.bot_equiv_punit Submodule.botEquivPUnit
 
 theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
@@ -183,14 +180,13 @@ theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=
 
 This is the module version of `AddSubmonoid.topEquiv`. -/
 @[simps]
-def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M
-    where
+def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
   toFun x := x
   invFun x := ⟨x, mem_top⟩
-  map_add' := fun _ _ ↦ rfl
-  map_smul' := fun _ _ ↦ rfl
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align submodule.top_equiv Submodule.topEquiv
 
 instance : InfSet (Submodule R M) :=
@@ -200,34 +196,35 @@ instance : InfSet (Submodule R M) :=
       add_mem' := by simp (config := { contextual := true }) [add_mem]
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
-private theorem Inf_le' {S : Set (Submodule R M)} {p} : p ∈ S → infₛ S ≤ p :=
-  Set.binterᵢ_subset_of_mem
+private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
+  Set.biInter_subset_of_mem
 
-private theorem le_Inf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ infₛ S :=
-  Set.subset_interᵢ₂
+private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
+  Set.subset_iInter₂
 
-instance : HasInf (Submodule R M) :=
+instance : Inf (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
       add_mem' := by simp (config := { contextual := true }) [add_mem]
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
-instance : CompleteLattice (Submodule R M) :=
+instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
-    sup := fun a b ↦ infₛ { x | a ≤ x ∧ b ≤ x }
-    le_sup_left := fun _ _ ↦ le_Inf' fun _ ⟨h, _⟩ ↦ h
-    le_sup_right := fun _ _ ↦ le_Inf' fun _ ⟨_, h⟩ ↦ h
-    sup_le := fun _ _ _ h₁ h₂ ↦ Inf_le' ⟨h₁, h₂⟩
+    sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
+    le_sup_left := fun _ _ ↦ le_sInf' fun _ ⟨h, _⟩ ↦ h
+    le_sup_right := fun _ _ ↦ le_sInf' fun _ ⟨_, h⟩ ↦ h
+    sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
     inf := (· ⊓ ·)
     le_inf := fun _ _ _ ↦ Set.subset_inter
     inf_le_left := fun _ _ ↦ Set.inter_subset_left _ _
     inf_le_right := fun _ _ ↦ Set.inter_subset_right _ _
-    le_supₛ := fun _ _ hs ↦ le_Inf' fun _ hq ↦ by exact hq _ hs
-    supₛ_le := fun _ _ hs ↦ Inf_le' hs
-    le_infₛ := fun _ _ ↦ le_Inf'
-    infₛ_le := fun _ _ ↦ Inf_le' }
+    le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
+    sSup_le := fun _ _ hs ↦ sInf_le' hs
+    le_sInf := fun _ _ ↦ le_sInf'
+    sInf_le := fun _ _ ↦ sInf_le' }
+#align submodule.complete_lattice Submodule.completeLattice
 
 @[simp]
 theorem inf_coe : ↑(p ⊓ q) = (p ∩ q : Set M) :=
@@ -240,9 +237,9 @@ theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x 
 #align submodule.mem_inf Submodule.mem_inf
 
 @[simp]
-theorem infₛ_coe (P : Set (Submodule R M)) : (↑(infₛ P) : Set M) = ⋂ p ∈ P, ↑p :=
+theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
   rfl
-#align submodule.Inf_coe Submodule.infₛ_coe
+#align submodule.Inf_coe Submodule.sInf_coe
 
 @[simp]
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
@@ -255,24 +252,24 @@ theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
 #align submodule.finset_inf_coe Submodule.finset_inf_coe
 
 @[simp]
-theorem infᵢ_coe {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
-  rw [infᵢ, infₛ_coe] ; simp only [Set.mem_range, Set.interᵢ_exists, Set.interᵢ_interᵢ_eq']
-#align submodule.infi_coe Submodule.infᵢ_coe
+theorem iInf_coe {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
+  rw [iInf, sInf_coe]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
+#align submodule.infi_coe Submodule.iInf_coe
 
 @[simp]
-theorem mem_infₛ {S : Set (Submodule R M)} {x : M} : x ∈ infₛ S ↔ ∀ p ∈ S, x ∈ p :=
-  Set.mem_interᵢ₂
-#align submodule.mem_Inf Submodule.mem_infₛ
+theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
+  Set.mem_iInter₂
+#align submodule.mem_Inf Submodule.mem_sInf
 
 @[simp]
-theorem mem_infᵢ {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
-  rw [← SetLike.mem_coe, infᵢ_coe, Set.mem_interᵢ] ; rfl
-#align submodule.mem_infi Submodule.mem_infᵢ
+theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
+  rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
+#align submodule.mem_infi Submodule.mem_iInf
 
 @[simp]
 theorem mem_finset_inf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
-  simp only [← SetLike.mem_coe, finset_inf_coe, Set.mem_interᵢ]
+  simp only [← SetLike.mem_coe, finset_inf_coe, Set.mem_iInter]
 #align submodule.mem_finset_inf Submodule.mem_finset_inf
 
 theorem mem_sup_left {S T : Submodule R M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
@@ -297,32 +294,32 @@ theorem sub_mem_sup {R' M' : Type _} [Ring R'] [AddCommGroup M'] [Module R' M']
   exact add_mem_sup hs (neg_mem ht)
 #align submodule.sub_mem_sup Submodule.sub_mem_sup
 
-theorem mem_supᵢ_of_mem {ι : Sort _} {b : M} {p : ι → Submodule R M} (i : ι) (h : b ∈ p i) :
+theorem mem_iSup_of_mem {ι : Sort _} {b : M} {p : ι → Submodule R M} (i : ι) (h : b ∈ p i) :
     b ∈ ⨆ i, p i :=
-  (le_supᵢ p i) h
-#align submodule.mem_supr_of_mem Submodule.mem_supᵢ_of_mem
+  (le_iSup p i) h
+#align submodule.mem_supr_of_mem Submodule.mem_iSup_of_mem
 
 open BigOperators
 
-theorem sum_mem_supᵢ {ι : Type _} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
+theorem sum_mem_iSup {ι : Type _} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i, f i ∈ p i) : (∑ i, f i) ∈ ⨆ i, p i :=
-  sum_mem fun i _ ↦ mem_supᵢ_of_mem i (h i)
-#align submodule.sum_mem_supr Submodule.sum_mem_supᵢ
+  sum_mem fun i _ ↦ mem_iSup_of_mem i (h i)
+#align submodule.sum_mem_supr Submodule.sum_mem_iSup
 
-theorem sum_mem_bsupr {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
+theorem sum_mem_biSup {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i ∈ s, f i ∈ p i) : (∑ i in s, f i) ∈ ⨆ i ∈ s, p i :=
-  sum_mem fun i hi ↦ mem_supᵢ_of_mem i <| mem_supᵢ_of_mem hi (h i hi)
-#align submodule.sum_mem_bsupr Submodule.sum_mem_bsupr
+  sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
+#align submodule.sum_mem_bsupr Submodule.sum_mem_biSup
 
-/-! Note that `Submodule.mem_supr` is provided in `LinearAlgebra/Span.lean`. -/
+/-! Note that `Submodule.mem_iSup` is provided in `LinearAlgebra/Span.lean`. -/
 
 
-theorem mem_supₛ_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
-    ∀ {x : M}, x ∈ s → x ∈ supₛ S := by
-  have := le_supₛ hs
+theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
+    ∀ {x : M}, x ∈ s → x ∈ sSup S := by
+  have := le_sSup hs
   rw [LE.le] at this
   exact this
-#align submodule.mem_Sup_of_mem Submodule.mem_supₛ_of_mem
+#align submodule.mem_Sup_of_mem Submodule.mem_sSup_of_mem
 
 theorem disjoint_def {p p' : Submodule R M} : Disjoint p p' ↔ ∀ x ∈ p, x ∈ p' → x = (0 : M) :=
   disjoint_iff_inf_le.trans <| show (∀ x, x ∈ p ∧ x ∈ p' → x ∈ ({0} : Set M)) ↔ _ by simp
@@ -344,12 +341,11 @@ section NatSubmodule
 
 -- Porting note: `S.toNatSubmodule` doesn't work. I used `AddSubmonoid.toNatSubmodule S` instead.
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
-def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M
-    where
+def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M where
   toFun S := { S with smul_mem' := fun r s hs ↦ show r • s ∈ S from nsmul_mem hs _ }
   invFun := Submodule.toAddSubmonoid
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 #align add_submonoid.to_nat_submodule AddSubmonoid.toNatSubmodule
 
@@ -387,12 +383,11 @@ variable [AddCommGroup M]
 
 -- Porting note: `S.toIntSubmodule` doesn't work. I used `AddSubgroup.toIntSubmodule S` instead.
 /-- An additive subgroup is equivalent to a ℤ-submodule. -/
-def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M
-    where
+def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M where
   toFun S := { S with smul_mem' := fun _ _ hs ↦ S.zsmul_mem hs _ }
   invFun := Submodule.toAddSubgroup
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 #align add_subgroup.to_int_submodule AddSubgroup.toIntSubmodule
 

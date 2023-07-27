@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.big_operators.associated
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Finsupp
+
+#align_import algebra.big_operators.associated from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Products of associated, prime, and irreducible elements.
@@ -55,8 +52,7 @@ end Prime
 
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α} (hp : Prime p)
     {s : Multiset α} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
-  Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps =>
-    by
+  Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
     rw [Multiset.prod_cons] at hps
     cases' hp.dvd_or_dvd hps with h h
     · have hap := hs a (Multiset.mem_cons.2 (Or.inl rfl))
@@ -99,7 +95,6 @@ theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : 
           intro a
           simp only [Multiset.map_id', associated_eq_eq, Multiset.countp_eq_card_filter]
           change Multiset.card (Multiset.filter (fun b => a = b) s.val) ≤ 1
-          simp_rw [@eq_comm _ a]
           apply le_of_eq_of_le (Multiset.count_eq_card_filter_eq _ _).symm
           apply Multiset.nodup_iff_count_le_one.mp
           exact s.nodup)

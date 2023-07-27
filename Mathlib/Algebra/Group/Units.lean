@@ -2,17 +2,13 @@
 Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.group.units
-! leanprover-community/mathlib commit 0f601d095cdfe465edc51882323d19e6b333c419
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Simps.Basic
+
+#align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -113,9 +109,9 @@ attribute [instance] AddUnits.instCoeHeadAddUnits
 
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
-instance : Inv αˣ :=
+instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
-attribute [instance] AddUnits.instNegAddUnits
+attribute [instance] AddUnits.instNeg
 
 /- porting note: the result of these definitions is syntactically equal to `Units.val` and
 `Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
@@ -133,12 +129,11 @@ theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
 #align add_units.coe_mk AddUnits.val_mk
 
 @[to_additive (attr := ext)]
-theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
+theorem ext : Function.Injective (val : αˣ → α)
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr;
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 #align units.ext Units.ext
-
 #align add_units.ext AddUnits.ext
 
 @[to_additive (attr := norm_cast)]
@@ -163,10 +158,10 @@ attribute [instance] AddUnits.instDecidableEqAddUnits
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 #align units.mk_coe Units.mk_val
-#align add_units.mk_coe Units.mk_val
+#align add_units.mk_coe AddUnits.mk_val
 
 /-- Copy a unit, adjusting definition equalities. -/
-@[to_additive "Copy an `AddUnit`, adjusting definitional equalities.", simps]
+@[to_additive (attr := simps) "Copy an `AddUnit`, adjusting definitional equalities."]
 def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) : αˣ :=
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
 #align units.copy Units.copy
@@ -216,7 +211,7 @@ instance : Inhabited αˣ :=
 attribute [instance] AddUnits.instInhabitedAddUnits
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
-@[to_additive "Additive units of an addditive monoid have a representation of the base value in
+@[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
@@ -485,7 +480,9 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 #align divp_divp_eq_divp_mul divp_divp_eq_divp_mul
 
-@[field_simps]
+/- Port note: to match the mathlib3 behavior, this needs to have higher simp
+priority than eq_divp_iff_mul_eq. -/
+@[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
   u.mul_left_inj.symm.trans <| by rw [divp_mul_cancel]; exact ⟨Eq.symm, Eq.symm⟩
 #align divp_eq_iff_mul_eq divp_eq_iff_mul_eq
@@ -549,6 +546,28 @@ theorem divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * 
   rw [divp_mul_eq_mul_divp, divp_assoc', divp_divp_eq_divp_mul]
 #align divp_mul_divp divp_mul_divp
 
+variable [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by rwa [mul_comm]) h) 1
+#align eq_one_of_mul_right eq_one_of_mul_right
+#align eq_zero_of_add_right eq_zero_of_add_right
+
+@[to_additive]
+theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ h <| by rwa [mul_comm]) 1
+#align eq_one_of_mul_left eq_one_of_mul_left
+#align eq_zero_of_add_left eq_zero_of_add_left
+
+@[to_additive (attr := simp)]
+theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
+    rintro ⟨rfl, rfl⟩
+    exact mul_one _⟩
+#align mul_eq_one mul_eq_one
+#align add_eq_zero add_eq_zero
+
 end CommMonoid
 
 /-!
@@ -578,9 +597,9 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
-attribute [nontriviality] isAddUnit_of_subsingleton
-
--- Porting note: removing the `CanLift` instance
+@[to_additive]
+instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
+  { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
@@ -707,7 +726,7 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_add_unit.add_unit IsAddUnit.addUnit
-attribute [to_additive] IsUnit.unit
+attribute [to_additive existing] IsUnit.unit
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
@@ -734,7 +753,7 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
-@[to_additive]
+@[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 attribute [instance] IsAddUnit.instDecidableIsAddUnit

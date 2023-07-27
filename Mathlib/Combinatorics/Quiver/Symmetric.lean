@@ -2,16 +2,12 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
-Ported by: Joël Riou, Rémi Bottinelli
-
-! This file was ported from Lean 3 source module combinatorics.quiver.symmetric
-! leanprover-community/mathlib commit 706d88f2b8fdfeb0b22796433d7a6c1a010af9f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Data.Sum.Basic
+
+#align_import combinatorics.quiver.symmetric from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
 /-!
 ## Symmetric quivers and arrow reversal
@@ -54,7 +50,7 @@ def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b �
   HasReverse.reverse'
 #align quiver.reverse Quiver.reverse
 
-/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity.`-/
+/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
 class HasInvolutiveReverse extends HasReverse V where
   /-- `reverse` is involutive -/
   inv' : ∀ {a b : V} (f : a ⟶ b), reverse (reverse f) = f
@@ -80,7 +76,6 @@ theorem reverse_inj [h : HasInvolutiveReverse V] {a b : V}
 theorem eq_reverse_iff [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b)
     (g : b ⟶ a) : f = reverse g ↔ reverse f = g := by
   rw [←reverse_inj, reverse_reverse]
-
 #align quiver.eq_reverse_iff Quiver.eq_reverse_iff
 
 section MapReverse
@@ -256,7 +251,7 @@ end Push
 /-- A quiver is preconnected iff there exists a path between any pair of
 vertices.
 Note that if `V` doesn't `HasReverse`, then the definition is stronger than
-simply having a preconnected underlying `simple_graph`, since a path in one
+simply having a preconnected underlying `SimpleGraph`, since a path in one
 direction doesn't induce one in the other.
 -/
 def IsPreconnected (V) [Quiver.{u + 1} V] :=

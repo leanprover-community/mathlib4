@@ -5,27 +5,9 @@ Authors: Floris van Doorn, Leonardo de Moura
 -/
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Util.CompileInductive
 
 namespace Nat
-
-
-section recursor_workarounds
-
-/-- A computable version of `Nat.rec`. Workaround until Lean has native support for this. -/
-def recC.{u} {motive : ℕ → Sort u} (zero : motive zero)
-  (succ : (n : ℕ) → motive n → motive (succ n)) :
-  (t : ℕ) → motive t
-| 0 => zero
-| (n + 1) => succ n (recC zero succ n)
-
-@[csimp]
-theorem rec_eq_recC : @Nat.rec = @Nat.recC := by
-  funext motive zero succ n
-  induction n with
-  | zero => rfl
-  | succ n ih => rw [Nat.recC, ←ih]
-
-end recursor_workarounds
 
 set_option linter.deprecated false
 
@@ -39,7 +21,6 @@ protected theorem zero_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 0 < bit0 n
     calc
       0 < succ (succ (bit0 n)) := zero_lt_succ _
       _ = bit0 (succ n) := (Nat.bit0_succ_eq n).symm
-
 #align nat.zero_lt_bit0 Nat.zero_lt_bit0
 
 protected theorem zero_lt_bit1 (n : Nat) : 0 < bit1 n :=
@@ -59,4 +40,3 @@ protected theorem bit1_ne_zero (n : ℕ) : bit1 n ≠ 0 :=
 #align nat.bit1_ne_zero Nat.bit1_ne_zero
 
 end Nat
-

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.support
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Data.Set.Finite
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.GroupAction.Pi
+
+#align_import algebra.support from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
 /-!
 # Support of a function
@@ -42,7 +39,7 @@ def support [Zero A] (f : α → A) : Set α :=
 #align function.support Function.support
 
 /-- `mulSupport` of a function is the set of points `x` such that `f x ≠ 1`. -/
-@[to_additive]
+@[to_additive existing]
 def mulSupport (f : α → M) : Set α :=
   { x | f x ≠ 1 }
 #align function.mul_support Function.mulSupport
@@ -60,7 +57,7 @@ theorem nmem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1
 #align function.nmem_support Function.nmem_support
 
 @[to_additive]
-theorem compl_mulSupport {f : α → M} : mulSupport fᶜ = { x | f x = 1 } :=
+theorem compl_mulSupport {f : α → M} : (mulSupport f)ᶜ = { x | f x = 1 } :=
   ext fun _ => nmem_mulSupport
 #align function.compl_mul_support Function.compl_mulSupport
 #align function.compl_support Function.compl_support
@@ -89,7 +86,6 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
     mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
   simp (config := { contextual := true }) only [ext_iff, mem_mulSupport, ne_eq, iff_def,
     not_imp_comm, and_comm, forall_and]
-
 #align function.mul_support_eq_iff Function.mulSupport_eq_iff
 #align function.support_eq_iff Function.support_eq_iff
 
@@ -121,8 +117,8 @@ theorem mulSupport_nonempty_iff {f : α → M} : (mulSupport f).Nonempty ↔ f �
 #align function.support_nonempty_iff Function.support_nonempty_iff
 
 @[to_additive]
-theorem range_subset_insert_image_mulSupport (f : α → M) : range f ⊆ insert 1 (f '' mulSupport f) :=
-  by
+theorem range_subset_insert_image_mulSupport (f : α → M) :
+    range f ⊆ insert 1 (f '' mulSupport f) := by
   simpa only [range_subset_iff, mem_insert_iff, or_iff_not_imp_left] using
     fun x (hx : x ∈ mulSupport f) => mem_image_of_mem f hx
 #align function.range_subset_insert_image_mul_support Function.range_subset_insert_image_mulSupport
@@ -183,21 +179,21 @@ theorem mulSupport_min [LinearOrder M] (f g : α → M) :
 #align function.support_min Function.support_min
 
 @[to_additive]
-theorem mulSupport_supᵢ [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
+theorem mulSupport_iSup [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
     (mulSupport fun x => ⨆ i, f i x) ⊆ ⋃ i, mulSupport (f i) := by
   rw [mulSupport_subset_iff']
-  simp only [mem_unionᵢ, not_exists, nmem_mulSupport]
+  simp only [mem_iUnion, not_exists, nmem_mulSupport]
   intro x hx
-  simp only [hx, csupᵢ_const]
-#align function.mul_support_supr Function.mulSupport_supᵢ
-#align function.support_supr Function.support_supᵢ
+  simp only [hx, ciSup_const]
+#align function.mul_support_supr Function.mulSupport_iSup
+#align function.support_supr Function.support_iSup
 
 @[to_additive]
-theorem mulSupport_infᵢ [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
+theorem mulSupport_iInf [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
     (mulSupport fun x => ⨅ i, f i x) ⊆ ⋃ i, mulSupport (f i) :=
-  @mulSupport_supᵢ _ Mᵒᵈ ι ⟨(1 : M)⟩ _ _ f
-#align function.mul_support_infi Function.mulSupport_infᵢ
-#align function.support_infi Function.support_infᵢ
+  @mulSupport_iSup _ Mᵒᵈ ι ⟨(1 : M)⟩ _ _ f
+#align function.mul_support_infi Function.mulSupport_iInf
+#align function.support_infi Function.support_iInf
 
 @[to_additive]
 theorem mulSupport_comp_subset {g : M → N} (hg : g 1 = 1) (f : α → M) :
@@ -217,6 +213,12 @@ theorem mulSupport_comp_eq (g : M → N) (hg : ∀ {x}, g x = 1 ↔ x = 1) (f : 
   Set.ext fun _ => not_congr hg
 #align function.mul_support_comp_eq Function.mulSupport_comp_eq
 #align function.support_comp_eq Function.support_comp_eq
+
+@[to_additive]
+theorem mulSupport_comp_eq_of_range_subset {g : M → N} {f : α → M}
+    (hg : ∀ {x}, x ∈ range f → (g x = 1 ↔ x = 1)) :
+    mulSupport (g ∘ f) = mulSupport f :=
+  Set.ext fun x ↦ not_congr <| by rw [Function.comp, hg (mem_range_self x)]
 
 @[to_additive]
 theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
@@ -263,7 +265,7 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
 #align function.mul_support_mul Function.mulSupport_mul
 #align function.support_add Function.support_add
 
-@[to_additive support_nsmul]
+@[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction' n with n hfn
@@ -301,6 +303,50 @@ theorem mulSupport_div : (mulSupport fun x => f x / g x) ⊆ mulSupport f ∪ mu
 #align function.support_sub Function.support_sub
 
 end DivisionMonoid
+
+section ZeroOne
+
+variable (R) [Zero R] [One R] [NeZero (1 : R)]
+
+@[simp]
+theorem support_one : support (1 : α → R) = univ :=
+  support_const one_ne_zero
+#align function.support_one Function.support_one
+
+@[simp]
+theorem mulSupport_zero : mulSupport (0 : α → R) = univ :=
+  mulSupport_const zero_ne_one
+#align function.mul_support_zero Function.mulSupport_zero
+
+end ZeroOne
+
+section AddMonoidWithOne
+
+variable [AddMonoidWithOne R] [CharZero R] {n : ℕ}
+
+theorem support_nat_cast (hn : n ≠ 0) : support (n : α → R) = univ :=
+  support_const <| Nat.cast_ne_zero.2 hn
+#align function.support_nat_cast Function.support_nat_cast
+
+theorem mulSupport_nat_cast (hn : n ≠ 1) : mulSupport (n : α → R) = univ :=
+  mulSupport_const <| Nat.cast_ne_one.2 hn
+#align function.mul_support_nat_cast Function.mulSupport_nat_cast
+
+end AddMonoidWithOne
+
+section AddGroupWithOne
+
+variable [AddGroupWithOne R] [CharZero R] {n : ℤ}
+
+theorem support_int_cast (hn : n ≠ 0) : support (n : α → R) = univ :=
+  support_const <| Int.cast_ne_zero.2 hn
+#align function.support_int_cast Function.support_int_cast
+
+theorem mulSupport_int_cast (hn : n ≠ 1) : mulSupport (n : α → R) = univ :=
+  mulSupport_const <| Int.cast_ne_one.2 hn
+#align function.mul_support_int_cast Function.mulSupport_int_cast
+
+end AddGroupWithOne
 
 theorem support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
     (g : α → M) : support (f • g) = support f ∩ support g :=
@@ -351,20 +397,20 @@ theorem support_div [GroupWithZero G₀] (f g : α → G₀) :
 theorem mulSupport_prod [CommMonoid M] (s : Finset α) (f : α → β → M) :
     (mulSupport fun x => ∏ i in s, f i x) ⊆ ⋃ i ∈ s, mulSupport (f i) := by
   rw [mulSupport_subset_iff']
-  simp only [mem_unionᵢ, not_exists, nmem_mulSupport]
+  simp only [mem_iUnion, not_exists, nmem_mulSupport]
   exact fun x => Finset.prod_eq_one
 #align function.mul_support_prod Function.mulSupport_prod
 #align function.support_sum Function.support_sum
 
 theorem support_prod_subset [CommMonoidWithZero A] (s : Finset α) (f : α → β → A) :
     (support fun x => ∏ i in s, f i x) ⊆ ⋂ i ∈ s, support (f i) := fun _ hx =>
-  mem_interᵢ₂.2 fun _ hi H => hx <| Finset.prod_eq_zero hi H
+  mem_iInter₂.2 fun _ hi H => hx <| Finset.prod_eq_zero hi H
 #align function.support_prod_subset Function.support_prod_subset
 
 theorem support_prod [CommMonoidWithZero A] [NoZeroDivisors A] [Nontrivial A] (s : Finset α)
     (f : α → β → A) : (support fun x => ∏ i in s, f i x) = ⋂ i ∈ s, support (f i) :=
   Set.ext fun x => by
-    simp [support, Ne.def, Finset.prod_eq_zero_iff, mem_setOf_eq, Set.mem_interᵢ, not_exists]
+    simp [support, Ne.def, Finset.prod_eq_zero_iff, mem_setOf_eq, Set.mem_iInter, not_exists]
 #align function.support_prod Function.support_prod
 
 theorem mulSupport_one_add [One R] [AddLeftCancelMonoid R] (f : α → R) :

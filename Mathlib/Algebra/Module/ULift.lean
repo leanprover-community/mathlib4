@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.module.ulift
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Module.Equiv
+
+#align_import algebra.module.ulift from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # `ULift` instances for module and multiplicative actions
@@ -80,7 +77,7 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M 
 #align ulift.smul_zero_class ULift.smulZeroClass
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
-  smul_zero c := by { ext;  simp [smul_zero] }
+  smul_zero c := by { ext; simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
 instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
@@ -90,9 +87,7 @@ instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) 
 instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
   smul_add c f g := by
     ext
-    -- Porting note: TODO this used to be a simple `simp [smul_add]` but that timeouts
-    simp only [smul_down, add_down]
-    rw [smul_add]
+    simp [smul_add]
 #align ulift.distrib_smul' ULift.distribSmul'
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
@@ -116,11 +111,9 @@ instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
   { ULift.mulAction' with
     smul_one := fun _ => by
       ext
-      dsimp only [smul_down, one_down]  -- Porting note: TODO this wasn't necessary
       simp [smul_one]
     smul_mul := fun _ _ _ => by
       ext
-      dsimp only [smul_down, mul_down] -- Porting note: TODO this wasn't necessary
       simp [smul_mul'] }
 #align ulift.mul_distrib_mul_action' ULift.mulDistribMulAction'
 
@@ -168,7 +161,7 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M
 #align ulift.module' ULift.module'
 
 /-- The `R`-linear equivalence between `ULift M` and `M`. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M where
   toFun := ULift.down
   invFun := ULift.up

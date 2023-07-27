@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.order.positive.ring
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
+
+#align_import algebra.order.positive.ring from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -140,7 +137,7 @@ section mul_comm
 instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
     OrderedCommMonoid { x : R // 0 < x } :=
   { Subtype.partialOrder _,
-    Subtype.coe_injective.commMonoid (Subtype.val) val_one val_mul val_pow with
+    Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow with
     mul_le_mul_left := fun _ _ hxy c =>
       Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_left hxy c.2.le }
 #align positive.subtype.ordered_comm_monoid Positive.orderedCommMonoid

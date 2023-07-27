@@ -2,14 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.pi
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Lattice
+
+#align_import data.set.intervals.pi from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
 /-!
 # Intervals in `pi`-space
@@ -18,6 +17,9 @@ In this we prove various simple lemmas about intervals in `Π i, α i`. Closed i
 `Iic x`, `Icc x y`) are equal to products of their projections to `α i`, while (semi-)open intervals
 usually include the corresponding products as proper subsets.
 -/
+
+-- porting note: Added, since dot notation no longer works on `Function.update`
+open Function
 
 variable {ι : Type _} {α : ι → Type _}
 
@@ -109,8 +111,7 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
 
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
-      (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) :=
-  by 
+    (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
   rintro z h₁ h₂
   refine' (h₁ i₀ (mem_univ _)).2.not_lt _
@@ -118,6 +119,214 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
 #align set.disjoint_pi_univ_Ioc_update_left_right Set.disjoint_pi_univ_Ioc_update_left_right
 
 end PiPreorder
+
+section PiPartialOrder
+
+variable [DecidableEq ι] [∀ i, PartialOrder (α i)]
+
+-- porting note: Dot notation on `Function.update` broke
+theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
+    update f i '' Icc a b = Icc (update f i a) (update f i b) := by
+  ext x
+  rw [← Set.pi_univ_Icc]
+  refine' ⟨_, fun h => ⟨x i, _, _⟩⟩
+  · rintro ⟨c, hc, rfl⟩
+    simpa [update_le_update_iff]
+  · simpa only [Function.update_same] using h i (mem_univ i)
+  · ext j
+    obtain rfl | hij := eq_or_ne i j
+    · exact Function.update_same _ _ _
+    · simpa only [Function.update_noteq hij.symm, le_antisymm_iff] using h j (mem_univ j)
+#align set.image_update_Icc Set.image_update_Icc
+
+theorem image_update_Ico (f : ∀ i, α i) (i : ι) (a b : α i) :
+    update f i '' Ico a b = Ico (update f i a) (update f i b) := by
+  rw [← Icc_diff_right, ← Icc_diff_right, image_diff (update_injective _ _), image_singleton,
+    image_update_Icc]
+#align set.image_update_Ico Set.image_update_Ico
+
+theorem image_update_Ioc (f : ∀ i, α i) (i : ι) (a b : α i) :
+    update f i '' Ioc a b = Ioc (update f i a) (update f i b) := by
+  rw [← Icc_diff_left, ← Icc_diff_left, image_diff (update_injective _ _), image_singleton,
+    image_update_Icc]
+#align set.image_update_Ioc Set.image_update_Ioc
+
+theorem image_update_Ioo (f : ∀ i, α i) (i : ι) (a b : α i) :
+    update f i '' Ioo a b = Ioo (update f i a) (update f i b) := by
+  rw [← Ico_diff_left, ← Ico_diff_left, image_diff (update_injective _ _), image_singleton,
+    image_update_Ico]
+#align set.image_update_Ioo Set.image_update_Ioo
+
+theorem image_update_Icc_left (f : ∀ i, α i) (i : ι) (a : α i) :
+    update f i '' Icc a (f i) = Icc (update f i a) f := by simpa using image_update_Icc f i a (f i)
+#align set.image_update_Icc_left Set.image_update_Icc_left
+
+theorem image_update_Ico_left (f : ∀ i, α i) (i : ι) (a : α i) :
+    update f i '' Ico a (f i) = Ico (update f i a) f := by simpa using image_update_Ico f i a (f i)
+#align set.image_update_Ico_left Set.image_update_Ico_left
+
+theorem image_update_Ioc_left (f : ∀ i, α i) (i : ι) (a : α i) :
+    update f i '' Ioc a (f i) = Ioc (update f i a) f := by simpa using image_update_Ioc f i a (f i)
+#align set.image_update_Ioc_left Set.image_update_Ioc_left
+
+theorem image_update_Ioo_left (f : ∀ i, α i) (i : ι) (a : α i) :
+    update f i '' Ioo a (f i) = Ioo (update f i a) f := by simpa using image_update_Ioo f i a (f i)
+#align set.image_update_Ioo_left Set.image_update_Ioo_left
+
+theorem image_update_Icc_right (f : ∀ i, α i) (i : ι) (b : α i) :
+    update f i '' Icc (f i) b = Icc f (update f i b) := by simpa using image_update_Icc f i (f i) b
+#align set.image_update_Icc_right Set.image_update_Icc_right
+
+theorem image_update_Ico_right (f : ∀ i, α i) (i : ι) (b : α i) :
+    update f i '' Ico (f i) b = Ico f (update f i b) := by simpa using image_update_Ico f i (f i) b
+#align set.image_update_Ico_right Set.image_update_Ico_right
+
+theorem image_update_Ioc_right (f : ∀ i, α i) (i : ι) (b : α i) :
+    update f i '' Ioc (f i) b = Ioc f (update f i b) := by simpa using image_update_Ioc f i (f i) b
+#align set.image_update_Ioc_right Set.image_update_Ioc_right
+
+theorem image_update_Ioo_right (f : ∀ i, α i) (i : ι) (b : α i) :
+    update f i '' Ioo (f i) b = Ioo f (update f i b) := by simpa using image_update_Ioo f i (f i) b
+#align set.image_update_Ioo_right Set.image_update_Ioo_right
+
+variable [∀ i, One (α i)]
+
+@[to_additive]
+theorem image_mulSingle_Icc (i : ι) (a b : α i) :
+    Pi.mulSingle i '' Icc a b = Icc (Pi.mulSingle i a) (Pi.mulSingle i b) :=
+  image_update_Icc _ _ _ _
+#align set.image_mul_single_Icc Set.image_mulSingle_Icc
+#align set.image_single_Icc Set.image_single_Icc
+
+@[to_additive]
+theorem image_mulSingle_Ico (i : ι) (a b : α i) :
+    Pi.mulSingle i '' Ico a b = Ico (Pi.mulSingle i a) (Pi.mulSingle i b) :=
+  image_update_Ico _ _ _ _
+#align set.image_mul_single_Ico Set.image_mulSingle_Ico
+#align set.image_single_Ico Set.image_single_Ico
+
+@[to_additive]
+theorem image_mulSingle_Ioc (i : ι) (a b : α i) :
+    Pi.mulSingle i '' Ioc a b = Ioc (Pi.mulSingle i a) (Pi.mulSingle i b) :=
+  image_update_Ioc _ _ _ _
+#align set.image_mul_single_Ioc Set.image_mulSingle_Ioc
+#align set.image_single_Ioc Set.image_single_Ioc
+
+@[to_additive]
+theorem image_mulSingle_Ioo (i : ι) (a b : α i) :
+    Pi.mulSingle i '' Ioo a b = Ioo (Pi.mulSingle i a) (Pi.mulSingle i b) :=
+  image_update_Ioo _ _ _ _
+#align set.image_mul_single_Ioo Set.image_mulSingle_Ioo
+#align set.image_single_Ioo Set.image_single_Ioo
+
+@[to_additive]
+theorem image_mulSingle_Icc_left (i : ι) (a : α i) :
+    Pi.mulSingle i '' Icc a 1 = Icc (Pi.mulSingle i a) 1 :=
+  image_update_Icc_left _ _ _
+#align set.image_mul_single_Icc_left Set.image_mulSingle_Icc_left
+#align set.image_single_Icc_left Set.image_single_Icc_left
+
+@[to_additive]
+theorem image_mulSingle_Ico_left (i : ι) (a : α i) :
+    Pi.mulSingle i '' Ico a 1 = Ico (Pi.mulSingle i a) 1 :=
+  image_update_Ico_left _ _ _
+#align set.image_mul_single_Ico_left Set.image_mulSingle_Ico_left
+#align set.image_single_Ico_left Set.image_single_Ico_left
+
+@[to_additive]
+theorem image_mulSingle_Ioc_left (i : ι) (a : α i) :
+    Pi.mulSingle i '' Ioc a 1 = Ioc (Pi.mulSingle i a) 1 :=
+  image_update_Ioc_left _ _ _
+#align set.image_mul_single_Ioc_left Set.image_mulSingle_Ioc_left
+#align set.image_single_Ioc_left Set.image_single_Ioc_left
+
+@[to_additive]
+theorem image_mulSingle_Ioo_left (i : ι) (a : α i) :
+    Pi.mulSingle i '' Ioo a 1 = Ioo (Pi.mulSingle i a) 1 :=
+  image_update_Ioo_left _ _ _
+#align set.image_mul_single_Ioo_left Set.image_mulSingle_Ioo_left
+#align set.image_single_Ioo_left Set.image_single_Ioo_left
+
+@[to_additive]
+theorem image_mulSingle_Icc_right (i : ι) (b : α i) :
+    Pi.mulSingle i '' Icc 1 b = Icc 1 (Pi.mulSingle i b) :=
+  image_update_Icc_right _ _ _
+#align set.image_mul_single_Icc_right Set.image_mulSingle_Icc_right
+#align set.image_single_Icc_right Set.image_single_Icc_right
+
+@[to_additive]
+theorem image_mulSingle_Ico_right (i : ι) (b : α i) :
+    Pi.mulSingle i '' Ico 1 b = Ico 1 (Pi.mulSingle i b) :=
+  image_update_Ico_right _ _ _
+#align set.image_mul_single_Ico_right Set.image_mulSingle_Ico_right
+#align set.image_single_Ico_right Set.image_single_Ico_right
+
+@[to_additive]
+theorem image_mulSingle_Ioc_right (i : ι) (b : α i) :
+    Pi.mulSingle i '' Ioc 1 b = Ioc 1 (Pi.mulSingle i b) :=
+  image_update_Ioc_right _ _ _
+#align set.image_mul_single_Ioc_right Set.image_mulSingle_Ioc_right
+#align set.image_single_Ioc_right Set.image_single_Ioc_right
+
+@[to_additive]
+theorem image_mulSingle_Ioo_right (i : ι) (b : α i) :
+    Pi.mulSingle i '' Ioo 1 b = Ioo 1 (Pi.mulSingle i b) :=
+  image_update_Ioo_right _ _ _
+#align set.image_mul_single_Ioo_right Set.image_mulSingle_Ioo_right
+#align set.image_single_Ioo_right Set.image_single_Ioo_right
+
+end PiPartialOrder
+
+section PiLattice
+
+variable [∀ i, Lattice (α i)]
+
+@[simp]
+theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i => uIcc (a i) (b i)) = uIcc a b :=
+  pi_univ_Icc _ _
+#align set.pi_univ_uIcc Set.pi_univ_uIcc
+
+variable [DecidableEq ι]
+
+theorem image_update_uIcc (f : ∀ i, α i) (i : ι) (a b : α i) :
+    update f i '' uIcc a b = uIcc (update f i a) (update f i b) :=
+  (image_update_Icc _ _ _ _).trans <| by simp_rw [uIcc, update_sup, update_inf]
+#align set.image_update_uIcc Set.image_update_uIcc
+
+theorem image_update_uIcc_left (f : ∀ i, α i) (i : ι) (a : α i) :
+    update f i '' uIcc a (f i) = uIcc (update f i a) f := by
+  simpa using image_update_uIcc f i a (f i)
+#align set.image_update_uIcc_left Set.image_update_uIcc_left
+
+theorem image_update_uIcc_right (f : ∀ i, α i) (i : ι) (b : α i) :
+    update f i '' uIcc (f i) b = uIcc f (update f i b) := by
+  simpa using image_update_uIcc f i (f i) b
+#align set.image_update_uIcc_right Set.image_update_uIcc_right
+
+variable [∀ i, One (α i)]
+
+@[to_additive]
+theorem image_mulSingle_uIcc (i : ι) (a b : α i) :
+    Pi.mulSingle i '' uIcc a b = uIcc (Pi.mulSingle i a) (Pi.mulSingle i b) :=
+  image_update_uIcc _ _ _ _
+#align set.image_mul_single_uIcc Set.image_mulSingle_uIcc
+#align set.image_single_uIcc Set.image_single_uIcc
+
+@[to_additive]
+theorem image_mulSingle_uIcc_left (i : ι) (a : α i) :
+    Pi.mulSingle i '' uIcc a 1 = uIcc (Pi.mulSingle i a) 1 :=
+  image_update_uIcc_left _ _ _
+#align set.image_mul_single_uIcc_left Set.image_mulSingle_uIcc_left
+#align set.image_single_uIcc_left Set.image_single_uIcc_left
+
+@[to_additive]
+theorem image_mulSingle_uIcc_right (i : ι) (b : α i) :
+    Pi.mulSingle i '' uIcc 1 b = uIcc 1 (Pi.mulSingle i b) :=
+  image_update_uIcc_right _ _ _
+#align set.image_mul_single_uIcc_right Set.image_mulSingle_uIcc_right
+#align set.image_single_uIcc_right Set.image_single_uIcc_right
+
+end PiLattice
 
 variable [DecidableEq ι] [∀ i, LinearOrder (α i)]
 
@@ -141,15 +350,13 @@ E.g., if `x' = x` and `y' = y`, then this lemma states that the difference betwe
 of the faces of `[x, y]`. -/
 theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
-      (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y :=
-  by 
+    (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
   simp at ha'
   simp [le_update_iff, update_le_iff, hxa, hay, hxa _, hay _, ← exists_or]
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
   cases lt_or_le (x' w) (a w) <;> simp_all
-
 #align set.Icc_diff_pi_univ_Ioo_subset Set.Icc_diff_pi_univ_Ioo_subset
 
 /-- If `x`, `y`, `z` are functions `Π i : ι, α i`, then

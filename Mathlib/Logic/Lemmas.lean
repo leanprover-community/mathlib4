@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module logic.lemmas
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SplitIfs
+
+#align_import logic.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
 /-!
 # More basic logic properties
@@ -72,10 +69,10 @@ theorem ite_ite_distrib_right : ite p (ite q a b) c = ite q (ite p a c) (ite p b
 #align ite_ite_distrib_right ite_ite_distrib_right
 
 lemma Prop.forall {f : Prop → Prop} : (∀ p, f p) ↔ f True ∧ f False :=
-⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
+  ⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
 #align Prop.forall Prop.forall
 
 lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
-⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
-  by rintro (h | h) <;> exact ⟨_, h⟩⟩
+  ⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
+    by rintro (h | h) <;> exact ⟨_, h⟩⟩
 #align Prop.exists Prop.exists

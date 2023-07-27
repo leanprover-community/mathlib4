@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.ulift
-! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Basic
+
+#align_import data.ulift from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
 /-!
 # Extra lemmas about `ULift` and `PLift`
@@ -135,5 +132,10 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 @[ext]
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
   congrArg up h
+#align ulift.ext ULift.ext
+
+theorem ext_iff {α : Type _} (x y : ULift α) : x = y ↔ x.down = y.down :=
+  ⟨congrArg _, ULift.ext _ _⟩
+#align ulift.ext_iff ULift.ext_iff
 
 end ULift

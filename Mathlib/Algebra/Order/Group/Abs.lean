@@ -2,15 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.group.abs
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Order.MinMax
+
+#align_import algebra.order.group.abs from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Absolute values in ordered groups.
@@ -28,13 +25,13 @@ section Neg
 -- see Note [lower instance priority]
 /-- `abs a` is the absolute value of `a`. -/
 @[to_additive "`abs a` is the absolute value of `a`"]
-instance (priority := 100) Inv.toHasAbs [Inv α] [HasSup α] : Abs α :=
+instance (priority := 100) Inv.toHasAbs [Inv α] [Sup α] : Abs α :=
   ⟨fun a => a ⊔ a⁻¹⟩
 #align has_inv.to_has_abs Inv.toHasAbs
 #align has_neg.to_has_abs Neg.toHasAbs
 
 @[to_additive]
-theorem abs_eq_sup_inv [Inv α] [HasSup α] (a : α) : |a| = a ⊔ a⁻¹ :=
+theorem abs_eq_sup_inv [Inv α] [Sup α] (a : α) : |a| = a ⊔ a⁻¹ :=
   rfl
 #align abs_eq_sup_inv abs_eq_sup_inv
 #align abs_eq_sup_neg abs_eq_sup_neg
@@ -73,7 +70,7 @@ theorem abs_le_abs (h₀ : a ≤ b) (h₁ : -a ≤ b) : |a| ≤ |b| :=
   (abs_le'.2 ⟨h₀, h₁⟩).trans (le_abs_self b)
 #align abs_le_abs abs_le_abs
 
-theorem abs_by_cases (P : α → Prop) {a : α} (h1 : P a) (h2 : P (-a)) : P (|a|) :=
+theorem abs_by_cases (P : α → Prop) {a : α} (h1 : P a) (h2 : P (-a)) : P |a| :=
   sup_ind _ _ h1 h2
 #align abs_by_cases abs_by_cases
 
@@ -88,13 +85,13 @@ theorem abs_neg (a : α) : |(-a)| = |a| := by rw [abs_eq_max_neg, max_comm, neg_
 #align abs_neg abs_neg
 
 theorem eq_or_eq_neg_of_abs_eq {a b : α} (h : |a| = b) : a = b ∨ a = -b := by
-  simpa only [← h, eq_comm, eq_neg_iff_eq_neg] using abs_choice a
+  simpa only [← h, eq_comm (a := |a|), neg_eq_iff_eq_neg] using abs_choice a
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
 theorem abs_eq_abs {a b : α} : |a| = |b| ↔ a = b ∨ a = -b := by
   refine' ⟨fun h => _, fun h => _⟩
   · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
-      simpa only [neg_eq_iff_neg_eq, neg_inj, or_comm, @eq_comm _ (-b)] using abs_choice b
+      simpa only [neg_eq_iff_eq_neg (a := |b|), neg_inj, or_comm] using abs_choice b
   · cases' h with h h <;>
     simp [h, abs_neg]
 #align abs_eq_abs abs_eq_abs
@@ -103,7 +100,6 @@ theorem abs_sub_comm (a b : α) : |a - b| = |b - a| :=
   calc
     |a - b| = |(-(b - a))| := congr_arg _ (neg_sub b a).symm
     _ = |b - a| := abs_neg (b - a)
-
 #align abs_sub_comm abs_sub_comm
 
 variable [CovariantClass α α (· + ·) (· ≤ ·)] {a b c : α}
@@ -155,11 +151,9 @@ theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
       -|a| = -a := congr_arg Neg.neg (abs_of_nonneg h)
       _ ≤ 0 := neg_nonpos.mpr h
       _ ≤ a := h
-
   · calc
       -|a| = - -a := congr_arg Neg.neg (abs_of_nonpos h)
       _ ≤ a := (neg_neg a).le
-
 #align neg_abs_le_self neg_abs_le_self
 
 theorem add_abs_nonneg (a : α) : 0 ≤ a + |a| := by
@@ -254,7 +248,7 @@ theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {β : Type _} [MulOneClass β] [Preorder β]
     [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
-    {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f (|a|) ≤ f a * f (-a) :=
+    {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
 #align apply_abs_le_mul_of_one_le' apply_abs_le_mul_of_one_le'
@@ -263,7 +257,7 @@ theorem apply_abs_le_mul_of_one_le' {β : Type _} [MulOneClass β] [Preorder β]
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
     [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
-    (h : ∀ x, 1 ≤ f x) (a : α) : f (|a|) ≤ f a * f (-a) :=
+    (h : ∀ x, 1 ≤ f x) (a : α) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
 #align apply_abs_le_mul_of_one_le apply_abs_le_mul_of_one_le
 #align apply_abs_le_add_of_nonneg apply_abs_le_add_of_nonneg
@@ -271,7 +265,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
 /-- The **triangle inequality** in `LinearOrderedAddCommGroup`s. -/
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
   abs_le.2
-    ⟨(neg_add (|a|) (|b|)).symm ▸
+    ⟨(neg_add |a| |b|).symm ▸
         add_le_add ((@neg_le α ..).2 <| neg_le_abs_self _) ((@neg_le α ..).2 <| neg_le_abs_self _),
       add_le_add (le_abs_self _) (le_abs_self _)⟩
 #align abs_add abs_add
@@ -313,7 +307,6 @@ theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
       _ ≤ |a - b| + |b| := abs_add _ _
-
 #align abs_sub_abs_le_abs_sub abs_sub_abs_le_abs_sub
 
 theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
@@ -326,28 +319,28 @@ theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
 #align abs_eq abs_eq
 
-theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max (|a|) (|c|) :=
+theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c| :=
   abs_le'.2
     ⟨by simp [hbc.trans (le_abs_self c)], by
       simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs_self a)]⟩
 #align abs_le_max_abs_abs abs_le_max_abs_abs
 
-theorem min_abs_abs_le_abs_max : min (|a|) (|b|) ≤ |max a b| :=
+theorem min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
   (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
     fun h => (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
 #align min_abs_abs_le_abs_max min_abs_abs_le_abs_max
 
-theorem min_abs_abs_le_abs_min : min (|a|) (|b|) ≤ |min a b| :=
+theorem min_abs_abs_le_abs_min : min |a| |b| ≤ |min a b| :=
   (le_total a b).elim (fun h => (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
     fun h => (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
 #align min_abs_abs_le_abs_min min_abs_abs_le_abs_min
 
-theorem abs_max_le_max_abs_abs : |max a b| ≤ max (|a|) (|b|) :=
+theorem abs_max_le_max_abs_abs : |max a b| ≤ max |a| |b| :=
   (le_total a b).elim (fun h => (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
     fun h => (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
 #align abs_max_le_max_abs_abs abs_max_le_max_abs_abs
 
-theorem abs_min_le_max_abs_abs : |min a b| ≤ max (|a|) (|b|) :=
+theorem abs_min_le_max_abs_abs : |min a b| ≤ max |a| |b| :=
   (le_total a b).elim (fun h => (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
     (congr_arg _ <| min_eq_right h).trans_le <| le_max_right _ _
 #align abs_min_le_max_abs_abs abs_min_le_max_abs_abs
@@ -360,7 +353,6 @@ theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
   calc
     |a - c| = |a - b + (b - c)| := by rw [sub_add_sub_cancel]
     _ ≤ |a - b| + |b - c| := abs_add _ _
-
 #align abs_sub_le abs_sub_le
 
 theorem abs_add_three (a b c : α) : |a + b + c| ≤ |a| + |b| + |c| :=

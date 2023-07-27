@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.rel
-! leanprover-community/mathlib commit 706d88f2b8fdfeb0b22796433d7a6c1a010af9f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.GaloisConnection
+
+#align_import data.rel from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
 /-!
 # Relations
@@ -20,7 +17,7 @@ Relations are also known as set-valued functions, or partial multifunctions.
 ## Main declarations
 
 * `Rel α β`: Relation between `α` and `β`.
-* `Rel.inv`: `r.inv` is the `rel β α` obtained by swapping the arguments of `r`.
+* `Rel.inv`: `r.inv` is the `Rel β α` obtained by swapping the arguments of `r`.
 * `Rel.dom`: Domain of a relation. `x ∈ r.dom` iff there exists `y` such that `r x y`.
 * `Rel.codom`: Codomain, aka range, of a relation. `y ∈ r.codom` iff there exists `x` such that
   `r x y`.
@@ -63,7 +60,7 @@ theorem inv_def (x : α) (y : β) : r.inv y x ↔ r x y :=
 #align rel.inv_def Rel.inv_def
 
 theorem inv_inv : inv (inv r) = r := by
-  ext (x y)
+  ext x y
   rfl
 #align rel.inv_inv Rel.inv_inv
 
@@ -79,12 +76,12 @@ def codom := { y | ∃ x, r x y }
 #align rel.codom Rel.codom
 
 theorem codom_inv : r.inv.codom = r.dom := by
-  ext (x y)
+  ext x
   rfl
 #align rel.codom_inv Rel.codom_inv
 
 theorem dom_inv : r.inv.dom = r.codom := by
-  ext (x y)
+  ext x
   rfl
 #align rel.dom_inv Rel.dom_inv
 
@@ -118,12 +115,12 @@ theorem comp_left_id (r : Rel α β) : @Eq α • r = r := by
 #align rel.comp_left_id Rel.comp_left_id
 
 theorem inv_id : inv (@Eq α) = @Eq α := by
-  ext (x y)
+  ext x y
   constructor <;> apply Eq.symm
 #align rel.inv_id Rel.inv_id
 
 theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv r := by
-  ext (x z)
+  ext x z
   simp [comp, inv, flip, and_comm]
 #align rel.inv_comp Rel.inv_comp
 

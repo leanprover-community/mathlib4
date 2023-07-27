@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.denumerable
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
+
+#align_import logic.denumerable from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Denumerable types
@@ -66,7 +63,7 @@ theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := 
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
-  obtain ⟨a, h, e⟩ := decode_inv n
+  obtain ⟨a, h, e⟩ := decode_inv (α := α) n
   rwa [ofNat_of_decode h]
 #align denumerable.encode_of_nat Denumerable.encode_ofNat
 
@@ -127,7 +124,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
   rfl
 #align denumerable.of_nat_nat Denumerable.ofNat_nat
 
-/-- If `α` is denumerable, then so is `option α`. -/
+/-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
   ⟨fun n => by
     cases n
@@ -256,15 +253,12 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
       (h ⟨_, Nat.find_spec hx⟩ hxy).not_lt <|
-        show _ < _ from -- lean4#2073
         calc
           (y : ℕ) ≤ (y : ℕ) + Nat.find hx := le_add_of_nonneg_right (Nat.zero_le _)
           _ < (y : ℕ) + Nat.find hx + 1 := Nat.lt_succ_self _
-
 #align nat.subtype.le_succ_of_forall_lt_le Nat.Subtype.le_succ_of_forall_lt_le
 
 theorem lt_succ_self (x : s) : x < succ x :=
-  show _ < _ from -- lean4#2073
   calc
     -- Porting note: replaced `x + _`, added type annotations
     (x : ℕ) ≤ (x + Nat.find (exists_succ x): ℕ) := le_self_add
@@ -339,10 +333,8 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
     have h₁ : (ofNat s n : ℕ) ∉ (range (ofNat s n)).filter (· ∈ s) := by simp
-    have h₂ :
-      (range (succ (ofNat s n))).filter (· ∈ s) =
-        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) :=
-      by
+    have h₂ : (range (succ (ofNat s n))).filter (· ∈ s) =
+        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by
@@ -351,7 +343,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
-    simp only [toFunAux_eq, ofNat, range_succ] at ih⊢
+    simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
       rhs
       rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]
@@ -386,6 +378,10 @@ end Denumerable
 theorem nonempty_denumerable (α : Type _) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
   (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
+
+theorem nonempty_denumerable_iff {α : Type _} :
+    Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
+  ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
 
 instance nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β] [Infinite β] :
     Nonempty (α ≃ β) := by

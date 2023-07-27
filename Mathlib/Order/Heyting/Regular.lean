@@ -2,18 +2,15 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.regular
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.GaloisConnection
+
+#align_import order.heyting.regular from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
 /-!
 # Heyting regular elements
 
-This file defines Heyting regular elements, elements of an Heyting algebra that are their own double
+This file defines Heyting regular elements, elements of a Heyting algebra that are their own double
 complement, and proves that they form a boolean algebra.
 
 From a logic standpoint, this means that we can perform classical logic within intuitionistic logic
@@ -41,7 +38,7 @@ section HasCompl
 
 variable [HasCompl α] {a : α}
 
-/-- An element of an Heyting algebra is regular if its double complement is itself. -/
+/-- An element of a Heyting algebra is regular if its double complement is itself. -/
 def IsRegular (a : α) : Prop :=
   aᶜᶜ = a
 #align heyting.is_regular Heyting.IsRegular
@@ -74,15 +71,15 @@ theorem IsRegular.himp (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⇨ 
   rw [IsRegular, compl_compl_himp_distrib, ha.eq, hb.eq]
 #align heyting.is_regular.himp Heyting.IsRegular.himp
 
-theorem isRegular_compl (a : α) : IsRegular (aᶜ) :=
+theorem isRegular_compl (a : α) : IsRegular aᶜ :=
   compl_compl_compl _
 #align heyting.is_regular_compl Heyting.isRegular_compl
 
-protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint (aᶜ) b ↔ b ≤ a :=
+protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint aᶜ b ↔ b ≤ a :=
   by rw [← le_compl_iff_disjoint_left, ha.eq]
 #align heyting.is_regular.disjoint_compl_left_iff Heyting.IsRegular.disjoint_compl_left_iff
 
-protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a (bᶜ) ↔ a ≤ b :=
+protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a bᶜ ↔ a ≤ b :=
   by rw [← le_compl_iff_disjoint_right, hb.eq]
 #align heyting.is_regular.disjoint_compl_right_iff Heyting.IsRegular.disjoint_compl_right_iff
 
@@ -90,7 +87,7 @@ protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoi
 /-- A Heyting algebra with regular excluded middle is a boolean algebra. -/
 @[reducible]
 def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
-  have : ∀ a : α, IsCompl a (aᶜ) := fun a =>
+  have : ∀ a : α, IsCompl a aᶜ := fun a =>
     ⟨disjoint_compl_right,
       codisjoint_iff.2 <| by erw [← (h a), compl_sup, inf_compl_eq_bot, compl_bot]⟩
   { ‹HeytingAlgebra α›,
@@ -136,7 +133,7 @@ instance top : Top (Regular α) :=
 instance bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
-instance hasInf : HasInf (Regular α) :=
+instance inf : Inf (Regular α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 instance himp : HImp (Regular α) :=
@@ -166,7 +163,7 @@ theorem coe_himp (a b : Regular α) : (↑(a ⇨ b) : α) = (a : α) ⇨ b :=
 #align heyting.regular.coe_himp Heyting.Regular.coe_himp
 
 @[simp, norm_cast]
-theorem coe_compl (a : Regular α) : (↑(aᶜ) : α) = (a : α)ᶜ :=
+theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
   rfl
 #align heyting.regular.coe_compl Heyting.Regular.coe_compl
 

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.multiset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
+
+#align_import algebra.gcd_monoid.multiset from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # GCD and LCM operations on multisets
@@ -97,7 +94,7 @@ variable [DecidableEq α]
 @[simp]
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) <| fun a s IH ↦ by
-    by_cases a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s <;> simp [IH, h]
     unfold lcm
     rw [← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
     apply lcm_eq_of_associated_left (associated_normalize _)
@@ -200,7 +197,7 @@ variable [DecidableEq α]
 @[simp]
 theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
   Multiset.induction_on s (by simp) <| fun a s IH ↦ by
-    by_cases a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s <;> simp [IH, h]
     unfold gcd
     rw [← cons_erase h, fold_cons_left, ← gcd_assoc, gcd_same]
     apply (associated_normalize _).gcd_eq_left
@@ -250,7 +247,7 @@ theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ← gcd_dedup, dedup_nsmul (card_pos.2 hs).ne', dedup_singleton, gcd_singleton]
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s
-      push_neg  at h
+      push_neg at h
       refine' ⟨s.pmap @f fun _ ↦ id, _, extract_gcd' s _ h _⟩ <;>
       · rw [map_pmap]
         conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]

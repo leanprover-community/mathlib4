@@ -1,0 +1,21 @@
+/*
+Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wojciech Nawrocki
+*/
+
+-- This is a Penrose (https://penrose.cs.cmu.edu/) substance file describing a triangle commutative diagram.
+
+Object A,B,C
+Cell f := MakeCell(A,B)
+Cell g := MakeCell(B,C)
+Cell h := MakeCell(A,C)
+
+IsRightHorizontal(f)
+IsDownVertical(g)
+IsRightDownDiagonal(h)
+
+IsLabelLeft(f)
+IsLabelLeft(g)
+
+AutoLabel All

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.int.char_zero
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Field
+
+#align_import data.int.char_zero from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
 /-!
 # Injectivity of `Int.Cast` into characteristic zero rings and fields.
@@ -46,8 +43,17 @@ theorem cast_ne_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠
   not_congr cast_eq_zero
 #align int.cast_ne_zero Int.cast_ne_zero
 
+@[simp]
+theorem cast_eq_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 1 ↔ n = 1 := by
+  rw [← cast_one, cast_inj]
+#align int.cast_eq_one Int.cast_eq_one
+
+theorem cast_ne_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 1 ↔ n ≠ 1 :=
+  cast_eq_one.not
+#align int.cast_ne_one Int.cast_ne_one
+
 @[simp, norm_cast]
-theorem cast_div_charZero {k : Type _} [Field k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type _} [DivisionRing k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
     ((m / n : ℤ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp [Int.ediv_zero]

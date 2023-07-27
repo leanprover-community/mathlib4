@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
-
-! This file was ported from Lean 3 source module data.list.join
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
+
+#align_import data.list.join from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Join of a list of lists
@@ -71,7 +68,7 @@ theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join 
 
 @[simp]
 theorem length_join (L : List (List α)) : length (join L) = sum (map length L) := by
-  induction L <;> [rfl, simp only [*, join, map, sum_cons, length_append]]
+  induction L <;> [rfl; simp only [*, join, map, sum_cons, length_append]]
 #align list.length_join List.length_join
 
 @[simp]
@@ -82,7 +79,7 @@ theorem length_bind (l : List α) (f : α → List β) :
 @[simp]
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
   join_eq_nil.trans <| by
-    simp only [mem_map', forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align list.bind_eq_nil List.bind_eq_nil
 
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
@@ -133,7 +130,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
 #align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe
 
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
-original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
+original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
 theorem drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
@@ -144,7 +141,7 @@ theorem drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
 
 set_option linter.deprecated false in
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
-original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
+original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
 @[deprecated drop_take_succ_join_eq_get]
 theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.length) :

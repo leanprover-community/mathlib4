@@ -2,17 +2,14 @@
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.finite.basic
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Vector
+
+#align_import data.finite.basic from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Finite types
@@ -33,7 +30,7 @@ defined.
 There is an apparent duplication of many `Fintype` instances in this module,
 however they follow a pattern: if a `Fintype` instance depends on `Decidable`
 instances or other `Fintype` instances, then we need to "lower" the instance
-to be a `Finite` instance by removing the `decidable` instances and switching
+to be a `Finite` instance by removing the `Decidable` instances and switching
 the `Fintype` instances to `Finite` instances. These are precisely the ones
 that cannot be inferred using `Finite.of_fintype`. (However, when using
 `open Classical` or the `classical` tactic the instances relying only
@@ -140,14 +137,15 @@ instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪
   · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
     -- "stuck at solving universe constraint" error.
     apply Finite.of_subsingleton
-   
+
   · refine' h.elim fun f => _
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ FunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite
 
 instance Equiv.finite_right {α β : Sort _} [Finite β] : Finite (α ≃ β) :=
-  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by convert FunLike.congr_fun h
+  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
+    convert FunLike.congr_fun h using 0
 #align equiv.finite_right Equiv.finite_right
 
 instance Equiv.finite_left {α β : Sort _} [Finite α] : Finite (α ≃ β) :=

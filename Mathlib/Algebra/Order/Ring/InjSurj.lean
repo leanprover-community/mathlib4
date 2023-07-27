@@ -2,15 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.order.ring.inj_surj
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Cancel.Basic
 import Mathlib.Algebra.Ring.InjSurj
+
+#align_import algebra.order.ring.inj_surj from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Pulling back ordered rings along injective maps.
@@ -159,7 +156,7 @@ protected def strictOrderedCommRing [StrictOrderedCommRing α] [Zero β] [One β
 /-- Pullback a `LinearOrderedSemiring` under an injective map. -/
 @[reducible]
 protected def linearOrderedSemiring [LinearOrderedSemiring α] [Zero β] [One β] [Add β] [Mul β]
-    [Pow β ℕ] [SMul ℕ β] [NatCast β] [HasSup β] [HasInf β] (f : β → α) (hf : Injective f)
+    [Pow β ℕ] [SMul ℕ β] [NatCast β] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (nat_cast : ∀ n : ℕ, f n = n)
@@ -173,7 +170,7 @@ protected def linearOrderedSemiring [LinearOrderedSemiring α] [Zero β] [One β
 /-- Pullback a `LinearOrderedSemiring` under an injective map. -/
 @[reducible]
 protected def linearOrderedCommSemiring [LinearOrderedCommSemiring α] [Zero β] [One β] [Add β]
-    [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [HasSup β] [HasInf β] (f : β → α) (hf : Injective f)
+    [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (nat_cast : ∀ n : ℕ, f n = n)
@@ -187,7 +184,7 @@ protected def linearOrderedCommSemiring [LinearOrderedCommSemiring α] [Zero β]
 /-- Pullback a `LinearOrderedRing` under an injective map. -/
 @[reducible]
 def linearOrderedRing [LinearOrderedRing α] [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β]
-    [SMul ℕ β] [SMul ℤ β] [Pow β ℕ] [NatCast β] [IntCast β] [HasSup β] [HasInf β] (f : β → α)
+    [SMul ℕ β] [SMul ℤ β] [Pow β ℕ] [NatCast β] [IntCast β] [Sup β] [Inf β] (f : β → α)
     (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
@@ -203,8 +200,8 @@ def linearOrderedRing [LinearOrderedRing α] [Zero β] [One β] [Add β] [Mul β
 /-- Pullback a `LinearOrderedCommRing` under an injective map. -/
 @[reducible]
 protected def linearOrderedCommRing [LinearOrderedCommRing α] [Zero β] [One β] [Add β] [Mul β]
-    [Neg β] [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β] [NatCast β] [IntCast β] [HasSup β]
-    [HasInf β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    [Neg β] [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β] [NatCast β] [IntCast β] [Sup β]
+    [Inf β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x)

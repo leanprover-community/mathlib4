@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.powerset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.powerset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # The powerset of a multiset
@@ -61,8 +58,7 @@ theorem powersetAux'_cons (a : α) (l : List α) :
   simp [powersetAux']; rfl
 #align multiset.powerset_aux'_cons Multiset.powersetAux'_cons
 
-theorem powerset_aux'_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux' l₁ ~ powersetAux' l₂ :=
-  by
+theorem powerset_aux'_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux' l₁ ~ powersetAux' l₂ := by
   induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ _ _ IH₁ IH₂
   · simp
   · simp only [powersetAux'_cons]
@@ -125,17 +121,16 @@ theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
   Quotient.inductionOn s <| by simp
 #align multiset.card_powerset Multiset.card_powerset
 
-theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l :=
-  by
-  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, mem_map'] at h
+theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l := by
+  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, List.mem_map] at h
   simp only [Prod_map, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists _ _ _ h)
 #align multiset.revzip_powerset_aux Multiset.revzip_powersetAux
 
-theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux' l)) : x.1 + x.2 = ↑l :=
-  by
-  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, mem_map'] at h
+theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux' l)) :
+    x.1 + x.2 = ↑l := by
+  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, List.mem_map] at h
   simp only [Prod_map, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists' _ _ _ h)
@@ -206,8 +201,8 @@ theorem powersetLenAux_nil (n : ℕ) : powersetLenAux (n + 1) (@nil α) = [] :=
 @[simp]
 theorem powersetLenAux_cons (n : ℕ) (a : α) (l : List α) :
     powersetLenAux (n + 1) (a :: l) =
-      powersetLenAux (n + 1) l ++ List.map (cons a) (powersetLenAux n l) :=
-  by simp [powersetLenAux_eq_map_coe]; rfl
+      powersetLenAux (n + 1) l ++ List.map (cons a) (powersetLenAux n l) := by
+  simp [powersetLenAux_eq_map_coe]; rfl
 #align multiset.powerset_len_aux_cons Multiset.powersetLenAux_cons
 
 theorem powersetLenAux_perm {n} {l₁ l₂ : List α} (p : l₁ ~ l₂) :

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.units.lemmas
-! leanprover-community/mathlib commit 4dc134b97a3de65ef2ed881f3513d56260971562
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Hom.Units
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+
+#align_import algebra.group_with_zero.units.lemmas from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -37,7 +34,7 @@ theorem eq_mul_inv_iff_mul_eq₀ (hc : c ≠ 0) : a = b * c⁻¹ ↔ a * c = b :
 #align eq_mul_inv_iff_mul_eq₀ eq_mul_inv_iff_mul_eq₀
 
 theorem eq_inv_mul_iff_mul_eq₀ (hb : b ≠ 0) : a = b⁻¹ * c ↔ b * a = c :=
-  IsUnit.eq_inv_mul_iff_mul_eq  hb.isUnit
+  IsUnit.eq_inv_mul_iff_mul_eq hb.isUnit
 #align eq_inv_mul_iff_mul_eq₀ eq_inv_mul_iff_mul_eq₀
 
 theorem inv_mul_eq_iff_eq_mul₀ (ha : a ≠ 0) : a⁻¹ * b = c ↔ b = a * c :=
@@ -193,6 +190,10 @@ theorem div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d =
 theorem div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b :=
   IsUnit.div_div_cancel ha.isUnit
 #align div_div_cancel' div_div_cancel'
+
+theorem div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ :=
+  ha.isUnit.div_div_cancel_left
+#align div_div_cancel_left' div_div_cancel_left'
 
 theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]

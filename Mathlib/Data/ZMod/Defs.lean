@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.zmod.defs
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
+
+#align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -38,47 +35,58 @@ namespace Fin
 ## Ring structure on `Fin n`
 
 We define a commutative ring structure on `Fin n`.
-Afterwords, when we define `ZMod n` in terms of `Fin n`, we use these definitions
+Afterwards, when we define `ZMod n` in terms of `Fin n`, we use these definitions
 to register the ring structure on `ZMod n` as type class instance.
 -/
 
 
 open Nat.ModEq Int
 
-/-- Multiplicative commutative semigroup structure on `fin n`. -/
-instance (n : ℕ) : CommSemigroup (Fin n) :=
+/-- Multiplicative commutative semigroup structure on `Fin n`. -/
+instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_veq <|
-        show _ ≡ _ [MOD _] from -- lean4#2073
         calc
           a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
           _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
           _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
     mul_comm := Fin.mul_comm }
+#align fin.comm_semigroup Fin.instCommSemigroup
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
   Fin.eq_of_veq <|
-    show _ ≡ _ [MOD _] from -- lean4#2073
     calc
       a * ((b + c) % n) ≡ a * (b + c) [MOD n] := (Nat.mod_modEq _ _).mul_left _
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
 /-- Commutative ring structure on `Fin n`. -/
-instance (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.instAddMonoidWithOneFin n, Fin.addCommGroup n,
-    Fin.instCommSemigroupFin n with
-    one_mul := Fin.one_mul
-    mul_one := Fin.mul_one
+instance instDistrib (n : ℕ) : Distrib (Fin n) :=
+  { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
-      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm],
+      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
+#align fin.distrib Fin.instDistrib
+
+/-- Commutative ring structure on `fin n`. -/
+instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
+  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
+    one_mul := Fin.one_mul
+    mul_one := Fin.mul_one,
     -- porting note: new, see
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
     zero_mul := Fin.zero_mul
     mul_zero := Fin.mul_zero }
+#align fin.comm_ring Fin.instCommRing
+
+/-- Note this is more general than `fin.comm_ring` as it applies (vacuously) to `fin 0` too. -/
+instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
+  { toInvolutiveNeg := Fin.instInvolutiveNeg n
+    mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
+    neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
+#align fin.has_distrib_neg Fin.instHasDistribNeg
 
 end Fin
 
@@ -89,8 +97,8 @@ def ZMod : ℕ → Type
 #align zmod ZMod
 
 instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
-  | 0 => by dsimp [ZMod]; infer_instance
-  | n + 1 => by dsimp [ZMod]; infer_instance
+  | 0 => inferInstanceAs (DecidableEq ℤ)
+  | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
 #align zmod.decidable_eq ZMod.decidableEq
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
@@ -113,7 +121,7 @@ instance infinite : Infinite (ZMod 0) :=
 theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   cases n with
   | zero => exact (not_finite (ZMod 0)).elim
-  | succ n => convert Fintype.card_fin (n + 1); apply Subsingleton.elim
+  | succ n => convert Fintype.card_fin (n + 1) using 2
 #align zmod.card ZMod.card
 
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finsupp.indicator
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
+
+#align_import data.finsupp.indicator from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
 /-!
 # Building finitely supported functions off finsets
@@ -62,7 +59,7 @@ theorem indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s the
 
 theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f := by
   intro a b h
-  ext (i hi)
+  ext i hi
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
   exact FunLike.congr_fun h i
 #align finsupp.indicator_injective Finsupp.indicator_injective
@@ -73,5 +70,11 @@ theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := b
   by_contra h
   exact hi (indicator_of_not_mem h _)
 #align finsupp.support_indicator_subset Finsupp.support_indicator_subset
+
+lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
+  classical
+  ext j
+  simp [single_apply, indicator_apply, @eq_comm _ j]
+#align finsupp.single_eq_indicator Finsupp.single_eq_indicator
 
 end Finsupp

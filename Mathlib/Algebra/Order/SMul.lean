@@ -2,18 +2,16 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.order.smul
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.smul from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Ordered scalar product
@@ -88,11 +86,11 @@ section OrderedSMul
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
   {s : Set M} {a b : M} {c : R}
 
-theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b :=
+@[gcongr] theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b :=
   OrderedSMul.smul_lt_smul_of_pos
 #align smul_lt_smul_of_pos smul_lt_smul_of_pos
 
-theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b := by
+@[gcongr] theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b := by
   rcases h₁.eq_or_lt with (rfl | hab)
   · rfl
   · rcases h₂.eq_or_lt with (rfl | hc)
@@ -182,7 +180,7 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
-    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn⊢
+    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn ⊢
       exact strictMono_smul_left hn
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul
@@ -270,7 +268,7 @@ def OrderIso.smulLeft (hc : 0 < c) : M ≃o M where
   right_inv := smul_inv_smul₀ hc.ne'
   map_rel_iff' := smul_le_smul_iff_of_pos hc
 #align order_iso.smul_left OrderIso.smulLeft
-#align order_iso.smul_left_symm_apply OrderIso.smulLeft_symmApply
+#align order_iso.smul_left_symm_apply OrderIso.smulLeft_symm_apply
 #align order_iso.smul_left_apply OrderIso.smulLeft_apply
 
 variable {M}

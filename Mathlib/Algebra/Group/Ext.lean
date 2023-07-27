@@ -2,14 +2,10 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.group.ext
-! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
-import Mathlib.Tactic.Basic
+
+#align_import algebra.group.ext from "leanprover-community/mathlib"@"e574b1a4e891376b0ef974b926da39e05da12a06"
 
 /-!
 # Extensionality lemmas for monoid and group structures
@@ -37,7 +33,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄ (h_mul : m₁.mul = m
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := by
-    ext (n x)
+    ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
   rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
   rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
@@ -131,12 +127,12 @@ theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : 
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := congr_arg (·.npow) h_mon
   have : m₁.zpow = m₂.zpow := by
-    ext (m x)
+    ext m x
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
   have : m₁.div = m₂.div := by
-    ext (a b)
+    ext a b
     exact @map_div' _ _
-      (@MonoidHom _ _ (_) _) (_) _
+      (@MonoidHom _ _ (_) _) (id _) _
       (@MonoidHom.monoidHomClass _ _ (_) _) f (congr_fun h_inv) a b
   rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   rcases m₂ with @⟨_, ⟨_⟩, ⟨_⟩⟩

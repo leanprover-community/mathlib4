@@ -2,15 +2,11 @@
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module combinatorics.quiver.path
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Logic.Lemmas
+
+#align_import combinatorics.quiver.path from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Paths in quivers
@@ -31,6 +27,9 @@ inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Sort max (u + 1) v
   | cons : ∀ {b c : V}, Path a b → (b ⟶ c) → Path a c
 #align quiver.path Quiver.Path
 
+-- See issue lean4#2049
+compile_inductive% Path
+
 /-- An arrow viewed as a path of length one. -/
 def Hom.toPath {V} [Quiver V] {a b : V} (e : a ⟶ b) : Path a b :=
   Path.nil.cons e
@@ -41,11 +40,11 @@ namespace Path
 variable {V : Type u} [Quiver V] {a b c d : V}
 
 lemma nil_ne_cons (p : Path a b) (e : b ⟶ a) : Path.nil ≠ p.cons e :=
-fun h => by injection h
+  fun h => by injection h
 #align quiver.path.nil_ne_cons Quiver.Path.nil_ne_cons
 
 lemma cons_ne_nil (p : Path a b) (e : b ⟶ a) : p.cons e ≠ Path.nil :=
-fun h => by injection h
+  fun h => by injection h
 #align quiver.path.cons_ne_nil Quiver.Path.cons_ne_nil
 
 lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
@@ -138,9 +137,7 @@ theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length
 theorem comp_inj' {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (h : p₁.length = p₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ :=
   ⟨fun h_eq => (comp_inj <| Nat.add_left_cancel <| by simpa [h] using congr_arg length h_eq).1 h_eq,
-    by
-    rintro ⟨rfl, rfl⟩
-    rfl⟩
+   by rintro ⟨rfl, rfl⟩; rfl⟩
 #align quiver.path.comp_inj' Quiver.Path.comp_inj'
 
 theorem comp_injective_left (q : Path b c) : Injective fun p : Path a b => p.comp q :=

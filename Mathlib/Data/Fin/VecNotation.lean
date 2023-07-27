@@ -2,39 +2,36 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fin.vec_notation
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
 
+#align_import data.fin.vec_notation from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
+
 /-!
 # Matrix and vector notation
 
 This file defines notation for vectors and matrices. Given `a b c d : α`,
-the notation allows us to write `![a, b, c, d] : fin 4 → α`.
-Nesting vectors gives coefficients of a matrix, so `![![a, b], ![c, d]] : fin 2 → fin 2 → α`.
-In later files we introduce `!![a, b; c, d]` as notation for `matrix.of ![![a, b], ![c, d]]`.
+the notation allows us to write `![a, b, c, d] : Fin 4 → α`.
+Nesting vectors gives coefficients of a matrix, so `![![a, b], ![c, d]] : Fin 2 → Fin 2 → α`.
+In later files we introduce `!![a, b; c, d]` as notation for `Matrix.of ![![a, b], ![c, d]]`.
 
 ## Main definitions
 
-* `vec_empty` is the empty vector (or `0` by `n` matrix) `![]`
-* `vec_cons` prepends an entry to a vector, so `![a, b]` is `vec_cons a (vec_cons b vec_empty)`
+* `vecEmpty` is the empty vector (or `0` by `n` matrix) `![]`
+* `vecCons` prepends an entry to a vector, so `![a, b]` is `vecCons a (vecCons b vecEmpty)`
 
 ## Implementation notes
 
-The `simp` lemmas require that one of the arguments is of the form `vec_cons _ _`.
+The `simp` lemmas require that one of the arguments is of the form `vecCons _ _`.
 This ensures `simp` works with entries only when (some) entries are already given.
 In other words, this notation will only appear in the output of `simp` if it
 already appears in the input.
 
 ## Notations
 
-The main new notation is `![a, b]`, which gets expanded to `vec_cons a (vec_cons b vec_empty)`.
+The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b vecEmpty)`.
 
 ## Examples
 
@@ -58,14 +55,32 @@ def vecEmpty : Fin 0 → α :=
 /-- `vecCons h t` prepends an entry `h` to a vector `t`.
 
 The inverse functions are `vecHead` and `vecTail`.
-The notation `![a, b, ...]` expands to `vecCons a (vec_cons b ...)`.
+The notation `![a, b, ...]` expands to `vecCons a (vecCons b ...)`.
 -/
 def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
   Fin.cons h t
 #align matrix.vec_cons Matrix.vecCons
 
 /-- Construct a vector `Fin n → α` using `Matrix.vecEmpty` and `Matrix.vecCons`. -/
-notation3"!["(l", "* => foldr (h t => vecCons h t) vecEmpty)"]" => l
+syntax (name := vecNotation) "![" term,* "]" : term
+
+macro_rules
+  | `(![$term:term, $terms:term,*]) => `(vecCons $term ![$terms,*])
+  | `(![$term:term]) => `(vecCons $term ![])
+  | `(![]) => `(vecEmpty)
+
+/-- Unexpander for the `![x, y, ...]` notation. -/
+@[app_unexpander vecCons]
+def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $term ![$term2, $terms,*]) => `(![$term, $term2, $terms,*])
+  | `($_ $term ![$term2]) => `(![$term, $term2])
+  | `($_ $term ![]) => `(![$term])
+  | _ => throw ()
+
+/-- Unexpander for the `![]` notation. -/
+@[app_unexpander vecEmpty]
+def vecEmptyUnexpander : Lean.PrettyPrinter.Unexpander
+  | _ => `(![])
 
 /-- `vecHead v` gives the first entry of the vector `v` -/
 def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
@@ -79,7 +94,7 @@ def vecTail {n : ℕ} (v : Fin n.succ → α) : Fin n → α :=
 
 variable {m n : ℕ}
 
-/-- Use `![...]` notation for displaying a vector `fin n → α`, for example:
+/-- Use `![...]` notation for displaying a vector `Fin n → α`, for example:
 
 ```
 #eval ![1, 2] + ![3, 4] -- ![4, 6]
@@ -181,13 +196,16 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
 /-- `![a, b, ...] 1` is equal to `b`.
 
   The simplifier needs a special lemma for length `≥ 2`, in addition to
-  `cons_val_succ`, because `1 : fin 1 = 0 : fin 1`.
+  `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
 @[simp]
-theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u := by
-  rw [← Fin.succ_zero_eq_one, cons_val_succ]
+theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u :=
   rfl
 #align matrix.cons_val_one Matrix.cons_val_one
+
+@[simp]
+theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
+  rfl
 
 @[simp]
 theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons x u i = x := by
@@ -199,31 +217,23 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 #align matrix.cons_fin_one Matrix.cons_fin_one
 
--- Porting note: the next two decls are commented out. TODO(eric-wieser)
+open Lean in
+open Qq in
+protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
+  have lu := toLevel.{u}
+  have eα : Q(Type $lu) := toTypeExpr α
+  have toTypeExpr := q(Fin $n → $eα)
+  match n with
+  | 0 => { toTypeExpr, toExpr := fun _ => q(@vecEmpty $eα) }
+  | n + 1 =>
+    { toTypeExpr, toExpr := fun v =>
+      have := PiFin.toExpr n
+      have eh : Q($eα) := toExpr (vecHead v)
+      have et : Q(Fin $n → $eα) := toExpr (vecTail v)
+      q(vecCons $eh $et) }
+#align pi_fin.reflect PiFin.toExpr
 
--- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---  unsupported tactic `reflect_name #[] -/
--- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---  unsupported tactic `reflect_name #[] -/
--- unsafe instance _root_.pi_fin.reflect [reflected_univ.{u}] [reflected _ α] [has_reflect α] :
---     ∀ {n}, has_reflect (Fin n → α)
---   | 0, v =>
---     (Subsingleton.elim vecEmpty v).rec
---       ((by
---             trace
---               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---                unsupported tactic `reflect_name #[]" :
---             reflected _ @vecEmpty.{u}).subst
---         q(α))
---   | n + 1, v =>
---     (cons_head_tail v).rec <|
---       (by
---             trace
---               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---                unsupported tactic `reflect_name #[]" :
---             reflected _ @vecCons.{u}).subst₄
---         q(α) q(n) q(_) (_root_.pi_fin.reflect _)
--- #align pi_fin.reflect pi_fin.reflect
+-- Porting note: the next decl is commented out. TODO(eric-wieser)
 
 -- /-- Convert a vector of pexprs to the pexpr constructing that vector.-/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
@@ -231,13 +241,13 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
 --   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
 -- #align pi_fin.to_pexpr pi_fin.to_pexpr
 
-/-! ### Numeral (`bit0` and `bit1`) indices
-The following definitions and `simp` lemmas are to allow any
+/-! ### `bit0` and `bit1` indices
+The following definitions and `simp` lemmas are used to allow
 numeral-indexed element of a vector given with matrix notation to
-be extracted by `simp` (even when the numeral is larger than the
+be extracted by `simp` in Lean 3 (even when the numeral is larger than the
 number of elements in the vector, which is taken modulo that number
 of elements by virtue of the semantics of `bit0` and `bit1` and of
-addition on `fin n`).
+addition on `Fin n`).
 -/
 
 
@@ -247,9 +257,9 @@ which provides control of definitional equality for the vector length.
 
 This turns out to be helpful when providing simp lemmas to reduce `![a, b, c] n`, and also means
 that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case because there is
-no `Zero (fin (m + n))` instance. -/
+no `Zero (Fin (m + n))` instance. -/
 def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
-  Fin.append u v ∘ Fin.cast ho
+  Fin.append u v ∘ Fin.castIso ho
 #align matrix.vec_append Matrix.vecAppend
 
 theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
@@ -280,10 +290,8 @@ theorem empty_vecAppend (v : Fin n → α) : vecAppend (zero_add _).symm ![] v =
 
 @[simp]
 theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v : Fin n → α) :
-    vecAppend ho (vecCons x u) v =
-      vecCons x
-        (vecAppend (by rwa [add_assoc, add_comm 1, ← add_assoc, add_right_cancel_iff] at ho) u v) :=
-  by
+    vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by
+      rwa [add_assoc, add_comm 1, ← add_assoc, add_right_cancel_iff] at ho) u v) := by
   ext i
   simp_rw [vecAppend_eq_ite]
   split_ifs with h
@@ -330,19 +338,20 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
 theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 := by
   ext i
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
-  cases n
-  · cases' i with i hi
+  cases n with
+  | zero =>
+    cases' i with i hi
     simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at hi; subst i; rfl
-  · split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
+  | succ n =>
+    split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
     · simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
       rw [Fin.val_mk] at h
-      rw [Fin.val_one]
       erw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
       erw [Nat.mod_eq_of_lt h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
-        Nat.mod_eq_sub_mod h]
-      refine' (Nat.mod_eq_of_lt _).symm
+        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by simp)]
+      refine (Nat.mod_eq_of_lt ?_).symm
       rw [tsub_lt_iff_left h]
       exact Nat.add_succ_lt_add i.2 i.2
 #align matrix.vec_alt1_vec_append Matrix.vecAlt1_vecAppend
@@ -526,7 +535,7 @@ theorem zero_empty : (0 : Fin 0 → α) = ![] :=
 
 @[simp]
 theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
-  ext (i j)
+  ext i
   refine' Fin.cases _ _ i
   · rfl
   simp

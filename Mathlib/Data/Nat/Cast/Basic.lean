@@ -2,11 +2,6 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.cast.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Group.Opposite
+
+#align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -70,6 +67,10 @@ theorem cast_commute [NonAssocSemiring α] (n : ℕ) (x : α) : Commute (n : α)
   | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
 #align nat.cast_commute Nat.cast_commute
 
+theorem _root_.Commute.ofNat_left [NonAssocSemiring α] (n : ℕ) [n.AtLeastTwo] (x : α) :
+    Commute (OfNat.ofNat n) x :=
+  n.cast_commute x
+
 theorem cast_comm [NonAssocSemiring α] (n : ℕ) (x : α) : (n : α) * x = x * n :=
   (cast_commute n x).eq
 #align nat.cast_comm Nat.cast_comm
@@ -78,12 +79,15 @@ theorem commute_cast [NonAssocSemiring α] (x : α) (n : ℕ) : Commute x n :=
   (n.cast_commute x).symm
 #align nat.commute_cast Nat.commute_cast
 
+theorem _root_.Commute.ofNat_right [NonAssocSemiring α] (x : α) (n : ℕ) [n.AtLeastTwo] :
+    Commute x (OfNat.ofNat n) :=
+  n.commute_cast x
+
 section OrderedSemiring
 
 variable [OrderedSemiring α]
 
--- porting note: missing mono attribute
--- @[mono]
+@[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
@@ -110,27 +114,25 @@ end Nontrivial
 
 variable [CharZero α] {m n : ℕ}
 
-theorem StrictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
+theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
-#align nat.strict_mono_cast Nat.StrictMono_cast
+#align nat.strict_mono_cast Nat.strictMono_cast
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def castOrderEmbedding : ℕ ↪o α :=
-  OrderEmbedding.ofStrictMono Nat.cast Nat.StrictMono_cast
+  OrderEmbedding.ofStrictMono Nat.cast Nat.strictMono_cast
 #align nat.cast_order_embedding Nat.castOrderEmbedding
 #align nat.cast_order_embedding_apply Nat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
 theorem cast_le : (m : α) ≤ n ↔ m ≤ n :=
-  StrictMono_cast.le_iff_le
+  strictMono_cast.le_iff_le
 #align nat.cast_le Nat.cast_le
 
--- porting note: missing mono attribute
--- @[simp, norm_cast, mono]
-@[simp, norm_cast]
+@[simp, norm_cast, mono]
 theorem cast_lt : (m : α) < n ↔ m < n :=
-  StrictMono_cast.lt_iff_lt
+  strictMono_cast.lt_iff_lt
 #align nat.cast_lt Nat.cast_lt
 
 @[simp, norm_cast]
@@ -259,6 +261,12 @@ theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
+--Porting note: new theorem
+@[simp]
+theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
+    (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
+  map_natCast f n
+
 theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp only [map_one f, map_one g]
 #align ext_nat ext_nat
@@ -300,22 +308,6 @@ instance Nat.uniqueRingHom {R : Type _} [NonAssocSemiring R] : Unique (ℕ →+*
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
 
-namespace MulOpposite
-
-variable [AddMonoidWithOne α]
-
-@[simp, norm_cast]
-theorem op_natCast (n : ℕ) : op (n : α) = n :=
-  rfl
-#align mul_opposite.op_nat_cast MulOpposite.op_natCast
-
-@[simp, norm_cast]
-theorem unop_natCast (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
-  rfl
-#align mul_opposite.unop_nat_cast MulOpposite.unop_natCast
-
-end MulOpposite
-
 namespace Pi
 
 variable {π : α → Type _} [∀ a, NatCast (π a)]
@@ -332,6 +324,9 @@ theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
 theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.coe_nat
+
+@[simp]
+theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 
 end Pi
 

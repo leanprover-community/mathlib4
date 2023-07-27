@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.submonoid.center
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Center
+
+#align_import group_theory.submonoid.center from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Centers of monoids
@@ -46,17 +43,10 @@ theorem coe_center : ↑(center M) = Set.center M :=
 #align submonoid.coe_center Submonoid.coe_center
 #align add_submonoid.coe_center AddSubmonoid.coe_center
 
-@[simp]
+@[to_additive (attr := simp) AddSubmonoid.center_toAddSubsemigroup]
 theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
-
-theorem _root_.AddSubmonoid.center_toAddSubsemigroup (M) [AddMonoid M] :
-    (AddSubmonoid.center M).toAddSubsemigroup = AddSubsemigroup.center M :=
-  rfl
-#align add_submonoid.center_to_add_subsemigroup AddSubmonoid.center_toAddSubsemigroup
-
-attribute [to_additive AddSubmonoid.center_toAddSubsemigroup] Submonoid.center_toSubsemigroup
 
 variable {M}
 
@@ -90,7 +80,6 @@ instance center.smulCommClass_right : SMulCommClass M (center M) M :=
 /-! Note that `smulCommClass (center M) (center M) M` is already implied by
 `Submonoid.smulCommClass_right` -/
 
-
 example : SMulCommClass (center M) (center M) M := by infer_instance
 
 end
@@ -108,6 +97,5 @@ end
 
 end Submonoid
 
--- Porting note: `assert_not_exists` is not ported yet
 -- Guard against import creep
---assert_not_exists finset
+assert_not_exists Finset

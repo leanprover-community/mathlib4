@@ -2,15 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module data.int.cast.lemmas
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
+
+#align_import data.int.cast.lemmas from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 /-!
 # Cast of integers (additional theorems)
@@ -53,7 +49,7 @@ lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
 #align int.to_nat_lt Int.toNat_lt'
 
 lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-(toNat_lt' hb).2 $ emod_lt_of_pos _ $ coe_nat_pos.2 hb.bot_lt
+  (toNat_lt' hb).2 $ emod_lt_of_pos _ $ coe_nat_pos.2 hb.bot_lt
 #align int.nat_mod_lt Int.natMod_lt
 
 section cast
@@ -228,7 +224,7 @@ variable {A : Type _}
 
 /-- Two additive monoid homomorphisms `f`, `g` from `ℤ` to an additive monoid are equal
 if `f 1 = g 1`. -/
-@[ext]
+@[ext high]
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
   have this' : ∀ n : ℕ, f n = g n := FunLike.ext_iff.1 this
@@ -367,22 +363,6 @@ theorem Sum.elim_intCast_intCast {α β γ : Type _} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   @Sum.elim_lam_const_lam_const α β γ n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
-
-namespace MulOpposite
-
-variable [AddGroupWithOne α]
-
-@[simp, norm_cast]
-theorem op_intCast (z : ℤ) : op (z : α) = z :=
-  rfl
-#align mul_opposite.op_int_cast MulOpposite.op_intCast
-
-@[simp, norm_cast]
-theorem unop_intCast (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
-  rfl
-#align mul_opposite.unop_int_cast MulOpposite.unop_intCast
-
-end MulOpposite
 
 /-! ### Order dual -/
 

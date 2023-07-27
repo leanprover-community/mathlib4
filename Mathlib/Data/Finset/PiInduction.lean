@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.finset.pi_induction
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Finset.Sigma
+
+#align_import data.finset.pi_induction from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
@@ -47,7 +44,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
   cases nonempty_fintype ι
   induction' hs : univ.sigma f using Finset.strongInductionOn with s ihs generalizing f; subst s
   cases' eq_empty_or_nonempty (univ.sigma f) with he hne
-  · convert h0
+  · convert h0 using 1
     simpa [funext_iff] using he
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
     rcases H_ex i (f i) hi with ⟨x, x_mem, hr⟩
@@ -118,4 +115,3 @@ theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
 #align finset.induction_on_pi_min Finset.induction_on_pi_min
 
 end Finset
-

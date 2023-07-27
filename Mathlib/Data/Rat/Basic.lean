@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.basic
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Rat.Defs
+
+#align_import data.rat.basic from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 
 /-!
 # Field Structure on the Rational Numbers
@@ -46,7 +43,7 @@ instance field : Field ℚ :=
     one := 1
     mul := (· * ·)
     inv := Inv.inv
-    ratCast := id
+    ratCast := Rat.cast
     ratCast_mk := fun a b h1 h2 => (num_div_den _).symm
     qsmul := (· * ·) }
 

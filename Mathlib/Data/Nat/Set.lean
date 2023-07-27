@@ -2,13 +2,10 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.nat.set
-! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+
+#align_import data.nat.set from "leanprover-community/mathlib"@"cf9386b56953fb40904843af98b7a80757bbe7f9"
 
 /-!
 ### Recursion on the natural numbers and `Set.range`
@@ -40,13 +37,12 @@ theorem range_of_succ (f : ℕ → α) : {f 0} ∪ range (f ∘ succ) = range f 
 theorem range_rec {α : Type _} (x : α) (f : ℕ → α → α) :
     (Set.range fun n => Nat.rec x f n : Set α) =
       {x} ∪ Set.range fun n => Nat.rec (f 0 x) (f ∘ succ) n := by
-  convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm
+  convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm using 4
   dsimp
-  apply congr_arg Set.range
-  ext n
+  rename_i n
   induction' n with n ihn
   · rfl
-  · dsimp at ihn⊢
+  · dsimp at ihn ⊢
     rw [ihn]
 #align nat.range_rec Nat.range_rec
 

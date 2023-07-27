@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Std.Tactic.Simpa
 import Std.Tactic.Lint.Basic
@@ -53,7 +52,7 @@ theorem mul_eq {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (_ : 0 < b) : b
   simp [*]
 
 lemma eq_of_not_lt_of_not_gt {α} [LinearOrder α] (a b : α) (h1 : ¬ a < b) (h2 : ¬ b < a) : a = b :=
-le_antisymm (le_of_not_gt h2) (le_of_not_gt h1)
+  le_antisymm (le_of_not_gt h2) (le_of_not_gt h1)
 
 -- used in the `nlinarith` normalization steps. The `_` argument is for uniformity.
 @[nolint unusedArguments]

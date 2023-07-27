@@ -2,16 +2,13 @@
 Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.fin.tuple.sort
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Basic
+
+#align_import data.fin.tuple.sort from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 
@@ -25,7 +22,7 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 ## Main declarations
 
 * `Tuple.sort`: given `f : Fin n → α`, produces a permutation on `Fin n`
-* `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `monotone`
+* `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
 
 -/
 
@@ -62,8 +59,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
 
 /-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,
 mapping `i` to `(f i, i)`. -/
-def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f
-    where
+def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
   toFun i := ⟨(f i, i), by simp [graph]⟩
   invFun p := p.1.2
   left_inv i := by simp
@@ -124,9 +120,7 @@ theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
     eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
-      -- Porting note: used to use dot notation
-      (List.Monotone.ofFn_sorted hfσ)
-      (List.Monotone.ofFn_sorted hfτ)
+      hfσ.ofFn_sorted hfτ.ofFn_sorted
 #align tuple.unique_monotone Tuple.unique_monotone
 
 variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}
@@ -151,7 +145,7 @@ theorem eq_sort_iff :
   refine' ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => _⟩, fun h i j hij => _⟩
   · exact (((Prod.Lex.lt_iff _ _).1 <| h hij).resolve_left hfij.not_lt).2
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply (Prod.Lex.lt_iff _ _).2
-    exacts[Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
+    exacts [Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
 #align tuple.eq_sort_iff Tuple.eq_sort_iff
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/

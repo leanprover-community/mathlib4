@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.opposites
-! leanprover-community/mathlib commit 7a89b1aed52bcacbcc4a8ad515e72c5c07268940
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.IsEmpty
+
+#align_import algebra.opposites from "leanprover-community/mathlib"@"7a89b1aed52bcacbcc4a8ad515e72c5c07268940"
 
 /-!
 
@@ -49,31 +46,30 @@ universe u v
 
 open Function
 
+/-- Auxiliary type to implement `MulOpposite` and `AddOpposite`.
+
+It turns out to be convenient to have `MulOpposite α= AddOpposite α` true by definition, in the
+same way that it is convenient to have `Additive α = α`; this means that we also get the defeq
+`AddOpposite (Additive α) = MulOpposite α`, which is convenient when working with quotients.
+
+This is a compromise between making `MulOpposite α = AddOpposite α = α` (what we had in Lean 3) and
+having no defeqs within those three types (which we had as of mathlib4#1036). -/
+structure PreOpposite (α : Type u) : Type u where
+  /-- The element of `PreOpposite α` that represents `x : α`. -/ op' ::
+  /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α
+
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
 reverses left and right in multiplication.-/
-structure MulOpposite (α : Type u) : Type u where
-  /-- The element of `MulOpposite α` that represents `x : α`. -/ op ::
-  /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/ unop : α
-#align mul_opposite.op MulOpposite.op
-#align mul_opposite.unop MulOpposite.unop
+@[to_additive
+      "Additive opposite of a type. This type inherits all multiplicative structures on `α` and
+      reverses left and right in addition."]
+def MulOpposite (α : Type u) : Type u :=
+  PreOpposite α
 #align mul_opposite MulOpposite
-
--- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
--- both tagged with it in mathlib3
-
-/-- Additive opposite of a type. This type inherits all multiplicative structures on
-      `α` and reverses left and right in addition. -/
-structure AddOpposite (α : Type u) : Type u where
-  /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/ op ::
-  /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/ unop : α
-#align add_opposite.unop AddOpposite.unop
-#align add_opposite.op AddOpposite.op
 #align add_opposite AddOpposite
-
 -- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
 -- both tagged with it in mathlib3
 
-attribute [to_additive] MulOpposite
 
 /-- Multiplicative opposite of a type. -/
 postfix:max "ᵐᵒᵖ" => MulOpposite
@@ -83,8 +79,21 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 
 namespace MulOpposite
 
--- porting note: `simp` can prove this in Lean 4
-@[to_additive]
+/-- The element of `MulOpposite α` that represents `x : α`. -/
+@[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
+def op : α → αᵐᵒᵖ :=
+  PreOpposite.op'
+#align mul_opposite.op MulOpposite.op
+#align add_opposite.op AddOpposite.op
+
+/-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
+@[to_additive "The element of `α` represented by `x : αᵃᵒᵖ`."]
+def unop : αᵐᵒᵖ → α :=
+  PreOpposite.unop'
+#align mul_opposite.unop MulOpposite.unop
+#align add_opposite.unop AddOpposite.unop
+
+@[to_additive (attr := simp)]
 theorem unop_op (x : α) : unop (op x) = x := rfl
 #align mul_opposite.unop_op MulOpposite.unop_op
 #align add_opposite.unop_op AddOpposite.unop_op
@@ -108,15 +117,15 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 #align add_opposite.unop_comp_op AddOpposite.unop_comp_op
 
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
-@[to_additive (attr := simp)
-  "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
+@[to_additive (attr := simp, elab_as_elim)
+  "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec'`."]
 protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
 #align add_opposite.rec AddOpposite.rec'
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
-@[to_additive "The canonical bijection between `α` and `αᵃᵒᵖ`.",--]
-  simps (config := { fullyApplied := false }) apply symm_apply]
+@[to_additive (attr := simps (config := { fullyApplied := false }) apply symm_apply)
+  "The canonical bijection between `α` and `αᵃᵒᵖ`."]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩
 #align mul_opposite.op_equiv MulOpposite.opEquiv
@@ -160,9 +169,8 @@ theorem unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
 #align mul_opposite.unop_surjective MulOpposite.unop_surjective
 #align add_opposite.unop_surjective AddOpposite.unop_surjective
 
--- porting note: `simp` can prove this
-@[to_additive]
-theorem op_inj {x y : α} : op x = op y ↔ x = y := by simp
+@[to_additive (attr := simp)]
+theorem op_inj {x y : α} : op x = op y ↔ x = y := iff_of_eq $ PreOpposite.op'.injEq _ _
 #align mul_opposite.op_inj MulOpposite.op_inj
 #align add_opposite.op_inj AddOpposite.op_inj
 
@@ -177,51 +185,51 @@ attribute [nolint simpComm] AddOpposite.unop_inj
 variable (α)
 
 @[to_additive]
-instance [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
+instance nontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
   op_injective.nontrivial
 
 @[to_additive]
-instance [Inhabited α] : Inhabited αᵐᵒᵖ :=
+instance inhabited [Inhabited α] : Inhabited αᵐᵒᵖ :=
   ⟨op default⟩
 
 @[to_additive]
-instance [Subsingleton α] : Subsingleton αᵐᵒᵖ :=
+instance subsingleton [Subsingleton α] : Subsingleton αᵐᵒᵖ :=
   unop_injective.subsingleton
 
 @[to_additive]
-instance [Unique α] : Unique αᵐᵒᵖ :=
+instance unique [Unique α] : Unique αᵐᵒᵖ :=
   Unique.mk' _
 
 @[to_additive]
-instance [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
+instance isEmpty [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
   Function.isEmpty unop
 
-instance [Zero α] : Zero αᵐᵒᵖ where zero := op 0
+instance zero [Zero α] : Zero αᵐᵒᵖ where zero := op 0
 
 @[to_additive]
-instance [One α] : One αᵐᵒᵖ where one := op 1
+instance one [One α] : One αᵐᵒᵖ where one := op 1
 
-instance [Add α] : Add αᵐᵒᵖ where add x y := op (unop x + unop y)
+instance add [Add α] : Add αᵐᵒᵖ where add x y := op (unop x + unop y)
 
-instance [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y)
+instance sub [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y)
 
-instance [Neg α] : Neg αᵐᵒᵖ where neg x := op $ -unop x
+instance neg [Neg α] : Neg αᵐᵒᵖ where neg x := op $ -unop x
 
-instance [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ :=
-  { MulOpposite.instNegMulOpposite α with neg_neg := fun _ => unop_injective $ neg_neg _ }
-
-@[to_additive]
-instance [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
+instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ :=
+  { MulOpposite.neg α with neg_neg := fun _ => unop_injective $ neg_neg _ }
 
 @[to_additive]
-instance [Inv α] : Inv αᵐᵒᵖ where inv x := op $ (unop x)⁻¹
+instance mul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
 
 @[to_additive]
-instance [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
-  { MulOpposite.instInvMulOpposite α with inv_inv := fun _ => unop_injective $ inv_inv _ }
+instance inv [Inv α] : Inv αᵐᵒᵖ where inv x := op $ (unop x)⁻¹
 
 @[to_additive]
-instance (R : Type _) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
+  { MulOpposite.inv α with inv_inv := fun _ => unop_injective $ inv_inv _ }
+
+@[to_additive]
+instance smul (R : Type _) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
 
 section
 
@@ -355,7 +363,7 @@ end MulOpposite
 
 namespace AddOpposite
 
-instance [One α] : One αᵃᵒᵖ where one := op 1
+instance one [One α] : One αᵃᵒᵖ where one := op 1
 
 @[simp]
 theorem op_one [One α] : op (1 : α) = 1 :=
@@ -379,7 +387,7 @@ theorem unop_eq_one_iff [One α] {a : αᵃᵒᵖ} : unop a = 1 ↔ a = 1 :=
 
 attribute [nolint simpComm] unop_eq_one_iff
 
-instance [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b)
+instance mul [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b)
 
 @[simp]
 theorem op_mul [Mul α] (a b : α) : op (a * b) = op a * op b :=
@@ -391,10 +399,10 @@ theorem unop_mul [Mul α] (a b : αᵃᵒᵖ) : unop (a * b) = unop a * unop b :
   rfl
 #align add_opposite.unop_mul AddOpposite.unop_mul
 
-instance [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
+instance inv [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
 
-instance [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ :=
-  { AddOpposite.instInvAddOpposite with inv_inv := fun _ => unop_injective $ inv_inv _ }
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ :=
+  { AddOpposite.inv with inv_inv := fun _ => unop_injective $ inv_inv _ }
 
 @[simp]
 theorem op_inv [Inv α] (a : α) : op a⁻¹ = (op a)⁻¹ :=
@@ -406,7 +414,7 @@ theorem unop_inv [Inv α] (a : αᵃᵒᵖ) : unop a⁻¹ = (unop a)⁻¹ :=
   rfl
 #align add_opposite.unop_inv AddOpposite.unop_inv
 
-instance [Div α] : Div αᵃᵒᵖ where div a b := op (unop a / unop b)
+instance div [Div α] : Div αᵃᵒᵖ where div a b := op (unop a / unop b)
 
 @[simp]
 theorem op_div [Div α] (a b : α) : op (a / b) = op a / op b :=

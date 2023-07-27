@@ -2,54 +2,62 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.enat.basic
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
 
+#align_import data.enat.basic from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
+
 /-!
 # Definition and basic properties of extended natural numbers
 
 In this file we define `ENat` (notation: `ℕ∞`) to be `WithTop ℕ` and prove some basic lemmas
 about this type.
+
+## Implementation details
+
+There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.some` and `Nat.cast`.  In
+Lean 3, this difference was hidden in typeclass instances. Since these instances were definitionally
+equal, we did not duplicate generic lemmas about `WithTop α` and `WithTop.some` coercion for `ENat`
+and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may either rewrite back
+and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 -/
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type :=
   WithTop ℕ
-deriving Zero, AddCommMonoidWithOne, CanonicallyOrderedCommSemiring, Nontrivial,
+deriving Zero,
+  -- AddCommMonoidWithOne,
+  CanonicallyOrderedCommSemiring, Nontrivial,
   LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
-  -- OrderBot, OrderTop, OrderedSub,  SuccOrder, WellFoundedLt, CharZero
+  -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
 
+-- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
+-- the `deriving AddCommMonoidWithOne`, and it seems to work without.
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 notation "ℕ∞" => ENat
 
 namespace ENat
 
-/-- The canonical map from `ℕ` to `ℕ∞` -/
-@[coe] def ofNat (n : ℕ) : ℕ∞ := WithTop.some n
-
-instance : Coe ℕ ℕ∞ := ⟨ofNat⟩
-
 --Porting note: instances that derive failed to find
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := by delta ENat; infer_instance
-instance : SuccOrder ℕ∞ := by delta ENat; infer_instance
-instance : WellFoundedLT ℕ∞ := by delta ENat; infer_instance
-instance : CharZero ℕ∞ := by delta ENat; infer_instance
+instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
+instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
+instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
+instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
+
+/-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
+`ℕ → ℕ∞` is `Nat.cast`. -/
+@[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
 
 --Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
@@ -199,8 +207,8 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
   have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
   cases a
-  . exact htop A
-  . exact A _
+  · exact htop A
+  · exact A _
 #align enat.nat_induction ENat.nat_induction
 
 end ENat

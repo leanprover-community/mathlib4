@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.dedup
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.dedup from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Erasing duplicates in a multiset.
@@ -88,7 +85,9 @@ alias dedup_eq_self ↔ _ Nodup.dedup
 #align multiset.nodup.dedup Multiset.Nodup.dedup
 
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
-  Quot.induction_on m fun _ => List.count_dedup _ _
+  Quot.induction_on m fun _ => by
+    simp only [quot_mk_to_coe'', coe_dedup, mem_coe, List.mem_dedup, coe_nodup, coe_count]
+    apply List.count_dedup _ _
 #align multiset.count_dedup Multiset.count_dedup
 
 @[simp]

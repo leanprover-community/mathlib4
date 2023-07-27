@@ -2,17 +2,14 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
-
-! This file was ported from Lean 3 source module group_theory.group_action.defs
-! leanprover-community/mathlib commit dad7ecf9a1feae63e6e49f07619b7087403fb8d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
+
+#align_import group_theory.group_action.defs from "leanprover-community/mathlib"@"dad7ecf9a1feae63e6e49f07619b7087403fb8d4"
 
 /-!
 # Definitions of group actions
@@ -229,6 +226,18 @@ theorem SMulCommClass.symm (M N α : Type _) [SMul M α] [SMul N α] [SMulCommCl
 because this would cause a loop in the instance search graph. -/
 add_decl_doc VAddCommClass.symm
 
+theorem Function.Injective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
+    [SMulCommClass M N β] {f : α → β} (hf : Function.Injective f)
+    (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
+    SMulCommClass M N α where
+  smul_comm c₁ c₂ x := hf <| by simp only [h₁, h₂, smul_comm c₁ c₂ (f x)]
+
+theorem Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
+    [SMulCommClass M N α] {f : α → β} (hf : Function.Surjective f)
+    (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
+    SMulCommClass M N β where
+  smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
+
 @[to_additive]
 instance smulCommClass_self (M α : Type _) [CommMonoid M] [MulAction M α] : SMulCommClass M M α :=
   ⟨fun a a' b => by rw [← mul_smul, mul_comm, mul_smul]⟩
@@ -275,16 +284,19 @@ class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop wher
 /-- A typeclass indicating that the right (aka `MulOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `•`. -/
-@[to_additive IsCentralVAdd] -- TODO auto-translating
+@[to_additive]
 class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop where
   /-- The right and left actions of `M` on `α` are equal. -/
   op_smul_eq_smul : ∀ (m : M) (a : α), MulOpposite.op m • a = m • a
 #align is_central_scalar IsCentralScalar
 
+attribute [simp] IsCentralScalar.op_smul_eq_smul
+
 @[to_additive]
 theorem IsCentralScalar.unop_smul_eq_smul {M α : Type _} [SMul M α] [SMul Mᵐᵒᵖ α]
-    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a :=
-  MulOpposite.rec (fun _ => (IsCentralScalar.op_smul_eq_smul _ _).symm) m
+    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
+  induction m using MulOpposite.rec'
+  exact (IsCentralScalar.op_smul_eq_smul _ a).symm
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 #align is_central_vadd.unop_vadd_eq_vadd IsCentralVAdd.unop_vadd_eq_vadd
 
@@ -341,8 +353,7 @@ variable (α)
 
 See note [reducible non-instances]. Since this is reducible, we make sure to go via
 `SMul.comp.smul` to prevent typeclass inference unfolding too far. -/
-@[reducible,
-  to_additive
+@[to_additive (attr := reducible)
       "An additive action of `M` on `α` and a function `N → M` induces
        an additive action of `N` on `α` "]
 def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
@@ -389,7 +400,7 @@ theorem comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
 are still metavariables.
 -/
 @[to_additive
-      "This cannot be an instance because it can cause infinite loops wheneverthe `VAdd` arguments
+      "This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
        are still metavariables."]
 theorem comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
     haveI := comp α g
@@ -502,7 +513,7 @@ variable {M}
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
-"Pullback an additive action along an injective map respecting `+ᵥ`."]
+    "Pullback an additive action along an injective map respecting `+ᵥ`."]
 protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -515,7 +526,7 @@ protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Inj
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
-"Pushforward an additive action along a surjective map respecting `+ᵥ`."]
+    "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
 protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -533,9 +544,8 @@ protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Su
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[reducible,
-  to_additive
-      "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
+@[to_additive (attr := reducible)
+    "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
 def Function.Surjective.mulActionLeft {R S M : Type _} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
@@ -673,10 +683,9 @@ theorem SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 
 /-- If the multiplicative action of `M` on `N` is compatible with multiplication on `N`, then
 `fun x => x • 1` is a monoid homomorphism from `M` to `N`. -/
-@[to_additive
-      "If the additive action of `M` on `N` is compatible with addition on `N`, then
-      `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`.",
-  simps]
+@[to_additive (attr := simps)
+    "If the additive action of `M` on `N` is compatible with addition on `N`, then
+    `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
 def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N] :
     M →* N where
   toFun x := x • (1 : N)
@@ -685,6 +694,7 @@ def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N]
 #align smul_one_hom smulOneHom
 #align vadd_zero_hom vaddZeroHom
 #align smul_one_hom_apply smulOneHom_apply
+#align vadd_zero_hom_apply vaddZeroHom_apply
 
 end CompatibleScalar
 
@@ -779,6 +789,13 @@ theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a 
   DistribSMul.smul_add _ _ _
 #align smul_add smul_add
 
+instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
+  smul r f :=
+    { toFun := (fun a => r • (f a))
+      map_zero' := by simp only [map_zero, smul_zero]
+      map_add' := fun x y => by simp only [map_add, smul_add] }
+  smul_zero r := ext fun _ => smul_zero _
+
 /-- Pullback a distributive scalar multiplication along an injective additive monoid
 homomorphism.
 See note [reducible non-instances]. -/
@@ -828,7 +845,7 @@ def DistribSMul.compFun (f : N → M) : DistribSMul N A :=
     smul_add := fun x => smul_add (f x) }
 #align distrib_smul.comp_fun DistribSMul.compFun
 
-/-- Each element of the scalars defines a additive monoid homomorphism. -/
+/-- Each element of the scalars defines an additive monoid homomorphism. -/
 @[simps]
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
   { SMulZeroClass.toZeroHom A x with toFun := (· • ·) x, map_add' := smul_add x }
@@ -904,8 +921,8 @@ def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
   { DistribSMul.compFun A f, MulAction.compHom A f with smul := SMul.comp.smul f }
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
-/-- Each element of the monoid defines a additive monoid homomorphism. -/
-@[simps]
+/-- Each element of the monoid defines an additive monoid homomorphism. -/
+@[simps!]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 #align distrib_mul_action.to_add_monoid_hom DistribMulAction.toAddMonoidHom
@@ -1157,7 +1174,7 @@ def MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α 
   MulAction.compHom α f
 #align mul_action.of_End_hom MulAction.ofEndHom
 
-/-! ### `additive`, `multiplicative` -/
+/-! ### `Additive`, `Multiplicative` -/
 
 section
 

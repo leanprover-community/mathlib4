@@ -2,24 +2,20 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
-
-! This file was ported from Lean 3 source module data.finset.option
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Order.Hom.Basic
+
+#align_import data.finset.option from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-!
-# Finite sets in `option α`
+# Finite sets in `Option α`
 
 In this file we define
 
 * `Option.toFinset`: construct an empty or singleton `Finset α` from an `Option α`;
 * `Finset.insertNone`: given `s : Finset α`, lift it to a finset on `Option α` using `Option.some`
   and then insert `Option.none`;
-* `Finset.eraseNone`: given `s : Finset (option α)`, returns `t : Finset α` such that
+* `Finset.eraseNone`: given `s : Finset (Option α)`, returns `t : Finset α` such that
   `x ∈ t ↔ some x ∈ s`.
 
 Then we prove some basic lemmas about these definitions.
@@ -66,7 +62,7 @@ namespace Finset
 /-- Given a finset on `α`, lift it to being a finset on `Option α`
 using `Option.some` and then insert `Option.none`. -/
 def insertNone : Finset α ↪o Finset (Option α) :=
-  (OrderEmbedding.ofMapLeIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
+  (OrderEmbedding.ofMapLEIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
     rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
 #align finset.insert_none Finset.insertNone
 
@@ -95,11 +91,11 @@ theorem mem_eraseNone {s : Finset (Option α)} {x : α} : x ∈ eraseNone s ↔ 
   simp [eraseNone]
 #align finset.mem_erase_none Finset.mem_eraseNone
 
-theorem eraseNone_eq_bUnion [DecidableEq α] (s : Finset (Option α)) :
-    eraseNone s = s.bunionᵢ Option.toFinset := by
+theorem eraseNone_eq_biUnion [DecidableEq α] (s : Finset (Option α)) :
+    eraseNone s = s.biUnion Option.toFinset := by
   ext
   simp
-#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_bUnion
+#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_biUnion
 
 @[simp]
 theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = s := by
@@ -155,14 +151,14 @@ theorem map_some_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
 #align finset.map_some_erase_none Finset.map_some_eraseNone
 
 @[simp]
-theorem insert_none_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
+theorem insertNone_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
     insertNone (eraseNone s) = insert none s := by ext (_ | x) <;> simp
-#align finset.insert_none_erase_none Finset.insert_none_eraseNone
+#align finset.insert_none_erase_none Finset.insertNone_eraseNone
 
 @[simp]
-theorem eraseNone_insert_none (s : Finset α) : eraseNone (insertNone s) = s := by
+theorem eraseNone_insertNone (s : Finset α) : eraseNone (insertNone s) = s := by
   ext
   simp
-#align finset.erase_none_insert_none Finset.eraseNone_insert_none
+#align finset.erase_none_insert_none Finset.eraseNone_insertNone
 
 end Finset

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Mario Carneiro
 -/
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Elab.Tactic.Basic
 import Lean.Elab.Tactic.Location
 
 /-!
@@ -67,7 +68,7 @@ def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
 
 /-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
 def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
-  match f  with
+  match f with
   | Expr.app rel x => do
     let check: Bool ← do
       try
@@ -104,8 +105,8 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
 -/
-elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
-  let tgt ← getMainTarget
+elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
+  let tgt ← getMainTarget''
   let (rel, x, z) ←
     match tgt with
     | Expr.app f z =>
@@ -145,7 +146,7 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
   let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
   let s ← saveState
   for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
-      ``HEq.trans |>.push ``HEq.trans  do
+      ``HEq.trans |>.push ``HEq.trans do
     try
       liftMetaTactic fun g ↦ do
         trace[Tactic.trans]"trying lemma {lem}"

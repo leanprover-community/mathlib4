@@ -2,13 +2,10 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.lazy_list
-! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
+
+#align_import data.lazy_list from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 /-!
 # Lazy lists
 
@@ -56,7 +53,6 @@ then this function does not terminate.
 def toList : LazyList α → List α
   | nil => []
   | cons h t => h :: toList (t.get)
-
 #align lazy_list.to_list LazyList.toList
 
 /-- Returns the first element of the lazy list,
@@ -87,7 +83,7 @@ def map (f : α → β) : LazyList α → LazyList β
 #align lazy_list.map LazyList.map
 
 /-- Maps a binary function over two lazy list.
-Like `lazy_list.zip`, the result is only as long as the smaller input.
+Like `LazyList.zip`, the result is only as long as the smaller input.
 -/
 def map₂ (f : α → β → δ) : LazyList α → LazyList β → LazyList δ
   | nil, _ => nil
@@ -107,7 +103,7 @@ def join : LazyList (LazyList α) → LazyList α
 #align lazy_list.join LazyList.join
 
 /-- Maps a function over a lazy list.
-Same as `lazy_list.map`, but with swapped arguments.
+Same as `LazyList.map`, but with swapped arguments.
 -/
 def «for» (l : LazyList α) (f : α → β) : LazyList β :=
   map f l
@@ -129,7 +125,7 @@ def filter (p : α → Prop) [DecidablePred p] : LazyList α → LazyList α
   | cons h t => if p h then cons h (filter p t.get) else filter p (t.get)
 #align lazy_list.filter LazyList.filter
 
-/-- The nth element of a lazy list as an option (like `list.nth`). -/
+/-- The nth element of a lazy list as an option (like `List.get?`). -/
 def nth : LazyList α → Nat → Option α
   | nil, _ => none
   | cons a _, 0 => some a

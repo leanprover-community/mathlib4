@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.hom.set
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Set.Image
+
+#align_import order.hom.set from "leanprover-community/mathlib"@"198161d833f2c01498c39c266b0b3dbe2c7a8c07"
 
 /-!
 # Order homomorphisms and sets
@@ -104,7 +101,7 @@ variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f
 
 /-- A strictly monotone function from a linear order is an order isomorphism between its domain and
 its range. -/
-@[simps apply]
+@[simps! apply]
 protected noncomputable def orderIso :
     α ≃o Set.range f where
   toEquiv := Equiv.ofInjective f h_mono.injective
@@ -149,7 +146,7 @@ def OrderIso.compl : α ≃o αᵒᵈ where
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le
 #align order_iso.compl OrderIso.compl
-#align order_iso.compl_symm_apply OrderIso.compl_symmApply
+#align order_iso.compl_symm_apply OrderIso.compl_symm_apply
 #align order_iso.compl_apply OrderIso.compl_apply
 
 theorem compl_strictAnti : StrictAnti (compl : α → α) :=

@@ -19,9 +19,9 @@ theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hs
 protected def equiv (as bs : List α) := ∀ x, x ∈ as ↔ x ∈ bs
 
 theorem equiv_iff_subset_and_subset {as bs : List α} : as.equiv bs ↔ as ⊆ bs ∧ bs ⊆ as :=
-Iff.intro
-  (fun h ↦ ⟨fun _ xas ↦ (h _).1 xas, fun _ xbs ↦ (h _).2 xbs⟩)
-  (fun ⟨h1, h2⟩ x ↦ ⟨@h1 x, @h2 x⟩)
+  Iff.intro
+    (fun h ↦ ⟨fun _ xas ↦ (h _).1 xas, fun _ xbs ↦ (h _).2 xbs⟩)
+    (fun ⟨h1, h2⟩ x ↦ ⟨@h1 x, @h2 x⟩)
 
 theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
   fun x ↦ by simp
@@ -149,7 +149,7 @@ theorem card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as
       exact Nat.add_le_add_right ih _
 
 theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
-    inj_on f as →  card (as.map f) = card as := by
+    inj_on f as → card (as.map f) = card as := by
   induction as with
   | nil => simp
   | cons a as ih =>
@@ -158,7 +158,7 @@ theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
       intro inj_on'
       cases (exists_of_mem_map h) with
       | intro x hx =>
-        have : a = x := inj_on' (mem_cons_self ..) (mem_cons_of_mem _ hx.1) hx.2
+        have : x = a := inj_on' (mem_cons_of_mem _ hx.1) (mem_cons_self ..) hx.2
         have h1 : a ∈ as := this ▸ hx.1
         have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
         rw [map, card_cons_of_mem h, ih h2, card_cons_of_mem h1]

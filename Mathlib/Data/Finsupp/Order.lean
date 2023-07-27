@@ -2,13 +2,10 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
-
-! This file was ported from Lean 3 source module data.finsupp.order
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
+
+#align_import data.finsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Pointwise order on finitely supported functions
@@ -21,9 +18,9 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
--- porting notes: removed from module documentation becasue it moved to `data.finsupp.multiset`
+-- porting notes: removed from module documentation because it moved to `data.finsupp.multiset`
 -- TODO: move to `Data.Finsupp.Multiset` when that is ported
--- * `finsupp.order_iso_multiset`: The order isomorphism between `ℕ`-valued finitely supported
+-- * `Finsupp.orderIsoMultiset`: The order isomorphism between `ℕ`-valued finitely supported
 --   functions and multisets.
 
 
@@ -56,8 +53,7 @@ theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=
 #align finsupp.le_def Finsupp.le_def
 
 /-- The order on `Finsupp`s over a partial order embeds into the order on functions -/
-def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α)
-    where
+def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
   toFun f := f
   inj' f g h :=
     Finsupp.ext fun i => by
@@ -120,6 +116,18 @@ instance lattice [Lattice α] : Lattice (ι →₀ α) :=
   { Finsupp.semilatticeInf, Finsupp.semilatticeSup with }
 #align finsupp.lattice Finsupp.lattice
 
+section Lattice
+variable [DecidableEq ι] [Lattice α] (f g : ι →₀ α)
+
+theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
+  coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
+#align finsupp.support_inf_union_support_sup Finsupp.support_inf_union_support_sup
+
+theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
+  (union_comm _ _).trans <| support_inf_union_support_sup _ _
+#align finsupp.support_sup_union_support_inf Finsupp.support_sup_union_support_inf
+
+end Lattice
 end Zero
 
 /-! ### Algebraic order structures -/
@@ -165,9 +173,9 @@ theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g
   le_iff' f g <| Subset.refl _
 #align finsupp.le_iff Finsupp.le_iff
 
-instance decidableLe [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
+instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
-#align finsupp.decidable_le Finsupp.decidableLe
+#align finsupp.decidable_le Finsupp.decidableLE
 
 @[simp]
 theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=

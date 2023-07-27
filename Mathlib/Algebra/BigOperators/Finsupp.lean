@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.big_operators.finsupp
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.big_operators.finsupp from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
 /-!
 # Big operators for finsupps
@@ -80,7 +77,6 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
       prod_of_support_subset _ support_single_subset h fun x hx =>
         (mem_singleton.1 hx).symm ▸ h_zero
     _ = h a b := by simp
-
 #align finsupp.prod_single_index Finsupp.prod_single_index
 #align finsupp.sum_single_index Finsupp.sum_single_index
 
@@ -328,16 +324,16 @@ theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → �
 #align finsupp.coe_sum Finsupp.coe_sum
 
 theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} :
-    (f.sum g).support ⊆ f.support.bunionᵢ fun a => (g a (f a)).support := by
+    (f.sum g).support ⊆ f.support.biUnion fun a => (g a (f a)).support := by
   have : ∀ c, (f.sum fun a b => g a b c) ≠ 0 → ∃ a, f a ≠ 0 ∧ ¬(g a (f a)) c = 0 := fun a₁ h =>
     let ⟨a, ha, ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨a, mem_support_iff.mp ha, ne⟩
-  simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_bunionᵢ, sum_apply, exists_prop]
+  simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, sum_apply, exists_prop]
 #align finsupp.support_sum Finsupp.support_sum
 
 theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
-    (Finset.sum s f).support ⊆ s.bunionᵢ fun x => (f x).support := by
-  rw [← Finset.sup_eq_bunionᵢ]
+    (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
+  rw [← Finset.sup_eq_biUnion]
   induction' s using Finset.cons_induction_on with a s ha ih
   · rfl
   · rw [Finset.sum_cons, Finset.sup_cons]
@@ -439,24 +435,25 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
 
 @[simp]
 theorem liftAddHom_apply [AddCommMonoid M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :
-    liftAddHom F f = f.sum fun x => F x :=
+    (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x => F x :=
   rfl
 #align finsupp.lift_add_hom_apply Finsupp.liftAddHom_apply
 
 @[simp]
 theorem liftAddHom_symm_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α) :
-    liftAddHom.symm F x = F.comp (singleAddHom x) :=
+    (liftAddHom (α := α) (M := M) (N := N)).symm F x = F.comp (singleAddHom x) :=
   rfl
 #align finsupp.lift_add_hom_symm_apply Finsupp.liftAddHom_symm_apply
 
 theorem liftAddHom_symm_apply_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α)
-    (y : M) : liftAddHom.symm F x y = F (single x y) :=
+    (y : M) : (liftAddHom (α := α) (M := M) (N := N)).symm F x y = F (single x y) :=
   rfl
 #align finsupp.lift_add_hom_symm_apply_apply Finsupp.liftAddHom_symm_apply_apply
 
 @[simp]
 theorem liftAddHom_singleAddHom [AddCommMonoid M] :
-    liftAddHom (singleAddHom : α → M →+ α →₀ M) = AddMonoidHom.id _ :=
+    (liftAddHom (α := α) (M := M) (N := α →₀ M)) (singleAddHom : α → M →+ α →₀ M) =
+      AddMonoidHom.id _ :=
   liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
 #align finsupp.lift_add_hom_single_add_hom Finsupp.liftAddHom_singleAddHom
 
@@ -477,7 +474,7 @@ theorem sum_univ_single [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     (∑ j : α, (single j m) i) = m := by
 -- Porting note: rewrite due to leaky classical in lean3
-  simp_rw [single, coe_mk, Finset.sum_pi_single]
+  simp_rw [single, coe_mk]
   classical rw [Finset.sum_pi_single]
   simp
 #align finsupp.sum_univ_single' Finsupp.sum_univ_single'
@@ -485,18 +482,20 @@ theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 -- Porting note: simp can prove this
 -- @[simp]
 theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
-    (b : M) : liftAddHom f (single a b) = f a b :=
+    (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
   sum_single_index (f a).map_zero
 #align finsupp.lift_add_hom_apply_single Finsupp.liftAddHom_apply_single
 
 @[simp]
 theorem liftAddHom_comp_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α) :
-    (liftAddHom f).comp (singleAddHom a) = f a :=
+    ((liftAddHom (α := α) (M := M) (N := N)) f).comp (singleAddHom a) = f a :=
   AddMonoidHom.ext fun b => liftAddHom_apply_single f a b
 #align finsupp.lift_add_hom_comp_single Finsupp.liftAddHom_comp_single
 
 theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g : N →+ P)
-    (f : α → M →+ N) : g.comp (liftAddHom f) = liftAddHom fun a => g.comp (f a) :=
+    (f : α → M →+ N) :
+    g.comp ((liftAddHom (α := α) (M := M) (N := N)) f) =
+      (liftAddHom (α := α) (M := M) (N := P)) fun a => g.comp (f a) :=
   liftAddHom.symm_apply_eq.1 <|
     funext fun a => by
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
@@ -504,7 +503,8 @@ theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g
 
 theorem sum_sub_index [AddCommGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : α → β → γ}
     (h_sub : ∀ a b₁ b₂, h a (b₁ - b₂) = h a b₁ - h a b₂) : (f - g).sum h = f.sum h - g.sum h :=
-  (liftAddHom fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
+  ((liftAddHom (α := α) (M := β) (N := γ)) fun a =>
+    AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
 #align finsupp.sum_sub_index Finsupp.sum_sub_index
 
 @[to_additive]
@@ -541,22 +541,22 @@ theorem multiset_sum_sum_index [AddCommMonoid M] [AddCommMonoid N] (f : Multiset
     rw [Multiset.sum_cons, Multiset.map_cons, Multiset.sum_cons, sum_add_index' h₀ h₁, ih]
 #align finsupp.multiset_sum_sum_index Finsupp.multiset_sum_sum_index
 
-theorem support_sum_eq_bunionᵢ {α : Type _} {ι : Type _} {M : Type _} [DecidableEq α]
+theorem support_sum_eq_biUnion {α : Type _} {ι : Type _} {M : Type _} [DecidableEq α]
     [AddCommMonoid M] {g : ι → α →₀ M} (s : Finset ι)
     (h : ∀ i₁ i₂, i₁ ≠ i₂ → Disjoint (g i₁).support (g i₂).support) :
-    (∑ i in s, g i).support = s.bunionᵢ fun i => (g i).support := by
+    (∑ i in s, g i).support = s.biUnion fun i => (g i).support := by
   classical
   -- Porting note: apply Finset.induction_on s was not working; refine does.
   refine Finset.induction_on s ?_ ?_
   · simp
   · intro i s hi
-    simp only [hi, sum_insert, not_false_iff, bunionᵢ_insert]
+    simp only [hi, sum_insert, not_false_iff, biUnion_insert]
     intro hs
     rw [Finsupp.support_add_eq, hs]
-    rw [hs, Finset.disjoint_bunionᵢ_right]
+    rw [hs, Finset.disjoint_biUnion_right]
     intro j hj
     refine' h _ _ (ne_of_mem_of_not_mem hj hi).symm
-#align finsupp.support_sum_eq_bUnion Finsupp.support_sum_eq_bunionᵢ
+#align finsupp.support_sum_eq_bUnion Finsupp.support_sum_eq_biUnion
 
 theorem multiset_map_sum [Zero M] {f : α →₀ M} {m : β → γ} {h : α → M → Multiset β} :
     Multiset.map m (f.sum h) = f.sum fun a b => (h a b).map m :=
@@ -597,6 +597,25 @@ theorem prod_dvd_prod_of_subset_of_dvd [AddCommMonoid M] [CommMonoid N] {f1 f2 :
     apply prod_dvd_prod_of_dvd
     exact h2
 #align finsupp.prod_dvd_prod_of_subset_of_dvd Finsupp.prod_dvd_prod_of_subset_of_dvd
+
+lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : ∀ a ∈ s, M) :
+    indicator s f = ∑ x in s.attach, single ↑x (f x x.2) := by
+  rw [← sum_single (indicator s f), sum, sum_subset (support_indicator_subset _ _), ← sum_attach]
+  · refine' Finset.sum_congr rfl (fun _ _ => _)
+    rw [indicator_of_mem]
+  · intro i _ hi
+    rw [not_mem_support_iff.mp hi, single_zero]
+#align finsupp.indicator_eq_sum_single Finsupp.indicator_eq_sum_single
+
+@[to_additive (attr := simp)]
+lemma prod_indicator_index [Zero M] [CommMonoid N]
+    {s : Finset α} (f : ∀ a ∈ s, M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
+    (indicator s f).prod h = ∏ x in s.attach, h ↑x (f x x.2) := by
+  rw [prod_of_support_subset _ (support_indicator_subset _ _) h h_zero, ← prod_attach]
+  refine' Finset.prod_congr rfl (fun _ _ => _)
+  rw [indicator_of_mem]
+#align finsupp.prod_indicator_index Finsupp.prod_indicator_index
+#align finsupp.sum_indicator_index Finsupp.sum_indicator_index
 
 end Finsupp
 
@@ -640,7 +659,6 @@ namespace Nat
 theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (hf : 0 ∉ f.support) :
     0 < f.prod (· ^ ·) :=
  Finset.prod_pos fun a ha => pos_iff_ne_zero.mpr (pow_ne_zero _ fun H => by subst H; exact hf ha)
-
 #align nat.prod_pow_pos_of_zero_not_mem_support Nat.prod_pow_pos_of_zero_not_mem_support
 
 end Nat

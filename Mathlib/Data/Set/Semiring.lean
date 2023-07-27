@@ -2,13 +2,11 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.semiring
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.Set.Pointwise.SMul
+
+#align_import data.set.semiring from "leanprover-community/mathlib"@"62e8311c791f02c47451bf14aa2501048e7c2f33"
 
 /-!
 # Sets as a semiring under union
@@ -52,6 +50,10 @@ namespace SetSemiring
 protected def down : SetSemiring α ≃ Set α :=
   Equiv.refl _
 #align set_semiring.down SetSemiring.down
+
+--Porting note: new, since dot notation doesn't work
+open SetSemiring (down)
+open Set (up)
 
 --Porting note: dot notation no longer works
 @[simp]
@@ -97,6 +99,34 @@ instance : AddCommMonoid (SetSemiring α) where
   add_zero := union_empty
   add_comm := union_comm
 
+theorem zero_def : (0 : SetSemiring α) = Set.up ∅ :=
+  rfl
+#align set_semiring.zero_def SetSemiring.zero_def
+
+@[simp]
+theorem down_zero : down (0 : SetSemiring α) = ∅ :=
+  rfl
+#align set_semiring.down_zero SetSemiring.down_zero
+
+@[simp]
+theorem _root_.Set.up_empty : Set.up (∅ : Set α) = 0 :=
+  rfl
+#align set.up_empty Set.up_empty
+
+theorem add_def (s t : SetSemiring α) : s + t = up (down s ∪ down t) :=
+  rfl
+#align set_semiring.add_def SetSemiring.add_def
+
+@[simp]
+theorem down_add (s t : SetSemiring α) : down (s + t) = down s ∪ down t :=
+  rfl
+#align set_semiring.down_add SetSemiring.down_add
+
+@[simp]
+theorem _root_.Set.up_union (s t : Set α) : up (s ∪ t) = up s + up t :=
+  rfl
+#align set.up_union Set.up_union
+
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
 instance covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
@@ -116,6 +146,21 @@ instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
     left_distrib := fun _ _ _ => mul_union
     right_distrib := fun _ _ _ => union_mul }
 
+-- TODO: port
+theorem mul_def (s t : SetSemiring α) : s * t = up (down s * down t) :=
+  rfl
+#align set_semiring.mul_def SetSemiring.mul_def
+
+@[simp]
+theorem down_mul (s t : SetSemiring α) : down (s * t) = down s * down t :=
+  rfl
+#align set_semiring.down_mul SetSemiring.down_mul
+
+@[simp]
+theorem _root_.Set.up_mul (s t : Set α) : up (s * t) = up s * up t :=
+  rfl
+#align set.up_mul Set.up_mul
+
 instance : NoZeroDivisors (SetSemiring α) :=
   ⟨fun {a b} ab =>
     a.eq_empty_or_nonempty.imp_right fun ha =>
@@ -134,22 +179,49 @@ instance covariantClass_mul_right :
 
 end Mul
 
--- Porting note: this was `one := 1`
+
+section One
+
+variable [One α]
+
+instance : One (SetSemiring α) where one := Set.up (1 : Set α)
+
+theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
+  rfl
+#align set_semiring.one_def SetSemiring.one_def
+
+@[simp]
+theorem down_one : down (1 : SetSemiring α) = 1 :=
+  rfl
+#align set_semiring.down_one SetSemiring.down_one
+
+@[simp]
+theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
+  rfl
+#align set.up_one Set.up_one
+
+end One
+
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with
-    one := Set.up ({1} : Set α)
+    one := 1
     mul := (· * ·) }
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }
 
-instance [Monoid α] : Semiring (SetSemiring α) :=
+instance [Monoid α] : IdemSemiring (SetSemiring α) :=
   { (inferInstance : NonAssocSemiring (SetSemiring α)),
-    (inferInstance : NonUnitalSemiring (SetSemiring α)) with }
+    (inferInstance : NonUnitalSemiring (SetSemiring α)),
+    (inferInstance : CompleteBooleanAlgebra (Set α)) with }
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
+
+instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
+  { (inferInstance : IdemSemiring (SetSemiring α)),
+    (inferInstance : CommMonoid (Set α)) with }
 
 instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
@@ -159,18 +231,37 @@ instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
     (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)),
     (inferInstance : NoZeroDivisors (SetSemiring α)) with
     add_le_add_left := fun _ _ => add_le_add_left
-    exists_add_of_le := @fun _ b ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
+    exists_add_of_le := fun {_ b} ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
     le_self_add := subset_union_left }
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
 def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β
     where
-  toFun := image f
+  toFun s := up (image f (down s))
   map_zero' := image_empty _
-  map_one' := by rw [image_one, map_one, singleton_one]
+  map_one' := by
+    dsimp only  -- porting note: structures do not do this automatically any more
+    rw [down_one, image_one, map_one, singleton_one, up_one]
   map_add' := image_union _
   map_mul' _ _ := image_mul f
 #align set_semiring.image_hom SetSemiring.imageHom
+
+lemma imageHom_def [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
+    imageHom f s = up (image f (down s)) :=
+  rfl
+#align set_semiring.image_hom_def SetSemiring.imageHom_def
+
+@[simp]
+lemma down_imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
+    down (imageHom f s) = f '' down s :=
+  rfl
+#align set_semiring.down_image_hom SetSemiring.down_imageHom
+
+@[simp]
+lemma _root_.Set.up_image [MulOneClass α] [MulOneClass β] (f : α →* β) (s : Set α) :
+    up (f '' s) = imageHom f (up s) :=
+  rfl
+#align set.up_image Set.up_image
 
 end SetSemiring

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.sum.interval
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.LocallyFinite
+
+#align_import data.sum.interval from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 # Finite intervals in a disjoint union
@@ -50,7 +47,7 @@ theorem mem_sumLift₂ :
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
   constructor
-  · cases a <;> cases b <;> rename_i a b
+  · cases' a with a a <;> cases' b with b b
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩

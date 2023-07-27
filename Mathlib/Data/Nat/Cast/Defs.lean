@@ -2,15 +2,11 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
-
-! This file was ported from Lean 3 source module data.nat.cast.defs
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
-import Mathlib.Tactic.SplitIfs
+
+#align_import data.nat.cast.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Cast of natural numbers
@@ -39,12 +35,6 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 
 #align nat.cast Nat.cast
 
--- see note [coercion into rings]
-instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
-
--- see note [coercion into rings]
-instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
-
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
 
@@ -64,7 +54,9 @@ instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
 @[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
+  (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
+
+theorem Nat.cast_eq_ofNat [NatCast R] [Nat.AtLeastTwo n] : (Nat.cast n : R) = OfNat.ofNat n := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -113,8 +105,8 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
 #align nat.cast_zero Nat.cast_zero
 
--- Lemmas about nat.succ need to get a low priority, so that they are tried last.
--- This is because `nat.succ _` matches `1`, `3`, `x+1`, etc.
+-- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
+-- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
 @[simp 500, norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=

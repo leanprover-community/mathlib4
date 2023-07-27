@@ -2,14 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.natural_transformation
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.CategoryTheory.Reassoc
+
+#align_import category_theory.natural_transformation from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Natural transformations
@@ -37,7 +33,7 @@ Introduces notations
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -48,7 +44,7 @@ The field `app` provides the components of the natural transformation.
 
 Naturality is expressed by `α.naturality`.
 -/
-@[ext]
+@[ext, pp_dot]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The component of a natural transformation. -/
   app : ∀ X : C, F.obj X ⟶ G.obj X
@@ -59,11 +55,8 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 #align category_theory.nat_trans.ext_iff CategoryTheory.NatTrans.ext_iff
 #align category_theory.nat_trans.ext CategoryTheory.NatTrans.ext
 
--- TODO Perhaps we should just turn on `ext` in aesop?
-attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
-
 -- Rather arbitrarily, we say that the 'simpler' form is
--- components of natural transfomations moving earlier.
+-- components of natural transformations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
 #align category_theory.nat_trans.naturality_assoc CategoryTheory.NatTrans.naturality_assoc
 

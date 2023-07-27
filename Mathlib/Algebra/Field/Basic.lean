@@ -2,16 +2,13 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.field.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Hom.Ring
-import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.Commute
+
+#align_import algebra.field.basic from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
@@ -27,7 +24,7 @@ variable {α β K : Type _}
 
 section DivisionSemiring
 
-variable [DivisionSemiring α] {a b c : α}
+variable [DivisionSemiring α] {a b c d : α}
 
 theorem add_div (a b c : α) : (a + b) / c = a / c + b / c := by simp_rw [div_eq_mul_inv, add_mul]
 #align add_div add_div
@@ -70,6 +67,21 @@ theorem add_div' (a b c : α) (hc : c ≠ 0) : b + a / c = (b * c + a) / c := by
 theorem div_add' (a b c : α) (hc : c ≠ 0) : a / c + b = (a + b * c) / c := by
   rwa [add_comm, add_div', add_comm]
 #align div_add' div_add'
+
+protected theorem Commute.div_add_div (hbc : Commute b c) (hbd : Commute b d) (hb : b ≠ 0)
+    (hd : d ≠ 0) : a / b + c / d = (a * d + b * c) / (b * d) := by
+  rw [add_div, mul_div_mul_right _ b hd, hbc.eq, hbd.eq, mul_div_mul_right c d hb]
+#align commute.div_add_div Commute.div_add_div
+
+protected theorem Commute.one_div_add_one_div (hab : Commute a b) (ha : a ≠ 0) (hb : b ≠ 0) :
+    1 / a + 1 / b = (a + b) / (a * b) := by
+  rw [(Commute.one_right a).div_add_div hab ha hb, one_mul, mul_one, add_comm]
+#align commute.one_div_add_one_div Commute.one_div_add_one_div
+
+protected theorem Commute.inv_add_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b ≠ 0) :
+    a⁻¹ + b⁻¹ = (a + b) / (a * b) := by
+  rw [inv_eq_one_div, inv_eq_one_div, hab.one_div_add_one_div ha hb]
+#align commute.inv_add_inv Commute.inv_add_inv
 
 end DivisionSemiring
 
@@ -124,7 +136,7 @@ end DivisionMonoid
 
 section DivisionRing
 
-variable [DivisionRing K] {a b : K}
+variable [DivisionRing K] {a b c d : K}
 
 @[simp]
 theorem div_neg_self {a : K} (h : a ≠ 0) : a / -a = -1 := by rw [div_neg_eq_neg_div, div_self h]
@@ -174,6 +186,16 @@ instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
   NoZeroDivisors.to_isDomain _
 #align division_ring.is_domain DivisionRing.isDomain
 
+protected theorem Commute.div_sub_div (hbc : Commute b c) (hbd : Commute b d) (hb : b ≠ 0)
+    (hd : d ≠ 0) : a / b - c / d = (a * d - b * c) / (b * d) := by
+  simpa only [mul_neg, neg_div, ← sub_eq_add_neg] using hbc.neg_right.div_add_div hbd hb hd
+#align commute.div_sub_div Commute.div_sub_div
+
+protected theorem Commute.inv_sub_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b ≠ 0) :
+    a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
+  simp only [inv_eq_one_div, (Commute.one_right a).div_sub_div hab ha hb, one_mul, mul_one]
+#align commute.inv_sub_inv Commute.inv_sub_inv
+
 end DivisionRing
 
 section Semifield
@@ -181,16 +203,16 @@ section Semifield
 variable [Semifield α] {a b c d : α}
 
 theorem div_add_div (a : α) (c : α) (hb : b ≠ 0) (hd : d ≠ 0) :
-    a / b + c / d = (a * d + b * c) / (b * d) := by
-  rw [← mul_div_mul_right _ b hd, ← mul_div_mul_left c d hb, div_add_div_same]
+    a / b + c / d = (a * d + b * c) / (b * d) :=
+  (Commute.all b _).div_add_div (Commute.all _ _) hb hd
 #align div_add_div div_add_div
 
-theorem one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) : 1 / a + 1 / b = (a + b) / (a * b) := by
-  rw [div_add_div _ _ ha hb, one_mul, mul_one, add_comm]
+theorem one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) : 1 / a + 1 / b = (a + b) / (a * b) :=
+  (Commute.all a _).one_div_add_one_div ha hb
 #align one_div_add_one_div one_div_add_one_div
 
-theorem inv_add_inv (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ + b⁻¹ = (a + b) / (a * b) := by
-  rw [inv_eq_one_div, inv_eq_one_div, one_div_add_one_div ha hb]
+theorem inv_add_inv (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ + b⁻¹ = (a + b) / (a * b) :=
+  (Commute.all a _).inv_add_inv ha hb
 #align inv_add_inv inv_add_inv
 
 end Semifield
@@ -203,10 +225,8 @@ attribute [local simp] mul_assoc mul_comm mul_left_comm
 
 @[field_simps]
 theorem div_sub_div (a : K) {b : K} (c : K) {d : K} (hb : b ≠ 0) (hd : d ≠ 0) :
-    a / b - c / d = (a * d - b * c) / (b * d) := by
-  simp [sub_eq_add_neg]
-  rw [neg_eq_neg_one_mul, ← mul_div_assoc, div_add_div _ _ hb hd, ← mul_assoc, mul_comm b,
-    mul_assoc, ← neg_eq_neg_one_mul]
+    a / b - c / d = (a * d - b * c) / (b * d) :=
+  (Commute.all b _).div_sub_div (Commute.all _ _) hb hd
 #align div_sub_div div_sub_div
 
 theorem inv_sub_inv {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
@@ -289,7 +309,7 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
     DivisionRing K' :=
   { hf.groupWithZero f zero one mul inv div npow zpow,
     hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := RatCast.ratCast,
+    ratCast := Rat.cast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
@@ -327,7 +347,7 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     Field K' :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow,
     hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := RatCast.ratCast,
+    ratCast := Rat.cast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by

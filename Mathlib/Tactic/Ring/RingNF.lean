@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Tim Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Conv
+import Mathlib.Util.Qq
 
 /-!
 # `ring_nf` tactic
@@ -15,6 +16,9 @@ prove some equations that `ring` cannot because they involve ring reasoning insi
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
+
+-- In this file we would like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
 
 namespace Mathlib.Tactic
 open Lean hiding Rat
@@ -90,11 +94,13 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
         guard e.isApp -- all interesting ring expressions are applications
-        let ⟨.succ u, α, e⟩ ← inferTypeQ e | failure
+        let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
         let c ← mkCache sα
-        let ⟨a, va, pa⟩ ← eval sα c e rctx s
-        guard !va.isAtom
+        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
+        | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
+        | some none => failure -- No point rewriting atoms
+        | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
         let r ← nctx.simp { expr := a, proof? := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
@@ -164,7 +170,7 @@ def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withM
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
   let r ← M.run s cfg <| rewrite tgt
-  if r.expr.isConstOf ``True then
+  if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
@@ -190,7 +196,7 @@ which rewrites all ring expressions into a normal form.
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? : tactic => do
+elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -198,7 +204,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
   withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
     fun _ ↦ throwError "ring_nf failed"
 
-@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(ppSpace location)? : tactic =>
+@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| ring_nf ! $(cfg)? $(loc)?)
 
 @[inherit_doc ringNF] syntax (name := ringNFConv) "ring_nf" "!"? (config)? : conv

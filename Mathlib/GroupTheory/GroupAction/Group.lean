@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.group
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.GroupTheory.GroupAction.Units
+
+#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
 /-!
 # Group actions applied to various types of group
@@ -79,9 +76,9 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
 #align mul_action.to_perm_hom MulAction.toPermHom
 #align mul_action.to_perm_hom_apply MulAction.toPermHom_apply
 
-/-- Given an action of a additive group `α` on a set `β`, each `g : α` defines a permutation of
+/-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
 `β`. -/
-@[simps]
+@[simps!]
 def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
     α →+ Additive (Equiv.Perm β) :=
   MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
@@ -253,7 +250,7 @@ def DistribMulAction.toAddEquiv (x : α) : β ≃+ β :=
   { DistribMulAction.toAddMonoidHom β x, MulAction.toPermHom α β x with }
 #align distrib_mul_action.to_add_equiv DistribMulAction.toAddEquiv
 #align distrib_mul_action.to_add_equiv_apply DistribMulAction.toAddEquiv_apply
-#align distrib_mul_action.to_add_equiv_symm_apply DistribMulAction.toAddEquiv_symmApply
+#align distrib_mul_action.to_add_equiv_symm_apply DistribMulAction.toAddEquiv_symm_apply
 
 variable (α)
 
@@ -309,12 +306,12 @@ This is a stronger version of `MulAction.toPerm`. -/
 def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
   { MulDistribMulAction.toMonoidHom β x, MulAction.toPermHom α β x with }
 #align mul_distrib_mul_action.to_mul_equiv MulDistribMulAction.toMulEquiv
-#align mul_distrib_mul_action.to_mul_equiv_symm_apply MulDistribMulAction.toMulEquiv_symmApply
+#align mul_distrib_mul_action.to_mul_equiv_symm_apply MulDistribMulAction.toMulEquiv_symm_apply
 #align mul_distrib_mul_action.to_mul_equiv_apply MulDistribMulAction.toMulEquiv_apply
 
 variable (α)
 
-/-- Each element of the group defines an multiplicative monoid isomorphism.
+/-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
@@ -332,9 +329,8 @@ end MulDistribMulAction
 section Arrow
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive arrowAddAction
-      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`",
-  simps]
+@[to_additive (attr := simps) arrowAddAction
+      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
 def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul := by
@@ -361,12 +357,12 @@ attribute [local instance] arrowMulDistribMulAction
 
 /-- Given groups `G H` with `G` acting on `A`, `G` acts by
   multiplicative automorphisms on `A → H`. -/
-@[simps]
+@[simps!]
 def mulAutArrow {G A H} [Group G] [MulAction G A] [Monoid H] : G →* MulAut (A → H) :=
   MulDistribMulAction.toMulAut _ _
 #align mul_aut_arrow mulAutArrow
 #align mul_aut_arrow_apply_apply mulAutArrow_apply_apply
-#align mul_aut_arrow_apply_symm_apply mulAutArrow_apply_symmApply
+#align mul_aut_arrow_apply_symm_apply mulAutArrow_apply_symm_apply
 
 end Arrow
 

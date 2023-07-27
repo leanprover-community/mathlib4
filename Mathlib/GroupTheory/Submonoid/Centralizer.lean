@@ -2,14 +2,11 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.submonoid.centralizer
-! leanprover-community/mathlib commit 44b58b42794e5abe2bf86397c38e26b587e07e59
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.GroupTheory.Submonoid.Center
+
+#align_import group_theory.submonoid.centralizer from "leanprover-community/mathlib"@"cc67cd75b4e54191e13c2e8d722289a89e67e4fa"
 
 /-!
 # Centralizers of magmas and monoids
@@ -55,7 +52,7 @@ theorem _root_.AddSubmonoid.centralizer_toAddSubsemigroup {M} [AddMonoid M] (S :
   rfl
 #align add_submonoid.centralizer_to_add_subsemigroup AddSubmonoid.centralizer_toAddSubsemigroup
 
-attribute [to_additive AddSubmonoid.centralizer_toAddSubsemigroup]
+attribute [to_additive existing AddSubmonoid.centralizer_toAddSubsemigroup]
   Submonoid.centralizer_toSubsemigroup
 
 variable {S}
@@ -65,6 +62,12 @@ theorem mem_centralizer_iff {z : M} : z ∈ centralizer S ↔ ∀ g ∈ S, g * z
   Iff.rfl
 #align submonoid.mem_centralizer_iff Submonoid.mem_centralizer_iff
 #align add_submonoid.mem_centralizer_iff AddSubmonoid.mem_centralizer_iff
+
+@[to_additive]
+theorem center_le_centralizer (s) : center M ≤ centralizer s :=
+  s.center_subset_centralizer
+#align submonoid.center_le_centralizer Submonoid.center_le_centralizer
+#align add_submonoid.center_le_centralizer AddSubmonoid.center_le_centralizer
 
 @[to_additive]
 instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
@@ -79,6 +82,12 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 #align submonoid.centralizer_le Submonoid.centralizer_le
 #align add_submonoid.centralizer_le AddSubmonoid.centralizer_le
 
+@[to_additive (attr := simp)]
+theorem centralizer_eq_top_iff_subset {s : Set M} : centralizer s = ⊤ ↔ s ⊆ center M :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align submonoid.centralizer_eq_top_iff_subset Submonoid.centralizer_eq_top_iff_subset
+#align add_submonoid.centralizer_eq_top_iff_subset AddSubmonoid.centralizer_eq_top_iff_subset
+
 variable (M)
 
 @[to_additive (attr := simp)]
@@ -91,6 +100,5 @@ end
 
 end Submonoid
 
--- Porting note: `assert_not_exists` not implemented yet
 -- Guard against import creep
---assert_not_exists finset
+assert_not_exists Finset

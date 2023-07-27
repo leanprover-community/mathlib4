@@ -2,20 +2,18 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.min_max
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Tactic.Contrapose
+
+#align_import algebra.order.monoid.min_max from "leanprover-community/mathlib"@"de87d5053a9fe5cbde723172c0fb7e27e7436473"
 
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.
 -/
 
+
+open Function
 
 variable {α β : Type _}
 
@@ -59,25 +57,6 @@ theorem max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
 #align max_mul_mul_left max_mul_mul_left
 #align max_add_add_left max_add_add_left
 
-@[to_additive]
-theorem lt_or_lt_of_mul_lt_mul [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b m n : α}
-    (h : m * n < a * b) : m < a ∨ n < b := by
-  contrapose! h
-  exact mul_le_mul' h.1 h.2
-#align lt_or_lt_of_mul_lt_mul lt_or_lt_of_mul_lt_mul
-#align lt_or_lt_of_add_lt_add lt_or_lt_of_add_lt_add
-
-@[to_additive]
-theorem mul_lt_mul_iff_of_le_of_le [CovariantClass α α (Function.swap (· * ·)) (· < ·)]
-    [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
-    {a b c d : α} (ac : a ≤ c) (bd : b ≤ d) : a * b < c * d ↔ a < c ∨ b < d := by
-  refine' ⟨lt_or_lt_of_mul_lt_mul, fun h => _⟩
-  cases' h with ha hb
-  · exact mul_lt_mul_of_lt_of_le ha bd
-  · exact mul_lt_mul_of_le_of_lt ac hb
-#align mul_lt_mul_iff_of_le_of_le mul_lt_mul_iff_of_le_of_le
-#align add_lt_add_iff_of_le_of_le add_lt_add_iff_of_le_of_le
-
 end Left
 
 section Right
@@ -97,6 +76,54 @@ theorem max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
 #align max_add_add_right max_add_add_right
 
 end Right
+
+@[to_additive]
+theorem lt_or_lt_of_mul_lt_mul [CovariantClass α α (· * ·) (· ≤ ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a₁ a₂ b₁ b₂ : α} :
+    a₁ * b₁ < a₂ * b₂ → a₁ < a₂ ∨ b₁ < b₂ := by
+  contrapose!
+  exact fun h => mul_le_mul' h.1 h.2
+#align lt_or_lt_of_mul_lt_mul lt_or_lt_of_mul_lt_mul
+#align lt_or_lt_of_add_lt_add lt_or_lt_of_add_lt_add
+
+@[to_additive]
+theorem le_or_lt_of_mul_le_mul [CovariantClass α α (· * ·) (· ≤ ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} :
+    a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ < b₂ := by
+  contrapose!
+  exact fun h => mul_lt_mul_of_lt_of_le h.1 h.2
+#align le_or_lt_of_mul_le_mul le_or_lt_of_mul_le_mul
+#align le_or_lt_of_add_le_add le_or_lt_of_add_le_add
+
+@[to_additive]
+theorem lt_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a₁ a₂ b₁ b₂ : α} :
+    a₁ * b₁ ≤ a₂ * b₂ → a₁ < a₂ ∨ b₁ ≤ b₂ := by
+  contrapose!
+  exact fun h => mul_lt_mul_of_le_of_lt h.1 h.2
+#align lt_or_le_of_mul_le_mul lt_or_le_of_mul_le_mul
+#align lt_or_le_of_add_le_add lt_or_le_of_add_le_add
+
+@[to_additive]
+theorem le_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} :
+    a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ ≤ b₂ := by
+  contrapose!
+  exact fun h => mul_lt_mul_of_lt_of_lt h.1 h.2
+#align le_or_le_of_mul_le_mul le_or_le_of_mul_le_mul
+#align le_or_le_of_add_le_add le_or_le_of_add_le_add
+
+@[to_additive]
+theorem mul_lt_mul_iff_of_le_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] [CovariantClass α α (· * ·) (· < ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂)
+    (hb : b₁ ≤ b₂) : a₁ * b₁ < a₂ * b₂ ↔ a₁ < a₂ ∨ b₁ < b₂ := by
+  refine' ⟨lt_or_lt_of_mul_lt_mul, fun h => _⟩
+  cases' h with ha' hb'
+  · exact mul_lt_mul_of_lt_of_le ha' hb
+  · exact mul_lt_mul_of_le_of_lt ha hb'
+#align mul_lt_mul_iff_of_le_of_le mul_lt_mul_iff_of_le_of_le
+#align add_lt_add_iff_of_le_of_le add_lt_add_iff_of_le_of_le
 
 end Mul
 

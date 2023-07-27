@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.cofinite
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Pi
+
+#align_import order.filter.cofinite from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # The cofinite filter
@@ -59,6 +56,13 @@ instance cofinite_neBot [Infinite α] : NeBot (@cofinite α) :=
   hasBasis_cofinite.neBot_iff.2 fun hs => hs.infinite_compl.nonempty
 #align filter.cofinite_ne_bot Filter.cofinite_neBot
 
+@[simp]
+theorem cofinite_eq_bot_iff : @cofinite α = ⊥ ↔ Finite α := by
+  simp [← empty_mem_iff_bot, finite_univ_iff]
+
+@[simp]
+theorem cofinite_eq_bot [Finite α] : @cofinite α = ⊥ := cofinite_eq_bot_iff.2 ‹_›
+
 theorem frequently_cofinite_iff_infinite {p : α → Prop} :
     (∃ᶠ x in cofinite, p x) ↔ Set.Infinite { x | p x } := by
   simp only [Filter.Frequently, Filter.Eventually, mem_cofinite, compl_setOf, not_not,
@@ -89,7 +93,7 @@ theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine' ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => _⟩
-  rw [← compl_compl s, ← bunionᵢ_of_singleton (sᶜ), compl_unionᵢ₂, Filter.binterᵢ_mem hs]
+  rw [← compl_compl s, ← biUnion_of_singleton sᶜ, compl_iUnion₂, Filter.biInter_mem hs]
   exact fun x _ => h x
 #align filter.le_cofinite_iff_compl_singleton_mem Filter.le_cofinite_iff_compl_singleton_mem
 
@@ -160,7 +164,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type _} [LinearOrder β]
     refine' ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim _ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
-    push_neg  at not_all_top
+    push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
     exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
 #align filter.tendsto.exists_within_forall_le Filter.Tendsto.exists_within_forall_le
@@ -181,6 +185,9 @@ theorem Filter.Tendsto.exists_forall_ge [Nonempty α] [LinearOrder β] {f : α �
     (hf : Tendsto f cofinite atBot) : ∃ a₀, ∀ a, f a ≤ f a₀ :=
   @Filter.Tendsto.exists_forall_le _ βᵒᵈ _ _ _ hf
 #align filter.tendsto.exists_forall_ge Filter.Tendsto.exists_forall_ge
+
+theorem Function.Surjective.le_map_cofinite {f : α → β} (hf : Surjective f) :
+    cofinite ≤ map f cofinite := fun _ h => .of_preimage h hf
 
 /-- For an injective function `f`, inverse images of finite sets are finite. See also
 `Filter.comap_cofinite_le` and `Function.Injective.comap_cofinite_eq`. -/

@@ -2,18 +2,14 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-Ported by: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.order.hom.monoid
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Order.Hom.Basic
+
+#align_import algebra.order.hom.monoid from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
 
 /-!
 # Ordered monoid and group homomorphisms
@@ -140,7 +136,7 @@ variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneCla
   "Turn an element of a type `F` satisfying `OrderAddMonoidHomClass F α β` into an actual
   `OrderAddMonoidHom`. This is declared as the default coercion from `F` to `α →+o β`."]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderMonoidHomClass F α β] (f : F) : α →*o β :=
-{ (f : α →* β) with monotone' := monotone f }
+  { (f : α →* β) with monotone' := monotone f }
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -353,13 +349,13 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_hom.to_monoid_hom_injective OrderMonoidHom.toMonoidHom_injective
 #align order_add_monoid_hom.to_add_monoid_hom_injective OrderAddMonoidHom.toAddMonoidHom_injective
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_hom.to_order_hom_injective OrderMonoidHom.toOrderHom_injective
 #align order_add_monoid_hom.to_order_hom_injective OrderAddMonoidHom.toOrderHom_injective
 
@@ -634,11 +630,11 @@ theorem coe_orderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
 #align order_monoid_with_zero_hom.coe_order_monoid_hom OrderMonoidWithZeroHom.coe_orderMonoidHom
 
 theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_with_zero_hom.to_order_monoid_hom_injective OrderMonoidWithZeroHom.toOrderMonoidHom_injective
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
-  fun f g h => ext <| by convert FunLike.ext_iff.1 h
+  fun f g h => ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_with_zero_hom.to_monoid_with_zero_hom_injective OrderMonoidWithZeroHom.toMonoidWithZeroHom_injective
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix

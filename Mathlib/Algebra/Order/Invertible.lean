@@ -2,14 +2,12 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module algebra.order.invertible
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Invertible
+import Mathlib.Data.Nat.Cast.Basic
+
+#align_import algebra.order.invertible from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.
@@ -41,3 +39,7 @@ theorem invOf_lt_zero [Invertible a] : ⅟ a < 0 ↔ a < 0 := by simp only [← 
 theorem invOf_le_one [Invertible a] (h : 1 ≤ a) : ⅟ a ≤ 1 :=
   mul_invOf_self a ▸ le_mul_of_one_le_left (invOf_nonneg.2 <| zero_le_one.trans h) h
 #align inv_of_le_one invOf_le_one
+
+theorem pos_invOf_of_invertible_cast [Nontrivial α] (n : ℕ)
+    [Invertible (n : α)] : 0 < ⅟(n : α) :=
+  invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (α := α) n

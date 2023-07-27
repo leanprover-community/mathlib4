@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.sum
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Sum
 import Mathlib.Logic.Embedding.Set
+
+#align_import data.fintype.sum from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 ## Instances
@@ -47,8 +44,7 @@ def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
     classical exact (Equiv.sumCompl (· = a)).bijective
 #align fintype_of_fintype_ne fintypeOfFintypeNe
 
-open Classical in
-theorem image_subtype_ne_univ_eq_image_erase [Fintype α] (k : β) (b : α → β) :
+theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : β) (b : α → β) :
     image (fun i : { a // b a ≠ k } => b ↑i) univ = (image b univ).erase k := by
   apply subset_antisymm
   · rw [image_subset_iff]
@@ -61,8 +57,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] (k : β) (b : α → �
     exact ⟨⟨a, ne_of_mem_erase hi⟩, mem_univ _, rfl⟩
 #align image_subtype_ne_univ_eq_image_erase image_subtype_ne_univ_eq_image_erase
 
-open Classical in
-theorem image_subtype_univ_ssubset_image_univ [Fintype α] (k : β) (b : α → β)
+theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k : β) (b : α → β)
     (hk : k ∈ Finset.image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
     image (fun i : { a // p (b a) } => b ↑i) univ ⊂ image b univ := by
   constructor
@@ -79,10 +74,9 @@ theorem image_subtype_univ_ssubset_image_univ [Fintype α] (k : β) (b : α → 
     exact hp (hj' ▸ j.2)
 #align image_subtype_univ_ssubset_image_univ image_subtype_univ_ssubset_image_univ
 
-open Classical in
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
-theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
+theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t : Finset β}
     (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical

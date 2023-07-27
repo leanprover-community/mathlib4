@@ -2,15 +2,12 @@
 Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module order.rel_classes
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Order.Basic
 import Mathlib.Logic.IsEmpty
-import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Logic.Relation
+import Mathlib.Order.Basic
+
+#align_import order.rel_classes from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
 /-!
 # Unbundled relation classes
@@ -184,7 +181,7 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
     <| irrefl b
 #align extensional_of_trichotomous_of_irrefl extensional_of_trichotomous_of_irrefl
 
-/-- Construct a partial order from a `isStrictOrder` relation.
+/-- Construct a partial order from an `isStrictOrder` relation.
 
 See note [reducible non-instances]. -/
 @[reducible]
@@ -225,7 +222,7 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidable_le := hD }
+    decidableLE := hD }
 set_option linter.uppercaseLean3 false in
 #align linear_order_of_STO linearOrderOfSTO
 
@@ -283,13 +280,20 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 #align has_well_founded WellFoundedRelation
 set_option linter.uppercaseLean3 false in
 #align has_well_founded.R WellFoundedRelation.rel
-instance [h : WellFoundedRelation α] : IsWellFounded α WellFoundedRelation.rel :=
+
+instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
+    IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
 theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
 termination_by _ => a
+
+lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
+    (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=
+  (Prod.lex ⟨_, ha⟩ ⟨_, hb⟩).wf
+#align prod.lex_wf WellFounded.prod_lex
 
 namespace IsWellFounded
 
@@ -305,10 +309,8 @@ theorem apply : ∀ a, Acc r a :=
   wf.apply
 #align is_well_founded.apply IsWellFounded.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as less under a well-founded
 relation. See also `IsWellFounded.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
   wf.fix
 #align is_well_founded.fix IsWellFounded.fix
@@ -337,6 +339,9 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsy
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
   IsAsymm.isIrrefl
+
+instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
+  ⟨i.wf.transGen⟩
 
 /-- A class for a well founded relation `<`. -/
 @[reducible]
@@ -405,10 +410,8 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
   IsWellFounded.apply _
 #align well_founded_lt.apply WellFoundedLT.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as lesser. See also
 `WellFoundedLT.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· < ·)
 #align well_founded_lt.fix WellFoundedLT.fix
@@ -439,10 +442,8 @@ theorem apply : ∀ a : α, Acc (· > ·) a :=
   IsWellFounded.apply _
 #align well_founded_gt.apply WellFoundedGT.apply
 
--- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as greater. See also
 `WellFoundedGT.fix_eq`. -/
-noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, x < y → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· > ·)
 #align well_founded_gt.fix WellFoundedGT.fix
@@ -465,7 +466,7 @@ noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder 
   linearOrderOfSTO r
 #align is_well_order.linear_order IsWellOrder.linearOrder
 
-/-- Derive a `WellFoundedRelation` instance from a `IsWellOrder` instance. -/
+/-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
 def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
   rel := (· < ·)
   wf := hwo.wf
@@ -489,7 +490,7 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   wf := wellFounded_of_isEmpty r
 
 instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
-  ⟨(Prod.lex (IsWellFounded.toWellFoundedRelation _) (IsWellFounded.toWellFoundedRelation _)).wf⟩
+  ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
 
 instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
   trichotomous := fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ =>
@@ -505,19 +506,35 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
     cases' h₁ with a₁ a₂ b₁ b₂ ab a₁ b₁ b₂ ab <;> cases' h₂ with _ _ c₁ c₂ bc _ _ c₂ bc
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
-  wf := (Prod.lex (IsWellFounded.toWellFoundedRelation _)
-    (IsWellFounded.toWellFoundedRelation _)).wf
 
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
-instance (f : α → ℕ) : IsWellFounded _ (Measure f) :=
+instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
   ⟨(measure f).wf⟩
 
 theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 #align subrelation.is_well_founded Subrelation.isWellFounded
+
+instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
+    rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
+    simp only [Prod.mk_lt_mk] at w
+    rcases eq_or_ne a₁ a₂ with rfl | ha
+    · right
+      simpa using w
+    · left
+      rcases w with ⟨a_lt, _⟩ | ⟨a_le, _⟩
+      · assumption
+      · exact Ne.lt_of_le ha a_le
+
+instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+    WellFoundedGT (α × β) :=
+  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
 
 namespace Set
 
@@ -571,7 +588,7 @@ end Prod
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
 strict relation `s`. Compare `Preorder.lt_iff_le_not_le`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
-class IsNonstrictStrictOrder (α : Type _) (r s : α → α → Prop) where
+class IsNonstrictStrictOrder (α : Type _) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) where
   /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a
 #align is_nonstrict_strict_order IsNonstrictStrictOrder
@@ -587,9 +604,6 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
   right_iff_left_not_left
 #align right_iff_left_not_left_of right_iff_left_not_left_of
 
--- The free parameter `r` is strictly speaking not uniquely determined by `s`, but in practice it
--- always has a unique instance, so this is not dangerous.
-@[nolint dangerousInstance]
 instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 
@@ -600,39 +614,57 @@ variable [HasSubset α] {a b c : α}
 
 lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
 #align subset_of_eq_of_subset subset_of_eq_of_subset
+
 lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [←hbc]
 #align subset_of_subset_of_eq subset_of_subset_of_eq
-@[refl] lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
+
+@[refl]
+lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
 #align subset_refl subset_refl
+
 lemma subset_rfl [IsRefl α (· ⊆ ·)] : a ⊆ a := refl _
 #align subset_rfl subset_rfl
+
 lemma subset_of_eq [IsRefl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
 #align subset_of_eq subset_of_eq
+
 lemma superset_of_eq [IsRefl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
 #align superset_of_eq superset_of_eq
+
 lemma ne_of_not_subset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
 #align ne_of_not_subset ne_of_not_subset
+
 lemma ne_of_not_superset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
 #align ne_of_not_superset ne_of_not_superset
-@[trans] lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
+
+@[trans]
+lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
 #align subset_trans subset_trans
+
 lemma subset_antisymm [IsAntisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
 #align subset_antisymm subset_antisymm
+
 lemma superset_antisymm [IsAntisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → b = a := antisymm'
 #align superset_antisymm superset_antisymm
 
 alias subset_of_eq_of_subset ← Eq.trans_subset
 #align eq.trans_subset Eq.trans_subset
+
 alias subset_of_subset_of_eq ← HasSubset.subset.trans_eq
 #align has_subset.subset.trans_eq HasSubset.subset.trans_eq
+
 alias subset_of_eq ← Eq.subset' --TODO: Fix it and kill `Eq.subset`
 #align eq.subset' Eq.subset'
+
 alias superset_of_eq ← Eq.superset
 #align eq.superset Eq.superset
+
 alias subset_trans ← HasSubset.Subset.trans
 #align has_subset.subset.trans HasSubset.Subset.trans
+
 alias subset_antisymm ← HasSubset.Subset.antisymm
 #align has_subset.subset.antisymm HasSubset.Subset.antisymm
+
 alias superset_antisymm ← HasSubset.Subset.antisymm'
 #align has_subset.subset.antisymm' HasSubset.Subset.antisymm'
 
@@ -651,33 +683,47 @@ variable [HasSSubset α] {a b c : α}
 
 lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
 #align ssubset_of_eq_of_ssubset ssubset_of_eq_of_ssubset
+
 lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [←hbc]
 #align ssubset_of_ssubset_of_eq ssubset_of_ssubset_of_eq
+
 lemma ssubset_irrefl [IsIrrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
 #align ssubset_irrefl ssubset_irrefl
+
 lemma ssubset_irrfl [IsIrrefl α (· ⊂ ·)] {a : α} : ¬a ⊂ a := irrefl _
 #align ssubset_irrfl ssubset_irrfl
+
 lemma ne_of_ssubset [IsIrrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → a ≠ b := ne_of_irrefl
 #align ne_of_ssubset ne_of_ssubset
+
 lemma ne_of_ssuperset [IsIrrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → b ≠ a := ne_of_irrefl'
 #align ne_of_ssuperset ne_of_ssuperset
-@[trans] lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
+
+@[trans]
+lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
 #align ssubset_trans ssubset_trans
+
 lemma ssubset_asymm [IsAsymm α (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
 #align ssubset_asymm ssubset_asymm
 
 alias ssubset_of_eq_of_ssubset ← Eq.trans_ssubset
 #align eq.trans_ssubset Eq.trans_ssubset
+
 alias ssubset_of_ssubset_of_eq ← HasSSubset.SSubset.trans_eq
 #align has_ssubset.ssubset.trans_eq HasSSubset.SSubset.trans_eq
+
 alias ssubset_irrfl ← HasSSubset.SSubset.false
 #align has_ssubset.ssubset.false HasSSubset.SSubset.false
+
 alias ne_of_ssubset ← HasSSubset.SSubset.ne
 #align has_ssubset.ssubset.ne HasSSubset.SSubset.ne
+
 alias ne_of_ssuperset ← HasSSubset.SSubset.ne'
 #align has_ssubset.ssubset.ne' HasSSubset.SSubset.ne'
+
 alias ssubset_trans ← HasSSubset.SSubset.trans
 #align has_ssubset.ssubset.trans HasSSubset.SSubset.trans
+
 alias ssubset_asymm ← HasSSubset.SSubset.asymm
 #align has_ssubset.ssubset.asymm HasSSubset.SSubset.asymm
 
@@ -831,7 +877,7 @@ instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
 instance [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
 
-instance [LinearOrder α] : IsTotal α (· ≤ ·) :=
+instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
   ⟨le_total⟩
 
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=

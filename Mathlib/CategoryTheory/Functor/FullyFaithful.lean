@@ -2,15 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.fully_faithful
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Choose
+
+#align_import category_theory.functor.fully_faithful from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Full and faithful functors
@@ -85,6 +81,7 @@ theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
 #align category_theory.functor.map_iso_injective CategoryTheory.Functor.mapIso_injective
 
 /-- The specified preimage of a morphism under a full functor. -/
+@[pp_dot]
 def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   Full.preimage.{v₁, v₂} f
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage
@@ -212,7 +209,7 @@ def natTransOfCompFullyFaithful (α : F ⋙ H ⟶ G ⋙ H) :
 
 /-- We can construct a natural isomorphism between functors by constructing a natural isomorphism
 between those functors composed with a fully faithful functor. -/
-@[simps]
+@[simps!]
 def natIsoOfCompFullyFaithful (i : F ⋙ H ≅ G ⋙ H) : F ≅ G :=
   NatIso.ofComponents (fun X => (isoEquivOfFullyFaithful H).symm (i.app X)) fun f => by
     dsimp
@@ -354,8 +351,8 @@ theorem Faithful.div_comp (F : C ⥤ E) [Faithful F] (G : D ⥤ E) [Faithful G] 
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
   -- Porting note: Have to unfold the structure twice because the first one recovers only the
   -- prefunctor `F_pre`
-  cases' F with F_pre _ _ ; cases' G with G_pre _ _
-  cases' F_pre with F_obj _ ; cases' G_pre with G_obj _
+  cases' F with F_pre _ _; cases' G with G_pre _ _
+  cases' F_pre with F_obj _; cases' G_pre with G_obj _
   unfold Faithful.div Functor.comp
   -- Porting note: unable to find the lean4 analogue to `unfold_projs`, works without it
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm
