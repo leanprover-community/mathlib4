@@ -383,7 +383,7 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
     @decidableLTOfDecidableLE _ _ decidableLE
 #align complete_linear_order CompleteLinearOrder
 
-instance (priority := 180) CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] :
+instance (priority := 100) CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] :
     LinearOrder α :=
   { i with
     min := Inf.inf

@@ -159,7 +159,7 @@ end DivisionRing
 
 section OfScientific
 
-instance (priority := 180) DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
+instance (priority := 100) DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
 
 end OfScientific
