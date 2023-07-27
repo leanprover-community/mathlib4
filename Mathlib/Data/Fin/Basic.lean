@@ -323,7 +323,7 @@ The `Fin.zero_le` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
-theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
+protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
   Nat.zero_le a.val
 #align fin.zero_le Fin.zero_le'
 
@@ -961,7 +961,7 @@ theorem castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) :=
 #align fin.cast_succ_inj Fin.castSucc_inj
 #align fin.cast_succ_lt_last Fin.castSucc_lt_last
 
-/-
+/--
 The `Fin.castSucc_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
