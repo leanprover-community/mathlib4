@@ -59,6 +59,52 @@ def NameMap.insert2 [Singleton γ β] [Insert γ β] (t : NameMap β)
     (x : Name) (y : γ) : NameMap β :=
   RBMap.insert2 t x y
 
+/-- descendants of `x`, excluding `x`. -/
+def NameMap.descendants (g : NameMap NameSet) (x : Name) (fuel := 10000) : NameSet :=
+  go fuel [x] {}
+where
+  go : ℕ → List Name → NameSet → NameSet
+  | 0,      _,     results => results
+  | _,      [],    results => results
+  | fuel+1, x::xs, results =>
+    match g.find? x with
+    | some nms => Id.run do
+      let mut todo := xs
+      let mut found := results
+      for nm in nms do
+        if !results.contains nm then
+          todo := nm::todo
+          found := found.insert nm
+      go fuel todo found
+    | none => go fuel xs results
+
+/-- if s is downwards closed, find maximal elements in s. -/
+def NameMap.maximals (g : NameMap NameSet) (s : NameSet) : NameSet := Id.run do
+  let mut maximal : NameSet := {}
+  let mut notMaximal : NameSet := {}
+  for x in s do
+    match g.find? x with
+    | some nms => notMaximal := notMaximal ++ nms
+    | none => ()
+  for x in s do
+    if !notMaximal.contains x then
+      maximal := maximal.insert x
+  return maximal
+
+def NameMap.commonDescendants (g : NameMap NameSet) (x y : Name) : NameSet := Id.run do
+  let xs := g.descendants x
+  let ys := g.descendants y
+  let mut common : NameSet := {}
+  for nm in xs do
+    if ys.contains nm then
+      common := common.insert nm
+  common
+
+def NameMap.maximalCommonDescendants (g : NameMap NameSet) (x y : Name) : NameSet :=
+  g.maximals <| g.commonDescendants x y
+
+def structureIsCoherent
+
 /-- Turn a file name into a path, relative from the root of the appropriate project.
 Assumes `/` as directory seprator. -/
 def Name.toPath (module : Name) : String :=
@@ -157,27 +203,32 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
     let fields := fields.filter fun nm => isSubobjectField? env cl nm |>.isSome
     let fields := fields.map (cl ++ ·)
     return fields
-  let prios ← instances.filterMapM fun (inst, src, _) => do
-    let prio := (← getInstancePriority? inst).get!
-    if prio < 1000 then return none
-    let newPrio := if realParents.contains inst then 200 else 180
-    let src := src[0]!
-    let file := (env.getModuleFor? src).get!.toPath
-    unless file.startsWith "Mathlib" do return none
-    return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
-  let cmds : String := prios.foldl (· ++ ·) ""
-  let prios2 ← instances2.filterMapM fun (inst, src) => do
-    let newPrio := 200
-    let file := (env.getModuleFor? src).get!.toPath
-    unless file.startsWith "Mathlib" do return none
-    return some s!"sed -i -E 'H;1h;$!d;x; s/(\\nclass {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
-  let cmds2 : String := prios2.foldl (· ++ ·) ""
+  -- let prios ← instances.filterMapM fun (inst, src, _) => do
+  --   let prio := (← getInstancePriority? inst).get!
+  --   if prio < 1000 then return none
+  --   let newPrio := if realParents.contains inst then 200 else 180
+  --   let src := src[0]!
+  --   let file := (env.getModuleFor? src).get!.toPath
+  --   unless file.startsWith "Mathlib" do return none
+  --   return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
+  -- let cmds : String := prios.foldl (· ++ ·) ""
+  -- let prios2 ← instances2.filterMapM fun (inst, src) => do
+  --   let newPrio := 200
+  --   let file := (env.getModuleFor? src).get!.toPath
+  --   unless file.startsWith "Mathlib" do return none
+  --   return some s!"sed -i -E 'H;1h;$!d;x; s/(\\nclass {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
+  -- let cmds2 : String := prios2.foldl (· ++ ·) ""
   -- logInfo m!"{realParents.toList}"
   --find . -type f -print0 | xargs -0 sed -i -E 'H;1h;$!d;x; s/(class NonemptyFinLinOrd(.|\n.)*\n)\n/\1test\n\n/g' test.txt
   -- logInfo m!"{instances2}"
   -- logInfo m!"{cmds}"
-  logInfo m!"{cmds2}"
+  -- logInfo m!"{cmds2}"
   -- logInfo m!"{prios}"
+  logInfo m!"{instanceGraph.descendants `Group |>.toList}"
+  logInfo m!"{instanceGraph.commonDescendants `AddCommGroup `NonUnitalNonAssocSemiring |>.toList}"
+  logInfo m!"{instanceGraph.maximalCommonDescendants `AddCommMonoid `MulZeroClass |>.toList}"
+  logInfo m!"{instanceGraph.maximalCommonDescendants `MulZeroClass `Distrib |>.toList}"
+
   logInfo m!"classes with 1 type parameter: {classSet.size}"
   logInfo m!"instances between these classes: {instances.length}"
   -- logInfo m!"classes: {classes}"
@@ -189,7 +240,7 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
   return instanceGraph
   -- return .empty
 
--- set_option profiler true
+set_option profiler true
 run_cmd liftCoreM <| MetaM.run' <| do
   getClassInstanceGraph
 
