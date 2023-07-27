@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.AEEqFun
 # Functions invariant under (quasi)ergodic map
 
 In this file we prove that an a.e. strongly measurable function `g : α → X` that is a.e. invariant
-under a (quasi)ergodic is a.e. equal to a constant. We prove several versions of this statement with
+under a (quasi)ergodic map is a.e. equal to a constant. We prove several versions of this statement with
 slightly different measurability assumptions. We also formulate a version for
 `MeasureTheory.AEEqFun` functions with all a.e. equalities replaced with equalities in the quotient
 space.
