@@ -314,13 +314,30 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
-
 #align fin.val_zero' Fin.val_zero'
+
 #align fin.mk_zero Fin.mk_zero
-#align fin.zero_le Fin.zero_le
+
+/--
+The `Fin.zero_le` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
+  Nat.zero_le a.val
+#align fin.zero_le Fin.zero_le'
+
 #align fin.zero_lt_one Fin.zero_lt_one
 #align fin.not_lt_zero Fin.not_lt_zero
-#align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero
+
+/--
+The `Fin.pos_iff_ne_zero` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
+  rw [← val_fin_lt, val_zero, _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero]
+#align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero'
+
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
@@ -742,7 +759,16 @@ theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
 #align fin.add_one_le_iff Fin.add_one_le_iff
 #align fin.last_le_iff Fin.last_le_iff
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
-#align fin.le_zero_iff Fin.le_zero_iff
+
+/--
+The `Fin.le_zero_iff` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
+  ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
+#align fin.le_zero_iff Fin.le_zero_iff'
+
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
 #align fin.cast_lt Fin.castLT
 #align fin.coe_cast_lt Fin.coe_castLT
@@ -1332,15 +1358,6 @@ section SuccAbove
 def succAbove (p : Fin (n + 1)) (i : Fin n) : Fin (n + 1) :=
   if i.1 < p.1 then castSucc i else succ i
 
-/-- `predAbove p i` embeds `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`. -/
-def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
-  if h : castSucc p < i then i.pred ((ne_iff_vne i 0).mpr (Nat.not_eq_zero_of_lt h))
-  else i.castLT (Nat.lt_of_le_of_lt (Nat.ge_of_not_lt h) p.2)
-
-/-- `castPred` embeds `i : Fin (n + 2)` into `Fin (n + 1)`
-by lowering just `last (n + 1)` to `last n`. -/
-def castPred (i : Fin (n + 2)) : Fin (n + 1) := predAbove (last n) i
-
 theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   (castSuccEmb : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
     (fun _ _ hij hj => lt_trans ((castSuccEmb : Fin n ↪o _).lt_iff_lt.2 hij) hj) fun i =>
@@ -1586,6 +1603,10 @@ end SuccAbove
 
 section PredAbove
 
+/-- `predAbove p i` embeds `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`. -/
+def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
+  if h : castSucc p < i then i.pred ((ne_iff_vne i 0).mpr (Nat.not_eq_zero_of_lt h))
+  else i.castLT (Nat.lt_of_le_of_lt (Nat.ge_of_not_lt h) p.2)
 #align fin.pred_above Fin.predAbove
 
 theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
@@ -1612,6 +1633,9 @@ theorem predAbove_left_monotone (i : Fin (n + 1)) :
   · rfl
 #align fin.pred_above_left_monotone Fin.predAbove_left_monotone
 
+/-- `castPred` embeds `i : Fin (n + 2)` into `Fin (n + 1)`
+by lowering just `last (n + 1)` to `last n`. -/
+def castPred (i : Fin (n + 2)) : Fin (n + 1) := predAbove (last n) i
 #align fin.cast_pred Fin.castPred
 
 @[simp]
