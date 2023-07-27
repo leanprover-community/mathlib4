@@ -204,6 +204,10 @@ protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x
   le_of_eq (Subsingleton.elim x y)
 #align subsingleton.le Subsingleton.le
 
+@[nontriviality]
+theorem Subsingleton.eq_zero [Zero α] [Subsingleton α] (a : α) : a = 0 :=
+  Subsingleton.elim _ _
+
 namespace Bool
 
 instance : Nontrivial Bool :=

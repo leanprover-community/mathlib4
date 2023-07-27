@@ -106,6 +106,7 @@ theorem finset_sum_coeff {ι : Type _} (s : Finset ι) (f : ι → R[X]) (n : �
   (lcoeff R n).map_sum
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
 
+@[simp]
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
