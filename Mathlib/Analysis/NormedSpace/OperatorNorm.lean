@@ -808,6 +808,7 @@ theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = 
   rfl
 #align continuous_linear_map.flip_add ContinuousLinearMap.flip_add
 
+set_option synthInstance.maxHeartbeats 100000 in
 @[simp]
 theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c • f).flip = c • f.flip :=
   rfl
@@ -815,8 +816,8 @@ theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c
 
 variable (E F G σ₁₃ σ₂₃)
 
-set_option maxHeartbeats 300000 in
-set_option synthInstance.maxHeartbeats 25000 in
+set_option maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 100000 in
 /-- Flip the order of arguments of a continuous bilinear map.
 This is a version bundled as a `LinearIsometryEquiv`.
 For an unbundled version see `ContinuousLinearMap.flip`. -/
@@ -832,7 +833,8 @@ def flipₗᵢ' : (E →SL[σ₁₃] F →SL[σ₂₃] G) ≃ₗᵢ[𝕜₃] F �
 
 variable {E F G σ₁₃ σ₂₃}
 
-set_option synthInstance.maxHeartbeats 25000 in
+set_option maxHeartbeats 500000 in
+set_option synthInstance.maxHeartbeats 100000 in
 @[simp]
 theorem flipₗᵢ'_symm : (flipₗᵢ' E F G σ₂₃ σ₁₃).symm = flipₗᵢ' F E G σ₁₃ σ₂₃ :=
   rfl
@@ -846,7 +848,8 @@ theorem coe_flipₗᵢ' : ⇑(flipₗᵢ' E F G σ₂₃ σ₁₃) = flip :=
 
 variable (𝕜 E Fₗ Gₗ)
 
-set_option maxHeartbeats 250000 in
+set_option maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 100000 in
 /-- Flip the order of arguments of a continuous bilinear map.
 This is a version bundled as a `LinearIsometryEquiv`.
 For an unbundled version see `ContinuousLinearMap.flip`. -/
@@ -862,6 +865,8 @@ def flipₗᵢ : (E →L[𝕜] Fₗ →L[𝕜] Gₗ) ≃ₗᵢ[𝕜] Fₗ →L[�
 
 variable {𝕜 E Fₗ Gₗ}
 
+set_option maxHeartbeats 500000 in
+set_option synthInstance.maxHeartbeats 100000 in
 @[simp]
 theorem flipₗᵢ_symm : (flipₗᵢ 𝕜 E Fₗ Gₗ).symm = flipₗᵢ 𝕜 Fₗ E Gₗ :=
   rfl
@@ -1013,7 +1018,7 @@ variable (M₁ : Type u₁) [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁
 
 variable {Eₗ} (𝕜)
 
-set_option maxHeartbeats 750000 in
+set_option maxHeartbeats 2000000 in
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
   ContinuousLinearMap.copy
