@@ -335,7 +335,7 @@ The `Fin.pos_iff_ne_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
-  rw [← val_fin_lt, val_zero, _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero]
+  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero']
 #align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero'
 
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
@@ -744,13 +744,21 @@ theorem succ_zero_eq_one' [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one'
 
 #align fin.succ_zero_eq_one' Fin.succ_zero_eq_one
-#align fin.succ_one_eq_two Fin.succ_one_eq_two
 
-/-- Version of `succ_one_eq_two` to be used by `dsimp` -/
-@[simp, nolint simpNF]
-theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
-  rfl
-#align fin.succ_one_eq_two' Fin.succ_one_eq_two'
+/--
+The `Fin.succ_one_eq_two` in `Std` only applies in `Fin (n+2)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
+  cases n
+  · exact (NeZero.ne 0 rfl).elim
+  · rfl
+#align fin.succ_one_eq_two Fin.succ_one_eq_two'
+
+-- Version of `succ_one_eq_two` to be used by `dsimp`.
+-- Note the `'` swapped around due to a move to std4.
+#align fin.succ_one_eq_two' Fin.succ_one_eq_two
 
 #align fin.succ_mk Fin.succ_mk
 #align fin.mk_succ_pos Fin.mk_succ_pos
@@ -959,13 +967,31 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
 #align fin.cast_succ_zero Fin.castSucc_zero'
 #align fin.cast_succ_one Fin.castSucc_one
 
-/-- `castSucc i` is positive when `i` is positive -/
+/-- `castSucc i` is positive when `i` is positive.
+
+The `Fin.castSucc_pos` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.-/
 theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos'
 
-#align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff
+/--
+The `Fin.castSucc_eq_zero_iff` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
+  Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
+#align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff'
+
+/--
+The `Fin.castSucc_ne_zero_iff` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
+  not_iff_not.mpr <| castSucc_eq_zero_iff' a
 #align fin.cast_succ_ne_zero_iff Fin.castSucc_ne_zero_iff
+
 #align fin.cast_succ_fin_succ Fin.castSucc_fin_succ
 
 @[norm_cast, simp]
