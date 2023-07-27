@@ -268,17 +268,31 @@ Sample outputs:
 * `degree f = d => (degree, Eq, f, [d])` (similarly for `≤`);
 * `coeff f c = x => (coeff, Eq, f, [x, c])` (no `≤` option!).
 -/
-def twoHeadsArgs (e : Expr) : Option (Name × Name × Expr × List Expr) := do
-let (eq_or_le, lhs, rhs) := ← match e.getAppFnArgs with
-  | (na@``Eq, #[_, lhs, rhs])       => return (na, lhs, rhs)
-  | (na@``LE.le, #[_, _, lhs, rhs]) => return (na, lhs, rhs)
-  | _ => none
-let (ndeg_or_deg_or_coeff, pol, and?) := ← match lhs.getAppFnArgs with
-  | (na@``Polynomial.natDegree, #[_, _, pol]) => return (na, pol, [rhs])
-  | (na@``Polynomial.degree, #[_, _, pol])    => return (na, pol, [rhs])
-  | (na@``Polynomial.coeff, #[_, _, pol, c])  => return (na, pol, [rhs, c])
-  | _ => none
-return (ndeg_or_deg_or_coeff, eq_or_le, pol, and?)
+def twoHeadsArgs (e : Expr) : Name × Name × Name × List Bool :=
+let (eq_or_le, lhs, rhs) := match e.getAppFnArgs with
+  | (na@``Eq, #[_, lhs, rhs])       => (na, lhs, rhs)
+  | (na@``LE.le, #[_, _, lhs, rhs]) => (na, lhs, rhs)
+  | (na, _) => (na, default)
+if eq_or_le ∉ [``Eq, ``LE.le] then (.anonymous, eq_or_le, lhs.getAppFnArgs.1, []) else
+let (ndeg_or_deg_or_coeff, pol, and?) := match lhs.getAppFnArgs with
+  | (na@``Polynomial.natDegree, #[_, _, pol]) => (na, pol, [rhs])
+  | (na@``Polynomial.degree, #[_, _, pol])    => (na, pol, [rhs])
+  | (na@``Polynomial.coeff, #[_, _, pol, c])  => (na, pol, [rhs, c])
+  | (na@_, _) => (na, default)
+if pol == default then (ndeg_or_deg_or_coeff, .anonymous, pol.getAppFnArgs.1, []) else
+let head := match pol.numeral? with
+  -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
+  | some 0 => `zero
+  | some 1 => `one
+  | some _ => `many
+  | none => match pol.getAppFnArgs with
+  --  unusual indentation to improve legibility of the following block of pairs of lemmas
+  | (``FunLike.coe, #[_, _, _, _, polFun, _]) => match polFun.getAppFnArgs with
+    | (na@``Polynomial.monomial, _) => na
+    | (na@``Polynomial.C, _) => na
+    | _ => `error
+  | (na, _) => na
+(ndeg_or_deg_or_coeff, eq_or_le, head, and?.map isMVar)
 
 /--
 `getCongrLemma (lhs_name, rel_name, Mvars?)` returns the name of a lemma that preprocesses
@@ -330,53 +344,49 @@ Using the information contained in `twoH`, it decides which lemma is the most ap
 The 3 output names are the lemmas appropriate for a goal of the form
 `natDegree f ≤ d`, `degree f ≤ d`, `coeff f n = a`, in this order.
 -/
-def dispatchLemma (twoH : Option (Name × Name × Expr × List Expr)) (debug : Bool := false) : Name :=
+def dispatchLemma (twoH : Name × Name × Name × List Bool) (debug : Bool := false) : Name :=
 match twoH with
-  | none => ``id
-  | some (na1, na2, pol, lexpr) =>
-    let bools := lexpr.map isMVar
-    if false ∈ bools then getCongrLemma (na1, na2, bools)
+  | (.anonymous, _, _, _) => ``id
+  | (_, .anonymous, _, _) => ``id
+  | (na1, na2, head, bools) =>
+    let msg := f!"\ndispatchLemma:\n  {head}"
+    if false ∈ bools then getCongrLemma (na1, na2, bools) debug
     else
-      let msg := f!"\ndispatchLemma:\n  numeral?: {pol.numeral?}\n  name: {pol.getAppFnArgs.1}"
-      let nas := match pol.numeral? with
-        -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
-        | some 0 => (``natDegree_zero_le, ``degree_zero_le, ``coeff_zero)
-        | some 1 => (``natDegree_one_le, ``degree_one_le, ``coeff_nat_cast_ite)
-        | some _ => (``natDegree_nat_cast_le, ``degree_nat_cast_le, ``coeff_nat_cast_ite)
-        | none => match pol.getAppFnArgs with
-  --  unusual indentation to improve legibility of the following block of pairs of lemmas
-  | (``HAdd.hAdd, _) =>
-    (``natDegree_add_le_of_le, ``degree_add_le_of_le, ``coeff_add_of_eq)
-  | (``HSub.hSub, _) =>
-    (``natDegree_sub_le_of_le, ``degree_sub_le_of_le, ``coeff_sub_of_eq)
-  | (``HMul.hMul, _) =>
-    (``natDegree_mul_le_of_le, ``degree_mul_le_of_le, ``coeff_mul_add_of_le_natDegree_of_eq_ite)
-  | (``HPow.hPow, _) =>
-    (``natDegree_pow_le_of_le, ``degree_pow_le_of_le, ``coeff_pow_of_natDegree_le_of_eq_ite)
-  | (``Neg.neg, _) =>
-    (``natDegree_neg_le_of_le, ``degree_neg_le_of_le, ``coeff_neg)
-  | (``Polynomial.X, _) =>
-    (``natDegree_X_le, ``degree_X_le, ``coeff_X)
-  | (``Nat.cast, _) =>
-    (``natDegree_nat_cast_le, ``degree_nat_cast_le, ``coeff_nat_cast_ite)
-  | (``NatCast.natCast, _) =>
-    (``natDegree_nat_cast_le, ``degree_nat_cast_le, ``coeff_nat_cast_ite)
-  | (``Int.cast, _) =>
-    (``natDegree_int_cast_le, ``degree_int_cast_le, ``coeff_int_cast_ite)
-  | (``IntCast.intCast, _) =>
-    (``natDegree_int_cast_le, ``degree_int_cast_le, ``coeff_int_cast_ite)
-  | (``FunLike.coe, #[_, _, _, _, polFun, _]) => match polFun.getAppFnArgs with
-    | (``Polynomial.monomial, _) =>
-      (``natDegree_monomial_le, ``degree_monomial_le, ``coeff_monomial)
-    | (``Polynomial.C, _) =>
-      (``natDegree_C_le, ``degree_C_le, ``coeff_C)
-    | _ => ((.anonymous, .anonymous, .anonymous))
-  | _ => (``le_rfl, ``le_rfl, ``rfl)
-let π : Name × Name × Name → Name := match na1, na2 with
-  | ``natDegree, ``LE.le => Prod.fst
-  | ``degree, ``LE.le => Prod.fst ∘ Prod.snd
-  | _, _ => Prod.snd ∘ Prod.snd
-if debug then dbg_trace f!"{(π nas).getTail}\n{msg}"; π nas else π nas
+    let π : Name × Name × Name → Name := match na1, na2 with
+      | ``natDegree, ``LE.le => Prod.fst
+      | ``degree, ``LE.le => Prod.fst ∘ Prod.snd
+      | _, _ => Prod.snd ∘ Prod.snd
+    let nas := match head with
+      | `zero => (``natDegree_zero_le, ``degree_zero_le, ``coeff_zero)
+      | `one => (``natDegree_one_le, ``degree_one_le, ``coeff_nat_cast_ite)
+      | `many => (``natDegree_nat_cast_le, ``degree_nat_cast_le, ``coeff_nat_cast_ite)
+      | ``HAdd.hAdd =>
+        (``natDegree_add_le_of_le, ``degree_add_le_of_le, ``coeff_add_of_eq)
+      | ``HSub.hSub =>
+        (``natDegree_sub_le_of_le, ``degree_sub_le_of_le, ``coeff_sub_of_eq)
+      | ``HMul.hMul =>
+        (``natDegree_mul_le_of_le, ``degree_mul_le_of_le, ``coeff_mul_add_of_le_natDegree_of_eq_ite)
+      | ``HPow.hPow =>
+        (``natDegree_pow_le_of_le, ``degree_pow_le_of_le, ``coeff_pow_of_natDegree_le_of_eq_ite)
+      | ``Neg.neg =>
+        (``natDegree_neg_le_of_le, ``degree_neg_le_of_le, ``coeff_neg)
+      | ``Polynomial.X =>
+        (``natDegree_X_le, ``degree_X_le, ``coeff_X)
+      | ``Nat.cast =>
+        (``natDegree_nat_cast_le, ``degree_nat_cast_le, ``coeff_nat_cast_ite)
+      | ``NatCast.natCast =>
+        (``natDegree_nat_cast_le, ``degree_nat_cast_le, ``coeff_nat_cast_ite)
+      | ``Int.cast =>
+        (``natDegree_int_cast_le, ``degree_int_cast_le, ``coeff_int_cast_ite)
+      | ``IntCast.intCast =>
+        (``natDegree_int_cast_le, ``degree_int_cast_le, ``coeff_int_cast_ite)
+      | ``Polynomial.monomial =>
+        (``natDegree_monomial_le, ``degree_monomial_le, ``coeff_monomial)
+      | ``Polynomial.C =>
+        (``natDegree_C_le, ``degree_C_le, ``coeff_C)
+      | `error => (.anonymous, .anonymous, .anonymous)
+      | _ => (``le_rfl, ``le_rfl, ``rfl)
+    if debug then dbg_trace f!"{(π nas).getTail}\n{msg}"; π nas else π nas
 
 /-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goal not containing any metavariable.
@@ -447,49 +457,49 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
   let goal := ← getMainGoal
   let gt := ← goal.getType''
   let twoH := twoHeadsArgs gt
-  if twoH.isNone then
-    let cd := "'compute_degree' inapplicable.  The "
-    let lhs := ← match gt.getAppFnArgs with
-      | (``Eq, #[_, lhs, _])       => return lhs
-      | (``LE.le, #[_, _, lhs, _]) => return lhs
-      | (na, _) => throwError (cd ++ m!"goal\n\n   {gt}\n\n" ++
+  match twoH with
+    | (.anonymous, na, _, _) =>
+      let cd := "'compute_degree' inapplicable.  The "
+       throwError (cd ++ m!"goal\n\n   {gt}\n\n" ++
                                m!"is expected to be '≤' or '=', instead of '{na}'.")
-    ← match lhs.getAppFnArgs with
-      | (na, _) => throwError (cd ++ m!"LHS of\n\n   {gt}\n\nbegins with '{na}'.  " ++
+    | (na, .anonymous, _, _) =>
+      let cd := "'compute_degree' inapplicable.  The "
+      throwError (cd ++ m!"LHS of\n\n   {gt}\n\nbegins with '{na}'.  " ++
           m!"There is support only for\n\n   'natDegree'   'degree'   or   'coeff'")
-  let (lhs_head, eq_or_le, _, _) := twoH.getD default
-  let lem := dispatchLemma twoH
-  if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getTail}'"
-  let mut (gls, static) := (← goal.applyConst lem, [])
-  let tag := "exp_deg_eq_deg"
-  let deg_eq_deg := ← gls.findM? fun mv => return (← mv.getTag).getTail == tag
+    | (lhs_head, eq_or_le, _, _) =>
+    let lem := dispatchLemma twoH
+    if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getTail}'"
+    let mut (gls, static) := (← goal.applyConst lem, [])
+    let tag := "exp_deg_eq_deg"
+    let deg_eq_deg := ← gls.findM? fun mv => return (← mv.getTag).getTail == tag
 
-  let (tag, deg_eq_deg) := if deg_eq_deg.isNone then
-      ("natDeg_eq_coeff", ← gls.findM? fun mv => return (← mv.getTag).getTail == "natDeg_eq_coeff")
-    else (tag, deg_eq_deg)
-  while (! gls == []) do
-    (gls, static) := ← recOrd gls static
-  let rfled := ← try_rfl static
-  if ((eq_or_le == ``Eq) && lhs_head != ``coeff) then match deg_eq_deg with
-    | none => throwError m!"Did the tag '{tag}' disappear from '{lem.getTail}'?"
-    | some deg_eq_deg =>
-      let soluble? : Bool := ← withNewMCtxDepth do
-        let solved? := ← normNumAt deg_eq_deg (← mkDefault) #[]
-        if solved?.isSome then
-          return !((← solved?.get!.2.getType) == .const ``False [])
-        else return true
-      guard soluble? <|> do
-        let deg_trans_deg := ← deg_eq_deg.applyConst ``Eq.trans
-        let nnmd := ← deg_trans_deg.mapM fun g => do normNumAt g (← mkDefault) #[]
-        if let [computedDegree, givenDegree, _] := nnmd.map fun x => (x.get!).2 then
-        let cdeg := (← computedDegree.getType).eq?.get!.2.1
-        let gdeg := (← givenDegree.getType).eq?.get!.2.2
-        throwError m!"The expected degree is '{gdeg}'\nThe computed degree is '{cdeg}'"
-  setGoals rfled
-  if stx.isSome then
-    evalTactic (← `(tactic| any_goals norm_num <;> try assumption)) <|> pure ()
-  else
-    evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
+    let (tag, deg_eq_deg) := if deg_eq_deg.isNone then
+        ("natDeg_eq_coeff", ← gls.findM? fun mv =>
+          return (← mv.getTag).getTail == "natDeg_eq_coeff")
+      else (tag, deg_eq_deg)
+    while (! gls == []) do
+      (gls, static) := ← recOrd gls static
+    let rfled := ← try_rfl static
+    if ((eq_or_le == ``Eq) && lhs_head != ``coeff) then match deg_eq_deg with
+      | none => throwError m!"Did the tag '{tag}' disappear from '{lem.getTail}'?"
+      | some deg_eq_deg =>
+        let soluble? : Bool := ← withNewMCtxDepth do
+          let solved? := ← normNumAt deg_eq_deg (← mkDefault) #[]
+          if solved?.isSome then
+            return !((← solved?.get!.2.getType) == .const ``False [])
+          else return true
+        guard soluble? <|> do
+          let deg_trans_deg := ← deg_eq_deg.applyConst ``Eq.trans
+          let nnmd := ← deg_trans_deg.mapM fun g => do normNumAt g (← mkDefault) #[]
+          if let [computedDegree, givenDegree, _] := nnmd.map fun x => (x.get!).2 then
+          let cdeg := (← computedDegree.getType).eq?.get!.2.1
+          let gdeg := (← givenDegree.getType).eq?.get!.2.2
+          throwError m!"The expected degree is '{gdeg}'\nThe computed degree is '{cdeg}'"
+    setGoals rfled
+    if stx.isSome then
+      evalTactic (← `(tactic| any_goals norm_num <;> try assumption)) <|> pure ()
+    else
+      evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
 
 end Tactic
 
