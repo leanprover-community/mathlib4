@@ -2,15 +2,12 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.group.seminorm
-! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Real.NNReal
 import Mathlib.Tactic.GCongr
+
+#align_import analysis.normed.group.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 
 /-!
 # Group seminorms

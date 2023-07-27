@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.big_operators.basic
-! leanprover-community/mathlib commit fa2309577c7009ea243cffdf990cd6c84f0ad497
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Group.Pi
@@ -18,6 +13,8 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
+
+#align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
 
 /-!
 # Big operators

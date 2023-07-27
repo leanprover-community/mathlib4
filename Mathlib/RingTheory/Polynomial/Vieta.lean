@@ -2,14 +2,11 @@
 Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.vieta
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.RingTheory.MvPolynomial.Symmetric
+
+#align_import ring_theory.polynomial.vieta from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Vieta's Formula

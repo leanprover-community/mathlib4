@@ -2,15 +2,12 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module quadratic_form
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.ZMod.Basic
+
+#align_import quadratic_form from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # `QuadraticForm R M` and `Subtype BilinForm.IsSymm` are distinct notions in characteristic 2

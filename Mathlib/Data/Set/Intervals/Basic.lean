@@ -2,15 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
-Ported by: Winston Yin, Arien Malec
-
-! This file was ported from Lean 3 source module data.set.intervals.basic
-! leanprover-community/mathlib commit 4367b192b58a665b6f18773f73eb492eb4df7990
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
+
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"4367b192b58a665b6f18773f73eb492eb4df7990"
 
 /-!
 # Intervals
@@ -770,6 +766,18 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   · rintro ⟨rfl, rfl⟩
     exact Icc_self _
 #align set.Icc_eq_singleton_iff Set.Icc_eq_singleton_iff
+
+lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
+  fun _x ⟨hax, hxb⟩ _y ⟨hay, hyb⟩ ↦ le_antisymm
+    (le_implies_le_of_le_of_le hxb hay hba) (le_implies_le_of_le_of_le hyb hax hba)
+#align set.subsingleton_Icc_of_ge Set.subsingleton_Icc_of_ge
+
+@[simp] lemma subsingleton_Icc_iff {α : Type _} [LinearOrder α] {a b : α} :
+    Set.Subsingleton (Icc a b) ↔ b ≤ a := by
+  refine' ⟨fun h ↦ _, subsingleton_Icc_of_ge⟩
+  contrapose! h
+  simp only [ge_iff_le, gt_iff_lt, not_subsingleton_iff]
+  exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[simp]
 theorem Icc_diff_left : Icc a b \ {a} = Ioc a b :=

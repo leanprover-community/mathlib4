@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.category.Module.change_of_rings
-! leanprover-community/mathlib commit 56b71f0b55c03f70332b862e65c3aa1aa1249ca1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.RingTheory.TensorProduct
+
+#align_import algebra.category.Module.change_of_rings from "leanprover-community/mathlib"@"56b71f0b55c03f70332b862e65c3aa1aa1249ca1"
 
 /-!
 # Change Of Rings
@@ -386,7 +383,7 @@ def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) : (restri
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.to_restriction CategoryTheory.ModuleCat.RestrictionCoextensionAdj.HomEquiv.toRestriction
 
 -- Porting note: add to address timeout in unit'
-def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙  coextendScalars f).obj Y :=
+def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars f).obj Y :=
   { toFun := fun y : Y =>
       { toFun := fun s : S => (s • y : Y)
         map_add' := fun s s' => add_smul _ _ _
@@ -522,7 +519,7 @@ The map `S → X →ₗ[R] Y` given by `fun s x => s • (g x)`
 -/
 @[simps]
 def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
-    (g : X ⟶  (restrictScalars f).obj Y) : have : Module R Y := Module.compHom Y f
+    (g : X ⟶ (restrictScalars f).obj Y) : have : Module R Y := Module.compHom Y f
     X →ₗ[R] Y :=
   @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
     { toFun := fun x => s • (g x : Y)
@@ -534,7 +531,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
 
 /--
 Given `R`-module X and `S`-module Y and a map `X ⟶ (restrict_scalars f).obj Y`, i.e `R`-linear map
-`X ⟶ Y`, there is a map `(extend_scalars f).obj X ⟶ Y`, i.e  `S`-linear map `S ⨂ X → Y` by
+`X ⟶ Y`, there is a map `(extend_scalars f).obj X ⟶ Y`, i.e `S`-linear map `S ⨂ X → Y` by
 `s ⊗ x ↦ s • g x`.
 -/
 @[simps apply]
@@ -721,4 +718,3 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
   ⟨_, extendRestrictScalarsAdj f⟩
 
 end CategoryTheory.ModuleCat
-
