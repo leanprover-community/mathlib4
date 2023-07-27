@@ -11,7 +11,7 @@ import Mathlib.Data.Fin.VecNotation
 /-!
 # W types
 
-The file `Mathlib/Data/W/Basic.lean` shows that if `α` is an an encodable fintype and for every
+The file `Mathlib/Data/W/Basic.lean` shows that if `α` is an encodable fintype and for every
 `a : α`, `β a` is encodable, then `W β` is encodable.
 
 As an example of how this can be used, we show that the type of propositional formulas with

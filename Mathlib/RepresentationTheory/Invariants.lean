@@ -138,7 +138,7 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
   exact comm
 #align representation.lin_hom.mem_invariants_iff_comm Representation.linHom.mem_invariants_iff_comm
 
-/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the the representation
+/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
@@ -157,7 +157,7 @@ section FdRep
 
 variable {k : Type u} [Field k] {G : GroupCat.{u}}
 
-/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the the representation
+/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 def invariantsEquivFdRepHom (X Y : FdRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y := by
   rw [← FdRep.forget₂_ρ, ← FdRep.forget₂_ρ]
