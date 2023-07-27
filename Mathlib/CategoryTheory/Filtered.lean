@@ -489,17 +489,45 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
 
 end SpecialShapes
 
-section
+section FilteredClosure
 variable {C}
-variable [IsFilteredOrEmpty C]
-variable {α : Type w} (f : α → C)
+variable [IsFilteredOrEmpty C] {α : Type w} (f : α → C)
 
+/-- The "filtered closure" of an `α`-indexed family of objects in `C` is the set of objects in `C`
+    obtained by starting with the family and successively adding maxima and coequalizers. -/
 inductive filteredClosure : C → Prop
   | base : ∀ (x : α), filteredClosure (f x)
   | max : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j'), filteredClosure (max j j')
-  | coeq : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j') (f f' : j ⟶ j'), filteredClosure (coeq f f')
+  | coeq : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j') (f f' : j ⟶ j'),
+      filteredClosure (coeq f f')
 
-inductive nextStep (n : ℕ) (X : ∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) : Type (max v w)
+/-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
+theorem isFilteredOrEmpty_fullSubcategory_filteredClosure :
+    IsFilteredOrEmpty (FullSubcategory (filteredClosure f)) where
+  cocone_objs j j' :=
+    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
+  cocone_maps {j j'} f f' :=
+    ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f', coeq_condition _ _⟩
+
+namespace FilteredClosure.Small
+/-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
+    family of objects in `C` only depends on the size of `α` and the morphism types of `C`, not on
+    the size of the objects of `C`. In particular, if `α` lives in `Type w`, the objects of `C` live
+    in `Type u` and the morphisms of `C` live in `Type v`, then we want
+    `Small.{max v w} (FullSubcategory (filteredClosure f))`.
+
+    The strategy is to define a type `AbstractFilteredClosure` which should be an inductive type
+    similar to `filteredClosure`, which lives in the correct universe and surjects onto the full
+    subcategory. The difficulty with this is that we need to define it at the same time as the map
+    `AbstractFilteredClosure → C`, as the coequalizer constructor depends on the actual morphisms
+    in `C`. This would require some kind of inductive-recursive definition, which Lean does not
+    allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
+    induction and then taking the union over all natural numbers, mimicking what one would do in a
+    set-theoretic setting.
+-/
+
+private inductive nextStep (n : ℕ) (X : ∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) :
+    Type (max v w)
   | max : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n), (X hk).1 → (X hk').1 → nextStep n X
   | coeq : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n) (j : (X hk).1) (j' : (X hk').1),
       ((X hk).2 j ⟶ (X hk').2 j') → ((X hk).2 j ⟶ (X hk').2 j') → nextStep n X
@@ -515,14 +543,15 @@ noncomputable def step : (n : ℕ) → (∀ {k : ℕ}, k < n → Σ t : Type (ma
 noncomputable def allSteps : ℕ → Σ t : Type (max v w), t → C :=
   Nat.strongRec' (step.{w, v, u} f)
 
-noncomputable def modelFilteredClosure : Type (max v w) :=
+noncomputable def AbstractFilteredClosure : Type (max v w) :=
   Σ n, (allSteps f n).1
 
-noncomputable def modelFilteredClosureInclusion : modelFilteredClosure f → C :=
+noncomputable def abstractFilteredClosureRealization : AbstractFilteredClosure f → C :=
   fun x => (allSteps f x.1).2 x.2
 
-theorem surjective_aux (j : C) (h : filteredClosure f j) : ∃ (x : modelFilteredClosure f),
-  modelFilteredClosureInclusion f x = j := by
+instance small_subtype_filteredClosure : Small.{max v w} (FullSubcategory (filteredClosure f)) := by
+  refine' small_of_injective_of_exists (abstractFilteredClosureRealization f) FullSubcategory.ext _
+  rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
   | max hj₁ hj₂ ih ih' =>
@@ -538,19 +567,7 @@ theorem surjective_aux (j : C) (h : filteredClosure f j) : ∃ (x : modelFiltere
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
-theorem small_of_injective_of_exists {α : Type w} [Small.{v} α] {β : Type u} {γ : Type u₁}
-    (f : α → β) {g : γ → β} (hg : Function.Injective g) (h : ∀ c : γ, ∃ a : α, f a = g c) :
-    Small.{v} γ := by
-  by_cases hγ : _root_.Nonempty γ
-  · refine' small_of_surjective (f := invFun g ∘ f) (fun c => _)
-    obtain ⟨a, ha⟩ := h c
-    exact ⟨a, by rw [Function.comp_apply, ha, leftInverse_invFun hg]⟩
-  · simp only [not_nonempty_iff] at hγ
-    infer_instance
-
-instance small_subtype_filteredClosure : Small.{max v w} (FullSubcategory (filteredClosure f)) :=
-  small_of_injective_of_exists (modelFilteredClosureInclusion f) FullSubcategory.ext
-    (fun x => surjective_aux f x.1 x.2)
+end FilteredClosure.Small
 
 instance locallySmall_subtype_filteredClosure : LocallySmall.{max v w, v, u} (FullSubcategory (filteredClosure f)) :=
   locallySmall_max.{w, v, u}
@@ -558,12 +575,7 @@ instance locallySmall_subtype_filteredClosure : LocallySmall.{max v w, v, u} (Fu
 instance essentiallySmall_subtype_filteredClosure : EssentiallySmall.{max v w} (FullSubcategory (filteredClosure f)) :=
 essentiallySmall_of_small_of_locallySmall _
 
-theorem isFilteredOrEmpty_fullSubcategory_filteredClosure : IsFilteredOrEmpty (FullSubcategory (filteredClosure f)) where
-  cocone_objs j j' := ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
-  cocone_maps {j j'} f f' := ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f',
-    coeq_condition _ _⟩
-
-end
+end FilteredClosure
 
 section
 variable {C}
@@ -595,8 +607,6 @@ noncomputable def firstFunctor_secondFunctor : firstFunctor F ⋙ secondFunctor 
 isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
 
 end
-
-
 
 end IsFiltered
 
