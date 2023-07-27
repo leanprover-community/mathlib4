@@ -827,7 +827,7 @@ lemma Lp.coeFn_const : Lp.const p μ c =ᵐ[μ] Function.const α c :=
 @[simp]
 lemma Memℒp.toLp_const : Memℒp.toLp _ (memℒp_const c) = Lp.const p μ c := rfl
 
--- todo (after port): make it `simp`
+@[simp]
 lemma indicatorConstLp_univ :
     indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
   rw [← Memℒp.toLp_const, indicatorConstLp]
@@ -854,18 +854,16 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * (μ Set.univ).toR
   map_add' := map_add _
   map_smul' _ _ := rfl
 
-variable (𝕜 : Type _) [NormedField 𝕜] [NormedSpace 𝕜 E]
-
 @[simps! apply]
-protected def Lp.constL [Fact (1 ≤ p)] : E →L[𝕜] Lp E p μ :=
+protected def Lp.constL (𝕜 : Type _) [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
+    E →L[𝕜] Lp E p μ :=
   (Lp.constₗ p μ 𝕜).mkContinuous ((μ Set.univ).toReal ^ (1 / p.toReal)) <| fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
 
-/- TODO: next theorem fails to generate a `Norm` instance
-theorem Lp.norm_constL_le [Fact (1 ≤ p)] :
+theorem Lp.norm_constL_le (𝕜 : Type _) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+    [Fact (1 ≤ p)] :
     ‖(Lp.constL p μ 𝕜 : E →L[𝕜] Lp E p μ)‖ ≤ (μ Set.univ).toReal ^ (1 / p.toReal) :=
-  LinearMap.mkContinuous_norm_le _
--/
+  LinearMap.mkContinuous_norm_le _ (by positivity) _
 
 end const
 
