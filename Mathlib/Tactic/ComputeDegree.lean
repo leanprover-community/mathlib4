@@ -235,29 +235,29 @@ In each case it closes the goal, assuming that the goal is `natDegree f ≤ natD
 
 open Lean Meta Elab Expr Tactic
 
-open ConstantInfo in
+open ConstantInfo Command in
 /-- `declNameInThm thm tag` takes two `Name`s as input.  It checks that the declaration called
 `thm` exists and that one of its hypotheses is called `tag`.
 Since `compute_degree` finds goals by referring to their tags, this check makes sure that
 the tactic continues working and highlights potential problems.
 -/
-def declNameInThm (thm tag : Name) : MetaM Unit := do
+def declNameInThm (thm tag : Name) : CommandElabM Unit := do
   let tail :=  m!"\n\n  `{thm.getTail}`\n\nchange name?"
   match (← getEnv).find? thm with
     | none => throwError m!"Did lemma" ++ tail
     | some decl => do
       let stat := (toConstantVal decl).type
       let listBinderNames := stat.getForallBinderNames
-      guard (tag ∈ listBinderNames) <|>
+      if (! tag ∈ listBinderNames) then
         throwError m!"Did the hypothesis\n\n  `{tag}`\n\nof lemma" ++ tail
 
-/-! Check that the theorems
+/-! Check that both theorems
 `natDegree_eq_of_le_of_coeff_ne_zero'` and `degree_eq_of_le_of_coeff_ne_zero'` contain hypotheses
 called `exp_deg_eq_deg` and `natDeg_eq_coeff`. -/
-#eval do
-  let tags := [`exp_deg_eq_deg, `natDeg_eq_coeff]
-  let thms := [``natDegree_eq_of_le_of_coeff_ne_zero', ``degree_eq_of_le_of_coeff_ne_zero']
-  let _ := ← (tags.zip thms).mapM fun (tag, thm) => declNameInThm thm tag
+run_cmd
+  for thm in [``natDegree_eq_of_le_of_coeff_ne_zero', ``degree_eq_of_le_of_coeff_ne_zero'] do
+  for tag in [`exp_deg_eq_deg, `natDeg_eq_coeff] do
+    declNameInThm thm tag
 
 /-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
 the `e` looks like `lhs ≤ _` or `lhs = _` and that `lhs` is one of `natDegree, degree, coeff`.
