@@ -467,7 +467,7 @@ variable (f : L₁ →ₗ⁅R⁆ L₂)
 /-- A Lie ring module may be pulled back along a morphism of Lie algebras.
 
 See note [reducible non-instances]. -/
-theorem LieRingModule.compLieHom : LieRingModule L₁ M where
+def LieRingModule.compLieHom : LieRingModule L₁ M where
   bracket x m := ⁅f x, m⁆
   lie_add x := lie_add (f x)
   add_lie x y m := by simp only [LieHom.map_add, add_lie]
@@ -480,11 +480,8 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
   rfl
 #align lie_ring_module.comp_lie_hom_apply LieRingModule.compLieHom_apply
 
-/-- A Lie module may be pulled back along a morphism of Lie algebras.
-
-See note [reducible non-instances]. -/
-@[reducible]
-def LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
+/-- A Lie module may be pulled back along a morphism of Lie algebras. -/
+theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { LieRingModule.compLieHom M f with
     smul_lie := fun t x m => by
