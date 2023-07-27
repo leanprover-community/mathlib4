@@ -4,6 +4,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Fintype.Sigma
 
 universe v u
 
@@ -32,6 +33,9 @@ theorem foo [AddCommGroup β] {a b : β} (ha : a + b ≠ 0) : a ≠ 0 ∨ b ≠ 
 theorem bar {W X Y Z : V} {f : W ⟶ X} {g : Y ⟶ Z} (h : f ⊗ g ≠ 0) : f ≠ 0 ∧ g ≠ 0 := sorry
 
 theorem qux {X : ChainComplex V ℕ} {i j} (h : X.d i j ≠ 0) : j + 1 = i := sorry
+
+variable (i : ℕ) in
+#synth Fintype (Finset.Nat.antidiagonal i)
 
 def tensorObj_X (X Y : ChainComplex V ℕ) (i : ℕ) : V :=
   biproduct (fun p : Finset.Nat.antidiagonal i => (X.X p.1.1) ⊗ (Y.X p.1.2))
@@ -81,10 +85,39 @@ def tensorHom {W X Y Z : ChainComplex V ℕ} (f : W ⟶ X) (g : Y ⟶ Z) :
     simp
     sorry
 
+def associator₁ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
+    (tensorObj (tensorObj X Y) Z).X i ≅ biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.1 => (X.X q.1.1 ⊗ Y.X q.1.2) ⊗ Z.X p.1.2)) :=
+  sorry
+
+def associator₂ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
+    biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.1 => (X.X q.1.1 ⊗ Y.X q.1.2) ⊗ Z.X p.1.2))
+      ≅ biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => (X.X p.2.1.1 ⊗ Y.X p.2.1.2) ⊗ Z.X p.1.1.2) :=
+  sorry
+
+def associator₃ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
+    biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => (X.X p.2.1.1 ⊗ Y.X p.2.1.2) ⊗ Z.X p.1.1.2)
+      ≅ biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => X.X p.2.1.1 ⊗ (Y.X p.2.1.2 ⊗ Z.X p.1.1.2)) :=
+  sorry
+
+def associator₄ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
+    biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => X.X p.2.1.1 ⊗ (Y.X p.2.1.2 ⊗ Z.X p.1.1.2)) ≅
+      biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.2 => X.X p.1.1.1 ⊗ (Y.X p.2.1.1 ⊗ Z.X p.2.1.2)) :=
+  sorry
+
+def associator₅ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
+    biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.2 => X.X p.1.1.1 ⊗ (Y.X p.2.1.1 ⊗ Z.X p.2.1.2)) ≅
+      biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.2 => X.X p.1.1 ⊗ (Y.X q.1.1 ⊗ Z.X q.1.2))) :=
+  sorry
+
+def associator₆ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
+    biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.2 => X.X p.1.1 ⊗ (Y.X q.1.1 ⊗ Z.X q.1.2))) ≅
+      (tensorObj X (tensorObj Y Z)).X i :=
+  sorry
+
 def associator (X Y Z : ChainComplex V ℕ) :
     tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   HomologicalComplex.Hom.isoOfComponents
-    (fun i => sorry)
+    (fun i => associator₁ X Y Z i ≪≫ associator₂ X Y Z i ≪≫ associator₃ X Y Z i ≪≫ associator₄ X Y Z i ≪≫ associator₅ X Y Z i ≪≫ associator₆ X Y Z i)
     sorry
 
 end MonoidalCategory
