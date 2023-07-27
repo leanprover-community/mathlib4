@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.Tactic.Linarith
 
 #align_import category_theory.filtered from "leanprover-community/mathlib"@"14e80e85cbca5872a329fbfd3d1f3fd64e306934"
 
@@ -493,50 +494,49 @@ variable {C}
 variable [IsFilteredOrEmpty C]
 variable {α : Type w} (f : α → C)
 
--- mutual
-
---   inductive filteredClosure (f : α → C) : Type (max v w)
---     | base : α → filteredClosure f
---     | max : filteredClosure f → filteredClosure f → filteredClosure f
---     | coeq : filteredClosure f → filteredClosure f
-
---   noncomputable def filteredClosureRealization : filteredClosure C f → C
---     | filteredClosure.base x => f x
---     | filteredClosure.max u v => IsFiltered.max (filteredClosureRealization u) (filteredClosureRealization v)
---     | filteredClosure.coeq u => filteredClosureRealization u
-
--- end
-  --| coeq : fi
-
 inductive filteredClosure : C → Prop
   | base : ∀ (x : α), filteredClosure (f x)
   | max : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j'), filteredClosure (max j j')
   | coeq : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j') (f f' : j ⟶ j'), filteredClosure (coeq f f')
 
-instance : IsFilteredOrEmpty (FullSubcategory (filteredClosure f)) where
-  cocone_objs j j' := ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
-  cocone_maps {j j'} f f' := ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f',
-    coeq_condition _ _⟩
+inductive nextStep (n : ℕ) (X : ∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) : Type (max v w)
+  | max : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n), (X hk).1 → (X hk').1 → nextStep n X
+  | coeq : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n) (j : (X hk).1) (j' : (X hk').1),
+      ((X hk).2 j ⟶ (X hk').2 j') → ((X hk).2 j ⟶ (X hk').2 j') → nextStep n X
 
-inductive nextStep (X : Σ t : Type (max v w), t → C) : Type (max v w)
-  | base : X.1 → nextStep X
-  | max : X.1 → X.1 → nextStep X
-  | coeq : (j : X.1) → (j' : X.1) → (X.2 j ⟶ X.2 j') → (X.2 j ⟶ X.2 j') → nextStep X
+noncomputable def mapNextStep (n : ℕ) (X : ∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) : nextStep.{w} n X → C
+  | (nextStep.max hk hk' x y) => max ((X hk).2 x) ((X hk').2 y)
+  | (nextStep.coeq _ _ _ _ f g) => coeq f g
 
-noncomputable def mapNextStep (X : Σ t : Type (max v w), t → C) : nextStep.{w} X → C
-  | (nextStep.base x) => X.2 x
-  | (nextStep.max x y) => max (X.2 x) (X.2 y)
-  | (nextStep.coeq _ _ f g) => coeq f g
+noncomputable def step : (n : ℕ) → (∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) → Σ t : Type (max v w), t → C
+  | 0, _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
+  | (n + 1), X => ⟨nextStep.{w, v, u} (n + 1) X, mapNextStep (n + 1) X⟩
 
-noncomputable def allSteps : ℕ → Σ t : Type (max v w), t → C
-  | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
-  | (n + 1) => ⟨nextStep.{w} (allSteps n), mapNextStep.{w} (allSteps n)⟩
+noncomputable def allSteps : ℕ → Σ t : Type (max v w), t → C :=
+  Nat.strongRec' (step.{w, v, u} f)
 
 noncomputable def modelFilteredClosure : Type (max v w) :=
   Σ n, (allSteps f n).1
 
 noncomputable def modelFilteredClosureInclusion : modelFilteredClosure f → C :=
   fun x => (allSteps f x.1).2 x.2
+
+theorem surjective_aux (j : C) (h : filteredClosure f j) : ∃ (x : modelFilteredClosure f),
+  modelFilteredClosureInclusion f x = j := by
+  induction h with
+  | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
+  | max hj₁ hj₂ ih ih' =>
+    rcases ih with ⟨⟨n, x⟩, rfl⟩
+    rcases ih' with ⟨⟨m, y⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, nextStep.max _ _ x y⟩, rfl⟩
+    all_goals apply Nat.lt_succ_of_le
+    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+  | coeq hj₁ hj₂ g g' ih ih' =>
+    rcases ih with ⟨⟨n, x⟩, rfl⟩
+    rcases ih' with ⟨⟨m, y⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, nextStep.coeq _ _ x y g g'⟩, rfl⟩
+    all_goals apply Nat.lt_succ_of_le
+    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
 theorem small_of_injective_of_exists {α : Type w} [Small.{v} α] {β : Type u} {γ : Type u₁}
     (f : α → β) {g : γ → β} (hg : Function.Injective g) (h : ∀ c : γ, ∃ a : α, f a = g c) :
@@ -548,55 +548,53 @@ theorem small_of_injective_of_exists {α : Type w} [Small.{v} α] {β : Type u} 
   · simp only [not_nonempty_iff] at hγ
     infer_instance
 
-theorem exists_of_le (x : modelFilteredClosure f) (m : ℕ) (hm : x.1 ≤ m) : ∃ y : (allSteps f m).1,
-  modelFilteredClosureInclusion f ⟨m, y⟩ = modelFilteredClosureInclusion f x := by
-  induction hm with
-  | refl => exact ⟨x.2, rfl⟩
-  | step _ ih =>
-    rcases ih with ⟨y', hy'⟩
-    refine' ⟨nextStep.base y', _⟩
-    rw [← hy']
-    rfl
-
-#check Nat.strongRec'
-
-theorem surjective_aux (j : C) (h : filteredClosure f j) : ∃ (x : modelFilteredClosure f),
-  modelFilteredClosureInclusion f x = j := by
-  induction h with
-  | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
-  | max hj₁ hj₂ ih ih' =>
-    rcases ih with ⟨x, rfl⟩
-    rcases ih' with ⟨x', rfl⟩
-    obtain ⟨xl, hxl⟩ := exists_of_le f x (Max.max x.1 x'.1) (Nat.le_max_left _ _)
-    obtain ⟨xl', hxl'⟩ := exists_of_le f x' (Max.max x.1 x'.1) (Nat.le_max_right _ _)
-    rw [← hxl, ← hxl']
-    exact ⟨⟨Nat.succ (Max.max x.1 x'.1), nextStep.max xl xl'⟩, rfl⟩
-  | coeq hj₁ hj₂ g g' ih ih' =>
-    rcases ih with ⟨⟨x, a⟩, rfl⟩
-    rcases ih' with ⟨⟨y, b⟩, rfl⟩
-    -- cases le_or_lt x y with
-    -- | inl h =>
-    --   induction h with
-    --   | refl => exact ⟨⟨Nat.succ x, nextStep.coeq _ _ g g'⟩, rfl⟩
-    --   | step hm ih =>
-
-    --     sorry
-    -- | inr h => sorry
-    obtain ⟨xl, hxl⟩ := exists_of_le f ⟨x, a⟩ (Max.max x y) (Nat.le_max_left _ _)
-    obtain ⟨xl', hxl'⟩ := exists_of_le f ⟨y, b⟩ (Max.max x y) (Nat.le_max_right _ _)
-    sorry
-
-
-
-
-theorem small_subtype_filteredClosure : Small.{max v w} (Subtype (filteredClosure f)) :=
-  small_of_injective_of_exists (modelFilteredClosureInclusion f) (Subtype.coe_injective)
+instance small_subtype_filteredClosure : Small.{max v w} (FullSubcategory (filteredClosure f)) :=
+  small_of_injective_of_exists (modelFilteredClosureInclusion f) FullSubcategory.ext
     (fun x => surjective_aux f x.1 x.2)
+
+instance locallySmall_subtype_filteredClosure : LocallySmall.{max v w, v, u} (FullSubcategory (filteredClosure f)) :=
+  locallySmall_max.{w, v, u}
+
+instance essentiallySmall_subtype_filteredClosure : EssentiallySmall.{max v w} (FullSubcategory (filteredClosure f)) :=
+essentiallySmall_of_small_of_locallySmall _
+
+theorem isFilteredOrEmpty_fullSubcategory_filteredClosure : IsFilteredOrEmpty (FullSubcategory (filteredClosure f)) where
+  cocone_objs j j' := ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
+  cocone_maps {j j'} f f' := ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f',
+    coeq_condition _ _⟩
 
 end
 
---variable [IsFiltered C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
+section
+variable {C}
+variable [IsFiltered C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C) [_root_.Nonempty D]
 
+def SmallFilteredIntermediate : Type (max u₁ v) :=
+  SmallModel.{max u₁ v} (FullSubcategory (filteredClosure F.obj))
+
+noncomputable instance : SmallCategory (SmallFilteredIntermediate F) :=
+  show SmallCategory (SmallModel.{max u₁ v} (FullSubcategory (filteredClosure F.obj))) from inferInstance
+
+instance : IsFiltered (FullSubcategory (filteredClosure F.obj)) :=
+  { isFilteredOrEmpty_fullSubcategory_filteredClosure F.obj with
+    Nonempty := Nonempty.map (FullSubcategory.lift _ F filteredClosure.base).obj inferInstance }
+
+instance : IsFiltered (SmallFilteredIntermediate F) :=
+  of_equivalence (equivSmallModel _)
+
+noncomputable def firstFunctor : D ⥤ SmallFilteredIntermediate F :=
+  FullSubcategory.lift _ F filteredClosure.base ⋙ (equivSmallModel _).functor
+
+noncomputable def secondFunctor : SmallFilteredIntermediate F ⥤ C :=
+  (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
+
+instance faithful_secondFunctor : Faithful (secondFunctor F) :=
+  show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
+
+noncomputable def firstFunctor_secondFunctor : firstFunctor F ⋙ secondFunctor F ≅ F :=
+isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
+
+end
 
 
 
