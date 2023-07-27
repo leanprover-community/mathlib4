@@ -460,8 +460,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
   match twoH with
     | (.anonymous, na, _, _) =>
       let cd := "'compute_degree' inapplicable.  The "
-       throwError (cd ++ m!"goal\n\n   {gt}\n\n" ++
-                               m!"is expected to be '≤' or '=', instead of '{na}'.")
+      throwError (cd ++ m!"goal\n\n   {gt}\n\nis expected to be '≤' or '=', instead of '{na}'.")
     | (na, .anonymous, _, _) =>
       let cd := "'compute_degree' inapplicable.  The "
       throwError (cd ++ m!"LHS of\n\n   {gt}\n\nbegins with '{na}'.  " ++
