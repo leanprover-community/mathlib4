@@ -11,34 +11,21 @@ open Lean Meta Elab Term Tactic Core Parser Tactic
 open Std.Tactic
 
 /-!
-# Asynchronous tactic execution
+# AidedBy tactic combinator: asynchronous tactic execution
 
-We provide methods for executing tactics asynchronously. These are modelled on the `checkpoint` tactic.
+This implements a tactic combinator `aided_by` that automatically runs a tactic in the background. The syntax is essentially `"aided_by" tacticSeq "do" (tacticSeq)?`, with the first tactic sequence to be run in the background (e.g. `aesop?`) while the second tactic sequence is intractively entered. We also provide the sytax `"by!" tacticSeq` as a shorthand for `"aided_by" aesop? "do" tacticSeq`.
 
-* We run tactics and store resulting states in a cache.
-* We use a more robust key than that for checkpoints.
-
-## Indexing
-
-We index by
-
-* the current goal
-* the current local context converted into lists
-
-## Running tactics
-
-We have a function of type `TacticM Unit` which
-
-* executes the tactic
-* stores the resulting states in the cache
-
-## Fetching results
-
-* We fetch final states based on the current goal and local context.
-* We then restore these states.
+When elaborating each tactic in the (second) tactic sequence:
+* We launch a tactic in a separate thread, which on completion caches the resulting proof state if successful.
+* We wait briefly (50 ms by default) and then look for a proof state in the cache that matches the current goal and local context.
+* If we find a matching proof state, we use it to complete the proof with a `TryThis` action.
+* Otherwise the user continues proving interactively.
+* Observe that as the user works interactively, the tactic sequence is re-evaluated, and hence we check if the background task completed the proof at some stage.
 -/
 
-
+/--
+Helper for running to `IO` from `EIO`.
+-/
 def EIO.runToIO (eio: EIO Exception α) : IO α  := do
   match ←  eio.toIO' with
   | Except.ok x =>
@@ -49,12 +36,18 @@ def EIO.runToIO (eio: EIO Exception α) : IO α  := do
 
 namespace Mathlib.Tactic.AidedBy
 
+/--
+Extracting an array of tactics from a `tacticSeq`.
+-/
 def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   match s with
   | `(tacticSeq| { $[$t]* }) => t
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
+/--
+Appending a `tacticSeq` to an array of tactics to form a `tacticSeq`.
+-/
 def appendTactics (ts : Array (TSyntax `tactic))
     (s : TSyntax ``tacticSeq) :
   MetaM (TSyntax ``tacticSeq) := do
@@ -67,6 +60,9 @@ def appendTactics (ts : Array (TSyntax `tactic))
       `(tacticSeq| $[$ts']*)
   | _ => `(tacticSeq| $[$ts]*)
 
+/--
+Detects if a tactic sequence is a `sorry` tactic in that it can prove `False`.
+-/
 def isSorry (tacticCode: TSyntax `tactic) : TermElabM Bool := do
   let goal ← mkFreshExprMVar (mkConst ``False)
   try
@@ -83,11 +79,17 @@ register_option aided_by.delay : Nat :=
 
 deriving instance BEq, Hashable, Repr for LocalDecl
 
+/--
+Key for the cache of proof states.
+-/
 structure GoalKey where
   goal : Expr
   lctx : List <| Option LocalDecl
 deriving BEq, Hashable, Repr
 
+/--
+Proof state.
+-/
 structure ProofState where
   core   : Core.State
   meta   : Meta.State
@@ -95,6 +97,9 @@ structure ProofState where
   script : TSyntax ``tacticSeq
   messages : List Message
 
+/--
+Get the current goal and local context and form a key.
+-/
 def GoalKey.get : TacticM GoalKey := do
   let lctx ← getLCtx
   let goal ← getMainTarget
@@ -102,30 +107,51 @@ def GoalKey.get : TacticM GoalKey := do
 
 section Caches
 
+/--
+Cache of proof states for successful searches.
+-/
 initialize tacticCache : IO.Ref (HashMap GoalKey ProofState)
         ← IO.mkRef ∅
 
+/--
+Keys for which a search has been launched.
+-/
 initialize spawnedKeys :
   IO.Ref (HashSet <| GoalKey)
         ← IO.mkRef  ∅
 
+/--
+Check if a search has been launched for a key.
+-/
 def isSpawned (key : GoalKey) : IO Bool := do
   let m ← spawnedKeys.get
   return m.contains key
 
+/--
+Mark a key as having a search launched.
+-/
 def markSpawned (key : GoalKey)  : IO Unit := do
   spawnedKeys.modify fun m => m.insert key
 
+/--
+Mark a key as having a search completed and save the result.
+-/
 def putTactic (key : GoalKey) (s : ProofState) : MetaM Unit := do
   tacticCache.modify fun m => m.insert key s
 
-def getStates (key : GoalKey) : TacticM (Option ProofState) := do
+/--
+Get the (optional) proof state for a key.
+-/
+def getState (key : GoalKey) : TacticM (Option ProofState) := do
   let m ← tacticCache.get
   return m.find? key
 
 end Caches
 
-/-- This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
+/--
+Parses (if possible) a string as a `tacticSeq`.
+
+Note: This is a slight modification of `Parser.runParserCategory` due to Scott Morrison/Kim Liesinger. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
     Except String (TSyntax ``tacticSeq) :=
   let p := andthenFn whitespace Tactic.tacticSeq.fn
@@ -138,6 +164,9 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
 
+/--
+Extract a tactic from a message if there is a message beginning with "Try this:". Otherwise return a default tactic.
+-/
 def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| (TSyntax ``tacticSeq) × (List Message) := do
   let msgLog ← Core.getMessageLog
   let msgs := msgLog.toList
@@ -160,7 +189,9 @@ def getMsgTacticD (default : TSyntax ``tacticSeq)  : CoreM <| (TSyntax ``tacticS
         pure ()
   return (tac, msgs)
 
-
+/--
+Run a tactic in `Meta` and cache the resulting proof state if the tactic is successful and finishing.
+-/
 def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
   (goal: MVarId) (target : Expr)  : MetaM Unit :=
   goal.withContext do
@@ -188,6 +219,9 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
     set core₀
     set meta₀
 
+/--
+Run a tactic in `IO` and cache the resulting proof state if the tactic is successful and finishing.
+-/
 def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Expr)
   (mctx : Meta.Context) (ms : Meta.State)
   (cctx : Core.Context) (cs: Core.State) : IO Unit :=
@@ -196,11 +230,14 @@ def runAndCacheIO (tacticCode : TSyntax ``tacticSeq) (goal: MVarId) (target : Ex
   let res := eio.runToIO
   res
 
+/--
+Fetch a proof (if cached) for the current goal.
+-/
 def fetchProof  : TacticM ProofState :=
   focus do
   let key ← GoalKey.get
   let goal ← getMainGoal
-  match (← getStates key) with
+  match (← getState key) with
   | none => throwTacticEx `fetch goal  m!"No cached result found for the goal : {← ppExpr <| key.goal }."
   | some s => do
     return s
@@ -216,7 +253,9 @@ macro "by#"  : term =>
   `(by
   aided_by from_by aesop? do)
 
-
+/--
+Implementation of `aided_by` tactic.
+-/
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx =>
 withMainContext do
 match stx with
@@ -293,13 +332,3 @@ where
     initialSearch stx autoCode fromBy
     if (← getUnsolvedGoals).isEmpty then
         return ()
-
-
-namespace leanaide.auto
-
-scoped macro (priority := high) "by" tacs?:(tacticSeq)? : term =>
-  match tacs? with
-  | none => `(by aided_by from_by aesop? do)
-  | some tacs => `(by aided_by from_by aesop? do $tacs)
-
-end leanaide.auto
