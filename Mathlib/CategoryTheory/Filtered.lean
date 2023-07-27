@@ -579,8 +579,7 @@ theorem small_fullSubcategory_FilteredClosure :
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
-instance essentiallySmall_fullSubcategory_FilteredClosure :
-    EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) :=
+instance : EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) :=
   have : LocallySmall.{max v w} (FullSubcategory (FilteredClosure f)) := locallySmall_max.{w, v, u}
   have : Small.{max v w} (FullSubcategory (FilteredClosure f)) :=
     small_fullSubcategory_FilteredClosure f
@@ -617,7 +616,7 @@ noncomputable def smallFilteredIntermediateFactoring : D ⥤ SmallFilteredInterm
 noncomputable def smallFilteredIntermediateInclusion : SmallFilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance faithful_secondFunctor : Faithful (smallFilteredIntermediateInclusion F) :=
+instance : Faithful (smallFilteredIntermediateInclusion F) :=
   show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
