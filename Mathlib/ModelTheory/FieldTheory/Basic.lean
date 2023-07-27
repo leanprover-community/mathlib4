@@ -166,6 +166,8 @@ def fieldOfModelField {K : Type _} [Language.field.Structure K]
       (show invFunction.apply₁ 0 =' 0 ∈ Theory.field by simp [Theory.field])
     simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h }
 
+open FieldFunctions
+
 def structureFieldOfField {K : Type _} [Field K] :
     Language.field.Structure K :=
   { funMap := fun {n} f =>
@@ -187,8 +189,6 @@ def modelFieldOfField {K : Type _} [Field K] : Theory.field.Model K := by
     one_def, constantMap]
   simpa [Sentence.Realize, Formula.Realize, Term.equal,
     constantMap] using (fun _ => @mul_inv_cancel K _ _)
-
-end field
 
 end Language
 
