@@ -58,6 +58,7 @@ import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Lint
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormCast imports `Mathlib.Algebra.Group.Defs`
 -- import Mathlib.Tactic.NormCast
