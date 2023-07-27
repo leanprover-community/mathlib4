@@ -827,6 +827,8 @@ instance (priority := high) NormedSpace.continuousConstSMul [NormedField α]
 
 #check ContinuousLinearMap.addCommMonoid
 
+∑' ∑
+
 set_option trace.Meta.isDefEq true in
 set_option profiler true in
 set_option synthInstance.maxHeartbeats 30000 in
