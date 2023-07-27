@@ -501,7 +501,6 @@ theorem source_affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y
   · have h := (hP.affine_openCover_TFAE f).out 1 0
     apply h.mp
     use 𝒰
-    use inferInstance
 #align ring_hom.property_is_local.source_affine_open_cover_iff RingHom.PropertyIsLocal.source_affine_openCover_iff
 
 theorem isLocal_sourceAffineLocally : (sourceAffineLocally @P).IsLocal :=
