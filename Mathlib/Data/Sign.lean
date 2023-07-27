@@ -72,16 +72,16 @@ instance : Mul SignType :=
     | pos => y⟩
 
 /-- The less-than-or-equal relation on signs. -/
-inductive LE : SignType → SignType → Prop
-  | of_neg (a) : LE neg a
-  | zero : LE zero zero
-  | of_pos (a) : LE a pos
+protected inductive LE : SignType → SignType → Prop
+  | of_neg (a) : SignType.LE neg a
+  | zero : SignType.LE zero zero
+  | of_pos (a) : SignType.LE a pos
 #align sign_type.le SignType.LE
 
-instance : _root_.LE SignType :=
-  ⟨LE⟩
+instance : LE SignType :=
+  ⟨SignType.LE⟩
 
-instance LE.decidableRel : DecidableRel LE := fun a b => by
+instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 instance decidableEq : DecidableEq SignType := fun a b => by
