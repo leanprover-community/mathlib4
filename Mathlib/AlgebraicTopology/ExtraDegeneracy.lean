@@ -146,7 +146,7 @@ namespace StandardSimplex
 /-- When `[HasZero X]`, the shift of a map `f : Fin n → X`
 is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type _} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
-  dite (i = 0) (fun _ => 0) fun h => f (i.pred <| Fin.vne_of_ne h)
+  dite (i = 0) (fun _ => 0) fun h => f (i.pred h)
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun SSet.Augmented.StandardSimplex.shiftFun
 
@@ -267,7 +267,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     (fun i =>
       dite (i = 0)
         (fun _ => WidePullback.base _ ≫ S.section_)
-        (fun h => WidePullback.π _ (i.pred <| Fin.vne_of_ne h)))
+        (fun h => WidePullback.π _ (i.pred h)))
     fun i => by
       dsimp
       split_ifs with h

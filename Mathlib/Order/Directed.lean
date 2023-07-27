@@ -228,7 +228,7 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
 
 section Reflexive
 
-theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
   · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
