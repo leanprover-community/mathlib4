@@ -592,6 +592,8 @@ instance instRing : Ring (A ⊗[R] B) where
   intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
   add_left_neg := add_left_neg
 
+theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
 example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
