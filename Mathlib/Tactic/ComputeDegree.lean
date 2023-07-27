@@ -260,13 +260,19 @@ run_cmd
     declNameInThm thm tag
 
 /-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
-the `e` looks like `lhs ≤ _` or `lhs = _` and that `lhs` is one of `natDegree, degree, coeff`.
-Returns `none` if any one of the checks fails.
+the `e` looks like `lhs ≤ rhs` or `lhs = rhs` and that `lhs` is one of
+`natDegree f, degree f, coeff f n`.
+It also returns
+* the head symbol of `f` and
+* the list of answers to the question of whether `rhs` and, if present, `n` are metavariables.
+
+This is all the data needed to figure out whether `compute_degree` can make progress on `e`
+and, if so, which lemma it should apply.
 
 Sample outputs:
-* `natDegree f ≤ d => (natDegree, LE.le, f, [d])` (similarly for `=`);
-* `degree f = d => (degree, Eq, f, [d])` (similarly for `≤`);
-* `coeff f c = x => (coeff, Eq, f, [x, c])` (no `≤` option!).
+* `natDegree (f + g) ≤ d => (natDegree, LE.le, HAdd.hAdd, [d.isMVar])` (similarly for `=`);
+* `degree (f * g) = d => (degree, Eq, HMul.hMul, [d.isMVar])` (similarly for `≤`);
+* `coeff (1 : ℕ[X]) c = x => (coeff, Eq, one, [x.isMVar, c.isMVar])` (no `≤` option!).
 -/
 def twoHeadsArgs (e : Expr) : Name × Name × Name × List Bool :=
 let (eq_or_le, lhs, rhs) := match e.getAppFnArgs with
