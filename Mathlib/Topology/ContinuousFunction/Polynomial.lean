@@ -97,6 +97,8 @@ def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
+    rw [ContinuousMap.coe_smul, Pi.smul_apply]
+    simp
 #align polynomial.to_continuous_map_alg_hom Polynomial.toContinuousMapAlgHom
 
 /-- The algebra map from `R[X]` to continuous functions `C(X, R)`, for any subset `X` of `R`.
@@ -119,6 +121,8 @@ def toContinuousMapOnAlgHom (X : Set R) : R[X] →ₐ[R] C(X, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
+    rw [ContinuousMap.coe_smul, Pi.smul_apply]
+    simp
 #align polynomial.to_continuous_map_on_alg_hom Polynomial.toContinuousMapOnAlgHom
 
 end

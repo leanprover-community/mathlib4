@@ -494,6 +494,7 @@ theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f
   AEEqFun.coeFn_smul _ _
 #align measure_theory.Lp.coe_fn_smul MeasureTheory.Lp.coeFn_smul
 
+set_option synthInstance.maxHeartbeats 100000 in
 instance instIsCentralScalar [Module 𝕜ᵐᵒᵖ E] [BoundedSMul 𝕜ᵐᵒᵖ E] [IsCentralScalar 𝕜 E] :
     IsCentralScalar 𝕜 (Lp E p μ) where
   op_smul_eq_smul k f := Subtype.ext <| op_smul_eq_smul k (f : α →ₘ[μ] E)
