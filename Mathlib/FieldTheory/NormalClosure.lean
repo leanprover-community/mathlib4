@@ -22,7 +22,7 @@ definined in this file will mesh nicely with the Galois correspondence.
 - `IntermediateField.normalClosure K` for `K : IntermediateField F L`.
 -/
 
-open BigOperators IntermediateField Polynomial
+open BigOperators IntermediateField IsScalarTower Polynomial
 
 variable (F K L : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L] [Algebra K L]
   [IsScalarTower F K L]
@@ -34,12 +34,16 @@ noncomputable def normalClosure : IntermediateField F L :=
 lemma normalClosure_def : normalClosure F K L = ⨆ f : K →ₐ[F] L, f.fieldRange :=
   rfl
 
+variable {F K L}
+
 lemma normalClosure_le_iff {K' : IntermediateField F L} :
     normalClosure F K L ≤ K' ↔ ∀ f : K →ₐ[F] L, f.fieldRange ≤ K' :=
   iSup_le_iff
 
-lemma fieldRange_le_normalClosure (f : K →ₐ[F] L) : f.fieldRange ≤ normalClosure F K L :=
+lemma AlgHom.fieldRange_le_normalClosure  (f : K →ₐ[F] L) : f.fieldRange ≤ normalClosure F K L :=
   le_iSup AlgHom.fieldRange f
+
+variable (F K L)
 
 namespace normalClosure
 
@@ -56,8 +60,7 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
       Polynomial.aeval_algHom_apply, minpoly.aeval, map_zero]
   · rw [Polynomial.rootSet, Finset.mem_coe, Multiset.mem_toFinset] at hy
     let g := (algHomAdjoinIntegralEquiv F (hi x)).symm ⟨y, hy⟩
-    refine' le_iSup (fun f : K →ₐ[F] L => f.fieldRange)
-        ((g.liftNormal L).comp (IsScalarTower.toAlgHom F K L))
+    refine' le_iSup (fun f : K →ₐ[F] L => f.fieldRange) ((g.liftNormal L).comp (toAlgHom F K L))
         ⟨x, (g.liftNormal_commutes L (AdjoinSimple.gen F x)).trans _⟩
     rw [Algebra.id.map_eq_id, RingHom.id_apply]
     -- Porting note: in mathlib3 this next `apply` closed the goal.
@@ -83,6 +86,19 @@ instance finiteDimensional [FiniteDimensional F K] :
     fun f => f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
 
+noncomputable instance algebra : Algebra K (normalClosure F K L) :=
+  ((inclusion (toAlgHom F K L).fieldRange_le_normalClosure).comp
+    (toAlgHom F K L).toFieldRange).toAlgebra
+
+instance : IsScalarTower F K (normalClosure F K L) := by
+  apply of_algebraMap_eq
+  intro x
+  ext
+  exact algebraMap_apply F K L x
+
+instance : IsScalarTower K (normalClosure F K L) L :=
+  of_algebraMap_eq' rfl
+
 end normalClosure
 
 namespace IntermediateField
@@ -91,7 +107,7 @@ variable {F L}
 variable (K : IntermediateField F L)
 
 lemma le_normalClosure (K : IntermediateField F L) : K ≤ normalClosure F K L :=
-K.fieldRange_val.symm.trans_le (fieldRange_le_normalClosure F K L K.val)
+K.fieldRange_val.symm.trans_le K.val.fieldRange_le_normalClosure
 
 lemma normalClosure_of_normal (K : IntermediateField F L) [Normal F K] : normalClosure F K L = K :=
 by simp only [normalClosure_def, AlgHom.fieldRange_of_normal, iSup_const]
