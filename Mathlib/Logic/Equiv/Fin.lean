@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module logic.equiv.fin
-! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
+
+#align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
 # Equivalences for `Fin n`
@@ -106,7 +103,7 @@ def OrderIso.finTwoArrowIso (α : Type _) [Preorder α] : (Fin 2 → α) ≃o α
 
 /-- The 'identity' equivalence between `Fin n` and `Fin m` when `n = m`. -/
 def finCongr (h : m = n) : Fin m ≃ Fin n :=
-  (Fin.cast h).toEquiv
+  (Fin.castIso h).toEquiv
 #align fin_congr finCongr
 
 @[simp] theorem finCongr_apply_mk (h : m = n) (k : ℕ) (w : k < m) :
@@ -243,7 +240,7 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } :=
   { Equiv.optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩ with
-    map_rel_iff' := p.succAbove.map_rel_iff' }
+    map_rel_iff' := p.succAboveEmb.map_rel_iff' }
 #align fin_succ_above_equiv finSuccAboveEquiv
 
 theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
@@ -280,7 +277,8 @@ theorem finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
 #align fin_succ_equiv_last_last finSuccEquivLast_last
 
 @[simp]
-theorem finSuccEquivLast_symm_some (i : Fin n) : finSuccEquivLast.symm (some i) = Fin.castSucc i :=
+theorem finSuccEquivLast_symm_some (i : Fin n) :
+    finSuccEquivLast.symm (some i) = Fin.castSucc i :=
   finSuccEquiv'_symm_some_below i.2
 #align fin_succ_equiv_last_symm_some finSuccEquivLast_symm_some
 #align fin_succ_equiv_last_symm_coe finSuccEquivLast_symm_some
@@ -535,7 +533,7 @@ def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i 
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  map_rel_iff' := by simp
+  map_rel_iff' := by simp [(strictMono_castLE h).le_iff_le]
 #align fin.cast_le_order_iso Fin.castLEOrderIso
 #align fin.cast_le_order_iso_apply Fin.castLEOrderIso_apply
 #align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply

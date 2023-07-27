@@ -2,13 +2,10 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module dynamics.ergodic.ergodic
-! leanprover-community/mathlib commit 809e920edfa343283cea507aedff916ea0f1bd88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
+
+#align_import dynamics.ergodic.ergodic from "leanprover-community/mathlib"@"809e920edfa343283cea507aedff916ea0f1bd88"
 
 /-!
 # Ergodic maps and measures
@@ -65,7 +62,7 @@ variable {f} {μ : Measure α}
 namespace PreErgodic
 
 theorem measure_self_or_compl_eq_zero (hf : PreErgodic f μ) (hs : MeasurableSet s)
-    (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ (sᶜ) = 0 := by
+    (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ sᶜ = 0 := by
   simpa using hf.ae_empty_or_univ hs hs'
 #align pre_ergodic.measure_self_or_compl_eq_zero PreErgodic.measure_self_or_compl_eq_zero
 
@@ -79,7 +76,7 @@ theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs
   simpa [hs] using hf.measure_self_or_compl_eq_zero hs hs'
 #align pre_ergodic.prob_eq_zero_or_one PreErgodic.prob_eq_zero_or_one
 
-theorem of_iterate (n : ℕ) (hf : PreErgodic (f^[n]) μ) : PreErgodic f μ :=
+theorem of_iterate (n : ℕ) (hf : PreErgodic f^[n] μ) : PreErgodic f μ :=
   ⟨fun _ hs hs' => hf.ae_empty_or_univ hs <| IsFixedPt.preimage_iterate hs' n⟩
 #align pre_ergodic.of_iterate PreErgodic.of_iterate
 

@@ -2,17 +2,14 @@
 Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
-
-! This file was ported from Lean 3 source module group_theory.torsion
-! leanprover-community/mathlib commit 1f4705ccdfe1e557fc54a0ce081a05e33d2e6240
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Submonoid.Operations
+
+#align_import group_theory.torsion from "leanprover-community/mathlib"@"1f4705ccdfe1e557fc54a0ce081a05e33d2e6240"
 
 /-!
 # Torsion groups
@@ -251,8 +248,7 @@ theorem primaryComponent.disjoint {p' : ℕ} [hp' : Fact p'.Prime] (hne : p ≠ 
   Submonoid.disjoint_def.mpr <| by
     rintro g ⟨_ | n, hn⟩ ⟨n', hn'⟩
     · rwa [pow_zero, orderOf_eq_one_iff] at hn
-    ·
-      exact
+    · exact
         absurd (eq_of_prime_pow_eq hp.out.prime hp'.out.prime n.succ_pos (hn.symm.trans hn')) hne
 #align comm_monoid.primary_component.disjoint CommMonoid.primaryComponent.disjoint
 #align add_comm_monoid.primary_component.disjoint AddCommMonoid.primaryComponent.disjoint

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fp.basic
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Rat.Floor
+
+#align_import data.fp.basic from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
 /-!
 # Implementation of floating-point numbers (experimental).

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module measure_theory.covering.liminf_limsup
-! leanprover-community/mathlib commit 5f6e827d81dfbeb6151d7016586ceeb0099b9655
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Covering.DensityTheorem
+
+#align_import measure_theory.covering.liminf_limsup from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
 /-!
 # Liminf, limsup, and uniformly locally doubling measures.
@@ -125,7 +122,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     rw [eventually_atTop]
     refine'
       ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) _⟩
-    change Disjoint (b j) (Z iᶜ)
+    change Disjoint (b j) (Z i)ᶜ
     rw [disjoint_compl_right_iff_subset]
     refine' (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
       ((cthickening_mono hj' _).trans fun a ha => _)

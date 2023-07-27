@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.mv_polynomial.pderiv
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.MvPolynomial.Derivation
+
+#align_import data.mv_polynomial.pderiv from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Partial derivatives of polynomials
@@ -78,7 +75,7 @@ theorem pderiv_monomial {i : σ} :
       ← (monomial _).map_smul]
     refine' (Finset.sum_eq_single i (fun j _ hne => _) fun hi => _).trans _
     · simp [Pi.single_eq_of_ne hne]
-    · rw [Finsupp.not_mem_support_iff] at hi ; simp [hi]
+    · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
     · simp
 #align mv_polynomial.pderiv_monomial MvPolynomial.pderiv_monomial
 

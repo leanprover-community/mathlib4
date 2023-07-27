@@ -2,14 +2,11 @@
 Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module linear_algebra.ray
-! leanprover-community/mathlib commit 0f6670b8af2dff699de1c0b4b49039b31bc13c46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
+
+#align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
 /-!
 # Rays in modules

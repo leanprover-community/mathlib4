@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_product
-! leanprover-community/mathlib commit b0c712376e4ef44c53c3b872157ef44dfe9f9599
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
+
+#align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -329,7 +326,17 @@ section
 
 -- Like `R'`, `R'₂` provides a `DistribMulAction R'₂ (M ⊗[R] N)`
 variable {R'₂ : Type _} [Monoid R'₂] [DistribMulAction R'₂ M]
-variable [SMulCommClass R R'₂ M] [SMul R'₂ R']
+variable [SMulCommClass R R'₂ M]
+
+/-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
+instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) where
+  smul_comm r' r'₂ x :=
+    TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
+      (fun m n => by simp_rw [smul_tmul', smul_comm]) fun x y ihx ihy => by
+      simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]
+#align tensor_product.smul_comm_class_left TensorProduct.smulCommClass_left
+
+variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
@@ -730,7 +737,7 @@ theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
   simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span, Set.mem_image,
     Set.mem_setOf_eq]
-  congr ; ext t
+  congr; ext t
   constructor
   · rintro ⟨_, ⟨⟨m, n, rfl⟩, rfl⟩⟩
     use m, n

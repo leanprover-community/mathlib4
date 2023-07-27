@@ -2,11 +2,6 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.partition_of_unity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.SetTheory.Ordinal.Basic
@@ -14,6 +9,8 @@ import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma
+
+#align_import topology.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Continuous partition of unity
@@ -103,8 +100,8 @@ structure PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := un
   toFun : ι → C(X, ℝ)
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   nonneg' : 0 ≤ toFun
-  sum_eq_one' : ∀ x ∈ s, (∑ᶠ i, toFun i x) = 1
-  sum_le_one' : ∀ x, (∑ᶠ i, toFun i x) ≤ 1
+  sum_eq_one' : ∀ x ∈ s, ∑ᶠ i, toFun i x = 1
+  sum_le_one' : ∀ x, ∑ᶠ i, toFun i x ≤ 1
 #align partition_of_unity PartitionOfUnity
 
 /-- A `BumpCovering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
@@ -153,7 +150,7 @@ theorem nonneg (i : ι) (x : X) : 0 ≤ f i x :=
   f.nonneg' i x
 #align partition_of_unity.nonneg PartitionOfUnity.nonneg
 
-theorem sum_eq_one {x : X} (hx : x ∈ s) : (∑ᶠ i, f i x) = 1 :=
+theorem sum_eq_one {x : X} (hx : x ∈ s) : ∑ᶠ i, f i x = 1 :=
   f.sum_eq_one' x hx
 #align partition_of_unity.sum_eq_one PartitionOfUnity.sum_eq_one
 
@@ -165,7 +162,7 @@ theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x := by
   simpa only [fun i => (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
 #align partition_of_unity.exists_pos PartitionOfUnity.exists_pos
 
-theorem sum_le_one (x : X) : (∑ᶠ i, f i x) ≤ 1 :=
+theorem sum_le_one (x : X) : ∑ᶠ i, f i x ≤ 1 :=
   f.sum_le_one' x
 #align partition_of_unity.sum_le_one PartitionOfUnity.sum_le_one
 
@@ -396,7 +393,7 @@ theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
   exact flip (ht j) hj
 #align bump_covering.to_pou_fun_eq_mul_prod BumpCovering.toPOUFun_eq_mul_prod
 
-theorem sum_toPOUFun_eq (x : X) : (∑ᶠ i, f.toPOUFun i x) = 1 - ∏ᶠ i, (1 - f i x) := by
+theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - f i x) := by
   set s := (f.point_finite x).toFinset
   have hs : (s : Set ι) = { i | f i x ≠ 0 } := Finite.coe_toFinset _
   have A : (support fun i => toPOUFun f i x) ⊆ s := by
@@ -481,7 +478,7 @@ theorem support_toPartitionOfUnity_subset (i : ι) :
 #align bump_covering.support_to_partition_of_unity_subset BumpCovering.support_toPartitionOfUnity_subset
 
 theorem sum_toPartitionOfUnity_eq (x : X) :
-    (∑ᶠ i, f.toPartitionOfUnity i x) = 1 - ∏ᶠ i, (1 - f i x) :=
+    ∑ᶠ i, f.toPartitionOfUnity i x = 1 - ∏ᶠ i, (1 - f i x) :=
   f.sum_toPOUFun_eq x
 #align bump_covering.sum_to_partition_of_unity_eq BumpCovering.sum_toPartitionOfUnity_eq
 

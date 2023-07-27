@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.hom
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Lattice
+
+#align_import order.heyting.hom from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Heyting algebra morphisms
@@ -131,7 +128,7 @@ instance (priority := 100) BiheytingHomClass.toHeytingHomClass [BiheytingAlgebra
 
 -- See note [lower instance priority]
 instance (priority := 100) BiheytingHomClass.toCoheytingHomClass [BiheytingAlgebra α]
-    { _ : BiheytingAlgebra β}  [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
+    { _ : BiheytingAlgebra β} [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
   { ‹BiheytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 #align biheyting_hom_class.to_coheyting_hom_class BiheytingHomClass.toCoheytingHomClass
@@ -190,7 +187,7 @@ section HeytingAlgebra
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
 @[simp]
-theorem map_compl (a : α) : f (aᶜ) = f aᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
+theorem map_compl (a : α) : f aᶜ = (f a)ᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
 #align map_compl map_compl
 
 @[simp]

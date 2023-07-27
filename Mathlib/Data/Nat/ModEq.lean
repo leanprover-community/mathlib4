@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.modeq
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr.Core
+
+#align_import data.nat.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
 /-!
 # Congruences modulo a natural number
@@ -293,8 +290,7 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
   show Int.gcd (m / d) (c / d) = 1
-  ·
-    simp only [← Int.coe_nat_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+  · simp only [← Int.coe_nat_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 

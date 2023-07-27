@@ -2,11 +2,6 @@
 Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.lipschitz
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Set.Intervals.ProjIcc
@@ -14,6 +9,8 @@ import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Tactic.GCongr
+
+#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Lipschitz continuous functions
@@ -272,13 +269,13 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
       (le_trans (hβ _ _ _) <| ENNReal.mul_left_mono <| le_max_right _ _)
 #align lipschitz_with.uncurry LipschitzWith.uncurry
 
-protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) (f^[n])
+protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by rw [pow_succ']; exact (LipschitzWith.iterate hf n).comp hf
 #align lipschitz_with.iterate LipschitzWith.iterate
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
-    edist ((f^[n]) x) ((f^[n + 1]) x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
+    edist (f^[n] x) (f^[n + 1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [ENNReal.coe_pow] using (hf.iterate n) x (f x)
 #align lipschitz_with.edist_iterate_succ_le_geometric LipschitzWith.edist_iterate_succ_le_geometric
@@ -420,7 +417,7 @@ protected theorem dist : LipschitzWith 2 (Function.uncurry <| @dist α _) := by
 #align lipschitz_with.dist LipschitzWith.dist
 
 theorem dist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
-    dist ((f^[n]) x) ((f^[n + 1]) x) ≤ dist x (f x) * (K : ℝ) ^ n := by
+    dist (f^[n] x) (f^[n + 1] x) ≤ dist x (f x) * (K : ℝ) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [NNReal.coe_pow] using (hf.iterate n).dist_le_mul x (f x)
 #align lipschitz_with.dist_iterate_succ_le_geometric LipschitzWith.dist_iterate_succ_le_geometric

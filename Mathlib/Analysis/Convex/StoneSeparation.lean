@@ -2,18 +2,15 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.stone_separation
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Join
+
+#align_import analysis.convex.stone_separation from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Stone's separation theorem
 
-This file prove Stone's separation theorem. This tells us that any two disjoint convex sets can be
+This file proves Stone's separation theorem. This tells us that any two disjoint convex sets can be
 separated by a convex set whose complement is also convex.
 
 In locally convex real topological vector spaces, the Hahn-Banach separation theorems provide
@@ -63,9 +60,9 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       · exact mul_nonneg (mul_nonneg haz hav) hbu
       · exact mul_nonneg (mul_nonneg hbz hau) hbv
       · exact mul_nonneg hau hav
-    have hw : (∑ i, w i) = az * av + bz * au := by
+    have hw : ∑ i, w i = az * av + bz * au := by
       trans az * av * bu + (bz * au * bv + au * av)
-      . simp [Fin.sum_univ_succ, Fin.sum_univ_zero]
+      · simp [Fin.sum_univ_succ, Fin.sum_univ_zero]
       rw [← one_mul (au * av), ← habz, add_mul, ← add_assoc, add_add_add_comm, mul_assoc, ← mul_add,
         mul_assoc, ← mul_add, mul_comm av, ← add_mul, ← mul_add, add_comm bu, add_comm bv, habu,
         habv, one_mul, mul_one]
@@ -84,13 +81,13 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :
-    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 (Cᶜ) ∧ s ⊆ C ∧ t ⊆ Cᶜ := by
+    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 Cᶜ ∧ s ⊆ C ∧ t ⊆ Cᶜ := by
   let S : Set (Set E) := { C | Convex 𝕜 C ∧ Disjoint C t }
   obtain ⟨C, hC, hsC, hCmax⟩ :=
     zorn_subset_nonempty S
       (fun c hcS hc ⟨_, _⟩ =>
         ⟨⋃₀ c,
-          ⟨hc.directedOn.convex_sUnion  fun s hs => (hcS hs).1,
+          ⟨hc.directedOn.convex_sUnion fun s hs => (hcS hs).1,
             disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
           fun s => subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩
