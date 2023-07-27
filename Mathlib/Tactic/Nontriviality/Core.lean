@@ -61,8 +61,8 @@ The `nontriviality` tactic will first look for strict inequalities amongst the h
 and use these to derive the `Nontrivial` instance directly.
 
 Otherwise, it will perform a case split on `Subsingleton α ∨ Nontrivial α`, and attempt to discharge
-the `Subsingleton` goal using `simp [h₁, h₂, ..., hₙ, nontriviality]`, where `[h₁, h₂, ..., hₙ]` is a list of
-additional `simp` lemmas that can be passed to `nontriviality` using the syntax
+the `Subsingleton` goal using `simp [h₁, h₂, ..., hₙ, nontriviality]`, where `[h₁, h₂, ..., hₙ]` is 
+a list of additional `simp` lemmas that can be passed to `nontriviality` using the syntax
 `nontriviality α using h₁, h₂, ..., hₙ`.
 
 ```
