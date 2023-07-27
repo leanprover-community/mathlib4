@@ -730,14 +730,15 @@ theorem ext {g h : A ⊗[R] B →ₐ[R] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a �
   ext
   simp [H]
 #align algebra.tensor_product.ext Algebra.TensorProduct.ext
+
+-- TODO: with `SMulCommClass R S A` we can have this as an `S`-algebra morphism
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
 #align algebra.tensor_product.include_left Algebra.TensorProduct.includeLeft
 
 @[simp]
-theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
-    (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
+theorem includeLeft_apply (a : A) : (includeLeft : A →ₐ[R] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 #align algebra.tensor_product.include_left_apply Algebra.TensorProduct.includeLeft_apply
 
@@ -763,7 +764,7 @@ theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b =
 
 theorem includeLeft_comp_algebraMap {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] :
-    (includeLeftRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
+    (includeLeft.toRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
       includeRight.toRingHom.comp (algebraMap R T) := by
   ext
   simp
@@ -1174,8 +1175,7 @@ theorem productMap_apply_tmul (a : A) (b : B) : productMap f g (a ⊗ₜ b) = f 
   simp
 #align algebra.tensor_product.product_map_apply_tmul Algebra.TensorProduct.productMap_apply_tmul
 
-theorem productMap_left_apply (a : A) :
-    productMap f g (a ⊗ₜ 1) = f a := by
+theorem productMap_left_apply (a : A) : productMap f g ((includeLeft : A →ₐ[R] A ⊗ B) a) = f a := by
   simp
 #align algebra.tensor_product.product_map_left_apply Algebra.TensorProduct.productMap_left_apply
 
@@ -1185,7 +1185,7 @@ theorem productMap_left : (productMap f g).comp includeLeft = f :=
 #align algebra.tensor_product.product_map_left Algebra.TensorProduct.productMap_left
 
 theorem productMap_right_apply (b : B) :
-    productMap f g (1 ⊗ₜ b) = g b := by simp
+    productMap f g (includeRight (R := R) (A := A) (B := B) b) = g b := by simp
 #align algebra.tensor_product.product_map_right_apply Algebra.TensorProduct.productMap_right_apply
 
 @[simp]
