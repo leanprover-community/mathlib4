@@ -148,7 +148,7 @@ theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
       (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
   induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.castIso_refl]
+  · rw [ofFn_zero, append_nil, Fin.castAdd_zero]
     rfl
   · rw [ofFn_succ', ofFn_succ', IH, append_concat]
     rfl

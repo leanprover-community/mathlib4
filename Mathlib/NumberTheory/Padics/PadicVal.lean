@@ -578,7 +578,7 @@ theorem padicValNat_factorial_mul_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] 
         (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩ , zero_add]
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
-the largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
+largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 @[simp] theorem padicValNat_mul_div_factorial {p : ℕ} (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * (n / p))! = padicValNat p n ! := by
   nth_rw 2 [← div_add_mod n p]

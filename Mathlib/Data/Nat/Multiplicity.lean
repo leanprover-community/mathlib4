@@ -23,8 +23,8 @@ coefficients.
 ## Multiplicity calculations
 
 * `Nat.Prime.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
-  `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`. See `padicValNat_factorial` for the
-  for this result stated in the language of `p`-adic valuations and `padicValNat_factorial'` for a
+  `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`. See `padicValNat_factorial` for this
+  result stated in the language of `p`-adic valuations and `padicValNat_factorial'` for a
   related result.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
