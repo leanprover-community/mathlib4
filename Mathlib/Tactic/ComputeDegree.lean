@@ -346,10 +346,9 @@ else
 Using the information contained in `twoH`, it decides which lemma is the most appropriate.
 
 `dispatchLemma` is essentially the main dictionary for `compute_degree`.
-
-The 3 output names are the lemmas appropriate for a goal of the form
-`natDegree f ≤ d`, `degree f ≤ d`, `coeff f n = a`, in this order.
 -/
+--  Internally, `dispatchLemma` produces 3 names: these are the lemmas that are appropriate
+--  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f n = a`, in this order.
 def dispatchLemma (twoH : Name × Name × Name × List Bool) (debug : Bool := false) : Name :=
 match twoH with
   | (.anonymous, _, _, _) => ``id
