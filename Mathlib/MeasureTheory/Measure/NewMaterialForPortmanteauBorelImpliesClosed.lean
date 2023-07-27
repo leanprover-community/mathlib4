@@ -57,11 +57,17 @@ lemma ProbabilityMeasure.coe_null_iff (μ : ProbabilityMeasure α) (E : Set α) 
 
 variable [TopologicalSpace α]
 
--- TODO: avoid this?
+/-
+-- NOTE: Exists! (`MeasureTheory.lintegral_indicator_one`)
 lemma lintegral_indicator_one {α : Type _} [MeasurableSpace α] (μ : Measure α)
     {s : Set α} (s_mble : MeasurableSet s) :
     ∫⁻ x, (s.indicator (fun _ ↦ (1 : ℝ≥0∞)) x) ∂μ = μ s := by
+  --exact MeasureTheory.lintegral_indicator_one s_mble
   simp [lintegral_indicator _ s_mble]
+
+#check lintegral_indicator_const
+#check lintegral_indicator_one
+ -/
 
 -- NOTE: Missing?
 /-- If `μ` is a finite measure and the indicators of measurable sets `As i` tend pointwise to
@@ -74,7 +80,7 @@ lemma tendsto_measure_of_tendsto_indicator
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  simp_rw [← lintegral_indicator_one μ A_mble, ← lintegral_indicator_one μ (As_mble _)]
+  simp_rw [← MeasureTheory.lintegral_indicator_one A_mble, ← MeasureTheory.lintegral_indicator_one (As_mble _)]
   refine tendsto_lintegral_filter_of_dominated_convergence (fun _ ↦ (1 : ℝ≥0∞))
           (eventually_of_forall ?_) (eventually_of_forall ?_) ?_ h_lim
   · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
