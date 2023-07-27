@@ -1611,8 +1611,6 @@ theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
   measurable_infEdist.comp hf
 #align measurable.inf_edist Measurable.infEdist
 
---variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
-
 open Metric EMetric
 
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
