@@ -2,25 +2,22 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module set_theory.game.short
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Data.Fintype.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Game.Birthday
 
+#align_import set_theory.game.short from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+
 /-!
 # Short games
 
-A combinatorial game is `short` [Conway, ch.9][conway2001] if it has only finitely many positions.
+A combinatorial game is `Short` [Conway, ch.9][conway2001] if it has only finitely many positions.
 In particular, this means there is a finite set of moves at every point.
 
 We prove that the order relations `≤` and `<`, and the equivalence relation `≈`, are decidable on
-short games, although unfortunately in practice `dec_trivial` doesn't seem to be able to
+short games, although unfortunately in practice `decide` doesn't seem to be able to
 prove anything using these instances.
 -/
 
@@ -41,7 +38,11 @@ inductive Short : PGame.{u} → Type (u + 1)
       (_ : ∀ j : β, Short (R j)) [Fintype α] [Fintype β], Short ⟨α, β, L, R⟩
 #align pgame.short PGame.Short
 
--- Porting note: simp can prove this
+-- Porting note: Added `simpNF` exception. It's unclear what puts `eq_iff_true_of_subsingleton` into
+-- the simp set. A minimal reproduction of the simpNF error needs to import transitively at least
+-- `Mathlib.Logic.Unique`.
+--
+-- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
 attribute [nolint simpNF] Short.mk.injEq
 
 instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
@@ -81,7 +82,7 @@ decreasing_by {
 
 #align pgame.subsingleton_short PGame.subsingleton_short
 
-/-- A synonym for `short.mk` that specifies the pgame in an implicit argument. -/
+/-- A synonym for `Short.mk` that specifies the pgame in an implicit argument. -/
 def Short.mk' {x : PGame} [Fintype x.LeftMoves] [Fintype x.RightMoves]
     (sL : ∀ i : x.LeftMoves, Short (x.moveLeft i))
     (sR : ∀ j : x.RightMoves, Short (x.moveRight j)) : Short x := by
@@ -93,7 +94,7 @@ def Short.mk' {x : PGame} [Fintype x.LeftMoves] [Fintype x.RightMoves]
 
 attribute [class] Short
 
-/-- Extracting the `fintype` instance for the indexing type for Left's moves in a short game.
+/-- Extracting the `Fintype` instance for the indexing type for Left's moves in a short game.
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
 def fintypeLeft {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
@@ -106,7 +107,7 @@ instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := by
   cases S; assumption
 #align pgame.fintype_left_moves PGame.fintypeLeftMoves
 
-/-- Extracting the `fintype` instance for the indexing type for Right's moves in a short game.
+/-- Extracting the `Fintype` instance for the indexing type for Right's moves in a short game.
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
 def fintypeRight {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
@@ -123,7 +124,7 @@ instance moveLeftShort (x : PGame) [S : Short x] (i : x.LeftMoves) : Short (x.mo
   cases' S with _ _ _ _ L _ _ _; apply L
 #align pgame.move_left_short PGame.moveLeftShort
 
-/-- Extracting the `short` instance for a move by Left.
+/-- Extracting the `Short` instance for a move by Left.
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
@@ -137,7 +138,7 @@ instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.
   cases' S with _ _ _ _ _ R _ _; apply R
 #align pgame.move_right_short PGame.moveRightShort
 
-/-- Extracting the `short` instance for a move by Right.
+/-- Extracting the `Short` instance for a move by Right.
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
@@ -154,7 +155,7 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
     intro hs
     rcases hs with ⟨sL, sR⟩
     rw [birthday, max_lt_iff]
-    constructor;
+    constructor
     all_goals
       rw [← Cardinal.ord_aleph0]
       refine'
@@ -178,7 +179,7 @@ instance short1 : Short 1 :=
   Short.mk (fun i => by cases i; infer_instance) fun j => by cases j
 #align pgame.short_1 PGame.short1
 
-/-- Evidence that every `pgame` in a list is `short`. -/
+/-- Evidence that every `PGame` in a list is `Short`. -/
 class inductive ListShort : List PGame.{u} → Type (u + 1)
   | nil : ListShort []
   -- Porting note: We introduce `cons` as a separate instance because attempting to use
@@ -256,7 +257,7 @@ instance shortNat : ∀ n : ℕ, Short n
   | n + 1 => @PGame.shortAdd _ _ (shortNat n) PGame.short1
 #align pgame.short_nat PGame.shortNat
 
-instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (OfNat.ofNat n) := shortNat n
+instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
 
 -- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
 set_option linter.deprecated false in
@@ -268,7 +269,7 @@ instance shortBit1 (x : PGame.{u}) [Short x] : Short (bit1 x) := by dsimp [bit1]
 #align pgame.short_bit1 PGame.shortBit1
 
 /-- Auxiliary construction of decidability instances.
-We build `decidable (x ≤ y)` and `decidable (x ⧏ y)` in a simultaneous induction.
+We build `Decidable (x ≤ y)` and `Decidable (x ⧏ y)` in a simultaneous induction.
 Instances for the two projections separately are provided below.
 -/
 def leLfDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
@@ -328,6 +329,6 @@ example : Short (0 + 0) := by infer_instance
 example : Decidable ((1 : PGame) ≤ 1) := by infer_instance
 
 -- No longer works since definitional reduction of well-founded definitions has been restricted.
--- example : (0 : pgame) ≤ 0 := dec_trivial
--- example : (1 : pgame) ≤ 1 := dec_trivial
+-- example : (0 : PGame.{u}) ≤ 0 := by decide
+-- example : (1 : PGame.{u}) ≤ 1 := by decide
 end PGame

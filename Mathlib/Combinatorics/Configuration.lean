@@ -2,16 +2,13 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module combinatorics.configuration
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.SetTheory.Cardinal.Finite
+
+#align_import combinatorics.configuration from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
 /-!
 # Configurations of Points and lines
@@ -189,7 +186,7 @@ noncomputable def pointCount (l : L) : ℕ :=
 variable (L)
 
 theorem sum_lineCount_eq_sum_pointCount [Fintype P] [Fintype L] :
-    (∑ p : P, lineCount L p) = ∑ l : L, pointCount P l := by
+    ∑ p : P, lineCount L p = ∑ l : L, pointCount P l := by
   classical
     simp only [lineCount, pointCount, Nat.card_eq_fintype_card, ← Fintype.card_sigma]
     apply Fintype.card_congr
@@ -234,7 +231,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
   obtain ⟨f, hf₁, hf₂⟩ := Nondegenerate.exists_injective_of_card_le (le_of_not_le hc₂)
   have :=
     calc
-      (∑ p, lineCount L p) = ∑ l, pointCount P l := sum_lineCount_eq_sum_pointCount P L
+      ∑ p, lineCount L p = ∑ l, pointCount P l := sum_lineCount_eq_sum_pointCount P L
       _ ≤ ∑ l, lineCount L (f l) :=
         (Finset.sum_le_sum fun l _ => HasLines.pointCount_le_lineCount (hf₂ l))
       _ = ∑ p in Finset.univ.image f, lineCount L p :=
@@ -288,10 +285,10 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
   classical
     obtain ⟨f, hf1, hf2⟩ := HasLines.exists_bijective_of_card_eq hPL
     let s : Finset (P × L) := Set.toFinset { i | i.1 ∈ i.2 }
-    have step1 : (∑ i : P × L, lineCount L i.1) = ∑ i : P × L, pointCount P i.2 := by
+    have step1 : ∑ i : P × L, lineCount L i.1 = ∑ i : P × L, pointCount P i.2 := by
       rw [← Finset.univ_product_univ, Finset.sum_product_right, Finset.sum_product]
       simp_rw [Finset.sum_const, Finset.card_univ, hPL, sum_lineCount_eq_sum_pointCount]
-    have step2 : (∑ i in s, lineCount L i.1) = ∑ i in s, pointCount P i.2 := by
+    have step2 : ∑ i in s, lineCount L i.1 = ∑ i in s, pointCount P i.2 := by
       rw [s.sum_finset_product Finset.univ fun p => Set.toFinset { l | p ∈ l }]
       rw [s.sum_finset_product_right Finset.univ fun l => Set.toFinset { p | p ∈ l }]
       refine'
@@ -303,7 +300,7 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
       · obtain ⟨l, hl⟩ := hf1.2 p
         exact ⟨l, Finset.mem_univ l, hl.symm⟩
       all_goals simp_rw [Finset.mem_univ, true_and_iff, Set.mem_toFinset]; exact fun p => Iff.rfl
-    have step3 : (∑ i in sᶜ, lineCount L i.1) = ∑ i in sᶜ, pointCount P i.2 := by
+    have step3 : ∑ i in sᶜ, lineCount L i.1 = ∑ i in sᶜ, pointCount P i.2 := by
       rwa [← s.sum_add_sum_compl, ← s.sum_add_sum_compl, step2, add_left_cancel_iff] at step1
     rw [← Set.toFinset_compl] at step3
     exact

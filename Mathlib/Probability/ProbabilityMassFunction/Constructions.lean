@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
-
-! This file was ported from Lean 3 source module probability.probability_mass_function.constructions
-! leanprover-community/mathlib commit 4ac69b290818724c159de091daa3acd31da0ee6d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Monad
+
+#align_import probability.probability_mass_function.constructions from "leanprover-community/mathlib"@"4ac69b290818724c159de091daa3acd31da0ee6d"
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -154,12 +151,12 @@ section OfFinset
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,
   such that `f a = 0` for `a ∉ s`, we get a `Pmf`. -/
-def ofFinset (f : α → ℝ≥0∞) (s : Finset α) (h : (∑ a in s, f a) = 1)
+def ofFinset (f : α → ℝ≥0∞) (s : Finset α) (h : ∑ a in s, f a = 1)
     (h' : ∀ (a) (_ : a ∉ s), f a = 0) : Pmf α :=
   ⟨f, h ▸ hasSum_sum_of_ne_finset_zero h'⟩
 #align pmf.of_finset Pmf.ofFinset
 
-variable {f : α → ℝ≥0∞} {s : Finset α} (h : (∑ a in s, f a) = 1) (h' : ∀ (a) (_ : a ∉ s), f a = 0)
+variable {f : α → ℝ≥0∞} {s : Finset α} (h : ∑ a in s, f a = 1) (h' : ∀ (a) (_ : a ∉ s), f a = 0)
 
 @[simp]
 theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
@@ -201,11 +198,11 @@ end OfFinset
 section OfFintype
 
 /-- Given a finite type `α` and a function `f : α → ℝ≥0∞` with sum 1, we get a `Pmf`. -/
-def ofFintype [Fintype α] (f : α → ℝ≥0∞) (h : (∑ a, f a) = 1) : Pmf α :=
+def ofFintype [Fintype α] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) : Pmf α :=
   ofFinset f Finset.univ h fun a ha => absurd (Finset.mem_univ a) ha
 #align pmf.of_fintype Pmf.ofFintype
 
-variable [Fintype α] {f : α → ℝ≥0∞} (h : (∑ a, f a) = 1)
+variable [Fintype α] {f : α → ℝ≥0∞} (h : ∑ a, f a = 1)
 
 @[simp]
 theorem ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
@@ -239,7 +236,8 @@ end OfFintype
 
 section normalize
 
-/-- Given a `f` with non-zero and non-infinite sum, get a `Pmf` by normalizing `f` by its `tsum`. -/
+/-- Given an `f` with non-zero and non-infinite sum, get a `Pmf` by normalizing `f` by its `tsum`.
+-/
 def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞) : Pmf α :=
   ⟨fun a => f a * (∑' x, f x)⁻¹,
     ENNReal.summable.hasSum_iff.2 (ENNReal.tsum_mul_right.trans (ENNReal.mul_inv_cancel hf0 hf))⟩

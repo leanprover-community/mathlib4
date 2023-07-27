@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.with_bot
-! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
+
+#align_import order.with_bot from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
 /-!
 # `WithBot`, `WithTop`
@@ -112,7 +109,7 @@ theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
-/-- Specialization of `Option.get_or_else` to values in `WithBot α` that respects API boundaries.
+/-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
@@ -218,7 +215,7 @@ instance orderBot : OrderBot (WithBot α) :=
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   top := some ⊤
-  le_top o a ha := by cases ha ; exact ⟨_, rfl, le_top⟩
+  le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
 instance [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderBot, WithBot.orderTop with }
@@ -246,6 +243,16 @@ protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
   | none, _ => bot_le
   | Option.some _, hb => some_le_some.2 <| h <| some_le_some.1 hb
 #align is_max.with_bot IsMax.withBot
+
+theorem le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
+    a ≤ unbot b h ↔ (a : WithBot α) ≤ b := by
+  match b, h with
+  | some _, _ => simp only [unbot_coe, coe_le_coe]
+
+theorem unbot_le_iff {a : WithBot α} (h : a ≠ ⊥) {b : α} :
+    unbot a h ≤ b ↔ a ≤ (b : WithBot α) := by
+  match a, h with
+  | some _, _ => simp only [unbot_coe, coe_le_coe]
 
 end LE
 
@@ -304,7 +311,7 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
   lt := (· < ·)
   lt_iff_le_not_le := by
     intros a b
-    cases a <;> cases b <;> simp [lt_iff_le_not_le] ; simp [LE.le, LT.lt]
+    cases a <;> cases b <;> simp [lt_iff_le_not_le]; simp [LE.le, LT.lt]
   le_refl o a ha := ⟨a, ha, le_rfl⟩
   le_trans o₁ o₂ o₃ h₁ h₂ a ha :=
     let ⟨b, hb, ab⟩ := h₁ a ha
@@ -393,14 +400,14 @@ theorem unbot'_bot_le_iff [LE α] [OrderBot α] {a : WithBot α} {b : α} :
 theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (ha : a ≠ ⊥) : a.unbot' b < c ↔ a < c := by
   cases a
   · exact (ha rfl).elim
-  . rw [some_eq_coe, unbot'_coe, coe_lt_coe]
+  · rw [some_eq_coe, unbot'_coe, coe_lt_coe]
 #align with_bot.unbot'_lt_iff WithBot.unbot'_lt_iff
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
     sup := Option.liftOrGet (· ⊔ ·),
-    le_sup_left := fun o₁ o₂ a ha => by cases ha ; cases o₂ <;> simp [Option.liftOrGet],
-    le_sup_right := fun o₁ o₂ a ha => by cases ha ; cases o₁ <;> simp [Option.liftOrGet],
+    le_sup_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp [Option.liftOrGet],
+    le_sup_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp [Option.liftOrGet],
     sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases' o₁ with b <;> cases' o₂ with c <;> cases ha
       · exact h₂ a rfl
@@ -462,7 +469,7 @@ instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (Wit
 #align with_bot.decidable_le WithBot.decidableLE
 
 instance decidableLT [LT α] [@DecidableRel α (· < ·)] : @DecidableRel (WithBot α) (· < ·)
-  | none, Option.some x => isTrue <| by exists x, rfl ; rintro _ ⟨⟩
+  | none, Option.some x => isTrue <| by exists x, rfl; rintro _ ⟨⟩
   | Option.some x, Option.some y =>
       if h : x < y then isTrue <| by simp [*] else isFalse <| by simp [*]
   | x, none => isFalse <| by rintro ⟨a, ⟨⟨⟩⟩⟩
@@ -682,7 +689,7 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
   rfl
 #align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
-/-- Specialization of `Option.get_or_else` to values in `WithTop α` that respects API boundaries.
+/-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
 -/
 def untop' (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
@@ -835,7 +842,7 @@ instance orderTop : OrderTop (WithTop α) :=
 
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where
   bot := some ⊥
-  bot_le o a ha := by cases ha ; exact ⟨_, rfl, bot_le⟩
+  bot_le o a ha := by cases ha; exact ⟨_, rfl, bot_le⟩
 #align with_top.order_bot WithTop.orderBot
 
 instance boundedOrder [OrderBot α] : BoundedOrder (WithTop α) :=
@@ -863,6 +870,14 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
   rw [← toDual_le_toDual_iff] at hb
   simpa [toDual_le_iff] using (IsMax.withBot h : IsMax (toDual a : WithBot αᵒᵈ)) hb
 #align is_min.with_top IsMin.withTop
+
+theorem untop_le_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
+    untop a h ≤ b ↔ a ≤ (b : WithTop α) :=
+  @WithBot.le_unbot_iff αᵒᵈ _ _ _ _
+
+theorem le_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
+    a ≤ untop b h ↔ (a : WithTop α) ≤ b :=
+  @WithBot.unbot_le_iff αᵒᵈ _ _ _ _
 
 end LE
 
@@ -1156,8 +1171,8 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with
     inf := Option.liftOrGet (· ⊓ ·),
-    inf_le_left := fun o₁ o₂ a ha => by cases ha ; cases o₂ <;> simp [Option.liftOrGet],
-    inf_le_right := fun o₁ o₂ a ha => by cases ha ; cases o₁ <;> simp [Option.liftOrGet],
+    inf_le_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp [Option.liftOrGet],
+    inf_le_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp [Option.liftOrGet],
     le_inf := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases' o₂ with b <;> cases' o₃ with c <;> cases ha
       · exact h₂ a rfl
@@ -1210,7 +1225,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidabl
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
-  decidable_of_decidable_of_iff  toDual_le_toDual_iff
+  decidable_of_decidable_of_iff toDual_le_toDual_iff
 #align with_top.decidable_le WithTop.decidableLE
 
 instance decidableLT [LT α] [@DecidableRel α (· < ·)] :
@@ -1289,10 +1304,10 @@ instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) :=
   ⟨by
     rintro (a | a) (b | b)
-    . simp
-    . simp
-    . simp
-    . simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. < .) _ a b⟩
+    · simp
+    · simp
+    · simp
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· < ·) _ a b⟩
 #align with_top.trichotomous.lt WithTop.trichotomous.lt
 
 instance IsWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
@@ -1303,10 +1318,10 @@ instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     IsTrichotomous (WithTop α) (· > ·) :=
   ⟨by
     rintro (a | a) (b | b)
-    . simp
-    . simp
-    . simp
-    . simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. > .) _ a b⟩
+    · simp
+    · simp
+    · simp
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· > ·) _ a b⟩
 #align with_top.trichotomous.gt WithTop.trichotomous.gt
 
 instance IsWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
