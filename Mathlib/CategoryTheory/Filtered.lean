@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.Tactic.Linarith
 
 #align_import category_theory.filtered from "leanprover-community/mathlib"@"14e80e85cbca5872a329fbfd3d1f3fd64e306934"
 
