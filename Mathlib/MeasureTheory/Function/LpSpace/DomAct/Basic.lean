@@ -38,6 +38,11 @@ theorem mk_smul_toLp (c : M) {f : α → E} (hf : Memℒp f p μ) :
     mk c • hf.toLp _ = (hf.comp_measurePreserving <| measurePreserving_smul c μ).toLp _ :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem smul_Lp_const [IsFiniteMeasure μ] (c : Mᵈᵐᵃ) (a : E) :
+    c • Lp.const p μ a = Lp.const p μ a :=
+  rfl
+
 instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [MeasurableSMul N α] :
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
@@ -106,6 +111,5 @@ instance : DistribMulAction Mᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.distribMulAction ⟨⟨_, rfl⟩, fun _ _ ↦ rfl⟩ fun _ _ ↦ rfl
 
 end MulAction
-
 
 end DomMulAct
