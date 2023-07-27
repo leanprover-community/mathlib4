@@ -1649,6 +1649,14 @@ theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
   exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.measurableSet)
       (fun i j _ ij => thickening_mono ij _) hs
 
+/-- If a closed set has a thickening with finite measure, then the measure of its
+`r`-thickenings converge to its measure as `r > 0` tends to `0`. -/
+theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) (h's : IsClosed s) :
+    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ s)) := by
+  convert tendsto_measure_thickening hs
+  exact h's.closure_eq.symm
+
 variable [SecondCountableTopology α]
 
 @[measurability]
