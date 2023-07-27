@@ -66,15 +66,15 @@ theorem construction_of_accessible {α : Type _} [DecidableEq α]
   apply induction_on_accessible hSys.2 hs₀
   . exists []; simp [hSys.1]
   . simp only [List.mem_tails, forall_exists_index, and_imp]
-    intro a s ha hs₁ hs₂ l hl₁ hl₂ hl₃
+    intro a s ha _ hs l hl₁ hl₂ hl₃
     exists a :: l
     simp only [List.nodup_cons, hl₁, and_true, List.toFinset_cons, hl₂, true_and]
     have : a ∉ l := by simp only [← hl₂, List.mem_toFinset] at ha ; exact ha
-    simp [this]
+    simp only [this, true_and]
     intro l' hl'
     rw [List.suffix_cons_iff] at hl'
     apply hl'.elim <;> intro hl'
-    . simp only [hl', List.toFinset_cons, hl₂, hs₂]
+    . simp only [hl', List.toFinset_cons, hl₂, hs]
     . exact hl₃ _ hl'
 
 structure Greedoid (α : Type _) [DecidableEq α] [Fintype α] where
@@ -531,7 +531,7 @@ theorem stronger_local_submodularity_left
   apply (Finset.mem_union.mp (basis_subset hb₁₁ hx₁.1)).elim <;> intro h₃
   . have h₅ : G.rank (insert x b₃) ≤ G.rank s := by
       apply rank_le_of_subset
-      intro a ha
+      intro _ ha
       exact (mem_insert.mp ha).elim
         (fun h => h ▸ h₃)
         (fun h => inter_subset_left s t (basis_subset hb₃₁ h))
@@ -539,7 +539,7 @@ theorem stronger_local_submodularity_left
       [rank_of_feasible, card_insert_of_not_mem, lt_add_iff_pos_right, add_le_iff_nonpos_right]
   . have h₅ : G.rank (insert x b₃) ≤ G.rank t := by
       apply rank_le_of_subset
-      intro a ha
+      intro _ ha
       exact (mem_insert.mp ha).elim
         (fun h => h ▸ h₃)
         (fun h => inter_subset_right s t (basis_subset hb₃₁ h))
@@ -552,13 +552,19 @@ theorem stronger_local_submodularity_right
     G.rank (s ∪ t) = G.rank t := by
   simp only [h₂, ← h₁, stronger_local_submodularity_left h₁ h₂]
 
--- TODO: Looking for better name
-theorem rank_lt_succ_lt
-  (hs₁ : G.rank s < G.rank (insert x s))
-  (hs₂ : G.rank s < G.rank (insert y s)) :
-    G.rank s + 1 < G.rank (insert x (insert y s)) := sorry
-
-theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := sorry
+theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := by
+  apply (le_iff_lt_or_eq.mp (G.rank_le_of_subset (subset_of_ssubset h))).elim <;>
+    simp only [imp_self]
+  intro h'
+  exfalso
+  have h₁ := bases_of_feasible_eq_singleton hs
+  have ⟨_, hb₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have hb₂ := rank_eq_bases_card hb₁
+  rw [h₁, Finset.mem_singleton] at hb₁
+  rw [hb₂, hb₁] at h'
+  have h₂ : s.card ≤ t.card := (h') ▸ rank_le_card
+  rw [ssubset_def] at h
+  exact absurd ((eq_of_subset_of_card_le h.1 h₂) ▸ h.2) (by simp only [Finset.Subset.refl])
 
 /-- List of axioms for rank of greedoid. -/
 def greedoidRankAxioms (r : Finset α → ℕ) :=
