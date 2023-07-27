@@ -63,7 +63,7 @@ attribute [instance 100] AddTorsor.Nonempty -- porting note: removers `nolint in
 
 /-- An `AddGroup G` is a torsor for itself. -/
 --@[nolint instance_priority] Porting note: linter does not exist
-instance addGroupIsAddTorsor (G : Type _) [AddGroup G] : AddTorsor G G
+instance (priority := 200) addGroupIsAddTorsor (G : Type _) [AddGroup G] : AddTorsor G G
     where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel

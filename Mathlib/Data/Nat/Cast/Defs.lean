@@ -41,7 +41,6 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 /-- A type class for natural numbers which are greater than or equal to `2`. -/
 class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
-attribute [instance 200] instOfNat
 
 instance : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
@@ -51,7 +50,7 @@ instance is what makes things like `37 : R` type check.  Note that `0` and `1` a
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
+instance (priority := 200) [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
 @[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :

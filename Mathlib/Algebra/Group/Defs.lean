@@ -69,7 +69,6 @@ attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 class VAdd (G : Type _) (P : Type _) where
   vadd : G → P → P
 #align has_vadd VAdd
-attribute [instance 200] instHVAdd
 
 /-- Type class for the `-ᵥ` notation. -/
 class VSub (G : outParam (Type _)) (P : Type _) where
@@ -81,7 +80,6 @@ class VSub (G : outParam (Type _)) (P : Type _) where
 class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
 #align has_smul SMul
-attribute [instance 200] instHSMul
 
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
@@ -94,7 +92,7 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
-instance instHSMul [SMul α β] : HSMul α β β where
+instance (priority := 200) instHSMul [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
@@ -1064,7 +1062,6 @@ with a default so that `a - b = a + -b` holds by definition.
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
 #align add_group AddGroup
-attribute [instance 200] addGroupIsAddTorsor
 
 attribute [to_additive] Group
 

@@ -595,7 +595,6 @@ class IsNonstrictStrictOrder (α : Type _) (r : semiOutParam (α → α → Prop
   /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a
 #align is_nonstrict_strict_order IsNonstrictStrictOrder
-attribute [instance 200] instIsIrrefl_2
 
 theorem right_iff_left_not_left {r s : α → α → Prop} [IsNonstrictStrictOrder α r s] {a b : α} :
     s a b ↔ r a b ∧ ¬r b a :=
@@ -608,7 +607,7 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
   right_iff_left_not_left
 #align right_iff_left_not_left_of right_iff_left_not_left_of
 
-instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
+instance (priority := 200) {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 
 /-! #### `⊆` and `⊂` -/

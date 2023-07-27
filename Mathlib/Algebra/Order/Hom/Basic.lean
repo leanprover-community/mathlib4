@@ -185,7 +185,6 @@ class AddGroupSeminormClass (F : Type _) (α β : outParam <| Type _) [AddGroup 
   /-- The map is invariant under negation of its argument. -/
   map_neg_eq_map (f : F) (a : α) : f (-a) = f a
 #align add_group_seminorm_class AddGroupSeminormClass
-attribute [instance 200] AddGroupSeminormClass.toAddLEAddHomClass
 attribute [instance 200] AddGroupSeminormClass.toSubadditiveHomClass
 
 /-- `GroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
