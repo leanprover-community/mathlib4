@@ -388,7 +388,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-set_option maxHeartbeats 600000 in
+set_option maxHeartbeats 700000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
 set_option synthInstance.maxHeartbeats 200000 in
@@ -411,6 +411,7 @@ def KaehlerDifferential.endEquivAuxEquiv :
       { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
+
 
 set_option maxHeartbeats 1000000 in
 set_option synthInstance.maxHeartbeats 800000 in
