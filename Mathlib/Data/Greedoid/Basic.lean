@@ -515,13 +515,41 @@ theorem local_submodularity
 theorem stronger_local_submodularity_left
   (h₁ : G.rank s = G.rank (s ∩ t))
   (h₂ : G.rank t = G.rank (s ∩ t)) :
-    G.rank s = G.rank (s ∪ t) := by
-  sorry
+    G.rank (s ∪ t) = G.rank s := by
+  by_contra' h'
+  have ⟨_, hb₁₁⟩ : Nonempty (G.bases (s ∪ t)) := G.bases_nonempty
+  have ⟨_, hb₂₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have hb₂₂ := rank_eq_bases_card hb₂₁
+  have ⟨b₃, hb₃₁⟩ : Nonempty (G.bases (s ∩ t)) := G.bases_nonempty
+  have hb₃₂ := rank_eq_bases_card hb₃₁
+  have h' := lt_of_le_of_ne (G.rank_le_of_subset (subset_union_left s t)) h'.symm
+  rw [rank_eq_bases_card hb₁₁] at h'
+  have ⟨x, hx₁, hx₂⟩ := G.exchangeProperty
+    (basis_mem_feasible hb₁₁) (basis_mem_feasible hb₃₁) (hb₃₂ ▸ h₁ ▸ h')
+  rw [system_feasible_set_mem_mem] at hx₂
+  rw [mem_sdiff] at hx₁
+  apply (Finset.mem_union.mp (basis_subset hb₁₁ hx₁.1)).elim <;> intro h₃
+  . have h₅ : G.rank (insert x b₃) ≤ G.rank s := by
+      apply rank_le_of_subset
+      intro a ha
+      exact (mem_insert.mp ha).elim
+        (fun h => h ▸ h₃)
+        (fun h => inter_subset_left s t (basis_subset hb₃₁ h))
+    simp_all only
+      [rank_of_feasible, card_insert_of_not_mem, lt_add_iff_pos_right, add_le_iff_nonpos_right]
+  . have h₅ : G.rank (insert x b₃) ≤ G.rank t := by
+      apply rank_le_of_subset
+      intro a ha
+      exact (mem_insert.mp ha).elim
+        (fun h => h ▸ h₃)
+        (fun h => inter_subset_right s t (basis_subset hb₃₁ h))
+    simp_all only
+      [rank_of_feasible, card_insert_of_not_mem, lt_add_iff_pos_right, add_le_iff_nonpos_right]
 
 theorem stronger_local_submodularity_right
   (h₁ : G.rank s = G.rank (s ∩ t))
   (h₂ : G.rank t = G.rank (s ∩ t)) :
-    G.rank t = G.rank (s ∪ t) := by
+    G.rank (s ∪ t) = G.rank t := by
   simp only [h₂, ← h₁, stronger_local_submodularity_left h₁ h₂]
 
 -- TODO: Looking for better name
