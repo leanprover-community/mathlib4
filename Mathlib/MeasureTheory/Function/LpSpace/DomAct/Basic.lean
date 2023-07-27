@@ -97,7 +97,7 @@ end SMul
 
 section MulAction
 
-variable [Monoid M] [MulAction M α][SMulInvariantMeasure M α μ] [MeasurableSMul M α]
+variable [Monoid M] [MulAction M α] [SMulInvariantMeasure M α μ] [MeasurableSMul M α]
 
 @[to_additive]
 instance : MulAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.mulAction _ fun _ _ ↦ rfl
