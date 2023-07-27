@@ -68,7 +68,7 @@ This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
 ```lean
-def p (n : ℕ) := true
+def p (n : ℕ) := True
 example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
