@@ -15,7 +15,7 @@ example (α β : Type) (h : ∀ α β : Type, α = β) (b : β) : α := by
   apply h
 
 example (m n : Nat) (h : m = n) (b : Fin n) : Nat × Nat × Nat × Fin m := by
-  convert (config := { typeEqs := true }) (37, 57, 2, b)
+  convert (37, 57, 2, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × α := by
   -- type eq ok since arguments to `Prod` are explicit
