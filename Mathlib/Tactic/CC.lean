@@ -74,6 +74,30 @@ def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
   else
     return false
 
+/-- Similar to `mkAppM n #[lhs, rhs]`, but handles `Eq` and `Iff` more efficiently. -/
+def Lean.Meta.mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
+  if n == ``Eq then
+    mkEq lhs rhs
+  else if n == ``Iff then
+    return mkApp2 (.const ``Iff []) lhs rhs
+  else
+    mkAppM n #[lhs, rhs]
+
+/-- Given a reflexive relation `R`, and a proof `H : a = b`, build a proof for `R a b` -/
+def Lean.Meta.liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
+  if R == ``Eq then return H
+  let HType ← whnf (← inferType H)
+  -- `HType : @Eq A a _`
+  let some (A, a, _) := HType.eq?
+    | throwError "failed to build lift_of_eq equality proof expected: {H}"
+  let motive ← withLocalDeclD `x A fun x => mkRel R a x >>= mkLambdaFVars #[x]
+  let minor ← do
+    let mt ← mkRel R a a
+    let m ← mkFreshExprSyntheticOpaqueMVar mt
+    m.mvarId!.rfl
+    instantiateMVars m
+  mkEqRec motive minor H
+
 /-- Ordering on `Expr`. -/
 def Lean.Expr.quickCmp (a b : Expr) : Ordering :=
   if Expr.quickLt a b then .lt else if a.eqv b then .eq else .gt
@@ -3047,7 +3071,7 @@ void finalize_congruence_tactics() {
 -/
 
 inductive EntryExpr
-  | expr : Expr → EntryExpr
+  | ofExpr : Expr → EntryExpr
   /-- dummy congruence proof, it is just a placeholder. -/
   | congr : EntryExpr
   /-- dummy eq_true proof, it is just a placeholder -/
@@ -3056,7 +3080,7 @@ inductive EntryExpr
   | refl : EntryExpr
   deriving Inhabited
 
-instance : Coe Expr EntryExpr := ⟨EntryExpr.expr⟩
+instance : Coe Expr EntryExpr := ⟨EntryExpr.ofExpr⟩
 
 /-- Equivalence class data associated with an expression `e` -/
 structure Entry where
@@ -3497,14 +3521,26 @@ partial def updateMT (e : Expr) : CCM Unit := do
         { ccs with entries := ccs.entries.erase p.expr |>.insert p.expr newIt }
       updateMT p.expr
 
-/--
-If `asHEq` is `true`, then build a proof for `HEq e₁ e₂`.
-Otherwise, build a proof for `e₁ = e₂`.
-The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
-def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr) := sorry
+def hasHEqProofs (root : Expr) : CCM Bool := do
+  let some n ← getEntry root | failure
+  guard (n.root == root)
+  return n.heqProofs
 
-def getEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
-  getEqProofCore e₁ e₂ false
+def flipProofCore (H : Expr) (flipped heqProofs : Bool) : CCM Expr := do
+  let mut newH := H
+  if ← liftM <| pure heqProofs <&&> Expr.isEq <$> (inferType H >>= whnf) then
+    newH ← mkAppM ``heq_of_eq #[H]
+  if !flipped then
+    return newH
+  else if heqProofs then
+    mkHEqSymm newH
+  else
+    mkEqSymm newH
+
+def flipProof (H : EntryExpr) (flipped heqProofs : Bool) : CCM EntryExpr :=
+  match H with
+  | .ofExpr H => EntryExpr.ofExpr <$> flipProofCore H flipped heqProofs
+  | _ => return H
 
 def isEqv (e₁ e₂ : Expr) : CCM Bool := do
   let some n₁ ← getEntry e₁ | return false
@@ -3522,6 +3558,226 @@ def isEqTrue (e : Expr) : CCM Bool :=
 
 def isEqFalse (e : Expr) : CCM Bool :=
   isEqv e (.const ``False [])
+
+def mkTrans (H₁ H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
+  if heqProofs then mkAppM ``HEq.trans #[H₁, H₂] else mkAppM ``Eq.trans #[H₁, H₂]
+
+def mkTransOpt (H₁? : Option Expr) (H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
+  match H₁? with
+  | some H₁ => mkTrans H₁ H₂ heqProofs
+  | none => pure H₂
+
+mutual
+partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := do
+  let mut lhsArgsRev : Array Expr := #[]
+  let mut rhsArgsRev : Array Expr := #[]
+  let mut lhsIt := lhs
+  let mut rhsIt := rhs
+  if lhs != rhs then
+    repeat
+      let .app lhsItFn lhsItArg := lhsIt | failure
+      let .app rhsItFn rhsItArg := rhsIt | failure
+      lhsArgsRev := lhsArgsRev.push lhsItArg
+      rhsArgsRev := rhsArgsRev.push rhsItArg
+      lhsIt := lhsItFn
+      rhsIt := rhsItFn
+      if lhsIt == rhsIt then
+        break
+      if ← pureIsDefEq lhsIt rhsIt then
+        break
+      if ← isEqv lhsIt rhsIt <&&>
+          inferType lhsIt >>= fun i₁ => inferType rhsIt >>= fun i₂ => pureIsDefEq i₁ i₂ then
+        break
+  if lhsArgsRev.isEmpty then
+    if heqProofs then
+      return (← mkHEqRefl lhs)
+    else
+      return (← mkEqRefl lhs)
+  let lhsArgs := lhsArgsRev.reverse
+  let rhsArgs := rhsArgsRev.reverse
+  let PLift.up ha ← if ha : lhsArgs.size = rhsArgs.size then pure (PLift.up ha) else failure
+  let lhsFn := lhsIt
+  let rhsFn := rhsIt
+  guard (← isEqv lhsFn rhsFn <||> pureIsDefEq lhsFn rhsFn)
+  guard (← pureIsDefEq (← inferType lhsFn) (← inferType rhsFn))
+  /- Create proof for
+        `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
+     where
+        `n := lhsArgs.size` -/
+  let some specLemma ← mkExtHCongrWithArity lhsFn lhsArgs.size | failure
+  let mut kindsIt := specLemma.congrTheorem.argKinds
+  let mut lemmaArgs : Array Expr := #[]
+  for hi : i in [:lhsArgs.size] do
+    guard !kindsIt.isEmpty
+    lemmaArgs := lemmaArgs.push (lhsArgs[i]'hi.2) |>.push (rhsArgs[i]'(ha.symm ▸ hi.2))
+    if kindsIt[0]! matches CongrArgKind.heq then
+      let some p ← getHEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      lemmaArgs := lemmaArgs.push p
+    else
+      guard (kindsIt[0]! matches .eq)
+      let some p ← getEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      lemmaArgs := lemmaArgs.push p
+    kindsIt := kindsIt.eraseIdx 0
+  let mut r := mkAppN specLemma.congrTheorem.proof lemmaArgs
+  if specLemma.heqResult && !heqProofs then
+    r ← mkAppM ``eq_of_heq #[r]
+  else if !specLemma.heqResult && heqProofs then
+    r ← mkAppM ``heq_of_eq #[r]
+  if ← pureIsDefEq lhsFn rhsFn then
+    return r
+  /- Convert `r` into a proof of `lhs = rhs` using `Eq.rec` and
+     the proof that `lhsFn = rhsFn` -/
+  let some lhsFnEqRhsFn ← getEqProof lhsFn rhsFn | failure
+  withLocalDeclD `x (← inferType lhsFn) fun x => do
+    let motiveRhs := mkAppN x rhsArgs
+    let motive ← if heqProofs then mkHEq lhs motiveRhs else mkEq lhs motiveRhs
+    let motive ← mkLambdaFVars #[x] motive
+    mkEqRec motive r lhsFnEqRhsFn
+
+partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
+  let some (R₁, lhs₁, rhs₁) ← isSymmRelation e₁ | return none
+  let some (R₂, lhs₂, rhs₂) ← isSymmRelation e₂ | return none
+  if R₁ != R₂ then return none
+  if !(← isEqv lhs₁ lhs₂) then
+    guard (← isEqv lhs₁ rhs₂)
+    /- We must apply symmetry.
+       The symm congruence table is implicitly using symmetry.
+       That is, we have
+         `e₁ := lhs₁ ~R₁~ rhs₁`
+       and
+         `e2 := lhs₂ ~R₁~ rhs₂`
+       But,
+       `lhs₁ ~R₁~ rhs₂` and `rhs₁ ~R₁~ lhs₂` -/
+    /- Given `e₁ := lhs₁ ~R₁~ rhs₁`,
+       create proof for
+         `lhs₁ ~R₁~ rhs₁` = `rhs₁ ~R₁~ lhs₁` -/
+    let newE₁ ← mkRel R₁ rhs₁ lhs₁
+    let e₁IffNewE₁ ←
+      withLocalDeclD `h₁ e₁ fun h₁ =>
+      withLocalDeclD `h₂ newE₁ fun h₂ => do
+        mkAppM ``Iff.intro #[← mkLambdaFVars #[h₁] (← h₁.symm), ← mkLambdaFVars #[h₂] (← h₂.symm)]
+    let mut e₁EqNewE₁ := mkApp3 (.const ``propext []) e₁ newE₁ e₁IffNewE₁
+    let newE₁EqE₂ ← mkCongrProofCore newE₁ e₂ heqProofs
+    if heqProofs then
+      e₁EqNewE₁ ← mkAppM ``heq_of_eq #[e₁EqNewE₁]
+    return some (← mkTrans e₁EqNewE₁ newE₁EqE₂ heqProofs)
+  return none
+
+partial def mkCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM Expr := do
+  if let some r ← mkSymmCongrProof e₁ e₂ heqProofs then
+    return r
+  else
+    mkCongrProofCore e₁ e₂ heqProofs
+
+partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Expr := do
+  match H with
+  | .congr => mkCongrProof lhs rhs heqProofs
+  | .eqTrue =>
+    let (flip, some (R, a, b)) ←
+      if lhs == .const ``True [] then
+        ((true, ·)) <$> isReflRelation rhs
+      else
+        ((false, ·)) <$> isReflRelation lhs
+      | failure
+    let aRb ←
+      if R == ``Eq then
+        getEqProof a b >>= liftOption
+      else if R == ``HEq then
+        getHEqProof a b >>= liftOption
+      else
+        -- TODO(Leo): the following code assumes R is homogeneous.
+        -- We should add support arbitrary heterogenous reflexive relations.
+        getEqProof a b >>= liftOption >>= fun aEqb => liftM (liftFromEq R aEqb)
+    let aRbEqTrue ← mkAppM ``eq_true_intro #[aRb]
+    if flip then
+      mkEqSymm aRbEqTrue
+    else
+      return aRbEqTrue
+  | .refl =>
+    let type ← if heqProofs then mkHEq lhs rhs else mkEq lhs rhs
+    let proof ← if heqProofs then mkHEqRefl lhs else mkEqRefl lhs
+    mkExpectedTypeHint proof type
+  | .ofExpr H => return H
+
+/--
+If `asHEq` is `true`, then build a proof for `HEq e₁ e₂`.
+Otherwise, build a proof for `e₁ = e₂`.
+The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
+partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr) := do
+  if e₁.hasExprMVar || e₂.hasExprMVar then return none
+  if ← pureIsDefEq e₁ e₂ then
+    if asHEq then
+      return some (← mkHEqRefl e₁)
+    else
+      return some (← mkEqRefl e₁)
+  let some n₁ ← getEntry e₁ | return none
+  let some n₂ ← getEntry e₂ | return none
+  if n₁.root != n₂.root then return none
+  let heqProofs ← hasHEqProofs n₁.root
+  -- 1. Retrieve "path" from `e₁` to `root`
+  let mut path₁ : Array Expr := #[]
+  let mut Hs₁ : Array EntryExpr := #[]
+  let mut visited : RBExprSet := ∅
+  let mut it₁ := e₁
+  repeat
+    visited := visited.insert it₁
+    let some it₁N ← getEntry it₁ | failure
+    let some t := it₁N.target | break
+    path₁ := path₁.push t
+    let some p := it₁N.proof | failure
+    Hs₁ := Hs₁.push (← flipProof p it₁N.flipped heqProofs)
+    it₁ := t
+  guard (it₁ == n₁.root)
+  -- 2. The path from `e₂` to root must have at least one element `c` in visited
+  -- Retrieve "path" from `e₂` to `c`
+  let mut path₂ : Array Expr := #[]
+  let mut Hs₂ : Array EntryExpr := #[]
+  let mut it₂ := e₂
+  repeat
+    if visited.contains it₂ then
+      break -- found common
+    let some it₂N ← getEntry it₂ | failure
+    let some t := it₂N.target | failure
+    path₂ := path₂.push it₂
+    let some p := it₂N.proof | failure
+    Hs₂ := Hs₂.push (← flipProof p (!it₂N.flipped) heqProofs)
+    it₂ := t
+  -- `it₂` is the common element...
+  -- 3. Shrink `path₁`/`Hs₁` until we find `it₂` (the common element)
+  repeat
+    if path₁.isEmpty then
+      guard (it₂ == e₁)
+      break
+    if path₁.back == it₂ then
+      -- found it!
+      break
+    path₁ := path₁.pop
+    Hs₁ := Hs₁.pop
+
+  -- 4. Build transitivity proof
+  let mut pr? : Option Expr := none
+  let mut lhs := e₁
+  for i in [:path₁.size] do
+    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
+    lhs := path₁[i]!
+  let mut i := Hs₂.size
+  while i > 0 do
+    i := i - 1
+    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₂[i]! Hs₂[i]! heqProofs) heqProofs
+    lhs := path₂[i]!
+  let mut some pr := pr? | failure
+  if heqProofs && !asHEq then
+    pr ← mkAppM ``eq_of_heq #[pr]
+  else if !heqProofs && asHEq then
+    pr ← mkAppM ``heq_of_eq #[pr]
+  return pr
+
+partial def getEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
+  getEqProofCore e₁ e₂ false
+
+partial def getHEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
+  getEqProofCore e₁ e₂ true
+end
 
 def getEqTrueProof (e : Expr) : CCM Expr := do
   guard (← isEqTrue e)
@@ -3589,6 +3845,7 @@ def addCongruenceTable (e : Expr) : CCM Unit := do
         let newEntry := { currEntry with cgRoot := oldE }
         modifyState fun ccs => { ccs with entries := ccs.entries.erase e |>.insert e newEntry }
         -- 2. Put new equivalence in the todo queue
+        -- TODO(Leo): check if the following line is a bottleneck
         let heqProof ← pureIsDefEq (← inferType e) (← inferType oldE)
         pushTodo e oldE .congr heqProof
         return
@@ -3632,7 +3889,9 @@ def pushSubsingletonEq (a b : Expr) : CCM Unit := do
   -- internalizing the types of `a` and `b`.
   let A ← normalize (← inferType a)
   let B ← normalize (← inferType b)
+  -- TODO(Leo): check if the following test is a performance bottleneck
   if ← pureIsDefEq A B then
+    -- TODO(Leo): to improve performance we can create the following proof lazily
     let proof ← mkAppM ``Subsingleton.elim #[a, b]
     pushEq a b proof
   else
@@ -4197,6 +4456,8 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
   let some c₂ := e₂.isConstructorApp? env | failure
   if ← pureIsDefEq (← inferType e₁) (← inferType e₂) then
     -- The implications above only hold if the types are equal.
+    -- TODO(Leo): if the types are different, we may still propagate by searching the equivalence
+    --            classes of `e₁` and `e₂` for other constructors that may have compatible types.
     return
   let some h ← getEqProof e₁ e₂ | failure
   if c₁.name == c₂.name then
@@ -4450,7 +4711,7 @@ def internalize (e : Expr) (gen : Nat) : CCM Unit := do
   processTodo
 
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
-  pushTodo lhs rhs (.expr H) heqProof
+  pushTodo lhs rhs H heqProof
   processTodo
 
 def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
