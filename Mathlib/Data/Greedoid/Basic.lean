@@ -575,22 +575,20 @@ def greedoidRankAxioms (r : Finset α → ℕ) :=
 protected def rank.toGreedoid (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Greedoid α :=
   ⟨univ.filter fun s => r s = s.card, by
     simp only [mem_univ, Finset.mem_filter, hr.1, card_empty], by
+    simp only [_root_.accessibleProperty, mem_univ, Finset.mem_filter, true_and]
     intro s hs₁ hs₂
-    simp only [mem_univ, Finset.mem_filter, true_and] at *
     by_contra' h'
-    have ⟨x, hx₁, y, hy₁, h₁⟩ : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ r (s \ {x}) = r (s \ {y}) := sorry
-    have h₂ : r (s \ {x, y}) = r (s \ {x}) := sorry
-    have h₃ := hr.2.2.2
-      (sorry : r (s \ {x, y}) = r (insert x (s \ {x, y})))
-      (sorry : r (s \ {x, y}) = r (insert y (s \ {x, y})))
-    rw [h₂] at h₃
-    have h₄ : r (s \ {x}) = r s := sorry -- by pigeonhole principle?
-    rw [hs₁] at h₄
-    have h₅ : r (s \ {x}) < s.card := by
-      apply lt_of_le_of_lt hr.2.1
-      simp [hx₁, card_sdiff]
-      exact sub_lt (card_pos.mpr (nonempty_of_ne_empty hs₂)) (by decide : 0 < 1)
-    simp only [h₄, lt_self_iff_false] at h₅, by
+    have h₁ : ∀ x ∈ s, r (s \ {x}) < s.card - 1 := by
+      intro x hx
+      have h := h' x hx
+      apply lt_iff_le_and_ne.mpr (And.intro _ _)
+      . have h₁ : r (s \ {x}) ≤ (s \ {x}).card := hr.2.1
+        simp only [hx, singleton_subset_iff, card_sdiff, card_singleton] at h₁
+        exact h₁
+      . simp only [hx, singleton_subset_iff, card_sdiff, card_singleton] at h
+        exact h
+    clear h'
+    sorry, by
     sorry⟩
 
 theorem greedoidRankAxioms_unique_greedoid {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
@@ -622,7 +620,7 @@ theorem self_subset_closure : s ⊆ G.closure s := by
 @[simp]
 theorem rank_closure_eq_rank_self : G.rank (G.closure s) = G.rank s := by
   simp only [closure, mem_univ, forall_true_left]
-  rw [stronger_local_submodularity_left]
+  rw [← stronger_local_submodularity_left]
   sorry
 
 theorem feasible_iff_elem_notin_closure_minus_elem :
