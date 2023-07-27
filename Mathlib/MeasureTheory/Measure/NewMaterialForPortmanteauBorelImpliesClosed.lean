@@ -12,6 +12,8 @@ open Metric
 -- TODO: Just PR the obvious generalization.
 variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
 
+#check tendsto_measure_cthickening
+
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
 thickenings converges to the measure of its closure as `r` tends to `0`. -/
 theorem tendsto_measure_cthickening'  {μ : Measure α} {s : Set α}
@@ -55,26 +57,6 @@ lemma ProbabilityMeasure.coe_null_iff (μ : ProbabilityMeasure α) (E : Set α) 
 
 variable [TopologicalSpace α]
 
-#check Set.indicator_iUnion_apply
-
--- NOTE: Missing?
-@[to_additive] lemma _root_.Set.mulIndicator_iInter_apply {α ι M}
-    [Nonempty ι] [CompleteLattice M] [One M]
-    (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
-    mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
-  by_cases hx : x ∈ ⋂ i, s i
-  · rw [mulIndicator_of_mem hx]
-    rw [mem_iInter] at hx
-    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
-    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
-  · rw [mulIndicator_of_not_mem hx]
-    simp only [mem_iInter, not_exists, not_forall] at hx
-    rcases hx with ⟨j, hj⟩
-    refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
-    simpa [mulIndicator_of_not_mem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
-
-#check Set.indicator_iInter_apply
-
 -- TODO: avoid this?
 lemma lintegral_indicator_one {α : Type _} [MeasurableSpace α] (μ : Measure α)
     {s : Set α} (s_mble : MeasurableSet s) :
@@ -107,7 +89,7 @@ lemma tendsto_measure_thickening_nhds_measure_closure
     {α : Type _} [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
     (μ : Measure α) [IsFiniteMeasure μ] {E : Set α} :
     Tendsto (fun δ ↦ μ (Metric.thickening δ E)) (𝓝[>] (0 : ℝ)) (𝓝 (μ (closure E))) := by
-  refine tendsto_measure_of_tendsto_indicator (𝓝[>] (0 : ℝ)) μ isClosed_closure.measurableSet
+  refine tendsto_measure_of_tendsto_indicator (𝓝[>] (0 : ℝ)) μ measurableSet_closure
           (fun δ ↦ (@Metric.isOpen_thickening _ _ δ E).measurableSet) ?_
   apply eventually_of_forall
   intro x
@@ -125,6 +107,47 @@ lemma tendsto_measure_thickening_of_isClosed
   exact F_closed.closure_eq.symm
 
 -- TODO: Add similar ones for the closed thickenings (milder assumption, just `𝓝 (0 : ℝ)`).
+-- NOTE: There are existing lemmas for these!
+
+#check tendsto_measure_cthickening
+
+/-- If `μ` is a finite measure (on an `OpensMeasurableSpace`), then for any set `E`,
+the measures of the closed δ-thickenings of `E` tend to the measure of the closure of `E`
+as δ tends to zero. -/
+lemma tendsto_measure_cthickening_nhds_measure_closure
+    {α : Type _} [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
+    (μ : Measure α) [IsFiniteMeasure μ] {E : Set α} :
+    Tendsto (fun δ ↦ μ (Metric.cthickening δ E)) (𝓝 (0 : ℝ)) (𝓝 (μ (closure E))) := by
+  refine tendsto_measure_of_tendsto_indicator (𝓝 (0 : ℝ)) μ isClosed_closure.measurableSet
+          (fun δ ↦ (@Metric.isClosed_cthickening _ _ δ E).measurableSet) ?_
+  apply eventually_of_forall
+  intro x
+  have key := tendsto_indicator_cthickening_indicator_closure (fun _ ↦ (1 : ℝ≥0∞)) E
+  rw [tendsto_pi_nhds] at key
+  exact key x
+
+-- TODO: Deduplicate in Mathlib?
+
+#check tendsto_measure_cthickening_of_isClosed
+#check tendsto_measure_cthickening_of_isClosed'
+
+/-- If `μ` is a finite measure (on an `OpensMeasurableSpace`), then for any closed set `F`,
+the measures of the closed δ-thickenings of `F` tend to the measure of `F` as δ tends to zero. -/
+lemma tendsto_measure_cthickening_of_isClosed''
+    {α : Type _} [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
+    (μ : Measure α) [IsFiniteMeasure μ] {F : Set α} (F_closed : IsClosed F) :
+    Tendsto (fun δ ↦ μ (Metric.cthickening δ F)) (𝓝 (0 : ℝ)) (𝓝 (μ F)) := by
+  convert tendsto_measure_cthickening_nhds_measure_closure μ
+  exact F_closed.closure_eq.symm
+
+
+
+
+
+
+
+
+
 
 /-- One implication of the portmanteau theorem:
 Assuming that for all Borel sets `E` whose boundary `∂E` carries no probability mass under a
