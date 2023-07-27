@@ -706,7 +706,7 @@ theorem closure_eq_of_subset_adj_closure (hst : s ⊆ G.closure t) (hts : t ⊆ 
     G.closure s = G.closure t := sorry
 
 theorem closure_idempotent : G.closure (G.closure s) = G.closure s :=
-  closure_eq_of_subset_adj_closure (by simp)
+  closure_eq_of_subset_adj_closure Subset.rfl
     (Finset.Subset.trans self_subset_closure self_subset_closure)
 
 theorem closure_exchange_property
