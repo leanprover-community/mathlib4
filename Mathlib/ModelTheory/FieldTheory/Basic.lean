@@ -71,26 +71,30 @@ instance (α : Type _) : Inv (Language.field.Term α) :=
 theorem inv_def (α : Type _) (t : Language.field.Term α) :
     t⁻¹ = invFunction.apply₁ t := rfl
 
+end field
+
+open field
+
 open BoundedFormula
 
 def Theory.field : Language.field.Theory :=
-show Set Language.field.Sentence from
-{ addFunction.assoc,
-  addFunction.comm,
-  addFunction.leftId 0,
-  addFunction.rightId 0,
-  addFunction.leftInv negFunction 0,
-  addFunction.rightInv negFunction 0,
-  mulFunction.leftDistrib addFunction,
-  mulFunction.rightDistrib addFunction,
-  mulFunction.assoc,
-  mulFunction.comm,
-  mulFunction.leftId 1,
-  mulFunction.rightId 1,
-  mulFunction.leftNeZeroInv invFunction 0 1,
-  mulFunction.rightNeZeroInv invFunction 0 1,
-  invFunction.apply₁ 0 =' 0,
-  (Term.equal 0 1).not}
+  show Set Language.field.Sentence from
+  { addFunction.assoc,
+    addFunction.comm,
+    addFunction.leftId 0,
+    addFunction.rightId 0,
+    addFunction.leftInv negFunction 0,
+    addFunction.rightInv negFunction 0,
+    mulFunction.leftDistrib addFunction,
+    mulFunction.rightDistrib addFunction,
+    mulFunction.assoc,
+    mulFunction.comm,
+    mulFunction.leftId 1,
+    mulFunction.rightId 1,
+    mulFunction.leftNeZeroInv invFunction 0 1,
+    mulFunction.rightNeZeroInv invFunction 0 1,
+    invFunction.apply₁ 0 =' 0,
+    (Term.equal 0 1).not}
 
 set_option maxHeartbeats 20000000 in
 def fieldOfModelField {K : Type _} [Language.field.Structure K]
@@ -183,7 +187,6 @@ def modelFieldOfField {K : Type _} [Field K] : Theory.field.Model K := by
     one_def, constantMap]
   simpa [Sentence.Realize, Formula.Realize, Term.equal,
     constantMap] using (fun _ => @mul_inv_cancel K _ _)
-
 
 end field
 
