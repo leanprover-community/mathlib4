@@ -22,70 +22,104 @@ definined in this file will mesh nicely with the Galois correspondence.
 - `IntermediateField.normalClosure K` for `K : IntermediateField F L`.
 -/
 
-open BigOperators Polynomial
+open BigOperators IntermediateField Polynomial
 
-variable {F L : Type _} [Field F] [Field L] [Algebra F L] (K : IntermediateField F L)
-
-namespace IntermediateField
+variable (F K L : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L] [Algebra K L]
+  [IsScalarTower F K L]
 
 /-- The normal closure of `K` in `L`. -/
 noncomputable def normalClosure : IntermediateField F L :=
-  (_root_.normalClosure F K L).restrictScalars F
+  ⨆ f : K →ₐ[F] L, f.fieldRange
 
-lemma normalClosure_def : K.normalClosure = ⨆ f : K →ₐ[F] L, f.fieldRange :=
+lemma normalClosure_def : normalClosure F K L = ⨆ f : K →ₐ[F] L, f.fieldRange :=
   rfl
+
+lemma normalClosure_le_iff {K' : IntermediateField F L} :
+    normalClosure F K L ≤ K' ↔ ∀ f : K →ₐ[F] L, f.fieldRange ≤ K' :=
+  iSup_le_iff
+
+lemma fieldRange_le_normalClosure (f : K →ₐ[F] L) : f.fieldRange ≤ normalClosure F K L :=
+  le_iSup AlgHom.fieldRange f
 
 namespace normalClosure
 
-instance normal [Normal F L] : Normal F K.normalClosure :=
-  _root_.normalClosure.normal F K L
+theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
+    normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
+  classical
+  have hi : ∀ x : K, IsIntegral F x :=
+    fun x ↦ (isIntegral_algebraMap_iff (algebraMap K L).injective).mp (h.isIntegral _)
+  refine' le_antisymm (iSup_le _) (iSup_le fun x => adjoin_le_iff.mpr fun y hy => _)
+  · rintro f _ ⟨x, rfl⟩
+    refine' le_iSup (fun x => adjoin F ((minpoly F x).rootSet L)) x
+        (subset_adjoin F ((minpoly F x).rootSet L) _)
+    rw [mem_rootSet_of_ne (minpoly.ne_zero (hi x)), AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom,
+      Polynomial.aeval_algHom_apply, minpoly.aeval, map_zero]
+  · rw [Polynomial.rootSet, Finset.mem_coe, Multiset.mem_toFinset] at hy
+    let g := (algHomAdjoinIntegralEquiv F (hi x)).symm ⟨y, hy⟩
+    refine' le_iSup (fun f : K →ₐ[F] L => f.fieldRange)
+        ((g.liftNormal L).comp (IsScalarTower.toAlgHom F K L))
+        ⟨x, (g.liftNormal_commutes L (AdjoinSimple.gen F x)).trans _⟩
+    rw [Algebra.id.map_eq_id, RingHom.id_apply]
+    -- Porting note: in mathlib3 this next `apply` closed the goal.
+    -- Now it can't find a proof by unification, so we have to do it ourselves.
+    apply PowerBasis.lift_gen
+    change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
+    exact minpoly_gen (hi x) ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
+
+instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
+  let ϕ := algebraMap K L
+  rw [← IntermediateField.restrictScalars_normal, restrictScalars_eq_iSup_adjoin]
+  -- Porting note: use the `(_)` trick to obtain an instance by unification.
+  apply IntermediateField.normal_iSup (h := _)
+  intro x
+  -- Porting note: use the `(_)` trick to obtain an instance by unification.
+  apply Normal.of_isSplittingField (p := minpoly F x) (hFEp := _)
+  exact adjoin_rootSet_isSplittingField ((minpoly.eq_of_algebraMap_eq ϕ.injective
+    ((isIntegral_algebraMap_iff ϕ.injective).mp (h.isIntegral (ϕ x))) rfl).symm ▸ h.splits _)
 
 instance finiteDimensional [FiniteDimensional F K] :
-    FiniteDimensional F K.normalClosure :=
-  normalClosure.is_finiteDimensional F K L
+    FiniteDimensional F (normalClosure F K L) := by
+  have : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange :=
+    fun f => f.toLinearMap.finiteDimensional_range
+  apply IntermediateField.finiteDimensional_iSup_of_finite
 
 end normalClosure
 
-variable {K}
+namespace IntermediateField
 
-lemma normalClosure_le_iff {K' : IntermediateField F L} :
-    K.normalClosure ≤ K' ↔ ∀ f : K →ₐ[F] L, f.fieldRange ≤ K' :=
-  iSup_le_iff
+variable {F L}
+variable (K : IntermediateField F L)
 
-lemma fieldRange_le_normalClosure (f : K →ₐ[F] L) : f.fieldRange ≤ K.normalClosure :=
-  le_iSup AlgHom.fieldRange f
+lemma le_normalClosure (K : IntermediateField F L) : K ≤ normalClosure F K L :=
+K.fieldRange_val.symm.trans_le (fieldRange_le_normalClosure F K L K.val)
 
-variable (K)
-
-lemma le_normalClosure : K ≤ K.normalClosure :=
-K.fieldRange_val.symm.trans_le (fieldRange_le_normalClosure K.val)
-
-lemma normalClosure_of_normal [Normal F K] : K.normalClosure = K :=
+lemma normalClosure_of_normal (K : IntermediateField F L) [Normal F K] : normalClosure F K L = K :=
 by simp only [normalClosure_def, AlgHom.fieldRange_of_normal, iSup_const]
 
 variable [Normal F L]
 
-lemma normalClosure_normalClosure : K.normalClosure.normalClosure = K.normalClosure :=
-K.normalClosure.normalClosure_of_normal
+lemma normalClosure_normalClosure :
+  normalClosure F (normalClosure F K L) L = normalClosure F K L :=
+IntermediateField.normalClosure_of_normal (normalClosure F K L)
 
-lemma normalClosure_def' : K.normalClosure = ⨆ f : L →ₐ[F] L, K.map f := by
-  refine' K.normalClosure_def.trans (le_antisymm (iSup_le (fun f ↦ _)) (iSup_le (fun f ↦ _)))
+lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f := by
+  refine' (normalClosure_def F K L).trans (le_antisymm (iSup_le (fun f ↦ _)) (iSup_le (fun f ↦ _)))
   · exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.2, h ▸ f.liftNormal_commutes L a⟩)
   · exact le_iSup_of_le (f.comp K.val) (fun b ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩)
 
-lemma normalClosure_def'' : K.normalClosure = ⨆ f : L ≃ₐ[F] L, K.map f := by
-  refine' K.normalClosure_def'.trans (le_antisymm (iSup_le (fun f ↦ _)) (iSup_le (fun f ↦ _)))
+lemma normalClosure_def'' : normalClosure F K L = ⨆ f : L ≃ₐ[F] L, K.map f := by
+  refine' (normalClosure_def' K).trans (le_antisymm (iSup_le (fun f ↦ _)) (iSup_le (fun f ↦ _)))
   · exact le_iSup_of_le (f.restrictNormal' L)
       (fun b ⟨a, h⟩ ↦ ⟨a, h.1, h.2 ▸ f.restrictNormal_commutes L a⟩)
   · exact le_iSup_of_le f le_rfl
 
-variable {K}
+variable {K : IntermediateField F L}
 
-lemma normal_iff_normalClosure_eq : Normal F K ↔ K.normalClosure = K :=
-⟨@normalClosure_of_normal F L _ _ _ K, fun h ↦ h ▸ normalClosure.normal K⟩
+lemma normal_iff_normalClosure_eq : Normal F K ↔ normalClosure F K L = K :=
+⟨@normalClosure_of_normal F L _ _ _ K, fun h ↦ h ▸ normalClosure.normal F K L⟩
 
-lemma normal_iff_normalClosure_le : Normal F K ↔ K.normalClosure ≤ K :=
-normal_iff_normalClosure_eq.trans K.le_normalClosure.le_iff_eq.symm
+lemma normal_iff_normalClosure_le : Normal F K ↔ normalClosure F K L ≤ K :=
+normal_iff_normalClosure_eq.trans (le_normalClosure K).le_iff_eq.symm
 
 lemma normal_iff_forall_fieldRange_le : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange ≤ K :=
 by rw [normal_iff_normalClosure_le, normalClosure_def, iSup_le_iff]
