@@ -91,8 +91,15 @@ variable {α : Type _} [DecidableEq α] [Fintype α]
     This is often called 'feasible'. -/
 protected def Greedoid.mem (s : Finset α) (G : Greedoid α) := s ∈ G.feasibleSet
 
-instance {α : Type _} [Fintype α] [DecidableEq α] :
-  Membership (Finset α) (Greedoid α) := ⟨Greedoid.mem⟩
+instance {α : Type _} [DecidableEq α] [Fintype α] :
+    Membership (Finset α) (Greedoid α) :=
+  ⟨Greedoid.mem⟩
+
+instance {α : Type _} [DecidableEq α] [Fintype α] {G : Greedoid α} :
+    DecidablePred (fun s => s ∈ G) := fun s =>
+  if h : s ∈ G.feasibleSet
+  then isTrue h
+  else isFalse fun h' => h h'
 
 end Greedoid
 
@@ -389,9 +396,7 @@ theorem rank_eq_bases_card
 
 @[simp]
 theorem rank_of_empty : G.rank ∅ = 0 := by
-  simp only [rank, subset_empty, system_feasible_set_mem_mem, Finset.filter_eq']
-  simp only [G.containsEmpty]
-  simp only [ite_true, image_singleton, card_empty, max_singleton, WithBot.unbot_coe]
+  simp only [rank_eq_bases_card (mem_bases_self_iff.mp G.containsEmpty), card_empty]
 
 theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
   have ⟨_, h⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
@@ -571,25 +576,34 @@ def greedoidRankAxioms (r : Finset α → ℕ) :=
   (r ∅ = 0) ∧ (∀ {s}, r s ≤ s.card) ∧ (∀ {s t}, s ⊆ t → r s ≤ r t) ∧
   (∀ {s x y}, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
 
+
+set_option linter.unusedVariables false in
+protected def rank.toGreedoid' (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Finset (Finset α) :=
+  univ.filter fun s => r s = s.card
+
+theorem rank_toGreedoid'_greedoidRankAxioms_accessibleProperty
+  {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
+    _root_.accessibleProperty (rank.toGreedoid' r hr) := by
+  simp only [_root_.accessibleProperty, rank.toGreedoid', mem_univ, Finset.mem_filter, true_and]
+  intro s hs₁ hs₂
+  sorry
+
+theorem rank_toGreedoid'_greedoidRankAxioms_exchangeProperty
+  {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
+    _root_.exchangeProperty (rank.toGreedoid' r hr) := by
+  simp only [_root_.exchangeProperty, rank.toGreedoid', mem_univ, Finset.mem_filter, true_and,
+    mem_sdiff]
+  intro s₁ hs₁ s₂ hs₂ hs
+  sorry
+
 /-- Rank function satisfying `greedoidRankAxioms` generates a unique greedoid. -/
 protected def rank.toGreedoid (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Greedoid α :=
   ⟨univ.filter fun s => r s = s.card, by
     simp only [mem_univ, Finset.mem_filter, hr.1, card_empty], by
-    simp only [_root_.accessibleProperty, mem_univ, Finset.mem_filter, true_and]
-    intro s hs₁ hs₂
-    by_contra' h'
-    have h₁ : ∀ x ∈ s, r (s \ {x}) < s.card - 1 := by
-      intro x hx
-      have h := h' x hx
-      apply lt_iff_le_and_ne.mpr (And.intro _ _)
-      . have h₁ : r (s \ {x}) ≤ (s \ {x}).card := hr.2.1
-        simp only [hx, singleton_subset_iff, card_sdiff, card_singleton] at h₁
-        exact h₁
-      . simp only [hx, singleton_subset_iff, card_sdiff, card_singleton] at h
-        exact h
-    clear h'
-    sorry, by
-    sorry⟩
+    have := @rank_toGreedoid'_greedoidRankAxioms_accessibleProperty _ _ _ _ hr
+    simp only [rank.toGreedoid'] at this; simp only [this], by
+    have := @rank_toGreedoid'_greedoidRankAxioms_exchangeProperty _ _ _ _ hr
+    simp only [rank.toGreedoid'] at this; simp only [this]⟩
 
 theorem greedoidRankAxioms_unique_greedoid {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
     ∃! G : Greedoid α, G.rank = r := by
@@ -610,8 +624,6 @@ theorem greedoidRankAxioms_unique_greedoid {r : Finset α → ℕ} (hr : greedoi
     . simp only [mem_univ, forall_true_left, Finset.mem_filter, true_and, WithBot.le_unbot_iff]
       apply Finset.le_max
       simp only [mem_univ, forall_true_left, Finset.mem_filter, true_and, mem_image]
-      by_contra' h'
-      simp only [ne_eq, and_imp] at h'
       sorry
   . intro G' hG'
     apply Greedoid.eq_of_veq
@@ -632,23 +644,59 @@ end rank
 def closure (G : Greedoid α) (s : Finset α) : Finset α :=
   univ.filter fun x => G.rank (insert x s) = G.rank s
 
-def feasible_continuations (G : Greedoid α) (s : Finset α) := univ \ G.closure s
+set_option linter.unusedVariables false in
+def feasibleContinuations (G : Greedoid α) (s : Finset α) (hs : s ∈ G) :=
+  univ.filter fun x => x ∉ s ∧ insert x s ∈ G
+
+theorem feasibleContinuations_eq (hs : s ∈ G):
+    G.feasibleContinuations s hs = univ \ G.closure s := by
+  simp only [feasibleContinuations, mem_univ, closure]
+  ext x
+  simp only [mem_univ, Finset.mem_filter, true_and, mem_sdiff]
+  constructor <;> intro h
+  . intro h'
+    let ⟨h₁, h₂⟩ := h
+    rw [← rank_eq_card_iff_feasible, h'] at h₂
+    simp only [h₁, card_insert_of_not_mem] at h₂
+    have : G.rank s ≤ s.card := rank_le_card
+    simp only [h₂, add_le_iff_nonpos_right] at this
+  . constructor
+    . intro h'; apply h; rw [insert_eq_of_mem h']
+    . have h₁ := Nat.lt_of_le_and_ne (rank_le_of_subset (subset_insert _ _)) (Ne.symm h)
+      rw [← rank_eq_card_iff_feasible]
+      rw [← rank_eq_card_iff_feasible] at hs
+      rw [hs] at h₁
+      have h₂ : G.rank (insert x s) = s.card + 1 := by
+        apply Nat.le_antisymm (le_trans rank_le_card (card_insert_le x s))
+        simp_arith at h₁
+        exact h₁
+      exact Nat.le_antisymm rank_le_card (h₂ ▸ card_insert_le _ _)
 
 section closure
 
 variable {s t : Finset α} {x y : α}
 
 theorem self_subset_closure : s ⊆ G.closure s := by
-  simp [closure]
+  simp only [closure]
   intro x hx
-  have hx : {x} ⊆ s := by simp only [singleton_subset_iff, hx]
-  simp [Finset.union_eq_left_iff_subset.mpr hx]
+  simp only [mem_univ, Finset.mem_filter, true_and, insert_eq_of_mem hx]
 
 @[simp]
-theorem rank_closure_eq_rank_self : G.rank (G.closure s) = G.rank s := by
-  simp only [closure, mem_univ, forall_true_left]
-  rw [← stronger_local_submodularity_left]
-  sorry
+theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.rank s := by
+  symm
+  by_cases h : s = G.closure s
+  . rw [← h]
+  . have h₁ : s.card < (G.closure s).card := by
+      rw [lt_iff_le_and_ne]
+      constructor
+      . exact card_le_of_subset self_subset_closure
+      . exact fun h' => h (eq_of_subset_of_card_le self_subset_closure (by rw [h']))
+    have ⟨x, hx⟩ : ∃ x, x ∈ G.closure s \ s := by
+      by_contra' h'
+      simp only [mem_sdiff, not_and, not_not] at h'
+      simp only [← subset_antisymm self_subset_closure h', lt_self_iff_false] at h₁
+    have h₂ := rank_closure_eq_rank_self (insert x s)
+    sorry
 
 theorem feasible_iff_elem_notin_closure_minus_elem :
     s ∈ G ↔ ∀ x ∈ s, x ∉ G.closure (s \ {x}) := by
