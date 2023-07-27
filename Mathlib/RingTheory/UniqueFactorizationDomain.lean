@@ -1556,7 +1556,7 @@ noncomputable instance : Inf (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
 noncomputable instance : Lattice (Associates α) :=
-  { Associates.instPartialOrderAssociatesToMonoidToMonoidWithZeroToCommMonoidWithZero with
+  { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
     sup_le := fun _ _ c hac hbc =>

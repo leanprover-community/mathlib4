@@ -505,7 +505,7 @@ def piOptionEquivProd {β : Option α → Type _} :
 #align equiv.pi_option_equiv_prod_apply Equiv.piOptionEquivProd_apply
 
 /-- `α ⊕ β` is equivalent to a `Sigma`-type over `Bool`. Note that this definition assumes `α` and
-`β` to be types from the same universe, so it cannot by used directly to transfer theorems about
+`β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=

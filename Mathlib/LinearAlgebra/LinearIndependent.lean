@@ -1169,7 +1169,7 @@ theorem linearIndependent_iff_not_mem_span :
     exact False.elim (h _ ((smul_mem_iff _ ha').1 ha))
 #align linear_independent_iff_not_mem_span linearIndependent_iff_not_mem_span
 
-theorem LinearIndependent.insert (hs : LinearIndependent K (fun b => b : s → V))
+protected theorem LinearIndependent.insert (hs : LinearIndependent K (fun b => b : s → V))
     (hx : x ∉ span K s) : LinearIndependent K (fun b => b : ↥(insert x s) → V) := by
   rw [← union_singleton]
   have x0 : x ≠ 0 := mt (by rintro rfl; apply zero_mem (span K s)) hx

@@ -249,6 +249,11 @@ theorem le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   match b, h with
   | some _, _ => simp only [unbot_coe, coe_le_coe]
 
+theorem unbot_le_iff {a : WithBot α} (h : a ≠ ⊥) {b : α} :
+    unbot a h ≤ b ↔ a ≤ (b : WithBot α) := by
+  match a, h with
+  | some _, _ => simp only [unbot_coe, coe_le_coe]
+
 end LE
 
 section LT
@@ -869,6 +874,10 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
 theorem untop_le_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
     untop a h ≤ b ↔ a ≤ (b : WithTop α) :=
   @WithBot.le_unbot_iff αᵒᵈ _ _ _ _
+
+theorem le_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
+    a ≤ untop b h ↔ (a : WithTop α) ≤ b :=
+  @WithBot.unbot_le_iff αᵒᵈ _ _ _ _
 
 end LE
 

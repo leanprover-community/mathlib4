@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
 
-#align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"b0c712376e4ef44c53c3b872157ef44dfe9f9599"
+#align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -329,13 +329,12 @@ variable {R'₂ : Type _} [Monoid R'₂] [DistribMulAction R'₂ M]
 variable [SMulCommClass R R'₂ M]
 
 /-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
-instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) :=
-{ smul_comm := fun r' r'₂ x => TensorProduct.induction_on x
-    (by simp_rw [TensorProduct.smul_zero])
-    (fun m n => by simp_rw [smul_tmul', smul_comm])
-    (fun x y ihx ihy => by simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]) }
--- TODO: add once https://github.com/leanprover-community/mathlib/pull/19143 is merged
--- #align tensor_product.smul_comm_class_left TensorProduct.smulCommClass_left
+instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) where
+  smul_comm r' r'₂ x :=
+    TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
+      (fun m n => by simp_rw [smul_tmul', smul_comm]) fun x y ihx ihy => by
+      simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]
+#align tensor_product.smul_comm_class_left TensorProduct.smulCommClass_left
 
 variable [SMul R'₂ R']
 

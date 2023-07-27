@@ -222,7 +222,7 @@ theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
 
 /-- Auxiliary function to construct the list of all sublists of a given length. Given an
 integer `n`, a list `l`, a function `f` and an auxiliary list `L`, it returns the list made of
-of `f` applied to all sublists of `l` of length `n`, concatenated with `L`. -/
+`f` applied to all sublists of `l` of length `n`, concatenated with `L`. -/
 def sublistsLenAux {α β : Type _} : ℕ → List α → (List α → β) → List β → List β
   | 0, _, f, r => f [] :: r
   | _ + 1, [], _, r => r
