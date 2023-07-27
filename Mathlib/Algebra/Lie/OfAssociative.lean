@@ -95,8 +95,11 @@ Note that this cannot be a global instance because it would create a diamond whe
 specifically we can build two mathematically-different `bracket A A`s:
  1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
  2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-    (and thus `⁅a, b⁆ = a * b`) -/
-theorem LieRingModule.ofAssociativeModule : LieRingModule A M where
+    (and thus `⁅a, b⁆ = a * b`)
+
+See note [reducible non-instances] -/
+@[reducible]
+def LieRingModule.ofAssociativeModule : LieRingModule A M where
   bracket := (· • ·)
   add_lie := add_smul
   lie_add := smul_add
@@ -134,7 +137,7 @@ Lie algebra via the ring commutator.
 
 See the comment at `LieRingModule.ofAssociativeModule` for why the possibility `M = A` means
 this cannot be a global instance. -/
-def LieModule.ofAssociativeModule : LieModule R A M where
+theorem LieModule.ofAssociativeModule : LieModule R A M where
   smul_lie := smul_assoc
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule
