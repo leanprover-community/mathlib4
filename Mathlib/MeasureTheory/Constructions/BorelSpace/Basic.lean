@@ -1507,59 +1507,6 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
   rw [A, B, C, add_assoc]
 #align measure_eq_measure_preimage_add_measure_tsum_Ico_zpow measure_eq_measure_preimage_add_measure_tsum_Ico_zpow
 
-section PseudoEMetricSpace
-/-
-variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
-
-open Metric EMetric
-
-/-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
-thickenings converges to the measure of its closure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
-  have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
-    rw [closure_eq_iInter_cthickening]
-    exact
-      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
-        (fun i j _ ij => cthickening_mono ij _) hs
-  have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
-    apply Tendsto.congr' _ tendsto_const_nhds
-    filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
-    rw [cthickening_of_nonpos hr]
-  convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
-#align tendsto_measure_cthickening tendsto_measure_cthickening
-
-/-- If a closed set has a closed thickening with finite measure, then the measure of its closed
-`r`-thickenings converge to its measure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
-  convert tendsto_measure_cthickening hs
-  exact h's.closure_eq.symm
-#align tendsto_measure_cthickening_of_is_closed tendsto_measure_cthickening_of_isClosed
-
-/-- If a set has a thickening with finite measure, then the measures of its `r`-thickenings
-converge to the measure of its closure as `r > 0` tends to `0`. -/
-theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) :
-    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ (closure s))) := by
-  rw [closure_eq_iInter_thickening]
-  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.measurableSet)
-      (fun i j _ ij => thickening_mono ij _) hs
-
-@[measurability]
-theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
-  (continuous_infEdist (s := s)).measurable
-
-@[measurability]
-theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infEdist (f x) s :=
-  measurable_infEdist.comp hf
- -/
-end PseudoEMetricSpace
-
 section PseudoMetricSpace
 
 variable [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
