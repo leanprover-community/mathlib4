@@ -34,25 +34,14 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
-universe u v₁ v₂ v₃ v₄
-
-open scoped TensorProduct
-
-open TensorProduct
-
 namespace TensorProduct
+
+namespace AlgebraTensorModule
 
 variable {R A M N P : Type _}
 
-/-!
-### The `A`-module structure on `A ⊗[R] M`
--/
-
-
 open LinearMap
 open Algebra (lsmul)
-
-namespace AlgebraTensorModule
 
 section Semiring
 
