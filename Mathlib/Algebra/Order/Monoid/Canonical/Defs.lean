@@ -120,11 +120,11 @@ theorem le_iff_exists_mul [Mul α] [LE α] [LEIffExistsMul α] {a b : α} :
 instance [Mul α] [LE α] [LEIffExistsMul α] : ExistsMulOfLE α :=
   ⟨le_iff_exists_mul.1⟩
 
-variable [CommMonoid α] {a b c d : α}
+variable [CommMonoid α]
 
 section Preorder
 
-variable [Preorder α] [LEIffExistsMul α]
+variable [Preorder α] [LEIffExistsMul α] {a b c d : α}
 
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
@@ -190,7 +190,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [LEIffExistsMul α]
+variable [PartialOrder α] [LEIffExistsMul α] {a b c d : α}
 
 @[to_additive]
 instance : CovariantClass α α (· * ·) (· ≤ ·) where
@@ -273,7 +273,8 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 #align le_add_right le_add_right
 
 @[to_additive]
-theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
+theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] {a b : α} :
+    a < b ↔ ∃ c > 1, b = a * c := by
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
   apply exists_congr
   intro c
