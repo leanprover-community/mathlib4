@@ -9,22 +9,33 @@ open FirstOrder
 
 open Structure
 
+inductive FieldFunctions : ℕ → Type
+  | add : FieldFunctions 2
+  | mul : FieldFunctions 2
+  | neg : FieldFunctions 1
+  | inv : FieldFunctions 1
+  | zero : FieldFunctions 0
+  | one : FieldFunctions 0
+
 protected def field : Language :=
-Language.mk₂ Bool Bool Bool Empty Empty
+  { Functions := FieldFunctions
+    Relations := fun _ => Empty }
 
 namespace field
 
-instance : Zero Language.field.Constants := ⟨false⟩
+open FieldFunctions
 
-instance : One Language.field.Constants := ⟨true⟩
+instance : Zero Language.field.Constants := ⟨zero⟩
 
-def addFunction : Language.field.Functions 2 := false
+instance : One Language.field.Constants := ⟨one⟩
 
-def mulFunction : Language.field.Functions 2 := true
+abbrev addFunction : Language.field.Functions 2 := add
 
-def negFunction : Language.field.Functions 1 := false
+abbrev mulFunction : Language.field.Functions 2 := mul
 
-def invFunction : Language.field.Functions 1 := true
+abbrev negFunction : Language.field.Functions 1 := neg
+
+abbrev invFunction : Language.field.Functions 1 := inv
 
 instance (α : Type _) : Zero (Language.field.Term α) :=
 { zero := Constants.term 0 }
@@ -150,6 +161,29 @@ def fieldOfModelField {K : Type _} [Language.field.Structure K]
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show invFunction.apply₁ 0 =' 0 ∈ Theory.field by simp [Theory.field])
     simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h }
+
+def structureFieldOfField {K : Type _} [Field K] :
+    Language.field.Structure K :=
+  { funMap := fun {n} f =>
+      match n, f with
+      | _, add => fun x => x 0 + x 1
+      | _, mul => fun x => x 0 * x 1
+      | _, neg => fun x => - x 0
+      | _, inv => fun x => (x 0)⁻¹
+      | _, zero => fun _ => 0
+      | _, one => fun _ => 1,
+    RelMap := fun i => Empty.elim i }
+
+attribute [local instance] structureFieldOfField
+
+def modelFieldOfField {K : Type _} [Field K] : Theory.field.Model K := by
+  simp [Theory.field, structureFieldOfField, addFunction,
+    add_assoc, mulFunction, mul_assoc, add_comm, add_left_comm,
+    mul_comm, mul_left_comm, mul_assoc, mul_add, add_mul, zero_def,
+    one_def, constantMap]
+  simpa [Sentence.Realize, Formula.Realize, Term.equal,
+    constantMap] using (fun _ => @mul_inv_cancel K _ _)
+
 
 end field
 
