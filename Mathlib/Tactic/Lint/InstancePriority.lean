@@ -145,7 +145,8 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
       if !relevantArgs.Nodup then return none
       let lastArg ← args[args.size - 1]!.fvarId!.getDecl
       unless lastArg.binderInfo == .instImplicit do return none
-      let (sourceClass, _) := ty.getAppFnArgs
+      let (sourceClass, _) := lastArg.type.getAppFnArgs
+      if sourceClass == .anonymous then do return none
       return some (nm, sourceClass)
 
   let instanceGraph : NameMap NameSet := instances.foldl (init := {}) fun r (_, src, tgt) =>
@@ -169,7 +170,7 @@ def getClassInstanceGraph (full := true) : MetaM (NameMap NameSet) := do
     let newPrio := 200
     let file := (env.getModuleFor? src).get!.toPath
     unless file.startsWith "Mathlib" do return none
-    return some s!"sed -i -E 'H;1h;$!d;x; s/(class {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
+    return some s!"sed -i -E 'H;1h;$!d;x; s/(\\nclass {src}([^\\n]|\\n[^\\n])*\\n)\\n/\\1attribute [instance {newPrio}] {inst}\\n\\n/g' {file}\n"
   let cmds2 : String := prios2.foldl (· ++ ·) ""
   -- logInfo m!"{realParents.toList}"
   --find . -type f -print0 | xargs -0 sed -i -E 'H;1h;$!d;x; s/(class NonemptyFinLinOrd(.|\n.)*\n)\n/\1test\n\n/g' test.txt
