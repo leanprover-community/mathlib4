@@ -122,6 +122,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
 * Bryan Gin-ge Chen (@bryangingechen): documentation, infrastructure
 * Johan Commelin (@jcommelin): algebra, number theory, category theory, algebraic geometry
+* Anatole Dedecker (@ADedecker): topology, functional analysis, calculus
 * Rémy Degenne (@RemyDegenne): probability, measure theory, analysis
 * Floris van Doorn (@fpvandoorn): measure theory, model theory, tactics
 * Frédéric Dupuis (@dupuisf): linear algebra, functional analysis
