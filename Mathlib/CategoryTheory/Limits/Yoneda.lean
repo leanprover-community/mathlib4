@@ -72,7 +72,7 @@ variable {C : Type u} [Category.{v} C]
 
 open Limits
 
-/--n The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
+/-- The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
 instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X)
     where preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>

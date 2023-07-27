@@ -125,7 +125,7 @@ class HasRightDual (X : C) where
   [exact : ExactPairing X rightDual]
 #align category_theory.has_right_dual CategoryTheory.HasRightDual
 
-/-- A class of objects with have a left dual. -/
+/-- A class of objects which have a left dual. -/
 class HasLeftDual (Y : C) where
   leftDual : C
   [exact : ExactPairing leftDual Y]
