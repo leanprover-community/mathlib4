@@ -2,15 +2,12 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed.group.infinite_sum
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.NNReal
+
+#align_import analysis.normed.group.infinite_sum from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -83,7 +80,7 @@ theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
   refine' Metric.cauchySeq_iff'.2 fun ε hε => _
   refine' (Metric.cauchySeq_iff'.1 hg ε hε).imp fun N hg n hn => _
   specialize hg n hn
-  rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg⊢
+  rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg ⊢
   calc
     ‖∑ k in Ico N n, f k‖ ≤ ∑ k in _, ‖f k‖ := norm_sum_le _ _
     _ ≤ ∑ k in _, g k := (sum_le_sum fun x _ => hf x)

@@ -2,15 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.with_zero.defs
-! leanprover-community/mathlib commit 4dc134b97a3de65ef2ed881f3513d56260971562
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+
+#align_import algebra.order.monoid.with_zero.defs from "leanprover-community/mathlib"@"4dc134b97a3de65ef2ed881f3513d56260971562"
 
 /-!
 # Adjoining a zero element to an ordered monoid.
@@ -92,9 +89,17 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
   exact mul_le_mul_left' hbc' _
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
--- Porting note: `simp` can prove these mathlib3 lemmas, so they are omitted.
-#noalign with_zero.le_max_iff
-#noalign with_zero.min_le_iff
+-- Porting note: @[simp] can prove this
+nonrec theorem le_max_iff [LinearOrder α] {a b c : α} :
+    (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
+  simp only [WithZero.coe_le_coe, le_max_iff]
+#align with_zero.le_max_iff WithZero.le_max_iff
+
+-- Porting note: @[simp] can prove this
+nonrec theorem min_le_iff [LinearOrder α] {a b c : α} :
+    min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
+  simp only [WithZero.coe_le_coe, min_le_iff]
+#align with_zero.min_le_iff WithZero.min_le_iff
 
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
   { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with

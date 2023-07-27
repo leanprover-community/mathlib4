@@ -2,15 +2,12 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed.group.add_torsor
-! leanprover-community/mathlib commit 837f72de63ad6cd96519cde5f1ffd5ed8d280ad0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+
+#align_import analysis.normed.group.add_torsor from "leanprover-community/mathlib"@"837f72de63ad6cd96519cde5f1ffd5ed8d280ad0"
 
 /-!
 # Torsors of additive normed group actions.
@@ -287,16 +284,20 @@ theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g)
 #align continuous.vsub Continuous.vsub
 
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
-  (hg : ContinuousAt g x) :
+    (hg : ContinuousAt g x) :
     ContinuousAt (f -ᵥ g) x :=
   hf.vsub hg
 #align continuous_at.vsub ContinuousAt.vsub
 
 nonrec theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
-  (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (f -ᵥ g) s x :=
   hf.vsub hg
 #align continuous_within_at.vsub ContinuousWithinAt.vsub
+
+theorem ContinuousOn.vsub {f g : α → P} {s : Set α} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g s) : ContinuousOn (f -ᵥ g) s := fun x hx ↦
+  (hf x hx).vsub (hg x hx)
 
 end
 
@@ -317,3 +318,21 @@ theorem Filter.Tendsto.midpoint [Invertible (2 : R)] {l : Filter α} {f₁ f₂ 
 #align filter.tendsto.midpoint Filter.Tendsto.midpoint
 
 end
+
+section Pointwise
+
+open Pointwise
+
+theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed s)
+    (ht : IsCompact t) : IsClosed (s +ᵥ t) := by
+  -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
+  -- but we don't yet have a nice way to state it.
+  refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
+  choose! a v hav using husv
+  rcases ht.isSeqCompact fun n ↦ (hav n).2.1 with ⟨q, hqt, φ, φ_mono, hφq⟩
+  refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
+    (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
+  convert (hav (φ n)).1 using 1
+  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).2.2.symm
+
+end Pointwise

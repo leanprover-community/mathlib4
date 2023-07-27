@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module number_theory.well_approximable
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.AddCircle
 import Mathlib.MeasureTheory.Covering.LiminfLimsup
+
+#align_import number_theory.well_approximable from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem
@@ -46,7 +43,7 @@ We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
    `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
    is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
  * `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
-   for the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
+   the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
    `addWellApproximable 𝕊 δ` is almost empty or almost full.
 
 ## TODO:
@@ -228,7 +225,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     `AddCircle.ae_empty_or_univ_of_forall_vadd_ae_eq_self`. -/
   letI : SemilatticeSup Nat.Primes := Nat.Subtype.semilatticeSup _
   set μ : Measure 𝕊 := volume
-  set u : Nat.Primes → 𝕊 := fun p => ↑((↑(1 : ℕ) : ℝ) / p * T)
+  set u : Nat.Primes → 𝕊 := fun p => ↑((↑(1 : ℕ) : ℝ) / ((p : ℕ) : ℝ) * T)
   have hu₀ : ∀ p : Nat.Primes, addOrderOf (u p) = (p : ℕ) := by
     rintro ⟨p, hp⟩; exact addOrderOf_div_of_gcd_eq_one hp.pos (gcd_one_left p)
   have hu : Tendsto (addOrderOf ∘ u) atTop atTop := by
@@ -254,10 +251,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     intro p
     simp only [addWellApproximable, ← blimsup_or_eq_sup, ← and_or_left, ← sup_eq_union, sq]
     congr
-    refine' funext fun n => propext <| iff_self_and.mpr fun _ => _
-    -- `tauto` can finish from here but unfortunately it's very slow.
-    simp only [(em (p ∣ n)).symm, (em (p * p ∣ n)).symm, or_and_left, or_true_iff, true_and_iff,
-      or_assoc]
+    ext n
+    tauto
   have hE₂ : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊) → E =ᵐ[μ] C p := by
     rintro p ⟨hA, hB⟩
     rw [hE₁ p]

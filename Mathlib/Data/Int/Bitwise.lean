@@ -2,16 +2,13 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.bitwise
-! leanprover-community/mathlib commit 0743cc5d9d86bcd1bba10f480e948a257d65056f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
+
+#align_import data.int.bitwise from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"
 
 /-!
 # Bitwise operations on integers
@@ -225,15 +222,15 @@ theorem bitwise_or : bitwise or = lor := by
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff',
       negSucc.injEq, Bool.true_or, Nat.land']
-  . rw [Nat.bitwise'_swap, Function.swap]
+  · rw [Nat.bitwise'_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
     rfl
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
 #align int.bitwise_or Int.bitwise_or
@@ -245,12 +242,12 @@ theorem bitwise_and : bitwise and = land := by
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
       cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq,
       Bool.and_false, Nat.land']
-  . rw [Nat.bitwise'_swap, Function.swap]
+  · rw [Nat.bitwise'_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
     rfl
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
 #align int.bitwise_and Int.bitwise_and
@@ -262,13 +259,13 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff' := by
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
       cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq,
       Bool.and_false, Nat.land', Bool.not_true, ldiff', Nat.lor']
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
-  . rw [Nat.bitwise'_swap, Function.swap]
+  · rw [Nat.bitwise'_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
@@ -282,13 +279,13 @@ theorem bitwise_xor : bitwise xor = lxor' := by
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
       cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq, Bool.false_xor,
       Bool.true_xor, Bool.and_false, Nat.land', Bool.not_true, ldiff', Nat.lor', lxor', Nat.lxor']
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
-  . congr
+  · congr
     funext x y
     cases x <;> cases y <;> rfl
 #align int.bitwise_xor Int.bitwise_xor
@@ -299,10 +296,10 @@ theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
   cases' m with m m <;> cases' n with n n <;>
   simp only [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
     bit_negSucc]
-  . by_cases h : f false false <;> simp [h]
-  . by_cases h : f false true <;> simp [h]
-  . by_cases h : f true false <;> simp [h]
-  . by_cases h : f true true <;> simp [h]
+  · by_cases h : f false false <;> simp [h]
+  · by_cases h : f false true <;> simp [h]
+  · by_cases h : f true false <;> simp [h]
+  · by_cases h : f true true <;> simp [h]
 #align int.bitwise_bit Int.bitwise_bit
 
 @[simp]
@@ -335,10 +332,10 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
 theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
   cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
-  . by_cases h : f false false <;> simp [h]
-  . by_cases h : f false true <;> simp [h]
-  . by_cases h : f true false <;> simp [h]
-  . by_cases h : f true true <;> simp [h]
+  · by_cases h : f false false <;> simp [h]
+  · by_cases h : f false true <;> simp [h]
+  · by_cases h : f true false <;> simp [h]
+  · by_cases h : f true true <;> simp [h]
 #align int.test_bit_bitwise Int.testBit_bitwise
 
 @[simp]

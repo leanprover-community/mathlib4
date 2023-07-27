@@ -2,14 +2,11 @@
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.module
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.infinite_sum.module from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-! # Infinite sums in topological vector spaces -/
 
@@ -29,7 +26,7 @@ theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z => f z �
   (hf.hasSum.smul_const _).summable
 #align summable.smul_const Summable.smul_const
 
-theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : (∑' z, f z • a) = (∑' z, f z) • a :=
+theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • a = (∑' z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
@@ -86,7 +83,7 @@ protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ]
 #align continuous_linear_equiv.summable ContinuousLinearEquiv.summable
 
 theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
-    {y : M₂} : (∑' z, e (f z)) = y ↔ (∑' z, f z) = e.symm y := by
+    {y : M₂} : (∑' z, e (f z)) = y ↔ ∑' z, f z = e.symm y := by
   by_cases hf : Summable f
   · exact
       ⟨fun h => (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h =>

@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.group_action.quotient
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Fintype.BigOperators
@@ -14,6 +9,8 @@ import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Coset
+
+#align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # Properties of group actions involving quotient groups

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.henselian
-! leanprover-community/mathlib commit d1accf4f9cddb3666c6e8e4da0ac2d19c4ed73f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Taylor
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.LinearAlgebra.AdicCompletion
+
+#align_import ring_theory.henselian from "leanprover-community/mathlib"@"d1accf4f9cddb3666c6e8e4da0ac2d19c4ed73f0"
 
 /-!
 # Henselian rings
@@ -74,7 +71,7 @@ theorem isLocalRingHom_of_le_jacobson_bot {R : Type _} [CommRing R] (I : Ideal R
     obtain ⟨b, hb⟩ := h
     obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective b
     use Ideal.Quotient.mk _ b
-    rw [← (Ideal.Quotient.mk _).map_one, ← (Ideal.Quotient.mk _).map_mul, Ideal.Quotient.eq] at hb⊢
+    rw [← (Ideal.Quotient.mk _).map_one, ← (Ideal.Quotient.mk _).map_mul, Ideal.Quotient.eq] at hb ⊢
     exact h hb
   obtain ⟨⟨x, y, h1, h2⟩, rfl : x = _⟩ := this
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
@@ -201,7 +198,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R
         refine' ih.add _
         rw [SModEq.zero, Ideal.neg_mem_iff]
         refine' I.mul_mem_right _ _
-        rw [← SModEq.zero] at h₁⊢
+        rw [← SModEq.zero] at h₁ ⊢
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
@@ -255,7 +252,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type _) [CommRing R
         suffices ∀ n, f.eval a ≡ 0 [SMOD (I ^ n • ⊤ : Ideal R)] by exact IsHausdorff.haus' _ this
         intro n
         specialize ha n
-        rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one] at ha⊢
+        rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one] at ha ⊢
         refine' (ha.symm.eval f).trans _
         rw [SModEq.zero]
         exact Ideal.pow_le_pow le_self_add (hfcI _)

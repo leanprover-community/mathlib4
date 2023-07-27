@@ -2,15 +2,13 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
-
-! This file was ported from Lean 3 source module imo.imo1981_q3
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Fib
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
+
+#align_import imo.imo1981_q3 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1981 Q3
@@ -57,20 +55,14 @@ variable {N}
 
 theorem m_le_n {m n : ℤ} (h1 : ProblemPredicate N m n) : m ≤ n := by
   by_contra h2
-  have h3 : 1 = (n * (n - m) - m ^ 2) ^ 2 := by
-    calc
-      1 = (n ^ 2 - m * n - m ^ 2) ^ 2 := h1.eq_one.symm
-      _ = (n * (n - m) - m ^ 2) ^ 2 := by ring
+  have h3 : 1 = (n * (n - m) - m ^ 2) ^ 2 := by linear_combination - h1.eq_one
   have h4 : n * (n - m) - m ^ 2 < -1 := by nlinarith [h1.n_range.left]
   have h5 : 1 < (n * (n - m) - m ^ 2) ^ 2 := by nlinarith
   exact h5.ne h3
 #align imo1981_q3.problem_predicate.m_le_n Imo1981Q3.ProblemPredicate.m_le_n
 
 theorem eq_imp_1 {n : ℤ} (h1 : ProblemPredicate N n n) : n = 1 :=
-  haveI : n * (n * (n * n)) = 1 := by
-    calc
-      _ = (n ^ 2 - n * n - n ^ 2) ^ 2 := by simp [sq, mul_assoc]
-      _ = 1 := h1.eq_one
+  have : n * (n * (n * n)) = 1 := by linear_combination h1.eq_one
   eq_one_of_mul_eq_one_right h1.m_range.left.le this
 #align imo1981_q3.problem_predicate.eq_imp_1 Imo1981Q3.ProblemPredicate.eq_imp_1
 
@@ -79,7 +71,6 @@ theorem reduction {m n : ℤ} (h1 : ProblemPredicate N m n) (h2 : 1 < n) :
   obtain (rfl : m = n) | (h3 : m < n) := h1.m_le_n.eq_or_lt
   · have h4 : m = 1 := h1.eq_imp_1
     exact absurd h4.symm h2.ne
-  -- Porting note: Original proof used `refine_struct { n_range := h1.m_range .. }`
   exact
     { n_range := h1.m_range
       m_range := by
@@ -89,10 +80,7 @@ theorem reduction {m n : ℤ} (h1 : ProblemPredicate N m n) (h2 : 1 < n) :
             _ < n := sub_lt_self n h1.m_range.left
             _ ≤ N := h1.n_range.right
         exact ⟨h5, h6.le⟩
-      eq_one := by
-        calc
-          _ = (n ^ 2 - m * n - m ^ 2) ^ 2 := by ring
-          _ = 1 := h1.eq_one }
+      eq_one := by linear_combination h1.eq_one }
 #align imo1981_q3.problem_predicate.reduction Imo1981Q3.ProblemPredicate.reduction
 
 end ProblemPredicate
@@ -189,7 +177,7 @@ variable {M : ℕ} (HM : M = fib K ^ 2 + fib (K + 1) ^ 2)
 theorem k_bound {m n : ℤ} (h1 : ProblemPredicate N m n) : m ^ 2 + n ^ 2 ≤ M := by
   have h2 : 0 ≤ m := h1.m_range.left.le
   have h3 : 0 ≤ n := h1.n_range.left.le
-  rw [← natAbs_of_nonneg h2, ← natAbs_of_nonneg h3] at h1 ; clear h2 h3
+  rw [← natAbs_of_nonneg h2, ← natAbs_of_nonneg h3] at h1; clear h2 h3
   obtain ⟨h4 : m.natAbs ≤ fib K, h5 : n.natAbs ≤ fib (K + 1)⟩ := m_n_bounds HK h1
   have h6 : m ^ 2 ≤ (fib K : ℤ) ^ 2 := Int.natAbs_le_iff_sq_le.mp h4
   have h7 : n ^ 2 ≤ (fib (K + 1) : ℤ) ^ 2 := Int.natAbs_le_iff_sq_le.mp h5

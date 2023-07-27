@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.maps
-! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order
 import Mathlib.Topology.NhdsSet
+
+#align_import topology.maps from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
 /-!
 # Specific classes of maps between topological spaces
@@ -69,7 +66,7 @@ structure Inducing [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
 theorem inducing_induced (f : α → β) : @Inducing α β (TopologicalSpace.induced f ‹_›) _ f :=
-  @Inducing.mk  _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
+  @Inducing.mk _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
 
 theorem inducing_id : Inducing (@id α) :=
   ⟨induced_id.symm⟩
@@ -174,6 +171,10 @@ theorem Inducing.isClosed_preimage {f : α → β} (h : Inducing f) (s : Set β)
 theorem Inducing.isOpen_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsOpen s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s := by rw [hf.induced, isOpen_induced_iff]
 #align inducing.is_open_iff Inducing.isOpen_iff
+
+theorem Inducing.setOf_isOpen {f : α → β} (hf : Inducing f) :
+    {s : Set α | IsOpen s} = preimage f '' {t | IsOpen t} :=
+  Set.ext fun _ ↦ hf.isOpen_iff
 
 theorem Inducing.dense_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
@@ -537,6 +538,11 @@ theorem isClosedMap_iff_closure_image [TopologicalSpace α] [TopologicalSpace β
         _ = f '' c := by rw [hc.closure_eq]⟩
 #align is_closed_map_iff_closure_image isClosedMap_iff_closure_image
 
+theorem isClosedMap_iff_clusterPt [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+    IsClosedMap f ↔ ∀ s y, MapClusterPt y (𝓟 s) f → ∃ x, f x = y ∧ ClusterPt x (𝓟 s) := by
+  simp [MapClusterPt, isClosedMap_iff_closure_image, subset_def, mem_closure_iff_clusterPt,
+    and_comm]
+
 section OpenEmbedding
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
@@ -547,7 +553,7 @@ structure OpenEmbedding (f : α → β) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   open_range : IsOpen <| range f
 #align open_embedding OpenEmbedding
-#align open_embedding_iff  openEmbedding_iff
+#align open_embedding_iff openEmbedding_iff
 
 theorem OpenEmbedding.isOpenMap {f : α → β} (hf : OpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.open_range

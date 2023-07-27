@@ -2,13 +2,10 @@
 Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.restrict
-! leanprover-community/mathlib commit 09258fb7f75d741b7eda9fa18d5c869e2135d9f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+
+#align_import linear_algebra.affine_space.restrict from "leanprover-community/mathlib"@"09258fb7f75d741b7eda9fa18d5c869e2135d9f1"
 
 /-!
 # Affine map restrictions
@@ -77,7 +74,7 @@ theorem AffineMap.restrict.injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.
     {E : AffineSubspace k P₁} {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F]
     (hEF : E.map φ ≤ F) : Function.Injective (AffineMap.restrict φ hEF) := by
   intro x y h
-  simp only [Subtype.ext_iff, Subtype.coe_mk, AffineMap.restrict.coe_apply] at h⊢
+  simp only [Subtype.ext_iff, Subtype.coe_mk, AffineMap.restrict.coe_apply] at h ⊢
   exact hφ h
 #align affine_map.restrict.injective AffineMap.restrict.injective
 

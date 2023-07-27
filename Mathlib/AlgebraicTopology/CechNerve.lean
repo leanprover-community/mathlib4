@@ -2,16 +2,13 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.cech_nerve
-! leanprover-community/mathlib commit 618ea3d5c99240cd7000d8376924906a148bf9ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Arrow
+
+#align_import algebraic_topology.cech_nerve from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
 /-!
 
@@ -138,10 +135,10 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
         intro x y f
         dsimp
         ext
-        . dsimp
+        · dsimp
           simp only [WidePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
           rfl
-        . dsimp
+        · dsimp
           simp }
   right := G.right
 #align category_theory.simplicial_object.equivalence_left_to_right CategoryTheory.SimplicialObject.equivalenceLeftToRight
@@ -173,19 +170,19 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     dsimp
     ext x : 2
     · refine' WidePullback.hom_ext _ _ _ (fun j => _) _
-      . dsimp
+      · dsimp
         simp
         rfl
-      . simpa using congr_app A.w.symm x
-    . rfl
+      · simpa using congr_app A.w.symm x
+    · rfl
 #align category_theory.simplicial_object.cech_nerve_equiv CategoryTheory.SimplicialObject.cechNerveEquiv
 
 /-- The augmented Čech nerve construction is right adjoint to the `toArrow` functor. -/
 abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
-      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv] ; aesop_cat
-      homEquiv_naturality_right := by dsimp [cechNerveEquiv] ; aesop_cat }
+      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; aesop_cat
+      homEquiv_naturality_right := by dsimp [cechNerveEquiv]; aesop_cat }
 #align category_theory.simplicial_object.cech_nerve_adjunction CategoryTheory.SimplicialObject.cechNerveAdjunction
 
 end SimplicialObject
@@ -270,7 +267,7 @@ def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
   w := by
     dsimp
     rw [@WidePushout.arrow_ι_assoc _ _ _ _ _ (fun (_ : Fin 1) => F.hom)
-      (by dsimp ; infer_instance)]
+      (by dsimp; infer_instance)]
     exact congr_app G.w (SimplexCategory.mk 0)
 #align category_theory.cosimplicial_object.equivalence_left_to_right CategoryTheory.CosimplicialObject.equivalenceLeftToRight
 
@@ -314,14 +311,14 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     intro A
     dsimp
     ext x : 2
-    . rfl
-    . refine' WidePushout.hom_ext _ _ _ (fun j => _) _
-      . dsimp
+    · rfl
+    · refine' WidePushout.hom_ext _ _ _ (fun j => _) _
+      · dsimp
         simp only [Category.assoc, ← NatTrans.naturality A.right, Arrow.augmentedCechConerve_right,
           SimplexCategory.len_mk, Arrow.cechConerve_map, colimit.ι_desc,
           WidePushoutShape.mkCocone_ι_app, colimit.ι_desc_assoc]
         rfl
-      . dsimp
+      · dsimp
         rw [colimit.ι_desc]
         exact congr_app A.w x
   right_inv := by

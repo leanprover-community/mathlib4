@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.polynomial.splits
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Prime
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.Data.Polynomial.Lifts
+
+#align_import data.polynomial.splits from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Split polynomials
@@ -277,7 +274,7 @@ theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     Finset.induction_on t (fun _ =>
         ⟨fun _ _ h => by simp only [Finset.not_mem_empty] at h, fun _ => splits_one i⟩)
       fun a t hat ih ht => _
-  rw [Finset.forall_mem_insert] at ht⊢
+  rw [Finset.forall_mem_insert] at ht ⊢
   rw [Finset.prod_insert hat, splits_mul_iff i ht.1 (Finset.prod_ne_zero_iff.2 ht.2), ih ht.2]
 #align polynomial.splits_prod_iff Polynomial.splits_prod_iff
 

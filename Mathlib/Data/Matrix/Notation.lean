@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.notation
-! leanprover-community/mathlib commit a99f85220eaf38f14f94e04699943e185a5e1d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.matrix.notation from "leanprover-community/mathlib"@"a99f85220eaf38f14f94e04699943e185a5e1d1a"
 
 /-!
 # Matrix and vector notation
@@ -224,7 +221,7 @@ end Transpose
 
 section Mul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_mul [Fintype n'] (A : Matrix (Fin 0) n' α) (B : Matrix n' o' α) : A ⬝ B = of ![] :=
@@ -260,7 +257,7 @@ end Mul
 
 section VecMul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_vecMul (v : Fin 0 → α) (B : Matrix (Fin 0) o' α) : vecMul v B = 0 :=
@@ -295,7 +292,7 @@ end VecMul
 
 section MulVec
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_mulVec [Fintype n'] (A : Matrix (Fin 0) n' α) (v : n' → α) : mulVec A v = ![] :=
@@ -325,7 +322,7 @@ end MulVec
 
 section VecMulVec
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![] :=
@@ -355,7 +352,7 @@ end VecMulVec
 
 section Smul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 -- @[simp] -- Porting note: simp can prove this
 theorem smul_mat_empty {m' : Type _} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=

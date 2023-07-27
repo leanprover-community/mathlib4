@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.power_series.basic
-! leanprover-community/mathlib commit 2d5739b61641ee4e7e53eca5688a08f66f2e6a60
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.MvPolynomial.Basic
@@ -16,6 +11,8 @@ import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.Linarith
+
+#align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
 /-!
 # Formal power series
@@ -544,7 +541,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
     intro h
     replace h := congr_arg (coeff R (single s 1)) h
     rw [coeff_X, if_pos rfl, coeff_X] at h
-    split_ifs  at h with H
+    split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
       cases' H with H H
       · exact H.1
@@ -820,7 +817,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
     else
       -a *
         ∑ x in n.antidiagonal, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
-  termination_by' ⟨_, Finsupp.lt_wf σ⟩
+termination_by _ n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
 theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :
@@ -909,7 +906,7 @@ section LocalRing
 
 variable {S : Type _} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
--- Thanks to the linter for informing us that  this instance does
+-- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map `A[[X]] → B[[X]]` induced by a local ring hom `A → B` is local -/
 instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=
@@ -2005,10 +2002,10 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : PowerSerie
     · rw [ih j hj, MulZeroClass.mul_zero]
     by_cases hi : i < m
     · specialize hm₂ _ hi
-      push_neg  at hm₂
+      push_neg at hm₂
       rw [hm₂, MulZeroClass.zero_mul]
     rw [Finset.Nat.mem_antidiagonal] at hij
-    push_neg  at hi hj
+    push_neg at hi hj
     suffices m < i by
       have : m + n < i + j := add_lt_add_of_lt_of_le this hj
       exfalso

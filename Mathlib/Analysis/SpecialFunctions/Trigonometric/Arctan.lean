@@ -2,19 +2,16 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.arctan
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+
+#align_import analysis.special_functions.trigonometric.arctan from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The `arctan` function.
 
 Inequalities, derivatives,
-and `real.tan` as a `local_homeomorph` between `(-(π / 2), π / 2)` and the whole line.
+and `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line.
 -/
 
 
@@ -214,7 +211,7 @@ theorem continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 #align real.continuous_at_arctan Real.continuousAt_arctan
 
-/-- `real.tan` as a `local_homeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+/-- `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
 def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan

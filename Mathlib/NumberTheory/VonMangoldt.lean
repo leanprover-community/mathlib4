@@ -2,15 +2,12 @@
 Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module number_theory.von_mangoldt
-! leanprover-community/mathlib commit c946d6097a6925ad16d7ec55677bbc977f9846de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+#align_import number_theory.von_mangoldt from "leanprover-community/mathlib"@"c946d6097a6925ad16d7ec55677bbc977f9846de"
 
 /-!
 # The von Mangoldt Function
@@ -109,7 +106,7 @@ theorem vonMangoldt_eq_zero_iff {n : ℕ} : Λ n = 0 ↔ ¬IsPrimePow n :=
 
 open scoped BigOperators
 
-theorem vonMangoldt_sum {n : ℕ} : (∑ i in n.divisors, Λ i) = Real.log n := by
+theorem vonMangoldt_sum {n : ℕ} : ∑ i in n.divisors, Λ i = Real.log n := by
   refine' recOnPrimeCoprime _ _ _ n
   · simp
   · intro p k hp
@@ -117,7 +114,7 @@ theorem vonMangoldt_sum {n : ℕ} : (∑ i in n.divisors, Λ i) = Real.log n := 
       vonMangoldt_apply_one]
     simp [vonMangoldt_apply_pow (Nat.succ_ne_zero _), vonMangoldt_apply_prime hp]
   intro a b ha' hb' hab ha hb
-  simp only [vonMangoldt_apply, ← sum_filter] at ha hb⊢
+  simp only [vonMangoldt_apply, ← sum_filter] at ha hb ⊢
   rw [mul_divisors_filter_prime_pow hab, filter_union,
     sum_union (disjoint_divisors_filter_isPrimePow hab), ha, hb, Nat.cast_mul,
     Real.log_mul (cast_ne_zero.2 (pos_of_gt ha').ne') (cast_ne_zero.2 (pos_of_gt hb').ne')]

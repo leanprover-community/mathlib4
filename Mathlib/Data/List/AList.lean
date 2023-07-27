@@ -2,13 +2,10 @@
 Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.alist
-! leanprover-community/mathlib commit f808feb6c18afddb25e66a71d317643cf7fb5fbb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Sigma
+
+#align_import data.list.alist from "leanprover-community/mathlib"@"f808feb6c18afddb25e66a71d317643cf7fb5fbb"
 
 /-!
 # Association Lists
@@ -319,7 +316,7 @@ theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlook
 @[simp]
 theorem insert_insert {a} {b b' : β a} (s : AList β) :
     (s.insert a b).insert a b' = s.insert a b' := by
-  ext : 1 ; simp only [AList.insert_entries, List.kerase_cons_eq]
+  ext : 1; simp only [AList.insert_entries, List.kerase_cons_eq]
 #align alist.insert_insert AList.insert_insert
 
 theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a ≠ a') :
@@ -504,9 +501,9 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (s₁ ∪ s₂).entries ~ (s₂ ∪ s₁).entries :=
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by
-      intros ; simp
+      intros; simp
       constructor <;> intro h'
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           apply h
@@ -514,7 +511,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           exact rfl
         · left
           rw [h'.2]
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           intro h''

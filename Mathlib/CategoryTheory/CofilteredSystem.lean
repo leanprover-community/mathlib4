@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
-
-! This file was ported from Lean 3 source module category_theory.cofiltered_system
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Filtered
 import Mathlib.Data.Set.Finite
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+
+#align_import category_theory.cofiltered_system from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Cofiltered systems
@@ -182,7 +179,7 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.m
 def toPreimages : J ⥤ Type v where
   obj j := ⋂ f : j ⟶ i, F.map f ⁻¹' s
   map g := MapsTo.restrict (F.map g) _ _ fun x h => by
-    rw [mem_iInter] at h⊢
+    rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
@@ -203,7 +200,7 @@ variable [IsCofilteredOrEmpty J]
 
 theorem eventualRange_mapsTo (f : j ⟶ i) :
     (F.eventualRange j).MapsTo (F.map f) (F.eventualRange i) := fun x hx => by
-  rw [mem_eventualRange_iff] at hx⊢
+  rw [mem_eventualRange_iff] at hx ⊢
   intro k f'
   obtain ⟨l, g, g', he⟩ := cospan f f'
   obtain ⟨x, rfl⟩ := hx g

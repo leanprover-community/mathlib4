@@ -2,14 +2,11 @@
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.trails
-! leanprover-community/mathlib commit edaaaa4a5774e6623e0ddd919b2f2db49c65add4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Data.Nat.Parity
+
+#align_import combinatorics.simple_graph.trails from "leanprover-community/mathlib"@"edaaaa4a5774e6623e0ddd919b2f2db49c65add4"
 
 /-!
 
@@ -76,7 +73,7 @@ theorem IsTrail.even_countp_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
         rintro rfl
         exact huv.ne
     · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne.def] at ih⊢
+      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne.def] at ih ⊢
       rw [ih]
       constructor <;>
         · rintro h' h'' rfl

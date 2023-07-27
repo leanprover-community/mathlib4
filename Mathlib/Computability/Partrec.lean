@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.partrec
-! leanprover-community/mathlib commit 9ee02c6c2208fd7795005aa394107c0374906cca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Primrec
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.PFun
+
+#align_import computability.partrec from "leanprover-community/mathlib"@"9ee02c6c2208fd7795005aa394107c0374906cca"
 
 /-!
 # The partial recursive functions
@@ -141,7 +138,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
     refine' ⟨fd, _⟩
     have := rfind_spec (get_mem fd)
-    simp at this⊢
+    simp at this ⊢
     cases' Option.isSome_iff_exists.1 this.symm with a e
     rw [e]; trivial⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
@@ -475,7 +472,7 @@ theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ}
     cases' e : decode (α := α) n with a <;> simp [e]
     induction' f a with m IH <;> simp
     rw [IH, Part.bind_map]
-    congr ; funext s
+    congr; funext s
     simp [encodek]
 #align partrec.nat_elim Partrec.nat_rec
 
@@ -569,7 +566,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
     fun n => by
     cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
-    congr ; funext n
+    congr; funext n
     simp [Part.map_map, (· ∘ ·)]
     refine map_id' (fun b => ?_) _
     cases b <;> rfl
