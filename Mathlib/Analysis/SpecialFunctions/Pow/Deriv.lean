@@ -3,11 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne
-
-! This file was ported from Lean 3 source module analysis.special_functions.pow.deriv
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
@@ -15,6 +10,8 @@ import Mathlib.Analysis.Calculus.ExtendDeriv
 import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+
+#align_import analysis.special_functions.pow.deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Derivatives of power function on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`
@@ -329,6 +326,14 @@ theorem hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
   simpa using (hasStrictDerivAt_const _ _).rpow (hasStrictDerivAt_id x) ha
 #align real.has_strict_deriv_at_const_rpow Real.hasStrictDerivAt_const_rpow
 
+lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
+    DifferentiableAt ℝ (fun x => x ^ p) x :=
+  (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
+
+lemma differentiableOn_rpow_const (p : ℝ) :
+    DifferentiableOn ℝ (fun x => x ^ p) {0}ᶜ :=
+  fun _ hx => (Real.differentiableAt_rpow_const_of_ne p hx).differentiableWithinAt
+
 /-- This lemma says that `fun x => a ^ x` is strictly differentiable for `a < 0`. Note that these
 values of `a` are outside of the "official" domain of `a ^ x`, and we may redefine `a ^ x`
 for negative `a` if some other definition will be more convenient. -/
@@ -600,6 +605,22 @@ theorem deriv_rpow_const (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0 ∨ 1 �
     deriv (fun x => f x ^ p) x = deriv f x * p * f x ^ (p - 1) :=
   (hf.hasDerivAt.rpow_const hx).deriv
 #align deriv_rpow_const deriv_rpow_const
+
+lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
+    deriv (fun (x:ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by
+  calc deriv (fun (x:ℝ) => x ^ p) =ᶠ[atTop] fun x => p * x ^ (p - 1) := by
+              filter_upwards [eventually_ne_atTop 0] with x hx
+              rw [Real.deriv_rpow_const (Or.inl hx)]
+       _ =Θ[atTop] fun x => x ^ (p-1) :=
+              Asymptotics.IsTheta.const_mul_left hp Asymptotics.isTheta_rfl
+
+lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
+    deriv (fun (x:ℝ) => x ^ p) =O[atTop] fun x => x ^ (p-1) := by
+  rcases eq_or_ne p 0 with rfl | hp
+  case inl =>
+    simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
+  case inr =>
+    exact (isTheta_deriv_rpow_const_atTop hp).1
 
 end deriv
 

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.differential_object
-! leanprover-community/mathlib commit b535c2d5d996acd9b0554b76395d9c920e186f4f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.CategoryTheory.DifferentialObject
+
+#align_import algebra.homology.differential_object from "leanprover-community/mathlib"@"b535c2d5d996acd9b0554b76395d9c920e186f4f"
 
 /-!
 # Homological complexes are differential graded objects.
@@ -94,9 +91,9 @@ def dgoToHomologicalComplex :
     { X := fun i => X.obj i
       d := fun i j =>
         if h : i + b = j then X.d i ≫ X.objEqToHom (show i + (1 : ℤ) • b = j by simp [h]) else 0
-      shape := fun i j w => by dsimp at w ; convert dif_neg w
+      shape := fun i j w => by dsimp at w; convert dif_neg w
       d_comp_d' := fun i j k hij hjk => by
-        dsimp at hij hjk ; substs hij hjk
+        dsimp at hij hjk; substs hij hjk
         simp }
   map {X Y} f :=
     { f := f.f

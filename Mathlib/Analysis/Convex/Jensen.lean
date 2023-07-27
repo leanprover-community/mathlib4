@@ -2,14 +2,11 @@
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudriashov
-
-! This file was ported from Lean 3 source module analysis.convex.jensen
-! leanprover-community/mathlib commit bfad3f455b388fbcc14c49d0cac884f774f14d20
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Function
+
+#align_import analysis.convex.jensen from "leanprover-community/mathlib"@"bfad3f455b388fbcc14c49d0cac884f774f14d20"
 
 /-!
 # Jensen's inequality and maximum principle for convex functions
@@ -63,7 +60,7 @@ theorem ConcaveOn.le_map_centerMass (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ 
 #align concave_on.le_map_center_mass ConcaveOn.le_map_centerMass
 
 /-- Convex **Jensen's inequality**, `Finset.sum` version. -/
-theorem ConvexOn.map_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : (∑ i in t, w i) = 1)
+theorem ConvexOn.map_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i in t, w i = 1)
     (hmem : ∀ i ∈ t, p i ∈ s) : f (∑ i in t, w i • p i) ≤ ∑ i in t, w i • f (p i) := by
   simpa only [centerMass, h₁, inv_one, one_smul] using
     hf.map_centerMass_le h₀ (h₁.symm ▸ zero_lt_one) hmem
@@ -71,7 +68,7 @@ theorem ConvexOn.map_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ 
 
 /-- Concave **Jensen's inequality**, `Finset.sum` version. -/
 theorem ConcaveOn.le_map_sum (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
-    (h₁ : (∑ i in t, w i) = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
+    (h₁ : ∑ i in t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     (∑ i in t, w i • f (p i)) ≤ f (∑ i in t, w i • p i) :=
   @ConvexOn.map_sum_le 𝕜 E βᵒᵈ _ _ _ _ _ _ _ _ _ _ _ _ hf h₀ h₁ hmem
 #align concave_on.le_map_sum ConcaveOn.le_map_sum

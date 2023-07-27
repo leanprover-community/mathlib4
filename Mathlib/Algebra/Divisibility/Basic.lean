@@ -3,14 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
-Ported by: Matej Penciak
-
-! This file was ported from Lean 3 source module algebra.divisibility.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
+
+#align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Divisibility
@@ -58,6 +54,11 @@ alias Dvd.intro ← dvd_of_mul_right_eq
 theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
   h
 #align exists_eq_mul_right_of_dvd exists_eq_mul_right_of_dvd
+
+theorem dvd_def : a ∣ b ↔ ∃ c, b = a * c :=
+  Iff.rfl
+
+alias dvd_def ← dvd_iff_exists_eq_mul_right
 
 theorem Dvd.elim {P : Prop} {a b : α} (H₁ : a ∣ b) (H₂ : ∀ c, b = a * c → P) : P :=
   Exists.elim H₁ H₂

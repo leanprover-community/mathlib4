@@ -2,11 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.encodable.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Data.PNat.Basic
@@ -14,6 +9,8 @@ import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
+
+#align_import logic.encodable.basic from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 
 /-!
 # Encodable types
@@ -161,7 +158,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 instance _root_.Option.encodable {α : Type _} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
-    cases o <;> dsimp ; simp [encodek, Nat.succ_ne_zero]⟩
+    cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
 #align option.encodable Option.encodable
 
 @[simp]
@@ -194,7 +191,7 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simp [decode₂] ; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simp [decode₂]; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
@@ -235,7 +232,7 @@ def decidableRangeEncode (α : Type _) [Encodable α] : DecidablePred (· ∈ Se
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
     ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
-      fun ⟨n, hn⟩ => by rw [← hn, encodek₂] ; exact rfl⟩
+      fun ⟨n, hn⟩ => by rw [← hn, encodek₂]; exact rfl⟩
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
@@ -244,8 +241,8 @@ def equivRangeEncode (α : Type _) [Encodable α] : α ≃ Set.range (@encode α
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.1) by cases' n.2 with x hx ; rw [← hx, encodek₂] ; exact rfl)
-  left_inv a := by dsimp ; rw [← Option.some_inj, Option.some_get, encodek₂]
+      (show isSome (decode₂ α n.1) by cases' n.2 with x hx; rw [← hx, encodek₂]; exact rfl)
+  left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
     apply Subtype.eq
     dsimp
@@ -425,7 +422,7 @@ instance _root_.Subtype.encodable : Encodable { a : α // P a } :=
   ⟨encodeSubtype, decodeSubtype, fun ⟨v, h⟩ => by simp [encodeSubtype, decodeSubtype, encodek, h]⟩
 #align subtype.encodable Subtype.encodable
 
-theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a ; rfl
+theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a; rfl
 #align encodable.subtype.encode_eq Encodable.Subtype.encode_eq
 
 end Subtype
@@ -689,7 +686,7 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
 def encodableQuotient : Encodable (Quotient s) :=
   ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
-    rintro ⟨l⟩ ; dsimp ; rw [encodek] ; exact congr_arg some ⟦l⟧.rep_spec⟩
+    rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩
 #align encodable_quotient encodableQuotient
 
 end Quotient

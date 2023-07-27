@@ -2,11 +2,6 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module order.category.omega_complete_partial_order
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
@@ -14,12 +9,14 @@ import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 
+#align_import order.category.omega_complete_partial_order from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+
 /-!
-# Category of types with a omega complete partial order
+# Category of types with an omega complete partial order
 
 In this file, we bundle the class `OmegaCompletePartialOrder` into a
 concrete category and prove that continuous functions also form
-a `OmegaCompletePartialOrder`.
+an `OmegaCompletePartialOrder`.
 
 ## Main definitions
 
@@ -35,7 +32,7 @@ universe u v
 
 set_option linter.uppercaseLean3 false -- `ωCPO`
 
-/-- The category of types with a omega complete partial order. -/
+/-- The category of types with an omega complete partial order. -/
 def ωCPO : Type (u + 1) :=
   Bundled OmegaCompletePartialOrder
 #align ωCPO ωCPO

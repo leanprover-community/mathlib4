@@ -2,17 +2,14 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.pointwise.basic
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import data.set.pointwise.basic from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
 /-!
 # Pointwise operations of sets
@@ -474,13 +471,13 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 #align set.union_add_inter_subset_union Set.union_add_inter_subset_union
 
 @[to_additive]
-theorem iUnion_mul_left_image : (⋃ a ∈ s, (· * ·) a '' t) = s * t :=
+theorem iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
   iUnion_image_left _
 #align set.Union_mul_left_image Set.iUnion_mul_left_image
 #align set.Union_add_left_image Set.iUnion_add_left_image
 
 @[to_additive]
-theorem iUnion_mul_right_image : (⋃ a ∈ t, (· * a) '' s) = s * t :=
+theorem iUnion_mul_right_image : ⋃ a ∈ t, (· * a) '' s = s * t :=
   iUnion_image_right _
 #align set.Union_mul_right_image Set.iUnion_mul_right_image
 #align set.Union_add_right_image Set.iUnion_add_right_image
@@ -740,13 +737,13 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 #align set.union_sub_inter_subset_union Set.union_sub_inter_subset_union
 
 @[to_additive]
-theorem iUnion_div_left_image : (⋃ a ∈ s, (· / ·) a '' t) = s / t :=
+theorem iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
   iUnion_image_left _
 #align set.Union_div_left_image Set.iUnion_div_left_image
 #align set.Union_sub_left_image Set.iUnion_sub_left_image
 
 @[to_additive]
-theorem iUnion_div_right_image : (⋃ a ∈ t, (· / a) '' s) = s / t :=
+theorem iUnion_div_right_image : ⋃ a ∈ t, (· / a) '' s = s / t :=
   iUnion_image_right _
 #align set.Union_div_right_image Set.iUnion_div_right_image
 #align set.Union_sub_right_image Set.iUnion_sub_right_image

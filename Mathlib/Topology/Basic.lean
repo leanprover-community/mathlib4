@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
-
-! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Algebra.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Tactic.Continuity
+
+#align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
 /-!
 # Basic theory of topological spaces.
@@ -46,8 +43,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 
 ## References
 
-*  [N. Bourbaki, *General Topology*][bourbaki1966]
-*  [I. M. James, *Topologies and Uniformities*][james1999]
+* [N. Bourbaki, *General Topology*][bourbaki1966]
+* [I. M. James, *Topologies and Uniformities*][james1999]
 
 ## Tags
 
@@ -410,6 +407,10 @@ theorem interior_sInter_subset (S : Set (Set α)) : interior (⋂₀ S) ⊆ ⋂ 
 def closure (s : Set α) : Set α :=
   ⋂₀ { t | IsClosed t ∧ s ⊆ t }
 #align closure closure
+
+set_option quotPrecheck false in
+/-- Notation for `closure` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 
 @[simp]
 theorem isClosed_closure {s : Set α} : IsClosed (closure s) :=
@@ -1484,8 +1485,8 @@ theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : β → α} {l : Filter 
 ### Limits of filters in topological spaces
 
 In this section we define functions that return a limit of a filter (or of a function along a
-filter), if it exists, and a random point otherwise. This functions are rarely used in Mathlib, most
-of the theorems are written using `Filter.Tendsto`. One of the reasons is that
+filter), if it exists, and a random point otherwise. These functions are rarely used in Mathlib,
+most of the theorems are written using `Filter.Tendsto`. One of the reasons is that
 `Filter.limUnder f g = a` is not equivalent to `Filter.Tendsto g f (𝓝 a)` unless the codomain is a
 Hausdorff space and `g` has a limit along `f`.
 -/

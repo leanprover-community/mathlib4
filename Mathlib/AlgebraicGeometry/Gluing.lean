@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.gluing
-! leanprover-community/mathlib commit 533f62f4dd62a5aad24a04326e6e787c8f7e98b1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PresheafedSpace.Gluing
 import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+
+#align_import algebraic_geometry.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
 /-!
 # Gluing Schemes
@@ -25,8 +22,8 @@ Given a family of gluing data of schemes, we may glue them together.
 * `AlgebraicGeometry.Scheme.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
 * `AlgebraicGeometry.Scheme.GlueData.isoCarrier`: The isomorphism between the underlying space
   of the glued scheme and the gluing of the underlying topological spaces.
-* `algebraic_geometry.Scheme.OpenCover.gluedCover`: The glue data associated with an open cover.
-* `algebraic_geometry.Scheme.OpenCover.fromGlued`: The canonical morphism
+* `AlgebraicGeometry.Scheme.OpenCover.gluedCover`: The glue data associated with an open cover.
+* `AlgebraicGeometry.Scheme.OpenCover.fromGlued`: The canonical morphism
   `𝒰.gluedCover.glued ⟶ X`. This has an `is_iso` instance.
 * `AlgebraicGeometry.Scheme.OpenCover.glueMorphisms`: We may glue a family of compatible
   morphisms defined on an open cover of a scheme.
@@ -39,9 +36,9 @@ Given a family of gluing data of schemes, we may glue them together.
   `ι i : U i ⟶ glued` are jointly surjective.
 * `AlgebraicGeometry.Scheme.GlueData.vPullbackConeIsLimit` : `V i j` is the pullback
   (intersection) of `U i` and `U j` over the glued space.
-* `algebraic_geometry.Scheme.glue_data.ι_eq_iff_rel` : `ι i x = ι j y` if and only if they coincide
+* `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff` : `ι i x = ι j y` if and only if they coincide
   when restricted to `V i i`.
-* `AlgebraicGeometry.Scheme.GlueData.isOpen_iff` : An subset of the glued scheme is open iff
+* `AlgebraicGeometry.Scheme.GlueData.isOpen_iff` : A subset of the glued scheme is open iff
   all its preimages in `U i` are open.
 
 ## Implementation details
@@ -69,8 +66,8 @@ namespace Scheme
 
 /-- A family of gluing data consists of
 1. An index type `J`
-2. An scheme `U i` for each `i : J`.
-3. An scheme `V i j` for each `i j : J`.
+2. A scheme `U i` for each `i : J`.
+3. A scheme `V i j` for each `i j : J`.
   (Note that this is `J × J → Scheme` rather than `J → J → Scheme` to connect to the
   limits library easier.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
@@ -125,7 +122,7 @@ instance (i : 𝖣.J) :
   apply LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
 /-- (Implementation). The glued scheme of a glue data.
-This should not be used outside this file. Use `Scheme.glue_data.glued` instead. -/
+This should not be used outside this file. Use `AlgebraicGeometry.Scheme.GlueData.glued` instead. -/
 def gluedScheme : Scheme := by
   apply LocallyRingedSpace.IsOpenImmersion.scheme
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
@@ -190,7 +187,7 @@ theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j �
 #align algebraic_geometry.Scheme.glue_data.glue_condition AlgebraicGeometry.Scheme.GlueData.glue_condition
 
 /-- The pullback cone spanned by `V i j ⟶ U i` and `V i j ⟶ U j`.
-This is a pullback diagram (`V_pullback_cone_is_limit`). -/
+This is a pullback diagram (`vPullbackConeIsLimit`). -/
 def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
   PullbackCone.mk (D.f i j) (D.t i j ≫ D.f j i) (by simp)
 #align algebraic_geometry.Scheme.glue_data.V_pullback_cone AlgebraicGeometry.Scheme.GlueData.vPullbackCone
@@ -238,7 +235,7 @@ theorem ι_isoCarrier_inv (i : D.J) :
 #align algebraic_geometry.Scheme.glue_data.ι_iso_carrier_inv AlgebraicGeometry.Scheme.GlueData.ι_isoCarrier_inv
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
-See `Scheme.gluing_data.ι_eq_iff`. -/
+See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
 def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
   a = b ∨
     ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).1.base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).1.base x = b.2
@@ -337,7 +334,7 @@ theorem glued_cover_cocycle (x y z : 𝒰.J) :
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle
 
 /-- The glue data associated with an open cover.
-The canonical isomorphism `𝒰.glued_cover.glued ⟶ X` is provided by `𝒰.from_glued`. -/
+The canonical isomorphism `𝒰.gluedCover.glued ⟶ X` is provided by `𝒰.fromGlued`. -/
 @[simps]
 def gluedCover : Scheme.GlueData.{u} where
   J := 𝒰.J
@@ -355,7 +352,7 @@ def gluedCover : Scheme.GlueData.{u} where
 #align algebraic_geometry.Scheme.open_cover.glued_cover AlgebraicGeometry.Scheme.OpenCover.gluedCover
 
 /-- The canonical morphism from the gluing of an open cover of `X` into `X`.
-This is an isomorphism, as witnessed by an `is_iso` instance. -/
+This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   fapply Multicoequalizer.desc
   exact fun x => 𝒰.map x
