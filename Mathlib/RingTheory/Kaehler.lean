@@ -413,8 +413,8 @@ def KaehlerDifferential.endEquivAuxEquiv :
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
 
-set_option maxHeartbeats 1000000 in
-set_option synthInstance.maxHeartbeats 800000 in
+set_option maxHeartbeats 1200000 in
+set_option synthInstance.maxHeartbeats 1000000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
