@@ -69,6 +69,10 @@ instance : LT (BitVec w)  := ⟨fun x y => BitVec.lt x y⟩
 instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
 instance : Neg (BitVec w) := ⟨BitVec.neg⟩
 
+/-!
+## Bitwise operations
+-/
+
 @[norm_cast]
 theorem val_bitvec_eq {a b : BitVec w} : a.val = b.val ↔ a = b :=
   ⟨(match a, b, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
