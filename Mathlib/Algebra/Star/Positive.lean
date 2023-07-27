@@ -152,17 +152,10 @@ instance instNontrivial [Nontrivial R] : Nontrivial (positive R) where
   exists_pair_ne := ⟨1, 0, NeZero.ne 1⟩
 
 instance instNatCast : NatCast (positive R) where
-  natCast := let rec aux
-      | 0 => 0
-      | 1 => 1
-      | n => ⟨n, n.cast_nonneg'⟩
-    aux
+  natCast n := ⟨n, n.cast_nonneg'⟩
 
 @[simp, norm_cast]
-theorem val_natCast : ∀ n : ℕ, ((n : positive R) : R) = n
-  | 0 => show (0 : R) = _ from Nat.cast_zero.symm
-  | 1 => show (1 : R) = _ from Nat.cast_one.symm
-  | _ + 2 => rfl
+theorem val_natCast (n : ℕ) : ((n : positive R) : R) = n := rfl
 
 instance instAddCommMonoidWithOne : AddCommMonoidWithOne (positive R) :=
   Subtype.val_injective.addCommMonoidWithOne _ rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) val_natCast
@@ -176,9 +169,7 @@ variable [Ring R] [PartialOrder R] [StarOrderedRing R]
 @[simp]
 theorem selfAdjoint_natCast (n : ℕ) :
     positive.selfAdjoint (n : positive R) = (n : selfAdjoint R) := by
-  ext
-  simp only [val_selfAdjoint, val_natCast]
-  rfl
+  ext; rfl
 
 end Ring
 
