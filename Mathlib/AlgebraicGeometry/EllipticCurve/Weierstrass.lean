@@ -81,7 +81,8 @@ elliptic curve, weierstrass equation, j invariant
 
 -- porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
 local macro "map_simp" : tactic =>
-  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
+  `(tactic| simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe,
+      map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
 universe u v w
 
@@ -431,6 +432,43 @@ lemma baseChange_self : W.baseChange R = W := by
 lemma baseChange_baseChange : (W.baseChange A).baseChange B = W.baseChange B := by
   ext <;> exact (IsScalarTower.algebraMap_apply R A B _).symm
 #align weierstrass_curve.base_change_base_change WeierstrassCurve.baseChange_baseChange
+
+namespace VariableChange
+
+variable (C : VariableChange R)
+
+/-- The change of variables over `R` base changed to `A`. -/
+@[simps]
+def baseChange : VariableChange A :=
+  ⟨Units.map (↑(algebraMap R A)) C.u, algebraMap R A C.r, algebraMap R A C.s, algebraMap R A C.t⟩
+
+lemma baseChange_id : baseChange A (id : VariableChange R) = id := by
+  simp only [id, baseChange]
+  ext <;> simp only [map_one, Units.val_one, map_zero]
+
+lemma baseChange_comp (C' : VariableChange R) :
+    baseChange A (C.comp C') = (baseChange A C).comp (baseChange A C') := by
+  simp only [comp, baseChange]
+  ext <;> map_simp
+
+/-- The base change of change of variables over `R` to `A` is a group homomorphism. -/
+def baseChangeMap : VariableChange R →* VariableChange A where
+  toFun := baseChange A
+  map_one' := baseChange_id A
+  map_mul' := baseChange_comp A
+
+lemma baseChange_self : C.baseChange R = C := by
+  ext <;> rfl
+
+lemma baseChange_baseChange : (C.baseChange A).baseChange B = C.baseChange B := by
+  ext <;> exact (IsScalarTower.algebraMap_apply R A B _).symm
+
+end VariableChange
+
+lemma baseChange_variableChange (C : VariableChange R) :
+    (W.baseChange A).variableChange (C.baseChange A) = (W.variableChange C).baseChange A := by
+  simp only [baseChange, variableChange, VariableChange.baseChange]
+  ext <;> map_simp
 
 end BaseChange
 
@@ -1114,7 +1152,6 @@ lemma coe_inv_baseChange_Δ' : ↑(E.baseChange A).Δ'⁻¹ = algebraMap R A ↑
 lemma baseChange_j : (E.baseChange A).j = algebraMap R A E.j := by
   simp only [j, baseChange, E.baseChange_c₄]
   map_simp
-  rfl
 #align elliptic_curve.base_change_j EllipticCurve.baseChange_j
 
 end BaseChange
