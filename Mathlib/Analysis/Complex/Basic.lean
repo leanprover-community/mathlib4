@@ -429,6 +429,7 @@ noncomputable instance : IsROrC ℂ where
   le_iff_re_im := by simp only [not_and, AddMonoidHom.coe_mk, ZeroHom.coe_mk, forall_const]
 
 noncomputable instance toStarOrderedRing : StarOrderedRing ℂ := by
+  -- Bad quality proof but lets see if it works
   apply StarOrderedRing.ofNonnegIff'
   intros x y hxy z
   unfold LE.le Preorder.toLE PartialOrder.toPreorder IsROrC.toPartialOrder instIsROrCComplex
@@ -447,10 +448,13 @@ noncomputable instance toStarOrderedRing : StarOrderedRing ℂ := by
   intro hz
   cases' hz with y hy
   rw [Complex.ext_iff] at hy
-  sorry
-
-
-
+  simp only [ofReal_re, ofReal_im] at hy
+  constructor
+  simp only [zero_re]
+  rw [hy.1]
+  apply normSq_nonneg
+  simp only [zero_im]
+  exact hy.2.symm
 
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
