@@ -1637,3 +1637,17 @@ theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (ra
 end Set
 
 end Disjoint
+
+section Sigma
+
+variable {α : Type _} {β : α → Type _} {i j : α} {s : Set (β i)}
+
+lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' s) = ∅ := by
+  change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ s} = ∅
+  simp [h]
+
+lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s := by
+  change Sigma.mk i ⁻¹' {⟨i, u⟩ | u ∈ s} = s
+  simp
+
+end Sigma
