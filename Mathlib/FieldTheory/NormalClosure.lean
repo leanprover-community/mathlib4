@@ -91,9 +91,8 @@ noncomputable instance algebra : Algebra K (normalClosure F K L) :=
     (toAlgHom F K L).toFieldRange).toAlgebra
 
 instance : IsScalarTower F K (normalClosure F K L) := by
-  apply of_algebraMap_eq
-  intro x
-  ext
+  apply of_algebraMap_eq'
+  ext x
   exact algebraMap_apply F K L x
 
 instance : IsScalarTower K (normalClosure F K L) L :=
