@@ -205,6 +205,7 @@ namespace Mathlib.Tactic.CC
 
 initialize
   registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
   registerTraceClass `Debug.Meta.Tactic.cc
   registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
@@ -1428,7 +1429,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
 
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
-  let ss ← synthInstance? (← mkAppM ``Subsingleton #[e])
+  let ss ← synthInstance? (← mkAppM ``Subsingleton #[type])
   if ss.isNone then return -- type is not a subsingleton
   let type ← normalize type
   -- Make sure type has been internalized
