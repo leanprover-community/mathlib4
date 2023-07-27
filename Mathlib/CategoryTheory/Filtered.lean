@@ -526,84 +526,105 @@ namespace FilteredClosure.Small
     set-theoretic setting.
 -/
 
-private inductive nextStep (n : ℕ) (X : ∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) :
+/-- One step of the inductive procedure consists of adjoining all maxima and coequalizers of all
+    objects and morphisms obtained so far. This is quite redundant, picking up many objects which we
+    already hit in earlier iterations, but this is easier to work with later.
+    -/
+private inductive InductiveStep (n : ℕ) (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) :
     Type (max v w)
-  | max : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n), (X hk).1 → (X hk').1 → nextStep n X
-  | coeq : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n) (j : (X hk).1) (j' : (X hk').1),
-      ((X hk).2 j ⟶ (X hk').2 j') → ((X hk).2 j ⟶ (X hk').2 j') → nextStep n X
+  | max : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n), (X _ hk).1 → (X _ hk').1 → InductiveStep n X
+  | coeq : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n) (j : (X _ hk).1) (j' : (X _ hk').1),
+      ((X _ hk).2 j ⟶ (X _ hk').2 j') → ((X _ hk).2 j ⟶ (X _ hk').2 j') → InductiveStep n X
 
-noncomputable def mapNextStep (n : ℕ) (X : ∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) : nextStep.{w} n X → C
-  | (nextStep.max hk hk' x y) => max ((X hk).2 x) ((X hk').2 y)
-  | (nextStep.coeq _ _ _ _ f g) => coeq f g
+/-- The realization function sends the abstract maxima and weak coequalizers to the corresponding
+    objects in `C`. -/
+private noncomputable def inductiveStepRealization (n : ℕ)
+    (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) : InductiveStep.{w} n X → C
+  | (InductiveStep.max hk hk' x y) => max ((X _ hk).2 x) ((X _ hk').2 y)
+  | (InductiveStep.coeq _ _ _ _ f g) => coeq f g
 
-noncomputable def step : (n : ℕ) → (∀ {k : ℕ}, k < n → Σ t : Type (max v w), t → C) → Σ t : Type (max v w), t → C
-  | 0, _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
-  | (n + 1), X => ⟨nextStep.{w, v, u} (n + 1) X, mapNextStep (n + 1) X⟩
+/-- All steps of building the abstract filtered closure together with the realization function,
+    as a function of `ℕ`. -/
+private noncomputable def bundledAbstractFilteredClosure : ℕ → Σ t : Type (max v w), t → C :=
+  Nat.strongRec' $ fun n => match n with
+  | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
+  | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
 
-noncomputable def allSteps : ℕ → Σ t : Type (max v w), t → C :=
-  Nat.strongRec' (step.{w, v, u} f)
+/-- The small type modelling the filtered closure. -/
+private noncomputable def AbstractFilteredClosure : Type (max v w) :=
+  Σ n, (bundledAbstractFilteredClosure f n).1
 
-noncomputable def AbstractFilteredClosure : Type (max v w) :=
-  Σ n, (allSteps f n).1
+/-- The surjection from the abstract filtered closure to the actual filtered closure in `C`. -/
+private noncomputable def abstractFilteredClosureRealization : AbstractFilteredClosure f → C :=
+  fun x => (bundledAbstractFilteredClosure f x.1).2 x.2
 
-noncomputable def abstractFilteredClosureRealization : AbstractFilteredClosure f → C :=
-  fun x => (allSteps f x.1).2 x.2
+end FilteredClosure.Small
 
-instance small_subtype_filteredClosure : Small.{max v w} (FullSubcategory (filteredClosure f)) := by
-  refine' small_of_injective_of_exists (abstractFilteredClosureRealization f) FullSubcategory.ext _
+theorem small_fullSubcategory_filteredClosure :
+    Small.{max v w} (FullSubcategory (filteredClosure f)) := by
+  refine' small_of_injective_of_exists (FilteredClosure.Small.abstractFilteredClosureRealization f)
+    FullSubcategory.ext _
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, nextStep.max _ _ x y⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, FilteredClosure.Small.InductiveStep.max _ _ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | coeq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, nextStep.coeq _ _ x y g g'⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, FilteredClosure.Small.InductiveStep.coeq _ _ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
-end FilteredClosure.Small
-
-instance locallySmall_subtype_filteredClosure : LocallySmall.{max v w, v, u} (FullSubcategory (filteredClosure f)) :=
-  locallySmall_max.{w, v, u}
-
-instance essentiallySmall_subtype_filteredClosure : EssentiallySmall.{max v w} (FullSubcategory (filteredClosure f)) :=
-essentiallySmall_of_small_of_locallySmall _
+instance essentiallySmall_fullSubcategory_filteredClosure :
+    EssentiallySmall.{max v w} (FullSubcategory (filteredClosure f)) :=
+  have : LocallySmall.{max v w} (FullSubcategory (filteredClosure f)) := locallySmall_max.{w, v, u}
+  have : Small.{max v w} (FullSubcategory (filteredClosure f)) :=
+    small_fullSubcategory_filteredClosure f
+  essentiallySmall_of_small_of_locallySmall _
 
 end FilteredClosure
 
 section
 variable {C}
-variable [IsFiltered C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C) [_root_.Nonempty D]
+variable [IsFilteredOrEmpty C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
 
+/-- Every functor from a small category to a filtered category factors faithfully through a small
+    filtered category. This is that category. -/
 def SmallFilteredIntermediate : Type (max u₁ v) :=
   SmallModel.{max u₁ v} (FullSubcategory (filteredClosure F.obj))
 
 noncomputable instance : SmallCategory (SmallFilteredIntermediate F) :=
-  show SmallCategory (SmallModel.{max u₁ v} (FullSubcategory (filteredClosure F.obj))) from inferInstance
+  show SmallCategory (SmallModel (FullSubcategory (filteredClosure F.obj))) from inferInstance
 
-instance : IsFiltered (FullSubcategory (filteredClosure F.obj)) :=
+instance [_root_.Nonempty D] : IsFiltered (FullSubcategory (filteredClosure F.obj)) :=
   { isFilteredOrEmpty_fullSubcategory_filteredClosure F.obj with
     Nonempty := Nonempty.map (FullSubcategory.lift _ F filteredClosure.base).obj inferInstance }
 
-instance : IsFiltered (SmallFilteredIntermediate F) :=
+instance [_root_.Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
   of_equivalence (equivSmallModel _)
 
-noncomputable def firstFunctor : D ⥤ SmallFilteredIntermediate F :=
+/-- The first part of a factoring of a functor from a small category to a filtered category through
+    a small filtered category. -/
+noncomputable def smallFilteredIntermediateFactoring : D ⥤ SmallFilteredIntermediate F :=
   FullSubcategory.lift _ F filteredClosure.base ⋙ (equivSmallModel _).functor
 
-noncomputable def secondFunctor : SmallFilteredIntermediate F ⥤ C :=
+/-- The second, faithful part of a factoring of a functor from a small category to a filtered
+    category through a small filtered category. -/
+noncomputable def smallFilteredIntermediateInclusion : SmallFilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance faithful_secondFunctor : Faithful (secondFunctor F) :=
+instance faithful_secondFunctor : Faithful (smallFilteredIntermediateInclusion F) :=
   show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
 
-noncomputable def firstFunctor_secondFunctor : firstFunctor F ⋙ secondFunctor F ≅ F :=
+/-- The factorization through a small filtered category is in fact a factorization, up to natural
+    isomorphism. -/
+noncomputable def smallFilteredIntermediateFactoringCompSmallFilteredIntermediateInclusion :
+  smallFilteredIntermediateFactoring F ⋙ smallFilteredIntermediateInclusion F ≅ F :=
 isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
 
 end
