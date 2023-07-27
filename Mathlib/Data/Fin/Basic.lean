@@ -769,6 +769,14 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
 /--
+The `Fin.le_zero_iff` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
+  ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
+#align fin.le_zero_iff Fin.le_zero_iff'
+
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
 #align fin.cast_lt Fin.castLT
 #align fin.coe_cast_lt Fin.coe_castLT
