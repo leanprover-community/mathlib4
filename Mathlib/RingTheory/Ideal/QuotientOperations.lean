@@ -168,11 +168,12 @@ instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
     commutes' := fun _ _ => mul_comm _ _ }
 #align ideal.quotient.algebra Ideal.Quotient.algebra
 
--- -- Lean can struggle to find this instance later if we don't provide this shortcut
--- -- Porting note: this can probably now be deleted
--- instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
---     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
--- #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
+-- Lean can struggle to find this instance later if we don't provide this shortcut
+-- Porting note: this can probably now be deleted
+-- update: maybe note; removal causes timeouts
+instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
+    IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
+#align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
 
 /-- The canonical morphism `A →ₐ[R₁] A ⧸ I` as morphism of `R₁`-algebras, for `I` an ideal of
 `A`, where `A` is an `R₁`-algebra. -/
