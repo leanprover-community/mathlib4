@@ -416,7 +416,7 @@ theorem pwFilter_eq_self {l : List α} : pwFilter R l = l ↔ Pairwise R l :=
     rw [pwFilter_cons_of_pos (BAll.imp_left (pwFilter_subset l) al), IH p]⟩
 #align list.pw_filter_eq_self List.pwFilter_eq_self
 
-alias pwFilter_eq_self ↔ _ Pairwise.pwFilter
+alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 #align list.pairwise.pw_filter List.Pairwise.pwFilter
 
 -- Porting note: commented out

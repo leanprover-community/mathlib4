@@ -17,8 +17,8 @@ namespace Classical
 attribute [local instance] propDecidable
 attribute [local instance] decidableInhabited
 
-alias axiomOfChoice ← axiom_of_choice -- TODO: fix in core
-alias propComplete ← prop_complete -- TODO: fix in core
+alias axiom_of_choice := axiomOfChoice -- TODO: fix in core
+alias prop_complete := propComplete -- TODO: fix in core
 
 @[elab_as_elim] theorem cases_true_false (p : Prop → Prop)
     (h1 : p True) (h2 : p False) (a : Prop) : p a :=
@@ -30,8 +30,8 @@ theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p
 theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
 #align classical.cases Classical.cases
 
-alias byCases ← by_cases
-alias byContradiction ← by_contradiction
+alias by_cases := byCases
+alias by_contradiction := byContradiction
 
 theorem eq_false_or_eq_true (a : Prop) : a = False ∨ a = True := (prop_complete a).symm
 
