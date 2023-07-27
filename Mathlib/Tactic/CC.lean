@@ -10,7 +10,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init.CCLemmas
 import Mathlib.Data.Option.Defs
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Propext
 
 /-!
@@ -3080,11 +3079,23 @@ abbrev ParentOccSet := Std.RBSet ParentOcc (byKey ParentOcc.expr Expr.quickCmp)
 
 abbrev Parents := RBExprMap ParentOccSet
 
-abbrev Congruences := UInt64Map (List Expr)
+inductive CongruencesKey
+  | fo (fn : Expr) (args : Array Expr) : CongruencesKey
+  | ho (fn : Expr) (arg : Expr) : CongruencesKey
+  deriving BEq, Hashable
 
-abbrev SymmCongruences := UInt64Map (List (Expr × Name))
+abbrev Congruences := Std.HashMap CongruencesKey (List Expr)
+
+structure SymmCongruencesKey where
+  (h₁ h₂ : Expr)
+  deriving BEq, Hashable
+
+abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
 abbrev SubsingletonReprs := RBExprMap Expr
+
+/-- Stores the root representatives of `.instImplicit` arguments. -/
+abbrev InstImplicitReprs := RBExprMap (List Expr)
 
 abbrev TodoEntry := Expr × Expr × EntryExpr × Bool
 
@@ -3098,6 +3109,9 @@ structure CCState where
   congruences : Congruences := ∅
   symmCongruences : SymmCongruences := ∅
   subsingletonReprs : SubsingletonReprs := ∅
+  /- Porting note: This is an alternative of `defeq_canonizer` in Lean3. -/
+  /-- Stores the root representatives of `.instImplicit` arguments. -/
+  instImplicitReprs : InstImplicitReprs := ∅
   /-- The congruence closure module has a mode where the root of each equivalence class is marked as
       an interpreted/abstract value. Moreover, in this mode proof production is disabled.
       This capability is useful for heuristic instantiation. -/
@@ -3329,7 +3343,20 @@ def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := do
   modifyCache fun ccc => ccc.insert key₁ none
   return none
 
-def propagateInstImplicit (e : Expr) : CCM Unit := sorry
+def propagateInstImplicit (e : Expr) : CCM Unit := do
+  let type ← inferType e
+  let type ← normalize type
+  match (← getState).instImplicitReprs.find? type with
+  | some l =>
+    for e' in l do
+      if ← withNewMCtxDepth <| isDefEq e e' then
+        pushReflEq e e'
+        return
+    modifyState fun ccs =>
+      { ccs with instImplicitReprs := ccs.instImplicitReprs.modify type (e :: ·) }
+  | none =>
+    modifyState fun ccs =>
+      { ccs with instImplicitReprs := ccs.instImplicitReprs.insert type [e] }
 
 def setFO (e : Expr) : CCM Unit := do
   let some d ← getEntry e | failure
@@ -3489,7 +3516,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
       for h : i in [:apps.size] do
         let arg := (apps[i]'h.2).appArg!
         addOccurrence e arg false
-        if !pinfo.isEmpty && pinfo.headI.isInstImplicit then
+        if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← getState).config.ignoreInstances` is `true`.
           mkEntry arg false gen
           propagateInstImplicit arg
@@ -3512,7 +3539,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
         for h : j in [i:apps.size] do
           addOccurrence (apps[j]'h.2) currArg false
           addOccurrence (apps[j]'h.2) currFn false
-        if !pinfo.isEmpty && pinfo.headI.isInstImplicit then
+        if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← getState).config.ignoreInstances` is `true`.
           mkEntry currArg false gen
           mkEntry currFn false gen
@@ -3555,10 +3582,13 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
       if ← isProp e then
         mkEntry e false gen
     | .app _ _ | .lit _ => internalizeApp e gen
+    /- Porting note: `.proj` case is new in Lean4. We convert this to the `.app` of the
+       corresponsing projection function because cc is good at dealing with `.app`. -/
     | .proj sn i pe =>
       mkEntry e false gen
       let some fn := (getStructureFields (← getEnv) sn)[i]? | failure
       let e' ← pe.mkDirectProjection fn
+      internalizeApp e' gen
       pushReflEq e e'
 
 partial def propagateIffUp (e : Expr) : CCM Unit := do
@@ -3806,7 +3836,76 @@ partial def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
   processSubsingletonElem e
 end
 
-def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr) := sorry
+def mayPropagate (e : Expr) : Bool :=
+  e.isAppOfArity ``Iff 2 || e.isAppOfArity ``And 2 || e.isAppOfArity ``Or 2 ||
+    e.isAppOfArity ``Not 1 || e.isArrow || e.isIte
+
+def mkCongruencesKey (e : Expr) : CCM CongruencesKey := do
+  let .app f a := e | failure
+  if (← getEntry e).any Entry.fo then
+    -- first-order case, where we do not consider all partial applications
+    return .fo e.getAppFn e.getAppArgs
+  else
+    return .ho f a
+
+def mkSymmCongruencesKey (lhs rhs : Expr) : SymmCongruencesKey :=
+  if hash lhs > hash rhs then { h₁ := rhs, h₂ := lhs } else { h₁ := lhs, h₂ := rhs }
+
+/-- Auxiliary function for comparing `lhs₁ ~ rhs₁` and `lhs₂ ~ rhs₂`,
+    when `~` is symmetric/commutative.
+    It returns true (equal) for `a ~ b` `b ~ a`-/
+def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
+  let lhs₁ ← getRoot lhs₁
+  let rhs₁ ← getRoot rhs₁
+  let lhs₂ ← getRoot lhs₂
+  let rhs₂ ← getRoot rhs₂
+  let (lhs₁, rhs₁) := if rhs₁.quickLt lhs₁ then (rhs₁, lhs₁) else (lhs₁, rhs₁)
+  let (lhs₂, rhs₂) := if rhs₂.quickLt lhs₂ then (rhs₂, lhs₂) else (lhs₂, rhs₂)
+  return lhs₁ == lhs₂ && rhs₁ == rhs₂
+
+def compareSymm (k₁ k₂ : Expr × Name) : CCM Bool := do
+  if k₁.2 != k₂.2 then return false
+  let e₁ := k₁.1
+  let e₂ := k₂.1
+  if k₁.2 == ``Eq || k₁.2 == ``Iff then
+    compareSymmAux e₁.appFn!.appArg! e₁.appArg! e₂.appFn!.appArg! e₂.appArg!
+  else
+    let some (_, lhs₁, rhs₁) ← isSymmRelation e₁ | failure
+    let some (_, lhs₂, rhs₂) ← isSymmRelation e₂ | failure
+    compareSymmAux lhs₁ rhs₁ lhs₂ rhs₂
+
+def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr) := do
+  let some ps := (← getState).parents.find? e | return parentsToPropagate
+  let mut parentsToPropagate := parentsToPropagate
+  for pocc in ps do
+    let p := pocc.expr
+    trace[Debug.Meta.Tactic.cc] "remove parent: {p}"
+    if mayPropagate p then
+      parentsToPropagate := parentsToPropagate.push p
+    if p.isApp then
+      if pocc.symmTable then
+        let some (rel, lhs, rhs) ← isSymmRelation p | failure
+        let k' := mkSymmCongruencesKey lhs rhs
+        if let some lst := (← getState).symmCongruences.find? k' then
+          let k := (p, rel)
+          let newLst ← lst.filterM fun k₂ => (!·) <$> compareSymm k k₂
+          if !newLst.isEmpty then
+            modifyState fun ccs =>
+              { ccs with symmCongruences := ccs.symmCongruences.insert k' newLst }
+          else
+            modifyState fun ccs =>
+              { ccs with symmCongruences := ccs.symmCongruences.erase k' }
+      else
+        let k' ← mkCongruencesKey p
+        if let some es := (← getState).congruences.find? k' then
+          let newEs := es.erase p
+          if !newEs.isEmpty then
+            modifyState fun ccs =>
+              { ccs with congruences := ccs.congruences.insert k' newEs }
+          else
+            modifyState fun ccs =>
+              { ccs with congruences := ccs.congruences.erase k' }
+  return parentsToPropagate
 
 /--
 The fields `target` and `proof` in `e`'s entry are encoding a transitivity proof
