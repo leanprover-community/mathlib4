@@ -34,7 +34,7 @@ Note that a group `G` with Haar measure that is both left and right invariant is
 
 open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
-open scoped Pointwise NNReal
+open scoped Pointwise NNReal ENNReal
 
 variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
@@ -156,3 +156,181 @@ theorem MeasurePreservingQuotientGroup.mk' [Subgroup.Normal Γ]
   map_eq := by rw [h𝓕.map_restrict_quotient K h𝓕_finite, h]; rfl
 #align measure_preserving_quotient_group.mk' MeasurePreservingQuotientGroup.mk'
 #align measure_preserving_quotient_add_group.mk' MeasurePreservingQuotientAddGroup.mk'
+
+section
+
+local notation "μ_𝓕" => Measure.map (@QuotientGroup.mk G _ Γ) (μ.restrict 𝓕)
+
+/-- The `ess_sup` of a function `g` on the quotient space `G ⧸ Γ` with respect to the pushforward
+  of the restriction, `μ_𝓕`, of a right-invariant measure `μ` to a fundamental domain `𝓕`, is the
+  same as the `ess_sup` of `g`'s lift to the universal cover `G` with respect to `μ`. -/
+-- @[to_additive "The `ess_sup` of a function `g` on the additive quotient space `G ⧸ Γ` with respect
+--   to the pushforward of the restriction, `μ_𝓕`, of a right-invariant measure `μ` to a fundamental
+--   domain `𝓕`, is the same as the `ess_sup` of `g`'s lift to the universal cover `G` with respect
+--   to `μ`."]
+lemma essSup_comp_quotientGroup_mk [μ.IsMulRightInvariant] {g : G ⧸ Γ → ℝ≥0∞}
+    (g_ae_measurable : AEMeasurable g μ_𝓕) : essSup g μ_𝓕 = essSup (fun (x : G) ↦ g x) μ := by
+  have hπ : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
+  rw [essSup_map_measure g_ae_measurable hπ.aemeasurable]
+  refine h𝓕.essSup_measure_restrict ?_
+  intro ⟨γ, hγ⟩ x
+  dsimp
+  congr 1
+  exact QuotientGroup.mk_mul_of_mem x hγ
+
+
+
+/-- Given a quotient space `G ⧸ Γ` where `Γ` is `countable`, and the restriction,
+  `μ_𝓕`, of a right-invariant measure `μ` on `G` to a fundamental domain `𝓕`, a set
+  in the quotient which has `μ_𝓕`-measure zero, also has measure zero under the
+  folding of `μ` under the quotient. Note that, if `Γ` is infinite, then the folded map
+  will take the value `∞` on any open set in the quotient! -/
+-- @[to_additive "Given an additive quotient space `G ⧸ Γ` where `Γ` is `countable`, and the
+--   restriction, `μ_𝓕`, of a right-invariant measure `μ` on `G` to a fundamental domain `𝓕`, a set
+--   in the quotient which has `μ_𝓕`-measure zero, also has measure zero under the
+--   folding of `μ` under the quotient. Note that, if `Γ` is infinite, then the folded map
+--   will take the value `∞` on any open set in the quotient!"]
+lemma _root_.MeasureTheory.IsFundamentalDomain.absolutelyContinuous_map
+    [μ.IsMulRightInvariant] :
+    map (QuotientGroup.mk : G → G ⧸ Γ) μ ≪ map (QuotientGroup.mk : G → G ⧸ Γ) (μ.restrict 𝓕) := by
+  set π : G → G ⧸ Γ := QuotientGroup.mk
+  have meas_π : Measurable π := continuous_quotient_mk'.measurable
+  apply AbsolutelyContinuous.mk
+  intro s s_meas hs
+  rw [map_apply meas_π s_meas] at hs ⊢
+  rw [Measure.restrict_apply] at hs
+  apply h𝓕.measure_zero_of_invariant _ _ hs
+  · intro γ
+    ext g
+    rw [Set.mem_smul_set_iff_inv_smul_mem, mem_preimage, mem_preimage]
+    --conrm _ ∈ s
+    --convert QuotientGroup.mk_mul_of_mem g (γ⁻¹).2 using 1
+    sorry
+  exact MeasurableSet.preimage s_meas meas_π
+
+
+
+--local attribute [-instance] quotient.measurable_space
+
+/-- This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of a group `G`, the
+  integral of a function `f` on `G` with respect to a right-invariant measure `μ` is equal to the
+  integral over the quotient `G ⧸ Γ` of the automorphization of `f`. -/
+-- @[to_additive "This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of an
+--   additive  group `G`, the integral of a function `f` on `G` with respect to a right-invariant
+--   measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`."]
+lemma QuotientGroup.integral_eq_integral_automorphize {E : Type _} [NormedAddCommGroup E]
+    [CompleteSpace E] [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
+    (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :
+    ∫ x : G, f x ∂μ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := by
+  calc ∫ x : G, f x ∂μ = ∑' γ : (Subgroup.opposite Γ), ∫ x in 𝓕, f (γ • x) ∂μ :=
+    h𝓕.integral_eq_tsum'' f hf₁
+    _ = ∫ x in 𝓕, ∑' γ : (Subgroup.opposite Γ), f (γ • x) ∂μ := ?_
+    _ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := (integral_map continuous_quotient_mk'.aemeasurable hf₂).symm
+  rw [integral_tsum]
+  · exact fun i ↦ (hf₁.1.comp_quasiMeasurePreserving
+      (measurePreserving_smul i μ).quasiMeasurePreserving).restrict
+  · rw [← h𝓕.lintegral_eq_tsum'' (fun x ↦ ‖f x‖₊)]
+    exact ne_of_lt hf₁.2
+
+
+
+/-- This is the **Unfolding Trick**: Given a subgroup `Γ` of a group `G`, the integral of a
+  function `f` on `G` times the lift to `G` of a function `g` on the quotient `G ⧸ Γ` with respect
+  to a right-invariant measure `μ` on `G`, is equal to the integral over the quotient of the
+  automorphization of `f` times `g`. -/
+lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type _} [NormedField K]
+    [CompleteSpace K] [NormedSpace ℝ K] [μ.IsMulRightInvariant] {f : G → K}
+    (f_ℒ_1 : Integrable f μ) {g : G ⧸ Γ → K} (hg : AEStronglyMeasurable g μ_𝓕)
+    (g_ℒ_infinity : essSup (fun x ↦ ↑‖g x‖₊) μ_𝓕 ≠ ∞)
+    (F_ae_measurable : AEStronglyMeasurable (QuotientGroup.automorphize f) μ_𝓕) :
+    ∫ x : G, g (x : G ⧸ Γ) * (f x) ∂μ
+      = ∫ x : G ⧸ Γ, g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by
+  let π : G → G ⧸ Γ := QuotientGroup.mk
+  have meas_π : Measurable π := continuous_quotient_mk'.measurable
+  have H₀ : QuotientGroup.automorphize ((g ∘ π) * f) = g * (QuotientGroup.automorphize f) :=
+    QuotientGroup.automorphize_smul_left f g
+  -- :=
+    --QuotientGroup.automorphize_smul_left f g
+
+
+
+#exit
+
+
+begin
+  let π : G → G ⧸ Γ := quotient_group.mk,
+  have H₀ : quotient_group.automorphize ((g ∘ π) * f) = g * (quotient_group.automorphize f) :=
+    quotient_group.automorphize_smul_left f g,
+  calc ∫ (x : G), g (π x) * f x ∂μ =
+       ∫ (x : G ⧸ Γ), quotient_group.automorphize ((g ∘ π) * f) x ∂μ_𝓕 : _
+  ... = ∫ (x : G ⧸ Γ), g x * (quotient_group.automorphize f x) ∂μ_𝓕 : by simp [H₀],
+  have meas_π : measurable π := continuous_quotient_mk.measurable,
+  have H₁ : integrable ((g ∘ π) * f) μ,
+  { have : ae_strongly_measurable (λ x : G, g (x : G ⧸ Γ)) μ,
+    { refine (ae_strongly_measurable_of_absolutely_continuous _ _ hg).comp_measurable meas_π,
+      exact h𝓕.absolutely_continuous_map },
+    refine integrable.ess_sup_smul f_ℒ_1 this _,
+    { have hg' : ae_strongly_measurable (λ x, ↑‖g x‖₊) μ_𝓕 :=
+        (ennreal.continuous_coe.comp continuous_nnnorm).comp_ae_strongly_measurable hg,
+      rw [← ess_sup_comp_quotient_group_mk h𝓕 hg'.ae_measurable],
+      exact g_ℒ_infinity } },
+  have H₂ : ae_strongly_measurable (quotient_group.automorphize ((g ∘ π) * f)) μ_𝓕,
+  { simp_rw [H₀],
+    exact hg.mul F_ae_measurable },
+  apply quotient_group.integral_eq_integral_automorphize h𝓕 H₁ H₂,
+end
+
+-- end
+
+-- section
+
+-- variables {G' : Type*} [add_group G'] [measurable_space G'] [topological_space G']
+--   [topological_add_group G'] [borel_space G']
+--   {μ' : measure G'}
+--   {Γ' : add_subgroup G'}
+--   [countable Γ'] [measurable_space (G' ⧸ Γ')] [borel_space (G' ⧸ Γ')]
+--   {𝓕' : set G'}
+
+-- local notation `μ_𝓕` := measure.map (@quotient_add_group.mk G' _ Γ') (μ'.restrict 𝓕')
+
+-- /-- This is the **Unfolding Trick**: Given an additive subgroup `Γ'` of an additive group `G'`, the
+--   integral of a function `f` on `G'` times the lift to `G'` of a function `g` on the quotient
+--   `G' ⧸ Γ'` with respect to a right-invariant measure `μ` on `G'`, is equal to the integral over
+--   the quotient of the automorphization of `f` times `g`. -/
+-- lemma quotient_add_group.integral_mul_eq_integral_automorphize_mul
+-- {K : Type*} [normed_field K]
+--   [complete_space K] [normed_space ℝ K] [μ'.is_add_right_invariant] {f : G' → K}
+--   (f_ℒ_1 : integrable f μ') {g : G' ⧸ Γ' → K} (hg : ae_strongly_measurable g μ_𝓕)
+--   (g_ℒ_infinity : ess_sup (λ x, ↑‖g x‖₊) μ_𝓕 ≠ ∞)
+--   (F_ae_measurable : ae_strongly_measurable (quotient_add_group.automorphize f) μ_𝓕)
+--   (h𝓕 : is_add_fundamental_domain Γ'.opposite 𝓕' μ') :
+--   ∫ x : G', g (x : G' ⧸ Γ') * (f x) ∂μ'
+--     = ∫ x : G' ⧸ Γ', g x * (quotient_add_group.automorphize f x) ∂μ_𝓕 :=
+-- begin
+--   let π : G' → G' ⧸ Γ' := quotient_add_group.mk,
+--   have H₀ : quotient_add_group.automorphize ((g ∘ π) * f)
+--     = g * (quotient_add_group.automorphize f) :=
+--     quotient_add_group.automorphize_smul_left f g,
+--   calc ∫ (x : G'), g (π x) * f x ∂μ' =
+--        ∫ (x : G' ⧸ Γ'), quotient_add_group.automorphize ((g ∘ π) * f) x ∂μ_𝓕 : _
+--   ... = ∫ (x : G' ⧸ Γ'), g x * (quotient_add_group.automorphize f x) ∂μ_𝓕 : by simp [H₀],
+--   have meas_π : measurable π := continuous_quotient_mk.measurable,
+--   have H₁ : integrable ((g ∘ π) * f) μ',
+--   { have : ae_strongly_measurable (λ x : G', g (x : G' ⧸ Γ')) μ',
+--     { refine (ae_strongly_measurable_of_absolutely_continuous _ _ hg).comp_measurable meas_π,
+--       exact h𝓕.absolutely_continuous_map },
+--     refine integrable.ess_sup_smul f_ℒ_1 this _,
+--     { have hg' : ae_strongly_measurable (λ x, ↑‖g x‖₊) μ_𝓕 :=
+--         (ennreal.continuous_coe.comp continuous_nnnorm).comp_ae_strongly_measurable hg,
+--       rw [← ess_sup_comp_quotient_add_group_mk h𝓕 hg'.ae_measurable],
+--       exact g_ℒ_infinity } },
+--   have H₂ : ae_strongly_measurable (quotient_add_group.automorphize ((g ∘ π) * f)) μ_𝓕,
+--   { simp_rw [H₀],
+--     exact hg.mul F_ae_measurable },
+--   apply quotient_add_group.integral_eq_integral_automorphize h𝓕 H₁ H₂,
+-- end
+
+-- end
+
+-- attribute [to_additive quotient_group.integral_mul_eq_integral_automorphize_mul]
+--   quotient_add_group.integral_mul_eq_integral_automorphize_mul
