@@ -620,12 +620,15 @@ def mkCongruencesKey (e : Expr) : CCM CongruencesKey := do
   let .app f a := e | failure
   if (← getEntry e).any Entry.fo then
     -- first-order case, where we do not consider all partial applications
-    return e.withApp fun fn args => .fo fn args
+    e.withApp fun fn args => do
+      return .fo (← getRoot fn) (← args.mapM getRoot)
   else
-    return .ho f a
+    return .ho (← getRoot f) (← getRoot a)
 
-def mkSymmCongruencesKey (lhs rhs : Expr) : SymmCongruencesKey :=
-  if hash lhs > hash rhs then { h₁ := rhs, h₂ := lhs } else { h₁ := lhs, h₂ := rhs }
+def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
+  let lhs ← getRoot lhs
+  let rhs ← getRoot rhs
+  if hash lhs > hash rhs then return { h₁ := rhs, h₂ := lhs } else return { h₁ := lhs, h₂ := rhs }
 
 def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := do
   let fn := e.getAppFn
@@ -1015,7 +1018,7 @@ def addCongruenceTable (e : Expr) : CCM Unit := do
 
 def addSymmCongruenceTable (e : Expr) : CCM Unit := do
   let some (rel, lhs, rhs) ← isSymmRelation e | failure
-  let k := mkSymmCongruencesKey lhs rhs
+  let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
   if let some ps := (← getState).symmCongruences.find? k then
     for p in ps do
@@ -1472,7 +1475,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr
     if p.isApp then
       if pocc.symmTable then
         let some (rel, lhs, rhs) ← isSymmRelation p | failure
-        let k' := mkSymmCongruencesKey lhs rhs
+        let k' ← mkSymmCongruencesKey lhs rhs
         if let some lst := (← getState).symmCongruences.find? k' then
           let k := (p, rel)
           let newLst ← lst.filterM fun k₂ => (!·) <$> compareSymm k k₂

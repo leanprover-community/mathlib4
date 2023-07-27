@@ -15,7 +15,7 @@ set_option pp.explicit true
 example (a b c d : Nat) (f : Nat → Nat → Nat) :
     a = b → b = c → d + (if b > 0 then a else b) = 0 → f (b + b) b ≠ f (a + c) c → False := by
   intro _ _ _ h
-  run_tac do
+  run_tac withMainContext do
     let s ← CCState.mkUsingHs
     logInfo (toMessageData s)
     let some (_, t₁, t₂) ← liftM <| getFVarFromUserName `h >>= inferType >>= matchNe? | failure
