@@ -161,23 +161,18 @@ variable [Algebra R₁ A] [Algebra R₂ A] [Algebra R₁ B]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
-  {
-    RingHom.comp (Ideal.Quotient.mk I)
-      (algebraMap R₁
-        A) with
-    toFun := fun x => Ideal.Quotient.mk I (algebraMap R₁ A x)
-    smul := (· • ·)
+  { toRingHom :=  RingHom.comp (Ideal.Quotient.mk I) (algebraMap R₁ A)
     smul_def' := fun _ x =>
       Quotient.inductionOn' x fun _ =>
         ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
     commutes' := fun _ _ => mul_comm _ _ }
 #align ideal.quotient.algebra Ideal.Quotient.algebra
 
--- Lean can struggle to find this instance later if we don't provide this shortcut
--- Porting note: this can probably now be deleted
-instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
-    IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
-#align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
+-- -- Lean can struggle to find this instance later if we don't provide this shortcut
+-- -- Porting note: this can probably now be deleted
+-- instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
+--     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
+-- #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
 
 /-- The canonical morphism `A →ₐ[R₁] A ⧸ I` as morphism of `R₁`-algebras, for `I` an ideal of
 `A`, where `A` is an `R₁`-algebra. -/
@@ -451,12 +446,13 @@ theorem quotient_map_comp_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] 
 where`J = f(I)`. -/
 def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
-  { quotientEquiv I J (f : A ≃+* B) hIJ with commutes' := fun r => by
-  { -- Porting note: Needed to add the below lemma because Equivs coerce weird
-    have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
-    rw [this]
-    simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
-  RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}}
+  { quotientEquiv I J (f : A ≃+* B) hIJ with
+    commutes' := fun r => by
+    { -- Porting note: Needed to add the below lemma because Equivs coerce weird
+      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
+      rw [this]
+      simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
+      RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}}
 #align ideal.quotient_equiv_alg Ideal.quotientEquivAlg
 
 instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
@@ -468,9 +464,6 @@ theorem algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
-  -- Porting note: Needed to add these two lines b/c we removed deinstanced this earlier
-  letI : NonAssocRing R := Ring.toNonAssocRing
-  letI : NonAssocRing A := Ring.toNonAssocRing
   rw [← RingHom.map_sub] at hab
   exact Quotient.eq.mpr hab
 #align ideal.algebra_map_quotient_injective Ideal.algebraMap_quotient_injective

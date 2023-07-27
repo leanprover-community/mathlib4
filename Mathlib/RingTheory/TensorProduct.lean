@@ -431,8 +431,16 @@ theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
 
 instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 
-instance : AddMonoidWithOne (A ⊗[R] B) :=
-  AddMonoidWithOne.unary
+theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
+  rfl
+#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
+
+instance : AddMonoidWithOne (A ⊗[R] B) where
+  natCast n := n ⊗ₜ 1
+  natCast_zero := by simp
+  natCast_succ n := by simp [add_tmul, one_def]
+
+theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
@@ -440,8 +448,13 @@ instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
 
--- and this separately seems to improve things slightly
-instance : NonUnitalNonAssocSemiring (A ⊗[R] B) where
+@[simp]
+theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
+    a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
+  rfl
+#align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
+
+instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
@@ -453,16 +466,8 @@ instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
 instance instSemiring : Semiring (A ⊗[R] B) where
   one_mul := one_mul
   mul_one := mul_one
-
-theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
-  rfl
-#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
-
-@[simp]
-theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
-    a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
-  rfl
-#align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
+  natCast_zero := AddMonoidWithOne.natCast_zero
+  natCast_succ := AddMonoidWithOne.natCast_succ
 
 @[simp]
 theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
@@ -484,8 +489,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
 variable {S : Type _} [CommSemiring S] [Algebra S A]
 
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
-  { TensorProduct.includeLeftRingHom.comp (algebraMap S A),
-    (by infer_instance : Module S (A ⊗[R] B)) with
+  { toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A)
     commutes' := fun r x => by
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp
@@ -507,6 +511,8 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
         rw [smul_add, mul_add] -- porting note: these were in the `simp` call in lean 3
         simp [*] }
 #align algebra.tensor_product.left_algebra Algebra.TensorProduct.leftAlgebra
+
+example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
@@ -577,9 +583,19 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance instRing : Ring (A ⊗[R] B) :=
-  { toSemiring := inferInstance
-    add_left_neg := add_left_neg }
+instance instRing : Ring (A ⊗[R] B) where
+  zsmul := SubNegMonoid.zsmul
+  zsmul_zero' := SubNegMonoid.zsmul_zero'
+  zsmul_succ' := SubNegMonoid.zsmul_succ'
+  zsmul_neg' := SubNegMonoid.zsmul_neg'
+  intCast z := z ⊗ₜ (1 : B)
+  intCast_ofNat n := by simp [natCast_def]
+  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
+  add_left_neg := add_left_neg
+
+-- verify there are no diamonds
+example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
+example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
 
