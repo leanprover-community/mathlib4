@@ -2,14 +2,11 @@
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.kuratowski
-! leanprover-community/mathlib commit 95d4f6586d313c8c28e00f36621d2a6a66893aa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Topology.Sets.Compacts
+
+#align_import topology.metric_space.kuratowski from "leanprover-community/mathlib"@"95d4f6586d313c8c28e00f36621d2a6a66893aa6"
 
 /-!
 # The Kuratowski embedding
@@ -150,10 +147,10 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f :
     exact LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
   choose g hgl hgeq using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
-  . exact ⟨0, LipschitzWith.const' 0, by simp⟩
+  · exact ⟨0, LipschitzWith.const' 0, by simp⟩
   · -- Show that the extensions are uniformly bounded
     have hf_extb : ∀ a : α, Memℓp (swap g a) ∞
-    . apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
+    · apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
       use ‖f a₀‖
       rintro - ⟨i, rfl⟩
       simp_rw [←hgeq i ha₀_in_s]

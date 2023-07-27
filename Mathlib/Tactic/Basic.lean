@@ -99,7 +99,7 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
       return ((), fvars.map .some, ← mvarId.replaceTargetDefEq targetNew)
     match ← mvarId.getType with
     | .forallE n d b bi => do check d; finalize (.forallE n typeNew b bi)
-    | .letE n t v b ndep  => do check t; finalize (.letE n typeNew v b ndep)
+    | .letE n t v b ndep => do check t; finalize (.letE n typeNew v b ndep)
     | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
   return mvarId
 
@@ -120,7 +120,7 @@ changes their types to be `h : n + 1 + 1 = 2` and `h' : n + 2 + 1 = 4`.
 Change is like `refine` in that every placeholder needs to be solved for by unification,
 but you can use named placeholders and `?_` where you want `change` to create new goals.
 
-The the tactic `show e` is interchangeable with `change e`, where the pattern `e` is applied to
+The tactic `show e` is interchangeable with `change e`, where the pattern `e` is applied to
 the main goal. -/
 elab_rules : tactic
   | `(tactic| change $newType:term $[$loc:location]?) => do
@@ -212,7 +212,7 @@ where
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
-elab "match_target " t:term : tactic  => do
+elab "match_target " t:term : tactic => do
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then

@@ -2,16 +2,12 @@
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.monad.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Control.Lawful
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Control.SimpSet
 import Mathlib.Tactic.Common
+
+#align_import control.monad.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Monad
@@ -43,11 +39,6 @@ functor, applicative, monad, simp
 -/
 
 attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
-
-attribute [functor_norm] bind_assoc pure_bind bind_pure
-
-attribute [monad_norm] seq_eq_bind_map
-
 
 @[monad_norm]
 theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]

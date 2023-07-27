@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.cycle
-! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.List.Rotate
+
+#align_import data.list.cycle from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
 /-!
 # Cycles of a list
@@ -73,8 +70,8 @@ theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x �
   by_cases h : x = y
   · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
   · rw [nextOr, nextOr, IH]
-    . simpa [h] using x_mem
-    . simpa using x_ne
+    · simpa [h] using x_mem
+    · simpa using x_ne
 #align list.next_or_eq_next_or_of_mem_of_ne List.nextOr_eq_nextOr_of_mem_of_ne
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
@@ -285,24 +282,24 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     · subst hi'
       rw [next_getLast_cons]
       · simp [hi', get]
-      . rw [get_cons_succ]; exact get_mem _ _ _
-      . exact hx'
-      . simp [getLast_eq_get]
-      . exact hn.of_cons
-    . rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
+      · rw [get_cons_succ]; exact get_mem _ _ _
+      · exact hx'
+      · simp [getLast_eq_get]
+      · exact hn.of_cons
+    · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
       simp only [get_cons_succ]
       rw [next_get (y::l), ← get_cons_succ (a := x)]
       congr
       dsimp
       rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
         Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
-      . simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
-      . exact hn.of_cons
-      . rw [getLast_eq_get]
+      · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
+      · exact hn.of_cons
+      · rw [getLast_eq_get]
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
-      . rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact get_mem _ _ _
 
 set_option linter.deprecated false in
 @[deprecated next_get]
@@ -414,7 +411,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
     rw [← nthLe_reverse]
     · simp [tsub_tsub_cancel_of_le (Nat.le_pred_of_lt hk)]
     · simpa using (Nat.sub_le _ _).trans_lt (tsub_lt_self lpos Nat.succ_pos')
-    . simpa
+    · simpa
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
@@ -686,7 +683,7 @@ theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬S
 /-- The `s : Cycle α` as a `Multiset α`.
 -/
 def toMultiset (s : Cycle α) : Multiset α :=
-  Quotient.liftOn' s (↑) fun _ _  h => Multiset.coe_eq_coe.mpr h.perm
+  Quotient.liftOn' s (↑) fun _ _ h => Multiset.coe_eq_coe.mpr h.perm
 #align cycle.to_multiset Cycle.toMultiset
 
 @[simp]

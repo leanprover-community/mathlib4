@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.spectral.hom
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.spectral.hom from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Spectral maps
@@ -188,7 +185,7 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 
 @[simp]
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
-    (f ∘ g)= (f : ContinuousMap β γ) ∘  (g: ContinuousMap α β) := by
+    (f ∘ g)= (f : ContinuousMap β γ) ∘ (g: ContinuousMap α β) := by
    rfl
 
 -- porting note: removed `simp` from this and added lemma above to address `simpNF` lint

@@ -2,14 +2,11 @@
 Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
-
-! This file was ported from Lean 3 source module data.set.ncard
-! leanprover-community/mathlib commit 74c2af38a828107941029b03839882c5c6f87a04
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.Finprod
+
+#align_import data.set.ncard from "leanprover-community/mathlib"@"74c2af38a828107941029b03839882c5c6f87a04"
 
 /-!
 # Noncomputable Set Cardinality
@@ -42,7 +39,7 @@ a `Finite s` term in the cases where `s` is a set in a `Finite` type.
 Often, where there are two set arguments `s` and `t`, the Finiteness of one follows from the other
 in the context of the theorem, in which case we only include the ones that are needed, and derive
 the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
-finiteness arguments; they are are true by coincidence due to junk values.
+finiteness arguments; they are true by coincidence due to junk values.
 -/
 
 open BigOperators
@@ -642,7 +639,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   cases' t.finite_or_infinite with ht ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
       ←@Finite.toFinset_subset_toFinset _ _ _ hs ht, ←Finset.exists_eq_insert_iff]
-    convert Iff.rfl using 2 ; simp
+    convert Iff.rfl using 2; simp
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
   simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and]

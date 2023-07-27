@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.basic
-! leanprover-community/mathlib commit 3b1890e71632be9e3b2086ab512c3259a7e9a3ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.Star
+
+#align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b1890e71632be9e3b2086ab512c3259a7e9a3ef"
 
 /-!
 # Infinite sum over a topological monoid
@@ -64,9 +61,15 @@ def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
 
-/-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise -/
+/-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise. -/
 irreducible_def tsum {β} (f : β → α) :=
-  if h : Summable f then Classical.choose h else 0
+  if h : Summable f then
+  /- Note that the sum might not be uniquely defined if the topology is not separated.
+  When the support of `f` is finite, we make the most reasonable choice to use the finite sum over
+  the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. -/
+    if (support f).Finite then finsum f
+    else Classical.choose h
+  else 0
 #align tsum tsum
 
 -- see Note [operator precedence of big operators]
@@ -74,11 +77,6 @@ irreducible_def tsum {β} (f : β → α) :=
 notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
 
 variable {f g : β → α} {a b : α} {s : Finset β}
-
-theorem Summable.hasSum (ha : Summable f) : HasSum f (∑' b, f b) := by
-  simp only [tsum_def, ha, dite_true]
-  exact Classical.choose_spec ha
-#align summable.has_sum Summable.hasSum
 
 theorem HasSum.summable (h : HasSum f a) : Summable f :=
   ⟨a, h⟩
@@ -199,6 +197,16 @@ theorem hasSum_sum_of_ne_finset_zero (hf : ∀ (b) (_ : b ∉ s), f b = 0) : Has
 theorem summable_of_ne_finset_zero (hf : ∀ (b) (_ : b ∉ s), f b = 0) : Summable f :=
   (hasSum_sum_of_ne_finset_zero hf).summable
 #align summable_of_ne_finset_zero summable_of_ne_finset_zero
+
+theorem summable_of_finite_support (h : (support f).Finite) : Summable f := by
+  apply summable_of_ne_finset_zero (s := h.toFinset); simp
+
+theorem Summable.hasSum (ha : Summable f) : HasSum f (∑' b, f b) := by
+  simp only [tsum_def, ha, dite_true]
+  by_cases H : (support f).Finite
+  · simp [H, hasSum_sum_of_ne_finset_zero, finsum_eq_sum]
+  · simpa [H] using Classical.choose_spec ha
+#align summable.has_sum Summable.hasSum
 
 theorem hasSum_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 0) : HasSum f (f b) :=
   suffices HasSum f (∑ b' in {b}, f b') by simpa using this
@@ -454,48 +462,44 @@ end HasSum
 
 section tsum
 
-variable [AddCommMonoid α] [TopologicalSpace α]
+variable [AddCommMonoid α] [TopologicalSpace α] {f g : β → α} {a a₁ a₂ : α}
 
 theorem tsum_congr_subtype (f : β → α) {s t : Set β} (h : s = t) :
     ∑' x : s, f x = ∑' x : t, f x := by rw [h]
 #align tsum_congr_subtype tsum_congr_subtype
 
-theorem tsum_zero' (hz : IsClosed ({0} : Set α)) : ∑' _ : β, (0 : α) = 0 := by
-  classical
-    rw [tsum_def, dif_pos summable_zero]
-    suffices ∀ x : α, HasSum (fun _ : β => (0 : α)) x → x = 0 by
-      exact this _ (Classical.choose_spec _)
-    intro x hx
+theorem tsum_eq_finsum (hf : (support f).Finite) :
+    ∑' b, f b = ∑ᶠ b, f b := by simp [tsum_def, summable_of_finite_support hf, hf]
+
+theorem tsum_eq_sum {s : Finset β} (hf : ∀ (b) (_ : b ∉ s), f b = 0) :
+    ∑' b, f b = ∑ b in s, f b := by
+  have I : support f ⊆ s := by
+    intros x hx
     contrapose! hx
-    simp only [HasSum, tendsto_nhds, Finset.sum_const_zero, Filter.mem_atTop_sets, ge_iff_le,
-      Finset.le_eq_subset, Set.mem_preimage, not_forall, not_exists, exists_prop, exists_and_right]
-    refine ⟨{0}ᶜ, ⟨isOpen_compl_iff.mpr hz, by simpa [hx] using fun x ↦ ⟨x, subset_refl _⟩⟩⟩
-#align tsum_zero' tsum_zero'
+    rw [nmem_support]
+    exact hf _ hx
+  simp [tsum_def, summable_of_ne_finset_zero hf, Set.Finite.subset (finite_toSet s) I]
+  exact finsum_eq_sum_of_support_subset f I
+#align tsum_eq_sum tsum_eq_sum
 
 @[simp]
-theorem tsum_zero [T1Space α] : ∑' _ : β, (0 : α) = 0 :=
-  tsum_zero' isClosed_singleton
+theorem tsum_zero : ∑' _ : β, (0 : α) = 0 := by rw [tsum_eq_finsum] <;> simp
 #align tsum_zero tsum_zero
-
-variable [T2Space α] {f g : β → α} {a a₁ a₂ : α}
-
-theorem HasSum.tsum_eq (ha : HasSum f a) : ∑' b, f b = a :=
-  (Summable.hasSum ⟨a, ha⟩).unique ha
-#align has_sum.tsum_eq HasSum.tsum_eq
-
-theorem Summable.hasSum_iff (h : Summable f) : HasSum f a ↔ ∑' b, f b = a :=
-  Iff.intro HasSum.tsum_eq fun eq => eq ▸ h.hasSum
-#align summable.has_sum_iff Summable.hasSum_iff
+#align tsum_zero' tsum_zero
 
 @[simp]
-theorem tsum_empty [IsEmpty β] : ∑' b, f b = 0 :=
-  hasSum_empty.tsum_eq
+theorem tsum_empty [IsEmpty β] : ∑' b, f b = 0 := by
+  rw [tsum_eq_sum (s := (∅ : Finset β))] <;> simp
 #align tsum_empty tsum_empty
 
-theorem tsum_eq_sum {f : β → α} {s : Finset β} (hf : ∀ (b) (_ : b ∉ s), f b = 0) :
-    ∑' b, f b = ∑ b in s, f b :=
-  (hasSum_sum_of_ne_finset_zero hf).tsum_eq
-#align tsum_eq_sum tsum_eq_sum
+theorem tsum_congr {f g : β → α}
+    (hfg : ∀ b, f b = g b) : ∑' b, f b = ∑' b, g b :=
+  congr_arg tsum (funext hfg)
+#align tsum_congr tsum_congr
+
+theorem tsum_fintype [Fintype β] (f : β → α) : ∑' b, f b = ∑ b, f b := by
+  apply tsum_eq_sum; simp
+#align tsum_fintype tsum_fintype
 
 theorem sum_eq_tsum_indicator (f : β → α) (s : Finset β) :
     ∑ x in s, f x = ∑' x, Set.indicator (↑s) f x :=
@@ -506,23 +510,15 @@ theorem sum_eq_tsum_indicator (f : β → α) (s : Finset β) :
     (tsum_eq_sum this).symm
 #align sum_eq_tsum_indicator sum_eq_tsum_indicator
 
-theorem tsum_congr {α β : Type _} [AddCommMonoid α] [TopologicalSpace α] {f g : β → α}
-    (hfg : ∀ b, f b = g b) : ∑' b, f b = ∑' b, g b :=
-  congr_arg tsum (funext hfg)
-#align tsum_congr tsum_congr
-
-theorem tsum_fintype [Fintype β] (f : β → α) : ∑' b, f b = ∑ b, f b :=
-  (hasSum_fintype f).tsum_eq
-#align tsum_fintype tsum_fintype
-
 theorem tsum_bool (f : Bool → α) : ∑' i : Bool, f i = f False + f True := by
   rw [tsum_fintype, Finset.sum_eq_add] <;> simp
 #align tsum_bool tsum_bool
 
 theorem tsum_eq_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 0) :
-    ∑' b, f b = f b :=
-  (hasSum_single b hf).tsum_eq
-#align tsum_eq_single tsum_eq_single
+    ∑' b, f b = f b := by
+  rw [tsum_eq_sum (s := {b}), sum_singleton]
+  exact fun b' hb' ↦ hf b' (by simpa using hb')
+  #align tsum_eq_single tsum_eq_single
 
 theorem tsum_tsum_eq_single (f : β → γ → α) (b : β) (c : γ) (hfb : ∀ (b') (_ : b' ≠ b), f b' c = 0)
     (hfc : ∀ (b' : β) (c' : γ), c' ≠ c → f b' c' = 0) : ∑' (b') (c'), f b' c' = f b c :=
@@ -533,14 +529,45 @@ theorem tsum_tsum_eq_single (f : β → γ → α) (b : β) (c : γ) (hfb : ∀ 
 
 @[simp]
 theorem tsum_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
-    ∑' b', (if b' = b then a else 0) = a :=
-  (hasSum_ite_eq b a).tsum_eq
+    ∑' b', (if b' = b then a else 0) = a := by
+  rw [tsum_eq_single b]
+  · simp
+  · intro b' hb'; simp [hb']
 #align tsum_ite_eq tsum_ite_eq
 
 @[simp]
-theorem tsum_pi_single [DecidableEq β] (b : β) (a : α) : ∑' b', Pi.single b a b' = a :=
-  (hasSum_pi_single b a).tsum_eq
+theorem tsum_pi_single [DecidableEq β] (b : β) (a : α) : ∑' b', Pi.single b a b' = a := by
+  rw [tsum_eq_single b]
+  · simp
+  · intro b' hb'; simp [hb']
 #align tsum_pi_single tsum_pi_single
+
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[simp, nolint simpNF]
+theorem Finset.tsum_subtype (s : Finset β) (f : β → α) :
+    ∑' x : { x // x ∈ s }, f x = ∑ x in s, f x := by
+  rw [← sum_attach]; exact tsum_fintype _
+#align finset.tsum_subtype Finset.tsum_subtype
+
+theorem Finset.tsum_subtype' (s : Finset β) (f : β → α) :
+    ∑' x : (s : Set β), f x = ∑ x in s, f x := by simp
+#align finset.tsum_subtype' Finset.tsum_subtype'
+
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[simp, nolint simpNF]
+theorem tsum_singleton (b : β) (f : β → α) : ∑' x : ({b} : Set β), f x = f b := by
+  rw [← coe_singleton, Finset.tsum_subtype', sum_singleton]
+#align tsum_singleton tsum_singleton
+
+variable [T2Space α]
+
+theorem HasSum.tsum_eq (ha : HasSum f a) : ∑' b, f b = a :=
+  (Summable.hasSum ⟨a, ha⟩).unique ha
+#align has_sum.tsum_eq HasSum.tsum_eq
+
+theorem Summable.hasSum_iff (h : Summable f) : HasSum f a ↔ ∑' b, f b = a :=
+  Iff.intro HasSum.tsum_eq fun eq => eq ▸ h.hasSum
+#align summable.has_sum_iff Summable.hasSum_iff
 
 theorem tsum_dite_right (P : Prop) [Decidable P] (x : β → ¬P → α) :
     ∑' b : β, (if h : P then (0 : α) else x b h) = if h : P then (0 : α) else ∑' b : β, x b h := by
@@ -582,21 +609,6 @@ theorem tsum_eq_tsum_of_ne_zero_bij {g : γ → α} (i : support g → β)
 
 /-! ### `tsum` on subsets -/
 
-
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[simp, nolint simpNF]
-theorem Finset.tsum_subtype (s : Finset β) (f : β → α) :
-    ∑' x : { x // x ∈ s }, f x = ∑ x in s, f x :=
-  (s.hasSum f).tsum_eq
-#align finset.tsum_subtype Finset.tsum_subtype
-
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[simp high, nolint simpNF]
-theorem Finset.tsum_subtype' (s : Finset β) (f : β → α) :
-    ∑' x : (s : Set β), f x = ∑ x in s, f x :=
-  s.tsum_subtype f
-#align finset.tsum_subtype' Finset.tsum_subtype'
-
 theorem tsum_subtype (s : Set β) (f : β → α) : ∑' x : s, f x = ∑' x, s.indicator f x :=
   tsum_eq_tsum_of_hasSum_iff_hasSum hasSum_subtype_iff_indicator
 #align tsum_subtype tsum_subtype
@@ -611,16 +623,6 @@ theorem tsum_subtype_eq_of_support_subset {f : β → α} {s : Set β} (hs : sup
 theorem tsum_univ (f : β → α) : ∑' x : (Set.univ : Set β), f x = ∑' x, f x :=
   tsum_subtype_eq_of_support_subset <| Set.subset_univ _
 #align tsum_univ tsum_univ
-
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[simp, nolint simpNF]
-theorem tsum_singleton (b : β) (f : β → α) : ∑' x : ({b} : Set β), f x = f b := by
-  rw [_root_.tsum_subtype, tsum_eq_single b]
-  · simp
-  · intro b' hb'
-    rw [Set.indicator_of_not_mem]
-    rwa [Set.mem_singleton_iff]
-#align tsum_singleton tsum_singleton
 
 theorem tsum_image {g : γ → β} (f : β → α) {s : Set γ} (hg : Set.InjOn g s) :
     ∑' x : g '' s, f x = ∑' x : s, f (g x) :=
@@ -697,8 +699,8 @@ theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0
     intro n h
     generalize decode₂ γ n = foo at *
     cases' foo with b
-    . refine' (h <| by simp [m0]).elim
-    . exact rfl
+    · refine' (h <| by simp [m0]).elim
+    · exact rfl
   symm
   refine' tsum_eq_tsum_of_ne_zero_bij (fun a => Option.get _ (H a.1 a.2)) _ _ _
   · dsimp only []
@@ -842,7 +844,7 @@ theorem HasSum.update (hf : HasSum f a₁) (b : β) [DecidableEq β] (a : α) :
   by_cases h : b' = b
   · rw [h, update_same]
     simp [eq_self_iff_true, if_true, sub_add_cancel]
-  . simp only [h, update_noteq, if_false, Ne.def, zero_add, not_false_iff]
+  · simp only [h, update_noteq, if_false, Ne.def, zero_add, not_false_iff]
 #align has_sum.update HasSum.update
 
 theorem Summable.update (hf : Summable f) (b : β) [DecidableEq β] (a : α) :

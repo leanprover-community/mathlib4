@@ -2,13 +2,10 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.single
-! leanprover-community/mathlib commit 324a7502510e835cdbd3de1519b6c66b51fb2467
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homology
+
+#align_import algebra.homology.single from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
 
 /-!
 # Chain complexes supported in a single degree
@@ -55,8 +52,8 @@ def single (j : ι) : V ⥤ HomologicalComplex V c where
     { X := fun i => if i = j then A else 0
       d := fun i j => 0 }
   map f :=
-    { f := fun i => if h : i = j then eqToHom (by dsimp ; rw [if_pos h]) ≫ f ≫
-              eqToHom (by dsimp ; rw [if_pos h]) else 0 }
+    { f := fun i => if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
+              eqToHom (by dsimp; rw [if_pos h]) else 0 }
   map_id A := by
     ext
     dsimp
@@ -136,12 +133,12 @@ def single₀ : V ⥤ ChainComplex V ℕ where
         | n + 1 => 0 }
   map_id X := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
   map_comp f g := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
 #align chain_complex.single₀ ChainComplex.single₀
 
 @[simp]
@@ -239,10 +236,10 @@ def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
         | n + 1 => 0
       comm' := fun i j h => by
         rcases i with (_|_|i) <;> cases j <;> simp only [single₀_obj_X_d, comp_zero]
-        . rw [C.shape, zero_comp]
+        · rw [C.shape, zero_comp]
           simp
-        . exact f.2.symm
-        . rw [C.shape, zero_comp]
+        · exact f.2.symm
+        · rw [C.shape, zero_comp]
           exact i.succ_succ_ne_one.symm }
   left_inv f := by
     ext i
@@ -297,9 +294,9 @@ def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
         hom_inv_id := to_single₀_ext _ _ (by simp)
         inv_hom_id := by
           ext (_|_)
-          . dsimp
+          · dsimp
             simp
-          . dsimp
+          · dsimp
             rw [Category.comp_id] })
     fun f => by ext (_|_) <;> aesop_cat
 #align chain_complex.single₀_iso_single ChainComplex.single₀IsoSingle
@@ -333,12 +330,12 @@ def single₀ : V ⥤ CochainComplex V ℕ where
         | n + 1 => 0 }
   map_id X := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
   map_comp f g := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
 #align cochain_complex.single₀ CochainComplex.single₀
 
 @[simp]
@@ -436,10 +433,10 @@ def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
       comm' := fun i j h => by
         rcases f with ⟨f, hf⟩
         rcases j with (_|_|j) <;> cases i <;> simp only [single₀_obj_X_d, zero_comp]
-        . rw [C.shape, comp_zero]
+        · rw [C.shape, comp_zero]
           simp
-        . exact hf
-        . rw [C.shape, comp_zero]
+        · exact hf
+        · rw [C.shape, comp_zero]
           simp
           exact j.succ_succ_ne_one.symm }
   left_inv f := by
@@ -470,9 +467,9 @@ def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
       hom_inv_id := from_single₀_ext _ _ (by simp)
       inv_hom_id := by
         ext (_|_)
-        . dsimp
+        · dsimp
           simp
-        . dsimp
+        · dsimp
           rw [Category.id_comp]
           rfl }
 #align cochain_complex.single₀_iso_single CochainComplex.single₀IsoSingle
