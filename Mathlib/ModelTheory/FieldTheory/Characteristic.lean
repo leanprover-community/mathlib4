@@ -16,6 +16,11 @@ def eqZero (n : ℕ) : Language.field.Sentence :=
 def Theory.fieldOfChar (n : ℕ) : Language.field.Theory :=
   Theory.field ∪ {eqZero n} ∪ ⋃ (i : ℕ) (_ : n ≠ i), {∼ (eqZero i)}
 
+attribute [local instance] structureFieldOfField
+
+def ModelFieldOfCharOfField {K : Type _} [Field K] (n : ℕ) (h : n ≠ 0)
+    (M : (Theory.fieldOfChar n).Model) : Theory.field.Model := sorry
+
 end field
 
 end Language
