@@ -200,7 +200,7 @@ theorem ncard_diff_singleton_lt_of_mem (h : a ∈ s) (hs : s.Finite := by toFini
 theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
   · apply ncard_le_of_subset (diff_subset _ _) hs
-  convert @zero_le ℕ _ _
+  convert @zero_le ℕ _ _ _ _
   exact (hs.diff (by simp : Set.Finite {a})).ncard
 #align set.ncard_diff_singleton_le Set.ncard_diff_singleton_le
 
