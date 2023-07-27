@@ -388,6 +388,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
+<<<<<<< HEAD
 set_option profiler true in
 set_option trace.Meta.synthInstance true in
 #synth MulAction S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
