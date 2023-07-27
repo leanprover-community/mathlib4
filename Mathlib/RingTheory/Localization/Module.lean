@@ -157,3 +157,42 @@ theorem LinearIndependent.iff_fractionRing {ι : Type _} {b : ι → V} :
 #align linear_independent.iff_fraction_ring LinearIndependent.iff_fractionRing
 
 end FractionRing
+
+section
+
+variable {R : Type _} [CommRing R] (S : Submonoid R)
+variable (A : Type _) [CommRing A] [Algebra R A] [h : IsLocalization S A]
+variable {M N : Type _}
+  [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+  [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
+
+/-- An `R`-linear map between two `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
+def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N where
+  toFun := f
+  map_add' := f.map_add
+  map_smul' := by
+    intro r m
+    simp only [RingHom.id_apply]
+    rcases IsLocalization.mk'_surjective S r with ⟨r, s, rfl⟩
+    conv_lhs =>
+      rw [← one_smul A (f _), ← IsLocalization.mk'_self' _ (x := s),  ← mul_one r,
+        ← mul_one (↑s : R)]
+      conv =>
+        -- 'repeat' appears to discharge goals
+        -- https://github.com/leanprover/lean4/pull/2357
+        repeat rw [← IsLocalization.smul_mk' ]
+      rw [smul_assoc r, f.map_smul]
+      conv in (↑s • _) • _ =>
+        rw [smul_comm]
+      conv in (↑s • _) • _ =>
+        rw [smul_assoc, smul_comm]
+      rw [← f.map_smul (↑s : ↑ S)]
+      conv in (occs := 1) _ • _ • _ =>
+        rw [← smul_assoc]
+      arg 2; rw [← smul_assoc]
+    iterate 2 rw [IsLocalization.smul_mk', mul_one]
+    rw [IsLocalization.mk'_self, one_smul]
+
+@[simp] lemma LinearMap.restrictScalars_extendScalarsOfIsLocalization (f : M →ₗ[R] N) :
+    (f.extendScalarsOfIsLocalization S A).restrictScalars R = f := rfl
+end

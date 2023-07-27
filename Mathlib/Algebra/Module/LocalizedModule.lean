@@ -5,6 +5,7 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Module
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.RingTheory.IsTensorProduct
 
@@ -1102,49 +1103,13 @@ theorem isBaseChange : IsBaseChange A f := by
     · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
     · rintro q rfl
       simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
-  rcases this with ⟨ℓ, h₁, h₂⟩
-  -- Should this be refactored into a `linear_map.extend_scalars` lemma? If so, what would the
-  -- predicate have to be? Just `map_smul'`?
-  let g' : M' →ₗ[A] Q :=
-    { toFun := ℓ.toFun
-      map_add' := ℓ.map_add'
-      map_smul' := by
-        intros r x
-        rw [RingHom.id_apply]
-        rcases IsLocalization.mk'_surjective S r with ⟨r,s,rfl⟩
-        conv_lhs =>
-          dsimp
-          rw [← one_smul A (ℓ _), ← IsLocalization.mk'_self' _ (x := s),  ← mul_one r,
-            ← mul_one (↑s : R)]
-          conv =>
-            -- 'repeat' appears to discharge goals
-            -- https://github.com/leanprover/lean4/pull/2357
-            repeat rw [← IsLocalization.smul_mk' ]
-          rw [smul_assoc r, ℓ.map_smul]
-          conv in (↑s • _) • _ =>
-            rw [smul_comm]
-          conv in (↑s • _) • _ =>
-            rw [smul_assoc, smul_comm]
-          dsimp
-          rw [← ℓ.map_smul (↑s : ↑ S)]
-          conv in (occs := 1) _ • _ • _ =>
-            rw [← smul_assoc]
-          arg 2; rw [← smul_assoc]
-        iterate 2 rw [IsLocalization.smul_mk', mul_one]
-        rw [IsLocalization.mk'_self, one_smul]; rfl }
-  use g'
-  have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ := by
-    ext
-    simp [LinearMap.restrictScalars_apply, LinearMap.toFun_eq_coe]
-  constructor
-  · dsimp only
-    rwa [g'_extends_scalars]
-  · rintro g'' h
-    have := h₂ (LinearMap.restrictScalars R g'') h
-    rw [← g'_extends_scalars] at this
-    ext x
-    apply_fun fun f => f x at this
-    simpa [LinearMap.restrictScalars_apply]
+  rcases this with ⟨ℓ, rfl, h₂⟩
+  refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
+  have := h₂ (LinearMap.restrictScalars R g'') h
+  rw [← ℓ.restrictScalars_extendScalarsOfIsLocalization S A] at this
+  ext x
+  apply_fun fun f => f x at this
+  simpa [LinearMap.restrictScalars_apply]
 
 end IsLocalizedModule
 
