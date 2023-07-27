@@ -1471,8 +1471,10 @@ end
 
 section
 
-instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
+instance smul [Zero M] [SMulZeroClass R M] : SMul R (α →₀ M) where
   smul a v := v.mapRange ((· • ·) a) (smul_zero _)
+
+instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
   smul_zero a := by
     ext
     apply smul_zero
@@ -1508,7 +1510,6 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
 variable (α M)
 
 instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
-  smul := (· • ·)
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
   smul_zero _ := ext fun _ => smul_zero _
 #align finsupp.distrib_smul Finsupp.distribSMul
