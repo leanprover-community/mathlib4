@@ -422,6 +422,35 @@ noncomputable instance : IsROrC ℂ where
   conj_I_ax := conj_I
   norm_sq_eq_def_ax z := (normSq_eq_abs z).symm
   mul_im_I_ax _ := mul_one _
+  le := fun w z => w.re ≤ z.re ∧ w.im = z.im
+  le_refl := by simp only [le_refl, and_self, forall_const]
+  le_trans := fun _ _ _ h1 h2 => ⟨le_trans h1.1 h2.1, Eq.trans h1.2 h2.2 ⟩
+  le_antisymm := fun _ _ hab hba => Complex.ext (le_antisymm hab.1 hba.1) hab.2
+  le_iff_re_im := by simp only [not_and, AddMonoidHom.coe_mk, ZeroHom.coe_mk, forall_const]
+
+noncomputable instance toStarOrderedRing : StarOrderedRing ℂ := by
+  apply StarOrderedRing.ofNonnegIff'
+  intros x y hxy z
+  unfold LE.le Preorder.toLE PartialOrder.toPreorder IsROrC.toPartialOrder instIsROrCComplex
+  simpa [add_re, add_le_add_iff_left, add_im, add_right_inj] using hxy
+  intro x
+  simp only [Complex.star_def, ← Complex.normSq_eq_conj_mul_self]
+  constructor
+  intro hx
+  use Real.sqrt (x.re)
+  simp only [normSq_ofReal]
+  ext
+  simp only [ofReal_mul, mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero]
+  apply (Real.mul_self_sqrt hx.1).symm
+  simp only [ofReal_mul, mul_im, ofReal_re, ofReal_im, mul_zero, zero_mul, add_zero]
+  exact hx.2.symm
+  intro hz
+  cases' hz with y hy
+  rw [Complex.ext_iff] at hy
+  sorry
+
+
+
 
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
