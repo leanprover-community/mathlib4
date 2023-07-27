@@ -833,8 +833,9 @@ lemma indicatorConstLp_univ :
   rw [← Memℒp.toLp_const, indicatorConstLp]
   simp only [Set.indicator_univ, Function.const]
 
-theorem Lp.norm_const (hp_zero : p ≠ 0) (hmeas : μ ≠ 0) :
+theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * (μ Set.univ).toReal ^ (1 / p.toReal) := by
+  have := NeZero.ne μ
   rw [← Memℒp.toLp_const, Lp.norm_toLp, snorm_const] <;> try assumption
   rw [ENNReal.toReal_mul, ENNReal.coe_toReal, ← ENNReal.toReal_rpow, coe_nnnorm]
 
