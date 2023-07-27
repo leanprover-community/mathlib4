@@ -494,29 +494,29 @@ variable [IsFilteredOrEmpty C] {α : Type w} (f : α → C)
 
 /-- The "filtered closure" of an `α`-indexed family of objects in `C` is the set of objects in `C`
     obtained by starting with the family and successively adding maxima and coequalizers. -/
-inductive filteredClosure : C → Prop
-  | base : ∀ (x : α), filteredClosure (f x)
-  | max : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j'), filteredClosure (max j j')
-  | coeq : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j') (f f' : j ⟶ j'),
-      filteredClosure (coeq f f')
+inductive FilteredClosure : C → Prop
+  | base : ∀ (x : α), FilteredClosure (f x)
+  | max : ∀ {j j' : C} (_ : FilteredClosure j) (_ : FilteredClosure j'), FilteredClosure (max j j')
+  | coeq : ∀ {j j' : C} (_ : FilteredClosure j) (_ : FilteredClosure j') (f f' : j ⟶ j'),
+      FilteredClosure (coeq f f')
 
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
-theorem isFilteredOrEmpty_fullSubcategory_filteredClosure :
-    IsFilteredOrEmpty (FullSubcategory (filteredClosure f)) where
+theorem isFilteredOrEmpty_fullSubcategory_FilteredClosure :
+    IsFilteredOrEmpty (FullSubcategory (FilteredClosure f)) where
   cocone_objs j j' :=
-    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
+    ⟨⟨max j.1 j'.1, FilteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
   cocone_maps {j j'} f f' :=
-    ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f', coeq_condition _ _⟩
+    ⟨⟨coeq f f', FilteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f', coeq_condition _ _⟩
 
-namespace FilteredClosure.Small
+namespace FilteredClosureSmall
 /-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
     family of objects in `C` only depends on the size of `α` and the morphism types of `C`, not on
     the size of the objects of `C`. In particular, if `α` lives in `Type w`, the objects of `C` live
     in `Type u` and the morphisms of `C` live in `Type v`, then we want
-    `Small.{max v w} (FullSubcategory (filteredClosure f))`.
+    `Small.{max v w} (FullSubcategory (FilteredClosure f))`.
 
     The strategy is to define a type `AbstractFilteredClosure` which should be an inductive type
-    similar to `filteredClosure`, which lives in the correct universe and surjects onto the full
+    similar to `FilteredClosure`, which lives in the correct universe and surjects onto the full
     subcategory. The difficulty with this is that we need to define it at the same time as the map
     `AbstractFilteredClosure → C`, as the coequalizer constructor depends on the actual morphisms
     in `C`. This would require some kind of inductive-recursive definition, which Lean does not
@@ -557,11 +557,11 @@ private noncomputable def AbstractFilteredClosure : Type (max v w) :=
 private noncomputable def abstractFilteredClosureRealization : AbstractFilteredClosure f → C :=
   fun x => (bundledAbstractFilteredClosure f x.1).2 x.2
 
-end FilteredClosure.Small
+end FilteredClosureSmall
 
-theorem small_fullSubcategory_filteredClosure :
-    Small.{max v w} (FullSubcategory (filteredClosure f)) := by
-  refine' small_of_injective_of_exists (FilteredClosure.Small.abstractFilteredClosureRealization f)
+theorem small_fullSubcategory_FilteredClosure :
+    Small.{max v w} (FullSubcategory (FilteredClosure f)) := by
+  refine' small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
     FullSubcategory.ext _
   rintro ⟨j, h⟩
   induction h with
@@ -569,21 +569,21 @@ theorem small_fullSubcategory_filteredClosure :
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosure.Small.InductiveStep.max _ _ x y⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max _ _ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | coeq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosure.Small.InductiveStep.coeq _ _ x y g g'⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq _ _ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
-instance essentiallySmall_fullSubcategory_filteredClosure :
-    EssentiallySmall.{max v w} (FullSubcategory (filteredClosure f)) :=
-  have : LocallySmall.{max v w} (FullSubcategory (filteredClosure f)) := locallySmall_max.{w, v, u}
-  have : Small.{max v w} (FullSubcategory (filteredClosure f)) :=
-    small_fullSubcategory_filteredClosure f
+instance essentiallySmall_fullSubcategory_FilteredClosure :
+    EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) :=
+  have : LocallySmall.{max v w} (FullSubcategory (FilteredClosure f)) := locallySmall_max.{w, v, u}
+  have : Small.{max v w} (FullSubcategory (FilteredClosure f)) :=
+    small_fullSubcategory_FilteredClosure f
   essentiallySmall_of_small_of_locallySmall _
 
 end FilteredClosure
@@ -595,14 +595,14 @@ variable [IsFilteredOrEmpty C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
 /-- Every functor from a small category to a filtered category factors faithfully through a small
     filtered category. This is that category. -/
 def SmallFilteredIntermediate : Type (max u₁ v) :=
-  SmallModel.{max u₁ v} (FullSubcategory (filteredClosure F.obj))
+  SmallModel.{max u₁ v} (FullSubcategory (FilteredClosure F.obj))
 
 noncomputable instance : SmallCategory (SmallFilteredIntermediate F) :=
-  show SmallCategory (SmallModel (FullSubcategory (filteredClosure F.obj))) from inferInstance
+  show SmallCategory (SmallModel (FullSubcategory (FilteredClosure F.obj))) from inferInstance
 
-instance [_root_.Nonempty D] : IsFiltered (FullSubcategory (filteredClosure F.obj)) :=
-  { isFilteredOrEmpty_fullSubcategory_filteredClosure F.obj with
-    Nonempty := Nonempty.map (FullSubcategory.lift _ F filteredClosure.base).obj inferInstance }
+instance [_root_.Nonempty D] : IsFiltered (FullSubcategory (FilteredClosure F.obj)) :=
+  { isFilteredOrEmpty_fullSubcategory_FilteredClosure F.obj with
+    Nonempty := Nonempty.map (FullSubcategory.lift _ F FilteredClosure.base).obj inferInstance }
 
 instance [_root_.Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
   of_equivalence (equivSmallModel _)
@@ -610,7 +610,7 @@ instance [_root_.Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
 /-- The first part of a factoring of a functor from a small category to a filtered category through
     a small filtered category. -/
 noncomputable def smallFilteredIntermediateFactoring : D ⥤ SmallFilteredIntermediate F :=
-  FullSubcategory.lift _ F filteredClosure.base ⋙ (equivSmallModel _).functor
+  FullSubcategory.lift _ F FilteredClosure.base ⋙ (equivSmallModel _).functor
 
 /-- The second, faithful part of a factoring of a functor from a small category to a filtered
     category through a small filtered category. -/
