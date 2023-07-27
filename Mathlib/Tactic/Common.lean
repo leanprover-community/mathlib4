@@ -19,6 +19,7 @@ import Qq
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.AidedBy
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
 -- ApplyFun imports `Mathlib.Order.Monotone.Basic`
