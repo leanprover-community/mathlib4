@@ -158,41 +158,16 @@ variable {B : Type v₂} [Semiring B] [Algebra R B]
 ### The `R`-algebra structure on `A ⊗[R] B`
 -/
 
-
-/-- (Implementation detail)
-The multiplication map on `A ⊗[R] B`,
-for a fixed pure tensor in the first argument,
-as an `R`-linear map.
--/
-def mulAux (a₁ : A) (b₁ : B) : A ⊗[R] B →ₗ[R] A ⊗[R] B :=
-  TensorProduct.map (LinearMap.mulLeft R a₁) (LinearMap.mulLeft R b₁)
-#align algebra.tensor_product.mul_aux Algebra.TensorProduct.mulAux
-
-@[simp]
-theorem mulAux_apply (a₁ a₂ : A) (b₁ b₂ : B) :
-    (mulAux a₁ b₁) (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
-  rfl
-#align algebra.tensor_product.mul_aux_apply Algebra.TensorProduct.mulAux_apply
+#noalign algebra.tensor_product.mul_aux
+#noalign algebra.tensor_product.mul_aux_apply
 
 /-- (Implementation detail)
 The multiplication map on `A ⊗[R] B`,
 as an `R`-bilinear map.
 -/
 def mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B :=
-  TensorProduct.lift <|
-    LinearMap.mk₂ R mulAux
-      (fun x₁ x₂ y =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.add_apply, add_mul, add_tmul])
-      (fun c x y =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul', smul_mul_assoc])
-      (fun x y₁ y₂ =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.add_apply, add_mul, tmul_add])
-      fun c x y =>
-      TensorProduct.ext' fun x' y' => by
-        simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul, smul_tmul', smul_mul_assoc]
+  TensorProduct.homTensorHomMap R A B A B
+    ∘ₗ TensorProduct.map (LinearMap.mul R A) (LinearMap.mul R B)
 #align algebra.tensor_product.mul Algebra.TensorProduct.mul
 
 @[simp]
@@ -201,35 +176,16 @@ theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.mul_apply Algebra.TensorProduct.mul_apply
 
-theorem mul_assoc' (mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B)
-    (h :
-      ∀ (a₁ a₂ a₃ : A) (b₁ b₂ b₃ : B),
-        mul (mul (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂)) (a₃ ⊗ₜ[R] b₃) =
-          mul (a₁ ⊗ₜ[R] b₁) (mul (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃))) :
-    ∀ x y z : A ⊗[R] B, mul (mul x y) z = mul x (mul y z) := by
-  intros x y z
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, LinearMap.zero_apply]
-  refine TensorProduct.induction_on y ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, forall_const, LinearMap.zero_apply]
-  refine TensorProduct.induction_on z ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, forall_const]
-  · intros
-    simp only [h]
-  · intros
-    simp only [LinearMap.map_add, *]
-  · intros
-    simp only [LinearMap.map_add, *, LinearMap.add_apply]
-  · intros
-    simp only [LinearMap.map_add, *, LinearMap.add_apply]
-#align algebra.tensor_product.mul_assoc' Algebra.TensorProduct.mul_assoc'
+#noalign algebra.tensor_product.mul_assoc'
 
-protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
-  mul_assoc' mul
-    (by
-      intros
-      simp only [mul_apply, mul_assoc])
-    x y z
+protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
+  -- restate as an equality of morphisms so that we can use `ext`
+  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
+  ext xa xb ya yb za zb
+  refine congr_arg₂ (· ⊗ₜ ·) (mul_assoc _ _ _) (mul_assoc _ _ _)
+
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
 protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
