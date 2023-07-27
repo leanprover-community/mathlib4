@@ -1,4 +1,5 @@
 import Mathlib.ModelTheory.FieldTheory.Basic
+import Mathlib.Algebra.CharP.Basic
 
 namespace FirstOrder
 
@@ -14,12 +15,32 @@ def eqZero (n : ℕ) : Language.field.Sentence :=
   Term.equal (ofNat n) 0
 
 def Theory.fieldOfChar (n : ℕ) : Language.field.Theory :=
-  Theory.field ∪ {eqZero n} ∪ ⋃ (i : ℕ) (_ : n ≠ i), {∼ (eqZero i)}
+  {eqZero n} ∪ (⋃ (i : ℕ) (_ : n ≠ i) (_ : n ≠ 0), {∼ (eqZero i)}) ∪ Theory.field
+
+section
 
 attribute [local instance] structureFieldOfField
 
-def ModelFieldOfCharOfField {K : Type _} [Field K] (n : ℕ) (h : n ≠ 0)
-    (M : (Theory.fieldOfChar n).Model) : Theory.field.Model := sorry
+theorem realize_ofNat {α K : Type _} [Field K] (p : ℕ) (v : α → K) :
+    (Term.realize v (@ofNat α p) : K) = p := by
+  induction p <;>
+    simp [ofNat, *, zero_def, structureFieldOfField, add_def, one_def,
+      constantMap]
+
+def ModelFieldOfCharOfField {K : Type _} [Field K] (p : ℕ) [CharP K p] :
+    (Theory.fieldOfChar p).Model K := by
+  rw [Theory.fieldOfChar]
+  refine Theory.model_union_iff.2 ⟨?_, modelFieldOfField⟩
+  refine Theory.model_union_iff.2 ⟨?_, ?_⟩
+  . simp [eqZero, Sentence.Realize, realize_ofNat,
+      zero_def, constantMap, structureFieldOfField]
+  . simp (config := {contextual := true}) [eqZero,
+      Sentence.Realize, realize_ofNat, structureFieldOfField,
+      zero_def, one_def, constantMap]
+    intro _ hp0 q hpq _
+
+
+end
 
 end field
 
