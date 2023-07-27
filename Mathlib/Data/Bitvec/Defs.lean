@@ -42,8 +42,11 @@ instance : Inhabited (BitVec w) := ⟨BitVec.zero w⟩
 instance : OfNat (BitVec w) (nat_lit 0) :=
   ⟨BitVec.zero w⟩
 
--- We inherit `Fin` implementations when fast but write mod/div
--- ourselves to avoid the extra modulo operation.
+/-!
+## Arithmetic
+We inherit `Fin` implementations when fast but write mod/div
+ourselves to avoid the extra modulo operation.
+-/
 protected def add (x y : BitVec w) : BitVec w := Fin.add x y
 protected def sub (x y : BitVec w) : BitVec w := Fin.sub x y
 protected def mul (x y : BitVec w) : BitVec w := Fin.mul x y
