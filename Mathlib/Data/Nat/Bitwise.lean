@@ -93,7 +93,7 @@ lemma bit_lt_bit_iff : bit b n < bit b' m ↔ n < m ∨ (n = m ∧ b = false ∧
 
 /-- `n % 2^(i+1)` can be espressed in terms of `n % (2^i)`.
 This is useful for induction on the most significant bit.-/
-theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (n.testBit i).toNat + n % (2^i):= by
+theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (n.testBit i).toNat + n % (2^i) := by
   have h1 := div_add_mod_two_pow i n
   have h3 := div_add_mod (Nat.shiftr n i) 2
   rw [← h3, mul_add, ← mul_assoc, ← pow_succ, shiftr_mod_two_eq_testBit] at h1
