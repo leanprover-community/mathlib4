@@ -34,7 +34,7 @@ inverse of `eB`:
 but whose inverse functor is `G`.
 
 When extra assumptions are given, we shall also provide simplification lemmas for the
-unit and counit isomorphisms of `equivalence`. (TODO)
+unit and counit isomorphisms of `equivalence`.
 
 -/
 
