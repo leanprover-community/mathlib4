@@ -33,11 +33,11 @@ along with metavariables for the parameters and implicit arguments.
 The first list of returned metavariables correspond to the arguments that `⟨x,y,...⟩` notation uses.
 The second list corresponds to everything else: the parameters and implicit arguments.
 The third list consists of those implicit arguments that are instance implicits, which one can
-try to synthesize; this list is a sublist of the second list.
+try to synthesize. The third list is a sublist of the second list.
 
 Returns metavariables for all arguments whether or not the metavariables are assigned.
 -/
-def _root_.Lean.MVarId.constructor1 (mvarId : MVarId) :
+def applyTheConstructor (mvarId : MVarId) :
     MetaM (List MVarId × List MVarId × List MVarId) := do
   mvarId.withContext do
     mvarId.checkNotAssigned `constructor
@@ -82,11 +82,12 @@ partial
 def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : List MVarId) :
     TermElabM (List MVarId × List MVarId × List MVarId) := do
   trace[tactic.use] "gs = {gs}\nargs = {args}\nacc = {acc}"
-  if args.isEmpty then
+  match gs, args with
+  | gs, [] =>
     return (gs, acc, insts)
-  else if gs.isEmpty then
-    throwErrorAt args[0]! "too many arguments supplied to `use`"
-  else if let (g :: gs', arg :: args') := (gs, args) then
+  | [], arg :: _ =>
+    throwErrorAt arg "too many arguments supplied to `use`"
+  | g :: gs', arg :: args' =>
     if ← g.isAssigned then
       -- Goals might become assigned in inductive types with indices.
       -- Let's check that what's supplied is defeq to what's already there.
@@ -95,7 +96,7 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : Li
         throwErrorAt arg
           "argument is not definitionally equal to inferred value{indentExpr (.mvar g)}"
       return ← useLoop eager gs' args' acc insts
-    -- Type ascription is a workaround for fact that `refine` doesn't seem to ensure the type.
+    -- Type ascription is a workaround for `refine` ensuring the type after synthesizing mvars.
     let refineArg ← `(tactic| refine ($arg : $(← Term.exprToSyntax (← g.getType))))
     if eager then
       -- In eager mode, first try refining with the argument before applying the constructor
@@ -103,15 +104,14 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : Li
         return ← useLoop eager gs' args' (acc ++ newGoals) insts
     if eager || gs'.isEmpty then
       if let some (expl, impl, insts') ← observing? do
-                try g.constructor1 catch e => trace[tactic.use] "{e.toMessageData}"; throw e then
+                try applyTheConstructor g
+                catch e => trace[tactic.use] "Constructor. {e.toMessageData}"; throw e then
         trace[tactic.use] "expl.length = {expl.length}, impl.length = {impl.length}"
         return ← useLoop eager (expl ++ gs') args (acc ++ impl) (insts ++ insts')
     -- In eager mode, the following will give an error, which hopefully is more informative than
-    -- the one provided by `constructor1`.
+    -- the one provided by `applyTheConstructor`.
     let newGoals ← run g do evalTactic refineArg
     useLoop eager gs' args' (acc ++ newGoals) insts
-  else
-    throwError "useLoop: impossible"
 
 /-- Run the `useLoop` on the main goal then discharge remaining explicit `Prop` arguments. -/
 def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : TacticM Unit := do
