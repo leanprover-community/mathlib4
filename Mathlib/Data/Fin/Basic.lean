@@ -84,6 +84,9 @@ def finZeroElim {α : Fin 0 → Sort _} (x : Fin 0) : α x :=
 
 namespace Fin
 
+instance : CanLift ℕ (Fin n) Fin.val (· < n) where
+  prf k hk := ⟨⟨k, hk⟩, rfl⟩
+
 /-- A non-dependent variant of `elim0`. -/
 def elim0' {α : Sort _} (x : Fin 0) : α :=
   x.elim0
