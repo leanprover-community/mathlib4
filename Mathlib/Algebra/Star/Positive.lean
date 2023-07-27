@@ -53,7 +53,7 @@ Note that the type class assumptions for `StarOrderedRing.positive` are actually
 weaker (just `OrderedAddCommMonoid`) so that it can be used in as many contexts as possible, but
 the primary intended use case is when `R` is a `StarOrderedRing`.
 
-In addiiton, we note that `StarOrderedRing.positive` is just an alias of `AddSubmonoid.nonneg`, but
+In addition, we note that `StarOrderedRing.positive` is just an alias of `AddSubmonoid.nonneg`, but
 we choose to keep these separate for naming purposes and also because we will add many instances to
 this object (viewed as a type).
 
