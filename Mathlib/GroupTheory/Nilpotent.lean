@@ -465,7 +465,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 #align subgroup.is_nilpotent Subgroup.isNilpotent
 
-/-- A the nilpotency class of a subgroup is less or equal to the nilpotency class of the group -/
+/-- The nilpotency class of a subgroup is less or equal to the nilpotency class of the group -/
 theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
     Group.nilpotencyClass H ≤ Group.nilpotencyClass G := by
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]

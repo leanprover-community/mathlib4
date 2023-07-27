@@ -24,7 +24,7 @@ such that `a ≤ b` and `b ≤ a`.
   preorder, `Antisymmetrization α` is a partial order.
 -/
 
-/- Porting Notes: There are many changes from `toAntisymmetrization (. ≤ .)` to
+/- Porting Notes: There are many changes from `toAntisymmetrization (· ≤ ·)` to
 `@toAntisymmetrization α (· ≤ ·) _` -/
 
 open Function OrderDual
