@@ -433,6 +433,17 @@ lemma baseChange_baseChange : (W.baseChange A).baseChange B = W.baseChange B := 
   ext <;> exact (IsScalarTower.algebraMap_apply R A B _).symm
 #align weierstrass_curve.base_change_base_change WeierstrassCurve.baseChange_baseChange
 
+lemma baseChange_injective (h : Function.Injective ↑(algebraMap R A)) :
+    Function.Injective <| baseChange (R := R) (A := A) := fun W W' h1 => by
+  simp only [baseChange, mk.injEq] at h1
+  rcases h1 with ⟨h1, h2, h3, h4, h5⟩
+  ext
+  · exact h h1
+  · exact h h2
+  · exact h h3
+  · exact h h4
+  · exact h h5
+
 namespace VariableChange
 
 variable (C : VariableChange R)
@@ -462,6 +473,17 @@ lemma baseChange_self : C.baseChange R = C := by
 
 lemma baseChange_baseChange : (C.baseChange A).baseChange B = C.baseChange B := by
   ext <;> exact (IsScalarTower.algebraMap_apply R A B _).symm
+
+lemma baseChange_injective (h : Function.Injective ↑(algebraMap R A)) :
+    Function.Injective <| baseChange (R := R) A := fun C C' h1 => by
+  simp only [baseChange, mk.injEq] at h1
+  rcases h1 with ⟨h1, h2, h3, h4⟩
+  ext
+  · simp only [Units.map, MonoidHom.mk'_apply, Units.mk.injEq] at h1
+    exact h h1.1
+  · exact h h2
+  · exact h h3
+  · exact h h4
 
 end VariableChange
 
@@ -1153,6 +1175,21 @@ lemma baseChange_j : (E.baseChange A).j = algebraMap R A E.j := by
   simp only [j, baseChange, E.baseChange_c₄]
   map_simp
 #align elliptic_curve.base_change_j EllipticCurve.baseChange_j
+
+lemma baseChange_injective (h : Function.Injective ↑(algebraMap R A)) :
+    Function.Injective <| baseChange (R := R) (A := A) := fun E E' h1 => by
+  simp only [baseChange, mk.injEq] at h1
+  rcases h1 with ⟨h1, h6⟩
+  simp only [WeierstrassCurve.baseChange, WeierstrassCurve.mk.injEq] at h1
+  rcases h1 with ⟨h1, h2, h3, h4, h5⟩
+  ext
+  · exact h h1
+  · exact h h2
+  · exact h h3
+  · exact h h4
+  · exact h h5
+  · simp only [Units.map, MonoidHom.mk'_apply, Units.mk.injEq] at h6
+    exact h h6.1
 
 end BaseChange
 
