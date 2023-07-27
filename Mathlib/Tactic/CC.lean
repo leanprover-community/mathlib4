@@ -3546,7 +3546,7 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
       pushReflEq e e'
     | .forallE _ t b _ =>
       if e.isArrow then
-        if (← isProp t) && (← isProp b) then
+        if ← isProp t <&&> isProp b then
           internalizeCore t e gen
           internalizeCore b e gen
           addOccurrence e t false
@@ -3986,7 +3986,7 @@ def propagateNotDown (e : Expr) : CCM Unit := do
     let some a := e.not? | failure
     pushEq a (.const ``False [])
       (mkApp2 (.const ``eq_false_of_not_eq_true []) a (← getEqTrueProof e))
-  else if (← getState).config.em && (← isEqFalse e) then
+  else if ← (·.config.em) <$> getState <&&> isEqFalse e then
     let some a := e.not? | failure
     pushEq a (.const ``True [])
       (mkApp2 (.const ``eq_true_of_not_eq_false []) a (← getEqFalseProof e))
@@ -4127,7 +4127,7 @@ where
       if let some it' := (← getState).parents.find? e₂Root then
         ps₂ := it'
       for p in ps₁ do
-        if p.expr.isApp || (← isCgRoot p.expr) then
+        if ← pure p.expr.isApp <||> isCgRoot p.expr then
           if !constructorEq && r₂.constructor then
             propagateProjectionConstructor p.expr e₂Root
           ps₂ := ps₂.insert p
@@ -4214,7 +4214,7 @@ def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
       internalizeCore rhs none gen
       addEqvCore lhs rhs (mkApp3 (.const ``propext []) lhs rhs proof) false
   | _ =>
-    if isNeg || (← isProp p) then
+    if ← pure isNeg <||> isProp p then
       internalizeCore p none gen
       if isNeg then
         addEqvCore p (.const ``False []) (← mkEqFalse proof) false
