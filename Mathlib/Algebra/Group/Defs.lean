@@ -1160,10 +1160,15 @@ theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGrou
 #align comm_group.to_group_injective CommGroup.toGroup_injective
 #align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective
 
-/-- Define a Group structure on a Type by proving `∀ a, 1 * a = a` and
+/-- Define a `Group` structure on a Type by proving `∀ a, 1 * a = a` and
 `∀ a, a⁻¹ * a = 1`.
+Note that this uses the default definitions for `npow`, `zpow` and `div`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)]
+@[to_additive (attr := reducible)
+"Define an `AddGroup` structure on a Type by proving `∀ a, 0 + a = a` and
+`∀ a, -a + a = 0`.
+Note that this uses the default definitions for `nsmul`, `zsmul` and `neg`.
+See note [reducible non-instances]."]
 def Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
     (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
     (one_mul : ∀ a : G, 1 * a = a)
@@ -1182,10 +1187,15 @@ def Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
             rw [mul_left_inv, one_mul, mul_left_inv]
       rw [← mul_left_inv a, ← assoc, mul_right_inv a, one_mul] }
 
-/-- Define a Group structure on a Type by proving `∀ a, a * 1 = a` and
+/-- Define a `Group` structure on a Type by proving `∀ a, a * 1 = a` and
 `∀ a, a * a⁻¹ = 1`.
+Note that this uses the default definitions for `npow`, `zpow` and `div`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)]
+@[to_additive (attr := reducible)
+"Define an `AddGroup` structure on a Type by proving `∀ a, a + 0 = a` and
+`∀ a, a + -a = 0`.
+Note that this uses the default definitions for `nsmul`, `zsmul` and `neg`.
+See note [reducible non-instances]."]
 def Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
     (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
     (mul_one : ∀ a : G, a * 1 = a)
@@ -1203,7 +1213,8 @@ def Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
     mul_left_inv := mul_left_inv,
     one_mul := fun a => by
       rw [← mul_right_inv a, assoc, mul_left_inv, mul_one] }
-
+#print AddGroup.ofLeftAxioms
+#print Group.ofLeftAxioms
 section CommGroup
 
 variable [CommGroup G]
