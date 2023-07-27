@@ -1344,8 +1344,6 @@ lemma tsum_const_smul'' {γ : Type _} [DivisionRing γ] [Module γ α] [Continuo
 --   rwa summable.map_iff_of_equiv mul_g; apply continuous_const_smul,
 
 
-#exit
-
 end ConstSmul
 
 /-! ### Product and pi types -/
@@ -1485,3 +1483,120 @@ theorem tsum_star : star (∑' b, f b) = ∑' b, star (f b) := by
 #align tsum_star tsum_star
 
 end ContinuousStar
+
+section automorphize
+
+variable {M : Type _} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type _}
+  [DivisionRing R] [Module R M] [ContinuousConstSMul R M]
+
+/-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a
+  function `β ⧸ α → M` by summing over `α` orbits, `b ↦ ∑' (a : α), f(a • b)`. -/
+-- @[to_additive "Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
+--   we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
+--   `b ↦ ∑' (a : α), f(a • b)`."]
+def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
+    Quotient (MulAction.orbitRel α β) → M := by
+  refine @Quotient.lift _ _ (MulAction.orbitRel α β) (fun b ↦ ∑' (a : α), f (a • b)) ?_
+  intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
+  simp only
+  rw [← ha]
+  convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
+  simp only [Equiv.coe_mulRight]
+  congr
+  ext
+  congr 1
+  simp only [mul_smul]
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+  `R`-scalar multiplication. -/
+lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
+    (g : Quotient (MulAction.orbitRel α β) → R) :
+    MulAction.automorphize ((g ∘ (@Quotient.mk' _ (MulAction.orbitRel α β))) • f)
+      = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
+  ext x
+  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
+  intro b
+  simp only [automorphize, Pi.smul_apply', comp_apply]
+  set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
+  have H₁ : ∀ a : α, π (a • b) = π b
+  · intro a
+    apply (@Quotient.eq _ (MulAction.orbitRel α β) (a • b) b).mpr
+    use a
+  change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
+  simp_rw [H₁]
+  exact tsum_const_smul'' _
+
+-- /-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the `R`
+--   -scalar multiplication. -/
+-- lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
+--   (g : Quotient (AddAction.orbitRel α β) → R) :
+--   AddAction.automorphize ((g ∘ quotient.mk') • f)
+--     = g • (add_action.automorphize f : quotient (add_action.orbit_rel α β) → M) :=
+-- begin
+--   ext x,
+--   apply quotient.induction_on' x,
+--   intro b,
+--   simp only [add_action.automorphize, pi.smul_apply', function.comp_app],
+--   set π : β → quotient (add_action.orbit_rel α β) := quotient.mk',
+--   have H₁ : ∀ a : α, π (a +ᵥ b) = π b,
+--   { intro a,
+--     rw quotient.eq_rel,
+--     fconstructor,
+--     exact a,
+--     simp, },
+--   change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b),
+--   simp_rw [H₁],
+--   exact tsum_const_smul'' _,
+-- end
+
+
+-- attribute [to_additive mul_action.automorphize_smul_left] add_action.automorphize_smul_left
+
+section
+
+variable {G : Type _} [Group G] {Γ : Subgroup G}
+
+/-- Given a subgroup `Γ` of a group `G`, and a function `f : G → M`, we "automorphize" `f` to a
+  function `G ⧸ Γ → M` by summing over `Γ` orbits, `g ↦ ∑' (γ : Γ), f(γ • g)`. -/
+-- @[to_additive "Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
+--   automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
+--   `g ↦ ∑' (γ : Γ), f(γ • g)`."]
+def QuotientGroup.automorphize  (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the `R`
+  -scalar multiplication. -/
+lemma QuotientGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
+    (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ (_)) : G → R) • f) : G ⧸ Γ → M)
+      = g • (QuotientGroup.automorphize f : G ⧸ Γ → M) := MulAction.automorphize_smul_left f g
+
+/-
+What the hell? Why doesn't this work??
+
+    (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ _) : G → R) • f) : G ⧸ Γ → M)
+      = g • (QuotientGroup.automorphize f : G ⧸ Γ → M) := MulAction.automorphize_smul_left f g
+
+without the parentheses around `_` in `@Quotient.mk' _ _`??
+
+-/
+
+
+
+end
+
+-- section
+
+-- variables {G : Type*} [add_group G] {Γ : add_subgroup G}
+
+-- /-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the `R`
+--   -scalar multiplication. -/
+-- lemma quotient_add_group.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
+--   quotient_add_group.automorphize ((g ∘ quotient.mk') • f)
+--     = g • (quotient_add_group.automorphize f : G ⧸ Γ → M) :=
+-- add_action.automorphize_smul_left f g
+
+-- end
+
+-- attribute [to_additive quotient_group.automorphize_smul_left]
+--   quotient_add_group.automorphize_smul_left
+
+end automorphize
