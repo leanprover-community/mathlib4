@@ -999,14 +999,16 @@ lemma ResMono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) {f : WithTop I → Bool}
       apply h₁ (lt_of_lt_of_le (by assumption) h)
   · rfl
 
+def T : Prop := ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval C))
+
 variable (I)
 
-def T : Prop := ∀ o, ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval (Res C o)))
-
 def P' (o : Ordinal) : Prop :=
-o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) →
-  ∀ C, T I C → IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
-  LinearIndependent ℤ (GoodProducts.eval C)
+  o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) →
+  (o.IsLimit ∧ (∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
+    LinearIndependent ℤ (GoodProducts.eval C)))
+  ∨ (¬ o.IsLimit ∧ (∀ C, T C → IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
+    LinearIndependent ℤ (GoodProducts.eval C)))
 
 def Q' (o : Ordinal) : Prop :=
 o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) →
@@ -4424,7 +4426,9 @@ lemma GoodProducts.Q0 : Q' I 0 := by
 
 lemma GoodProducts.P0 : P' I 0 := by
   dsimp [P']
-  intro _ C _ _ hsC
+  intro _
+  right
+  intro C _ _ hsC
   dsimp [Support] at hsC
   have : C ⊆ {(fun _ ↦ false)}
   · intro c hc
@@ -4442,6 +4446,18 @@ lemma GoodProducts.P0 : P' I 0 := by
     exact linearIndependentEmpty
   · subst C
     exact linearIndependentSingleton
+
+lemma GoodProducts.Qmono (o o' : Ordinal) (h : o' < o)
+    (ho : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop)) : Q' I o → Q' I o' := by
+  intro hQ
+  dsimp [Q'] at *
+  intro _ C hC hsC
+  specialize hQ ho C hC
+  apply hQ
+  refine' subset_trans hsC _
+  intro j hj
+  simp only [Set.mem_setOf_eq] at hj
+  exact lt_trans hj h
 
 lemma GoodProducts.Qlimit :
     ∀ (o : Ordinal), Ordinal.IsLimit o → (∀ (o' : Ordinal), o' < o → Q' I o') → Q' I o := by
@@ -4516,42 +4532,109 @@ lemma GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (ev
     rw [← hl]
     exact Ll C l
 
-lemma GoodProducts.h_one' {o : Ordinal} (hS : T I C) :
-    T I (Res C o) := by
-  intro o'
-  by_cases o' ≤ o
-  · have : Res (Res C o) o' = Res C o' := sorry
-    rw [this]
-    exact hS o'
-  · have : Res (Res C o) o' = Res C o := sorry
-    rw [this]
-    exact hS o
+-- lemma Res_oo'₁ {o o' : Ordinal} (h : o < o') (hsC : Support C ⊆ {j | ord I j < Order.succ o}) :
+--   Res C o' = C := by sorry
 
-lemma GoodProducts.h_one'' {o : Ordinal} (hS : T I C)
+-- lemma Res_oo'₂ {o o' : Ordinal} (h : o ≤ o')
+--     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
+--     Res (C' C ho) o' = C' C ho := by
+--   refine' (supportResEq (C' C ho) o' _).symm
+--   refine' subset_trans (support_C' C ho) _
+--   intro j hj
+--   simp only [Set.mem_setOf_eq]
+--   exact lt_of_lt_of_le hj h
+
+-- lemma Res_oo'₃ {o o' : Ordinal} (h : o = o') : Res C o' = Res C o := by rw [h]
+
+-- lemma Res_oo'₄ {o o' : Ordinal} (h : o' < o) (hsC : Support C ⊆ {j | ord I j < Order.succ o})
+--     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
+--     Res (C' C ho) o' = C' C ho := by sorry
+
+
+lemma GoodProducts.Tlimit {o o' : Ordinal}
+    (hlo : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (ho : o.IsLimit) (hS : T (Res C o)) (ho' : o' < o) : T (Res C o') := sorry
+
+lemma GoodProducts.h_one' {o : Ordinal} (hS : T C) (hC : IsClosed C)
+    (hsC : Support C ⊆ {i | ord I i < Order.succ o})
     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
-    T I (C' C ho) := by
-  intro o'
-  specialize hS o'
-  have : Res (C' C ho) o' = C' (Res C o') ho := sorry
-  rw [this]
-  set W := Res C o'
+    T (Res C o) := by
+  dsimp [T] at *
   sorry
+
+
+  -- intro o'
+  -- by_cases o' ≤ o
+  -- · have : Res (Res C o) o' = Res C o' := sorry
+  --   rw [this]
+  --   exact hS o'
+  -- · have : Res (Res C o) o' = Res C o := sorry
+  --   rw [this]
+  --   exact hS o
+
+lemma GoodProducts.h_one'' {o : Ordinal} (hS : T C)
+    (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hsC : Support C ⊆ {j | ord I j < Order.succ o}) :
+    T (C' C ho) := by
+  sorry
+  -- intro o'
+  -- by_cases h : o ≤ o'
+  -- · have : Res (C' C ho) o' = C' C ho := Res_oo'₂ C h ho
+  --   rw [this]
+  --   specialize hS (Order.succ o)
+  --   rw [← supportResEq C (Order.succ o) hsC] at hS
+  --   sorry
+  -- · simp only [not_le] at h
+  --   have hso' : Order.succ o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop)
+  --   · refine' lt_of_le_of_lt _ ho
+  --     simpa only [Order.succ_le_iff]
+  --   have ho' : o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop) := lt_trans h ho
+  --   have : Res (C' C ho) o' = C' (Res C (Order.succ o')) ho'
+  --   · ext f
+  --     constructor
+  --     <;> intro hf
+  --     · obtain ⟨g, hf⟩ := hf
+  --       obtain ⟨r, hg⟩ := hf.1.2
+  --       dsimp [C', C0, C1] at hf hg ⊢
+  --       refine' ⟨⟨⟨g, ⟨hf.1.1.1,_⟩⟩, _⟩, _⟩
+  --       · sorry
+  --       · sorry
+  --       · sorry
+  --     · sorry
+  -- specialize hS o'
+  --   · simp only [not_lt] at h
+
+  -- rw [this]
+  -- set W := Res C o'
+  -- sorry
   -- have hsurj : Function.Surjective (Linear_CC) ... bla
 
 lemma GoodProducts.Plimit :
     ∀ (o : Ordinal), Ordinal.IsLimit o → (∀ (o' : Ordinal), o' < o → P' I o') → P' I o := by
   intro o ho h
   dsimp [P'] at *
-  intro hho C hS hC hsC
+  intro hho
+  left
+  refine' ⟨ho,_⟩
+  intro C hC hsC
   rw [ModProducts.linear_independent_iff C ho hsC]
   refine' linearIndependent_iUnion_of_directed (DirectedS C o) _
   rintro ⟨o', ho'⟩
   have hho' : o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop) :=
     lt_of_lt_of_le ho' hho
-  specialize h o' ho' (le_of_lt hho') (Res C o') (h_one' C hS)
-    (isClosed_Res C o' hC) (support_Res_le_o C o')
-  rw [ModProducts.smaller_linear_independent_iff] at h
-  exact h
+  specialize h o' ho' (le_of_lt hho')
+  cases' h with h h
+  · have h' := h.2 (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
+    rw [ModProducts.smaller_linear_independent_iff] at h'
+    exact h'
+  · have hos : ∃ a, o' = Order.succ a := sorry
+    obtain ⟨a, ha⟩ := hos
+    have h' := h.2 (Res C o') ?_ (isClosed_Res C o' hC) (support_Res_le_o C o')
+    · rw [ModProducts.smaller_linear_independent_iff] at h'
+      exact h'
+    sorry
+
+
 
 lemma GoodProducts.linearIndependentAux (i : WithTop I) : P' I (ord I i) := by -- (basisAux i).2
   -- rw [PIffP I i]
