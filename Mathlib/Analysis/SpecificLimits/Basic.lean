@@ -55,8 +55,7 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
 
 theorem tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type _) [Semiring 𝕜] [Algebra ℝ 𝕜]
     [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ 𝕜] :
-    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ => (n : ℝ)⁻¹) atTop (nhds 0) :=
-  by
+    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ => (n : ℝ)⁻¹) atTop (nhds 0) := by
   rw [← map_zero (algebraMap ℝ 𝕜)]
   exact Tendsto.comp (continuous_algebraMap ℝ 𝕜).continuousAt tendsto_inverse_atTop_nhds_0_nat
 
