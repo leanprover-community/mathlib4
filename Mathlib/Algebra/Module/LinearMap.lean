@@ -1102,7 +1102,6 @@ instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
   SMulCommClass.symm _ _ _
 #align module.End.smul_comm_class' Module.End.smulCommClass'
 
-
 theorem _root_.Module.End_isUnit_apply_inv_apply_of_isUnit
     {f : Module.End R M} (h : IsUnit f) (x : M) :
     f (h.unit.inv x) = x :=
