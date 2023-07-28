@@ -258,14 +258,14 @@ theorem antitone_on_dual_iff : AntitoneOn f s ↔ AntitoneOn (toDual ∘ f ∘ o
 alias antitone_on_dual_iff ↔ AntitoneOn.dual _
 #align antitone_on.dual AntitoneOn.dual
 
-protected theorem StrictMono.dual (hf : StrictMono f) :
-    StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
-  swap hf
+theorem strict_mono_dual_iff : StrictMono f ↔ StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
+  rw [strictMono_toDual_comp_iff, strictAnti_comp_ofDual_iff]
+alias strict_mono_dual_iff ↔ StrictMono.dual _
 #align strict_mono.dual StrictMono.dual
 
-protected theorem StrictAnti.dual (hf : StrictAnti f) :
-    StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
-  swap hf
+theorem strict_anti_dual_iff : StrictAnti f ↔ StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
+  rw [strictAnti_toDual_comp_iff, strictMono_comp_ofDual_iff]
+alias strict_anti_dual_iff ↔ StrictAnti.dual _
 #align strict_anti.dual StrictAnti.dual
 
 protected theorem StrictMonoOn.dual (hf : StrictMonoOn f s) :
