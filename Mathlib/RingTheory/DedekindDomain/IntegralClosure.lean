@@ -144,7 +144,7 @@ theorem exists_integral_multiples (s : Finset L) :
     rcases this with ⟨x', y', hy', hx'⟩
     refine' ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => _⟩
     rcases Finset.mem_insert.mp hx'' with (rfl | hx'')
-    · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, mul_comm _ x'', hx']
+    · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, hx']
       exact isIntegral_mul isIntegral_algebraMap x'.2
     · rw [mul_comm, mul_smul, Algebra.smul_def]
       exact isIntegral_mul isIntegral_algebraMap (hs _ hx'')
