@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.tensor_product
-! leanprover-community/mathlib commit 69b2e97a276619372b19cf80fc1e91b05ae2baa4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+
+#align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"69b2e97a276619372b19cf80fc1e91b05ae2baa4"
 
 /-!
 # The tensor product of R-algebras
@@ -439,7 +436,7 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
-instance : Semiring (A ⊗[R] B) :=
+instance instSemiring : Semiring (A ⊗[R] B) :=
   { (by infer_instance : AddMonoidWithOne (A ⊗[R] B)),
     (by infer_instance : AddCommMonoid (A ⊗[R] B)) with
     zero := 0
@@ -518,7 +515,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
-instance : Algebra R (A ⊗[R] B) :=
+instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
@@ -585,8 +582,8 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance : Ring (A ⊗[R] B) :=
-  { (by infer_instance : Semiring (A ⊗[R] B)) with
+instance instRing : Ring (A ⊗[R] B) :=
+  { toSemiring := inferInstance
     add_left_neg := add_left_neg }
 
 end Ring
@@ -599,8 +596,8 @@ variable {A : Type v₁} [CommRing A] [Algebra R A]
 
 variable {B : Type v₂} [CommRing B] [Algebra R B]
 
-instance : CommRing (A ⊗[R] B) :=
-  { (by infer_instance : Ring (A ⊗[R] B)) with
+instance instCommRing : CommRing (A ⊗[R] B) :=
+  { toRing := inferInstance
     mul_comm := fun x y => by
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp

@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Scott Morrison
-
-! This file was ported from Lean 3 source module group_theory.coset
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.MulOpposite
+
+#align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Cosets
@@ -473,6 +470,9 @@ theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
   Quotient.surjective_Quotient_mk''
 #align quotient_group.mk_surjective QuotientGroup.mk_surjective
 #align quotient_add_group.mk_surjective QuotientAddGroup.mk_surjective
+
+@[to_additive (attr := simp)]
+lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjective.mpr mk_surjective
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.discrete_valuation_ring.tfae
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Nakayama
+
+#align_import ring_theory.discrete_valuation_ring.tfae from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -106,7 +103,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · exact sInf_le ⟨hle, inferInstance⟩
     · refine'
         le_sInf fun I hI =>
-          (eq_maximalIdeal <| IsDedekindDomain.dimensionLEOne _ (fun e => ha₂ _) hI.2).ge
+          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ _)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -180,8 +177,8 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
   tfae_have 4 → 3
   · rintro ⟨h₁, h₂⟩;
     exact
-      ⟨inferInstance, fun I hI hI' =>
-        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R, h₁⟩
+      ⟨inferInstance, ⟨fun hI hI' =>
+        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R⟩, h₁⟩
   tfae_have 3 → 5
   · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 5 → 6

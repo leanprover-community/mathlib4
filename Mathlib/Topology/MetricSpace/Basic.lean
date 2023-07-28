@@ -2,16 +2,13 @@
 Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.basic
-! leanprover-community/mathlib commit 8000bbbe2e9d39b84edb993d88781f536a8a3fa8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Bornology.Constructions
+
+#align_import topology.metric_space.basic from "leanprover-community/mathlib"@"8047de4d911cdef39c2d646165eea972f7f9f539"
 
 /-!
 # Metric spaces
@@ -498,6 +495,15 @@ theorem ne_of_mem_sphere (h : y ∈ sphere x ε) (hε : ε ≠ 0) : y ≠ x :=
   ne_of_mem_of_not_mem h <| by simpa using hε.symm
 #align metric.ne_of_mem_sphere Metric.ne_of_mem_sphere
 
+theorem nonneg_of_mem_sphere (hy : y ∈ sphere x ε) : 0 ≤ ε :=
+  dist_nonneg.trans_eq hy
+#align metric.nonneg_of_mem_sphere Metric.nonneg_of_mem_sphere
+
+@[simp]
+theorem sphere_eq_empty_of_neg (hε : ε < 0) : sphere x ε = ∅ :=
+  Set.eq_empty_iff_forall_not_mem.mpr fun _y hy => (nonneg_of_mem_sphere hy).not_lt hε
+#align metric.sphere_eq_empty_of_neg Metric.sphere_eq_empty_of_neg
+
 theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sphere x ε = ∅ :=
   Set.eq_empty_iff_forall_not_mem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
 #align metric.sphere_eq_empty_of_subsingleton Metric.sphere_eq_empty_of_subsingleton
@@ -519,6 +525,11 @@ theorem nonempty_closedBall : (closedBall x ε).Nonempty ↔ 0 ≤ ε :=
 theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_closedBall, not_le]
 #align metric.closed_ball_eq_empty Metric.closedBall_eq_empty
+
+/-- Closed balls and spheres coincide when the radius is non-positive -/
+theorem closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
+  Set.ext fun _ => (hε.trans dist_nonneg).le_iff_eq
+#align metric.closed_ball_eq_sphere_of_nonpos Metric.closedBall_eq_sphere_of_nonpos
 
 theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
   mem_closedBall.2 (le_of_lt hy)
@@ -1447,7 +1458,7 @@ theorem squeeze_zero' {α} {f g : α → ℝ} {t₀ : Filter α} (hf : ∀ᶠ t 
 #align squeeze_zero' squeeze_zero'
 
 /-- Special case of the sandwich theorem; see `tendsto_of_tendsto_of_tendsto_of_le_of_le`
-and  `tendsto_of_tendsto_of_tendsto_of_le_of_le'` for the general case. -/
+and `tendsto_of_tendsto_of_tendsto_of_le_of_le'` for the general case. -/
 theorem squeeze_zero {α} {f g : α → ℝ} {t₀ : Filter α} (hf : ∀ t, 0 ≤ f t) (hft : ∀ t, f t ≤ g t)
     (g0 : Tendsto g t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 0) :=
   squeeze_zero' (eventually_of_forall hf) (eventually_of_forall hft) g0
@@ -1775,6 +1786,19 @@ theorem closedBall_prod_same (x : α) (y : β) (r : ℝ) :
   ext fun z => by simp [Prod.dist_eq]
 #align closed_ball_prod_same closedBall_prod_same
 
+theorem sphere_prod (x : α × β) (r : ℝ) :
+    sphere x r = sphere x.1 r ×ˢ closedBall x.2 r ∪ closedBall x.1 r ×ˢ sphere x.2 r := by
+  obtain hr | rfl | hr := lt_trichotomy r 0
+  · simp [hr]
+  · cases x
+    simp_rw [← closedBall_eq_sphere_of_nonpos le_rfl, union_self, closedBall_prod_same]
+  · ext ⟨x', y'⟩
+    simp_rw [Set.mem_union, Set.mem_prod, Metric.mem_closedBall, Metric.mem_sphere, Prod.dist_eq,
+      max_eq_iff]
+    refine' or_congr (and_congr_right _) (and_comm.trans (and_congr_left _))
+    all_goals rintro rfl; rfl
+#align sphere_prod sphere_prod
+
 end Prod
 
 -- porting note: 3 new lemmas
@@ -2001,10 +2025,24 @@ theorem nndist_pi_le_iff {f g : ∀ b, π b} {r : ℝ≥0} :
     nndist f g ≤ r ↔ ∀ b, nndist (f b) (g b) ≤ r := by simp [nndist_pi_def]
 #align nndist_pi_le_iff nndist_pi_le_iff
 
+theorem nndist_pi_lt_iff {f g : ∀ b, π b} {r : ℝ≥0} (hr : 0 < r) :
+    nndist f g < r ↔ ∀ b, nndist (f b) (g b) < r := by
+  simp [nndist_pi_def, Finset.sup_lt_iff (show ⊥ < r from hr)]
+#align nndist_pi_lt_iff nndist_pi_lt_iff
+
+theorem nndist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ≥0} (hr : 0 < r) :
+    nndist f g = r ↔ (∃ i, nndist (f i) (g i) = r) ∧ ∀ b, nndist (f b) (g b) ≤ r := by
+  rw [eq_iff_le_not_lt, nndist_pi_lt_iff hr, nndist_pi_le_iff, not_forall, and_comm]
+  simp_rw [not_lt, and_congr_left_iff, le_antisymm_iff]
+  intro h
+  refine' exists_congr fun b => _
+  apply (and_iff_right <| h _).symm
+#align nndist_pi_eq_iff nndist_pi_eq_iff
+
 theorem dist_pi_lt_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 < r) :
     dist f g < r ↔ ∀ b, dist (f b) (g b) < r := by
   lift r to ℝ≥0 using hr.le
-  simp [dist_pi_def, Finset.sup_lt_iff (show ⊥ < r from hr)]
+  exact nndist_pi_lt_iff hr
 #align dist_pi_lt_iff dist_pi_lt_iff
 
 theorem dist_pi_le_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 ≤ r) :
@@ -2012,6 +2050,12 @@ theorem dist_pi_le_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 ≤ r) :
   lift r to ℝ≥0 using hr
   exact nndist_pi_le_iff
 #align dist_pi_le_iff dist_pi_le_iff
+
+theorem dist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 < r) :
+    dist f g = r ↔ (∃ i, dist (f i) (g i) = r) ∧ ∀ b, dist (f b) (g b) ≤ r := by
+  lift r to ℝ≥0 using hr.le
+  simp_rw [← coe_nndist, NNReal.coe_eq, nndist_pi_eq_iff hr, NNReal.coe_le_coe]
+#align dist_pi_eq_iff dist_pi_eq_iff
 
 theorem dist_pi_le_iff' [Nonempty β] {f g : ∀ b, π b} {r : ℝ} :
     dist f g ≤ r ↔ ∀ b, dist (f b) (g b) ≤ r := by
@@ -2078,6 +2122,24 @@ theorem closedBall_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r :=
   (le_or_lt 0 r).elim (closedBall_pi x) fun hr => by simp [closedBall_eq_empty.2 hr]
 #align closed_ball_pi' closedBall_pi'
+
+/-- A sphere in a product space is a union of spheres on each component restricted to the closed
+ball. -/
+theorem sphere_pi (x : ∀ b, π b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
+    sphere x r = (⋃ i : β, Function.eval i ⁻¹' sphere (x i) r) ∩ closedBall x r := by
+  obtain hr | rfl | hr := lt_trichotomy r 0
+  · simp [hr]
+  · rw [closedBall_eq_sphere_of_nonpos le_rfl, eq_comm, Set.inter_eq_right_iff_subset]
+    letI := h.resolve_left (lt_irrefl _)
+    inhabit β
+    refine' subset_iUnion_of_subset default _
+    intro x hx
+    replace hx := hx.le
+    rw [dist_pi_le_iff le_rfl] at hx
+    exact le_antisymm (hx default) dist_nonneg
+  · ext
+    simp [dist_pi_eq_iff hr, dist_pi_le_iff hr.le]
+#align sphere_pi sphere_pi
 
 @[simp]
 theorem Fin.nndist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type _}
@@ -2398,7 +2460,7 @@ protected theorem Bounded.prod [PseudoMetricSpace β] {s : Set α} {t : Set β} 
 theorem _root_.TotallyBounded.bounded {s : Set α} (h : TotallyBounded s) : Bounded s :=
   -- We cover the totally bounded set by finitely many balls of radius 1,
   -- and then argue that a finite union of bounded sets is bounded
-  let  ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
+  let ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
   Bounded.mono subs <| (bounded_biUnion fint).2 fun _ _ => bounded_ball
 #align totally_bounded.bounded TotallyBounded.bounded
 
@@ -2616,7 +2678,7 @@ theorem diam_triple :
 #align metric.diam_triple Metric.diam_triple
 
 /-- If the distance between any two points in a set is bounded by some constant `C`,
-then `ENNReal.ofReal C`  bounds the emetric diameter of this set. -/
+then `ENNReal.ofReal C` bounds the emetric diameter of this set. -/
 theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
     EMetric.diam s ≤ ENNReal.ofReal C :=
   EMetric.diam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)

@@ -45,8 +45,7 @@ theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
 variable {K}
 
 @[simp]
-theorem apply_at (φ : K →+* ℂ) (x : K) :
-    (NumberField.canonicalEmbedding K x) φ = φ x := rfl
+theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K x) φ = φ x := rfl
 
 open scoped ComplexConjugate
 
@@ -64,8 +63,7 @@ theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     exact congrArg ((a : ℂ) * ·) hx
 
 theorem nnnorm_eq [NumberField K] (x : K) :
-    ‖canonicalEmbedding K x‖₊ =
-      Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
+    ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
