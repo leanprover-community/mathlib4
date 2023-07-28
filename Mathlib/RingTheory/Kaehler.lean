@@ -388,17 +388,22 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
 /- After porting note: Lean is slow to synthesize theses instances.
   Without them the endEquivDerivation' and endEquivAuxEquiv both have
   significant timeouts. This was not the case in Mathlib 3 -/
-local instance : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Algebra.toSMul
+local instance : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Algebra.toSMul
 
-theorem isScalarTower_S_right : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+theorem isScalarTower_S_right : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
 
 attribute [local instance] isScalarTower_S_right
 
-theorem isScalarTower_R_right : IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+theorem isScalarTower_R_right : IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
 
 attribute [local instance] isScalarTower_R_right
 
-theorem isScalarTower_SS_right : IsScalarTower (S ⊗[R] S) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+theorem isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
+  IsScalarTower.right
 
 attribute [local instance] isScalarTower_SS_right
 
