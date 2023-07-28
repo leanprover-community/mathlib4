@@ -388,31 +388,28 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
 /- After porting note: Lean is slow to synthesize theses instances.
   Without them the endEquivDerivation' and endEquivAuxEquiv both have
   significant timeouts. This was not the case in Mathlib 3 -/
+local instance : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Algebra.toSMul
+
+theorem isScalarTower_S_right : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+
+attribute [local instance] isScalarTower_S_right
+
+theorem isScalarTower_R_right : IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+
+attribute [local instance] isScalarTower_R_right
+
+theorem isScalarTower_SS_right : IsScalarTower (S ⊗[R] S) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+
+attribute [local instance] isScalarTower_SS_right
+
 local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ _ _ IsScalarTower.right
+  Submodule.module' _
 
 local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ _ _ IsScalarTower.right
+  Submodule.module' _
 
 local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ _ _ IsScalarTower.right
-
-theorem isScalarTower_R_S_cotangentIdeal : @IsScalarTower R S
-    (KaehlerDifferential.ideal R S).cotangentIdeal _ (instS R S).toSMul (instR R S).toSMul :=
-  @Submodule.isScalarTower' R _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
-
-attribute [local instance] isScalarTower_R_S_cotangentIdeal
-
-theorem isScalarTower_R_SS_cotangentIdeal : @IsScalarTower S (S ⊗[R] S)
-    (KaehlerDifferential.ideal R S).cotangentIdeal _ (instSS R S).toSMul (instS R S).toSMul :=
-  @Submodule.isScalarTower' S _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
-
-attribute [local instance] isScalarTower_R_SS_cotangentIdeal
+  Submodule.module' _
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
