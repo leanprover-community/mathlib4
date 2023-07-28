@@ -828,7 +828,7 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
     forall_const]
 #align real.is_R_or_C Real.isROrC
 
-instance toStarOrderedRingK : StarOrderedRing K := by
+instance toStarOrderedRing : StarOrderedRing K := by
   apply StarOrderedRing.ofNonnegIff'
   · intros x y hxy z
     rw [IsROrC.le_iff_re_im] at *
