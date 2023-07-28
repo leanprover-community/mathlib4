@@ -53,6 +53,13 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
+theorem tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type _) [Semiring 𝕜] [Algebra ℝ 𝕜]
+    [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ 𝕜] :
+    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ => (n : ℝ)⁻¹) atTop (nhds 0) :=
+  by
+  rw [← map_zero (algebraMap ℝ 𝕜)]
+  exact Tendsto.comp (continuous_algebraMap ℝ 𝕜).continuousAt tendsto_inverse_atTop_nhds_0_nat
+
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).
 
