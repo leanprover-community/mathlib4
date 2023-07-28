@@ -1,5 +1,6 @@
 import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib
 
 open MeasureTheory Set Filter BoundedContinuousFunction Topology ENNReal NNReal BigOperators
 
@@ -19,7 +20,65 @@ lemma ProbabilityMeasure.coe_null_iff (μ : ProbabilityMeasure α) (E : Set α) 
 
 variable [TopologicalSpace α]
 
+#check integrable_indicator_iff
+#check integrable_indicatorConstLp
+#check lintegral_indicator_const
+
+#check aestronglyMeasurable_indicator_iff
+--#check measurable_indicator
+#check Measurable.indicator
+--#check indicator_measurable
+
+lemma integrable_indicator_const_iff [MeasurableSpace α] (μ : Measure α) {A : Set α}
+    [NormedAddCommGroup E] [MeasurableSpace E] (c : E) :
+    Integrable (A.indicator (fun _ ↦ c)) μ ↔ (c = 0 ∨ (MeasurableSet A ∧ μ A ≠ ∞)) := by
+  constructor <;> intro h
+  · by_cases hc : c = 0
+    · exact Or.inl hc
+    · simp only [hc, ne_eq, false_or]
+      have : A = (A.indicator (fun _ ↦ c)) ⁻¹' {c} := by
+        ext
+        --apply?
+        sorry
+      sorry
+  · by_cases hc : c = 0
+    · simp only [hc, indicator_zero, integrable_zero]
+    · simp only [hc, ne_eq, false_or] at h
+      rcases h with ⟨A_mble, meas_A⟩
+      refine ⟨?_, ?_⟩
+      · have : Measurable (A.indicator (fun _ ↦ c)) := by
+          --have := measurable_indicator_con
+          --apply?
+          sorry
+        --apply Measurable.aestronglyMeasurable
+        sorry
+      · sorry
+
+lemma integrable_indicator_one_iff [MeasurableSpace α] (μ : Measure α) {A : Set α}
+    [NormedAddCommGroup E] (c : E) :
+    Integrable (A.indicator (fun _ ↦ c)) μ ↔ MeasurableSet A ∧ (c = 0 ∨ μ A ≠ ∞) := by
+  sorry
+
 -- NOTE: Missing?
+/-- If `μ` is a finite measure and the indicators of measurable sets `As i` tend pointwise to
+the indicator of a set `A` (along a countably generated filter), then the measures `μ (As i)`
+tend to the measure `μ A`. -/
+lemma tendsto_measure_of_tendsto_indicator'
+    {α ι : Type _} (L : Filter ι) [IsCountablyGenerated L]
+    [MeasurableSpace α] (μ : Measure α) {A : Set α} (A_mble : MeasurableSet A)
+    {As : ι → Set α} (As_mble : ∀ i, MeasurableSet (As i))
+    (h_finmeas : ∀ᶠ i in L, μ (As i) < ∞)
+    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
+      L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  simp_rw [← MeasureTheory.lintegral_indicator_one A_mble, ← MeasureTheory.lintegral_indicator_one (As_mble _)]
+  refine tendsto_lintegral_filter_of_dominated_convergence (fun _ ↦ (1 : ℝ≥0∞))
+          (eventually_of_forall ?_) (eventually_of_forall ?_) ?_ h_lim
+  · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
+  · exact fun i ↦ eventually_of_forall (fun x ↦ indicator_apply_le (fun _ ↦ le_refl _))
+  · rw [lintegral_one]
+    exact (measure_lt_top μ univ).ne
+
 /-- If `μ` is a finite measure and the indicators of measurable sets `As i` tend pointwise to
 the indicator of a set `A` (along a countably generated filter), then the measures `μ (As i)`
 tend to the measure `μ A`. -/
