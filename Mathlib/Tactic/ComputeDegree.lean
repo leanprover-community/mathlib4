@@ -146,29 +146,34 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite [Semiring R] {m n o : ℕ} {a : R} {
 
 section congr_lemmas
 
---  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
---  They achieve the following goals:
---  * they introduce fresh metavariables for several of the important variables --
---    this helps `compute_degree`, since it does not "pre-estimate" the degree,
---    but it "picks it up along the way";
---  * they split checking the inequality `coeff p n ≠ 0` into the task of
---    finding a value `c` for the `coeff` and then
---    proving that this value is non-zero by `coeff_ne_zero`.
-theorem natDegree_eq_of_le_of_coeff_ne_zero' {m deg o : ℕ} {c : R} {p : R[X]}
+/--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
+They achieve the following goals.
+* They introduce *two* fresh metavariables replacing the given one `deg`,
+  one for the `natDegree ≤` computation and one for the `coeff =` computation.
+  This helps `compute_degree`, since it does not "pre-estimate" the degree,
+  but it "picks it up along the way".
+* They split checking the inequality `coeff p n ≠ 0` into the task of
+  finding a value `c` for the `coeff` and then
+  proving that this value is non-zero by `coeff_ne_zero`.
+-/
+theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
     (pn : natDegree p ≤ m) (coeff_eq : coeff p o = c)
-    (coeff_ne_zero : c ≠ 0) (exp_deg_eq_deg : m = deg) (natDeg_eq_coeff : m = o) :
+    (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     natDegree p = deg := by
-  subst coeff_eq exp_deg_eq_deg natDeg_eq_coeff
+  subst coeff_eq deg_eq_deg coeff_eq_deg
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
-theorem degree_eq_of_le_of_coeff_ne_zero' {n : WithBot ℕ} {m o : ℕ} {c : R} {p : R[X]}
+theorem degree_eq_of_le_of_coeff_ne_zero' {deg : WithBot ℕ} {m o : ℕ} {c : R} {p : R[X]}
     (pn : natDegree p ≤ m) (coeff_eq : coeff p o = c)
-    (coeff_ne_zero : c ≠ 0) (exp_deg_eq_deg : m = n) (natDeg_eq_coeff : m = o) :
-    degree p = n := by
-  subst coeff_eq exp_deg_eq_deg natDeg_eq_coeff
+    (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
+    degree p = deg := by
+  subst coeff_eq coeff_eq_deg
+  rw [Nat.cast_inj] at deg_eq_deg
+  subst deg_eq_deg
   rcases eq_or_ne p 0 with (rfl|H)
   · exact False.elim (coeff_ne_zero rfl)
   · apply (degree_eq_iff_natDegree_eq ‹_›).mpr
+
     apply natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
@@ -199,15 +204,27 @@ section Tactic
 
 open Lean Elab Tactic Meta
 
-/--  `Lean.Name.getTail name` takes `name : Name` as input.  If `name = .str _ tail`,
-the it returns `tail`.  For instance,
+/--  `Lean.Name.getTail name` takes `name : Name` as input.
+If `name = .str _ tail`, then it returns `tail`.
+For instance,
 ```lean
-#eval Lean.Name.getTail ``Lean.Expr.bvar  -- "bvar"
+#eval Lean.Name.getTail `first.second.third  -- "third"
 ```
 -/
 def _root_.Lean.Name.getTail : Name → String
   | .str _ tail => tail
   | _ => ""
+
+/--  `Lean.Name.getHead name` takes `name : Name` as input.
+If `name = .str head _`, then it returns `head`.
+For instance,
+```lean
+#eval Lean.Name.getHead `first.second.third  -- "first.second"
+```
+-/
+def _root_.Lean.Name.getHead : Name → Name
+  | .str head _ => head
+  | _ => .anonymous
 
 /-! `isDegLE e` checks whether `e` is an `Expr`ession representing an inequality whose LHS is
 the `natDegree/degree` of a polynomial with coefficients in a semiring `R`.
@@ -256,7 +273,7 @@ def declNameInThm (thm tag : Name) : CommandElabM Unit := do
 called `exp_deg_eq_deg` and `natDeg_eq_coeff`. -/
 run_cmd
   for thm in [``natDegree_eq_of_le_of_coeff_ne_zero', ``degree_eq_of_le_of_coeff_ne_zero'] do
-  for tag in [`exp_deg_eq_deg, `natDeg_eq_coeff] do
+  for tag in [`deg_eq_deg, `coeff_eq_deg, `coeff_ne_zero] do
     declNameInThm thm tag
 
 /-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
@@ -363,7 +380,7 @@ match twoH with
       | _, _ => Prod.snd ∘ Prod.snd
     let nas := match head with
       | `zero => (``natDegree_zero_le, ``degree_zero_le, ``coeff_zero)
-      | `one => (``natDegree_one_le, ``degree_one_le, ``coeff_nat_cast_ite)
+      | `one => (``natDegree_one_le, ``degree_one_le, ``coeff_one)
       | `many => (``natDegree_nat_cast_le, ``degree_nat_cast_le, ``coeff_nat_cast_ite)
       | ``HAdd.hAdd =>
         (``natDegree_add_le_of_le, ``degree_add_le_of_le, ``coeff_add_of_eq)
@@ -457,10 +474,47 @@ macro "compute_degree!" "-debug"? : tactic => `(tactic| compute_degree ! -debug)
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
 open Elab.Tactic Mathlib.Meta.NormNum Lean.Meta.Simp.Context in
+/-- `miscomputedDegree? deg degMVs` takes as input
+*  an `Expr`ession `deg` representing the degree of a polynomial
+   (i.e. a term of type either `ℕ` or `WithBot ℕ`);
+*  a list of `MVarId`s `degMVs` representing the three goals
+   `⊢ given_degree = expected_degree`, `⊢ given_coeff_degree = expected_degree`,
+   `⊢ coeff_of_given_degree ≠ 0`.
+
+`miscomputedDegree?` then produces a list of error message, whose entries are indexed by the
+goals that `norm_num` reduces to `False`.
+Thus, the resulting list is empty if and only if `norm_num` cannot disprove one of the given
+goals (even though the goal need not be solvable!).
+-/
+def miscomputedDegree? (deg : Expr) (degMVs : List MVarId) : MetaM (List MessageData) := do
+let simps := ← degMVs.mapM fun x =>
+  return (← x.getTag, ← deriveSimp (← mkDefault) true (← x.getType''))
+let simps := simps.filter fun x => (x.2.expr == (Expr.const ``False []))
+let contrs := ← simps.mapM fun x => do
+  let st := x.2.proof?.getD (Expr.const ``Lean.Rat [])
+  logInfo x.1
+  match (← inferType st).eq? with
+    | some (_, lhs, _) =>
+      if lhs.eq?.isSome then
+        let lhs := lhs.eq?.get!.2.1
+        return (← deriveSimp (← mkDefault) true lhs).expr
+      else
+        pure lhs.getAppFn
+    | _ => pure (← inferType st).getAppFn
+return (contrs.map fun e =>
+  if e.isApp then
+    m!"* the naïvely computed degree is '{e}'\n"
+  else
+    m!"* the coefficient of degree '{deg}' is zero")
+
+open Elab.Tactic Mathlib.Meta.NormNum Lean.Meta.Simp.Context MessageData in
 elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => focus do
   let dbg := dbg.isSome
   let goal := ← getMainGoal
   let gt := ← goal.getType''
+  let deg := match gt.eq? with
+    | some (_, _, rhs) => some rhs
+    | _ => none
   let twoH := twoHeadsArgs gt
   match twoH with
     | (.anonymous, na, _, _) =>
@@ -470,40 +524,24 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
       let cd := "'compute_degree' inapplicable.  The "
       throwError (cd ++ m!"LHS of\n\n   {gt}\n\nbegins with '{na}'.  " ++
           m!"There is support only for\n\n   'natDegree'   'degree'   or   'coeff'")
-    | (lhs_head, eq_or_le, _, _) =>
-    let lem := dispatchLemma twoH
-    if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getTail}'"
-    let mut (gls, static) := (← goal.applyConst lem, [])
-    let tag := "exp_deg_eq_deg"
-    let deg_eq_deg := ← gls.findM? fun mv => return (← mv.getTag).getTail == tag
-
-    let (tag, deg_eq_deg) := if deg_eq_deg.isNone then
-        ("natDeg_eq_coeff", ← gls.findM? fun mv =>
-          return (← mv.getTag).getTail == "natDeg_eq_coeff")
-      else (tag, deg_eq_deg)
-    while (! gls == []) do
-      (gls, static) := ← recOrd gls static
-    let rfled := ← try_rfl static
-    if ((eq_or_le == ``Eq) && lhs_head != ``coeff) then match deg_eq_deg with
-      | none => throwError m!"Did the tag '{tag}' disappear from '{lem.getTail}'?"
-      | some deg_eq_deg =>
-        let soluble? : Bool := ← withNewMCtxDepth do
-          let solved? := ← normNumAt deg_eq_deg (← mkDefault) #[]
-          if solved?.isSome then
-            return !((← solved?.get!.2.getType) == .const ``False [])
-          else return true
-        guard soluble? <|> do
-          let deg_trans_deg := ← deg_eq_deg.applyConst ``Eq.trans
-          let nnmd := ← deg_trans_deg.mapM fun g => do normNumAt g (← mkDefault) #[]
-          if let [computedDegree, givenDegree, _] := nnmd.map fun x => (x.get!).2 then
-          let cdeg := (← computedDegree.getType).eq?.get!.2.1
-          let gdeg := (← givenDegree.getType).eq?.get!.2.2
-          throwError m!"The expected degree is '{gdeg}'\nThe computed degree is '{cdeg}'"
-    setGoals rfled
-    if stx.isSome then
-      evalTactic (← `(tactic| any_goals norm_num <;> try assumption)) <|> pure ()
-    else
-      evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
+    | _ =>
+      let lem := dispatchLemma twoH
+      if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getTail}'"
+      let mut (gls, static) := (← goal.applyConst lem, [])
+      let currTag := (← gls[0]!.getTag).getHead
+      let tags := (["deg_eq_deg", "coeff_eq_deg", "coeff_ne_zero"].map (.str currTag))
+      let degMVs := tags.map ((← getMCtx).userNames.find? ·)
+      while (! gls == []) do (gls, static) := ← recOrd gls static
+      let rfled := ← try_rfl static
+      if deg.isSome then
+        let res := ← miscomputedDegree? deg.get! degMVs.reduceOption
+        if ! res.isEmpty then
+          throwError (res.foldl compose m!"The given degree is '{deg}'.  However,\n\n")
+      setGoals rfled
+      if stx.isSome then
+        evalTactic (← `(tactic| any_goals norm_num <;> try assumption)) <|> pure ()
+      else
+        evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
 
 end Tactic
 
