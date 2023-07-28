@@ -6,7 +6,7 @@ section native_mathlib4_tests
 
 variable {n : ℕ} {z : ℤ} {f : ℤ[X]} (hn : natDegree f ≤ 5) (hd : degree f ≤ 5)
 
-/--  This example flows through all the matches in `direct` with a `natDegree` goal. -/
+/--  Flows through all the matches in `compute_degree`, with a `natDegree _ ≤ _` goal. -/
 example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
     NatCast.natCast 1 + (z : ℤ[X]) + (n : ℤ[X]) + f) ≤ 5 := by
   compute_degree!
@@ -14,13 +14,27 @@ example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCas
 example [Semiring R] : natDegree (OfNat.ofNat (OfNat.ofNat 0) : R[X]) ≤ 0 := by
   compute_degree
 
-/--  This example flows through all the matches in `direct` with a `degree` goal. -/
-example : degree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
+/--  Flows through all the matches in `compute_degree`, with a `degree _ ≤ _` goal. -/
+example : degree (- C z * X ^ 5 + (C 0 + monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
     NatCast.natCast 1 + (z : ℤ[X]) + (n : ℤ[X]) + f) ≤ 5 := by
   set k := f with _h₀
   compute_degree!
 
-/--  This example flows through all the matches in `direct` with a `degree` goal. -/
+/--  Flows through all the matches in `compute_degree`, with a `natDegree _ = _` goal. -/
+example : natDegree (- C 1 * X ^ 5 + (C 0 + monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
+    NatCast.natCast 1 + (z : ℤ[X]) + (n : ℤ[X])) = 5 := by
+  set k := f with _h₀
+  compute_degree!
+
+/--  Flows through all the matches in `compute_degree`, with a `degree _ = _` goal. -/
+example : degree (- C 1 * X ^ 5 + (C 0 + monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
+    NatCast.natCast 1 + (z : ℤ[X]) + (n : ℤ[X])) = 5 := by
+  set k := f with _h₀
+  compute_degree
+  split_ifs <;> simp_all
+  norm_num
+
+/--  Flows through all the matches in `compute_degree`, with a `degree _ ≤ _` goal. -/
 example [Ring R] (g : R[X]) (hg : degree g ≤ 5) : degree (- C (z : R) * X ^ 5 + (monomial 2 5) ^ 2
     - 0 + 1 + IntCast.intCast 1 + NatCast.natCast 1 + (z : R[X]) + (n : R[X]) + g) ≤ 5 := by
   set k := g with _h₀
