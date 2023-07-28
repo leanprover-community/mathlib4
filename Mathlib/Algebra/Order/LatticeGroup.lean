@@ -66,19 +66,7 @@ lattice, ordered, group
 -- Needed for squares
 universe u v
 
-variable {α : Type u} {β : Type v}
-
--- A linearly ordered additive commutative group is a lattice ordered commutative group
-
-@[to_additive] -- see Note [lower instance priority]
-instance LinearOrderedCommGroup.to_covariant_class (α : Type u)
-  [LinearOrderedCommGroup α] : CovariantClass α α (· * · ) (· ≤ ·) :=
-{ elim := fun a _ _ bc => OrderedCommGroup.mul_le_mul_left _ _ bc a }
-
-
-section
-
-variable [Lattice α] [CommGroup α]
+variable {α : Type u} {β : Type v} [Lattice α] [CommGroup α]
 
 -- Special case of Bourbaki A.VI.9 (1)
 -- c + (a ⊔ b) = (c + a) ⊔ (c + b)
@@ -134,11 +122,8 @@ theorem inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a
 #align inf_mul_sup inf_mul_sup
 #align inf_add_sup inf_add_sup
 
-end
 
 namespace LatticeOrderedCommGroup
-
-variable [Lattice α] [CommGroup α]
 
 -- see Note [lower instance priority]
 /--
