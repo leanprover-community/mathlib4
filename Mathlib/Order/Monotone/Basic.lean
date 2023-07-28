@@ -249,7 +249,7 @@ protected theorem Antitone.dual (hf : Antitone f) : Antitone (toDual ∘ f ∘ o
 theorem monotone_dual_iff : Monotone f ↔ Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
   rw [monotone_toDual_comp_iff, antitone_comp_ofDual_iff]
 
-protected theorem Antitone.dual_iff : Antitone f ↔ Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
+theorem antitone_dual_iff : Antitone f ↔ Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
   rw [antitone_toDual_comp_iff, monotone_comp_ofDual_iff]
 
 protected theorem MonotoneOn.dual (hf : MonotoneOn f s) :
