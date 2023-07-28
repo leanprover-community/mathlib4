@@ -229,20 +229,20 @@ def mapBilinear : (M →ₗ[A] P) →ₗ[B] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R] 
     map_add' := fun _f₁ _f₂ => LinearMap.ext <| fun _g => map_add_left _ _ _
     map_smul' := fun _c _f => LinearMap.ext <| fun _g => map_smul_left _ _ _ }
 
-variable {R A M N P Q}
+variable {R A B M N P Q}
 
 @[simp]
 theorem mapBilinear_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     mapBilinear R A B M N P Q f g = map f g :=
   rfl
 
-variable (R A M N P Q)
+variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.homTensorHomMap` -/
 def homTensorHomMap : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[B] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   lift <| mapBilinear R A B M N P Q
 
-variable {R A M N P Q}
+variable {R A B M N P Q}
 
 @[simp] theorem homTensorHomMap_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     homTensorHomMap R A B M N P Q (f ⊗ₜ g) = map f g :=
