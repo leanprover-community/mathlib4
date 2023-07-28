@@ -55,7 +55,7 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
     _ ≤ Finset.univ.card • 1 := (Finset.sum_le_card_nsmul _ _ 1 fun (i : n) _ => ?_)
     _ ≤ Fintype.card n := by simp [mul_one, Algebra.id.smul_eq_mul, Finset.card_univ]
   dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
-  compute_degree_le
+  compute_degree
 #align polynomial.nat_degree_det_X_add_C_le Polynomial.natDegree_det_X_add_C_le
 
 theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
@@ -82,7 +82,7 @@ theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
   · simp [coeff_C]
   · rintro p -
     dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
-    compute_degree_le
+    compute_degree
 #align polynomial.coeff_det_X_add_C_card Polynomial.coeff_det_X_add_C_card
 
 theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
