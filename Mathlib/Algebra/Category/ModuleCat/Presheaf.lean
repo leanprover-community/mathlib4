@@ -14,126 +14,103 @@ as a presheaf of abelian groups with additional data.
 
 ## Future work
 
-* Show that we can check the sheaf condition at the level of abelian groups.
 * Compare this to the definition as a presheaf of pairs `(R, M)` with specified first part.
 * Compare this to the definition as a module object of the presheaf of rings
   thought of as a monoid object.
-
+* (Pre)sheaves of modules over a given sheaf of rings are an abelian category.
+* Presheaves of modules over a presheaf of commutative rings form a monoidal category.
+* Pushforward and pullback.
 -/
 
-open CategoryTheory
+universe v₁ u₁ u
 
--- TODO: Porting note: move these definitions to the linear algebra library.
--- They belong in `Mathlib.Algebra.Ring.CompTypeclasses`.
+open CategoryTheory LinearMap Opposite
 
-class RingHomId {R : Type _} [Semiring R] (σ : R →+* R) : Prop where
-  eq_id : σ = RingHom.id R
-
-instance {R : Type _} [Semiring R] : RingHomId (RingHom.id R) where
-  eq_id := rfl
-
-/-- A generalisation of `LinearMap.id` that constructs the identity function
-as a `σ`-semilinear map for any ring homomorphism `σ` which we know is the identity. -/
-@[simps]
-def LinearMap.id' {R : Type _} [Semiring R]
-    {M : Type _} [AddCommMonoid M] [Module R M]
-    {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
-  toFun x := x
-  map_add' x y := rfl
-  map_smul' r x := by
-    have := (RingHomId.eq_id : σ = _)
-    subst this
-    rfl
-
-open LinearMap
-
-open Opposite
-
-variable {C : Type u₁} [Category.{v₁} C] {R : Type u₂} [Category.{v₂} R]
+variable {C : Type u₁} [Category.{v₁} C]
 
 /-- A presheaf of modules over a given presheaf of rings,
 described as a presheaf of abelian groups, and the extra data of the action at each object,
 and a condition relating functoriality and scalar multiplication. -/
-structure PresheafOfModules (F : Cᵒᵖ ⥤ RingCat.{u}) where
+structure PresheafOfModules (R : Cᵒᵖ ⥤ RingCat.{u}) where
   presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v}
-  module : ∀ X : Cᵒᵖ, Module (F.obj X) (presheaf.obj X)
-  map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : F.obj X) (x : presheaf.obj X),
-    presheaf.map f (r • x) = F.map f r • presheaf.map f x
+  module : ∀ X : Cᵒᵖ, Module (R.obj X) (presheaf.obj X)
+  map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (x : presheaf.obj X),
+    presheaf.map f (r • x) = R.map f r • presheaf.map f x
 
 namespace PresheafOfModules
 
-variable {F : Cᵒᵖ ⥤ RingCat.{u}}
+variable {R : Cᵒᵖ ⥤ RingCat.{u}}
 
 attribute [instance] PresheafOfModules.module
 
 /-- The bundled module over an object `X`. -/
-def obj (P : PresheafOfModules F) (X : Cᵒᵖ) : ModuleCat (F.obj X) :=
+def obj (P : PresheafOfModules R) (X : Cᵒᵖ) : ModuleCat (R.obj X) :=
   ModuleCat.of _ (P.presheaf.obj X)
 
 /--
-If `P` is a presheaf of modules over a presheaf of rings `F`, both over some category `C`,
-and `f : X ⟶ Y` is a morphism in `Cᵒᵖ`, we construct the `F.map f`-semilinear map
-from the `F.obj X`-module `P.presheaf.obj X` to the `F.obj Y`-module `P.presheaf.obj Y`.
+If `P` is a presheaf of modules over a presheaf of rings `R`, both over some category `C`,
+and `f : X ⟶ Y` is a morphism in `Cᵒᵖ`, we construct the `R.map f`-semilinear map
+from the `R.obj X`-module `P.presheaf.obj X` to the `R.obj Y`-module `P.presheaf.obj Y`.
  -/
-def map (P : PresheafOfModules F) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    P.obj X →ₛₗ[F.map f] P.obj Y :=
+def map (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    P.obj X →ₛₗ[R.map f] P.obj Y :=
   { toAddHom := (P.presheaf.map f).toAddHom,
     map_smul' := P.map_smul f, }
 
 @[simp]
-theorem map_apply (P : PresheafOfModules F) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
+theorem map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
     P.map f x = (P.presheaf.map f) x :=
   rfl
 
-instance (X : Cᵒᵖ) : RingHomId (F.map (𝟙 X)) where
-  eq_id := F.map_id X
+instance (X : Cᵒᵖ) : RingHomId (R.map (𝟙 X)) where
+  eq_id := R.map_id X
 
 instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    RingHomCompTriple (F.map f) (F.map g) (F.map (f ≫ g)) where
-  comp_eq := (F.map_comp f g).symm
+    RingHomCompTriple (R.map f) (R.map g) (R.map (f ≫ g)) where
+  comp_eq := (R.map_comp f g).symm
 
 @[simp]
-theorem map_id (P : PresheafOfModules F) (X : Cᵒᵖ) :
+theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
     P.map (𝟙 X) = LinearMap.id' := by
   ext
   simp
 
 @[simp]
-theorem map_comp (P : PresheafOfModules F) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem map_comp (P : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     P.map (f ≫ g) = (P.map g).comp (P.map f) := by
   ext
   simp
 
 /-- A morphism of presheaves of modules. -/
-structure Hom (P Q : PresheafOfModules F) where
+structure Hom (P Q : PresheafOfModules R) where
   hom : P.presheaf ⟶ Q.presheaf
-  map_smul : ∀ (X : Cᵒᵖ) (r : F.obj X) (x : P.presheaf.obj X), hom.app X (r • x) = r • hom.app X x
+  map_smul : ∀ (X : Cᵒᵖ) (r : R.obj X) (x : P.presheaf.obj X), hom.app X (r • x) = r • hom.app X x
 
 namespace Hom
 
 /-- The identity morphism on a presheaf of modules. -/
-def id (P : PresheafOfModules F) : Hom P P where
+def id (P : PresheafOfModules R) : Hom P P where
   hom := 𝟙 _
   map_smul _ _ _ := rfl
 
 /-- Composition of morphisms of presheaves of modules. -/
-def comp {P Q R : PresheafOfModules F} (f : Hom P Q) (g : Hom Q R) : Hom P R where
+def comp {P Q R : PresheafOfModules R} (f : Hom P Q) (g : Hom Q R) : Hom P R where
   hom := f.hom ≫ g.hom
   map_smul _ _ _ := by simp [Hom.map_smul]
 
 end Hom
 
-instance : Category (PresheafOfModules F) where
+instance : Category (PresheafOfModules R) where
   Hom := Hom
   id := Hom.id
   comp f g := Hom.comp f g
 
-variable {P Q : PresheafOfModules F}
+variable {P Q : PresheafOfModules R}
 
 /--
 The `(X : Cᵒᵖ)`-component of morphism between presheaves of modules
-over a presheaf of rings `F`, as an `F.obj X`-linear map. -/
-def Hom.app (f : Hom P Q) (X : Cᵒᵖ) : P.obj X →ₗ[F.obj X] Q.obj X :=
+over a presheaf of rings `R`, as an `R.obj X`-linear map. -/
+def Hom.app (f : Hom P Q) (X : Cᵒᵖ) : P.obj X →ₗ[R.obj X] Q.obj X :=
   { toAddHom := (f.hom.app X).toAddHom
     map_smul' := f.map_smul X }
 
@@ -147,7 +124,7 @@ theorem Hom.ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
 /-- The functor from presheaves of modules over a specified presheaf of rings,
 to presheaves of abelian groups.
 -/
-def toPresheaf : PresheafOfModules F ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
+def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
   obj P := P.presheaf
   map f := f.hom
 
