@@ -22,34 +22,42 @@ open scoped BigOperators
 
 noncomputable section
 
-variable {R A : Type _} [CommSemiring R] [AddCommMonoid A] [Module R A] [Module (Polynomial R) A]
+variable {R A : Type _} [CommSemiring R]
+
+/-- ## Derivative as a derivation -/
+
+def derivative' : Derivation R R[X] R[X] where
+  toFun := derivative
+  map_add' _ _ := derivative_add
+  map_smul' := derivative_smul
+  map_one_eq_zero' := derivative_one
+  leibniz' f g := by simp [mul_comm, add_comm, derivative_mul]
+
+variable [AddCommMonoid A] [Module R A] [Module (Polynomial R) A]
 
 section
 
 @[simp]
-theorem derivation_C (D : Derivation R (Polynomial R) A) (a : R) : D (C a) = 0 :=
+theorem derivation_C (D : Derivation R R[X] A) (a : R) : D (C a) = 0 :=
   D.map_algebraMap a
 
--- simp normal form is `derivation_C_mul'`
-theorem derivation_C_mul (D : Derivation R (Polynomial R) A) (a : R) (f : Polynomial R) :
-    D (C a * f) = a • D f := by rw [C_mul', D.map_smul]
-
 @[simp]
-theorem derivation_C_mul' (D : Derivation R (Polynomial R) A) (a : R) (f : Polynomial R) :
+theorem derivation_C_mul (D : Derivation R R[X] A) (a : R) (f : Polynomial R) :
     C a • D f = a • D f := by
   have : C a • D f = D (C a * f) := by simp
-  rw [this, derivation_C_mul]
+  rw [this, C_mul', D.map_smul]
 
 @[ext]
-theorem derivation_ext {D₁ D₂ : Derivation R (Polynomial R) A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
-  Derivation.ext fun f => Derivation.eqOn_adjoin (Set.eqOn_singleton.2 h) (mem_adjoin_X f)
+theorem derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
+  Derivation.ext fun f => Derivation.eqOn_adjoin (Set.eqOn_singleton.2 h) <| by
+    simp only [adjoin_X, Algebra.coe_top, Set.mem_univ]
 
 variable [IsScalarTower R (Polynomial R) A]
 
 variable (R)
 
 /-- The derivation on `R[X]` that takes the value `a` on `X`. -/
-def mkDerivation (a : A) : Derivation R (Polynomial R) A where
+def mkDerivation (a : A) : Derivation R R[X] A where
   toLinearMap := (LinearMap.restrictScalars R <| LinearMap.toSpanSingleton R[X] A a).comp derivative
   map_one_eq_zero' := by simp
   leibniz' := by
@@ -58,6 +66,14 @@ def mkDerivation (a : A) : Derivation R (Polynomial R) A where
 
 @[simp]
 theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation]
+
+lemma mkDerivation_one_eq_derivative' : mkDerivation R (1 : R[X]) = derivative' := by
+  apply derivation_ext
+  simp [derivative']
+
+lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = derivative f := by
+  rw [mkDerivation_one_eq_derivative']
+  rfl
 
 /-- `Polynomial.mkDerivation` as a linear equivalence. -/
 def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
@@ -68,3 +84,10 @@ def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
       map_smul' := fun _ _ => rfl
       left_inv := fun _ => derivation_ext <| mkDerivation_X _ _
       right_inv := fun _ => mkDerivation_X _ _ }
+
+@[simp] lemma mkDerivationEquiv_apply_toFun (a : A) (f : R[X]) :
+    ((mkDerivationEquiv R) a) f = Polynomial.derivative f • a := by
+  rfl
+
+@[simp] lemma mkDerivationEquiv_symm_apply (D : Derivation R R[X] A) :
+    (mkDerivationEquiv R).symm D = D X := rfl
