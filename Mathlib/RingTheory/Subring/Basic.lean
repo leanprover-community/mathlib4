@@ -932,21 +932,20 @@ theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s)
 #align subring.closure_induction Subring.closure_induction
 
 @[elab_as_elim]
-theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
-    (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_closure h⟩) (H0 : p 0) (H1 : p 1)
-    (Hadd : ∀ x y, p x → p y → p (x + y)) (Hneg : ∀ x, p x → p (-x))
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p a :=
-  Subtype.recOn a fun b hb => by
-    refine Exists.elim ?_ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
-    refine
-      closure_induction hb (fun x hx => ⟨subset_closure hx, Hs x hx⟩) ⟨zero_mem (closure s), H0⟩
-        ⟨one_mem (closure s), H1⟩ ?_ ?_ ?_
-    · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
-      exact ⟨add_mem hx hy, Hadd _ _ hpx hpy⟩
-    · rintro x ⟨hx, hpx⟩
-      exact ⟨neg_mem hx, Hneg _ hpx⟩
-    · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
-      exact ⟨mul_mem hx hy, Hmul _ _ hpx hpy⟩
+theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
+    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H0 : p 0 (zero_mem _)) (H1 : p 1 (one_mem _))
+    (Hadd : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (Hneg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
+    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {a : R} (ha : a ∈ closure s) : p a ha := by
+  refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine
+    closure_induction ha (fun m hm => ⟨subset_closure hm, Hs m hm⟩) ⟨zero_mem _, H0⟩
+      ⟨one_mem _, H1⟩ ?_ (fun x hx => hx.elim fun hx' hx => ⟨neg_mem hx', Hneg _ _ hx⟩) ?_
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨add_mem hx' hy', Hadd _ _ _ _ hx hy⟩)
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨mul_mem hx' hy', Hmul _ _ _ _ hx hy⟩)
 
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]
