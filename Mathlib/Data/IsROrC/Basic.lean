@@ -829,16 +829,6 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
     forall_const]
 #align real.is_R_or_C Real.isROrC
 
-noncomputable instance toStarOrderedRing : StarOrderedRing ℝ := by
-  apply StarOrderedRing.ofNonnegIff'
-  intros x y h z
-  simpa [add_le_add_iff_left] using h
-  simp only [star_trivial]
-  intros z
-  refine ⟨ (fun h => ⟨ Real.sqrt z, (Real.mul_self_sqrt h).symm⟩ ), fun hz => ?_ ⟩
-  rw [(Exists.choose_spec hz)]
-  exact mul_self_nonneg _
-
 instance toStarOrderedRingK : StarOrderedRing K := by
   apply StarOrderedRing.ofNonnegIff'
   · intros x y hxy z
