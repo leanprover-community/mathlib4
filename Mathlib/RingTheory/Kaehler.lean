@@ -385,11 +385,11 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-/- After porting note: Lean is slow to synthesize theses instances.
-  Without them the endEquivDerivation' and endEquivAuxEquiv both have
-  significant timeouts. This was not the case in Mathlib 3 -/
+/- Note: Lean is slow to synthesize theses instances (times out).
+  Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
+  In Mathlib 3, it was slow but not this slow. -/
 local instance : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Algebra.toSMul
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
 
 theorem isScalarTower_S_right : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right

@@ -170,7 +170,7 @@ instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
 
 -- Lean can struggle to find this instance later if we don't provide this shortcut
 -- Porting note: this can probably now be deleted
--- update: maybe note; removal causes timeouts
+-- update: maybe not - removal causes timeouts
 instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
 #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
@@ -449,11 +449,11 @@ def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' := fun r => by
-    { -- Porting note: Needed to add the below lemma because Equivs coerce weird
+      -- Porting note: Needed to add the below lemma because Equivs coerce weird
       have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
       rw [this]
       simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
-      RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}}
+      RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}
 #align ideal.quotient_equiv_alg Ideal.quotientEquivAlg
 
 instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
