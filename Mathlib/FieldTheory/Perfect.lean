@@ -21,7 +21,7 @@ prime characteristic.
 
 -/
 
-open Function
+open Function Polynomial
 
 /-- A perfect ring of characteristic `p` (prime) in the sense of Serre.
 
@@ -58,13 +58,13 @@ theorem frobenius_comp_frobeniusEquiv_symm :
     (frobenius R p).comp (frobeniusEquiv R p).symm = RingHom.id R := by
   ext; simp [surjInv_eq]
 
-lemma polynomial_expand_eq (f : Polynomial R) :
-    Polynomial.expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
-  rw [← (f.map (S := R) (frobeniusEquiv R p).symm).expand_char p, Polynomial.map_expand,
-    Polynomial.map_map, frobenius_comp_frobeniusEquiv_symm, Polynomial.map_id]
+lemma polynomial_expand_eq (f : R[X]) :
+    expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
+  rw [← (f.map (S := R) (frobeniusEquiv R p).symm).expand_char p, map_expand, map_map,
+    frobenius_comp_frobeniusEquiv_symm, map_id]
 
 @[simp]
-theorem not_irreducible_expand (f : Polynomial R) : ¬ Irreducible (Polynomial.expand R p f) := by
+theorem not_irreducible_expand (f : R[X]) : ¬ Irreducible (expand R p f) := by
   have hp : Fact p.Prime := inferInstance
   rw [polynomial_expand_eq]
   exact fun hf ↦ hf.not_unit $ (of_irreducible_pow hp.out.ne_one hf).pow p
@@ -75,12 +75,12 @@ end PerfectRing
 
 See also `PerfectRing` for a generalisation in positive characteristic. -/
 class PerfectField (K : Type _) [Field K] : Prop where
-  separable_of_irreducible : ∀ {f : Polynomial K}, Irreducible f → f.Separable
+  separable_of_irreducible : ∀ {f : K[X]}, Irreducible f → f.Separable
 
 lemma PerfectRing.toPerfectField (K : Type _) (p : ℕ)
     [Field K] [hp : Fact p.Prime] [CharP K p] [PerfectRing K p] : PerfectField K := by
   refine' PerfectField.mk $ fun hf ↦ _
-  rcases Polynomial.separable_or p hf with h | ⟨-, g, -, rfl⟩
+  rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
   · assumption
   · exfalso; revert hf; simp
 
@@ -96,8 +96,6 @@ instance ofFinite [Finite K] : PerfectField K := by
   exact PerfectRing.toPerfectField K p
 
 variable [PerfectField K]
-
-open Polynomial
 
 instance PerfectField.toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K p := by
   refine' PerfectRing.mkOfReduced _ _ $ fun y ↦ _
