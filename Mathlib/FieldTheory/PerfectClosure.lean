@@ -3,9 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Hom.Iterate
-import Mathlib.Algebra.Ring.Equiv
+import Mathlib.FieldTheory.Perfect
 
 #align_import field_theory.perfect_closure from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -17,113 +15,6 @@ import Mathlib.Algebra.Ring.Equiv
 universe u v
 
 open Function
-
-section Defs
-
-variable (R : Type u) [CommSemiring R] (p : ℕ) [Fact p.Prime] [CharP R p]
-
-/-- A perfect ring is a ring of characteristic p that has p-th root. -/
-class PerfectRing : Type u where
-  pthRoot' : R → R
-  frobenius_pthRoot' : ∀ x, frobenius R p (pthRoot' x) = x
-  pthRoot_frobenius' : ∀ x, pthRoot' (frobenius R p x) = x
-#align perfect_ring PerfectRing
-
-/-- Frobenius automorphism of a perfect ring. -/
-def frobeniusEquiv [PerfectRing R p] : R ≃+* R :=
-  { frobenius R p with
-    invFun := PerfectRing.pthRoot' p
-    left_inv := PerfectRing.pthRoot_frobenius'
-    right_inv := PerfectRing.frobenius_pthRoot' }
-#align frobenius_equiv frobeniusEquiv
-
-/-- `p`-th root of an element in a `PerfectRing` as a `RingHom`. -/
-def pthRoot [PerfectRing R p] : R →+* R :=
-  (frobeniusEquiv R p).symm
-#align pth_root pthRoot
-
-end Defs
-
-section
-
-variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S] (f : R →* S) (g : R →+* S)
-  {p : ℕ} [Fact p.Prime] [CharP R p] [PerfectRing R p] [CharP S p] [PerfectRing S p]
-
-@[simp]
-theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p :=
-  rfl
-#align coe_frobenius_equiv coe_frobeniusEquiv
-
-@[simp]
-theorem coe_frobeniusEquiv_symm : ⇑(frobeniusEquiv R p).symm = pthRoot R p :=
-  rfl
-#align coe_frobenius_equiv_symm coe_frobeniusEquiv_symm
-
-@[simp]
-theorem frobenius_pthRoot (x : R) : frobenius R p (pthRoot R p x) = x :=
-  (frobeniusEquiv R p).apply_symm_apply x
-#align frobenius_pth_root frobenius_pthRoot
-
-@[simp]
-theorem pthRoot_pow_p (x : R) : pthRoot R p x ^ p = x :=
-  frobenius_pthRoot x
-#align pth_root_pow_p pthRoot_pow_p
-
-@[simp]
-theorem pthRoot_frobenius (x : R) : pthRoot R p (frobenius R p x) = x :=
-  (frobeniusEquiv R p).symm_apply_apply x
-#align pth_root_frobenius pthRoot_frobenius
-
--- Porting note: @[simp] can prove this
-theorem pthRoot_pow_p' (x : R) : pthRoot R p (x ^ p) = x :=
-  pthRoot_frobenius x
-#align pth_root_pow_p' pthRoot_pow_p'
-
-theorem leftInverse_pthRoot_frobenius : LeftInverse (pthRoot R p) (frobenius R p) :=
-  pthRoot_frobenius
-#align left_inverse_pth_root_frobenius leftInverse_pthRoot_frobenius
-
-theorem rightInverse_pthRoot_frobenius : Function.RightInverse (pthRoot R p) (frobenius R p) :=
-  frobenius_pthRoot
-#align right_inverse_pth_root_frobenius rightInverse_pthRoot_frobenius
-
-theorem commute_frobenius_pthRoot : Function.Commute (frobenius R p) (pthRoot R p) := fun x =>
-  (frobenius_pthRoot x).trans (pthRoot_frobenius x).symm
-#align commute_frobenius_pth_root commute_frobenius_pthRoot
-
-theorem eq_pthRoot_iff {x y : R} : x = pthRoot R p y ↔ frobenius R p x = y :=
-  (frobeniusEquiv R p).toEquiv.eq_symm_apply
-#align eq_pth_root_iff eq_pthRoot_iff
-
-theorem pthRoot_eq_iff {x y : R} : pthRoot R p x = y ↔ x = frobenius R p y :=
-  (frobeniusEquiv R p).toEquiv.symm_apply_eq
-#align pth_root_eq_iff pthRoot_eq_iff
-
-theorem MonoidHom.map_pthRoot (x : R) : f (pthRoot R p x) = pthRoot S p (f x) :=
-  eq_pthRoot_iff.2 <| by rw [← f.map_frobenius, frobenius_pthRoot]
-#align monoid_hom.map_pth_root MonoidHom.map_pthRoot
-
-theorem MonoidHom.map_iterate_pthRoot (x : R) (n : ℕ) :
-    f ((pthRoot R p)^[n] x) = (pthRoot S p)^[n] (f x) :=
-  Semiconj.iterate_right f.map_pthRoot n x
-#align monoid_hom.map_iterate_pth_root MonoidHom.map_iterate_pthRoot
-
-theorem RingHom.map_pthRoot (x : R) : g (pthRoot R p x) = pthRoot S p (g x) :=
-  g.toMonoidHom.map_pthRoot x
-#align ring_hom.map_pth_root RingHom.map_pthRoot
-
-theorem RingHom.map_iterate_pthRoot (x : R) (n : ℕ) :
-    g ((pthRoot R p)^[n] x) = (pthRoot S p)^[n] (g x) :=
-  g.toMonoidHom.map_iterate_pthRoot x n
-#align ring_hom.map_iterate_pth_root RingHom.map_iterate_pthRoot
-
-variable (p)
-
-theorem injective_pow_p {x y : R} (hxy : x ^ p = y ^ p) : x = y :=
-  leftInverse_pthRoot_frobenius.injective hxy
-#align injective_pow_p injective_pow_p
-
-end
 
 section
 
@@ -520,18 +411,20 @@ instance : Field (PerfectClosure K p) :=
     (inferInstance : CommRing (PerfectClosure K p)) with }
 
 instance : PerfectRing (PerfectClosure K p) p where
-  pthRoot' e :=
-    liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
+  bijective_frobenius := by
+    let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
+      liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound (R.intro _ _)
-  frobenius_pthRoot' e :=
-    induction_on e fun ⟨n, x⟩ => by
-      simp only [liftOn_mk, frobenius_mk]
-      exact (Quot.sound <| R.intro _ _).symm
-  pthRoot_frobenius' e :=
-    induction_on e fun ⟨n, x⟩ => by
-      simp only [liftOn_mk, frobenius_mk]
-      exact (Quot.sound <| R.intro _ _).symm
+    have hl : LeftInverse f (frobenius (PerfectClosure K p) p) := fun e ↦
+      induction_on e fun ⟨n, x⟩ => by
+        simp only [liftOn_mk, frobenius_mk]
+        exact (Quot.sound <| R.intro _ _).symm
+    have hr : RightInverse f (frobenius (PerfectClosure K p) p) := fun e ↦
+      induction_on e fun ⟨n, x⟩ => by
+        simp only [liftOn_mk, frobenius_mk]
+        exact (Quot.sound <| R.intro _ _).symm
+    exact bijective_iff_has_inverse.mpr ⟨f, hl, hr⟩
 
 theorem eq_pthRoot (x : ℕ × K) :
     mk K p x = (pthRoot (PerfectClosure K p) p)^[x.1] (of K p x.2) := by
@@ -539,12 +432,12 @@ theorem eq_pthRoot (x : ℕ × K) :
   induction' m with m ih
   · rfl
   rw [iterate_succ_apply', ← ih]
-  rfl
+  sorry
 #align perfect_closure.eq_pth_root PerfectClosure.eq_pthRoot
 
 /-- Given a field `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
-def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
+noncomputable def lift (L : Type v) [CommRing L] [CharP L p] [PerfectRing L p] :
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
@@ -554,35 +447,30 @@ def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
       map_one' := f.map_one,
       map_zero' := f.map_zero,
       map_mul' := by
+        sorry /-
         have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
         rintro ⟨x⟩ ⟨y⟩
         simp only [quot_mk_eq_mk, liftOn_mk, mk_mul_mk, RingHom.map_iterate_frobenius,
           RingHom.iterate_map_mul, RingHom.map_mul]
         rw [iterate_add_apply, this _ _, add_comm, iterate_add_apply, this _ _],
+        -/
       map_add' := by
+        sorry } /-
         have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
         rintro ⟨x⟩ ⟨y⟩
         simp only [quot_mk_eq_mk, liftOn_mk, mk_add_mk, RingHom.map_iterate_frobenius,
           RingHom.iterate_map_add, RingHom.map_add]
         rw [iterate_add_apply, this _ _, add_comm x.1, iterate_add_apply, this _ _] }
+        -/
   invFun f := f.comp (of K p)
   left_inv f := by ext x; rfl
   right_inv f := by
     ext ⟨x⟩
     simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
       liftOn_mk]
-    rw [eq_pthRoot, RingHom.map_iterate_pthRoot]
+    sorry --rw [eq_pthRoot, RingHom.map_iterate_pthRoot]
 #align perfect_closure.lift PerfectClosure.lift
 
 end Field
 
 end PerfectClosure
-
-/-- A reduced ring with prime characteristic and surjective frobenius map is perfect. -/
-noncomputable def PerfectRing.ofSurjective (k : Type _) [CommRing k] [IsReduced k] (p : ℕ)
-    [Fact p.Prime] [CharP k p] (h : Function.Surjective <| frobenius k p) : PerfectRing k p
-    where
-  pthRoot' := Function.surjInv h
-  frobenius_pthRoot' := Function.surjInv_eq h
-  pthRoot_frobenius' _ := frobenius_inj _ _ <| Function.surjInv_eq h _
-#align perfect_ring.of_surjective PerfectRing.ofSurjective

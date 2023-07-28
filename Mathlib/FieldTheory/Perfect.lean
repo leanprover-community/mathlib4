@@ -42,11 +42,12 @@ variable (R : Type _) (p : ℕ) [CommRing R] [Fact p.Prime] [CharP R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
-lemma PerfectRing.mkOfReduced [IsReduced R] (h : Surjective $ frobenius R p) : PerfectRing R p :=
+lemma PerfectRing.ofSurjective [IsReduced R] (h : Surjective $ frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
+#align perfect_ring.of_surjective PerfectRing.ofSurjective
 
 instance PerfectRing.ofFiniteOfIsReduced [Finite R] [IsReduced R] : PerfectRing R p :=
-  mkOfReduced _ _ $ Finite.surjective_of_injective (frobenius_inj R p)
+  ofSurjective _ _ $ Finite.surjective_of_injective (frobenius_inj R p)
 
 variable [PerfectRing R p]
 
@@ -64,6 +65,15 @@ theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 theorem frobenius_comp_frobeniusEquiv_symm :
     (frobenius R p).comp (frobeniusEquiv R p).symm = RingHom.id R := by
   ext; simp [surjInv_eq]
+
+/-- The `p`th root function for a perfect ring. -/
+noncomputable abbrev pthRoot : R →+* R := (frobeniusEquiv R p).symm
+
+@[simp] lemma pthRoot_frobenius (x : R) : pthRoot R p (frobenius R p x) = x :=
+  RingEquiv.apply_symm_apply _ _
+
+theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
+#align injective_pow_p injective_pow_p
 
 lemma polynomial_expand_eq (f : R[X]) :
     expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
@@ -106,7 +116,7 @@ instance ofFinite [Finite K] : PerfectField K := by
 variable [PerfectField K]
 
 instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K p := by
-  refine' PerfectRing.mkOfReduced _ _ $ fun y ↦ _
+  refine' PerfectRing.ofSurjective _ _ $ fun y ↦ _
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField
   let ι := algebraMap K L
