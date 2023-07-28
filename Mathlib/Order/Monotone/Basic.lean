@@ -247,9 +247,7 @@ protected theorem Antitone.dual (hf : Antitone f) : Antitone (toDual ∘ f ∘ o
 #align antitone.dual Antitone.dual
 
 protected theorem Monotone.dual_iff : Monotone f ↔ Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
-  constructor
-  · exact Monotone.dual
-  · exact Monotone.dual
+  rw [monotone_toDual_comp_iff, antitone_comp_ofDual_iff]
 
 protected theorem Antitone.dual_iff : Antitone f ↔ Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) := by
   constructor
