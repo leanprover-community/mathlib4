@@ -20,7 +20,25 @@ example : degree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1
   set k := f with _h₀
   compute_degree!
 
+/--  This example flows through all the matches in `direct` with a `degree` goal. -/
+example [Ring R] (g : R[X]) (hg : degree g ≤ 5) : degree (- C (z : R) * X ^ 5 + (monomial 2 5) ^ 2
+    - 0 + 1 + IntCast.intCast 1 + NatCast.natCast 1 + (z : R[X]) + (n : R[X]) + g) ≤ 5 := by
+  set k := g with _h₀
+  compute_degree!
+
 example {N : WithBot ℕ} (nN : n ≤ N) : degree (- C z * X ^ n) ≤ N := by
+  compute_degree!
+
+example [Ring R] : coeff (1 : R[X]) 0 = 1 := by
+  compute_degree!
+
+example [Ring R] : coeff (1 : R[X]) 2 = 0 := by
+  compute_degree!
+
+example [Ring R] : coeff (1 : R[X]) n = if 0 = n then 1 else 0 := by
+  compute_degree!
+
+example [Ring R] (h : (0 : R) = 6) : coeff (1 : R[X]) 1 = 6 := by
   compute_degree!
 
 /-!  The following examples exhaust all the match-leaves in `direct`. -/
