@@ -495,14 +495,13 @@ variable [IsFilteredOrEmpty C] {α : Type w} (f : α → C)
 /-- The "filtered closure" of an `α`-indexed family of objects in `C` is the set of objects in `C`
     obtained by starting with the family and successively adding maxima and coequalizers. -/
 inductive FilteredClosure : C → Prop
-  | base : ∀ (x : α), FilteredClosure (f x)
-  | max : ∀ {j j' : C} (_ : FilteredClosure j) (_ : FilteredClosure j'), FilteredClosure (max j j')
-  | coeq : ∀ {j j' : C} (_ : FilteredClosure j) (_ : FilteredClosure j') (f f' : j ⟶ j'),
+  | base : (x : α) → FilteredClosure (f x)
+  | max : {j j' : C} → FilteredClosure j → FilteredClosure j' → FilteredClosure (max j j')
+  | coeq : {j j' : C} → FilteredClosure j → FilteredClosure j' → (f f' : j ⟶ j') →
       FilteredClosure (coeq f f')
 
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
-theorem isFilteredOrEmpty_fullSubcategory_FilteredClosure :
-    IsFilteredOrEmpty (FullSubcategory (FilteredClosure f)) where
+instance : IsFilteredOrEmpty (FullSubcategory (FilteredClosure f)) where
   cocone_objs j j' :=
     ⟨⟨max j.1 j'.1, FilteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
   cocone_maps {j j'} f f' :=
@@ -531,8 +530,8 @@ namespace FilteredClosureSmall
     -/
 private inductive InductiveStep (n : ℕ) (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) :
     Type (max v w)
-  | max : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n), (X _ hk).1 → (X _ hk').1 → InductiveStep n X
-  | coeq : ∀ {k k' : ℕ} (hk : k < n) (hk' : k' < n) (j : (X _ hk).1) (j' : (X _ hk').1),
+  | max : {k k' : ℕ} → (hk : k < n) → (hk' : k' < n) → (X _ hk).1 → (X _ hk').1 → InductiveStep n X
+  | coeq : {k k' : ℕ} → (hk : k < n) → (hk' : k' < n) → (j : (X _ hk).1) → (j' : (X _ hk').1) →
       ((X _ hk).2 j ⟶ (X _ hk').2 j') → ((X _ hk).2 j ⟶ (X _ hk').2 j') → InductiveStep n X
 
 /-- The realization function sends the abstract maxima and weak coequalizers to the corresponding
@@ -545,9 +544,9 @@ private noncomputable def inductiveStepRealization (n : ℕ)
 /-- All steps of building the abstract filtered closure together with the realization function,
     as a function of `ℕ`. -/
 private noncomputable def bundledAbstractFilteredClosure : ℕ → Σ t : Type (max v w), t → C :=
-  Nat.strongRec' $ fun n => match n with
-  | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
-  | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
+  Nat.strongRec' fun n => match n with
+    | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
+    | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
 
 /-- The small type modelling the filtered closure. -/
 private noncomputable def AbstractFilteredClosure : Type (max v w) :=
@@ -559,7 +558,7 @@ private noncomputable def abstractFilteredClosureRealization : AbstractFilteredC
 
 end FilteredClosureSmall
 
-theorem small_fullSubcategory_FilteredClosure :
+theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (FullSubcategory (FilteredClosure f)) := by
   refine' small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
     FullSubcategory.ext _
@@ -582,7 +581,7 @@ theorem small_fullSubcategory_FilteredClosure :
 instance : EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) :=
   have : LocallySmall.{max v w} (FullSubcategory (FilteredClosure f)) := locallySmall_max.{w, v, u}
   have : Small.{max v w} (FullSubcategory (FilteredClosure f)) :=
-    small_fullSubcategory_FilteredClosure f
+    small_fullSubcategory_filteredClosure f
   essentiallySmall_of_small_of_locallySmall _
 
 end FilteredClosure
@@ -591,27 +590,20 @@ section
 variable {C}
 variable [IsFilteredOrEmpty C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
 
-/-- Every functor from a small category to a filtered category factors faithfully through a small
-    filtered category. This is that category. -/
+/-- Every functor from a small category to a filtered category factors fully faithfully through a
+    small filtered category. This is that category. -/
 def SmallFilteredIntermediate : Type (max u₁ v) :=
   SmallModel.{max u₁ v} (FullSubcategory (FilteredClosure F.obj))
 
 noncomputable instance : SmallCategory (SmallFilteredIntermediate F) :=
   show SmallCategory (SmallModel (FullSubcategory (FilteredClosure F.obj))) from inferInstance
 
-instance [_root_.Nonempty D] : IsFiltered (FullSubcategory (FilteredClosure F.obj)) :=
-  { isFilteredOrEmpty_fullSubcategory_FilteredClosure F.obj with
-    Nonempty := Nonempty.map (FullSubcategory.lift _ F FilteredClosure.base).obj inferInstance }
-
-instance [_root_.Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
-  of_equivalence (equivSmallModel _)
-
 /-- The first part of a factoring of a functor from a small category to a filtered category through
     a small filtered category. -/
 noncomputable def smallFilteredIntermediateFactoring : D ⥤ SmallFilteredIntermediate F :=
   FullSubcategory.lift _ F FilteredClosure.base ⋙ (equivSmallModel _).functor
 
-/-- The second, faithful part of a factoring of a functor from a small category to a filtered
+/-- The second, fully faithful part of a factoring of a functor from a small category to a filtered
     category through a small filtered category. -/
 noncomputable def smallFilteredIntermediateInclusion : SmallFilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
@@ -619,11 +611,21 @@ noncomputable def smallFilteredIntermediateInclusion : SmallFilteredIntermediate
 instance : Faithful (smallFilteredIntermediateInclusion F) :=
   show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
 
+noncomputable instance : Full (smallFilteredIntermediateInclusion F) :=
+  show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
+
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
     isomorphism. -/
 noncomputable def smallFilteredIntermediateFactoringCompSmallFilteredIntermediateInclusion :
-  smallFilteredIntermediateFactoring F ⋙ smallFilteredIntermediateInclusion F ≅ F :=
-isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
+    smallFilteredIntermediateFactoring F ⋙ smallFilteredIntermediateInclusion F ≅ F :=
+  isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
+
+instance : IsFilteredOrEmpty (SmallFilteredIntermediate F) :=
+  IsFilteredOrEmpty.of_equivalence (equivSmallModel _)
+
+instance [_root_.Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
+  { (inferInstance : IsFilteredOrEmpty _) with
+    Nonempty := Nonempty.map (smallFilteredIntermediateFactoring F).obj inferInstance }
 
 end
 
@@ -942,6 +944,133 @@ theorem of_equivalence (h : C ≌ D) : IsCofiltered D :=
 #align category_theory.is_cofiltered.of_equivalence CategoryTheory.IsCofiltered.of_equivalence
 
 end Nonempty
+
+
+section CofilteredClosure
+variable {C}
+variable [IsCofilteredOrEmpty C] {α : Type w} (f : α → C)
+
+/-- The "cofiltered closure" of an `α`-indexed family of objects in `C` is the set of objects in `C`
+    obtained by starting with the family and successively adding minima and equalizers. -/
+inductive CofilteredClosure : C → Prop
+  | base : (x : α) → CofilteredClosure (f x)
+  | min : {j j' : C} → CofilteredClosure j → CofilteredClosure j' → CofilteredClosure (min j j')
+  | eq : {j j' : C} → CofilteredClosure j → CofilteredClosure j' → (f f' : j ⟶ j') →
+      CofilteredClosure (eq f f')
+
+/-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
+instance : IsCofilteredOrEmpty (FullSubcategory (CofilteredClosure f)) where
+  cone_objs j j' :=
+    ⟨⟨min j.1 j'.1, CofilteredClosure.min j.2 j'.2⟩, minToLeft _ _, minToRight _ _, trivial⟩
+  cone_maps {j j'} f f' :=
+    ⟨⟨eq f f', CofilteredClosure.eq j.2 j'.2 f f'⟩, eqHom (C := C) f f', eq_condition _ _⟩
+
+namespace CofilteredClosureSmall
+
+/-- Implementation detail for the instance
+    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
+private inductive InductiveStep (n : ℕ) (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) :
+    Type (max v w)
+  | min : {k k' : ℕ} → (hk : k < n) → (hk' : k' < n) → (X _ hk).1 → (X _ hk').1 → InductiveStep n X
+  | eq : {k k' : ℕ} → (hk : k < n) → (hk' : k' < n) → (j : (X _ hk).1) → (j' : (X _ hk').1) →
+      ((X _ hk).2 j ⟶ (X _ hk').2 j') → ((X _ hk).2 j ⟶ (X _ hk').2 j') → InductiveStep n X
+
+/-- Implementation detail for the instance
+    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
+private noncomputable def inductiveStepRealization (n : ℕ)
+    (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) : InductiveStep.{w} n X → C
+  | (InductiveStep.min hk hk' x y) => min ((X _ hk).2 x) ((X _ hk').2 y)
+  | (InductiveStep.eq _ _ _ _ f g) => eq f g
+
+/-- Implementation detail for the instance
+    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
+private noncomputable def bundledAbstractCofilteredClosure : ℕ → Σ t : Type (max v w), t → C :=
+  Nat.strongRec' fun n => match n with
+    | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
+    | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
+
+/-- Implementation detail for the instance
+    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
+private noncomputable def AbstractCofilteredClosure : Type (max v w) :=
+  Σ n, (bundledAbstractCofilteredClosure f n).1
+
+/-- Implementation detail for the instance
+    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
+private noncomputable def abstractCofilteredClosureRealization : AbstractCofilteredClosure f → C :=
+  fun x => (bundledAbstractCofilteredClosure f x.1).2 x.2
+
+end CofilteredClosureSmall
+
+theorem small_fullSubcategory_cofilteredClosure :
+    Small.{max v w} (FullSubcategory (CofilteredClosure f)) := by
+  refine' small_of_injective_of_exists
+    (CofilteredClosureSmall.abstractCofilteredClosureRealization f) FullSubcategory.ext _
+  rintro ⟨j, h⟩
+  induction h with
+  | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
+  | min hj₁ hj₂ ih ih' =>
+    rcases ih with ⟨⟨n, x⟩, rfl⟩
+    rcases ih' with ⟨⟨m, y⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min _ _ x y⟩, rfl⟩
+    all_goals apply Nat.lt_succ_of_le
+    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+  | eq hj₁ hj₂ g g' ih ih' =>
+    rcases ih with ⟨⟨n, x⟩, rfl⟩
+    rcases ih' with ⟨⟨m, y⟩, rfl⟩
+    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq _ _ x y g g'⟩, rfl⟩
+    all_goals apply Nat.lt_succ_of_le
+    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+
+instance : EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) :=
+  have : LocallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) := locallySmall_max.{w, v, u}
+  have : Small.{max v w} (FullSubcategory (CofilteredClosure f)) :=
+    small_fullSubcategory_cofilteredClosure f
+  essentiallySmall_of_small_of_locallySmall _
+
+end CofilteredClosure
+
+section
+variable {C}
+variable [IsCofilteredOrEmpty C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
+
+/-- Every functor from a small category to a cofiltered category factors fully faithfully through a
+    small cofiltered category. This is that category. -/
+def SmallCofilteredIntermediate : Type (max u₁ v) :=
+  SmallModel.{max u₁ v} (FullSubcategory (CofilteredClosure F.obj))
+
+noncomputable instance : SmallCategory (SmallCofilteredIntermediate F) :=
+  show SmallCategory (SmallModel (FullSubcategory (CofilteredClosure F.obj))) from inferInstance
+
+/-- The first part of a factoring of a functor from a small category to a cofiltered category
+    through a small filtered category. -/
+noncomputable def smallCofilteredIntermediateFactoring : D ⥤ SmallCofilteredIntermediate F :=
+  FullSubcategory.lift _ F CofilteredClosure.base ⋙ (equivSmallModel _).functor
+
+/-- The second, fully faithful part of a factoring of a functor from a small category to a filtered
+    category through a small filtered category. -/
+noncomputable def smallCofilteredIntermediateInclusion : SmallCofilteredIntermediate F ⥤ C :=
+  (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
+
+instance : Faithful (smallCofilteredIntermediateInclusion F) :=
+  show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
+
+noncomputable instance : Full (smallCofilteredIntermediateInclusion F) :=
+  show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
+
+/-- The factorization through a small filtered category is in fact a factorization, up to natural
+    isomorphism. -/
+noncomputable def smallCofilteredIntermediateFactoringCompSmallCofilteredIntermediateInclusion :
+    smallCofilteredIntermediateFactoring F ⋙ smallCofilteredIntermediateInclusion F ≅ F :=
+  isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
+
+instance : IsCofilteredOrEmpty (SmallCofilteredIntermediate F) :=
+  IsCofilteredOrEmpty.of_equivalence (equivSmallModel _)
+
+instance [_root_.Nonempty D] : IsCofiltered (SmallCofilteredIntermediate F) :=
+  { (inferInstance : IsCofilteredOrEmpty _) with
+    Nonempty := Nonempty.map (smallCofilteredIntermediateFactoring F).obj inferInstance }
+
+end
 
 end IsCofiltered
 
