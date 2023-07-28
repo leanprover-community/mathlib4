@@ -140,7 +140,7 @@ theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
 
 theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
-  rw [(sup_eq_half_smul_add_add_abs_sub' ℝ)]
+  rw [sup_eq_half_smul_add_add_abs_sub' ℝ]
   refine'
     A.topologicalClosure.smul_mem
       (A.topologicalClosure.add_mem
