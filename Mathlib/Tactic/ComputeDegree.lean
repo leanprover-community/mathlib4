@@ -151,6 +151,18 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     · exact natDegree_mul_le_of_le hdf hdg
     · exact ne_comm.mp h
 
+theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} {p : R[X]}
+    (pn : natDegree p ≤ n) (mno : m * n ≤ o) (ha : coeff p n = a) :
+    coeff (p ^ m) o = if o = m * n then a ^ m else 0 := by
+  split_ifs with h
+  · subst h ha
+    rw [mul_comm]
+    apply coeff_pow_of_natDegree_le pn
+  · apply coeff_eq_zero_of_natDegree_lt
+    apply lt_of_le_of_lt ?_ (lt_of_le_of_ne mno ?_)
+    · exact natDegree_pow_le_of_le m pn
+    · exact Iff.mp ne_comm h
+
 section congr_lemmas
 
 /--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
@@ -396,7 +408,7 @@ match twoH with
       | ``HMul.hMul =>
         (``natDegree_mul_le_of_le, ``degree_mul_le_of_le, ``coeff_mul_add_of_le_natDegree_of_eq_ite)
       | ``HPow.hPow =>
-        (``natDegree_pow_le_of_le, ``degree_pow_le_of_le, ``coeff_pow_of_natDegree_le_of_eq_ite)
+        (``natDegree_pow_le_of_le, ``degree_pow_le_of_le, ``coeff_pow_of_natDegree_le_of_eq_ite')
       | ``Neg.neg =>
         (``natDegree_neg_le_of_le, ``degree_neg_le_of_le, ``coeff_neg)
       | ``Polynomial.X =>
