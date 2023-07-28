@@ -181,6 +181,18 @@ theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     exact mul_le_mul_of_nonneg_left pn m.zero_le
 #align polynomial.coeff_pow_of_nat_degree_le Polynomial.coeff_pow_of_natDegree_le
 
+theorem coeff_pow_of_natDegree_le_of_eq_ite [Semiring R] {m n o : ℕ} {p : R[X]}
+    (pn : natDegree p ≤ n) (mno : m * n ≤ o) :
+    coeff (p ^ m) o = if o = m * n then (coeff p n) ^ m else 0 := by
+  split_ifs with h
+  · subst h
+    rw [mul_comm]
+    apply coeff_pow_of_natDegree_le pn
+  · apply coeff_eq_zero_of_natDegree_lt
+    apply lt_of_le_of_lt ?_ (lt_of_le_of_ne mno ?_)
+    · exact natDegree_pow_le_of_le m pn
+    · exact Iff.mp ne_comm h
+
 theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coeff n :=
   (coeff_add _ _ _).trans <|
     (congr_arg _ <| coeff_eq_zero_of_natDegree_lt <| qn).trans <| add_zero _
