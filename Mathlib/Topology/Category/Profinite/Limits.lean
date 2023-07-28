@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 # Explicit limits and colimits
 
-This file collects some constructions of explicit limits and colimits in `CompHaus`,
+This file collects some constructions of explicit limits and colimits in `Profinite`,
 which may be useful due to their definitional properties.
 
 ## Main definitions
