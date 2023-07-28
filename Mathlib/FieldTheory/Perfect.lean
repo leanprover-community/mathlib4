@@ -18,6 +18,11 @@ prime characteristic.
    if its Frobenius map is bijective.
  * `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is
    separable.
+ * `PerfectRing.toPerfectField`: a field that is perfect in the sense of Serre is a perfect field.
+ * `PerfectField.toPerfectRing`: a perfect field of characteristic `p` (prime) is perfect in the
+   sense of Serre.
+ * `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
+ * `PerfectField.ofFinite`: all finite fields are perfect.
 
 -/
 
@@ -28,6 +33,7 @@ open Function Polynomial
 NB: This is not related to the concept with the same name introduced by Bass (related to projective
 covers of modules). -/
 class PerfectRing (R : Type _) (p : ℕ) [CommRing R] [Fact p.Prime] [CharP R p] : Prop where
+  /-- A ring is perfect if the Frobenius map is bijective. -/
   bijective_frobenius : Bijective $ frobenius R p
 
 section PerfectRing
@@ -44,6 +50,7 @@ instance PerfectRing.ofFiniteOfIsReduced [Finite R] [IsReduced R] : PerfectRing 
 
 variable [PerfectRing R p]
 
+/-- The Frobenius automorphism for a perfect ring. -/
 @[simps!]
 noncomputable def frobeniusEquiv : R ≃+* R :=
   RingEquiv.ofBijective (frobenius R p) PerfectRing.bijective_frobenius
@@ -75,6 +82,7 @@ end PerfectRing
 
 See also `PerfectRing` for a generalisation in positive characteristic. -/
 class PerfectField (K : Type _) [Field K] : Prop where
+  /-- A field is perfect if every irreducible polynomial is separable. -/
   separable_of_irreducible : ∀ {f : K[X]}, Irreducible f → f.Separable
 
 lemma PerfectRing.toPerfectField (K : Type _) (p : ℕ)
@@ -97,7 +105,7 @@ instance ofFinite [Finite K] : PerfectField K := by
 
 variable [PerfectField K]
 
-instance PerfectField.toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K p := by
+instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K p := by
   refine' PerfectRing.mkOfReduced _ _ $ fun y ↦ _
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField
