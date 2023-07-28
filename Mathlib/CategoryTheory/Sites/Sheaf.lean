@@ -464,9 +464,7 @@ variable (J : GrothendieckTopology C)
 
 variable {U : C} (R : Presieve U)
 
-variable (P' : Cᵒᵖ ⥤ A')
-
-variable (P : Cᵒᵖ ⥤ A)
+variable (P : Cᵒᵖ ⥤ A) (P' : Cᵒᵖ ⥤ A')
 
 section MultiequalizerConditions
 
