@@ -71,7 +71,7 @@ class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing 
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
-  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  le_iff_re_im : z ≤ w ↔ (Real.instLEReal.le (re z) (re w)) ∧ ((im z) = (im w))
 #align is_R_or_C IsROrC
 
 end
@@ -838,6 +838,23 @@ noncomputable instance toStarOrderedRing : StarOrderedRing ℝ := by
   refine ⟨ (fun h => ⟨ Real.sqrt z, (Real.mul_self_sqrt h).symm⟩ ), fun hz => ?_ ⟩
   rw [(Exists.choose_spec hz)]
   exact mul_self_nonneg _
+
+instance toStarOrderedRingK : StarOrderedRing K := by
+  apply StarOrderedRing.ofNonnegIff'
+  · intros x y hxy z
+    rw [IsROrC.le_iff_re_im] at *
+    simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy
+  · intro x
+    rw [IsROrC.le_iff_re_im, map_zero, map_zero, IsROrC.star_def, eq_comm]
+    constructor
+    · intro hx
+      use (Real.sqrt (IsROrC.re x))
+      rw [IsROrC.conj_ofReal, ← IsROrC.ofReal_mul, Real.mul_self_sqrt hx.1, IsROrC.ext_iff,
+        IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, true_and, hx.2]
+    · simp only [IsROrC.star_def, IsROrC.conj_mul, forall_exists_index]
+      intro y hy
+      rw [hy, IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
+      apply IsROrC.normSq_nonneg
 
 end Instances
 
