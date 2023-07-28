@@ -173,18 +173,9 @@ theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
 
 theorem mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ 𝓞 K := by
-  suffices Submodule.span ℤ (Set.range (integralBasis K)) =
-      AddSubgroup.toIntSubmodule (𝓞 K).toSubring.toAddSubgroup by rw [this]; rfl
-  convert congrArg
-    (Submodule.map (Submodule.subtype (AddSubgroup.toIntSubmodule (𝓞 K).toSubring.toAddSubgroup)))
-    (Basis.span_eq (RingOfIntegers.basis K))
-  · rw [Submodule.map_span]
-    congr
-    ext
-    simp only [Set.mem_range, integralBasis_apply, Submodule.coeSubtype, Set.mem_image,
-      exists_exists_eq_and]
-    rfl
-  · simp only [Submodule.map_top, Submodule.range_subtype]
+  rw [integralBasis, Basis.localizationLocalization_span, ← SetLike.mem_coe, ← SetLike.mem_coe,
+    Submodule.map_coe, IsScalarTower.coe_toAlgHom', Submodule.top_coe, Set.image_univ,
+    show Set.range _ = Set.range ((↑) : (𝓞 K) → K) by rfl, Subtype.range_coe]
 
 theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
