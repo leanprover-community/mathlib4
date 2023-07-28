@@ -222,14 +222,38 @@ def DeleteKaTeX : Component NoProps where
 KaTeX allows two (stable) means of rendering math: `katex.render`, which produces a DOM element, and `katex.renderToString`, which flattens to HTML.
 -/
 
+/-- KaTeX allows a variety of options, which can be found (here)[https://katex.org/docs/options.html].
+We inherit the defaults manually, except where specified. -/
+structure KaTeXProps extends TextProps where
+  displayMode  := true -- We use `true` here instead of `false`.
+  throwOnError := false
+  flushLeft    := false
+  errorColor   := "#cc0000"
+  globalGroup  := false
+  strict       := "warn"
+  trust        := false
+  -- there are more options to add eventually.
+  -- how do we allow things to have alternative types? do we need an instance of `RpcEncodable (α ⊕ β)`?
+  -- how do we denote a `function` here on the lean side? a string interpreted as `code`?
+#mkrpcenc KaTeXProps
+
+def processProps := "{
+  throwOnError:props.throwOnError,
+  displayMode:props.displayMode,
+  fleqn:props.flushLeft,
+  errorColor:props.errorColor,
+  globalGroup:props.globalGroup,
+  strict:props.strict,
+  trust:props.trust
+  }"
 /- ### .renderToString -/
 /- To use the HTML, we use `dangerouslySetInnerHTML` for now. I'm going to try using a ref soon; apparently that's another way to do this. -/
 @[widget_module]
-def KaTeXHTML : Component TeXProps where
+def KaTeXHTML : Component KaTeXProps where
   javascript := "
     import * as React from 'react'
     export default function(props) {
-      const html = katex.renderToString(props.text, {throwOnError:false})
+      const html = katex.renderToString(props.text," ++ processProps ++ ")
       return React.createElement('span',{dangerouslySetInnerHTML:{__html:html}})
     }"
 
