@@ -14,7 +14,7 @@ Rather than using `congr_arg` or `congr_fun`, one can write `congr($hf $hx)` wit
 `f` could have implicit arguments and complicated dependent types.
 -/
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.TermCongr
 open Lean Elab Meta
 
 initialize registerTraceClass `Tactic.congr
@@ -34,6 +34,10 @@ syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")
 /-- Extracts the LHS of an equality while holding onto the equality for later use.
 The antiquotations in `congr(...)` are replaced by this during elaboration of `congr(...)`. -/
 @[reducible] def c_lhs {α : Sort _} {x y : α} (_ : x = y) : α := x
+
+/-- Extracts the RHS of an equality while holding onto the equality for later use.
+The antiquotations in `congr(...)` are replaced by this during elaboration of `congr(...)`. -/
+@[reducible] def c_rhs {α : Sort _} {x y : α} (_ : x = y) : α := y
 
 /-- Ensures the expected type is an equality. Returns the equality along with the type
 of the terms being equated, the lhs, and the rhs. -/
@@ -65,29 +69,37 @@ def elabEnsureEq : Term.TermElab := fun stx expectedType? => do
 /-- (Internal for `congr(...)`)
 Helper to expand antiquotations into `c_lhs` expressions. Produces an annotated term
 to ensure `c_lhs` is always regarded as having exactly four arguments. -/
-syntax (name := congrCExpand) "congr_c_expand% " term : term
+syntax (name := cLhsExpand) "c_lhs% " term : term
 
-@[term_elab congrCExpand]
-def elabCongrCExpand : Term.TermElab := fun stx expectedType? =>
-  match stx with
-  | `(congr_c_expand% $e) => do
-    let e ← Term.elabTerm (← `(c_lhs (ensure_eq% $e))) expectedType?
-    return mkAnnotation ``congrCExpand e
-  | _ => throwUnsupportedSyntax
+/-- (Internal for `congr(...)`)
+Helper to expand antiquotations into `c_rhs` expressions. Produces an annotated term
+to ensure `c_rhs` is always regarded as having exactly four arguments. -/
+syntax (name := cRhsExpand) "c_rhs% " term : term
 
-/-- Gives the un-annotated expression for expressions elaborated by `congr_c_expand%`. -/
-def congrCExpand? (e : Expr) : Option Expr := annotation? ``congrCExpand e
+@[term_elab cLhsExpand, term_elab cRhsExpand]
+def elabCongrCExpand : Term.TermElab := fun stx expectedType? => do
+  let e ← match stx with
+    | `(c_lhs% $e) => Term.elabTerm (← `(c_lhs (ensure_eq% $e))) expectedType?
+    | `(c_rhs% $e) => Term.elabTerm (← `(c_rhs (ensure_eq% $e))) expectedType?
+    | _ => throwUnsupportedSyntax
+  return mkAnnotation decl_name% e
 
-/-- Elaborates to the LHS of the type of an equality proof -/
+/-- Gives the un-annotated expression for expressions elaborated by `c_lhs%` or `c_rhs%`.
+Returns `(α, x : α, y : α, h : x = y)` -/
+def congrCExpand? (e : Expr) : Option (Expr × Expr × Expr × Expr) := do
+  let e ← annotation? ``elabCongrCExpand e
+  let .app (.app (.app (.app _ ty) x) y) h := e | failure
+  return (ty, x, y, h)
+
+/-- Elaborates to the LHS of the type of an equality proof. -/
 syntax (name := eq_lhs_term) "eq_lhs% " term:max : term
 
-/-- Elaborates to the RHS of the type of an equality proof -/
+/-- Elaborates to the RHS of the type of an equality proof. -/
 syntax (name := eq_rhs_term) "eq_rhs% " term:max : term
 
 @[term_elab eq_lhs_term, term_elab eq_rhs_term]
 def elabEqLhsRhsTerm : Term.TermElab := fun stx expectedType? => do
-  let (isLhs, term) ←
-    match stx with
+  let (isLhs, term) ← match stx with
     | `(eq_lhs% $t) => pure (true, t)
     | `(eq_rhs% $t) => pure (false, t)
     | _ => throwUnsupportedSyntax
@@ -95,27 +107,45 @@ def elabEqLhsRhsTerm : Term.TermElab := fun stx expectedType? => do
   discard <| Term.elabTermEnsuringType term eq
   return if isLhs then lhs else rhs
 
+/-- Create the LHS by replacing all antiquotes with `congr_c_expand%` expressions.
+
+Use `c_lhs` to store the equalities in the terms. Makes sure to annotate the
+terms to ensure that if `$h` is used as a function, we still sees `c_lhs`
+as being a four-argument function. -/
+def processAntiquot (t : Term) : Term.TermElabM Term := do
+  let left ← t.raw.replaceM fun s => do
+    if s.isAntiquots then
+      let ks := s.antiquotKinds
+      unless ks.any (fun (k, _) => k == `term) do
+        throwErrorAt s "Expecting term"
+      let h : Term := ⟨s.getCanonicalAntiquot.getAntiquotTerm⟩
+      `(congr_c_expand% $h)
+    else
+      pure none
+  return ⟨left⟩
+
+def elaboratePattern (t : Term) (expectedType : Expr) : Term.TermElabM Term := do
+  let left ← processAntiquot t
+  let left' ← left.raw.replaceM fun
+    | `(congr_c_expand% $h) => ``(eq_lhs% $h)
+    | _ => pure none
+  let right' ← left.raw.replaceM fun
+    | `(congr_c_expand% $h) => ``(eq_rhs% $h)
+    | _ => pure none
+
 @[term_elab termCongr]
 def elabTermCongr : Term.TermElab := fun stx expectedType? => do
   match stx with
   | `(congr($t)) =>
     let (expEq, expTy, _) ← mkEqForExpectedType expectedType?
-    -- Use `c_lhs` to store the equalities in the terms. Makes sure to annotate the
-    -- terms to ensure that if `$h` is used as a function, `simp` still sees `c_lhs`
-    -- as a four-argument function.
-    let left ← t.raw.replaceM fun s => do
-      if s.isAntiquots then
-        let h ← s.getAntiquotTerm
-        `(congr_c_expand% $h)
-      else
-        pure none
+    let left ← processAntiquot t
     let preLeft ← Term.withoutErrToSorry do
       try
         Term.elabTermEnsuringType left expTy
       catch ex =>
-        -- Failed, so let's re-elaborate with
+        -- Failed, so let's re-elaborate with LHS's to get a better error message.
         let left ← t.raw.replaceM fun
-          | `(c($h)) => ``(eq_lhs% $h)
+          | `(congr_c_expand% $h) => ``(eq_lhs% $h)
           | _ => pure none
         discard <| Term.elabTermEnsuringType left expTy
         -- That should fail, but if it didn't we at least can throw the original exception:
