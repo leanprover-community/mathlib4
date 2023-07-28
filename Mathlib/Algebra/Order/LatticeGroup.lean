@@ -73,7 +73,7 @@ variable {α : Type u} {β : Type v}
 @[to_additive] -- see Note [lower instance priority]
 instance LinearOrderedCommGroup.to_covariant_class (α : Type u)
   [LinearOrderedCommGroup α] : CovariantClass α α (· * · ) (· ≤ ·) :=
-{ elim := fun a b c bc => OrderedCommGroup.mul_le_mul_left _ _ bc a }
+{ elim := fun a _ _ bc => OrderedCommGroup.mul_le_mul_left _ _ bc a }
 
 
 section
