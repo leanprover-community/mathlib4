@@ -1665,7 +1665,6 @@ import Mathlib.Data.Polynomial.HasseDeriv
 import Mathlib.Data.Polynomial.Identities
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Inductions
-import Mathlib.Data.Polynomial.IntegralNormalization
 import Mathlib.Data.Polynomial.Laurent
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Mirror
@@ -2819,6 +2818,7 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
+import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.Opposites
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.Quotient
