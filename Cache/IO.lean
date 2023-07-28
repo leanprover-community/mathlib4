@@ -209,7 +209,7 @@ abbrev HashMap := Lean.HashMap FilePath UInt64
 
 namespace HashMap
 
-def filter (hashMap : HashMap) (keep : Bool) : IO HashMap :=
+def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
   hashMap.foldM (init := default) fun acc path hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
