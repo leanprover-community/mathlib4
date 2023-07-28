@@ -16,7 +16,7 @@ import Mathlib.GroupTheory.Index
 This file introduces the commuting probability of finite groups.
 
 ## Main definitions
-* `commProb`: The commuting probability of a type with a multiplication operation.
+* `commProb`: The commuting probability of a finite type with a multiplication operation.
 
 ## Todo
 * Neumann's theorem.
@@ -31,7 +31,7 @@ open Fintype
 
 variable (M : Type _) [Mul M]
 
-/-- The commuting probability of a type with a multiplication operation. -/
+/-- The commuting probability of a finite type with a multiplication operation. -/
 def commProb : ℚ :=
   Nat.card { p : M × M // Commute p.1 p.2 } / (Nat.card M : ℚ) ^ 2
 #align comm_prob commProb
