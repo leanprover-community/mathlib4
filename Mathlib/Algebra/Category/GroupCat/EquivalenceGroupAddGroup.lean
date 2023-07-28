@@ -25,12 +25,6 @@ open CategoryTheory
 
 namespace GroupCat
 
--- Porting note: Lean cannot find these now
-private instance (X : GroupCat) : MulOneClass X.α := X.str.toMulOneClass
-private instance (X : CommGroupCat) : MulOneClass X.α := X.str.toMulOneClass
-private instance (X : AddGroupCat) : AddZeroClass X.α := X.str.toAddZeroClass
-private instance (X : AddCommGroupCat) : AddZeroClass X.α := X.str.toAddZeroClass
-
 /-- The functor `Group ⥤ AddGroup` by sending `X ↦ additive X` and `f ↦ f`.
 -/
 @[simps]

@@ -424,7 +424,7 @@ theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
   φ.toRingHom.map_list_prod s
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps (config := .lemmasOnly) mul one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc ϕ ψ χ := rfl

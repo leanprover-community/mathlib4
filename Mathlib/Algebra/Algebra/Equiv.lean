@@ -57,6 +57,7 @@ namespace AlgEquivClass
 instance (priority := 100) toAlgHomClass (F R A B : Type _) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
+  letI : RingEquivClass F A B := inferInstance
   { h with
     coe := (⇑)
     coe_injective' := FunLike.coe_injective

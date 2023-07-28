@@ -189,6 +189,7 @@ theorem MonovaryOn.sum_comp_perm_smul_lt_sum_smul_iff (hfg : MonovaryOn f g s)
 `f` and `g` antivary together. Stated by permuting the entries of `g`. -/
 theorem AntivaryOn.sum_smul_le_sum_smul_comp_perm (hfg : AntivaryOn f g s)
     (hσ : { x | σ x ≠ x } ⊆ s) : ∑ i in s, f i • g i ≤ ∑ i in s, f i • g (σ i) :=
+  letI : OrderedSMul α βᵒᵈ := inferInstance
   hfg.dual_right.sum_smul_comp_perm_le_sum_smul hσ
 #align antivary_on.sum_smul_le_sum_smul_comp_perm AntivaryOn.sum_smul_le_sum_smul_comp_perm
 
@@ -198,6 +199,7 @@ together. Stated by permuting the entries of `g`. -/
 theorem AntivaryOn.sum_smul_eq_sum_smul_comp_perm_iff (hfg : AntivaryOn f g s)
     (hσ : { x | σ x ≠ x } ⊆ s) :
     ((∑ i in s, f i • g (σ i)) = ∑ i in s, f i • g i) ↔ AntivaryOn f (g ∘ σ) s :=
+  letI : OrderedSMul α βᵒᵈ := inferInstance
   (hfg.dual_right.sum_smul_comp_perm_eq_sum_smul_iff hσ).trans monovaryOn_toDual_right
 #align antivary_on.sum_smul_eq_sum_smul_comp_perm_iff AntivaryOn.sum_smul_eq_sum_smul_comp_perm_iff
 
@@ -215,6 +217,7 @@ theorem AntivaryOn.sum_smul_lt_sum_smul_comp_perm_iff (hfg : AntivaryOn f g s)
 `f` and `g` antivary together. Stated by permuting the entries of `f`. -/
 theorem AntivaryOn.sum_smul_le_sum_comp_perm_smul (hfg : AntivaryOn f g s)
     (hσ : { x | σ x ≠ x } ⊆ s) : ∑ i in s, f i • g i ≤ ∑ i in s, f (σ i) • g i :=
+  letI : OrderedSMul α βᵒᵈ := inferInstance
   hfg.dual_right.sum_comp_perm_smul_le_sum_smul hσ
 #align antivary_on.sum_smul_le_sum_comp_perm_smul AntivaryOn.sum_smul_le_sum_comp_perm_smul
 
@@ -224,6 +227,7 @@ together. Stated by permuting the entries of `f`. -/
 theorem AntivaryOn.sum_smul_eq_sum_comp_perm_smul_iff (hfg : AntivaryOn f g s)
     (hσ : { x | σ x ≠ x } ⊆ s) :
     ((∑ i in s, f (σ i) • g i) = ∑ i in s, f i • g i) ↔ AntivaryOn (f ∘ σ) g s :=
+  letI : OrderedSMul α βᵒᵈ := inferInstance
   (hfg.dual_right.sum_comp_perm_smul_eq_sum_smul_iff hσ).trans monovaryOn_toDual_right
 #align antivary_on.sum_smul_eq_sum_comp_perm_smul_iff AntivaryOn.sum_smul_eq_sum_comp_perm_smul_iff
 
