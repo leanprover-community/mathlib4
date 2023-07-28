@@ -334,11 +334,11 @@ variable {R S : Type _} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
-    ∃ (x : integralClosure R S) (y : _) (_ : y ≠ (0 : R)), z * algebraMap R S y = x := by
+    ∃ (x : integralClosure R S) (y : _) (_ : y ≠ (0 : R)), algebraMap R S y * z = x := by
   rcases hz with ⟨p, p_ne_zero, px⟩
   set a := p.leadingCoeff
   have a_ne_zero : a ≠ 0 := mt Polynomial.leadingCoeff_eq_zero.mp p_ne_zero
-  have x_integral : IsIntegral R (z * algebraMap R S a) :=
+  have x_integral : IsIntegral R (algebraMap R S a * z) :=
     ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
       integralNormalization_aeval_eq_zero px inj⟩
   exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
@@ -357,7 +357,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type _} [Field L] [Algebra R S
     ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L _⟩
   simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
     IsScalarTower.algebraMap_apply]
-  rw [← mul_assoc _ (_ / _), mul_div_cancel' (algebraMap S L a), mul_comm]
+  rw [mul_left_comm, mul_div_cancel' (algebraMap S L a), mul_comm]
   exact mt ((injective_iff_map_eq_zero _).mp (IsIntegralClosure.algebraMap_injective S R L) _) hb
 #align is_integral_closure.exists_smul_eq_mul IsIntegralClosure.exists_smul_eq_mul
 
