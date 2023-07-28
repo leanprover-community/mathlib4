@@ -406,6 +406,8 @@ theorem ofRealClm_apply (x : ℝ) : ofRealClm x = x :=
   rfl
 #align complex.of_real_clm_apply Complex.ofRealClm_apply
 
+open ComplexOrder
+
 noncomputable instance : IsROrC ℂ where
   re := ⟨⟨Complex.re, Complex.zero_re⟩, Complex.add_re⟩
   im := ⟨⟨Complex.im, Complex.zero_im⟩, Complex.add_im⟩
@@ -422,6 +424,7 @@ noncomputable instance : IsROrC ℂ where
   conj_I_ax := conj_I
   norm_sq_eq_def_ax z := (normSq_eq_abs z).symm
   mul_im_I_ax _ := mul_one _
+  le_iff_re_im := Iff.rfl
 
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
