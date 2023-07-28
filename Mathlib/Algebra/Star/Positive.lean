@@ -47,86 +47,68 @@ variable {R : Type u}
 
 namespace StarOrderedRing
 
-/-- The positive elements of a star ordered ring, as an additive submonoid.
+/-- The positive elements of a star ordered ring. This is just a type synonym for `{x : R // 0 ≤ x}`
 
-Note that the type class assumptions for `StarOrderedRing.positive` are actually significantly
-weaker (just `OrderedAddCommMonoid`) so that it can be used in as many contexts as possible, but
-the primary intended use case is when `R` is a `StarOrderedRing`.
+Regarding naming of lemmas: whenever a lemma involves a hypothesis of the form `0 ≤ x` with `x : R`,
+it will be referenced as `nonneg` in the declaration name. However, when the hypothesis is
+`x : Positive R`, the declaration name will use `positive` (or `Positive`), not `pos`, so as to
+avoid confusion with `0 < x`. -/
+abbrev Positive (R : Type _) [Zero R] [Preorder R] := {x : R // 0 ≤ x}
 
-In addition, we note that `StarOrderedRing.positive` is just an alias of `AddSubmonoid.nonneg`, but
-we choose to keep these separate for naming purposes and also because we will add many instances to
-this object (viewed as a type).
+theorem Positive.coe_nonneg [Zero R] [Preorder R] (x : Positive R) : (0 : R) ≤ x := x.property
 
-Regarding naming of lemmas: whenever a lemma involves a hypothesis of the form `0 ≤ x`, it will be
-referenced as `nonneg` in the declaration name, and we always prefer `0 ≤ x` over `x ∈ positive R`,
-even though these are definitionally equal. However, when the hypothesis is `x : positive R` (note
-the `:` versus `∈`), the declaration name will use `positive`, not `pos`, so as to avoid confusion
-with `0 < x`. -/
-alias AddSubmonoid.nonneg ← positive
-
-theorem positive_def [OrderedAddCommMonoid R] {x : R} :
-    x ∈ positive R ↔ 0 ≤ x :=
-  Iff.rfl
-
-theorem positive_coe_set [OrderedAddCommMonoid R] : (positive R : Set R) = {x | 0 ≤ x} := rfl
+theorem Positive.nonneg [Zero R] [Preorder R] (x : Positive R) : 0 ≤ x := x.property
 
 section NonUnitalSemiring
 
 variable [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
 
-theorem positive_iff {x : R} :
-    x ∈ positive R ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
-  rw [positive_def, nonneg_iff]
+theorem Positive.val_mem_addSubmonoid_closure (x : Positive R) :
+    (x : R) ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) :=
+  nonneg_iff.mp x.property
 
-theorem isSelfAdjoint_of_nonneg [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
+theorem isSelfAdjoint_of_nonneg
     {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x := by
   rw [nonneg_iff] at hx
   refine AddSubmonoid.closure_induction hx ?_ (isSelfAdjoint_zero R) fun _ _ => IsSelfAdjoint.add
   rintro - ⟨s, rfl⟩
   exact IsSelfAdjoint.star_mul_self s
 
-theorem le_iff_exists_positive {x y : R} : x ≤ y ↔ ∃ p : positive R, y = x + p := by
+theorem Positive.isSelfAdjoint (x : Positive R) :
+    IsSelfAdjoint (x : R) :=
+  isSelfAdjoint_of_nonneg x.property
+
+theorem le_iff_exists_positive {x y : R} : x ≤ y ↔ ∃ p : Positive R, y = x + p := by
   rw [le_iff']
   simp only [Subtype.exists, exists_prop]
-  rfl
 
-@[norm_cast]
-theorem positive.val_le_val {x y : positive R} : (x : R) ≤ y ↔ x ≤ y :=
-  Iff.rfl
-
-instance positive.instCanonicallyOrderedAddMonoid : CanonicallyOrderedAddMonoid (positive R) :=
-  { inferInstanceAs (OrderedAddCommMonoid (positive R)) with
-    bot := 0
-    bot_le := Subtype.prop
-    exists_add_of_le := @fun x y (h : (x : R) ≤ y) => by
-      convert le_iff_exists_positive.mp h using 1
-      funext p
-      exact_mod_cast rfl
-    le_self_add := fun x y => show (x : R) ≤ x + y from le_iff_exists_positive.mpr ⟨y, rfl⟩ }
-
-theorem positive.isSelfAdjoint (x : positive R) : IsSelfAdjoint (x : R) :=
-  isSelfAdjoint_of_nonneg x.prop
+instance Positive.instCanonicallyOrderedAddMonoid : CanonicallyOrderedAddMonoid (Positive R) where
+  bot_le := Subtype.property
+  exists_add_of_le := @fun x y (h : (x : R) ≤ y) => by
+    convert le_iff_exists_positive.mp h using 2
+    exact Subtype.ext_iff
+  le_self_add x y := by simpa using add_le_add_left y.property x
 
 end NonUnitalSemiring
 
-namespace positive
+namespace Positive
 
 section NonUnitalRing
 
 variable [NonUnitalRing R] [PartialOrder R] [StarOrderedRing R]
 
-/-- The identity map from `positive R` to `selfAdjoint R`, as an `AddMonoidHom`. -/
-protected def selfAdjoint : positive R →+ selfAdjoint R where
+/-- The identity map from `Positive R` to `selfAdjoint R`, as an `AddMonoidHom`. -/
+def toSelfAdjoint : Positive R →+ selfAdjoint R where
   toFun := Subtype.map id (fun _ => isSelfAdjoint_of_nonneg)
   map_zero' := rfl
   map_add' _ _ := rfl
 
 @[simp]
-theorem val_selfAdjoint (x : positive R) : (positive.selfAdjoint x : R) = x :=
+theorem val_toSelfAdjoint {x : Positive R} : (toSelfAdjoint x : R) = x :=
   rfl
 
-lemma selfAdjoint_le (x y : positive R) :
-    positive.selfAdjoint x ≤ positive.selfAdjoint y ↔ x ≤ y :=
+lemma toSelfAdjoint_le {x y : Positive R} :
+    toSelfAdjoint x ≤ toSelfAdjoint y ↔ x ≤ y :=
   Iff.rfl
 
 end NonUnitalRing
@@ -137,27 +119,27 @@ variable [Semiring R] [PartialOrder R] [StarOrderedRing R]
 
 variable (R)
 
-instance instOne : One (positive R) := ⟨⟨1, zero_le_one⟩⟩
+instance instOne : One (Positive R) := ⟨⟨1, zero_le_one⟩⟩
 
 @[simp, norm_cast]
-lemma val_one : (1 : positive R) = (1 : R) :=
+lemma val_one : (1 : Positive R) = (1 : R) :=
   rfl
 
 variable {R}
 
-instance instNeZeroOne [Nontrivial R] : NeZero (1 : positive R) where
+instance instNeZeroOne [Nontrivial R] : NeZero (1 : Positive R) where
   out := by rw [Ne.def, Subtype.ext_iff]; exact one_ne_zero
 
-instance instNontrivial [Nontrivial R] : Nontrivial (positive R) where
+instance instNontrivial [Nontrivial R] : Nontrivial (Positive R) where
   exists_pair_ne := ⟨1, 0, NeZero.ne 1⟩
 
-instance instNatCast : NatCast (positive R) where
+instance instNatCast : NatCast (Positive R) where
   natCast n := ⟨n, n.cast_nonneg'⟩
 
 @[simp, norm_cast]
-theorem val_natCast (n : ℕ) : ((n : positive R) : R) = n := rfl
+theorem val_natCast (n : ℕ) : ((n : Positive R) : R) = n := rfl
 
-instance instAddCommMonoidWithOne : AddCommMonoidWithOne (positive R) :=
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne (Positive R) :=
   Subtype.val_injective.addCommMonoidWithOne _ rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) val_natCast
 
 end Semiring
@@ -167,12 +149,12 @@ section Ring
 variable [Ring R] [PartialOrder R] [StarOrderedRing R]
 
 @[simp]
-theorem selfAdjoint_natCast (n : ℕ) :
-    positive.selfAdjoint (n : positive R) = (n : selfAdjoint R) := by
+theorem toSelfAdjoint_natCast (n : ℕ) :
+    toSelfAdjoint (n : Positive R) = (n : selfAdjoint R) := by
   ext; rfl
 
 end Ring
 
-end positive
+end Positive
 
 end StarOrderedRing
