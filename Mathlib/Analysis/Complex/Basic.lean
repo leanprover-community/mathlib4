@@ -428,24 +428,6 @@ noncomputable instance : IsROrC ℂ where
   le_antisymm := fun _ _ hab hba => Complex.ext (le_antisymm hab.1 hba.1) hab.2
   le_iff_re_im := by simp only [not_and, AddMonoidHom.coe_mk, ZeroHom.coe_mk, forall_const]
 
-noncomputable instance toStarOrderedRing : StarOrderedRing ℂ := by
-  apply StarOrderedRing.ofNonnegIff'
-  · intros x y hxy z
-    simpa [le_def, add_re, add_le_add_iff_left, add_im, add_right_inj] using hxy
-  intro x
-  simp only [Complex.star_def, ← Complex.normSq_eq_conj_mul_self]
-  constructor
-  · intro hx
-    use (Real.sqrt (x.re))
-    ext;
-    all_goals (simp only [normSq_ofReal, ofReal_mul, mul_re, mul_im, ofReal_re, ofReal_im,
-      mul_zero, sub_zero, zero_mul, (Real.mul_self_sqrt hx.1), add_zero, zero_im, hx.2.symm] )
-  · simp_rw [Complex.ext_iff, le_def, ofReal_re, ofReal_im, zero_im, zero_re]
-    intro h
-    cases' h with y hy
-    rw [hy.1]
-    refine ⟨ normSq_nonneg _, hy.2.symm⟩
-
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
 #align is_R_or_C.re_eq_complex_re IsROrC.re_eq_complex_re

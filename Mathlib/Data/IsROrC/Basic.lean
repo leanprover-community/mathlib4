@@ -49,7 +49,6 @@ local notation "𝓚" => algebraMap ℝ _
 
 open ComplexConjugate
 
-variable {n: Type _}[Fintype n]
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
