@@ -2,15 +2,12 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.quadratic_char.basic
-! leanprover-community/mathlib commit 5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Parity
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.FieldTheory.Finite.Basic
+
+#align_import number_theory.legendre_symbol.quadratic_char.basic from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
 /-!
 # Quadratic characters of finite fields
@@ -237,7 +234,7 @@ variable {F}
 when the domain has odd characteristic. -/
 theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial := by
   rcases quadraticChar_exists_neg_one hF with ⟨a, ha⟩
-  have hu : IsUnit a := by by_contra hf; rw [MulChar.map_nonunit _ hf] at ha ; norm_num at ha
+  have hu : IsUnit a := by by_contra hf; rw [MulChar.map_nonunit _ hf] at ha; norm_num at ha
   refine' ⟨hu.unit, (_ : quadraticChar F a ≠ 1)⟩
   rw [ha]
   norm_num
@@ -310,8 +307,7 @@ theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
   set n := Fintype.card F / 2
   cases' Nat.even_or_odd n with h₂ h₂
   · simp only [Even.neg_one_pow h₂, eq_self_iff_true, if_true]
-  · simp only [Odd.neg_one_pow h₂, ite_eq_right_iff]
-    exact fun hf => Ring.neg_one_ne_one_of_char_ne_two hF hf
+  · simp only [Odd.neg_one_pow h₂, Ring.neg_one_ne_one_of_char_ne_two hF, ite_false]
 #align quadratic_char_neg_one quadraticChar_neg_one
 
 /-- `-1` is a square in `F` iff `#F` is not congruent to `3` mod `4`. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.nat.lattice
-! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
+#align_import data.nat.lattice from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 
 /-!
 # Conditionally complete linear order structure on `ℕ`
@@ -126,11 +123,11 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
     (inferInstance : LinearOrder ℕ) with
     -- sup := sSup -- Porting note: removed, unnecessary?
     -- inf := sInf -- Porting note: removed, unnecessary?
-    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb] ; revert a ha ; exact @Nat.find_spec _ _ hb
-    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb]; revert a ha; exact @Nat.find_spec _ _ hb
+    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     le_csInf := fun s a hs hb ↦ by
-      rw [sInf_def hs] ; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
-    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+      rw [sInf_def hs]; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
+    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     csSup_empty := by
       simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
         not_false_iff, exists_const]
@@ -177,20 +174,20 @@ section
 
 variable {α : Type _} [CompleteLattice α]
 
-theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = (⨆ k < n, u k) ⊔ u n := by
+theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = (⨆ k < n, u k) ⊔ u n := by
   simp [Nat.lt_succ_iff_lt_or_eq, iSup_or, iSup_sup_eq]
 #align nat.supr_lt_succ Nat.iSup_lt_succ
 
-theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = u 0 ⊔ ⨆ k < n, u (k + 1) := by
+theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = u 0 ⊔ ⨆ k < n, u (k + 1) := by
   rw [← sup_iSup_nat_succ]
   simp
 #align nat.supr_lt_succ' Nat.iSup_lt_succ'
 
-theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : (⨅ k < n + 1, u k) = (⨅ k < n, u k) ⊓ u n :=
+theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = (⨅ k < n, u k) ⊓ u n :=
   @iSup_lt_succ αᵒᵈ _ _ _
 #align nat.infi_lt_succ Nat.iInf_lt_succ
 
-theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : (⨅ k < n + 1, u k) = u 0 ⊓ ⨅ k < n, u (k + 1) :=
+theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = u 0 ⊓ ⨅ k < n, u (k + 1) :=
   @iSup_lt_succ' αᵒᵈ _ _ _
 #align nat.infi_lt_succ' Nat.iInf_lt_succ'
 
@@ -202,19 +199,19 @@ namespace Set
 
 variable {α : Type _}
 
-theorem biUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = (⋃ k < n, u k) ∪ u n :=
+theorem biUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋃ k < n + 1, u k = (⋃ k < n, u k) ∪ u n :=
   Nat.iSup_lt_succ u n
 #align set.bUnion_lt_succ Set.biUnion_lt_succ
 
-theorem biUnion_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = u 0 ∪ ⋃ k < n, u (k + 1) :=
+theorem biUnion_lt_succ' (u : ℕ → Set α) (n : ℕ) : ⋃ k < n + 1, u k = u 0 ∪ ⋃ k < n, u (k + 1) :=
   Nat.iSup_lt_succ' u n
 #align set.bUnion_lt_succ' Set.biUnion_lt_succ'
 
-theorem biInter_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = (⋂ k < n, u k) ∩ u n :=
+theorem biInter_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = (⋂ k < n, u k) ∩ u n :=
   Nat.iInf_lt_succ u n
 #align set.bInter_lt_succ Set.biInter_lt_succ
 
-theorem biInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = u 0 ∩ ⋂ k < n, u (k + 1) :=
+theorem biInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = u 0 ∩ ⋂ k < n, u (k + 1) :=
   Nat.iInf_lt_succ' u n
 #align set.bInter_lt_succ' Set.biInter_lt_succ'
 

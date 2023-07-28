@@ -2,11 +2,6 @@
 Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.cyclotomic.basic
-! leanprover-community/mathlib commit 7fdeecc0d03cd40f7a165e6cf00a4d2286db599f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Polynomial.BigOperators
@@ -18,6 +13,8 @@ import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
+
+#align_import ring_theory.polynomial.cyclotomic.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
 /-!
 # Cyclotomic polynomials.
@@ -170,7 +167,7 @@ set_option linter.uppercaseLean3 false in
 `∏ i in Nat.divisors n, cyclotomic' i K = X ^ n - 1`. -/
 theorem prod_cyclotomic'_eq_X_pow_sub_one {K : Type _} [CommRing K] [IsDomain K] {ζ : K} {n : ℕ}
     (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
-    (∏ i in Nat.divisors n, cyclotomic' i K) = X ^ n - 1 := by
+    ∏ i in Nat.divisors n, cyclotomic' i K = X ^ n - 1 := by
   have hd : (n.divisors : Set ℕ).PairwiseDisjoint fun k => primitiveRoots k K :=
     fun x _ y _ hne => IsPrimitiveRoot.disjoint hne
   simp only [X_pow_sub_one_eq_prod hpos h, cyclotomic', ← Finset.prod_biUnion hd,
@@ -363,8 +360,8 @@ open Finset
 
 /-- `∏ i in Nat.divisors n, cyclotomic i R = X ^ n - 1`. -/
 theorem prod_cyclotomic_eq_X_pow_sub_one {n : ℕ} (hpos : 0 < n) (R : Type _) [CommRing R] :
-    (∏ i in Nat.divisors n, cyclotomic i R) = X ^ n - 1 := by
-  have integer : (∏ i in Nat.divisors n, cyclotomic i ℤ) = X ^ n - 1 := by
+    ∏ i in Nat.divisors n, cyclotomic i R = X ^ n - 1 := by
+  have integer : ∏ i in Nat.divisors n, cyclotomic i ℤ = X ^ n - 1 := by
     apply map_injective (Int.castRingHom ℂ) Int.cast_injective
     simp only [Polynomial.map_prod, int_cyclotomic_spec, Polynomial.map_pow, map_X,
       Polynomial.map_one, Polynomial.map_sub]
@@ -387,7 +384,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.cyclotomic.dvd_X_pow_sub_one Polynomial.cyclotomic.dvd_X_pow_sub_one
 
 theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [CommRing R] :
-    (∏ i in n.divisors.erase 1, cyclotomic i R) = ∑ i in Finset.range n, X ^ i := by
+    ∏ i in n.divisors.erase 1, cyclotomic i R = ∑ i in Finset.range n, X ^ i := by
   suffices (∏ i in n.divisors.erase 1, cyclotomic i ℤ) = ∑ i in Finset.range n, X ^ i by
     simpa only [Polynomial.map_prod, map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow,
       Polynomial.map_X] using congr_arg (map (Int.castRingHom R)) this

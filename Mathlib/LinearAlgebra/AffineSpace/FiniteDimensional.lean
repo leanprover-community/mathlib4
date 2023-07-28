@@ -2,14 +2,11 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.finite_dimensional
-! leanprover-community/mathlib commit 67e606eaea14c7854bdc556bd53d98aefdf76ec0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.FiniteDimensional
+
+#align_import linear_algebra.affine_space.finite_dimensional from "leanprover-community/mathlib"@"67e606eaea14c7854bdc556bd53d98aefdf76ec0"
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -241,7 +238,7 @@ theorem AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
     apply Nat.succ_pos
   refine' eq_of_direction_eq_of_nonempty_of_le _ ((hn.image p).to_set.affineSpan k) hle
   have hd := direction_le hle
-  rw [direction_affineSpan] at hd⊢
+  rw [direction_affineSpan] at hd ⊢
   exact hi.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hd hc
 #align affine_independent.affine_span_image_finset_eq_of_le_of_card_eq_finrank_add_one AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
 
@@ -253,7 +250,7 @@ theorem AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one [Fintyp
     (hle : affineSpan k (Set.range p) ≤ sp) (hc : Fintype.card ι = finrank k sp.direction + 1) :
     affineSpan k (Set.range p) = sp := by
   rw [← Finset.card_univ] at hc
-  rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image] at hle⊢
+  rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image] at hle ⊢
   exact hi.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hle hc
 #align affine_independent.affine_span_eq_of_le_of_card_eq_finrank_add_one AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
 
@@ -529,7 +526,7 @@ theorem Collinear.mem_affineSpan_of_mem_of_ne {s : Set P} (h : Collinear k s) {p
 span of the whole set. -/
 theorem Collinear.affineSpan_eq_of_ne {s : Set P} (h : Collinear k s) {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₁p₂ : p₁ ≠ p₂) : line[k, p₁, p₂] = affineSpan k s :=
-  le_antisymm (affineSpan_mono _ (Set.insert_subset.2 ⟨hp₁, Set.singleton_subset_iff.2 hp₂⟩))
+  le_antisymm (affineSpan_mono _ (Set.insert_subset_iff.2 ⟨hp₁, Set.singleton_subset_iff.2 hp₂⟩))
     (affineSpan_le.2 fun _ hp => h.mem_affineSpan_of_mem_of_ne hp₁ hp₂ hp hp₁p₂)
 #align collinear.affine_span_eq_of_ne Collinear.affineSpan_eq_of_ne
 

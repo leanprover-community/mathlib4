@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.basic
-! leanprover-community/mathlib commit d8bbb04e2d2a44596798a9207ceefc0fb236e41e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+
+#align_import measure_theory.function.conditional_expectation.basic from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
 /-! # Conditional expectation
 
@@ -230,7 +227,7 @@ theorem set_integral_condexp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : In
 theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   suffices ∫ x in Set.univ, (μ[f|m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
-    simp_rw [integral_univ] at this ; exact this
+    simp_rw [integral_univ] at this; exact this
   exact set_integral_condexp hm hf (@MeasurableSet.univ _ m)
 #align measure_theory.integral_condexp MeasureTheory.integral_condexp
 
@@ -248,7 +245,7 @@ theorem ae_eq_condexp_of_forall_set_integral_eq (hm : m ≤ m0) [SigmaFinite (μ
   rw [hg_eq s hs hμs, set_integral_condexp hm hf hs]
 #align measure_theory.ae_eq_condexp_of_forall_set_integral_eq MeasureTheory.ae_eq_condexp_of_forall_set_integral_eq
 
-theorem condexp_bot' [hμ : μ.ae.NeBot] (f : α → F') :
+theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
   by_cases hμ_finite : IsFiniteMeasure μ
   swap
@@ -257,7 +254,6 @@ theorem condexp_bot' [hμ : μ.ae.NeBot] (f : α → F') :
     rw [condexp_of_not_sigmaFinite bot_le h]
     simp only [hμ_finite, ENNReal.top_toReal, inv_zero, zero_smul]
     rfl
-  haveI : IsFiniteMeasure μ := hμ_finite
   by_cases hf : Integrable f μ
   swap; · rw [integral_undef hf, smul_zero, condexp_undef hf]; rfl
   have h_meas : StronglyMeasurable[⊥] (μ[f|⊥]) := stronglyMeasurable_condexp
@@ -266,18 +262,15 @@ theorem condexp_bot' [hμ : μ.ae.NeBot] (f : α → F') :
   have h_integral : ∫ x, (μ[f|⊥]) x ∂μ = ∫ x, f x ∂μ := integral_condexp bot_le hf
   simp_rw [h_eq, integral_const] at h_integral
   rw [← h_integral, ← smul_assoc, smul_eq_mul, inv_mul_cancel, one_smul]
-  rw [Ne.def, ENNReal.toReal_eq_zero_iff, Measure.measure_univ_eq_zero, ← ae_eq_bot, not_or,
-    ← Ne.def, ← neBot_iff]
-  exact ⟨hμ, measure_ne_top μ Set.univ⟩
+  rw [Ne.def, ENNReal.toReal_eq_zero_iff, not_or]
+  exact ⟨NeZero.ne _, measure_ne_top μ Set.univ⟩
 #align measure_theory.condexp_bot' MeasureTheory.condexp_bot'
 
 theorem condexp_bot_ae_eq (f : α → F') :
     μ[f|⊥] =ᵐ[μ] fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
-  by_cases μ.ae.NeBot
-  · refine' eventually_of_forall fun x => _
-    rw [condexp_bot' f]
-  · rw [neBot_iff, Classical.not_not, ae_eq_bot] at h
-    simp only [h, ae_zero]; norm_cast
+  rcases eq_zero_or_neZero μ with rfl | hμ
+  · rw [ae_zero]; exact eventually_bot
+  · exact eventually_of_forall <| congr_fun (condexp_bot' f)
 #align measure_theory.condexp_bot_ae_eq MeasureTheory.condexp_bot_ae_eq
 
 theorem condexp_bot [IsProbabilityMeasure μ] (f : α → F') : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by

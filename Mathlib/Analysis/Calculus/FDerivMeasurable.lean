@@ -2,15 +2,12 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv_measurable
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+
+#align_import analysis.calculus.fderiv_measurable from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Derivative is measurable
@@ -295,7 +292,7 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * ‖c‖ * (ε / (12 * ‖c‖)) := by gcongr
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0), ne_of_gt cpos] ; ring
+      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0), ne_of_gt cpos]; ring
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
@@ -657,7 +654,7 @@ theorem d_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * (ε / 12) := (mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num))
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)] ; ring
+      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)]; ring
 
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=

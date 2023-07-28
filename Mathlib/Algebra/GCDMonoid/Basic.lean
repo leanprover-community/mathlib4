@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.basic
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
+
+#align_import algebra.gcd_monoid.basic from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
@@ -513,7 +510,7 @@ theorem dvd_gcd_mul_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k
 #align dvd_gcd_mul_of_dvd_mul dvd_gcd_mul_of_dvd_mul
 
 theorem dvd_mul_gcd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k ∣ m * gcd k n := by
-  rw [mul_comm] at H⊢
+  rw [mul_comm] at H ⊢
   exact dvd_gcd_mul_of_dvd_mul H
 #align dvd_mul_gcd_of_dvd_mul dvd_mul_gcd_of_dvd_mul
 
@@ -633,7 +630,7 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
     exact gcd_zero_right' a
   obtain rfl | hk := k.eq_zero_or_pos
   · use 1
-    rw [pow_zero] at h⊢
+    rw [pow_zero] at h ⊢
     use Units.mkOfMulEqOne _ _ h
     rw [Units.val_mkOfMulEqOne, one_mul]
   have hc : c ∣ a * b := by
@@ -930,7 +927,7 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
       -- Porting note: Lean4 seems to need help specifying `g₁` and `g₂`
       refine' associated_iff_eq.mp (associated_of_dvd_dvd _ _)
       · exact (@lcm_dvd_iff _ _ g₁ ..).mpr ⟨@dvd_lcm_left _ _ g₂ _ _, @dvd_lcm_right _ _ g₂ _ _⟩
-      · exact lcm_dvd_iff.mpr ⟨@dvd_lcm_left  _ _ g₁ _ _, @dvd_lcm_right _ _ g₁  _ _⟩
+      · exact lcm_dvd_iff.mpr ⟨@dvd_lcm_left _ _ g₁ _ _, @dvd_lcm_right _ _ g₁ _ _⟩
     cases g₁
     cases g₂
     dsimp only at hgcd hlcm
@@ -1106,7 +1103,6 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab
-          push_neg at hab
           rw [← normalize_eq_zero, ← this, hab, zero_mul]
         have h2 : normalize (gcd a b * l) = gcd a b * l := by rw [this, normalize_idem]
         rw [← normalize_gcd] at this

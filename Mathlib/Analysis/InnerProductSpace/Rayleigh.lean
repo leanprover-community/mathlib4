@@ -2,17 +2,14 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.rayleigh
-! leanprover-community/mathlib commit 6b0169218d01f2837d79ea2784882009a0da1aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.Calculus.LagrangeMultipliers
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+
+#align_import analysis.inner_product_space.rayleigh from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # The Rayleigh quotient
@@ -85,17 +82,17 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
 #align continuous_linear_map.image_rayleigh_eq_image_rayleigh_sphere ContinuousLinearMap.image_rayleigh_eq_image_rayleigh_sphere
 
 theorem iSup_rayleigh_eq_iSup_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
-    (⨆ x : { x : E // x ≠ 0 }, rayleighQuotient T x) =
+    ⨆ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨆ x : sphere (0 : E) r, rayleighQuotient T x :=
-  show (⨆ x : ({0}ᶜ : Set E), rayleighQuotient T x) = _ by
+  show ⨆ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sSup_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 #align continuous_linear_map.supr_rayleigh_eq_supr_rayleigh_sphere ContinuousLinearMap.iSup_rayleigh_eq_iSup_rayleigh_sphere
 
 theorem iInf_rayleigh_eq_iInf_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
-    (⨅ x : { x : E // x ≠ 0 }, rayleighQuotient T x) =
+    ⨅ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨅ x : sphere (0 : E) r, rayleighQuotient T x :=
-  show (⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x) = _ by
+  show ⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sInf_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 #align continuous_linear_map.infi_rayleigh_eq_infi_rayleigh_sphere ContinuousLinearMap.iInf_rayleigh_eq_iInf_rayleigh_sphere

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module order.omega_complete_partial_order
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Hom.Order
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Omega Complete Partial Orders
@@ -316,8 +313,8 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   cases' hb with j hb; replace hb := hb.symm
   rw [eq_some_iff] at ha hb
   cases' le_total i j with hij hji
-  . have := c.monotone hij _ ha; apply mem_unique this hb
-  . have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
+  · have := c.monotone hij _ ha; apply mem_unique this hb
+  · have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
   --Porting note: Old proof
   -- wlog h : i ≤ j := le_total i j using a b i j, b a j i
   -- rw [eq_some_iff] at ha hb
@@ -355,7 +352,7 @@ noncomputable instance omegaCompletePartialOrder :
   ωSup := Part.ωSup
   le_ωSup c i := by
     intro x hx
-    rw [← eq_some_iff] at hx⊢
+    rw [← eq_some_iff] at hx ⊢
     rw [ωSup_eq_some, ← hx]
     rw [← hx]
     exact ⟨i, rfl⟩
@@ -572,7 +569,7 @@ if for every chain `c : chain α`, `f (⊔ i, c i) = ⊔ i, f (c i)`.
 This is just the bundled version of `OrderHom.continuous`. -/
 structure ContinuousHom extends OrderHom α β where
   /-- The underlying function of a `ContinuousHom` is continuous, i.e. it preserves `ωSup` -/
-  cont : Continuous (OrderHom.mk toFun Monotone')
+  cont : Continuous (OrderHom.mk toFun monotone')
 #align omega_complete_partial_order.continuous_hom OmegaCompletePartialOrder.ContinuousHom
 
 attribute [nolint docBlame] ContinuousHom.toOrderHom
@@ -813,7 +810,7 @@ def apply : (α →𝒄 β) × α →𝒄 β where
     dsimp
     trans y.fst x.snd <;> [apply h.1; apply y.1.monotone h.2]
   cont := by
-    intro _ c
+    intro c
     apply le_antisymm
     · apply ωSup_le
       intro i
@@ -851,7 +848,7 @@ def flip {α : Type _} (f : α → β →𝒄 γ) :
     β →𝒄 α → γ where
   toFun x y := f y x
   monotone' x y h a := (f a).monotone h
-  cont := by intro _ _; ext x; change f _ _ = _; rw [(f _).continuous]; rfl
+  cont := by intro _; ext x; change f _ _ = _; rw [(f _).continuous]; rfl
 #align omega_complete_partial_order.continuous_hom.flip OmegaCompletePartialOrder.ContinuousHom.flip
 #align omega_complete_partial_order.continuous_hom.flip_apply OmegaCompletePartialOrder.ContinuousHom.flip_apply
 

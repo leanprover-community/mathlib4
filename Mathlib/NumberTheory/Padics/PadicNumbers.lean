@@ -2,14 +2,11 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_numbers
-! leanprover-community/mathlib commit b9b2114f7711fec1c1e055d507f082f8ceb2c3b7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import number_theory.padics.padic_numbers from "leanprover-community/mathlib"@"b9b2114f7711fec1c1e055d507f082f8ceb2c3b7"
 
 /-!
 # p-adic numbers
@@ -43,7 +40,7 @@ A small special-purpose simplification tactic, `padic_index_simp`, is used to ma
 indices in the proof that the norm extends.
 
 `padicNormE` is the rational-valued `p`-adic norm on `ℚ_[p]`.
-To instantiate `ℚ_[p]` as a normed field, we must cast this into a `ℝ`-valued norm.
+To instantiate `ℚ_[p]` as a normed field, we must cast this into an `ℝ`-valued norm.
 The `ℝ`-valued norm, using notation `‖ ‖` from normed spaces,
 is the canonical representation of this norm.
 
@@ -450,8 +447,8 @@ theorem add_eq_max_of_ne {f g : PadicSeq p} (hfgne : f.norm ≠ g.norm) :
       have h2 : g.norm = 0 := (norm_zero_iff _).2 hg
       rw [h1, h2, max_eq_left (norm_nonneg _)]
     else by
-      unfold norm at hfgne⊢; split_ifs  at hfgne⊢
-      -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne⊢`
+      unfold norm at hfgne ⊢; split_ifs at hfgne ⊢
+      -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne ⊢`
       rw [lift_index_left hf, lift_index_right hg] at hfgne
       rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
       exact padicNorm.add_eq_max_of_ne hfgne
@@ -826,7 +823,7 @@ theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := 
 #align padic_norm_e.nonarchimedean padicNormE.nonarchimedean
 
 theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
-  dsimp [norm] at h⊢
+  dsimp [norm] at h ⊢
   have : padicNormE q ≠ padicNormE r := by exact_mod_cast h
   exact_mod_cast add_eq_max_of_ne' this
 #align padic_norm_e.add_eq_max_of_ne padicNormE.add_eq_max_of_ne
@@ -980,7 +977,7 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
     exists q
     intro ε hε
     cases' exists_rat_btwn hε with ε' hε'
-    norm_cast  at hε'
+    norm_cast at hε'
     cases' hq ε' hε'.1 with N hN
     exists N
     intro i hi

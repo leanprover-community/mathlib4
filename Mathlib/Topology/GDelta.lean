@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.G_delta
-! leanprover-community/mathlib commit b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.Separation
 import Mathlib.Order.Filter.CountableInter
+
+#align_import topology.G_delta from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
 /-!
 # `Gδ` sets
@@ -141,16 +138,16 @@ theorem isGδ_compl_singleton (a : α) : IsGδ ({a}ᶜ : Set α) :=
   isOpen_compl_singleton.isGδ
 #align is_Gδ_compl_singleton isGδ_compl_singleton
 
-theorem Set.Countable.isGδ_compl {s : Set α} (hs : s.Countable) : IsGδ (sᶜ) := by
+theorem Set.Countable.isGδ_compl {s : Set α} (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
   exact isGδ_biInter hs fun x _ => isGδ_compl_singleton x
 #align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
 
-theorem Set.Finite.isGδ_compl {s : Set α} (hs : s.Finite) : IsGδ (sᶜ) :=
+theorem Set.Finite.isGδ_compl {s : Set α} (hs : s.Finite) : IsGδ sᶜ :=
   hs.countable.isGδ_compl
 #align set.finite.is_Gδ_compl Set.Finite.isGδ_compl
 
-theorem Set.Subsingleton.isGδ_compl {s : Set α} (hs : s.Subsingleton) : IsGδ (sᶜ) :=
+theorem Set.Subsingleton.isGδ_compl {s : Set α} (hs : s.Subsingleton) : IsGδ sᶜ :=
   hs.finite.isGδ_compl
 #align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
 

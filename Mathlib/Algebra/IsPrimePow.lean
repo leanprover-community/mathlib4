@@ -2,14 +2,11 @@
 Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module algebra.is_prime_pow
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.NumberTheory.Divisors
+
+#align_import algebra.is_prime_pow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Prime powers
@@ -98,7 +95,7 @@ instance {n : ℕ} : Decidable (IsPrimePow n) :=
   decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
-  rw [isPrimePow_nat_iff] at hn⊢
+  rw [isPrimePow_nat_iff] at hn ⊢
   rcases hn with ⟨p, k, hp, _hk, rfl⟩
   obtain ⟨i, hik, rfl⟩ := (Nat.dvd_prime_pow hp).1 hm
   refine' ⟨p, i, hp, _, rfl⟩

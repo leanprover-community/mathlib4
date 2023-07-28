@@ -2,17 +2,14 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
-
-! This file was ported from Lean 3 source module linear_algebra.dual
-! leanprover-community/mathlib commit b1c017582e9f18d8494e5c18602a8cb4a6f843ac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+#align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
 /-!
 # Dual vector spaces
@@ -927,7 +924,7 @@ theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
 
 /-- See also `Subspace.dualAnnihilator_iInf_eq` for vector subspaces when `ι` is finite. -/
 theorem iSup_dualAnnihilator_le_iInf {ι : Type _} (U : ι → Submodule R M) :
-    (⨆ i : ι, (U i).dualAnnihilator) ≤ (⨅ i : ι, U i).dualAnnihilator := by
+    ⨆ i : ι, (U i).dualAnnihilator ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
   apply iInf_mono
   exact fun i : ι => le_dualAnnihilator_dualCoannihilator (U i)
@@ -966,7 +963,7 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     rintro rfl
     exact hw'n (Submodule.zero_mem W)
   rw [Ne.def, ← Module.forall_dual_apply_eq_zero_iff K w'] at hw'nz
-  push_neg  at hw'nz
+  push_neg at hw'nz
   obtain ⟨φ, hφ⟩ := hw'nz
   exists ((LinearMap.ofIsComplProd hW).comp (LinearMap.inr _ _ _)) φ
   simp only [coe_comp, coe_inr, Function.comp_apply, ofIsComplProd_apply, map_add,
@@ -1093,7 +1090,10 @@ open FiniteDimensional
 
 variable {V₁ : Type _} [AddCommGroup V₁] [Module K V₁]
 
-instance [H : FiniteDimensional K V] : FiniteDimensional K (Module.Dual K V) := by infer_instance
+instance instModuleDualFiniteDimensional [H : FiniteDimensional K V] :
+    FiniteDimensional K (Module.Dual K V) := by
+  infer_instance
+#align subspace.module.dual.finite_dimensional Subspace.instModuleDualFiniteDimensional
 
 variable [FiniteDimensional K V] [FiniteDimensional K V₁]
 
@@ -1452,7 +1452,7 @@ theorem dualAnnihilator_iInf_eq {ι : Type _} [Finite ι] (W : ι → Subspace K
 to direct sum decompositions. -/
 theorem isCompl_dualAnnihilator {W W' : Subspace K V₁} (h : IsCompl W W') :
     IsCompl W.dualAnnihilator W'.dualAnnihilator := by
-  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at h⊢
+  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at h ⊢
   rw [← dualAnnihilator_inf_eq, ← dualAnnihilator_sup_eq, h.1, h.2, dualAnnihilator_top,
     dualAnnihilator_bot]
   exact ⟨rfl, rfl⟩
@@ -1621,8 +1621,8 @@ isomorphism `R ⊗ R ≃ R`.
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
-  . exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
-  . exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
+  · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
+  · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis
 
 variable (R M N)

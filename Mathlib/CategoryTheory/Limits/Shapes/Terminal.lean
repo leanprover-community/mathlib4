@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.terminal
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Category.Preorder
+
+#align_import category_theory.limits.shapes.terminal from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Initial and terminal objects in a category.
@@ -30,8 +27,6 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Construct a cone for the empty diagram given an object. -/
 @[simps]

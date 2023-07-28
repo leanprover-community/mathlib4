@@ -2,14 +2,12 @@
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
-
-! This file was ported from Lean 3 source module imo.imo1964_q1
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.Ring
+
+#align_import imo.imo1964_q1 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1964 Q1
@@ -32,22 +30,12 @@ open Nat
 
 namespace Imo1964Q1
 
-theorem two_pow_three_mul_mod_seven (m : ℕ) : 2 ^ (3 * m) ≡ 1 [MOD 7] := by
-  rw [pow_mul]
-  have h : 8 ≡ 1 [MOD 7] := modEq_of_dvd (by use -1; norm_num)
-  convert h.pow _
-  simp
-#align imo1964_q1.two_pow_three_mul_mod_seven Imo1964Q1.two_pow_three_mul_mod_seven
-
-theorem two_pow_three_mul_add_one_mod_seven (m : ℕ) : 2 ^ (3 * m + 1) ≡ 2 [MOD 7] := by
-  rw [pow_add]
-  exact (two_pow_three_mul_mod_seven m).mul_right _
-#align imo1964_q1.two_pow_three_mul_add_one_mod_seven Imo1964Q1.two_pow_three_mul_add_one_mod_seven
-
-theorem two_pow_three_mul_add_two_mod_seven (m : ℕ) : 2 ^ (3 * m + 2) ≡ 4 [MOD 7] := by
-  rw [pow_add]
-  exact (two_pow_three_mul_mod_seven m).mul_right _
-#align imo1964_q1.two_pow_three_mul_add_two_mod_seven Imo1964Q1.two_pow_three_mul_add_two_mod_seven
+theorem two_pow_mod_seven (n : ℕ) : 2 ^ n ≡ 2 ^ (n % 3) [MOD 7] :=
+  let t := n % 3
+  calc 2 ^ n = 2 ^ (3 * (n / 3) + t) := by rw [Nat.div_add_mod]
+    _ = (2 ^ 3) ^ (n / 3) * 2 ^ t := by rw [pow_add, pow_mul]
+    _ ≡ 1 ^ (n / 3) * 2 ^ t [MOD 7] := by gcongr; norm_num
+    _ = 2 ^ t := by ring
 
 /-!
 ## The question
@@ -58,31 +46,15 @@ def ProblemPredicate (n : ℕ) : Prop :=
   7 ∣ 2 ^ n - 1
 #align imo1964_q1.problem_predicate Imo1964Q1.ProblemPredicate
 
-theorem aux (n : ℕ) : ProblemPredicate n ↔ 2 ^ n ≡ 1 [MOD 7] := by
-  rw [Nat.ModEq.comm]
-  apply (modEq_iff_dvd' _).symm
-  apply Nat.one_le_pow'
-#align imo1964_q1.aux Imo1964Q1.aux
-
-theorem imo1964_q1a (n : ℕ) (hn : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
-  rw [aux]
-  constructor
-  · intro h
-    let t := n % 3
-    rw [show n = 3 * (n / 3) + t from (Nat.div_add_mod n 3).symm] at h
-    have ht : t < 3 := Nat.mod_lt _ (by decide)
-    interval_cases hr : t <;> simp only [hr] at h
-    · exact Nat.dvd_of_mod_eq_zero hr
-    · exfalso
-      have nonsense := (two_pow_three_mul_add_one_mod_seven _).symm.trans h
-      rw [modEq_iff_dvd] at nonsense
-      norm_num at nonsense
-    · exfalso
-      have nonsense := (two_pow_three_mul_add_two_mod_seven _).symm.trans h
-      rw [modEq_iff_dvd] at nonsense
-      norm_num at nonsense
-  · rintro ⟨m, rfl⟩
-    apply two_pow_three_mul_mod_seven
+theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
+  let t := n % 3
+  have : t < 3 := Nat.mod_lt _ (by decide)
+  calc 7 ∣ 2 ^ n - 1 ↔ 2 ^ n ≡ 1 [MOD 7] := by
+        rw [Nat.ModEq.comm, Nat.modEq_iff_dvd']
+        apply Nat.one_le_pow'
+    _ ↔ 2 ^ t ≡ 1 [MOD 7] := ⟨(two_pow_mod_seven n).symm.trans, (two_pow_mod_seven n).trans⟩
+    _ ↔ t = 0 := by interval_cases t <;> decide
+    _ ↔ 3 ∣ n := by rw [dvd_iff_mod_eq_zero]
 #align imo1964_q1.imo1964_q1a Imo1964Q1.imo1964_q1a
 
 end Imo1964Q1
@@ -90,21 +62,11 @@ end Imo1964Q1
 open Imo1964Q1
 
 theorem imo1964_q1b (n : ℕ) : ¬7 ∣ 2 ^ n + 1 := by
+  intro h
   let t := n % 3
-  rw [← modEq_zero_iff_dvd, show n = 3 * (n / 3) + t from (Nat.div_add_mod n 3).symm]
-  have ht : t < 3 := Nat.mod_lt _ (by decide)
-  interval_cases hr : t <;> simp only [hr]
-  · rw [add_zero]
-    intro h
-    have := h.symm.trans ((two_pow_three_mul_mod_seven _).add_right _)
-    rw [modEq_iff_dvd] at this
-    norm_num at this
-  · intro h
-    have := h.symm.trans ((two_pow_three_mul_add_one_mod_seven _).add_right _)
-    rw [modEq_iff_dvd] at this
-    norm_num at this
-  · intro h
-    have := h.symm.trans ((two_pow_three_mul_add_two_mod_seven _).add_right _)
-    rw [modEq_iff_dvd] at this
-    norm_num at this
+  have : t < 3 := Nat.mod_lt _ (by decide)
+  have H : 2 ^ t + 1 ≡ 0 [MOD 7]
+  · calc 2 ^ t + 1 ≡ 2 ^ n + 1 [MOD 7 ] := by gcongr ?_ + 1; exact (two_pow_mod_seven n).symm
+      _ ≡ 0 [MOD 7] := h.modEq_zero_nat
+  interval_cases t <;> norm_num at H
 #align imo1964_q1b imo1964_q1b

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.ascending_descending_sequences
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Powerset
+
+#align_import wiedijk_100_theorems.ascending_descending_sequences from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Erdős–Szekeres theorem
@@ -106,7 +103,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       rw [mem_filter] at ht₁
       -- Ensure `t` ends at `i`.
       have : t.max = i
-      simp [ht₁.2.1]
+      simp only [ht₁.2.1]
       -- Now our new subsequence is given by adding `j` at the end of `t`.
       refine' ⟨insert j t, _, _⟩
       -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
@@ -151,7 +148,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i
-    -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is a increasing and
+    -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is an increasing and
     -- decreasing subsequence which we did right near the top.
     have z : 1 ≤ (ab i).1 ∧ 1 ≤ (ab i).2 := by
       simp only [← hab]

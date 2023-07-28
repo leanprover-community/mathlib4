@@ -2,14 +2,11 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.measure.vector_measure
-! leanprover-community/mathlib commit 70a4f2197832bceab57d7f41379b2592d1110570
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.Analysis.Complex.Basic
+
+#align_import measure_theory.measure.vector_measure from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
 
 /-!
 
@@ -148,7 +145,7 @@ variable [T2Space M] {v : VectorMeasure α M} {f : ℕ → Set α}
 theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) : HasSum (fun i => v (f i)) (v (⋃ i, f i)) := by
   cases nonempty_encodable β
-  set g := fun i : ℕ => ⋃ (b : β) (H : b ∈ Encodable.decode₂ β i), f b with hg
+  set g := fun i : ℕ => ⋃ (b : β) (_ : b ∈ Encodable.decode₂ β i), f b with hg
   have hg₁ : ∀ i, MeasurableSet (g i) :=
     fun _ => MeasurableSet.iUnion fun b => MeasurableSet.iUnion fun _ => hf₁ b
   have hg₂ : Pairwise (Disjoint on g) := Encodable.iUnion_decode₂_disjoint_on hf₂
@@ -175,7 +172,7 @@ theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : �
     · exact (v.m_iUnion hg₁ hg₂).summable
     · intro x hx
       convert v.empty
-      simp only [Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx⊢
+      simp only [Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx ⊢
       intro i hi
       exact False.elim ((hx i) ((Encodable.decode₂_is_partial_inv _ _).1 hi))
 #align measure_theory.vector_measure.has_sum_of_disjoint_Union MeasureTheory.VectorMeasure.hasSum_of_disjoint_iUnion
@@ -938,7 +935,7 @@ variable (v w : VectorMeasure α M) {i j : Set α}
 theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, MeasurableSet (f n))
     (hf₂ : ∀ n, v ≤[f n] w) : v ≤[⋃ n, f n] w := by
   refine' restrict_le_restrict_of_subset_le v w fun a ha₁ ha₂ => _
-  have ha₃ : (⋃ n, a ∩ disjointed f n) = a := by
+  have ha₃ : ⋃ n, a ∩ disjointed f n = a := by
     rwa [← Set.inter_iUnion, iUnion_disjointed, Set.inter_eq_left_iff_subset]
   have ha₄ : Pairwise (Disjoint on fun n => a ∩ disjointed f n) :=
     (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
@@ -1138,7 +1135,7 @@ theorem smul {R : Type _} [Semiring R] [DistribMulAction R M] [ContinuousConstSM
 theorem map [MeasureSpace β] (h : v ≪ᵥ w) (f : α → β) : v.map f ≪ᵥ w.map f := by
   by_cases hf : Measurable f
   · refine' mk fun s hs hws => _
-    rw [map_apply _ hf hs] at hws⊢
+    rw [map_apply _ hf hs] at hws ⊢
     exact h hws
   · intro s _
     rw [map_not_measurable v hf, zero_apply]

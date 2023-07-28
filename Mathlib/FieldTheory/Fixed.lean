@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module field_theory.fixed
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.Tower
+
+#align_import field_theory.fixed from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Fixed field under a group action.
@@ -133,7 +130,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   rw [coe_insert] at hs ⊢
   rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
   rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine' ⟨ih hs.1, fun ha => _⟩
-  rw [Finsupp.mem_span_image_iff_total] at ha ; rcases ha with ⟨l, hl, hla⟩
+  rw [Finsupp.mem_span_image_iff_total] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.total_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
     replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)

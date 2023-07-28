@@ -2,14 +2,11 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_norm
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.NumberTheory.Padics.PadicVal
+
+#align_import number_theory.padics.padic_norm from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # p-adic norm
@@ -22,10 +19,6 @@ assumptions on `p`.
 
 The valuation induces a norm on `ℚ`. This norm is a nonarchimedean absolute value.
 It takes values in {0} ∪ {1/p^k | k ∈ ℤ}.
-
-## Notations
-
-This file uses the local notation `/.` for `rat.mk`.
 
 ## Implementation notes
 

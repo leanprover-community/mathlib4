@@ -2,15 +2,12 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.basic
-! leanprover-community/mathlib commit 05b820ec79b3c98a7dbf1cb32e181584166da2ca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Functor.EpiMono
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+
+#align_import category_theory.concrete_category.basic from "leanprover-community/mathlib"@"311ef8c4b4ae2804ea76b8a611bc5ea1d9c16872"
 
 /-!
 # Concrete categories
@@ -41,7 +38,7 @@ related work.
 -/
 
 
-universe w w' v v' u
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
@@ -68,13 +65,13 @@ attribute [instance] ConcreteCategory.forget_faithful
 
 /-- The forgetful functor from a concrete category to `Type u`. -/
 @[reducible]
-def forget (C : Type v) [Category C] [ConcreteCategory.{u} C] : C ⥤ Type u :=
+def forget (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] : C ⥤ Type w :=
   ConcreteCategory.forget
 #align category_theory.forget CategoryTheory.forget
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
 @[reducible]
-instance ConcreteCategory.types : ConcreteCategory (Type u) where
+instance ConcreteCategory.types : ConcreteCategory.{u, u, u+1} (Type u) where
   forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
 
@@ -86,8 +83,8 @@ You can use it on particular examples as:
 instance : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
 ```
 -/
-def ConcreteCategory.hasCoeToSort (C : Type v) [Category C] [ConcreteCategory C] :
-    CoeSort C (Type u) where
+def ConcreteCategory.hasCoeToSort (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
+    CoeSort C (Type w) where
   coe := fun X => (forget C).obj X
 #align category_theory.concrete_category.has_coe_to_sort CategoryTheory.ConcreteCategory.hasCoeToSort
 
@@ -95,7 +92,7 @@ section
 
 attribute [local instance] ConcreteCategory.hasCoeToSort
 
-variable {C : Type v} [Category C] [ConcreteCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 
 -- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 #noalign category_theory.forget_obj_eq_coe
@@ -191,7 +188,7 @@ theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
 #align category_theory.concrete_category.bijective_of_is_iso CategoryTheory.ConcreteCategory.bijective_of_isIso
 
 @[simp]
-theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶  Y) : CoeFun.coe f = f := rfl
+theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶ Y) : CoeFun.coe f = f := rfl
 #align category_theory.concrete_category.has_coe_to_fun_Type CategoryTheory.ConcreteCategory.hasCoeToFun_Type
 
 end

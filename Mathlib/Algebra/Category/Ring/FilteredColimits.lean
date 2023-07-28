@@ -2,14 +2,11 @@
 Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
-
-! This file was ported from Lean 3 source module algebra.category.Ring.filtered_colimits
-! leanprover-community/mathlib commit c43486ecf2a5a17479a32ce09e4818924145e90e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+
+#align_import algebra.category.Ring.filtered_colimits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 
 /-!
 # The forgetful functor from (commutative) (semi-) rings preserves filtered colimits.
@@ -36,9 +33,8 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-open CategoryTheory.IsFiltered renaming max → max'
+open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
--- avoid name collision with `_root_.max`.
 open AddMonCat.FilteredColimits (colimit_zero_eq colimit_add_mk_eq)
 
 open MonCat.FilteredColimits (colimit_one_eq colimit_mul_mk_eq)
@@ -72,10 +68,7 @@ set_option linter.uppercaseLean3 false in
 instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
     AddCommMonCat.FilteredColimits.colimitAddCommMonoid
-      (F ⋙
-        forget₂ SemiRingCat
-          AddCommMonCat.{max v
-              u}) with
+      (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
     mul_zero := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
       cases' x with j x
@@ -144,8 +137,7 @@ set_option linter.uppercaseLean3 false in
 /-- The proposed colimit cocone is a colimit in `SemiRing`. -/
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   desc t :=
-    {
-      (MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
+    { (MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
             (F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat)).desc
         ((forget₂ SemiRingCatMax.{v, u} MonCat).mapCocone t),
       (AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
@@ -163,8 +155,9 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.colimit_cocone_is_colimit SemiRingCat.FilteredColimits.colimitCoconeIsColimit
 
 instance forget₂MonPreservesFilteredColimits :
-    PreservesFilteredColimits (forget₂ SemiRingCat MonCat.{u})
-    where preserves_filtered_colimits {J hJ1 _} := letI : Category J := hJ1
+    PreservesFilteredColimits (forget₂ SemiRingCat MonCat.{u}) where
+  preserves_filtered_colimits {J hJ1 _} :=
+    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ SemiRingCat MonCat.{u})) }
@@ -213,8 +206,7 @@ set_option linter.uppercaseLean3 false in
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    {
-      (SemiRingCat.FilteredColimits.colimitCocone
+    { (SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).ι with }
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.colimit_cocone CommSemiRingCat.FilteredColimits.colimitCocone
@@ -237,8 +229,9 @@ set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.colimit_cocone_is_colimit CommSemiRingCat.FilteredColimits.colimitCoconeIsColimit
 
 instance forget₂SemiRingPreservesFilteredColimits :
-    PreservesFilteredColimits (forget₂ CommSemiRingCat SemiRingCat.{u})
-    where preserves_filtered_colimits {J hJ1 _} := letI : Category J := hJ1
+    PreservesFilteredColimits (forget₂ CommSemiRingCat SemiRingCat.{u}) where
+  preserves_filtered_colimits {J hJ1 _} :=
+    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
@@ -289,8 +282,7 @@ set_option linter.uppercaseLean3 false in
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    {
-      (SemiRingCat.FilteredColimits.colimitCocone
+    { (SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).ι with }
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.colimit_cocone RingCat.FilteredColimits.colimitCocone
@@ -313,8 +305,9 @@ set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.colimit_cocone_is_colimit RingCat.FilteredColimits.colimitCoconeIsColimit
 
 instance forget₂SemiRingPreservesFilteredColimits :
-    PreservesFilteredColimits (forget₂ RingCat SemiRingCat.{u})
-    where preserves_filtered_colimits {J hJ1 _} := letI : Category J := hJ1
+    PreservesFilteredColimits (forget₂ RingCat SemiRingCat.{u}) where
+  preserves_filtered_colimits {J hJ1 _} :=
+    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
@@ -386,8 +379,9 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.colimit_cocone_is_colimit CommRingCat.FilteredColimits.colimitCoconeIsColimit
 
 instance forget₂RingPreservesFilteredColimits :
-    PreservesFilteredColimits (forget₂ CommRingCat RingCat.{u})
-    where preserves_filtered_colimits {J hJ1 _} := letI : Category J := hJ1
+    PreservesFilteredColimits (forget₂ CommRingCat RingCat.{u}) where
+  preserves_filtered_colimits {J hJ1 _} :=
+    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
           (RingCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommRingCat RingCat.{u})) }

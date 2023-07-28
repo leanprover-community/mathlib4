@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
-
-! This file was ported from Lean 3 source module combinatorics.young.young_diagram
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
+
+#align_import combinatorics.young.young_diagram from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Young diagrams
@@ -330,7 +327,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
   by_contra' h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
-  rw [← mem_iff_lt_rowLen] at h_lt⊢
+  rw [← mem_iff_lt_rowLen] at h_lt ⊢
   exact μ.up_left_mem hi (by rfl) h_lt
 #align young_diagram.row_len_anti YoungDiagram.rowLen_anti
 
@@ -479,7 +476,7 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
   cells := YoungDiagram.cellsOfRowLens w
   isLowerSet := by
     rintro ⟨i2, j2⟩ ⟨i1, j1⟩ ⟨hi : i1 ≤ i2, hj : j1 ≤ j2⟩ hcell
-    rw [Finset.mem_coe, YoungDiagram.mem_cellsOfRowLens] at hcell⊢
+    rw [Finset.mem_coe, YoungDiagram.mem_cellsOfRowLens] at hcell ⊢
     obtain ⟨h1, h2⟩ := hcell
     refine' ⟨hi.trans_lt h1, _⟩
     calc

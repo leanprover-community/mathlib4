@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module order.succ_pred.relation
-! leanprover-community/mathlib commit 9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.SuccPred.Basic
+
+#align_import order.succ_pred.relation from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
 
 /-!
 # Relations on types with a `SuccOrder`

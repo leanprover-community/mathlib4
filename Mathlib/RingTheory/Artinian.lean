@@ -2,15 +2,12 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.artinian
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Nakayama
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Tactic.RSuffices
+
+#align_import ring_theory.artinian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
 /-!
 # Artinian rings and modules
@@ -234,7 +231,7 @@ theorem exists_endomorphism_iterate_ker_sup_range_eq_top (f : M →ₗ[R] M) :
   use x - (f ^ (n + 1)) y
   constructor
   · rw [LinearMap.mem_ker, LinearMap.map_sub, ← hy, sub_eq_zero, pow_add]
-    simp [iterate_add_apply]
+    simp [pow_add]
   · use (f ^ (n + 1)) y
     simp
 #align is_artinian.exists_endomorphism_iterate_ker_sup_range_eq_top IsArtinian.exists_endomorphism_iterate_ker_sup_range_eq_top
@@ -287,7 +284,7 @@ theorem range_smul_pow_stabilizes (r : R) :
   monotone_stabilizes
     ⟨fun n => LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ =>
       ⟨r ^ (m - n) • y, by
-        dsimp at hy⊢
+        dsimp at hy ⊢
         rw [← smul_assoc, smul_eq_mul, ← pow_add, ← hy, add_tsub_cancel_of_le h]⟩⟩
 #align is_artinian.range_smul_pow_stabilizes IsArtinian.range_smul_pow_stabilizes
 
@@ -333,7 +330,7 @@ theorem isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Mo
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
 theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M := by
-  rw [isArtinian_iff_wellFounded] at h⊢
+  rw [isArtinian_iff_wellFounded] at h ⊢
   refine' (Submodule.restrictScalarsEmbedding R S M).wellFounded h
 #align is_artinian_of_tower isArtinian_of_tower
 
@@ -344,8 +341,8 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
   haveI := Classical.decEq R
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
   refine' @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ _ _ isArtinian_finsupp
-  . exact Finsupp.total (↑s : Set M) N R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
-  . rw [← LinearMap.range_eq_top, eq_top_iff,
+  · exact Finsupp.total (↑s : Set M) N R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
+  · rw [← LinearMap.range_eq_top, eq_top_iff,
        ← map_le_map_iff_of_injective (show Injective (Submodule.subtype N)
          from Subtype.val_injective), Submodule.map_top, range_subtype,
          ← Submodule.map_top, ← Submodule.map_comp, Submodule.map_top]
@@ -370,7 +367,7 @@ theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M]
 
 theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F} [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
-  rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H⊢
+  rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H ⊢
   exact (Ideal.orderEmbeddingOfSurjective f hf).wellFounded H
 #align function.surjective.is_artinian_ring Function.Surjective.isArtinianRing
 

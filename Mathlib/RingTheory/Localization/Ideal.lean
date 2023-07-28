@@ -2,13 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-! This file was ported from Lean 3 source module ring_theory.localization.ideal
-! leanprover-community/mathlib commit e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import ring_theory.localization.ideal from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
 /-!
 # Ideals in localizations of commutative rings
@@ -70,7 +68,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
 theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
-    rw [← hx] at hJ⊢
+    rw [← hx] at hJ ⊢
     exact
       Ideal.mul_mem_right _ _
         (Ideal.mem_map_of_mem _
