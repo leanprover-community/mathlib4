@@ -838,6 +838,12 @@ theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n :
   exact Finsupp.support_single_subset
 #align polynomial.support_monomial' Polynomial.support_monomial'
 
+theorem support_C {a : R} (h : a ≠ 0) : (C a).support = singleton 0 :=
+  support_monomial 0 h
+
+theorem support_C' (a : R) : (C a).support ⊆ singleton 0 :=
+  support_monomial' 0 a
+
 theorem support_C_mul_X {c : R} (h : c ≠ 0) : Polynomial.support (C c * X) = singleton 1 := by
   rw [C_mul_X_eq_monomial, support_monomial 1 h]
 #align polynomial.support_C_mul_X Polynomial.support_C_mul_X
