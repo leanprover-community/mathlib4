@@ -2,16 +2,13 @@
 Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
-
-! This file was ported from Lean 3 source module number_theory.number_field.units
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.RootsOfUnity.Basic
+
+#align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Units of a number field
@@ -184,92 +181,93 @@ variable {K}
 /-- The distinguished infinite place. -/
 def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 
-variable (K)
-
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def log_embedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-{ toFun := fun x w => mult K w * Real.log (w.val (Additive.toMul x))
+{ toFun := fun x w => mult w.val * Real.log (w.val (Additive.toMul x))
   map_zero' := by simp; rfl
   map_add' := by
     intro _ _
-    simp [ne_eq, toMul_add, map_mul, map_eq_zero, ne_zero, Real.log_mul, mul_add]
+    simp only [ne_eq, toMul_add, map_mul, _root_.map_mul, map_eq_zero, ne_zero, not_false_eq_true,
+      Real.log_mul, mul_add]
     rfl }
 
 @[simp]
 theorem log_embedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :
-    (log_embedding K x) w = mult K w * Real.log (w.val x) := rfl
+    (log_embedding x) w = mult w.val * Real.log (w.val x) := rfl
 
 theorem log_embedding_sum_component (x : (𝓞 K)ˣ) :
-    ∑ w, log_embedding K x w = - mult K w₀ * Real.log (w₀ (x : K)) := by
-  have h := congrArg Real.log (prod_mult_eq_abs_norm K x)
+    ∑ w, log_embedding x w = - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
+  have h := congrArg Real.log (prod_eq_abs_norm (x : K))
   rw [show |(Algebra.norm ℚ) (x : K)| = 1 from isUnit_iff_norm.mp x.isUnit, Rat.cast_one,
     Real.log_one, Real.log_prod] at h
   · simp_rw [Real.log_pow] at h
     rw [← Finset.insert_erase (Finset.mem_univ w₀), Finset.sum_insert (Finset.not_mem_erase w₀
       Finset.univ), add_comm, add_eq_zero_iff_eq_neg] at h
     convert h using 1
-    · refine (Finset.sum_subtype _ (fun w => ?_) (fun w => (mult K w) * (Real.log (w ↑x)))).symm
+    · refine (Finset.sum_subtype _ (fun w => ?_) (fun w => (mult w) * (Real.log (w (x : K))))).symm
       exact ⟨Finset.ne_of_mem_erase, fun h => Finset.mem_erase_of_ne_of_mem h (Finset.mem_univ w)⟩
     · norm_num
   · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (ne_zero K x))
 
 theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
-    mult K w * Real.log (w x) = 0 ↔ w.val x = 1 := by
+    mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
-  · have : 0 ≤ w.val x := AbsoluteValue.nonneg _ _
+  · have : 0 ≤ w x := map_nonneg _ _
     linarith
   · simp only [ne_eq, map_eq_zero, ne_zero K x]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
 
 theorem log_embedding_eq_zero_iff (x : (𝓞 K)ˣ) :
-    log_embedding K x = 0 ↔ x ∈ torsion K := by
+    log_embedding x = 0 ↔ x ∈ torsion K := by
   rw [mem_torsion]
   refine ⟨fun h w => ?_, fun h => ?_⟩
   · by_cases hw : w = w₀
-    · suffices - mult K w₀ * Real.log (w₀ (x : K)) = 0 by
+    · suffices - mult w₀ * Real.log (w₀ (x : K)) = 0 by
         rw [neg_mul, neg_eq_zero, ← hw] at this
-        exact (mult_log_place_eq_zero K).mp this
+        exact mult_log_place_eq_zero.mp this
       rw [← log_embedding_sum_component, Finset.sum_eq_zero]
       exact fun w _ => congrFun h w
-    · exact (mult_log_place_eq_zero K).mp (congrFun h ⟨w, hw⟩)
+    · exact mult_log_place_eq_zero.mp (congrFun h ⟨w, hw⟩)
   · ext w
     rw [log_embedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
 
-/-- The lattice formed by the image of the logarithmic embedding. -/
-noncomputable def unit_lattice : AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-  AddSubgroup.map (log_embedding K) ⊤
-
-theorem log_embedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖log_embedding K x‖ ≤ r)
-    (w : {w : InfinitePlace K // w ≠ w₀}) : |log_embedding K x w| ≤ r := by
+theorem log_embedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖log_embedding x‖ ≤ r)
+    (w : {w : InfinitePlace K // w ≠ w₀}) : |log_embedding x w| ≤ r := by
   lift r to NNReal using hr
   simp_rw [Pi.norm_def, NNReal.coe_le_coe, Finset.sup_le_iff, ← NNReal.coe_le_coe] at h
   exact h w (Finset.mem_univ _)
 
-theorem log_le_of_log_embedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖log_embedding K x‖ ≤ r)
+theorem log_le_of_log_embedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖log_embedding x‖ ≤ r)
     (w : InfinitePlace K) : |Real.log (w x)| ≤ (Fintype.card (InfinitePlace K)) * r := by
-  have tool : ∀ x : ℝ, 0 ≤ x → x ≤ mult K w * x := fun x hx => by
+  have tool : ∀ x : ℝ, 0 ≤ x → x ≤ mult w * x := fun x hx => by
       nth_rw 1 [← one_mul x]
       refine mul_le_mul ?_ le_rfl hx ?_
       all_goals { rw [mult]; split_ifs <;> norm_num }
   by_cases hw : w = w₀
-  · have hyp := congrArg (‖·‖) (log_embedding_sum_component K x).symm
+  · have hyp := congrArg (‖·‖) (log_embedding_sum_component x).symm
     replace hyp := (le_of_eq hyp).trans (norm_sum_le _ _)
     simp_rw [norm_mul, norm_neg, Real.norm_eq_abs, Nat.abs_cast] at hyp
     refine (le_trans ?_ hyp).trans ?_
     · rw [← hw]
       exact tool _ (abs_nonneg _)
     · refine (Finset.sum_le_card_nsmul Finset.univ _  _
-        (fun w _ => log_embedding_component_le K hr h w)).trans ?_
+        (fun w _ => log_embedding_component_le hr h w)).trans ?_
       rw [nsmul_eq_mul]
       refine mul_le_mul ?_ le_rfl hr (Fintype.card (InfinitePlace K)).cast_nonneg
       simp [Finset.card_univ]
-  · have hyp := log_embedding_component_le K hr h ⟨w, hw⟩
+  · have hyp := log_embedding_component_le hr h ⟨w, hw⟩
     rw [log_embedding_component, abs_mul, Nat.abs_cast] at hyp
     refine (le_trans ?_ hyp).trans ?_
     · exact tool _ (abs_nonneg _)
     · nth_rw 1 [← one_mul r]
       exact mul_le_mul (Nat.one_le_cast.mpr Fintype.card_pos) (le_of_eq rfl) hr (Nat.cast_nonneg _)
+
+variable (K)
+
+/-- The lattice formed by the image of the logarithmic embedding. -/
+noncomputable def unit_lattice : AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+  AddSubgroup.map log_embedding ⊤
 
 theorem unit_lattice_inter_ball_finite (r : ℝ) :
     ((unit_lattice K : Set ({ w : InfinitePlace K // w ≠ w₀} → ℝ)) ∩
@@ -280,12 +278,12 @@ theorem unit_lattice_inter_ball_finite (r : ℝ) :
     exact Set.inter_empty _
   · suffices Set.Finite {x : (𝓞 K)ˣ | IsIntegral ℤ (x : K) ∧
         ∀ (φ : K →+* ℂ), ‖φ x‖ ≤ Real.exp ((Fintype.card (InfinitePlace K)) * r)} by
-      refine (Set.Finite.image (log_embedding K) this).subset ?_
+      refine (Set.Finite.image log_embedding this).subset ?_
       rintro _ ⟨⟨x, ⟨_, rfl⟩⟩, hx⟩
       refine ⟨x, ⟨x.val.prop, (le_iff_le _ _).mp (fun w => (Real.log_le_iff_le_exp ?_).mp ?_)⟩, rfl⟩
       · exact pos_iff.mpr (ne_zero K x)
       · rw [mem_closedBall_zero_iff] at hx
-        exact (le_abs_self _).trans (log_le_of_log_embedding_le K hr hx w)
+        exact (le_abs_self _).trans (log_le_of_log_embedding_le hr hx w)
     refine Set.Finite.of_finite_image ?_ ((coe_to_field_injective K).injOn _)
     refine (Embeddings.finite_of_norm_le K ℂ
         (Real.exp ((Fintype.card (InfinitePlace K)) * r))).subset ?_
@@ -319,12 +317,12 @@ theorem seq.next {x : 𝓞 K} (hx : x ≠ 0) :
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_coe_nat]
       calc
-        _ = ∏ w : InfinitePlace K, w y ^ mult K w   := (prod_mult_eq_abs_norm K y).symm
-        _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult K w   := ?_
-        _ ≤ (B : ℝ)      := ?_
+        _ = ∏ w : InfinitePlace K, w y ^ mult w       := (prod_eq_abs_norm (y : K)).symm
+        _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := ?_
+        _ ≤ (B : ℝ)                                   := ?_
       · refine Finset.prod_le_prod ?_ ?_
         exact fun _ _ => pow_nonneg (by positivity) _
-        exact fun w _ => pow_le_pow_of_le_left (by positivity) (le_of_lt (h_yle w)) (mult K w)
+        exact fun w _ => pow_le_pow_of_le_left (by positivity) (le_of_lt (h_yle w)) (mult w)
       · simp_rw [← coe_pow, ← NNReal.coe_prod]
         exact le_of_eq (congrArg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
@@ -421,7 +419,7 @@ theorem unit_lattice_span_eq_top :
   -- The standard basis
   let B := Pi.basisFun ℝ {w : InfinitePlace K // w ≠ w₀}
   -- The family of units constructed above
-  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } => log_embedding K ((exists_unit K w).choose)
+  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } => log_embedding ((exists_unit K w).choose)
   -- To prove the result, it is enough to prove that the family `v` is linearly independent
   suffices B.det v ≠ 0 by
     rw [← isUnit_iff_ne_zero, ← is_basis_iff_det] at this

@@ -2,17 +2,14 @@
 Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
-
-! This file was ported from Lean 3 source module number_theory.number_field.canonical_embedding
-! leanprover-community/mathlib commit 60da01b41bbe4206f05d34fd70c8dd7498717a30
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Zlattice
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.Discriminant
+
+#align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
 /-!
 # Canonical embedding of a number field
@@ -56,8 +53,7 @@ theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
 variable {K}
 
 @[simp]
-theorem apply_at (φ : K →+* ℂ) (x : K) :
-    (NumberField.canonicalEmbedding K x) φ = φ x := rfl
+theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K x) φ = φ x := rfl
 
 open scoped ComplexConjugate
 
@@ -168,7 +164,8 @@ local notation "E" K =>
 
 /-- The canonical embedding of a number field `K` of signature `(r₁, r₂)` into `ℝ^r₁ × ℂ^r₂`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (E K) :=
-  RingHom.prod (Pi.ringHom fun w => w.prop.embedding) (Pi.ringHom fun w => w.val.embedding)
+  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
+    (Pi.ringHom fun w => w.val.embedding)
 
 instance [NumberField K] :  Nontrivial (E K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
@@ -227,10 +224,10 @@ theorem disjoint_span_comm_map_ker [NumberField K]:
       rw [eq_comm, ← Complex.conj_eq_iff_re, canonicalEmbedding.conj_apply _ h_mem,
         ComplexEmbedding.isReal_iff.mp hφ], ← Complex.ofReal_zero]
     congr
-    rw [← ComplexEmbedding.IsReal.embedding_mk hφ, ← comm_map_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
+    rw [← embedding_mk_eq_of_isReal hφ, ← comm_map_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
     exact congrFun (congrArg (fun x => x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
   · have := congrFun (congrArg (fun x => x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
-    cases ComplexEmbedding.embedding_mk φ with
+    cases embedding_mk_eq φ with
     | inl h => rwa [← h, ← comm_map_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
     | inr h =>
         apply RingHom.injective (starRingEnd ℂ)
@@ -293,15 +290,15 @@ def convex_body : Set (E K) :=
 
 theorem convex_body_mem {x : K} :
     mixedEmbedding K x ∈ (convex_body K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
-  simp only [mixedEmbedding, RingHom.prod_apply, convex_body, Set.mem_prod, Set.mem_pi,
-    Set.mem_univ, Pi.ringHom_apply, mem_ball, dist_zero_right, Real.norm_eq_abs,
-    IsReal.abs_embedding_apply, forall_true_left, Subtype.forall, Complex.norm_eq_abs,
-    abs_embedding, ← ball_or_left, ← not_isReal_iff_isComplex, em, forall_true_left]
+  simp_rw [mixedEmbedding, RingHom.prod_apply, convex_body, Set.mem_prod, Set.mem_pi,
+    Set.mem_univ, forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
+    embedding_of_isReal_apply, Subtype.forall, ← ball_or_left, ← not_isReal_iff_isComplex, em,
+    forall_true_left, norm_embedding_eq]
 
 theorem convex_body_symmetric (x : E K) (hx : x ∈ (convex_body K f)) :
     -x ∈ (convex_body K f) := by
   simp only [convex_body, Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
-    mem_ball, dist_zero_right, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
+    mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
     Prod.snd_neg, Complex.norm_eq_abs, hx] at hx ⊢
   exact hx
 
@@ -334,7 +331,7 @@ theorem constant_factor_lt_top : (constant_factor K) < ⊤ := by
 
 set_option maxHeartbeats 400000 in
 theorem convex_body_volume :
-    volume (convex_body K f) = (constant_factor K) * ∏ w, (f w) ^ (mult K w) := by
+    volume (convex_body K f) = (constant_factor K) * ∏ w, (f w) ^ (mult w) := by
   rw [volume_eq_prod, convex_body, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi]
   conv_lhs =>
     congr; congr; next => skip
@@ -360,16 +357,15 @@ theorem convex_body_volume :
     congr; ext
     exact ⟨fun _ =>  Finset.mem_subtype.mpr (Finset.mem_univ _), fun _ => Finset.mem_univ _⟩
 
-
 variable {f}
 
 /-- This is a technical result: quite often, we want to impose conditions at all infinite places
 but one and choose the value at the remaining place so that we can apply
 `exists_ne_zero_mem_ring_of_integers_lt`. -/
 theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁→ f w ≠ 0) :
-    ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult K w = B := by
-  let S := ∏ w in Finset.univ.erase w₁, (f w) ^ mult K w
-  refine ⟨Function.update f w₁ ((B * S⁻¹) ^ (mult K w₁ : ℝ)⁻¹), ?_, ?_⟩
+    ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult w = B := by
+  let S := ∏ w in Finset.univ.erase w₁, (f w) ^ mult w
+  refine ⟨Function.update f w₁ ((B * S⁻¹) ^ (mult w₁ : ℝ)⁻¹), ?_, ?_⟩
   · exact fun w hw => Function.update_noteq hw _ f
   · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_same,
       Finset.prod_congr rfl fun w hw => by rw [Function.update_noteq (Finset.ne_of_mem_erase hw)],

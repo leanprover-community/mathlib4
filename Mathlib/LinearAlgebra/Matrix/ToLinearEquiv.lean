@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.to_linear_equiv
-! leanprover-community/mathlib commit e42cfdb03b7902f8787a1eb552cb8f77766b45b9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
+
+#align_import linear_algebra.matrix.to_linear_equiv from "leanprover-community/mathlib"@"e42cfdb03b7902f8787a1eb552cb8f77766b45b9"
 
 /-!
 # Matrices and linear equivalences

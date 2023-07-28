@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.terminal
-! leanprover-community/mathlib commit bbe25d4d92565a5fd773e52e041a90387eee3c93
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.shapes.terminal from "leanprover-community/mathlib"@"bbe25d4d92565a5fd773e52e041a90387eee3c93"
 
 /-!
 # Preserving terminal object

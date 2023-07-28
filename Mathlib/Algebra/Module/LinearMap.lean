@@ -3,17 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module algebra.module.linear_map
-! leanprover-community/mathlib commit cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Ring.CompTypeclasses
+
+#align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
 /-!
 # (Semi)linear maps
@@ -402,7 +399,7 @@ we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be
 `R` does not support negation.
 -/
 class CompatibleSMul (R S : Type _) [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
-  [Module S M₂] where
+  [Module S M₂] : Prop where
   /-- Scalar multiplication by `R` of `M` can be moved through linear maps. -/
   map_smul : ∀ (fₗ : M →ₗ[S] M₂) (c : R) (x : M), fₗ (c • x) = c • fₗ x
 #align linear_map.compatible_smul LinearMap.CompatibleSMul
@@ -1043,8 +1040,7 @@ theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g :=
   rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
-instance _root_.Module.End.monoid : Monoid (Module.End R M)
-    where
+instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
   mul_assoc f g h := LinearMap.ext fun x ↦ rfl

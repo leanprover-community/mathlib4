@@ -2,16 +2,13 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.language
-! leanprover-community/mathlib commit a239cd3e7ac2c7cde36c913808f9d40c411344f6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
+
+#align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 
 /-!
 # Languages

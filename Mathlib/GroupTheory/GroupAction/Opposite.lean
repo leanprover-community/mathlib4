@@ -2,14 +2,11 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.group_action.opposite
-! leanprover-community/mathlib commit 4330aae21f538b862f8aead371cfb6ee556398f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.opposite from "leanprover-community/mathlib"@"4330aae21f538b862f8aead371cfb6ee556398f1"
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`

@@ -2,15 +2,12 @@
 Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
-
-! This file was ported from Lean 3 source module algebra.module.zlattice
-! leanprover-community/mathlib commit a3e83f0fa4391c8740f7d773a7a9b74e311ae2a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.RingTheory.Localization.Module
+
+#align_import algebra.module.zlattice from "leanprover-community/mathlib"@"a3e83f0fa4391c8740f7d773a7a9b74e311ae2a3"
 
 /-!
 # ℤ-lattices
