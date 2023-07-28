@@ -147,7 +147,6 @@ theorem Basis.localizationLocalization_span {ι : Type _} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
       Submodule.map (IsScalarTower.toAlgHom R A Aₛ) ⊤ := by
   convert congrArg (Submodule.map (IsScalarTower.toAlgHom R A Aₛ)) b.span_eq
-  change _ = map (AlgHom.toLinearMap _) _
   rw [Submodule.map_span]
   congr
   ext
