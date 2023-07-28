@@ -263,12 +263,16 @@ def declNameInThm (thm tag : Name) : CommandElabM Unit := do
       if (! tag ∈ listBinderNames) then
         throwError m!"Did the hypothesis\n\n  `{tag}`\n\nof lemma" ++ tail
 
+/--  `CDtags` is the list containing the three tags that `compute_degree` uses to report errors
+relating to the degree-computations. -/
+private def CDtags : List String := ["deg_eq_deg", "coeff_eq_deg", "coeff_ne_zero"]
+
 /-! Check that both theorems
 `natDegree_eq_of_le_of_coeff_ne_zero'` and `degree_eq_of_le_of_coeff_ne_zero'` contain hypotheses
 called `exp_deg_eq_deg` and `natDeg_eq_coeff`. -/
 run_cmd
   for thm in [``natDegree_eq_of_le_of_coeff_ne_zero', ``degree_eq_of_le_of_coeff_ne_zero'] do
-  for tag in [`deg_eq_deg, `coeff_eq_deg, `coeff_ne_zero] do
+  for tag in CDtags do
     declNameInThm thm tag
 
 /-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
@@ -524,7 +528,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
       if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getTail}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       let currTag := (← gls[0]!.getTag).getHead
-      let tags := (["deg_eq_deg", "coeff_eq_deg", "coeff_ne_zero"].map (.str currTag))
+      let tags := CDtags.map (.str currTag)
       let degMVs := tags.map ((← getMCtx).userNames.find? ·)
       while (! gls == []) do (gls, static) := ← recOrd gls static
       let rfled := ← try_rfl static
