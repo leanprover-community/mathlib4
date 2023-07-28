@@ -322,33 +322,26 @@ theorem Integrable.exists_boundedContinuous_integral_sub_le [μ.WeaklyRegular] {
 
 namespace Lp
 
-variable (E)
+variable (E μ)
 
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
-theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)]
-    (hp : p ≠ ∞) [μ.WeaklyRegular] : (boundedContinuousFunction E p μ).topologicalClosure = ⊤ := by
-  rw [AddSubgroup.eq_top_iff']
-  intro f
-  refine' mem_closure_iff_frequently.mpr _
-  rw [Metric.nhds_basis_closedBall.frequently_iff]
-  intro ε hε
-  have A : ENNReal.ofReal ε ≠ 0 := by simp only [Ne.def, ENNReal.ofReal_eq_zero, not_le, hε]
+theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fact (1 ≤ p)]
+    (hp : p ≠ ∞) [μ.WeaklyRegular] :
+    Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := fun f ↦ by
+  refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
   obtain ⟨g, hg, g_mem⟩ :
-      ∃ g : α →ᵇ E, snorm ((f : α → E) - (g : α → E)) p μ ≤ ENNReal.ofReal ε ∧ Memℒp g p μ :=
-    (Lp.memℒp f).exists_boundedContinuous_snorm_sub_le hp A
-  refine' ⟨g_mem.toLp _, _, ⟨g, rfl⟩⟩
-  simp only [dist_eq_norm, Metric.mem_closedBall']
-  rw [Lp.norm_def]
-  -- porting note: original proof started with:
-  -- convert ENNReal.toReal_le_of_le_ofReal hε.le hg using 2
-  -- the `convert` was completely borked and timed out
-  have key : snorm ((f : α → E) - (g : α → E)) p μ = snorm (f - Memℒp.toLp (↑g) g_mem) p μ := by
-    apply snorm_congr_ae
-    filter_upwards [coeFn_sub f (g_mem.toLp g), g_mem.coeFn_toLp] with x hx h'x
-    simp only [hx, Pi.sub_apply, sub_right_inj, h'x]
-  simpa only [key] using ENNReal.toReal_le_of_le_ofReal hε.le hg
+      ∃ g : α →ᵇ E, snorm ((f : α → E) - (g : α → E)) p μ ≤ ε ∧ Memℒp g p μ :=
+    (Lp.memℒp f).exists_boundedContinuous_snorm_sub_le hp hε.ne'
+  refine ⟨g_mem.toLp _, ⟨g, rfl⟩, ?_⟩
+  rwa [EMetric.mem_closedBall', ← Lp.toLp_coeFn f (Lp.memℒp f), Lp.edist_toLp_toLp]
+
+/-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
+theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]
+    [Fact (1 ≤ p)] (hp : p ≠ ∞) [μ.WeaklyRegular] :
+    (boundedContinuousFunction E p μ).topologicalClosure = ⊤ :=
+  SetLike.ext' <| (boundedContinuousFunction_dense E μ hp).closure_eq
 set_option linter.uppercaseLean3 false in
-#align measure_theory.Lp.bounded_continuous_function_dense MeasureTheory.Lp.boundedContinuousFunction_dense
+#align measure_theory.Lp.bounded_continuous_function_dense MeasureTheory.Lp.boundedContinuousFunction_topologicalClosure
 
 end Lp
 
@@ -365,10 +358,8 @@ namespace BoundedContinuousFunction
 theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] :
     DenseRange (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ) := by
   haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-  rw [denseRange_iff_closure_range]
-  suffices (LinearMap.range (toLp p μ 𝕜 : _ →L[𝕜] Lp E p μ)).toAddSubgroup.topologicalClosure = ⊤
-    by exact congr_arg ((↑) : AddSubgroup (Lp E p μ) → Set (Lp E p μ)) this
-  simpa [range_toLp p μ] using MeasureTheory.Lp.boundedContinuousFunction_dense E hp
+  simpa only [← range_toLp p μ (𝕜 := 𝕜)]
+    using MeasureTheory.Lp.boundedContinuousFunction_dense E μ hp
 set_option linter.uppercaseLean3 false in
 #align bounded_continuous_function.to_Lp_dense_range BoundedContinuousFunction.toLp_denseRange
 
