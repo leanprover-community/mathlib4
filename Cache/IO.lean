@@ -277,7 +277,7 @@ def isPathFromMathlib (path : FilePath) : Bool :=
 
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
-  let hashMap ← hashMap.filter true
+  let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
