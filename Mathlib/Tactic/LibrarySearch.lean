@@ -249,6 +249,8 @@ syntax (name := exact?') "exact?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
 syntax (name := exact?!) "exact?!" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
+syntax (name := exact!?) "exact!?" (config)? (simpArgs)?
+  (" using " (colGt term),+)? : tactic
 
 syntax (name := apply?') "apply?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
