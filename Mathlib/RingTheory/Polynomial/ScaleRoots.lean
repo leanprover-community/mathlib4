@@ -16,7 +16,7 @@ be the polynomial with root `r * s` for each root `r` of `p` and proves some bas
 -/
 
 
-variable {A K R S : Type _}
+variable {R S A K : Type _}
 
 namespace Polynomial
 
