@@ -431,30 +431,28 @@ noncomputable instance : IsROrC ℂ where
 noncomputable instance toStarOrderedRing : StarOrderedRing ℂ := by
   -- Bad quality proof but lets see if it works
   apply StarOrderedRing.ofNonnegIff'
-  intros x y hxy z
-  unfold LE.le Preorder.toLE PartialOrder.toPreorder IsROrC.toPartialOrder instIsROrCComplex
-  simpa [add_re, add_le_add_iff_left, add_im, add_right_inj] using hxy
+  · intros x y hxy z
+    simpa [le_def, add_re, add_le_add_iff_left, add_im, add_right_inj] using hxy
+  -- intro x
+  -- simp only [Complex.star_def, ← Complex.normSq_eq_conj_mul_self]
+  -- constructor
+  -- · refine fun hx => (
+  --   Exists.intro (Real.sqrt (x.re))
+  --   (by ext; all_goals (simp only [normSq_ofReal, ofReal_mul, mul_re, mul_im, ofReal_re, ofReal_im,
+  --     mul_zero, sub_zero, zero_mul, (Real.mul_self_sqrt hx.1), add_zero, zero_im, hx.2.symm] )))
+  -- · simp_rw [Complex.ext_iff, le_def, ofReal_re, ofReal_im, zero_im, zero_re]
+  --   intro h
+  --   cases' h with y hy
+  --   rw [hy.1]
+  --   refine ⟨ normSq_nonneg _, hy.2.symm⟩
   intro x
-  simp only [Complex.star_def, ← Complex.normSq_eq_conj_mul_self]
-  constructor
-  intro hx
-  use Real.sqrt (x.re)
-  simp only [normSq_ofReal]
-  ext
-  simp only [ofReal_mul, mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero]
-  apply (Real.mul_self_sqrt hx.1).symm
-  simp only [ofReal_mul, mul_im, ofReal_re, ofReal_im, mul_zero, zero_mul, add_zero]
-  exact hx.2.symm
-  intro hz
-  cases' hz with y hy
-  rw [Complex.ext_iff] at hy
-  simp only [ofReal_re, ofReal_im] at hy
-  constructor
-  simp only [zero_re]
-  rw [hy.1]
-  apply normSq_nonneg
-  simp only [zero_im]
-  exact hy.2.symm
+  simp_rw [Complex.star_def, ← Complex.normSq_eq_conj_mul_self, Complex.ext_iff, le_def,
+    ofReal_re, ofReal_im, zero_im, zero_re, exists_and_right, eq_comm, and_congr_left_iff]
+  exact fun _ => ⟨
+    fun hl => Exists.intro (Real.sqrt x.re) (by simp only [normSq_ofReal, Real.mul_self_sqrt hl]),
+    fun h => Exists.casesOn h fun w => (fun h1 =>
+      Eq.mpr (h1 ▸ Eq.refl (0 ≤ x.re)) (normSq_nonneg w))
+  ⟩
 
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
