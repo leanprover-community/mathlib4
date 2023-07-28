@@ -5,6 +5,8 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Order.Closure
 
 #align_import algebra.order.lattice_group from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
@@ -62,9 +64,21 @@ lattice, ordered, group
 
 -- Needed for squares
 -- Needed for squares
-universe u
+universe u v
 
-variable {α : Type u} [Lattice α] [CommGroup α]
+variable {α : Type u} {β : Type v}
+
+-- A linearly ordered additive commutative group is a lattice ordered commutative group
+
+@[to_additive] -- see Note [lower instance priority]
+instance LinearOrderedCommGroup.to_covariant_class (α : Type u)
+  [LinearOrderedCommGroup α] : CovariantClass α α (· * · ) (· ≤ ·) :=
+{ elim := fun a b c bc => OrderedCommGroup.mul_le_mul_left _ _ bc a }
+
+
+section
+
+variable [Lattice α] [CommGroup α]
 
 -- Special case of Bourbaki A.VI.9 (1)
 -- c + (a ⊔ b) = (c + a) ⊔ (c + b)
@@ -120,7 +134,11 @@ theorem inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a
 #align inf_mul_sup inf_mul_sup
 #align inf_add_sup inf_add_sup
 
+end
+
 namespace LatticeOrderedCommGroup
+
+variable [Lattice α] [CommGroup α]
 
 -- see Note [lower instance priority]
 /--
@@ -571,11 +589,11 @@ theorem mabs_mul_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : |a
 
 -- |a - b| = |b - a|
 @[to_additive]
-theorem abs_inv_comm (a b : α) : |a / b| = |b / a| := by
+theorem abs_div_comm (a b : α) : |a / b| = |b / a| := by
   dsimp only [Abs.abs]
   rw [inv_div a b, ← inv_inv (a / b), inv_div, sup_comm]
-#align lattice_ordered_comm_group.abs_inv_comm LatticeOrderedCommGroup.abs_inv_comm
-#align lattice_ordered_comm_group.abs_neg_comm LatticeOrderedCommGroup.abs_neg_comm
+#align lattice_ordered_comm_group.abs_inv_comm LatticeOrderedCommGroup.abs_div_comm
+#align lattice_ordered_comm_group.abs_neg_comm LatticeOrderedCommGroup.abs_sub_comm
 
 -- | |a| - |b| | ≤ |a - b|
 @[to_additive]
@@ -586,7 +604,7 @@ theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
   · apply div_le_iff_le_mul.2
     convert mabs_mul_le (a / b) b
     rw [div_mul_cancel']
-  · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, abs_inv_comm]
+  · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, abs_div_comm]
     convert mabs_mul_le (b / a) a
     · rw [div_mul_cancel']
 #align lattice_ordered_comm_group.abs_abs_div_abs_le LatticeOrderedCommGroup.abs_abs_div_abs_le
@@ -594,9 +612,43 @@ theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
 
 end LatticeOrderedCommGroup
 
+section invertible
+
+variable (α)
+variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) :
+  x ⊓ y = (⅟2 : α) • (x + y - |y - x|) :=
+by rw [←LatticeOrderedCommGroup.two_inf_eq_add_sub_abs_sub x y, two_smul, ←two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+lemma sup_eq_half_smul_add_add_abs_sub (x y : β) :
+  x ⊔ y = (⅟2 : α) • (x + y + |y - x|) :=
+by rw [←LatticeOrderedCommGroup.two_sup_eq_add_add_abs_sub x y, two_smul, ←two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+end invertible
+
+section DivisionSemiring
+
+variable (α)
+variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact inf_eq_half_smul_add_sub_abs_sub α x y
+
+lemma sup_eq_half_smul_add_add_abs_sub' (x y : β) : x ⊔ y = (2⁻¹ : α) • (x + y + |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact sup_eq_half_smul_add_add_abs_sub α x y
+
+end DivisionSemiring
+
 namespace LatticeOrderedAddCommGroup
 
-variable {β : Type u} [Lattice β] [AddCommGroup β]
+variable [Lattice β] [AddCommGroup β]
 
 section solid
 
