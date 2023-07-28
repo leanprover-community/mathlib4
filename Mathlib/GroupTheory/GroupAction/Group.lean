@@ -265,17 +265,15 @@ def DistribMulAction.toAddAut : α →* AddAut β where
 #align distrib_mul_action.to_add_aut DistribMulAction.toAddAut
 #align distrib_mul_action.to_add_aut_apply DistribMulAction.toAddAut_apply
 
-
 /-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
 `AddMonoid` on which it acts distributively.
-This is a stronger version of `DistribMulAction.toAddMonoid_hom`. -/
+This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
 def DistribMulAction.toAddEquiv₀ {α : Type _} (β : Type _) [GroupWithZero α] [AddMonoid β]
-  [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β where
-    toFun := fun b ↦ x⁻¹ • b
-    invFun := fun b ↦ x • b
-    left_inv := fun b ↦ smul_inv_smul₀ hx b
-    right_inv := fun b ↦ inv_smul_smul₀ hx b
-    map_add' := fun _ _ ↦ smul_add _ _ _
+    [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
+  { DistribMulAction.toAddMonoidHom β x with
+    invFun := fun b ↦ x⁻¹ • b
+    left_inv := fun b ↦ inv_smul_smul₀ hx b
+    right_inv := fun b ↦ smul_inv_smul₀ hx b }
 
 variable {α β}
 

@@ -1321,28 +1321,8 @@ lemma tsum_const_smul'' {γ : Type _} [DivisionRing γ] [Module γ α] [Continuo
   · simp [hg]
   let mul_g : α ≃+ α := DistribMulAction.toAddEquiv₀ α g hg
   apply tsum_eq_zero_of_not_summable
-  sorry
-  -- convert (not_iff_not.mpr (@Summable.map_iff_of_equiv α β α _ _ f _ _ ?_ ?_ ?_ ?_ ?_)).mpr hf
-  -- · sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry
-
-
-
---  change ¬ Summable (mul_g ∘ f)
---  have := @Summable.map_iff_of_equiv (f := f) (g := g) α _ _ _ _ ?_ ?_ ?_
-  --change ¬ Summable (mul_g ∘ f)
-  --rwa [Summable.map_iff_of_equiv _]
-
-
-
-
---   change ¬ summable (mul_g ∘ f),
---   rwa summable.map_iff_of_equiv mul_g; apply continuous_const_smul,
-
+  change ¬ Summable (mul_g ∘ f)
+  rwa [Summable.map_iff_of_equiv] <;> apply continuous_const_smul
 
 end ConstSmul
 
