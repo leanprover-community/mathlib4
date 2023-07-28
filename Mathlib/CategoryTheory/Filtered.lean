@@ -489,6 +489,7 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
 end SpecialShapes
 
 section FilteredClosure
+
 variable {C}
 variable [IsFilteredOrEmpty C] {α : Type w} (f : α → C)
 
@@ -584,6 +585,7 @@ instance : EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) :=
 end FilteredClosure
 
 section
+
 variable {C}
 variable [IsFilteredOrEmpty C] {D : Type u₁} [Category.{v₁} D] (F : D ⥤ C)
 
@@ -944,6 +946,7 @@ end Nonempty
 
 
 section CofilteredClosure
+
 variable {C}
 variable [IsCofilteredOrEmpty C] {α : Type w} (f : α → C)
 
@@ -1027,6 +1030,7 @@ instance : EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) :=
 end CofilteredClosure
 
 section
+
 variable {C}
 variable [IsCofilteredOrEmpty C] {D : Type u₁} [Category.{v₁} D] (F : D ⥤ C)
 
