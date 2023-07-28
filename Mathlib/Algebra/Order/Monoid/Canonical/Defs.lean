@@ -103,7 +103,7 @@ class LEIffExistsMul (α : Type _) [Mul α] [LE α] : Prop where
 
 /-- A mixin class stating that an ordering interacts canonically with addition
   in the sense that `a ≤ b` iff `b = a + c` for some `c`. This is essentially the
-  definition of a `CanonicallyOrderedMonoid`, but is decoupled so that it can be
+  definition of a `CanonicallyOrderedAddMonoid`, but is decoupled so that it can be
   added as an assumption for arbitrary `Add`/`LE` typeclasses such as `CompleteLattice`,
   while avoiding diamonds. -/
 class LEIffExistsAdd (α : Type _) [Add α] [LE α] : Prop where
