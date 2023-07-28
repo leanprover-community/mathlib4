@@ -57,6 +57,7 @@ protected def lt (x y : BitVec w) : Bool :=
 protected def le (x y : BitVec w) : Bool :=
   x.val ≤ y.val
 
+
 instance : Add (BitVec w) := inferInstanceAs (Add (Fin _))
 instance : Sub (BitVec w) := inferInstanceAs (Sub (Fin _))
 instance : Mul (BitVec w) := inferInstanceAs (Mul (Fin _))
@@ -134,7 +135,8 @@ protected def append (x : BitVec w) (y : BitVec v) : BitVec (w+v) :=
 
 instance : HAppend (BitVec w) (BitVec v) (BitVec (w+v)) := ⟨BitVec.append⟩
 
-@[simp] def extract (i j : Nat) (x : BitVec w) : BitVec (i - j + 1) :=
+@[simp]
+def extract (i j : Nat) (x : BitVec w) : BitVec (i - j + 1) :=
   BitVec.ofNat _ (x.val >>> j)
 
 def repeat_ : (i : Nat) → BitVec w → BitVec (w*i)
@@ -163,13 +165,14 @@ def shrink (v : Nat) (x : BitVec w) : BitVec v :=
   else 0
 
 /-- Return the `i`-th least significant bit. -/
-@[simp] def lsbGet (x : BitVec w) (i : Nat) : Bool :=
+@[simp]
+def get (x : BitVec w) (i : Nat) : Bool :=
   x.extract i i != 0
 
 def bbT (bs : List Bool) : BitVec bs.length :=
   ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
 
-theorem lsbGet_eq_testBit {x : BitVec w} : x.lsbGet i = x.val.testBit i := by
+theorem lsbGet_eq_testBit {x : BitVec w} : x.get i = x.val.testBit i := by
   cases' h: Nat.bodd (Nat.shiftr (x.val) i)
   <;> simp [Nat.testBit, BitVec.ofNat, Fin.ofNat',
             h, Nat.mod_two_of_bodd, Nat.shiftRight, Nat.shiftRight_eq_shiftr]
