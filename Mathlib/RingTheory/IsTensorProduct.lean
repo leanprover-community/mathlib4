@@ -149,7 +149,7 @@ variable (f : M →ₗ[R] N)
 tensor product. -/
 def IsBaseChange : Prop :=
   IsTensorProduct
-    (((Algebra.ofId S <| Module.End S (M →ₗ[R] N)).toLinearMap.flip f).restrictScalars R)
+    (((Algebra.linearMap S <| Module.End S (M →ₗ[R] N)).flip f).restrictScalars R)
 #align is_base_change IsBaseChange
 
 -- Porting note: split `variable`
@@ -168,9 +168,9 @@ variable [Module R Q] [IsScalarTower R S Q]
 `M` to an `S`-module factors through `f`. -/
 noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :=
   { h.lift
-      (((Algebra.ofId S <| Module.End S (M →ₗ[R] Q)).toLinearMap.flip g).restrictScalars R) with
+      (((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R) with
     map_smul' := fun r x => by
-      let F := ((Algebra.ofId S <| Module.End S (M →ₗ[R] Q)).toLinearMap.flip g).restrictScalars R
+      let F := ((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
       apply h.inductionOn x
