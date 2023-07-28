@@ -268,3 +268,21 @@ def KaTeXHTML : Component KaTeXProps where
 - use `.render`
 -/
 
+/- ### .render -/
+/- Is this idiomatic? Also, does this render at "the right time" in general? What *is* the right time? Should we try to render all katex at once? -/
+@[widget_module]
+def KaTeXDOM : Component KaTeXProps where
+  javascript := "
+    import * as React from 'react'
+    export default function(props) {
+      const ref = React.useRef();
+
+      React.useEffect(() => {
+        katex.render(props.text, ref.current, " ++ processProps ++ ")
+      }, []);
+
+      return React.createElement('span',{ref});
+    }"
+
+#html <DeleteKaTeX />
+#html <span><AddKaTeX /><KaTeXDOM text="\\int_0^\\infty t^{z-1}e^{-t}\\;dt" /></span>
