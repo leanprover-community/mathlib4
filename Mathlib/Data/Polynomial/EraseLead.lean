@@ -245,6 +245,29 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
       exact Nat.succ_ne_zero _
 #align polynomial.induction_with_nat_degree_le Polynomial.induction_with_natDegree_le
 
+theorem coeff_mul_add_of_le_natDegree_of_eq {df dg : ℕ} {f g : R[X]}
+    (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
+    (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
+  revert hdg g
+  apply f.induction_with_natDegree_le (P_0 := by simp)
+  · intros n r _r0 hn g hdg
+    rw [mul_assoc, coeff_C_mul, coeff_C_mul, coeff_X_pow_mul', coeff_X_pow,
+      if_pos (le_add_right hn)]
+    split_ifs with H
+    · simp [H]
+    · rw [mul_zero, zero_mul]
+      apply mul_eq_zero_of_right
+      apply coeff_eq_zero_of_natDegree_lt
+      apply hdg.trans_lt
+      rw [add_comm, Nat.add_sub_assoc hn]
+      apply Nat.lt_add_of_pos_right
+      apply Nat.sub_pos_of_lt
+      exact Ne.lt_of_le' H hn
+  · intros f g _fg _gle hf hg h hle
+    rw [add_mul, coeff_add, coeff_add, add_mul]
+    congr <;> solve_by_elim
+  · assumption
+
 /-- Let `φ : R[x] → S[x]` be an additive map, `k : ℕ` a bound, and `fu : ℕ → ℕ` a
 "sufficiently monotone" map.  Assume also that
 * `φ` maps to `0` all monomials of degree less than `k`,
