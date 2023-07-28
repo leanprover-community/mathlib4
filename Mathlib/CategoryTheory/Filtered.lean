@@ -510,8 +510,8 @@ instance : IsFilteredOrEmpty (FullSubcategory (FilteredClosure f)) where
 namespace FilteredClosureSmall
 /-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
     family of objects in `C` only depends on the size of `α` and the morphism types of `C`, not on
-    the size of the objects of `C`. In particular, if `α` lives in `Type w`, the objects of `C` live
-    in `Type u` and the morphisms of `C` live in `Type v`, then we want
+    the size of the objects of `C`. More precisely, if `α` lives in `Type w`, the objects of `C`
+    live in `Type u` and the morphisms of `C` live in `Type v`, then we want
     `Small.{max v w} (FullSubcategory (FilteredClosure f))`.
 
     The strategy is to define a type `AbstractFilteredClosure` which should be an inductive type
@@ -520,14 +520,12 @@ namespace FilteredClosureSmall
     `AbstractFilteredClosure → C`, as the coequalizer constructor depends on the actual morphisms
     in `C`. This would require some kind of inductive-recursive definition, which Lean does not
     allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
-    induction and then taking the union over all natural numbers, mimicking what one would do in a
-    set-theoretic setting.
--/
+    induction and then take the union over all natural numbers, mimicking what one would do in a
+    set-theoretic setting.  -/
 
 /-- One step of the inductive procedure consists of adjoining all maxima and coequalizers of all
     objects and morphisms obtained so far. This is quite redundant, picking up many objects which we
-    already hit in earlier iterations, but this is easier to work with later.
-    -/
+    already hit in earlier iterations, but this is easier to work with later.  -/
 private inductive InductiveStep (n : ℕ) (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) :
     Type (max v w)
   | max : {k k' : ℕ} → (hk : k < n) → (hk' : k' < n) → (X _ hk).1 → (X _ hk').1 → InductiveStep n X
@@ -580,8 +578,7 @@ theorem small_fullSubcategory_filteredClosure :
 
 instance : EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) :=
   have : LocallySmall.{max v w} (FullSubcategory (FilteredClosure f)) := locallySmall_max.{w, v, u}
-  have : Small.{max v w} (FullSubcategory (FilteredClosure f)) :=
-    small_fullSubcategory_filteredClosure f
+  have := small_fullSubcategory_filteredClosure f
   essentiallySmall_of_small_of_locallySmall _
 
 end FilteredClosure
@@ -1022,9 +1019,9 @@ theorem small_fullSubcategory_cofilteredClosure :
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
 instance : EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) :=
-  have : LocallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) := locallySmall_max.{w, v, u}
-  have : Small.{max v w} (FullSubcategory (CofilteredClosure f)) :=
-    small_fullSubcategory_cofilteredClosure f
+  have : LocallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) :=
+    locallySmall_max.{w, v, u}
+  have := small_fullSubcategory_cofilteredClosure f
   essentiallySmall_of_small_of_locallySmall _
 
 end CofilteredClosure
