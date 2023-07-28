@@ -118,7 +118,7 @@ theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
 
 theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊓ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
-  rw [(inf_eq_half_smul_add_sub_abs_sub' ℝ)]
+  rw [inf_eq_half_smul_add_sub_abs_sub' ℝ]
   refine'
     A.topologicalClosure.smul_mem
       (A.topologicalClosure.sub_mem
