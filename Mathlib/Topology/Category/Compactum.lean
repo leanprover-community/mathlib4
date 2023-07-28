@@ -2,11 +2,6 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module topology.category.Compactum
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monad.Types
 import Mathlib.CategoryTheory.Monad.Limits
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Data.Set.Constructions
+
+#align_import topology.category.Compactum from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 
@@ -296,7 +293,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     intro A hA h
     by_contra H
     rw [le_nhds_iff] at cond
-    specialize cond (Aᶜ) H hA.isOpen_compl
+    specialize cond Aᶜ H hA.isOpen_compl
     rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_not_mem] at cond
     contradiction
   -- If A ∈ F, then x ∈ cl A.

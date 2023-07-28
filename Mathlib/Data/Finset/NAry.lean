@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.n_ary
-! leanprover-community/mathlib commit eba7871095e834365616b5e43c8c7bb0b37058d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Set.Finite
+
+#align_import data.finset.n_ary from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"
 
 /-!
 # N-ary images of finsets
@@ -244,10 +241,10 @@ theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
   haveI := Classical.decEq α
   haveI := Classical.decEq β
   refine' ⟨insert x s', insert y t', _⟩
-  simp_rw [coe_insert, Set.insert_subset]
+  simp_rw [coe_insert, Set.insert_subset_iff]
   exact
     ⟨⟨hx, hs⟩, ⟨hy, hs'⟩,
-      insert_subset.2
+      insert_subset_iff.2
         ⟨mem_image₂.2 ⟨x, y, mem_insert_self _ _, mem_insert_self _ _, ha⟩,
           h.trans <| image₂_subset (subset_insert _ _) <| subset_insert _ _⟩⟩
 #align finset.subset_image₂ Finset.subset_image₂

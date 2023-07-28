@@ -2,16 +2,13 @@
 Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu, Jack McKoen
-
-! This file was ported from Lean 3 source module ring_theory.valuation.valuation_subring
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+
+#align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 
@@ -375,7 +372,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     idealOfLE A S hS ≤ idealOfLE A R hR := fun x hx =>
   (valuation_lt_one_iff R _).2
     (by
-      by_contra c; push_neg at c ; replace c := monotone_mapOfLE R S h c
+      by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
       apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
 #align valuation_subring.ideal_of_le_le_of_le ValuationSubring.idealOfLE_le_of_le
@@ -389,7 +386,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S | A ≤ S} where
   right_inv S := by ext1; simp
 #align valuation_subring.prime_spectrum_equiv ValuationSubring.primeSpectrumEquiv
 
-/-- An ordered variant of `prime_spectrum_equiv`. -/
+/-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
   { primeSpectrumEquiv A with
@@ -480,7 +477,7 @@ def unitGroup : Subgroup Kˣ :=
 theorem mem_unitGroup_iff (x : Kˣ) : x ∈ A.unitGroup ↔ A.valuation x = 1 := Iff.rfl
 #align valuation_subring.mem_unit_group_iff ValuationSubring.mem_unitGroup_iff
 
-/-- For a valuation subring `A`, `A.unit_group` agrees with the units of `A`. -/
+/-- For a valuation subring `A`, `A.unitGroup` agrees with the units of `A`. -/
 def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
   toFun x :=
     { val := ⟨(x : Kˣ), mem_of_valuation_le_one A _ x.prop.le⟩
@@ -587,7 +584,7 @@ variable {A}
 
 /-- The elements of `A.nonunits` are those of the maximal ideal of `A` after coercion to `K`.
 
-See also `mem_nonunits_iff_exists_mem_maximal_ideal`, which gets rid of the coercion to `K`,
+See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
 at the expense of a more complicated right hand side.
  -/
 theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ LocalRing.maximalIdeal A :=
@@ -805,16 +802,15 @@ variable {G : Type _} [Group G] [MulSemiringAction G K]
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-def pointwiseHasSmul : SMul G (ValuationSubring K)
-    where smul g
-    S :=-- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
+def pointwiseHasSMul : SMul G (ValuationSubring K) where
+  smul g S :=-- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
     { g • S.toSubring with
       mem_or_inv_mem' := fun x =>
         (mem_or_inv_mem S (g⁻¹ • x)).imp Subring.mem_pointwise_smul_iff_inv_smul_mem.mpr fun h =>
           Subring.mem_pointwise_smul_iff_inv_smul_mem.mpr <| by rwa [smul_inv''] }
-#align valuation_subring.pointwise_has_smul ValuationSubring.pointwiseHasSmul
+#align valuation_subring.pointwise_has_smul ValuationSubring.pointwiseHasSMul
 
-scoped[Pointwise] attribute [instance] ValuationSubring.pointwiseHasSmul
+scoped[Pointwise] attribute [instance] ValuationSubring.pointwiseHasSMul
 
 open scoped Pointwise
 

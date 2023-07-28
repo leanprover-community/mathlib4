@@ -4,25 +4,31 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Control.Random
+import Mathlib.Control.ULiftable
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Subtype
 import Mathlib.Data.Nat.Basic
 
+#align_import testing.slim_check.gen from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
+
 /-!
 # `Gen` Monad
+
 This monad is used to formulate randomized computations with a parameter
 to specify the desired size of the result.
 This is a port of the Haskell QuickCheck library.
 
 ## Main definitions
-  * `Gen` monad
+
+* `Gen` monad
 
 ## Tags
 
 random testing
 
 ## References
-  * https://hackage.haskell.org/package/QuickCheck
+
+* https://hackage.haskell.org/package/QuickCheck
 -/
 
 namespace SlimCheck
@@ -65,10 +71,12 @@ def getSize : Gen Nat :=
 def resize (f : Nat → Nat) (x : Gen α) : Gen α :=
   withReader (ULift.up ∘ f ∘ ULift.down) x
 
+variable {α : Type u}
+
 /-- Create an `Array` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def arrayOf (x : Gen α) : Gen (Array α) := do
-  let sz ← choose Nat 0 (←getSize) (Nat.zero_le _)
+  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (←getSize) (Nat.zero_le _) : Gen (ULift ℕ))
   let mut res := #[]
   for _ in [0:sz] do
     res := res.push (← x)
@@ -81,26 +89,28 @@ def listOf (x : Gen α) : Gen (List α) :=
 
 /-- Given a list of example generators, choose one to create an example. -/
 def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
-  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.size pos
+  let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.size pos
   xs.get ⟨x, h2⟩
 
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
-  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.length pos
+  let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
   pure $ xs.get ⟨x, h2⟩
 
 open List in
 /-- Generate a random permutation of a given list. -/
-def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
+def permutationOf : (xs : List α) → Gen { ys // xs ~ ys }
   | [] => pure ⟨[], Perm.nil⟩
   | x::xs => do
     let ⟨ys, h1⟩ ← permutationOf xs
-    let ⟨n, _, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
-    pure ⟨insertNth n x ys, Perm.trans (perm_insertNth _ _ h3) (Perm.cons _ h1)⟩
+    let ⟨n, _, h3⟩ ← ULiftable.up <| choose Nat 0 ys.length (Nat.zero_le _)
+    pure ⟨insertNth n x ys, Perm.trans (Perm.cons _ h1) (perm_insertNth _ _ h3).symm⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
-def prodOf {α β : Type u} (x : Gen α) (y : Gen β) : Gen (α × β) := do
-  pure (←x, ←y)
+def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β) := do
+  let ⟨a⟩ ← (ULiftable.up x : Gen (ULift.{max u v} α))
+  let ⟨b⟩ ← (ULiftable.up y : Gen (ULift.{max u v} β))
+  pure (a, b)
 
 end Gen
 

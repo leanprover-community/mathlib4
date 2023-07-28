@@ -2,19 +2,16 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.hom.freiman
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Data.FunLike.Basic
 
+#align_import algebra.hom.freiman from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
+
 /-!
 # Freiman homomorphisms
 
-In this file, we define Freiman homomorphisms. A `n`-Freiman homomorphism on `A` is a function
+In this file, we define Freiman homomorphisms. An `n`-Freiman homomorphism on `A` is a function
 `f : α → β` such that `f (x₁) * ... * f (xₙ) = f (y₁) * ... * f (yₙ)` for all
 `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that `x₁ * ... * xₙ = y₁ * ... * yₙ`. In particular, any
 `MulHom` is a Freiman homomorphism.
@@ -67,12 +64,12 @@ structure AddFreimanHom (A : Set α) (β : Type _) [AddCommMonoid α] [AddCommMo
     (s.map toFun).sum = (t.map toFun).sum
 #align add_freiman_hom AddFreimanHom
 
-/-- A `n`-Freiman homomorphism on a set `A` is a map which preserves products of `n` elements. -/
+/-- An `n`-Freiman homomorphism on a set `A` is a map which preserves products of `n` elements. -/
 @[to_additive AddFreimanHom]
 structure FreimanHom (A : Set α) (β : Type _) [CommMonoid α] [CommMonoid β] (n : ℕ) where
   /-- The underlying function. -/
   toFun : α → β
-  /-- A `n`-Freiman homomorphism preserves products of `n` elements. -/
+  /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod' {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n) (h : s.prod = t.prod) :
     (s.map toFun).prod = (t.map toFun).prod
@@ -106,7 +103,7 @@ You should extend this class when you extend `FreimanHom`. -/
       sums-preserving morphisms. You should extend this class when you extend `AddFreimanHom`."]
 class FreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <| Type _) [CommMonoid α]
   [CommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
-  /-- A `n`-Freiman homomorphism preserves products of `n` elements. -/
+  /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
     (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
     (h : s.prod = t.prod) :
@@ -329,7 +326,7 @@ theorem one_comp (f : A →*[n] β) {hf} : (1 : B →*[n] γ).comp f hf = 1 :=
 instance : Inhabited (A →*[n] β) :=
   ⟨1⟩
 
-/-- `f * g` is the Freiman homomorphism  sends `x` to `f x * g x`. -/
+/-- `f * g` is the Freiman homomorphism sends `x` to `f x * g x`. -/
 @[to_additive "`f + g` is the Freiman homomorphism sending `x` to `f x + g x`."]
 instance : Mul (A →*[n] β) :=
   ⟨fun f g =>
@@ -524,9 +521,9 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
 #align map_sum_eq_map_sum_of_le map_sum_eq_map_sum_of_le
 
-/-- `α →*[n] β` is naturally included in  `A →*[m] β` for any `m ≤ n`. -/
+/-- `α →*[n] β` is naturally included in `A →*[m] β` for any `m ≤ n`. -/
 @[to_additive AddFreimanHom.toAddFreimanHom
-      "`α →+[n] β` is naturally included in  `α →+[m] β`
+      "`α →+[n] β` is naturally included in `α →+[m] β`
       for any `m ≤ n`"]
 def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β where
   toFun := f
@@ -534,7 +531,7 @@ def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β wher
 #align freiman_hom.to_freiman_hom FreimanHom.toFreimanHom
 #align add_freiman_hom.to_add_freiman_hom AddFreimanHom.toAddFreimanHom
 
-/-- A `n`-Freiman homomorphism is also a `m`-Freiman homomorphism for any `m ≤ n`. -/
+/-- An `n`-Freiman homomorphism is also a `m`-Freiman homomorphism for any `m ≤ n`. -/
 @[to_additive AddFreimanHom.addFreimanHomClass_of_le
       "An additive `n`-Freiman homomorphism is
       also an additive `m`-Freiman homomorphism for any `m ≤ n`."]

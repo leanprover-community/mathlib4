@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.sheafed_space
-! leanprover-community/mathlib commit f384f5d1a4e39f36817b8d22afff7b52af8121d1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PresheafedSpace.HasColimits
 import Mathlib.Topology.Sheaves.Functors
+
+#align_import algebraic_geometry.sheafed_space from "leanprover-community/mathlib"@"f384f5d1a4e39f36817b8d22afff7b52af8121d1"
 
 /-!
 # Sheafed spaces
@@ -101,6 +98,7 @@ theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
   PresheafedSpace.ext α β w h
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
+@[simps! obj map]
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in

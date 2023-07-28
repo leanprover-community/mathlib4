@@ -2,11 +2,6 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
-
-! This file was ported from Lean 3 source module ring_theory.ideal.norm
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Data.Finsupp.Fintype
@@ -17,6 +12,8 @@ import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.Norm
+
+#align_import ring_theory.ideal.norm from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -557,7 +554,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
 #align ideal.span_norm_mul_span_norm_le Ideal.spanNorm_mul_spanNorm_le
 
 /-- This condition `eq_bot_or_top` is equivalent to being a field.
-However, `span_norm_mul_of_field` is harder to apply since we'd need to upgrade a `CommRing R`
+However, `Ideal.spanNorm_mul_of_field` is harder to apply since we'd need to upgrade a `CommRing R`
 instance to a `Field R` instance. -/
 theorem spanNorm_mul_of_bot_or_top [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S]
     (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤) (I J : Ideal S) :

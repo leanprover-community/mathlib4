@@ -2,17 +2,14 @@
 Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
-
-! This file was ported from Lean 3 source module number_theory.number_field.embeddings
-! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm
 import Mathlib.Topology.Instances.Complex
+
+#align_import number_theory.number_field.embeddings from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
 /-!
 # Embeddings of number fields
@@ -29,6 +26,8 @@ This file defines the embeddings of a number field into an algebraic closed fiel
 number field, embeddings, places, infinite places
 -/
 
+-- Porting note: see https://github.com/leanprover/lean4/issues/2220
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 open scoped Classical
 
@@ -79,9 +78,6 @@ end Roots
 
 section Bounded
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
-
 open FiniteDimensional Polynomial Set
 
 variable {K : Type _} [Field K] [NumberField K]
@@ -93,7 +89,7 @@ theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x�
   have hx := IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
   refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
-      (IsAlgClosed.splits_codomain _) (IntermediateField.minpoly.natDegree_le hx) (fun z hz => ?_) i
+      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => ?_) i
   classical
   rw [← Multiset.mem_toFinset] at hz
   obtain ⟨φ, rfl⟩ := (range_eval_eq_rootSet_minpoly K A x).symm.subset hz
@@ -111,7 +107,7 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
   have h_map_ℚ_minpoly := minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx.1
   refine ⟨_, ⟨?_, fun i => ?_⟩, mem_rootSet.2 ⟨minpoly.ne_zero hx.1, minpoly.aeval ℤ x⟩⟩
   · rw [← (minpoly.monic hx.1).natDegree_map (algebraMap ℤ ℚ), ← h_map_ℚ_minpoly]
-    exact IntermediateField.minpoly.natDegree_le (isIntegral_of_isScalarTower hx.1)
+    exact minpoly.natDegree_le x
   rw [mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
   refine (Eq.trans_le ?_ <| coeff_bdd_of_norm_le hx.2 i).trans (Nat.le_ceil _)
   rw [h_map_ℚ_minpoly, coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
@@ -130,7 +126,7 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
     rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
     refine h.resolve_right fun hp => ?_
     specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
-    rw [pow_eq_zero hp, map_zero, norm_zero] at hx ; norm_num at hx
+    rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 #align number_field.embeddings.pow_eq_one_of_norm_eq_one NumberField.Embeddings.pow_eq_one_of_norm_eq_one
 
 end Bounded
@@ -174,7 +170,7 @@ theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := 
   ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
 #align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
 
-/-- A embedding into `ℂ` is real if it is fixed by complex conjugation. -/
+/-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 @[reducible]
 def IsReal (φ : K →+* ℂ) : Prop :=
   IsSelfAdjoint φ
@@ -305,7 +301,7 @@ theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) 
 theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
   constructor
   · -- We prove that the map ψ ∘ φ⁻¹ between φ(K) and ℂ is uniform continuous, thus it is either the
-    -- inclusion or the complex conjugation using complex.uniform_continuous_ring_hom_eq_id_or_conj
+    -- inclusion or the complex conjugation using `Complex.uniformContinuous_ringHom_eq_id_or_conj`
     intro h₀
     obtain ⟨j, hiφ⟩ := (φ.injective).hasLeftInverse
     let ι := RingEquiv.ofLeftInverse hiφ
@@ -504,13 +500,10 @@ theorem prod_eq_abs_norm (x : K) :
     · rw [Finset.filter_congr fun (w : InfinitePlace K) _ => @not_isReal_iff_isComplex K _ w,
         ← Finset.prod_subtype_eq_prod_filter, ← Finset.prod_subtype_eq_prod_filter]
       convert Finset.prod_fiberwise Finset.univ (fun φ => mkComplex K φ)
-        (fun φ => Complex.abs (φ.val x)) using 2
+        (fun φ => Complex.abs (φ.val x)) using 2 with w
       · ext; simp only [Finset.mem_subtype, Finset.mem_univ, not_isReal_iff_isComplex]
-      · rename_i w _ -- Porting note : need to recover the name of the variable
-                     -- generated automatically by the `convert`
-        rw [@Finset.prod_congr _ _ _ _ _ (fun _ => w.val x) _ (Eq.refl _) fun φ hφ =>
+      · rw [@Finset.prod_congr _ _ _ _ _ (fun _ => w.val x) _ (Eq.refl _) fun φ hφ =>
             (mkComplex.apply K φ x).symm.trans ?_, Finset.prod_const, mkComplex.filter_card K w]
-        norm_num
         rw [congr_arg Subtype.val (Finset.mem_filter.1 hφ).2]
       · ext; simp only [Finset.mem_subtype, Finset.mem_univ]
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]

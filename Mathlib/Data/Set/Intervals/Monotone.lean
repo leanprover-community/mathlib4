@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.monotone
-! leanprover-community/mathlib commit 4d06b17aea8cf2e220f0b0aa46cd0231593c5c97
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Order.SuccPred.Basic
+
+#align_import data.set.intervals.monotone from "leanprover-community/mathlib"@"4d06b17aea8cf2e220f0b0aa46cd0231593c5c97"
 
 /-!
 # Monotonicity on intervals
@@ -188,9 +185,9 @@ section iUnion
 variable {α β : Type _} [SemilatticeSup α] [LinearOrder β] {f g : α → β} {a b : β}
 
 theorem iUnion_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone g)
-    (ha : IsGLB (range f) a) (hb : IsLUB (range g) b) : (⋃ x, Ioo (f x) (g x)) = Ioo a b :=
+    (ha : IsGLB (range f) a) (hb : IsLUB (range g) b) : ⋃ x, Ioo (f x) (g x) = Ioo a b :=
   calc
-    (⋃ x, Ioo (f x) (g x)) = (⋃ x, Ioi (f x)) ∩ ⋃ x, Iio (g x) :=
+    ⋃ x, Ioo (f x) (g x) = (⋃ x, Ioi (f x)) ∩ ⋃ x, Iio (g x) :=
       iUnion_inter_of_monotone hf.Ioi hg.Iio
     _ = Ioi a ∩ Iio b := congr_arg₂ (· ∩ ·) ha.iUnion_Ioi_eq hb.iUnion_Iio_eq
 #align Union_Ioo_of_mono_of_is_glb_of_is_lub iUnion_Ioo_of_mono_of_isGLB_of_isLUB
@@ -240,10 +237,10 @@ theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : �
   · exact hψ _ (lt_of_lt_of_le hxy hy)
   rw [Set.mem_Iic] at *
   simp only [Function.iterate_succ', Function.comp_apply] at ih hxy hy ⊢
-  by_cases hmax : IsMax ((succ^[k]) x)
+  by_cases hmax : IsMax (succ^[k] x)
   · rw [succ_eq_iff_isMax.2 hmax] at hxy ⊢
     exact ih (le_trans (le_succ _) hy) hxy
-  by_cases hmax' : IsMax (succ ((succ^[k]) x))
+  by_cases hmax' : IsMax (succ (succ^[k] x))
   · rw [succ_eq_iff_isMax.2 hmax'] at hxy ⊢
     exact ih (le_trans (le_succ _) hy) hxy
   refine'

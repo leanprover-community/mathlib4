@@ -2,13 +2,10 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.star
-! leanprover-community/mathlib commit 4d66277cfec381260ba05c68f9ae6ce2a118031d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+
+#align_import linear_algebra.clifford_algebra.star from "leanprover-community/mathlib"@"4d66277cfec381260ba05c68f9ae6ce2a118031d"
 
 /-!
 # Star structure on `CliffordAlgebra`
@@ -23,7 +20,7 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 
 ## Main definitions
 
-* `clifford_algebra.star_ring`
+* `CliffordAlgebra.instStarRing`
 
 -/
 
@@ -36,7 +33,7 @@ variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 
-instance : StarRing (CliffordAlgebra Q) where
+instance instStarRing : StarRing (CliffordAlgebra Q) where
   -- porting note: cannot infer `Q`
   star x := reverse (Q := Q) (involute x)
   star_involutive x := by
