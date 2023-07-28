@@ -676,10 +676,18 @@ section closure
 
 variable {s t : Finset α} {x y : α}
 
+theorem mem_closure : x ∈ G.closure s ↔ G.rank (insert x s) = G.rank s :=
+  ⟨fun h => by simp [closure] at h; exact h, fun h => by simp [closure]; exact h⟩
+
 theorem self_subset_closure : s ⊆ G.closure s := by
-  simp only [closure]
   intro x hx
-  simp only [mem_univ, Finset.mem_filter, true_and, insert_eq_of_mem hx]
+  simp only [mem_closure, insert_eq_of_mem hx]
+
+theorem closure_subset_of_subset (h : s ⊆ t) :
+    G.closure s ⊆ G.closure t := by
+  intro x hx
+  rw [mem_closure] at *
+  sorry
 
 @[simp]
 theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.rank s := by
@@ -696,11 +704,40 @@ theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.ran
       simp only [mem_sdiff, not_and, not_not] at h'
       simp only [← subset_antisymm self_subset_closure h', lt_self_iff_false] at h₁
     have h₂ := rank_closure_eq_rank_self (insert x s)
-    sorry
+    simp only [mem_sdiff, mem_closure] at hx
+    rw [← hx.1, ← h₂]
+    apply congr_arg
+    ext y; simp only [mem_closure]
+    constructor <;> intro hy
+    . rw [Insert.comm, hx.1] at hy
+      have h₃ : G.rank s ≤ G.rank (insert y s) := rank_le_of_subset (subset_insert _ _)
+      have h₄ : G.rank (insert y s) ≤ G.rank (insert x (insert y s)) :=
+        rank_le_of_subset (subset_insert _ _)
+      rw [hy] at h₄
+      exact le_antisymm h₄ h₃
+    . rw [local_submodularity hy.symm hx.1.symm, hx.1]
+termination_by rank_closure_eq_rank_self => (@univ α _).card - s.card
+decreasing_by
+  simp_wf
+  rw [mem_sdiff] at hx
+  simp only [hx.2, card_insert_of_not_mem]
+  rw [← Nat.sub_sub]
+  exact Nat.sub_lt (tsub_pos_iff_lt.mpr (card_lt_univ_of_not_mem hx.2)) (by decide)
 
 theorem feasible_iff_elem_notin_closure_minus_elem :
     s ∈ G ↔ ∀ x ∈ s, x ∉ G.closure (s \ {x}) := by
-  sorry
+  constructor <;> intro h
+  . intro x hx h'
+    rw [mem_closure] at h'
+    have h₁ := sdiff_insert_insert_of_mem_of_not_mem hx (not_mem_empty x)
+    simp only [insert_emptyc_eq, mem_sdiff, Finset.mem_singleton, sdiff_empty] at h₁
+    rw [h₁] at h'
+    have h₃ : G.rank (s \ {x}) ≤ (s \ {x}).card := rank_le_card
+    rw [← h', rank_of_feasible h, card_sdiff (fun y hy => by simp_all)] at h₃
+    have : s.card - 1 < s.card := sub_lt (card_pos.mpr ⟨x, hx⟩) (by decide)
+    rw [lt_iff_not_ge] at this
+    exact this h₃
+  . sorry
 
 theorem closure_eq_of_subset_adj_closure (hst : s ⊆ G.closure t) (hts : t ⊆ G.closure s) :
     G.closure s = G.closure t := sorry
