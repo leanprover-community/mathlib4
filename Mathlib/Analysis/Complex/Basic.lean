@@ -429,7 +429,6 @@ noncomputable instance : IsROrC ℂ where
   le_iff_re_im := by simp only [not_and, AddMonoidHom.coe_mk, ZeroHom.coe_mk, forall_const]
 
 noncomputable instance toStarOrderedRing : StarOrderedRing ℂ := by
-  -- Bad quality proof but lets see if it works
   apply StarOrderedRing.ofNonnegIff'
   · intros x y hxy z
     simpa [le_def, add_re, add_le_add_iff_left, add_im, add_right_inj] using hxy
