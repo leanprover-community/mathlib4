@@ -214,7 +214,7 @@ attribute [-instance] Quotient.instMeasurableSpace
   additive  group `G`, the integral of a function `f` on `G` with respect to a right-invariant
   measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`."]
 lemma QuotientGroup.integral_eq_integral_automorphize {E : Type _} [NormedAddCommGroup E]
-    [CompleteSpace E] [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
+    [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
     (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :
     ∫ x : G, f x ∂μ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := by
   calc ∫ x : G, f x ∂μ = ∑' γ : (Subgroup.opposite Γ), ∫ x in 𝓕, f (γ • x) ∂μ :=
