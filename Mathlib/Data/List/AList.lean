@@ -183,6 +183,7 @@ instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
 theorem keys_subset_keys_of_entries_subset_entries
     {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
   intro k hk
+  letI : DecidableEq α := Classical.decEq α
   have := h (mem_lookup_iff.1 (Option.get_mem (lookup_isSome.2 hk)))
   rw [← mem_lookup_iff, Option.mem_def] at this
   rw [← mem_keys, ← lookup_isSome, this]
