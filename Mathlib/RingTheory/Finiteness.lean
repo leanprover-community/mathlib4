@@ -682,7 +682,7 @@ variable {A}
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
-  Module.Finite.of_surjective (Algebra.ofId A B).toLinearMap hf
+  Module.Finite.of_surjective (Algebra.linearMap A B) hf
 #align ring_hom.finite.of_surjective RingHom.Finite.of_surjective
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
