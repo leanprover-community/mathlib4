@@ -83,6 +83,16 @@ def AddMathJaxCHTML : Component NoProps where
       (include_str ".." / ".." / ".." / "mathjax-prebuilt" / "es5" / "tex-chtml.js") ++ "
     }"
 
+/- When you simply want to delete MathJax instead of replacing it. -/
+@[widget_module]
+def DeleteMathJax : Component NoProps where
+  javascript := "
+    export default function (){
+      if (typeof window?.MathJax !== 'undefined') {
+        delete window['MathJax']
+      }
+    }"
+
 /- ## Rendering
 
 There are three ways to render typesetting in MathJax: with `MathJax.typeset()`, `MathJax.typesetPromise()`, and by producing HTMLElements with converters.
