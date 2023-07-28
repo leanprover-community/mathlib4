@@ -61,8 +61,6 @@ lattices.
 lattice, ordered, group
 -/
 
-
--- Needed for squares
 -- Needed for squares
 universe u v
 
@@ -121,7 +119,6 @@ theorem inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a
     _ = a * b := by rw [mul_comm, inv_mul_cancel_right]
 #align inf_mul_sup inf_mul_sup
 #align inf_add_sup inf_add_sup
-
 
 namespace LatticeOrderedCommGroup
 
