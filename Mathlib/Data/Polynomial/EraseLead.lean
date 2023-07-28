@@ -244,8 +244,8 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
       rw [Ne.def, leadingCoeff_eq_zero, ← card_support_eq_zero, f0]
       exact Nat.succ_ne_zero _
 #align polynomial.induction_with_nat_degree_le Polynomial.induction_with_natDegree_le
-
-theorem coeff_mul_add_of_le_natDegree_of_eq {df dg : ℕ} {f g : R[X]}
+#where
+theorem coeff_mul_add_of_le_natDegree_of_eq {df dg : ℕ} {g : R[X]}
     (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
     (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
   revert hdg g
