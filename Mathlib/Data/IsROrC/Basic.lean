@@ -51,7 +51,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K,
+class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K, PartialOrder K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -69,6 +69,8 @@ class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing 
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
+  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+
 #align is_R_or_C IsROrC
 
 end
@@ -822,6 +824,8 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_I_ax z := by simp only [MulZeroClass.mul_zero, AddMonoidHom.zero_apply]
+  le_iff_re_im := by simp only [AddMonoidHom.id_apply, AddMonoidHom.zero_apply, and_true,
+    forall_const]
 #align real.is_R_or_C Real.isROrC
 
 end Instances
