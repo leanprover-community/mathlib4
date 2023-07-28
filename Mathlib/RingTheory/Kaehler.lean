@@ -385,47 +385,13 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-<<<<<<< HEAD
--- set_option profiler true in
--- set_option trace.Meta.synthInstance true in
--- #synth MulAction S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
---
--- #synth CommRing (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
--- -- attribute [-instance] SMulZeroClass.toSMul
--- -- attribute [-instance] NonUnitalNonAssocSemiring.toAddCommMonoid MulAction.toSMul
--- set_option profiler true in
--- set_option trace.Meta.synthInstance true in
--- set_option synthInstance.maxHeartbeats 0 in
--- #synth Module S (KaehlerDifferential.ideal R S).cotangentIdeal
---
--- #synth Algebra S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
---
--- set_option profiler true in
--- set_option trace.Meta.synthInstance true in
--- set_option synthInstance.maxHeartbeats 0 in
--- #synth IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
---
--- -- set_option synthInstance.maxHeartbeats 0 in
--- local instance (priority := high) : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
---     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _ -- CommRing.toSMul
---
--- local instance (priority := high) : Module S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := inferInstance
---
--- set_option trace.Meta.synthInstance true in
--- set_option synthInstance.maxHeartbeats 0 in
--- local instance (priority := high) : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
---     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := inferInstance
---
--- set_option profiler true in
--- set_option trace.Meta.synthInstance true in
--- -- set_option synthInstance.maxHeartbeats 0 in
--- -- (After) Porting note : These 5 instances are found automatically in Lean 3
+/- After porting note: Lean is slow to synthesize theses instances.
+  Without them the endEquivDerivation' and endEquivAuxEquiv both have
+  significant timeouts. This was not the case in Mathlib 3 -/
 local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
---   Submodule.module' (KaehlerDifferential.ideal R S).cotangentIdeal
-
   @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ IsScalarTower.right
---
+
 local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
   @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ IsScalarTower.right
