@@ -2,16 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.category.Meas
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.Topology.Category.TopCat.Basic
+
+#align_import measure_theory.category.Meas from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 # The category of measurable spaces
@@ -72,6 +69,7 @@ instance unbundledHom : UnbundledHom @Measurable :=
 deriving instance LargeCategory for MeasCat
 
 -- Porting note: `deriving instance ConcreteCategory for MeasCat` didn't work. Define it manually.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory MeasCat := by
   unfold MeasCat
   infer_instance
@@ -116,7 +114,7 @@ def Integral : Giry.Algebra where
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
   unit := Subtype.eq <| funext fun r : ℝ≥0∞ => lintegral_dirac' _ measurable_id
   assoc := Subtype.eq <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) =>
-    show (∫⁻ x, x ∂μ.join) = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
+    show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>
         apply_rules [measurable_id, Measure.measurable_lintegral]
 #align Meas.Integral MeasCat.Integral

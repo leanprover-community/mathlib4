@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.independence.basic
-! leanprover-community/mathlib commit 2f8347015b12b0864dfaf366ec4909eb70c78740
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
+
+#align_import probability.independence.basic from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -147,7 +144,7 @@ section Indep
 @[symm]
 theorem IndepSets.symm {s₁ s₂ : Set (Set Ω)} [MeasurableSpace Ω] {μ : Measure Ω}
     (h : IndepSets s₁ s₂ μ) : IndepSets s₂ s₁ μ := by
-  intro t1 t2 ht1 ht2;
+  intro t1 t2 ht1 ht2
   rw [Set.inter_comm, mul_comm]; exact h t2 t1 ht2 ht1
 #align probability_theory.indep_sets.symm ProbabilityTheory.IndepSets.symm
 
@@ -259,7 +256,7 @@ theorem indepSets_singleton_iff [MeasurableSpace Ω] {s t : Set Ω} {μ : Measur
 
 end Indep
 
-/-! ### Deducing `indep` from `Indep` -/
+/-! ### Deducing `Indep` from `iIndep` -/
 
 
 section FromIndepToIndep
@@ -276,7 +273,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} [MeasurableSpace Ω] {μ 
     have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true, eq_self_iff_true]
     have h2 : t₂ = ite (j = i) t₁ t₂ := by simp only [hij.symm, if_false]
     have h_inter :
-      (⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂) =
+      ⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂ =
         ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ :=
       by simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
     have h_prod :
@@ -340,7 +337,7 @@ section FromPiSystemsToMeasurableSpaces
 /-! ### Independence of generating π-systems implies independence of measurable space structures -/
 
 
-private theorem indep_sets.indep_aux {m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω}
+private theorem IndepSets.indep_aux {m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω}
     {μ : Measure Ω} [IsProbabilityMeasure μ] {p1 p2 : Set (Set Ω)} (h2 : m2 ≤ m)
     (hp2 : IsPiSystem p2) (hpm2 : m2 = generateFrom p2) (hyp : IndepSets p1 p2 μ) {t1 t2 : Set Ω}
     (ht1 : t1 ∈ p1) (ht2m : MeasurableSet[m2] t2) : μ (t1 ∩ t2) = μ t1 * μ t2 := by
@@ -375,7 +372,7 @@ theorem IndepSets.indep {m1 m2 : MeasurableSpace Ω} {m : MeasurableSpace Ω} {�
     rw [hpm1]
     exact measurableSet_generateFrom ht
   rw [Measure.restrict_apply ht1, Measure.smul_apply, smul_eq_mul, mul_comm]
-  exact indep_sets.indep_aux h2 hp2 hpm2 hyp ht ht2
+  exact IndepSets.indep_aux h2 hp2 hpm2 hyp ht ht2
 #align probability_theory.indep_sets.indep ProbabilityTheory.IndepSets.indep
 
 theorem IndepSets.indep' {_m : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
@@ -588,9 +585,9 @@ section IndepSet
 
 /-! ### Independence of measurable sets
 
-We prove the following equivalences on `indep_set`, for measurable sets `s, t`.
-* `indep_set s t μ ↔ μ (s ∩ t) = μ s * μ t`,
-* `indep_set s t μ ↔ indep_sets {s} {t} μ`.
+We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
+* `IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t`,
+* `IndepSet s t μ ↔ IndepSets {s} {t} μ`.
 -/
 
 
@@ -874,7 +871,7 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsProbabilityMeasure μ] {ι 
       fun a (j : ({i} : Finset ι)) => f j a := rfl
     have h_meas_right : Measurable fun p : ∀ _j : ({i} : Finset ι), β
       => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
-    have h_left : (∏ j in s, f j) = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
+    have h_left : ∏ j in s, f j = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
       ext1 a
       simp only [Function.comp_apply]
       have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]
@@ -907,7 +904,7 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
     rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
     rintro S π _hπ
     simp_rw [Set.indicator_const_preimage_eq_union]
-    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s iᶜ) ∅) fun i _hi => _
+    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => _
     have hsi : MeasurableSet[generateFrom {s i}] (s i) :=
       measurableSet_generateFrom (Set.mem_singleton _)
     refine'

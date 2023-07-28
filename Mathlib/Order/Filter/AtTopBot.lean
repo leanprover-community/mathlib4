@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module order.filter.at_top_bot
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Preimage
@@ -15,6 +10,8 @@ import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Algebra.Order.Group.MinMax
+
+#align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorded sets, monoids and groups.
@@ -241,6 +238,28 @@ protected theorem Tendsto.eventually_ne_atBot [Preorder β] [NoMinOrder β] {f :
   hf.eventually (eventually_ne_atBot c)
 #align filter.tendsto.eventually_ne_at_bot Filter.Tendsto.eventually_ne_atBot
 
+theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
+    (∀ᶠ x in atTop, ∀ y, x ≤ y → p y) ↔ ∀ᶠ x in atTop, p x := by
+  refine ⟨fun h ↦ h.mono fun x hx ↦ hx x le_rfl, fun h ↦ ?_⟩
+  rcases (hasBasis_iInf_principal_finite _).eventually_iff.1 h with ⟨S, hSf, hS⟩
+  refine mem_iInf_of_iInter hSf (V := fun x ↦ Ici x.1) (fun _ ↦ Subset.rfl) fun x hx y hy ↦ ?_
+  simp only [mem_iInter] at hS hx
+  exact hS fun z hz ↦ le_trans (hx ⟨z, hz⟩) hy
+
+theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
+    (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
+  eventually_forall_ge_atTop (α := αᵒᵈ)
+
+theorem Tendsto.eventually_forall_ge_atTop {α β : Type _} [Preorder β] {l : Filter α}
+    {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
+    ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
+  rw [←Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
+
+theorem Tendsto.eventually_forall_le_atBot {α β : Type _} [Preorder β] {l : Filter α}
+    {p : β → Prop} {f : α → β} (hf : Tendsto f l atBot) (h_evtl : ∀ᶠ x in atBot, p x) :
+    ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
+  rw [←Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
+
 theorem atTop_basis_Ioi [Nonempty α] [SemilatticeSup α] [NoMaxOrder α] :
     (@atTop α _).HasBasis (fun _ => True) Ioi :=
   atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
@@ -339,12 +358,12 @@ theorem Frequently.forall_exists_of_atBot [SemilatticeInf α] [Nonempty α] {p :
 #align filter.frequently.forall_exists_of_at_bot Filter.Frequently.forall_exists_of_atBot
 
 theorem map_atTop_eq [Nonempty α] [SemilatticeSup α] {f : α → β} :
-    atTop.map f = ⨅ a, 𝓟 <| f '' { a' | a ≤ a' } :=
+    atTop.map f = ⨅ a, 𝓟 (f '' { a' | a ≤ a' }) :=
   (atTop_basis.map f).eq_iInf
 #align filter.map_at_top_eq Filter.map_atTop_eq
 
 theorem map_atBot_eq [Nonempty α] [SemilatticeInf α] {f : α → β} :
-    atBot.map f = ⨅ a, 𝓟 <| f '' { a' | a' ≤ a } :=
+    atBot.map f = ⨅ a, 𝓟 (f '' { a' | a' ≤ a }) :=
   @map_atTop_eq αᵒᵈ _ _ _ _
 #align filter.map_at_bot_eq Filter.map_atBot_eq
 
@@ -447,7 +466,7 @@ theorem inf_map_atBot_neBot_iff [SemilatticeInf α] [Nonempty α] {F : Filter β
 theorem extraction_of_frequently_atTop' {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   choose u hu hu' using h
-  refine ⟨fun n => (u^[n + 1]) 0, strictMono_nat_of_lt_succ fun n => ?_, fun n => ?_⟩
+  refine ⟨fun n => u^[n + 1] 0, strictMono_nat_of_lt_succ fun n => ?_, fun n => ?_⟩
   · exact Trans.trans (hu _) (Function.iterate_succ_apply' _ _ _).symm
   · simpa only [Function.iterate_succ_apply'] using hu' _
 #align filter.extraction_of_frequently_at_top' Filter.extraction_of_frequently_atTop'
@@ -536,7 +555,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u k < u n, hn_min : ∀ m, m < n → N ≤ m → u m ≤ u k⟩ :
       ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k := by
     rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
-    push_neg  at hn_min
+    push_neg at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
   use n, hnN
   rintro (l : ℕ) (hl : l < n)
@@ -1001,7 +1020,7 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to infinity
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to infinity
 if and only if `0 < r. `-/
 theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r := by
@@ -1010,7 +1029,7 @@ theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
   exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_lt hrx
 #align filter.tendsto_const_mul_at_top_iff_pos Filter.tendsto_const_mul_atTop_iff_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to infinity
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to infinity
 if and only if `0 < r. `-/
 theorem tendsto_mul_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop ↔ 0 < r := by
@@ -1133,42 +1152,42 @@ theorem tendsto_mul_const_atBot_iff [NeBot l] :
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff]
 #align filter.tendsto_mul_const_at_bot_iff Filter.tendsto_mul_const_atBot_iff
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to
 infinity if and only if `r < 0. `-/
 theorem tendsto_const_mul_atTop_iff_neg [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atTop ↔ r < 0 := by
   simp [tendsto_const_mul_atTop_iff, h, h.not_tendsto disjoint_atBot_atTop]
 #align filter.tendsto_const_mul_at_top_iff_neg Filter.tendsto_const_mul_atTop_iff_neg
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to
 infinity if and only if `r < 0. `-/
 theorem tendsto_mul_const_atTop_iff_neg [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop ↔ r < 0 := by
   simp only [mul_comm _ r, tendsto_const_mul_atTop_iff_neg h]
 #align filter.tendsto_mul_const_at_top_iff_neg Filter.tendsto_mul_const_atTop_iff_neg
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to
 negative infinity if and only if `0 < r. `-/
 theorem tendsto_const_mul_atBot_iff_pos [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atBot ↔ 0 < r := by
   simp [tendsto_const_mul_atBot_iff, h, h.not_tendsto disjoint_atBot_atTop]
 #align filter.tendsto_const_mul_at_bot_iff_pos Filter.tendsto_const_mul_atBot_iff_pos
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to
 negative infinity if and only if `0 < r. `-/
 theorem tendsto_mul_const_atBot_iff_pos [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot ↔ 0 < r := by
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff_pos h]
 #align filter.tendsto_mul_const_at_bot_iff_pos Filter.tendsto_mul_const_atBot_iff_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to negative
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to negative
 infinity if and only if `r < 0. `-/
 theorem tendsto_const_mul_atBot_iff_neg [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atBot ↔ r < 0 := by
   simp [tendsto_const_mul_atBot_iff, h, h.not_tendsto disjoint_atTop_atBot]
 #align filter.tendsto_const_mul_at_bot_iff_neg Filter.tendsto_const_mul_atBot_iff_neg
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to negative
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to negative
 infinity if and only if `r < 0. `-/
 theorem tendsto_mul_const_atBot_iff_neg [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot ↔ r < 0 := by
@@ -1728,16 +1747,16 @@ theorem tendsto_atBot_of_monotone_of_subseq [Preorder ι] [Preorder α] {u : ι 
 #align filter.tendsto_at_bot_of_monotone_of_subseq Filter.tendsto_atBot_of_monotone_of_subseq
 
 /-- Let `f` and `g` be two maps to the same commutative monoid. This lemma gives a sufficient
-condition for comparison of the filter `atTop.map (λ s, ∏ b in s, f b)` with
-`atTop.map (λ s, ∏ b in s, g b)`. This is useful to compare the set of limit points of
+condition for comparison of the filter `atTop.map (fun s ↦ ∏ b in s, f b)` with
+`atTop.map (fun s ↦ ∏ b in s, g b)`. This is useful to compare the set of limit points of
 `Π b in s, f b` as `s → atTop` with the similar set for `g`. -/
 @[to_additive "Let `f` and `g` be two maps to the same commutative additive monoid. This lemma gives
-a sufficient condition for comparison of the filter `atTop.map (λ s, ∑ b in s, f b)` with
-`atTop.map (λ s, ∑ b in s, g b)`. This is useful to compare the set of limit points of
+a sufficient condition for comparison of the filter `atTop.map (fun s ↦ ∑ b in s, f b)` with
+`atTop.map (fun s ↦ ∑ b in s, g b)`. This is useful to compare the set of limit points of
 `∑ b in s, f b` as `s → atTop` with the similar set for `g`."]
 theorem map_atTop_finset_prod_le_of_prod_eq [CommMonoid α] {f : β → α} {g : γ → α}
     (h_eq : ∀ u : Finset γ,
-      ∃ v : Finset β, ∀ v', v ⊆ v' → ∃ u', u ⊆ u' ∧ (∏ x in u', g x) = ∏ b in v', f b) :
+      ∃ v : Finset β, ∀ v', v ⊆ v' → ∃ u', u ⊆ u' ∧ ∏ x in u', g x = ∏ b in v', f b) :
     (atTop.map fun s : Finset β => ∏ b in s, f b) ≤
       atTop.map fun s : Finset γ => ∏ x in s, g x := by
   classical
@@ -1843,7 +1862,7 @@ theorem frequently_iff_seq_frequently {ι : Type _} {l : Filter ι} {p : ι → 
     rw [tendsto_principal] at hx_p
     exact hx_p.frequently
   · obtain ⟨x, hx_tendsto, hx_freq⟩ := h_exists_freq
-    simp_rw [Filter.Frequently, Filter.Eventually] at hx_freq⊢
+    simp_rw [Filter.Frequently, Filter.Eventually] at hx_freq ⊢
     have : { n : ℕ | ¬p (x n) } = { n | x n ∈ { y | ¬p y } } := rfl
     rw [this, ← mem_map'] at hx_freq
     exact mt (@hx_tendsto _) hx_freq
@@ -1935,9 +1954,28 @@ theorem exists_le_mul_self (a : R) : ∃ x ≥ 0, a ≤ x * x :=
 
 end
 
+theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type _} [Preorder ι] {s : ι → Set α}
+    [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋃ i, s i)]
+    (hs : Monotone s) (f g : (a : α) → β a) (a : α) :
+    ∀ᶠ i in atTop, (s i).piecewise f g a = (⋃ i, s i).piecewise f g a := by
+  rcases em (∃ i, a ∈ s i) with ⟨i, hi⟩ | ha
+  · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
+    simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
+  · refine eventually_of_forall fun i ↦ ?_
+    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha]
+
+theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type _} [Preorder ι] {s : ι → Set α}
+    [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋂ i, s i)]
+    (hs : Antitone s) (f g : (a : α) → β a) (a : α) :
+    ∀ᶠ i in atTop, (s i).piecewise f g a = (⋂ i, s i).piecewise f g a := by
+  classical
+  convert ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
+  · convert congr_fun (Set.piecewise_compl (s _) g f) a
+  · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]
+
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. Then the filters
-`atTop.map (λ s, ∏ i in s, f (g i))` and `atTop.map (λ s, ∏ i in s, f i)` coincide.
+`atTop.map (fun s ↦ ∏ i in s, f (g i))` and `atTop.map (fun s ↦ ∏ i in s, f i)` coincide.
 
 The additive version of this lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions.-/
@@ -1963,7 +2001,7 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
 
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to an additive commutative monoid. Suppose that `f x = 0` outside of the range of `g`. Then the
-filters `atTop.map (λ s, ∑ i in s, f (g i))` and `atTop.map (λ s, ∑ i in s, f i)` coincide.
+filters `atTop.map (fun s ↦ ∑ i in s, f (g i))` and `atTop.map (fun s ↦ ∑ i in s, f i)` coincide.
 
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions.-/

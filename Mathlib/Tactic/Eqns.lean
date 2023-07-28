@@ -14,7 +14,7 @@ example
 
 ```lean4
 def transpose {m n} (A : m → n → ℕ) : n → m → ℕ
-| i, j => A j i
+  | i, j => A j i
 
 theorem transpose_apply {m n} (A : m → n → ℕ) (i j) :
   transpose A i j = A j i := rfl
@@ -35,7 +35,7 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
   registerNameMapAttribute {
     name  := `eqns
     descr := "Overrides the equation lemmas for a declaration to the provided list"
-    add   :=  fun
+    add   := fun
     | _, `(attr| eqns $[$names]*) =>
       names.mapM resolveGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }

@@ -2,25 +2,22 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.function.uniform_integrable
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 import Mathlib.MeasureTheory.Function.L1Space
+
+#align_import measure_theory.function.uniform_integrable from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Uniform integrability
 
 This file contains the definitions for uniform integrability (both in the measure theory sense
 as well as the probability theory sense). This file also contains the Vitali convergence theorem
-which estabishes a relation between uniform integrability, convergence in measure and
+which establishes a relation between uniform integrability, convergence in measure and
 Lp convergence.
 
 Uniform integrability plays a vital role in the theory of martingales most notably is used to
-fomulate the martingale convergence theorem.
+formulate the martingale convergence theorem.
 
 ## Main definitions
 
@@ -64,7 +61,7 @@ A sequence of functions `f` is said to be uniformly integrable if for all `ε > 
 some `δ > 0` such that for all sets `s` with measure less than `δ`, the Lp-norm of `f i`
 restricted on `s` is less than `ε`.
 
-Uniform integrablility is also known as uniformly absolutely continuous integrals. -/
+Uniform integrability is also known as uniformly absolutely continuous integrals. -/
 def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   ∀ ⦃ε : ℝ⦄ (_ : 0 < ε), ∃ (δ : ℝ) (_ : 0 < δ), ∀ i s,
     MeasurableSet s → μ s ≤ ENNReal.ofReal δ → snorm (s.indicator (f i)) p μ ≤ ENNReal.ofReal ε
@@ -535,7 +532,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp
       (dist_comm (g x) (f n x) ▸ (hN x hx).le :
         dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     refine' le_trans this _
-    rw [div_mul_eq_div_mul_one_div, ← ENNReal.ofReal_toReal (measure_lt_top μ (tᶜ)).ne,
+    rw [div_mul_eq_div_mul_one_div, ← ENNReal.ofReal_toReal (measure_lt_top μ tᶜ).ne,
       ENNReal.ofReal_rpow_of_nonneg ENNReal.toReal_nonneg hdivp, ← ENNReal.ofReal_mul, mul_assoc]
     · refine' ENNReal.ofReal_le_ofReal (mul_le_of_le_one_right hε'.le _)
       rw [mul_comm, mul_one_div, div_le_one]
@@ -834,7 +831,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
         ENNReal.one_ne_top⟩
 #align measure_theory.uniform_integrable_of' MeasureTheory.uniformIntegrable_of'
 
-/-- A sequene of functions `(fₙ)` is uniformly integrable in the probability sense if for all
+/-- A sequence of functions `(fₙ)` is uniformly integrable in the probability sense if for all
 `ε > 0`, there exists some `C` such that `∫ x in {|fₙ| ≥ C}, fₙ x ∂μ ≤ ε` for all `n`. -/
 theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ)
@@ -862,7 +859,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
   obtain ⟨-, hfu, M, hM⟩ := hfu
   obtain ⟨δ, hδpos, hδ⟩ := hfu hε
   obtain ⟨C, hC⟩ : ∃ C : ℝ≥0, ∀ i, μ { x | C ≤ ‖f i x‖₊ } ≤ ENNReal.ofReal δ := by
-    by_contra hcon; push_neg  at hcon
+    by_contra hcon; push_neg at hcon
     choose ℐ hℐ using hcon
     lift δ to ℝ≥0 using hδpos.le
     have : ∀ C : ℝ≥0, C • (δ : ℝ≥0∞) ^ (1 / p.toReal) ≤ snorm (f (ℐ C)) p μ := by

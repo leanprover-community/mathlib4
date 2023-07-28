@@ -2,13 +2,10 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.derivation.basic
-! leanprover-community/mathlib commit b608348ffaeb7f557f2fd46876037abafd326ff3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import ring_theory.derivation.basic from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
 /-!
 # Derivations
@@ -22,10 +19,10 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 - `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
-See `ring_theory.derivation.lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form an lie algebra over `R`.
+See `RingTheory.Derivation.Lie` for
+- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
-and `ring_theory.derivation.to_square_zero` for
+and `RingTheory.Derivation.ToSquareZero` for
 - `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
@@ -229,7 +226,7 @@ variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulCommClass 
 
 variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass T A M]
 
-instance (priority := 100) : SMul S (Derivation R A M) :=
+instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
     { toLinearMap := r • D.1
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
@@ -260,7 +257,7 @@ def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   map_add' := coe_add
 #align derivation.coe_fn_add_monoid_hom Derivation.coeFnAddMonoidHom
 
-instance (priority := 100) : DistribMulAction S (Derivation R A M) :=
+instance : DistribMulAction S (Derivation R A M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] : IsCentralScalar S (Derivation R A M)
@@ -274,7 +271,7 @@ instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
 
 end Scalar
 
-instance (priority := 100) instModule {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
+instance instModule {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulCommClass S A M] : Module S (Derivation R A M) :=
   Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
@@ -316,7 +313,7 @@ def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A
   map_smul' r D := by ext; rfl
 #align derivation.llcomp Derivation.llcomp
 
-/-- Pushing a derivation foward through a linear equivalence is an equivalence. -/
+/-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
 def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer

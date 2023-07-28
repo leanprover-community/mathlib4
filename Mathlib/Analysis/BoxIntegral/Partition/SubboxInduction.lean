@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.subbox_induction
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+
+#align_import analysis.box_integral.partition.subbox_induction from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Induction on subboxes
@@ -48,7 +45,7 @@ namespace Prepartition
 def splitCenter (I : Box ι) : Prepartition I where
   boxes := Finset.univ.map (Box.splitCenterBoxEmb I)
   le_of_mem' := by simp [I.splitCenterBox_le]
-  PairwiseDisjoint := by
+  pairwiseDisjoint := by
     rw [Finset.coe_map, Finset.coe_univ, image_univ]
     rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ Hne
     exact I.disjoint_splitCenterBox (mt (congr_arg _) Hne)

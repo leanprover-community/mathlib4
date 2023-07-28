@@ -2,14 +2,10 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
-Ported by: Rémy Degenne
-
-! This file was ported from Lean 3 source module data.nat.log
-! leanprover-community/mathlib commit 3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Pow
+
+#align_import data.nat.log from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
 
 /-!
 # Natural number logarithms
@@ -116,7 +112,7 @@ theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ 
 
 theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log b y := by
   rcases ne_or_eq y 0 with (hy | rfl)
-  exacts[(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
+  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
 #align nat.le_log_of_pow_le Nat.le_log_of_pow_le
 
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=

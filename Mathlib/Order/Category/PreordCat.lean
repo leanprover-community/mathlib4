@@ -2,16 +2,13 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.Preord
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Order.Hom.Basic
+
+#align_import order.category.Preord from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # Category of preorders
@@ -40,6 +37,7 @@ instance : BundledHom @OrderHom where
 
 deriving instance LargeCategory for PreordCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory PreordCat :=
   BundledHom.concreteCategory _
 
@@ -91,8 +89,8 @@ set_option linter.uppercaseLean3 false in
 def dualEquiv : PreordCat ≌ PreordCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align Preord.dual_equiv PreordCat.dualEquiv
 

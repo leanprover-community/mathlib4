@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.adjoin_root
-! leanprover-community/mathlib commit 5c4b3d41a84bd2a1d79c7d9265e58a891e71be89
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Polynomial.FieldDivision
@@ -17,6 +12,8 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
+
+#align_import ring_theory.adjoin_root from "leanprover-community/mathlib"@"5c4b3d41a84bd2a1d79c7d9265e58a891e71be89"
 
 /-!
 # Adjoining roots of polynomials
@@ -240,7 +237,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
   induction x using AdjoinRoot.induction_on with
-    | ih p =>  exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
+    | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
 
 @[simp]
@@ -350,18 +347,18 @@ theorem liftHom_of {x : R} : liftHom f a hfx (of f x) = algebraMap _ _ x :=
 section AdjoinInv
 
 @[simp]
-theorem root_is_inv (r : R) : of _ r * root (C r * X - 1) = 1 := by
+theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
   convert sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
-#align adjoin_root.root_is_inv AdjoinRoot.root_is_inv
+#align adjoin_root.root_is_inv AdjoinRoot.root_isInv
 
 theorem algHom_subsingleton {S : Type _} [CommRing S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
       (@inv_unique _ _ (algebraMap R S r) _ _
-        (by rw [← f.commutes, ← f.map_mul, algebraMap_eq, root_is_inv, map_one])
-        (by rw [← g.commutes, ← g.map_mul, algebraMap_eq, root_is_inv, map_one]))⟩
+        (by rw [← f.commutes, ← f.map_mul, algebraMap_eq, root_isInv, map_one])
+        (by rw [← g.commutes, ← g.map_mul, algebraMap_eq, root_isInv, map_one]))⟩
 #align adjoin_root.alg_hom_subsingleton AdjoinRoot.algHom_subsingleton
 
 end AdjoinInv
@@ -402,8 +399,8 @@ noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
       -- porting note: was
       -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
       convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
-      . simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
-      . simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
     qsmul := (· • ·)
     qsmul_eq_mul' := fun a x =>
       -- porting note: I gave the explicit motive and changed `rw` to `simp`.

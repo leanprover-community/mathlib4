@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.erase_lead
-! leanprover-community/mathlib commit fa256f00ce018e7b40e1dc756e403c86680bf448
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import data.polynomial.erase_lead from "leanprover-community/mathlib"@"fa256f00ce018e7b40e1dc756e403c86680bf448"
 
 /-!
 # Erase the leading term of a univariate polynomial
@@ -308,7 +305,7 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
 
 theorem card_support_eq {n : ℕ} :
     f.support.card = n ↔
-      ∃ (k : Fin n → ℕ)(x : Fin n → R)(hk : StrictMono k)(hx : ∀ i, x i ≠ 0),
+      ∃ (k : Fin n → ℕ) (x : Fin n → R) (hk : StrictMono k) (hx : ∀ i, x i ≠ 0),
         f = ∑ i, C (x i) * X ^ k i := by
   refine' ⟨_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
   induction' n with n hn generalizing f
@@ -322,14 +319,15 @@ theorem card_support_eq {n : ℕ} :
       ⟨Function.extend Fin.castSucc k fun _ => f.natDegree,
         Function.extend Fin.castSucc x fun _ => f.leadingCoeff, _, _, _⟩
     · intro i j hij
-      have hi : i ∈ Set.range (Fin.castSucc : Fin n ↪o Fin (n + 1)) := by
+      have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
         rw [Fin.range_castSucc, Set.mem_def]
         exact lt_of_lt_of_le hij (Nat.lt_succ_iff.mp j.2)
       obtain ⟨i, rfl⟩ := hi
-      rw [Fin.castSucc.injective.extend_apply]
+      rw [Fin.strictMono_castSucc.injective.extend_apply]
       by_cases hj : ∃ j₀, Fin.castSucc j₀ = j
       · obtain ⟨j, rfl⟩ := hj
-        rwa [Fin.castSucc.injective.extend_apply, hk.lt_iff_lt, ← Fin.castSucc_lt_castSucc_iff]
+        rwa [Fin.strictMono_castSucc.injective.extend_apply, hk.lt_iff_lt,
+          ← Fin.castSucc_lt_castSucc_iff]
       · rw [Function.extend_apply' _ _ _ hj]
         apply lt_natDegree_of_mem_eraseLead_support
         rw [mem_support_iff, hf, finset_sum_coeff]
@@ -341,12 +339,12 @@ theorem card_support_eq {n : ℕ} :
     · intro i
       by_cases hi : ∃ i₀, Fin.castSucc i₀ = i
       · obtain ⟨i, rfl⟩ := hi
-        rw [Fin.castSucc.injective.extend_apply]
+        rw [Fin.strictMono_castSucc.injective.extend_apply]
         exact hx i
       · rw [Function.extend_apply' _ _ _ hi, Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, h]
         exact n.succ_ne_zero
     · rw [Fin.sum_univ_castSucc]
-      simp only [Fin.castSucc.injective.extend_apply]
+      simp only [Fin.strictMono_castSucc.injective.extend_apply]
       rw [← hf, Function.extend_apply', Function.extend_apply', eraseLead_add_C_mul_X_pow]
       all_goals exact H
 #align polynomial.card_support_eq Polynomial.card_support_eq
@@ -362,7 +360,8 @@ theorem card_support_eq_one : f.support.card = 1 ↔
 
 theorem card_support_eq_two :
     f.support.card = 2 ↔
-      ∃ (k m : ℕ)(hkm : k < m)(x y : R)(hx : x ≠ 0)(hy : y ≠ 0), f = C x * X ^ k + C y * X ^ m := by
+      ∃ (k m : ℕ) (hkm : k < m) (x y : R) (hx : x ≠ 0) (hy : y ≠ 0),
+        f = C x * X ^ k + C y * X ^ m := by
   refine' ⟨fun h => _, _⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
     refine' ⟨k 0, k 1, hk Nat.zero_lt_one, x 0, x 1, hx 0, hx 1, _⟩
@@ -374,7 +373,7 @@ theorem card_support_eq_two :
 
 theorem card_support_eq_three :
     f.support.card = 3 ↔
-      ∃ (k m n : ℕ)(hkm : k < m)(hmn : m < n)(x y z : R)(hx : x ≠ 0)(hy : y ≠ 0)(hz : z ≠ 0),
+      ∃ (k m n : ℕ) (hkm : k < m) (hmn : m < n) (x y z : R) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0),
         f = C x * X ^ k + C y * X ^ m + C z * X ^ n := by
   refine' ⟨fun h => _, _⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h

@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.derivation.to_square_zero
-! leanprover-community/mathlib commit b608348ffaeb7f557f2fd46876037abafd326ff3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.derivation.to_square_zero from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
 /-!
 # Results
@@ -49,7 +46,7 @@ theorem diffToIdealOfQuotientCompEq_apply (f₁ f₂ : A →ₐ[R] B)
 variable [Algebra A B] [IsScalarTower R A B]
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : Ideal B`, each lift `A →ₐ[R] B`
-of the canonical map `A →ₐ[R] B ⧸ I` corresponds to a `R`-derivation from `A` to `I`. -/
+of the canonical map `A →ₐ[R] B ⧸ I` corresponds to an `R`-derivation from `A` to `I`. -/
 def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) :
     Derivation R A I := by
@@ -83,7 +80,7 @@ theorem derivationToSquareZeroOfLift_apply (f : A →ₐ[R] B)
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : Ideal B`, each `R`-derivation
 from `A` to `I` corresponds to a lift `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
-@[simps (config := { attrs := [] })]
+@[simps (config := { isSimp := false })]
 def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
   { ((I.restrictScalars R).subtype.comp f.toLinearMap + (IsScalarTower.toAlgHom R A B).toLinearMap :
       A →ₗ[R] B) with
@@ -117,7 +114,7 @@ theorem liftOfDerivationToSquareZero_mk_apply' (d : Derivation R A I) (x : A) :
   simp only [Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop, zero_add]
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : ideal B`,
-there is a 1-1 correspondance between `R`-derivations from `A` to `I` and
+there is a 1-1 correspondence between `R`-derivations from `A` to `I` and
 lifts `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
 @[simps!]
 def derivationToSquareZeroEquivLift : Derivation R A I ≃

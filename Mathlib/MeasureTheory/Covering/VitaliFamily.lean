@@ -2,13 +2,10 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.vitali_family
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.covering.vitali_family from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Vitali families
@@ -190,10 +187,10 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
   setsAt x := v.setsAt x ∪ { a | MeasurableSet a ∧ (interior a).Nonempty ∧ ¬a ⊆ closedBall x δ }
   MeasurableSet' x a ha := by
     cases' ha with ha ha
-    exacts[v.MeasurableSet' _ _ ha, ha.1]
+    exacts [v.MeasurableSet' _ _ ha, ha.1]
   nonempty_interior x a ha := by
     cases' ha with ha ha
-    exacts[v.nonempty_interior _ _ ha, ha.2.1]
+    exacts [v.nonempty_interior _ _ ha, ha.2.1]
   Nontrivial := by
     intro x ε εpos
     rcases v.Nontrivial x ε εpos with ⟨a, ha, h'a⟩

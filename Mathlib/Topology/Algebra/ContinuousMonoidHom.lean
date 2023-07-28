@@ -2,14 +2,11 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module topology.algebra.continuous_monoid_hom
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Topology.ContinuousFunction.Algebra
+
+#align_import topology.algebra.continuous_monoid_hom from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 
@@ -24,9 +21,7 @@ This file defines the space of continuous homomorphisms between two topological 
 -/
 
 
-open Pointwise
-
-open Function
+open Pointwise Function
 
 variable (F A B C D E : Type _) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
@@ -117,7 +112,7 @@ instance ContinuousMonoidHom.ContinuousMonoidHomClass :
 /-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`FunLike.hasCoeToFun`."]
+      "Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`."]
 instance : CoeFun (ContinuousMonoidHom A B) fun _ => A → B :=
   FunLike.hasCoeToFun
 
@@ -142,7 +137,7 @@ theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) 
 
 -- porting note: Removed simps because given definition is not a constructor application
 /-- Construct a `ContinuousMonoidHom` from a `Continuous` `MonoidHom`. -/
-@[to_additive "Construct a `ContinuousAddMonoidHom` from a `continuous` `AddMonoidHom`."]
+@[to_additive "Construct a `ContinuousAddMonoidHom` from a `Continuous` `AddMonoidHom`."]
 def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
   { f with continuous_toFun := (hf : Continuous f.toFun)}
 #align continuous_monoid_hom.mk' ContinuousMonoidHom.mk'
@@ -385,7 +380,7 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
 variable (E)
 
 /-- `ContinuousMonoidHom _ f` is a functor. -/
-@[to_additive "`continuous_add_monoid_hom _ f` is a functor."]
+@[to_additive "`ContinuousAddMonoidHom _ f` is a functor."]
 def compLeft (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
@@ -398,7 +393,7 @@ def compLeft (f : ContinuousMonoidHom A B) :
 variable (A) {E}
 
 /-- `ContinuousMonoidHom f _` is a functor. -/
-@[to_additive "`continuous_add_monoid_hom f _` is a functor."]
+@[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
 def compRight {B : Type _} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
@@ -471,20 +466,19 @@ theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
 
 
 @[simp]
--- porting note: Renamed to map_mul', since it shadows the underlying lemma used.
-theorem map_mul' (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
+nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
   ext fun x => ext fun y => map_mul x (f y) (g y)
-#align pontryagin_dual.map_mul PontryaginDual.map_mul'
+#align pontryagin_dual.map_mul PontryaginDual.map_mul
 
 variable (A B C D E)
 
-/-- `continuous_monoid_hom.dual` as a `ContinuousMonoidHom`. -/
+/-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
 noncomputable def mapHom [LocallyCompactSpace E] :
     ContinuousMonoidHom (ContinuousMonoidHom A E)
       (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
   toFun := map
   map_one' := map_one
-  map_mul' := map_mul'
+  map_mul' := map_mul
   continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
 #align pontryagin_dual.map_hom PontryaginDual.mapHom
 

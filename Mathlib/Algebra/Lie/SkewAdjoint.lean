@@ -2,14 +2,12 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.skew_adjoint
-! leanprover-community/mathlib commit 075b3f7d19b9da85a0b54b3e33055a74fc388dec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
+import Mathlib.Tactic.NoncommRing
+
+#align_import algebra.lie.skew_adjoint from "leanprover-community/mathlib"@"075b3f7d19b9da85a0b54b3e33055a74fc388dec"
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form
@@ -18,7 +16,7 @@ When a module carries a bilinear form, the Lie algebra of endomorphisms of the m
 distinguished Lie subalgebra: the skew-adjoint endomorphisms. Such subalgebras are important
 because they provide a simple, explicit construction of the so-called classical Lie algebras.
 
-This file defines the Lie subalgebra of skew-adjoint endomorphims cut out by a bilinear form on
+This file defines the Lie subalgebra of skew-adjoint endomorphisms cut out by a bilinear form on
 a module and proves some basic related results. It also provides the corresponding definitions and
 results for the Lie algebra of square matrices.
 
@@ -112,8 +110,7 @@ theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjoin
   rw [Matrix.lie_transpose, LieRing.of_associative_ring_bracket,
     LieRing.of_associative_ring_bracket, sub_mul, mul_assoc, mul_assoc, hA, hB, ← mul_assoc,
     ← mul_assoc, hA, hB]
-  --noncomm_ring -- Porting note: This tactic doesn't exist yet, so write a new `rw`
-  rw [neg_sub, mul_sub_left_distrib, mul_assoc, mul_assoc, neg_mul_neg, neg_mul_neg]
+  noncomm_ring
 #align matrix.is_skew_adjoint_bracket Matrix.isSkewAdjoint_bracket
 
 /-- The Lie subalgebra of skew-adjoint square matrices corresponding to a square matrix `J`. -/

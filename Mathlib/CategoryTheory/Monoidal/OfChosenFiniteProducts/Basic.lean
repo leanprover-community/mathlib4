@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Simon Hudon
-
-! This file was ported from Lean 3 source module category_theory.monoidal.of_chosen_finite_products.basic
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.PEmpty
+
+#align_import category_theory.monoidal.of_chosen_finite_products.basic from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 # The monoidal structure on a category with chosen finite products.
@@ -183,10 +180,6 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
     (L X (L Y Z).cone.pt).isLimit
 #align category_theory.limits.binary_fan.associator_of_limit_cone CategoryTheory.Limits.BinaryFan.associatorOfLimitCone
 
--- Porting note: no tidy
--- attribute [local tidy] tactic.discrete_cases
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- Construct a left unitor from specified limit cones.
 -/
 @[simps]
@@ -202,6 +195,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
             -- `PEmpty.rec x x` should not even typecheck.
             { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } })
         (𝟙 X))
+  -- Porting note: this should be automatable:
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩

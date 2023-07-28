@@ -2,14 +2,11 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.transfer
-! leanprover-community/mathlib commit 56489b558d42c30f6aac5947cafc9a594f60813b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
+
+#align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # The Transfer Homomorphism
@@ -20,12 +17,12 @@ In this file we construct the transfer homomorphism.
 
 - `diff ϕ S T` : The difference of two left transversals `S` and `T` under the homomorphism `ϕ`.
 - `transfer ϕ` : The transfer homomorphism induced by `ϕ`.
-- `transfer_center_pow`: The transfer homomorphism `G →* center G`.
+- `transferCenterPow`: The transfer homomorphism `G →* center G`.
 
 ## Main results
-- `transfer_center_pow_apply`:
+- `transferCenterPow_apply`:
   The transfer homomorphism `G →* center G` is given by `g ↦ g ^ (center G).index`.
-- `ker_transfer_sylow_is_complement'`: Burnside's transfer (or normal `p`-complement) theorem:
+- `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
   If `hP : N(P) ≤ C(P)`, then `(transfer P hP).ker` is a normal `p`-complement.
 -/
 
@@ -133,21 +130,20 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     letI := H.fintypeQuotientOfFiniteIndex
     calc
       transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
-      _ = _ := ((quotientEquivSigmaZmod H g).symm.prod_comp _).symm
+      _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
       _ = _ := (Finset.prod_sigma _ _ _)
       _ = _ := by
         refine' Fintype.prod_congr _ _ (fun q => _)
-        simp only [quotientEquivSigmaZmod_symm_apply, transferTransversal_apply',
+        simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod ((· • ·) g) q.out')) _]
         · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
         · intro k hk
           simp only [if_neg hk, inv_mul_self]
           exact map_one ϕ
-#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot
-  MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
+#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
-/-- Auxillary lemma in order to state `transfer_eq_pow`. -/
+/-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     g ^ H.index ∈ H := by
@@ -213,7 +209,7 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 
 section BurnsideTransfer
 
-variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ (P : Subgroup G).centralizer)
+variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
@@ -225,24 +221,24 @@ noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Sub
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
-/-- Auxillary lemma in order to state `transfer_sylow_eq_pow`. -/
-theorem transfer_sylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
+/-- Auxiliary lemma in order to state `transferSylow_eq_pow`. -/
+theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   haveI : (P : Subgroup G).IsCommutative :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   replace hg := (P : Subgroup G).pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
-#align monoid_hom.transfer_sylow_eq_pow_aux MonoidHom.transfer_sylow_eq_pow_aux
+#align monoid_hom.transfer_sylow_eq_pow_aux MonoidHom.transferSylow_eq_pow_aux
 
 variable [FiniteIndex (P : Subgroup G)]
 
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
-      ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transfer_sylow_eq_pow_aux P hP g hg)⟩ :=
+      ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
   @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩) _ _ g
-      (transfer_sylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
+      (transferSylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
@@ -263,7 +259,7 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
     ker_restrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
-  exact IsComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
+  exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 #align monoid_hom.ker_transfer_sylow_is_complement' MonoidHom.ker_transferSylow_isComplement'
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=

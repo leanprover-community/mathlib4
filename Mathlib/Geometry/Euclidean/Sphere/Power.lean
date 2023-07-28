@@ -2,14 +2,11 @@
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales, Benjamin Davidson
-
-! This file was ported from Lean 3 source module geometry.euclidean.sphere.power
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.Geometry.Euclidean.Sphere.Basic
+
+#align_import geometry.euclidean.sphere.power from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -129,7 +126,7 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
   obtain ⟨-, k₂, -, hcd₁⟩ := angle_eq_zero_iff.mp hcpd
   refine' mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, _, hab₁⟩ ⟨k₂, _, hcd₁⟩ <;> by_contra hnot <;>
     simp_all only [Classical.not_not, one_smul]
-  exacts[hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
+  exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
 #align euclidean_geometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero
 
 end EuclideanGeometry

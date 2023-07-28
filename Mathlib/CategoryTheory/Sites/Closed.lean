@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.closed
-! leanprover-community/mathlib commit 4cfc30e317caad46858393f1a7a33f609296cc30
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.Order.Closure
+
+#align_import category_theory.sites.closed from "leanprover-community/mathlib"@"4cfc30e317caad46858393f1a7a33f609296cc30"
 
 /-!
 # Closed sieves
@@ -192,7 +189,7 @@ def Functor.closedSieves : Cᵒᵖ ⥤ Type max v u where
 #align category_theory.functor.closed_sieves CategoryTheory.Functor.closedSieves
 
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
-The proof of this is adapted from [MM92], Chatper III, Section 7, Lemma 1.
+The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 -/
 theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) := by
   intro X S hS
@@ -200,15 +197,13 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
   refine' ⟨_, _⟩
   · rintro x ⟨M, hM⟩ ⟨N, hN⟩ hM₂ hN₂
     simp only [Functor.closedSieves_obj]
-    ext Y
-    intro f
+    ext Y f
     dsimp only [Subtype.coe_mk]
     rw [← J₁.covers_iff_mem_of_isClosed hM, ← J₁.covers_iff_mem_of_isClosed hN]
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
       fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
     have MSNS : M ⊓ S = N ⊓ S := by
-      ext Z
-      intro g
+      ext Z g
       rw [Sieve.inter_apply, Sieve.inter_apply]
       simp only [and_comm]
       apply and_congr_right
@@ -315,15 +310,14 @@ The topology given by the closure operator `J.close` on a Grothendieck topology 
 -/
 theorem topologyOfClosureOperator_self :
     (topologyOfClosureOperator J₁.closureOperator fun X Y => J₁.pullback_close) = J₁ := by
-  ext (X S)
+  ext X S
   apply GrothendieckTopology.close_eq_top_iff_mem
 #align category_theory.topology_of_closure_operator_self CategoryTheory.topologyOfClosureOperator_self
 
 theorem topologyOfClosureOperator_close (c : ∀ X : C, ClosureOperator (Sieve X))
     (pb : ∀ ⦃X Y : C⦄ (f : Y ⟶ X) (S : Sieve X), c Y (S.pullback f) = (c X S).pullback f) (X : C)
     (S : Sieve X) : (topologyOfClosureOperator c pb).close S = c X S := by
-  ext Y
-  intro f
+  ext Y f
   change c _ (Sieve.pullback f S) = ⊤ ↔ c _ S f
   rw [pb, Sieve.pullback_eq_top_iff_mem]
 #align category_theory.topology_of_closure_operator_close CategoryTheory.topologyOfClosureOperator_close

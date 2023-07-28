@@ -2,11 +2,6 @@
 Copyright (c) 2020 Zhangir Azerbayev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
-
-! This file was ported from Lean 3 source module linear_algebra.alternating
-! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Perm.Sign
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.Perm.Subgroup
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.Multilinear.Basis
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+
+#align_import linear_algebra.alternating from "leanprover-community/mathlib"@"bd65478311e4dfd41f48bf38c7e3b02fb75d0163"
 
 /-!
 # Alternating Maps
@@ -74,7 +71,8 @@ variable (R M N ι)
 /-- An alternating map is a multilinear map that vanishes when two of its arguments are equal.
 -/
 structure AlternatingMap extends MultilinearMap R (fun _ : ι => M) N where
-  map_eq_zero_of_eq' : ∀ (v : ι → M) (i j : ι) (_ : v i = v j) (_ : i ≠ j), toFun v = 0
+  /-- The map is alternating: if `v` has two equal coordinates, then `f v = 0`. -/
+  map_eq_zero_of_eq' : ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → toFun v = 0
 #align alternating_map AlternatingMap
 
 end
@@ -232,7 +230,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
 
 theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 := by
   rw [Function.Injective] at hv
-  push_neg  at hv
+  push_neg at hv
   rcases hv with ⟨i₁, i₂, heq, hne⟩
   exact f.map_eq_zero_of_eq v heq hne
 #align alternating_map.map_eq_zero_of_not_injective AlternatingMap.map_eq_zero_of_not_injective
@@ -358,6 +356,11 @@ theorem coe_zero : ((0 : AlternatingMap R M N ι) : MultilinearMap R (fun _ : ι
   rfl
 #align alternating_map.coe_zero AlternatingMap.coe_zero
 
+@[simp]
+theorem mk_zero :
+    mk (0 : MultilinearMap R (fun _ : ι ↦ M) N) (0 : AlternatingMap R M N ι).2 = 0 :=
+  rfl
+
 instance inhabited : Inhabited (AlternatingMap R M N ι) :=
   ⟨0⟩
 #align alternating_map.inhabited AlternatingMap.inhabited
@@ -482,7 +485,7 @@ namespace LinearMap
 
 variable {N₂ : Type _} [AddCommMonoid N₂] [Module R N₂]
 
-/-- Composing a alternating map with a linear map on the left gives again an alternating map. -/
+/-- Composing an alternating map with a linear map on the left gives again an alternating map. -/
 def compAlternatingMap (g : N →ₗ[R] N₂) : AlternatingMap R M N ι →+ AlternatingMap R M N₂ ι where
   toFun f :=
     { g.compMultilinearMap (f : MultilinearMap R (fun _ : ι => M) N) with
@@ -535,7 +538,7 @@ variable {M₂ : Type _} [AddCommMonoid M₂] [Module R M₂]
 
 variable {M₃ : Type _} [AddCommMonoid M₃] [Module R M₃]
 
-/-- Composing a alternating map with the same linear map on each argument gives again an
+/-- Composing an alternating map with the same linear map on each argument gives again an
 alternating map. -/
 def compLinearMap (f : AlternatingMap R M N ι) (g : M₂ →ₗ[R] M) : AlternatingMap R M₂ N ι :=
   { (f : MultilinearMap R (fun _ : ι => M) N).compLinearMap fun _ => g with

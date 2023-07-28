@@ -2,12 +2,6 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.ring.defs
-! leanprover-community/mathlib commit 44e29dbcff83ba7114a464d592b8c3743987c1e5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
@@ -20,6 +14,8 @@ import Mathlib.Order.MinMax
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Algebra.Group.Units
+
+#align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
 /-!
 # Ordered rings and semirings
@@ -1033,7 +1029,7 @@ instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α 
       intro a b hab
       refine' Decidable.or_iff_not_and_not.2 fun h => _; revert hab
       cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
-      exacts[(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
+      exacts [(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
         (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
 #align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
 
@@ -1175,7 +1171,7 @@ theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
     exact h.false
   · intro h
     cases' h.lt_or_lt with h h
-    exacts[mul_pos_of_neg_of_neg h h, mul_pos h h]
+    exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 #align mul_self_pos mul_self_pos
 
 theorem mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=

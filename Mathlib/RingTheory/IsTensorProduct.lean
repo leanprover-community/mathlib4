@@ -2,24 +2,21 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.is_tensor_product
-! leanprover-community/mathlib commit c4926d76bb9c5a4a62ed2f03d998081786132105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.Algebra.Module.ULift
 
+#align_import ring_theory.is_tensor_product from "leanprover-community/mathlib"@"c4926d76bb9c5a4a62ed2f03d998081786132105"
+
 /-!
-# The characteristice predicate of tensor product
+# The characteristic predicate of tensor product
 
 ## Main definitions
 
 - `IsTensorProduct`: A predicate on `f : M₁ →ₗ[R] M₂ →ₗ[R] M` expressing that `f` realizes `M` as
   the tensor product of `M₁ ⊗[R] M₂`. This is defined by requiring the lift `M₁ ⊗[R] M₂ → M` to be
   bijective.
-- `IsBaseChange`: A predicate on an `R`-algebra `S` and a map `f : M →ₗ[R] N` with `N` being a
+- `IsBaseChange`: A predicate on an `R`-algebra `S` and a map `f : M →ₗ[R] N` with `N` being an
   `S`-module, expressing that `f` realizes `N` as the base change of `M` along `R → S`.
 - `Algebra.IsPushout`: A predicate on the following diagram of scalar towers
   ```
@@ -225,7 +222,7 @@ variable (R M N S)
 theorem TensorProduct.isBaseChange : IsBaseChange S (TensorProduct.mk R S M 1) := by
   delta IsBaseChange
   convert TensorProduct.isTensorProduct R S M using 1
-  ext (s x)
+  ext s x
   change s • (1 : S) ⊗ₜ[R] x = s ⊗ₜ[R] x
   rw [TensorProduct.smul_tmul']
   congr 1
@@ -449,10 +446,10 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
     · rw [MulZeroClass.zero_mul, map_zero, MulZeroClass.zero_mul]
     rotate_left
     · intro s s' e
-      dsimp only [LinearMap.restrictScalars_apply] at e⊢
+      dsimp only [LinearMap.restrictScalars_apply] at e ⊢
       rw [LinearMap.map_smul, smul_mul_assoc, LinearMap.map_smul, e, smul_mul_assoc]
     · intro s s' e₁ e₂
-      dsimp only [LinearMap.restrictScalars_apply] at e₁ e₂⊢
+      dsimp only [LinearMap.restrictScalars_apply] at e₁ e₂ ⊢
       rw [add_mul, map_add, map_add, add_mul, e₁, e₂]
     intro x
     dsimp

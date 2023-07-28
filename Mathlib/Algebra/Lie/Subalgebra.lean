@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.subalgebra
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.RingTheory.Noetherian
+
+#align_import algebra.lie.subalgebra from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
 /-!
 # Lie subalgebras
@@ -42,7 +39,7 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
 This is a sufficient condition for the subset itself to form a Lie algebra. -/
 structure LieSubalgebra extends Submodule R L where
-  /-- An Lie subalgebra is closed under Lie bracket. -/
+  /-- A Lie subalgebra is closed under Lie bracket. -/
   lie_mem' : ∀ {x y}, x ∈ carrier → y ∈ carrier → ⁅x, y⁆ ∈ carrier
 #align lie_subalgebra LieSubalgebra
 

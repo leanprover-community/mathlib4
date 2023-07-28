@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.products
-! leanprover-community/mathlib commit e11bafa5284544728bd3b189942e930e0d4701de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.DiscreteCategory
+
+#align_import category_theory.limits.shapes.products from "leanprover-community/mathlib"@"e11bafa5284544728bd3b189942e930e0d4701de"
 
 /-!
 # Categorical (co)products
@@ -51,7 +48,6 @@ variable {C : Type u} [Category.{v} C]
 
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
 -- or `(Co)span`, since we already have `Discrete.functor`.
---attribute [local tidy] tactic.discrete_cases -- Porting note: no tidy
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
 abbrev Fan (f : β → C) :=
@@ -107,9 +103,7 @@ def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
     (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j)
     (uniq : ∀ (s : Fan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, m ≫ t.proj j = s.proj j), m = lift s) :
     IsLimit t :=
-  { lift
-    fac := fun s j => fac s j.as
-    uniq := fun s m w => uniq s m fun j => w (Discrete.mk j) }
+  { lift }
 #align category_theory.limits.mk_fan_limit CategoryTheory.Limits.mkFanLimit
 
 section
@@ -143,10 +137,10 @@ abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
 #align category_theory.limits.sigma_obj CategoryTheory.Limits.sigmaObj
 
 /-- notation for categorical products -/
-notation "∏ " f:20 => piObj f
+notation "∏ " f:60 => piObj f
 
 /-- notation for categorical coproducts -/
-notation "∐ " f:20 => sigmaObj f
+notation "∐ " f:60 => sigmaObj f
 
 /-- The `b`-th projection from the pi object over `f` has the form `∏ f ⟶ f b`. -/
 abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ f ⟶ f b :=
@@ -160,7 +154,7 @@ abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
 
 -- porting note: added the next two lemmas to ease automation; without these lemmas,
 -- `limit.hom_ext` would be applied, but the goal would involve terms
--- in `Discete β` rather than `β` itself
+-- in `Discrete β` rather than `β` itself
 @[ext 1050]
 lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
     (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
@@ -168,18 +162,17 @@ lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
 
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
-    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂ ) : g₁ = g₂ :=
+    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂) : g₁ = g₂ :=
   colimit.hom_ext (fun ⟨j⟩ => h j)
 
 /-- The fan constructed of the projections from the product is limiting. -/
 def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
-  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cones.ext (Iso.refl _) (by aesop_cat))
+  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cones.ext (Iso.refl _))
 #align category_theory.limits.product_is_product CategoryTheory.Limits.productIsProduct
 
 /-- The cofan constructed of the inclusions from the coproduct is colimiting. -/
 def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
-  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
-    (Cocones.ext (Iso.refl _) (by aesop_cat))
+  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocones.ext (Iso.refl _))
 #align category_theory.limits.coproduct_is_coproduct CategoryTheory.Limits.coproductIsCoproduct
 
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ f`. -/
@@ -239,7 +232,7 @@ variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
 variable (f : β → C)
 
 /-- The comparison morphism for the product of `f`. This is an iso iff `G` preserves the product
-of `f`, see `PreservesProduct.ofIsoComparison.of_iso_comparison`. -/
+of `f`, see `PreservesProduct.ofIsoComparison`. -/
 def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
     G.obj (∏ f) ⟶ ∏ fun b => G.obj (f b) :=
   Pi.lift fun b => G.map (Pi.π f b)
@@ -260,9 +253,9 @@ theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (
 #align category_theory.limits.map_lift_pi_comparison CategoryTheory.Limits.map_lift_piComparison
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
-of `f`, see `PreservesCoroduct.ofIsoComparison.of_iso_comparison`. -/
+of `f`, see `PreservesCoproduct.ofIsoComparison`. -/
 def sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] :
-    (∐ fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
+    ∐ (fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
   Sigma.desc fun b => G.map (Sigma.ι f b)
 #align category_theory.limits.sigma_comparison CategoryTheory.Limits.sigmaComparison
 
@@ -336,14 +329,12 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
         apply Subsingleton.elim)) }
   isLimit :=
     { lift := fun s => s.π.app default
-      fac := fun s j  => by
+      fac := fun s j => by
         have h := Subsingleton.elim j default
         subst h
-        dsimp
         simp
       uniq := fun s m w => by
         specialize w default
-        dsimp at w
         simpa using w }
 #align category_theory.limits.limit_cone_of_unique CategoryTheory.Limits.limitConeOfUnique
 
@@ -351,7 +342,7 @@ instance (priority := 100) hasProduct_unique : HasProduct f :=
   HasLimit.mk (limitConeOfUnique f)
 #align category_theory.limits.has_product_unique CategoryTheory.Limits.hasProduct_unique
 
-/-- A product over a index type with exactly one term is just the object over that term. -/
+/-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def productUniqueIso : ∏ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
@@ -375,7 +366,6 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default
-        dsimp at w
         erw [Category.id_comp] at w
         exact w }
 #align category_theory.limits.colimit_cocone_of_unique CategoryTheory.Limits.colimitCoconeOfUnique
@@ -384,7 +374,7 @@ instance (priority := 100) hasCoproduct_unique : HasCoproduct f :=
   HasColimit.mk (colimitCoconeOfUnique f)
 #align category_theory.limits.has_coproduct_unique CategoryTheory.Limits.hasCoproduct_unique
 
-/-- A coproduct over a index type with exactly one term is just the object over that term. -/
+/-- A coproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def coproductUniqueIso : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit

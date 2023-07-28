@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.lebesgue.basic
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.LinearAlgebra.Determinant
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+#align_import measure_theory.measure.lebesgue.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Lebesgue measure on the real line and on `ℝⁿ`
@@ -27,8 +24,9 @@ Lebesgue measure on `ℝⁿ`. In particular, we prove that they are translation 
 We show that, on `ℝⁿ`, a linear map acts on Lebesgue measure by rescaling it through the absolute
 value of its determinant, in `Real.map_linearMap_volume_pi_eq_smul_volume_pi`.
 
-More properties of the Lebesgue measure are deduced from this in `Lebesgue.EqHaar.lean`, where they
-are proved more generally for any additive Haar measure on a finite-dimensional real vector space.
+More properties of the Lebesgue measure are deduced from this in
+`Mathlib/MeasureTheory/Measure/Lebesgue/EqHaar.lean`, where they are proved more generally for any
+additive Haar measure on a finite-dimensional real vector space.
 -/
 
 
@@ -139,7 +137,7 @@ instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
 #align real.has_no_atoms_volume Real.noAtoms_volume
 
 @[simp]
-theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal (|b - a|) := by
+theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
   rw [← Icc_min_max, volume_Icc, max_sub_min_eq_abs]
 #align real.volume_interval Real.volume_interval
 
@@ -295,7 +293,7 @@ theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam
 
 
 theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
-    ENNReal.ofReal (|a|) • Measure.map (a * ·) volume = volume := by
+    ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
   refine' (Real.measure_ext_Ioo_rat fun p q => _).symm
   cases' lt_or_gt_of_ne h with h h
   · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
@@ -308,7 +306,7 @@ theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
 #align real.smul_map_volume_mul_left Real.smul_map_volume_mul_left
 
 theorem map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
-    Measure.map (a * ·) volume = ENNReal.ofReal (|a⁻¹|) • volume := by
+    Measure.map (a * ·) volume = ENNReal.ofReal |a⁻¹| • volume := by
   conv_rhs =>
     rw [← Real.smul_map_volume_mul_left h, smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ←
       abs_mul, inv_mul_cancel h, abs_one, ENNReal.ofReal_one, one_smul]
@@ -324,12 +322,12 @@ theorem volume_preimage_mul_left {a : ℝ} (h : a ≠ 0) (s : Set ℝ) :
 #align real.volume_preimage_mul_left Real.volume_preimage_mul_left
 
 theorem smul_map_volume_mul_right {a : ℝ} (h : a ≠ 0) :
-    ENNReal.ofReal (|a|) • Measure.map (· * a) volume = volume := by
+    ENNReal.ofReal |a| • Measure.map (· * a) volume = volume := by
   simpa only [mul_comm] using Real.smul_map_volume_mul_left h
 #align real.smul_map_volume_mul_right Real.smul_map_volume_mul_right
 
 theorem map_volume_mul_right {a : ℝ} (h : a ≠ 0) :
-    Measure.map (· * a) volume = ENNReal.ofReal (|a⁻¹|) • volume := by
+    Measure.map (· * a) volume = ENNReal.ofReal |a⁻¹| • volume := by
   simpa only [mul_comm] using Real.map_volume_mul_left h
 #align real.map_volume_mul_right Real.map_volume_mul_right
 
@@ -391,7 +389,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   let e : (ι → ℝ) ≃ᵐ (α → ℝ) × (β → ℝ) := MeasurableEquiv.piEquivPiSubtypeProd (fun _ : ι => ℝ) p
   have : (toLin' t.toMatrix : (ι → ℝ) → ι → ℝ) = e.symm ∘ F ∘ e := by
     cases t with | mk t_i t_j t_hij t_c =>
-    ext (f k)
+    ext f k
     simp only [LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
       Algebra.id.smul_eq_mul, one_mul, dotProduct, stdBasisMatrix,
       MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id.def, transvection, Pi.add_apply,
@@ -426,8 +424,7 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
     Measure.map (toLin' M) volume = ENNReal.ofReal (abs (det M)⁻¹) • volume := by
   -- This follows from the cases we have already proved, of diagonal matrices and transvections,
   -- as these matrices generate all invertible matrices.
-  apply
-    diagonal_transvection_induction_of_det_ne_zero _ M hM
+  apply diagonal_transvection_induction_of_det_ne_zero _ M hM
   · intro D hD
     conv_rhs => rw [← smul_map_diagonal_volume_pi hD]
     rw [smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, inv_mul_cancel hD, abs_one,
@@ -594,7 +591,7 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
   let u := ⋃ i : ↥s × ↥s, T i
   have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
-    ∃ A : Set (↥s × ↥s), A.Countable ∧ (⋃ i ∈ A, T i) = ⋃ i : ↥s × ↥s, T i :=
+    ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
   have : s ⊆ s \ u ∪ ⋃ p ∈ A, s ∩ T p := by
     intro x hx
@@ -629,7 +626,7 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Se
   let u := ⋃ i : ↥s × ↥s, T i
   have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
-    ∃ A : Set (↥s × ↥s), A.Countable ∧ (⋃ i ∈ A, T i) = ⋃ i : ↥s × ↥s, T i :=
+    ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
   have M : ∀ᵐ x ∂μ, x ∉ s \ u := hfinite.countable.ae_not_mem _
   have M' : ∀ᵐ x ∂μ, ∀ (i : ↥s × ↥s), i ∈ A → x ∈ s ∩ T i → p x := by

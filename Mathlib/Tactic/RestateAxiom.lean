@@ -2,7 +2,6 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-Ported by: E.W.Ayers
 -/
 import Lean
 import Lean.Data
@@ -23,8 +22,8 @@ This is useful to remove `autoParam` or `optParam` from the statement.
 As an example, we have:
 ```lean
 structure A :=
-(x : ℕ)
-(a' : x = 1 . skip)
+  (x : ℕ)
+  (a' : x = 1 . skip)
 
 example (z : A) : z.x = 1 := by rw A.a' -- rewrite tactic failed, lemma is not an equality nor a iff
 

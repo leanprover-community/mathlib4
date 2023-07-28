@@ -2,13 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv_symmetric
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.MeanValue
+
+#align_import analysis.calculus.fderiv_symmetric from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # Symmetry of the second derivative
@@ -136,9 +134,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
         _ = h * ‖v‖ + t * (h * ‖w‖) := by
           simp only [norm_smul, Real.norm_eq_abs, hpos.le, abs_of_nonneg, abs_mul, ht.left,
             mul_assoc]
-        _ ≤ h * ‖v‖ + 1 * (h * ‖w‖) :=
-          (add_le_add le_rfl
-            (mul_le_mul_of_nonneg_right ht.2.le (mul_nonneg hpos.le (norm_nonneg _))))
+        _ ≤ h * ‖v‖ + 1 * (h * ‖w‖) := by gcongr; exact ht.2.le
         _ = h * (‖v‖ + ‖w‖) := by ring
     calc
       ‖g' t‖ = ‖(f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)) (h • w)‖ := by
@@ -157,10 +153,9 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
           exact I.trans_lt hδ
         simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel'] using sδ H
       _ ≤ ε * (‖h • v‖ + ‖h • w‖) * ‖h • w‖ := by
-        apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
-        apply mul_le_mul_of_nonneg_left _ εpos.le
+        gcongr
         apply (norm_add_le _ _).trans
-        refine' add_le_add le_rfl _
+        gcongr
         simp only [norm_smul, Real.norm_eq_abs, abs_mul, abs_of_nonneg, ht.1, hpos.le, mul_assoc]
         exact mul_le_of_le_one_left (mul_nonneg hpos.le (norm_nonneg _)) ht.2.le
       _ = ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by

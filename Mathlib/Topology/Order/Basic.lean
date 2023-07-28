@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.order.basic
-! leanprover-community/mathlib commit c985ae9840e06836a71db38de372f20acb49b790
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Pointwise.Interval
@@ -14,6 +9,8 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Support
 import Mathlib.Topology.Algebra.Order.LeftRight
+
+#align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
 /-!
 # Theory of topology on ordered spaces
@@ -57,7 +54,7 @@ see their statements.
 * `le_of_tendsto_of_tendsto` : if `f` converges to `a`, `g` converges to `b`, and eventually
   `f x ≤ g x`, then `a ≤ b`
 * `le_of_tendsto`, `ge_of_tendsto` : if `f` converges to `a` and eventually `f x ≤ b`
-  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a); we also provide primed versions
+  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a`); we also provide primed versions
   that assume the inequalities to hold for all `x`.
 
 ### Min, max, `sSup` and `sInf`
@@ -114,7 +111,7 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α]
 
 namespace Subtype
 
--- todo: add `OrderEmbedding.orderClosedtopology`
+-- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prod_map continuous_subtype_val
@@ -245,7 +242,7 @@ theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (h
   (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
 #align is_closed.hypograph IsClosed.hypograph
 
--- todo: move these lemmas to `Topology.Algebra.Order.LeftRight`
+-- Porting note: todo: move these lemmas to `Topology.Algebra.Order.LeftRight`
 theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
   nhdsWithin_neBot_of_mem H₂
 #align nhds_within_Ici_ne_bot nhdsWithin_Ici_neBot
@@ -801,51 +798,6 @@ theorem Dense.Iio_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x 
     Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
   Dense.Ioi_eq_biUnion (α := αᵒᵈ) hs x
 
-variable [Nonempty α] [TopologicalSpace β]
-
-/-- A compact set is bounded below -/
-theorem IsCompact.bddBelow {s : Set α} (hs : IsCompact s) : BddBelow s := by
-  cases' botOrderOrNoBotOrder α with h h; exact OrderBot.bddBelow s
-  have : s ⊆ ⋃ a : α, Ioi a := (@iUnion_Ioi α _ (NoBotOrder.to_noMinOrder α)).symm ▸ subset_univ s
-  rcases hs.elim_finite_subcover _ (fun _ => isOpen_Ioi) this with ⟨t, ht⟩
-  refine t.bddBelow.imp fun C hC y hy => ?_
-  rcases mem_iUnion₂.1 (ht hy) with ⟨a, ha, hay⟩
-  exact (hC ha).trans (le_of_lt hay)
-#align is_compact.bdd_below IsCompact.bddBelow
-
-/-- A compact set is bounded above -/
-theorem IsCompact.bddAbove {s : Set α} (hs : IsCompact s) : BddAbove s :=
-  @IsCompact.bddBelow αᵒᵈ _ _ _ _ _ hs
-#align is_compact.bdd_above IsCompact.bddAbove
-
-/-- A continuous function is bounded below on a compact set. -/
-theorem IsCompact.bddBelow_image {f : β → α} {K : Set β} (hK : IsCompact K)
-    (hf : ContinuousOn f K) : BddBelow (f '' K) :=
-  (hK.image_of_continuousOn hf).bddBelow
-#align is_compact.bdd_below_image IsCompact.bddBelow_image
-
-/-- A continuous function is bounded above on a compact set. -/
-theorem IsCompact.bddAbove_image {f : β → α} {K : Set β} (hK : IsCompact K)
-    (hf : ContinuousOn f K) : BddAbove (f '' K) :=
-  @IsCompact.bddBelow_image αᵒᵈ _ _ _ _ _ _ _ _ hK hf
-#align is_compact.bdd_above_image IsCompact.bddAbove_image
-
-/-- A continuous function with compact support is bounded below. -/
-@[to_additive " A continuous function with compact support is bounded below. "]
-theorem Continuous.bddBelow_range_of_hasCompactMulSupport [One α] {f : β → α} (hf : Continuous f)
-    (h : HasCompactMulSupport f) : BddBelow (range f) :=
-  (h.isCompact_range hf).bddBelow
-#align continuous.bdd_below_range_of_has_compact_mul_support Continuous.bddBelow_range_of_hasCompactMulSupport
-#align continuous.bdd_below_range_of_has_compact_support Continuous.bddBelow_range_of_hasCompactSupport
-
-/-- A continuous function with compact support is bounded above. -/
-@[to_additive " A continuous function with compact support is bounded above. "]
-theorem Continuous.bddAbove_range_of_hasCompactMulSupport [One α] {f : β → α} (hf : Continuous f)
-    (h : HasCompactMulSupport f) : BddAbove (range f) :=
-  @Continuous.bddBelow_range_of_hasCompactMulSupport αᵒᵈ _ _ _ _ _ _ _ _ hf h
-#align continuous.bdd_above_range_of_has_compact_mul_support Continuous.bddAbove_range_of_hasCompactMulSupport
-#align continuous.bdd_above_range_of_has_compact_support Continuous.bddAbove_range_of_hasCompactSupport
-
 end LinearOrder
 
 end OrderClosedTopology
@@ -1066,13 +1018,13 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type _} [LinearO
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
 
 /-- A strictly monotone function between linear orders with order topology is a topological
-embedding provided that the range of `f` is  order-connected. -/
+embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
-/-- On an `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
+/-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
@@ -1250,7 +1202,7 @@ theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici {a : α} {s : Set α} (hs : 
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
     simpa [ha.Ici_eq] using hs
-  · rcases(nhdsWithin_Ici_basis' ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
+  · rcases (nhdsWithin_Ici_basis' ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsWithin_Ici' hab, hbs⟩⟩
@@ -1399,11 +1351,11 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
       refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
       by_contra' H
-      exact False.elim (lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h'))
+      exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
     · refine' disjoint_left.2 fun u ux ux' => x't.2.2.1 _
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
       by_contra' H
-      exact False.elim (lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h'))
+      exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
   · rw [H]
@@ -1921,6 +1873,13 @@ theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
   simp only [Ioo, abs_lt, ← sub_lt_iff_lt_add, neg_lt_sub_iff_lt_add, sub_lt_comm]
 #align nhds_basis_Ioo_pos nhds_basis_Ioo_pos
 
+theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
+    (𝓝 a).HasBasis ((0 : α) < ·) fun ε ↦ Icc (a - ε) (a + ε) :=
+  (nhds_basis_Ioo_pos a).to_hasBasis
+    (fun _ε ε₀ ↦ let ⟨δ, δ₀, δε⟩ := exists_between ε₀
+      ⟨δ, δ₀, Icc_subset_Ioo (sub_lt_sub_left δε _) (add_lt_add_left δε _)⟩)
+    (fun ε ε₀ ↦ ⟨ε, ε₀, Ioo_subset_Icc_self⟩)
+
 variable (α)
 
 theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
@@ -1959,7 +1918,7 @@ theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.None
     ∃ᶠ x in 𝓝[≤] a, x ∈ s := by
   rcases hs with ⟨a', ha'⟩
   intro h
-  rcases(ha.1 ha').eq_or_lt with (rfl | ha'a)
+  rcases (ha.1 ha').eq_or_lt with (rfl | ha'a)
   · exact h.self_of_nhdsWithin le_rfl ha'
   · rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
     rcases ha.exists_between hba with ⟨b', hb's, hb'⟩
@@ -2111,7 +2070,7 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
   have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
   have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
   choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
-  refine ⟨fun k => v ((N^[k]) 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
+  refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
     hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
@@ -2131,7 +2090,7 @@ theorem exists_seq_strictMono_tendsto' {α : Type _} [LinearOrder α] [Topologic
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x) := by
   have hx : x ∉ Ioo y x := fun h => (lt_irrefl x h.2).elim
   have ht : Set.Nonempty (Ioo y x) := nonempty_Ioo.2 hy
-  rcases(isLUB_Ioo hy).exists_seq_strictMono_tendsto_of_not_mem hx ht with ⟨u, hu⟩
+  rcases (isLUB_Ioo hy).exists_seq_strictMono_tendsto_of_not_mem hx ht with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2.symm⟩
 #align exists_seq_strict_mono_tendsto' exists_seq_strictMono_tendsto'
 
@@ -2152,7 +2111,7 @@ theorem exists_seq_strictMono_tendsto_nhdsWithin [DenselyOrdered α] [NoMinOrder
 theorem exists_seq_tendsto_sSup {α : Type _} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
     (hS' : BddAbove S) : ∃ u : ℕ → α, Monotone u ∧ Tendsto u atTop (𝓝 (sSup S)) ∧ ∀ n, u n ∈ S := by
-  rcases(isLUB_csSup hS hS').exists_seq_monotone_tendsto hS with ⟨u, hu⟩
+  rcases (isLUB_csSup hS hS').exists_seq_monotone_tendsto hS with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2⟩
 #align exists_seq_tendsto_Sup exists_seq_tendsto_sSup
 
@@ -2244,7 +2203,7 @@ theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := 
   · cases' hab.lt_or_lt with hab hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
-      simp only [insert_subset, singleton_subset_iff]
+      simp only [insert_subset_iff, singleton_subset_iff]
       exact ⟨(isGLB_Ioo hab).mem_closure hab', (isLUB_Ioo hab).mem_closure hab'⟩
     · rw [Icc_eq_empty_of_lt hab]
       exact empty_subset _
@@ -2392,8 +2351,7 @@ theorem nhdsWithin_Ioi_self_neBot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝
   nhdsWithin_Ioi_neBot' H (le_refl a)
 #align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_neBot'
 
-@[instance]
-theorem nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) :=
+instance nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) :=
   nhdsWithin_Ioi_neBot (le_refl a)
 #align nhds_within_Ioi_self_ne_bot nhdsWithin_Ioi_self_neBot
 
@@ -2416,8 +2374,7 @@ theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝
   nhdsWithin_Iio_neBot' H (le_refl b)
 #align nhds_within_Iio_self_ne_bot' nhdsWithin_Iio_self_neBot'
 
-@[instance]
-theorem nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) :=
+instance nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) :=
   nhdsWithin_Iio_neBot (le_refl a)
 #align nhds_within_Iio_self_ne_bot nhdsWithin_Iio_self_neBot
 

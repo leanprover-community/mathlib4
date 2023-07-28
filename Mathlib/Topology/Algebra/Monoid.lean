@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit 6efec6bb9fcaed3cf1baaddb2eaadd8a2a06679c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.algebra.monoid from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Theory of topological monoids
@@ -283,8 +280,11 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
       map (uncurry (· * ·)) (𝓝 (x₀, y₀)) = map (uncurry (· * ·)) (𝓝 x₀ ×ˢ 𝓝 y₀) :=
         by rw [nhds_prod_eq]
       _ = map (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) (𝓝 1 ×ˢ 𝓝 1) :=
-        by simp_rw [uncurry, hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp]
         -- Porting note: `rw` was able to prove this
+        -- Now it fails with `failed to rewrite using equation theorems for 'Function.uncurry'`
+        -- and `failed to rewrite using equation theorems for 'Function.comp'`.
+        -- Removing those two lemmas, the `rw` would succeed, but then needs a `rfl`.
+        by simp_rw [uncurry, hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp]
       _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) :=
         by rw [key, ← Filter.map_map]
       _ ≤ map ((fun x : M => x₀ * x) ∘ fun x => x * y₀) (𝓝 1) := map_mono hmul
@@ -341,7 +341,7 @@ homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
 @[to_additive (attr := simps (config := .asFn))
   "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
-type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`."]
+type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`."]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂
     where
@@ -503,7 +503,7 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
 
 /-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
 such that `VV ⊆ U`. -/
-@[to_additive "Given a open neighborhood `U` of `0` there is a open neighborhood `V` of `0`
+@[to_additive "Given an open neighborhood `U` of `0` there is an open neighborhood `V` of `0`
   such that `V + V ⊆ U`."]
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
@@ -775,7 +775,7 @@ theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X
 
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type _} [CommMonoid M] {s : Finset ι} {l : Filter X}
-    {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : (∏ i in s, f i) =ᶠ[l] ∏ i in s, g i := by
+    {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
   replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x
   · rwa [eventually_all_finset]
   filter_upwards [hs]with x hx
@@ -799,7 +799,7 @@ theorem LocallyFinite.exists_finset_mulSupport {M : Type _} [CommMonoid M] {f : 
 @[to_additive]
 theorem finprod_eventually_eq_prod {M : Type _} [CommMonoid M] {f : ι → X → M}
     (hf : LocallyFinite fun i => mulSupport (f i)) (x : X) :
-    ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, (∏ᶠ i, f i y) = ∏ i in s, f i y :=
+    ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, ∏ᶠ i, f i y = ∏ i in s, f i y :=
   let ⟨I, hI⟩ := hf.exists_finset_mulSupport x
   ⟨I, hI.mono fun _ hy => finprod_eq_prod_of_mulSupport_subset _ fun _ hi => hy hi⟩
 #align finprod_eventually_eq_prod finprod_eventually_eq_prod
@@ -870,26 +870,26 @@ namespace ContinuousMap
 variable [Mul X] [ContinuousMul X]
 
 /-- The continuous map `fun y => y * x` -/
-@[to_additive "The continuous map `fun y => y + x"]
+@[to_additive "The continuous map `fun y => y + x`"]
 protected def mulRight (x : X) : C(X, X) :=
   mk _ (continuous_mul_right x)
 #align continuous_map.mul_right ContinuousMap.mulRight
 #align continuous_map.add_right ContinuousMap.addRight
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 #align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
 #align continuous_map.coe_add_right ContinuousMap.coe_addRight
 
 /-- The continuous map `fun y => x * y` -/
-@[to_additive "The continuous map `fun y => x + y"]
+@[to_additive "The continuous map `fun y => x + y`"]
 protected def mulLeft (x : X) : C(X, X) :=
   mk _ (continuous_mul_left x)
 #align continuous_map.mul_left ContinuousMap.mulLeft
 #align continuous_map.add_left ContinuousMap.addLeft
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
 #align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft

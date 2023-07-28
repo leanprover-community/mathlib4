@@ -2,15 +2,12 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.multiplicity
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import ring_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Multiplicity of a divisor
@@ -34,7 +31,7 @@ open Nat Part
 open BigOperators
 
 /-- `multiplicity a b` returns the largest natural number `n` such that
-  `a ^ n ∣ b`, as an `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
+  `a ^ n ∣ b`, as a `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
   then it returns `⊤`-/
 def multiplicity [Monoid α] [DecidableRel ((· ∣ ·) : α → α → Prop)] (a b : α) : PartENat :=
   PartENat.find fun n => ¬a ^ (n + 1) ∣ b
@@ -475,7 +472,7 @@ variable [CancelCommMonoidWithZero α]
 
 /- Porting note: removed previous wf recursion hints and added termination_by
 Also pulled a b intro parameters since Lean parses that more easily -/
-theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α}:
+theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
   | n, m => fun ha hb ⟨s, hs⟩ =>
     have : p ∣ a * b := ⟨p ^ (n + m) * s, by simp [hs, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩
@@ -506,7 +503,7 @@ theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α}:
         ⟨s, mul_right_cancel₀ hp.1 (by
               rw [add_assoc, tsub_add_cancel_of_le (succ_le_of_lt hm0)]
               simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩
-termination_by finite_mul_aux _ _ n m  => n+m
+termination_by finite_mul_aux _ _ n m => n+m
 #align multiplicity.finite_mul_aux multiplicity.finite_mul_aux
 
 theorem finite_mul {p a b : α} (hp : Prime p) : Finite p a → Finite p b → Finite p (a * b) :=

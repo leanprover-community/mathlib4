@@ -2,17 +2,14 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.real.irrational
-! leanprover-community/mathlib commit 7e7aaccf9b0182576cabdde36cf1b5ad3585b70d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.Sqrt
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.IntervalCases
+
+#align_import data.real.irrational from "leanprover-community/mathlib"@"7e7aaccf9b0182576cabdde36cf1b5ad3585b70d"
 
 /-!
 # Irrational real numbers
@@ -463,7 +460,7 @@ theorem of_one_div (h : Irrational (1 / x)) : Irrational x :=
 #align irrational.of_one_div Irrational.of_one_div
 
 /-!
-#### Natural and integerl power
+#### Natural and integer power
 -/
 
 

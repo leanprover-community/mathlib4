@@ -2,14 +2,11 @@
 Copyright (c) 2022 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.function.simple_func_dense_lp
-! leanprover-community/mathlib commit 5a2df4cd59cb31e97a516d4603a14bed5c2f9425
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
+
+#align_import measure_theory.function.simple_func_dense_lp from "leanprover-community/mathlib"@"5a2df4cd59cb31e97a516d4603a14bed5c2f9425"
 
 /-!
 # Density of simple functions
@@ -248,7 +245,7 @@ theorem tendsto_approxOn_L1_nnnorm [OpensMeasurableSpace E] {f : β → E} (hf :
 theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Integrable f μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Integrable (fun _ => y₀) μ) (n : ℕ) : Integrable (approxOn f fmeas s y₀ h₀ n) μ := by
-  rw [← memℒp_one_iff_integrable] at hf hi₀⊢
+  rw [← memℒp_one_iff_integrable] at hf hi₀ ⊢
   exact memℒp_approxOn fmeas hf h₀ hi₀ n
 #align measure_theory.simple_func.integrable_approx_on MeasureTheory.SimpleFunc.integrable_approxOn
 
@@ -444,6 +441,8 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p :
 
 variable (E)
 
+-- Porting note: the proofs were rewritten in tactic mode to avoid an
+-- "unknown free variable '_uniq.546677'" error.
 /-- `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple
     function. -/
 def simpleFunc : AddSubgroup (Lp E p μ) where
@@ -849,8 +848,8 @@ theorem exists_simpleFunc_nonneg_ae_eq {f : Lp.simpleFunc G p μ} (hf : 0 ≤ f)
   rw [← Lp.simpleFunc.coeFn_nonneg] at hf
   have hf_ae : 0 ≤ᵐ[μ] simpleFunc.toSimpleFunc f := by
     filter_upwards [toSimpleFunc_eq_toFun f, hf] with _ h1 _; rwa [h1]
-  let s := toMeasurable μ { x | ¬0 ≤ simpleFunc.toSimpleFunc f x }ᶜ
-  have hs_zero : μ (sᶜ) = 0 := by
+  let s := (toMeasurable μ { x | ¬0 ≤ simpleFunc.toSimpleFunc f x })ᶜ
+  have hs_zero : μ sᶜ = 0 := by
     rw [compl_compl, measure_toMeasurable]; rwa [EventuallyLE, ae_iff] at hf_ae
   have hfs_nonneg : ∀ x ∈ s, 0 ≤ simpleFunc.toSimpleFunc f x := by
     intro x hxs

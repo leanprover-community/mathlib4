@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.cardinal.schroeder_bernstein
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.Zorn
+
+#align_import set_theory.cardinal.schroeder_bernstein from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals
@@ -55,7 +52,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst =>
         compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
-  -- Porting note: dot dotation `F.lfp` doesn't work here
+  -- Porting note: dot notation `F.lfp` doesn't work here
   set s : Set α := OrderHom.lfp F
   have hs : (g '' (f '' s)ᶜ)ᶜ = s := F.map_lfp
   have hns : g '' (f '' s)ᶜ = sᶜ := compl_injective (by simp [hs])

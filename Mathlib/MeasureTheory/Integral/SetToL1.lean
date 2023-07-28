@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.integral.set_to_l1
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+
+#align_import measure_theory.integral.set_to_l1 from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -47,7 +44,7 @@ The lemmas listed here don't show all hypotheses. Refer to the actual lemmas for
 Linearity:
 - `setToFun_zero_left : setToFun μ 0 hT f = 0`
 - `setToFun_add_left : setToFun μ (T + T') _ f = setToFun μ T hT f + setToFun μ T' hT' f`
-- `setToFun_smul_left : setToFun μ (λ s, c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
+- `setToFun_smul_left : setToFun μ (fun s ↦ c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
 - `setToFun_zero : setToFun μ T hT (0 : α → E) = 0`
 - `setToFun_neg : setToFun μ T hT (-f) = - setToFun μ T hT f`
 If `f` and `g` are integrable:
@@ -581,10 +578,9 @@ theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C 
   calc
     ‖f.setToSimpleFunc T‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
       norm_setToSimpleFunc_le_sum_op_norm T f
-    _ ≤ ∑ x in f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
-      (sum_le_sum fun b _ =>
-        mul_le_mul_of_nonneg_right (hT_norm _ <| SimpleFunc.measurableSet_fiber _ _) <|
-          norm_nonneg _)
+    _ ≤ ∑ x in f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ := by
+      gcongr
+      exact hT_norm _ <| SimpleFunc.measurableSet_fiber _ _
     _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm
 
@@ -599,11 +595,9 @@ theorem norm_setToSimpleFunc_le_sum_mul_norm_of_integrable (T : Set α → E →
       refine' Finset.sum_le_sum fun b hb => _
       obtain rfl | hb := eq_or_ne b 0
       · simp
-      exact
-        mul_le_mul_of_nonneg_right
-          (hT_norm _ (SimpleFunc.measurableSet_fiber _ _) <|
-            SimpleFunc.measure_preimage_lt_top_of_integrable _ hf hb)
-          (norm_nonneg _)
+      gcongr
+      exact hT_norm _ (SimpleFunc.measurableSet_fiber _ _) <|
+        SimpleFunc.measure_preimage_lt_top_of_integrable _ hf hb
     _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm_of_integrable MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm_of_integrable
 
@@ -1429,7 +1423,7 @@ theorem setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ]
   by_cases hfi : Integrable f μ
   · have hgi : Integrable g μ := hfi.congr h
     rw [setToFun_eq hT hfi, setToFun_eq hT hgi, (Integrable.toL1_eq_toL1_iff f g hfi hgi).2 h]
-  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi ; exact hfi
+  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi; exact hfi
     rw [setToFun_undef hT hfi, setToFun_undef hT hgi]
 #align measure_theory.set_to_fun_congr_ae MeasureTheory.setToFun_congr_ae
 

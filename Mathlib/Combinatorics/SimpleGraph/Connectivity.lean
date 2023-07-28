@@ -2,15 +2,12 @@
 Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.connectivity
-! leanprover-community/mathlib commit b99e2d58a5e6861833fa8de11e51a81144258db4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
+
+#align_import combinatorics.simple_graph.connectivity from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
 /-!
 
@@ -166,7 +163,7 @@ theorem cons_copy {u v w v' w'} (h : G.Adj u v) (p : G.Walk v' w') (hv : v' = v)
 #align simple_graph.walk.cons_copy SimpleGraph.Walk.cons_copy
 
 theorem exists_eq_cons_of_ne {u v : V} (hne : u ≠ v) :
-    ∀ (p : G.Walk u v), ∃ (w : V)(h : G.Adj u w)(p' : G.Walk w v), p = cons h p'
+    ∀ (p : G.Walk u v), ∃ (w : V) (h : G.Adj u w) (p' : G.Walk w v), p = cons h p'
   | nil => (hne rfl).elim
   | cons h p' => ⟨_, h, p', rfl⟩
 #align simple_graph.walk.exists_eq_cons_of_ne SimpleGraph.Walk.exists_eq_cons_of_ne
@@ -300,7 +297,7 @@ theorem concat_append {u v w x : V} (p : G.Walk u v) (h : G.Adj v w) (q : G.Walk
 
 /-- A non-trivial `cons` walk is representable as a `concat` walk. -/
 theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    ∃ (x : V)(q : G.Walk u x)(h' : G.Adj x w), cons h p = q.concat h' := by
+    ∃ (x : V) (q : G.Walk u x) (h' : G.Adj x w), cons h p = q.concat h' := by
   induction p generalizing u with
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
@@ -312,7 +309,7 @@ theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 /-- A non-trivial `concat` walk is representable as a `cons` walk. -/
 theorem exists_concat_eq_cons {u v w : V} :
     ∀ (p : G.Walk u v) (h : G.Adj v w),
-      ∃ (x : V)(h' : G.Adj u x)(q : G.Walk x w), p.concat h = cons h' q
+      ∃ (x : V) (h' : G.Adj u x) (q : G.Walk x w), p.concat h = cons h' q
   | nil, h => ⟨_, h, nil, rfl⟩
   | cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
 #align simple_graph.walk.exists_concat_eq_cons SimpleGraph.Walk.exists_concat_eq_cons
@@ -671,7 +668,7 @@ theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Dar
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
 theorem edges_subset_edgeSet {u v : V} :
     ∀ (p : G.Walk u v) ⦃e : Sym2 V⦄, e ∈ p.edges → e ∈ G.edgeSet
-  | cons h' p', e, h  => by
+  | cons h' p', e, h => by
     cases h
     · exact h'
     next h' => exact edges_subset_edgeSet p' h'
@@ -1072,7 +1069,7 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 #align simple_graph.walk.take_spec SimpleGraph.Walk.take_spec
 
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
-    {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w)(r : G.Walk w v), p = q.append r := by
+    {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
   classical
   constructor
   · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
@@ -1484,7 +1481,7 @@ theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
 #align simple_graph.walk.map_map SimpleGraph.Walk.map_map
 
 /-- Unlike categories, for graphs vertex equality is an important notion, so needing to be able to
-to work with equality of graph homomorphisms is a necessary evil. -/
+work with equality of graph homomorphisms is a necessary evil. -/
 theorem map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
     p.map f = (p.map f').copy (h ▸ rfl) (h ▸ rfl) := by
   subst_vars
@@ -1699,7 +1696,7 @@ theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
 #align simple_graph.walk.edges_transfer SimpleGraph.Walk.edges_transfer
 
 @[simp]
-theorem support_transfer  (hp) : (p.transfer H hp).support = p.support := by
+theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
   induction p <;> simp [*]
 #align simple_graph.walk.support_transfer SimpleGraph.Walk.support_transfer
 
@@ -1757,7 +1754,7 @@ theorem transfer_append (q : G.Walk v w) (hpq) :
 @[simp]
 theorem reverse_transfer (hp) :
     (p.transfer H hp).reverse =
-      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse']; exact hp) := by
+      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
   induction p with
   | nil => simp
   | cons _ _ ih => simp only [transfer_append, Walk.transfer, reverse_nil, reverse_cons, ih]
@@ -2489,7 +2486,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   -- so they both contain the edge ⟦(v, w)⟧, but that's a contradiction since c is a trail.
   have hbq := hb (pvu.append puw)
   have hpq' := hb pwv.reverse
-  rw [Walk.edges_reverse, List.mem_reverse'] at hpq'
+  rw [Walk.edges_reverse, List.mem_reverse] at hpq'
   rw [Walk.isTrail_def, this, Walk.edges_append, Walk.edges_append, List.nodup_append_comm,
     ← List.append_assoc, ← Walk.edges_append] at hc
   exact List.disjoint_of_nodup_append hc hbq hpq'
@@ -2498,7 +2495,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
 -- porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     G.Adj v w ∧ (G \ fromEdgeSet {⟦(v, w)⟧}).Reachable v w ↔
-      ∃ (u : V)(p : G.Walk u u), p.IsCycle ∧ ⟦(v, w)⟧ ∈ p.edges := by
+      ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ ⟦(v, w)⟧ ∈ p.edges := by
   classical
   rw [reachable_delete_edges_iff_exists_walk]
   constructor

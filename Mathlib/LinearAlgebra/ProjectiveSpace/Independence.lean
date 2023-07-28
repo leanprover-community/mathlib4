@@ -2,13 +2,10 @@
 Copyright (c) 2022 Michael Blyth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Blyth
-
-! This file was ported from Lean 3 source module linear_algebra.projective_space.independence
-! leanprover-community/mathlib commit 1e82f5ec4645f6a92bb9e02fce51e44e3bc3e1fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
+
+#align_import linear_algebra.projective_space.independence from "leanprover-community/mathlib"@"1e82f5ec4645f6a92bb9e02fce51e44e3bc3e1fe"
 
 /-!
 # Independence in Projective Space
@@ -41,8 +38,8 @@ namespace Projectivization
 /-- A linearly independent family of nonzero vectors gives an independent family of points
 in projective space. -/
 inductive Independent : (ι → ℙ K V) → Prop
-| mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (hl : LinearIndependent K f) :
-  Independent fun i => mk K (f i) (hf i)
+  | mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (hl : LinearIndependent K f) :
+    Independent fun i => mk K (f i) (hf i)
 #align projectivization.independent Projectivization.Independent
 
 /-- A family of points in a projective space is independent if and only if the representative
@@ -77,8 +74,8 @@ theorem independent_iff_completeLattice_independent :
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/
 inductive Dependent : (ι → ℙ K V) → Prop
-| mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (h : ¬LinearIndependent K f) :
-  Dependent fun i => mk K (f i) (hf i)
+  | mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (h : ¬LinearIndependent K f) :
+    Dependent fun i => mk K (f i) (hf i)
 #align projectivization.dependent Projectivization.Dependent
 
 /-- A family of points in a projective space is dependent if and only if their

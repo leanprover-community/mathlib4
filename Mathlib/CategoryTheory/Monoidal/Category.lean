@@ -2,13 +2,10 @@
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.monoidal.category
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.monoidal.category from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Monoidal categories
@@ -137,42 +134,13 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
     aesop_cat
 #align category_theory.monoidal_category CategoryTheory.MonoidalCategory
 
--- Porting Note: `restate_axiom` doesn't seem to be necessary in Lean 4
--- restate_axiom MonoidalCategory.tensor_id'
-
 attribute [simp] MonoidalCategory.tensor_id
-
--- Porting Note: same as above
--- restate_axiom MonoidalCategory.tensor_comp'
-
 attribute [reassoc] MonoidalCategory.tensor_comp
-
--- This would be redundant in the simp set.
 attribute [simp] MonoidalCategory.tensor_comp
-
--- Porting Note: same as above
--- restate_axiom MonoidalCategory.associator_naturality'
-
 attribute [reassoc] MonoidalCategory.associator_naturality
-
--- Porting Note: same as above
--- restate_axiom MonoidalCategory.leftUnitor_naturality'
-
 attribute [reassoc] MonoidalCategory.leftUnitor_naturality
-
--- Porting Note: same as above
--- restate_axiom MonoidalCategory.rightUnitor_naturality'
-
 attribute [reassoc] MonoidalCategory.rightUnitor_naturality
-
--- Porting Note: same as above
--- restate_axiom MonoidalCategory.pentagon'
-
--- Porting Note: same as above
--- restate_axiom MonoidalCategory.triangle'
-
 attribute [reassoc] MonoidalCategory.pentagon
-
 attribute [reassoc (attr := simp)] MonoidalCategory.triangle
 
 -- Porting Note: This is here to make `tensorUnit` explicitly depend on `C`, which was done in
@@ -182,31 +150,30 @@ open CategoryTheory.MonoidalCategory in
 abbrev MonoidalCategory.tensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] : C :=
   tensorUnit' (C := C)
 
-open MonoidalCategory
+namespace MonoidalCategory
 
--- mathport name: tensor_obj
 /-- Notation for `tensorObj`, the tensor product of objects in a monoidal category -/
-infixr:70 " ⊗ " => tensorObj
+scoped infixr:70 " ⊗ " => tensorObj
 
--- mathport name: tensor_hom
 /-- Notation for `tensorHom`, the tensor product of morphisms in a monoidal category -/
-infixr:70 " ⊗ " => tensorHom
+scoped infixr:70 " ⊗ " => tensorHom
 
--- mathport name: «expr𝟙_»
 /-- Notation for `tensorUnit`, the two-sided identity of `⊗` -/
-notation "𝟙_" => tensorUnit
+scoped notation "𝟙_" => tensorUnit
 
--- mathport name: exprα_
 /-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z) ≃ X ⊗ (Y ⊗ Z)` -/
-notation "α_" => associator
+scoped notation "α_" => associator
 
--- mathport name: «exprλ_»
 /-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
-notation "λ_" => leftUnitor
+scoped notation "λ_" => leftUnitor
 
--- mathport name: exprρ_
 /-- Notation for the `rightUnitor`: `X ⊗ 𝟙_C ≃ X` -/
-notation "ρ_" => rightUnitor
+scoped notation "ρ_" => rightUnitor
+
+end MonoidalCategory
+
+open scoped MonoidalCategory
+open MonoidalCategory
 
 variable (C : Type u) [𝒞 : Category.{v} C] [MonoidalCategory C]
 
@@ -220,7 +187,6 @@ def tensorIso {C : Type u} {X Y X' Y' : C} [Category.{v} C] [MonoidalCategory.{v
   inv_hom_id := by rw [← tensor_comp, Iso.inv_hom_id, Iso.inv_hom_id, ← tensor_id]
 #align category_theory.tensor_iso CategoryTheory.tensorIso
 
--- mathport name: tensor_iso
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
 infixr:70 " ⊗ " => tensorIso
 
@@ -476,13 +442,13 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = 
   rfl
 #align category_theory.monoidal_category.right_assoc_tensor_map CategoryTheory.MonoidalCategory.rightAssocTensor_map
 
-/-- The functor `λ X, 𝟙_ C ⊗ X`. -/
+/-- The functor `fun X ↦ 𝟙_ C ⊗ X`. -/
 def tensorUnitLeft : C ⥤ C where
   obj X := 𝟙_ C ⊗ X
   map {X Y : C} (f : X ⟶ Y) := 𝟙 (𝟙_ C) ⊗ f
 #align category_theory.monoidal_category.tensor_unit_left CategoryTheory.MonoidalCategory.tensorUnitLeft
 
-/-- The functor `λ X, X ⊗ 𝟙_ C`. -/
+/-- The functor `fun X ↦ X ⊗ 𝟙_ C`. -/
 def tensorUnitRight : C ⥤ C where
   obj X := X ⊗ 𝟙_ C
   map {X Y : C} (f : X ⟶ Y) := f ⊗ 𝟙 (𝟙_ C)
@@ -574,7 +540,7 @@ variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
 
 /-- Tensoring on the left, as a functor from `C` into endofunctors of `C`.
 
-TODO: show this is a op-monoidal functor.
+TODO: show this is an op-monoidal functor.
 -/
 @[simps]
 def tensoringLeft : C ⥤ C ⥤ C where

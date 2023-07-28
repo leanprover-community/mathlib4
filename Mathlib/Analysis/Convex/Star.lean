@@ -2,13 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.star
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Segment
+import Mathlib.Tactic.GCongr
+
+#align_import analysis.convex.star from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Star-convex sets
@@ -129,7 +127,7 @@ theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
 theorem starConvex_iUnion {ι : Sort _} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋃ i, s i) := by
   rintro y hy a b ha hb hab
-  rw [mem_iUnion] at hy⊢
+  rw [mem_iUnion] at hy ⊢
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
 #align star_convex_Union starConvex_iUnion
@@ -431,16 +429,16 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
   · refine' hs.out hx hy (mem_Icc.2 ⟨_, _⟩)
     calc
       x = a • x + b • x := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg hxy hb) _
+      _ ≤ a • x + b • y := by gcongr
     calc
-      a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg hxy ha) _
+      a • x + b • y ≤ a • y + b • y := by gcongr
       _ = y := Convex.combo_self hab _
   · refine' hs.out hy hx (mem_Icc.2 ⟨_, _⟩)
     calc
       y = a • y + b • y := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := add_le_add_right (smul_le_smul_of_nonneg hyx ha) _
+      _ ≤ a • x + b • y := by gcongr
     calc
-      a • x + b • y ≤ a • x + b • x := add_le_add_left (smul_le_smul_of_nonneg hyx hb) _
+      a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _
 #align set.ord_connected.star_convex Set.OrdConnected.starConvex
 

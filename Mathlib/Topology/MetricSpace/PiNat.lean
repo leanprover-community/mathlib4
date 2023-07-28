@@ -2,13 +2,10 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.pi_nat
-! leanprover-community/mathlib commit 49b7f94aab3a3bdca1f9f34c5d818afb253b3993
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import topology.metric_space.pi_nat from "leanprover-community/mathlib"@"49b7f94aab3a3bdca1f9f34c5d818afb253b3993"
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -175,7 +172,7 @@ theorem cylinder_eq_cylinder_of_le_firstDiff (x y : ∀ n, E n) {n : ℕ} (hn : 
 #align pi_nat.cylinder_eq_cylinder_of_le_first_diff PiNat.cylinder_eq_cylinder_of_le_firstDiff
 
 theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
-    (⋃ k, cylinder (update x n k) (n + 1)) = cylinder x n := by
+    ⋃ k, cylinder (update x n k) (n + 1) = cylinder x n := by
   ext y
   simp only [mem_cylinder_iff, mem_iUnion]
   constructor
@@ -366,7 +363,7 @@ theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
 #align pi_nat.is_open_cylinder PiNat.isOpen_cylinder
 
 theorem isTopologicalBasis_cylinders :
-    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n)(n : ℕ), s = cylinder x n } := by
+    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n) (n : ℕ), s = cylinder x n } := by
   apply isTopologicalBasis_of_open_of_nhds
   · rintro u ⟨x, n, rfl⟩
     apply isOpen_cylinder
@@ -515,7 +512,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
   have A := exists_disjoint_cylinder hs hx
   rw [shortestPrefixDiff, dif_pos A]
   have B := Nat.find_spec A
-  contrapose! B; rw [not_lt] at B -- porting note: why this `rw` is needed?
+  contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
   refine' ⟨y, hy, _⟩
   rw [mem_cylinder_comm]
@@ -661,7 +658,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           rw [← mem_cylinder_iff_eq]
           apply cylinder_anti x _ A.some_mem.2
           apply firstDiff_le_longestPrefix hs xs ys
-        rw [fs y ys] at hfxfy⊢
+        rw [fs y ys] at hfxfy ⊢
         rwa [← fx, I2, ← mem_cylinder_iff_eq, mem_cylinder_iff_le_firstDiff hfxfy] at I
       -- case where `y ∉ s`
       · have Ax : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
@@ -684,7 +681,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           congr
         -- case where the common prefix to `x` and `s` is long, as well as the common prefix to
         -- `y` and `s`. Then all points remain in the same cylinders.
-        · push_neg  at H
+        · push_neg at H
           have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
             rw [← mem_cylinder_iff_eq]
             exact cylinder_anti x H.1 Ax.some_mem.2
@@ -793,7 +790,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [Met
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :
-      (⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n)) =
+      ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n) =
         ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (y n)) ((1 / 2) ^ n) := by
       refine iInter_congr fun n ↦ iInter_congr fun hn ↦ ?_
       have : x n = y n := apply_eq_of_dist_lt (mem_ball'.1 hxy) hn
@@ -877,8 +874,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
         _ ≤ min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
               min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
           min_le_right _ _
-    calc dist x z ≤ ∑' i, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
+    calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
+          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
         tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
       _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
@@ -911,14 +908,14 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
         calc
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
           _ = (∑ i in K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
-                ∑' i : ↑((K : Set ι)ᶜ), min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
+                ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
             (sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i in K, dist (x i) (y i)) +
-                ∑' i : ↑((K : Set ι)ᶜ), ((1 / 2) ^ encode (i : ι) : ℝ) := by
+                ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
             refine' add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) _
             refine' tsum_le_tsum (fun i => min_le_left _ _) _ _
-            · apply Summable.subtype (dist_summable x y) ((↑K : Set ι)ᶜ)
-            · apply Summable.subtype summable_geometric_two_encode ((↑K : Set ι)ᶜ)
+            · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
+            · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
           _ < (∑ _i in K, δ) + ε / 2 := by
             apply add_lt_add_of_le_of_lt _ hK
             refine Finset.sum_le_sum fun i hi => (hxy i ?_).le

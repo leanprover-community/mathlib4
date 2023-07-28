@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.adjunction.opposites
-! leanprover-community/mathlib commit 0148d455199ed64bf8eb2f493a1e7eb9211ce170
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Opposites
+
+#align_import category_theory.adjunction.opposites from "leanprover-community/mathlib"@"0148d455199ed64bf8eb2f493a1e7eb9211ce170"
 
 /-!
 # Opposite adjunctions
@@ -48,13 +45,17 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      erw [homEquiv_unit, homEquiv_unit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_unit, homEquiv_unit]
       simp
     homEquiv_naturality_right := by
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X Y Y' f g
       dsimp [opEquiv]
-      erw [homEquiv_counit, homEquiv_counit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_counit, homEquiv_counit]
       simp }
 #align category_theory.adjunction.adjoint_of_op_adjoint_op CategoryTheory.Adjunction.adjointOfOpAdjointOp
 
@@ -87,13 +88,17 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      erw [homEquiv_unit, homEquiv_unit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_unit, homEquiv_unit]
       simp
     homEquiv_naturality_right := by
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      erw [homEquiv_counit, homEquiv_counit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_counit, homEquiv_counit]
       simp }
 #align category_theory.adjunction.op_adjoint_op_of_adjoint CategoryTheory.Adjunction.opAdjointOpOfAdjoint
 
@@ -118,12 +123,9 @@ We use this in combination with `fullyFaithfulCancelRight` to show left adjoints
 -/
 def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda :=
-  NatIso.ofComponents
-    (fun X =>
-      NatIso.ofComponents
-        (fun Y => ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso)
-          (fun {X' Y} f => by funext ; simp))
-    (fun {X Y} f => by ext ; funext ; dsimp ; simp)
+  NatIso.ofComponents fun X =>
+    NatIso.ofComponents fun Y =>
+      ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 #align category_theory.adjunction.left_adjoints_coyoneda_equiv CategoryTheory.Adjunction.leftAdjointsCoyonedaEquiv
 
 /-- If `F` and `F'` are both left adjoint to `G`, then they are naturally isomorphic. -/
@@ -155,7 +157,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
 @[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x :=
-  by rw [← unit_leftAdjointUniq_hom adj1 adj2] ; rfl
+  by rw [← unit_leftAdjointUniq_hom adj1 adj2]; rfl
 #align category_theory.adjunction.unit_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.unit_leftAdjointUniq_hom_app
 
 @[reassoc (attr := simp)]
@@ -231,7 +233,9 @@ theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (a
   -- Porting note: was `simpa`
   simp only [opAdjointOpOfAdjoint, Functor.op_obj, Opposite.unop_op, mkOfHomEquiv_unit_app,
     Equiv.trans_apply, homEquiv_counit, Functor.id_obj]
-  erw [F.map_id] -- Porting note: Yet another `erw`...
+  -- Porting note: Yet another `erw`...
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
+  erw [F.map_id]
   rw [Category.id_comp]
   rfl
 #align category_theory.adjunction.hom_equiv_symm_right_adjoint_uniq_hom_app CategoryTheory.Adjunction.homEquiv_symm_rightAdjointUniq_hom_app

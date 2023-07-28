@@ -2,14 +2,11 @@
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.units
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Analysis.SpecificLimits.Normed
+
+#align_import analysis.normed_space.units from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # The group of units of a complete normed ring
@@ -96,7 +93,7 @@ namespace nonunits
 
 /-- The `nonunits` in a complete normed ring are contained in the complement of the ball of radius
 `1` centered at `1 : R`. -/
-theorem subset_compl_ball : nonunits R ⊆ Metric.ball (1 : R) 1ᶜ := fun x hx h₁ ↦ hx <|
+theorem subset_compl_ball : nonunits R ⊆ (Metric.ball (1 : R) 1)ᶜ := fun x hx h₁ ↦ hx <|
   sub_sub_self 1 x ▸ (Units.oneSub (1 - x) (by rwa [mem_ball_iff_norm'] at h₁)).isUnit
 #align nonunits.subset_compl_ball nonunits.subset_compl_ball
 

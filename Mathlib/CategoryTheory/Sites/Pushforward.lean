@@ -2,14 +2,11 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.pushforward
-! leanprover-community/mathlib commit e2e38c005fc6f715502490da6cb0ec84df9ed228
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.LeftExact
+
+#align_import category_theory.sites.pushforward from "leanprover-community/mathlib"@"e2e38c005fc6f715502490da6cb0ec84df9ed228"
 
 /-!
 # Pushforward of sheaves
@@ -68,10 +65,8 @@ def Sites.pullbackPushforwardAdjunction {G : C ⥤ D} (hG₁ : CompatiblePreserv
     (hG₂ : CoverPreserving J K G) : Sites.pushforward A J K G ⊣ Sites.pullback A hG₁ hG₂ :=
   ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (sheafToPresheaf J A) (𝟭 _)
-    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ =>
-      (Category.comp_id _).trans (Category.id_comp _).symm)
-    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ =>
-      (Category.comp_id _).trans (Category.id_comp _).symm)
+    (NatIso.ofComponents fun _ => Iso.refl _)
+    (NatIso.ofComponents fun _ => Iso.refl _)
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Sites.pullbackPushforwardAdjunction
 
 end CategoryTheory

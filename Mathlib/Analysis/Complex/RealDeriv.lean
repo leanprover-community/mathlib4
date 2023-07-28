@@ -2,16 +2,13 @@
 Copyright (c) Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yourong Zang
-
-! This file was ported from Lean 3 source module analysis.complex.real_deriv
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.Deriv.Linear
 import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+
+#align_import analysis.complex.real_deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-! # Real differentiability of complex-differentiable functions
 
@@ -135,17 +132,17 @@ theorem HasDerivWithinAt.complexToReal_fderiv {f : ℂ → ℂ} {s : Set ℂ} {f
 
 /-- If a complex function `e` is differentiable at a real point, then its restriction to `ℝ` is
 differentiable there as a function `ℝ → ℂ`, with the same derivative. -/
-theorem HasDerivAt.comp_of_real (hf : HasDerivAt e e' ↑z) : HasDerivAt (fun y : ℝ => e ↑y) e' z :=
+theorem HasDerivAt.comp_ofReal (hf : HasDerivAt e e' ↑z) : HasDerivAt (fun y : ℝ => e ↑y) e' z :=
   by simpa only [ofRealClm_apply, ofReal_one, mul_one] using hf.comp z ofRealClm.hasDerivAt
-#align has_deriv_at.comp_of_real HasDerivAt.comp_of_real
+#align has_deriv_at.comp_of_real HasDerivAt.comp_ofReal
 
 /-- If a function `f : ℝ → ℝ` is differentiable at a (real) point `x`, then it is also
 differentiable as a function `ℝ → ℂ`. -/
-theorem HasDerivAt.of_real_comp {f : ℝ → ℝ} {u : ℝ} (hf : HasDerivAt f u z) :
+theorem HasDerivAt.ofReal_comp {f : ℝ → ℝ} {u : ℝ} (hf : HasDerivAt f u z) :
     HasDerivAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u z := by
   simpa only [ofRealClm_apply, ofReal_one, real_smul, mul_one] using
     ofRealClm.hasDerivAt.scomp z hf
-#align has_deriv_at.of_real_comp HasDerivAt.of_real_comp
+#align has_deriv_at.of_real_comp HasDerivAt.ofReal_comp
 
 end RealDerivOfComplex
 

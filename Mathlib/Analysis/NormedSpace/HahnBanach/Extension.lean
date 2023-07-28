@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.hahn_banach.extension
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Data.IsROrC.Lemmas
+
+#align_import analysis.normed_space.hahn_banach.extension from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Extension Hahn-Banach theorem
@@ -68,7 +65,7 @@ open IsROrC
 
 variable {𝕜 : Type _} [IsROrC 𝕜] {F : Type _} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisyfing `IsROrC 𝕜`. -/
+/-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisfying `IsROrC 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
     ∃ g : F →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : Module ℝ F := RestrictScalars.module ℝ 𝕜 F

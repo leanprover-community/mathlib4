@@ -2,17 +2,14 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.unique_factorization_domain
-! leanprover-community/mathlib commit 570e9f4877079b3a923135b3027ac3be8695ab8c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Multiplicity
+
+#align_import ring_theory.unique_factorization_domain from "leanprover-community/mathlib"@"570e9f4877079b3a923135b3027ac3be8695ab8c"
 
 /-!
 
@@ -128,7 +125,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     classical
       refine' ⟨(f.erase b).cons (b * u), fun a ha => _, _, Multiset.cons_ne_zero⟩
       · obtain rfl | ha := Multiset.mem_cons.1 ha
-        exacts[Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
+        exacts [Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
     fun ⟨f, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
@@ -357,7 +354,7 @@ variable {β : Type _} [CancelCommMonoidWithZero α] [CancelCommMonoidWithZero �
 
 theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactorizationMonoid α) :
     UniqueFactorizationMonoid β := by
-  rw [UniqueFactorizationMonoid.iff_exists_prime_factors] at hα⊢
+  rw [UniqueFactorizationMonoid.iff_exists_prime_factors] at hα ⊢
   intro a ha
   obtain ⟨w, hp, u, h⟩ :=
     hα (e.symm a) fun h =>
@@ -979,15 +976,14 @@ See also `count_normalizedFactors_eq` which expands the definition of `multiplic
 to produce a specification for `count (normalizedFactors _) _`..
 -/
 theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
-(hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
+    (hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply PartENat.le_of_lt_add_one
     rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,
       le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
     simp
   rw [le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
-#align unique_factorization_monoid.multiplicity_eq_count_normalized_factors
-  UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
+#align unique_factorization_monoid.multiplicity_eq_count_normalized_factors UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
 
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
@@ -1267,7 +1263,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   induction p using WithTop.recTopCoe
   · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
-  . rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
+  · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false_iff, not_exists]
     exact fun a => not_and_of_not_right _ a.prop.ne_zero
 #align associates.factor_set.prod_eq_zero_iff Associates.FactorSet.prod_eq_zero_iff
@@ -1491,7 +1487,7 @@ theorem eq_factors_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠
     a.factors = b.factors := by
   obtain ⟨sa, h_sa⟩ := factors_eq_some_iff_ne_zero.mpr ha
   obtain ⟨sb, h_sb⟩ := factors_eq_some_iff_ne_zero.mpr hb
-  rw [h_sa, h_sb] at h⊢
+  rw [h_sa, h_sb] at h ⊢
   rw [Option.some_inj]
   have h_count : ∀ (p : Associates α) (hp : Irreducible p),
       sa.count ⟨p, hp⟩ = sb.count ⟨p, hp⟩ := by
@@ -1513,7 +1509,7 @@ theorem count_le_count_of_factors_le {a b p : Associates α} (hb : b ≠ 0) (hp 
   · simp_all
   obtain ⟨sa, h_sa⟩ := factors_eq_some_iff_ne_zero.mpr ha
   obtain ⟨sb, h_sb⟩ := factors_eq_some_iff_ne_zero.mpr hb
-  rw [h_sa, h_sb] at h⊢
+  rw [h_sa, h_sb] at h ⊢
   rw [count_some hp, count_some hp]; rw [WithTop.some_le_some] at h
   exact Multiset.count_le_of_le _ h
 #align associates.count_le_count_of_factors_le Associates.count_le_count_of_factors_le
@@ -1560,7 +1556,7 @@ noncomputable instance : Inf (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
 noncomputable instance : Lattice (Associates α) :=
-  { Associates.instPartialOrderAssociatesToMonoidToMonoidWithZeroToCommMonoidWithZero with
+  { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
     sup_le := fun _ _ c hac hbc =>
@@ -1587,7 +1583,7 @@ theorem dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p �
     exact dvd_zero p
   obtain ⟨a0, nza, ha'⟩ := exists_non_zero_rep ha0
   rw [← Associates.factors_prod a]
-  rw [← ha', factors_mk a0 nza] at hm⊢
+  rw [← ha', factors_mk a0 nza] at hm ⊢
   rw [prod_coe]
   apply Multiset.dvd_prod; apply Multiset.mem_map.mpr
   exact ⟨⟨p, hp⟩, mem_factorSet_some.mp hm, rfl⟩
@@ -1854,7 +1850,7 @@ theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α} (hp : Irreducible 
 
 theorem count_factors_eq_find_of_dvd_pow {a p : Associates α} (hp : Irreducible p)
     [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
-    @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩  = p.count a.factors := by
+    @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
   apply le_antisymm
   · refine' Nat.find_le ⟨1, _⟩
     rw [mul_one]
@@ -1873,7 +1869,7 @@ theorem eq_pow_of_mul_eq_pow [Nontrivial α] {a b c : Associates α} (ha : a ≠
   classical
     by_cases hk0 : k = 0
     · use 1
-      rw [hk0, pow_zero] at h⊢
+      rw [hk0, pow_zero] at h ⊢
       apply (mul_eq_one_iff.1 h).1
     · refine' is_pow_of_dvd_count ha _
       intro p hp

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module number_theory.l_series
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Analysis.PSeries
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+
+#align_import number_theory.l_series from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # L-series
@@ -95,7 +92,7 @@ theorem LSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ}
   simp only [h, Complex.mul_re, mul_eq_mul_left_iff, sub_right_inj]
   right
   rw [Complex.log_im, ← Complex.ofReal_nat_cast]
-  exact Complex.arg_of_real_of_nonneg (le_of_lt (cast_pos.2 n.succ_pos))
+  exact Complex.arg_ofReal_of_nonneg (le_of_lt (cast_pos.2 n.succ_pos))
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re Nat.ArithmeticFunction.LSeriesSummable_iff_of_re_eq_re
 
 theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ArithmeticFunction ℂ} {m : ℝ}

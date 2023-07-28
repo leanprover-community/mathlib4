@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.multiequalizer
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.ConeCategory
+
+#align_import category_theory.limits.shapes.multiequalizer from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -414,7 +411,6 @@ variable [HasProduct I.left] [HasProduct I.right]
 @[reassoc (attr := simp)]
 theorem pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap := by
   ext
-  discrete_cases
   simp
 #align category_theory.limits.multifork.pi_condition CategoryTheory.Limits.Multifork.pi_condition
 
@@ -492,7 +488,6 @@ noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap w
       w := by
         rintro (_ | _)
         · apply limit.hom_ext
-          dsimp
           simp
         · apply limit.hom_ext
           intros j
@@ -519,17 +514,12 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
   functor := toPiForkFunctor I
   inverse := ofPiForkFunctor I
   unitIso :=
-    NatIso.ofComponents
-      (fun K =>
-        Cones.ext (Iso.refl _)
-          (by
-            rintro (_ | _) <;> dsimp <;>
-              simp [← Fork.app_one_eq_ι_comp_left, -Fork.app_one_eq_ι_comp_left]))
-      fun {K₁ K₂} f => by dsimp; ext; simp
+    NatIso.ofComponents fun K =>
+      Cones.ext (Iso.refl _) (by
+        rintro (_ | _) <;> dsimp <;>
+          simp [← Fork.app_one_eq_ι_comp_left, -Fork.app_one_eq_ι_comp_left])
   counitIso :=
-    NatIso.ofComponents
-      (fun K => Fork.ext (Iso.refl _) (by dsimp; ext j; dsimp; simp))
-      fun {K₁ K₂} f => by dsimp; ext; simp
+    NatIso.ofComponents fun K => Fork.ext (Iso.refl _)
 #align category_theory.limits.multicospan_index.multifork_equiv_pi_fork CategoryTheory.Limits.MulticospanIndex.multiforkEquivPiFork
 
 end MulticospanIndex
@@ -613,7 +603,6 @@ variable [HasCoproduct I.left] [HasCoproduct I.right]
 @[reassoc (attr := simp)]
 theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
   ext
-  discrete_cases
   simp
 #align category_theory.limits.multicofork.sigma_condition CategoryTheory.Limits.Multicofork.sigma_condition
 
@@ -652,7 +641,7 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp
         · simp
         · simp
-        · dsimp ; rw [c.condition] ; simp
+        · dsimp; rw [c.condition]; simp
         · simp }
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 
@@ -723,33 +712,17 @@ noncomputable def multicoforkEquivSigmaCofork :
     Multicofork I ≌ Cofork I.fstSigmaMap I.sndSigmaMap where
   functor := toSigmaCoforkFunctor I
   inverse := ofSigmaCoforkFunctor I
-  unitIso :=
-    NatIso.ofComponents (fun K => Cocones.ext (Iso.refl _) (by
-      rintro (_ | _)
-      · dsimp; simp
-      -- porting note; `dsimp, simp` worked in mathlib3.
-      · dsimp [Multicofork.ofSigmaCofork]; simp ))
-      fun {K₁ K₂} f => by
-        -- porting note: in mathlib3 `ext` works and I don't
-        -- really understand why it doesn't work here
-        apply Limits.CoconeMorphism.ext
-        simp
-  counitIso :=
-    NatIso.ofComponents
-      (fun K =>
-        Cofork.ext (Iso.refl _)
-          (by
-            -- porting note: in mathlib3 this was just `ext` and I don't know why it's not here
-            apply Limits.colimit.hom_ext
-            rintro ⟨j⟩
-            dsimp
-            simp only [Category.comp_id, colimit.ι_desc, Cofan.mk_ι_app]
-            rfl))
-      fun {K₁ K₂} f => by
-        -- porting note: in mathlib3 the next line was just `ext`
-        apply Limits.CoconeMorphism.ext
+  unitIso := NatIso.ofComponents fun K => Cocones.ext (Iso.refl _) (by
+      rintro (_ | _) <;> simp)
+  counitIso := NatIso.ofComponents fun K =>
+    Cofork.ext (Iso.refl _)
+      (by
+        -- porting note: in mathlib3 this was just `ext` and I don't know why it's not here
+        apply Limits.colimit.hom_ext
+        rintro ⟨j⟩
         dsimp
-        simp
+        simp only [Category.comp_id, colimit.ι_desc, Cofan.mk_ι_app]
+        rfl)
 #align category_theory.limits.multispan_index.multicofork_equiv_sigma_cofork CategoryTheory.Limits.MultispanIndex.multicoforkEquivSigmaCofork
 
 end MultispanIndex

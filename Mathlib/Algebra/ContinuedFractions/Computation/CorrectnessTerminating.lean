@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.computation.correctness_terminating
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
+
+#align_import algebra.continued_fractions.computation.correctness_terminating from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 # Correctness of Terminating Continued Fraction Computations (`GeneralizedContinuedFraction.of`)
@@ -61,7 +58,7 @@ variable {K : Type _} [LinearOrderedField K] {v : K} {n : ℕ}
 - `exact_conts.a / exact_conts.b` where `exact_conts = nextContinuants 1 fr⁻¹ pconts conts`
   otherwise.
 
-This function can be used to compute the exact value approxmated by a continued fraction
+This function can be used to compute the exact value approximated by a continued fraction
 `GeneralizedContinuedFraction.of v` as described in lemma
 `compExactValue_correctness_of_stream_eq_some`.
 -/

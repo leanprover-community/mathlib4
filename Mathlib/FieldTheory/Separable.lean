@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module field_theory.separable
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Squarefree
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
+
+#align_import field_theory.separable from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 
@@ -333,7 +330,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 #align polynomial.separable_or Polynomial.separable_or
 
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
-    ∃ (n : ℕ)(g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
+    ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
   induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)

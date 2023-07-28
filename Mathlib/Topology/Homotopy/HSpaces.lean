@@ -2,20 +2,17 @@
 Copyright (c) 2022 Filippo A. E. Nuccio Mortarino Majno di Capriglio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
-
-! This file was ported from Lean 3 source module topology.homotopy.H_spaces
-! leanprover-community/mathlib commit 729d23f9e1640e1687141be89b106d3c8f9d10c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Homotopy.Path
+
+#align_import topology.homotopy.H_spaces from "leanprover-community/mathlib"@"729d23f9e1640e1687141be89b106d3c8f9d10c0"
 
 /-!
 # H-spaces
 
 This file defines H-spaces mainly following the approach proposed by Serre in his paper
-*Homologie singulière des espaces fibrés*. The idea beaneath `H-spaces` is that they are topological
+*Homologie singulière des espaces fibrés*. The idea beneath `H-spaces` is that they are topological
 spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
 operation what would make `X` into a topological monoid. In particular, there exists a "neutral
 element" `e : X` such that `λ x, e ⋀ x` and `λ x, x ⋀ e` are homotopic to the identity on `X`, see
@@ -37,7 +34,7 @@ equal to the product of `H-space` structures on `G` and `G'`.
 
 ## To Do
 * Prove that for every `normed_add_torsor Z` and every `z : Z`, the operation
-`λ x y, midpoint x y` defines a `H-space` structure with `z` as a "neutral element".
+`λ x y, midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
 first three inherit the structure because they are topological groups (they are Lie groups,
 actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
@@ -73,7 +70,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 #align H_space HSpace
 
 -- mathport name: H_space.Hmul
--- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on a H-space
+-- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
 -- porting note: opening `HSpaces` so that the above notation works
@@ -101,7 +98,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     -- porting note: was `use ⟨G, hG⟩`
     refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
     · rintro ⟨x, y⟩
-      exacts[Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
+      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
     · rintro ⟨x, y⟩
       exact Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
     · rintro t ⟨x, y⟩ h
@@ -121,7 +118,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     -- porting note: was `use ⟨G, hG⟩`
     refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
     · rintro ⟨x, y⟩
-      exacts[Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
+      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
     · rintro ⟨x, y⟩
       exact Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
     · rintro t ⟨x, y⟩ h
@@ -258,7 +255,7 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
     refl_apply]
   split_ifs with h; swap; conv_rhs => rw [← γ.target]
   all_goals apply congr_arg γ; ext1; rw [qRight_zero_right]
-  exacts[if_neg h, if_pos h]
+  exacts [if_neg h, if_pos h]
 #align path.delay_refl_right_zero Path.delayReflRight_zero
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
@@ -286,7 +283,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
 #align path.delay_refl_left_one Path.delayReflLeft_one
 
-/-- The loop space at x carries a structure of a `H-space`. Note that the field `eHmul`
+/-- The loop space at x carries a structure of an `H-space`. Note that the field `eHmul`
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/

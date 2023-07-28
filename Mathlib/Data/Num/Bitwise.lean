@@ -2,14 +2,12 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.num.bitwise
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Basic
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Vector.Basic
+
+#align_import data.num.bitwise from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Bitwise operations using binary representation of integers
@@ -344,7 +342,7 @@ open SNum
       `0 : SNum` and `(-1) : SNum`. -/
 def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
-  | msb b => by rw [← bit_one] ; exact s b (SNum.zero (Not b)) (z (Not b))
+  | msb b => by rw [← bit_one]; exact s b (SNum.zero (Not b)) (z (Not b))
   | bit b p => s b p (drec' z s p)
 #align nzsnum.drec' NzsNum.drec'
 
@@ -426,7 +424,7 @@ def bits : SNum → ∀ n, Vector Bool n
       `a` represents a carry bit. -/
 def cAdd : SNum → SNum → Bool → SNum :=
   rec' (fun a p c ↦ czAdd c a p) fun a p IH ↦
-    rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bitvec.xor3 a b c :: IH q (Bitvec.carry a b c)
+    rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bool.xor3 a b c :: IH q (Bool.carry a b c)
 #align snum.cadd SNum.cAdd
 
 /-- Add two `SNum`s. -/

@@ -2,11 +2,6 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module algebra.group_power.lemmas
-! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Cast.Basic
@@ -14,6 +9,8 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
+
+#align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
 /-!
 # Lemmas about power operations on monoids and groups
@@ -845,7 +842,7 @@ attribute [to_additive existing zmultiplesHom] zpowersHom
 variable {M G A}
 
 theorem powersHom_apply [Monoid M] (x : M) (n : Multiplicative ℕ) :
-    powersHom M x n = x ^ (Multiplicative.toAdd n):=
+    powersHom M x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align powers_hom_apply powersHom_apply
 
@@ -922,49 +919,24 @@ theorem AddMonoidHom.apply_int [AddGroup M] (f : ℤ →+ M) (n : ℤ) : f n = n
 /-! `AddMonoidHom.ext_int` is defined in `Data.Int.Cast` -/
 
 variable (M G A)
--- Porting note: `simp` was broken during the port.
 /-- If `M` is commutative, `powersHom` is a multiplicative equivalence. -/
 def powersMulHom [CommMonoid M] : M ≃* (Multiplicative ℕ →* M) :=
-  { powersHom M with map_mul' := fun a b => MonoidHom.ext (by
-      intro n
-      let n' : ℕ := Multiplicative.toAdd n
-      show (a*b) ^ n' = a ^ n' * b ^ n'
-      simp [mul_pow]
-    ) }
+  { powersHom M with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_pow] }
 #align powers_mul_hom powersMulHom
 
--- Porting note: `simp` was broken during the port.
 /-- If `M` is commutative, `zpowersHom` is a multiplicative equivalence. -/
 def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
-  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext (by
-      intro n
-      let n' : ℤ := Multiplicative.toAdd n
-      show (a*b) ^ n' = a ^ n' * b ^ n'
-      simp [mul_zpow]
-    )
-  -- <| by simp [mul_zpow]
-  }
+  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_zpow] }
 #align zpowers_mul_hom zpowersMulHom
 
--- Porting note: `simp` was multiplesHom during the port.
 /-- If `M` is commutative, `multiplesHom` is an additive equivalence. -/
 def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
-  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext (by
-      intro n
-      show n • (a+b) = n • a + n • b
-      simp [nsmul_add]
-  ) }
+  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [nsmul_add] }
 #align multiples_add_hom multiplesAddHom
 
 /-- If `M` is commutative, `zmultiplesHom` is an additive equivalence. -/
 def zmultiplesAddHom [AddCommGroup A] : A ≃+ (ℤ →+ A) :=
-  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext (by
-      intro n
-      show n • (a+b) = n • a + n • b
-      simp [zsmul_add]
-  )
-  -- <| by simp [zsmul_add]
-  }
+  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
 #align zmultiples_add_hom zmultiplesAddHom
 
 variable {M G A}

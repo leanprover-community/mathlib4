@@ -2,17 +2,14 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.glue_data
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+
+#align_import category_theory.glue_data from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Gluing data
@@ -236,7 +233,7 @@ theorem types_π_surjective (D : GlueData (Type _)) : Function.Surjective D.π :
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
 theorem types_ι_jointly_surjective (D : GlueData (Type _)) (x : D.glued) :
-    ∃ (i : _)(y : D.U i), D.ι i y = x := by
+    ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
   rcases D.types_π_surjective x with ⟨x', rfl⟩
@@ -338,7 +335,7 @@ theorem diagramIso_inv_app_right (i : D.J) :
 
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
--- porting note: commented out omi
+-- porting note: commented out omit
 -- omit H
 
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
@@ -389,14 +386,14 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
     NatIso.ofComponents
       (fun x => by
         cases x
-        exacts[D.gluedIso F, Iso.refl _])
+        exacts [D.gluedIso F, Iso.refl _])
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
   refine' Cones.ext (Iso.refl _) _
   · rintro (_ | _ | _)
     change _ = _ ≫ (_ ≫ _) ≫ _
-    all_goals change _ = 𝟙 _ ≫ _ ≫ _; simp; aesop_cat
+    all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.V_pullback_cone_is_limit_of_map CategoryTheory.GlueData.vPullbackConeIsLimitOfMap
 
@@ -407,7 +404,7 @@ set_option linter.uppercaseLean3 false in
 be jointly surjective. -/
 theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.multispan F]
     [∀ i j k : D.J, PreservesLimit (cospan (D.f i j) (D.f i k)) F] (x : F.obj D.glued) :
-    ∃ (i : _)(y : F.obj (D.U i)), F.map (D.ι i) y = x := by
+    ∃ (i : _) (y : F.obj (D.U i)), F.map (D.ι i) y = x := by
   let e := D.gluedIso F
   obtain ⟨i, y, eq⟩ := (D.mapGlueData F).types_ι_jointly_surjective (e.hom x)
   replace eq := congr_arg e.inv eq

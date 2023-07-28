@@ -15,8 +15,9 @@ import Mathlib.Control.Basic
 /-!
 # Library search
 
-This file defines a tactic `library_search`
-and a term elaborator `library_search%`
+This file defines tactics `exact?` and `apply?`,
+(formerly known as `library_search`)
+and a term elaborator `exact?%`
 that tries to find a lemma
 solving the current goal
 (subgoals are solved using `solveByElim`).
@@ -37,18 +38,16 @@ initialize registerTraceClass `Tactic.librarySearch.lemmas
 /--
 A "modifier" for a declaration.
 * `none` indicates the original declaration,
-* `symm` indicates that (possibly after binders) the declaration is an `=`,
-  and we want to consider the symmetric version,
-* `mp` indicates that (possibly after binders) the declaration is an `iff`,
+* `mp` indicates that (possibly after binders) the declaration is an `↔`,
   and we want to consider the forward direction,
 * `mpr` similarly, but for the backward direction.
 -/
 inductive DeclMod
-| none | symm | mp | mpr
+  | none | mp | mpr
 deriving DecidableEq, Ord
 
 instance : ToString DeclMod where
-  toString m := match m with | .none => "" | .symm => "symm" | .mp => "mp" | .mpr => "mpr"
+  toString m := match m with | .none => "" | .mp => "mp" | .mpr => "mpr"
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
@@ -60,17 +59,13 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     let keys ← DiscrTree.mkPath type
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
-    | (``Eq, #[_, lhs, rhs]) => do
-      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
-      return r.push (keys_symm, (name, .symm))
     | (``Iff, #[lhs, rhs]) => do
-      let keys_mp ← DiscrTree.mkPath rhs
-      let keys_mpr ← DiscrTree.mkPath lhs
-      return r.push (keys_mp, (name, .mp)) |>.push (keys_mpr, (name, .mpr))
+      return r.push (← DiscrTree.mkPath rhs, (name, .mp))
+        |>.push (← DiscrTree.mkPath lhs, (name, .mpr))
     | _ => return r
 
 /-- Insert a lemma into the discrimination tree. -/
--- Recall that `library_search` caches the discrimination tree on disk.
+-- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying this file, you will probably want to delete
 -- `build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
@@ -83,7 +78,7 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
-  DiscrTreeCache.mk "librarySearch: init cache" processLemma
+  DiscrTreeCache.mk "apply?: init cache" processLemma
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -105,7 +100,7 @@ initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
-    return ⟨r, ← DiscrTreeCache.mk "librarySearch: using cache" processLemma (init := some d)⟩
+    return ⟨r, ← DiscrTreeCache.mk "apply?: using cache" processLemma (init := some d)⟩
   else
     return ⟨none, ← buildDiscrTree⟩
 
@@ -140,10 +135,9 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     let lem ← mkConstWithFreshMVarLevels lem
     let lem ← match mod with
     | .none => pure lem
-    | .symm => mapForallTelescope (fun e => mkAppM ``Eq.symm #[e]) lem
     | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
-    let newGoals ← goal.apply lem
+    let newGoals ← goal.apply lem { allowSynthFailures := true }
     try
       let subgoals ← solveByElim newGoals required (exfalso := false) (depth := solveByElimDepth)
       pure (← getMCtx, subgoals)
@@ -162,6 +156,18 @@ def librarySearchCore (goal : MVarId)
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
+
+/--
+Run `librarySearchCore` on both the goal and `symm` applied to the goal.
+-/
+def librarySearchSymm (goal : MVarId)
+    (required : List Expr) (solveByElimDepth := 6) :
+    ListM MetaM (MetavarContext × List MVarId) :=
+  .append (librarySearchCore goal required solveByElimDepth) <| .squash do
+    if let some symm ← try? goal.symm then
+      return librarySearchCore symm required solveByElimDepth
+    else
+      return .nil
 
 /-- A type synonym for our subgoal ranking algorithm. -/
 def subgoalRankType : Type := Bool × Nat × Int
@@ -182,7 +188,7 @@ are better.
 def subgoalRanking (goal : MVarId) (subgoals : List MVarId) : MetaM subgoalRankType := do
   return (subgoals.isEmpty, ← countLocalHypsUsed (.mvar goal), - subgoals.length)
 
-/-- Sort the incomplete results from `library_search` according to
+/-- Sort the incomplete results from `librarySearchCore` according to
 * the number of local hypotheses used (the more the better) and
 * the number of remaining subgoals (the fewer the better).
 -/
@@ -210,7 +216,8 @@ unless the goal was completely solved.)
 this is not currently tracked.)
 -/
 def librarySearch (goal : MVarId) (required : List Expr)
-    (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
+    (solveByElimDepth := 6) (leavePercentHeartbeats : Nat := 10) :
+    MetaM (Option (Array (MetavarContext × List MVarId))) := do
   let librarySearchEmoji := fun
     | .error _ => bombEmoji
     | .ok (some _) => crossEmoji
@@ -221,9 +228,9 @@ def librarySearch (goal : MVarId) (required : List Expr)
     _ ← solveByElim [goal] required (exfalso := true) (depth := solveByElimDepth)
     return none) <|>
   (do
-    let results ← librarySearchCore goal required solveByElimDepth
+    let results ← librarySearchSymm goal required solveByElimDepth
       -- Don't use too many heartbeats.
-      |>.whileAtLeastHeartbeatsPercent 10
+      |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
       -- Stop if we find something that closes the goal
       |>.takeUpToFirst (·.2.isEmpty)
       |>.asArray
@@ -237,33 +244,53 @@ open Lean.Parser.Tactic
 
 -- TODO: implement the additional options for `library_search` from Lean 3,
 -- in particular including additional lemmas
--- with `library_search [X, Y, Z]` or `library_search with attr`.
-syntax (name := librarySearch') "library_search" (config)? (simpArgs)?
+-- with `exact? [X, Y, Z]` or `exact? with attr`.
+syntax (name := exact?') "exact?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
-syntax (name := librarySearch!) "library_search!" (config)? (simpArgs)?
+syntax (name := exact?!) "exact?!" (config)? (simpArgs)?
+  (" using " (colGt term),+)? : tactic
+syntax (name := exact!?) "exact!?" (config)? (simpArgs)?
+  (" using " (colGt term),+)? : tactic
+
+syntax (name := apply?') "apply?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
 
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
-open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required],*]?) => do
+open Elab.Tactic Elab Tactic
+
+def exact? (tk : Syntax) (required : Option (Array (TSyntax `term))) (requireClose : Bool) :
+    TacticM Unit := do
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
     let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
     if let some suggestions ← librarySearch goal required then
+      if requireClose then
+        throwError "`exact?` could not close the goal. Try `apply?` to see partial suggestions."
       reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta (addSubgoalsMsg := true)
-      if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
+      if suggestions.isEmpty then logError "apply? didn't find any relevant lemmas"
       admitGoal goal
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
 
+elab_rules : tactic | `(tactic| exact?%$tk $[using $[$required],*]?) => do
+  exact? tk required true
+
+elab_rules : tactic | `(tactic| apply?%$tk $[using $[$required],*]?) => do
+  exact? tk required false
+
+elab tk:"library_search" : tactic => do
+  logWarning ("`library_search` has been renamed to `apply?`" ++
+    " (or `exact?` if you only want solutions closing the goal)")
+  exact? tk none false
+
 open Elab Term in
-elab tk:"library_search%" : term <= expectedType => do
+elab tk:"exact?%" : term <= expectedType => do
   let goal ← mkFreshExprMVar expectedType
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
@@ -272,7 +299,7 @@ elab tk:"library_search%" : term <= expectedType => do
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta
-      if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
+      if suggestions.isEmpty then logError "exact? didn't find any relevant lemmas"
       mkSorry expectedType (synthetic := true)
     else
       addTermSuggestion tk (← instantiateMVars goal).headBeta

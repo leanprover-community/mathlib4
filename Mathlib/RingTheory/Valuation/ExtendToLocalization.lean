@@ -2,14 +2,11 @@
 Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module ring_theory.valuation.extend_to_localization
-! leanprover-community/mathlib commit 64b3576ff5bbac1387223e93988368644fcbcd7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import ring_theory.valuation.extend_to_localization from "leanprover-community/mathlib"@"64b3576ff5bbac1387223e93988368644fcbcd7e"
 
 /-!
 
@@ -34,7 +31,7 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
   { f.lift h with
     map_zero' := by convert f.lift_eq (P := Γ) _ 0 <;> simp
     map_add_le_max' := fun x y => by
-      obtain ⟨a, b, s, rfl, rfl⟩ : ∃ (a b : A)(s : S), f.mk' a s = x ∧ f.mk' b s = y := by
+      obtain ⟨a, b, s, rfl, rfl⟩ : ∃ (a b : A) (s : S), f.mk' a s = x ∧ f.mk' b s = y := by
         obtain ⟨a, s, rfl⟩ := f.mk'_surjective x
         obtain ⟨b, t, rfl⟩ := f.mk'_surjective y
         use a * t, b * s, s * t

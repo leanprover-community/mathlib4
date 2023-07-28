@@ -2,11 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module topology.algebra.polynomial
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Inductions
@@ -14,20 +9,22 @@ import Mathlib.Data.Polynomial.Splits
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Analysis.Normed.Field.Basic
 
+#align_import topology.algebra.polynomial from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
+
 /-!
 # Polynomials and limits
 
 In this file we prove the following lemmas.
 
-* `Polynomial.continuous_eval₂: `Polynomial.eval₂` defines a continuous function.
-* `Polynomial.continuous_aeval: `Polynomial.aeval` defines a continuous function;
+* `Polynomial.continuous_eval₂`: `Polynomial.eval₂` defines a continuous function.
+* `Polynomial.continuous_aeval`: `Polynomial.aeval` defines a continuous function;
   we also prove convenience lemmas `Polynomial.continuousAt_aeval`,
   `Polynomial.continuousWithinAt_aeval`, `Polynomial.continuousOn_aeval`.
 * `Polynomial.continuous`:  `Polynomial.eval` defines a continuous functions;
   we also prove convenience lemmas `Polynomial.continuousAt`, `Polynomial.continuousWithinAt`,
   `Polynomial.continuous_on`.
 * `Polynomial.tendsto_norm_atTop`: `λ x, ‖Polynomial.eval (z x) p‖` tends to infinity provided that
-  `λ x, ‖z x‖` tends to infinity and `0 < degree p`;
+  `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
 * `Polynomial.tendsto_abv_eval₂_atTop`, `Polynomial.tendsto_abv_atTop`,
   `Polynomial.tendsto_abv_aeval_atTop`: a few versions of the previous statement for
   `IsAbsoluteValue abv` instead of norm.

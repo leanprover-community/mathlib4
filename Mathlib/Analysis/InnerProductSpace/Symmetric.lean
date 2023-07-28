@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.symmetric
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.LinearAlgebra.SesquilinearForm
+
+#align_import analysis.inner_product_space.symmetric from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -117,7 +114,7 @@ theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : Is
   exact hu.sub_const _
 #align linear_map.is_symmetric.continuous LinearMap.IsSymmetric.continuous
 
-/-- For a symmetric operator `T`, the function `λ x, ⟪T x, x⟫` is real-valued. -/
+/-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
 @[simp]
 theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E))
     (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ := by

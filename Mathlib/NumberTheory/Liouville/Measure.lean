@@ -2,22 +2,19 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module number_theory.liouville.measure
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.Liouville.LiouvilleWith
 import Mathlib.Analysis.PSeries
 
+#align_import number_theory.liouville.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
+
 /-!
 # Volume of the set of Liouville numbers
 
 In this file we prove that the set of Liouville numbers with exponent (irrationality measure)
-strictly greater than two is a set of Lebesuge measure zero, see
+strictly greater than two is a set of Lebesgue measure zero, see
 `volume_iUnion_setOf_liouvilleWith`.
 
 Since this set is a residual set, we show that the filters `residual` and `volume.ae` are disjoint.

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.relator
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Logic.Basic
+
+#align_import logic.relator from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relator for functions, pairs, sums, and lists.
@@ -32,9 +29,9 @@ variable {α : Sort u₁} {β : Sort u₂} {γ : Sort v₁} {δ : Sort v₂}
 variable (R : α → β → Prop) (S : γ → δ → Prop)
 
 /-- The binary relations `R : α → β → Prop` and `S : γ → δ → Prop` induce a binary
-    relation on functions `LiftFun : (f : α → γ) (g : β → δ) : Prop'. -/
+    relation on functions `LiftFun : (α → γ) → (β → δ) → Prop`. -/
 def LiftFun (f : α → γ) (g : β → δ) : Prop :=
-∀⦃a b⦄, R a b → S (f a) (g b)
+  ∀⦃a b⦄, R a b → S (f a) (g b)
 #align relator.lift_fun Relator.LiftFun
 
 /-- `(R ⇒ S) f g` means `LiftFun R S f g`. -/
@@ -106,38 +103,38 @@ lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff))
 end
 
 lemma rel_imp : (Iff ⇒ (Iff ⇒ Iff)) (· → ·) (· → ·) :=
-λ _ _ h _ _ l => imp_congr h l
+  λ _ _ h _ _ l => imp_congr h l
 #align relator.rel_imp Relator.rel_imp
 
 lemma rel_not : (Iff ⇒ Iff) Not Not :=
-λ _ _ h => not_congr h
+  λ _ _ h => not_congr h
 #align relator.rel_not Relator.rel_not
 
 lemma bi_total_eq {α : Type u₁} : Relator.BiTotal (@Eq α) :=
-{ left := λ a => ⟨a, rfl⟩, right := λ a => ⟨a, rfl⟩ }
+  { left := λ a => ⟨a, rfl⟩, right := λ a => ⟨a, rfl⟩ }
 #align relator.bi_total_eq Relator.bi_total_eq
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 variable {r : α → β → Prop} {p : β → γ → Prop} {q : γ → δ → Prop}
 
 lemma LeftUnique.flip (h : LeftUnique r) : RightUnique (flip r) :=
-λ _ _ _ h₁ h₂ => h h₁ h₂
+  λ _ _ _ h₁ h₂ => h h₁ h₂
 #align relator.left_unique.flip Relator.LeftUnique.flip
 
 lemma rel_and : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·∧·) (·∧·) :=
-λ _ _ h₁ _ _ h₂ => and_congr h₁ h₂
+  λ _ _ h₁ _ _ h₂ => and_congr h₁ h₂
 #align relator.rel_and Relator.rel_and
 
 lemma rel_or : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·∨·) (·∨·) :=
-λ _ _ h₁ _ _ h₂ => or_congr h₁ h₂
+  λ _ _ h₁ _ _ h₂ => or_congr h₁ h₂
 #align relator.rel_or Relator.rel_or
 
 lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
-λ _ _ h₁ _ _ h₂ => iff_congr h₁ h₂
+  λ _ _ h₁ _ _ h₂ => iff_congr h₁ h₂
 #align relator.rel_iff Relator.rel_iff
 
 lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
-λ _ _ h₁ _ _ h₂ => ⟨λ h => hr.right h₁ $ h.symm ▸ h₂, λ h => hr.left h₁ $ h.symm ▸ h₂⟩
+  λ _ _ h₁ _ _ h₂ => ⟨λ h => hr.right h₁ $ h.symm ▸ h₂, λ h => hr.left h₁ $ h.symm ▸ h₂⟩
 #align relator.rel_eq Relator.rel_eq
 
 end Relator

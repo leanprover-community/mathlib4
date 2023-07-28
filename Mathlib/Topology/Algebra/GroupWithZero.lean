@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.group_with_zero
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.algebra.group_with_zero from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
 /-!
 # Topological group with zero
@@ -98,7 +95,7 @@ variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G�
 /-!
 ### Continuity of `fun x ↦ x⁻¹` at a non-zero point
 
-We define `HasContinuousinv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
+We define `HasContinuousInv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
 is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for
 `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and `Continuous`.
 -/
@@ -107,7 +104,7 @@ theorem tendsto_inv₀ {x : G₀} (hx : x ≠ 0) : Tendsto Inv.inv (𝓝 x) (�
   continuousAt_inv₀ hx
 #align tendsto_inv₀ tendsto_inv₀
 
-theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) ({0}ᶜ) := fun _x hx =>
+theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) {0}ᶜ := fun _x hx =>
   (continuousAt_inv₀ hx).continuousWithinAt
 #align continuous_on_inv₀ continuousOn_inv₀
 
@@ -322,7 +319,7 @@ theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)
 #align continuous_at_zpow₀ continuousAt_zpow₀
 
-theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) ({0}ᶜ) := fun _x hx =>
+theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>
   (continuousAt_zpow₀ _ _ (Or.inl hx)).continuousWithinAt
 #align continuous_on_zpow₀ continuousOn_zpow₀
 

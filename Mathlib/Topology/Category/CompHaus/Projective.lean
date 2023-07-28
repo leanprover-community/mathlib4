@@ -2,15 +2,12 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module topology.category.CompHaus.projective
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective
+
+#align_import topology.category.CompHaus.projective from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # CompHaus has enough projectives
@@ -38,7 +35,7 @@ open CategoryTheory Function
 
 namespace CompHaus
 
-attribute [local instance] ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.funLike
 
 instance projective_ultrafilter (X : Type _) : Projective (of <| Ultrafilter X)
     where
@@ -57,7 +54,6 @@ instance projective_ultrafilter (X : Type _) : Projective (of <| Ultrafilter X)
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
     rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
-    rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.projective_ultrafilter CompHaus.projective_ultrafilter
 

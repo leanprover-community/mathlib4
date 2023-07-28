@@ -2,16 +2,13 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit 8130e5155d637db35907c272de9aec9dc851c03a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
 /-!
 
@@ -49,7 +46,7 @@ structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Mo
 add_decl_doc Submodule.toAddSubmonoid
 #align submodule.to_add_submonoid Submodule.toAddSubmonoid
 
-/-- Reinterpret a `Submodule` as an `SubMulAction`. -/
+/-- Reinterpret a `Submodule` as a `SubMulAction`. -/
 add_decl_doc Submodule.toSubMulAction
 #align submodule.to_sub_mul_action Submodule.toSubMulAction
 
@@ -189,6 +186,15 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
 instance (priority := 75) toModule : Module R S' :=
   Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SMulMemClass.toModule
+
+/-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
+this to manually derive `Module` on specific types. -/
+def toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
+    [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
+    Module R' s :=
+  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R A
+  SMulMemClass.toModule s
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
 protected def subtype : S' →ₗ[R] M where
@@ -346,12 +352,10 @@ instance addCommMonoid : AddCommMonoid p :=
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul := (· • ·)
-    -- Porting note: this used to be `ext <;> simp [add_smul, smul_add]` but `simp` tries
-    -- to prove it for the un-coerced version
-    smul_zero := fun a => Subtype.ext (smul_zero a)
-    zero_smul := fun a => Subtype.ext (zero_smul S (a : M))
-    add_smul := fun a b x => Subtype.ext (add_smul a b (x : M))
-    smul_add := fun a x y => Subtype.ext (smul_add a (x : M) (y : M)) }
+    smul_zero := fun a => by ext; simp
+    zero_smul := fun a => by ext; simp
+    add_smul := fun a b x => by ext; simp [add_smul]
+    smul_add := fun a x y => by ext; simp [smul_add] }
 #align submodule.module' Submodule.module'
 
 instance module : Module R p :=
@@ -382,7 +386,7 @@ theorem injective_subtype : Injective p.subtype :=
 #align submodule.injective_subtype Submodule.injective_subtype
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- porting note: removing the `@[simp]` attribute since it's lterally `AddSubmonoid.coe_finset_sum`
+-- porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum
@@ -390,7 +394,7 @@ theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in
 section AddAction
 
 /-! ### Additive actions by `Submodule`s
-These instances transfer the action by an element `m : M` of a `R`-module `M` written as `m +ᵥ a`
+These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
 These instances work particularly well in conjunction with `add_group.to_add_action`, enabling

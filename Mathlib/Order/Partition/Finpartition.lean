@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module order.partition.finpartition
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.SupIndep
+
+#align_import order.partition.finpartition from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Finite partitions
@@ -474,7 +471,7 @@ theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.supParts
 #align finpartition.bUnion_parts Finpartition.biUnion_parts
 
-theorem sum_card_parts : (∑ i in P.parts, i.card) = s.card := by
+theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl
@@ -561,7 +558,7 @@ variable {F : Finset (Finset α)}
    (Q «expr ⊆ » F) -/
 theorem mem_atomise :
     t ∈ (atomise s F).parts ↔
-      t.Nonempty ∧ ∃ (Q : _)(_ : Q ⊆ F), (s.filter fun i ↦ ∀ u ∈ F, u ∈ Q ↔ i ∈ u) = t := by
+      t.Nonempty ∧ ∃ (Q : _) (_ : Q ⊆ F), (s.filter fun i ↦ ∀ u ∈ F, u ∈ Q ↔ i ∈ u) = t := by
   simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, nonempty_iff_ne_empty,
     mem_singleton, and_comm, mem_powerset, exists_prop]
 #align finpartition.mem_atomise Finpartition.mem_atomise

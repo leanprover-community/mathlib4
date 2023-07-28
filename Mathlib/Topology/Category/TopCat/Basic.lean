@@ -2,15 +2,12 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.category.Top.basic
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.category.Top.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Category instance for topological spaces
@@ -46,6 +43,7 @@ set_option linter.uppercaseLean3 false in
 deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance concreteCategory : ConcreteCategory TopCat := by
   dsimp [TopCat]
   infer_instance
@@ -59,7 +57,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.hasCoeToFun in
+attribute [instance] ConcreteCategory.funLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 

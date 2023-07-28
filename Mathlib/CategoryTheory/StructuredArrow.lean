@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.structured_arrow
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
+
+#align_import category_theory.structured_arrow from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # The category of "structured arrows"
@@ -56,6 +53,7 @@ variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
   CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
@@ -82,7 +80,7 @@ theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
 
 @[reassoc (attr := simp)]
 theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
-  have := f.w ; aesop_cat
+  have := f.w; aesop_cat
 #align category_theory.structured_arrow.w CategoryTheory.StructuredArrow.w
 
 @[simp]
@@ -102,8 +100,8 @@ we need a morphism of the objects underlying the target,
 and to check that the triangle commutes.
 -/
 @[simps]
-def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right) (w : f.hom ≫ T.map g = f'.hom) :
-    f ⟶ f' where
+def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
+    (w : f.hom ≫ T.map g = f'.hom := by aesop_cat) : f ⟶ f' where
   left := eqToHom (by ext)
   right := g
   w := by
@@ -129,7 +127,8 @@ we need an isomorphism of the objects underlying the target,
 and to check that the triangle commutes.
 -/
 @[simps!]
-def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right) (w : f.hom ≫ T.map g.hom = f'.hom) :
+def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right)
+    (w : f.hom ≫ T.map g.hom = f'.hom := by aesop_cat) :
     f ≅ f' :=
   Comma.isoMk (eqToIso (by ext)) g (by simpa [eqToHom_map] using w.symm)
 #align category_theory.structured_arrow.iso_mk CategoryTheory.StructuredArrow.isoMk
@@ -179,7 +178,7 @@ theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom := by
 /-- Eta rule for structured arrows. -/
 @[simps!]
 def eta (f : StructuredArrow S T) : f ≅ mk f.hom :=
-  isoMk (Iso.refl _) (by aesop_cat)
+  isoMk (Iso.refl _)
 #align category_theory.structured_arrow.eta CategoryTheory.StructuredArrow.eta
 
 /- Porting note : it appears the simp lemma is not getting generated but the linter
@@ -227,12 +226,9 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 
 open CategoryTheory.Limits
 
--- attribute [local tidy] tactic.discrete_cases
-
 /-- The identity structured arrow is initial. -/
 def mkIdInitial [Full T] [Faithful T] : IsInitial (mk (𝟙 (T.obj Y))) where
-  desc c := homMk (T.preimage c.pt.hom) (by simp)
-  fac := fun _ ⟨a⟩ => by cases a
+  desc c := homMk (T.preimage c.pt.hom)
   uniq c m _ := by
     apply CommaMorphism.ext
     · aesop_cat
@@ -276,6 +272,7 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
 #align category_theory.costructured_arrow CategoryTheory.CostructuredArrow
 
 instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
+
 namespace CostructuredArrow
 
 /-- The obvious projection functor from costructured arrows. -/
@@ -288,6 +285,7 @@ variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
@@ -339,8 +337,8 @@ we need a morphism of the objects underlying the source,
 and to check that the triangle commutes.
 -/
 @[simps!]
-def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left) (w : S.map g ≫ f'.hom = f.hom) :
-    f ⟶ f' where
+def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
+    (w : S.map g ≫ f'.hom = f.hom := by aesop_cat) : f ⟶ f' where
   left := g
   right := eqToHom (by ext)
   w := by simpa [eqToHom_map] using w
@@ -355,8 +353,8 @@ we need an isomorphism of the objects underlying the source,
 and to check that the triangle commutes.
 -/
 @[simps!]
-def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left) (w : S.map g.hom ≫ f'.hom = f.hom) :
-    f ≅ f' :=
+def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left)
+    (w : S.map g.hom ≫ f'.hom = f.hom := by aesop_cat) : f ≅ f' :=
   Comma.isoMk g (eqToIso (by ext)) (by simpa [eqToHom_map] using w)
 #align category_theory.costructured_arrow.iso_mk CategoryTheory.CostructuredArrow.isoMk
 
@@ -404,7 +402,7 @@ theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom := by
 /-- Eta rule for costructured arrows. -/
 @[simps!]
 def eta (f : CostructuredArrow S T) : f ≅ mk f.hom :=
-  isoMk (Iso.refl _) (by aesop_cat)
+  isoMk (Iso.refl _)
 #align category_theory.costructured_arrow.eta CategoryTheory.CostructuredArrow.eta
 
 /- Porting note : it appears the simp lemma is not getting generated but the linter
@@ -447,23 +445,19 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
     ⟨⟨CostructuredArrow.homMk
         (inv ((proj S T).map f))
         (by rw [Functor.map_inv, IsIso.inv_comp_eq]; simp),
-      by constructor <;> apply Comma.hom_ext <;> dsimp at t ⊢ <;> simp⟩⟩
+      by constructor <;> ext <;> dsimp at t ⊢ <;> simp⟩⟩
 #align category_theory.costructured_arrow.proj_reflects_iso CategoryTheory.CostructuredArrow.proj_reflectsIsomorphisms
 
 open CategoryTheory.Limits
 
--- attribute [local tidy] tactic.discrete_cases -- Porting note: removed
-
 /-- The identity costructured arrow is terminal. -/
 def mkIdTerminal [Full S] [Faithful S] : IsTerminal (mk (𝟙 (S.obj Y))) where
-  lift c := homMk (S.preimage c.pt.hom) (by simp)
-  fac := fun _ ⟨a⟩ => by cases a
+  lift c := homMk (S.preimage c.pt.hom)
   uniq := by
     rintro c m -
-    apply CommaMorphism.ext
-    · apply S.map_injective
-      simpa only [homMk_left, S.image_preimage, ← w m] using (Category.comp_id _).symm
-    · aesop_cat
+    ext
+    apply S.map_injective
+    simpa only [homMk_left, S.image_preimage, ← w m] using (Category.comp_id _).symm
 #align category_theory.costructured_arrow.mk_id_terminal CategoryTheory.CostructuredArrow.mkIdTerminal
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
@@ -577,18 +571,15 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
   Equivalence.mk (StructuredArrow.toCostructuredArrow F d)
     (CostructuredArrow.toStructuredArrow' F d).rightOp
     (NatIso.ofComponents
-      (fun X =>
-        (@StructuredArrow.isoMk _ _ _ _ _ _ (StructuredArrow.mk (unop X).hom) (unop X) (Iso.refl _)
-            (by aesop_cat)).op)
+      (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk,Comma.isoMk,StructuredArrow.homMk] ; simp )
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp )
     (NatIso.ofComponents
-      (fun X =>
-        @CostructuredArrow.isoMk _ _ _ _ _ _ (CostructuredArrow.mk X.hom) X (Iso.refl _)
-          (by aesop_cat)) fun {X Y} f => by
-            apply CommaMorphism.ext <;>
-              dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk] ; simp )
+      (fun X => CostructuredArrow.isoMk (Iso.refl _))
+      fun {X Y} f => by
+        apply CommaMorphism.ext <;>
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp )
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -600,18 +591,15 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
   Equivalence.mk (CostructuredArrow.toStructuredArrow F d)
     (StructuredArrow.toCostructuredArrow' F d).rightOp
     (NatIso.ofComponents
-      (fun X =>
-        (@CostructuredArrow.isoMk _ _ _ _ _ _ (CostructuredArrow.mk (unop X).hom) (unop X)
-            (Iso.refl _) (by aesop_cat)).op)
+      (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk] ; simp )
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp )
     (NatIso.ofComponents
-      (fun X =>
-        @StructuredArrow.isoMk _ _ _ _ _ _ (StructuredArrow.mk X.hom) X (Iso.refl _)
-          (by aesop_cat)) fun {X Y} f => by
-            apply CommaMorphism.ext <;>
-              dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk] ; simp )
+      (fun X => StructuredArrow.isoMk (Iso.refl _))
+      fun {X Y} f => by
+        apply CommaMorphism.ext <;>
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp )
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory

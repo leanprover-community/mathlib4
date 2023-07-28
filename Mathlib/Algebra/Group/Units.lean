@@ -2,16 +2,13 @@
 Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.group.units
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
+
+#align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -214,7 +211,7 @@ instance : Inhabited αˣ :=
 attribute [instance] AddUnits.instInhabitedAddUnits
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
-@[to_additive "Additive units of an addditive monoid have a representation of the base value in
+@[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
@@ -600,11 +597,9 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
-attribute [nontriviality] isAddUnit_of_subsingleton
-
 @[to_additive]
 instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
-{ prf := fun _ ↦ id }
+  { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]

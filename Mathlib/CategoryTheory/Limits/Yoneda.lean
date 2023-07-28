@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.yoneda
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.Util.AssertExists
+
+#align_import category_theory.limits.yoneda from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -20,13 +17,7 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
 
--- import Mathlib.Tactic.AssertExists -- Porting note: see end of file
-
-open Opposite
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open Opposite CategoryTheory Limits
 
 universe w v u
 
@@ -41,8 +32,7 @@ variable {C : Type v} [SmallCategory C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := by aesop_cat
-         naturality := by aesop_cat }
+  ι := { app := by aesop_cat }
 #align category_theory.coyoneda.colimit_cocone CategoryTheory.Coyoneda.colimitCocone
 
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
@@ -82,7 +72,7 @@ variable {C : Type u} [Category.{v} C]
 
 open Limits
 
-/--n The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
+/-- The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
 instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X)
     where preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>

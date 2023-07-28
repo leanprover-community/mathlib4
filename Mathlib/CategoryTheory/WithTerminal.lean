@@ -2,13 +2,10 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.with_terminal
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.with_terminal from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 
@@ -32,7 +29,7 @@ The relevant constructions needed for the universal properties of these construc
   functor which was lifted.
 3. `liftUnique` provides the uniqueness property of `lift`.
 
-In addition to this, we provide `WithTerminal.map` and `WithInitinal.map` providing the
+In addition to this, we provide `WithTerminal.map` and `WithInitial.map` providing the
 functoriality of these constructions with respect to functors on the base categories.
 
 -/
@@ -102,9 +99,9 @@ instance : Category.{v} (WithTerminal C) where
     -- so the `false_of_from_star` destruct rule below can be used here.
     -- That works, but causes mysterious failures of `aesop_cat` in `map`.
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
-    . exact (h : PEmpty).elim
-    . exact (g : PEmpty).elim
-    . exact (h : PEmpty).elim
+    · exact (h : PEmpty).elim
+    · exact (g : PEmpty).elim
+    · exact (h : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
@@ -289,9 +286,9 @@ instance : Category.{v} (WithInitial C) where
     -- Porting note: it would be nice to automate this away as well.
     -- See the note on `Category (WithTerminal C)`
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
-    . exact (g : PEmpty).elim
-    . exact (f : PEmpty).elim
-    . exact (f : PEmpty).elim
+    · exact (g : PEmpty).elim
+    · exact (f : PEmpty).elim
+    · exact (f : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f

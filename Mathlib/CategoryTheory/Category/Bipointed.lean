@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module category_theory.category.Bipointed
-! leanprover-community/mathlib commit c8ab806ef73c20cab1d87b5157e43a82c205f28e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Pointed
+
+#align_import category_theory.category.Bipointed from "leanprover-community/mathlib"@"c8ab806ef73c20cab1d87b5157e43a82c205f28e"
 
 /-!
 # The category of bipointed types
@@ -112,16 +109,12 @@ def swap : Bipointed ⥤ Bipointed where
 @[simps!]
 def swapEquiv : Bipointed ≌ Bipointed :=
   CategoryTheory.Equivalence.mk swap swap
-    (NatIso.ofComponents
-      (fun X =>
+    (NatIso.ofComponents fun X =>
         { hom := ⟨id, rfl, rfl⟩
           inv := ⟨id, rfl, rfl⟩ })
-      fun f => rfl)
-    (NatIso.ofComponents
-      (fun X =>
+    (NatIso.ofComponents fun X =>
         { hom := ⟨id, rfl, rfl⟩
           inv := ⟨id, rfl, rfl⟩ })
-      fun f => rfl)
 #align Bipointed.swap_equiv Bipointed.swapEquiv
 
 @[simp]
@@ -205,22 +198,18 @@ theorem pointedToBipointedSnd_comp_swap :
 @[simps!]
 def pointedToBipointedCompBipointedToPointedFst :
     pointedToBipointed ⋙ bipointedToPointedFst ≅ 𝟭 _ :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := ⟨id, rfl⟩
-        inv := ⟨id, rfl⟩ })
-    fun f => rfl
+  NatIso.ofComponents fun X =>
+    { hom := ⟨id, rfl⟩
+      inv := ⟨id, rfl⟩ }
 #align Pointed_to_Bipointed_comp_Bipointed_to_Pointed_fst pointedToBipointedCompBipointedToPointedFst
 
 /-- `BipointedToPointed_snd` is inverse to `PointedToBipointed`. -/
 @[simps!]
 def pointedToBipointedCompBipointedToPointedSnd :
     pointedToBipointed ⋙ bipointedToPointedSnd ≅ 𝟭 _ :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := ⟨id, rfl⟩
-        inv := ⟨id, rfl⟩ })
-    fun f => rfl
+  NatIso.ofComponents fun X =>
+    { hom := ⟨id, rfl⟩
+      inv := ⟨id, rfl⟩ }
 #align Pointed_to_Bipointed_comp_Bipointed_to_Pointed_snd pointedToBipointedCompBipointedToPointedSnd
 
 /-- The free/forgetful adjunction between `PointedToBipointed_fst` and `BipointedToPointed_fst`.

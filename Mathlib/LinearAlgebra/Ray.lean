@@ -2,14 +2,11 @@
 Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module linear_algebra.ray
-! leanprover-community/mathlib commit 0f6670b8af2dff699de1c0b4b49039b31bc13c46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
+
+#align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
 /-!
 # Rays in modules
@@ -218,7 +215,7 @@ def RayVector (R M : Type _) [Zero M] :=
   { v : M // v ≠ 0 }
 #align ray_vector RayVector
 
--- Porting note: Made Coe into CoeOut so it's not dangeorus anymore
+-- Porting note: Made Coe into CoeOut so it's not dangerous anymore
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
 #align ray_vector.has_coe RayVector.coe
@@ -696,7 +693,7 @@ theorem exists_eq_smul_add (h : SameRay R v₁ v₂) :
 /-- If vectors `v₁` and `v₂` are on the same ray, then they are nonnegative multiples of the same
 vector. Actually, this vector can be assumed to be `v₁ + v₂`, see `SameRay.exists_eq_smul_add`. -/
 theorem exists_eq_smul (h : SameRay R v₁ v₂) :
-    ∃ (u : M)(a b : R), 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ v₁ = a • u ∧ v₂ = b • u :=
+    ∃ (u : M) (a b : R), 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ v₁ = a • u ∧ v₂ = b • u :=
   ⟨v₁ + v₂, h.exists_eq_smul_add⟩
 #align same_ray.exists_eq_smul SameRay.exists_eq_smul
 

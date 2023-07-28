@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.fubini
-! leanprover-community/mathlib commit 59382264386afdbaf1727e617f5fdda511992eb9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Functor.Currying
+
+#align_import category_theory.limits.fubini from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
 /-!
 # A Fubini theorem for categorical limits
@@ -94,8 +91,8 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
                   dsimp; simp only [Category.id_comp]
                   have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
                   dsimp at this
-                  simp only [Category.id_comp, CategoryTheory.Functor.map_id, NatTrans.id_app]
-                    at this
+                  simp? at this says
+                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
                   exact this } }
       naturality := fun j j' f =>
         (Q j').hom_ext
@@ -227,7 +224,7 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
   (limitUncurryIsoLimitCompLim _).symm ≪≫
     HasLimit.isoOfNatIso (uncurryObjFlip _) ≪≫
       HasLimit.isoOfEquivalence (Prod.braiding _ _)
-          (NatIso.ofComponents (fun _ => by rfl) (by simp)) ≪≫
+          (NatIso.ofComponents fun _ => by rfl) ≪≫
         limitUncurryIsoLimitCompLim _
 #align category_theory.limits.limit_flip_comp_lim_iso_limit_comp_lim CategoryTheory.Limits.limitFlipCompLimIsoLimitCompLim
 
@@ -321,7 +318,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_hom_π,
     Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
   erw [NatTrans.id_app]
-  -- Why can't `simp` do this`?
+  -- Why can't `simp` do this?
   dsimp
   -- porting note: the original proof only had `simp`.
   -- However, now `CategoryTheory.Bifunctor.map_id` does not get used by `simp`
@@ -339,8 +336,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
   simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_inv_π,
     Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
   erw [NatTrans.id_app]
-  -- Why can't `simp` do this`?
-  dsimp;
+  -- Porting note: `simp` can do this in lean 4.
   simp
 #align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim_inv_π_π CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π
 

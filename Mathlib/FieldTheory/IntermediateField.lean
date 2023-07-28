@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module field_theory.intermediate_field
-! leanprover-community/mathlib commit c596622fccd6e0321979d94931c964054dea2d26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
+
+#align_import field_theory.intermediate_field from "leanprover-community/mathlib"@"c596622fccd6e0321979d94931c964054dea2d26"
 
 /-!
 # Intermediate fields
@@ -217,7 +214,7 @@ protected theorem multiset_prod_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) �
   multiset_prod_mem m
 #align intermediate_field.multiset_prod_mem IntermediateField.multiset_prod_mem
 
-/-- Sum of a multiset of elements in a `IntermediateField` is in the `IntermediateField`. -/
+/-- Sum of a multiset of elements in an `IntermediateField` is in the `IntermediateField`. -/
 protected theorem multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.sum ∈ S :=
   multiset_sum_mem m
 #align intermediate_field.multiset_sum_mem IntermediateField.multiset_sum_mem
@@ -229,7 +226,7 @@ protected theorem prod_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀
   prod_mem h
 #align intermediate_field.prod_mem IntermediateField.prod_mem
 
-/-- Sum of elements in a `IntermediateField` indexed by a `Finset` is in the `IntermediateField`.
+/-- Sum of elements in an `IntermediateField` indexed by a `Finset` is in the `IntermediateField`.
 -/
 protected theorem sum_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
     (∑ i in t, f i) ∈ S :=

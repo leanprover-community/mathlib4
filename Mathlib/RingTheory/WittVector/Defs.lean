@@ -2,25 +2,22 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.defs
-! leanprover-community/mathlib commit f1944b30c97c5eb626e498307dec8b022a05bd0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.StructurePolynomial
+
+#align_import ring_theory.witt_vector.defs from "leanprover-community/mathlib"@"f1944b30c97c5eb626e498307dec8b022a05bd0a"
 
 /-!
 # Witt vectors
 
 In this file we define the type of `p`-typical Witt vectors and ring operations on it.
-The ring axioms are verified in `ring_theory/witt_vector/basic.lean`.
+The ring axioms are verified in `RingTheory.WittVector.Basic`.
 
 For a fixed commutative ring `R` and prime `p`,
 a Witt vector `x : 𝕎 R` is an infinite sequence `ℕ → R` of elements of `R`.
 However, the ring operations `+` and `*` are not defined in the obvious component-wise way.
 Instead, these operations are defined via certain polynomials
-using the machinery in `structure_polynomial.lean`.
+using the machinery in `StructurePolynomial.lean`.
 The `n`th value of the sum of two Witt vectors can depend on the `0`-th through `n`th values
 of the summands. This effectively simulates a “carrying” operation.
 
@@ -55,7 +52,7 @@ structure WittVector (p : ℕ) (R : Type _) where mk' ::
 #align witt_vector WittVector
 
 -- Porting note: added to make the `p` argument explicit
-def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R): WittVector p R := mk' coeff
+def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R) : WittVector p R := mk' coeff
 
 variable {p : ℕ}
 
@@ -68,7 +65,7 @@ local notation "𝕎" => WittVector p
 -- type as `\bbW`
 namespace WittVector
 
-variable (p) {R : Type _}
+variable {R : Type _}
 
 /-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
 add_decl_doc WittVector.mk
@@ -88,8 +85,10 @@ theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
 #align witt_vector.ext WittVector.ext
 
 theorem ext_iff {x y : 𝕎 R} : x = y ↔ ∀ n, x.coeff n = y.coeff n :=
-  ⟨fun h n => by rw [h], ext p⟩
+  ⟨fun h n => by rw [h], ext⟩
 #align witt_vector.ext_iff WittVector.ext_iff
+
+variable (p)
 
 theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
   rfl

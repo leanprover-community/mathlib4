@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+
+#align_import topology.sheaves.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Presheaves in `C` have limits and colimits when `C` does.
@@ -46,7 +43,7 @@ theorem isSheaf_of_isLimit [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C 
   let F' : J ⥤ Sheaf C X :=
     { obj := fun j => ⟨F.obj j, H j⟩
       map := fun f => ⟨F.map f⟩ }
-  let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents fun _ => Iso.refl _
   exact Presheaf.isSheaf_of_iso
     ((isLimitOfPreserves (Sheaf.forget C X) (limit.isLimit F')).conePointsIsoOfNatIso hc e)
     (limit F').2

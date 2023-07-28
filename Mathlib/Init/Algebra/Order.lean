@@ -2,17 +2,14 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module init.algebra.order
-! leanprover-community/lean commit c2bcdbcbe741ed37c361a30d38e179182b989f76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.SplitIfs
+
+#align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
 /-!
 # Orders
@@ -211,7 +208,7 @@ def decidableEqOfDecidableLE [@DecidableRel α (· ≤ ·)] : DecidableEq α
 
 namespace Decidable
 
-variable [@DecidableRel α (. ≤ .)]
+variable [@DecidableRel α (· ≤ ·)]
 
 theorem lt_or_eq_of_le {a b : α} (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_le hab hba)
@@ -252,7 +249,7 @@ def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → 
 
 /-- Default definition of `min`. -/
 def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
-if a ≤ b then a else b
+  if a ≤ b then a else b
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:
@@ -274,11 +271,11 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (. ≤ . : α → α → Prop)
+  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (. < . : α → α → Prop) :=
+  decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a

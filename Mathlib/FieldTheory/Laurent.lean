@@ -2,28 +2,25 @@
 Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module field_theory.laurent
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Taylor
 import Mathlib.FieldTheory.RatFunc
+
+#align_import field_theory.laurent from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Laurent expansions of rational functions
 
 ## Main declarations
 
-* `ratfunc.laurent`: the Laurent expansion of the rational function `f` at `r`, as an `alg_hom`.
-* `ratfunc.laurent_injective`: the Laurent expansion at `r` is unique
+* `RatFunc.laurent`: the Laurent expansion of the rational function `f` at `r`, as an `AlgHom`.
+* `RatFunc.laurent_injective`: the Laurent expansion at `r` is unique
 
 ## Implementation details
 
 Implemented as the quotient of two Taylor expansions, over domains.
-An auxiliary definition is provided first to make the construction of the `alg_hom` easier,
-  which works on `comm_ring` which are not necessarily domains.
+An auxiliary definition is provided first to make the construction of the `AlgHom` easier,
+  which works on `CommRing` which are not necessarily domains.
 -/
 
 
@@ -49,7 +46,7 @@ theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰
 #align ratfunc.taylor_mem_non_zero_divisors RatFunc.taylor_mem_nonZeroDivisors
 
 /-- The Laurent expansion of rational functions about a value.
-Auxiliary definition, usage when over integral domains should prefer `ratfunc.laurent`. -/
+Auxiliary definition, usage when over integral domains should prefer `RatFunc.laurent`. -/
 def laurentAux : RatFunc R →+* RatFunc R :=
   RatFunc.mapRingHom
     ( { toFun := taylor r

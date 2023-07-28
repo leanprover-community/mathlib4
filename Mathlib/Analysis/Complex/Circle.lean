@@ -2,15 +2,12 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.complex.circle
-! leanprover-community/mathlib commit ad3dfaca9ea2465198bcf58aa114401c324e29d1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Analysis.Normed.Field.UnitBall
+
+#align_import analysis.complex.circle from "leanprover-community/mathlib"@"ad3dfaca9ea2465198bcf58aa114401c324e29d1"
 
 /-!
 # The circle
@@ -22,7 +19,7 @@ radius `1`.  We equip it with the following structure:
 * a group
 * a topological group
 
-We furthermore define `expMapCircle` to be the natural map `λ t, exp (t * I)` from `ℝ` to
+We furthermore define `expMapCircle` to be the natural map `fun t ↦ exp (t * I)` from `ℝ` to
 `circle`, and show that this map is a group homomorphism.
 
 ## Implementation notes

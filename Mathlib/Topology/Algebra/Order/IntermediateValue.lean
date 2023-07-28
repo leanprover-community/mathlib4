@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Alistair Tucker
-
-! This file was ported from Lean 3 source module topology.algebra.order.intermediate_value
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.Basic
+
+#align_import topology.algebra.order.intermediate_value from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Intermediate Value Theorem
@@ -276,7 +273,7 @@ theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb
 /-- A preconnected set in a conditionally complete linear order is either one of the intervals
 `[Inf s, Sup s]`, `[Inf s, Sup s)`, `(Inf s, Sup s]`, `(Inf s, Sup s)`, `[Inf s, +∞)`,
 `(Inf s, +∞)`, `(-∞, Sup s]`, `(-∞, Sup s)`, `(-∞, +∞)`, or `∅`. The converse statement requires
-`α` to be densely ordererd. -/
+`α` to be densely ordered. -/
 theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     s ∈
       ({Icc (sInf s) (sSup s), Ico (sInf s) (sSup s), Ioc (sInf s) (sSup s), Ioo (sInf s) (sSup s),
@@ -612,7 +609,7 @@ theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → 
   by cases' le_total (f a) (f b) with hab hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
-/-- A continuous function which tendsto `Fitler.atTop` along `Filter.atTop` and to `atBot` along
+/-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
 `at_bot` is surjective. -/
 theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atTop atTop)
     (h_bot : Tendsto f atBot atBot) : Function.Surjective f := fun p =>

@@ -2,17 +2,14 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.pi.lex
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Mathport.Notation
+
+#align_import data.pi.lex from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Lexicographic order on Pi types
@@ -29,7 +26,7 @@ This file defines the lexicographic order for Pi types. `a` is less than `b` if 
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Oigma.Order`: Lexicographic order on `Σₗ i, α i`.
+* `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/
@@ -89,7 +86,7 @@ theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r)
           exact fun h' => wf.not_lt_min _ _ h'
         have hne : a i ≠ b i := wf.min_mem _ hab
         cases' trichotomous_of s (a i) (b i) with hi hi
-        exacts[Or.inl ⟨i, hri, hi⟩,
+        exacts [Or.inl ⟨i, hri, hi⟩,
           Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 #align pi.is_trichotomous_lex Pi.isTrichotomous_lex
 
@@ -102,7 +99,7 @@ instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
   trans := by
     rintro a b c ⟨N₁, lt_N₁, a_lt_b⟩ ⟨N₂, lt_N₂, b_lt_c⟩
     rcases lt_trichotomy N₁ N₂ with (H | rfl | H)
-    exacts[⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ <| hj.trans H), lt_N₂ _ H ▸ a_lt_b⟩,
+    exacts [⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ <| hj.trans H), lt_N₂ _ H ▸ a_lt_b⟩,
       ⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ hj), a_lt_b.trans b_lt_c⟩,
       ⟨N₂, fun j hj => (lt_N₁ _ (hj.trans H)).trans (lt_N₂ _ hj), (lt_N₁ _ H).symm ▸ b_lt_c⟩]
 #align pi.lex.is_strict_order Pi.Lex.isStrictOrder

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Andrew Yang, Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.homology.short_exact.abelian
-! leanprover-community/mathlib commit 356447fe00e75e54777321045cdff7c9ea212e60
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+
+#align_import algebra.homology.short_exact.abelian from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
 
 /-!
 # Short exact sequences in abelian categories
@@ -33,11 +30,12 @@ variable [Abelian 𝒜]
 open ZeroObject
 
 theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortExact f' g')
-    (i₁ : A ⟶ A') (i₂ : B ⟶ B') (i₃ : C ⟶ C') (comm₁ : i₁ ≫ f' = f ≫ i₂)
-    (comm₂ : i₂ ≫ g' = g ≫ i₃) [IsIso i₁] [IsIso i₃] : IsIso i₂ := by
+    (i₁ : A ⟶ A') (i₂ : B ⟶ B') (i₃ : C ⟶ C')
+    (comm₁ : i₁ ≫ f' = f ≫ i₂ := by aesop_cat)
+    (comm₂ : i₂ ≫ g' = g ≫ i₃ := by aesop_cat) [IsIso i₁] [IsIso i₃] : IsIso i₂ := by
   obtain ⟨_⟩ := h
   obtain ⟨_⟩ := h'
-  refine @Abelian.isIso_of_isIso_of_isIso_of_isIso_of_isIso 𝒜 _ _ 0 _ _ _ 0 _ _ _ 0 f g 0 f' g'
+  refine @Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono 𝒜 _ _ 0 _ _ _ 0 _ _ _ 0 f g 0 f' g'
       0 i₁ i₂ i₃ ?_ comm₁ comm₂ 0 0 0 0 0 ?_ ?_ ?_ ?_ ?_ ?_ ?_ _ _ _ _
   all_goals try simp
   all_goals try assumption
@@ -53,8 +51,7 @@ together with proofs that `f` is mono and `g` is epi.
 The morphism `i` is then automatically an isomorphism. -/
 def Splitting.mk' (h : ShortExact f g) (i : B ⟶ A ⊞ C) (h1 : f ≫ i = biprod.inl)
     (h2 : i ≫ biprod.snd = g) : Splitting f g :=
-  have : IsIso i := isIso_of_shortExact_of_isIso_of_isIso h ⟨exact_inl_snd A C⟩  (𝟙 _) i (𝟙 _)
-    (by aesop_cat) (by aesop_cat)
+  have : IsIso i := isIso_of_shortExact_of_isIso_of_isIso h ⟨exact_inl_snd A C⟩ (𝟙 _) i (𝟙 _)
   { iso := asIso i
     comp_iso_eq_inl := h1
     iso_comp_snd_eq := h2 }
@@ -69,7 +66,6 @@ The morphism `i` is then automatically an isomorphism. -/
 def Splitting.mk'' (h : ShortExact f g) (i : A ⊞ C ⟶ B) (h1 : biprod.inl ≫ i = f)
     (h2 : i ≫ g = biprod.snd) : Splitting f g :=
   have : IsIso i := isIso_of_shortExact_of_isIso_of_isIso ⟨exact_inl_snd A C⟩ h (𝟙 _) i (𝟙 _)
-    (by aesop_cat) (by aesop_cat)
   { iso := (asIso i).symm
     comp_iso_eq_inl := by rw [Iso.symm_hom, asIso_inv, IsIso.comp_inv_eq, h1]
     iso_comp_snd_eq := by rw [Iso.symm_hom, asIso_inv, IsIso.inv_comp_eq, h2] }

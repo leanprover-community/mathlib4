@@ -2,14 +2,11 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module data.set.intervals.unordered_interval
-! leanprover-community/mathlib commit 4020ddee5b4580a409bfda7d2f42726ce86ae674
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
+
+#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
 
 /-!
 # Intervals without endpoints ordering
@@ -225,7 +222,7 @@ lemma monotone_or_antitone_iff_uIcc :
     Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   constructor
   · rintro (hf | hf) a b c <;> simp_rw [← Icc_min_max, ← hf.map_min, ← hf.map_max]
-    exacts[fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
+    exacts [fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩

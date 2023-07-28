@@ -2,15 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module set_theory.ordinal.basic
-! leanprover-community/mathlib commit 8da9e30545433fdd8fe55a0d3da208e5d9263f03
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.PPWithUniv
+
+#align_import set_theory.ordinal.basic from "leanprover-community/mathlib"@"8ea5598db6caeddde6cb734aa179cc2408dbd345"
 
 /-!
 # Ordinals
@@ -32,7 +30,7 @@ initial segment (or, equivalently, in any way). This total order is well founded
 * `Ordinal.lift` lifts an ordinal in universe `u` to an ordinal in universe `max u v`.
   For a version registering additionally that this is an initial segment embedding, see
   `Ordinal.lift.initialSeg`.
-  For a version regiserting that it is a principal segment embedding if `u < v`, see
+  For a version registering that it is a principal segment embedding if `u < v`, see
   `Ordinal.lift.principalSeg`.
 * `Ordinal.omega` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
   `Ordinal.omega.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
@@ -150,6 +148,7 @@ instance Ordinal.isEquivalent : Setoid WellOrder
 #align ordinal.is_equivalent Ordinal.isEquivalent
 
 /-- `Ordinal.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
+@[pp_with_univ]
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 #align ordinal Ordinal
@@ -326,7 +325,7 @@ instance partialOrder : PartialOrder Ordinal
           ⟨(InitialSeg.ofIso f).trans <| h.trans (InitialSeg.ofIso g.symm)⟩⟩
   lt a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≺i s))
-      fun  _ _ _ _  ⟨f⟩ ⟨g⟩ =>
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
       propext
         ⟨fun ⟨h⟩ => ⟨PrincipalSeg.equivLT f.symm <| h.ltLe (InitialSeg.ofIso g)⟩, fun ⟨h⟩ =>
           ⟨PrincipalSeg.equivLT f <| h.ltLe (InitialSeg.ofIso g.symm)⟩⟩
@@ -499,25 +498,38 @@ theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r 
   (typein_injective r).eq_iff
 #align ordinal.typein_inj Ordinal.typein_inj
 
+/-- Principal segment version of the `typein` function, embedding a well order into
+  ordinals as a principal segment. -/
+def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
+    @PrincipalSeg α Ordinal.{u} r (· < ·) :=
+  ⟨⟨⟨typein r, typein_injective r⟩, typein_lt_typein r⟩, type r,
+    fun _ ↦ ⟨typein_surj r, fun ⟨a, h⟩ ↦ h ▸ typein_lt_type r a⟩⟩
+#align ordinal.typein.principal_seg Ordinal.typein.principalSeg
+
+@[simp]
+theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
+    (typein.principalSeg r : α → Ordinal) = typein r :=
+  rfl
+#align ordinal.typein.principal_seg_coe Ordinal.typein.principalSeg_coe
+
 /-! ### Enumerating elements in a well-order with ordinals. -/
 
 
 /-- `enum r o h` is the `o`-th element of `α` ordered by `r`.
   That is, `enum` maps an initial segment of the ordinals, those
   less than the order type of `r`, to the elements of `α`. -/
-def enum (r : α → α → Prop) [IsWellOrder α r] (o) : o < type r → α :=
-  Quot.recOn' o (fun ⟨β, s, _⟩ h => (Classical.choice h).top) fun ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨h⟩ => by
-    refine' funext fun H₂ : type t < type r => _
-    have H₁ : type s < type r := by rwa [type_eq.2 ⟨h⟩]
-    have : ∀ {o : Ordinal} {e : type s = o} (H : o < type r),
-      Eq.rec (fun h : type s < type r => (Classical.choice h).top) e H
-        = (Classical.choice H₁).top := by intros _ e _; subst e; rfl
-    exact (this H₂).trans (PrincipalSeg.top_eq h (Classical.choice H₁) (Classical.choice H₂))
-#align ordinal.enum Ordinal.enum
+def enum (r : α → α → Prop) [IsWellOrder α r] (o) (h : o < type r) : α :=
+  (typein.principalSeg r).subrelIso ⟨o, h⟩
+
+@[simp]
+theorem typein_enum (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < type r) :
+    typein r (enum r o h) = o :=
+  (typein.principalSeg r).apply_subrelIso _
+#align ordinal.typein_enum Ordinal.typein_enum
 
 theorem enum_type {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : s ≺i r) {h : type s < type r} : enum r (type s) h = f.top :=
-  PrincipalSeg.top_eq (RelIso.refl _) _ _
+  (typein.principalSeg r).injective <| (typein_enum _ _).trans (typein_top _).symm
 #align ordinal.enum_type Ordinal.enum_type
 
 @[simp]
@@ -525,14 +537,6 @@ theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     enum r (typein r a) (typein_lt_type r a) = a :=
   enum_type (PrincipalSeg.ofElement r a)
 #align ordinal.enum_typein Ordinal.enum_typein
-
-@[simp]
-theorem typein_enum (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < type r) :
-    typein r (enum r o h) = o := by
-  let ⟨a, e⟩ := typein_surj r h
-  subst e
-  rw [enum_typein]
-#align ordinal.typein_enum Ordinal.typein_enum
 
 theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
     (h₂ : o₂ < type r) : r (enum r o₁ h₁) (enum r o₂ h₂) ↔ o₁ < o₂ := by
@@ -558,6 +562,10 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 #align ordinal.rel_iso_enum Ordinal.relIso_enum
 
 theorem lt_wf : @WellFounded Ordinal (· < ·) :=
+/-
+  wellFounded_iff_wellFounded_subrel.mpr (·.induction_on fun ⟨_, r, wo⟩ ↦
+    RelHomClass.wellFounded (typein.principalSeg r).subrelIso wo.wf)
+-/
   ⟨fun a =>
     inductionOn a fun α r wo =>
       suffices ∀ a, Acc (· < ·) (typein r a) from
@@ -581,21 +589,6 @@ theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ 
   lt_wf.induction i h
 #align ordinal.induction Ordinal.induction
 
-/-- Principal segment version of the `typein` function, embedding a well order into
-  ordinals as a principal segment. -/
-def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
-    @PrincipalSeg α Ordinal.{u} r (· < ·) :=
-  ⟨RelEmbedding.ofMonotone (typein r) fun _ _=> (typein_lt_typein r).2,
-    type r,
-    fun _ => ⟨fun h => ⟨enum r _ h, typein_enum r h⟩, fun ⟨_, e⟩ => e ▸ typein_lt_type _ _⟩⟩
-#align ordinal.typein.principal_seg Ordinal.typein.principalSeg
-
-@[simp]
-theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
-    (typein.principalSeg r : α → Ordinal) = typein r :=
-  rfl
-#align ordinal.typein.principal_seg_coe Ordinal.typein.principalSeg_coe
-
 /-! ### Cardinality of ordinals -/
 
 
@@ -606,14 +599,14 @@ def card : Ordinal → Cardinal :=
 #align ordinal.card Ordinal.card
 
 @[simp]
-theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = (#α) :=
+theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = #α :=
   rfl
 #align ordinal.card_type Ordinal.card_type
 
 -- Porting note: nolint, simpNF linter falsely claims the lemma never applies
 @[simp, nolint simpNF]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
-    (#{ y // r y x }) = (typein r x).card :=
+    #{ y // r y x } = (typein r x).card :=
   rfl
 #align ordinal.card_typein Ordinal.card_typein
 
@@ -799,7 +792,7 @@ theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
   Cardinal.inductionOn c
     (fun α =>
       inductionOn b fun β s _ e' => by
-        rw [card_type, ← Cardinal.lift_id'.{max u v, u} (#β), ← Cardinal.lift_umax.{u, v},
+        rw [card_type, ← Cardinal.lift_id'.{max u v, u} #β, ← Cardinal.lift_umax.{u, v},
           lift_mk_eq.{u, max u v, max u v}] at e'
         cases' e' with f
         have g := RelIso.preimage f s
@@ -1159,7 +1152,7 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o o' : Ordinal
 @[simp]
 theorem enum_le_enum' (a : Ordinal) {o o' : Ordinal} (ho : o < type (· < ·))
     (ho' : o' < type (· < ·)) : enum (· < ·) o ho ≤ @enum a.out.α (· < ·) _ o' ho' ↔ o ≤ o' := by
-  rw [← @enum_le_enum _ (· < ·)  (isWellOrder_out_lt _), ← not_lt]
+  rw [← @enum_le_enum _ (· < ·) (isWellOrder_out_lt _), ← not_lt]
 #align ordinal.enum_le_enum' Ordinal.enum_le_enum'
 
 theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
@@ -1187,26 +1180,16 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).out.α) :
 @[simp]
 theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
     (h₂ : o₂ < type r) : enum r o₁ h₁ = enum r o₂ h₂ ↔ o₁ = o₂ :=
-  ⟨fun h => by
-    by_contra hne
-    haveI : IsIrrefl _ r := inferInstance
-    cases' lt_or_gt_of_ne hne with hlt hlt <;> apply (this).1
-    · rwa [← @enum_lt_enum α r _ o₁ o₂ h₁ h₂, h] at hlt
-    · rw [GT.gt] at hlt
-      rwa [← @enum_lt_enum α r _ o₂ o₁ h₂ h₁, h] at hlt, fun h => by simp_rw [h]⟩
+  (typein.principalSeg r).subrelIso.injective.eq_iff.trans Subtype.mk_eq_mk
 #align ordinal.enum_inj Ordinal.enum_inj
 
+-- TODO: Can we remove this definition and just use `(typein.principalSeg r).subrelIso` directly?
 /-- A well order `r` is order isomorphic to the set of ordinals smaller than `type r`. -/
 @[simps]
-def enumIso (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) (· < type r) ≃r r
-    where
-  toFun x := enum r x.1 x.2
-  invFun x := ⟨typein r x, typein_lt_type r x⟩
-  left_inv := fun ⟨o, h⟩ => Subtype.ext_val (typein_enum _ _)
-  right_inv h := enum_typein _ _
-  map_rel_iff' := by
-    rintro ⟨a, _⟩ ⟨b, _⟩
-    apply enum_lt_enum
+def enumIso (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) (· < type r) ≃r r :=
+  { (typein.principalSeg r).subrelIso with
+    toFun := fun x ↦ enum r x.1 x.2
+    invFun := fun x ↦ ⟨typein r x, typein_lt_type r x⟩ }
 #align ordinal.enum_iso Ordinal.enumIso
 
 /-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/
@@ -1267,7 +1250,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine' fun b => inductionOn b _; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · rw [← lift_id (type s)] at h⊢
+    · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
       cases' f with f a hf
       exists a
@@ -1320,7 +1303,7 @@ namespace Cardinal
 open Ordinal
 
 @[simp]
-theorem mk_ordinal_out (o : Ordinal) : (#o.out.α) = o.card :=
+theorem mk_ordinal_out (o : Ordinal) : #o.out.α = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_lt]
 #align cardinal.mk_ordinal_out Cardinal.mk_ordinal_out
 
@@ -1342,16 +1325,16 @@ def ord (c : Cardinal) : Ordinal :=
           (Quot.sound ⟨RelIso.preimage f i.1⟩))
 #align cardinal.ord Cardinal.ord
 
-theorem ord_eq_Inf (α : Type u) : ord (#α) = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
   rfl
 #align cardinal.ord_eq_Inf Cardinal.ord_eq_Inf
 
-theorem ord_eq (α) : ∃ (r : α → α → Prop)(wo : IsWellOrder α r), ord (#α) = @type α r wo :=
+theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 #align cardinal.ord_eq Cardinal.ord_eq
 
-theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord (#α) ≤ type r :=
+theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
 #align cardinal.ord_le_type Cardinal.ord_le_type
 
@@ -1444,11 +1427,11 @@ theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
   · rw [ord_le, ← lift_card, card_ord]
 #align cardinal.lift_ord Cardinal.lift_ord
 
-theorem mk_ord_out (c : Cardinal) : (#c.ord.out.α) = c := by simp
+theorem mk_ord_out (c : Cardinal) : #c.ord.out.α = c := by simp
 #align cardinal.mk_ord_out Cardinal.mk_ord_out
 
-theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord (#α) = type r) :
-    card (typein r x) < (#α) := by
+theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord #α = type r) :
+    card (typein r x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 #align cardinal.card_typein_lt Cardinal.card_typein_lt
@@ -1483,10 +1466,10 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
   as an element of `Cardinal.{v}` (when `u < v`). -/
 @[nolint checkUnivs]
 def univ :=
-  lift.{v, u + 1} (#Ordinal)
+  lift.{v, u + 1} #Ordinal
 #align cardinal.univ Cardinal.univ
 
-theorem univ_id : univ.{u, u + 1} = (#Ordinal) :=
+theorem univ_id : univ.{u, u + 1} = #Ordinal :=
   lift_id _
 #align cardinal.univ_id Cardinal.univ_id
 
@@ -1538,7 +1521,7 @@ theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c
 #align cardinal.lt_univ' Cardinal.lt_univ'
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
-    Small.{v} α ↔ Cardinal.lift.{v+1,_} (#α) < univ.{v, max u (v + 1)} := by
+    Small.{v} α ↔ Cardinal.lift.{v+1,_} #α < univ.{v, max u (v + 1)} := by
   rw [lt_univ']
   constructor
   · rintro ⟨β, e⟩

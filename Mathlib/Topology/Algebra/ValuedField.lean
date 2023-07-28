@@ -2,15 +2,12 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.valued_field
-! leanprover-community/mathlib commit 3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Valuation
 import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.Algebra.UniformField
+
+#align_import topology.algebra.valued_field from "leanprover-community/mathlib"@"3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064"
 
 /-!
 # Valued fields and their completions
@@ -48,7 +45,7 @@ section InversionEstimate
 variable (v : Valuation K Γ₀)
 
 -- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (ie the next instance)
+-- in the topology induced by a valuation on a division ring (i.e. the next instance)
 -- and the fact that a valued field is completable
 -- [BouAC, VI.5.1 Lemme 1]
 theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
@@ -142,9 +139,6 @@ open UniformSpace
 
 variable {K : Type _} [Field K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
 
---include hv
-
--- mathport name: exprhat
 local notation "hat " => Completion
 
 /-- A valued field is completable. -/
@@ -162,7 +156,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         have : x ∈ U ∩ M := ⟨hU hyp, xM⟩
         rwa [H] at this
       rcases this with ⟨γ₀, M₀, M₀_in, H₀⟩
-      rw [Valued.cauchy_iff] at hF⊢
+      rw [Valued.cauchy_iff] at hF ⊢
       refine' ⟨hF.1.map _, _⟩
       replace hF := hF.2
       intro γ
@@ -231,9 +225,9 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
           rw [← one_mul (1 : hat K)]
         refine'
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp _ continuous_snd.continuousAt)
-        convert continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))
-        -- Porting note: Added `ContinuousAt._eq_1`
-        rw [ContinuousAt._eq_1, inv_one]
+        -- Porting note: Added `ContinuousAt.tendsto`
+        convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
+        exact inv_one.symm
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
       let hatKstar := ({0}ᶜ : Set <| hat K)
       have : hatKstar ∈ 𝓝 (1 : hat K) := compl_singleton_mem_nhds zero_ne_one.symm

@@ -76,15 +76,23 @@ jobs:
 
       - name: update Mathlib.lean
         run: |
-          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: update MathlibExtras.lean
         run: |
-          find MathlibExtras -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
+          git ls-files 'MathlibExtras/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
 
       - name: update Mathlib/Tactic.lean
         run: |
-          find Mathlib/Tactic -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
+          git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
+
+      - name: update Counterexamples.lean
+        run: |
+          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
+
+      - name: update Archive.lean
+        run: |
+          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
       - name: check that all files are imported
         run: git diff --exit-code
@@ -114,16 +122,23 @@ jobs:
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: get cache
-        run: lake exe cache get
+        run: |
+          lake exe cache clean
+          lake exe cache get
 
       - name: build mathlib
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake build
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
+
+      - name: check for noisy stdout lines
+        run: |
+          ! grep "stdout:" stdout.log
 
       - name: build library_search cache
-        run: lake build MathlibExtras
+        run: lake build -KCI MathlibExtras
 
       - name: upload cache
         if: always()
@@ -132,6 +147,17 @@ jobs:
           lake exe cache put || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
+
+      - name: build archive
+        run: lake build Archive
+
+      - name: build counterexamples
+        run: lake build Counterexamples
+
+      - name: check declarations in db files
+        run: |
+          python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
+          build/bin/checkYaml
 
       - name: test mathlib
         run: make -j 8 test

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.basic
-! leanprover-community/mathlib commit 926daa81fd8acb2a04e15572c4ff20af2753c2ae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Polynomial.RationalRoot
+
+#align_import ring_theory.dedekind_domain.basic from "leanprover-community/mathlib"@"926daa81fd8acb2a04e15572c4ff20af2753c2ae"
 
 /-!
 # Dedekind domains
@@ -48,41 +45,47 @@ variable (R A K : Type _) [CommRing R] [CommRing A] [Field K]
 open scoped nonZeroDivisors Polynomial
 
 /-- A ring `R` has Krull dimension at most one if all nonzero prime ideals are maximal. -/
-def Ring.DimensionLEOne : Prop :=
-  ∀ (p) (_ : p ≠ (⊥ : Ideal R)), p.IsPrime → p.IsMaximal
+class Ring.DimensionLEOne : Prop :=
+  (maximalOfPrime : ∀ {p : Ideal R}, p ≠ ⊥ → p.IsPrime → p.IsMaximal)
 #align ring.dimension_le_one Ring.DimensionLEOne
 
 open Ideal Ring
 
+theorem Ideal.IsPrime.isMaximal {R : Type _} [CommRing R] [DimensionLEOne R]
+    {p : Ideal R} (h : p.IsPrime) (hp : p ≠ ⊥) : p.IsMaximal :=
+  DimensionLEOne.maximalOfPrime hp h
+
 namespace Ring
 
-theorem DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
-    DimensionLEOne A := fun _ nonzero _ =>
-  IsPrime.to_maximal_ideal nonzero
+instance DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
+    DimensionLEOne A where
+  maximalOfPrime := fun nonzero _ =>
+    IsPrime.to_maximal_ideal nonzero
 #align ring.dimension_le_one.principal_ideal_ring Ring.DimensionLEOne.principal_ideal_ring
 
 theorem DimensionLEOne.isIntegralClosure (B : Type _) [CommRing B] [IsDomain B] [Nontrivial R]
     [Algebra R A] [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A]
-    (h : DimensionLEOne R) : DimensionLEOne B := fun p ne_bot _ =>
-  IsIntegralClosure.isMaximal_of_isMaximal_comap A p
-    (h _ (IsIntegralClosure.comap_ne_bot A ne_bot) inferInstance)
+    [DimensionLEOne R] : DimensionLEOne B where
+  maximalOfPrime := fun {p} ne_bot _ =>
+    IsIntegralClosure.isMaximal_of_isMaximal_comap (R := R) A p
+      (Ideal.IsPrime.isMaximal inferInstance (IsIntegralClosure.comap_ne_bot A ne_bot))
 #align ring.dimension_le_one.is_integral_closure Ring.DimensionLEOne.isIntegralClosure
 
-nonrec theorem DimensionLEOne.integralClosure [Nontrivial R] [IsDomain A] [Algebra R A]
-    (h : DimensionLEOne R) : DimensionLEOne (integralClosure R A) :=
-  h.isIntegralClosure R A (integralClosure R A)
+nonrec instance DimensionLEOne.integralClosure [Nontrivial R] [IsDomain A] [Algebra R A]
+    [DimensionLEOne R] : DimensionLEOne (integralClosure R A) :=
+  DimensionLEOne.isIntegralClosure R A (integralClosure R A)
 #align ring.dimension_le_one.integral_closure Ring.DimensionLEOne.integralClosure
 
 variable {R}
 
-theorem DimensionLEOne.not_lt_lt (h : Ring.DimensionLEOne R) (p₀ p₁ p₂ : Ideal R) [hp₁ : p₁.IsPrime]
+theorem DimensionLEOne.not_lt_lt [Ring.DimensionLEOne R] (p₀ p₁ p₂ : Ideal R) [hp₁ : p₁.IsPrime]
     [hp₂ : p₂.IsPrime] : ¬(p₀ < p₁ ∧ p₁ < p₂)
-  | ⟨h01, h12⟩ => h12.ne ((h p₁ (bot_le.trans_lt h01).ne' hp₁).eq_of_le hp₂.ne_top h12.le)
+  | ⟨h01, h12⟩ => h12.ne ((hp₁.isMaximal (bot_le.trans_lt h01).ne').eq_of_le hp₂.ne_top h12.le)
 #align ring.dimension_le_one.not_lt_lt Ring.DimensionLEOne.not_lt_lt
 
-theorem DimensionLEOne.eq_bot_of_lt (h : Ring.DimensionLEOne R) (p P : Ideal R) [p.IsPrime]
+theorem DimensionLEOne.eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime]
     [P.IsPrime] (hpP : p < P) : p = ⊥ :=
-  by_contra fun hp0 => h.not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
+  by_contra fun hp0 => not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
 #align ring.dimension_le_one.eq_bot_of_lt Ring.DimensionLEOne.eq_bot_of_lt
 
 end Ring
@@ -103,12 +106,13 @@ TODO: Prove that these are actually equivalent definitions.
 -/
 class IsDedekindDomain : Prop where
   isNoetherianRing : IsNoetherianRing A
-  dimensionLeOne : DimensionLEOne A
+  dimensionLEOne : DimensionLEOne A
   isIntegrallyClosed : IsIntegrallyClosed A
 #align is_dedekind_domain IsDedekindDomain
 
 -- See library note [lower instance priority]
-attribute [instance 100] IsDedekindDomain.isNoetherianRing IsDedekindDomain.isIntegrallyClosed
+attribute [instance 100] IsDedekindDomain.dimensionLEOne IsDedekindDomain.isNoetherianRing
+  IsDedekindDomain.isIntegrallyClosed
 
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.

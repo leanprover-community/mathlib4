@@ -2,11 +2,6 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.nonneg.ring
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Order.Ring.Defs
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
+
+#align_import algebra.order.nonneg.ring from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # The type of nonnegative elements
@@ -32,7 +29,7 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 ## Implementation Notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
-However, using the explicit subtype has a big advantage: when writing and element explicitly
+However, using the explicit subtype has a big advantage: when writing an element explicitly
 with a proof of nonnegativity as `⟨x, hx⟩`, the `hx` is expected to have type `0 ≤ x`. If we would
 use `Ici 0`, then the type is expected to be `x ∈ Ici 0`. Although these types are definitionally
 equal, this often confuses the elaborator. Similar problems arise when doing cases on an element.
@@ -180,7 +177,7 @@ instance linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid α] 
     (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_cancel_add_comm_monoid Nonneg.linearOrderedCancelAddCommMonoid
 
-/-- Coercion `{x : α // 0 ≤ x} → α` as a `AddMonoidHom`. -/
+/-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
 def coeAddMonoidHom [OrderedAddCommMonoid α] : { x : α // 0 ≤ x } →+ α :=
   { toFun := ((↑) : { x : α // 0 ≤ x } → α)
     map_zero' := Nonneg.coe_zero

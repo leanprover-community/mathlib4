@@ -2,17 +2,14 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.pointwise
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
+
+#align_import data.finset.pointwise from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"
 
 /-!
 # Pointwise operations of finsets
@@ -524,7 +521,7 @@ section Div
 
 variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
-/-- The pointwise division of sfinets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
+/-- The pointwise division of finsets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
 @[to_additive
       "The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
@@ -857,7 +854,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s: Set α) ^ n  := by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -992,7 +989,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
-theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s: Set α) ^ n
+theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
     refine' (coe_inv _).trans _
@@ -1420,7 +1417,7 @@ theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t�
       "If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
-    ↑u ⊆ s • t → ∃ (s' : Finset α)(t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
+    ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
   subset_image₂
 #align finset.subset_smul Finset.subset_smul
 #align finset.subset_vadd Finset.subset_vadd
@@ -1599,7 +1596,7 @@ theorem mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y 
 #align finset.mem_vadd_finset Finset.mem_vadd_finset
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s)  = a • (↑s : Set β) :=
+theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) :=
   coe_image
 #align finset.coe_smul_finset Finset.coe_smul_finset
 #align finset.coe_vadd_finset Finset.coe_vadd_finset
@@ -2025,6 +2022,37 @@ theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
 #align finset.card_smul_finset Finset.card_smul_finset
 #align finset.card_vadd_finset Finset.card_vadd_finset
 
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s • t`. -/
+@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
+theorem card_dvd_card_smul_right {s : Finset α} :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
+  card_dvd_card_image₂_right fun _ _ => MulAction.injective _
+#align finset.card_dvd_card_smul_right Finset.card_dvd_card_smul_right
+#align finset.card_dvd_card_vadd_right Finset.card_dvd_card_vadd_right
+
+variable [DecidableEq α]
+
+/-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily distinct!), then
+the size of `s` divides the size of `s * t`. -/
+@[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
+distinct!), then the size of `s` divides the size of `s + t`."]
+theorem card_dvd_card_mul_left {s t : Finset α} :
+    ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
+      s.card ∣ (s * t).card :=
+  card_dvd_card_image₂_left fun _ _ => mul_left_injective _
+#align finset.card_dvd_card_mul_left Finset.card_dvd_card_mul_left
+#align finset.card_dvd_card_add_left Finset.card_dvd_card_add_left
+
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s * t`. -/
+@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s + t`."]
+theorem card_dvd_card_mul_right {s t : Finset α} :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
+  card_dvd_card_image₂_right fun _ _ => mul_right_injective _
+
 end Group
 
 section GroupWithZero
@@ -2072,7 +2100,7 @@ theorem smul_finset_symm_diff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     rw [← coe_subset] at hs
-    push_cast at hs⊢
+    push_cast at hs ⊢
     exact Set.smul_univ₀ hs
 #align finset.smul_univ₀ Finset.smul_univ₀
 

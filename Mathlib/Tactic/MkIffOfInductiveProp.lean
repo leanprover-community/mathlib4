@@ -66,9 +66,9 @@ def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
 args.foldrM (λarg i:Expr => do
     let t ← inferType arg
     let l := (← inferType t).sortLevel!
-    pure $ if arg.occurs i || l != Level.zero
-      then mkApp2 (mkConst `Exists [l] : Expr) t (←(mkLambdaFVars #[arg] i))
-      else mkApp2 (mkConst `And [] : Expr) t i)
+    if arg.occurs i || l != Level.zero
+      then pure <| mkApp2 (mkConst `Exists [l] : Expr) t (←(mkLambdaFVars #[arg] i))
+      else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
@@ -102,7 +102,7 @@ structure Shape : Type where
     ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []`
   ```
   and the first two variables `α` and `R` are "params", while the `a : α` gets
-  eliminated in a `compactRelation`, so `variablesKept = [false].
+  eliminated in a `compactRelation`, so `variablesKept = [false]`.
 
   `List.Chain.cons` has type
   ```lean
@@ -140,7 +140,7 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
      let (n, r) ← match bs.filterMap id, eqs with
      | [], [] => do
            pure (some 0, (mkConst `True))
-     | bs', []  => do
+     | bs', [] => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
@@ -164,7 +164,7 @@ match n with
     Tactic.evalTactic (←`(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
-| n  + 1 => do
+| n + 1 => do
   let (subgoals,_) ← Term.TermElabM.run $ Tactic.run mvar do
     Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"

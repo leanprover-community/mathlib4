@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.monic
-! leanprover-community/mathlib commit cbdf7b565832144d024caa5a550117c6df0204a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Algebra.Regular.SMul
+
+#align_import data.polynomial.monic from "leanprover-community/mathlib"@"cbdf7b565832144d024caa5a550117c6df0204a5"
 
 /-!
 # Theory of monic polynomials
@@ -139,13 +136,13 @@ theorem Monic.add_of_right (hq : Monic q) (hpq : degree p < degree q) : Monic (p
 
 theorem Monic.of_mul_monic_left (hp : p.Monic) (hpq : (p * q).Monic) : q.Monic := by
   contrapose! hpq
-  rw [Monic.def] at hpq⊢
+  rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_monic_mul hp]
 #align polynomial.monic.of_mul_monic_left Polynomial.Monic.of_mul_monic_left
 
 theorem Monic.of_mul_monic_right (hq : q.Monic) (hpq : (p * q).Monic) : p.Monic := by
   contrapose! hpq
-  rw [Monic.def] at hpq⊢
+  rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_mul_monic hq]
 #align polynomial.monic.of_mul_monic_right Polynomial.Monic.of_mul_monic_right
 
@@ -286,7 +283,7 @@ theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : �
     rw [nextCoeff_C_eq_zero]
   · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons,
       Monic.nextCoeff_mul, ih]
-    exacts[fun i hi => ht i (Multiset.mem_cons_of_mem hi), ht a (Multiset.mem_cons_self _ _),
+    exacts [fun i hi => ht i (Multiset.mem_cons_of_mem hi), ht a (Multiset.mem_cons_self _ _),
       monic_multiset_prod_of_monic _ _ fun b bs => ht _ (Multiset.mem_cons_of_mem bs)]
 #align polynomial.monic.next_coeff_multiset_prod Polynomial.Monic.nextCoeff_multiset_prod
 

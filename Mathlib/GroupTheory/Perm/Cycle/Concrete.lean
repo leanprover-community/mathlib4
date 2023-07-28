@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module group_theory.perm.cycle.concrete
-! leanprover-community/mathlib commit 00638177efd1b2534fc5269363ebf42a7871df9a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Cycle
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.List
+
+#align_import group_theory.perm.cycle.concrete from "leanprover-community/mathlib"@"00638177efd1b2534fc5269363ebf42a7871df9a"
 
 /-!
 
@@ -133,7 +130,7 @@ namespace Cycle
 
 variable [DecidableEq α] (s s' : Cycle α)
 
-/-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as a `Equiv.Perm α`
+/-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as an `Equiv.Perm α`
 where each element in the list is permuted to the next one, defined as `formPerm`.
 -/
 def formPerm : ∀ (s : Cycle α) (_ : Nodup s), Equiv.Perm α :=
@@ -162,14 +159,13 @@ theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h
 
 theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     IsCycle (formPerm s h) := by
-  induction s using Quot.inductionOn; simp
-  --apply List.isCycle_formPerm
+  induction s using Quot.inductionOn
   exact List.isCycle_formPerm h (length_nontrivial hn)
 #align cycle.is_cycle_form_perm Cycle.isCycle_formPerm
 
 theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     support (formPerm s h) = s.toFinset := by
-  induction' s using Quot.inductionOn with s; simp
+  induction' s using Quot.inductionOn with s
   refine' support_formPerm_of_nodup s h _
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
@@ -330,9 +326,8 @@ theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y
   by_cases hx : x ∈ f.support
   · obtain ⟨_ | k, _, hy⟩ := h.exists_pow_eq_of_mem_support hx
     · simp only [coe_one, id.def, pow_zero, Nat.zero_eq] at hy
-      simp [hy]
-      exists 0
-      simp only [rotate_zero]
+      -- Porting note: added `IsRotated.refl`
+      simp [hy, IsRotated.refl]
     use k.succ
     rw [← toList_pow_apply_eq_rotate, hy]
   · rw [toList_eq_nil_iff.mpr hx, isRotated_nil_iff', eq_comm, toList_eq_nil_iff]
@@ -351,6 +346,7 @@ theorem toList_formPerm_nil (x : α) : toList (formPerm ([] : List α)) x = [] :
 theorem toList_formPerm_singleton (x y : α) : toList (formPerm [x]) y = [] := by simp
 #align equiv.perm.to_list_form_perm_singleton Equiv.Perm.toList_formPerm_singleton
 
+set_option linter.deprecated false in
 theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) :
     toList (formPerm l) (l.nthLe 0 (zero_lt_two.trans_le hl)) = l := by
   have hc : l.formPerm.IsCycle := List.isCycle_formPerm hn hl
@@ -361,7 +357,7 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
   · refine' ext_get (by simp) fun k hk hk' => _
     simp [formPerm_pow_apply_nthLe _ hn, Nat.mod_eq_of_lt hk']
-    rfl -- Porting note: not needed in Lean 3
+    rw [nthLe_eq]
   · simpa [hs] using get_mem _ _ _
 #align equiv.perm.to_list_form_perm_nontrivial Equiv.Perm.toList_formPerm_nontrivial
 
@@ -442,7 +438,7 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     obtain ⟨x, -, -, hx, -⟩ := id ht
     have hl : 2 ≤ s.length := by simpa using Cycle.length_nontrivial ht
     simp only [Cycle.mk_eq_coe, Cycle.nodup_coe_iff, Cycle.mem_coe_iff, Subtype.coe_mk,
-      Cycle.formPerm_coe] at hn hx⊢
+      Cycle.formPerm_coe] at hn hx ⊢
     apply Subtype.ext
     dsimp
     rw [toCycle_eq_toList _ _ x]

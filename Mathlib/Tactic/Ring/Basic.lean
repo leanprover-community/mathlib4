@@ -91,6 +91,9 @@ ring subexpressions of type `ℕ`.
 -/
 def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
+-- In this file, we would like to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
@@ -119,8 +122,8 @@ inductive ExProd : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) �
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
   | const (value : ℚ) (hyp : Option Expr := none) : ExProd sα e
-  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is a `ExBase`
-  and `e` is a `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
+  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
+  and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
   a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
   | mul {α : Q(Type u)} {sα : Q(CommSemiring $α)} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
     ExBase sα x → ExProd sℕ e → ExProd sα b → ExProd sα q($x ^ $e * $b)
@@ -249,14 +252,14 @@ def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (
 section
 variable {sα}
 
-/-- Embed an exponent (a `ExBase, ExProd` pair) as a `ExProd` by multiplying by 1. -/
+/-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd (va : ExBase sα a) (vb : ExProd sℕ b) :
   ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
 
-/-- Get the leading coefficient of a `ExProd`. -/
+/-- Get the leading coefficient of an `ExProd`. -/
 def ExProd.coeff : ExProd sα e → ℚ
   | .const q _ => q
   | .mul _ _ v => v.coeff
@@ -291,7 +294,7 @@ def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα
   match va, vb with
   | .const za ha, .const zb hb => do
     let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-    let res ← NormNum.evalAdd.core q($a + $b) q(Add.add) _ _ ra rb
+    let res ← NormNum.evalAdd.core q($a + $b) q(HAdd.hAdd) a b ra rb
     match res with
     | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
     | rc =>
@@ -385,7 +388,7 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
     else
       let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
       let rc := (NormNum.evalMul.core q($a * $b) q(HMul.hMul) _ _
-        q(CommSemiring.toSemiring) ra rb).get!
+          q(CommSemiring.toSemiring) ra rb).get!
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
       let ⟨c, pc⟩ :=  rc.toRawEq
       ⟨c, .const zc hc, pc⟩
@@ -544,7 +547,7 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let rb := (NormNum.evalMul.core q($m1 * $a) q(HMul.hMul) _ _
       q(CommSemiring.toSemiring) rm ra).get!
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
-    let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=  rb.toRawEq
+    let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ := rb.toRawEq
     ⟨b, .const zb hb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ := evalNegProd rα va₃
@@ -634,8 +637,9 @@ partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
   | .const _ _ =>
     -- it must be positive because it is a nonzero nat literal
     have lit : Q(ℕ) := a.appArg!
-    let p : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
-    some (q(const_pos $lit $p) : Expr)
+    haveI : $a =Q Nat.rawCast $lit := ⟨⟩
+    haveI p : Nat.ble 1 $lit =Q true := ⟨⟩
+    by exact some (q(const_pos $lit $p))
   | .mul (e := ea₁) vxa₁ _ va₂ => do
     let pa₁ ← vxa₁.evalPos
     let pa₂ ← va₂.evalPos
@@ -713,7 +717,8 @@ def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q
       let ra := Result.ofRawRat za a ha
       have lit : Q(ℕ) := b.appArg!
       let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
-      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) _ b lit rb q(CommSemiring.toSemiring) ra
+      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) q($a) q($b) lit rb
+        q(CommSemiring.toSemiring) ra
       let ⟨zc, hc⟩ ← rc.toRatNZ
       let ⟨c, pc⟩ := rc.toRawEq
       some ⟨c, .const zc hc, pc⟩
@@ -778,7 +783,9 @@ Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 -/
 partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
   match va, vb with
-  | _, .const 1 => ⟨_, va, (q(pow_one_cast $a) : Expr)⟩
+  | va, .const 1 =>
+    haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
+    ⟨_, va, by exact q(pow_one_cast $a)⟩
   | .zero, vb => match vb.evalPos with
     | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
     | none => evalPowAtom sα (.sum .zero) vb
@@ -824,9 +831,9 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
 /-- Create a new cache for `α` by doing the necessary instance searches. -/
 def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
   return {
-    rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption
-    dα := (← trySynthInstanceQ (q(DivisionRing $α) : Q(Type u))).toOption
-    czα := (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption }
+    rα := (← trySynthInstanceQ q(Ring $α)).toOption
+    dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
+    czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
 theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]

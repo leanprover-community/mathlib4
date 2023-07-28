@@ -2,11 +2,6 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.abelian.non_preadditive
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -14,11 +9,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Preadditive.Basic
 
+#align_import category_theory.abelian.non_preadditive from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
+
 /-!
 # Every NonPreadditiveAbelian category is preadditive
 
 In mathlib, we define an abelian category as a preadditive category with a zero object,
-kernels and cokernels, products and coproducts and in which every monomorphism and epimorphis is
+kernels and cokernels, products and coproducts and in which every monomorphism and epimorphism is
 normal.
 
 While virtually every interesting abelian category has a natural preadditive structure (which is why
@@ -298,7 +295,7 @@ theorem lift_map {X Y : C} (f : X ⟶ Y) :
 #align category_theory.non_preadditive_abelian.lift_map CategoryTheory.NonPreadditiveAbelian.lift_map
 
 /-- σ is a cokernel of Δ X. -/
-def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶  X) diag_σ) :=
+def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶ X) diag_σ) :=
   cokernel.cokernelIso _ σ (asIso (r X)).symm (by rw [Iso.symm_hom, asIso_inv])
 #align category_theory.non_preadditive_abelian.is_colimit_σ CategoryTheory.NonPreadditiveAbelian.isColimitσ
 
@@ -366,7 +363,7 @@ theorem sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
 theorem lift_sub_lift {X Y : C} (a b c d : X ⟶ Y) :
     prod.lift a b - prod.lift c d = prod.lift (a - c) (b - d) := by
   simp only [sub_def]
-  apply prod.hom_ext
+  ext
   · rw [Category.assoc, σ_comp, prod.lift_map_assoc, prod.lift_fst, prod.lift_fst, prod.lift_fst]
   · rw [Category.assoc, σ_comp, prod.lift_map_assoc, prod.lift_snd, prod.lift_snd, prod.lift_snd]
 #align category_theory.non_preadditive_abelian.lift_sub_lift CategoryTheory.NonPreadditiveAbelian.lift_sub_lift

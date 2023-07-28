@@ -2,13 +2,10 @@
 Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.deriv.basic
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Basic
+
+#align_import analysis.calculus.deriv.basic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 
@@ -54,7 +51,7 @@ We also show the existence and compute the derivatives of:
   - sum of finitely many functions (in `Add.lean`)
   - negation (in `Add.lean`)
   - subtraction (in `Add.lean`)
-  - star  (in `Star.lean`)
+  - star (in `Star.lean`)
   - multiplication of two functions in `𝕜 → 𝕜` (in `Mul.lean`)
   - multiplication of a function in `𝕜 → 𝕜` and of a function in `𝕜 → E` (in `Mul.lean`)
   - powers of a function (in `Pow.lean` and `ZPow.lean`)
@@ -71,7 +68,7 @@ and they more frequently lead to the desired result.
 
 We set up the simplifier so that it can compute the derivative of simple functions. For instance,
 ```lean
-example (x : ℝ) : deriv (λ x, cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) :=
+example (x : ℝ) : deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) :=
 by { simp, ring }
 ```
 
@@ -229,9 +226,8 @@ alias hasDerivAt_iff_hasFDerivAt ↔ HasDerivAt.hasFDerivAt _
 theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     derivWithin f s x = 0 := by
   unfold derivWithin
-  rw [fderivWithin_zero_of_not_differentiableWithinAt]
+  rw [fderivWithin_zero_of_not_differentiableWithinAt h]
   simp
-  assumption
 #align deriv_within_zero_of_not_differentiable_within_at derivWithin_zero_of_not_differentiableWithinAt
 
 theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠ 0) :
@@ -241,9 +237,8 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
 
 theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
   unfold deriv
-  rw [fderiv_zero_of_not_differentiableAt]
+  rw [fderiv_zero_of_not_differentiableAt h]
   simp
-  assumption
 #align deriv_zero_of_not_differentiable_at deriv_zero_of_not_differentiableAt
 
 theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
@@ -731,4 +726,3 @@ protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x �
 #align has_deriv_at.continuous_on HasDerivAt.continuousOn
 
 end Continuous
-

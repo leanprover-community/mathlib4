@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.uniform
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.StrictConvexSpace
+
+#align_import analysis.convex.uniform from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Uniformly convex spaces
@@ -86,10 +83,10 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   have hxy' : ε / 3 ≤ ‖x' - y'‖ :=
     calc
       ε / 3 = ε - (ε / 3 + ε / 3) := by ring
-      _ ≤ ‖x - y‖ - (‖x' - x‖ + ‖y' - y‖) :=
-        (sub_le_sub hxy
-          (add_le_add ((h₂ _ hx hx'.le).trans <| min_le_of_right_le <| min_le_left _ _) <|
-            (h₂ _ hy hy'.le).trans <| min_le_of_right_le <| min_le_left _ _))
+      _ ≤ ‖x - y‖ - (‖x' - x‖ + ‖y' - y‖) := by
+        gcongr
+        · exact (h₂ _ hx hx'.le).trans <| min_le_of_right_le <| min_le_left _ _
+        · exact (h₂ _ hy hy'.le).trans <| min_le_of_right_le <| min_le_left _ _
       _ ≤ _ := by
         have : ∀ x' y', x - y = x' - y' + (x - x') + (y' - y) := fun _ _ => by abel
         rw [sub_le_iff_le_add, norm_sub_rev _ x, ← add_assoc, this]
@@ -109,7 +106,8 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
       norm_num -- Porting note: these three extra lines needed to make `exact` work
       have : 3 * (δ / 3) * (1 / 3) = δ / 3 := by linarith
       rw [this, mul_comm]
-      exact mul_le_mul_of_nonneg_left (min_le_of_right_le <| min_le_right _ _) three_pos.le
+      gcongr
+      exact min_le_of_right_le <| min_le_right _ _
 #align exists_forall_closed_ball_dist_add_le_two_sub exists_forall_closed_ball_dist_add_le_two_sub
 
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :
@@ -133,7 +131,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [UniformConvexSpace E]
 
 -- See note [lower instance priority]
 instance (priority := 100) UniformConvexSpace.toStrictConvexSpace : StrictConvexSpace ℝ E :=
-  StrictConvexSpace.ofNormAddNeTwo fun _ _ hx hy hxy =>
+  StrictConvexSpace.of_norm_add_ne_two fun _ _ hx hy hxy =>
     let ⟨_, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (norm_sub_pos_iff.2 hxy)
     ((h hx.le hy.le le_rfl).trans_lt <| sub_lt_self _ hδ).ne
 #align uniform_convex_space.to_strict_convex_space UniformConvexSpace.toStrictConvexSpace

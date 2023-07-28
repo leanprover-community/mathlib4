@@ -2,11 +2,6 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.over
-! leanprover-community/mathlib commit 3e0dd193514c9380edc69f1da92e80c02713c41d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.Adjunction.Opposites
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Comma
+
+#align_import category_theory.limits.over from "leanprover-community/mathlib"@"3e0dd193514c9380edc69f1da92e80c02713c41d"
 
 /-!
 # Limits and colimits in the over and under categories
@@ -86,7 +83,6 @@ def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst ≫ k.left) pullback.snd (by simp [pullback.condition]))
-      (by aesop_cat)
 #align category_theory.over.pullback CategoryTheory.Over.pullback
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
@@ -105,11 +101,12 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
             dsimp
             simp
           right_inv := fun Y => by
+            -- TODO: It would be nice to replace the next two lines with just `ext`.
             apply OverMorphism.ext
             apply pullback.hom_ext
-            . dsimp
+            · dsimp
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-            . dsimp
+            · dsimp
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, ← Over.w Y ]
               rfl } }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
@@ -175,7 +172,6 @@ def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
   obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
   map := fun g {h} {k} =>
     Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
-      (by aesop_cat)
 #align category_theory.under.pushout CategoryTheory.Under.pushout
 
 end

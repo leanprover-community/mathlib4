@@ -2,15 +2,12 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module order.height
-! leanprover-community/mathlib commit bf27744463e9620ca4e4ebe951fe83530ae6949b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Tactic.TFAE
+
+#align_import order.height from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
 /-!
 
@@ -174,7 +171,7 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
   · suffices t.chainHeight = ⊤ by
       rw [this, top_add]
       exact le_top
-    rw [chainHeight_eq_top_iff] at h⊢
+    rw [chainHeight_eq_top_iff] at h ⊢
     intro k
     have := (le_chainHeight_TFAE t k).out 1 2
     rw [this]
@@ -247,7 +244,7 @@ theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight = s.chainHeight := by
   apply le_antisymm <;>
   · rw [chainHeight_le_chainHeight_iff]
     rintro l ⟨h₁, h₂⟩
-    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i ((mem_reverse i l).mp h)⟩,
+    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i (mem_reverse.mp h)⟩,
       (length_reverse _).symm⟩
 #align set.chain_height_dual Set.chainHeight_dual
 

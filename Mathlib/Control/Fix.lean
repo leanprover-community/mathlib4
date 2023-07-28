@@ -2,15 +2,12 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.fix
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Stream.Defs
+
+#align_import control.fix from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Fixed point
@@ -32,7 +29,7 @@ open Classical
 
 variable {α : Type _} {β : α → Type _}
 
-/-- `Fix α` provides a `fix` operator to define recursive computatiation
+/-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
 class Fix (α : Type _) where
   /-- `fix f` represents the computation of a fixed point for `f`.-/

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module combinatorics.configuration
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.SetTheory.Cardinal.Finite
+
+#align_import combinatorics.configuration from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
 /-!
 # Configurations of Points and lines
@@ -143,13 +140,13 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       obtain ⟨p, hl⟩ := exists_point l
       rw [Finset.card_singleton, Finset.singleton_biUnion, Nat.one_le_iff_ne_zero]
       exact Finset.card_ne_zero_of_mem (Set.mem_toFinset.mpr hl)
-    suffices s.biUnion tᶜ.card ≤ sᶜ.card by
+    suffices (s.biUnion t)ᶜ.card ≤ sᶜ.card by
       -- Rephrase in terms of complements (uses `h`)
       rw [Finset.card_compl, Finset.card_compl, tsub_le_iff_left] at this
       replace := h.trans this
       rwa [← add_tsub_assoc_of_le s.card_le_univ, le_tsub_iff_left (le_add_left s.card_le_univ),
         add_le_add_iff_right] at this
-    have hs₂ : s.biUnion tᶜ.card ≤ 1 := by
+    have hs₂ : (s.biUnion t)ᶜ.card ≤ 1 := by
       -- At most one line through two points of `s`
       refine' Finset.card_le_one_iff.mpr @fun p₁ p₂ hp₁ hp₂ => _
       simp_rw [Finset.mem_compl, Finset.mem_biUnion, exists_prop, not_exists, not_and,
@@ -160,9 +157,9 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
     by_cases hs₃ : sᶜ.card = 0
     · rw [hs₃, le_zero_iff]
       rw [Finset.card_compl, tsub_eq_zero_iff_le, LE.le.le_iff_eq (Finset.card_le_univ _), eq_comm,
-        Finset.card_eq_iff_eq_univ] at hs₃⊢
+        Finset.card_eq_iff_eq_univ] at hs₃ ⊢
       rw [hs₃]
-      rw [Finset.eq_univ_iff_forall] at hs₃⊢
+      rw [Finset.eq_univ_iff_forall] at hs₃ ⊢
       exact fun p =>
         Exists.elim (exists_line p)-- If `s = univ`, then show `s.bUnion t = univ`
         fun l hl => Finset.mem_biUnion.mpr ⟨l, Finset.mem_univ l, Set.mem_toFinset.mpr hl⟩
@@ -189,7 +186,7 @@ noncomputable def pointCount (l : L) : ℕ :=
 variable (L)
 
 theorem sum_lineCount_eq_sum_pointCount [Fintype P] [Fintype L] :
-    (∑ p : P, lineCount L p) = ∑ l : L, pointCount P l := by
+    ∑ p : P, lineCount L p = ∑ l : L, pointCount P l := by
   classical
     simp only [lineCount, pointCount, Nat.card_eq_fintype_card, ← Fintype.card_sigma]
     apply Fintype.card_congr
@@ -234,7 +231,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
   obtain ⟨f, hf₁, hf₂⟩ := Nondegenerate.exists_injective_of_card_le (le_of_not_le hc₂)
   have :=
     calc
-      (∑ p, lineCount L p) = ∑ l, pointCount P l := sum_lineCount_eq_sum_pointCount P L
+      ∑ p, lineCount L p = ∑ l, pointCount P l := sum_lineCount_eq_sum_pointCount P L
       _ ≤ ∑ l, lineCount L (f l) :=
         (Finset.sum_le_sum fun l _ => HasLines.pointCount_le_lineCount (hf₂ l))
       _ = ∑ p in Finset.univ.image f, lineCount L p :=
@@ -288,10 +285,10 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
   classical
     obtain ⟨f, hf1, hf2⟩ := HasLines.exists_bijective_of_card_eq hPL
     let s : Finset (P × L) := Set.toFinset { i | i.1 ∈ i.2 }
-    have step1 : (∑ i : P × L, lineCount L i.1) = ∑ i : P × L, pointCount P i.2 := by
+    have step1 : ∑ i : P × L, lineCount L i.1 = ∑ i : P × L, pointCount P i.2 := by
       rw [← Finset.univ_product_univ, Finset.sum_product_right, Finset.sum_product]
       simp_rw [Finset.sum_const, Finset.card_univ, hPL, sum_lineCount_eq_sum_pointCount]
-    have step2 : (∑ i in s, lineCount L i.1) = ∑ i in s, pointCount P i.2 := by
+    have step2 : ∑ i in s, lineCount L i.1 = ∑ i in s, pointCount P i.2 := by
       rw [s.sum_finset_product Finset.univ fun p => Set.toFinset { l | p ∈ l }]
       rw [s.sum_finset_product_right Finset.univ fun l => Set.toFinset { p | p ∈ l }]
       refine'
@@ -303,7 +300,7 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
       · obtain ⟨l, hl⟩ := hf1.2 p
         exact ⟨l, Finset.mem_univ l, hl.symm⟩
       all_goals simp_rw [Finset.mem_univ, true_and_iff, Set.mem_toFinset]; exact fun p => Iff.rfl
-    have step3 : (∑ i in sᶜ, lineCount L i.1) = ∑ i in sᶜ, pointCount P i.2 := by
+    have step3 : ∑ i in sᶜ, lineCount L i.1 = ∑ i in sᶜ, pointCount P i.2 := by
       rwa [← s.sum_add_sum_compl, ← s.sum_add_sum_compl, step2, add_left_cancel_iff] at step1
     rw [← Set.toFinset_compl] at step3
     exact
@@ -371,7 +368,7 @@ variable (P L)
   and which has three points in general position. -/
 class ProjectivePlane extends HasPoints P L, HasLines P L where
   exists_config :
-    ∃ (p₁ p₂ p₃ : P)(l₁ l₂ l₃ : L),
+    ∃ (p₁ p₂ p₃ : P) (l₁ l₂ l₃ : L),
       p₁ ∉ l₂ ∧ p₁ ∉ l₃ ∧ p₂ ∉ l₁ ∧ p₂ ∈ l₂ ∧ p₂ ∈ l₃ ∧ p₃ ∉ l₁ ∧ p₃ ∈ l₂ ∧ p₃ ∉ l₃
 #align configuration.projective_plane Configuration.ProjectivePlane
 

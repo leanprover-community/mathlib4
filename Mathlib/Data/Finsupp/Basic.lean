@@ -2,17 +2,15 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finsupp.basic
-! leanprover-community/mathlib commit f69db8cecc668e2d5894d7e9bfc491da60db3b9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
+import Mathlib.Data.Set.Countable
+
+#align_import data.finsupp.basic from "leanprover-community/mathlib"@"f69db8cecc668e2d5894d7e9bfc491da60db3b9f"
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
@@ -179,7 +177,7 @@ section ZeroHom
 
 variable [Zero M] [Zero N] [Zero P]
 
-/-- Composition with a fixed zero-preserving homomorphism is itself an zero-preserving homomorphism
+/-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
 on functions. -/
 @[simps]
 def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (α →₀ M) (α →₀ N)
@@ -306,7 +304,7 @@ variable [Zero M]
 
 namespace Finsupp
 
-/-- Given `f : α ≃ β`, we can map `l : α →₀ M` to  `equivMapDomain f l : β →₀ M` (computably)
+/-- Given `f : α ≃ β`, we can map `l : α →₀ M` to `equivMapDomain f l : β →₀ M` (computably)
 by mapping the support forwards and the function backwards. -/
 def equivMapDomain (f : α ≃ β) (l : α →₀ M) : β →₀ M
     where
@@ -619,7 +617,7 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 #align finsupp.map_domain_injective Finsupp.mapDomain_injective
 
-/-- When `f` is an embedding we have an embedding `(α →₀ ℕ)  ↪ (β →₀ ℕ)` given by `mapDomain`. -/
+/-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type _} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
   ⟨Finsupp.mapDomain f, Finsupp.mapDomain_injective f.injective⟩
@@ -628,16 +626,10 @@ def mapDomainEmbedding {α β : Type _} (f : α ↪ β) : (α →₀ ℕ) ↪ β
 theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (g : M →+ N) :
     (mapDomain.addMonoidHom f).comp (mapRange.addMonoidHom g) =
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
-  apply Finsupp.addHom_ext'
-  intro x
-  apply AddMonoidHom.ext
-  intro x_1
-  apply Finsupp.ext
-  intro a
+  ext
   simp only [AddMonoidHom.coe_comp, Finsupp.mapRange_single, Finsupp.mapDomain.addMonoidHom_apply,
     Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
-  -- porting note: this is ugly, just expanded the Lean 3 proof; `ext` didn't work in the same way
 #align finsupp.map_domain.add_monoid_hom_comp_map_range Finsupp.mapDomain.addMonoidHom_comp_mapRange
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
@@ -668,8 +660,7 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
   ext a
   classical
     by_cases h : a ∈ v₁.support ∪ v₂.support
-    ·
-      rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
+    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
         · apply Set.union_subset hv₁ hv₂
           exact_mod_cast h
     · simp only [not_or, mem_union, not_not, mem_support_iff] at h
@@ -1000,8 +991,8 @@ theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr
   let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
   ht2 ▸ by
     classical
-      rw [single_apply] at ht2⊢
-      split_ifs  at ht2⊢
+      rw [single_apply] at ht2 ⊢
+      split_ifs at ht2 ⊢
       · exact Finset.mem_singleton_self _
       · exact (t ht2.symm).elim
 #align finsupp.frange_single Finsupp.frange_single
@@ -1230,11 +1221,10 @@ theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg�
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
   rw [Finsupp.curry]
   trans
-  ·
-    exact
+  · exact
       sum_sum_index (fun a => sum_zero_index) fun a b₀ b₁ =>
         sum_add_index' (fun a => hg₀ _ _) fun c d₀ d₁ => hg₁ _ _ _ _
-  congr ; funext p c
+  congr; funext p c
   trans
   · exact sum_single_index sum_zero_index
   exact sum_single_index (hg₀ _ _)

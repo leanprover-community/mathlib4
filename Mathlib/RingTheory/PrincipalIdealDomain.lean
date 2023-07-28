@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
-
-! This file was ported from Lean 3 source module ring_theory.principal_ideal_domain
-! leanprover-community/mathlib commit 6010cf523816335f7bae7f8584cb2edaace73940
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.RingTheory.UniqueFactorizationDomain
+
+#align_import ring_theory.principal_ideal_domain from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"
 
 /-!
 # Principal ideal rings and principal ideal domains
@@ -371,7 +368,7 @@ theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) :=
   · obtain ⟨r, s, rfl⟩ : ∃ r s, r * x + s * y = d := by
       rw [← Ideal.mem_span_pair, hd, Ideal.mem_span_singleton]
     apply dvd_add <;> apply dvd_mul_of_dvd_right
-    exacts[gcd_dvd_left x y, gcd_dvd_right x y]
+    exacts [gcd_dvd_left x y, gcd_dvd_right x y]
 #align span_gcd span_gcd
 
 theorem gcd_dvd_iff_exists (a b : R) {z} : gcd a b ∣ z ↔ ∃ x y, z = a * x + b * y := by

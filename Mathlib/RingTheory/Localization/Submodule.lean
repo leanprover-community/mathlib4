@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.submodule
-! leanprover-community/mathlib commit 1ebb20602a8caef435ce47f6373e1aa40851a177
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import ring_theory.localization.submodule from "leanprover-community/mathlib"@"1ebb20602a8caef435ce47f6373e1aa40851a177"
 
 /-!
 # Submodules in localizations of commutative rings
@@ -99,7 +96,7 @@ variable [IsLocalization M S]
 section
 
 theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h⊢
+  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
 #align is_localization.is_noetherian_ring IsLocalization.isNoetherianRing
 

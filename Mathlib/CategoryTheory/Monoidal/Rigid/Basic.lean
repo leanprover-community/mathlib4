@@ -2,15 +2,12 @@
 Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.monoidal.rigid.basic
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.Tactic.ApplyFun
+
+#align_import category_theory.monoidal.rigid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Rigid (autonomous) monoidal categories
@@ -63,7 +60,7 @@ rigid category, monoidal category
 -/
 
 
-open CategoryTheory
+open CategoryTheory MonoidalCategory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -128,7 +125,7 @@ class HasRightDual (X : C) where
   [exact : ExactPairing X rightDual]
 #align category_theory.has_right_dual CategoryTheory.HasRightDual
 
-/-- A class of objects with have a left dual. -/
+/-- A class of objects which have a left dual. -/
 class HasLeftDual (Y : C) where
   leftDual : C
   [exact : ExactPairing leftDual Y]

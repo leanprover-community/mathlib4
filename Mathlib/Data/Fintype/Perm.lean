@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.perm
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Tactic.Ring
+
+#align_import data.fintype.perm from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
@@ -69,7 +66,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
     refine' List.mem_of_ne_of_mem hxa (h x fun h => _)
     simp only [mul_apply, swap_apply_def, mul_apply, Ne.def, apply_eq_iff_eq] at hx
     split_ifs at hx with h_1
-    exacts[hxa (h.symm.trans h_1), hx h]
+    exacts [hxa (h.symm.trans h_1), hx h]
   suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, Equiv.swap a b * g = f by
     simpa only [permsOfList, exists_prop, List.mem_map, mem_append, List.mem_bind]
   refine' or_iff_not_imp_left.2 fun _hfl => ⟨f a, _, Equiv.swap a (f a) * f, IH this, _⟩
@@ -127,7 +124,7 @@ theorem nodup_permsOfList : ∀ {l : List α} (_ : l.Nodup), (permsOfList l).Nod
       let ⟨g, hg⟩ := List.mem_map.1 hx'
       have hgxa : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
       have hxa : x ≠ a := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
-      exact  (List.nodup_cons.1 hl).1 <|
+      exact (List.nodup_cons.1 hl).1 <|
           hgxa ▸ mem_of_mem_permsOfList hg.1 _ (by rwa [apply_inv_self, hgxa])
 #align nodup_perms_of_list nodup_permsOfList
 
@@ -142,11 +139,11 @@ def permsOfFinset (s : Finset α) : Finset (Perm α) :=
 
 theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by
-  rintro ⟨⟨l⟩, hs⟩ f ; exact mem_permsOfList_iff
+  rintro ⟨⟨l⟩, hs⟩ f; exact mem_permsOfList_iff
 #align mem_perms_of_finset_iff mem_perms_of_finset_iff
 
 theorem card_perms_of_finset : ∀ s : Finset α, (permsOfFinset s).card = s.card ! := by
-  rintro ⟨⟨l⟩, hs⟩ ; exact length_permsOfList l
+  rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
 #align card_perms_of_finset card_perms_of_finset
 
 /-- The collection of permutations of a fintype is a fintype. -/

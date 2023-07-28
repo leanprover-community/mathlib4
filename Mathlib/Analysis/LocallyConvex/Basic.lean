@@ -2,15 +2,12 @@
 Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.locally_convex.basic
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.locally_convex.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Local convexity
@@ -100,8 +97,7 @@ theorem absorbs_iUnion_finset {ι : Type _} {t : Finset ι} {f : ι → Set E} :
     Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
   classical
     induction' t using Finset.induction_on with i t _ht hi
-    ·
-      simp only [Finset.not_mem_empty, Set.iUnion_false, Set.iUnion_empty, absorbs_empty,
+    · simp only [Finset.not_mem_empty, Set.iUnion_false, Set.iUnion_empty, absorbs_empty,
         IsEmpty.forall_iff, imp_true_iff]
     rw [Finset.set_biUnion_insert, absorbs_union, hi]
     constructor <;> intro h
@@ -361,7 +357,7 @@ theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) :
   intro a ha
   obtain rfl | h := eq_or_ne a 0
   · rw [zero_smul_set]
-    exacts[subset_union_left _ _, ⟨0, Or.inl rfl⟩]
+    exacts [subset_union_left _ _, ⟨0, Or.inl rfl⟩]
   · rw [← image_smul, image_union]
     apply union_subset_union
     · rw [image_zero, smul_zero]
@@ -406,7 +402,7 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 theorem balanced_convexHull_of_balanced (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
-    rw [balanced_iff_smul_mem] at hs⊢
+    rw [balanced_iff_smul_mem] at hs ⊢
     refine' fun a ha x hx => convexHull_min _ this hx a ha
     exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha

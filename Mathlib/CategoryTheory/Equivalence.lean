@@ -2,23 +2,20 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.equivalence
-! leanprover-community/mathlib commit 9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.Tactic.CategoryTheory.Slice
+
+#align_import category_theory.equivalence from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
 /-!
 # Equivalence of categories
 
 An equivalence of categories `C` and `D` is a pair of functors `F : C ⥤ D` and `G : D ⥤ C` such
 that `η : 𝟭 C ≅ F ⋙ G` and `ε : G ⋙ F ≅ 𝟭 D`. In many situations, equivalences are a better
-notion of "sameness" of categories than the stricter isomorphims of categories.
+notion of "sameness" of categories than the stricter isomorphism of categories.
 
 Recall that one way to express that two functors `F : C ⥤ D` and `G : D ⥤ C` are adjoint is using
 two natural transformations `η : 𝟭 C ⟶ F ⋙ G` and `ε : G ⋙ F ⟶ 𝟭 D`, called the unit and the
@@ -359,8 +356,8 @@ theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
 @[simps! functor inverse unitIso counitIso]
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
   Equivalence.mk ((whiskeringLeft _ _ _).obj e.inverse) ((whiskeringLeft _ _ _).obj e.functor)
-    (NatIso.ofComponents (fun F => (e.funInvIdAssoc F).symm) (by aesop_cat))
-    (NatIso.ofComponents (fun F => e.invFunIdAssoc F) (by aesop_cat))
+    (NatIso.ofComponents fun F => (e.funInvIdAssoc F).symm)
+    (NatIso.ofComponents fun F => e.invFunIdAssoc F)
 #align category_theory.equivalence.congr_left CategoryTheory.Equivalence.congrLeft
 
 /-- If `C` is equivalent to `D`, then `E ⥤ C` is equivalent to `E ⥤ D`. -/
@@ -368,11 +365,9 @@ def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
 def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D :=
   Equivalence.mk ((whiskeringRight _ _ _).obj e.functor) ((whiskeringRight _ _ _).obj e.inverse)
     (NatIso.ofComponents
-      (fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _)
-      (by aesop_cat))
+      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _)
     (NatIso.ofComponents
-      (fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
-      (by aesop_cat))
+      fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
 #align category_theory.equivalence.congr_right CategoryTheory.Equivalence.congrRight
 
 section CancellationLemmas
@@ -478,7 +473,7 @@ end Equivalence
 class IsEquivalence (F : C ⥤ D) where mk' ::
   /-- The inverse functor to `F` -/
   inverse : D ⥤ C
-  /-- Composition `F ⋙  inverse` is isomorphic to the identity. -/
+  /-- Composition `F ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ F ⋙ inverse
   /-- Composition `inverse ⋙ F` is isomorphic to the identity. =-/
   counitIso : inverse ⋙ F ≅ 𝟭 D
@@ -736,9 +731,9 @@ noncomputable def ofFullyFaithfullyEssSurj (F : C ⥤ D) [Full F] [Faithful F] [
   IsEquivalence.mk (equivalenceInverse F)
     (NatIso.ofComponents (fun X => (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
       fun f => by
-      apply F.map_injective
-      aesop_cat)
-    (NatIso.ofComponents F.objObjPreimageIso (by aesop_cat))
+        apply F.map_injective
+        aesop_cat)
+    (NatIso.ofComponents F.objObjPreimageIso)
 #align category_theory.equivalence.of_fully_faithfully_ess_surj CategoryTheory.Equivalence.ofFullyFaithfullyEssSurj
 
 @[simp]

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.filter
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Split
+
+#align_import analysis.box_integral.partition.filter from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Filters used in box-based integrals
@@ -305,8 +302,8 @@ It is also automatically satisfied for any `c > 1`, see TODO section of the modu
 details. -/
 structure MemBaseSet (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : TaggedPrepartition I) : Prop where
-  protected IsSubordinate : π.IsSubordinate r
-  protected IsHenstock : l.bHenstock → π.IsHenstock
+  protected isSubordinate : π.IsSubordinate r
+  protected isHenstock : l.bHenstock → π.IsHenstock
   protected distortion_le : l.bDistortion → π.distortion ≤ c
   protected exists_compl : l.bDistortion → ∃ π' : Prepartition I,
     π'.iUnion = ↑I \ π.iUnion ∧ π'.distortion ≤ c
@@ -410,10 +407,10 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
     ext x
     fconstructor
     · rintro (⟨hxI, hxπ⟩ | ⟨hxπ, hxp⟩)
-      exacts[⟨hxI, mt (@h x) hxπ⟩, ⟨π.iUnion_subset hxπ, hxp⟩]
+      exacts [⟨hxI, mt (@h x) hxπ⟩, ⟨π.iUnion_subset hxπ, hxp⟩]
     · rintro ⟨hxI, hxp⟩
       by_cases hxπ : x ∈ π.iUnion
-      exacts[Or.inr ⟨hxπ, hxp⟩, Or.inl ⟨hxI, hxπ⟩]
+      exacts [Or.inr ⟨hxπ, hxp⟩, Or.inl ⟨hxI, hxπ⟩]
   · have : (π.filter fun J => ¬p J).distortion ≤ c := (distortion_filter_le _ _).trans (hπ.3 hD)
     simpa [hc]
 #align box_integral.integration_params.mem_base_set.filter BoxIntegral.IntegrationParams.MemBaseSet.filter

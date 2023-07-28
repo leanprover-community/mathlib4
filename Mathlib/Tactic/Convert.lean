@@ -33,6 +33,8 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool)
   try m.congrN! depth config patterns
   catch _ => return [m]
 
+namespace Mathlib.Tactic
+
 /--
 The `exact e` and `refine e` tactics require a term `e` whose type is
 definitionally equal to the goal. `convert e` is similar to `refine e`,
@@ -103,8 +105,17 @@ elab_rules : tactic
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
-    let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
-      (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) `convert
+    let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
+    let (e, gs) ←
+      withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+        -- Allow typeclass inference failures since these will be inferred by unification
+        -- or else become new goals
+        withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
+          let t ← elabTermEnsuringType (mayPostpone := true) term expectedType
+          -- Process everything so that tactics get run, but again allow TC failures
+          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+          -- Use a type hint to ensure we collect goals from the type too
+          mkExpectedTypeHint t (← inferType t)
     liftMetaTactic fun g ↦
       return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
@@ -127,10 +138,12 @@ The syntax for `convert_to` is the same as for `convert`, and it has variations 
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
 syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)?: tactic
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
+
+end Mathlib.Tactic

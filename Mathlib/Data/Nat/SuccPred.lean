@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.nat.succ_pred
-! leanprover-community/mathlib commit a2d2e18906e2b62627646b5d5be856e6a642062f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.SuccPred.Basic
+
+#align_import data.nat.succ_pred from "leanprover-community/mathlib"@"a2d2e18906e2b62627646b5d5be856e6a642062f"
 
 /-!
 # Successors and predecessors of naturals
@@ -55,14 +52,14 @@ theorem pred_eq_pred : Order.pred = pred :=
   rfl
 #align nat.pred_eq_pred Nat.pred_eq_pred
 
-theorem succ_iterate (a : ℕ) : ∀ n, (succ^[n]) a = a + n
+theorem succ_iterate (a : ℕ) : ∀ n, succ^[n] a = a + n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', add_succ]
     exact congr_arg _ (succ_iterate a n)
 #align nat.succ_iterate Nat.succ_iterate
 
-theorem pred_iterate (a : ℕ) : ∀ n, (pred^[n]) a = a - n
+theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', sub_succ]
@@ -91,4 +88,3 @@ theorem Fin.coe_covby_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b 
 
 alias Fin.coe_covby_iff ↔ _ Covby.coe_fin
 #align covby.coe_fin Covby.coe_fin
-

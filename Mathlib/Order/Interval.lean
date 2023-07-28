@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.interval
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Init.Data.Prod
+
+#align_import order.interval from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Order intervals
@@ -322,7 +319,7 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
-@[reducible] -- Porting note: added reducible, it seems to help with coersions
+@[reducible] -- Porting note: added reducible, it seems to help with coercions
 def Interval (α : Type _) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
@@ -454,7 +451,7 @@ variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 instance partialOrder : PartialOrder (Interval α) :=
   WithBot.partialOrder
 
-/-- Consider a interval `[a, b]` as the set `[a, b]`. -/
+/-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff
     (fun s =>

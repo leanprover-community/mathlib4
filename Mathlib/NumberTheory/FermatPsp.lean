@@ -2,15 +2,12 @@
 Copyright (c) 2022 Niels Voss. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niels Voss
-
-! This file was ported from Lean 3 source module number_theory.fermat_psp
-! leanprover-community/mathlib commit c0439b4877c24a117bfdd9e32faf62eee9b115eb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Prime
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Order.Filter.Cofinite
+
+#align_import number_theory.fermat_psp from "leanprover-community/mathlib"@"c0439b4877c24a117bfdd9e32faf62eee9b115eb"
 
 /-!
 # Fermat Pseudoprimes
@@ -36,7 +33,7 @@ The main definitions for this file are
   composite, and is coprime with `b` (this last condition is automatically true if `n` divides
   `b ^ (n - 1) - 1`, but some sources include it in the definition).
 
-Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definiton of
+Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definition of
 `ProbablePrime` in this file implies that all numbers are probable primes to bases 0 and 1, and
 that 0 and 1 are probable primes to any base.
 
@@ -234,9 +231,9 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   refine' ⟨_, AB_not_prime, hi_AB⟩
   -- Used to prove that `2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1)`.
   have ha₁ : (b ^ 2 - 1) * (A * B - 1) = b * (b ^ (p - 1) - 1) * (b ^ p + b) := by
-    apply_fun fun x => x * (b ^ 2 - 1)  at AB_id
+    apply_fun fun x => x * (b ^ 2 - 1) at AB_id
     rw [Nat.div_mul_cancel hd] at AB_id
-    apply_fun fun x => x - (b ^ 2 - 1)  at AB_id
+    apply_fun fun x => x - (b ^ 2 - 1) at AB_id
     nth_rw 2 [← one_mul (b ^ 2 - 1)] at AB_id
     rw [← Nat.mul_sub_right_distrib, mul_comm] at AB_id
     rw [AB_id]
@@ -244,15 +241,8 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- If `b` is even, then `b^p` is also even, so `2 ∣ b^p + b`
   -- If `b` is odd, then `b^p` is also odd, so `2 ∣ b^p + b`
   have ha₂ : 2 ∣ b ^ p + b := by
-    by_cases h : Even b
-    · replace h : 2 ∣ b := even_iff_two_dvd.mp h
-      have : p ≠ 0 := by linarith
-      have : 2 ∣ b ^ p := dvd_pow h this
-      exact dvd_add this h
-    · have h : Odd b := Nat.odd_iff_not_even.mpr h
-      have : Odd (b ^ p) := Odd.pow h
-      have : Even (b ^ p + b) := Odd.add_odd this h
-      exact even_iff_two_dvd.mp this
+    -- Porting note: golfed
+    rw [← even_iff_two_dvd, Nat.even_add, Nat.even_pow' p_prime.ne_zero]
   -- Since `b` isn't divisible by `p`, `b` is coprime with `p`. we can use Fermat's Little Theorem
   -- to prove this.
   have ha₃ : p ∣ b ^ (p - 1) - 1 := by

@@ -2,20 +2,17 @@
 Copyright (c) 2022 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johanes Hölzl, Patrick Massot, Yury Kudryashov, Kevin Wilson, Heather Macbeth
-
-! This file was ported from Lean 3 source module order.filter.prod
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Basic
+
+#align_import order.filter.prod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Product and coproduct filters
 
 In this file we define `Filter.prod f g` (notation: `f ×ˢ g`) and `Filter.coprod f g`. The product
-of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and `Filter.Tendsto
-Prod.snd l g`.
+of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
+`Filter.Tendsto Prod.snd l g`.
 
 ## Implementation details
 
@@ -515,7 +512,7 @@ theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
 #align filter.coprod_ne_bot_right Filter.coprod_neBot_right
 
 theorem principal_coprod_principal (s : Set α) (t : Set β) :
-    (𝓟 s).coprod (𝓟 t) = 𝓟 ((sᶜ ×ˢ tᶜ)ᶜ) := by
+    (𝓟 s).coprod (𝓟 t) = 𝓟 (sᶜ ×ˢ tᶜ)ᶜ := by
   rw [Filter.coprod, comap_principal, comap_principal, sup_principal, Set.prod_eq, compl_inter,
     preimage_compl, preimage_compl, compl_compl, compl_compl]
 #align filter.principal_coprod_principal Filter.principal_coprod_principal
@@ -532,9 +529,10 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
 #align filter.map_prod_map_coprod_le Filter.map_prod_map_coprod_le
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, the first under the constant function `λ a, b` and the second under the identity function.
-Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this provides an
-example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict. -/
+`𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity
+function. Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this
+provides an example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict.
+-/
 theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :
     (map (fun _ => b) (𝓟 {a})).coprod (map id (𝓟 {i})) =
       𝓟 ((({b} : Set β) ×ˢ univ) ∪ (univ ×ˢ ({i} : Set ι))) := by
@@ -542,10 +540,9 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α)
     image_id, prod_univ, univ_prod, id]
 #align filter.map_const_principal_coprod_map_id_principal Filter.map_const_principal_coprod_map_id_principal
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, under the `prod.map` of two functions, respectively the constant function `λ a, b` and the
-identity function.  Together with the previous lemma,
+`𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a => b` and
+the identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
 in the lemma `map_prod_map_coprod_le` can be strict. -/
 theorem map_prod_map_const_id_principal_coprod_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :

@@ -68,10 +68,11 @@ syntax foldKind := &"foldl" <|> &"foldr"
 /-- `notation3` argument matching `extBinders`. -/
 syntax bindersItem := atomic("(" "..." ")")
 /-- `notation3` argument simulating a Lean 3 fold notation. -/
-syntax foldAction := "(" ident ppSpace strLit "*" " => " foldKind
+syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
   " (" ident ppSpace ident " => " term ") " term ")"
 /-- `notation3` argument binding a name. -/
-syntax identOptScoped := ident (":" "(" "scoped " ident " => " term ")")?
+syntax identOptScoped :=
+  ident (notFollowedBy(":" "(" "scoped") precedence)? (":" "(" "scoped " ident " => " term ")")?
 /-- `notation3` argument. -/
 -- Note: there is deliberately no ppSpace between items
 -- so that the space in the literals themselves stands out
@@ -144,7 +145,7 @@ Returns `#[]` if nothing has been pushed yet. -/
 def MatchState.getFoldArray (s : MatchState) (name : Name) : Array Term :=
   (s.foldState.find? name).getD #[]
 
-/-- Push an delaborated term onto a foldr/foldl array. -/
+/-- Push a delaborated term onto a foldr/foldl array. -/
 def MatchState.pushFold (s : MatchState) (name : Name) (t : Term) : MatchState :=
   let ts := (s.getFoldArray name).push t
   {s with foldState := s.foldState.insert name ts}
@@ -338,7 +339,7 @@ partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
     matchFoldl lit x y smatcher sinit s
 
 /-- Create a `Term` that represents a matcher for `foldl` notation.
-Reminder: `( lit ","* =>  foldl (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldl (x y => scopedTerm) init )` -/
 partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
@@ -348,7 +349,7 @@ partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote x) $(quote y) $smatcher $sinit))
 
 /-- Create a `Term` that represents a matcher for `foldr` notation.
-Reminder: `( lit ","* =>  foldr (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldr (x y => scopedTerm) init )` -/
 partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
@@ -457,9 +458,9 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       if let `(stx| $lit:str) := syntaxArgs.back then
         syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
-    | `(notation3Item| ($id:ident $sep:str* => $kind ($x $y => $scopedTerm) $init)) =>
+    | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
-        `(macroArg| $id:ident:sepBy(term, $sep:str))
+        `(macroArg| $id:ident:sepBy(term $(prec?)?, $sep:str))
       -- N.B. `Syntax.getId` returns `.anonymous` for non-idents
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       let init' ← init.replaceM fun s => pure (boundValues.find? s.getId)
@@ -478,11 +479,12 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
           matchers := matchers.push <|
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init (getBoundNames boundValues)
         | _ => throwUnsupportedSyntax
-    | `(notation3Item| $lit:ident : (scoped $scopedId:ident => $scopedTerm)) =>
+    | `(notation3Item| $lit:ident $(prec?)? : (scoped $scopedId:ident => $scopedTerm)) =>
       if hasScoped then
         throwErrorAt item "Cannot have more than one `scoped` item."
       hasScoped := true
-      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| $lit:ident:term))
+      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
+        `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
         mkScopedMatcher lit.getId scopedId.getId scopedTerm (getBoundNames boundValues)
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
@@ -490,8 +492,9 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
-    | `(notation3Item| $lit:ident) =>
-      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| $lit:ident:term))
+    | `(notation3Item| $lit:ident $(prec?)?) =>
+      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
+        `(macroArg| $lit:ident:term $(prec?)?)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| lit.1.mkAntiquotNode `term
     | stx => throwUnsupportedSyntax

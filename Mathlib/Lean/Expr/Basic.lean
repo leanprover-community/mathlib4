@@ -24,10 +24,10 @@ namespace BinderInfo
 
 /-- The brackets corresponding to a given `BinderInfo`. -/
 def brackets : BinderInfo → String × String
-| BinderInfo.implicit => ("{", "}")
-| BinderInfo.strictImplicit => ("{{", "}}")
-| BinderInfo.instImplicit => ("[", "]")
-| _ => ("(", ")")
+  | BinderInfo.implicit => ("{", "}")
+  | BinderInfo.strictImplicit => ("{{", "}}")
+  | BinderInfo.instImplicit => ("[", "]")
+  | _ => ("(", ")")
 
 end BinderInfo
 
@@ -55,15 +55,15 @@ def fromComponents : List Name → Name := go .anonymous where
 
 /-- Update the last component of a name. -/
 def updateLast (f : String → String) : Name → Name
-| .str n s => .str n (f s)
-| n        => n
+  | .str n s => .str n (f s)
+  | n        => n
 
 /-- Get the last field of a name as a string.
 Doesn't raise an error when the last component is a numeric field. -/
 def getString : Name → String
-| .str _ s => s
-| .num _ n => toString n
-| .anonymous => ""
+  | .str _ s => s
+  | .num _ n => toString n
+  | .anonymous => ""
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
@@ -94,7 +94,7 @@ Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/le
 def isInternal' (declName : Name) : Bool :=
   declName.isInternal ||
   match declName with
-  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s
   | _        => true
 
 
@@ -113,6 +113,16 @@ def isBlackListed (declName : Name) : MetaM Bool := do
 
 end Name
 
+namespace NameSet
+
+/-- The union of two `NameSet`s. -/
+def append (s t : NameSet) : NameSet :=
+  s.mergeBy (fun _ _ _ => .unit) t
+
+instance : Append NameSet where
+  append := NameSet.append
+
+end NameSet
 
 namespace ConstantInfo
 
@@ -193,6 +203,10 @@ def bvarIdx? : Expr → Option Nat
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
 
+/-- Like `Expr.getUsedConstants`, but produce a `NameSet`. -/
+def getUsedConstants' (e : Expr) : NameSet :=
+  e.foldConsts {} fun c cs => cs.insert c
+
 /-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
@@ -207,14 +221,14 @@ def fvarId? : Expr → Option FVarId
   `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
   it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
-e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
-where
-  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-    `depth - 1`. -/
-  aux (depth : Nat) : Expr → Nat → Bool
-  | .lam _ _ b _, n + 1  => aux depth b n
-  | e, 0  => !e.hasLooseBVar (depth - 1)
-  | _, _ => false
+  e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
+  where
+    /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+      `depth - 1`. -/
+    aux (depth : Nat) : Expr → Nat → Bool
+    | .lam _ _ b _, n + 1  => aux depth b n
+    | e, 0  => !e.hasLooseBVar (depth - 1)
+    | _, _ => false
 
 open Meta
 
@@ -233,8 +247,8 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 /-- Construct the term of type `α` for a given integer
 (doing typeclass search for the `OfNat` and `Neg` instances required). -/
 def ofInt (α : Expr) : Int → MetaM Expr
-| Int.ofNat n => Expr.ofNat α n
-| Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+  | Int.ofNat n => Expr.ofNat α n
+  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
 
 /--
   Return `some n` if `e` is one of the following
@@ -267,7 +281,7 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
   modifyAppArgM (M := Id) modifier
 
-def modifyRevArg (modifier : Expr → Expr): Nat → Expr  → Expr
+def modifyRevArg (modifier : Expr → Expr) : Nat → Expr → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 
@@ -282,7 +296,7 @@ def getRevArg? : Expr → Nat → Option Expr
   | _,       _   => none
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, returns the `i`th argument or none if out of bounds. -/
-def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs): Option Expr :=
+def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
   getRevArg? e (n - i - 1)
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
@@ -370,11 +384,64 @@ def rewriteType (e eq : Expr) : MetaM Expr := do
 
 end Expr
 
+/-- Return all names appearing in the type or value of a `ConstantInfo`. -/
+def ConstantInfo.getUsedConstants (c : ConstantInfo) : NameSet :=
+  let tc := c.type.getUsedConstants'
+  match c.value? with
+  | none => tc
+  | some v => tc ++ v.getUsedConstants'
+
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
   except that this returns the (last component of the) projection names instead of the parent names.
 -/
 def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
   getStructureFields env structName |>.filter fun fieldName =>
     isSubobjectField? env structName fieldName |>.isSome
+
+/-- Return the name of the module in which a declaration was defined. -/
+def Environment.getModuleFor? (env : Environment) (declName : Name) : Option Name :=
+  match env.getModuleIdxFor? declName with
+  | none =>
+    if env.constants.map₂.contains declName then
+      env.header.mainModule
+    else
+      none
+  | some idx => env.header.moduleNames[idx.toNat]!
+
+/--
+Return the names of the modules in which constants used in the specified declaration were defined.
+
+Note that this will *not* account for tactics and syntax used in the declaration,
+so the results may not suffice as imports.
+-/
+def Name.requiredModules (n : Name) : CoreM NameSet := do
+  let env ← getEnv
+  let mut requiredModules : NameSet := {}
+  let ci ← getConstInfo n
+  for n in ci.getUsedConstants do
+    match env.getModuleFor? n with
+    | some m =>
+      if ¬ (`Init).isPrefixOf m then
+        requiredModules := requiredModules.insert m
+    | none => pure ()
+  return requiredModules
+
+/--
+Return the names of the modules in which constants used in the current file were defined.
+
+Note that this will *not* account for tactics and syntax used in the file,
+so the results may not suffice as imports.
+-/
+def Environment.requiredModules (env : Environment) : NameSet := Id.run do
+  let localConstantInfos := env.constants.map₂
+  let mut requiredModules : NameSet := {}
+  for (_, ci) in localConstantInfos do
+    for n in ci.getUsedConstants do
+      match env.getModuleFor? n with
+      | some m =>
+        if ¬ (`Init).isPrefixOf m then
+          requiredModules := requiredModules.insert m
+      | none => pure ()
+  return requiredModules
 
 end Lean

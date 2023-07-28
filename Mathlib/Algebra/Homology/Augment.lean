@@ -2,13 +2,10 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.augment
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Single
+
+#align_import algebra.homology.augment from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Augmentation and truncation of `ℕ`-indexed (co)chain complexes.
@@ -25,7 +22,7 @@ variable {V : Type u} [Category.{v} V]
 
 namespace ChainComplex
 
-/-- The truncation of a `ℕ`-indexed chain complex,
+/-- The truncation of an `ℕ`-indexed chain complex,
 deleting the object at `0` and shifting everything else down.
 -/
 @[simps]
@@ -204,7 +201,7 @@ end ChainComplex
 
 namespace CochainComplex
 
-/-- The truncation of a `ℕ`-indexed cochain complex,
+/-- The truncation of an `ℕ`-indexed cochain complex,
 deleting the object at `0` and shifting everything else down.
 -/
 @[simps]
@@ -345,8 +342,7 @@ def augmentTruncate (C : CochainComplex V ℕ) :
         rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp
             -- Porting note: simp can't handle this now but aesop does
-            aesop
-    }
+            aesop }
   hom_inv_id := by
     ext i
     cases i <;>
@@ -395,4 +391,3 @@ def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
 #align cochain_complex.from_single₀_as_complex CochainComplex.fromSingle₀AsComplex
 
 end CochainComplex
-

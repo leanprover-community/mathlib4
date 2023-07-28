@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.ideal.quotient_operations
-! leanprover-community/mathlib commit b88d81c84530450a8989e918608e5960f015e6c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
 /-!
 # More operations on modules and ideals related to quotients
@@ -123,7 +120,7 @@ theorem ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S
     rw [← hy, mem_map_iff_of_surjective (Quotient.mk I) Quotient.mk_surjective]
     exact ⟨y, hx, rfl⟩
   · intro hx
-    rw [mem_map_iff_of_surjective (Quotient.mk I)  Quotient.mk_surjective] at hx
+    rw [mem_map_iff_of_surjective (Quotient.mk I) Quotient.mk_surjective] at hx
     obtain ⟨y, hy⟩ := hx
     rw [RingHom.mem_ker, ← hy.right, Ideal.Quotient.lift_mk]
     exact hy.left
@@ -690,7 +687,7 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
   rfl
 #align double_quot.coe_quot_left_to_quot_supₐ DoubleQuot.coe_quotLeftToQuotSupₐ
 
-/-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J) induced by `quotQuotToQuotSup`,
+/-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J)` induced by `quotQuotToQuotSup`,
   where `J'` is the projection of `J` in `A / I`. -/
 def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J :=
   AlgHom.mk (quotQuotToQuotSup I J) fun _ => rfl
