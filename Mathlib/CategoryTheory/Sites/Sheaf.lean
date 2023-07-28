@@ -457,9 +457,8 @@ namespace Presheaf
 -- between 00VQ and 00VR.
 variable {C : Type u₁} [Category.{v₁} C]
 
-variable {A' : Type u₂} [Category.{max v₁ u₁} A'] -- to use if we can't get `A` working
-
 variable {A : Type u₂} [Category.{v₂} A]
+variable {A' : Type u₂} [Category.{max v₁ u₁} A'] -- An alternative to `A` with universes satisfying inequalities.
 
 variable (J : GrothendieckTopology C)
 
