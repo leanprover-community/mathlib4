@@ -207,3 +207,30 @@ def DeleteKaTeX : Component NoProps where
       }
     }"
 
+/- ## Rendering
+
+KaTeX allows two (stable) means of rendering math: `katex.render`, which produces a DOM element, and `katex.renderToString`, which flattens to HTML.
+-/
+
+/- ### .renderToString -/
+/- To use the HTML, we use `dangerouslySetInnerHTML` for now. I'm going to try using a ref soon; apparently that's another way to do this. -/
+@[widget_module]
+def KaTeXHTML : Component TeXProps where
+  javascript := "
+    import * as React from 'react'
+    export default function(props) {
+      const html = katex.renderToString(props.text, {throwOnError:false})
+      return React.createElement('span',{dangerouslySetInnerHTML:{__html:html}})
+    }"
+
+#html <DeleteKaTeX />
+#html <AddKaTeX />
+#html <KaTeXHTML text="\\int_0^\\infty t^{z-1}e^{-t}\\;dt" />
+
+/- TODO:
+
+- use ref?
+- use script tag as in katex README? Or a "module loader" [https://katex.org/docs/browser.html]?
+- use `.render`
+-/
+
