@@ -240,7 +240,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
         -- Porting note: was simp [smul_tmul', Algebra.ofId_apply]
-        simp only [Algebra.ofId_apply, lift.tmul, smul_eq_mul, AlgHom.toLinearMap_apply,
+        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul,
           LinearMap.mul_apply, LinearMap.smul_apply, IsTensorProduct.equiv_apply,
           Module.algebraMap_end_apply, _root_.map_mul, smul_tmul', eq_self_iff_true,
           LinearMap.coe_restrictScalars, LinearMap.flip_apply]
