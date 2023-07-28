@@ -585,7 +585,7 @@ end FilteredClosure
 
 section
 variable {C}
-variable [IsFilteredOrEmpty C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
+variable [IsFilteredOrEmpty C] {D : Type u₁} [Category.{v₁} D] (F : D ⥤ C)
 
 /-- Every functor from a small category to a filtered category factors fully faithfully through a
     small filtered category. This is that category. -/
@@ -1028,7 +1028,7 @@ end CofilteredClosure
 
 section
 variable {C}
-variable [IsCofilteredOrEmpty C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
+variable [IsCofilteredOrEmpty C] {D : Type u₁} [Category.{v₁} D] (F : D ⥤ C)
 
 /-- Every functor from a small category to a cofiltered category factors fully faithfully through a
     small cofiltered category. This is that category. -/
