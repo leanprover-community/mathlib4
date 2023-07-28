@@ -151,8 +151,7 @@ theorem Basis.localizationLocalization_span {ι : Type _} (b : Basis ι R A) :
   rw [Submodule.map_span]
   congr
   ext
-  simp only [Set.mem_range, Submodule.coeSubtype, Set.mem_image, Basis.localizationLocalization_apply,
-    exists_exists_eq_and]
+  simp only [Set.mem_range, localizationLocalization_apply, Set.mem_image, exists_exists_eq_and]
   rfl
 
 end LocalizationLocalization
