@@ -464,12 +464,6 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
-instance : StarOrderedRing ℝ :=
-  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
-    refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
-    rintro ⟨s, rfl⟩
-    exact mul_self_nonneg s
-
 end Real
 
 open Real
