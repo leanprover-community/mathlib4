@@ -342,7 +342,7 @@ instance (priority := 200) toModule : Module R A where
 #align algebra.to_module Algebra.toModule
 
 -- porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
--- attribute [instance 0] Algebra.toSMul
+attribute [instance 0] Algebra.toSMul
 
 theorem smul_def (r : R) (x : A) : r • x = algebraMap R A r * x :=
   Algebra.smul_def' r x
