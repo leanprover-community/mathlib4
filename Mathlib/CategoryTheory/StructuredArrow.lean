@@ -252,6 +252,20 @@ def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ Structure
   map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
 
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : Faithful (post S F G) where
+  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Faithful G] : Full (post S F G) where
+  preimage {_ _} f := homMk f.right (G.map_injective (by simpa using f.w.symm))
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] : EssSurj (post S F G) where
+  mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
+
+/-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
+noncomputable def isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+    IsEquivalence (post S F G) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
+
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : ΣG : 𝒢, S ⟶ T.obj G => mk f.2 by
@@ -475,6 +489,20 @@ def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
   obj X := CostructuredArrow.mk (G.map X.hom)
   map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : Faithful (post F G S) where
+  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Faithful G] : Full (post F G S) where
+  preimage {_ _} f := homMk f.left (G.map_injective (by simpa using f.w))
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Full G] : EssSurj (post F G S) where
+  mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
+
+/-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
+noncomputable def isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+    IsEquivalence (post F G S) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
