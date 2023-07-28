@@ -2009,8 +2009,7 @@ theorem factorization_eq_count {n p : α} :
 #align factorization_eq_count factorization_eq_count
 
 @[simp]
-theorem factorization_zero : factorization (0 : α) = 0 := by
-  simp [factorization, map_zero Multiset.toFinsupp]
+theorem factorization_zero : factorization (0 : α) = 0 := by simp [factorization]
 #align factorization_zero factorization_zero
 
 @[simp]
