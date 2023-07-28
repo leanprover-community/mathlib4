@@ -476,7 +476,7 @@ theorem tensor_associativity_aux (W X Y Z : C) :
   slice_rhs 3 5 => rw [← tensor_comp, ← tensor_comp, ← hexagon_reverse, tensor_comp, tensor_comp]
 #align category_theory.tensor_associativity_aux CategoryTheory.tensor_associativity_aux
 
-set_option maxHeartbeats 400000
+set_option maxHeartbeats 400000 in
 theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     (tensor_μ C (X₁, X₂) (Y₁, Y₂) ⊗ 𝟙 (Z₁ ⊗ Z₂)) ≫
         tensor_μ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
