@@ -245,30 +245,6 @@ def _root_.Lean.Name.getHead : Name → Name
   | .str head _ => head
   | _ => .anonymous
 
-/-! `isDegLE e` checks whether `e` is an `Expr`ession representing an inequality whose LHS is
-the `natDegree/degree` of a polynomial with coefficients in a semiring `R`.
-If `e` represents
-*  `natDegree f ≤ d`, then it returns `(true,  f)`;
-*  `degree f ≤ d`,    then it returns `(false, f)`;
-*  anything else, then it throws an error.
--/
-
-/-! `computeDegreeLECore pol mv π` takes as input
-* an `Expr`ession `pol` representing a polynomial;
-* an `MVarId` `mv`;
-* a function `π : Name × Name → Name`, typically
-* * `pi = Prod.fst` if the goal is `natDegree f ≤ d`,
-* * `pi = Prod.snd` if the goal is `degree f ≤ d`.
-
-It recurses into `pol` matching each step with the appropriate pair of lemmas:
-the first if the goal involves `natDegree`, the second if it involves `degree`.
-It applies the lemma at each stage and continues until it reaches a "leaf":
-either the final goal asks for the degree of a "cast" of some sort, of `X`, of `monomial n r`
-or of an `fvar`.
-In each case it closes the goal, assuming that the goal is `natDegree f ≤ natDegree f` or
-`degree f ≤ degree f`, in the case of an `fvar`.
--/
-
 open Lean Meta Elab Expr Tactic
 
 open ConstantInfo Command in
