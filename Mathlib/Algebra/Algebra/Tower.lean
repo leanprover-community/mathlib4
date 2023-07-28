@@ -30,28 +30,29 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable [CommSemiring R] [Semiring A] [CommSemiring S] [Algebra R A]
+variable [AddCommMonoid M] [SMul R S] [Module R M] [Module S M] [Module A M]
+variable [IsScalarTower R A M] [IsScalarTower R S M] [SMulCommClass S R M] [SMulCommClass A S M]
 
 variable {A}
 
+
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
-on the `R`-module `M`.
+on the `S`-module `M`.
 
 This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
 called `Algebra.toModuleEnd`. -/
-def lsmul : A →ₐ[R] Module.End R M where
-  toFun := DistribMulAction.toLinearMap R M
+def lsmul : A →ₐ[R] Module.End S M where
+  toFun := DistribMulAction.toLinearMap S M
   map_one' := LinearMap.ext fun _ => one_smul A _
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _
   map_add' _a _b := LinearMap.ext fun _ => add_smul _ _ _
   commutes' r := LinearMap.ext <| algebraMap_smul A r
-#align algebra.lsmul Algebra.lsmul
+#align algebra.lsmul Algebra.lsmulₓ
 
 @[simp]
-theorem lsmul_coe (a : A) : (lsmul R M a : M → M) = (· • ·) a := rfl
+theorem lsmul_coe (a : A) : (lsmul R S M a : M → M) = (· • ·) a := rfl
 #align algebra.lsmul_coe Algebra.lsmul_coe
 
 end Algebra
@@ -354,13 +355,13 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-
-variable [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [CommSemiring R] [Semiring A] [Semiring S] [Algebra R A]
+variable [AddCommGroup M] [SMul R S] [Module R M] [Module S M] [Module A M]
+variable [IsScalarTower R A M] [IsScalarTower R S M] [SMulCommClass S R M] [SMulCommClass A S M]
 
 theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
-    Function.Injective (lsmul R M x) :=
-  smul_right_injective _ hx
+    Function.Injective (lsmul R S M x) :=
+  smul_right_injective M hx
 #align algebra.lsmul_injective Algebra.lsmul_injective
 
 end Algebra
