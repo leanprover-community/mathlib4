@@ -808,7 +808,7 @@ theorem div_le_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ b * 
 #align nnreal.div_le_iff NNReal.div_le_iff
 
 nonrec theorem div_le_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ r * b :=
-  @div_le_iff' ℝ _ a r b <| pos_iff_ne_zero.2 hr
+  @div_le_iff' ℝ _ a r b <| (pos_iff_ne_zero (α := ℝ≥0)).2 hr
 #align nnreal.div_le_iff' NNReal.div_le_iff'
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
@@ -820,11 +820,11 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
 #align nnreal.div_le_of_le_mul' NNReal.div_le_of_le_mul'
 
 nonrec theorem le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  @le_div_iff ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  @le_div_iff ℝ _ a b r <| (pos_iff_ne_zero (α := ℝ≥0)).2 hr
 #align nnreal.le_div_iff NNReal.le_div_iff
 
 nonrec theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b :=
-  @le_div_iff' ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  @le_div_iff' ℝ _ a b r <| (pos_iff_ne_zero (α := ℝ≥0)).2 hr
 #align nnreal.le_div_iff' NNReal.le_div_iff'
 
 theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r :=
