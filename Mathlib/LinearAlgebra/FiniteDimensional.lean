@@ -1302,7 +1302,7 @@ theorem finrank_le_one_iff [FiniteDimensional K V] :
     · replace h' := zero_lt_iff.mpr h'
       have : finrank K V = 1 := by linarith
       obtain ⟨v, -, p⟩ := finrank_eq_one_iff'.mp this
-      exact ⟨v, p⟩ -- porting note: was `use`
+      use v, p
   · rintro ⟨v, p⟩
     exact finrank_le_one v p
 #align finrank_le_one_iff finrank_le_one_iff

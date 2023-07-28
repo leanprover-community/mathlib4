@@ -153,8 +153,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
       exists_imp]
     rintro x (hx | ⟨x', hx', rfl⟩) rat hs
     · exact False.elim <| (hs x) <| And.intro hx rat
-    · use x'
-      exact And.intro hx' (And.intro rat hs)
+    · use x', hx', rat, hs
   · apply biUnion_subset_biUnion_of_subset_left
     apply subset_union_left
 #align hall_marriage_theorem.hall_cond_of_compl HallMarriageTheorem.hall_cond_of_compl
