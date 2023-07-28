@@ -178,12 +178,6 @@ namespace DihedralGroup
 instance : Infinite (DihedralGroup 0) := sorry
 
 -- PRed
-lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
-  have := Fintype.ofFinite α
-  have := Fintype.ofFinite β
-  simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
-
--- PRed
 @[simp]
 theorem ZMod.add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : ¬ 2 ∣ n) {a : ZMod n} :
     a + a = 0 ↔ a = 0 := by
