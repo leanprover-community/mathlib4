@@ -59,20 +59,6 @@ attribute [simp] RingHomId.eq_id
 instance {R : Type _} [Semiring R] : RingHomId (RingHom.id R) where
   eq_id := rfl
 
-/-- A generalisation of `LinearMap.id` that constructs the identity function
-as a `σ`-semilinear map for any ring homomorphism `σ` which we know is the identity. -/
-@[simps]
-def LinearMap.id' {R : Type _} [Semiring R]
-    {M : Type _} [AddCommMonoid M] [Module R M]
-    {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
-  toFun x := x
-  map_add' x y := rfl
-  map_smul' r x := by
-    have := (RingHomId.eq_id : σ = _)
-    subst this
-    rfl
-
-
 /-- Class that expresses the fact that three ring homomorphisms form a composition triple. This is
 used to handle composition of semilinear maps. -/
 class RingHomCompTriple (σ₁₂ : R₁ →+* R₂) (σ₂₃ : R₂ →+* R₃) (σ₁₃ : outParam (R₁ →+* R₃)) :
