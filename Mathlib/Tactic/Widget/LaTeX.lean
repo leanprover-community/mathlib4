@@ -129,3 +129,20 @@ def DangerousMathJaxCHTML : Component TeXProps where
 #html <AddMathJaxCHTML /> -- evaluate first
 -- fails; no fonts. (Blank.)
 #html <DangerousMathJaxCHTML text="\\int_0^\\infty t^{z-1}e^{-t}\\;dt" display={true} />
+
+/- # KaTeX
+
+We fork KaTeX so that we can inline fonts via `webpack`.
+With the changes made in this KaTeX fork, we can now write
+```
+cd KaTeX
+yarn install
+USE_TTF=false USE_WOFF=false BUNDLE_FONTS=true yarn build
+```
+This means that we only use the `*.woff2` fonts, and we inline them into the generated css files.
+
+We need to check that woff2 is appropriate in all places (e.g. vscode for web?) given that it's the most modern format.
+
+Honestly, I'd prefer to simply link to the (normal) CSS via vscode resource URI. But that's quite difficult. We at least need to obtain the workspace folder, and preferably use the standard means to generate a vscode resource URI instead of hacking one together. But all that functionality comes from the `vscode` JS API, which is not accessible at the point the javascript gets run (nor anywhere else). It'd be great to expose this somehow, but in the meantime, we can bundle.
+-/
+
