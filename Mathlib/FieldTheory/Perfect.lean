@@ -102,8 +102,6 @@ instance PerfectField.toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : 
   let f : Polynomial K := Polynomial.X ^ p - Polynomial.C y
   let L := f.SplittingField
   let ι := algebraMap K L
-  have : CharP L p := -- TODO Make this a global `instance`
-    charP_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective K L) p
   have hf : f.degree ≠ 0 := by
     rw [Polynomial.degree_X_pow_sub_C hp.out.pos y, p.cast_ne_zero]; exact hp.out.ne_zero
   let a : L := f.rootOfSplits ι (Polynomial.SplittingField.splits f) hf
