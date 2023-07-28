@@ -2197,6 +2197,44 @@ theorem IsLittleO.nat_cast_atTop {R : Type _} [StrictOrderedSemiring R] [Archime
     (fun (n:ℕ) => f n) =o[atTop] (fun n => g n) :=
   IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
 
+theorem isBigO_atTop_iff_dep_const {α : Type _} [SemilatticeSup α] [Nonempty α]
+    {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [eventually_atTop]
+    obtain ⟨c, hc⟩ := isBigO_iff.mp h
+    rw [eventually_atTop] at hc
+    obtain ⟨n₀, hc⟩ := hc
+    exact ⟨n₀, fun n₁ hn₁ => ⟨c, fun n hn => hc n <| hn₁.trans hn⟩⟩
+  case mpr =>
+    rw [isBigO_iff]
+    rw [eventually_atTop] at h
+    obtain ⟨n₀, h⟩ := h
+    obtain ⟨c, h⟩ := h n₀ (le_refl _)
+    refine ⟨c, ?_⟩
+    rw [eventually_atTop]
+    exact ⟨n₀, h⟩
+
+theorem isBigO_atTop_iff_dep_const' {α : Type _}
+    [SemilatticeSup α] [Nonempty α] {f : α → G} {g : α → G'} :
+    f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c > 0, ∀ n ≥ n₀, c * ‖f n‖ ≤ ‖g n‖ := by
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [isBigO_iff''] at h
+    obtain ⟨c, ⟨hc_mem, hc⟩⟩ := h
+    filter_upwards [eventually_forall_ge_atTop.mpr hc] with x hx
+    exact ⟨c, ⟨hc_mem, hx⟩⟩
+  case mpr =>
+    rw [isBigO_iff'']
+    rw [eventually_atTop] at h
+    obtain ⟨n₀, hn₀⟩ := h
+    have hn₀ := hn₀ n₀ (le_refl _)
+    obtain ⟨c, ⟨hc_pos, hc⟩⟩ := hn₀
+    refine ⟨c, ⟨hc_pos, ?_⟩⟩
+    rw [eventually_atTop]
+    exact ⟨n₀, hc⟩
+
+
 end Asymptotics
 
 open Asymptotics

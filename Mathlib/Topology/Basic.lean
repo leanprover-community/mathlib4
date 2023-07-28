@@ -1066,6 +1066,10 @@ instance nhds_neBot {a : α} : NeBot (𝓝 a) :=
   neBot_of_le (pure_le_nhds a)
 #align nhds_ne_bot nhds_neBot
 
+theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in l, f x = a) :
+    Tendsto f l (𝓝 a) :=
+  Tendsto.mono_right (by rwa [tendsto_pure]) (pure_le_nhds a)
+
 /-!
 ### Cluster points
 
