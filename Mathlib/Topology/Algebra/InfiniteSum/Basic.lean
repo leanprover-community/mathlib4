@@ -1488,7 +1488,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   simp only [mul_smul]
 
 /-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
-  `R`-scalar multiplication. -/
+`R`-scalar multiplication. -/
 lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
     (g : Quotient (MulAction.orbitRel α β) → R) :
     MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
@@ -1506,8 +1506,8 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
-/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the `R`
-  -scalar multiplication. -/
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
 lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
     (g : Quotient (AddAction.orbitRel α β) → R) :
     AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
@@ -1538,8 +1538,8 @@ variable {G : Type _} [Group G] {Γ : Subgroup G}
   `g ↦ ∑' (γ : Γ), f(γ • g)`."]
 noncomputable def QuotientGroup.automorphize  (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
 
-/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the `R`
-  -scalar multiplication. -/
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
 lemma QuotientGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
     (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ (_)) : G → R) • f) : G ⧸ Γ → M)
       = g • (QuotientGroup.automorphize f : G ⧸ Γ → M) :=
@@ -1551,8 +1551,8 @@ section
 
 variable {G : Type _} [AddGroup G] {Γ : AddSubgroup G}
 
-/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the `R`
-  -scalar multiplication. -/
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
 lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
   QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
     = g • (QuotientAddGroup.automorphize f : G ⧸ Γ → M) :=
