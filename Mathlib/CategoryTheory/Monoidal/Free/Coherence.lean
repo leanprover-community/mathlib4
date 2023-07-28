@@ -299,7 +299,9 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
           obtain rfl : X₃ = Y₃ := φ.1.1
           simp only [discrete_functor_map_eq_id, tensor_id]
           rfl
-        rw [NatTrans.comp_app, NatTrans.comp_app] at h₁ h₂ ⊢
+        rw [NatTrans.comp_app, NatTrans.comp_app] at h₁
+        rw [NatTrans.comp_app, NatTrans.comp_app] at h₂
+        rw [NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight,
           Functor.comp, Discrete.natTrans] at h₁ h₂ h₃ ⊢
         rw [mk_tensor, associator_inv_naturality_assoc, ← tensor_comp_assoc, h₁,

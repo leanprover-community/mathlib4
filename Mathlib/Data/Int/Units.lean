@@ -105,7 +105,10 @@ theorem isUnit_mul_self {a : ℤ} (ha : IsUnit a) : a * a = 1 :=
 -- Porting note: this was proven in mathlib3 with `tidy` which hasn't been ported yet
 theorem isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b)
     (hc : IsUnit c) (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
-  rw [isUnit_iff] at ha hb hc hd
+  rw [isUnit_iff] at ha
+  rw [isUnit_iff] at hb
+  rw [isUnit_iff] at hc
+  rw [isUnit_iff] at hd
   cases ha <;> cases hb <;> cases hc <;> cases hd <;>
       subst a <;> subst b <;> subst c <;> subst d <;>
     simp

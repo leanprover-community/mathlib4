@@ -176,7 +176,8 @@ theorem pmap_some (f : ∀ a : α, p a → β) {x : α} (h : p x) :
 #align option.pmap_some Option.pmap_some
 
 theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
-  rw [mem_def] at ha ⊢
+  rw [mem_def] at ha
+  rw [mem_def]
   subst ha
   rfl
 #align option.mem_pmem Option.mem_pmem
