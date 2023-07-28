@@ -71,7 +71,7 @@ class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing 
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
-  le_iff_re_im : z ≤ w ↔ (Real.instLEReal.le (re z) (re w)) ∧ ((im z) = (im w))
+  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
 #align is_R_or_C IsROrC
 
 end
