@@ -729,7 +729,6 @@ See note [reducible non-instances]. -/
 protected def ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  -- smul := (· • ·)
   -- Porting note: `simp` no longer works here.
   smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
 #align zero_hom.smul_zero_class ZeroHom.smulZeroClass
