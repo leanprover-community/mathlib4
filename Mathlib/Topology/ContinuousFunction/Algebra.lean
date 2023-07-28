@@ -909,7 +909,7 @@ variable {α : Type _} [TopologicalSpace α]
 
 variable {β : Type _} [TopologicalSpace β]
 
-/-! C(α, β) is a lattice ordered group -/
+/-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
 instance covariant_class_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
