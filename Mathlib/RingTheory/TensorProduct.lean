@@ -184,8 +184,7 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
       (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
     exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
   ext xa xb ya yb za zb
-  refine congr_arg₂ (· ⊗ₜ ·) (mul_assoc _ _ _) (mul_assoc _ _ _)
-
+  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
 protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
