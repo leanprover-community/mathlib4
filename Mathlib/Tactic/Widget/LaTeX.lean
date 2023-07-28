@@ -146,3 +146,64 @@ We need to check that woff2 is appropriate in all places (e.g. vscode for web?) 
 Honestly, I'd prefer to simply link to the (normal) CSS via vscode resource URI. But that's quite difficult. We at least need to obtain the workspace folder, and preferably use the standard means to generate a vscode resource URI instead of hacking one together. But all that functionality comes from the `vscode` JS API, which is not accessible at the point the javascript gets run (nor anywhere else). It'd be great to expose this somehow, but in the meantime, we can bundle.
 -/
 
+/- ## Setting up
+
+KaTeX doesn't care if the JS is run multiple times, for some reason. Unlike MathJax, there's only one katex.min.js.
+
+We would typically use a link, but that requires the vscode resource URI discussed above. If you like, define `pathToRepo` to be the path to your mathlib4 repo using `/` separators, and this hacked-together resource URI might work (it did for me).
+
+Here we provide both a means to add a `<link>` (which doesn't work unless you hardcode a path, yet) and a means to add a `<style>` tag (which does work)
+-/
+
+def pathToRepo : String := sorry
+
+def absPath := "'https://file%2B.vscode-resource.vscode-cdn.net/" ++ pathToRepo ++ "mathlib4/KaTeX/dist/katex.min.css'"
+
+def addLink := "
+  var l = document.createElement('link')
+  l.id = 'katex-style'
+  l.rel = 'stylesheet'
+  l.href = " ++ absPath ++ "
+  document.head.appendChild(l)"
+
+/- To use inlined CSS via a `<style>` tag, we need to, well, inline the CSS. It's easier to pass it as a default-initialized prop field; including it as a string in the javascript *code* is trickier because (I think) certain characters need to be escaped, but I'm not sure which. `s.replace "\\" "\\\\" |>.replace "\"" "\\\""` wasn't sufficient. Maybe there's a better way. -/
+-- Check that this default value gets elaborated here and isn't an autoparam. (Is `by` exclusively what indicates autoparams?)
+structure KaTeXCSSProps where
+  css : String := include_str ".." / ".." / ".." / "KaTeX" / "dist" / "katex.min.css"
+#mkrpcenc KaTeXCSSProps
+
+/-- Insert a style tag with inlined CSS into the head of the document. -/
+def addStyle := "
+  var s = document.createElement('style')
+  s.id = 'katex-style'
+  s.type = 'text/css'
+  s.innerHTML = props.css
+  document.head.appendChild(s)"
+
+/-- Run the minified KaTeX JS, then insert either a link or a style tag.
+(Do we want to actually add a script tag, or just run the JS from the widget? Well, the widget implementation is probably not the final form in any case.) -/
+def addKaTeX (s : String) := "
+    import * as React from 'react'
+    export default function(props) {
+      if (typeof window?.katex == 'undefined') {
+      " ++ (include_str ".." / ".." / ".." / "KaTeX" / "dist" / "katex.min.js") ++ ";
+      " ++ s ++
+      "}
+    }"
+
+@[widget_module]
+def AddKaTeX : Component KaTeXCSSProps where
+  javascript := addKaTeX addStyle -- use `addLink` instead of `addStyle` after setting `pathToRepo`
+
+/-- Deletes the `katex` object and removes anything in the head with id `katex-style`. -/
+@[widget_module]
+def DeleteKaTeX : Component NoProps where
+  javascript := "
+    export default function (){
+      if (typeof window?.katex !== 'undefined') {
+        delete window['katex']
+        const katexCSS = document.head.querySelectorAll('#katex-style')
+        katexCSS.forEach(n => n.remove())
+      }
+    }"
+
