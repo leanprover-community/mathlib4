@@ -393,7 +393,7 @@ set_option maxHeartbeats 700000 in
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
 set_option synthInstance.maxHeartbeats 200000 in
 -- This has type
--- `Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
+-- `Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
 -- But lean times-out if this is given explicitly.
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/

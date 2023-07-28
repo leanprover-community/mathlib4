@@ -431,14 +431,28 @@ protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
 
 instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 
-instance : AddMonoidWithOne (A ⊗[R] B) :=
-  AddMonoidWithOne.unary
+theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
+  rfl
+#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
+
+instance : AddMonoidWithOne (A ⊗[R] B) where
+  natCast n := n ⊗ₜ 1
+  natCast_zero := by simp
+  natCast_succ n := by simp [add_tmul, one_def]
+
+theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
 -- providing this instance separately makes some downstream code substantially faster
 instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
+
+@[simp]
+theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
+    a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
+  rfl
+#align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
 -- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
 -- appears to help performance.
@@ -517,6 +531,8 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
     toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 #align algebra.tensor_product.left_algebra Algebra.TensorProduct.leftAlgebra
 
+example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
+
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
 instance instAlgebra : Algebra R (A ⊗[R] B) :=
@@ -586,9 +602,21 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance instRing : Ring (A ⊗[R] B) :=
-  { toSemiring := inferInstance
-    add_left_neg := add_left_neg }
+instance instRing : Ring (A ⊗[R] B) where
+  zsmul := SubNegMonoid.zsmul
+  zsmul_zero' := SubNegMonoid.zsmul_zero'
+  zsmul_succ' := SubNegMonoid.zsmul_succ'
+  zsmul_neg' := SubNegMonoid.zsmul_neg'
+  intCast z := z ⊗ₜ (1 : B)
+  intCast_ofNat n := by simp [natCast_def]
+  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
+  add_left_neg := add_left_neg
+
+theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+
+-- verify there are no diamonds
+example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
+example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
 
