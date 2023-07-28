@@ -30,7 +30,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [CommSemiring S] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [Semiring S] [Algebra R A]
 variable [AddCommMonoid M] [SMul R S] [Module R M] [Module S M] [Module A M]
 variable [IsScalarTower R A M] [IsScalarTower R S M] [SMulCommClass S R M] [SMulCommClass A S M]
 
