@@ -461,7 +461,7 @@ instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) 
   mul_zero a := by simp [HMul.hMul, Mul.mul]
 
 instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
-  mul_assoc := mul_assoc
+  mul_assoc := Algebra.TensorProduct.mul_assoc
 
 instance instSemiring : Semiring (A ⊗[R] B) where
   one_mul := Algebra.TensorProduct.one_mul
