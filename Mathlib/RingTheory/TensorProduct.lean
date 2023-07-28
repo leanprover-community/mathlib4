@@ -436,7 +436,7 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
-instance : Semiring (A ⊗[R] B) :=
+instance instSemiring : Semiring (A ⊗[R] B) :=
   { (by infer_instance : AddMonoidWithOne (A ⊗[R] B)),
     (by infer_instance : AddCommMonoid (A ⊗[R] B)) with
     zero := 0
@@ -515,7 +515,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
-instance : Algebra R (A ⊗[R] B) :=
+instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
@@ -582,8 +582,8 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance : Ring (A ⊗[R] B) :=
-  { (by infer_instance : Semiring (A ⊗[R] B)) with
+instance instRing : Ring (A ⊗[R] B) :=
+  { toSemiring := inferInstance
     add_left_neg := add_left_neg }
 
 end Ring
@@ -596,8 +596,8 @@ variable {A : Type v₁} [CommRing A] [Algebra R A]
 
 variable {B : Type v₂} [CommRing B] [Algebra R B]
 
-instance : CommRing (A ⊗[R] B) :=
-  { (by infer_instance : Ring (A ⊗[R] B)) with
+instance instCommRing : CommRing (A ⊗[R] B) :=
+  { toRing := inferInstance
     mul_comm := fun x y => by
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp

@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Prod
 # Partially defined linear maps
 
 A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`.
-We define a `SemilatticeInf` with `OrderBot` instance on this this, and define three operations:
+We define a `SemilatticeInf` with `OrderBot` instance on this, and define three operations:
 
 * `mkSpanSingleton` defines a partial linear map defined on the span of a singleton.
 * `sup` takes two partial linear maps `f`, `g` that agree on the intersection of their

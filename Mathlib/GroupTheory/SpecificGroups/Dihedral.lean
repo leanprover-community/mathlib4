@@ -114,6 +114,9 @@ private def fintypeHelper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
 instance [NeZero n] : Fintype (DihedralGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
+instance : Infinite (DihedralGroup 0) :=
+  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
+
 instance : Nontrivial (DihedralGroup n) :=
   ⟨⟨r 0, sr 0, by simp_rw [ne_eq]⟩⟩
 
