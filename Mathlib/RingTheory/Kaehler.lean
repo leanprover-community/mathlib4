@@ -400,20 +400,19 @@ local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cota
   @Submodule.module' _ _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ IsScalarTower.right
 
-local instance : @IsScalarTower R S (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ (instS R S).toSMul (instR R S).toSMul :=
+theorem isScalarTower_R_S_cotangentIdeal : @IsScalarTower R S
+    (KaehlerDifferential.ideal R S).cotangentIdeal _ (instS R S).toSMul (instR R S).toSMul :=
   @Submodule.isScalarTower' R _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
 
-local instance : @IsScalarTower S (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ (instSS R S).toSMul (instS R S).toSMul :=
+attribute [local instance] isScalarTower_R_S_cotangentIdeal
+
+theorem isScalarTower_R_SS_cotangentIdeal : @IsScalarTower S (S ⊗[R] S)
+    (KaehlerDifferential.ideal R S).cotangentIdeal _ (instSS R S).toSMul (instS R S).toSMul :=
   @Submodule.isScalarTower' S _ _ _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ _ _ _ IsScalarTower.right _ IsScalarTower.right
 
-local instance : @LinearMap.CompatibleSMul (Ω[S⁄R]) (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ _ S (S ⊗[R] S) _ _ _ (instS R S).toSMul _ :=
-  @LinearMap.IsScalarTower.compatibleSMul (Ω[S⁄R]) _ _ _ S (S ⊗[R] S)
-    _ _ _ _ _ (instS R S).toSMul _ _
+attribute [local instance] isScalarTower_R_SS_cotangentIdeal
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
