@@ -1,5 +1,6 @@
 import Mathlib.ModelTheory.FieldTheory.Basic
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Data.Nat.Prime
 
 namespace FirstOrder
 
@@ -14,8 +15,9 @@ def ofNat {α : Type} : ℕ → Language.field.Term α
 def eqZero (n : ℕ) : Language.field.Sentence :=
   Term.equal (ofNat n) 0
 
-def Theory.fieldOfChar (n : ℕ) : Language.field.Theory :=
-  {eqZero n} ∪ (⋃ (i : ℕ) (_ : n ≠ i) (_ : n ≠ 0), {∼ (eqZero i)}) ∪ Theory.field
+def Theory.fieldOfChar (p : ℕ) : Language.field.Theory :=
+  {eqZero p} ∪ (⋃ (q : ℕ) (_ : q.Prime)
+    (_ : p ≠ q), {∼ (eqZero q)}) ∪ Theory.field
 
 section
 
@@ -37,7 +39,8 @@ def ModelFieldOfCharOfField {K : Type _} [Field K] (p : ℕ) [CharP K p] :
   . simp (config := {contextual := true}) [eqZero,
       Sentence.Realize, realize_ofNat, structureFieldOfField,
       zero_def, one_def, constantMap]
-    intro _ hp0 q hpq _
+    intro _ q hpq hq _
+    have :=
 
 
 end
