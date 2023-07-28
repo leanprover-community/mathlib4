@@ -8,17 +8,40 @@ import Lean.Data.NameMap
 /-!
 # Additional functions on `Lean.NameMap`.
 
-We provide `NameMap.filter`.
+We provide `NameMap.filter` and `NameMap.filterMap`.
 -/
 
 namespace Lean.NameMap
 
 /--
-Filter a `NameMap`. Takes a second optional argument `modify : α → α` which allows
-to modify/filter the value of each (key, value)-pair simultaneously.
+`filter f m` returns the `NameMap` consisting of all
+"`key`/`val`"-pairs in `m` where `f key val` returns `true`.
 -/
-def filter (m : NameMap α) (f : Name → Bool) (modify : α → α := id) : NameMap α :=
+def filter (f : Name → α → Bool) (m : NameMap α) : NameMap α :=
   m.fold process {}
 where
   process (r : NameMap α) (n : Name) (i : α) :=
-    if f n then r.insert n (modify i) else r
+    if f n i then r.insert n i else r
+
+/--
+`filterName f m` returns the `NameMap` consisting of all
+"`key`/`val`"-pairs in `m` where `f key` returns `true`.
+
+Shorthand for `NameMap.filter (fun n _ => f n) m`.
+-/
+def filterName (f : Name → Bool) (m : NameMap α) : NameMap α :=
+  filter (fun n _ => f n) m
+
+/--
+`filterMap f m` allows to filter a `NameMap` and simultaneously modify the filtered values.
+
+It takes a function `f : Name → α → Option β` and applies `f name` to the value with key `name`.
+The resulting entries with non-`none` value are collected to form the output `NameMap`.
+-/
+def filterMap (f : Name → α → Option β) (m : NameMap α) : NameMap β :=
+  m.fold process {}
+where
+  process (r : NameMap β) (n : Name) (i : α) :=
+    match f n i with
+    | none => r
+    | some b => r.insert n b

@@ -63,9 +63,10 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
     let mut graph := env.importGraph
     if let .some f := from? then
       graph := graph.dependenciesOf (NameSet.empty.insert f)
-    if args.hasFlag "noDep" then
+    if ¬(args.hasFlag "include-deps") then
       let p := getModule to
-      graph := graph.filter (isPrefixOf p) (.filter (isPrefixOf p))
+      graph := graph.filterMap (fun n i =>
+        if p.isPrefixOf n then (i.filter (isPrefixOf p)) else none)
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
@@ -88,7 +89,7 @@ def graph : Cmd := `[Cli|
     reduce;         "Remove transitively redundant edges."
     to : Name;      "Only show the upstream imports of the specified module."
     "from" : Name;  "Only show the downstream dependencies of the specified module."
-    noDep; "Do not include any imports from other packages."
+    "include-deps"; "Include used files from other projects (e.g. lake packages)"
 
   ARGS:
     ...outputs : String;  "Filename(s) for the output. " ++
