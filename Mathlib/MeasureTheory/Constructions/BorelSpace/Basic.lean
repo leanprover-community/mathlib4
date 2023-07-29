@@ -2,17 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.constructions.borel_space.basic
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Lattice
-import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Instances.EReal
@@ -20,6 +14,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+
+#align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # Borel (measurable) space
@@ -311,6 +307,10 @@ variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [T
 theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 #align is_open.measurable_set IsOpen.measurableSet
+
+instance (priority := 500) {s : Set α} [HasCountableSeparatingOn α IsOpen s] :
+    HasCountableSeparatingOn α MeasurableSet s :=
+  .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
 
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
@@ -835,14 +835,6 @@ theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Me
   hf.continuous.measurable
 #align closed_embedding.measurable ClosedEmbedding.measurable
 
-theorem Continuous.isOpenPosMeasure_map {f : β → γ} (hf : Continuous f)
-    (hf_surj : Function.Surjective f) {μ : Measure β} [μ.IsOpenPosMeasure] :
-    (Measure.map f μ).IsOpenPosMeasure := by
-  refine' ⟨fun U hUo hUne => _⟩
-  rw [Measure.map_apply hf.measurable hUo.measurableSet]
-  exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
-#align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
-
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
 theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j : α, Decidable (j ∈ s)]
@@ -1117,10 +1109,8 @@ private theorem AEMeasurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : M
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :
     AEMeasurable g μ := by
-  by_cases hμ : μ = 0
-  · rw [hμ]
-    exact aemeasurable_zero_measure
-  have : μ.ae.NeBot := by simpa [neBot_iff]
+  rcases eq_zero_or_neZero μ with rfl | hμ
+  · exact aemeasurable_zero_measure
   by_cases hι : Nonempty ι
   · exact AEMeasurable.is_lub_of_nonempty hι hf hg
   suffices ∃ x, g =ᵐ[μ] fun _ => g x by

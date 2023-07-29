@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
-
-! This file was ported from Lean 3 source module imo.imo1969_q1
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormCast
 import Mathlib.Data.Set.Finite
+
+#align_import imo.imo1969_q1 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1969 Q1

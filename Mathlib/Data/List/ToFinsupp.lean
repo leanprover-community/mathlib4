@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.to_finsupp
-! leanprover-community/mathlib commit 06a655b5fcfbda03502f9158bbf6c0f1400886f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Basic
+
+#align_import data.list.to_finsupp from "leanprover-community/mathlib"@"06a655b5fcfbda03502f9158bbf6c0f1400886f9"
 
 /-!
 

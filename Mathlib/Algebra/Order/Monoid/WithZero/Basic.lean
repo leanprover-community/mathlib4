@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.with_zero.basic
-! leanprover-community/mathlib commit dad7ecf9a1feae63e6e49f07619b7087403fb8d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Basic
+
+#align_import algebra.order.monoid.with_zero.basic from "leanprover-community/mathlib"@"dad7ecf9a1feae63e6e49f07619b7087403fb8d4"
 
 /-!
 # An instance orphaned from `Algebra.Order.Monoid.WithZero.Defs`

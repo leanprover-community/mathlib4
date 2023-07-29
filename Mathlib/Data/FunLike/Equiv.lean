@@ -2,13 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fun_like.equiv
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Embedding
+
+#align_import data.fun_like.equiv from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
@@ -142,7 +139,7 @@ class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
   left_inv : ∀ e, Function.LeftInverse (inv e) (coe e)
   /-- The coercions are right inverses. -/
   right_inv : ∀ e, Function.RightInverse (inv e) (coe e)
-  /-- If two coercions to functions are jointly injective. -/
+  /-- The two coercions to functions are jointly injective. -/
   coe_injective' : ∀ e g, coe e = coe g → inv e = inv g → e = g
   -- This is mathematically equivalent to either of the coercions to functions being injective, but
   -- the `inv` hypothesis makes this easier to prove with `congr'`
