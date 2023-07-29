@@ -201,35 +201,15 @@ theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.mul_apply Algebra.TensorProduct.mul_apply
 
-theorem mul_assoc' (mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B)
-    (h :
-      ∀ (a₁ a₂ a₃ : A) (b₁ b₂ b₃ : B),
-        mul (mul (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂)) (a₃ ⊗ₜ[R] b₃) =
-          mul (a₁ ⊗ₜ[R] b₁) (mul (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃))) :
-    ∀ x y z : A ⊗[R] B, mul (mul x y) z = mul x (mul y z) := by
-  intros x y z
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, LinearMap.zero_apply]
-  refine TensorProduct.induction_on y ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, forall_const, LinearMap.zero_apply]
-  refine TensorProduct.induction_on z ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, forall_const]
-  · intros
-    simp only [h]
-  · intros
-    simp only [LinearMap.map_add, *]
-  · intros
-    simp only [LinearMap.map_add, *, LinearMap.add_apply]
-  · intros
-    simp only [LinearMap.map_add, *, LinearMap.add_apply]
-#align algebra.tensor_product.mul_assoc' Algebra.TensorProduct.mul_assoc'
+#noalign algebra.tensor_product.mul_assoc'
 
-protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
-  mul_assoc' mul
-    (by
-      intros
-      simp only [mul_apply, mul_assoc])
-    x y z
+protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
+  -- restate as an equality of morphisms so that we can use `ext`
+  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
+  ext xa xb ya yb za zb
+  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
 protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
@@ -265,16 +245,14 @@ theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
-instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) where
+-- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
+-- appears to help performance.
+instance instSemiring : Semiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
   mul_zero a := by simp [HMul.hMul, Mul.mul]
-
-instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := Algebra.TensorProduct.mul_assoc
-
-instance instSemiring : Semiring (A ⊗[R] B) where
   one_mul := Algebra.TensorProduct.one_mul
   mul_one := Algebra.TensorProduct.mul_one
   natCast_zero := AddMonoidWithOne.natCast_zero
