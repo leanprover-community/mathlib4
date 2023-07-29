@@ -70,7 +70,8 @@ def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
     return true
   else if e.isSignedNum then
-    pureIsDefEq e (.const ``Nat []) <||> pureIsDefEq e (.const ``Int [])
+    let type ← inferType e
+    pureIsDefEq type (.const ``Nat []) <||> pureIsDefEq type (.const ``Int [])
   else
     return false
 
@@ -90,7 +91,11 @@ def Lean.Meta.liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
   -- `HType : @Eq A a _`
   let some (A, a, _) := HType.eq?
     | throwError "failed to build lift_of_eq equality proof expected: {H}"
-  let motive ← withLocalDeclD `x A fun x => mkRel R a x >>= mkLambdaFVars #[x]
+  let motive ←
+    withLocalDeclD `x A fun x => do
+      let hType ← mkEq a x
+      withLocalDeclD `h hType fun h =>
+        mkRel R a x >>= mkLambdaFVars #[x, h]
   let minor ← do
     let mt ← mkRel R a a
     let m ← mkFreshExprSyntheticOpaqueMVar mt
@@ -101,6 +106,25 @@ def Lean.Meta.liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
 /-- Ordering on `Expr`. -/
 def Lean.Expr.quickCmp (a b : Expr) : Ordering :=
   if Expr.quickLt a b then .lt else if a.eqv b then .eq else .gt
+
+def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
+  e.withApp fun cfn args => do
+    let some cname := cfn.constName? | return none
+    let some pinfo ← getProjectionFnInfo? cname | return none
+    if ha : args.size = pinfo.numParams + 1 then
+      let sarg := args[pinfo.numParams]'(ha ▸ pinfo.numParams.lt_succ_self)
+      sarg.withApp fun sc sfds => do
+        unless sc.constName? = some pinfo.ctorName do
+          return none
+        let sidx := pinfo.numParams + pinfo.i
+        if hs : sidx < sfds.size then
+          return some (sfds[sidx]'hs)
+        else
+          throwError
+            (m!"ill-formed expression, {sc} is the {pinfo.i}-th projection function" ++
+              m!" but {sarg} has not enough arguments")
+    else
+      return none
 
 /-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
     return a `forall x, Not (p x)` and a proof for it.
@@ -137,6 +161,8 @@ def Lean.Meta.isReflRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) 
     return (``Eq, lhs, rhs)
   if let some (lhs, rhs) := e.iff? then
     return (``Iff, lhs, rhs)
+  if let some (_, lhs, _, rhs) := e.heq? then
+    return (``HEq, lhs, rhs)
   if let .app (.app rel lhs) rhs := e then
     unless (← (Mathlib.Tactic.reflExt.getState (← getEnv)).getMatch rel).isEmpty do
       match rel.getAppFn.constName? with
@@ -149,6 +175,8 @@ def Lean.Meta.isSymmRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) 
     return (``Eq, lhs, rhs)
   if let some (lhs, rhs) := e.iff? then
     return (``Iff, lhs, rhs)
+  if let some (_, lhs, _, rhs) := e.heq? then
+    return (``HEq, lhs, rhs)
   if let .app (.app rel lhs) rhs := e then
     unless (← (Mathlib.Tactic.symmExt.getState (← getEnv)).getMatch rel).isEmpty do
       match rel.getAppFn.constName? with
@@ -209,8 +237,6 @@ initialize
   registerTraceClass `Debug.Meta.Tactic.cc
   registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
-abbrev UInt64Map (α : Type u) := Std.RBMap UInt64 α compare
-
 structure CCConfig where
   /-- If `true`, congruence closure will treat implicit instance arguments as constants. -/
   ignoreInstances : Bool := true
@@ -237,6 +263,13 @@ inductive EntryExpr
   /-- dummy refl proof, it is just a placeholder. -/
   | refl : EntryExpr
   deriving Inhabited
+
+instance : ToMessageData EntryExpr where
+  toMessageData
+  | .ofExpr e => toMessageData e
+  | .congr => m!"[congruence proof]"
+  | .eqTrue => m!"[eq_true proof]"
+  | .refl => m!"[refl proof]"
 
 instance : Coe Expr EntryExpr := ⟨EntryExpr.ofExpr⟩
 
@@ -431,7 +464,7 @@ def checkEqc (ccs : CCState) (e : Expr) : Bool :=
     guard (ccs.entries.find? root |>.any (·.size == size))
 
 def checkInvariant (ccs : CCState) : Bool :=
-  ccs.entries.all fun k n => !(k == n.root) || checkEqc ccs k
+  ccs.entries.all fun k n => k != n.root || checkEqc ccs k
 
 open MessageData
 
@@ -440,7 +473,7 @@ def ppEqc (ccs : CCState) (e : Expr) : MessageData := Id.run do
   let mut lr : List MessageData := []
   let mut it := e
   repeat
-    let itN := ccs.entries.find! it
+    let some itN := ccs.entries.find? it | break
     let mdIt : MessageData :=
       if it.isForall || it.isLambda || it.isLet then paren (ofExpr it) else ofExpr it
     lr := mdIt :: lr
@@ -543,7 +576,7 @@ def normalize (e : Expr) : CCM Expr := do
   else
     return e
 
-def pushTodo (lhs rhs : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit :=
+def pushTodo (lhs rhs : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   modifyTodo fun todo => todo.push (lhs, rhs, H, heqProof)
 
 def pushEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
@@ -553,7 +586,7 @@ def pushHEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
   modifyTodo fun todo => todo.push (lhs, rhs, H, true)
 
 def pushReflEq (lhs rhs : Expr) : CCM Unit :=
-  modifyTodo fun todo => todo.push (lhs, rhs, .refl, true)
+  modifyTodo fun todo => todo.push (lhs, rhs, .refl, false)
 
 def getRoot (e : Expr) : CCM Expr := do
   return (← getState).root e
@@ -651,6 +684,25 @@ def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := do
   modifyCache fun ccc => ccc.insert key₁ none
   return none
 
+def mkExtHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option ExtCongrTheorem) := do
+  let cache ← getCache
+
+  -- Check if `{ fn, nargs }` is in the cache
+  let key₁ : ExtCongrTheoremKey := { fn, nargs }
+  if let some it₁ := cache.findEntry? key₁ then
+    return it₁.2
+
+  -- Try automatically generated congruence lemma with support for heterogeneous equality.
+  let lemm ← mkExtHCongrWithArity fn nargs
+
+  if let some lemm := lemm then
+    modifyCache fun ccc => ccc.insert key₁ (some lemm)
+    return lemm
+
+  -- cache failure
+  modifyCache fun ccc => ccc.insert key₁ none
+  return none
+
 def propagateInstImplicit (e : Expr) : CCM Unit := do
   let type ← inferType e
   let type ← normalize type
@@ -661,7 +713,7 @@ def propagateInstImplicit (e : Expr) : CCM Unit := do
         pushReflEq e e'
         return
     modifyState fun ccs =>
-      { ccs with instImplicitReprs := ccs.instImplicitReprs.erase type |>.insert type (e :: l) }
+      { ccs with instImplicitReprs := ccs.instImplicitReprs.insert type (e :: l) }
   | none =>
     modifyState fun ccs =>
       { ccs with instImplicitReprs := ccs.instImplicitReprs.insert type [e] }
@@ -679,7 +731,7 @@ partial def updateMT (e : Expr) : CCM Unit := do
     if it.mt < gmt then
       let newIt := { it with mt := gmt }
       modifyState fun ccs =>
-        { ccs with entries := ccs.entries.erase p.expr |>.insert p.expr newIt }
+        { ccs with entries := ccs.entries.insert p.expr newIt }
       updateMT p.expr
 
 def hasHEqProofs (root : Expr) : CCM Bool := do
@@ -721,7 +773,7 @@ def isEqFalse (e : Expr) : CCM Bool :=
   isEqv e (.const ``False [])
 
 def mkTrans (H₁ H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
-  if heqProofs then mkAppM ``HEq.trans #[H₁, H₂] else mkAppM ``Eq.trans #[H₁, H₂]
+  if heqProofs then mkHEqTrans H₁ H₂ else mkEqTrans H₁ H₂
 
 def mkTransOpt (H₁? : Option Expr) (H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
   match H₁? with
@@ -765,7 +817,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
         `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
      where
         `n := lhsArgs.size` -/
-  let some specLemma ← mkExtHCongrWithArity lhsFn lhsArgs.size | failure
+  let some specLemma ← mkExtHCongrTheorem lhsFn lhsArgs.size | failure
   let mut kindsIt := specLemma.congrTheorem.argKinds
   let mut lemmaArgs : Array Expr := #[]
   for hi : i in [:lhsArgs.size] do
@@ -789,11 +841,14 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   /- Convert `r` into a proof of `lhs = rhs` using `Eq.rec` and
      the proof that `lhsFn = rhsFn` -/
   let some lhsFnEqRhsFn ← getEqProof lhsFn rhsFn | failure
-  withLocalDeclD `x (← inferType lhsFn) fun x => do
-    let motiveRhs := mkAppN x rhsArgs
-    let motive ← if heqProofs then mkHEq lhs motiveRhs else mkEq lhs motiveRhs
-    let motive ← mkLambdaFVars #[x] motive
-    mkEqRec motive r lhsFnEqRhsFn
+  let motive ←
+    withLocalDeclD `x (← inferType lhsFn) fun x => do
+      let motiveRhs := mkAppN x rhsArgs
+      let motive ← if heqProofs then mkHEq lhs motiveRhs else mkEq lhs motiveRhs
+      let hType ← mkEq lhsFn x
+      withLocalDeclD `h hType fun h =>
+        mkLambdaFVars #[x, h] motive
+  mkEqRec motive r lhsFnEqRhsFn
 
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
   let some (R₁, lhs₁, rhs₁) ← isSymmRelation e₁ | return none
@@ -849,7 +904,7 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
         -- TODO(Leo): the following code assumes R is homogeneous.
         -- We should add support arbitrary heterogenous reflexive relations.
         getEqProof a b >>= liftOption >>= fun aEqb => liftM (liftFromEq R aEqb)
-    let aRbEqTrue ← mkAppM ``eq_true_intro #[aRb]
+    let aRbEqTrue ← mkEqTrue aRb
     if flip then
       mkEqSymm aRbEqTrue
     else
@@ -988,9 +1043,9 @@ def compareSymm (k₁ k₂ : Expr × Name) : CCM Bool := do
 def checkEqTrue (e : Expr) : CCM Unit := do
   let some (_, lhs, rhs) ← isReflRelation e | return
   if ← isEqv e (.const ``True []) then return -- it is already equivalent to `True`
-  let lhs ← getRoot lhs
-  let rhs ← getRoot rhs
-  if lhs != rhs then return
+  let lhsR ← getRoot lhs
+  let rhsR ← getRoot rhs
+  if lhsR != rhsR then return
   -- Add `e = True`
   pushEq e (.const ``True []) .eqTrue
 
@@ -1004,10 +1059,10 @@ def addCongruenceTable (e : Expr) : CCM Unit := do
         -- 1. Update `cgRoot` field for `e`
         let some currEntry ← getEntry e | failure
         let newEntry := { currEntry with cgRoot := oldE }
-        modifyState fun ccs => { ccs with entries := ccs.entries.erase e |>.insert e newEntry }
+        modifyState fun ccs => { ccs with entries := ccs.entries.insert e newEntry }
         -- 2. Put new equivalence in the todo queue
         -- TODO(Leo): check if the following line is a bottleneck
-        let heqProof ← pureIsDefEq (← inferType e) (← inferType oldE)
+        let heqProof ← (!·) <$> pureIsDefEq (← inferType e) (← inferType oldE)
         pushTodo e oldE .congr heqProof
         return
     modifyState fun ccs =>
@@ -1027,7 +1082,7 @@ def addSymmCongruenceTable (e : Expr) : CCM Unit := do
         -- 1. Update `cgRoot` field for `e`
         let some currEntry ← getEntry e | failure
         let newEntry := { currEntry with cgRoot := p.1 }
-        modifyState fun ccs => { ccs with entries := ccs.entries.erase e |>.insert e newEntry }
+        modifyState fun ccs => { ccs with entries := ccs.entries.insert e newEntry }
         -- 2. Put new equivalence in the TODO queue
         -- NOTE(gabriel): support for symmetric relations is pretty much broken,
         -- since it ignores all arguments except the last two ones.
@@ -1345,7 +1400,7 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
     if let some raNeRb' := raNeRb then
     if let some aNeRb ← mkNeOfEqOfNe a ra raNeRb' then
     if let some aNeB ← mkNeOfNeOfEq aNeRb rb b then
-      pushEq e (.const ``False []) (← mkAppM ``eq_false_intro #[aNeB])
+      pushEq e (.const ``False []) (← mkEqFalse aNeB)
 
 partial def propagateUp (e : Expr) : CCM Unit := do
   if (← getState).inconsistent then return
@@ -1403,7 +1458,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     internalizeCore newE none (← getGenerationOf e)
     pushReflEq e newE
 
-  if let some r ← reduceProjOf? e (fun _ => true) then
+  if let some r ← reduceProjStruct? e then
     pushReflEq e r
 
   let fn := e.getAppFn
@@ -1520,7 +1575,7 @@ partial def invertTrans (e : Expr) (newFlipped : Bool := false) (newTarget : Opt
       flipped := newFlipped
       target := newTarget
       proof := newProof }
-  modifyState fun ccs => { ccs with entries := ccs.entries.erase e |>.insert e newN }
+  modifyState fun ccs => { ccs with entries := ccs.entries.insert e newN }
 
 /-- Traverse the `root`'s equivalence class, and collect the function's equivalence class roots. -/
 def collectFnRoots (root : Expr) (fnRoots : Array Expr) : CCM (Array Expr) := do
@@ -1590,7 +1645,7 @@ def propagateProjectionConstructor (p c : Expr) : CCM Unit := do
   p.withApp fun pFn pArgs => do
     let some pFnN := pFn.constName? | return
     let some info ← getProjectionFnInfo? pFnN | return
-    let mkidx := info.numParams + info.i
+    let mkidx := info.numParams
     if h : mkidx < pArgs.size then
       unless ← isEqv (pArgs[mkidx]'h) c do return
       unless ← pureIsDefEq (← inferType (pArgs[mkidx]'h)) (← inferType c) do return
@@ -1615,7 +1670,7 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
   let env ← getEnv
   let some c₁ := e₁.isConstructorApp? env | failure
   let some c₂ := e₂.isConstructorApp? env | failure
-  if ← pureIsDefEq (← inferType e₁) (← inferType e₂) then
+  unless ← pureIsDefEq (← inferType e₁) (← inferType e₂) do
     -- The implications above only hold if the types are equal.
     -- TODO(Leo): if the types are different, we may still propagate by searching the equivalence
     --            classes of `e₁` and `e₂` for other constructors that may have compatible types.
@@ -1624,7 +1679,7 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
   if c₁.name == c₂.name then
     if 0 < c₁.numFields then
       let name := mkInjectiveTheoremNameFor c₁.name
-      if (← getEnv).contains name then
+      if env.contains name then
         let rec go (type val : Expr) : CCM Unit := do
           let push (type val : Expr) : CCM Unit :=
             match type.eq? with
@@ -1691,7 +1746,7 @@ def propagateExistsDown (e : Expr) : CCM Unit := do
     let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
     let (all, hAll) ← toForallNot e hNotE
     internalizeCore all none (← getGenerationOf e)
-    pushEq all (.const ``True []) (← mkAppM ``eq_true_intro #[hAll])
+    pushEq all (.const ``True []) (← mkEqTrue hAll)
 
 def propagateDown (e : Expr) : CCM Unit := do
   if e.isAppOfArity ``And 2 then
@@ -1735,21 +1790,19 @@ def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit :
 where
   go (e₁ e₂: Expr) (n₁ n₂ r₁ r₂ : Entry) (flipped : Bool) (H : EntryExpr) (heqProof : Bool) :
       CCM Unit := do
-    let valueInconsistency :=
-      if r₁.interpreted && r₂.interpreted then
-        if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
-          true
-        else if n₁.root.isNum && n₂.root.isNum then
-          n₁.root.toInt != n₂.root.toInt
-        else
-          true
+    let mut valueInconsistency := false
+    if r₁.interpreted && r₂.interpreted then
+      if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
+        modifyState fun ccs => { ccs with inconsistent := true }
+      else if n₁.root.isNum && n₂.root.isNum then
+        valueInconsistency := n₁.root.toInt != n₂.root.toInt
       else
-        false
+        valueInconsistency := true
 
     let constructorEq := r₁.constructor && r₂.constructor
     let e₁Root := n₁.root
     let e₂Root := n₂.root
-    trace[Debug.Tactic.cc] "merging\n{e₁} ==> {e₁Root}\nwith\n{e₂Root} <== {e₂}"
+    trace[Debug.Meta.Tactic.cc] "merging\n{e₁} ==> {e₁Root}\nwith\n{e₂Root} <== {e₂}"
 
     /-
     Following target/proof we have
@@ -1764,7 +1817,7 @@ where
         target := e₂
         proof := H
         flipped }
-    modifyState fun ccs => { ccs with entries := ccs.entries.erase e₁ |>.insert e₁ newN₁ }
+    modifyState fun ccs => { ccs with entries := ccs.entries.insert e₁ newN₁ }
 
     -- The hash code for the parents is going to change
     let parentsToPropagate ← removeParents e₁Root #[]
@@ -1783,7 +1836,7 @@ where
       if propagate then
         toPropagate := toPropagate.push it
       let newItN : Entry := { itN with root := e₂Root }
-      modifyState fun ccs => { ccs with entries := ccs.entries.erase it |>.insert it newItN }
+      modifyState fun ccs => { ccs with entries := ccs.entries.insert it newItN }
       it := newItN.next
     until it == e₁
 
@@ -1806,8 +1859,7 @@ where
     modifyState fun ccs =>
       { ccs with
         entries :=
-          ccs.entries.erase e₁Root |>.insert e₁Root newR₁
-                   |>.erase e₂Root |>.insert e₂Root newR₂ }
+          ccs.entries.insert e₁Root newR₁ |>.insert e₂Root newR₂ }
     checkInvariant
 
     let lambdaAppsToInternalize ← propagateBetaToEqc fnRoots₂ lambdas₁ #[]
@@ -1825,7 +1877,7 @@ where
           ps₂ := ps₂.insert p
       modifyState fun ccs =>
         { ccs with
-          parents := ccs.parents.erase e₁Root |>.erase e₂Root |>.insert e₂Root ps₂ }
+          parents := ccs.parents.erase e₁Root |>.insert e₂Root ps₂ }
 
     if !(← getState).inconsistent && constructorEq then
       propagateConstructorEq e₁Root e₂Root
@@ -1930,8 +1982,8 @@ def mkUsingHsCore (cfg : CCConfig) : MetaM CCState := do
   let ctx ← instantiateLCtxMVars ctx
   let (_, c) ← CCM.run (ctx.forM fun dcl => do
     unless dcl.isImplementationDetail do
-      if (← isProp dcl.type) then
-       add dcl.type dcl.toExpr 0) { state := mkCore cfg }
+      if ← isProp dcl.type then
+        add dcl.type dcl.toExpr 0) { state := mkCore cfg }
   return c.state
 #align cc_state.mk_using_hs_core Mathlib.Tactic.CC.CCState.mkUsingHsCore
 
@@ -2051,33 +2103,35 @@ def mfoldEqc {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α
 
 end CCState
 
-def ccCore (cfg : CCConfig) : TacticM Unit := do
-  evalTactic <| ← `(tactic| intros)
-  withMainContext do
+def _root_.Lean.MVarId.ccCore (m : MVarId) (cfg : CCConfig) : MetaM Unit := do
+  let (_, m) ← m.intros
+  m.withContext do
     let s ← CCState.mkUsingHsCore cfg
-    let t ← getMainTarget
+    let t ← (m.getType >>= instantiateMVars) <&> Expr.cleanupAnnotations
     let s ← s.internalize t
     if s.inconsistent then
         let pr ← s.proofForFalse
-        mkAppOptM ``False.elim #[t, pr] >>= closeMainGoal
+        mkAppOptM ``False.elim #[t, pr] >>= m.assign
+    else
+      let tr := Expr.const ``True []
+      let b ← s.isEqv t tr
+      if b then
+        let pr ← s.eqvProof t tr
+        mkAppM ``of_eq_true #[pr] >>= m.assign
       else
-        let tr := Expr.const ``True []
-        let b ← s.isEqv t tr
-        if b then
-          let pr ← s.eqvProof t tr
-          mkAppM ``of_eq_true #[pr] >>= closeMainGoal
+        let dbg ← getBoolOption `trace.Meta.Tactic.cc.failure false
+        if dbg then
+          throwError m!"cc tactic failed, equivalence classes: {s}"
         else
-          let dbg ← getBoolOption `trace.Meta.Tactic.cc.failure false
-          if dbg then
-            throwError m!"cc tactic failed, equivalence classes: {s}"
-          else
-            throwError "cc tactic failed"
-#align tactic.cc_core Mathlib.Tactic.CC.ccCore
+          throwError "cc tactic failed"
+#align tactic.cc_core Lean.MVarId.ccCore
 
-@[tactic cc]
-def cc : Tactic := fun _ =>
-  ccCore {}
-#align tactic.cc Mathlib.Tactic.CC.cc
+def _root_.Lean.MVarId.cc (m : MVarId) : MetaM Unit :=
+  m.ccCore {}
+#align tactic.cc Lean.MVarId.cc
+
+elab_rules : tactic
+  | `(tactic| cc) => withMainContext do liftMetaFinishingTactic (·.cc)
 
 #noalign tactic.cc_dbg_core
 

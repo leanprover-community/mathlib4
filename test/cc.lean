@@ -10,8 +10,6 @@ open Mathlib.Tactic.CC
 
 open Lean Meta Elab Tactic
 
-set_option pp.explicit true
-
 example (a b c d : Nat) (f : Nat → Nat → Nat) :
     a = b → b = c → d + (if b > 0 then a else b) = 0 → f (b + b) b ≠ f (a + c) c → False := by
   intro _ _ _ h
@@ -442,7 +440,7 @@ example (a b : Nat) (s t r : List Nat) : a :: s = r → r = b :: t → a = b := 
 
 example (a b : Nat) (s t r : List Nat) : List.cons a = List.cons b → a = b := by
   intro h1
-  /- In the current implementation, cc does not "complete" partially applied
+  /- In the current implementation, `cc` does not "complete" partially applied
      constructor applications. So, the following one should fail. -/
   try cc
   /- Complete it manually. TODO(Leo): we can automate it for inhabited types. -/
@@ -455,7 +453,7 @@ inductive Foo
 
 example (a b : Nat) : Foo.mk1 a = Foo.mk2 b → False := by
   intro h1
-  /- In the current implementation, cc does not "complete" partially applied
+  /- In the current implementation, `cc` does not "complete" partially applied
      constructor applications. So, the following one should fail. -/
   try cc
   have h := congr_fun h1 0
