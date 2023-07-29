@@ -456,12 +456,15 @@ if `norm_num`med.
 *  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
    -- reducing to `False` means that the coefficient that was supposed to vanish, does not;
 *  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
+   -- reducing to `False` means that there is a term of degree that is apparently too large;
+*  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
    -- reducing to `False` means that there is a term of degree that is apparently too large.
 
-The case `a ≠ b` is not a perfect match with the top coefficient: reducing to `False` is not
-exactly correlated with a coefficient being non-zero.
-It still means that the goal is unsolvable, unless there was already a contradiction in the
-hypotheses before applying `compute_degree`.
+The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
+reducing to `False` is not exactly correlated with a coefficient being non-zero.
+It does mean that `compute_degree` reduced to initial to an unprovable state
+(unless there was already a contradiction in the initial hypotheses!), but it is indicative that
+there may be some problem.
 -/
 def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
   | tgt::tgts =>
@@ -470,6 +473,8 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
       m!"* the coefficient of degree {deg} may be zero" :: rest
     else if let some ((Expr.const ``Nat []), lhs, _) := tgt.le? then
       m!"* there is at least one term of naïve degree {lhs}" :: rest
+    else if let some (_, lhs, _) := tgt.eq? then
+      m!"* there may be a term of naïve degree {lhs}" :: rest
     else rest
   | [] => []
 
