@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 -/
 prelude
-import Leanbin.Init.Data.List.Basic
-import Leanbin.Init.Function
-import Leanbin.Init.Meta.Default
-import Leanbin.Init.Data.Nat.Lemmas
-import Leanbin.Init.Meta.Interactive
-import Leanbin.Init.Meta.Smt.Rsimp
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Function
+import Mathlib.Init.Meta.Default
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Meta.Interactive
+import Mathlib.Init.Meta.Smt.Rsimp
 
 #align_import init.data.list.lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
 
@@ -61,8 +61,7 @@ theorem length_cons (a : α) (l : List α) : length (a :: l) = length l + 1 :=
 
 #print List.length_append /-
 @[simp]
-theorem length_append (s t : List α) : length (s ++ t) = length s + length t :=
-  by
+theorem length_append (s t : List α) : length (s ++ t) = length s + length t := by
   induction s
   · show length t = 0 + length t; · rw [Nat.zero_add]
   · simp [*, Nat.add_comm, Nat.add_left_comm]
