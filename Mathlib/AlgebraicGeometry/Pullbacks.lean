@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.pullbacks
-! leanprover-community/mathlib commit 7316286ff2942aa14e540add9058c6b0aa1c8070
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+
+#align_import algebraic_geometry.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
 /-!
 # Fibred products of schemes
@@ -305,7 +302,7 @@ variable (s : PullbackCone f g)
 /-- (Implementation)
 The canonical map `(s.X ×[X] Uᵢ) ×[s.X] (s.X ×[X] Uⱼ) ⟶ (Uᵢ ×[Z] Y) ×[X] Uⱼ`
 
-This is used in `glued_lift`. -/
+This is used in `gluedLift`. -/
 def gluedLiftPullbackMap (i j : 𝒰.J) :
     pullback ((𝒰.pullbackCover s.fst).map i) ((𝒰.pullbackCover s.fst).map j) ⟶
       (gluing 𝒰 f g).V ⟨i, j⟩ := by
@@ -326,7 +323,7 @@ theorem gluedLiftPullbackMap_fst (i j : 𝒰.J) :
           pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition := by
   delta gluedLiftPullbackMap
   -- Porting note : the original set of simp lemma is not sufficient, but as this is terminal
-  -- I just let `simp` does it work
+  -- I just let `simp` do its work
   simp
 #align algebraic_geometry.Scheme.pullback.glued_lift_pullback_map_fst AlgebraicGeometry.Scheme.Pullback.gluedLiftPullbackMap_fst
 
@@ -335,7 +332,7 @@ theorem gluedLiftPullbackMap_snd (i j : 𝒰.J) :
     gluedLiftPullbackMap 𝒰 f g s i j ≫ pullback.snd = pullback.snd ≫ pullback.snd := by
   delta gluedLiftPullbackMap
   -- Porting note : the original set of simp lemma is not sufficient, but as this is terminal
-  -- I just let `simp` does it work
+  -- I just let `simp` do its work
   simp
 #align algebraic_geometry.Scheme.pullback.glued_lift_pullback_map_snd AlgebraicGeometry.Scheme.Pullback.gluedLiftPullbackMap_snd
 
@@ -347,7 +344,7 @@ Given a pullback cone `s`, we have the maps `s.fst ⁻¹' Uᵢ ⟶ Uᵢ` and
 
 to glue these into a map `s.X ⟶ Uᵢ ×[Z] Y`, we need to show that the maps agree on
 `(s.fst ⁻¹' Uᵢ) ×[s.X] (s.fst ⁻¹' Uⱼ) ⟶ Uᵢ ×[Z] Y`. This is achieved by showing that both of these
-maps factors through `glued_lift_pullback_map`.
+maps factors through `gluedLiftPullbackMap`.
 -/
 def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
   fapply (𝒰.pullbackCover s.fst).glueMorphisms
@@ -540,8 +537,7 @@ def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
   simp_rw [← Category.assoc]
   congr 1
   apply pullback.hom_ext
-  ·
-    simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_snd, Category.assoc,
+  · simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_snd, Category.assoc,
       pullbackP1Iso_hom_fst, pullback.lift_snd, pullback.lift_fst, pullbackSymmetry_hom_comp_fst]
   · simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_fst_assoc,
       pullbackP1Iso_hom_snd, Category.assoc, pullback.lift_fst_assoc,
@@ -654,7 +650,7 @@ def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ 
   apply pullback.hom_ext <;> simp
 #align algebraic_geometry.Scheme.pullback.open_cover_of_left_right AlgebraicGeometry.Scheme.Pullback.openCoverOfLeftRight
 
-/-- (Implementation). Use `open_cover_of_base` instead. -/
+/-- (Implementation). Use `openCoverOfBase` instead. -/
 @[simps! map]
 def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   apply (openCoverOfLeft (𝒰.pullbackCover f) f g).bind
@@ -676,7 +672,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     rfl
   · simp only [Category.comp_id, Category.id_comp]
   -- Porting note : this `IsIso` instance was `inferInstance`
-  . apply IsIso.comp_isIso
+  · apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
@@ -696,7 +692,7 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   -- Porting note : deviated from original proof a bit so that it won't timeout.
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
   apply pullback.hom_ext <;> dsimp <;>
-  . simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
+  · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
       limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
       limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
       pullbackSymmetry_hom_comp_snd_assoc]

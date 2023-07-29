@@ -2,13 +2,10 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.monge_point
-! leanprover-community/mathlib commit 1a4df69ca1a9a0e5e26bfe12e2b92814216016d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Circumcenter
+
+#align_import geometry.euclidean.monge_point from "leanprover-community/mathlib"@"1a4df69ca1a9a0e5e26bfe12e2b92814216016d0"
 
 /-!
 # Monge point and orthocenter
@@ -312,7 +309,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
     exact fun i => (Submodule.mem_inf.1 (h' i i.property)).1
   rw [Submodule.iInf_orthogonal, ← Submodule.span_iUnion] at hi
   have hu :
-    (⋃ i : { i // i₁ ≠ i }, ({s.points i₁ -ᵥ s.points i} : Set V)) =
+    ⋃ i : { i // i₁ ≠ i }, ({s.points i₁ -ᵥ s.points i} : Set V) =
       (· -ᵥ ·) (s.points i₁) '' (s.points '' (Set.univ \ {i₁})) := by
     rw [Set.image_image]
     ext x

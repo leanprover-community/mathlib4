@@ -2,14 +2,11 @@
 Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module data.polynomial.lifts
-! leanprover-community/mathlib commit 63417e01fbc711beaf25fa73b6edb395c0cfddd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Monic
+
+#align_import data.polynomial.lifts from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
 /-!
 # Polynomials that lift
@@ -184,7 +181,7 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     rw [habs, eraseLead_zero, eq_self_iff_true, not_true] at erase_zero
     exact erase_zero
   have lead_zero : p.coeff p.natDegree ≠ 0 := by
-    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero] ; exact pzero
+    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero]; exact pzero
   obtain ⟨lead, hlead⟩ :=
     monomial_mem_lifts_and_degree_eq
       (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))

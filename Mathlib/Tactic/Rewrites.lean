@@ -239,3 +239,5 @@ elab_rules : tactic |
 
 @[inherit_doc rewrites'] macro "rw?!" h:(ppSpace location)? : tactic =>
   `(tactic| rw? ! $[$h]?)
+@[inherit_doc rewrites'] macro "rw!?" h:(ppSpace location)? : tactic =>
+  `(tactic| rw? ! $[$h]?)

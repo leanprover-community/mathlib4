@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.subset_properties
-! leanprover-community/mathlib commit 3efd324a3a31eaa40c9d5bfc669c4fafee5f9423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Pi
 import Mathlib.Topology.Bases
@@ -16,6 +11,8 @@ import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Minimal
+
+#align_import topology.subset_properties from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
 /-!
 # Properties of subsets of topological spaces
@@ -458,7 +455,7 @@ theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪
   rw [union_eq_iUnion]; exact isCompact_iUnion fun b => by cases b <;> assumption
 #align is_compact.union IsCompact.union
 
-theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
+protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 #align is_compact.insert IsCompact.insert
 
@@ -482,7 +479,7 @@ theorem exists_subset_nhds_of_isCompact' {ι : Type _} [Nonempty ι] {V : ι →
     rcases hV i j with ⟨k, hki, hkj⟩
     refine' ⟨k, ⟨fun x => _, fun x => _⟩⟩ <;> simp only [and_imp, mem_inter_iff, mem_compl_iff] <;>
       tauto
-  have : ¬(⋂ i : ι, V i) ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
+  have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
   contradiction
 #align exists_subset_nhds_of_is_compact' exists_subset_nhds_of_isCompact'
 
@@ -730,14 +727,14 @@ theorem cluster_point_of_compact [CompactSpace α] (f : Filter α) [NeBot f] : �
 #align cluster_point_of_compact cluster_point_of_compact
 
 theorem CompactSpace.elim_nhds_subcover [CompactSpace α] (U : α → Set α) (hU : ∀ x, U x ∈ 𝓝 x) :
-    ∃ t : Finset α, (⋃ x ∈ t, U x) = ⊤ := by
+    ∃ t : Finset α, ⋃ x ∈ t, U x = ⊤ := by
   obtain ⟨t, -, s⟩ := IsCompact.elim_nhds_subcover isCompact_univ U fun x _ => hU x
   exact ⟨t, top_unique s⟩
 #align compact_space.elim_nhds_subcover CompactSpace.elim_nhds_subcover
 
 theorem compactSpace_of_finite_subfamily_closed
-    (h : ∀ {ι : Type u} (Z : ι → Set α), (∀ i, IsClosed (Z i)) → (⋂ i, Z i) = ∅ →
-      ∃ t : Finset ι, (⋂ i ∈ t, Z i) = ∅) :
+    (h : ∀ {ι : Type u} (Z : ι → Set α), (∀ i, IsClosed (Z i)) → ⋂ i, Z i = ∅ →
+      ∃ t : Finset ι, ⋂ i ∈ t, Z i = ∅) :
     CompactSpace α where
   isCompact_univ := isCompact_of_finite_subfamily_closed fun Z => by
     simpa using h Z
@@ -747,7 +744,7 @@ theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsC
   isCompact_of_isClosed_subset isCompact_univ h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
 
-/-- `α` is a noncompact topological space if it not a compact space. -/
+/-- `α` is a noncompact topological space if it is not a compact space. -/
 class NoncompactSpace (α : Type _) [TopologicalSpace α] : Prop where
   /-- In a noncompact space, `Set.univ` is not a compact set. -/
   noncompact_univ : ¬IsCompact (univ : Set α)
@@ -805,14 +802,14 @@ theorem exists_nhds_ne_neBot (α : Type _) [TopologicalSpace α] [CompactSpace �
 #align exists_nhds_ne_ne_bot exists_nhds_ne_neBot
 
 theorem finite_cover_nhds_interior [CompactSpace α] {U : α → Set α} (hU : ∀ x, U x ∈ 𝓝 x) :
-    ∃ t : Finset α, (⋃ x ∈ t, interior (U x)) = univ :=
+    ∃ t : Finset α, ⋃ x ∈ t, interior (U x) = univ :=
   let ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover (fun x => interior (U x))
     (fun _ => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   ⟨t, univ_subset_iff.1 ht⟩
 #align finite_cover_nhds_interior finite_cover_nhds_interior
 
 theorem finite_cover_nhds [CompactSpace α] {U : α → Set α} (hU : ∀ x, U x ∈ 𝓝 x) :
-    ∃ t : Finset α, (⋃ x ∈ t, U x) = univ :=
+    ∃ t : Finset α, ⋃ x ∈ t, U x = univ :=
   let ⟨t, ht⟩ := finite_cover_nhds_interior hU
   ⟨t, univ_subset_iff.1 <| ht.symm.subset.trans <| iUnion₂_mono fun _ _ => interior_subset⟩
 #align finite_cover_nhds finite_cover_nhds
@@ -1285,7 +1282,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
 class SigmaCompactSpace (α : Type _) [TopologicalSpace α] : Prop where
   /-- In a σ-compact space, there exists (by definition) a countable collection of compact subspaces
   that cover the entire space. -/
-  exists_compact_covering : ∃ K : ℕ → Set α, (∀ n, IsCompact (K n)) ∧ (⋃ n, K n) = univ
+  exists_compact_covering : ∃ K : ℕ → Set α, (∀ n, IsCompact (K n)) ∧ ⋃ n, K n = univ
 #align sigma_compact_space SigmaCompactSpace
 
 -- see Note [lower instance priority]
@@ -1322,7 +1319,7 @@ theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering α n) :
   isCompact_accumulate (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).1 n
 #align is_compact_compact_covering isCompact_compactCovering
 
-theorem iUnion_compactCovering : (⋃ n, compactCovering α n) = univ := by
+theorem iUnion_compactCovering : ⋃ n, compactCovering α n = univ := by
   rw [compactCovering, iUnion_accumulate]
   exact (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).2
 #align Union_compact_covering iUnion_compactCovering
@@ -1426,7 +1423,7 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : α → Set α} {s : Set
 point `x` to a neighborhood of `x`, then for some countable set `s`, the neighborhoods `f x`,
 `x ∈ s`, cover the whole space. -/
 theorem countable_cover_nhds_of_sigma_compact {f : α → Set α} (hf : ∀ x, f x ∈ 𝓝 x) :
-    ∃ s : Set α, s.Countable ∧ (⋃ x ∈ s, f x) = univ := by
+    ∃ s : Set α, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
   simp only [← nhdsWithin_univ] at hf
   rcases countable_cover_nhdsWithin_of_sigma_compact isClosed_univ fun x _ => hf x with
     ⟨s, -, hsc, hsU⟩
@@ -1437,7 +1434,7 @@ end Compact
 
 /-- An [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets) of a
 topological space is a sequence of compact sets `K n` such that `K n ⊆ interior (K (n + 1))` and
-`(⋃ n, K n) = univ`.
+`⋃ n, K n = univ`.
 
 If `X` is a locally compact sigma compact space, then `CompactExhaustion.choice X` provides
 a choice of an exhaustion by compact sets. This choice is also available as
@@ -1451,7 +1448,7 @@ structure CompactExhaustion (X : Type _) [TopologicalSpace X] where
     each set is contained in the interior of the next. -/
   subset_interior_succ' : ∀ n, toFun n ⊆ interior (toFun (n + 1))
   /-- The union of all sets in a compact exhaustion equals the entire space. -/
-  iUnion_eq' : (⋃ n, toFun n) = univ
+  iUnion_eq' : ⋃ n, toFun n = univ
 #align compact_exhaustion CompactExhaustion
 
 namespace CompactExhaustion
@@ -1483,7 +1480,7 @@ theorem subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
   Subset.trans (K.subset_interior_succ m) <| interior_mono <| K.subset h
 #align compact_exhaustion.subset_interior CompactExhaustion.subset_interior
 
-theorem iUnion_eq : (⋃ n, K n) = univ :=
+theorem iUnion_eq : ⋃ n, K n = univ :=
   K.iUnion_eq'
 #align compact_exhaustion.Union_eq CompactExhaustion.iUnion_eq
 
@@ -1820,7 +1817,7 @@ theorem isIrreducible_irreducibleComponent {x : α} : IsIrreducible (irreducible
   ⟨⟨x, mem_irreducibleComponent⟩, (irreducibleComponent_property x).1⟩
 #align is_irreducible_irreducible_component isIrreducible_irreducibleComponent
 
-theorem eq_irreducibleComponent {x : α}  {s : Set α} :
+theorem eq_irreducibleComponent {x : α} {s : Set α} :
     IsPreirreducible s → irreducibleComponent x ⊆ s → s = irreducibleComponent x :=
   (irreducibleComponent_property x).2.2 _
 #align eq_irreducible_component eq_irreducibleComponent

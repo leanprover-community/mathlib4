@@ -2,15 +2,12 @@
 Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module algebraic_geometry.elliptic_curve.weierstrass
-! leanprover-community/mathlib commit e2e7f2ac359e7514e4d40061d7c08bb69487ba4e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.RingTheory.Norm
 import Mathlib.Tactic.LinearCombination
+
+#align_import algebraic_geometry.elliptic_curve.weierstrass from "leanprover-community/mathlib"@"e2e7f2ac359e7514e4d40061d7c08bb69487ba4e"
 
 /-!
 # Weierstrass equations of elliptic curves
@@ -431,8 +428,7 @@ lemma eval_polynomial (x y : R) :
 
 @[simp]
 lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
-  simp only [← C_0, eval_polynomial, zero_add, zero_sub, MulZeroClass.mul_zero,
-    zero_pow <| Nat.zero_lt_succ _]
+  simp only [← C_0, eval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.zero_lt_succ _]
 #align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.eval_polynomial_zero
 
 -- porting note: added `protected` for consistency with `WeierstrassCurve.polynomial`
@@ -468,9 +464,9 @@ lemma equation_iff_variableChange (x y : R) :
 lemma equation_iff_baseChange [Nontrivial A] [NoZeroSMulDivisors R A] (x y : R) :
     W.equation x y ↔ (W.baseChange A).equation (algebraMap R A x) (algebraMap R A y) := by
   simp only [equation_iff]
-  refine' ⟨fun h => _, fun h => _⟩
-  · convert congr_arg (algebraMap R A) h <;> map_simp <;> rfl
-  · apply NoZeroSMulDivisors.algebraMap_injective R A; map_simp; exact h
+  exact
+    ⟨fun h => by convert congr_arg (algebraMap R A) h <;> map_simp <;> rfl,
+      fun h => by apply NoZeroSMulDivisors.algebraMap_injective R A; map_simp; exact h⟩
 #align weierstrass_curve.equation_iff_base_change WeierstrassCurve.equation_iff_baseChange
 
 lemma equation_iff_baseChange_of_baseChange [Nontrivial B] [NoZeroSMulDivisors A B] (x y : A) :
@@ -500,8 +496,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma eval_polynomialX_zero : (W.polynomialX.eval 0).eval 0 = -W.a₄ := by
-  simp only [← C_0, eval_polynomialX, zero_add, zero_sub, MulZeroClass.mul_zero,
-    zero_pow zero_lt_two]
+  simp only [← C_0, eval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow zero_lt_two]
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.eval_polynomial_X_zero WeierstrassCurve.eval_polynomialX_zero
 
@@ -525,7 +520,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma eval_polynomialY_zero : (W.polynomialY.eval 0).eval 0 = W.a₃ := by
-  simp only [← C_0, eval_polynomialY, zero_add, MulZeroClass.mul_zero]
+  simp only [← C_0, eval_polynomialY, zero_add, mul_zero]
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.eval_polynomial_Y_zero WeierstrassCurve.eval_polynomialY_zero
 
@@ -568,9 +563,9 @@ lemma nonsingular_iff_variableChange (x y : R) :
 lemma nonsingular_iff_baseChange [Nontrivial A] [NoZeroSMulDivisors R A] (x y : R) :
     W.nonsingular x y ↔ (W.baseChange A).nonsingular (algebraMap R A x) (algebraMap R A y) := by
   rw [nonsingular_iff, nonsingular_iff, and_congr <| W.equation_iff_baseChange A x y]
-  refine'
-    ⟨Or.imp (not_imp_not.mpr fun h => _) (not_imp_not.mpr fun h => _),
-      Or.imp (not_imp_not.mpr fun h => _) (not_imp_not.mpr fun h => _)⟩
+  refine
+    ⟨Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_),
+      Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_)⟩
   any_goals apply NoZeroSMulDivisors.algebraMap_injective R A; map_simp; exact h
   any_goals convert congr_arg (algebraMap R A) h <;> map_simp <;> rfl
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.nonsingular_iff_baseChange
@@ -597,18 +592,14 @@ lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W.equation x y) (hΔ : W.Δ ≠ 0
 
 /-! ### Ideals in the coordinate ring -/
 
--- porting note: verify that using `abbrev` instead of `def` does not cause an issue, otherwise
--- define a new `notation`, and verify if the new def-eq cache (lean4#1102) fixed this issue
-/-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`.
-
-In Lean 3, this is a `def` under a `derive [inhabited, comm_ring]` tag with the following comments.
-Note that `deriving comm_ring` generates a reducible instance of `comm_ring` for `coordinate_ring`.
-In certain circumstances this might be extremely slow, because all instances in its definition are
-unified exponentially many times. In this case, one solution is to manually add the local attribute
-`local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
-
-See Zulip thread:
-https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk -/
+-- porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
+-- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
+-- circumstances this might be extremely slow, because all instances in its definition are unified
+-- exponentially many times. In this case, one solution is to manually add the local attribute
+-- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
+-- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
+-- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
+/-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`. -/
 abbrev CoordinateRing : Type u :=
   AdjoinRoot W.polynomial
 #align weierstrass_curve.coordinate_ring WeierstrassCurve.CoordinateRing
@@ -622,8 +613,8 @@ namespace CoordinateRing
 
 -- porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
 /-- An element of the coordinate ring `R[W]` of `W` over `R`. -/
-noncomputable abbrev mk (x : R[X][X]) : W.CoordinateRing :=
-  AdjoinRoot.mk W.polynomial x
+noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
+  AdjoinRoot.mk W.polynomial
 
 open Ideal
 

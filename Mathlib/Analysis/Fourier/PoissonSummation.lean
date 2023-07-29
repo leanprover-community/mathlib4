@@ -2,17 +2,14 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.fourier.poisson_summation
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.SchwartzSpace
+import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+
+#align_import analysis.fourier.poisson_summation from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Poisson's summation formula
@@ -83,7 +80,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       simp_rw [coe_mul, Pi.mul_apply,
         ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
     -- Swap sum and integral.
-    _ =  ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
+    _ = ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine' (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm _).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
@@ -112,7 +109,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
 theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
     (h_norm :
       ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict K‖)
-    (h_sum : Summable fun n : ℤ => 𝓕 f n) : (∑' n : ℤ, f n) = (∑' n : ℤ, 𝓕 f n) := by
+    (h_sum : Summable fun n : ℤ => 𝓕 f n) : ∑' n : ℤ, f n = (∑' n : ℤ, 𝓕 f n) := by
   let F : C(UnitAddCircle, ℂ) :=
     ⟨(f.periodic_tsum_comp_add_zsmul 1).lift, continuous_coinduced_dom.mpr (map_continuous _)⟩
   have : Summable (fourierCoeff F) := by
@@ -229,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 `|x| ^ (-b)` for some `1 < b` and its Fourier transform is summable. -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ → ℂ} (hc : Continuous f)
     {b : ℝ} (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
-    (hFf : Summable fun n : ℤ => 𝓕 f n) : (∑' n : ℤ, f n) = (∑' n : ℤ, 𝓕 f n) :=
+    (hFf : Summable fun n : ℤ => 𝓕 f n) : ∑' n : ℤ, f n = (∑' n : ℤ, 𝓕 f n) :=
   Real.tsum_eq_tsum_fourierIntegral
     (fun K =>
       summable_of_isBigO (Real.summable_abs_int_rpow hb)
@@ -245,7 +242,7 @@ Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay {f : ℝ → ℂ} (hc : Continuous f) {b : ℝ}
     (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
     (hFf : IsBigO (cocompact ℝ) (𝓕 f) fun x : ℝ => |x| ^ (-b)) :
-    (∑' n : ℤ, f n) = ∑' n : ℤ, 𝓕 f n :=
+    ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n :=
   Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable hc hb hf
     (summable_of_isBigO (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite))
 #align real.tsum_eq_tsum_fourier_integral_of_rpow_decay Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay
@@ -256,7 +253,7 @@ section Schwartz
 
 /-- **Poisson's summation formula** for Schwartz functions. -/
 theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 f = g) :
-    (∑' n : ℤ, f n) = (∑' n : ℤ, g n) := by
+    ∑' n : ℤ, f n = (∑' n : ℤ, g n) := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
   simp_rw [← hfg]

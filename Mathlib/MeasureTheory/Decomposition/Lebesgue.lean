@@ -2,17 +2,14 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.decomposition.lebesgue
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Decomposition.Jordan
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+
+#align_import measure_theory.decomposition.lebesgue from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 
 /-!
 # Lebesgue decomposition
@@ -479,7 +476,7 @@ theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE 
 #align measure_theory.measure.lebesgue_decomposition.sup_mem_measurable_le MeasureTheory.Measure.LebesgueDecomposition.sup_mem_measurableLE
 
 theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α) :
-    (⨆ (k : ℕ) (_ : k ≤ m + 1), f k a) = f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a := by
+    ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a = f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a := by
   refine Option.ext fun x => ?_
   simp only [Option.mem_def, ENNReal.some_eq_coe]
   constructor <;> intro h <;> rw [← h]; symm

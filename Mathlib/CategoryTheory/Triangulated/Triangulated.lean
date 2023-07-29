@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.triangulated.triangulated
-! leanprover-community/mathlib commit 19786714ebe478f40b503acb4705fb058ba47303
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+
+#align_import category_theory.triangulated.triangulated from "leanprover-community/mathlib"@"19786714ebe478f40b503acb4705fb058ba47303"
 
 /-!
 # Triangulated Categories
@@ -122,7 +119,7 @@ open Triangulated
 
 /-- A triangulated category is a pretriangulated category which satisfies
 the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
-class IsTriangulated where
+class IsTriangulated : Prop where
   /-- the octahedron axiom (TR 4) -/
   octahedron_axiom :
     ∀ {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}

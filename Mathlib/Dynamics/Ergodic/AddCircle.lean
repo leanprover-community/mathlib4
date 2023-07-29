@@ -2,16 +2,13 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module dynamics.ergodic.add_circle
-! leanprover-community/mathlib commit 5f6e827d81dfbeb6151d7016586ceeb0099b9655
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Group.AddCircle
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.Data.Set.Pointwise.Iterate
+
+#align_import dynamics.ergodic.add_circle from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
 /-!
 # Ergodic maps of the additive circle
@@ -133,7 +130,7 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
   suffices e ∘ f ∘ e.symm = fun y => n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
   replace h : n - 1 ≠ 0
-  · rw [← abs_one] at h ; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
+  · rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
   have hnx : n • DivisibleBy.div x (n - 1) = x + DivisibleBy.div x (n - 1) := by
     conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
     rw [sub_smul, one_smul, sub_add_cancel]

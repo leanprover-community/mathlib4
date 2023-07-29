@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.identities
-! leanprover-community/mathlib commit 0798037604b2d91748f9b43925fb7570a5f3256c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Frobenius
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.MulP
+
+#align_import ring_theory.witt_vector.identities from "leanprover-community/mathlib"@"0798037604b2d91748f9b43925fb7570a5f3256c"
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -58,23 +55,18 @@ theorem verschiebung_zmod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
 
 variable (p R)
 
-theorem coeff_p_pow [CharP R p] (i : ℕ) : (p ^ i : 𝕎 R).coeff i = 1 := by
+theorem coeff_p_pow [CharP R p] (i : ℕ) : ((p : 𝕎 R) ^ i).coeff i = 1 := by
   induction' i with i h
-  · -- Porting note: needed to move `pow_zero` out of `simp only` and into `rw` for it to fire, and
-    -- had to add the following for this goal. The original
-    -- `simp only [one_coeff_zero, Ne.def, pow_zero]` was no longer needed.
-    rw [pow_zero]
-    simp only [Nat.cast_one, Nat.zero_eq, one_coeff_zero]
-  · -- Porting note: needed to add manual `Nat.cast_mul`, `Nat.cast_pow` manipulations.
-    rw [pow_succ', Nat.cast_mul, Nat.cast_pow, ← frobenius_verschiebung, coeff_frobenius_charP,
-      verschiebung_coeff_succ, ← Nat.cast_pow, h, one_pow]
+  · simp only [Nat.zero_eq, one_coeff_zero, Ne.def, pow_zero]
+  · rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_charP,
+      verschiebung_coeff_succ, h, one_pow]
 #align witt_vector.coeff_p_pow WittVector.coeff_p_pow
 
-theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : (p ^ i : 𝕎 R).coeff j = 0 := by
+theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : ((p : 𝕎 R) ^ i).coeff j = 0 := by
   induction' i with i hi generalizing j
-  · rw [pow_zero, Nat.cast_one, one_coeff_eq_of_pos]
+  · rw [Nat.zero_eq, pow_zero, one_coeff_eq_of_pos]
     exact Nat.pos_of_ne_zero hj
-  · rw [pow_succ', Nat.cast_mul, ← frobenius_verschiebung, coeff_frobenius_charP]
+  · rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_charP]
     cases j
     · rw [verschiebung_coeff_zero, zero_pow]
       exact Nat.Prime.pos hp.out

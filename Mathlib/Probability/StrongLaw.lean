@@ -2,17 +2,14 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module probability.strong_law
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.IdentDistrib
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+
+#align_import probability.strong_law from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The strong law of large numbers
@@ -130,7 +127,7 @@ theorem truncation_nonneg {f : α → ℝ} (A : ℝ) {x : α} (h : 0 ≤ f x) : 
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.memℒp_truncation [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) {A : ℝ} {p : ℝ≥0∞} : Memℒp (truncation f A) p μ :=
-  Memℒp.of_bound hf.truncation (|A|) (eventually_of_forall fun _ => abs_truncation_le_bound _ _ _)
+  Memℒp.of_bound hf.truncation |A| (eventually_of_forall fun _ => abs_truncation_le_bound _ _ _)
 #align measure_theory.ae_strongly_measurable.mem_ℒp_truncation MeasureTheory.AEStronglyMeasurable.memℒp_truncation
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integrable_truncation [IsFiniteMeasure μ]

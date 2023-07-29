@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
-
-! This file was ported from Lean 3 source module topology.shrinking_lemma
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.shrinking_lemma from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # The shrinking lemma
@@ -249,7 +246,7 @@ theorem exists_subset_iUnion_closed_subset (hs : IsClosed s) (uo : ∀ i, IsOpen
 to a new open cover so that the closure of each new open set is contained in the corresponding
 original open set. -/
 theorem exists_iUnion_eq_closure_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
-    (uU : (⋃ i, u i) = univ) :
+    (uU : ⋃ i, u i = univ) :
     ∃ v : ι → Set X, iUnion v = univ ∧ (∀ i, IsOpen (v i)) ∧ ∀ i, closure (v i) ⊆ u i :=
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closure_subset isClosed_univ uo (fun x _ => uf x) uU.ge
   ⟨v, univ_subset_iff.1 vU, hv⟩
@@ -259,7 +256,7 @@ theorem exists_iUnion_eq_closure_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, 
 to a new closed cover so that each of the new closed sets is contained in the corresponding
 original open set. See also `exists_iUnion_eq_closure_subset` for a stronger statement. -/
 theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
-    (uU : (⋃ i, u i) = univ) :
+    (uU : ⋃ i, u i = univ) :
     ∃ v : ι → Set X, iUnion v = univ ∧ (∀ i, IsClosed (v i)) ∧ ∀ i, v i ⊆ u i :=
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closed_subset isClosed_univ uo (fun x _ => uf x) uU.ge
   ⟨v, univ_subset_iff.1 vU, hv⟩

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.even
-! leanprover-community/mathlib commit 9264b15ee696b7ca83f13c8ad67c83d6eb70b730
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+
+#align_import linear_algebra.clifford_algebra.even from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
 
 /-!
 # The universal property of the even subalgebra
@@ -80,7 +77,7 @@ structure EvenHom : Type max uA uM where
 
 variable {A Q}
 
-/-- Compose an `even_hom` with an `AlgHom` on the output. -/
+/-- Compose an `EvenHom` with an `AlgHom` on the output. -/
 @[simps]
 def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
   bilin := g.bilin.compr₂ f.toLinearMap
@@ -143,7 +140,7 @@ private def S : Submodule R (M →ₗ[R] A) :=
   Submodule.span R
     {f' | ∃ x m₂, f' = LinearMap.lcomp R _ (f.bilin.flip m₂) (LinearMap.mulRight R x)}
 
-/-- An auxiliary bilinear map that is later passed into `clifford_algebra.fold`. Our desired result
+/-- An auxiliary bilinear map that is later passed into `CliffordAlgebra.foldr`. Our desired result
 is stored in the `A` part of the accumulator, while auxiliary recursion state is stored in the `S f`
 part. -/
 private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=

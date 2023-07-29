@@ -2,14 +2,11 @@
 Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module field_theory.is_alg_closed.spectrum
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+
+#align_import field_theory.is_alg_closed.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
 # Spectrum mapping theorem
@@ -160,7 +157,7 @@ over an algebraically closed field `𝕜` has non-empty spectrum. -/
 theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontrivial A]
     [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
-  have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p ; rw [h_eval_p]; simp
+  have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p; rw [h_eval_p]; simp
   rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu
   obtain ⟨k, hk, _⟩ := exists_mem_of_not_isUnit_aeval_prod nu
   exact ⟨k, hk⟩

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.pi_nat
-! leanprover-community/mathlib commit 49b7f94aab3a3bdca1f9f34c5d818afb253b3993
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import topology.metric_space.pi_nat from "leanprover-community/mathlib"@"49b7f94aab3a3bdca1f9f34c5d818afb253b3993"
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -175,7 +172,7 @@ theorem cylinder_eq_cylinder_of_le_firstDiff (x y : ∀ n, E n) {n : ℕ} (hn : 
 #align pi_nat.cylinder_eq_cylinder_of_le_first_diff PiNat.cylinder_eq_cylinder_of_le_firstDiff
 
 theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
-    (⋃ k, cylinder (update x n k) (n + 1)) = cylinder x n := by
+    ⋃ k, cylinder (update x n k) (n + 1) = cylinder x n := by
   ext y
   simp only [mem_cylinder_iff, mem_iUnion]
   constructor
@@ -793,7 +790,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [Met
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :
-      (⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n)) =
+      ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n) =
         ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (y n)) ((1 / 2) ^ n) := by
       refine iInter_congr fun n ↦ iInter_congr fun hn ↦ ?_
       have : x n = y n := apply_eq_of_dist_lt (mem_ball'.1 hxy) hn
@@ -877,8 +874,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
         _ ≤ min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
               min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
           min_le_right _ _
-    calc dist x z ≤ ∑' i, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
+    calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
+          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
         tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
       _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _

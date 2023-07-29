@@ -2,15 +2,12 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.slash_actions
-! leanprover-community/mathlib commit 738054fa93d43512da144ec45ce799d18fd44248
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+
+#align_import number_theory.modular_forms.slash_actions from "leanprover-community/mathlib"@"738054fa93d43512da144ec45ce799d18fd44248"
 
 /-!
 # Slash actions
@@ -112,7 +109,7 @@ private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
   rw [e3]
   simp only [UpperHalfPlane.num, UpperHalfPlane.denom, ofReal_mul, Subgroup.coe_mul,
     UpperHalfPlane.coe_smul, Units.val_mul, Matrix.mul_eq_mul, Matrix.det_mul,
-    UpperHalfPlane.smulAux, UpperHalfPlane.smulAux', Subtype.coe_mk] at *
+    UpperHalfPlane.smulAux, UpperHalfPlane.smulAux', UpperHalfPlane.coe_mk] at *
   field_simp
   have : (((↑(↑A : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ) *
       ((↑(↑B : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ)) ^ (k - 1) =

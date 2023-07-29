@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.metrizable_uniformity
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Metrizable
+
+#align_import topology.metric_space.metrizable_uniformity from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Metrizable uniform spaces
@@ -76,7 +73,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
     refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
     calc
-      (⨅ l, (zipWith d (x::l) (l ++ [z])).sum) ≤
+      ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=
         ciInf_le (OrderBot.bddBelow _) (lxy ++ y::lyz)
       _ = (zipWith d (x::lxy) (lxy ++ [y])).sum + (zipWith d (y::lyz) (lyz ++ [z])).sum := by
@@ -169,7 +166,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
     rw [get_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
-    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le _ _ M.succ_pos hMl
+    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine' (ihn _ hlen_lt _ y _ hlen).trans _
     rw [cons_get_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=

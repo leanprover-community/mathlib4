@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.primrec
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
+
+#align_import computability.primrec from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # The primitive recursive functions
@@ -1499,7 +1496,7 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
     have x1 : @Primrec' 3 fun v => v.head.succ := succ.comp₁ _ head
     have y1 : @Primrec' 3 fun v => v.tail.head.succ := succ.comp₁ _ (tail head)
     exact if_lt x1 (mul.comp₂ _ y1 y1) (tail head) y1
-  introv ; symm
+  introv; symm
   induction' n with n IH; · simp
   dsimp; rw [IH]; split_ifs with h
   · exact le_antisymm (Nat.sqrt_le_sqrt (Nat.le_succ _)) (Nat.lt_succ_iff.1 <| Nat.sqrt_lt.2 h)

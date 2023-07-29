@@ -2,17 +2,14 @@
 Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module category_theory.monoidal.subcategory
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Closed.Monoidal
+
+#align_import category_theory.monoidal.subcategory from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Full monoidal subcategories
@@ -58,7 +55,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   tensorHom := @fun X₁ Y₁ X₂ Y₂ f g => by
     change X₁.1 ⊗ X₂.1 ⟶ Y₁.1 ⊗ Y₂.1
-    change X₁.1 ⟶ Y₁.1 at f ; change X₂.1 ⟶ Y₂.1 at g ; exact f ⊗ g
+    change X₁.1 ⟶ Y₁.1 at f; change X₂.1 ⟶ Y₂.1 at g; exact f ⊗ g
   tensorUnit' := ⟨𝟙_ C, prop_id⟩
   associator X Y Z :=
     ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),

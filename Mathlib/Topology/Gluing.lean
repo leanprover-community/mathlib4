@@ -2,17 +2,14 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.gluing
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.LibrarySearch
+
+#align_import topology.gluing from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Gluing Topological spaces
@@ -359,8 +356,12 @@ structure MkCore where
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core TopCat.GlueData.MkCore
 
-theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x :=
-Subtype.eq <| by convert h.t_id j ▸ (h.cocycle j i j x <| h.V_id j ▸ ⟨⟩) using 1
+theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
+  have := h.cocycle j i j x ?_
+  rw [h.t_id] at this
+  convert Subtype.eq this
+  rw [h.V_id]
+  trivial
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
@@ -525,7 +526,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.glue_data.range_from_open_subsets_glue TopCat.GlueData.range_fromOpenSubsetsGlue
 
 /-- The gluing of an open cover is homeomomorphic to the original space. -/
-def openCoverGlueHomeo (h : (⋃ i, (U i : Set α)) = Set.univ) :
+def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (ofOpenSubsets U).toGlueData.glued ≃ₜ α :=
   Homeomorph.homeomorphOfContinuousOpen
     (Equiv.ofBijective (fromOpenSubsetsGlue U)

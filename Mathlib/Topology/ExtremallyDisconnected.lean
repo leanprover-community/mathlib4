@@ -2,14 +2,11 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module topology.extremally_disconnected
-! leanprover-community/mathlib commit 7e281deff072232a3c5b3e90034bd65dde396312
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.StoneCech
+
+#align_import topology.extremally_disconnected from "leanprover-community/mathlib"@"7e281deff072232a3c5b3e90034bd65dde396312"
 
 /-!
 # Extremally disconnected spaces
@@ -51,6 +48,31 @@ class ExtremallyDisconnected : Prop where
 
 /-- The closure of every open set is open. -/
 add_decl_doc ExtremallyDisconnected.open_closure
+
+section TotallySeparated
+
+/-- Extremally disconnected spaces are totally separated. -/
+instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
+{ isTotallySeparated_univ := by
+    intro x _ y _ hxy
+    obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
+    use closure U
+    use (closure U)ᶜ
+    refine ⟨ExtremallyDisconnected.open_closure U hUV.1,
+      by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
+      by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
+    simp only [Set.mem_compl_iff]
+    rw [mem_closure_iff]
+    push_neg
+    refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
+    rw [Set.nonempty_iff_ne_empty]
+    simp only [not_not]
+    rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
+    exact hUV.2.2.2.2 }
+
+end TotallySeparated
+
+section
 
 /-- The assertion `CompactT2.Projective` states that given continuous maps
 `f : X → Z` and `g : Y → Z` with `g` surjective between `t_2`, compact topological spaces,
@@ -239,3 +261,30 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   exact x.val.mem.symm
 
 end
+
+-- Note: It might be possible to use Gleason for this instead
+/-- The sigma-type of extremally disconneted spaces is extremally disconnected -/
+instance instExtremallyDisconnected
+    {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [h₀ : ∀ i, ExtremallyDisconnected (π i)] :
+    ExtremallyDisconnected (Σi, π i) := by
+  constructor
+  intro s hs
+  rw [isOpen_sigma_iff] at hs ⊢
+  intro i
+  rcases h₀ i with ⟨h₀⟩
+  have h₁ : IsOpen (closure (Sigma.mk i ⁻¹' s))
+  · apply h₀
+    exact hs i
+  suffices h₂ : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
+  · rwa [h₂]
+  apply IsOpenMap.preimage_closure_eq_closure_preimage
+  intro U _
+  · rw [isOpen_sigma_iff]
+    intro j
+    by_cases ij : i = j
+    · rw [← ij]
+      rw [sigma_mk_preimage_image_eq_self]
+      assumption
+    · rw [sigma_mk_preimage_image' ij]
+      apply isOpen_empty
+  · continuity

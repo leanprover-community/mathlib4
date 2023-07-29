@@ -2,11 +2,6 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.local_properties
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Localization.AtPrime
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.RingHomProperties
+
+#align_import ring_theory.local_properties from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Local properties of commutative rings
@@ -66,7 +63,7 @@ def LocalizationPreserves : Prop :=
     [IsLocalization M S], @P R hR → @P S hS
 #align localization_preserves LocalizationPreserves
 
-/-- A property `P` of comm rings satisfies `OfLocalizationMaximal` if
+/-- A property `P` of comm rings satisfies `OfLocalizationMaximal`
   if `P` holds for `R` whenever `P` holds for `Rₘ` for all maximal ideal `m`. -/
 def OfLocalizationMaximal : Prop :=
   ∀ (R : Type u) [CommRing R],
@@ -140,8 +137,8 @@ def RingHom.OfLocalizationSpanTarget : Prop :=
     (_ : ∀ r : s, P ((algebraMap S (Localization.Away (r : S))).comp f)), P f
 #align ring_hom.of_localization_span_target RingHom.OfLocalizationSpanTarget
 
-/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationPrime` if
-  if `P` holds for `R` whenever `P` holds for `Rₘ` for all prime ideals `p`. -/
+/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationPrime`
+if `P` holds for `R` whenever `P` holds for `Rₘ` for all prime ideals `p`. -/
 def RingHom.OfLocalizationPrime : Prop :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S),
     (∀ (J : Ideal S) (_ : J.IsPrime), P (Localization.localRingHom _ J f rfl)) → P f
@@ -349,7 +346,7 @@ theorem surjective_ofLocalizationSpan :
   letI := f.toAlgebra
   intro x
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem
-    (LinearMap.range (Algebra.ofId R S).toLinearMap) s e
+    (LinearMap.range (Algebra.linearMap R S)) s e
   intro r
   obtain ⟨a, e'⟩ := H r (algebraMap _ _ x)
   obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) a
@@ -406,7 +403,7 @@ theorem localization_away_map_finite (r : R) [IsLocalization.Away r R']
   localization_finite.away r hf
 #align localization_away_map_finite localization_away_map_finite
 
-/-- Let `S` be an `R`-algebra, `M` an submonoid of `R`, and `S' = M⁻¹S`.
+/-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
 span of `IsLocalization.finsetIntegerMultiple _ s` over `R`.
@@ -595,7 +592,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
     mul_comm]
 #align is_localization.exists_smul_mem_of_mem_adjoin IsLocalization.exists_smul_mem_of_mem_adjoin
 
-/-- Let `S` be an `R`-algebra, `M` an submonoid of `R`, and `S' = M⁻¹S`.
+/-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the adjoin of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
 adjoin of `IsLocalization.finsetIntegerMultiple _ s` over `R`.

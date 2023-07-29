@@ -2,14 +2,11 @@
 Copyright (c) 2020 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
-
-! This file was ported from Lean 3 source module ring_theory.subring.basic
-! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
+
+#align_import ring_theory.subring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
 /-!
 # Subrings
@@ -1147,7 +1144,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
       (AddSubgroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
-  suffices (⨆ i, S i) ≤ U by intro h; simpa using (this h)
+  suffices ⨆ i, S i ≤ U by intro h; simpa using (this h)
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align subring.mem_supr_of_directed Subring.mem_iSup_of_directed
 

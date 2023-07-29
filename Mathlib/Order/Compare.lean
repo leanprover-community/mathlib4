@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.compare
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.Synonym
+
+#align_import order.compare from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Comparison
@@ -50,7 +47,7 @@ namespace Ordering
 
 /-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
 that the relation `a < b` is defined. -/
--- Porting: note we have removed `@[simp]` here in favour of separate simp lemmas,
+-- Porting note: we have removed `@[simp]` here in favour of separate simp lemmas,
 -- otherwise this definition will unfold to a match.
 def Compares [LT α] : Ordering → α → α → Prop
   | lt, a, b => a < b
