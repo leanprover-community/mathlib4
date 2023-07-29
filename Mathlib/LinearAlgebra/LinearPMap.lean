@@ -475,11 +475,12 @@ instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
     · simp only [add_domain, inf_assoc]
     · simp only [add_apply, hxy, add_assoc]⟩
 
-instance instAddCommSemigroup : AddCommSemigroup (E →ₗ.[R] F) :=
-  ⟨fun f g => by
+instance instAddCommSemigroup : AddCommSemigroup (E →ₗ.[R] F) where
+  __ := instAddSemigroup
+  add_comm f g := by
     ext x y hxy
     · simp only [add_domain, inf_comm]
-    · simp only [add_apply, hxy, add_comm]⟩
+    · simp only [add_apply, hxy, add_comm]
 
 instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
   ⟨fun f => by

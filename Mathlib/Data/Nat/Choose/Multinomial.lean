@@ -256,9 +256,10 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       Finset.instIsEmptySubtypeMemFinsetInstMembershipFinsetEmptyCollectionInstEmptyCollectionFinset
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
-  rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
-  · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
-      (ne_of_mem_of_not_mem hb ha).symm
+  rw [sum_insert ha,
+    (Commute.sum_right s _ _ fun _ hb =>
+      hc (mem_insert_self a s) (mem_insert_of_mem hb) (ne_of_mem_of_not_mem hb ha).symm).add_pow,
+    sum_range]
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine' (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
     rw [m.1.1.multinomial_filter_ne a]

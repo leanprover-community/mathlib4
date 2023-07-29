@@ -805,6 +805,10 @@ def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →�
     (show algebraMap R' A 1 + f (0 : M) = 1 by rw [map_zero, map_one, add_zero])
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
+        -- cursed dsimp can't apply these lemmas
+        rw [LinearMap.add_apply]; rw [LinearMap.add_apply]; rw [LinearMap.add_apply]
+        rw [LinearMap.comp_apply]; rw [LinearMap.comp_apply]; rw [LinearMap.comp_apply];
+          rw [LinearMap.comp_apply]; rw [LinearMap.comp_apply]; rw [LinearMap.comp_apply]
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hf, smul_zero,
           op_smul_eq_smul]
