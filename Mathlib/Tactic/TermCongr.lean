@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean
+import Mathlib.Logic.Basic
 --import Mathlib.Lean.Expr.Traverse
 --import Mathlib.Lean.Meta.Simp
 
@@ -60,11 +61,11 @@ def mkCHole (forLhs : Bool) (lhs rhs pf : MVarId) : Expr :=
     |>.insert congrIsLhsKey forLhs
   Expr.mdata d e
 
-/-- Return a fresh metavariable that is immediately assigned to the value `val`. This is used to be
-able to store expressions as metadata. -/
+/-- Return a fresh metavariable that is immediately assigned to the value `val`. This is for
+being able to store expressions as metadata. -/
 def mkPseudoMVar (val : Expr) (type? : Option Expr := none) : MetaM MVarId := do
   let type ← if let some type := type? then pure type else inferType val
-  let mvar := (← Meta.mkFreshExprMVar type).mvarId!
+  let mvar := (← mkFreshExprMVar type).mvarId!
   mvar.assign val
   return mvar
 
@@ -78,8 +79,8 @@ def elabCHole (h : Syntax) (forLhs : Bool) : Term.TermElabM Expr := do
     let rhs' ← mkPseudoMVar rhs tyRhs
     return mkCHole forLhs lhs' rhs' pf
   else
-    let lhs := (← Meta.mkFreshExprMVar none).mvarId!
-    let rhs := (← Meta.mkFreshExprMVar none).mvarId!
+    let lhs := (← mkFreshExprMVar none).mvarId!
+    let rhs := (← mkFreshExprMVar none).mvarId!
     return mkCHole forLhs lhs rhs pf
 
 /-- If the expression is a congruence hole, returns `(forLhs, lhs, rhs, pf)`. -/
@@ -94,7 +95,7 @@ def cHole? (e : Expr) : Option (Bool × Expr × Expr × Expr) := do
   | _ => none
 
 /-- If the expression is a recent congruence hole, returns `(forLhs, lhs, rhs, pf)`.
-Does `cHole?` but then makes sure that the metavariable is recent.  -/
+Does `cHole?` but makes sure that the metavariable is recent.  -/
 def cHole?' (ctx : MetavarContext) (mvarCounterSaved : Nat) (e : Expr) :
     Option (Bool × Expr × Expr × Expr) := do
   if let some r@(_, _, _, pf) := cHole? e then
@@ -102,7 +103,7 @@ def cHole?' (ctx : MetavarContext) (mvarCounterSaved : Nat) (e : Expr) :
       return r
   none
 
-/-- Returns a subexpression that's a congruence hole that's recent.  -/
+/-- Returns any subexpression that's a congruence hole that's recent.  -/
 def hasCHole (mvarCounterSaved : Nat) (e : Expr) : MetaM (Option Expr) := do
   let mctx ← getMCtx
   return e.find? fun e' => (cHole?' mctx mvarCounterSaved e').isSome
@@ -115,7 +116,7 @@ elab (name := cLhsExpand) "c_lhs% " h:term : term => elabCHole h true
 Elaborates to an expression satisfying `cHole?` that equals the LHS of `h`. -/
 elab (name := cRhsExpand) "c_rhs% " h:term : term => elabCHole h false
 
-/-- Replace all `term` antiquotations in a term using the `expand` function. -/
+/-- Replace all `term` antiquotations in a term using the given `expand` function. -/
 def processAntiquot (t : Term) (expand : Term → Term.TermElabM Term) : Term.TermElabM Term := do
   let t' ← t.raw.replaceM fun s => do
     if s.isAntiquots then
@@ -135,25 +136,51 @@ def elaboratePattern (t : Term) (expectedType : Expr) (forLhs : Bool) : Term.Ter
     let t' ← processAntiquot t (fun h => if forLhs then `(c_lhs% $h) else `(c_rhs% $h))
     Term.elabTermEnsuringType t' expectedType
 
-/-- Ensures the expected type is an equality. Returns the equality along with the type
-of the terms being equated, the lhs, and the rhs. -/
-private def mkEqForExpectedType (expectedType? : Option Expr) :
-    Term.TermElabM (Expr × Expr × Expr × Expr) := do
-  let ty ← Meta.mkFreshTypeMVar
-  let a ← Meta.mkFreshExprMVar ty
-  let b ← Meta.mkFreshExprMVar ty
-  let eq ← Meta.mkEq a b
+/-- Ensures the expected type is an equality. Returns the equality.
+This expression is suitable for `Lean.Expr.eq?`. -/
+def mkEqForExpectedType (expectedType? : Option Expr) : MetaM Expr := do
+  let ty ← mkFreshTypeMVar
+  let a ← mkFreshExprMVar ty
+  let b ← mkFreshExprMVar ty
+  let eq ← mkEq a b
   if let some expectedType := expectedType? then
-    unless ← Meta.isDefEq expectedType eq do
-      throwError m!"Term {← Meta.mkHasTypeButIsExpectedMsg eq expectedType}"
-  return (eq, ty, a, b)
+    unless ← isDefEq expectedType eq do
+      throwError m!"Term {← mkHasTypeButIsExpectedMsg eq expectedType}"
+  return eq
 
-/-- A congruence lemma between two expressions. -/
+/-- Ensures the expected type is a HEq. Returns the HEq.
+This expression is suitable for `Lean.Expr.heq?`. -/
+def mkHEqForExpectedType (expectedType? : Option Expr) : MetaM Expr := do
+  let a ← mkFreshExprMVar none
+  let b ← mkFreshExprMVar none
+  let heq ← mkHEq a b
+  if let some expectedType := expectedType? then
+    unless ← isDefEq expectedType heq do
+      throwError m!"Term {← mkHasTypeButIsExpectedMsg heq expectedType}"
+  return heq
+
+-- /-- Ensures the expected type is an iff. Returns the iff along with the lhs and the rhs. -/
+-- def mkIffForExpectedType (expectedType? : Option Expr) :
+--     MetaM (Expr × Expr × Expr × Expr) := do
+--   let a ← mkFreshExprMVar (Expr.sort .zero)
+--   let b ← mkFreshExprMVar (Expr.sort .zero)
+--   let iff := mkApp2 (.const ``Iff []) a b
+--   if let some expectedType := expectedType? then
+--     unless ← isDefEq expectedType iff do
+--       throwError m!"Term {← mkHasTypeButIsExpectedMsg iff expectedType}"
+--   return (eq, ty, a, b)
+
+/-- A congruence lemma between two expressions.
+The expressions can be related by `Iff`, `Eq`, or `HEq`.
+The given proof can be a proof of any of these relations. -/
 structure CongrResult where
   (lhs rhs : Expr)
   /-- A proof somehow relates `lhs` to `rhs` (by `Iff`, `Eq`, or `HEq`).
-  If `none`, then the proof is the appropriate notion of reflexivity. -/
+  If `none`, then the proof is the appropriate notion of reflexivity
+  and `lhs` and `rhs` are defeq. -/
   (pf? : Option Expr)
+
+def CongrResult.isRfl (res : CongrResult) : Bool := res.pf?.isNone
 
 def CongrResult.assertLhsDefeq (res : CongrResult) (lhs pfTy : Expr) : MetaM Unit := do
   unless ← isDefEq res.lhs lhs do
@@ -167,7 +194,44 @@ def CongrResult.assertRhsDefeq (res : CongrResult) (rhs pfTy : Expr) : MetaM Uni
       }and is not definitionally equal to right-hand side of congruence hole, which has type{""
       }{indentD pfTy}"
 
-/-- Returns the proof that `lhs = rhs`.
+/-- Given a `pf` of an `Iff`, `Eq`, or `HEq`, return a proof of `Eq`.
+If `pf` is not obviously any of these, unify its type with `Eq`, but if `prop` is true
+then insert `propext` so that the goal is an `Iff`. -/
+def toEqPf (pf : Expr) (prop : Bool) : MetaM Expr:= do
+  let ty ← whnf (← inferType pf)
+  if let some .. := ty.iff? then
+    mkPropExt pf
+  else if let some .. := ty.eq? then
+    return pf
+  else if let some (lhsTy, _, rhsTy, _) := ty.heq? then
+    unless ← isDefEq lhsTy rhsTy do
+      throwError "Cannot turn HEq proof into an equality. Has type{indentD ty}"
+    mkAppM ``eq_of_heq #[pf]
+  else
+    let pf ← if prop then mkPropExt pf else pure pf
+    let ty ← mkEqForExpectedType (← inferType pf)
+    -- Ensure the type is obviously an equality.
+    mkExpectedTypeHint pf ty
+
+/-- Given a `pf` of an `Iff`, `Eq`, or `HEq`, return a proof of `HEq`.
+If `pf` is not obviously any of these, unify its type with `HEq`, but try making
+it be an `Eq` if possible, and in this case if `prop` is true insert a `propext` so
+that the goal is an `Iff`. -/
+def toHEqPf (pf : Expr) (tryEq : Bool) (prop : Bool) : MetaM Expr := do
+  let ty ← whnf (← inferType pf)
+  if let some .. := ty.iff? then
+    mkAppM ``heq_of_eq #[← mkPropExt pf]
+  else if let some .. := ty.eq? then
+    mkAppM ``heq_of_eq #[pf]
+  else if let some .. := ty.heq? then
+    return pf
+  else
+    let pf ← if tryEq then mkAppM ``heq_of_eq #[← toEqPf pf prop] else pure pf
+    let ty ← mkHEqForExpectedType (← inferType pf)
+    -- Ensure the type is obviously a HEq.
+    mkExpectedTypeHint pf ty
+
+/-- Returns the proof that `lhs = rhs`. Fails if the `CongrResult` is inapplicable.
 
 If `pf? = none`, this returns the `rfl` proof. If `lhs` and `rhs` are not syntactically equal, then
 uses `mkExpectedTypeHint`. -/
@@ -177,46 +241,71 @@ def CongrResult.eq (res : CongrResult) : MetaM Expr := do
       }to have definitionally equal types."
   match res.pf? with
   | some pf =>
-    -- TODO handle coercions
-    let ty ← whnf (← inferType pf)
-    if let some (_, lhs, _, rhs) ← sides? ty then
-      res.assertLhsDefeq lhs ty
-      res.assertRhsDefeq rhs ty
-    if let some .. := ty.iff? then
-      mkPropExt pf
-    else if let some .. := ty.eq? then
-      return pf
-    else if let some (lhsTy, _, rhsTy, _) := ty.heq? then
-      unless ← isDefEq lhsTy rhsTy do
-        throwError "Cannot turn congruence hole into an equality. Has type{indentD ty}"
-      mkAppM ``eq_of_heq #[pf]
-    else
-      return pf
+    let pf ← toEqPf pf (prop := ← Meta.isProp res.lhs)
+    let some (_, lhs, rhs) := (← whnf <| ← inferType pf).eq? | unreachable!
+    -- TODO handle coercions when `res` is for an equality of types?
+    res.assertLhsDefeq lhs (← inferType pf)
+    res.assertRhsDefeq rhs (← inferType pf)
+    return pf
   | none =>
-    let pf ← mkEqRefl res.rhs
+    -- Then `isDefEq res.lhs res.rhs`
+    let pf ← mkEqRefl res.lhs
     if res.lhs == res.rhs then
       return pf
     else
       mkExpectedTypeHint pf (← mkEq res.lhs res.rhs)
 
-/-- Force the lhs and rhs to be defeq. For `dsimp`-like congruence. -/
-def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
-  unless ← isDefEq res.lhs res.rhs do
-    throwError "congr(...) failed, {""
-      }left-hand side{indentD res.lhs}\nis not definitionally equal to{indentD res.rhs}"
-  return res
+/-- Returns the proof that `HEq lhs rhs`. Fails if the `CongrResult` is inapplicable.
 
-/-- Ensures `lhs` and `rhs` are defeq without proof irrelevance.
-Turning off proof irrelevance means it can solve for proof metavariables. -/
+If `pf? = none`, this returns the `rfl` proof. If `lhs` and `rhs` are not syntactically equal, then
+uses `mkExpectedTypeHint`. -/
+def CongrResult.heq (res : CongrResult) : MetaM Expr := do
+  match res.pf? with
+  | some pf =>
+    let pf ← toHEqPf pf
+              (tryEq := ← withNewMCtxDepth <| isDefEq (← inferType res.lhs) (← inferType res.rhs))
+              (prop := ← Meta.isProp res.lhs)
+    let some (_, lhs, _, rhs) := (← whnf <| ← inferType pf).heq? | unreachable!
+    res.assertLhsDefeq lhs (← inferType pf)
+    res.assertRhsDefeq rhs (← inferType pf)
+    return pf
+  | none =>
+    -- Then `isDefEq res.lhs res.rhs`
+    let pf ← mkHEqRefl res.lhs
+    if res.lhs == res.rhs then
+      return pf
+    else
+      mkExpectedTypeHint pf (← mkHEq res.lhs res.rhs)
+
+/-- Ensures `lhs` and `rhs` are defeq. -/
 def ensureDefeq (lhs rhs : Expr) : MetaM Unit := do
-  unless ← withoutProofIrrelevance <| isDefEq lhs rhs do
+  unless ← isDefEq lhs rhs do
     throwError "congr(...) failed, {""
       }left-hand side{indentD lhs}\nis not definitionally equal to{indentD rhs}"
 
-/-- Checks that `lhs` and `rhs` are defeq, returning a `rfl` congruence. -/
+/-- Checks that `lhs` and `rhs` are defeq, returning a `rfl` congruence.
+
+If that fails, tries to synthesize a proof using `Subsingleton.elim`. -/
 def mkCongrOfDefeq (lhs rhs : Expr) : MetaM CongrResult := do
-  ensureDefeq lhs rhs
-  return {lhs, rhs, pf? := none}
+  if ← isDefEq lhs rhs then
+    return {lhs, rhs, pf? := none}
+  let res? ← observing? do
+    -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to prevent specialization.
+    let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
+    return {lhs, rhs, pf? := pf}
+  if let some res := res? then
+    return res
+  else
+    throwError "congr(...) failed, {""
+      }left-hand side{indentD lhs}\nis not definitionally equal to{indentD rhs}"
+
+/-- Force the lhs and rhs to be defeq. For `dsimp`-like congruence. Clears the proof. -/
+def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
+  if res.pf?.isSome then
+    ensureDefeq res.lhs res.rhs
+    -- Propagate types into proof that we're dropping:
+    discard <| res.eq
+  return {res with pf? := none}
 
 /-- Throw an internal error. -/
 def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
@@ -227,7 +316,8 @@ def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
 Only process ones that are at least as new as `mvarCounterSaved` since there's nothing
 preventing congruence holes from leaking into the context. -/
 def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option CongrResult) := do
-  match ← cHole?' mvarCounterSaved lhs, ← cHole?' mvarCounterSaved rhs with
+  let mctx ← getMCtx
+  match cHole?' mctx mvarCounterSaved lhs, cHole?' mctx mvarCounterSaved rhs with
   | some (_, lhs1, rhs1, pf1), some (_, lhs2, rhs2, pf2) =>
     -- Defeq checks to unify the lhs and rhs congruence holes.
     unless ← isDefEq lhs1 lhs2 do
@@ -243,33 +333,133 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
     throwCongrEx lhs rhs "Left-hand side lost its congruence hole annotation."
   | none, none => return none
 
-/-- Walks along `lhs` and `rhs` simultaneously to create a congruence lemma between them.
+/-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
 Assumes all metavariables are instantiated. -/
-def mkCongrOf (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM CongrResult := do
+partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM CongrResult := do
+  trace[Tactic.congr] "mkCongrOf: {depth}, {lhs}, {rhs}"
+  if depth > 100 then
+    throwError "out of gas"
   if let some res ← mkCongrOfCHole? mvarCounterSaved lhs rhs then
+    trace[Tactic.congr] "hole"
     return res
   match lhs, rhs with
   | .app .., .app .. =>
+    trace[Tactic.congr] "app"
     let arity := lhs.getAppNumArgs
     unless arity == rhs.getAppNumArgs do
-      throwCongrEx lhs rhs "Each side has a different number of arguments."
+      throwCongrEx lhs rhs "Both sides have different numbers of arguments."
     let f := lhs.getAppFn
-    unless ← isDefEq (← inferType f) (← inferType rhs.getAppFn) do
-      throwCongrEx lhs rhs "Functions in each application have non-defeq types."
-    --let (f, args) := lhs.getAppNumArgs
-    let arity := mkHCongrWithArity
-    failure
+    let f' := rhs.getAppFn
+    unless ← isDefEq (← inferType f) (← inferType f') do
+      throwCongrEx lhs rhs "The functions in each application have non-defeq types."
+    let fnRes ← mkCongrOf (depth + 1) mvarCounterSaved f f'
+    trace[Tactic.congr] "mkCongrOf result {f}, {f'} has isRfl = {fnRes.isRfl}"
+    let lhs := mkAppN fnRes.lhs lhs.getAppArgs
+    let rhs := mkAppN fnRes.rhs rhs.getAppArgs
+    -- If there's a nontrivial proof, then since mkHCongrWithArity doesn't rewrite the function
+    -- we need to handle this ourselves.
+    if !fnRes.isRfl then
+      let mut pf ← fnRes.eq
+      for arg in lhs.getAppArgs do
+        pf ← mkCongrFun pf arg
+      let res' ← mkCongrOf (depth + 1) mvarCounterSaved (mkAppN fnRes.rhs lhs.getAppArgs) rhs
+      if res'.isRfl then
+        return {lhs, rhs, pf? := pf}
+      else
+        -- Need to combine these results by transitivity. Slightly inefficient to switch to heq.
+        let pf'' ← mkAppM ``HEq.trans #[← mkAppM ``heq_of_eq #[pf], ← res'.heq]
+        return {lhs, rhs, pf? := pf''}
+    let argRes ← (lhs.getAppArgs.zip rhs.getAppArgs).mapM fun (x, x') =>
+                    mkCongrOf (depth + 1) mvarCounterSaved x x'
+    if argRes.all fun res => res.isRfl then
+      return {lhs, rhs, pf? := none}
+    let thm ← mkHCongrWithArity fnRes.lhs arity
+    let mut args := #[]
+    for res in argRes, kind in thm.argKinds do
+      match kind with
+      | .eq =>
+        let pf ← res.eq
+        let some (_, lhs, rhs) := (← whnf <| ← inferType pf).eq? | unreachable!
+        args := args |>.push lhs |>.push rhs |>.push pf
+      | .heq =>
+        let pf ← res.heq
+        let some (_, lhs, _, rhs) := (← whnf <| ← inferType pf).heq? | unreachable!
+        args := args |>.push lhs |>.push rhs |>.push pf
+      | _ => panic! "unexpected hcongr argument kind"
+    let pf := mkAppN thm.proof args
+    return {lhs, rhs, pf? := pf}
   -- lam forallE letE
+  | .lam .., .lam .. =>
+    trace[Tactic.congr] "lam"
+    let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
+    -- We do not yet support congruences in the binding domain for lambdas.
+    discard <| resDom.defeq
+    withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
+      let lhsb := lhs.bindingBody!.instantiate1 x
+      let rhsb := rhs.bindingBody!.instantiate1 x
+      let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb
+      let lhs ← mkLambdaFVars #[x] resBody.lhs
+      let rhs ← mkLambdaFVars #[x] resBody.rhs
+      if resBody.isRfl then
+        return {lhs, rhs, pf? := none}
+      else
+        let pf ← mkLambdaFVars #[x] (← resBody.eq)
+        return {lhs, rhs, pf? := ← mkAppM ``funext #[pf]}
+  | .forallE .., .forallE .. =>
+    trace[Tactic.congr] "forallE"
+    let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
+    if lhs.isArrow && rhs.isArrow then
+      let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingBody! rhs.bindingBody!
+      let lhs := Expr.forallE lhs.bindingName! resDom.lhs resBody.lhs lhs.bindingInfo!
+      let rhs := Expr.forallE rhs.bindingName! resDom.rhs resBody.rhs rhs.bindingInfo!
+      if resDom.isRfl && resBody.isRfl then
+        return {lhs, rhs, pf? := none}
+      else
+        return {lhs, rhs, pf? := ← mkImpCongr (← resDom.eq) (← resBody.eq)}
+    else
+      -- We do not yet support congruences in the binding domain for dependent pi types.
+      discard <| resDom.defeq
+      withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
+        let lhsb := lhs.bindingBody!.instantiate1 x
+        let rhsb := rhs.bindingBody!.instantiate1 x
+        let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb
+        let lhs ← mkForallFVars #[x] resBody.lhs
+        let rhs ← mkForallFVars #[x] resBody.rhs
+        if resBody.isRfl then
+          return {lhs, rhs, pf? := none}
+        else
+          let pf ← mkLambdaFVars #[x] (← resBody.eq)
+          return {lhs, rhs, pf? := ← mkAppM ``pi_congr #[pf]}
+  | .letE .., .letE .. =>
+    trace[Tactic.congr] "letE"
+    -- Zeta reduce for now. Could look at `Lean.Meta.Simp.simp.simpLet`
+    let lhs := lhs.letBody!.instantiate1 lhs.letValue!
+    let rhs := rhs.letBody!.instantiate1 rhs.letValue!
+    let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs rhs
+    return {res with lhs, rhs}
   | .mdata _ lhs', .mdata _ rhs' =>
-    let res ← mkCongrOf mvarCounterSaved lhs' rhs'
-    return {res with lhs := lhs, rhs := rhs}
+    trace[Tactic.congr] "mdata"
+    let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
+    return {res with lhs := lhs.updateMData! res.lhs, rhs := rhs.updateMData! res.rhs}
   | .proj n1 i1 e1, .proj n2 i2 e2 =>
+    trace[Tactic.congr] "proj"
+    -- Only handles defeq at the moment.
+    -- Recurses just to propagate type information for elaboration reasons.
     unless n1 == n2 && i1 == i2 do
       throwCongrEx lhs rhs "Incompatible primitive projections"
-    let res ← mkCongrOf mvarCounterSaved e1 e2
-    res.defeq
-    return {lhs := lhs, rhs := rhs, pf? := none}
-  | _, _ => mkCongrOfDefeq lhs rhs
+    let res ← mkCongrOf (depth + 1) mvarCounterSaved e1 e2
+    discard <| res.defeq
+    return {lhs := lhs.updateProj! res.lhs, rhs := rhs.updateProj! res.rhs, pf? := none}
+  | _, _ =>
+    trace[Tactic.congr] "base case"
+    -- Shouldn't need to instantiate metavars, but it's to be sure we catch congruence holes
+    let lhs ← instantiateMVars lhs
+    let rhs ← instantiateMVars rhs
+    if let some h ← hasCHole mvarCounterSaved lhs then
+      throwError "Left-hand side{indentD lhs}\nstill has a congruence hole{indentD h}"
+    if let some h ← hasCHole mvarCounterSaved rhs then
+      throwError "Right-hand side{indentD rhs}\nstill has a congruence hole{indentD h}"
+    mkCongrOfDefeq lhs rhs
 
 @[term_elab termCongr]
 def elabTermCongr : Term.TermElab := fun stx expectedType? => do
@@ -277,47 +467,20 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
   | `(congr($t)) =>
     -- Save the current mvarCounter so that we can tell which cHoles are for this congr quotation.
     let mvarCounterSaved := (← getMCtx).mvarCounter
-    let (expEq, expTy, expLhs, expRhs) ← mkEqForExpectedType expectedType?
+    let expEq ← mkEqForExpectedType expectedType?
+    let some (expTy, expLhs, expRhs) := expEq.eq? | unreachable!
     let lhs ← elaboratePattern t expTy true
     let rhs ← elaboratePattern t expTy false
     unless ← isDefEq expLhs lhs do
-      throwError "Left-hand side{indentD lhs}\n{""
-        }is not definitionally equal to left-hand side of{indentD expEq}"
+      throwError "Left-hand side of elaborated pattern{indentD lhs}\n{""
+        }is not definitionally equal to left-hand side of expected type{indentD expEq}"
     unless ← isDefEq expRhs rhs do
-      throwError "Right-hand side{indentD rhs}\n{""
-        }is not definitionally equal to right-hand side of{indentD expEq}"
+      throwError "Right-hand side of elaborated pattern{indentD rhs}\n{""
+        }is not definitionally equal to right-hand side of expected type{indentD expEq}"
     Term.synthesizeSyntheticMVars (mayPostpone := true)
     let lhs ← instantiateMVars lhs
     let rhs ← instantiateMVars rhs
-    let res ← mkCongrOf mvarCounterSaved lhs rhs
-    -- Unfold the `c_lhs` terms and remove annotations to get the true LHS
-    let left := preLeft.replace (fun e =>
-      if let some (_α, lhs, _rhs, _eq) := e.app4? ``c_lhs then lhs else none)
-    let left := left.replace congrCExpand?
-    trace[Tactic.congr] "left = {left}"
-    -- Rewrite the `c_lhs` terms to get the RHS. `c_lhs` is reducible, which makes using
-    -- a simp lemma not work reliably, so using a pre-transform instead.
-    let simpCtx : Simp.Context :=
-      { config := Simp.neutralConfig,
-        simpTheorems := #[]
-        congrTheorems := (← getSimpCongrTheorems) }
-    let preTrans (e : Expr) : SimpM Simp.Step := do
-      if let some (_α, _lhs, rhs, eq) := e.app4? ``c_lhs then
-        return .visit {expr := rhs, proof? := eq}
-      else
-        return .visit {expr := e}
-    let (res, _) ← Simp.main preLeft simpCtx (methods := { pre := preTrans })
-    -- Remove the annotations
-    let right := res.expr.replace congrCExpand?
-    trace[Tactic.congr] "right = {right}"
-    -- Make sure there are no `c_lhs` expressions remaining in the term
-    if right.find? (·.isConstOf ``c_lhs) matches some .. then
-      throwError m!"Could not rewrite all occurrences of c(..) holes. There are still `c_lhs`{
-        ""} expressions in{indentExpr right}"
-    -- Check the expected type
-    let eq' ← mkEq left right
-    unless ← Meta.isDefEq eq' expEq do
-      throwError m!"Generated congruence {← Meta.mkHasTypeButIsExpectedMsg eq' expEq}"
-    -- Create a type hint to lock in the `c_lhs`-free version of the equality.
-    mkExpectedTypeHint (← res.getProof) eq'
+    let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
+    let pf ← res.eq
+    return pf
   | _ => throwUnsupportedSyntax
