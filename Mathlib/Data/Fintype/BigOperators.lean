@@ -2,11 +2,6 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.big_operators
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Powerset
@@ -15,6 +10,8 @@ import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Option
+
+#align_import data.fintype.big_operators from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent

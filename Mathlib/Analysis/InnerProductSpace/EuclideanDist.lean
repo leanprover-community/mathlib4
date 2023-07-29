@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.euclidean_dist
-! leanprover-community/mathlib commit 9425b6f8220e53b059f5a4904786c3c4b50fc057
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import analysis.inner_product_space.euclidean_dist from "leanprover-community/mathlib"@"9425b6f8220e53b059f5a4904786c3c4b50fc057"
 
 /-!
 # Euclidean distance on a finite dimensional space

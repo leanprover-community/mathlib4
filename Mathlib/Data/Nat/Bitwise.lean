@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+
 Authors: Markus Himmel, Harun Khan, Abdalrhman M Mohamed
 
 ! This file was ported from Lean 3 source module data.nat.bitwise
 ! leanprover-community/mathlib commit 6afc9b06856ad973f6a2619e3e8a0a8d537a58f2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
+
 -/
 import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
@@ -16,6 +18,8 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
+
+#align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
 /-!
 # Bitwise operations on natural numbers
@@ -79,7 +83,8 @@ theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false :
 
 lemma bit_toNat (b : Bool) : bit b 0 = b.toNat := by cases' b <;> simp
 
-@[simp] lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
+@[simp]
+lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
 
 lemma shiftr_mod_two_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by
   simp [Nat.testBit, Nat.mod_two_of_bodd]

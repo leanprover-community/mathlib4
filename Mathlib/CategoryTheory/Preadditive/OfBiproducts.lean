@@ -2,15 +2,12 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.preadditive.of_biproducts
-! leanprover-community/mathlib commit 061ea99a5610cfc72c286aa930d3c1f47f74f3d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Tactic.CategoryTheory.Reassoc
+
+#align_import category_theory.preadditive.of_biproducts from "leanprover-community/mathlib"@"061ea99a5610cfc72c286aa930d3c1f47f74f3d0"
 /-!
 # Constructing a semiadditive structure from binary biproducts
 
@@ -77,7 +74,7 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
     ext
     · aesop_cat
     · simp only [biprod.inr_desc, BinaryBicone.inr_snd_assoc]
-  have h₁ : ∀ f : X ⟶ Y,  biprod.desc f (0 : X ⟶ Y) = biprod.fst ≫ f := by
+  have h₁ : ∀ f : X ⟶ Y, biprod.desc f (0 : X ⟶ Y) = biprod.fst ≫ f := by
     intro f
     ext
     · aesop_cat
@@ -93,7 +90,7 @@ theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ
   have h₁ : biprod.lift (f +ᵣ g) (h +ᵣ k) = biprod.lift (𝟙 X) (𝟙 X) ≫ diag := by
       ext <;> aesop_cat
   have h₂ : diag ≫ biprod.desc (𝟙 Y) (𝟙 Y) = biprod.desc (f +ₗ h) (g +ₗ k) := by
-    ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂] <;> aesop_cat
+    ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
 #align category_theory.semiadditive_of_binary_biproducts.distrib CategoryTheory.SemiadditiveOfBinaryBiproducts.distrib
 
