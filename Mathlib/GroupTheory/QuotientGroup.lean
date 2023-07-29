@@ -141,7 +141,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 
 @[to_additive]
 instance Quotient.commGroup {G : Type _} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
-  { toGroup := @QuotientGroup.Quotient.group _ _ N N.normal_of_comm
+  { @QuotientGroup.Quotient.group _ _ N N.normal_of_comm with
     mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
 #align quotient_group.quotient.comm_group QuotientGroup.Quotient.commGroup
 #align quotient_add_group.quotient.add_comm_group QuotientAddGroup.Quotient.addCommGroup
