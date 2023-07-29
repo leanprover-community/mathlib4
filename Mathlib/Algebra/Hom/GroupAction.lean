@@ -175,7 +175,8 @@ class MulActionHomClass (F : Type _) {M N : outParam (Type _)}
 export MulActionHomClass (map_smul)
 
 /-
-/-- `MulActionHomClass F M X Y` states that `F` is a type of morphisms which are equivariant with respect to actions of `M``
+/-- `MulActionHomClass F M X Y` states that `F` is a type of
+morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionHomClass`. -/
 abbrev MulActionHomClass (F : Type _) (M : outParam (Type _))
 (X Y : outParam (Type _)) [SMul M X] [SMul M Y] :=
@@ -386,11 +387,11 @@ theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
   exact h₂ x
 
 /-- If actions of `M` and `N` on `α` commute,
-  then for `c : M`, `(c • · : α → α)` is an `N`-action
-homomorphism. -/
+  then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
 @[simps]
-def _root_.SMulCommClass.toMulActionHom {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
-    (c : M) : α →[N] α where
+def _root_.SMulCommClass.toMulActionHom {M} (N α : Type _)
+    [SMul M α] [SMul N α] [SMulCommClass M N α] (c : M) :
+  α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
 

@@ -389,7 +389,8 @@ theorem _root_.image_smul_setₛₗ [SemilinearMapClass F σ M M₃] (c : R) (s 
   · rintro x ⟨y, ⟨z, zs, rfl⟩, rfl⟩
     exact ⟨h z, Set.mem_image_of_mem _ zs, (SemilinearMapClass.map_smul _ _ _).symm⟩
   · rintro x ⟨y, ⟨z, hz, rfl⟩, rfl⟩
-    exact (Set.mem_image _ _ _).2 ⟨c • z, Set.smul_mem_smul_set hz, SemilinearMapClass.map_smul _ _ _⟩
+    exact (Set.mem_image _ _ _).2
+      ⟨c • z, Set.smul_mem_smul_set hz, SemilinearMapClass.map_smul _ _ _⟩
 #align image_smul_setₛₗ image_smul_setₛₗ
 
 theorem _root_.preimage_smul_setₛₗ [SemilinearMapClass F σ M M₃] {c : R} (hc : IsUnit c)
@@ -398,8 +399,8 @@ theorem _root_.preimage_smul_setₛₗ [SemilinearMapClass F σ M M₃] {c : R} 
   apply Set.Subset.antisymm
   · rintro x ⟨y, ys, hy⟩
     refine' ⟨(hc.unit.inv : R) • x, _, _⟩
-    · simp only [← hy, smul_smul, Set.mem_preimage, Units.inv_eq_val_inv, SemilinearMapClass.map_smul h, ← map_mul,
-        IsUnit.val_inv_mul, one_smul, map_one, ys]
+    · simp only [← hy, smul_smul, Set.mem_preimage, Units.inv_eq_val_inv,
+        SemilinearMapClass.map_smul h, ← map_mul, IsUnit.val_inv_mul, one_smul, map_one, ys]
     · simp only [smul_smul, IsUnit.mul_val_inv, one_smul, Units.inv_eq_val_inv]
   · rintro x ⟨y, hy, rfl⟩
     refine' ⟨h y, hy, by simp only [RingHom.id_apply, SemilinearMapClass.map_smul h]⟩
@@ -556,7 +557,8 @@ variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
 def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   toFun := f ∘ g
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
-  map_smul' r x := by simp only [Function.comp_apply, SemilinearMapClass.map_smul, RingHomCompTriple.comp_apply]
+  map_smul' r x := by
+    simp only [Function.comp_apply, SemilinearMapClass.map_smul, RingHomCompTriple.comp_apply]
 #align linear_map.comp LinearMap.comp
 
 set_option quotPrecheck false in -- Porting note: error message suggested to do this
