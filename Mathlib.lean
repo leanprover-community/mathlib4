@@ -811,8 +811,8 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.SpecificLimits.IsROrC
 import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.Analysis.SpecificLimits.IsROrC
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
