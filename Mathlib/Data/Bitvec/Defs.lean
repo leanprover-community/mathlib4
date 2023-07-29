@@ -9,6 +9,7 @@ Authors: Wojciech Nawrocki, Joe Hendrix, Harun Khan, Abdalrhman M Mohamed
 
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Bitwise
+import Mathlib.Data.ZMod.Defs
 
 
 /-!
@@ -59,6 +60,8 @@ protected def lt (x y : BitVec w) : Bool :=
 protected def le (x y : BitVec w) : Bool :=
   x.val ≤ y.val
 
+
+instance : Ring (BitVec w) := inferInstanceAs (Ring (Fin _))
 
 instance : Add (BitVec w) := inferInstanceAs (Add (Fin _))
 instance : Sub (BitVec w) := inferInstanceAs (Sub (Fin _))
@@ -137,6 +140,7 @@ protected def append (x : BitVec w) (y : BitVec v) : BitVec (w+v) :=
 
 instance : HAppend (BitVec w) (BitVec v) (BitVec (w+v)) := ⟨BitVec.append⟩
 
+/-- Extract the bitvector between indices i and j. -/
 @[simp]
 def extract (i j : Nat) (x : BitVec w) : BitVec (i - j + 1) :=
   BitVec.ofNat _ (x.val >>> j)
@@ -157,7 +161,6 @@ def signExtend (i : Nat) (x : BitVec w) : BitVec (w+i) :=
     rw [Nat.sub_self, Nat.zero_add, Nat.one_mul, Nat.add_comm]
   hEq ▸ ((repeat_ i (extract (w-1) (w-1) x)) ++ x)
 
--- `prefix` may be a better name
 def shrink (v : Nat) (x : BitVec w) : BitVec v :=
   if hZero : 0 < v then
     have hEq : v - 1 + 0 + 1 = v := by
