@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.separation
-! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Connected
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
+
+#align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
 /-!
 # Separation properties of topological spaces.
@@ -827,6 +824,16 @@ theorem ConnectedSpace.infinite [ConnectedSpace α] [Nontrivial α] [T1Space α]
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 #align connected_space.infinite ConnectedSpace.infinite
 
+/-- A non-trivial connected T1 space has no isolated points. -/
+instance ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
+    [ConnectedSpace α] [Nontrivial α] [T1Space α] (x : α) :
+    NeBot (𝓝[≠] x) := by
+  by_contra contra
+  rw [not_neBot, ← isOpen_singleton_iff_punctured_nhds] at contra
+  replace contra := nonempty_inter isOpen_compl_singleton
+    contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
+  simp [compl_inter_self {x}] at contra
+
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set α} [DiscreteTopology s] {x : α}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
   have : ({⟨x, hx⟩} : Set s) ∈ 𝓝 (⟨x, hx⟩ : s) := by simp [nhds_discrete]
@@ -1443,7 +1450,7 @@ theorem exists_open_superset_and_isCompact_closure [LocallyCompactSpace α] [T2S
     ⟨interior K', isOpen_interior, hKK', isCompact_closure_of_subset_compact hK' interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
 
-/-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find a
+/-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find an
 open set `V` between these sets with compact closure: `K ⊆ V` and the closure of `V` is inside `U`.
 -/
 theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace α] [T2Space α] {K U : Set α}

@@ -6,11 +6,13 @@ Authors: Floris van Doorn
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
 
+#align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
+
 /-!
 # Convolution of a bump function
 
 In this file we prove lemmas about convolutions `(φ.normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀`,
-where `φ : ContDiffBump 0` is an smooth bump function.
+where `φ : ContDiffBump 0` is a smooth bump function.
 
 We prove that this convolution is equal to `g x₀`
 if `g` is a constant on `Metric.ball x₀ φ.rOut`.

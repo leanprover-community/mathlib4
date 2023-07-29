@@ -2,11 +2,6 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.basic
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Analysis.Complex.Basic
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.LinearAlgebra.BilinearForm
+
+#align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Inner product space
@@ -37,7 +34,7 @@ product structure on `n → 𝕜` for `𝕜 = ℝ` or `ℂ`, see `EuclideanSpace
   properties, most notably the Cauchy-Schwarz inequality. Here `𝕜` is understood to be either `ℝ`
   or `ℂ`, through the `IsROrC` typeclass.
 - We show that the inner product is continuous, `continuous_inner`, and bundle it as the
-  the continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
+  continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
 - We define `Orthonormal`, a predicate on a function `v : ι → E`, and prove the existence of a
   maximal orthonormal set, `exists_maximal_orthonormal`.  Bessel's inequality,
   `Orthonormal.tsum_inner_products_le`, states that given an orthonormal set `v` and a vector `x`,
@@ -1979,7 +1976,7 @@ open DirectSum
 /-- An indexed family of mutually-orthogonal subspaces of an inner product space `E`.
 
 The simple way to express this concept would be as a condition on `V : ι → Submodule 𝕜 E`.  We
-We instead implement it as a condition on a family of inner product spaces each equipped with an
+instead implement it as a condition on a family of inner product spaces each equipped with an
 isometric embedding into `E`, thus making it a property of morphisms rather than subobjects.
 The connection to the subobject spelling is shown in `orthogonalFamily_iff_pairwise`.
 

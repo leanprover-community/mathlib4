@@ -2,17 +2,14 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.basic
-! leanprover-community/mathlib commit 9da1b3534b65d9661eb8f42443598a92bbb49211
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
 import Std.Data.List.Lemmas
+
+#align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
 
 /-!
 # Basic properties of lists
@@ -628,16 +625,12 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 #align list.map_reverse_core List.map_reverseAux
 
--- Porting TODO: Fix statement of `mem_reverse` in Std to match Lean3,
--- then deprecate/remove this one
-theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
-  List.mem_reverse _ _
-#align list.mem_reverse List.mem_reverse'
+#align list.mem_reverse List.mem_reverse
 
 @[simp] theorem reverse_replicate (n) (a : α) : reverse (replicate n a) = replicate n a :=
   eq_replicate.2
     ⟨by rw [length_reverse, length_replicate],
-     fun b h => eq_of_mem_replicate (mem_reverse'.1 h)⟩
+     fun b h => eq_of_mem_replicate (mem_reverse.1 h)⟩
 #align list.reverse_replicate List.reverse_replicate
 
 /-! ### empty -/
@@ -1887,9 +1880,6 @@ theorem take_zero (l : List α) : take 0 l = [] :=
   rfl
 #align list.take_zero List.take_zero
 
-@[simp]
-theorem take_nil : ∀ n, take n [] = ([] : List α)
-  | 0 | _ + 1 => rfl
 #align list.take_nil List.take_nil
 
 theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: take n l :=

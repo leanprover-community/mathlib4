@@ -2,11 +2,6 @@
 Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.modeq
-! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.GroupTheory.QuotientGroup

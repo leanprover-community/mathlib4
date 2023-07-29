@@ -2,15 +2,12 @@
 Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.connectivity
-! leanprover-community/mathlib commit b99e2d58a5e6861833fa8de11e51a81144258db4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
+
+#align_import combinatorics.simple_graph.connectivity from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
 /-!
 
@@ -1484,7 +1481,7 @@ theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
 #align simple_graph.walk.map_map SimpleGraph.Walk.map_map
 
 /-- Unlike categories, for graphs vertex equality is an important notion, so needing to be able to
-to work with equality of graph homomorphisms is a necessary evil. -/
+work with equality of graph homomorphisms is a necessary evil. -/
 theorem map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
     p.map f = (p.map f').copy (h ▸ rfl) (h ▸ rfl) := by
   subst_vars
@@ -1757,7 +1754,7 @@ theorem transfer_append (q : G.Walk v w) (hpq) :
 @[simp]
 theorem reverse_transfer (hp) :
     (p.transfer H hp).reverse =
-      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse']; exact hp) := by
+      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
   induction p with
   | nil => simp
   | cons _ _ ih => simp only [transfer_append, Walk.transfer, reverse_nil, reverse_cons, ih]
@@ -2489,7 +2486,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   -- so they both contain the edge ⟦(v, w)⟧, but that's a contradiction since c is a trail.
   have hbq := hb (pvu.append puw)
   have hpq' := hb pwv.reverse
-  rw [Walk.edges_reverse, List.mem_reverse'] at hpq'
+  rw [Walk.edges_reverse, List.mem_reverse] at hpq'
   rw [Walk.isTrail_def, this, Walk.edges_append, Walk.edges_append, List.nodup_append_comm,
     ← List.append_assoc, ← Walk.edges_append] at hc
   exact List.disjoint_of_nodup_append hc hbq hpq'

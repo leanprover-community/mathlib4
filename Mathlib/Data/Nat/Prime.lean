@@ -2,11 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.prime
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.Parity
@@ -16,6 +11,8 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Order.Bounds.Basic
+
+#align_import data.nat.prime from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Prime numbers
@@ -249,7 +246,7 @@ theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k
 
 /-- If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
   Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
-  If `n` is odd and `1 < n`, then then `minFacAux n 3` is the smallest prime factor of `n`. -/
+  If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`. -/
 def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if h : n < k * k then n

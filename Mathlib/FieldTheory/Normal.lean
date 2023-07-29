@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.normal
-! leanprover-community/mathlib commit 9fb8964792b4237dac6200193a0d533f1b3f7423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.Tower
 import Mathlib.GroupTheory.Solvable
 import Mathlib.RingTheory.PowerBasis
+
+#align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 
 /-!
 # Normal field extensions
@@ -266,6 +263,11 @@ instance normal_iSup {ι : Type _} (t : ι → IntermediateField F K) [h : ∀ i
   rw [minpoly_eq, Subtype.coe_mk, ← minpoly_eq] at this
   exact Polynomial.splits_comp_of_splits _ (inclusion hE).toRingHom this
 #align intermediate_field.normal_supr IntermediateField.normal_iSup
+
+instance normal_sup
+    (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
+    Normal F (E ⊔ E' : IntermediateField F K) :=
+  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by intro i; cases i <;> infer_instance)
 
 -- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
 variable {F K} {L : Type _} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
