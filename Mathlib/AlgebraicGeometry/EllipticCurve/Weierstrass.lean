@@ -1004,16 +1004,10 @@ lemma ofJ'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJ' j).j = j := 
     WeierstrassCurve.ofJ_c₄]
   ring1
 
--- TODO: move this lemma to suitable place in mathlib4 if it's useful by others
-private lemma ne_zero_or_ne_zero_of_nat_gcd_eq_one [Nontrivial R] {a b : ℕ} (h : a.gcd b = 1) :
-    (a : R) ≠ 0 ∨ (b : R) ≠ 0 :=
-  not_or_of_imp <| fun x y => not_isCoprime_zero_zero (R := R) <| by
-    simpa only [map_natCast, x, y] using IsCoprime.map (Nat.coprime.isCoprime h) (Int.castRingHom R)
-
 variable {F : Type u} [Field F] (j : F)
 
 private lemma two_or_three_ne_zero : (2 : F) ≠ 0 ∨ (3 : F) ≠ 0 :=
-  ne_zero_or_ne_zero_of_nat_gcd_eq_one (show Nat.gcd 2 3 = 1 by norm_num1)
+  ne_zero_or_ne_zero_of_nat_coprime (show Nat.coprime 2 3 by norm_num1)
 
 variable [DecidableEq F]
 
