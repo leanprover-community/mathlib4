@@ -547,7 +547,7 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let rb := (NormNum.evalMul.core q($m1 * $a) q(HMul.hMul) _ _
       q(CommSemiring.toSemiring) rm ra).get!
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
-    let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ := rb.toRawEq
+    let ⟨b, (pb : by clear! sα; exact Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ := rb.toRawEq
     ⟨b, .const zb hb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ := evalNegProd rα va₃
@@ -580,7 +580,7 @@ theorem sub_pf {R} [Ring R] {a b c d : R}
 -/
 def evalSub (rα : Q(Ring $α)) (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a - $b) :=
   let ⟨_c, vc, pc⟩ := evalNeg sα rα vb
-  let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ := evalAdd sα va vc
+  let ⟨d, vd, (pd : by clear! sα; exact Q($a + $_c = $d))⟩ := evalAdd sα va vc
   ⟨d, vd, (q(sub_pf $pc $pd) : Expr)⟩
 
 theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
