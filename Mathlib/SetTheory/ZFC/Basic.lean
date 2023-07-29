@@ -1820,7 +1820,7 @@ theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u})
 #align Set.choice_mem ZFSet.choice_mem
 
 /-- The noncomputable inverse of `ZFSet.toSet` as an equivalence. -/
-noncomputable def ZFSet.fromSet: { s : Set ZFSet.{u} // Small.{u} s } ≃ ZFSet.{u} :=
+noncomputable def fromSet: { s : Set ZFSet.{u} // Small.{u} s } ≃ ZFSet.{u} :=
   let toFun | ⟨s, h⟩ => ZFSet.mk (PSet.mk (Shrink s) fun x => ((equivShrink s).symm x).1.out)
   let invFun | s => ⟨s.toSet, s.small_toSet⟩
   have left_inv := by
