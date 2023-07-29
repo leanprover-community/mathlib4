@@ -48,8 +48,8 @@ lemma ε_app (X₁ : C₁) :
   letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso'.symm
   simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
-    Functor.id_obj, Functor.comp_obj, Lifting.id_iso', Functor.rightUnitor_hom_app, whiskerRight_app,
-    CatCommSq.hComp_iso'_hom_app, id_comp]
+    Functor.id_obj, Functor.comp_obj, Lifting.id_iso', Functor.rightUnitor_hom_app,
+      whiskerRight_app, CatCommSq.hComp_iso'_hom_app, id_comp]
 
 /-- Auxiliary definition of the counit morphism for the adjunction `Adjunction.localization` -/
 noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
