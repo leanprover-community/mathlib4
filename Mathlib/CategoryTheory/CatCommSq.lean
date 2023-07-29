@@ -14,6 +14,9 @@ this file introduces the notion of 2-commutative squares of functors.
 If `T : C₁ ⥤ C₂`, `L : C₁ ⥤ C₃`, `R : C₂ ⥤ C₄`, `B : C₃ ⥤ C₄` are functors,
 then `[CatCommSq T L R B]` contains the datum of an isomorphism `T ⋙ R ≅ L ⋙ B`.
 
+Future work: using this notion in the development of the localization of categories
+(e.g. localization of adjunctions).
+
 -/
 
 namespace CategoryTheory
