@@ -2,13 +2,10 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module lean_core.init.data.list.instances
-! leanprover-community/lean commit 9af482290ef68e8aaa5ead01aa7b09b7be7019fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.List.Lemmas
+
+#align_import init.data.list.instances from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
 /-!
 Decidable Instances for `List` not (yet) in `Std`
@@ -68,10 +65,10 @@ instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
     then isTrue ⟨x, mem_cons_self _ _, h₁⟩
     else match decidableBex xs with
       | isTrue h₂  => isTrue <| by
-        cases' h₂ with y h; cases' h with hm hp;
+        cases' h₂ with y h; cases' h with hm hp
         exact ⟨y, mem_cons_of_mem _ hm, hp⟩
       | isFalse h₂ => isFalse <| by
-        intro h; cases' h with y h; cases' h with hm hp;
+        intro h; cases' h with y h; cases' h with hm hp
         cases' mem_cons.1 hm with h h
         · rw [h] at hp; contradiction
         · exact absurd ⟨y, h, hp⟩ h₂

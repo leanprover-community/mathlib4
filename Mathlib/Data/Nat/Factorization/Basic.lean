@@ -2,11 +2,6 @@
 Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
-
-! This file was ported from Lean 3 source module data.nat.factorization.basic
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finsupp.Multiset
@@ -14,6 +9,8 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.IntervalCases
+
+#align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Prime factorizations
@@ -795,7 +792,7 @@ we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
     (h : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → P a → P (p ^ n * a)) : ∀ a : ℕ, P a := fun a =>
-  Nat.strong_rec_on a fun n =>
+  Nat.strongRecOn a fun n =>
     match n with
     | 0 => fun _ => h0
     | 1 => fun _ => h1

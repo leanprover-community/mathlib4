@@ -2,11 +2,6 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.combination
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IndicatorFunction
@@ -16,6 +11,8 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Tactic.FinCases
+
+#align_import linear_algebra.affine_space.combination from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Affine combinations of points

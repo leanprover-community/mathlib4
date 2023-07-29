@@ -100,12 +100,12 @@ theorem mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
           (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
   rintro ⟨α, ⟨h, ⟨Y, ⟨π, hπ⟩⟩⟩⟩
   have h_le : Sieve.generate (Presieve.ofArrows _ π) ≤ S := by
-      rw [Sieve.sets_iff_generate (Presieve.ofArrows _ π) S]
-      apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows (fun i => Y i) π) S _
-      intro W g f
-      use W, 𝟙 W
-      rcases f with ⟨i⟩
-      exact ⟨π i, ⟨hπ.2 i,Category.id_comp (π i) ⟩⟩
+    rw [Sieve.sets_iff_generate (Presieve.ofArrows _ π) S]
+    apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows (fun i => Y i) π) S _
+    intro W g f
+    use W, 𝟙 W
+    rcases f with ⟨i⟩
+    exact ⟨π i, ⟨hπ.2 i,Category.id_comp (π i) ⟩⟩
   apply Coverage.saturate_of_superset (coherentCoverage C) h_le
   exact Coverage.saturate.of X _ ⟨α, inferInstance, Y, π, ⟨rfl, hπ.1⟩⟩
 
@@ -146,8 +146,8 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α
     (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Fintype (β a)]
     {Y_n : (a : α) → β a → C} (π_n : (a : α) → (b : β a) → (Y_n a b ⟶ Y a))
     (H : ∀ a, EffectiveEpiFamily (Y_n a) (π_n a)) :
-EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst)
-    := by
+    EffectiveEpiFamily
+      (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst) := by
   rw [← Sieve.effectiveEpimorphic_family]
   suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
         (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ GrothendieckTopology.sieves (coherentTopology C) X by
@@ -165,8 +165,6 @@ EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fs
   apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
   · apply Coverage.saturate.of
     use α, inferInstance, Y, π
-    simp only [true_and]
-    exact Iff.mp (Sieve.effectiveEpimorphic_family Y π) h'
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]
     apply (coherentTopology C).pullback_stable'
@@ -188,7 +186,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
   · intro h
-    induction' h with Y T hS  Y Y R S _ _ a b
+    induction' h with Y T hS Y Y R S _ _ a b
     · rcases hS with ⟨a, h, Y', π, h'⟩
       use a, h, Y', π, by tauto
       intro a'
