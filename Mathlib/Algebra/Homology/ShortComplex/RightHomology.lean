@@ -1098,6 +1098,27 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : RightHomologyDat
 
 end RightHomologyMapData
 
+instance (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData)
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (rightHomologyMap' φ h₁ h₂) := by
+  let h₂' := RightHomologyData.ofEpiOfIsIsoOfMono φ h₁
+  haveI : IsIso (rightHomologyMap' φ h₁ h₂') := by
+    rw [(RightHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).rightHomologyMap'_eq]
+    dsimp
+    infer_instance
+  have eq := rightHomologyMap'_comp φ (𝟙 S₂) h₁ h₂' h₂
+  rw [comp_id] at eq
+  rw [eq]
+  infer_instance
+
+/-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
+and `φ.τ₃` is mono, then the induced morphism on right homology is an isomorphism. -/
+instance (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (rightHomologyMap φ) := by
+  dsimp only [rightHomologyMap]
+  infer_instance
+
 end ShortComplex
 
 end CategoryTheory
