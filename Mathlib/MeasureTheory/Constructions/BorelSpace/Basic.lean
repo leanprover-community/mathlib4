@@ -1109,10 +1109,8 @@ private theorem AEMeasurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : M
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :
     AEMeasurable g μ := by
-  by_cases hμ : μ = 0
-  · rw [hμ]
-    exact aemeasurable_zero_measure
-  have : μ.ae.NeBot := by simpa [neBot_iff]
+  rcases eq_zero_or_neZero μ with rfl | hμ
+  · exact aemeasurable_zero_measure
   by_cases hι : Nonempty ι
   · exact AEMeasurable.is_lub_of_nonempty hι hf hg
   suffices ∃ x, g =ᵐ[μ] fun _ => g x by

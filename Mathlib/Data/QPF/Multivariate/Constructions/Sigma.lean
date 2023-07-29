@@ -23,13 +23,13 @@ variable {n : ℕ} {A : Type u}
 
 variable (F : A → TypeVec.{u} n → Type u)
 
-/-- Dependent sum of of an `n`-ary functor. The sum can range over
+/-- Dependent sum of an `n`-ary functor. The sum can range over
 data types like `ℕ` or over `Type.{u-1}` -/
 def Sigma (v : TypeVec.{u} n) : Type u :=
   Σ α : A, F α v
 #align mvqpf.sigma MvQPF.Sigma
 
-/-- Dependent product of of an `n`-ary functor. The sum can range over
+/-- Dependent product of an `n`-ary functor. The sum can range over
 data types like `ℕ` or over `Type.{u-1}` -/
 def Pi (v : TypeVec.{u} n) : Type u :=
   ∀ α : A, F α v

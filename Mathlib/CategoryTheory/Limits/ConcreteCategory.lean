@@ -130,7 +130,7 @@ def Concrete.multiequalizerEquivAux (I : MulticospanIndex C) :
 #align category_theory.limits.concrete.multiequalizer_equiv_aux CategoryTheory.Limits.Concrete.multiequalizerEquivAux
 
 /-- The equivalence between the noncomputable multiequalizer and
-and the concrete multiequalizer. -/
+the concrete multiequalizer. -/
 noncomputable def Concrete.multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] :
     (multiequalizer I : C) ≃
