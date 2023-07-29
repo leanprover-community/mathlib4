@@ -291,6 +291,14 @@ theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
 #align is_R_or_C.norm_of_real IsROrC.norm_ofReal
 
+@[simp, isROrC_simps]
+theorem re_sum (f : n → K) : IsROrC.re (∑ i in s, f i) = ∑ i in s, IsROrC.re (f i) := by
+  apply map_sum _ _
+
+@[simp, isROrC_simps]
+theorem im_sum (f : n → K) : IsROrC.im (∑ i in s, f i) = ∑ i in s, IsROrC.im (f i) := by
+  apply map_sum _ _
+
 /-! ### Characteristic zero -/
 
 -- see Note [lower instance priority]

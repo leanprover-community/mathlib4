@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.Data.IsROrC.Basic
 
 #align_import linear_algebra.matrix.dot_product from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -99,5 +100,29 @@ theorem dotProduct_self_star_eq_zero [PartialOrder R] [NonUnitalRing R] [StarOrd
 #align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
 
 end Self
+
+section IsROrCFields
+variable [Fintype n]
+variable {K: Type}[IsROrC K]
+
+lemma dot_product_star_self_eq_zero_iff_R_or_C
+    (v : n → K) : Matrix.dotProduct (star v) v = 0 ↔  v = 0 := by
+  simp_rw [Matrix.dotProduct, Pi.star_apply, ← starRingEnd_apply, IsROrC.conj_mul]
+  rw [IsROrC.ext_iff]
+  simp only [IsROrC.re_sum, IsROrC.ofReal_re, map_zero, IsROrC.im_sum, IsROrC.ofReal_im,
+    Finset.sum_const_zero, and_true]
+  constructor
+  · intro hr
+    rw [Finset.sum_eq_zero_iff_of_nonneg] at hr
+    · simp only [Finset.mem_univ, map_eq_zero, forall_true_left] at hr
+      funext i
+      exact hr i
+    · simp only [Finset.mem_univ, forall_true_left]
+      intro
+      apply IsROrC.normSq_nonneg
+  · intro h
+    rw [h]
+    simp only [Pi.zero_apply, map_zero, Finset.sum_const_zero]
+end IsROrCFields
 
 end Matrix

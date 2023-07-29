@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.Data.Complex.Module
+import Mathlib.Data.IsROrC.Basic
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
 
@@ -224,6 +225,45 @@ theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.r
 #align matrix.rank_self_mul_conj_transpose Matrix.rank_self_mul_conjTranspose
 
 end StarOrderedField
+
+section IsROrCFields
+variable {K: Type}[IsROrC K]
+open BigOperators
+
+theorem ker_mulVecLin_conjTranspose_mul_self_R_or_C (A : Matrix m n K) :
+    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) := by
+  ext x
+  simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
+  constructor
+  · intro h
+    replace h := congr_arg (dotProduct (star x)) h
+    rwa [dotProduct_zero, dotProduct_mulVec, vecMul_conjTranspose, star_star,
+      dot_product_star_self_eq_zero_iff_R_or_C] at h
+  · intro h
+    rw [h, mulVec_zero]
+
+theorem rank_conjTranspose_mul_self_R_or_C (A : Matrix m n K) : (Aᴴ ⬝ A).rank = A.rank := by
+  dsimp only [rank]
+  refine' add_left_injective (finrank K (LinearMap.ker (mulVecLin A))) _
+  dsimp only
+  trans finrank K { x // x ∈ LinearMap.range (mulVecLin (Aᴴ ⬝ A)) } +
+    finrank K { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ ⬝ A)) }
+  · rw [ker_mulVecLin_conjTranspose_mul_self_R_or_C]
+  · simp only [LinearMap.finrank_range_add_finrank_ker]
+
+@[simp]
+theorem rank_conjTranspose_R_or_C (A : Matrix m n K) : Aᴴ.rank = A.rank :=
+  le_antisymm
+    (((rank_conjTranspose_mul_self_R_or_C _).symm.trans_le <| rank_mul_le_left _ _).trans_eq <|
+      congr_arg _ <| conjTranspose_conjTranspose _)
+    ((rank_conjTranspose_mul_self_R_or_C _).symm.trans_le <| rank_mul_le_left _ _)
+
+@[simp]
+theorem rank_self_mul_conjTranspose_R_or_C (A : Matrix m n K) : (A ⬝ Aᴴ).rank = A.rank := by
+  simpa only [rank_conjTranspose_R_or_C, conjTranspose_conjTranspose] using
+    rank_conjTranspose_mul_self_R_or_C Aᴴ
+
+end IsROrCFields
 
 section LinearOrderedField
 
