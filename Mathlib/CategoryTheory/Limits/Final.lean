@@ -370,14 +370,15 @@ end
 end Final
 variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
-#where
-theorem of_comp_full_faithful [Full G] [Faithful G] [Final (F ⋙ G)] : Final F where
-  out d := by
-    haveI := StructuredArrow.isEquivalence_post d F G
-    haveI : IsConnected (StructuredArrow (G.obj d) (F ⋙ G)) := sorry
-    let a := (asEquivalence (StructuredArrow.post d F G)).symm
+theorem final_of_comp_full_faithful [Full G] [Faithful G] [Final (F ⋙ G)] : Final F where
+  out d :=
+    have := StructuredArrow.isEquivalence_post d F G
+    isConnected_of_equivalent (asEquivalence (StructuredArrow.post d F G)).symm
 
-    have := isConnected_of_equivalent a
+theorem initial_of_comp_full_faithful [Full G] [Faithful G] [Initial (F ⋙ G)] : Initial F where
+  out d :=
+    have := CostructuredArrow.isEquivalence_post d F G
+    isConnected_of_equivalent (asEquivalence (CostructuredArrow.post F G d)).symm
 
 end ArbitraryUniverse
 
