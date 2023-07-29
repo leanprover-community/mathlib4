@@ -479,7 +479,7 @@ section
 variable (S)
 variable [S.HasRightHomology]
 
-/-- The left homology of a short complex,
+/-- The right homology of a short complex,
 given by the `H` field of a chosen right homology data. -/
 noncomputable def rightHomology : C := S.rightHomologyData.H
 
