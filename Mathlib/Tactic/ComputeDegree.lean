@@ -361,12 +361,14 @@ Using the information contained in `twoH`, it decides which lemma is the most ap
 --  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f n = a`, in this order.
 def dispatchLemma (twoH : Name × Name × Name × List Bool) (debug : Bool := false) : Name :=
 match twoH with
-  | (.anonymous, _, _, _) => ``id
-  | (_, .anonymous, _, _) => ``id
+  | (.anonymous, _, _, _) => ``id -- `twoH` gave default value, so we do nothing
+  | (_, .anonymous, _, _) => ``id -- `twoH` gave default value, so we do nothing
   | (na1, na2, head, bools) =>
     let msg := f!"\ndispatchLemma:\n  {head}"
+    -- if there is some non-metavariable on the way, we "congr" it away
     if false ∈ bools then getCongrLemma (na1, na2, bools) debug
     else
+    -- otherwise, we select either the first, second or third element of the triple in `nas` below
     let π : Name × Name × Name → Name := match na1, na2 with
       | ``natDegree, ``LE.le => Prod.fst
       | ``degree, ``LE.le => Prod.fst ∘ Prod.snd
@@ -480,23 +482,27 @@ Thus, the resulting list is empty if and only if `norm_num` cannot disprove one 
 goals (even though the goal need not be solvable!).
 -/
 def miscomputedDegree? (deg : Expr) (degMVs : List MVarId) : MetaM (List MessageData) := do
-let simps := ← degMVs.mapM fun x =>
-  return (← x.getTag, ← deriveSimp (← mkDefault) true (← x.getType''))
-let simps := simps.filter fun x => (x.2.expr == (Expr.const ``False []))
+-- apply `norm_num` to the `MVarId`s
+let simps := ← degMVs.mapM fun x => do deriveSimp (← mkDefault) true (← x.getType'')
+-- select the `MVarId`s that `norm_num` reduced to `False`
+let simps := simps.filter fun x => (x.expr == (Expr.const ``False []))
+-- if `norm_num` reduces `x` to `False`, then `x.proof? = some (goal = False)`
 let contrs := ← simps.mapM fun x => do
-  let st := x.2.proof?.getD (Expr.const ``Lean.Rat [])
-  logInfo x.1
+  let st := x.proof?.getD (Expr.const ``Lean.Rat [])
   match (← inferType st).eq? with
+    -- we enter in `goal = False`: here, `lhs = goal`
     | some (_, lhs, _) =>
-      if lhs.eq?.isSome then
-        let lhs := lhs.eq?.get!.2.1
-        return (← deriveSimp (← mkDefault) true lhs).expr
-      else
-        pure lhs.getAppFn
+      match lhs.eq? with
+        -- we enter `goal`: here `goal` was an equality `goal = (lhs = _)` and we do `norm_num lhs`
+        | some (_, lhs, _) => return (← deriveSimp (← mkDefault) true lhs).expr
+        | none => return lhs.getAppFn
     | _ => pure (← inferType st).getAppFn
+-- finally, we see what each `MVarId` in our list became:
 return (contrs.map fun e =>
+  -- the `Expr.app`s correspond to an equality `given_degree = computed_degree` reducing to `False`
   if e.isApp then
     m!"* the naïvely computed degree is '{e}'\n"
+  -- the rest correspond to an inequality `coeff ≠ 0` reducing to `False`
   else
     m!"* the coefficient of degree '{deg}' is zero")
 
