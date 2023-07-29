@@ -110,6 +110,7 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ (isoWhiskerRight (IsPreconnected.iso_constant _ j).some _)
     ≪≫ NatIso.ofComponents (fun j' => eqToIso (Function.invFun_eq ⟨j, rfl⟩)) (by aesop_cat)
+#align category_theory.iso_constant CategoryTheory.isoConstant
 
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
