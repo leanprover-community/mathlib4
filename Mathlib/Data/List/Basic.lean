@@ -416,14 +416,18 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 /-! ### replicate -/
 
-attribute [simp] replicate_succ
-#align list.replicate_succ List.replicate_succ
-
 @[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
 #align list.replicate_zero List.replicate_zero
 
+attribute [simp] replicate_succ
+#align list.replicate_succ List.replicate_succ
+
 lemma replicate_one (a : α) : replicate 1 a = [a] := rfl
 #align list.replicate_one List.replicate_one
+
+#align list.length_replicate List.length_replicate
+#align list.mem_replicate List.mem_replicate
+#align list.eq_of_mem_replicate List.eq_of_mem_replicate
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
