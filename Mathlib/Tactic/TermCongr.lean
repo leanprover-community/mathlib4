@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Lean
 import Mathlib.Logic.Basic
+--import Mathlib.Tactic.Congr!
 --import Mathlib.Lean.Expr.Traverse
 --import Mathlib.Lean.Meta.Simp
 
@@ -103,7 +104,7 @@ def cHole?' (ctx : MetavarContext) (mvarCounterSaved : Nat) (e : Expr) :
       return r
   none
 
-/-- Returns any subexpression that's a congruence hole that's recent.  -/
+/-- Returns any subexpression that is a recent congruence hole.  -/
 def hasCHole (mvarCounterSaved : Nat) (e : Expr) : MetaM (Option Expr) := do
   let mctx ← getMCtx
   return e.find? fun e' => (cHole?' mctx mvarCounterSaved e').isSome
@@ -319,6 +320,7 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
   let mctx ← getMCtx
   match cHole?' mctx mvarCounterSaved lhs, cHole?' mctx mvarCounterSaved rhs with
   | some (_, lhs1, rhs1, pf1), some (_, lhs2, rhs2, pf2) =>
+    trace[Tactic.congr] "mkCongrOfCHole, both holes"
     -- Defeq checks to unify the lhs and rhs congruence holes.
     unless ← isDefEq lhs1 lhs2 do
       throwCongrEx lhs rhs "Elaborated left-hand sides of congruence holes are not defeq."
@@ -335,8 +337,9 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
 
 /-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
 Assumes all metavariables are instantiated. -/
-partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM CongrResult := do
-  trace[Tactic.congr] "mkCongrOf: {depth}, {lhs}, {rhs}"
+partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
+    MetaM CongrResult := do
+  trace[Tactic.congr] "mkCongrOf: {depth}, {lhs}, {rhs}, {(← mkFreshExprMVar none).mvarId!}"
   if depth > 100 then
     throwError "out of gas"
   if let some res ← mkCongrOfCHole? mvarCounterSaved lhs rhs then
@@ -482,5 +485,6 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     let rhs ← instantiateMVars rhs
     let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
     let pf ← res.eq
+    --logInfo m!"pf type = {toString (← inferType pf)}"
     return pf
   | _ => throwUnsupportedSyntax

@@ -31,37 +31,30 @@ example [Fintype α] [Fintype β] (h : α = β) : Fintype.card α = Fintype.card
   congr(Fintype.card $h)
 
 example (s t : Set α) [Fintype s] [Fintype t] (h : s = t) : Fintype.card s = Fintype.card t :=
-  -- Need type ascription, otherwise it gets confused due to coercion.
-  -- (In `c_lhs h` it's `s` that gets coerced but `h` does not get coerced with it.)
-  congr(Fintype.card ($(h) :))
-
-example (s t : Set α) [Fintype s] [Fintype t] (h : s = t) : Fintype.card s = Fintype.card t :=
-  -- Need type ascription, otherwise it gets confused due to coercion.
-  -- (In `c_lhs h` it's `s` that gets coerced but `h` does not get coerced with it.)
   congr(Fintype.card $(h))
-#exit
+
 example (x y : ℤ) (h1 : 3*x + 2*y = 10) (h2 : 2*x + 5*y = 3) :
     11*y = -11 := by
-  have := congr% -2*c(h1) + 3*c(h2)
-  guard_hyp this :ₛ -2*(3*x + 2*y) + 3*(2*x + 5*y) = -2*10 + 3*3
+  have := congr(-2*$(h1) + 3*$(h2))
+  guard_hyp this : -2*(3*x + 2*y) + 3*(2*x + 5*y) = -2*10 + 3*3
   ring_nf at this ⊢
   exact this
-#exit
+
 example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c*3 = d) (h4 : -d = a) :
     2*a - 3 + 9*c + 3*d = 8 - b + 3*d - 3*a := by
-  have := congr% 2*c(h1) -1*c(h2) +3*c(h3) -3*c(h4)
-  guard_hyp this :ₛ 2*a - 1*3 + 3*(c*3) -3*(-d) = 2*4 - 1*b + 3*d - 3*a
+  have := congr(2*$(h1) -1*$(h2) +3*$(h3) -3*$(h4))
+  guard_hyp this : 2*a - 1*3 + 3*(c*3) -3*(-d) = 2*4 - 1*b + 3*d - 3*a
   ring_nf at this ⊢
   exact this
-#exit
+
 example (a b c d e f : Nat) (hab : a = b) (hcd : c = d) (hef : e = f) : True := by
-  have := congr% 1 + c(hab) + c(hcd) * c(hef)
-  guard_hyp this :ₛ 1 + a + c * e = 1 + b + d * f
+  have := congr(1 + $(hab) + $(hcd) * $(hef))
+  guard_hyp this : 1 + a + c * e = 1 + b + d * f
   trivial
-#exit
+
 example (f g : Nat → Nat) (h : ∀ n, f n = g n) :
     (fun n => 1 + f n) = (fun n => 1 + g n) :=
-  congr% fun n => 1 + c(h n)
+  congr(fun n => 1 + $(h n))
 #exit
 example (f g : Nat → Nat) (h : ∀ n, f n = g n) :
     (fun n => 1 + f n) = (fun n => 1 + g n) := by
