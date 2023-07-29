@@ -1485,8 +1485,8 @@ theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : β → α} {l : Filter 
 ### Limits of filters in topological spaces
 
 In this section we define functions that return a limit of a filter (or of a function along a
-filter), if it exists, and a random point otherwise. This functions are rarely used in Mathlib, most
-of the theorems are written using `Filter.Tendsto`. One of the reasons is that
+filter), if it exists, and a random point otherwise. These functions are rarely used in Mathlib,
+most of the theorems are written using `Filter.Tendsto`. One of the reasons is that
 `Filter.limUnder f g = a` is not equivalent to `Filter.Tendsto g f (𝓝 a)` unless the codomain is a
 Hausdorff space and `g` has a limit along `f`.
 -/

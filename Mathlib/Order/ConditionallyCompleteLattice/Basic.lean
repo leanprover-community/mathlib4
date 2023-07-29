@@ -193,11 +193,11 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
   /-- A `ConditionallyCompleteLinearOrder` is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (. ≤ . : α → α → Prop)
+  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (. < . : α → α → Prop) :=
+  decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
