@@ -78,9 +78,9 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
   calc
     (e'.inverse ⋙ eA.inverse) ⋙ F ≅ (e'.inverse ⋙ eA.inverse) ⋙ eA.functor ⋙ e'.functor :=
       isoWhiskerLeft _ hF.symm
-    _ ≅ e'.inverse ⋙ (eA.inverse ⋙ eA.functor) ⋙ e'.functor := (Iso.refl _)
-    _ ≅ e'.inverse ⋙ 𝟭 _ ⋙ e'.functor := (isoWhiskerLeft _ (isoWhiskerRight eA.counitIso _))
-    _ ≅ e'.inverse ⋙ e'.functor := (Iso.refl _)
+    _ ≅ e'.inverse ⋙ (eA.inverse ⋙ eA.functor) ⋙ e'.functor := Iso.refl _
+    _ ≅ e'.inverse ⋙ 𝟭 _ ⋙ e'.functor := isoWhiskerLeft _ (isoWhiskerRight eA.counitIso _)
+    _ ≅ e'.inverse ⋙ e'.functor := Iso.refl _
     _ ≅ 𝟭 B' := e'.counitIso
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso
 
@@ -97,10 +97,10 @@ theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence
 def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
   calc
     𝟭 A ≅ eA.functor ⋙ eA.inverse := eA.unitIso
-    _ ≅ eA.functor ⋙ 𝟭 A' ⋙ eA.inverse := (Iso.refl _)
+    _ ≅ eA.functor ⋙ 𝟭 A' ⋙ eA.inverse := Iso.refl _
     _ ≅ eA.functor ⋙ (e'.functor ⋙ e'.inverse) ⋙ eA.inverse :=
-      (isoWhiskerLeft _ (isoWhiskerRight e'.unitIso _))
-    _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
+      isoWhiskerLeft _ (isoWhiskerRight e'.unitIso _)
+    _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse ⋙ eA.inverse := Iso.refl _
     _ ≅ F ⋙ e'.inverse ⋙ eA.inverse := isoWhiskerRight hF _
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso
 
@@ -132,8 +132,8 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
         eB.functor ⋙ (e'.inverse ⋙ eA.inverse ⋙ F) ⋙ eB.inverse :=
       Iso.refl _
     _ ≅ eB.functor ⋙ 𝟭 _ ⋙ eB.inverse :=
-      (isoWhiskerLeft _ (isoWhiskerRight (equivalence₁CounitIso hF) _))
-    _ ≅ eB.functor ⋙ eB.inverse := (Iso.refl _)
+      isoWhiskerLeft _ (isoWhiskerRight (equivalence₁CounitIso hF) _)
+    _ ≅ eB.functor ⋙ eB.inverse := Iso.refl _
     _ ≅ 𝟭 B := eB.unitIso.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso
 
@@ -150,9 +150,9 @@ theorem equivalence₂CounitIso_eq :
 def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse :=
   calc
     𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse := equivalence₁UnitIso hF
-    _ ≅ F ⋙ 𝟭 B' ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
+    _ ≅ F ⋙ 𝟭 B' ⋙ e'.inverse ⋙ eA.inverse := Iso.refl _
     _ ≅ F ⋙ (eB.inverse ⋙ eB.functor) ⋙ e'.inverse ⋙ eA.inverse :=
-      (isoWhiskerLeft _ (isoWhiskerRight eB.counitIso.symm _))
+      isoWhiskerLeft _ (isoWhiskerRight eB.counitIso.symm _)
     _ ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse := Iso.refl _
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso
 
@@ -174,8 +174,8 @@ def equivalence : A ≌ B :=
     refine' IsEquivalence.ofIso _ (IsEquivalence.ofEquivalence (equivalence₂ eB hF).symm)
     calc
       eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := Iso.refl _
-      _ ≅ (G ⋙ eA.functor) ⋙ eA.inverse := (isoWhiskerRight hG _)
-      _ ≅ G ⋙ 𝟭 A := (isoWhiskerLeft _ eA.unitIso.symm)
+      _ ≅ (G ⋙ eA.functor) ⋙ eA.inverse := isoWhiskerRight hG _
+      _ ≅ G ⋙ 𝟭 A := isoWhiskerLeft _ eA.unitIso.symm
       _ ≅ G := Functor.rightUnitor G
   G.asEquivalence.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence AlgebraicTopology.DoldKan.Compatibility.equivalence
@@ -202,9 +202,9 @@ def τ₁ (η : G ⋙ F ≅ eB.functor) : eB.functor ⋙ e'.inverse ⋙ e'.funct
   calc
     eB.functor ⋙ e'.inverse ⋙ e'.functor ≅ (eB.functor ⋙ e'.inverse) ⋙ e'.functor :=
         Iso.refl _
-    _ ≅ (G ⋙ eA.functor) ⋙ e'.functor := (isoWhiskerRight hG _)
+    _ ≅ (G ⋙ eA.functor) ⋙ e'.functor := isoWhiskerRight hG _
     _ ≅ G ⋙ eA.functor ⋙ e'.functor := by rfl
-    _ ≅ G ⋙ F := (isoWhiskerLeft _ hF)
+    _ ≅ G ⋙ F := isoWhiskerLeft _ hF
     _ ≅ eB.functor := η
 #align algebraic_topology.dold_kan.compatibility.τ₁ AlgebraicTopology.DoldKan.Compatibility.τ₁
 
@@ -215,7 +215,7 @@ variable (η : G ⋙ F ≅ eB.functor) (hη : τ₀ = τ₁ hF hG η)
 def equivalenceCounitIso : G ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
   calc
     G ⋙ F ⋙ eB.inverse ≅ (G ⋙ F) ⋙ eB.inverse := Iso.refl _
-    _ ≅ eB.functor ⋙ eB.inverse := (isoWhiskerRight η _)
+    _ ≅ eB.functor ⋙ eB.inverse := isoWhiskerRight η _
     _ ≅ 𝟭 B := eB.unitIso.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalenceCounitIso
 
@@ -247,7 +247,7 @@ def υ : eA.functor ≅ F ⋙ e'.inverse :=
   calc
     eA.functor ≅ eA.functor ⋙ 𝟭 A' := (Functor.leftUnitor _).symm
     _ ≅ eA.functor ⋙ e'.functor ⋙ e'.inverse := (isoWhiskerLeft _ e'.unitIso)
-    _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse := (Iso.refl _)
+    _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse := Iso.refl _
     _ ≅ F ⋙ e'.inverse := isoWhiskerRight hF _
 #align algebraic_topology.dold_kan.compatibility.υ AlgebraicTopology.DoldKan.Compatibility.υ
 
@@ -259,14 +259,14 @@ def equivalenceUnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ G :=
   calc
     𝟭 A ≅ eA.functor ⋙ eA.inverse := eA.unitIso
     _ ≅ (F ⋙ e'.inverse) ⋙ eA.inverse := isoWhiskerRight ε _
-    _ ≅ F ⋙ 𝟭 B' ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
+    _ ≅ F ⋙ 𝟭 B' ⋙ e'.inverse ⋙ eA.inverse := Iso.refl _
     _ ≅ F ⋙ (eB.inverse ⋙ eB.functor) ⋙ e'.inverse ⋙ eA.inverse :=
-      (isoWhiskerLeft _ (isoWhiskerRight eB.counitIso.symm _))
-    _ ≅ (F ⋙ eB.inverse) ⋙ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := (Iso.refl _)
+      isoWhiskerLeft _ (isoWhiskerRight eB.counitIso.symm _)
+    _ ≅ (F ⋙ eB.inverse) ⋙ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := Iso.refl _
     _ ≅ (F ⋙ eB.inverse) ⋙ (G ⋙ eA.functor) ⋙ eA.inverse :=
-      (isoWhiskerLeft _ (isoWhiskerRight hG _))
-    _ ≅ (F ⋙ eB.inverse ⋙ G) ⋙ eA.functor ⋙ eA.inverse := (Iso.refl _)
-    _ ≅ (F ⋙ eB.inverse ⋙ G) ⋙ 𝟭 A := (isoWhiskerLeft _ eA.unitIso.symm)
+      isoWhiskerLeft _ (isoWhiskerRight hG _)
+    _ ≅ (F ⋙ eB.inverse ⋙ G) ⋙ eA.functor ⋙ eA.inverse := Iso.refl _
+    _ ≅ (F ⋙ eB.inverse ⋙ G) ⋙ 𝟭 A := isoWhiskerLeft _ eA.unitIso.symm
     _ ≅ (F ⋙ eB.inverse) ⋙ G := Iso.refl _
 #align algebraic_topology.dold_kan.compatibility.equivalence_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalenceUnitIso
 
