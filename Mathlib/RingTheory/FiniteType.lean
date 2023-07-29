@@ -143,7 +143,6 @@ theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
     use { x : A // x ∈ s }, inferInstance, f
-    exact hsur
   · rintro ⟨ι, ⟨hfintype, ⟨f, hsur⟩⟩⟩
     letI : Fintype ι := hfintype
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R ι) f hsur
