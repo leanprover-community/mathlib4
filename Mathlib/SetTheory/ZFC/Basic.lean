@@ -1828,13 +1828,13 @@ noncomputable def ZFSet.fromSet: { s : Set ZFSet.{u} // Small.{u} s } ≃ ZFSet.
     ext x
     simp only [ZFSet.mem_toSet]
     constructor
-    . intro xs
+    · intro xs
       rw [←ZFSet.mk_out x, ZFSet.mk_mem_iff] at xs
       dsimp [Membership.mem, PSet.Mem] at xs
       rcases xs with ⟨b, h2⟩
       rw [←ZFSet.eq, ZFSet.mk_out, ZFSet.mk_out] at h2
       simp [h2]
-    . intro xs
+    · intro xs
       rw [←ZFSet.mk_out x, ZFSet.mk_mem_iff]
       use (equivShrink s) (Subtype.mk x xs)
       simp [PSet.Equiv.refl]
@@ -1844,7 +1844,7 @@ noncomputable def ZFSet.fromSet: { s : Set ZFSet.{u} // Small.{u} s } ≃ ZFSet.
     left_inv := left_inv
     right_inv := by
       apply Function.rightInverse_of_injective_of_leftInverse
-      . intro x y
+      · intro x y
         simp
       apply left_inv
   }
