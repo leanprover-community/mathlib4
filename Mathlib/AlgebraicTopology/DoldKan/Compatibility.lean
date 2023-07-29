@@ -258,7 +258,7 @@ variable (ε : eA.functor ≅ F ⋙ e'.inverse) (hε : υ hF = ε) (hG)
 def equivalenceUnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ G :=
   calc
     𝟭 A ≅ eA.functor ⋙ eA.inverse := eA.unitIso
-    _ ≅ (F ⋙ e'.inverse) ⋙ eA.inverse := (isoWhiskerRight ε _)
+    _ ≅ (F ⋙ e'.inverse) ⋙ eA.inverse := isoWhiskerRight ε _
     _ ≅ F ⋙ 𝟭 B' ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
     _ ≅ F ⋙ (eB.inverse ⋙ eB.functor) ⋙ e'.inverse ⋙ eA.inverse :=
       (isoWhiskerLeft _ (isoWhiskerRight eB.counitIso.symm _))
