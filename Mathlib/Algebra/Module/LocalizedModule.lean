@@ -1105,7 +1105,6 @@ theorem isBaseChange : IsBaseChange A f := by
       simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
   rcases this with ⟨ℓ, rfl, h₂⟩
   refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
-  have := h₂ (LinearMap.restrictScalars R g'') h
   ext x
   simp [← h₂ (LinearMap.restrictScalars R g'') h]
 
