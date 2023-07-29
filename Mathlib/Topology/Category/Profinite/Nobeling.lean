@@ -4530,7 +4530,50 @@ lemma GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (ev
 
 section Span
 
-variable (hC : IsClosed C)
+def ProjFin (J : Finset (WithTop I)) : (WithTop I → Bool) → (WithTop I → Bool) :=
+  fun f i ↦ if i ∈ J then f i else false
+
+lemma continuous_projFin (J : Finset (WithTop I)) :
+    Continuous (ProjFin J : (WithTop I → Bool) → (WithTop I → Bool)) := by
+  refine' continuous_pi _
+  intro i
+  dsimp [ProjFin]
+  split_ifs
+  · exact continuous_apply _
+  · exact continuous_const
+
+lemma isClosedMap_projFin (J : Finset (WithTop I)) :
+    IsClosedMap (ProjFin J : (WithTop I → Bool) → (WithTop I → Bool)) :=
+  fun _ hF ↦ (IsCompact.isClosed (hF.isCompact.image (continuous_projFin J)))
+
+def ResFin (J : Finset (WithTop I)) := (ProjFin J) '' C
+
+lemma isClosed_resFin (J : Finset (WithTop I)) (hC : IsClosed C) : IsClosed (ResFin C J) :=
+  isClosedMap_projFin J C hC
+
+noncomputable
+def ResFinSubset (J : Finset (WithTop I)) : {i // i ∈ C} → {i // i ∈ ResFin C J} :=
+fun ⟨i, h⟩ ↦ ⟨ProjFin J i, Set.mem_image_of_mem _ h⟩
+
+lemma resFinSubset_eq (J : Finset (WithTop I)) : Subtype.val ∘ ResFinSubset C J =
+    (ProjFin J : (WithTop I → Bool) → _) ∘ Subtype.val := by
+  rfl
+
+lemma continuous_val_comp_resFinSubset (J : Finset (WithTop I)) :
+    Continuous (Subtype.val ∘ ResFinSubset C J) := by
+  rw [resFinSubset_eq _]
+  exact Continuous.comp (continuous_projFin J) continuous_subtype_val
+
+lemma continuous_resFinSubset (J : Finset (WithTop I)) : Continuous (ResFinSubset C J) := by
+  rw [continuous_induced_rng]
+  exact continuous_val_comp_resFinSubset _ _
+
+lemma surjective_resFinSubset (J : Finset (WithTop I)) :
+    Function.Surjective (ResFinSubset C J) := by
+  rintro ⟨i, ⟨b, hb⟩⟩
+  dsimp [ResFinSubset]
+  use ⟨b, hb.1⟩
+  simp_rw [← hb.2]
 
 lemma GoodProducts.spanAux (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := sorry
