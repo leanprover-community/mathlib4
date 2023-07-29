@@ -84,6 +84,9 @@ instance : Coe (𝓞 K)ˣ K := ⟨to_field⟩
 theorem ext {x y : (𝓞 K)ˣ} (h : (x : K) = y) : x = y := (coe_to_field_injective K).eq_iff.mp h
 
 @[simp]
+theorem coe_coe (x : (𝓞 K)ˣ) : ((x : 𝓞 K) : K) = (x : K) := rfl
+
+@[simp]
 theorem map_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n :=
   _root_.map_pow (coe_to_field K) x n
 
