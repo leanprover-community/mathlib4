@@ -39,13 +39,6 @@ lemma measurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [Zero β]
     Measurable (A.indicator (fun _ ↦ b)) ↔ (b = 0 ∨ MeasurableSet A) :=
   measurable_indicator_const_iff' A (MeasurableSet.singleton 0) b
 
-#check StronglyMeasurable
-#check StronglyMeasurable.measurable
-#check StronglyMeasurable.aemeasurable
-#check AEStronglyMeasurable.aemeasurable
-
-#check AEStronglyMeasurable.indicator
-
 /-- A characterization of the a.e.-measurability of the indicator function which takes a constant
 value `b` on a set `A` and `0` elsewhere. (This version requires the measurability of the singleton
 `{0}` as an explicit input, see `measurable_indicator_const_iff` for a version with typeclass
@@ -104,9 +97,8 @@ lemma measurableSet_of_tendsto_indicator {α ι : Type _}
   have obs := measurable_indicator_const_iff A (1 : ℝ≥0∞)
   simp only [one_ne_zero, false_or] at obs
   rw [←obs]
-  have := @measurable_of_tendsto_ennreal' α _ ι (fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
+  apply @measurable_of_tendsto_ennreal' α _ ι (fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
     (A.indicator (fun _ ↦ (1 : ℝ≥0∞))) L _ _
-  apply this
   · intro i
     simp only [measurable_indicator_const_iff, one_ne_zero, As_mble i, or_true]
   · simpa [tendsto_pi_nhds] using h_lim
@@ -120,15 +112,16 @@ lemma nullMeasurableSet_of_tendsto_indicator {α ι : Type _}
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
     NullMeasurableSet A μ := by
-  have obs := measurable_indicator_const_iff A (1 : ℝ≥0∞)
+  have obs := @aeMeasurable_indicator_const_iff' α ℝ≥0∞ _ A _ _ _ _ _ _ _ _ μ
+                (MeasurableSet.singleton 0) 1
   simp only [one_ne_zero, false_or] at obs
   rw [←obs]
-  have := @measurable_of_tendsto_ennreal' α _ ι (fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
-    (A.indicator (fun _ ↦ (1 : ℝ≥0∞))) L _ _
-  apply this
-  · intro i
-    simp only [measurable_indicator_const_iff, one_ne_zero, As_mble i, or_true]
-  · simpa [tendsto_pi_nhds] using h_lim
+  refine aestronglyMeasurable_of_tendsto_ae (μ := μ) (u := L)
+            (f := (fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x))
+            (g := A.indicator (fun _ ↦ (1 : ℝ≥0∞))) ?_ h_lim
+  intro i
+  simp [aeMeasurable_indicator_const_iff', As_mble i]
+  --simp only [MeasurableSet.singleton, aeMeasurable_indicator_const_iff', one_ne_zero, As_mble i, or_true]
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
@@ -147,9 +140,7 @@ lemma tendsto_measure_of_tendsto_indicator'
           (eventually_of_forall ?_) ?_ ?_ h_lim
   · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
   · filter_upwards [As_le_B] with i hi
-    apply eventually_of_forall
-    intro x
-    exact indicator_le_indicator_of_subset hi (by simp) x
+    exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
   · rwa [← lintegral_indicator_one B_mble] at B_finmeas
 
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
