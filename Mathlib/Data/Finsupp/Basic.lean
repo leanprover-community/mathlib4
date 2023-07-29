@@ -1535,8 +1535,7 @@ instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ 
 #align finsupp.is_central_scalar Finsupp.isCentralScalar
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
-  { Finsupp.distribMulAction α M with
-    smul := (· • ·)
+  { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
 #align finsupp.module Finsupp.module
