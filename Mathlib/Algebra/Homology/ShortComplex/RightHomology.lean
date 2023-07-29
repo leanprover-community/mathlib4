@@ -1119,6 +1119,122 @@ instance (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology]
   dsimp only [rightHomologyMap]
   infer_instance
 
+variable (C)
+
+section
+
+variable [HasKernels C] [HasCokernels C] [HasKernels Cᵒᵖ] [HasCokernels Cᵒᵖ]
+
+/-- The opposite of the right homology functor is the left homology functor. -/
+@[simps!]
+noncomputable def rightHomologyFunctorOpNatIso :
+  (rightHomologyFunctor C).op ≅ opFunctor C ⋙ leftHomologyFunctor Cᵒᵖ :=
+    NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm) (by simp)
+
+/-- The opposite of the left homology functor is the right homology functor. -/
+@[simps!]
+noncomputable def leftHomologyFunctorOpNatIso :
+  (leftHomologyFunctor C).op ≅ opFunctor C ⋙ rightHomologyFunctor Cᵒᵖ :=
+    NatIso.ofComponents (fun S => (rightHomologyOpIso S.unop).symm) (by simp)
+
+end
+
+section
+
+variable {C}
+variable (h : RightHomologyData S) {A : C}
+  (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [HasRightHomology S]
+
+/-- A morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends to a morphism `S.opcycles ⟶ A`. -/
+noncomputable def descOpcycles : S.opcycles ⟶ A :=
+  S.rightHomologyData.descQ k hk
+
+@[reassoc (attr := simp)]
+lemma p_descOpcycles : S.pOpcycles ≫ S.descOpcycles k hk = k :=
+  RightHomologyData.p_descQ _ k hk
+
+@[reassoc]
+lemma descOpcycles_comp {A' : C} (α : A ⟶ A') :
+    S.descOpcycles k hk ≫ α = S.descOpcycles (k ≫ α) (by rw [reassoc_of% hk, zero_comp]) := by
+  simp only [← cancel_epi S.pOpcycles, p_descOpcycles_assoc, p_descOpcycles]
+
+/-- Via `S.pOpcycles : S.X₂ ⟶ S.opcycles`, the object `S.opcycles` identifies to the
+cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
+noncomputable def opcyclesIsCokernel :
+    IsColimit (CokernelCofork.ofπ S.pOpcycles S.f_pOpcycles) :=
+  S.rightHomologyData.hp
+
+/-- The canonical isomorphism `S.opcycles ≅ cokernel S.f`. -/
+@[simps]
+noncomputable def opcyclesIsoCokernel [HasCokernel S.f] : S.opcycles ≅ cokernel S.f where
+  hom := S.descOpcycles (cokernel.π S.f) (by simp)
+  inv := cokernel.desc S.f S.pOpcycles (by simp)
+
+/-- The morphism `S.rightHomology ⟶ A` obtained from a morphism `k : S.X₂ ⟶ A`
+such that `S.f ≫ k = 0.` -/
+@[simp]
+noncomputable def descRightHomology : S.rightHomology ⟶ A :=
+  S.rightHomologyι ≫ S.descOpcycles k hk
+
+@[reassoc]
+lemma rightHomologyι_descOpcycles_π_eq_zero_of_boundary (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
+    S.rightHomologyι ≫ S.descOpcycles k (by rw [hx, S.zero_assoc, zero_comp]) = 0 :=
+  RightHomologyData.ι_descQ_eq_zero_of_boundary _ k x hx
+
+@[reassoc (attr := simp)]
+lemma rightHomologyι_comp_fromOpcycles :
+    S.rightHomologyι ≫ S.fromOpcycles = 0 :=
+  S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary S.g (𝟙 _) (by rw [comp_id])
+
+noncomputable def rightHomologyIsKernel :
+    IsLimit (KernelFork.ofι S.rightHomologyι S.rightHomologyι_comp_fromOpcycles) :=
+  S.rightHomologyData.hι
+
+variable {S}
+
+@[reassoc (attr := simp)]
+lemma opcyclesMap_comp_descOpcycles (φ : S₁ ⟶ S) [S₁.HasRightHomology] :
+    opcyclesMap φ ≫ S.descOpcycles k hk =
+      S₁.descOpcycles (φ.τ₂ ≫ k) (by rw [← φ.comm₁₂_assoc, hk, comp_zero]) := by
+  simp only [← cancel_epi (S₁.pOpcycles), p_opcyclesMap_assoc, p_descOpcycles]
+
+@[reassoc (attr := simp)]
+lemma RightHomologyData.opcyclesIso_inv_comp_descOpcycles :
+    h.opcyclesIso.inv ≫ S.descOpcycles k hk = h.descQ k hk := by
+  simp only [← cancel_epi h.p, p_comp_opcyclesIso_inv_assoc, p_descOpcycles, p_descQ]
+
+@[simp]
+lemma RightHomologyData.opcyclesIso_hom_comp_descQ :
+    h.opcyclesIso.hom ≫ h.descQ k hk = S.descOpcycles k hk := by
+  rw [← h.opcyclesIso_inv_comp_descOpcycles, Iso.hom_inv_id_assoc]
+
+end
+
+variable {C}
+
+namespace HasRightHomology
+
+lemma hasCokernel [S.HasRightHomology] : HasCokernel S.f :=
+  ⟨⟨⟨_, S.rightHomologyData.hp⟩⟩⟩
+
+lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
+    HasKernel (cokernel.desc S.f S.g S.zero) := by
+  let h := S.rightHomologyData
+  haveI : HasLimit (parallelPair h.g' 0) := ⟨⟨⟨_, h.hι'⟩⟩⟩
+  let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
+    parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
+      (Iso.refl _) (coequalizer.hom_ext (by simp)) (by aesop_cat)
+  exact hasLimitOfIso e.symm
+
+end HasRightHomology
+
+/-- The right homology of a short complex `S` identifies to the kernel of the canonical
+morphism `cokernel S.f ⟶ S.X₃`. -/
+noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S.f]
+    [HasKernel (cokernel.desc S.f S.g S.zero)] :
+    S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
+  (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
+
 end ShortComplex
 
 end CategoryTheory
