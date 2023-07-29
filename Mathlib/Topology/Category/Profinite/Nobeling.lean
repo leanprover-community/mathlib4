@@ -999,16 +999,14 @@ lemma ResMono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) {f : WithTop I → Bool}
       apply h₁ (lt_of_lt_of_le (by assumption) h)
   · rfl
 
-def T : Prop := ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval C))
+-- def T : Prop := ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval C))
 
 variable (I)
 
 def P' (o : Ordinal) : Prop :=
   o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) →
-  (o.IsLimit ∧ (∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
-    LinearIndependent ℤ (GoodProducts.eval C)))
-  ∨ (¬ o.IsLimit ∧ (∀ C, T C → IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
-    LinearIndependent ℤ (GoodProducts.eval C)))
+  (∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
+    LinearIndependent ℤ (GoodProducts.eval C))
 
 def Q' (o : Ordinal) : Prop :=
 o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) →
@@ -4426,9 +4424,7 @@ lemma GoodProducts.Q0 : Q' I 0 := by
 
 lemma GoodProducts.P0 : P' I 0 := by
   dsimp [P']
-  intro _
-  right
-  intro C _ _ hsC
+  intro _ C _ hsC
   dsimp [Support] at hsC
   have : C ⊆ {(fun _ ↦ false)}
   · intro c hc
@@ -4532,6 +4528,15 @@ lemma GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (ev
     rw [← hl]
     exact Ll C l
 
+section Span
+
+variable (hC : IsClosed C)
+
+lemma GoodProducts.spanAux (hC : IsClosed C) :
+    ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := sorry
+
+end Span
+
 -- lemma Res_oo'₁ {o o' : Ordinal} (h : o < o') (hsC : Support C ⊆ {j | ord I j < Order.succ o}) :
 --   Res C o' = C := by sorry
 
@@ -4551,16 +4556,16 @@ lemma GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (ev
 --     Res (C' C ho) o' = C' C ho := by sorry
 
 
-lemma GoodProducts.Tlimit {o o' : Ordinal}
-    (hlo : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
-    (ho : o.IsLimit) (hS : T (Res C o)) (ho' : o' < o) : T (Res C o') := sorry
+-- lemma GoodProducts.Tlimit {o o' : Ordinal}
+--     (hlo : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+--     (ho : o.IsLimit) (hS : T (Res C o)) (ho' : o' < o) : T (Res C o') := sorry
 
-lemma GoodProducts.h_one' {o : Ordinal} (hS : T C) (hC : IsClosed C)
-    (hsC : Support C ⊆ {i | ord I i < Order.succ o})
-    (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
-    T (Res C o) := by
-  dsimp [T] at *
-  sorry
+-- lemma GoodProducts.h_one' {o : Ordinal} (hS : T C) (hC : IsClosed C)
+--     (hsC : Support C ⊆ {i | ord I i < Order.succ o})
+--     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
+--     T (Res C o) := by
+--   dsimp [T] at *
+--   sorry
 
 
   -- intro o'
@@ -4572,11 +4577,11 @@ lemma GoodProducts.h_one' {o : Ordinal} (hS : T C) (hC : IsClosed C)
   --   rw [this]
   --   exact hS o
 
-lemma GoodProducts.h_one'' {o : Ordinal} (hS : T C)
-    (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop))
-    (hsC : Support C ⊆ {j | ord I j < Order.succ o}) :
-    T (C' C ho) := by
-  sorry
+-- lemma GoodProducts.h_one'' {o : Ordinal} (hS : T C)
+--     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+--     (hsC : Support C ⊆ {j | ord I j < Order.succ o}) :
+--     T (C' C ho) := by
+--   sorry
   -- intro o'
   -- by_cases h : o ≤ o'
   -- · have : Res (C' C ho) o' = C' C ho := Res_oo'₂ C h ho
@@ -4614,8 +4619,6 @@ lemma GoodProducts.Plimit :
   intro o ho h
   dsimp [P'] at *
   intro hho
-  left
-  refine' ⟨ho,_⟩
   intro C hC hsC
   rw [ModProducts.linear_independent_iff C ho hsC]
   refine' linearIndependent_iUnion_of_directed (DirectedS C o) _
@@ -4623,18 +4626,9 @@ lemma GoodProducts.Plimit :
   have hho' : o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop) :=
     lt_of_lt_of_le ho' hho
   specialize h o' ho' (le_of_lt hho')
-  cases' h with h h
-  · have h' := h.2 (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
-    rw [ModProducts.smaller_linear_independent_iff] at h'
-    exact h'
-  · have hos : ∃ a, o' = Order.succ a := sorry
-    obtain ⟨a, ha⟩ := hos
-    have h' := h.2 (Res C o') ?_ (isClosed_Res C o' hC) (support_Res_le_o C o')
-    · rw [ModProducts.smaller_linear_independent_iff] at h'
-      exact h'
-    sorry
-
-
+  have h' := h (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
+  rw [ModProducts.smaller_linear_independent_iff] at h'
+  exact h'
 
 lemma GoodProducts.linearIndependentAux (i : WithTop I) : P' I (ord I i) := by -- (basisAux i).2
   -- rw [PIffP I i]
@@ -4642,7 +4636,7 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P' I (ord I i) := by -
       (fun o ho h ↦ (GoodProducts.Plimit o ho (fun o' ho' ↦ (h o' ho'))))
   intro o h
   dsimp [P'] at *
-  intro ho C hS hC hsC
+  intro ho C hC hsC
   have ho' : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop) :=
     lt_of_lt_of_le (Order.lt_succ _) ho
   by_cases hnC : Nonempty C
@@ -4651,18 +4645,16 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P' I (ord I i) := by -
     · exact this
     refine' ModuleCat.linearIndependent_leftExact _ _ _
         (LocallyConstant.LeftExact C hC hsC ho') (huv C o) (huw C hsC ho')
-    · refine h (le_of_lt ho') (Res C o) ?_ (isClosed_Res C o hC) (support_Res_le_o C o)
-      exact h_one' C hS
+    · refine h (le_of_lt ho') (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
     · have h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o))) :=
-        h_one' C hS (Res C o) id continuous_id Function.surjective_id (isClosed_Res C o hC)
+        spanAux (Res C o) (isClosed_Res C o hC)
       apply (hhw C hC hsC ho' h₁)
       -- rw [← hw C hC hsC ho' h₁]
-      refine h (le_of_lt ho') (C' C ho') ?_ (isClosed_C' C hC ho') (support_C' C ho')
-      exact h_one'' C hS ho'
+      refine h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho') (support_C' C ho')
     · exact injective_u C o hsC
   · rw [Set.nonempty_coe_sort, Set.not_nonempty_iff_eq_empty] at hnC
     subst hnC
-    specialize h (le_of_lt ho') ∅ hS hC
+    specialize h (le_of_lt ho') ∅ hC
     apply h
     dsimp [Support]
     intro i hi
@@ -4695,26 +4687,25 @@ lemma supportTop (C₁ : Set (I → Bool)) : Support ((r I) '' C₁) ⊆ {j | or
 lemma ordITop : ord I ⊤ ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) := by
   exact le_of_lt (Ordinal.typein_lt_type _ _)
 
-lemma GoodProducts.linearIndependent (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
+lemma GoodProducts.linearIndependent (hC₁ : IsClosed C₁) :
   LinearIndependent ℤ (GoodProducts.eval ((r I) '' C₁)) :=
 GoodProducts.linearIndependentAux ⊤ (le_of_lt (Ordinal.typein_lt_type _ _))
-  ((r I) '' C₁) hT (isClosedInWithTop hC₁) (supportTop C₁)
+  ((r I) '' C₁) (isClosedInWithTop hC₁) (supportTop C₁)
 
 #print axioms GoodProducts.linearIndependent
 
-lemma GoodProducts.span (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
+lemma GoodProducts.span (hC₁ : IsClosed C₁)  :
     ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval ((r I) '' C₁))) :=
-hT (r I '' C₁) (subset_refl _) (isClosedInWithTop hC₁) (r I '' C₁) id continuous_id
-  Function.surjective_id (isClosedInWithTop hC₁)
+GoodProducts.spanAux ((r I) '' C₁) (isClosedInWithTop hC₁)
 
 noncomputable
-def GoodProducts.Basis (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
+def GoodProducts.Basis (hC₁ : IsClosed C₁) :
     Basis (GoodProducts ((r I) '' C₁)) ℤ (LocallyConstant {i // i ∈ ((r I) '' C₁)} ℤ) :=
-Basis.mk (GoodProducts.linearIndependent hC₁ hT) (GoodProducts.span hC₁ hT)
+Basis.mk (GoodProducts.linearIndependent hC₁) (GoodProducts.span hC₁)
 
-lemma closedFree (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
+lemma closedFree (hC₁ : IsClosed C₁) :
     Module.Free ℤ (LocallyConstant {i // i ∈ ((r I) '' C₁)} ℤ) :=
-Module.Free.of_basis $ GoodProducts.Basis hC₁ hT
+Module.Free.of_basis $ GoodProducts.Basis hC₁
 
 variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
 
@@ -4750,8 +4741,8 @@ def locConstIso (hι : ClosedEmbedding ι) :
   (LocallyConstant S ℤ) ≃ₗ[ℤ] (LocallyConstant { i // i ∈ r I '' Set.range ι } ℤ) :=
 LocallyConstant.equivLinear (homeoClosed hι)
 
-lemma Nobeling (hT : T (r I '' Set.range ι)) : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
-  (closedFree hι.closed_range hT) (locConstIso hι).symm
+lemma Nobeling : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
+  (closedFree hι.closed_range) (locConstIso hι).symm
 
 end NobelingProof
 
@@ -4760,16 +4751,16 @@ variable (S : Profinite.{u})
 open Classical
 
 noncomputable
-def Nobeling.ι' : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
+def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
 instance totally_separated_of_totally_disconnected_compact_hausdorff (α : Type _)
     [TopologicalSpace α] [CompactSpace α] [TotallyDisconnectedSpace α] [T2Space α] :
     TotallySeparatedSpace α := by
   rwa [← compact_t2_tot_disc_iff_tot_sep]
 
-lemma Nobeling.embedding' : ClosedEmbedding (Nobeling.ι' S) := by
+lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
-  · dsimp [ι']
+  · dsimp [ι]
     refine' continuous_pi _
     intro C
     rw [← IsLocallyConstant.iff_continuous]
@@ -4794,121 +4785,121 @@ lemma Nobeling.embedding' : ClosedEmbedding (Nobeling.ι' S) := by
     have h' := exists_clopen_of_totally_separated hnab
     obtain ⟨C, hC, h₁⟩ := h'
     apply h₁.2
-    have ha : ι' S a ⟨C, hC⟩ = decide (a ∈ C) := rfl
-    have hb : ι' S b ⟨C, hC⟩ = decide (b ∈ C) := rfl
+    have ha : ι S a ⟨C, hC⟩ = decide (a ∈ C) := rfl
+    have hb : ι S b ⟨C, hC⟩ = decide (b ∈ C) := rfl
     apply of_decide_eq_true
     rw [← hb, ← hab, ha]
     apply decide_eq_true
     exact h₁.1
 
-def Nobeling.index : Type u := Σ (C : Set S), (C → C → Prop)
+-- def Nobeling.index : Type u := Σ (C : Set S), (C → C → Prop)
 
-def Nobeling.I : Type u := Σ (i : index S), Set (Quot i.snd)
+-- def Nobeling.I : Type u := Σ (i : index S), Set (Quot i.snd)
 
-def Nobeling.setι : {C : Set S // IsClopen C} → I S := fun C ↦ ⟨⟨C.val, fun a b ↦ a = b⟩, Set.univ⟩
+-- def Nobeling.setι : {C : Set S // IsClopen C} → I S := fun C ↦ ⟨⟨C.val, fun a b ↦ a = b⟩, Set.univ⟩
 
-noncomputable
-def Nobeling.ι₂ : ({C : Set S // IsClopen C} → Bool) → (I S → Bool) := by
-  intro f i
-  exact if h : IsClopen i.fst.fst then f ⟨i.fst.fst, h⟩ else false
+-- noncomputable
+-- def Nobeling.ι₂ : ({C : Set S // IsClopen C} → Bool) → (I S → Bool) := by
+--   intro f i
+--   exact if h : IsClopen i.fst.fst then f ⟨i.fst.fst, h⟩ else false
 
-noncomputable
-def Nobeling.ι : S → (I S → Bool) := Nobeling.ι₂ S ∘ Nobeling.ι' S
+-- noncomputable
+-- def Nobeling.ι : S → (I S → Bool) := Nobeling.ι₂ S ∘ Nobeling.ι' S
 
-lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
-  refine' ClosedEmbedding.comp _ (embedding' S)
-  apply Continuous.closedEmbedding
-  · apply continuous_pi
-    intro i
-    dsimp [ι₂]
-    split_ifs with h
-    · continuity
-    · exact continuous_const
-  · intro a b h
-    dsimp [ι₂] at h
-    ext x
-    have hh := congrFun h (setι S x)
-    split_ifs at hh with h'
-    · exact hh
-    · dsimp [setι] at h'
-      exfalso
-      exact h' x.prop
+-- lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
+--   refine' ClosedEmbedding.comp _ (embedding' S)
+--   apply Continuous.closedEmbedding
+--   · apply continuous_pi
+--     intro i
+--     dsimp [ι₂]
+--     split_ifs with h
+--     · continuity
+--     · exact continuous_const
+--   · intro a b h
+--     dsimp [ι₂] at h
+--     ext x
+--     have hh := congrFun h (setι S x)
+--     split_ifs at hh with h'
+--     · exact hh
+--     · dsimp [setι] at h'
+--       exfalso
+--       exact h' x.prop
 
-noncomputable
-instance : LinearOrder (Nobeling.I S) := IsWellOrder.linearOrder WellOrderingRel
+-- noncomputable
+-- instance : LinearOrder (Nobeling.I S) := IsWellOrder.linearOrder WellOrderingRel
 
-open NobelingProof GoodProducts in
-lemma Nobeling.T : @NobelingProof.T (I S) (IsWellOrder.linearOrder WellOrderingRel)
-    ((NobelingProof.r (I S) '' Set.range (ι S))) := by
-  intro V hsV hCV W π hcπ hsπ hW
-  rw [span_iff_products]
-  intro f _
-  let i : S → (WithTop (I S) → Bool) := r (I S) ∘ (ι S)
-  let C : Set S := i ⁻¹' V
-  have hmem : ∀ (a : C), i a.val ∈ V := by simp
-  let r : C → C → Prop := fun a b ↦ π ⟨i a.val, hmem a⟩  = π ⟨i b.val, hmem b⟩
-  let a : index S := ⟨C, r⟩
-  let c' : C → W := fun a ↦ π ⟨i a.val, hmem a⟩
-  let c : Quot r → W := Quot.lift c' (fun _ _ h ↦ h)
-  haveI : Fintype (Set.range f) := sorry
-  let b : (Set.range f).toFinset → Set (Quot r) := (fun s ↦ c ⁻¹' s) ∘ (fun n ↦ f ⁻¹' {n.val})
-  let d : (Set.range f).toFinset → WithTop (I S) := fun n ↦ some ⟨a, b n⟩
-  let p : (Set.range f).toFinset → Products (WithTop (I S)) :=
-      fun n ↦ ⟨[(d n)], List.chain'_singleton _⟩
-  have hp : p.Injective
-  · intro x y h
-    rw [Subtype.ext_iff, List.cons_eq_cons, Option.some_inj] at h
-    suffices : b.Injective
-    · have h' := h.1
-      apply_fun Sigma.snd at h'
-      exact this h'
-    intro X Y H
-    sorry
-  let g : Products (WithTop (I S)) → ℤ :=
-    fun l ↦ if h : l ∈ Set.range p then (Equiv.ofInjective p hp).symm ⟨l, h⟩ else 0
-  have hg : ∀ l, g l ≠ 0 → l ∈ Finset.image p Finset.univ := sorry
-  let q := Finsupp.onFinset (Finset.image p Finset.univ) g hg
-  rw [Finsupp.mem_span_range_iff_exists_finsupp]
-  refine' ⟨q, _⟩
-  ext x
-  have hhh : ∀ α (map : α → LocallyConstant {i // i ∈ W} ℤ) (d : α →₀ ℤ),
-      (d.sum (fun i (a : ℤ) ↦ a • map i)) x = d.sum (fun i a ↦ a • map i x) :=
-    fun _ _ _ ↦ map_finsupp_sum (LocconstEval W x) _ _
-  rw [hhh, Finsupp.sum]
-  have hfr : f x ∈ (Set.range f).toFinset := by simp
-  have haf : ⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ ∈ q.support := sorry
-  have hz := (add_zero (f x)).symm
-  rw [hz, ← Finset.add_sum_erase _ _ haf]
-  congr
-  · set l := (⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ : Products (WithTop (I S)) ) with hl
-    have hpl : Products.eval W l x = 1
-    · rw [Products.eval_eq]
-      split_ifs with hh
-      · rfl
-      · exfalso
-        push_neg at hh
-        simp only [Function.comp_apply, List.mem_singleton, ne_eq, Bool.not_eq_true,
-          exists_eq_left] at hh
-        rw [← Bool.not_eq_true] at hh
-        apply hh
-        sorry
-    suffices : q l = f x
-    · rw [this, hpl]
-      simp only [smul_eq_mul, mul_one]
-    simp only [Function.comp_apply, Finset.univ_eq_attach, Set.mem_range, Subtype.exists,
-      Set.mem_toFinset, Eq.ndrec, id_eq, exists_prop, Finsupp.onFinset_apply]
-    split_ifs with hh
-    · sorry
-    · sorry
-  · apply Finset.sum_eq_zero
-    intro l hl
-    simp only [smul_eq_mul, mul_eq_zero]
-    right
-    rw [Products.eval_eq]
-    split_ifs with hh
-    · exfalso
-      sorry
-    · rfl
+-- open NobelingProof GoodProducts in
+-- lemma Nobeling.T : @NobelingProof.T (I S) (IsWellOrder.linearOrder WellOrderingRel)
+--     ((NobelingProof.r (I S) '' Set.range (ι S))) := by
+--   intro V hsV hCV W π hcπ hsπ hW
+--   rw [span_iff_products]
+--   intro f _
+--   let i : S → (WithTop (I S) → Bool) := r (I S) ∘ (ι S)
+--   let C : Set S := i ⁻¹' V
+--   have hmem : ∀ (a : C), i a.val ∈ V := by simp
+--   let r : C → C → Prop := fun a b ↦ π ⟨i a.val, hmem a⟩  = π ⟨i b.val, hmem b⟩
+--   let a : index S := ⟨C, r⟩
+--   let c' : C → W := fun a ↦ π ⟨i a.val, hmem a⟩
+--   let c : Quot r → W := Quot.lift c' (fun _ _ h ↦ h)
+--   haveI : Fintype (Set.range f) := sorry
+--   let b : (Set.range f).toFinset → Set (Quot r) := (fun s ↦ c ⁻¹' s) ∘ (fun n ↦ f ⁻¹' {n.val})
+--   let d : (Set.range f).toFinset → WithTop (I S) := fun n ↦ some ⟨a, b n⟩
+--   let p : (Set.range f).toFinset → Products (WithTop (I S)) :=
+--       fun n ↦ ⟨[(d n)], List.chain'_singleton _⟩
+--   have hp : p.Injective
+--   · intro x y h
+--     rw [Subtype.ext_iff, List.cons_eq_cons, Option.some_inj] at h
+--     suffices : b.Injective
+--     · have h' := h.1
+--       apply_fun Sigma.snd at h'
+--       exact this h'
+--     intro X Y H
+--     sorry
+--   let g : Products (WithTop (I S)) → ℤ :=
+--     fun l ↦ if h : l ∈ Set.range p then (Equiv.ofInjective p hp).symm ⟨l, h⟩ else 0
+--   have hg : ∀ l, g l ≠ 0 → l ∈ Finset.image p Finset.univ := sorry
+--   let q := Finsupp.onFinset (Finset.image p Finset.univ) g hg
+--   rw [Finsupp.mem_span_range_iff_exists_finsupp]
+--   refine' ⟨q, _⟩
+--   ext x
+--   have hhh : ∀ α (map : α → LocallyConstant {i // i ∈ W} ℤ) (d : α →₀ ℤ),
+--       (d.sum (fun i (a : ℤ) ↦ a • map i)) x = d.sum (fun i a ↦ a • map i x) :=
+--     fun _ _ _ ↦ map_finsupp_sum (LocconstEval W x) _ _
+--   rw [hhh, Finsupp.sum]
+--   have hfr : f x ∈ (Set.range f).toFinset := by simp
+--   have haf : ⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ ∈ q.support := sorry
+--   have hz := (add_zero (f x)).symm
+--   rw [hz, ← Finset.add_sum_erase _ _ haf]
+--   congr
+--   · set l := (⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ : Products (WithTop (I S)) ) with hl
+--     have hpl : Products.eval W l x = 1
+--     · rw [Products.eval_eq]
+--       split_ifs with hh
+--       · rfl
+--       · exfalso
+--         push_neg at hh
+--         simp only [Function.comp_apply, List.mem_singleton, ne_eq, Bool.not_eq_true,
+--           exists_eq_left] at hh
+--         rw [← Bool.not_eq_true] at hh
+--         apply hh
+--         sorry
+--     suffices : q l = f x
+--     · rw [this, hpl]
+--       simp only [smul_eq_mul, mul_one]
+--     simp only [Function.comp_apply, Finset.univ_eq_attach, Set.mem_range, Subtype.exists,
+--       Set.mem_toFinset, Eq.ndrec, id_eq, exists_prop, Finsupp.onFinset_apply]
+--     split_ifs with hh
+--     · sorry
+--     · sorry
+--   · apply Finset.sum_eq_zero
+--     intro l hl
+--     simp only [smul_eq_mul, mul_eq_zero]
+--     right
+--     rw [Products.eval_eq]
+--     split_ifs with hh
+--     · exfalso
+--       sorry
+--     · rfl
   -- have hQ : (Quot.mk r : C → Quot r).Surjective
   -- · intro a
   --   obtain ⟨a', h'⟩ := hsπ (c a)
@@ -4925,5 +4916,5 @@ lemma Nobeling.T : @NobelingProof.T (I S) (IsWellOrder.linearOrder WellOrderingR
   -- use CoeffsFinsupp T f' --  universe issues...?
 
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
-@NobelingProof.Nobeling (Nobeling.I S) (IsWellOrder.linearOrder WellOrderingRel)
-  WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S) (Nobeling.T.{u} S)
+@NobelingProof.Nobeling {C : Set S // IsClopen C} (IsWellOrder.linearOrder WellOrderingRel)
+  WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S)
