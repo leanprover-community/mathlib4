@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.group.arithmetic
-! leanprover-community/mathlib commit a75898643b2d774cced9ae7c0b28c21663b99666
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+
+#align_import measure_theory.group.arithmetic from "leanprover-community/mathlib"@"a75898643b2d774cced9ae7c0b28c21663b99666"
 
 /-!
 # Typeclasses for measurability of operations
@@ -195,7 +192,7 @@ theorem measurable_div_const' {G : Type _} [DivInvMonoid G] [MeasurableSpace G] 
 #align measurable_sub_const' measurable_sub_const'
 
 /-- This class assumes that the map `β × γ → β` given by `(x, y) ↦ x ^ y` is measurable. -/
-class MeasurablePow (β γ : Type _) [MeasurableSpace β] [MeasurableSpace γ] [Pow β γ] where
+class MeasurablePow (β γ : Type _) [MeasurableSpace β] [MeasurableSpace γ] [Pow β γ] : Prop where
   measurable_pow : Measurable fun p : β × γ => p.1 ^ p.2
 #align has_measurable_pow MeasurablePow
 

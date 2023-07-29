@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.game.ordinal
-! leanprover-community/mathlib commit b90e72c7eebbe8de7c8293a80208ea2ba135c834
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Ordinal.NaturalOps
+
+#align_import set_theory.game.ordinal from "leanprover-community/mathlib"@"b90e72c7eebbe8de7c8293a80208ea2ba135c834"
 
 /-!
 # Ordinals as games
@@ -201,7 +198,7 @@ theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b)
       · exact nadd_lt_nadd_left wf _
     · rw [toPGame_moveLeft']
       rcases lt_nadd_iff.1 (toLeftMovesToPGame_symm_lt i) with (⟨c, hc, hc'⟩ | ⟨c, hc, hc'⟩) <;>
-      rw [← toPGame_le_iff, ← le_congr_right (toPGame_add _ _)] at hc'  <;>
+      rw [← toPGame_le_iff, ← le_congr_right (toPGame_add _ _)] at hc' <;>
       apply lf_of_le_of_lf hc'
       · apply add_lf_add_right
         rwa [toPGame_lf_iff]
