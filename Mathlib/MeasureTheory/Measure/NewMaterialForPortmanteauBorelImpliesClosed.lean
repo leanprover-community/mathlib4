@@ -20,6 +20,7 @@ lemma ProbabilityMeasure.coe_null_iff (μ : ProbabilityMeasure α) (E : Set α) 
 
 variable [TopologicalSpace α]
 
+/-
 #check integrable_indicator_iff
 #check integrable_indicatorConstLp
 #check lintegral_indicator_const
@@ -96,6 +97,7 @@ lemma tendsto_measure_of_tendsto_indicator
   · exact fun i ↦ eventually_of_forall (fun x ↦ indicator_apply_le (fun _ ↦ le_refl _))
   · rw [lintegral_one]
     exact (measure_lt_top μ univ).ne
+ -/
 
 /-
 /-- If `μ` is a finite measure (on an `OpensMeasurableSpace`), then for any set `E`,
