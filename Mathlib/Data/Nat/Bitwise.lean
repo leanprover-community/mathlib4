@@ -83,7 +83,8 @@ theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false :
 
 lemma bit_toNat (b : Bool) : bit b 0 = b.toNat := by cases' b <;> simp
 
-@[simp] lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
+@[simp]
+lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
 
 lemma shiftr_mod_two_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by
   simp [Nat.testBit, Nat.mod_two_of_bodd]
