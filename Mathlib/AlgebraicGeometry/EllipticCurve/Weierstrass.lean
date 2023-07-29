@@ -62,7 +62,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `EllipticCurve.nonsingular`: an elliptic curve is nonsingular at every point.
  * `EllipticCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
     admissible linear change of variables.
- * `EllipticCurve.ofJ_j`: the proof that the $j$-invariant of `EllipticCurve.ofJ` is equal to $j$.
+ * `EllipticCurve.ofJ_j`: the $j$-invariant of `EllipticCurve.ofJ` is equal to $j$.
 
 ## Implementation notes
 
@@ -1013,7 +1013,7 @@ private lemma ne_zero_or_ne_zero_of_nat_gcd_eq_one [Nontrivial R] {a b : ℕ} (h
 variable {F : Type u} [Field F] (j : F)
 
 private lemma two_or_three_ne_zero : (2 : F) ≠ 0 ∨ (3 : F) ≠ 0 :=
-  ne_zero_or_ne_zero_of_nat_gcd_eq_one (show Nat.gcd 2 3 = 1 from by norm_num1)
+  ne_zero_or_ne_zero_of_nat_gcd_eq_one (show Nat.gcd 2 3 = 1 by norm_num1)
 
 variable [DecidableEq F]
 
