@@ -191,16 +191,16 @@ open Classical
 
 /-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
-(see `lintegral_compProd`).
-If one of the kernels is not s-finite, `compProd` is given the arbitrary value 0. -/
+(see `ProbabilityTheory.kernel.lintegral_compProd`).
+If either of the kernels is not s-finite, `compProd` is given the junk value 0. -/
 noncomputable def compProd (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ) :=
 if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
 { val := λ a ↦
     Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
       (@compProdFun_iUnion _ _ _ _ _ _ κ η h.2 a)
   property := by
-    have := h.1
-    have := h.2
+    have : IsSFiniteKernel κ := h.1
+    have : IsSFiniteKernel η := h.2
     refine' Measure.measurable_of_measurable_coe _ fun s hs => _
     have :
       (fun a =>
@@ -229,12 +229,12 @@ theorem compProd_apply_eq_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (
   rfl
 #align probability_theory.kernel.comp_prod_apply_eq_comp_prod_fun ProbabilityTheory.kernel.compProd_apply_eq_compProdFun
 
-theorem compProd_undef_left (κ : kernel α β) (η : kernel (α × β) γ) (h : ¬ IsSFiniteKernel κ) :
+theorem compProd_of_not_isSFiniteKernel_left (κ : kernel α β) (η : kernel (α × β) γ) (h : ¬ IsSFiniteKernel κ) :
     κ ⊗ₖ η = 0 := by
   rw [compProd, dif_neg]
   simp [h]
 
-theorem compProd_undef_right (κ : kernel α β) (η : kernel (α × β) γ) (h : ¬ IsSFiniteKernel η) :
+theorem compProd_of_not_isSFiniteKernel_right (κ : kernel α β) (η : kernel (α × β) γ) (h : ¬ IsSFiniteKernel η) :
     κ ⊗ₖ η = 0 := by
   rw [compProd, dif_neg]
   simp [h]
