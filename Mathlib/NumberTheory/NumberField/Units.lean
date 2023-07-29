@@ -88,6 +88,10 @@ theorem map_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n :=
   _root_.map_pow (coe_to_field K) x n
 
 @[simp]
+theorem map_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n :=
+  _root_.map_zpow (coe_to_field K) x n
+
+@[simp]
 theorem map_one : ((1 : (𝓞 K)ˣ) : K) = 1 := rfl
 
 @[simp]
