@@ -30,9 +30,18 @@ example : natDegree (- C 1 * X ^ 5 + (C 0 + monomial 2 5) ^ 2 - 0 + 1 + IntCast.
 example : degree (- C 1 * X ^ 5 + (C 0 + monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
     NatCast.natCast 1 + (z : ℤ[X]) + (n : ℤ[X])) = 5 := by
   set k := f with _h₀
-  compute_degree
-  split_ifs <;> simp_all
-  norm_num
+  compute_degree!
+
+example : degree
+    ((C 1 * X ^ 2 + C 2 * X + C 3) * (C 0 * X ^ 0 + C 2 * X ^ 1 + C 1 * X ^ 5) ^ 4) = 22 := by
+  compute_degree!
+
+example [Nontrivial R] [Ring R] : degree
+    (1 + X + X ^ 2 - X ^ 5 - X ^ 6 - 2 * X ^ 7 - X ^ 8 - X ^ 9 + X ^ 12 + X ^ 13 + X ^ 14 +
+        X ^ 15 + X ^ 16 + X ^ 17 - X ^ 20 - X ^ 22 - X ^ 24 - X ^ 26 - X ^ 28 + X ^ 31 + X ^ 32 +
+        X ^ 33 + X ^ 34 + X ^ 35 + X ^ 36 - X ^ 39 - X ^ 40 - 2 * X ^ 41 - X ^ 42 - X ^ 43 +
+        X ^ 46 + X ^ 47 + X ^ 48 : R[X]) = 48 := by
+  compute_degree!
 
 /--  Flows through all the matches in `compute_degree`, with a `degree _ ≤ _` goal. -/
 example [Ring R] (g : R[X]) (hg : degree g ≤ 5) : degree (- C (z : R) * X ^ 5 + (monomial 2 5) ^ 2
