@@ -532,6 +532,45 @@ lemma ProbabilityMeasure.limsup_measure_closed_le_of_forall_tendsto_measure
     filter_upwards [eventually_lt_of_limsup_lt (lt_of_le_of_lt key aux)] with i hi
     apply (@ENNReal.toNNReal_le_toNNReal (μs i F) (μ F + ε) ?_ ?_).mpr (by simp [hi.le]) <;>
     simp [measure_ne_top]
+/-
+lemma ProbabilityMeasure.limsup_measure_closed_le_iff_tendsto_measure_of_null_frontier'
+    {α ι : Type _} {L : Filter ι} [NeBot L]
+    [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
+    {μ : ProbabilityMeasure α} {μs : ι → ProbabilityMeasure α} :
+    (∀ {E : Set α}, MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
+      ↔ (∀ {F : Set α}, IsClosed F → L.limsup (fun i ↦ μs i F) ≤ μ F) := by
+  constructor <;> intro h
+  · intro F F_closed
+    exact limsup_measure_closed_le_of_forall_tendsto_measure h F F_closed
+  · intro E E_mble E_nullbdry
+    have aux := limsup_measure_closed_le_iff_liminf_measure_open_ge.mp h
+    have := tendsto_measure_of_le_liminf_measure_of_limsup_measure_le
+ -/
+
+lemma ProbabilityMeasure.limsup_measure_closed_le_iff_tendsto_measure_of_null_frontier
+    {α ι : Type _} {L : Filter ι} [NeBot L]
+    [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
+    {μ : ProbabilityMeasure α} {μs : ι → ProbabilityMeasure α} :
+    (∀ {E : Set α}, MeasurableSet E → (μ : Measure α) (frontier E) = 0 →
+        Tendsto (fun i ↦ (μs i : Measure α) E) L (𝓝 ((μ : Measure α) E)))
+      ↔ (∀ {F : Set α}, IsClosed F → L.limsup (fun i ↦ (μs i : Measure α) F) ≤ (μ : Measure α) F) := by
+  constructor <;> intro h
+  · intro F F_closed
+    apply limsup_measure_closed_le_of_forall_tendsto_measure'
+    · intro E E_mble E_nullbdry
+      have := h E_mble
+      sorry
+    · exact F_closed
+  · intro E E_mble E_nullbdry
+    have aux := limsup_measure_closed_le_iff_liminf_measure_open_ge.mp h
+    have := tendsto_measure_of_le_liminf_measure_of_limsup_measure_le
+/-
+    apply limsup_measure_closed_le_iff_tendsto_measure_of_null_frontier.mpr
+    · intro F F_closed
+      exact h F_closed
+    · exact E_mble
+    · exact E_nullbdry
+ -/
 
 end LimitBorelImpliesLimsupClosedLE --section
 
