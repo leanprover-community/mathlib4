@@ -428,6 +428,9 @@ theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m  := by
   nth_rw 2 [← one_mul m]
   rw [mk'_mul, mk'_one, Algebra.smul_def]
 
+@[simp] theorem smul_mk'_one (x : R) (m : M) : x • mk' S 1 m = mk' S x m := by
+  rw [smul_mk', mul_one]
+
 @[simp] lemma smul_mk'_self {m : M} {r : R} :
     (m : R) • mk' S r m = algebraMap R S r := by
   rw [smul_mk', mk'_mul_cancel_left]

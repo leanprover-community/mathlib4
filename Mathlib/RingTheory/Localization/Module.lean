@@ -161,10 +161,12 @@ end FractionRing
 section
 
 variable {R : Type _} [CommRing R] (S : Submonoid R)
-variable (A : Type _) [CommRing A] [Algebra R A] [h : IsLocalization S A]
+variable (A : Type _) [CommRing A] [Algebra R A] [IsLocalization S A]
 variable {M N : Type _}
   [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
   [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
+
+open IsLocalization
 
 /-- An `R`-linear map between two `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N where
@@ -173,26 +175,19 @@ def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N 
   map_smul' := by
     intro r m
     simp only [RingHom.id_apply]
-    rcases IsLocalization.mk'_surjective S r with ⟨r, s, rfl⟩
-    conv_lhs =>
-      rw [← one_smul A (f _), ← IsLocalization.mk'_self' _ (x := s),  ← mul_one r,
-        ← mul_one (↑s : R)]
-      conv =>
-        -- 'repeat' appears to discharge goals
-        -- https://github.com/leanprover/lean4/pull/2357
-        repeat rw [← IsLocalization.smul_mk' ]
-      rw [smul_assoc r, f.map_smul]
-      conv in (↑s • _) • _ =>
-        rw [smul_comm]
-      conv in (↑s • _) • _ =>
-        rw [smul_assoc, smul_comm]
-      rw [← f.map_smul (↑s : ↑ S)]
-      conv in (occs := 1) _ • _ • _ =>
-        rw [← smul_assoc]
-      arg 2; rw [← smul_assoc]
-    iterate 2 rw [IsLocalization.smul_mk', mul_one]
-    rw [IsLocalization.mk'_self, one_smul]
+    rcases mk'_surjective S r with ⟨r, s, rfl⟩
+    calc f (mk' A r s • m)
+        = ((s : R) • mk' A 1 s) • f (mk' A r s • m) := by simp
+      _ = (mk' A 1 s) • (s : R) • f (mk' A r s • m) := by rw [smul_comm, smul_assoc]
+      _ = (mk' A 1 s) • f ((s : R) • mk' A r s • m) := by simp
+      _ = (mk' A 1 s) • f (r • m) := by rw [← smul_assoc, smul_mk'_self, algebraMap_smul]
+      _ = (mk' A 1 s) • r • f m := by simp
+      _ = mk' A r s • f m := by rw [smul_comm, ← smul_assoc, smul_mk'_one]
 
 @[simp] lemma LinearMap.restrictScalars_extendScalarsOfIsLocalization (f : M →ₗ[R] N) :
     (f.extendScalarsOfIsLocalization S A).restrictScalars R = f := rfl
+
+@[simp] lemma LinearMap.extendScalarsOfIsLocalization_apply (f : M →ₗ[A] N) :
+    f.extendScalarsOfIsLocalization S A = f := rfl
+
 end

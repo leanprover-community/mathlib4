@@ -1106,10 +1106,8 @@ theorem isBaseChange : IsBaseChange A f := by
   rcases this with ⟨ℓ, rfl, h₂⟩
   refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
   have := h₂ (LinearMap.restrictScalars R g'') h
-  rw [← ℓ.restrictScalars_extendScalarsOfIsLocalization S A] at this
   ext x
-  apply_fun fun f => f x at this
-  simpa [LinearMap.restrictScalars_apply]
+  simp [← h₂ (LinearMap.restrictScalars R g'') h]
 
 end IsLocalizedModule
 
