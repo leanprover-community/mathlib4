@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Set.Finite
+import Mathlib.SetTheory.Cardinal.Basic
 
 #align_import data.nat.prime_fin from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -21,6 +22,12 @@ namespace Nat
 theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
   Set.infinite_of_not_bddAbove not_bddAbove_setOf_prime
 #align nat.infinite_set_of_prime Nat.infinite_setOf_prime
+
+instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
+
+open scoped Cardinal
+
+theorem Primes.cardinal_mk_eq_aleph0 : #Primes = ℵ₀ := Cardinal.mk_eq_aleph0 Primes
 
 /-- If `a`, `b` are positive, the prime divisors of `a * b` are the union of those of `a` and `b` -/
 theorem factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
