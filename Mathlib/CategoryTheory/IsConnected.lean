@@ -106,7 +106,7 @@ the constant functor with value `F.obj j` (for any choice of `j`).
 def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
-    ≪≫ (isoWhiskerRight (IsPreconnected.iso_constant _ j).some _)
+    ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
     ≪≫ NatIso.ofComponents (fun j' => eqToIso Function.apply_invFun_apply) (by aesop_cat)
 #align category_theory.iso_constant CategoryTheory.isoConstant
 
