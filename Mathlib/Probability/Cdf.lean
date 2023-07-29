@@ -106,7 +106,7 @@ lemma MeasureTheory.Measure.eq_of_cdf (μ ν : Measure ℝ) [IsProbabilityMeasur
     [IsProbabilityMeasure ν] (h : cdf μ = cdf ν) : μ = ν := by
   rw [← measure_cdf μ, ← measure_cdf ν, h]
 
-lemma MeasureTheory.Measure.eq_iff_cdf (μ ν : Measure ℝ) [IsProbabilityMeasure μ]
+@[simp] lemma MeasureTheory.Measure.cdf_eq_iff (μ ν : Measure ℝ) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] :
-    μ = ν ↔ cdf μ = cdf ν :=
-⟨fun h ↦ by rw [h], MeasureTheory.Measure.eq_of_cdf μ ν⟩
+    cdf μ = cdf ν ↔ μ = ν :=
+⟨MeasureTheory.Measure.eq_of_cdf μ ν, fun h ↦ by rw [h]⟩
