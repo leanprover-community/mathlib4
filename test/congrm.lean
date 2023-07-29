@@ -29,16 +29,19 @@ example {a b : ℕ} (h : a = b) : (λ y : ℕ => ∀ z, a + a = z) = (λ x => �
 
 end docs
 
-example (f : α → Prop) (h : ∀ a, f a = True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
+example (f : α → Prop) (h : ∀ a, f a ↔ True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
   fail_if_success congrm f ?_
   congrm ∀ x, ?_
   guard_hyp x : α
   exact h x
 
 example (f : α → Prop) (h : ∀ a, f a = True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
-  congrm ∀ x, c(h _)
+  congrm ∀ x, $(h _)
 
-example (f : α → α → Prop) (h : ∀ a b, f a b = True) :
+example (f : α → Prop) (h : ∀ a, f a ↔ True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
+  congrm ∀ x, $(h _)
+
+example (f : α → α → Prop) (h : ∀ a b, f a b ↔ True) :
     (∀ a b, f a b) ↔ (∀ _ _ : α, True) := by
   congrm ∀ x y, ?_
   exact h x y
@@ -83,9 +86,9 @@ example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
   exact h
 
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
-  congrm _ = c(h)
+  congrm _ = $h
 
-example (f : α → Prop) (h : ∀ a, f a = True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
+example (f : α → Prop) (h : ∀ a, f a ↔ True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
   fail_if_success congrm f ?_
   congrm ∀ _, ?_
   exact h _
@@ -102,16 +105,7 @@ example (a b : Nat) (h : a = b) : 1 + a ≤ 1 + b := by
   congrm 1 + ?_
   exact h
 
-/-
--- Fails for now; simp can't synthesize arguments for `Fintype.card_congr'` with so
--- little information
-
-set_option trace.Tactic.congrm true
-set_option trace.Tactic.congr true
-set_option trace.Meta.Tactic.simp.congr true
-set_option trace.Debug.Meta.Tactic.simp.congr true
-#check Fintype.card_congr'
+-- Subsingleton instances
 example [Fintype α] [Fintype β] (h : α = β) : Fintype.card α = Fintype.card β := by
-  --congrm Fintype.card ?_
-  --congrm Fintype.card c((?_ : α = β))
--/
+  congrm Fintype.card ?_
+  exact h
