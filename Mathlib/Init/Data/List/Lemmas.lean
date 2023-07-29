@@ -83,7 +83,3 @@ theorem length_mapAccumr₂ :
 end MapAccumr₂
 
 end List
-
-#align list.length_zip_with List.length_zipWith
-#align list.mem_replicate List.mem_replicate
-#align list.eq_of_mem_replicate List.eq_of_mem_replicate
