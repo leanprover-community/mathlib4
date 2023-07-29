@@ -229,12 +229,14 @@ theorem compProd_apply_eq_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (
   rfl
 #align probability_theory.kernel.comp_prod_apply_eq_comp_prod_fun ProbabilityTheory.kernel.compProd_apply_eq_compProdFun
 
-theorem compProd_of_not_isSFiniteKernel_left (κ : kernel α β) (η : kernel (α × β) γ) (h : ¬ IsSFiniteKernel κ) :
+theorem compProd_of_not_isSFiniteKernel_left (κ : kernel α β) (η : kernel (α × β) γ)
+    (h : ¬ IsSFiniteKernel κ) :
     κ ⊗ₖ η = 0 := by
   rw [compProd, dif_neg]
   simp [h]
 
-theorem compProd_of_not_isSFiniteKernel_right (κ : kernel α β) (η : kernel (α × β) γ) (h : ¬ IsSFiniteKernel η) :
+theorem compProd_of_not_isSFiniteKernel_right (κ : kernel α β) (η : kernel (α × β) γ)
+    (h : ¬ IsSFiniteKernel η) :
     κ ⊗ₖ η = 0 := by
   rw [compProd, dif_neg]
   simp [h]
@@ -472,7 +474,7 @@ theorem compProd_eq_sum_compProd_left (κ : kernel α β) [IsSFiniteKernel κ] (
   κ ⊗ₖ η = kernel.sum fun n => seq κ n ⊗ₖ η := by
   by_cases h : IsSFiniteKernel η
   swap
-  · simp_rw [compProd_undef_right _ _ h]
+  · simp_rw [compProd_of_not_isSFiniteKernel_right _ _ h]
     simp
   rw [compProd_eq_sum_compProd]
   congr with n a s hs
@@ -484,7 +486,7 @@ theorem compProd_eq_sum_compProd_right (κ : kernel α β) (η : kernel (α × �
     [IsSFiniteKernel η] : κ ⊗ₖ η = kernel.sum fun n => κ ⊗ₖ seq η n := by
   by_cases hκ : IsSFiniteKernel κ
   swap
-  · simp_rw [compProd_undef_left _ _ hκ]
+  · simp_rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
     simp
   rw [compProd_eq_sum_compProd]
   simp_rw [compProd_eq_sum_compProd_left κ _]
@@ -503,7 +505,7 @@ theorem compProd_apply_univ_le (κ : kernel α β) (η : kernel (α × β) γ) [
     (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
   by_cases hκ : IsSFiniteKernel κ
   swap
-  · rw [compProd_undef_left _ _ hκ]
+  · rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
     simp
   rw [compProd_apply κ η a MeasurableSet.univ]
   simp only [Set.mem_univ, Set.setOf_true]
@@ -529,11 +531,11 @@ instance IsSFiniteKernel.compProd (κ : kernel α β) (η : kernel (α × β) γ
     IsSFiniteKernel (κ ⊗ₖ η) := by
   by_cases h : IsSFiniteKernel κ
   swap
-  · rw [compProd_undef_left _ _ h]
+  · rw [compProd_of_not_isSFiniteKernel_left _ _ h]
     infer_instance
   by_cases h : IsSFiniteKernel η
   swap
-  · rw [compProd_undef_right _ _ h]
+  · rw [compProd_of_not_isSFiniteKernel_right _ _ h]
     infer_instance
   rw [compProd_eq_sum_compProd]
   exact kernel.isSFiniteKernel_sum fun n => kernel.isSFiniteKernel_sum inferInstance
