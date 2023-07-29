@@ -136,31 +136,31 @@ theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
-    (hf : f.coeff n = a) (hg : g.coeff n = b) :
+    (h_add_left : f.coeff n = a) (h_add_right : g.coeff n = b) :
     (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply coeff_add
 
 theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g : R[X]}
-    (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg)
-    (hf : f.coeff df = a) (hg : g.coeff dg = b) (ddf : df + dg ≤ d) :
+    (h_mul_left : natDegree f ≤ df) (h_mul_right : natDegree g ≤ dg)
+    (h_mul_left : f.coeff df = a) (h_mul_right : g.coeff dg = b) (ddf : df + dg ≤ d) :
     (f * g).coeff d = if d = df + dg then a * b else 0 := by
   split_ifs with h
-  · subst hf hg h
-    exact coeff_mul_add_of_le_natDegree_of_eq hdf hdg
+  · subst h_mul_left h_mul_right h
+    exact coeff_mul_add_of_le_natDegree_of_eq ‹_› ‹_›
   · apply coeff_eq_zero_of_natDegree_lt
     apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ddf ?_)
-    · exact natDegree_mul_le_of_le hdf hdg
+    · exact natDegree_mul_le_of_le ‹_› ‹_›
     · exact ne_comm.mp h
 
 theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} {p : R[X]}
-    (pn : natDegree p ≤ n) (mno : m * n ≤ o) (ha : coeff p n = a) :
+    (h_pow : natDegree p ≤ n) (h_exp : m * n ≤ o) (h_pow_bas : coeff p n = a) :
     coeff (p ^ m) o = if o = m * n then a ^ m else 0 := by
   split_ifs with h
-  · subst h ha
+  · subst h h_pow_bas
     rw [mul_comm]
-    apply coeff_pow_of_natDegree_le pn
+    exact coeff_pow_of_natDegree_le ‹_›
   · apply coeff_eq_zero_of_natDegree_lt
-    apply lt_of_le_of_lt ?_ (lt_of_le_of_ne mno ?_)
-    · exact natDegree_pow_le_of_le m pn
+    apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ‹_› ?_)
+    · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
 
 section congr_lemmas
@@ -176,20 +176,20 @@ They achieve the following goals.
   proving that this value is non-zero by `coeff_ne_zero`.
 -/
 theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
-    (pn : natDegree p ≤ m) (coeff_eq : coeff p o = c)
+    (h_natDeg_le : natDegree p ≤ m) (coeff_eq : coeff p o = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     natDegree p = deg := by
   subst coeff_eq deg_eq_deg coeff_eq_deg
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 theorem degree_eq_of_le_of_coeff_ne_zero' {deg : WithBot ℕ} {m o : ℕ} {c : R} {p : R[X]}
-    (pn : degree p ≤ m) (coeff_eq : coeff p o = c)
+    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p o = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg
   rw [Nat.cast_inj] at deg_eq_deg
-  subst deg_eq_deg
-  exact degree_eq_of_le_of_coeff_ne_zero pn coeff_ne_zero
+  subst ‹_›
+  exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
 
