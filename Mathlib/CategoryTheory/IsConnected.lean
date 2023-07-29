@@ -84,18 +84,37 @@ variable {J : Type u₁} [Category.{v₁} J]
 
 variable {K : Type u₂} [Category.{v₂} K]
 
+namespace IsPreconnected.IsoConstantAux
+
+/-- Implementation detail of `isoConstant`. -/
+private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Discrete J where
+  obj j := have := Nonempty.intro j
+    Discrete.mk (Function.invFun F.obj (F.obj j))
+  map {j j'} f := have := Nonempty.intro j
+    ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext _ _ (Discrete.eq_of_hom (F.map f)))⟩⟩
+
+/-- Implementation detail of `isoConstant`. -/
+private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
+    liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
+  NatIso.ofComponents (fun j => have := Nonempty.intro j
+    eqToIso (Function.invFun_eq ⟨j, rfl⟩)) (by aesop_cat)
+
+end IsPreconnected.IsoConstantAux
+
 /-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
 the constant functor with value `F.obj j` (for any choice of `j`).
 -/
-def isoConstant [IsPreconnected J] {α : Type u₁} (F : J ⥤ Discrete α) (j : J) :
+def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
     F ≅ (Functor.const J).obj (F.obj j) :=
-  (IsPreconnected.iso_constant F j).some
-#align category_theory.iso_constant CategoryTheory.isoConstant
+  have := Nonempty.intro j
+  (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
+    ≪≫ (isoWhiskerRight (IsPreconnected.iso_constant _ j).some _)
+    ≪≫ NatIso.ofComponents (fun j' => eqToIso (Function.invFun_eq ⟨j, rfl⟩)) (by aesop_cat)
 
-/-- If J is connected, any functor to a discrete category is constant on objects.
+/-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
 -/
-theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₁} (F : J ⥤ Discrete α) (j j' : J) :
+theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j j' : J) :
     F.obj j = F.obj j' := by
   ext; exact ((isoConstant F j').hom.app j).down.1
 #align category_theory.any_functor_const_on_obj CategoryTheory.any_functor_const_on_obj
@@ -114,7 +133,7 @@ This can be thought of as a local-to-global property.
 
 The converse is shown in `IsConnected.of_constant_of_preserves_morphisms`
 -/
-theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₁} (F : J → α)
+theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F : J → α)
     (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) (j j' : J) : F j = F j' := by
   simpa using
     any_functor_const_on_obj
@@ -150,7 +169,7 @@ The converse is given in `IsConnected.of_induct`.
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
   let aux (j₁ j₂ : J) (f : j₁ ⟶ j₂) := congrArg ULift.up <| (h1 f).to_eq
-  injection constant_of_preserves_morphisms (fun k => ULift.up (k ∈ p)) aux j j₀ with i
+  injection constant_of_preserves_morphisms (fun k => ULift.up.{u₁} (k ∈ p)) aux j j₀ with i
   rwa [i]
 #align category_theory.induct_on_objects CategoryTheory.induct_on_objects
 
@@ -203,7 +222,7 @@ theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort _)
 #align category_theory.is_preconnected_induction CategoryTheory.isPreconnected_induction
 
 /-- If `J` and `K` are equivalent, then if `J` is preconnected then `K` is as well. -/
-theorem isPreconnected_of_equivalent {K : Type u₁} [Category.{v₂} K] [IsPreconnected J]
+theorem isPreconnected_of_equivalent {K : Type u₂} [Category.{v₂} K] [IsPreconnected J]
     (e : J ≌ K) : IsPreconnected K where
   iso_constant F k :=
     ⟨calc
@@ -216,7 +235,7 @@ theorem isPreconnected_of_equivalent {K : Type u₁} [Category.{v₂} K] [IsPrec
 #align category_theory.is_preconnected_of_equivalent CategoryTheory.isPreconnected_of_equivalent
 
 /-- If `J` and `K` are equivalent, then if `J` is connected then `K` is as well. -/
-theorem isConnected_of_equivalent {K : Type u₁} [Category.{v₂} K] (e : J ≌ K) [IsConnected J] :
+theorem isConnected_of_equivalent {K : Type u₂} [Category.{v₂} K] (e : J ≌ K) [IsConnected J] :
     IsConnected K :=
   { is_nonempty := Nonempty.map e.functor.obj (by infer_instance)
     toIsPreconnected := isPreconnected_of_equivalent e }
