@@ -3,10 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.Equivalence
 
-/-! 2-commutative squares of functors
+/-!
+# 2-commutative squares of functors
 
 Similarly as `CommSq.lean` defines the notion of commutative squares,
 this file introduces the notion of 2-commutative squares of functors.
