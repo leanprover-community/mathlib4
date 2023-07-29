@@ -64,7 +64,8 @@ if they leak into the local context. -/
 private def congrHoleIndex : Name := decl_name%
 
 /-- Hold onto the hole's value along with the value of either the LHS or RHS of the hole. -/
-@[reducible] def cHole {α : Sort u} (val : α) {p : Prop} (_ : p) : α := val
+@[nolint unusedArguments, reducible]
+def cHole {α : Sort u} (val : α) {p : Prop} (_ : p) : α := val
 
 /-- For error reporting purposes, make the hole pretty print as its value.
 We can still see it's a hole on mouseover in the info view. -/
