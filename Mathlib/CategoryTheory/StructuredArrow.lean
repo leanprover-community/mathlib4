@@ -217,13 +217,13 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
 #align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp
 
 /-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
-@[simps!]
+@[simp]
 def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
   Comma.mapLeftIso _ ((Functor.const _).mapIso i)
 
 /-- A natural isomorphism `T ≅ T'` induces an equivalence
     `StructuredArrow S T ≌ StructuredArrow S T'`.-/
-@[simps!]
+@[simp]
 def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
   Comma.mapRightIso _ i
 
@@ -453,13 +453,13 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
 
 /-- An isomorphism `T ≅ T'` induces an equivalence
     `CostructuredArrow S T ≌ CostructuredArrow S T'`. -/
-@[simps!]
+@[simp]
 def mapIso (i : T ≅ T') : CostructuredArrow S T ≌ CostructuredArrow S T' :=
   Comma.mapRightIso _ ((Functor.const _).mapIso i)
 
 /-- A natural isomorphism `S ≅ S'` induces an equivalence
     `CostrucutredArrow S T ≌ CostructuredArrow S' T`. -/
-@[simps!]
+@[simp]
 def mapNatIso (i : S ≅ S') : CostructuredArrow S T ≌ CostructuredArrow S' T :=
   Comma.mapLeftIso _ i
 
