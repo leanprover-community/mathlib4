@@ -279,7 +279,7 @@ local notation "μ_𝓕" => Measure.map (@QuotientAddGroup.mk G' _ Γ') (μ'.res
   `G' ⧸ Γ'` with respect to a right-invariant measure `μ` on `G'`, is equal to the integral over
   the quotient of the automorphization of `f` times `g`. -/
 lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type _} [NormedField K]
-    [CompleteSpace K] [NormedSpace ℝ K] [μ'.IsAddRightInvariant] {f : G' → K}
+    [NormedSpace ℝ K] [μ'.IsAddRightInvariant] {f : G' → K}
     (f_ℒ_1 : Integrable f μ') {g : G' ⧸ Γ' → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 ≠ ∞)
     (F_ae_measurable : AEStronglyMeasurable (QuotientAddGroup.automorphize f) μ_𝓕)
