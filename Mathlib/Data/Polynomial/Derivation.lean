@@ -57,12 +57,9 @@ variable [IsScalarTower R (Polynomial R) A]
 variable (R)
 
 /-- The derivation on `R[X]` that takes the value `a` on `X`. -/
-def mkDerivation (a : A) : Derivation R R[X] A where
-  toLinearMap := (LinearMap.restrictScalars R <| LinearMap.toSpanSingleton R[X] A a).comp derivative
-  map_one_eq_zero' := by simp
-  leibniz' := by
-    intros f g
-    simp [mul_comm, mul_smul, add_comm]
+/-- The derivation on `R[X]` that takes the value `a` on `X`. -/
+def mkDerivation (a : A) : Derivation R R[X] A :=
+  (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
 
 @[simp]
 theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation]
