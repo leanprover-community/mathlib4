@@ -33,11 +33,11 @@ is then also a C⋆-norm.
 ## Main definitions
 
 - `NonUnitalAlgHom.Lmul : A →ₙₐ[𝕜] A →L[𝕜] A`: `ContinuousLinearMap.mul` upgraded to a non-unital
-  algebra homomorphism.
-- `Unitization.leftRegRep : Unitization 𝕜 A →ₐ[𝕜] (𝕜 × (A →L[𝕜] A))`: The first coordinate of this
-  map is just `Unitization.fst` and the second is the left regular representation of
-  `Unitization 𝕜 A` *acting on `A`*. This is the `Unitization.lift` of `NonUnitalAlgHom.Lmul`.
-  We use this map to pull back the `NormedRing` and `NormedAlgebra` structures.
+  algebra homomorphism. This is the left regular representation of `A`.
+- `Unitization.splitMul : Unitization 𝕜 A →ₐ[𝕜] (𝕜 × (A →L[𝕜] A))`: The first coordinate of this
+  map is just `Unitization.fst` and the second is the `Unitization.lift` of the left regular
+  representation of `A` (i.e., `NonUnitalAlgHom.Lmul`). We use this map to pull back the
+  `NormedRing` and `NormedAlgebra` structures.
 
 ## Implementation details
 
@@ -71,36 +71,35 @@ variable (𝕜 A)
 
 namespace Unitization
 
-/-- `leftRegRep` stands for "left regular representation" which is multiplication on the left. So,
-given `(k, a) : Unitization 𝕜 A`, the second coordinate of `Unitization.leftRegRep (k, a)` should
-be the representation of `Unitization 𝕜 A` on `A →L[𝕜] A`; note that this is not just
-`NonUnitalAlgHom.Lmul` for a few reasons: (a) that would either be `A` acting on `A`, or
-(b) `Unitization 𝕜 A` acting on `Unitization 𝕜 A`, and (c) that's a `NonUnitalAlgHom` but
-here we need an `AlgHom`. In addition, the first coordinate of `Unitization.leftRegRep (k, a)`
-should just be `k`. See `Unitization.leftRegRep_apply` also. -/
-noncomputable def leftRegRep : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
+/-- Given `(k, a) : Unitization 𝕜 A`, the second coordinate of `Unitization.splitMul (k, a)` iw
+the natural representation of `Unitization 𝕜 A` on given by multiplication on the left `A →L[𝕜] A`;
+note that this is not just `NonUnitalAlgHom.Lmul` for a few reasons: (a) that would either be `A`
+acting on `A`, or (b) `Unitization 𝕜 A` acting on `Unitization 𝕜 A`, and (c) that's a
+`NonUnitalAlgHom` but here we need an `AlgHom`. In addition, the first coordinate of
+`Unitization.splitMul (k, a)` should just be `k`. See `Unitization.splitMul_apply` also. -/
+noncomputable def splitMul : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
   (lift 0).prod (lift <| NonUnitalAlgHom.Lmul 𝕜 A)
 
 variable {𝕜 A}
 
 @[simp]
-theorem leftRegRep_apply (x : Unitization 𝕜 A) :
-    leftRegRep 𝕜 A x = (x.fst, algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd) :=
+theorem splitMul_apply (x : Unitization 𝕜 A) :
+    splitMul 𝕜 A x = (x.fst, algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd) :=
   show (x.fst + 0, _) = (x.fst, _) by rw [add_zero]; rfl
 
 /-- this lemma establishes that if `ContinuousLinearMap.mul 𝕜 A` is injective, then so is
-`Unitization.leftRegRep 𝕜 A`. When `A` is a `RegularNormedAlgebra`, then
+`Unitization.splitMul 𝕜 A`. When `A` is a `RegularNormedAlgebra`, then
 `ContinuousLinearMap.mul 𝕜 A` is an isometry, and is therefore automatically injective. -/
-theorem leftRegRep_injective_of_clm_mul_injective
+theorem splitMul_injective_of_clm_mul_injective
     (h : Function.Injective (mul 𝕜 A)) :
-    Function.Injective (leftRegRep 𝕜 A) := by
+    Function.Injective (splitMul 𝕜 A) := by
   rw [injective_iff_map_eq_zero]
   intro x hx
   induction x using Unitization.ind
   rw [map_add] at hx
-  simp only [Prod.mk_add_mk, add_zero, fst_inl, leftRegRep_apply,
+  simp only [Prod.mk_add_mk, add_zero, fst_inl, splitMul_apply,
     snd_inl, snd_inr, Prod.mk_eq_zero, zero_add, fst_inr,
-    map_zero, leftRegRep_apply, add_zero, Prod.mk_eq_zero] at hx
+    map_zero, splitMul_apply, add_zero, Prod.mk_eq_zero] at hx
   obtain ⟨rfl, hx⟩ := hx
   simp only [map_zero, zero_add, inl_zero] at hx ⊢
   rw [← map_zero (mul 𝕜 A)] at hx
@@ -109,43 +108,43 @@ theorem leftRegRep_injective_of_clm_mul_injective
 variable [RegularNormedAlgebra 𝕜 A]
 variable (𝕜 A)
 
-/- In a `RegularNormedAlgebra`, the map `Unitization.leftRegRep 𝕜 A` is injective. We will use this
+/- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective. We will use this
 to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
-theorem leftRegRep_injective : Function.Injective (leftRegRep 𝕜 A) :=
-  leftRegRep_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
+theorem splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
+  splitMul_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
 
 variable {𝕜 A}
 
 section Aux
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
-algebra homomorphism `Unitization.leftRegRep 𝕜 A`. This does not give us the desired topology,
+algebra homomorphism `Unitization.splitMul 𝕜 A`. This does not give us the desired topology,
 uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
 it as a local instance to build the real one. -/
 @[reducible]
 noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
   @NormedRing.induced _ (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) Unitization.instRing
-    Prod.normedRing _ (leftRegRep 𝕜 A) (leftRegRep_injective 𝕜 A)
+    Prod.normedRing _ (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
 -- ummmm... what? why does Lean need me to fill in these instances?
 
 attribute [local instance] Unitization.normedRingAux
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
-algebra homomorphism `Unitization.leftRegRep 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
+algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one.-/
 @[reducible]
 noncomputable def normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
-  NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (leftRegRep 𝕜 A)
+  NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A)
 
 attribute [local instance] Unitization.normedAlgebraAux
 
-theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖leftRegRep 𝕜 A x‖ :=
+theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
   rfl
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
 theorem norm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖ = ‖x.fst‖ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖ := by
-  rw [norm_def, leftRegRep_apply, Prod.norm_def, sup_eq_max]
+  rw [norm_def, splitMul_apply, Prod.norm_def, sup_eq_max]
 
 variable (𝕜 A)
 
@@ -222,14 +221,14 @@ instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
   CompleteSpace.prod
 
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
-algebra homomorphism `Unitization.leftRegRep 𝕜 A`, but replace the bornology and the uniformity so
+algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
 that they coincide with `𝕜 × A`. -/
 noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
   (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
     fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
-algebra homomorphism `Unitization.leftRegRep 𝕜 A`. -/
+algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
     where
   dist_eq := normedRingAux.dist_eq
@@ -237,7 +236,7 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
   norm := normedRingAux.norm
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
-algebra homomorphism `Unitization.leftRegRep 𝕜 A`. -/
+algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
     rw [norm_def, map_smul, norm_smul, ← norm_def]
