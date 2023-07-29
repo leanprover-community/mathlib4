@@ -75,7 +75,7 @@ set_option linter.uppercaseLean3 false
 instance (G : GroupCat) : Group G.α :=
   G.str
 
-variable {A B C : GroupCat.{u}} (f : A ⟶ B) (f' : B ⟶ C)
+variable {A B : GroupCat.{u}} (f : A ⟶ B)
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
@@ -96,10 +96,6 @@ theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
   Iff.trans (mono_iff_ker_eq_bot f) <| MonoidHom.ker_eq_bot_iff f
 #align Group.mono_iff_injective GroupCat.mono_iff_injective
 #align AddGroup.mono_iff_injective AddGroupCat.mono_iff_injective
-
-@[to_additive]
-theorem range_le_ker_iff : f.range ≤ f'.ker ↔ f'.comp f = 1 :=
-  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact FunLike.congr_fun h y⟩
 
 namespace SurjectiveOfEpiAuxs
 
@@ -408,7 +404,7 @@ namespace CommGroupCat
 
 set_option linter.uppercaseLean3 false
 
-variable {A B C : CommGroupCat.{u}} (f : A ⟶ B) (f' : B ⟶ C)
+variable {A B : CommGroupCat.{u}} (f : A ⟶ B)
 
 -- Porting note: again to help with non-transparency
 private instance (A : CommGroupCat) : CommGroup A.α := A.str
@@ -458,15 +454,6 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, MonoidHom.range_top_iff_surjective]
 #align CommGroup.epi_iff_surjective CommGroupCat.epi_iff_surjective
 #align AddCommGroup.epi_iff_surjective AddCommGroupCat.epi_iff_surjective
-
-@[to_additive]
-theorem range_le_ker_iff : f.range ≤ f'.ker ↔ f'.comp f = 1 :=
-  GroupCat.range_le_ker_iff (A := A) (B := B) (C := C) f f'
-
-@[to_additive]
-theorem ker_le_range_iff : f'.ker ≤ f.range ↔ (QuotientGroup.mk' f.range).comp f'.ker.subtype = 1 :=
-  ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (QuotientGroup.eq_one_iff _).mpr <| h hx,
-    fun h x hx => (QuotientGroup.eq_one_iff _).mp <| by exact FunLike.congr_fun h ⟨x, hx⟩⟩
 
 @[to_additive AddCommGroupCat.forget_commGroupCat_preserves_mono]
 instance forget_commGroupCat_preserves_mono : (forget CommGroupCat).PreservesMonomorphisms where

@@ -47,7 +47,7 @@ isomorphism theorems, quotient groups
 
 open Function
 
-universe u v
+universe u v w
 
 namespace QuotientGroup
 
@@ -124,6 +124,12 @@ theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 
   rw [mul_one, Subgroup.inv_mem_iff]
 #align quotient_group.eq_one_iff QuotientGroup.eq_one_iff
 #align quotient_add_group.eq_zero_iff QuotientAddGroup.eq_zero_iff
+
+@[to_additive]
+theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
+    g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
+  ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
+    fun h x hx => (eq_one_iff _).mp <| by exact FunLike.congr_fun h ⟨x, hx⟩⟩
 
 @[to_additive (attr := simp)]
 theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
