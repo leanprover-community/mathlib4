@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
 
-#align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"b0c712376e4ef44c53c3b872157ef44dfe9f9599"
+#align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -167,7 +167,7 @@ Note that `Module R' (M ⊗[R] N)` is available even without this typeclass on `
 needed if `TensorProduct.smul_tmul`, `TensorProduct.smul_tmul'`, or `TensorProduct.tmul_smul` is
 used.
 -/
-class CompatibleSMul [DistribMulAction R' N] where
+class CompatibleSMul [DistribMulAction R' N] : Prop where
   smul_tmul : ∀ (r : R') (m : M) (n : N), (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n)
 #align tensor_product.compatible_smul TensorProduct.CompatibleSMul
 
@@ -326,7 +326,17 @@ section
 
 -- Like `R'`, `R'₂` provides a `DistribMulAction R'₂ (M ⊗[R] N)`
 variable {R'₂ : Type _} [Monoid R'₂] [DistribMulAction R'₂ M]
-variable [SMulCommClass R R'₂ M] [SMul R'₂ R']
+variable [SMulCommClass R R'₂ M]
+
+/-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
+instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) where
+  smul_comm r' r'₂ x :=
+    TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
+      (fun m n => by simp_rw [smul_tmul', smul_comm]) fun x y ihx ihy => by
+      simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]
+#align tensor_product.smul_comm_class_left TensorProduct.smulCommClass_left
+
+variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
