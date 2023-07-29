@@ -245,34 +245,6 @@ def _root_.Lean.Name.getHead : Name → Name
   let (type, _, lhs, rhs) := ← p.app4? ``LE.le
   return (type, lhs, rhs)
 
-open ConstantInfo Command in
-/-- `declNameInThm thm tag` takes two `Name`s as input.  It checks that the declaration called
-`thm` exists and that one of its hypotheses is called `tag`.
-Since `compute_degree` finds goals by referring to their tags, this check makes sure that
-the tactic continues working and highlights potential problems.
--/
-def declNameInThm (thm tag : Name) : CommandElabM Unit := do
-  let tail :=  m!"\n\n  `{thm.getTail}`\n\nchange name?"
-  match (← getEnv).find? thm with
-    | none => throwError m!"Did lemma" ++ tail
-    | some decl => do
-      let stat := (toConstantVal decl).type
-      let listBinderNames := stat.getForallBinderNames
-      if (! tag ∈ listBinderNames) then
-        throwError m!"Did the hypothesis\n\n  `{tag}`\n\nof lemma" ++ tail
-
-/--  `CDtags` is the list containing the three tags that `compute_degree` uses to report errors
-relating to the degree-computations. -/
-private def CDtags : List String := ["deg_eq_deg", "coeff_eq_deg", "coeff_ne_zero"]
-
-/-! Check that both theorems
-`natDegree_eq_of_le_of_coeff_ne_zero'` and `degree_eq_of_le_of_coeff_ne_zero'` contain hypotheses
-called `exp_deg_eq_deg` and `natDeg_eq_coeff`. -/
-run_cmd
-  for thm in [``natDegree_eq_of_le_of_coeff_ne_zero', ``degree_eq_of_le_of_coeff_ne_zero'] do
-  for tag in CDtags do
-    declNameInThm thm tag
-
 /-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
 the `e` looks like `lhs ≤ rhs` or `lhs = rhs` and that `lhs` is one of
 `natDegree f, degree f, coeff f n`.
