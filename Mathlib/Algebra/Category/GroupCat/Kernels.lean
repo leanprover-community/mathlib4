@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 namespace AddCommGroupCat
 
-open CategoryTheory Limits QuotientAddGroup
+open AddMonoidHom CategoryTheory Limits QuotientAddGroup
 
 universe u
 
