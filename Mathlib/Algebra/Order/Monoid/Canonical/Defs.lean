@@ -99,6 +99,7 @@ section LEIffExistsMul
   added as an assumption for arbitrary `Mul`/`LE` typeclasses such as `CompleteLattice`,
   while avoiding diamonds. -/
 class LEIffExistsMul (α : Type _) [Mul α] [LE α] : Prop where
+  /-- `a ≤ b` if `b = a * c` for some `c` -/
   protected le_iff_exists_mul : ∀ {a b : α}, a ≤ b ↔ ∃ c, b = a * c
 
 /-- A mixin class stating that an ordering interacts canonically with addition
@@ -107,6 +108,7 @@ class LEIffExistsMul (α : Type _) [Mul α] [LE α] : Prop where
   added as an assumption for arbitrary `Add`/`LE` typeclasses such as `CompleteLattice`,
   while avoiding diamonds. -/
 class LEIffExistsAdd (α : Type _) [Add α] [LE α] : Prop where
+  /-- `a ≤ b` if `b = a + c` for some `c` -/
   protected le_iff_exists_add : ∀ {a b : α}, a ≤ b ↔ ∃ c, b = a + c
 
 attribute [to_additive] LEIffExistsMul
@@ -235,7 +237,7 @@ theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
 #align eq_one_or_one_lt eq_one_or_one_lt
 #align eq_zero_or_pos eq_zero_or_pos
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   mul_eq_one
 #align mul_eq_one_iff mul_eq_one_iff
