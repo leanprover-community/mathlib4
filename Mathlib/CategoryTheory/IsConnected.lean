@@ -90,14 +90,13 @@ namespace IsPreconnected.IsoConstantAux
 private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Discrete J where
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
-  map {j j'} f := have := Nonempty.intro j
+  map {j _} f := have := Nonempty.intro j
     ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext _ _ (Discrete.eq_of_hom (F.map f)))⟩⟩
 
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
-  NatIso.ofComponents (fun j => have := Nonempty.intro j
-    eqToIso (Function.invFun_eq ⟨j, rfl⟩)) (by aesop_cat)
+  NatIso.ofComponents (fun j => eqToIso Function.apply_invFun_apply) (by aesop_cat)
 
 end IsPreconnected.IsoConstantAux
 
@@ -106,10 +105,9 @@ the constant functor with value `F.obj j` (for any choice of `j`).
 -/
 def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
     F ≅ (Functor.const J).obj (F.obj j) :=
-  have := Nonempty.intro j
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ (isoWhiskerRight (IsPreconnected.iso_constant _ j).some _)
-    ≪≫ NatIso.ofComponents (fun j' => eqToIso (Function.invFun_eq ⟨j, rfl⟩)) (by aesop_cat)
+    ≪≫ NatIso.ofComponents (fun j' => eqToIso Function.apply_invFun_apply) (by aesop_cat)
 #align category_theory.iso_constant CategoryTheory.isoConstant
 
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
