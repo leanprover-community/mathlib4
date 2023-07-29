@@ -1186,6 +1186,8 @@ lemma rightHomologyι_comp_fromOpcycles :
     S.rightHomologyι ≫ S.fromOpcycles = 0 :=
   S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary S.g (𝟙 _) (by rw [comp_id])
 
+/-- Via `S.rightHomologyι : S.rightHomology ⟶ S.opcycles`, the object `S.rightHomology` identifies
+to the kernel of `S.fromOpcycles : S.opcycles ⟶ S.X₃`. -/
 noncomputable def rightHomologyIsKernel :
     IsLimit (KernelFork.ofι S.rightHomologyι S.rightHomologyι_comp_fromOpcycles) :=
   S.rightHomologyData.hι
