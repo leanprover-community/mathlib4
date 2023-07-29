@@ -1273,6 +1273,7 @@ import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bool.Count
