@@ -4530,10 +4530,12 @@ lemma GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (ev
 
 section Span
 
-def ProjFin (J : Finset (WithTop I)) : (WithTop I → Bool) → (WithTop I → Bool) :=
+variable (J : Finset (WithTop I))
+
+def ProjFin : (WithTop I → Bool) → (WithTop I → Bool) :=
   fun f i ↦ if i ∈ J then f i else false
 
-lemma continuous_projFin (J : Finset (WithTop I)) :
+lemma continuous_projFin :
     Continuous (ProjFin J : (WithTop I → Bool) → (WithTop I → Bool)) := by
   refine' continuous_pi _
   intro i
@@ -4542,38 +4544,156 @@ lemma continuous_projFin (J : Finset (WithTop I)) :
   · exact continuous_apply _
   · exact continuous_const
 
-lemma isClosedMap_projFin (J : Finset (WithTop I)) :
+lemma isClosedMap_projFin :
     IsClosedMap (ProjFin J : (WithTop I → Bool) → (WithTop I → Bool)) :=
   fun _ hF ↦ (IsCompact.isClosed (hF.isCompact.image (continuous_projFin J)))
 
-def ResFin (J : Finset (WithTop I)) := (ProjFin J) '' C
+def ResFin := (ProjFin J) '' C
 
-lemma isClosed_resFin (J : Finset (WithTop I)) (hC : IsClosed C) : IsClosed (ResFin C J) :=
+lemma isClosed_resFin (hC : IsClosed C) : IsClosed (ResFin C J) :=
   isClosedMap_projFin J C hC
 
 noncomputable
-def ResFinSubset (J : Finset (WithTop I)) : {i // i ∈ C} → {i // i ∈ ResFin C J} :=
+def ResFinSubset : {i // i ∈ C} → {i // i ∈ ResFin C J} :=
 fun ⟨i, h⟩ ↦ ⟨ProjFin J i, Set.mem_image_of_mem _ h⟩
 
-lemma resFinSubset_eq (J : Finset (WithTop I)) : Subtype.val ∘ ResFinSubset C J =
+lemma resFinSubset_eq : Subtype.val ∘ ResFinSubset C J =
     (ProjFin J : (WithTop I → Bool) → _) ∘ Subtype.val := by
   rfl
 
-lemma continuous_val_comp_resFinSubset (J : Finset (WithTop I)) :
+lemma continuous_val_comp_resFinSubset :
     Continuous (Subtype.val ∘ ResFinSubset C J) := by
   rw [resFinSubset_eq _]
   exact Continuous.comp (continuous_projFin J) continuous_subtype_val
 
-lemma continuous_resFinSubset (J : Finset (WithTop I)) : Continuous (ResFinSubset C J) := by
+lemma continuous_resFinSubset : Continuous (ResFinSubset C J) := by
   rw [continuous_induced_rng]
   exact continuous_val_comp_resFinSubset _ _
 
-lemma surjective_resFinSubset (J : Finset (WithTop I)) :
+lemma surjective_resFinSubset :
     Function.Surjective (ResFinSubset C J) := by
   rintro ⟨i, ⟨b, hb⟩⟩
   dsimp [ResFinSubset]
   use ⟨b, hb.1⟩
   simp_rw [← hb.2]
+
+noncomputable
+def LinearResFin :
+    LocallyConstant {i // i ∈ ResFin C J} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ :=
+LocallyConstant.comapLinear _ (continuous_resFinSubset C J)
+
+lemma eFin {a : WithTop I} (ha : a ∈ J) :
+    e (ResFin C J) a ∘ ResFinSubset C J = e C a := by
+  ext ⟨f,hf⟩
+  dsimp [e, ResFinSubset, BoolToZ, ProjFin]
+  split_ifs
+  · rfl
+  · rfl
+
+lemma eFin_apply {a : WithTop I} (ha : a ∈ J) :
+    ∀ x, (e (ResFin C J) a) ((ResFinSubset C J) x) = e C a x := by
+  intro x
+  exact congr_fun (eFin C J ha) x
+
+
+-- lemma Products.evalFacFin {l : Products (WithTop I)}
+--     (hlhead : l.val ≠ [] → (l.val.head!) ∈ J) :
+--     l.eval (ResFin C J) ∘ ResFinSubset C J = l.eval C := by
+--   obtain ⟨l, hl⟩ := l
+--   induction l with
+--   | nil => rfl
+--   | cons a as ih =>
+--     · ext ⟨f, hf⟩
+--       rw [evalCons (ResFin C J) hl]
+--       rw [evalCons C hl]
+--       dsimp
+--       specialize hlhead (List.cons_ne_nil a as)
+--       dsimp at hlhead
+--       rw [eFin_apply C J hlhead]
+--       specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
+--       dsimp at ih
+--       congr! 1
+--       by_cases has : as = []
+--       · simp_rw [has]
+--         rfl
+--       · have : List.head! as ∈ J
+--         · rw [← List.cons_head!_tail has] at hl
+--           refine' lt_trans _ hlhead
+--           dsimp [ord]
+--           simp only [Ordinal.typein_lt_typein]
+--           have := List.Chain'.rel_head hl
+--           simp only [gt_iff_lt] at this
+--           exact this
+--         exact congr_fun (ih (fun _ ↦ this)) _
+
+-- lemma Products.head_lt_ord_of_isGood {l : Products (WithTop I)} {o : Ordinal}
+--     (h : l.isGood (Res C o)) : l.val ≠ [] → ord I (l.val.head!) < o := by
+--   intro hn
+--   by_contra h'
+--   apply h
+--   obtain ⟨l,hl⟩ := l
+--   dsimp at hn
+--   have hl' : List.Chain' (·>·) (l.head! :: l.tail)
+--   · rw [List.cons_head!_tail hn]
+--     exact hl
+--   have : (⟨l,hl⟩ : Products (WithTop I)) = ⟨l.head! :: l.tail, hl'⟩
+--   · simp_rw [List.cons_head!_tail hn]
+--   rw [this, evalCons (Res C o) hl']
+--   have eZero : e (Res C o) (List.head! l) = 0
+--   · dsimp [e]
+--     ext ⟨f,hf⟩
+--     dsimp [BoolToZ]
+--     dsimp [Res, ProjOrd] at hf
+--     obtain ⟨g, hg⟩ := hf
+--     rw [← hg.2]
+--     split_ifs
+--     · exfalso
+--       assumption
+--     · rfl
+--     · exfalso
+--       assumption
+--     · rfl
+--   rw [eZero]
+--   simp only [zero_mul, Submodule.zero_mem]
+
+-- lemma Products.goodEvalFac {l : Products (WithTop I)} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
+--     (hl : l.isGood (Res C o₁)) : l.eval (Res C o₁) ∘ ResOnSubsets C h = l.eval (Res C o₂) :=
+--   evalFac C h (head_lt_ord_of_isGood C hl)
+
+-- lemma Products.goodEvalFacC {l : Products (WithTop I)} {o : Ordinal}
+--     (hl : l.isGood (Res C o)) : l.eval (Res C o) ∘ ResOnSubset C o = l.eval C :=
+--   evalFacC C (head_lt_ord_of_isGood C hl)
+
+-- lemma Products.eval_comapFac {l : Products (WithTop I)} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
+--     (hl : l.isGood (Res C o₁)) :
+--     LocallyConstant.comap (ResOnSubsets C h) (l.eval (Res C o₁)) = l.eval (Res C o₂) := by
+--   ext f
+--   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubsets _ _)]
+--   exact congr_fun (goodEvalFac C h hl) _
+
+-- lemma Products.eval_comapFacC {l : Products (WithTop I)} {o : Ordinal}
+--     (hl : l.isGood (Res C o)) :
+--     LocallyConstant.comap (ResOnSubset C o) (l.eval (Res C o)) = l.eval C := by
+--   ext f
+--   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
+--   exact congr_fun (goodEvalFacC C hl) _
+
+-- lemma Products.eval_comapFac' {l : Products (WithTop I)} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
+--     (hlhead : l.val ≠ [] → ord I (l.val.head!) < o₁) :
+--     LocallyConstant.comap (ResOnSubsets C h) (l.eval (Res C o₁)) = l.eval (Res C o₂) := by
+--   ext f
+--   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubsets _ _)]
+--   exact congr_fun (evalFac C h hlhead) _
+
+-- lemma Products.eval_comapFac'C {l : Products (WithTop I)} {o : Ordinal}
+--     (hlhead : l.val ≠ [] → ord I (l.val.head!) < o) :
+--     LocallyConstant.comap (ResOnSubset C o) (l.eval (Res C o)) = l.eval C := by
+--   ext f
+--   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
+--   exact congr_fun (evalFacC C hlhead) _
+
+lemma linearResFin_of_eval (l : Products (WithTop I)) (hl : l.isGood (ResFin C J)) :
+  l.eval C = LinearResFin C J (l.eval (ResFin C J)) := sorry
 
 lemma GoodProducts.spanAux (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := sorry
