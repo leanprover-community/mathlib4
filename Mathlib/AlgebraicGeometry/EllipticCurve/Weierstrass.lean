@@ -81,8 +81,7 @@ elliptic curve, weierstrass equation, j invariant
 
 -- porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
 local macro "map_simp" : tactic =>
-  `(tactic| simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe,
-      map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
+  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
 universe u v w
 
@@ -454,7 +453,8 @@ lemma baseChange_id : baseChange A (id : VariableChange R) = id := by
 lemma baseChange_comp (C' : VariableChange R) :
     baseChange A (C.comp C') = (baseChange A C).comp (baseChange A C') := by
   simp only [comp, baseChange]
-  ext <;> map_simp
+  ext <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe,
+    map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow]
 
 /-- The base change of change of variables over `R` to `A` is a group homomorphism. -/
 def baseChangeMap : VariableChange R →* VariableChange A where
@@ -479,7 +479,8 @@ end VariableChange
 lemma baseChange_variableChange (C : VariableChange R) :
     (W.baseChange A).variableChange (C.baseChange A) = (W.variableChange C).baseChange A := by
   simp only [baseChange, variableChange, VariableChange.baseChange]
-  ext <;> map_simp
+  ext <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe,
+    map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow]
 
 end BaseChange
 
@@ -1163,6 +1164,7 @@ lemma coe_inv_baseChange_Δ' : ↑(E.baseChange A).Δ'⁻¹ = algebraMap R A ↑
 lemma baseChange_j : (E.baseChange A).j = algebraMap R A E.j := by
   simp only [j, baseChange, E.baseChange_c₄]
   map_simp
+  rfl
 #align elliptic_curve.base_change_j EllipticCurve.baseChange_j
 
 lemma baseChange_injective (h : Function.Injective <| algebraMap R A) :
