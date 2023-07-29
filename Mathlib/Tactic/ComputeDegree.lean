@@ -183,17 +183,13 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 theorem degree_eq_of_le_of_coeff_ne_zero' {deg : WithBot ℕ} {m o : ℕ} {c : R} {p : R[X]}
-    (pn : natDegree p ≤ m) (coeff_eq : coeff p o = c)
+    (pn : degree p ≤ m) (coeff_eq : coeff p o = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg
   rw [Nat.cast_inj] at deg_eq_deg
   subst deg_eq_deg
-  rcases eq_or_ne p 0 with (rfl|H)
-  · exact False.elim (coeff_ne_zero rfl)
-  · apply (degree_eq_iff_natDegree_eq ‹_›).mpr
-
-    apply natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
+  exact degree_eq_of_le_of_coeff_ne_zero pn coeff_ne_zero
 
 variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
 
