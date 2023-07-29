@@ -51,18 +51,22 @@ theorem nhdsSet_Icc (h : a ≤ b) : 𝓝ˢ (Icc a b) = 𝓝 a ⊔ 𝓝 b ⊔ �
 -/
 
 @[simp]
-theorem Ioi_mem_nhdsSet_Ici : Ioi a ∈ 𝓝ˢ (Ici b) ↔ a < b := by
+theorem Ioi_mem_nhdsSet_Ici_iff : Ioi a ∈ 𝓝ˢ (Ici b) ↔ a < b := by
   rw [isOpen_Ioi.mem_nhdsSet, Ici_subset_Ioi]
 
+alias Ioi_mem_nhdsSet_Ici_iff ↔ _ Ioi_mem_nhdsSet_Ici
+
 theorem Ici_mem_nhdsSet_Ici (h : a < b) : Ici a ∈ 𝓝ˢ (Ici b) :=
-  mem_of_superset (Ioi_mem_nhdsSet_Ici.2 h) Ioi_subset_Ici_self
+  mem_of_superset (Ioi_mem_nhdsSet_Ici h) Ioi_subset_Ici_self
 
 /-!
 ### Lemmas about `Iix _ ∈ 𝓝ˢ (Set.Iic _)`
 -/
 
-theorem Iio_mem_nhdsSet_Iic : Iio b ∈ 𝓝ˢ (Iic a) ↔ a < b :=
-  Ioi_mem_nhdsSet_Ici (α := αᵒᵈ)
+theorem Iio_mem_nhdsSet_Iic_iff : Iio b ∈ 𝓝ˢ (Iic a) ↔ a < b :=
+  Ioi_mem_nhdsSet_Ici_iff (α := αᵒᵈ)
+
+alias Iio_mem_nhdsSet_Iic_iff ↔ _ Iio_mem_nhdsSet_Iic
 
 theorem Iic_mem_nhdsSet_Iic (h : a < b) : Iic b ∈ 𝓝ˢ (Iic a) :=
   Ici_mem_nhdsSet_Ici (α := αᵒᵈ) h
@@ -71,16 +75,14 @@ theorem Iic_mem_nhdsSet_Iic (h : a < b) : Iic b ∈ 𝓝ˢ (Iic a) :=
 ### Lemmas about `Ixx _ _? ∈ 𝓝ˢ (Set.Icc _ _)`
 -/
 
-theorem Ioi_mem_nhdsSet_Icc (h : a < b) : Ioi a ∈ 𝓝ˢ (Icc b c) := by
-  nhdsSet_mono Icc_subset_Ici_self (Ioi_mem_nhdsSet_Ici h)
+theorem Ioi_mem_nhdsSet_Icc (h : a < b) : Ioi a ∈ 𝓝ˢ (Icc b c) :=
+  nhdsSet_mono Icc_subset_Ici_self <| Ioi_mem_nhdsSet_Ici h
 
 theorem Ici_mem_nhdsSet_Icc (h : a < b) : Ici a ∈ 𝓝ˢ (Icc b c) :=
   mem_of_superset (Ioi_mem_nhdsSet_Icc h) Ioi_subset_Ici_self
 
 theorem Iio_mem_nhdsSet_Icc (h : b < c) : Iio c ∈ 𝓝ˢ (Icc a b) :=
-  have : Iio c ∈ 𝓝ˢ (toDual ⁻¹' (Icc (toDual b) (toDual a))) :=
-    Ioi_mem_nhdsSet_Icc (α := αᵒᵈ) h
-  by rwa [dual_Icc] at this
+  nhdsSet_mono Icc_subset_Iic_self <| Iio_mem_nhdsSet_Iic h
 
 theorem Iic_mem_nhdsSet_Icc (h : b < c) : Iic c ∈ 𝓝ˢ (Icc a b) :=
   mem_of_superset (Iio_mem_nhdsSet_Icc h) Iio_subset_Iic_self
