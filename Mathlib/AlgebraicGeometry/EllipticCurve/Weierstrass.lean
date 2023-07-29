@@ -1033,13 +1033,17 @@ lemma ofJ_0_of_three_eq_zero (h3 : (3 : F) = 0) :
   rw [ofJ, dif_pos rfl, dif_pos h3]
 
 lemma ofJ_0_of_two_eq_zero (h2 : (2 : F) = 0) :
-    ofJ 0 = @ofJ0 _ _ (invertibleOfNonzero <| two_or_three_ne_zero.neg_resolve_left h2) := by
-  rw [ofJ, dif_pos rfl, dif_neg <| two_or_three_ne_zero.neg_resolve_left h2]
+    ofJ 0 = @ofJ0 _ _ (invertibleOfNonzero <| two_or_three_ne_zero.neg_resolve_left h2) :=
+  ofJ_0_of_three_ne_zero <| two_or_three_ne_zero.neg_resolve_left h2
+
+lemma ofJ_1728_of_three_eq_zero (h3 : (3 : F) = 0) :
+    ofJ 1728 = @ofJ1728 _ _ (invertibleOfNonzero <| two_or_three_ne_zero.neg_resolve_right h3) := by
+  rw [ofJ, dif_pos <| by rw [show (1728 : F) = 3 * 576 by norm_num1, h3, zero_mul], dif_pos h3]
 
 lemma ofJ_1728_of_two_ne_zero (h2 : (2 : F) ≠ 0) :
     ofJ 1728 = @ofJ1728 _ _ (invertibleOfNonzero h2) := by
   by_cases h3 : (3 : F) = 0
-  · rw [ofJ, dif_pos <| by rw [show (1728 : F) = 3 * 576 by norm_num1, h3, zero_mul], dif_pos h3]
+  · exact ofJ_1728_of_three_eq_zero h3
   · have h : (1728 : F) ≠ 0 := fun h => or_iff_not_and_not.mp
       (mul_eq_zero.mp <| by rwa [show 2 ^ 6 * 3 ^ 3 = (1728 : F) by norm_num1])
       ⟨pow_ne_zero 6 h2, pow_ne_zero 3 h3⟩
@@ -1048,10 +1052,6 @@ lemma ofJ_1728_of_two_ne_zero (h2 : (2 : F) ≠ 0) :
 lemma ofJ_1728_of_two_eq_zero (h2 : (2 : F) = 0) :
     ofJ 1728 = @ofJ0 _ _ (invertibleOfNonzero <| two_or_three_ne_zero.neg_resolve_left h2) := by
   rw [ofJ, dif_pos <| by rw [show (1728 : F) = 2 * 864 by norm_num1, h2, zero_mul], dif_neg]
-
-lemma ofJ_1728_of_three_eq_zero (h3 : (3 : F) = 0) :
-    ofJ 1728 = @ofJ1728 _ _ (invertibleOfNonzero <| two_or_three_ne_zero.neg_resolve_right h3) := by
-  rw [ofJ, dif_pos <| by rw [show (1728 : F) = 3 * 576 by norm_num1, h3, zero_mul], dif_pos h3]
 
 lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) :
     ofJ j =
