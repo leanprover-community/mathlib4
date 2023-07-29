@@ -39,33 +39,50 @@ lemma measurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [Zero β]
     Measurable (A.indicator (fun _ ↦ b)) ↔ (b = 0 ∨ MeasurableSet A) :=
   measurable_indicator_const_iff' A (MeasurableSet.singleton 0) b
 
+#check StronglyMeasurable
+#check StronglyMeasurable.measurable
+#check StronglyMeasurable.aemeasurable
+#check AEStronglyMeasurable.aemeasurable
+
+#check AEStronglyMeasurable.indicator
+
 /-- A characterization of the a.e.-measurability of the indicator function which takes a constant
 value `b` on a set `A` and `0` elsewhere. (This version requires the measurability of the singleton
 `{0}` as an explicit input, see `measurable_indicator_const_iff` for a version with typeclass
 inference.) -/
-lemma aeMeasurable_indicator_const_iff' [MeasurableSpace α] (A : Set α)
-  [Zero β] [MeasurableSpace β] [TopologicalSpace β] (μ : Measure α)
+lemma aeMeasurable_indicator_const_iff' [MeasurableSpace α] (A : Set α) [DecidableEq β]
+  [Zero β] [MeasurableSpace β] [TopologicalSpace β] [TopologicalSpace.PseudoMetrizableSpace β]
+  [BorelSpace β]
+  [TopologicalSpace.SecondCountableTopology β] [OpensMeasurableSpace β] (μ : Measure α)
   (h0 : MeasurableSet ({0} : Set β)) (b : β) :
     AEStronglyMeasurable (A.indicator (fun _ ↦ b)) μ ↔ (b = 0 ∨ NullMeasurableSet A μ) := by
   constructor <;> intro h
   · by_cases hb : b = 0 <;> simp only [hb, true_or, false_or]
-    --convert h h0.compl
-    --ext a
-    --simp [hb]
-    sorry
+    obtain ⟨f, ⟨f_mble, f_eq⟩⟩ := h
+    --have f_really_mble := f_mble.measurable
+    have A_eq := @indicator_const_preimage_eq_union α β _ A {0}ᶜ b _ _
+    simp only [preimage_compl, mem_compl_iff, mem_singleton_iff, hb, not_false_eq_true,
+               ite_true, not_true, ite_false, union_empty] at A_eq
+    rw [←A_eq]
+    refine @NullMeasurableSet.congr α ‹MeasurableSpace α› μ (f ⁻¹' {(0 : β)})ᶜ ((indicator A fun _ ↦ b) ⁻¹' {(0 : β)})ᶜ ?_ ?_
+    · apply NullMeasurableSet.compl
+      apply MeasurableSet.nullMeasurableSet
+      measurability
+    · exact EventuallyEq.compl (EventuallyEq.preimage (id (EventuallyEq.symm f_eq)) {0})
   · by_cases hb : b = 0
     · simp only [hb, indicator_zero]
-      --apply Measurable.AEStronglyMeasurable
-      sorry
-    · --have A_mble : MeasurableSet A := by simpa only [hb, false_or] using h
-      --intro B _
-      --rcases indicator_const_preimage A B b with ⟨hB⟩ | ⟨hB | ⟨hB | hB⟩⟩
-      --· simp only [hB, MeasurableSet.univ]
-      --· simp only [hB, A_mble]
-      --· simp only [hB, MeasurableSet.compl_iff, A_mble]
-      --· simp only [mem_singleton_iff] at hB
-      --  simp only [hB, MeasurableSet.empty]
-      sorry
+      exact Measurable.aestronglyMeasurable measurable_const
+    · simp only [hb, false_or] at h
+      obtain ⟨A', ⟨mble_A', eq_A'⟩⟩ := h
+      refine @AEStronglyMeasurable.congr α β ‹MeasurableSpace α› μ _ (A'.indicator (fun _ ↦ b)) (A.indicator (fun _ ↦ b)) ?_ ?_
+      · apply Measurable.aestronglyMeasurable
+        apply measurable_const.indicator
+        exact mble_A'
+      · filter_upwards [eq_A'] with a ha
+        have same : a ∈ A ↔ a ∈ A' := Iff.of_eq ha
+        by_cases haA : a ∈ A
+        · simp [haA, same.mp haA]
+        · simp [haA, (not_iff_not.mpr same).mp haA]
 
 section TendstoMeasureOfTendstoIndicator
 /-!
