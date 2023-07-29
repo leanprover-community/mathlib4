@@ -75,7 +75,7 @@ theorem one_rpow (x : ℝ) : (1 : ℝ≥0) ^ x = 1 :=
 #align nnreal.one_rpow NNReal.one_rpow
 
 theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z :=
-  NNReal.eq <| Real.rpow_add (pos_iff_ne_zero.2 hx) _ _
+  NNReal.eq <| Real.rpow_add ((pos_iff_ne_zero (α := ℝ≥0)).2 hx) _ _
 #align nnreal.rpow_add NNReal.rpow_add
 
 theorem rpow_add' (x : ℝ≥0) {y z : ℝ} (h : y + z ≠ 0) : x ^ (y + z) = x ^ y * x ^ z :=
@@ -94,7 +94,7 @@ theorem rpow_neg_one (x : ℝ≥0) : x ^ (-1 : ℝ) = x⁻¹ := by simp [rpow_ne
 #align nnreal.rpow_neg_one NNReal.rpow_neg_one
 
 theorem rpow_sub {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y - z) = x ^ y / x ^ z :=
-  NNReal.eq <| Real.rpow_sub (pos_iff_ne_zero.2 hx) y z
+  NNReal.eq <| Real.rpow_sub ((pos_iff_ne_zero (α := ℝ≥0)).2 hx) y z
 #align nnreal.rpow_sub NNReal.rpow_sub
 
 theorem rpow_sub' (x : ℝ≥0) {y z : ℝ} (h : y - z ≠ 0) : x ^ (y - z) = x ^ y / x ^ z :=
