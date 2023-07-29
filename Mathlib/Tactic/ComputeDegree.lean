@@ -532,10 +532,11 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
         if ! res.isEmpty then
           throwError (res.foldl compose m!"The given degree is '{deg}'.  However,\n\n")
       setGoals rfled
+      --  simplify the left-hand sides, since this is where the degree computations leave
+      --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
+      evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
       if stx.isSome then
         evalTactic (← `(tactic| any_goals norm_num <;> try assumption)) <|> pure ()
-      else
-        evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
 
 end Tactic
 
