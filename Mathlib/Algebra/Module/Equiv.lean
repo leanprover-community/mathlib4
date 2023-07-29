@@ -92,11 +92,13 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [Semiring S]
-  (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  (σ : outParam (R →+* S)) {σ' : outParam (S →+* R)}
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam (Type _)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
   AddEquivClass F M M₂ where
+  -- TO DO : call it map_smulₛₗ ?
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x ` equals `σ r • f x`. -/
-  map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
+  map_smul : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
 
 -- `R, S, σ, σ'` become metavars, but it's OK since they are outparams.
@@ -177,7 +179,8 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
-  map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
+-- TODO : was map_smulₛₗ
+  map_smul := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
@@ -273,7 +276,8 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
-    map_smul' := fun r x => by dsimp only; rw [map_smulₛₗ] }
+-- was map_smulₛₗ
+    map_smul' := fun r x => by dsimp only; rw [SemilinearMapClass.map_smul] }
 #align linear_equiv.symm LinearEquiv.symm
 
 -- Porting note: this is new
@@ -500,7 +504,7 @@ protected theorem map_smulₛₗ (c : R) (x : M) : e (c • x) = (σ : R → S) 
 #align linear_equiv.map_smulₛₗ LinearEquiv.map_smulₛₗ
 
 theorem map_smul (e : N₁ ≃ₗ[R₁] N₂) (c : R₁) (x : N₁) : e (c • x) = c • e x :=
-  map_smulₛₗ e c x
+  e.map_smul' c x
 #align linear_equiv.map_smul LinearEquiv.map_smul
 
 theorem map_eq_zero_iff {x : M} : e x = 0 ↔ x = 0 :=
