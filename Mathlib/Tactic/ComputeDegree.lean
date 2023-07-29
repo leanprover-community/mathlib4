@@ -241,6 +241,10 @@ def _root_.Lean.Name.getHead : Name → Name
   | .str head _ => head
   | _ => .anonymous
 
+@[inline] def _root_.Lean.Expr.le? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) := ← p.app4? ``LE.le
+  return (type, lhs, rhs)
+
 open ConstantInfo Command in
 /-- `declNameInThm thm tag` takes two `Name`s as input.  It checks that the declaration called
 `thm` exists and that one of its hypotheses is called `tag`.
@@ -469,45 +473,35 @@ macro "compute_degree!" "-debug"? : tactic => `(tactic| compute_degree ! -debug)
 @[inherit_doc computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
-open Mathlib.Meta.NormNum Simp.Context in
-/-- `miscomputedDegree? deg degMVs` takes as input
-*  an `Expr`ession `deg` representing the degree of a polynomial
-   (i.e. a term of type either `ℕ` or `WithBot ℕ`);
-*  a list of `MVarId`s `degMVs` representing the three goals
-   `⊢ given_degree = expected_degree`, `⊢ given_coeff_degree = expected_degree`,
-   `⊢ coeff_of_given_degree ≠ 0`.
+/-- `miscomputedDegree? deg false_goals` takes as input
+*  an `Expr`ession `deg`, representing the degree of a polynomial
+   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
+*  a list of `MVarId`s `false_goals`.
 
-`miscomputedDegree?` then produces a list of error message, whose entries are indexed by the
-goals that `norm_num` reduces to `False`.
-Thus, the resulting list is empty if and only if `norm_num` cannot disprove one of the given
-goals (even though the goal need not be solvable!).
+Although inconsecuential for this function, the list of goals `false_goals` reduces to `False`
+if `norm_num`med.
+`miscomputedDegree?` extracts error information from goals of the form
+*  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
+   -- reducing to `False` means that the coefficient that was supposed to vanish, does not;
+*  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
+   -- reducing to `False` means that there is a term of degree that is apparently too large.
+
+The case `a ≠ b` is not a perfect match with the top coefficient: reducing to `False` is not
+exactly correlated with a coefficient being non-zero.
+It still means that the goal is unsolvable, unless there was already a contradiction in the
+hypotheses before applying `compute_degree`.
 -/
-def miscomputedDegree? (deg : Expr) (degMVs : List MVarId) : MetaM (List MessageData) := do
--- apply `norm_num` to the `MVarId`s
-let simps := ← degMVs.mapM fun x => do deriveSimp (← mkDefault) true (← x.getType'')
--- select the `MVarId`s that `norm_num` reduced to `False`
-let simps := simps.filter fun x => (x.expr == (Expr.const ``False []))
--- if `norm_num` reduces `x` to `False`, then `x.proof? = some (goal = False)`
-let contrs := ← simps.mapM fun x => do
-  let st := x.proof?.getD (Expr.const ``Lean.Rat [])
-  match (← inferType st).eq? with
-    -- we enter in `goal = False`: here, `lhs = goal`
-    | some (_, lhs, _) =>
-      match lhs.eq? with
-        -- we enter `goal`: here `goal` was an equality `goal = (lhs = _)` and we do `norm_num lhs`
-        | some (_, lhs, _) => return (← deriveSimp (← mkDefault) true lhs).expr
-        | none => return lhs.getAppFn
-    | _ => pure (← inferType st).getAppFn
--- finally, we see what each `MVarId` in our list became:
-return (contrs.map fun e =>
-  -- the `Expr.app`s correspond to an equality `given_degree = computed_degree` reducing to `False`
-  if e.isApp then
-    m!"* the naïvely computed degree is '{e}'\n"
-  -- the rest correspond to an inequality `coeff ≠ 0` reducing to `False`
-  else
-    m!"* the coefficient of degree '{deg}' is zero")
+def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
+  | tgt::tgts =>
+    let rest := miscomputedDegree? deg tgts
+    if tgt.ne?.isSome then
+      m!"* the coefficient of degree {deg} may be zero" :: rest
+    else if let some ((Expr.const ``Nat []), lhs, _) := tgt.le? then
+      m!"* there is at least one term of naïve degree {lhs}" :: rest
+    else rest
+  | [] => []
 
-elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => focus do
+elab_rules : tactic | `(tactic| compute_degree $[!%$bang]? $[-debug%$dbg]?) => focus do
   let dbg := dbg.isSome
   let goal := ← getMainGoal
   let gt := ← goal.getType''
@@ -526,21 +520,29 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
       let lem := dispatchLemma twoH
       if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getTail}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
-      let currTag := (← gls[0]!.getTag).getHead
-      let tags := CDtags.map (.str currTag)
-      let degMVs := tags.map ((← getMCtx).userNames.find? ·)
       while (! gls == []) do (gls, static) := ← splitApply gls static
       let rfled := ← try_rfl static
-      if deg.isSome then
-        let res := ← miscomputedDegree? deg.get! degMVs.reduceOption
-        if ! res.isEmpty then
-          throwError (res.foldl MessageData.compose m!"The given degree is '{deg}'.  However,\n\n")
       setGoals rfled
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
-      if stx.isSome then
+      -- we save in `final_gls` the list of goals *before* `norm_num` has a chance
+      -- to reduce them to `False`, so that we can get an informed error message
+      let final_gls := ← getGoals
+      if bang.isSome then
         evalTactic (← `(tactic| any_goals norm_num <;> try assumption)) <|> pure ()
+      done <|> unless deg.isNone do
+        -- we extract, from the list `final_gls` of stored goals, the ones that are now `False`
+        let false_goals := ← final_gls.filterM fun mv_before => do
+          let mv_after? := (← getMCtx).userNames.find? (← mv_before.getTag)
+          match mv_after? with
+            | some mv_after => return ((← mv_after.getType'') == (Expr.const ``False []))
+            | none => return false
+        -- we compute the error message
+        let errors := miscomputedDegree? deg.get! (← false_goals.mapM (MVarId.getType'' ·))
+        if errors.length != 0 then
+          throwError (Lean.MessageData.joinSep
+            (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n")
 
 end Tactic
 
