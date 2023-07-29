@@ -388,8 +388,8 @@ theorem average_eq_integral_normalize {E : Type _} [NormedAddCommGroup E] [Norme
     average (μ : Measure Ω) f = ∫ ω, f ω ∂(μ.normalize : Measure Ω) := by
   rw [μ.toMeasure_normalize_eq_of_nonzero nonzero, average]
   congr
-  dsimp
-  rw [ENNReal.coe_inv (μ.mass_nonzero_iff.mpr nonzero), ennreal_mass]
+  simp only [RingHom.toFun_eq_coe, ENNReal.coe_ofNNRealHom,
+    ENNReal.coe_inv (μ.mass_nonzero_iff.mpr nonzero), ennreal_mass]
 #align measure_theory.finite_measure.average_eq_integral_normalize MeasureTheory.FiniteMeasure.average_eq_integral_normalize
 
 variable [TopologicalSpace Ω]

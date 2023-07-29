@@ -200,6 +200,7 @@ after we convert to a representation and back to a module,
 we have `Module (MonoidAlgebra k G) (restrictScalars k (MonoidAlgebra k G) M)`.
 -/
 
+
 @[simp]
 theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
     (m : RestrictScalars k (MonoidAlgebra k G) M) :

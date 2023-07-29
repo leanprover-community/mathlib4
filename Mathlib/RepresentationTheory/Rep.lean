@@ -629,6 +629,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
 /- Porting note: rest of broken proof was `simp`. -/
+        rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
         erw [Representation.ofModule_asAlgebraHom_apply_apply]
         exact AddEquiv.symm_apply_apply _ _}
 set_option linter.uppercaseLean3 false in
