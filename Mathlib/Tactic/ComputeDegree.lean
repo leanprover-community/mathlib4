@@ -278,12 +278,11 @@ let head := match pol.numeral? with
   | some 1 => `one
   | some _ => `many
   | none => match pol.getAppFnArgs with
-  --  unusual indentation to improve legibility of the following block of pairs of lemmas
-  | (``FunLike.coe, #[_, _, _, _, polFun, _]) => match polFun.getAppFnArgs with
-    | (na@``Polynomial.monomial, _) => na
-    | (na@``Polynomial.C, _) => na
-    | _ => `error
-  | (na, _) => na
+    | (``FunLike.coe, #[_, _, _, _, polFun, _]) => match polFun.getAppFnArgs with
+      | (na@``Polynomial.monomial, _) => na
+      | (na@``Polynomial.C, _) => na
+      | _ => `error
+    | (na, _) => na
 (ndeg_or_deg_or_coeff, eq_or_le, head, and?.map isMVar)
 
 /--
