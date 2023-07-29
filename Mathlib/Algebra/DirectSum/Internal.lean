@@ -49,10 +49,6 @@ instance AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSub
     (A : ι → σ) : ∀ i, AddCommMonoid (A i) := fun i => by infer_instance
 #align add_comm_monoid.of_submonoid_on_semiring AddCommMonoid.ofSubmonoidOnSemiring
 
-instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ) :
-    ∀ i, AddCommGroup (A i) := fun i => by infer_instance
-#align add_comm_group.of_subgroup_on_ring AddCommGroup.ofSubgroupOnRing
-
 theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
   rw [Algebra.algebraMap_eq_smul_one]
