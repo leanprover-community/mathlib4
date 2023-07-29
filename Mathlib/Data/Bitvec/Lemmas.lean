@@ -8,8 +8,16 @@ Authors: Harun Khan
 
 import Mathlib.Data.Bitvec.Defs
 
-open BitVec Nat
+/-!
+# Basic Theorems About Bitvectors
 
+This file contains theorems about bitvectors and their coercions to
+`Nat` and `Fin`.
+-/
+
+namespace BitVec
+
+open Nat
 
 lemma testBit_eq_ofNat {x: BitVec w} :
   Bool.toNat (testBit (x.val) k) = (BitVec.ofNat 1 (x.val >>> k)).val:= by
@@ -31,12 +39,17 @@ theorem concat_ext {x : BitVec a} {y : BitVec b} :
 theorem extract_ext : (extract i j x).val = x.val/2^j % (2^(i - j + 1)) := by
   simp [extract, BitVec.ofNat, Fin.ofNat', shiftRight_eq_shiftr, shiftr_eq_div_pow]
 
+theorem get_eq_testBit {x : BitVec w} : x.get i = x.val.testBit i := by
+  cases' h: Nat.bodd (Nat.shiftr (x.val) i)
+  <;> simp [Nat.testBit, BitVec.ofNat, Fin.ofNat', h,
+            Nat.mod_two_of_bodd, Nat.shiftRight, Nat.shiftRight_eq_shiftr, ← val_bitvec_eq]
+  norm_cast
+
 theorem testBit_eq_rep {x: BitVec w} (i : Nat) (h: i< w): x[i] = testBit x.val i := by rfl
 
 theorem testBit_eq_rep' {x: Nat} (i : Nat) (h: i< w) (h2: x< 2^w):
   (BitVec.ofNat w x)[i] = testBit x i := by
   simp [BitVec.ofNat, GetElem.getElem, get, extract, Fin.ofNat', mod_eq_of_lt, h2]
-
 
 /-! ### Equivalence between bitwise and BitVec operations -/
 

@@ -6,11 +6,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki, Joe Hendrix, Harun Khan, Abdalrhman M Mohamed
 -/
 
-
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Bitwise
-import Mathlib.Data.ZMod.Defs
-
 
 /-!
 We define bitvectors. We choose the `Fin` representation over others for its relative efficiency
@@ -59,9 +56,6 @@ protected def lt (x y : BitVec w) : Bool :=
   x.val < y.val
 protected def le (x y : BitVec w) : Bool :=
   x.val ≤ y.val
-
-
-instance : Ring (BitVec w) := inferInstanceAs (Ring (Fin _))
 
 instance : Add (BitVec w) := inferInstanceAs (Add (Fin _))
 instance : Sub (BitVec w) := inferInstanceAs (Sub (Fin _))
@@ -176,12 +170,6 @@ def get (x : BitVec w) (i : Nat) : Bool :=
 
 def bbT (bs : List Bool) : BitVec bs.length :=
   ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
-
-theorem lsbGet_eq_testBit {x : BitVec w} : x.get i = x.val.testBit i := by
-  cases' h: Nat.bodd (Nat.shiftr (x.val) i)
-  <;> simp [Nat.testBit, BitVec.ofNat, Fin.ofNat',
-            h, Nat.mod_two_of_bodd, Nat.shiftRight, Nat.shiftRight_eq_shiftr]
-  aesop
 
 instance : GetElem (BitVec w) Nat Bool (fun _ i => i < w) where
   getElem x i _ := Nat.testBit x.val i
