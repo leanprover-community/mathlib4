@@ -52,9 +52,7 @@ theorem nhdsSet_Icc (h : a ≤ b) : 𝓝ˢ (Icc a b) = 𝓝 a ⊔ 𝓝 b ⊔ �
 
 @[simp]
 theorem Ioi_mem_nhdsSet_Ici : Ioi a ∈ 𝓝ˢ (Ici b) ↔ a < b := by
-  refine ⟨(Ici_subset_Ioi.1 <| principal_le_nhdsSet ·), fun h ↦ ?_⟩
-  rw [nhdsSet_Ici]
-  exact ⟨Ioi_mem_nhds h, Ioi_subset_Ioi h.le⟩
+  rw [isOpen_Ioi.mem_nhdsSet, Ici_subset_Ioi]
 
 theorem Ici_mem_nhdsSet_Ici (h : a < b) : Ici a ∈ 𝓝ˢ (Ici b) :=
   mem_of_superset (Ioi_mem_nhdsSet_Ici.2 h) Ioi_subset_Ici_self
@@ -74,12 +72,7 @@ theorem Iic_mem_nhdsSet_Iic (h : a < b) : Iic b ∈ 𝓝ˢ (Iic a) :=
 -/
 
 theorem Ioi_mem_nhdsSet_Icc (h : a < b) : Ioi a ∈ 𝓝ˢ (Icc b c) := by
-  cases le_or_lt b c with
-  | inl hbc =>
-    rw [nhdsSet_Icc hbc]
-    exact ⟨⟨Ioi_mem_nhds h, Ioi_mem_nhds (h.trans_le hbc)⟩,
-      Ioo_subset_Ioi_self.trans <| Ioi_subset_Ioi h.le⟩
-  | inr hcb => simp [Icc_eq_empty_of_lt hcb]
+  nhdsSet_mono Icc_subset_Ici_self (Ioi_mem_nhdsSet_Ici h)
 
 theorem Ici_mem_nhdsSet_Icc (h : a < b) : Ici a ∈ 𝓝ˢ (Icc b c) :=
   mem_of_superset (Ioi_mem_nhdsSet_Icc h) Ioi_subset_Ici_self
