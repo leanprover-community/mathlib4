@@ -293,6 +293,15 @@ theorem mk_set_le (s : Set α) : #s ≤ #α :=
   mk_subtype_le s
 #align cardinal.mk_set_le Cardinal.mk_set_le
 
+@[simp]
+lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
+  rw [← mk_uLift, Cardinal.eq]
+  constructor
+  let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
+  have : Function.Bijective f :=
+    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
+  exact Equiv.ofBijective f this
+
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   trans
   · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
