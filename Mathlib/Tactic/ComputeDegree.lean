@@ -502,7 +502,6 @@ return (contrs.map fun e =>
   else
     m!"* the coefficient of degree '{deg}' is zero")
 
-open Elab.Tactic Mathlib.Meta.NormNum Lean.Meta.Simp.Context MessageData in
 elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => focus do
   let dbg := dbg.isSome
   let goal := ← getMainGoal
@@ -530,7 +529,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
       if deg.isSome then
         let res := ← miscomputedDegree? deg.get! degMVs.reduceOption
         if ! res.isEmpty then
-          throwError (res.foldl compose m!"The given degree is '{deg}'.  However,\n\n")
+          throwError (res.foldl MessageData.compose m!"The given degree is '{deg}'.  However,\n\n")
       setGoals rfled
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
