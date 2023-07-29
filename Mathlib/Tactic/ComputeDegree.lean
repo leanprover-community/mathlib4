@@ -433,15 +433,16 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
   return (assignable.join ++ nrfl.join)
 
 /--
-`recOrd mvs static` takes two lists of `MVarId`s.  The first list, `mvs`, corresponds to goals that
-are potentially within the scope of `compute_degree`: namely, goals of the form
+`splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
+corresponds to goals that are potentially within the scope of `compute_degree`:
+namely, goals of the form
 `natDegree f ≤ d`, `degree f ≤ d`, `natDegree f = d`, `degree f = d`, `coeff f n = r`.
 
-`recOrd` determines which of these goals are actually within the scope, it applies the relevant
+`splitApply` determines which of these goals are actually within the scope, it applies the relevant
 lemma and returns two lists: the left-over goals of all the applications, followed by the
 concatenation of the previous `static` list, followed by the newly discovered goals outside of the
 scope of `compute_degree`. -/
-def recOrd (mvs : List MVarId) (static : List MVarId) : MetaM ((List MVarId) × (List MVarId)) := do
+def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId)) := do
 let (can_progress, curr_static) := ← mvs.partitionM fun mv => do
   return dispatchLemma (twoHeadsArgs (← mv.getType'')) != ``id
 let progress := ← can_progress.mapM fun mv => do
@@ -528,7 +529,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$stx]? $[-debug%$dbg]?) => fo
       let currTag := (← gls[0]!.getTag).getHead
       let tags := CDtags.map (.str currTag)
       let degMVs := tags.map ((← getMCtx).userNames.find? ·)
-      while (! gls == []) do (gls, static) := ← recOrd gls static
+      while (! gls == []) do (gls, static) := ← splitApply gls static
       let rfled := ← try_rfl static
       if deg.isSome then
         let res := ← miscomputedDegree? deg.get! degMVs.reduceOption
