@@ -11,6 +11,12 @@ import Mathlib.FieldTheory.Perfect
 # The perfect closure of a field
 -/
 
+-- TODO Replace the other `iterate_map_mul`s and `iterate_map_add`s with this
+@[to_additive]
+theorem iterate_map_mul {M F : Type _} [Monoid M]
+    (f : F) (n : ℕ) (x y : M) [MulHomClass F M M] :
+    f^[n] (x * y) = f^[n] x * f^[n] y :=
+  Function.Semiconj₂.iterate (map_mul f) n x y
 
 universe u v
 
@@ -45,6 +51,9 @@ variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 #align perfect_closure.mk PerfectClosure.mk
+
+@[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
+  Eq.symm $ Quot.sound (R.intro m x)
 
 @[simp]
 theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) = mk K p x :=
@@ -426,14 +435,11 @@ instance : PerfectRing (PerfectClosure K p) p where
         exact (Quot.sound <| R.intro _ _).symm
     exact bijective_iff_has_inverse.mpr ⟨f, hl, hr⟩
 
-theorem eq_pthRoot (x : ℕ × K) :
-    mk K p x = (pthRoot (PerfectClosure K p) p)^[x.1] (of K p x.2) := by
-  rcases x with ⟨m, x⟩
-  induction' m with m ih
-  · rfl
-  rw [iterate_succ_apply', ← ih]
-  sorry
-#align perfect_closure.eq_pth_root PerfectClosure.eq_pthRoot
+@[simp]
+theorem iterate_frobenius_mk (n : ℕ) (x : K) :
+    (frobenius (PerfectClosure K p) p)^[n] (mk K p ⟨n, x⟩) = of K p x := by
+  induction' n with n ih; rfl
+  rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
 
 /-- Given a field `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
@@ -441,34 +447,32 @@ noncomputable def lift (L : Type v) [CommRing L] [CharP L p] [PerfectRing L p] :
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
-        refine' fun e => liftOn e (fun x => (pthRoot L p)^[x.1] (f x.2)) _
-        rintro a b ⟨n⟩
-        simp only [f.map_frobenius, iterate_succ_apply, pthRoot_frobenius],
-      map_one' := f.map_one,
-      map_zero' := f.map_zero,
+        refine' fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) _
+        rintro - - ⟨n, x⟩
+        simp [f.map_frobenius]
+      map_one' := f.map_one
+      map_zero' := f.map_zero
       map_mul' := by
-        sorry /-
-        have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
-        rintro ⟨x⟩ ⟨y⟩
-        simp only [quot_mk_eq_mk, liftOn_mk, mk_mul_mk, RingHom.map_iterate_frobenius,
-          RingHom.iterate_map_mul, RingHom.map_mul]
-        rw [iterate_add_apply, this _ _, add_comm, iterate_add_apply, this _ _],
-        -/
+        rintro ⟨n, x⟩ ⟨m, y⟩
+        simp only [quot_mk_eq_mk, liftOn_mk, f.map_iterate_frobenius, mk_mul_mk, map_mul,
+          iterate_map_mul]
+        have := LeftInverse.iterate (frobeniusEquiv_symm_apply_frobenius L p)
+        rw [iterate_add_apply, this _ _, add_comm, iterate_add_apply, this _ _]
       map_add' := by
-        sorry } /-
-        have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
-        rintro ⟨x⟩ ⟨y⟩
-        simp only [quot_mk_eq_mk, liftOn_mk, mk_add_mk, RingHom.map_iterate_frobenius,
-          RingHom.iterate_map_add, RingHom.map_add]
-        rw [iterate_add_apply, this _ _, add_comm x.1, iterate_add_apply, this _ _] }
-        -/
+        rintro ⟨n, x⟩ ⟨m, y⟩
+        simp only [quot_mk_eq_mk, liftOn_mk, f.map_iterate_frobenius, mk_add_mk, map_add,
+          iterate_map_add]
+        have := LeftInverse.iterate (frobeniusEquiv_symm_apply_frobenius L p)
+        rw [iterate_add_apply, this _ _, add_comm n, iterate_add_apply, this _ _] }
   invFun f := f.comp (of K p)
   left_inv f := by ext x; rfl
   right_inv f := by
-    ext ⟨x⟩
+    ext ⟨n, x⟩
     simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
       liftOn_mk]
-    sorry --rw [eq_pthRoot, RingHom.map_iterate_pthRoot]
+    apply (injective_frobenius L p).iterate n
+    rw [← f.map_iterate_frobenius, iterate_frobenius_mk,
+      RightInverse.iterate (frobenius_apply_frobeniusEquiv_symm L p) n]
 #align perfect_closure.lift PerfectClosure.lift
 
 end Field

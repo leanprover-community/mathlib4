@@ -51,8 +51,17 @@ instance PerfectRing.ofFiniteOfIsReduced [Finite R] [IsReduced R] : PerfectRing 
 
 variable [PerfectRing R p]
 
+@[simp]
+theorem bijective_frobenius : Bijective (frobenius R p) := PerfectRing.bijective_frobenius
+
+@[simp]
+theorem injective_frobenius : Injective (frobenius R p) := (bijective_frobenius R p).1
+
+@[simp]
+theorem surjective_frobenius : Surjective (frobenius R p) := (bijective_frobenius R p).2
+
 /-- The Frobenius automorphism for a perfect ring. -/
-@[simps!]
+@[simps! apply]
 noncomputable def frobeniusEquiv : R ≃+* R :=
   RingEquiv.ofBijective (frobenius R p) PerfectRing.bijective_frobenius
 #align frobenius_equiv frobeniusEquiv
@@ -62,11 +71,26 @@ theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 #align coe_frobenius_equiv coe_frobeniusEquiv
 
 @[simp]
+theorem frobeniusEquiv_symm_apply_frobenius (x : R) :
+    (frobeniusEquiv R p).symm (frobenius R p x) = x :=
+  leftInverse_surjInv PerfectRing.bijective_frobenius x
+
+@[simp]
+theorem frobenius_apply_frobeniusEquiv_symm (x : R) :
+    frobenius R p ((frobeniusEquiv R p).symm x) = x :=
+  surjInv_eq _ _
+
+@[simp]
 theorem frobenius_comp_frobeniusEquiv_symm :
     (frobenius R p).comp (frobeniusEquiv R p).symm = RingHom.id R := by
-  ext; simp [surjInv_eq]
+  ext; simp
 
-/-- The `p`th root function for a perfect ring. -/
+@[simp]
+theorem frobeniusEquiv_symm_comp_frobenius :
+    ((frobeniusEquiv R p).symm : R →+* R).comp (frobenius R p) = RingHom.id R := by
+  ext; simp
+
+/-- The `p`th root function for a perfect ring. TODO (probably) drop this. -/
 noncomputable abbrev pthRoot : R →+* R := (frobeniusEquiv R p).symm
 
 @[simp] lemma pthRoot_frobenius (x : R) : pthRoot R p (frobenius R p x) = x :=
@@ -115,6 +139,7 @@ instance ofFinite [Finite K] : PerfectField K := by
 
 variable [PerfectField K]
 
+/-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K p := by
   refine' PerfectRing.ofSurjective _ _ $ fun y ↦ _
   let f : K[X] := X ^ p - C y
