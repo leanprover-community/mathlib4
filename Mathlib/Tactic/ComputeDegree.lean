@@ -217,7 +217,7 @@ end recursion_lemmas
 
 section Tactic
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Expr
 
 /--  `Lean.Name.getTail name` takes `name : Name` as input.
 If `name = .str _ tail`, then it returns `tail`.
@@ -240,8 +240,6 @@ For instance,
 def _root_.Lean.Name.getHead : Name → Name
   | .str head _ => head
   | _ => .anonymous
-
-open Lean Meta Elab Expr Tactic
 
 open ConstantInfo Command in
 /-- `declNameInThm thm tag` takes two `Name`s as input.  It checks that the declaration called
@@ -468,7 +466,7 @@ macro "compute_degree!" "-debug"? : tactic => `(tactic| compute_degree ! -debug)
 @[inherit_doc computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
-open Elab.Tactic Mathlib.Meta.NormNum Lean.Meta.Simp.Context in
+open Mathlib.Meta.NormNum Simp.Context in
 /-- `miscomputedDegree? deg degMVs` takes as input
 *  an `Expr`ession `deg` representing the degree of a polynomial
    (i.e. a term of type either `ℕ` or `WithBot ℕ`);
