@@ -13,9 +13,13 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 open scoped MonoidalCategory
 
-variable {V : Type u} [Category.{v} V] [Preadditive V] [MonoidalCategory V]
+variable {V : Type u} [Category.{v} V] [Preadditive V] [MonoidalCategory V] [MonoidalPreadditive V]
   [HasFiniteBiproducts V]
 
+/--
+Construct a morphism between two objects in a family,
+either using `eqToHom` if they have equal indices, or zero otherwise.
+-/
 def idOrZero {β : Type _} [DecidableEq β] (X : β → V) (i j : β) : X i ⟶ X j :=
 if h : i = j then
   eqToHom (congrArg X h)
@@ -74,7 +78,7 @@ def tensorObj (X Y : ChainComplex V ℕ) : ChainComplex V ℕ where
 
 def tensorHom {W X Y Z : ChainComplex V ℕ} (f : W ⟶ X) (g : Y ⟶ Z) :
   tensorObj W Y ⟶ tensorObj X Z where
-  f := fun i => biproduct.map (fun p => f.f p.1.1 ⊗ g.f p.1.2)
+  f := fun i => biproduct.map fun p => f.f p.1.1 ⊗ g.f p.1.2
   comm' i j w := by
     simp [tensorObj, tensorObj_X, tensorObj_d]
     ext ⟨⟨k₁, k₂⟩, hk⟩ ⟨⟨l₁, l₂⟩, hl⟩
@@ -87,12 +91,12 @@ def tensorHom {W X Y Z : ChainComplex V ℕ} (f : W ⟶ X) (g : Y ⟶ Z) :
 
 def associator₁ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
     (tensorObj (tensorObj X Y) Z).X i ≅ biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.1 => (X.X q.1.1 ⊗ Y.X q.1.2) ⊗ Z.X p.1.2)) :=
-  sorry
+  biproduct.mapIso fun _ => rightDistributor _ _
 
 def associator₂ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
     biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.1 => (X.X q.1.1 ⊗ Y.X q.1.2) ⊗ Z.X p.1.2))
       ≅ biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => (X.X p.2.1.1 ⊗ Y.X p.2.1.2) ⊗ Z.X p.1.1.2) :=
-  sorry
+  biproductBiproductIso _ _
 
 def associator₃ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
     biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => (X.X p.2.1.1 ⊗ Y.X p.2.1.2) ⊗ Z.X p.1.1.2)
