@@ -239,18 +239,18 @@ lemma compProd_assoc (κ : kernel (M.node i) (M.path i j))
     M.er_assoc]
 
 noncomputable
-def cast_path (κ : kernel (M.node i) (M.path i j)) (h : j = k) :
+def castPath (κ : kernel (M.node i) (M.path i j)) (h : j = k) :
     kernel (M.node i) (M.path i k) :=
   kernel.map κ (e_path_eq M h) (MeasurableEquiv.measurable _)
 
-lemma cast_path_apply (κ : kernel (M.node i) (M.path i j)) (h : j = k)
+lemma castPath_apply (κ : kernel (M.node i) (M.path i j)) (h : j = k)
     (a : M.node i) (s : Set (M.path i k)) (hs : MeasurableSet s) :
-    cast_path κ h a s = κ a (e_path_eq M h ⁻¹' s) := by
-  rw [cast_path, kernel.map_apply' _ _ _ hs]
+    castPath κ h a s = κ a (e_path_eq M h ⁻¹' s) := by
+  rw [castPath, kernel.map_apply' _ _ _ hs]
 
 instance (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (cast_path κ h) := by
-  rw [cast_path]; infer_instance
+    IsSFiniteKernel (castPath κ h) := by
+  rw [castPath]; infer_instance
 
 end MeasurableSpaceGraph
 
@@ -265,6 +265,17 @@ def markovGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : Measurabl
   er_meas := fun _ _ _ _ _ ↦ measurable_snd
   el_assoc := fun _ _ _ _ _ _ _ _ ↦ rfl
   er_assoc := fun _ _ _ _ _ _ _ _ _ _ ↦ rfl
+
+namespace markovGraph
+
+variable (α : ι → Type _) [∀ i, MeasurableSpace (α i)]
+
+lemma node_eq : (markovGraph α).node i = α i := rfl
+lemma path_eq : (markovGraph α).path i j = α j := rfl
+def node_equiv : (markovGraph α).node i ≃ᵐ α i := MeasurableEquiv.refl _
+def path_equiv : (markovGraph α).path i j ≃ᵐ α j := MeasurableEquiv.refl _
+
+end markovGraph
 
 section TransitionGraph
 
@@ -328,7 +339,7 @@ lemma el_assoc {i j k : ι} (hij : i < j) (hjk : j ≤ k) (a : (x : Iic i) → �
       = el i k (hij.le.trans hjk) (a, er i j k hij hjk (b, c)) := by
   ext x
   simp only [el, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, er]
-  split_ifs with h h2 h3
+  split_ifs with h _ h3
   · rfl
   · rfl
   · exfalso; exact h (h3.trans hij.le)
@@ -369,16 +380,15 @@ def transitionGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : Measu
   el_assoc := fun i j k hij hjk ↦ el_assoc hij hjk.le
   er_assoc := fun i j k l hij hjk hkl ↦ er_assoc hij hjk hkl.le
 
-local notation "M" => ProbabilityTheory.transitionGraph
-
+namespace transitionGraph
 variable (α)
 
-lemma transitionGraph.node_eq : (M α).node i = ∀ x : Iic i, α x := rfl
-lemma transitionGraph.path_eq : (M α).path i j = ∀ x : Ioc i j, α x := rfl
-def transitionGraph.node_equiv : (M α).node i ≃ᵐ ∀ x : Iic i, α x := MeasurableEquiv.refl _
-def transitionGraph.path_equiv : (M α).path i j ≃ᵐ ∀ x : Ioc i j, α x := MeasurableEquiv.refl _
+lemma node_eq : (transitionGraph α).node i = ∀ x : Iic i, α x := rfl
+lemma path_eq : (transitionGraph α).path i j = ∀ x : Ioc i j, α x := rfl
+def node_equiv : (transitionGraph α).node i ≃ᵐ ∀ x : Iic i, α x := MeasurableEquiv.refl _
+def path_equiv : (transitionGraph α).path i j ≃ᵐ ∀ x : Ioc i j, α x := MeasurableEquiv.refl _
 
-variable {α}
+end transitionGraph
 
 end TransitionGraph
 
@@ -404,7 +414,7 @@ def kerInterval (κ₀ : kernel (M.node i) (M.path i j))
     kernel (M.node i) (M.path i k) := by
   induction k with
   | zero => exact 0
-  | succ k κ_k => exact if h : j = k + 1 then M.cast_path κ₀ h else (κ_k ⊗ₖ[M] (κ k))
+  | succ k κ_k => exact if h : j = k + 1 then M.castPath κ₀ h else (κ_k ⊗ₖ[M] κ k)
 
 @[simp]
 lemma kerInterval_zero (κ₀ : kernel (M.node i) (M.path i j))
@@ -414,7 +424,7 @@ lemma kerInterval_zero (κ₀ : kernel (M.node i) (M.path i j))
 lemma kerInterval_succ {κ₀ : kernel (M.node i) (M.path i j)}
     {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (k : ℕ) :
     kerInterval κ₀ κ (k + 1)
-      = if h : j = k + 1 then M.cast_path κ₀ h else ((kerInterval κ₀ κ k) ⊗ₖ[M] (κ k)) := rfl
+      = if h : j = k + 1 then M.castPath κ₀ h else ((kerInterval κ₀ κ k) ⊗ₖ[M] (κ k)) := rfl
 
 lemma kerInterval_succ_of_ne {κ₀ : kernel (M.node i) (M.path i j)}
     {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (h : j ≠ k + 1) :
@@ -443,7 +453,7 @@ lemma kerInterval_of_eq (κ₀ : kernel (M.node i) (M.path i j))
   | succ n =>
     rw [kerInterval_succ, dif_pos rfl]
     ext a s hs
-    rw [M.cast_path_apply _ _ _ _ hs]
+    rw [M.castPath_apply _ _ _ _ hs]
     rfl
 
 instance (κ₀ : kernel (M.node i) (M.path i j)) [h₀ : IsSFiniteKernel κ₀]
@@ -451,11 +461,7 @@ instance (κ₀ : kernel (M.node i) (M.path i j)) [h₀ : IsSFiniteKernel κ₀]
     IsSFiniteKernel (kerInterval κ₀ κ k) := by
   induction k with
   | zero => rw [kerInterval_zero]; infer_instance
-  | succ n _ =>
-      rw [kerInterval_succ]
-      split_ifs with h_eq
-      · infer_instance
-      · infer_instance
+  | succ n _ => rw [kerInterval_succ]; split_ifs <;> infer_instance
 
 noncomputable
 def kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (i j : ℕ) :
@@ -563,20 +569,20 @@ def e_succ (j : ℕ) : α (j + 1) ≃ᵐ (M α).path j (j + 1) :=
   (e_succ_nat j).trans (transitionGraph.path_equiv α).symm
 
 noncomputable
-def to_M (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) (i : ℕ) :
+def toMeasurableSpaceGraph (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) (i : ℕ) :
     kernel ((M α).node i) ((M α).path i (i + 1)) :=
   kernel.map (κ i) (e_succ i) (MeasurableEquiv.measurable _)
 
 instance (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) [∀ i, IsSFiniteKernel (κ i)]
     (i : ℕ) :
-    IsSFiniteKernel (to_M κ i) := by
-  rw [to_M]; infer_instance
+    IsSFiniteKernel (toMeasurableSpaceGraph κ i) := by
+  rw [toMeasurableSpaceGraph]; infer_instance
 
 noncomputable
-def Transition_of_seq_nat (κ : ∀ i, kernel ((j : Iic i) → α ↑j) (α (i + 1)))
+def transition_of_seq_nat (κ : ∀ i, kernel ((j : Iic i) → α ↑j) (α (i + 1)))
     [∀ i, IsSFiniteKernel (κ i)] :
     Transition (M α) :=
-  (M α).transition (to_M κ)
+  (M α).transition (toMeasurableSpaceGraph κ)
 
 end nat
 
@@ -595,22 +601,11 @@ def measurableSpaceGraph_markov_nat (α : ℕ → Type _) [∀ i, MeasurableSpac
     MeasurableSpaceGraph ℕ :=
   markovGraph α
 
-local notation "M" => measurableSpaceGraph_markov_nat
-
-variable (α)
-
-lemma measurableSpaceGraph_markov_nat.node_eq : (M α).node i = α i := rfl
-lemma measurableSpaceGraph_markov_nat.path_eq : (M α).path i j = α j := rfl
-def measurableSpaceGraph_markov_nat.node_equiv : (M α).node i ≃ᵐ α i := MeasurableEquiv.refl _
-def measurableSpaceGraph_markov_nat.path_equiv : (M α).path i j ≃ᵐ α j := MeasurableEquiv.refl _
-
-variable {α}
-
 noncomputable
-def Transition_of_markov_seq_nat (κ : ∀ i, kernel (α i) (α (i + 1)))
+def transition_of_markov_seq_nat (κ : ∀ i, kernel (α i) (α (i + 1)))
     [∀ i, IsSFiniteKernel (κ i)] :
-    Transition (M α) :=
-  (M α).transition κ
+    Transition (measurableSpaceGraph_markov_nat α) :=
+  (measurableSpaceGraph_markov_nat α).transition κ
 
 end Markov
 
