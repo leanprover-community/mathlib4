@@ -26,7 +26,7 @@ open Function Set TopologicalSpace
 
 open scoped Manifold
 
-variable {n : ℕ∞} {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
+variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
   [TopologicalSpace M] [HM : ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E']
   [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
