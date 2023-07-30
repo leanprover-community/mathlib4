@@ -32,21 +32,23 @@ open Function Polynomial
 
 NB: This is not related to the concept with the same name introduced by Bass (related to projective
 covers of modules). -/
-class PerfectRing (R : Type _) (p : ℕ) [CommRing R] [Fact p.Prime] [CharP R p] : Prop where
+class PerfectRing (R : Type _) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p] : Prop where
   /-- A ring is perfect if the Frobenius map is bijective. -/
   bijective_frobenius : Bijective $ frobenius R p
 
 section PerfectRing
 
-variable (R : Type _) (p : ℕ) [CommRing R] [Fact p.Prime] [CharP R p]
+variable (R : Type _) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
-lemma PerfectRing.ofSurjective [IsReduced R] (h : Surjective $ frobenius R p) : PerfectRing R p :=
+lemma PerfectRing.ofSurjective (R : Type _) [CommRing R] [CharP R p] [IsReduced R]
+    (h : Surjective $ frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
 #align perfect_ring.of_surjective PerfectRing.ofSurjective
 
-instance PerfectRing.ofFiniteOfIsReduced [Finite R] [IsReduced R] : PerfectRing R p :=
+instance PerfectRing.ofFiniteOfIsReduced (R : Type _) [CommRing R] [CharP R p]
+    [Finite R] [IsReduced R] : PerfectRing R p :=
   ofSurjective _ _ $ Finite.surjective_of_injective (frobenius_inj R p)
 
 variable [PerfectRing R p]
