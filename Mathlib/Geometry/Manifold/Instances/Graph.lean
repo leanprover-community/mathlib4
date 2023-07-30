@@ -31,7 +31,7 @@ variable {n : ℕ∞} {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _
   [TopologicalSpace M] [HM : ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E']
   [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
   {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M'] {G : StructureGroupoid H}
-  (hM : HasGroupoid M G) (f : M → M') (hf : Continuous f)
+  {hM : HasGroupoid M G} (f : M → M') (hf : Continuous f)
 
 /-- A structure to hold the graph of a continuous function on a manifold -/
 structure cont_graph :=
