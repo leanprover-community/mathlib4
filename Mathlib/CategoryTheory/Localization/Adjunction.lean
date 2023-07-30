@@ -1,5 +1,23 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.CatCommSq
 import Mathlib.CategoryTheory.Localization.Predicate
+
+/-!
+# Localization of adjunctions
+
+In this file, we show that if we have an adjunction `adj : G ⊣ F` such that both
+functors `G : C₁ ⥤ C₂` and `F : C₂ ⥤ C₁` induce functors
+`G' : D₁ ⥤ D₂` and `F' : D₂ ⥤ D₁` on localized categories, i.e. that we
+have localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` with respect
+to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagrams
+`[CatCommSq G L₁ L₂ G']` and `[CatCommSq F L₂ L₁ F']`, then we have an
+induced adjunction `adj.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
+
+-/
 
 namespace CategoryTheory
 
@@ -10,13 +28,13 @@ variable {C₁ C₂ D₁ D₂ : Type _} [Category C₁] [Category C₂] [Categor
   (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) (W₂ : MorphismProperty C₂) [L₂.IsLocalization W₂]
   (G' : D₁ ⥤ D₂) (F' : D₂ ⥤ D₁)
-  [CatCommSq L₁ G L₂ G'] [CatCommSq L₂ F L₁ F']
+  [CatCommSq G L₁ L₂ G'] [CatCommSq F L₂ L₁ F']
 
 namespace Adjunction
 
 namespace Localization
 
-/-- auxiliary definition of the unit morphism for the adjunction `Adjunction.localization` -/
+/-- Auxiliary definition of the unit morphism for the adjunction `Adjunction.localization` -/
 noncomputable def ε : 𝟭 D₁ ⟶ G' ⋙ F' := by
   letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso'.symm
@@ -25,15 +43,15 @@ noncomputable def ε : 𝟭 D₁ ⟶ G' ⋙ F' := by
 
 lemma ε_app (X₁ : C₁) :
     (ε adj L₁ W₁ L₂ G' F').app (L₁.obj X₁) =
-      L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso L₂ F L₁ F').hom.app (G.obj X₁) ≫
-        F'.map ((CatCommSq.iso L₁ G L₂ G').hom.app X₁) := by
+      L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
+        F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
   letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso'.symm
-  simp only [ε, liftNatTrans_app]
-  change _ ≫ _ ≫ (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso'.hom.app _ = _
-  simp [Lifting.iso]
+  simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
+    Functor.id_obj, Functor.comp_obj, Lifting.id_iso', Functor.rightUnitor_hom_app,
+      whiskerRight_app, CatCommSq.hComp_iso'_hom_app, id_comp]
 
-/-- auxiliary definition of the counit morphism for the adjunction `Adjunction.localization` -/
+/-- Auxiliary definition of the counit morphism for the adjunction `Adjunction.localization` -/
 noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
   letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso'.symm
@@ -41,14 +59,13 @@ noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
 
 lemma η_app (X₂ : C₂) :
     (η adj L₁ L₂ W₂ G' F').app (L₂.obj X₂) =
-      G'.map ((CatCommSq.iso L₂ F L₁ F').inv.app X₂) ≫
-        (CatCommSq.iso L₁ G L₂ G').inv.app (F.obj X₂) ≫
+      G'.map ((CatCommSq.iso F L₂ L₁ F').inv.app X₂) ≫
+        (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
         L₂.map (adj.counit.app X₂) := by
   letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso'.symm
-  simp only [η, liftNatTrans_app]
-  change (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso'.inv.app _ ≫ _ = _
-  simp [Lifting.iso]
+  simp only [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso'_inv_app,
+    whiskerRight_app, Lifting.id_iso', Functor.rightUnitor_inv_app, comp_id, assoc]
 
 end Localization
 
@@ -72,7 +89,7 @@ noncomputable def localization : G' ⊣ F' :=
           assoc, assoc]
         erw [(Localization.η adj L₁ L₂ W₂ G' F').naturality, Localization.η_app,
           assoc, assoc, ← G'.map_comp_assoc, ← G'.map_comp_assoc, assoc, Iso.hom_inv_id_app,
-          comp_id, (CatCommSq.iso L₁ G L₂ G').inv.naturality_assoc, ← L₂.map_comp_assoc, eq,
+          comp_id, (CatCommSq.iso G L₁ L₂ G').inv.naturality_assoc, ← L₂.map_comp_assoc, eq,
           L₂.map_id, id_comp, Iso.inv_hom_id_app]
         rfl
       right_triangle := by
@@ -91,15 +108,17 @@ noncomputable def localization : G' ⊣ F' :=
 @[simp]
 lemma localization_unit_app (X₁ : C₁) :
   (adj.localization L₁ W₁ L₂ W₂ G' F').unit.app (L₁.obj X₁) =
-    L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso L₂ F L₁ F').hom.app (G.obj X₁) ≫
-      F'.map ((CatCommSq.iso L₁ G L₂ G').hom.app X₁) := by apply Localization.ε_app
+    L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
+      F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
+  apply Localization.ε_app
 
 @[simp]
 lemma localization_counit_app (X₂ : C₂) :
   (adj.localization L₁ W₁ L₂ W₂ G' F').counit.app (L₂.obj X₂) =
-    G'.map ((CatCommSq.iso L₂ F L₁ F').inv.app X₂) ≫
-      (CatCommSq.iso L₁ G L₂ G').inv.app (F.obj X₂) ≫
-      L₂.map (adj.counit.app X₂) := by apply Localization.η_app
+    G'.map ((CatCommSq.iso F L₂ L₁ F').inv.app X₂) ≫
+      (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
+      L₂.map (adj.counit.app X₂) := by
+  apply Localization.η_app
 
 end Adjunction
 
