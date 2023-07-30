@@ -69,6 +69,11 @@ lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) :
   funext
   apply h
 
+@[simps]
+def mkIso {X Y : GradedObject β C} (f : ∀ i : β, X i ≅ Y i) : X ≅ Y where
+  hom := fun i => (f i).hom
+  inv := fun i => (f i).inv
+
 /-- The projection of a graded object to its `i`-th component. -/
 @[simps]
 def eval {β : Type w} (b : β) : GradedObject β C ⥤ C where

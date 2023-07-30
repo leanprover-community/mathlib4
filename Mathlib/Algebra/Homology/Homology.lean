@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.CategoryTheory.GradedObject
+import Mathlib.CategoryTheory.GradedObject.Basic
 
 #align_import algebra.homology.homology from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 

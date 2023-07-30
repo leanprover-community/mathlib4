@@ -217,6 +217,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.ModuleCat
+import Mathlib.Algebra.Homology.Monoidal
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Basic
@@ -926,7 +927,8 @@ import Mathlib.CategoryTheory.Functor.LeftDerived
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
-import Mathlib.CategoryTheory.GradedObject
+import Mathlib.CategoryTheory.GradedObject.Basic
+import Mathlib.CategoryTheory.GradedObject.Monoidal
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
