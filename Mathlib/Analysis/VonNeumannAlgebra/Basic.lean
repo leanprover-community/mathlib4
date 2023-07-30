@@ -44,7 +44,7 @@ One the other hand, not picking one means that the weak-* topology
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
 class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Module ℂ M]
-    [NormedAlgebra ℂ M] [StarModule ℂ M] where
+    [NormedAlgebra ℂ M] [StarModule ℂ M] : Prop where
   /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
   to the `WStarAlgebra`. -/
   exists_predual :
