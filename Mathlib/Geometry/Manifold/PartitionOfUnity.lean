@@ -115,7 +115,7 @@ structure SmoothBumpCovering (s : Set M := univ) where
   eventuallyEq_one' : ∀ x ∈ s, ∃ i, toFun i =ᶠ[𝓝 x] 1
 #align smooth_bump_covering SmoothBumpCovering
 
-/-- We say that that a collection of functions form a smooth partition of unity on a set `s` if
+/-- We say that a collection of functions form a smooth partition of unity on a set `s` if
 
 * all functions are infinitely smooth and nonnegative;
 * the family `λ i, support (f i)` is locally finite;

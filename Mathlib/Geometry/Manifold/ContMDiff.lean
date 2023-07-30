@@ -267,6 +267,7 @@ theorem ContMDiff.smooth (h : ContMDiff I I' ⊤ f) : Smooth I I' f :=
 
 theorem Smooth.contMDiff (h : Smooth I I' f) : ContMDiff I I' n f :=
   h.of_le le_top
+#align smooth.cont_mdiff Smooth.contMDiff
 
 theorem ContMDiffOn.smoothOn (h : ContMDiffOn I I' ⊤ f s) : SmoothOn I I' f s :=
   h
@@ -739,7 +740,12 @@ theorem contMDiffWithinAt_insert_self :
   refine Iff.rfl.and <| (contDiffWithinAt_congr_nhds ?_).trans contDiffWithinAt_insert_self
   simp only [← map_extChartAt_nhdsWithin I, nhdsWithin_insert, Filter.map_sup, Filter.map_pure]
 
-alias contMDiffWithinAt_insert_self ↔ ContMDiffWithinAt.of_insert ContMDiffWithinAt.insert
+alias contMDiffWithinAt_insert_self ↔ ContMDiffWithinAt.of_insert _
+
+-- TODO: use `alias` again once it can make protected theorems
+theorem ContMDiffWithinAt.insert (h : ContMDiffWithinAt I I' n f s x) :
+    ContMDiffWithinAt I I' n f (insert x s) x :=
+  contMDiffWithinAt_insert_self.2 h
 
 theorem ContMDiffAt.contMDiffWithinAt (hf : ContMDiffAt I I' n f x) :
     ContMDiffWithinAt I I' n f s x :=

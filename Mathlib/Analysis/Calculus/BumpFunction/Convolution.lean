@@ -8,15 +8,14 @@ import Mathlib.Analysis.Calculus.BumpFunction.Normed
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Covering.Differentiation
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.LinearAlgebra.Finrank
 
 #align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
 /-!
-# Convolution of a bump function
+# Convolution with a bump function
 
 In this file we prove lemmas about convolutions `(φ.normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀`,
-where `φ : ContDiffBump 0` is an smooth bump function.
+where `φ : ContDiffBump 0` is a smooth bump function.
 
 We prove that this convolution is equal to `g x₀`
 if `g` is a constant on `Metric.ball x₀ φ.rOut`.
@@ -30,8 +29,8 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
   then `((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀` tends to `g x₀` along the same filter.
 - `ContDiffBump.convolution_tendsto_right`: generalization of the above lemma.
 - `ContDiffBump.ae_convolution_tendsto_right_of_locally_integrable`: let `g` be a locally
-  integrable function. Then the convolution of `g` with a family of bump functions converges
-  almost everywhere to `g`.
+  integrable function. Then the convolution of `g` with a family of bump functions with
+  support tending to `0` converges almost everywhere to `g`.
 
 ## Keywords
 
@@ -90,7 +89,7 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
     {k : ι → G} {x₀ : G} {z₀ : E'} {l : Filter ι} (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0))
     (hig : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))
     (hk : Tendsto k l (𝓝 x₀)) :
-    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g i : G → E') (k i)) l (𝓝 z₀) :=
+    Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g i) (k i)) l (𝓝 z₀) :=
   convolution_tendsto_right (eventually_of_forall fun i => (φ i).nonneg_normed)
     (eventually_of_forall fun i => (φ i).integral_normed) (tendsto_support_normed_smallSets hφ) hig
     hcg hk
@@ -100,7 +99,7 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
   and the limit is taken only in the first function. -/
 theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) (hg : Continuous g) (x₀ : G) :
-    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) l (𝓝 (g x₀)) :=
+    Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀) l (𝓝 (g x₀)) :=
   convolution_tendsto_right hφ (eventually_of_forall fun _ => hg.aestronglyMeasurable)
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
@@ -116,6 +115,9 @@ theorem ae_convolution_tendsto_right_of_locally_integrable
     (h'φ : ∀ᶠ i in l, (φ i).rOut ≤ K * (φ i).rIn) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
     Tendsto (fun i ↦ ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀) l (𝓝 (g x₀)) := by
   have : IsAddHaarMeasure μ := ⟨⟩
+  -- By Lebesgue differentiation theorem, the average of `g` on a small ball converges
+  -- almost everywhere to the value of `g` as the radius shrinks to zero.
+  -- We will see that this set of points satisfies the desired conclusion.
   filter_upwards [(Besicovitch.vitaliFamily μ).ae_tendsto_average_norm_sub hg] with x₀ h₀
   simp only [convolution_eq_swap, lsmul_apply]
   have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) :=
