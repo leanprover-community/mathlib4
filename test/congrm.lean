@@ -93,6 +93,10 @@ example (f : α → Prop) (h : ∀ a, f a ↔ True) : (∀ a : α, f a) ↔ (∀
   congrm ∀ _, ?_
   exact h _
 
+example (α : Nat → Type) (f : (x : Nat) → α x) (h : i = j) : HEq (f i) (f j) := by
+  congrm f ?_
+  exact h
+
 def foo (n : Nat) : Nat := 1 + n
 
 -- Unfolding

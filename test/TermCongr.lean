@@ -19,7 +19,7 @@ example (x y : Nat) (h : x = y) : True := by
 
 example [Decidable p] (x y : Nat) (h : x = y) : True := by
   have := congr(if p then 1 else $h)
-  guard_hyp this : (if p then 1 else x) = (if p then 1 else y)
+  guard_hyp this :ₛ (if p then 1 else x) = (if p then 1 else y)
   trivial
 
 example (x y z w : Nat) (h : x = y) (h' : z = w) : 1 + x * z^2 = 1 + y * w^2 := by
@@ -32,11 +32,20 @@ example (x y z w : Nat) (h : x = y) (h' : z = w) : 1 + x * z^2 = 1 + y * w^2 := 
   case foo => exact h
   case bar => exact h'
 
+example (p q : Prop) (h : p = q) : p ↔ q := congr($h)
+
+example (p q : Prop) (h : p = q) : p ↔ q := by
+  refine congr($(?_))
+  guard_target = p ↔ q
+  exact congr($h)
+
 example (p q : Prop) (h : p = q) : Nonempty p = Nonempty q := congr(Nonempty $h)
 
 example (p q : Prop) (h : p ↔ q) : Nonempty p = Nonempty q := congr(Nonempty $h)
 
 example (p q : Prop) (h : p ↔ q) : Nonempty p ↔ Nonempty q := Iff.of_eq <| congr(Nonempty $h)
+
+example (p q : Prop) (h : p ↔ q) : Nonempty p ↔ Nonempty q := congr(Nonempty $h)
 
 example [Fintype α] [Fintype β] (h : α = β) : Fintype.card α = Fintype.card β :=
   congr(Fintype.card $h)

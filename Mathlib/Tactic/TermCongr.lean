@@ -60,6 +60,8 @@ For example, if `h : a = b` then `congr(1 + $h) : 1 + a = 1 + b`.
 
 This is able to make use of the expected type, for example `(congr(_ + $h) : 1 + _ = _)`
 with `h : x = y` gives `1 + x = 1 + y`.
+The expected type can be an `Iff`, `Eq`, or `HEq`.
+If there is no expected type, then it generates an equality.
 
 Note: the process of generating a congruence lemma involves elaborating the pattern
 using terms with attached metadata and a reducible wrapper.
@@ -198,10 +200,11 @@ def processAntiquot (t : Term) (expand : Term → Term.TermElabM Term) : Term.Te
 /-- Given the pattern `t` in `congr(t)`, elaborate it for the given side
 by relpacing antiquotations with `cHole%` terms, and ensure the elaborated term
 is of the expected type. -/
-def elaboratePattern (t : Term) (expectedType : Expr) (forLhs : Bool) : Term.TermElabM Expr :=
+def elaboratePattern (t : Term) (expectedType? : Option Expr) (forLhs : Bool) :
+    Term.TermElabM Expr :=
   Term.withoutErrToSorry do
     let t' ← processAntiquot t (fun h => if forLhs then `(cHole% lhs $h) else `(cHole% rhs $h))
-    Term.elabTermEnsuringType t' expectedType
+    Term.elabTermEnsuringType t' expectedType?
 
 /-! ### Congruence generation -/
 
@@ -299,7 +302,7 @@ def ensureIff (pf : Expr) : MetaM Expr := do
   discard <| mkIffForExpectedType (← inferType pf)
   return pf
 
-/-- A request for a type of congruence lemma in a `CongrResult`. -/
+/-- A request for a type of congruence lemma from a `CongrResult`. -/
 inductive CongrType
   | eq | heq
 
@@ -349,6 +352,12 @@ def CongrResult.heq (res : CongrResult) : MetaM Expr := do
   match res.pf? with
   | some pf => pf .heq
   | none => mkHEqRefl res.lhs
+
+/-- Returns a proof of `lhs ↔ rhs`. Uses `CongrResult.eq`. -/
+def CongrResult.iff (res : CongrResult) : MetaM Expr := do
+  unless ← Meta.isProp res.lhs do
+    throwError "Expecting{indentD res.lhs}\nto be a proposition."
+  return mkApp3 (.const ``iff_of_eq []) res.lhs res.rhs (← res.eq)
 
 /-- Combine two congruence proofs using transitivity.
 Does not check that `res1.rhs` is defeq to `res2.lhs`.
@@ -643,23 +652,34 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
 def elabTermCongr : Term.TermElab := fun stx expectedType? => do
   match stx with
   | `(congr($t)) =>
-    -- Save the current mvarCounter so that we can tell which cHoles are for this congr quotation.
+    -- Save the current mvarCounter so that we know which cHoles are for this congr quotation.
     let mvarCounterSaved := (← getMCtx).mvarCounter
-    let expEq ← mkEqForExpectedType expectedType?
-    let some (expTy, expLhs, expRhs) := expEq.eq? | unreachable!
-    let lhs ← elaboratePattern t expTy true
-    let rhs ← elaboratePattern t expTy false
-    unless ← isDefEq expLhs lhs do
-      throwError "Left-hand side of elaborated pattern{indentD lhs}\n{""
-        }is not definitionally equal to left-hand side of expected type{indentD expEq}"
-    unless ← isDefEq expRhs rhs do
-      throwError "Right-hand side of elaborated pattern{indentD rhs}\n{""
-        }is not definitionally equal to right-hand side of expected type{indentD expEq}"
+    -- Case 1: There is an expected type and it's obviously an Iff/Eq/HEq.
+    if let some expectedType := expectedType? then
+      if let some (expLhsTy, expLhs, expRhsTy, expRhs) ← sides? expectedType then
+        let lhs ← elaboratePattern t expLhsTy true
+        let rhs ← elaboratePattern t expRhsTy false
+        -- Note: these defeq checks can leak congruence holes.
+        unless ← isDefEq expLhs lhs do
+          throwError "Left-hand side of elaborated pattern{indentD lhs}\n{""
+            }is not definitionally equal to left-hand side of expected type{indentD expectedType}"
+        unless ← isDefEq expRhs rhs do
+          throwError "Right-hand side of elaborated pattern{indentD rhs}\n{""
+            }is not definitionally equal to right-hand side of expected type{indentD expectedType}"
+        Term.synthesizeSyntheticMVars (mayPostpone := true)
+        let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
+        let expectedType' ← whnf expectedType
+        let pf ← if expectedType'.iff?.isSome then res.iff
+                  else if expectedType'.isEq then res.eq
+                  else if expectedType'.isHEq then res.heq
+                  else panic! "unreachable case, sides? guarantees Iff, Eq, and HEq"
+        return ← mkExpectedTypeHint pf expectedType
+    -- Case 2: No expected type or it's not obviously Iff/Eq/HEq. We generate an Eq.
+    let lhs ← elaboratePattern t none true
+    let rhs ← elaboratePattern t none false
     Term.synthesizeSyntheticMVars (mayPostpone := true)
-    let lhs ← instantiateMVars lhs
-    let rhs ← instantiateMVars rhs
     let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
     let pf ← res.eq
-    -- Use the expected type `expEq` so that any type ascriptions stick
-    mkExpectedTypeHint pf (removeCHoles (← instantiateMVars expEq))
+    let ty ← mkEq res.lhs res.rhs
+    mkExpectedTypeHint pf ty
   | _ => throwUnsupportedSyntax

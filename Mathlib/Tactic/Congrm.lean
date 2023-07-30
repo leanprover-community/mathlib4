@@ -23,10 +23,11 @@ open Lean Parser Tactic Elab Tactic Meta
 initialize registerTraceClass `Tactic.congrm
 
 /--
-`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, or `R lhs rhs` when
-`R` is a reflexive relation. The expression `e` is a pattern containing placeholders `?_`,
-and this pattern is matched against `lhs` and `rhs`.
-These placeholders generate new goals that state that the corresponding subexpressions
+`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `HEq lhs rhs`,
+or `R lhs rhs` when `R` is a reflexive relation.
+The expression `e` is a pattern containing placeholders `?_`,
+and this pattern is matched against `lhs` and `rhs` simultaneously.
+These placeholders generate new goals that state that corresponding subexpressions
 in `lhs` and `rhs` are equal.
 If the placeholders have names, such as `?m`, then the new goals are given tags with those names.
 
@@ -53,7 +54,7 @@ example {a b : ℕ} (h : a = b) : (λ y : ℕ => ∀ z, a + a = z) = (λ x => �
 The `congrm` command is a convenient frontend to `congr(...)` congruence quotations.
 If the goal is an equality, `congrm e` is equivalent to `refine congr(e')` where `e'` is
 from replacing each placeholder `?m` with `$(?m)`.
-The pattern `e` is allowed to contain `$(..)` expressions to immediately substitute
+The pattern `e` is allowed to contain `$(...)` expressions to immediately substitute
 equality proofs into the congruence.
 -/
 syntax (name := congrM) "congrm " term : tactic
@@ -70,7 +71,7 @@ elab_rules : tactic
       else
         pure none
     trace[Tactic.congrm] "pattern: {pattern}"
-    -- Chain together transformations as needed to convert the goal to an Eq
+    -- Chain together transformations as needed to convert the goal to an Eq if possible.
     liftMetaTactic fun g => do
       return [← (← g.iffOfEq).liftReflToEq]
     -- Apply `congr(...)`
