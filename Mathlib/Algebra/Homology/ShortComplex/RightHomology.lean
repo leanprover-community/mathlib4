@@ -857,8 +857,7 @@ variable [HasKernels C] [HasCokernels C]
 short complex `S` is understood as a kernel of the obvious map `S.fromOpcycles : S.opcycles ⟶ S.X₃`
 where `S.opcycles` is a cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
 @[simps]
-noncomputable def rightHomologyFunctor :
-    ShortComplex C ⥤ C where
+noncomputable def rightHomologyFunctor : ShortComplex C ⥤ C where
   obj S := S.rightHomology
   map := rightHomologyMap
 
