@@ -2,16 +2,13 @@
 Copyright (c) 2021 Roberto Alvarez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Roberto Alvarez
-
-! This file was ported from Lean 3 source module topology.homotopy.homotopy_group
-! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Ext
+
+#align_import topology.homotopy.homotopy_group from "leanprover-community/mathlib"@"4c3e1721c58ef9087bbc2c8c38b540f70eda2e53"
 
 /-!
 # `n`th homotopy group

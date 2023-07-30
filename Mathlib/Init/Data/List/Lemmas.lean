@@ -30,7 +30,7 @@ section MapAccumr
 variable {φ : Type w₁} {σ : Type w₂}
 
 /-- Runs a function over a list returning the intermediate results and a
-a final result.
+final result.
 -/
 def mapAccumr (f : α → σ → σ × β) : List α → σ → σ × List β
   | [], c => (c, [])
@@ -54,7 +54,7 @@ section MapAccumr₂
 variable {φ : Type w₁} {σ : Type w₂}
 
 /-- Runs a function over two lists returning the intermediate results and a
- a final result.
+final result.
 -/
 def mapAccumr₂ (f : α → β → σ → σ × φ) : List α → List β → σ → σ × List φ
   | [], _, c => (c, [])
@@ -83,7 +83,3 @@ theorem length_mapAccumr₂ :
 end MapAccumr₂
 
 end List
-
-#align list.length_zip_with List.length_zipWith
-#align list.mem_replicate List.mem_replicate
-#align list.eq_of_mem_replicate List.eq_of_mem_replicate

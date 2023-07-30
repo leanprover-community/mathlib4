@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.isometric_smul
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Isometry
+
+#align_import topology.metric_space.isometric_smul from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Group actions by isometries

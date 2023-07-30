@@ -2,17 +2,14 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module zero_divisors_in_add_monoid_algebras
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
+
+#align_import zero_divisors_in_add_monoid_algebras from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # Examples of zero-divisors in `AddMonoidAlgebra`s
@@ -242,8 +239,8 @@ example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· �
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), Function.comp, ofLex_add, toDfinsupp_add,
-      toLex_add, ofLex_toLex, Dfinsupp.coe_add, toDfinsupp_coe, Pi.toLex_apply, Pi.add_apply,
+  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), Function.comp, ofLex_add, toDFinsupp_add,
+      toLex_add, ofLex_toLex, DFinsupp.coe_add, toDFinsupp_coe, Pi.toLex_apply, Pi.add_apply,
       forall_eq, f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=

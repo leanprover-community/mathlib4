@@ -2,15 +2,12 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.bifunctor
-! leanprover-community/mathlib commit dc1525fb3ef6eb4348fb1749c302d8abc303d34a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Functor
 import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Common
+
+#align_import control.bifunctor from "leanprover-community/mathlib"@"dc1525fb3ef6eb4348fb1749c302d8abc303d34a"
 
 /-!
 # Functors with two arguments
@@ -41,7 +38,7 @@ class Bifunctor (F : Type u₀ → Type u₁ → Type u₂) where
 export Bifunctor (bimap)
 
 /-- Bifunctor. This typeclass asserts that a lawless `Bifunctor` is lawful. -/
-class LawfulBifunctor (F : Type u₀ → Type u₁ → Type u₂) [Bifunctor F] where
+class LawfulBifunctor (F : Type u₀ → Type u₁ → Type u₂) [Bifunctor F] : Prop where
   id_bimap : ∀ {α β} (x : F α β), bimap id id x = x
   bimap_bimap :
     ∀ {α₀ α₁ α₂ β₀ β₁ β₂} (f : α₀ → α₁) (f' : α₁ → α₂) (g : β₀ → β₁) (g' : β₁ → β₂) (x : F α₀ β₀),

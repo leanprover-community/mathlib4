@@ -67,7 +67,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
 /-- Insert a lemma into the discrimination tree. -/
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying this file, you will probably want to delete
--- `build/lib/Util/TacticCaches/LibrarySearch.extra`
+-- `build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
@@ -92,9 +92,9 @@ open System (FilePath)
 
 def cachePath : IO FilePath :=
   try
-    return (← findOLean `TacticCaches.LibrarySearch).withExtension "extra"
+    return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "Util" / "TacticCaches" / "LibrarySearch.extra"
+    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
   let path ← cachePath
@@ -137,7 +137,7 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     | .none => pure lem
     | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
-    let newGoals ← goal.apply lem
+    let newGoals ← goal.apply lem { allowSynthFailures := true }
     try
       let subgoals ← solveByElim newGoals required (exfalso := false) (depth := solveByElimDepth)
       pure (← getMCtx, subgoals)
@@ -249,6 +249,8 @@ syntax (name := exact?') "exact?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
 syntax (name := exact?!) "exact?!" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
+syntax (name := exact!?) "exact!?" (config)? (simpArgs)?
+  (" using " (colGt term),+)? : tactic
 
 syntax (name := apply?') "apply?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
@@ -271,7 +273,7 @@ def exact? (tk : Syntax) (required : Option (Array (TSyntax `term))) (requireClo
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta (addSubgoalsMsg := true)
-      if suggestions.isEmpty then logError "exact? didn't find any relevant lemmas"
+      if suggestions.isEmpty then logError "apply? didn't find any relevant lemmas"
       admitGoal goal
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta

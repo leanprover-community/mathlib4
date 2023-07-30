@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Abhimanyu Pallavi Sudhir
-
-! This file was ported from Lean 3 source module order.filter.germ
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Algebra.Module.Pi
+
+#align_import order.filter.germ from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # Germ of a function at a filter
@@ -383,6 +380,10 @@ instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (G
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
 
 @[to_additive]
+instance mulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
+  Function.Surjective.mulOneClass ofFun (surjective_quot_mk _) rfl fun _ _ ↦ rfl
+
+@[to_additive]
 instance smul [SMul M G] : SMul M (Germ l G) :=
   ⟨fun n => map (n • ·)⟩
 
@@ -412,11 +413,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
   rfl
 #align filter.germ.const_pow Filter.Germ.const_pow
 
--- Porting note: `to_additive` can't generate this (firstMultArg bug).
-instance addMonoid [AddMonoid M] : AddMonoid (Germ l M) :=
-  Function.Surjective.addMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
-
-@[to_additive existing]
+@[to_additive]
 instance monoid [Monoid M] : Monoid (Germ l M) :=
   Function.Surjective.monoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
 
@@ -435,15 +432,41 @@ theorem coe_coeMulHom [Monoid M] : (coeMulHom l : (α → M) → Germ l M) = ofF
 
 @[to_additive]
 instance commMonoid [CommMonoid M] : CommMonoid (Germ l M) :=
-  { Germ.commSemigroup, Germ.monoid with
-    mul := (· * ·)
-    one := 1 }
+  Function.Surjective.commMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
+
+instance [NatCast M] : NatCast (Germ l M) where
+  natCast n := (n : α → M)
+
+@[simp]
+theorem coe_nat [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
+
+@[simp, norm_cast]
+theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
+
+@[simp, norm_cast]
+theorem coe_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
+    ((OfNat.ofNat n : α → M) : Germ l M) = OfNat.ofNat n :=
+  rfl
+
+@[simp, norm_cast]
+theorem const_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
+    ((OfNat.ofNat n : M) : Germ l M) = OfNat.ofNat n :=
+  rfl
+
+instance [IntCast M] : IntCast (Germ l M) where
+  intCast n := (n : α → M)
+
+@[simp]
+theorem coe_int [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
 instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) :=
-  { Germ.one, Germ.addMonoid with
-    natCast := fun n => ↑(n : M)
-    natCast_zero := congr_arg ((↑) : M → Germ l M) Nat.cast_zero
-    natCast_succ := fun _ => congr_arg ((↑) : M → Germ l M) (Nat.cast_succ _) }
+  Function.Surjective.addMonoidWithOne ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ ↦ rfl
+
+instance addCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) where
+  toAddMonoidWithOne := addMonoidWithOne
+  __ := addCommSemigroup
+
 
 @[to_additive]
 instance inv [Inv G] : Inv (Germ l G) :=
@@ -477,31 +500,39 @@ theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
 #align filter.germ.const_div Filter.Germ.const_div
 #align filter.germ.const_sub Filter.Germ.const_sub
 
--- Porting note: `to_additive` can't generate this.
-instance subNegMonoid [SubNegMonoid G] : SubNegMonoid (Germ l G) :=
-  Function.Surjective.subNegMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+@[to_additive]
+instance involutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) :=
+  Function.Surjective.involutiveInv ofFun (surjective_quot_mk _) fun _ ↦ rfl
 
-@[to_additive existing subNegMonoid]
+instance hasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) :=
+  Function.Surjective.hasDistribNeg ofFun (surjective_quot_mk _) (fun _ ↦ rfl) fun _ _ ↦ rfl
+
+@[to_additive]
+instance invOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
+  ⟨congr_arg ofFun inv_one⟩
+
+@[to_additive subNegMonoid]
 instance divInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) :=
   Function.Surjective.divInvMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
+instance divisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
+  inv_inv := inv_inv
+  mul_inv_rev x y := inductionOn₂ x y fun _ _ ↦ congr_arg ofFun <| mul_inv_rev _ _
+  inv_eq_of_mul x y := inductionOn₂ x y fun _ _ h ↦ coe_eq.2 <| (coe_eq.1 h).mono fun _ ↦
+    DivisionMonoid.inv_eq_of_mul _ _
+
+
+@[to_additive]
 instance group [Group G] : Group (Germ l G) :=
-  { Germ.divInvMonoid with
-    mul := (· * ·)
-    one := 1
-    mul_left_inv := by
-      rintro ⟨f⟩
-      exact congr_arg (Quot.mk _) (mul_left_inv f) }
+  Function.Surjective.group ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance commGroup [CommGroup G] : CommGroup (Germ l G) :=
-  { Germ.group, Germ.commMonoid with
-    mul := (· * ·)
-    one := 1
-    inv := Inv.inv }
+  Function.Surjective.commGroup ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 end Monoid
 
@@ -514,32 +545,71 @@ instance nontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
   ⟨⟨↑x, ↑y, mt const_inj.1 h⟩⟩
 #align filter.germ.nontrivial Filter.Germ.nontrivial
 
-instance mulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) where
-  zero := 0
-  mul := (· * ·)
-  mul_zero f :=
-    inductionOn f fun f => by
-      norm_cast
-      rw [mul_zero]
-  zero_mul f :=
-    inductionOn f fun f => by
-      norm_cast
-      rw [zero_mul]
+instance mulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) :=
+  Function.Surjective.mulZeroClass ofFun (surjective_quot_mk _) rfl fun _ _ ↦ rfl
 
-instance distrib [Distrib R] : Distrib (Germ l R) where
-  mul := (· * ·)
-  add := (· + ·)
-  left_distrib f g h :=
-    inductionOn₃ f g h fun f g h => by
-      norm_cast
-      rw [left_distrib]
-  right_distrib f g h :=
-    inductionOn₃ f g h fun f g h => by
-      norm_cast
-      rw [right_distrib]
+instance mulZeroOneClass [MulZeroOneClass R] : MulZeroOneClass (Germ l R) :=
+  Function.Surjective.mulZeroOneClass ofFun (surjective_quot_mk _) rfl rfl fun _ _ ↦ rfl
+
+instance monoidWithZero [MonoidWithZero R] : MonoidWithZero (Germ l R) :=
+  Function.Surjective.monoidWithZero ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
+
+instance distrib [Distrib R] : Distrib (Germ l R) :=
+  Function.Surjective.distrib ofFun (surjective_quot_mk _) (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
+    NonUnitalNonAssocSemiring (Germ l R) :=
+  Function.Surjective.nonUnitalNonAssocSemiring ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+instance nonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring (Germ l R) :=
+  Function.Surjective.nonUnitalSemiring ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+instance nonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring (Germ l R) :=
+  Function.Surjective.nonAssocSemiring ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
+
+instance nonUnitalNonAssocRing [NonUnitalNonAssocRing R] :
+    NonUnitalNonAssocRing (Germ l R) :=
+  Function.Surjective.nonUnitalNonAssocRing ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance nonUnitalRing [NonUnitalRing R] : NonUnitalRing (Germ l R) :=
+  Function.Surjective.nonUnitalRing ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance nonAssocRing [NonAssocRing R] : NonAssocRing (Germ l R) :=
+  Function.Surjective.nonAssocRing ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) fun _ ↦ rfl
 
 instance semiring [Semiring R] : Semiring (Germ l R) :=
-  { Germ.addCommMonoid, Germ.monoid, Germ.distrib, Germ.mulZeroClass, Germ.addMonoidWithOne with }
+  Function.Surjective.semiring ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+
+instance ring [Ring R] : Ring (Germ l R) :=
+  Function.Surjective.ring ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl)
+
+instance nonUnitalCommSemiring [NonUnitalCommSemiring R] : NonUnitalCommSemiring (Germ l R) :=
+  Function.Surjective.nonUnitalCommSemiring ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance commSemiring [CommSemiring R] : CommSemiring (Germ l R) :=
+  Function.Surjective.commSemiring ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+
+instance nonUnitalCommRing [NonUnitalCommRing R] : NonUnitalCommRing (Germ l R) :=
+    Function.Surjective.nonUnitalCommRing ofFun (surjective_quot_mk _) rfl (fun _ _ ↦ rfl)
+      (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+instance commRing [CommRing R] : CommRing (Germ l R) :=
+  Function.Surjective.commRing ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl)
 
 /-- Coercion `(α → R) → Germ l R` as a `RingHom`. -/
 def coeRingHom [Semiring R] (l : Filter α) : (α → R) →+* Germ l R :=
@@ -550,15 +620,6 @@ def coeRingHom [Semiring R] (l : Filter α) : (α → R) →+* Germ l R :=
 theorem coe_coeRingHom [Semiring R] : (coeRingHom l : (α → R) → Germ l R) = ofFun :=
   rfl
 #align filter.germ.coe_coe_ring_hom Filter.Germ.coe_coeRingHom
-
-instance ring [Ring R] : Ring (Germ l R) :=
-  { Germ.addCommGroup, Germ.semiring with }
-
-instance commSemiring [CommSemiring R] : CommSemiring (Germ l R) :=
-  { Germ.semiring, Germ.commMonoid with }
-
-instance commRing [CommRing R] : CommRing (Germ l R) :=
-  { Germ.ring, Germ.commMonoid with }
 
 end Ring
 
@@ -703,18 +764,117 @@ theorem const_top [Top β] : (↑(⊤ : β) : Germ l β) = ⊤ :=
   rfl
 #align filter.germ.const_top Filter.Germ.const_top
 
-instance orderBot [LE β] [OrderBot β] : OrderBot (Germ l β)
-    where
+instance orderBot [LE β] [OrderBot β] : OrderBot (Germ l β) where
   bot := ⊥
   bot_le f := inductionOn f fun _ => eventually_of_forall fun _ => bot_le
 
-instance orderTop [LE β] [OrderTop β] : OrderTop (Germ l β)
-    where
+instance orderTop [LE β] [OrderTop β] : OrderTop (Germ l β) where
   top := ⊤
   le_top f := inductionOn f fun _ => eventually_of_forall fun _ => le_top
 
 instance [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) :=
   { Filter.Germ.orderBot, Filter.Germ.orderTop with }
+
+instance sup [Sup β] : Sup (Germ l β) :=
+  ⟨map₂ (· ⊔ ·)⟩
+
+instance inf [Inf β] : Inf (Germ l β) :=
+  ⟨map₂ (· ⊓ ·)⟩
+
+@[simp, norm_cast]
+theorem const_sup [Sup β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
+  rfl
+#align filter.germ.const_sup Filter.Germ.const_sup
+
+@[simp, norm_cast]
+theorem const_inf [Inf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
+  rfl
+#align filter.germ.const_inf Filter.Germ.const_inf
+
+instance semilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) :=
+  { Germ.partialOrder with
+    sup := (· ⊔ ·)
+    le_sup_left := fun f g =>
+        inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => le_sup_left
+    le_sup_right := fun f g =>
+      inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => le_sup_right
+    sup_le := fun f₁ f₂ g =>
+      inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ => h₂.mp <| h₁.mono fun _x => sup_le }
+
+instance semilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) :=
+  { Germ.partialOrder with
+    inf := (· ⊓ ·)
+    inf_le_left := fun f g =>
+        inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => inf_le_left
+    inf_le_right := fun f g =>
+      inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => inf_le_right
+    le_inf := fun f₁ f₂ g =>
+      inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ => h₂.mp <| h₁.mono fun _x => le_inf }
+
+instance lattice [Lattice β] : Lattice (Germ l β) :=
+  { Germ.semilatticeSup, Germ.semilatticeInf with }
+
+instance distribLattice [DistribLattice β] : DistribLattice (Germ l β) :=
+  { Germ.semilatticeSup, Germ.semilatticeInf with
+    le_sup_inf := fun f g h =>
+      inductionOn₃ f g h fun _f _g _h => eventually_of_forall fun _ => le_sup_inf }
+
+@[to_additive]
+instance orderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid (Germ l β) :=
+  { Germ.partialOrder, Germ.commMonoid with
+    mul_le_mul_left := fun f g =>
+      inductionOn₂ f g fun _f _g H h =>
+        inductionOn h fun _h => H.mono fun _x H => mul_le_mul_left' H _ }
+
+@[to_additive]
+instance orderedCancelCommMonoid [OrderedCancelCommMonoid β]  :
+    OrderedCancelCommMonoid (Germ l β) :=
+  { Germ.orderedCommMonoid with
+    le_of_mul_le_mul_left := fun f g h =>
+      inductionOn₃ f g h fun _f _g _h H => H.mono fun _x => le_of_mul_le_mul_left' }
+
+@[to_additive]
+instance orderedCommGroup [OrderedCommGroup β] : OrderedCommGroup (Germ l β) :=
+  { Germ.orderedCancelCommMonoid, Germ.commGroup with }
+
+@[to_additive]
+instance existsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ l β) where
+  exists_mul_of_le {x y} := inductionOn₂ x y fun f g (h : f ≤ᶠ[l] g) ↦ by
+    classical
+    choose c hc using fun x (hx : f x ≤ g x) ↦ exists_mul_of_le hx
+    refine ⟨ofFun <| fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
+    filter_upwards [h] with x hx
+    rw [dif_pos hx, hc]
+
+@[to_additive]
+instance canonicallyOrderedMonoid [CanonicallyOrderedMonoid β] :
+    CanonicallyOrderedMonoid (Germ l β) :=
+  { orderedCommMonoid, orderBot, existsMulOfLE with
+    le_self_mul := fun x y ↦ inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul }
+
+instance orderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) :=
+  { Germ.semiring,
+    Germ.orderedAddCommMonoid with
+    zero_le_one := const_le zero_le_one
+    mul_le_mul_of_nonneg_left := fun x y z =>
+      inductionOn₃ x y z fun _f _g _h hfg hh =>
+          hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_left
+    mul_le_mul_of_nonneg_right := fun x y z =>
+      inductionOn₃ x y z fun _f _g _h hfg hh =>
+          hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_right }
+
+instance orderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring (Germ l β) :=
+  { Germ.orderedSemiring, Germ.commSemiring with }
+
+instance orderedRing [OrderedRing β] : OrderedRing (Germ l β) :=
+  { Germ.ring,
+    Germ.orderedAddCommGroup with
+    zero_le_one := const_le zero_le_one
+    mul_nonneg := fun x y =>
+      inductionOn₂ x y fun _f _g hf hg => hg.mp <| hf.mono fun _a => mul_nonneg }
+
+instance orderedCommRing [OrderedCommRing β] : OrderedCommRing (Germ l β) :=
+  { Germ.orderedRing, Germ.orderedCommSemiring with }
 
 end Germ
 
