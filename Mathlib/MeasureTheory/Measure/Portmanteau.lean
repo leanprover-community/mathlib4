@@ -85,156 +85,16 @@ open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
 
-section EquivalentConditions
-
-/-! ### Portmanteau: the standard phrasings of the equivalent conditions
-
-To facilitate organization, this section gives a few standard phrasings of the various conditions
-whose equivalence is the statement of the portmanteau theorem.
-
-We fix a space `Ω` with a topology (later assumed to be pseudo-metrizable) and a sigma-algebra
-(later assumed to be at least as fine as the Borel sigma-algebra). We also fix an indexing
-type `ι` and a filter `L` on it (later assumed to be countably-generated and nontrivial), and
-a collection `Ps` of probability measures indexed by `ι` and a candidate limit probability
-measure `P` on `Ω`. For formalization purposes, it is convenient to occasionally consider the
-probability measures coerced to measures, so we also denote by `μs` a collection of measures
-indexed by `ι` and by `μ` a measure on `Ω`.
-
-Informally, the conditions are:
-
-  (L) The probability measures `Ps` converge weakly (i.e., in distribution) to `P`.
-
-  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` under the `Ps` is at most
-      its measure under `P`.
-
-  (O) For any open set `G` in `Ω` the liminf of the measures of `G` under the `Ps` is at least
-      its measure under `P`.
-
-  (B) For any Borel set `E` in `Ω` whose boundary `∂E` carries zero measure under `P`, the limit
-      of the measures of `E` under the `Ps` equals its measure under `P`.
-
-Variants of formal phrasings of these conditions are:
-
-  (L): `MeasureTheory.Portmanteau.tendsto_in_distribution`
-
-  (C): `MeasureTheory.Portmanteau.limsup_closed_le` (using probability measures)
-       `MeasureTheory.Portmanteau.limsup_closed_le'` (using measures)
-
-  (O): `MeasureTheory.Portmanteau.le_liminf_open` (using probability measures)
-       `MeasureTheory.Portmanteau.le_liminf_open'` (using measures)
-
-  (B): `MeasureTheory.Portmanteau.tendsto_measure_of_null_frontier` (using probability measures)
-       `MeasureTheory.Portmanteau.tendsto_measure_of_null_frontier'` (using measures)
-
-We include lemmas to translate between the formulations of the same mathematical condition
-formulated either using probability measures or measures. Limits (or liminfs or limsups) are
-correspondingly taken in either `ℝ≥0` or `ℝ≥0∞`, and some coercions are involved.
--/
-
-variable {Ω ι : Type _} [TopologicalSpace Ω] [MeasurableSpace Ω] (L : Filter ι)
-variable (μ : Measure Ω) (μs : ι → Measure Ω)
-variable (P : ProbabilityMeasure Ω) (Ps : ι → ProbabilityMeasure Ω)
-
-namespace Portmanteau
-
-/-- The portmanteau condition (C): For any closed set `F`, the limsup of the measures of `F`
-under the `Ps` is at most its measure under `P`. -/
-private abbrev limsup_closed_le : Prop :=
-  ∀ (F : Set Ω), IsClosed F → L.limsup (fun i ↦ Ps i F) ≤ P F
-
-/-- The portmanteau condition (C'): For any closed set `F`, the limsup of the measures of `F`
-under the `μs` is at most its measure under `μ`. (This is meant to be applied to the coerctions
-of the probability measures to measures, the limsup is taken in `ℝ≥0∞`.) -/
-private abbrev limsup_closed_le' : Prop :=
-  ∀ (F : Set Ω), IsClosed F → L.limsup (fun i ↦ μs i F) ≤ μ F
-
-/-- The portmanteau condition (O): For any open set `G`, the liminf of the measures of `G`
-under the `Ps` is at least its measure under `P`. -/
-private abbrev le_liminf_open : Prop :=
-  ∀ (G : Set Ω), IsOpen G → P G ≤ L.liminf (fun i ↦ Ps i G)
-
-/-- The portmanteau condition (O'): For any open set `G`, the liminf of the measures of `G`
-under the `μs` is at least its measure under `μ`. (This is meant to be applied to the coerctions
-of the probability measures to measures, the liminf is taken in `ℝ≥0∞`.) -/
-private abbrev le_liminf_open' : Prop :=
-  ∀ (G : Set Ω), IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)
-
-/-- The portmanteau condition (B): For any Borel set `E` whose boundary `∂E` carries zero measure
-under `P`, the limit of the measures of `E` under the `Ps` equals its measure under `P`. -/
-private abbrev tendsto_measure_of_null_frontier : Prop :=
-  ∀ (E : Set Ω), MeasurableSet E → P (frontier E) = 0 → Tendsto (fun i ↦ Ps i E) L (𝓝 (P E))
-
-/-- The portmanteau condition (B'): For any Borel set `E` whose boundary `∂E` carries zero measure
-under `μ`, the limit of the measures of `E` under the `μs` equals its measure under `μ`. (This is
-meant to be applied to the coerctions of the probability measures to measures, the limit is taken
-in `ℝ≥0∞`.) -/
-private abbrev tendsto_measure_of_null_frontier' : Prop :=
-  ∀ (E : Set Ω), MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E))
-
-variable [OpensMeasurableSpace Ω]
-
-/-- The portmanteau condition (L): The probability measures `Ps` converge weakly
-(i.e., in distribution) to `P`. -/
-private abbrev tendsto_in_distribution := Tendsto Ps L (𝓝 P)
-
-lemma tendsto_probability_iff_tendsto_measure (E : Set Ω) :
-    Tendsto (fun i ↦ Ps i E) L (𝓝 (P E)) ↔
-      Tendsto (fun i ↦ (Ps i : Measure Ω) E) L (𝓝 ((P : Measure Ω) E)) := by
-  constructor <;> intro h
-  · convert (ENNReal.continuous_coe.tendsto _).comp h <;> simp
-  · convert (ENNReal.tendsto_toNNReal (show (P : Measure Ω) E ≠ ∞ from measure_ne_top P E)).comp h
-
-lemma limsup_probability_le_iff_limsup_measure_le [NeBot L] (F : Set Ω) :
-    L.limsup (fun i ↦ Ps i F) ≤ P F ↔
-      L.limsup (fun i ↦ (Ps i : Measure Ω) F) ≤ (P : Measure Ω) F := by
-  constructor <;> intro h
-  · apply ENNReal.le_of_forall_pos_le_add
-    intro ε ε_pos _
-    refine @limsup_le_of_le ℝ≥0∞ ι _ L (fun i ↦ (Ps i : Measure Ω) F) ((P : Measure Ω) F + ε) ?_ ?_
-    · exact isBounded_ge_of_bot.isCobounded_le
-    · have aux : P F < P F + ε := by simp [ε_pos]
-      have h' : L.limsup (fun i ↦ Ps i F) < P F + ε := lt_of_le_of_lt h aux
-      have := @eventually_lt_of_limsup_lt ι ℝ≥0 L _ (fun i ↦ Ps i F) (P F + ε) h' ?_
-      swap
-      · simp only
-        use 1
-        simp only [eventually_map]
-        apply eventually_of_forall
-        intro i
-        --have : (Ps i F) ≤ 1 := by apply ProbabilityMeasure.apply_le_one
-        --                       -- Why don't `simp` and `exact?` work here?
-        apply (Ps i).apply_le_one
-      filter_upwards [this] with i hi
-      simpa only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.coe_add]
-        using (@ENNReal.coe_le_coe (Ps i F) (P F + ε)).mpr hi.le
-  · apply _root_.le_of_forall_pos_le_add
-    intro ε ε_pos
-    refine @limsup_le_of_le ℝ≥0 ι _ L (fun i ↦ Ps i F) (P F + ε) ?_ ?_
-    · exact isBounded_ge_of_bot.isCobounded_le
-    · have aux : (P : Measure Ω) F < (P : Measure Ω) F + ε := by
-        convert (@ENNReal.add_lt_add_iff_left _ 0 ε _).mpr (by simp [ε_pos])
-        · simp only [add_zero]
-        · exact measure_ne_top P F
-      filter_upwards [eventually_lt_of_limsup_lt (lt_of_le_of_lt h aux)] with i hi
-      apply (@ENNReal.toNNReal_le_toNNReal (Ps i F) (P F + ε) ?_ ?_).mpr (by simp [hi.le]) <;>
-      simp [measure_ne_top]
-
-lemma le_liminf_probability_iff_le_liminf_measure (G : Set Ω) :
-    P G ≤ L.liminf (fun i ↦ Ps i G) ↔
-      (P : Measure Ω) G ≤ L.liminf (fun i ↦ (Ps i : Measure Ω) G) := by
-  sorry
-
-end Portmanteau
-
-end EquivalentConditions
-
 section LimsupClosedLEAndLELiminfOpen
 
 /-! ### Portmanteau: limsup condition for closed sets iff liminf condition for open sets
 
 In this section we prove that for a sequence of Borel probability measures on a topological space
-and its candidate limit measure, the conditions (C) and (O) are equivalent.
-
+and its candidate limit measure, the following two conditions are equivalent:
+  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` is at most the limit
+      measure of `F`.
+  (O) For any open set `G` in `Ω` the liminf of the measures of `G` is at least the limit
+      measure of `G`.
 Either of these will later be shown to be equivalent to the weak convergence of the sequence
 of measures.
 -/
@@ -598,48 +458,38 @@ theorem exists_null_frontiers_thickening (μ : Measure Ω) [SigmaFinite μ] (s :
 /-- One implication of the portmanteau theorem:
 Assuming that for all Borel sets `E` whose boundary `∂E` carries no probability mass under a
 candidate limit probability measure `μ` we have convergence of the measures `μs i E` to `μ E`,
-then for all closed sets `F` we have the limsup condition `limsup (μs i F) ≤ μ F`.
-
-This is a version with coercions to ordinary `ℝ≥0∞`-valued measures. See
-`MeasureTheory.ProbabilityMeasure.limsup_measure_closed_le_of_forall_tendsto_measure` for
-a version with probability measures directly.
--/
-lemma ProbabilityMeasure.limsup_measure_closed_le_of_forall_tendsto_measure'
-    {α ι : Type _} {L : Filter ι} [NeBot L]
-    [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
-    {μ : ProbabilityMeasure α} {μs : ι → ProbabilityMeasure α}
-    (h : ∀ {E : Set α},
-      MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
-    (F : Set α) (F_closed : IsClosed F) :
-    L.limsup (fun i ↦ (μs i : Measure α) F) ≤ (μ : Measure α) F := by
-  have h' : ∀ {E : Set α}, MeasurableSet E → (μ : Measure α) (frontier E) = 0 →
-              Tendsto (fun i ↦ (μs i : Measure α) E) L (𝓝 ((μ : Measure α) E)) := by
-    intro E E_mble E_nullbdry
-    have obs := ENNReal.tendsto_coe.mpr (h E_mble (by simp only [E_nullbdry, zero_toNNReal]))
-    simpa only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] using obs
+then for all closed sets `F` we have the limsup condition `limsup (μs i F) ≤ μ F`. -/
+lemma limsup_measure_closed_le_of_forall_tendsto_measure
+    {Ω ι : Type _} {L : Filter ι} [NeBot L]
+    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] {μs : ι → Measure Ω}
+    (h : ∀ {E : Set Ω}, MeasurableSet E → μ (frontier E) = 0 →
+            Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
+    (F : Set Ω) (F_closed : IsClosed F) :
+    L.limsup (fun i ↦ μs i F) ≤ μ F := by
   have ex := exists_null_frontiers_thickening μ F
   let rs := Classical.choose ex
   have rs_lim : Tendsto rs atTop (𝓝 0) := (Classical.choose_spec ex).1
   have rs_pos : ∀ n, 0 < rs n := fun n ↦ ((Classical.choose_spec ex).2 n).1
-  have rs_null : ∀ n, (μ : Measure α) (frontier (Metric.thickening (rs n) F)) = 0 :=
+  have rs_null : ∀ n, (μ : Measure Ω) (frontier (Metric.thickening (rs n) F)) = 0 :=
     fun n ↦ ((Classical.choose_spec ex).2 n).2
   have Fthicks_open : ∀ n, IsOpen (Metric.thickening (rs n) F) :=
     fun n ↦ Metric.isOpen_thickening
-  have key := fun (n : ℕ) ↦ h' (Fthicks_open n).measurableSet (rs_null n)
+  have key := fun (n : ℕ) ↦ h (Fthicks_open n).measurableSet (rs_null n)
   apply ENNReal.le_of_forall_pos_le_add
   intros ε ε_pos μF_finite
-  have keyB := @tendsto_measure_cthickening_of_isClosed α _ _ _ μ F
+  have keyB := @tendsto_measure_cthickening_of_isClosed Ω _ _ _ μ F
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
-  have nhd : Iio ((μ : Measure α) F + ε) ∈ 𝓝 ((μ : Measure α) F) := by
+  have nhd : Iio ((μ : Measure Ω) F + ε) ∈ 𝓝 ((μ : Measure Ω) F) := by
     apply Iio_mem_nhds
     simpa only [add_zero] using ENNReal.add_lt_add_left μF_finite.ne (ENNReal.coe_pos.mpr ε_pos)
   specialize rs_lim (keyB nhd)
   simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux' := fun i ↦
-    @measure_mono _ _ (μs i : Measure α) _ _ (Metric.self_subset_thickening (rs_pos m) F)
-  have aux : (fun i ↦ ((μs i : Measure α) F))
-              ≤ᶠ[L] (fun i ↦ (μs i : Measure α) (Metric.thickening (rs m) F)) := by
+    @measure_mono _ _ (μs i : Measure Ω) _ _ (Metric.self_subset_thickening (rs_pos m) F)
+  have aux : (fun i ↦ ((μs i : Measure Ω) F))
+              ≤ᶠ[L] (fun i ↦ (μs i : Measure Ω) (Metric.thickening (rs m) F)) := by
     exact eventually_of_forall aux'
   refine (limsup_le_limsup aux).trans ?_
   rw [Tendsto.limsup_eq (key m)]
@@ -648,70 +498,17 @@ lemma ProbabilityMeasure.limsup_measure_closed_le_of_forall_tendsto_measure'
 /-- One implication of the portmanteau theorem:
 Assuming that for all Borel sets `E` whose boundary `∂E` carries no probability mass under a
 candidate limit probability measure `μ` we have convergence of the measures `μs i E` to `μ E`,
-then for all closed sets `F` we have the limsup condition `limsup (μs i F) ≤ μ F`.
-
-A version with coercions to ordinary `ℝ≥0∞`-valued measures is
-`MeasureTheory.ProbabilityMeasure.limsup_measure_closed_le_of_forall_tendsto_measure'`.
--/
-lemma ProbabilityMeasure.limsup_measure_closed_le_of_forall_tendsto_measure
-    {α ι : Type _} {L : Filter ι} [NeBot L]
-    [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
-    {μ : ProbabilityMeasure α} {μs : ι → ProbabilityMeasure α}
-    (h : ∀ {E : Set α},
-      MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
-    (F : Set α) (F_closed : IsClosed F) :
-    L.limsup (fun i ↦ μs i F) ≤ μ F := by
-  have key := limsup_measure_closed_le_of_forall_tendsto_measure' h F F_closed
-  apply _root_.le_of_forall_pos_le_add
-  intro ε ε_pos
-  refine @limsup_le_of_le ℝ≥0 ι _ L (fun i ↦ μs i F) (μ F + ε) ?_ ?_
-  · exact isBounded_ge_of_bot.isCobounded_le
-  · have aux : (μ : Measure α) F < (μ : Measure α) F + ε := by
-      convert (@ENNReal.add_lt_add_iff_left _ 0 ε _).mpr (by simp [ε_pos])
-      · simp only [add_zero]
-      · exact measure_ne_top μ F
-    filter_upwards [eventually_lt_of_limsup_lt (lt_of_le_of_lt key aux)] with i hi
-    apply (@ENNReal.toNNReal_le_toNNReal (μs i F) (μ F + ε) ?_ ?_).mpr (by simp [hi.le]) <;>
-    simp [measure_ne_top]
-/-
-lemma ProbabilityMeasure.limsup_measure_closed_le_iff_tendsto_measure_of_null_frontier'
-    {α ι : Type _} {L : Filter ι} [NeBot L]
-    [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
-    {μ : ProbabilityMeasure α} {μs : ι → ProbabilityMeasure α} :
-    (∀ {E : Set α}, MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
-      ↔ (∀ {F : Set α}, IsClosed F → L.limsup (fun i ↦ μs i F) ≤ μ F) := by
-  constructor <;> intro h
-  · intro F F_closed
-    exact limsup_measure_closed_le_of_forall_tendsto_measure h F F_closed
-  · intro E E_mble E_nullbdry
-    have aux := limsup_measure_closed_le_iff_liminf_measure_open_ge.mp h
-    have := tendsto_measure_of_le_liminf_measure_of_limsup_measure_le
- -/
-
-lemma ProbabilityMeasure.limsup_measure_closed_le_iff_tendsto_measure_of_null_frontier
-    {α ι : Type _} {L : Filter ι} [NeBot L]
-    [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
-    {μ : ProbabilityMeasure α} {μs : ι → ProbabilityMeasure α} :
-    (∀ {E : Set α}, MeasurableSet E → (μ : Measure α) (frontier E) = 0 →
-        Tendsto (fun i ↦ (μs i : Measure α) E) L (𝓝 ((μ : Measure α) E)))
-      ↔ (∀ {F : Set α}, IsClosed F → L.limsup (fun i ↦ (μs i : Measure α) F) ≤ (μ : Measure α) F) := by
-  constructor <;> intro h
-  · intro F F_closed
-    apply limsup_measure_closed_le_of_forall_tendsto_measure'
-    · intro E E_mble E_nullbdry
-      have := h E_mble
-      sorry
-    · exact F_closed
-  · intro E E_mble E_nullbdry
-    have aux := limsup_measure_closed_le_iff_liminf_measure_open_ge.mp h
-    have := tendsto_measure_of_le_liminf_measure_of_limsup_measure_le
-/-
-    apply limsup_measure_closed_le_iff_tendsto_measure_of_null_frontier.mpr
-    · intro F F_closed
-      exact h F_closed
-    · exact E_mble
-    · exact E_nullbdry
- -/
+then for all open sets `G` we have the limsup condition `μ G ≤ liminf (μs i G)`. -/
+lemma le_liminf_measure_open_of_forall_tendsto_measure
+    {Ω ι : Type _} {L : Filter ι} [NeBot L]
+    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
+    (h : ∀ {E : Set Ω}, MeasurableSet E → (μ : Measure Ω) (frontier E) = 0 →
+            Tendsto (fun i ↦ (μs i : Measure Ω) E) L (𝓝 ((μ : Measure Ω) E)))
+    (G : Set Ω) (G_open : IsOpen G) :
+    (μ : Measure Ω) G ≤ L.liminf (fun i ↦ (μs i : Measure Ω) G) := by
+  apply le_measure_liminf_of_limsup_measure_compl_le G_open.measurableSet
+  exact limsup_measure_closed_le_of_forall_tendsto_measure h _ (isClosed_compl_iff.mpr G_open)
 
 end LimitBorelImpliesLimsupClosedLE --section
 
