@@ -42,7 +42,7 @@ instance whiskeringRightDiscrete_isLocalization (J : Type) [Finite J] [W.Contain
   let L₁ := Functor.pi (fun (_ : J) => L)
   let W₁ := MorphismProperty.pi (fun (_ : J) => W)
   let W₂ := MorphismProperty.functorCategory W (Discrete J)
-  have : CatCommSq L₁ E.functor L₂ E'.functor :=
+  have : CatCommSq E.functor L₁ L₂ E'.functor :=
     ⟨(Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft _ E'.counitIso.symm ≪≫
       Functor.associator _ _ _≪≫ isoWhiskerLeft _ ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (by exact Iso.refl _) _) ≪≫ (Functor.associator _ _ _).symm ≪≫
@@ -80,8 +80,8 @@ instance : (L' L J).IsLocalization (W' W J) := by
 variable {J}
 noncomputable def F' : (Discrete J ⥤ D) ⥤ D :=
   Localization.lift (F C J ⋙ L) (hF L W J hW) (L' L J)
-@[simp] instance : CatCommSq L (G C J) (L' L J) (G' D J) := ⟨(Functor.compConstIso _ _).symm⟩
-noncomputable instance : CatCommSq (L' L J) (F C J) L (F' L W hW) :=
+@[simp] instance : CatCommSq (G C J) L (L' L J) (G' D J) := ⟨(Functor.compConstIso _ _).symm⟩
+noncomputable instance : CatCommSq (F C J) (L' L J) L (F' L W hW) :=
   ⟨(Localization.fac _ _ _).symm⟩
 noncomputable def adj' : G' D J ⊣ F' L W hW := (adj C J).localization L W (L' L J) (W' W J) _ _
 

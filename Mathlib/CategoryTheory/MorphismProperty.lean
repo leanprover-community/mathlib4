@@ -116,14 +116,14 @@ theorem RespectsIso.unop {P : MorphismProperty Cᵒᵖ} (h : RespectsIso P) : Re
 #align category_theory.morphism_property.respects_iso.unop CategoryTheory.MorphismProperty.RespectsIso.unop
 
 /-- The closure by isomorphisms of a `MorphismProperty` -/
-def isoClosure (P : MorphismProperty C) : MorphismProperty C := fun _ _ f =>
-  ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)
+def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
+  fun _ _ f => ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)
 
 lemma subset_isoClosure (P : MorphismProperty C) : P ⊆ P.isoClosure :=
   fun _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
 
 lemma isoClosure_respectsIso (P : MorphismProperty C) :
-  RespectsIso P.isoClosure :=
+    RespectsIso P.isoClosure :=
   ⟨fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ =>
     ⟨_, _, f', hf', ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ e.symm)
       (asIso iso.hom.right) (by simp)⟩⟩,

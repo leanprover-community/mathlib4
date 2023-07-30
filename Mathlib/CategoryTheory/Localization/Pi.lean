@@ -33,7 +33,7 @@ instance pi [Finite J] :
     letI : ∀ i, Category (C₂ i) := by apply hC₂
     let E := pi_equivalence_of_equiv C₂ e
     let E' := pi_equivalence_of_equiv D₂ e
-    haveI : CatCommSq (Functor.pi L₁) E.functor (Functor.pi L₂) E'.functor :=
+    haveI : CatCommSq E.functor (Functor.pi L₁) (Functor.pi L₂) E'.functor :=
       CatCommSq.hInv' _ _ _ _ ⟨Iso.refl _⟩
     refine' IsLocalization.of_equivalences (Functor.pi L₁)
       (MorphismProperty.pi W₁) (Functor.pi L₂) (MorphismProperty.pi W₂) E E' _
@@ -65,7 +65,7 @@ instance pi [Finite J] :
     let L₂ := Functor.pi L
     let W₁ := (W none).prod (MorphismProperty.pi W')
     let W₂ := MorphismProperty.pi W
-    haveI : CatCommSq L₁ (pi_option_equivalence C).symm.functor L₂
+    haveI : CatCommSq (pi_option_equivalence C).symm.functor L₁ L₂
       (pi_option_equivalence D).symm.functor :=
         ⟨NatIso.pi' (by rintro (_|i) <;> apply Iso.refl)⟩
     refine' IsLocalization.of_equivalences L₁ W₁ L₂ W₂
