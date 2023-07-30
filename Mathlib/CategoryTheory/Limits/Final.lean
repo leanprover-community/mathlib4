@@ -755,7 +755,7 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
   let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} D := AsSmall.equiv
   let s₃ : E ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} E := AsSmall.equiv
-  let i : s₁.inverse ⋙ (F ⋙ G) ⋙ s₃.functor ≅
+  let _i : s₁.inverse ⋙ (F ⋙ G) ⋙ s₃.functor ≅
       (s₁.inverse ⋙ F ⋙ s₂.functor) ⋙ (s₂.inverse ⋙ G ⋙ s₃.functor) :=
     isoWhiskerLeft (s₁.inverse ⋙ F) (isoWhiskerRight s₂.unitIso (G ⋙ s₃.functor))
   rw [final_iff_comp_equivalence G s₃.functor, final_iff_equivalence_comp s₂.inverse,
@@ -763,7 +763,7 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
   rw [final_iff_comp_equivalence F s₂.functor, final_iff_equivalence_comp s₁.inverse,
     final_iff_isIso_colimit_pre] at hF
   rw [final_iff_comp_equivalence (F ⋙ G) s₃.functor, final_iff_equivalence_comp s₁.inverse,
-    final_natIso_iff i, final_iff_isIso_colimit_pre] at hFG
+    final_natIso_iff _i, final_iff_isIso_colimit_pre] at hFG
   simp only [← colimit.pre_pre] at hFG
   exact fun H => IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
 
@@ -778,7 +778,7 @@ theorem final_of_comp_full_faithful' [Full G] [Faithful G] [Final (F ⋙ G)] : F
   have := final_of_comp_full_faithful F G
   final_of_final_comp F G
 
-/-- The hypotheses also imply that `F` is initial, see `final_of_comp_full_faithful`. -/
+/-- The hypotheses also imply that `F` is initial, see `initial_of_comp_full_faithful`. -/
 theorem initial_of_comp_full_faithful' [Full G] [Faithful G] [Initial (F ⋙ G)] : Initial G :=
   have := initial_of_comp_full_faithful F G
   initial_of_initial_comp F G
