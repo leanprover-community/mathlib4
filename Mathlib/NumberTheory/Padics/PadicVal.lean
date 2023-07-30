@@ -602,19 +602,17 @@ theorem padicValNat_factorial' {p : ℕ} [hp : Fact p.Prime] (n : ℕ):
   apply n.strongInductionOn
   intro n hn
   rcases n.eq_zero_or_pos with rfl | hnp; simp
-  · simp only [h, ge_iff_le, factorial, padicValNat.one, mul_zero, ne_eq, digits_zero, List.sum_nil,
-        le_refl, tsub_eq_zero_of_le]
-  · suffices padicValNat p n ! = n / p + padicValNat p (n / p) ! by
-      rw [this, mul_add, hn (n / p) (Nat.div_lt_self hnp hp.out.one_lt)]
-      suffices (p.digits n).sum = n % p + (digits p (n / p)).sum by
-        nth_rw 4 [← div_add_mod' n p]
-        rw [this, sub_add_eq, Nat.add_sub_cancel, Nat.mul_sub_right_distrib p 1 _, one_mul,
-          ← Nat.add_sub_assoc (digit_sum_le p (n / p)) _,
-          Nat.sub_add_cancel <| le_mul_of_pos_left hp.out.pos, mul_comm]
-      rw [digits_def' hp.out.one_lt hnp]
-      exact List.foldl_assoc_comm_cons
-    rw [add_comm, ← padicValNat_factorial_mul (n / p)]
-    exact (padicValNat_mul_div_factorial n).symm
+  suffices padicValNat p n ! = n / p + padicValNat p (n / p) ! by
+    rw [this, mul_add, hn (n / p) (Nat.div_lt_self hnp hp.out.one_lt)]
+    suffices (p.digits n).sum = n % p + (digits p (n / p)).sum by
+      nth_rw 4 [← div_add_mod' n p]
+      rw [this, sub_add_eq, Nat.add_sub_cancel, Nat.mul_sub_right_distrib p 1 _, one_mul,
+        ← Nat.add_sub_assoc (digit_sum_le p (n / p)) _,
+        Nat.sub_add_cancel <| le_mul_of_pos_left hp.out.pos, mul_comm]
+    rw [digits_def' hp.out.one_lt hnp]
+    exact List.foldl_assoc_comm_cons
+  rw [add_comm, ← padicValNat_factorial_mul (n / p)]
+  exact (padicValNat_mul_div_factorial n).symm
 
 /-- **Kummer's Theorem**
 
