@@ -422,10 +422,7 @@ noncomputable instance : IsROrC ℂ where
   conj_I_ax := conj_I
   norm_sq_eq_def_ax z := (normSq_eq_abs z).symm
   mul_im_I_ax _ := mul_one _
-  le := fun w z => w.re ≤ z.re ∧ w.im = z.im
-  le_refl := by simp only [le_refl, and_self, forall_const]
-  le_trans := fun _ _ _ h1 h2 => ⟨le_trans h1.1 h2.1, Eq.trans h1.2 h2.2 ⟩
-  le_antisymm := fun _ _ hab hba => Complex.ext (le_antisymm hab.1 hba.1) hab.2
+  toPartialOrder := Complex.partialOrder
   le_iff_re_im := Iff.rfl
 
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
