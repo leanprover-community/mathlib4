@@ -2,11 +2,31 @@ import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.DirectSum.Module
 
+namespace ConvexCone
+
+class ConvexConeClass (S) (𝕜) (E) [SetLike S E] [OrderedSemiring 𝕜] [AddCommMonoid E] [SMul 𝕜 E] where
+  smul_mem' : ∀ {s : S} ⦃c : 𝕜⦄, 0 < c → x ∈ s → c • x ∈ s
+  add_mem' : ∀ {s : S}, x ∈ s → y ∈ s → x + y ∈ s
+
+#check ConvexConeClass
+
+class PointedConeClass (S) [SetLike S E] [OrderedSemiring 𝕜] [AddCommMonoid E] [SMul 𝕜 E] extends
+  ConvexConeClass S 𝕜 E where
+  is_pointed : ∀ {s : S}, 0 ∈ s
+
+
+end ConvexCone
+
 namespace ConvexCone.Pointed
 
 variable [OrderedSemiring 𝕜] [Nontrivial 𝕜]
 
+set_option quotPrecheck false in
+notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
+
+
 section Module
+
 
 variable [AddCommMonoid E] [Module 𝕜 E]
 
@@ -67,6 +87,15 @@ def subtype : S →ₗ[{ c : 𝕜 // 0 ≤ c }] E where
   map_add' := by simp
   map_smul' := by simp
 
+def toPointed [AddCommMonoid M] [Module { c : 𝕜 // 0 ≤ c } M] (f : M →ₗ[{ c : 𝕜 // 0 ≤ c }] E): ConvexCone 𝕜 E where
+  carrier := Set.range f
+  smul_mem' := by
+    simp
+    sorry
+  add_mem' := by
+    simp
+    sorry
+
   -- toFun := Subtype.val
   -- map_smul' := by simp only [coe_smul, Subtype.forall, implies_true, forall_const]
 
@@ -84,15 +113,7 @@ variable {S : ∀ i, ConvexCone 𝕜 (E i)} [hS : ∀ i, Fact (S i).Pointed]
 
 #check DFinsupp.smul_apply
 
-def DirectSum : ConvexCone 𝕜 (⨁ i, E i) where
-  carrier := range <| DFinsupp.mapRange.linearMap <| fun i => ConvexCone.Pointed.subtype (S := S i)
-  smul_mem' := by
-    simp
-    rintro c hc a
-    use (⟨c, le_of_lt hc⟩ : { c : 𝕜 // 0 ≤ c }) • a
-    ext
-    sorry
-  add_mem' := by sorry
+def DirectSum := toPointed <| DFinsupp.mapRange.linearMap <| fun i => ConvexCone.Pointed.subtype (S := S i)
 
 #check DirectSum
 
