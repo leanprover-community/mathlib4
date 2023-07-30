@@ -750,7 +750,7 @@ lemma rightHomologyIso_hom_comp_homologyι :
 lemma toCycles_comp_homologyπ :
     S.toCycles ≫ S.homologyπ = 0 := by
   dsimp only [homologyπ]
-  simp only [toCycles_comp_leftHomology_π_assoc, zero_comp]
+  simp only [toCycles_comp_leftHomologyπ_assoc, zero_comp]
 
 @[reassoc (attr := simp)]
 lemma homologyι_comp_fromOpcycles :
