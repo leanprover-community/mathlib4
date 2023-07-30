@@ -368,17 +368,6 @@ def colimitIso' [HasColimit (F ⋙ G)] :
 end
 
 end Final
-variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
-
-theorem final_of_comp_full_faithful [Full G] [Faithful G] [Final (F ⋙ G)] : Final F where
-  out d :=
-    have := StructuredArrow.isEquivalence_post d F G
-    isConnected_of_equivalent (asEquivalence (StructuredArrow.post d F G)).symm
-
-theorem initial_of_comp_full_faithful [Full G] [Faithful G] [Initial (F ⋙ G)] : Initial F where
-  out d :=
-    have := CostructuredArrow.isEquivalence_post d F G
-    isConnected_of_equivalent (asEquivalence (CostructuredArrow.post F G d)).symm
 
 end ArbitraryUniverse
 
@@ -652,6 +641,23 @@ def limitIso' [HasLimit (F ⋙ G)] :
 end
 
 end Initial
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+
+theorem final_of_comp_full_faithful [Full G] [Faithful G] [Final (F ⋙ G)] : Final F where
+  out d :=
+    have := StructuredArrow.isEquivalence_post d F G
+    isConnected_of_equivalent (asEquivalence (StructuredArrow.post d F G)).symm
+
+theorem initial_of_comp_full_faithful [Full G] [Faithful G] [Initial (F ⋙ G)] : Initial F where
+  out d :=
+    have := CostructuredArrow.isEquivalence_post d F G
+    isConnected_of_equivalent (asEquivalence (CostructuredArrow.post F G d)).symm
+
+--theorem final_comp_equivalence
 
 end Functor
 
