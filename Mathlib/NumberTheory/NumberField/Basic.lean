@@ -85,7 +85,6 @@ theorem isIntegral_of_mem_ringOfIntegers {K : Type _} [Field K] {x : K} (hx : x 
 For now, this is not an instance by default as it creates an equal-but-not-defeq diamond with
 `Algebra.id` when `K = L`. This is caused by `x = ⟨x, x.prop⟩` not being defeq on subtypes. This
 will likely change in Lean 4. -/
--- Porting note: check if this can be an instance now
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap K L k, IsIntegral.algebraMap k.2⟩
@@ -95,7 +94,7 @@ instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
         Subtype.ext <| by simp only [map_add, Subalgebra.coe_add, Subtype.coe_mk]
       map_mul' := fun x y =>
         Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
--- #align number_field.ring_of_integers_algebra NumberField.ringOfIntegersAlgebra
+#align number_field.ring_of_integers_algebra NumberField.inst_ringOfIntegersAlgebra
 
 namespace RingOfIntegers
 
