@@ -827,6 +827,10 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 
+end Instances
+
+namespace IsROrC
+
 instance toStarOrderedRing : StarOrderedRing K :=
   StarOrderedRing.ofNonnegIff'
     (h_add := fun {x y} hxy z => by
@@ -843,10 +847,6 @@ instance toStarOrderedRing : StarOrderedRing K :=
         simp only [IsROrC.star_def, IsROrC.conj_mul]
         rw [IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
         apply IsROrC.normSq_nonneg)
-
-end Instances
-
-namespace IsROrC
 
 open ComplexConjugate
 
