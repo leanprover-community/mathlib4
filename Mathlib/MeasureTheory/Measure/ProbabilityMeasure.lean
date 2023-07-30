@@ -174,6 +174,9 @@ theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ �
   exact MeasureTheory.FiniteMeasure.apply_mono _ h
 #align measure_theory.probability_measure.apply_mono MeasureTheory.ProbabilityMeasure.apply_mono
 
+theorem apply_le_one (μ : ProbabilityMeasure Ω) {s : Set Ω} : μ s ≤ 1 := by
+  simpa using apply_mono μ (subset_univ s)
+
 theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω := by
   by_contra maybe_empty
   have zero : (μ : Measure Ω) univ = 0 := by

@@ -158,6 +158,9 @@ def mass (μ : FiniteMeasure Ω) : ℝ≥0 :=
   μ univ
 #align measure_theory.finite_measure.mass MeasureTheory.FiniteMeasure.mass
 
+@[simp] theorem apply_le_mass (μ : FiniteMeasure Ω) {s : Set Ω} : μ s ≤ μ.mass := by
+  simpa using apply_mono μ (subset_univ s)
+
 @[simp]
 theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Measure Ω) univ :=
   ennreal_coeFn_eq_coeFn_toMeasure μ Set.univ
