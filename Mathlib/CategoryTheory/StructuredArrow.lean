@@ -244,6 +244,20 @@ def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ St
   Comma.preRight _ F G
 #align category_theory.structured_arrow.pre CategoryTheory.StructuredArrow.pre
 
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Faithful F] : Faithful (pre S F G) :=
+  show Faithful (Comma.preRight _ _ _) from inferInstance
+
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Full F] : Full (pre S F G) :=
+  show Full (Comma.preRight _ _ _) from inferInstance
+
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) :=
+  show EssSurj (Comma.preRight _ _ _) from inferInstance
+
+/-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
+noncomputable def isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [IsEquivalence F] :
+    IsEquivalence (pre S F G) :=
+  Comma.isEquivalence_preRight _ _ _
+
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
@@ -481,6 +495,20 @@ variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
 def pre (F : B ⥤ C) (G : C ⥤ D) (S : D) : CostructuredArrow (F ⋙ G) S ⥤ CostructuredArrow G S :=
   Comma.preLeft F G _
 #align category_theory.costructured_arrow.pre CategoryTheory.CostructuredArrow.pre
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Faithful F] : Faithful (pre F G S) :=
+  show Faithful (Comma.preLeft _ _ _) from inferInstance
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Full F] : Full (pre F G S) :=
+  show Full (Comma.preLeft _ _ _) from inferInstance
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) :=
+  show EssSurj (Comma.preLeft _ _ _) from inferInstance
+
+/-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
+noncomputable def isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [IsEquivalence F] :
+    IsEquivalence (pre F G S) :=
+  Comma.isEquivalence_preLeft _ _ _
 
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
 @[simps]
