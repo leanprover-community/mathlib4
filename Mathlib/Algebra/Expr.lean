@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.expr
-! leanprover-community/mathlib commit 6b711d2ba5d470c040677ddda0c26b0d72283886
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.ZeroOne
 import Qq
+
+#align_import algebra.expr from "leanprover-community/mathlib"@"6b711d2ba5d470c040677ddda0c26b0d72283886"
 
 /-! # Helpers to invoke functions involving algebra at tactic time
 

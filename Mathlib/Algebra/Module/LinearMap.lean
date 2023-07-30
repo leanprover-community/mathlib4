@@ -3,17 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module algebra.module.linear_map
-! leanprover-community/mathlib commit cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Ring.CompTypeclasses
+
+#align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
 /-!
 # (Semi)linear maps
@@ -30,7 +27,7 @@ In this file we define
 
 We then provide `LinearMap` with the following instances:
 
-* `LinearMap.addCommMonoid` and `LinearMap.AddCommGroup`: the elementwise addition structures
+* `LinearMap.addCommMonoid` and `LinearMap.addCommGroup`: the elementwise addition structures
   corresponding to addition in the codomain
 * `LinearMap.distribMulAction` and `LinearMap.module`: the elementwise scalar action structures
   corresponding to applying the action in the codomain.
@@ -235,8 +232,7 @@ theorem ext {f g : M →ₛₗ[σ] M₃} (h : ∀ x, f x = g x) : f = g :=
 
 /-- Copy of a `LinearMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : M →ₛₗ[σ] M₃
-    where
+protected def copy (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : M →ₛₗ[σ] M₃ where
   toFun := f'
   map_add' := h.symm ▸ f.map_add'
   map_smul' := h.symm ▸ f.map_smul'
@@ -402,7 +398,7 @@ we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be
 `R` does not support negation.
 -/
 class CompatibleSMul (R S : Type _) [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
-  [Module S M₂] where
+  [Module S M₂] : Prop where
   /-- Scalar multiplication by `R` of `M` can be moved through linear maps. -/
   map_smul : ∀ (fₗ : M →ₗ[S] M₂) (c : R) (x : M), fₗ (c • x) = c • fₗ x
 #align linear_map.compatible_smul LinearMap.CompatibleSMul
@@ -450,7 +446,7 @@ See also `LinearMap.map_smul_of_tower`. -/
   map_smul' := fₗ.map_smul_of_tower
 #align linear_map.restrict_scalars LinearMap.restrictScalars
 
--- porting note: generalized from `Algebra` to `Compatible SMul`
+-- porting note: generalized from `Algebra` to `CompatibleSMul`
 instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
   ⟨restrictScalars R⟩
 #align linear_map.coe_is_scalar_tower LinearMap.coeIsScalarTower
@@ -531,7 +527,6 @@ def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ, RingHomCompTriple.comp_apply]
 #align linear_map.comp LinearMap.comp
 
--- mathport name: «expr ∘ₗ »
 set_option quotPrecheck false in -- Porting note: error message suggested to do this
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
@@ -628,10 +623,10 @@ namespace Module
 @[simps]
 def compHom.toLinearMap {R S : Type _} [Semiring R] [Semiring S] (g : R →+* S) :
     letI := compHom S g; R →ₗ[R] S :=
-letI := compHom S g
-{ toFun := (g : R → S)
-  map_add' := g.map_add
-  map_smul' := g.map_mul }
+  letI := compHom S g
+  { toFun := (g : R → S)
+    map_add' := g.map_add
+    map_smul' := g.map_mul }
 #align module.comp_hom.to_linear_map Module.compHom.toLinearMap
 #align module.comp_hom.to_linear_map_apply Module.compHom.toLinearMap_apply
 
@@ -676,8 +671,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂]
 
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
-def mk' (f : M → M₂) (H : IsLinearMap R f) : M →ₗ[R] M₂
-    where
+def mk' (f : M → M₂) (H : IsLinearMap R f) : M →ₗ[R] M₂ where
   toFun := f
   map_add' := H.1
   map_smul' := H.2
@@ -824,11 +818,12 @@ instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M�
 
 -- example application of this instance: if S -> T -> R are homomorphisms of commutative rings and
 -- M and M₂ are R-modules then the S-module and T-module structures on Hom_R(M,M₂) are compatible.
-instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂)
-    where smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
+instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
 
 instance [DistribMulAction Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
-    IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
+    IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where
+  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
 end SMul
 
@@ -988,8 +983,7 @@ section Module
 
 variable [Semiring S] [Module S M₂] [SMulCommClass R₂ S M₂]
 
-instance module : Module S (M →ₛₗ[σ₁₂] M₂)
-    where
+instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
   zero_smul _ := ext fun _ ↦ zero_smul _ _
 
@@ -1043,8 +1037,7 @@ theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g :=
   rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
-instance _root_.Module.End.monoid : Monoid (Module.End R M)
-    where
+instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
   mul_assoc f g h := LinearMap.ext fun x ↦ rfl
@@ -1117,8 +1110,7 @@ end
 /-- The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyModule : Module (Module.End R M) M
-    where
+instance applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
   smul_zero := LinearMap.map_zero
   smul_add := LinearMap.map_add
@@ -1179,8 +1171,7 @@ def toLinearMap (s : S) : M →ₗ[R] M where
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd`. -/
 @[simps]
-def toModuleEnd : S →* Module.End R M
-    where
+def toModuleEnd : S →* Module.End R M where
   toFun := toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
@@ -1200,9 +1191,7 @@ variable [Semiring S] [Module S M] [SMulCommClass S R M]
 This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
 def toModuleEnd : S →+* Module.End R M :=
-  {
-    DistribMulAction.toModuleEnd R
-      M with
+  { DistribMulAction.toModuleEnd R M with
     toFun := DistribMulAction.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }

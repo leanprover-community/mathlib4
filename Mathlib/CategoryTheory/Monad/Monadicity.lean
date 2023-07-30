@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.monadicity
-! leanprover-community/mathlib commit 4bd8c855d6ba8f0d5eefbf80c20fa00ee034dec9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Monad.Coequalizer
 import Mathlib.CategoryTheory.Monad.Limits
+
+#align_import category_theory.monad.monadicity from "leanprover-community/mathlib"@"4bd8c855d6ba8f0d5eefbf80c20fa00ee034dec9"
 
 /-!
 # Monadicity theorems
@@ -279,16 +276,16 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 -- Porting note: added these to replace parametric instances lean4#2311
 -- When this is fixed the proofs below that struggle with instances should be reviewed.
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g]
-class HasCoequalizerOfIsSplitPair (G : D ⥤ C) where
+class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g
 
 -- Porting note: cannot find synth order
--- instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [HasCoequalizerOfIsSplitPair G] :
+-- instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [HasCoequalizerOfIsSplitPair G] :
 --     HasCoequalizer f g := HasCoequalizerOfIsSplitPair.out f g
 
 instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
-    HasCoequalizer ((F).map A.a)
-      ((ofRightAdjoint G).counit.app ((F).obj A.A)) :=
+    HasCoequalizer ((leftAdjoint G).map A.a)
+      ((ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A)) :=
   fun _ => HasCoequalizerOfIsSplitPair.out G _ _
 
 -- Porting note: added these to replace parametric instances lean4#2311
@@ -296,12 +293,12 @@ instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdj
 class PreservesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPair G] :
+instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPair G] :
     PreservesColimit (parallelPair f g) G := PreservesColimitOfIsSplitPair.out f g
 
 instance [PreservesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
-   PreservesColimit (parallelPair ((F).map A.a)
-      (NatTrans.app (adj).counit ((F).obj A.A))) G :=
+   PreservesColimit (parallelPair ((leftAdjoint G).map A.a)
+      (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => PreservesColimitOfIsSplitPair.out _ _
 
 -- Porting note: added these to replace parametric instances lean4#2311
@@ -309,12 +306,12 @@ instance [PreservesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAd
 class ReflectsColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair G] :
+instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair G] :
     ReflectsColimit (parallelPair f g) G := ReflectsColimitOfIsSplitPair.out f g
 
 instance [ReflectsColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
-    ReflectsColimit (parallelPair ((F).map A.a)
-      (NatTrans.app (adj).counit ((F).obj A.A))) G :=
+    ReflectsColimit (parallelPair ((leftAdjoint G).map A.a)
+      (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => ReflectsColimitOfIsSplitPair.out _ _
 
 /-- To show `G` is a monadic right adjoint, we can show it preserves and reflects `G`-split
@@ -346,9 +343,9 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
     -- Porting note: passing instances through
     apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ ?_
     letI _ :
-      G.IsSplitPair ((F).map (G.map ((adj).counit.app Y)))
-        ((adj).counit.app ((F).obj (G.obj Y))) :=
-      MonadicityInternal.main_pair_G_split ((comparison (adj)).obj Y)
+      G.IsSplitPair ((leftAdjoint G).map (G.map ((Adjunction.ofRightAdjoint G).counit.app Y)))
+        ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj (G.obj Y))) :=
+      MonadicityInternal.main_pair_G_split ((comparison (Adjunction.ofRightAdjoint G)).obj Y)
     infer_instance
   exact Adjunction.isRightAdjointToIsEquivalence
 set_option linter.uppercaseLean3 false in
@@ -359,12 +356,12 @@ set_option linter.uppercaseLean3 false in
 class CreatesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair G] :
+instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair G] :
     CreatesColimit (parallelPair f g) G := CreatesColimitOfIsSplitPair.out f g
 
 instance [CreatesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
-    CreatesColimit (parallelPair ((F).map A.a)
-      (NatTrans.app (adj).counit ((F).obj A.A))) G :=
+    CreatesColimit (parallelPair ((leftAdjoint G).map A.a)
+      (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => CreatesColimitOfIsSplitPair.out _ _
 
 /--
@@ -419,12 +416,12 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 class PreservesColimitOfIsReflexivePair (G : C ⥤ D) where
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsReflexivePair f g], PreservesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶  B) [IsReflexivePair f g] [PreservesColimitOfIsReflexivePair G] :
+instance {A B} (f g : A ⟶ B) [IsReflexivePair f g] [PreservesColimitOfIsReflexivePair G] :
   PreservesColimit (parallelPair f g) G := PreservesColimitOfIsReflexivePair.out f g
 
 instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra (toMonad (ofRightAdjoint G)),
-    PreservesColimit (parallelPair ((F).map X.a)
-      (NatTrans.app (adj).counit ((F).obj X.A))) G :=
+    PreservesColimit (parallelPair ((leftAdjoint G).map X.a)
+      (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj X.A))) G :=
  fun _ => PreservesColimitOfIsReflexivePair.out _ _
 
 variable [PreservesColimitOfIsReflexivePair G]
@@ -433,13 +430,15 @@ variable [PreservesColimitOfIsReflexivePair G]
 reflexive coequalizers and `G` reflects isomorphisms, then `G` is monadic.
 -/
 def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRightAdjoint G := by
-  letI i : IsRightAdjoint (comparison (adj)) :=
+  letI i : IsRightAdjoint (comparison (Adjunction.ofRightAdjoint G)) :=
     ⟨_, comparisonAdjunction⟩
   constructor
-  let _ : ∀ X : (adj).toMonad.Algebra,
-      IsIso ((Adjunction.ofRightAdjoint (comparison (adj))).unit.app X) := by
+  let _ : ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
+      IsIso ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X)
+    := by
     intro X
-    apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (adj).toMonad) ?_ _
+    apply
+      @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (Adjunction.ofRightAdjoint G).toMonad) ?_ _
     · change IsIso (comparisonAdjunction.unit.app X).f
       rw [comparisonAdjunction_unit_f]
       change
@@ -447,7 +446,8 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
           (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
               (unitColimitOfPreservesCoequalizer X)).hom
       apply IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
-  let _ : ∀ Y : D, IsIso ((ofRightAdjoint (comparison (adj))).counit.app Y) := by
+  let _ : ∀ Y : D,
+      IsIso ((ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).counit.app Y) := by
     intro Y
     change IsIso (comparisonAdjunction.counit.app Y)
     rw [comparisonAdjunction_counit_app]

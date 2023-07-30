@@ -2,15 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.continuous_function.polynomial
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.UnitInterval
+
+#align_import topology.continuous_function.polynomial from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Constructions relating polynomial functions and continuous functions.
@@ -207,5 +205,39 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
       simp [mul_comm]
 set_option linter.uppercaseLean3 false in
 #align polynomial_functions.comap_comp_right_alg_hom_Icc_homeo_I polynomialFunctions.comap_compRightAlgHom_iccHomeoI
+
+theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
+    polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by
+  refine le_antisymm ?_
+    (Algebra.adjoin_le fun _ h => ⟨X, trivial, (Set.mem_singleton_iff.1 h).symm⟩)
+  rintro - ⟨p, -, rfl⟩
+  rw [AlgHom.coe_toRingHom]
+  refine p.induction_on (fun r => ?_) (fun f g hf hg => ?_) fun n r hn => ?_
+  · rw [Polynomial.C_eq_algebraMap, AlgHomClass.commutes]
+    exact Subalgebra.algebraMap_mem _ r
+  · rw [map_add]
+    exact add_mem hf hg
+  · rw [pow_succ', ← mul_assoc, map_mul]
+    exact mul_mem hn (Algebra.subset_adjoin <| Set.mem_singleton _)
+
+theorem polynomialFunctions.le_equalizer {A : Type _} [Semiring A] [Algebra R A] (s : Set R)
+    (φ ψ : C(s, R) →ₐ[R] A)
+    (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
+    polynomialFunctions s ≤ φ.equalizer ψ := by
+  rw [polynomialFunctions.eq_adjoin_X s]
+  exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
+
+open StarSubalgebra
+
+theorem polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar R] (s : Set R) :
+    (polynomialFunctions s).starClosure = adjoin R {toContinuousMapOnAlgHom s X} := by
+  rw [polynomialFunctions.eq_adjoin_X s, adjoin_eq_starClosure_adjoin]
+
+theorem polynomialFunctions.starClosure_le_equalizer {A : Type _} [StarRing R] [ContinuousStar R]
+    [Semiring A] [StarRing A] [Algebra R A] (s : Set R) (φ ψ : C(s, R) →⋆ₐ[R] A)
+    (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
+    (polynomialFunctions s).starClosure ≤ StarAlgHom.equalizer φ ψ := by
+  rw [polynomialFunctions.starClosure_eq_adjoin_X s]
+  exact StarAlgHom.adjoin_le_equalizer φ ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
 
 end
