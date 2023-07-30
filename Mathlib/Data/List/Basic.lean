@@ -416,14 +416,18 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 /-! ### replicate -/
 
-attribute [simp] replicate_succ
-#align list.replicate_succ List.replicate_succ
-
 @[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
 #align list.replicate_zero List.replicate_zero
 
+attribute [simp] replicate_succ
+#align list.replicate_succ List.replicate_succ
+
 lemma replicate_one (a : α) : replicate 1 a = [a] := rfl
 #align list.replicate_one List.replicate_one
+
+#align list.length_replicate List.length_replicate
+#align list.mem_replicate List.mem_replicate
+#align list.eq_of_mem_replicate List.eq_of_mem_replicate
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
@@ -625,16 +629,12 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 #align list.map_reverse_core List.map_reverseAux
 
--- Porting TODO: Fix statement of `mem_reverse` in Std to match Lean3,
--- then deprecate/remove this one
-theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
-  List.mem_reverse _ _
-#align list.mem_reverse List.mem_reverse'
+#align list.mem_reverse List.mem_reverse
 
 @[simp] theorem reverse_replicate (n) (a : α) : reverse (replicate n a) = replicate n a :=
   eq_replicate.2
     ⟨by rw [length_reverse, length_replicate],
-     fun b h => eq_of_mem_replicate (mem_reverse'.1 h)⟩
+     fun b h => eq_of_mem_replicate (mem_reverse.1 h)⟩
 #align list.reverse_replicate List.reverse_replicate
 
 /-! ### empty -/
@@ -1884,9 +1884,6 @@ theorem take_zero (l : List α) : take 0 l = [] :=
   rfl
 #align list.take_zero List.take_zero
 
-@[simp]
-theorem take_nil : ∀ n, take n [] = ([] : List α)
-  | 0 | _ + 1 => rfl
 #align list.take_nil List.take_nil
 
 theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: take n l :=
