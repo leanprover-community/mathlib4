@@ -18,7 +18,7 @@ Using `compute_degree` when the goal is of one of the five forms
 *  `degree f ≤ d`,
 *  `natDegree f = d`,
 *  `degree f = d`,
-*  `coeff f n = r`, if `n` is the degree of `f`,
+*  `coeff f d = r`, if `d` is the degree of `f`,
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
@@ -251,7 +251,7 @@ otherwise, it returns `none`. -/
 
 /-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
 the `e` looks like `lhs ≤ rhs` or `lhs = rhs` and that `lhs` is one of
-`natDegree f, degree f, coeff f n`.
+`natDegree f, degree f, coeff f d`.
 It also returns
 * the head symbol of `f` and
 * the list of answers to the question of whether `rhs` and, if present, `n` are metavariables.
@@ -296,7 +296,7 @@ one of the five target
 *  `natDegree f = d`.
 *  `degree f ≤ d`;
 *  `degree f = d`.
-*  `coeff f n = r`.
+*  `coeff f d = r`.
 
 The end goals are of the form
 * `natDegree f ≤ ?_`, `degree f ≤ ?_`, `coeff f ?_ = ?_`, with fresh metavariables;
@@ -337,7 +337,7 @@ Using the information contained in `twoH`, it decides which lemma is the most ap
 `dispatchLemma` is essentially the main dictionary for `compute_degree`.
 -/
 --  Internally, `dispatchLemma` produces 3 names: these are the lemmas that are appropriate
---  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f n = a`, in this order.
+--  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f d = a`, in this order.
 def dispatchLemma (twoH : Name × Name × Name × List Bool) (debug : Bool := false) : Name :=
 match twoH with
   | (.anonymous, _, _, _) => ``id -- `twoH` gave default value, so we do nothing
@@ -415,7 +415,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
 corresponds to goals that are potentially within the scope of `compute_degree`:
 namely, goals of the form
-`natDegree f ≤ d`, `degree f ≤ d`, `natDegree f = d`, `degree f = d`, `coeff f n = r`.
+`natDegree f ≤ d`, `degree f ≤ d`, `natDegree f = d`, `degree f = d`, `coeff f d = r`.
 
 `splitApply` determines which of these goals are actually within the scope, it applies the relevant
 lemma and returns two lists: the left-over goals of all the applications, followed by the
@@ -468,9 +468,9 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
 *  `degree f = d`,
 *  `natDegree f ≤ d`,
 *  `degree f ≤ d`,
-*  `coeff f n = r`, if `n` is the degree of `f`.
+*  `coeff f d = r`, if `d` is the degree of `f`.
 
-The tactic may leave goals of the form `d' = d` `d' ≤ d`, `r ≠ 0` or, where `d'` in `ℕ` or
+The tactic may leave goals of the form `d' = d` `d' ≤ d`, or `r ≠ 0`, where `d'` in `ℕ` or
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
 leading coefficient of `f`.
 
