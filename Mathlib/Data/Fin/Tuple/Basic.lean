@@ -86,8 +86,8 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
   by_cases h : j = 0
   · rw [h]
     simp [Ne.symm (succ_ne_zero i)]
-  · let j' := pred j (Fin.vne_of_ne h)
-    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
+  · let j' := pred j h
+    have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ]
     by_cases h' : j' = i
     · rw [h']
@@ -123,8 +123,8 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   · rw [h]
     simp
   · simp only [h, update_noteq, Ne.def, not_false_iff]
-    let j' := pred j (Fin.vne_of_ne h)
-    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
+    let j' := pred j h
+    have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ, cons_succ]
 #align fin.update_cons_zero Fin.update_cons_zero
 
@@ -135,8 +135,8 @@ theorem cons_self_tail : cons (q 0) (tail q) = q := by
   by_cases h : j = 0
   · rw [h]
     simp
-  · let j' := pred j (Fin.vne_of_ne h)
-    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
+  · let j' := pred j h
+    have : j'.succ = j := succ_pred j h
     rw [← this]
     unfold tail
     rw [cons_succ]
@@ -236,8 +236,8 @@ theorem comp_cons {α : Type _} {β : Type _} (g : α → β) (y : α) (q : Fin 
   by_cases h : j = 0
   · rw [h]
     rfl
-  · let j' := pred j (Fin.vne_of_ne h)
-    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
+  · let j' := pred j h
+    have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ, comp, comp, cons_succ]
 #align fin.comp_cons Fin.comp_cons
 
@@ -292,13 +292,13 @@ def append {α : Type _} (a : Fin m → α) (b : Fin n → α) : Fin (m + n) →
 @[simp]
 theorem append_left {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
     append u v (Fin.castAdd n i) = u i :=
-  addCases_left _ _ _
+  addCases_left _
 #align fin.append_left Fin.append_left
 
 @[simp]
 theorem append_right {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
     append u v (natAdd m i) = v i :=
-  addCases_right _ _ _
+  addCases_right _
 #align fin.append_right Fin.append_right
 
 theorem append_right_nil {α : Type _} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
@@ -584,7 +584,7 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
   · rw [h]
     -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
     simp [snoc, castLT]
-  set j := pred i (Fin.vne_of_ne h) with ji
+  set j := pred i h with ji
   have : i = j.succ := by rw [ji, succ_pred]
   rw [this, cons_succ]
   by_cases h' : j.val < n

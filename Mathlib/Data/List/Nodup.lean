@@ -369,7 +369,7 @@ protected theorem Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup
   rw [concat_eq_append]; exact h'.append (nodup_singleton _) (disjoint_singleton.2 h)
 #align list.nodup.concat List.Nodup.concat
 
-theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
+protected theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
   if h' : a ∈ l then by rw [insert_of_mem h']; exact h
   else by rw [insert_of_not_mem h', nodup_cons]; constructor <;> assumption
 #align list.nodup.insert List.Nodup.insert

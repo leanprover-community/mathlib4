@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 #align_import analysis.special_functions.exponential from "leanprover-community/mathlib"@"e1a18cad9cd462973d760af7de36b05776b8811c"
