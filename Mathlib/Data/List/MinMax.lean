@@ -397,16 +397,16 @@ theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := b
 theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
   coe_le_maximum_iff (α := αᵒᵈ)
 
-theorem maximum_ne_bot_of_ne_nil {l : List α} (h : l ≠ []) : l.maximum ≠ ⊥ :=
+theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
 
-theorem minimum_ne_top_of_ne_nil {l : List α} (h : l ≠ []) : l.minimum ≠ ⊤ :=
+theorem minimum_ne_top_of_ne_nil (h : l ≠ []) : l.minimum ≠ ⊤ :=
   @maximum_ne_bot_of_ne_nil αᵒᵈ _ _ h
 
-theorem maximum_ne_bot_of_length_pos {l : List α} (h : 0 < l.length) : l.maximum ≠ ⊥ :=
+theorem maximum_ne_bot_of_length_pos (h : 0 < l.length) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
 
-theorem minimum_ne_top_of_length_pos {l : List α} (h : 0 < l.length) : l.minimum ≠ ⊤ :=
+theorem minimum_ne_top_of_length_pos (h : 0 < l.length) : l.minimum ≠ ⊤ :=
   maximum_ne_bot_of_length_pos (α := αᵒᵈ) h
 
 /-- The maximum value in a non-empty `List`. -/
@@ -414,45 +414,45 @@ def maximum_of_length_pos (h : 0 < l.length) : α :=
   WithBot.unbot l.maximum (maximum_ne_bot_of_length_pos h)
 
 /-- The minimum value in a non-empty `List`. -/
-def minimum_of_length_pos {L : List α} (h : 0 < L.length) : α :=
+def minimum_of_length_pos (h : 0 < l.length) : α :=
   maximum_of_length_pos (α := αᵒᵈ) h
 
 @[simp]
-lemma coe_maximum_of_length_pos {L : List α} (h : 0 < L.length) :
-    (L.maximum_of_length_pos h : α) = L.maximum :=
+lemma coe_maximum_of_length_pos (h : 0 < l.length) :
+    (l.maximum_of_length_pos h : α) = l.maximum :=
   WithBot.coe_unbot _ _
 
 @[simp]
-lemma coe_minimum_of_length_pos {L : List α} (h : 0 < L.length) :
-    (L.minimum_of_length_pos h : α) = L.minimum :=
+lemma coe_minimum_of_length_pos (h : 0 < l.length) :
+    (l.minimum_of_length_pos h : α) = l.minimum :=
   WithTop.coe_untop _ _
 
 @[simp]
-theorem le_maximum_of_length_pos_iff {L : List α} (h : 0 < L.length) :
-    b ≤ maximum_of_length_pos h ↔ b ≤ L.maximum :=
+theorem le_maximum_of_length_pos_iff (h : 0 < l.length) :
+    b ≤ maximum_of_length_pos h ↔ b ≤ l.maximum :=
   WithBot.le_unbot_iff _
 
 @[simp]
-theorem minimum_of_length_pos_le_iff {L : List α} (h : 0 < L.length) :
-    minimum_of_length_pos h ≤ b ↔ L.minimum ≤ b :=
+theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
+    minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
   le_maximum_of_length_pos_iff (α := αᵒᵈ) h
 
-theorem le_maximum_of_length_pos_of_mem {L : List α} (h : a ∈ L) (w : 0 < L.length) :
-     a ≤ L.maximum_of_length_pos w := by
+theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
+     a ≤ l.maximum_of_length_pos w := by
   simp [le_maximum_of_length_pos_iff]
   exact le_maximum_of_mem' h
 
-theorem minimum_of_length_pos_le_of_mem {L : List α} (h : a ∈ L) (w : 0 < L.length) :
-     L.minimum_of_length_pos w ≤ a :=
+theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
+     l.minimum_of_length_pos w ≤ a :=
   le_maximum_of_length_pos_of_mem (α := αᵒᵈ) h w
 
-theorem getElem_le_maximum_of_length_pos {L : List α} (w : i < L.length) :
-    L[i] ≤ L.maximum_of_length_pos (Nat.zero_lt_of_lt w) := by
+theorem getElem_le_maximum_of_length_pos (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+    l[i] ≤ l.maximum_of_length_pos h := by
   apply le_maximum_of_length_pos_of_mem
-  exact get_mem L i w
+  exact get_mem l i w
 
-theorem minimum_of_length_pos_le_getElem {L : List α} (w : i < L.length) :
-    L.minimum_of_length_pos (Nat.zero_lt_of_lt w) ≤ L[i] :=
+theorem minimum_of_length_pos_le_getElem (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+    l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
 end LinearOrder
