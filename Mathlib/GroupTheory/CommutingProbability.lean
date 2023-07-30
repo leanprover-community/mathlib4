@@ -157,8 +157,6 @@ theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ �
       (commutator G).commProb_quotient_le)
 #align inv_card_commutator_le_comm_prob inv_card_commutator_le_commProb
 
-end finite
-
 lemma aux1 {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
 
@@ -170,9 +168,6 @@ lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
 
 namespace DihedralGroup
-
--- PRed
-instance : Infinite (DihedralGroup 0) := sorry
 
 -- PRed
 lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
@@ -187,7 +182,7 @@ theorem ZMod.add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : ¬ 2 ∣ n) {a : ZMod 
   rw [←mul_two, ←@Nat.cast_two (ZMod n),
       ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn), Units.mul_left_eq_zero]
 
-def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup n // p.1 * p.2 = p.2 * p.1 } ≃
+def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n where
   toFun p :=
     match p.1.1, p.1.2 with
@@ -205,8 +200,8 @@ def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup
   left_inv := by
     rintro ⟨⟨i | i, j | j⟩, h⟩
     . rfl
-    . simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hn, eq_comm] using h
-    . simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hn, eq_comm] using h
+    . simpa [Commute, SemiconjBy, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hn, eq_comm] using h
+    . simpa [Commute, SemiconjBy, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hn, eq_comm] using h
     . replace h := r.inj h
       rw [←neg_sub, neg_eq_iff_add_eq_zero, ZMod.add_self_eq_zero_iff_eq_zero hn, sub_eq_zero] at h
       rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, ←two_mul, and_self]
