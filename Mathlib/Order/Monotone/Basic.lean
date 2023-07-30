@@ -240,45 +240,29 @@ theorem strictAntiOn_toDual_comp_iff : StrictAntiOn (toDual ∘ f : α → βᵒ
 
 theorem monotone_dual_iff : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Monotone f := by
   rw [monotone_toDual_comp_iff, antitone_comp_ofDual_iff]
-alias monotone_dual_iff ↔ Monotone.dual _
-#align monotone.dual Monotone.dual
 
 theorem antitone_dual_iff : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Antitone f := by
   rw [antitone_toDual_comp_iff, monotone_comp_ofDual_iff]
-alias antitone_dual_iff ↔ Antitone.dual _
-#align antitone.dual Antitone.dual
 
 theorem monotone_on_dual_iff : MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ MonotoneOn f s := by
   rw [monotoneOn_toDual_comp_iff, antitoneOn_comp_ofDual_iff]
-alias monotone_on_dual_iff ↔ MonotoneOn.dual _
-#align monotone_on.dual MonotoneOn.dual
 
 theorem antitone_on_dual_iff : AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ AntitoneOn f s := by
   rw [antitoneOn_toDual_comp_iff, monotoneOn_comp_ofDual_iff]
-alias antitone_on_dual_iff ↔ AntitoneOn.dual _
-#align antitone_on.dual AntitoneOn.dual
 
 theorem strict_mono_dual_iff : StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictMono f := by
   rw [strictMono_toDual_comp_iff, strictAnti_comp_ofDual_iff]
-alias strict_mono_dual_iff ↔ StrictMono.dual _
-#align strict_mono.dual StrictMono.dual
 
 theorem strict_anti_dual_iff : StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictAnti f := by
   rw [strictAnti_toDual_comp_iff, strictMono_comp_ofDual_iff]
-alias strict_anti_dual_iff ↔ StrictAnti.dual _
-#align strict_anti.dual StrictAnti.dual
 
 theorem strict_mono_on_dual_iff :
     StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictMonoOn f s := by
   rw [strictMonoOn_toDual_comp_iff, strictAntiOn_comp_ofDual_iff]
-alias strict_mono_on_dual_iff ↔ StrictMonoOn.dual _
-#align strict_mono_on.dual StrictMonoOn.dual
 
 theorem strict_anti_on_dual_iff :
     StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictAntiOn f s := by
   rw [strictAntiOn_toDual_comp_iff, strictMonoOn_comp_ofDual_iff]
-alias strict_anti_on_dual_iff ↔ StrictAntiOn.dual _
-#align strict_anti_on.dual StrictAntiOn.dual
 
 alias antitone_comp_ofDual_iff ↔ _ Monotone.dual_left
 #align monotone.dual_left Monotone.dual_left
@@ -327,6 +311,30 @@ alias strictAntiOn_toDual_comp_iff ↔ _ StrictMonoOn.dual_right
 
 alias strictMonoOn_toDual_comp_iff ↔ _ StrictAntiOn.dual_right
 #align strict_anti_on.dual_right StrictAntiOn.dual_right
+
+alias monotone_dual_iff ↔ Monotone.dual _
+#align monotone.dual Monotone.dual
+
+alias antitone_dual_iff ↔ Antitone.dual _
+#align antitone.dual Antitone.dual
+
+alias monotone_on_dual_iff ↔ MonotoneOn.dual _
+#align monotone_on.dual MonotoneOn.dual
+
+alias antitone_on_dual_iff ↔ AntitoneOn.dual _
+#align antitone_on.dual AntitoneOn.dual
+
+alias strict_mono_dual_iff ↔ StrictMono.dual _
+#align strict_mono.dual StrictMono.dual
+
+alias strict_anti_dual_iff ↔ StrictAnti.dual _
+#align strict_anti.dual StrictAnti.dual
+
+alias strict_mono_on_dual_iff ↔ StrictMonoOn.dual _
+#align strict_mono_on.dual StrictMonoOn.dual
+
+alias strict_anti_on_dual_iff ↔ StrictAntiOn.dual _
+#align strict_anti_on.dual StrictAntiOn.dual
 
 end OrderDual
 
