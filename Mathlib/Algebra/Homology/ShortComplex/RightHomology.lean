@@ -683,15 +683,15 @@ noncomputable def RightHomologyData.opcyclesIso (h : S.RightHomologyData) [S.Has
   S.opcycles ≅ h.Q := opcyclesMapIso' (Iso.refl _) _ _
 
 @[reassoc (attr := simp)]
-lemma RightHomologyData.p_compOpcyclesIso_inv (h : S.RightHomologyData) [S.HasRightHomology] :
+lemma RightHomologyData.p_comp_opcyclesIso_inv (h : S.RightHomologyData) [S.HasRightHomology] :
     h.p ≫ h.opcyclesIso.inv = S.pOpcycles := by
   dsimp [pOpcycles, RightHomologyData.opcyclesIso]
   simp only [p_opcyclesMap', id_τ₂, id_comp]
 
 @[reassoc (attr := simp)]
-lemma RightHomologyData.pOpcycles_compOpcyclesIso_hom (h : S.RightHomologyData)
+lemma RightHomologyData.pOpcycles_comp_opcyclesIso_hom (h : S.RightHomologyData)
     [S.HasRightHomology] : S.pOpcycles ≫ h.opcyclesIso.hom = h.p := by
-  simp only [← h.p_compOpcyclesIso_inv, assoc, Iso.inv_hom_id, comp_id]
+  simp only [← h.p_comp_opcyclesIso_inv, assoc, Iso.inv_hom_id, comp_id]
 
 namespace RightHomologyMapData
 
@@ -1050,7 +1050,7 @@ lemma RightHomologyData.rightHomologyIso_hom_comp_ι :
 @[reassoc (attr := simp)]
 lemma RightHomologyData.opcyclesIso_inv_comp_descOpcycles :
     h.opcyclesIso.inv ≫ S.descOpcycles k hk = h.descQ k hk := by
-  simp only [← cancel_epi h.p, p_compOpcyclesIso_inv_assoc, p_descOpcycles, p_descQ]
+  simp only [← cancel_epi h.p, p_comp_opcyclesIso_inv_assoc, p_descOpcycles, p_descQ]
 
 @[simp]
 lemma RightHomologyData.opcyclesIso_hom_comp_descQ :
