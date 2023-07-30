@@ -83,7 +83,7 @@ theorem cardinal_eq_of_is_open
 /-- In a nontrivial real topological vector space, a countable subset has dense complement. -/
 theorem Set.Countable.dense_compl {E : Type u} [AddCommGroup E] [Module ℝ E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-    [Nontrivial E] (s : Set E) (hs : s.Countable) : Dense sᶜ := by
+    [Nontrivial E] {s : Set E} (hs : s.Countable) : Dense sᶜ := by
   rw [← interior_eq_empty_iff_dense_compl]
   contrapose! hs
   intro H
