@@ -11,8 +11,7 @@ import Mathlib.Data.Bitvec.Defs
 /-!
 # Basic Theorems About Bitvectors
 
-This file contains theorems about bitvectors and their coercions to
-`Nat` and `Fin`.
+This file contains theorems about bitvectors.
 -/
 
 namespace BitVec
@@ -51,7 +50,8 @@ theorem testBit_eq_rep' {x: Nat} (i : Nat) (h: i< w) (h2: x< 2^w):
   (BitVec.ofNat w x)[i] = testBit x i := by
   simp [BitVec.ofNat, GetElem.getElem, get, extract, Fin.ofNat', mod_eq_of_lt, h2]
 
-/-! ### Equivalence between bitwise and BitVec operations -/
+
+/-! ## Equivalence between bitwise and BitVec operations -/
 
 theorem BV_add {x y : BitVec w}: bitadd x.val y.val w = (x + y).val := by
   rw [bitadd_eq_add]
