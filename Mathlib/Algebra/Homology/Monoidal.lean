@@ -101,28 +101,53 @@ def associator₂ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
 def associator₃ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
     biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => (X.X p.2.1.1 ⊗ Y.X p.2.1.2) ⊗ Z.X p.1.1.2)
       ≅ biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => X.X p.2.1.1 ⊗ (Y.X p.2.1.2 ⊗ Z.X p.1.1.2)) :=
-  sorry
+  biproduct.mapIso fun _ => α_ _ _ _
+
+def associator₄_equiv : (Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1) ≃ (Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.2) :=
+  { toFun := fun ⟨⟨⟨ab, c⟩, w₁⟩, ⟨⟨a, b⟩, w₂⟩⟩ =>
+      ⟨⟨⟨a, b + c⟩, by simp at w₁ w₂; subst w₁ w₂; simp [add_assoc]⟩, ⟨⟨b, c⟩, by simp⟩⟩
+    invFun := fun ⟨⟨⟨a, bc⟩, w₁⟩, ⟨⟨b, c⟩, w₂⟩⟩ =>
+      ⟨⟨⟨a + b, c⟩, by simp at w₁ w₂; subst w₁ w₂; simp [add_assoc]⟩, ⟨⟨a, b⟩, by simp⟩⟩
+    left_inv := fun ⟨⟨⟨ab, c⟩, w₁⟩, ⟨⟨a, b⟩, w₂⟩⟩ => by
+      simp at w₁ w₂
+      subst w₂
+      subst w₁
+      simp
+    right_inv := fun ⟨⟨⟨a, bc⟩, w₁⟩, ⟨⟨b, c⟩, w₂⟩⟩ => by
+      simp at w₁ w₂
+      subst w₂
+      subst w₁
+      simp }
 
 def associator₄ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
     biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1 => X.X p.2.1.1 ⊗ (Y.X p.2.1.2 ⊗ Z.X p.1.1.2)) ≅
       biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.2 => X.X p.1.1.1 ⊗ (Y.X p.2.1.1 ⊗ Z.X p.2.1.2)) :=
-  sorry
+  biproduct.whisker_equiv associator₄_equiv
+    fun ⟨⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩⟩ => Iso.refl _
 
 def associator₅ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
     biproduct (fun p : Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.2 => X.X p.1.1.1 ⊗ (Y.X p.2.1.1 ⊗ Z.X p.2.1.2)) ≅
       biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.2 => X.X p.1.1 ⊗ (Y.X q.1.1 ⊗ Z.X q.1.2))) :=
-  sorry
+  (biproductBiproductIso
+    (fun p : Finset.Nat.antidiagonal i => Finset.Nat.antidiagonal p.1.2)
+    (fun (p : Finset.Nat.antidiagonal i) (q : Finset.Nat.antidiagonal p.1.2) => X.X p.1.1 ⊗ (Y.X q.1.1 ⊗ Z.X q.1.2))).symm
 
 def associator₆ (X Y Z : ChainComplex V ℕ) (i : ℕ) :
     biproduct (fun p : Finset.Nat.antidiagonal i => biproduct (fun q : Finset.Nat.antidiagonal p.1.2 => X.X p.1.1 ⊗ (Y.X q.1.1 ⊗ Z.X q.1.2))) ≅
       (tensorObj X (tensorObj Y Z)).X i :=
-  sorry
+  biproduct.mapIso fun _ => (leftDistributor _ _).symm
 
 def associator (X Y Z : ChainComplex V ℕ) :
     tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   HomologicalComplex.Hom.isoOfComponents
     (fun i => associator₁ X Y Z i ≪≫ associator₂ X Y Z i ≪≫ associator₃ X Y Z i ≪≫ associator₄ X Y Z i ≪≫ associator₅ X Y Z i ≪≫ associator₆ X Y Z i)
-    sorry
+    (fun i j w => by
+      dsimp [tensorObj, tensorObj_X]
+      ext ⟨⟨j₁, j₂⟩, wj⟩ ⟨⟨i₁, i₂⟩, wi⟩
+      dsimp [tensorObj_d, associator₁, associator₂, associator₃, associator₄, associator₅, associator₆]
+      simp
+      -- Haha, this is horrendous.
+      sorry)
 
 end MonoidalCategory
 
@@ -134,13 +159,15 @@ instance : MonoidalCategory (ChainComplex V ℕ) where
   tensorUnit' := (ChainComplex.single₀ V).obj (𝟙_ V)
   tensor_id := sorry
   tensor_comp := sorry
-  associator := sorry
+  associator := associator
   leftUnitor := sorry
   rightUnitor := sorry
   associator_naturality := sorry
   leftUnitor_naturality := sorry
   rightUnitor_naturality := sorry
   triangle := sorry
-  pentagon := sorry
+  pentagon W X Y Z := by
+      dsimp [MonoidalCategory.tensorObj, tensorObj_X, MonoidalCategory.tensorHom]
+      ext
 
 end ChainComplex
