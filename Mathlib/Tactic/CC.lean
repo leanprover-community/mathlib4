@@ -19,42 +19,52 @@ open Lean Meta Elab Tactic Parser.Tactic Std
 
 syntax (name := Lean.Parser.Tactic.cc) "cc" : tactic
 
-def Lean.Expr.isNum : Expr → Bool
+namespace Mathlib.Tactic.CC
+
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.ac
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
+
+
+def isNum : Expr → Bool
   | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal _))) _ => true
   | .lit (.natVal _) => true
   | _ => false
 
-def Lean.Expr.toNat : Expr → Option Nat
+def toNat : Expr → Option Nat
   | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal n))) _ => some n
   | .lit (.natVal n) => some n
   | _ => none
 
-def Lean.Expr.toInt : Expr → Option Int
+def toInt : Expr → Option Int
   | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal n))) _ => some n
   | .lit (.natVal n) => some n
   | .app (.app (.app (.const ``Neg.neg _) _) _) r =>
-    match r.toNat with
+    match toNat r with
     | some n => some (-n)
     | none => none
   | _ => none
 
-def Lean.Expr.isSignedNum (e : Expr) : Bool :=
-  if e.isNum then true
-  else if let .app (.app (.app (.const ``Neg.neg _) _) _) r := e then r.isNum
+def isSignedNum (e : Expr) : Bool :=
+  if isNum e then true
+  else if let .app (.app (.app (.const ``Neg.neg _) _) _) r := e then isNum r
   else false
 
 /-- Return true if `e` represents a value (numeral, character, or string). -/
-def Lean.Expr.isValue (e : Expr) : Bool :=
-  e.isSignedNum || e.isCharLit || e.isStringLit
+def isValue (e : Expr) : Bool :=
+  isSignedNum e || e.isCharLit || e.isStringLit
 
-private def Lean.Expr.getAppAppsAux : Expr → Array Expr → Nat → Array Expr
+private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
   | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
   | _,       as, _ => as
 
 /-- Given `f a b c`, return `#[f a, f a b, f a b c]`.
     Remark: this procedure is very similar to `getAppArgs`. -/
 @[inline]
-def Lean.Expr.getAppApps (e : Expr) : Array Expr :=
+def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
@@ -62,21 +72,21 @@ def Lean.Expr.getAppApps (e : Expr) : Array Expr :=
 /-- Determines whether two expressions are definitionally equal to each other without any mvar
     assignments. -/
 @[inline]
-def Lean.Meta.pureIsDefEq (e₁ e₂ : Expr) : MetaM Bool :=
+def pureIsDefEq (e₁ e₂ : Expr) : MetaM Bool :=
   withNewMCtxDepth <| isDefEq e₁ e₂
 
 /-- Return true if `e` represents a value (nat/int numereal, character, or string). -/
-def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
+def isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
     return true
-  else if e.isSignedNum then
+  else if isSignedNum e then
     let type ← inferType e
     pureIsDefEq type (.const ``Nat []) <||> pureIsDefEq type (.const ``Int [])
   else
     return false
 
 /-- Similar to `mkAppM n #[lhs, rhs]`, but handles `Eq` and `Iff` more efficiently. -/
-def Lean.Meta.mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
+def mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
   if n == ``Eq then
     mkEq lhs rhs
   else if n == ``Iff then
@@ -85,7 +95,7 @@ def Lean.Meta.mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
     mkAppM n #[lhs, rhs]
 
 /-- Given a reflexive relation `R`, and a proof `H : a = b`, build a proof for `R a b` -/
-def Lean.Meta.liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
+def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
   if R == ``Eq then return H
   let HType ← whnf (← inferType H)
   -- `HType : @Eq A a _`
@@ -104,8 +114,8 @@ def Lean.Meta.liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
   mkEqRec motive minor H
 
 /-- Ordering on `Expr`. -/
-def Lean.Expr.cmp (a b : Expr) : Ordering :=
-  if Expr.lt a b then .lt else if Expr.eqv b a then .eq else .gt
+local instance : Ord Expr where
+  compare a b := if Expr.lt a b then .lt else if Expr.eqv b a then .eq else .gt
 
 def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
   e.withApp fun cfn args => do
@@ -130,7 +140,7 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
     return a `forall x, Not (p x)` and a proof for it.
 
     This function handles nested existentials. -/
-partial def Lean.Meta.toForallNotAux (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
+partial def toForallNotAux (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
   let xn ← mkFreshUserName `x
   withLocalDeclD xn A fun x => do
     let px := p.beta #[x]
@@ -152,11 +162,11 @@ partial def Lean.Meta.toForallNotAux (lvl : Level) (A p hNotEx : Expr) : MetaM (
     return a `forall x, Not (p x)` and a proof for it.
 
     This function handles nested existentials. -/
-def Lean.Meta.toForallNot (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
+def toForallNot (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
   let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
   toForallNotAux lvl A p hNotEx
 
-def Lean.Meta.isReflRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
+def isReflRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
     return (``Eq, lhs, rhs)
   if let some (lhs, rhs) := e.iff? then
@@ -170,7 +180,7 @@ def Lean.Meta.isReflRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) 
       | none => return none
   return none
 
-def Lean.Meta.isSymmRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
+def isSymmRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
     return (``Eq, lhs, rhs)
   if let some (lhs, rhs) := e.iff? then
@@ -184,11 +194,11 @@ def Lean.Meta.isSymmRelation (e : Expr) : MetaM (Option (Name × Expr × Expr)) 
       | none => return none
   return none
 
-abbrev RBExprMap (α : Type u) := Std.RBMap Expr α Expr.cmp
+abbrev RBExprMap (α : Type u) := Std.RBMap Expr α compare
 
-abbrev RBExprSet := Std.RBSet Expr Expr.cmp
+abbrev RBExprSet := Std.RBSet Expr compare
 
-structure Lean.Meta.ExtCongrTheorem where
+structure ExtCongrTheorem where
   /-- The basic `CongrTheorem` object defined at `Lean.Meta.CongrTheorems` -/
   congrTheorem : CongrTheorem
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
@@ -198,7 +208,7 @@ structure Lean.Meta.ExtCongrTheorem where
   hcongrTheorem : Bool := false
 
 /-- Automatically generated congruence lemma based on heterogeneous equality. -/
-def Lean.Meta.mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
+def mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
     MetaM (Option ExtCongrTheorem) := do
   let eqCongr ← try mkHCongrWithArity fn nargs catch _ => return none
   let type := eqCongr.type
@@ -210,33 +220,24 @@ def Lean.Meta.mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
         hcongrTheorem := true }
     return some res₁
 
-structure Lean.Meta.ExtCongrTheoremKey where
+structure ExtCongrTheoremKey where
   fn : Expr
   nargs : Nat
   deriving BEq, Hashable
 
-abbrev Lean.Meta.ExtCongrTheoremCache := Std.HashMap ExtCongrTheoremKey (Option ExtCongrTheorem)
+abbrev ExtCongrTheoremCache := Std.HashMap ExtCongrTheoremKey (Option ExtCongrTheorem)
 
-def Lean.Expr.isNot : Expr → Bool × Expr
+def isNot : Expr → Bool × Expr
   | .app (.const ``Not []) a => (true, a)
   | .forallE _ a (.const ``False []) _ => (true, a)
   | e => (false, e)
 
-def Lean.Expr.isNotOrNe : Expr → Bool × Expr
+def isNotOrNe : Expr → Bool × Expr
   | .app (.const ``Not []) a => (true, a)
   | .forallE _ a (.const ``False []) _ => (true, a)
   | .app (.app (.app (.const ``Ne [u]) α) lhs) rhs =>
     (true, .app (.app (.app (.const ``Eq [u]) α) lhs) rhs)
   | e => (false, e)
-
-namespace Mathlib.Tactic.CC
-
-initialize
-  registerTraceClass `Meta.Tactic.cc.merge
-  registerTraceClass `Meta.Tactic.cc.failure
-  registerTraceClass `Debug.Meta.Tactic.cc
-  registerTraceClass `Debug.Meta.Tactic.cc.ac
-  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 structure CCConfig where
   /-- If `true`, congruence closure will treat implicit instance arguments as constants. -/
@@ -263,16 +264,18 @@ inductive ACApp where
 instance : Coe Expr ACApp := ⟨ACApp.ofExpr⟩
 
 /-- Ordering on `ACApp`. -/
-def ACApp.cmp : ACApp → ACApp → Ordering
-  | .ofExpr a, .ofExpr b => Expr.cmp a b
-  | .ofExpr _, .app _ _ => .lt
-  | .app _ _, .ofExpr _ => .gt
-  | .app op₁ args₁, .app op₂ args₂ =>
-    Expr.cmp op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-      for i in [:args₁.size] do
-        let o := Expr.cmp args₁[i]! args₂[i]!
-        if o != .eq then return o
-      return .eq
+local instance : Ord ACApp where
+  compare a b :=
+  match a, b with
+    | .ofExpr a, .ofExpr b => compare a b
+    | .ofExpr _, .app _ _ => .lt
+    | .app _ _, .ofExpr _ => .gt
+    | .app op₁ args₁, .app op₂ args₂ =>
+      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
+        for i in [:args₁.size] do
+          let o := compare args₁[i]! args₂[i]!
+          if o != .eq then return o
+        return .eq
 
 /-- Return true iff `e₁` is a "subset" of `e₂`.
     Example: The result is `true` for `e₁ := a*a*a*b*d` and `e₂ := a*a*a*a*b*b*c*d*d` -/
@@ -364,9 +367,9 @@ def ACApp.toExpr : ACApp → Option Expr
   | .app op ⟨arg₀ :: args⟩ => some <| args.foldl (fun e arg => mkApp2 op e arg) arg₀
   | .ofExpr e => some e
 
-abbrev RBACAppSet := Std.RBSet ACApp ACApp.cmp
+abbrev RBACAppSet := Std.RBSet ACApp compare
 
-abbrev RBACAppMap (α : Type u) := Std.RBMap ACApp α ACApp.cmp
+abbrev RBACAppMap (α : Type u) := Std.RBMap ACApp α compare
 
 inductive DelayedExpr where
   | ofExpr : Expr → DelayedExpr
@@ -458,7 +461,7 @@ def ACOccurrences.insert (aco : ACOccurrences) (e : ACApp) : ACOccurrences :=
 
 def ACOccurrences.erase (aco : ACOccurrences) (e : ACApp) : ACOccurrences :=
   if aco.occs.contains e then
-    { occs := aco.occs.erase e.cmp
+    { occs := aco.occs.erase (compare e)
       size := aco.size - 1 }
   else aco
 
@@ -482,7 +485,7 @@ structure ParentOcc where
       performance reasons. -/
   symmTable : Bool
 
-abbrev ParentOccSet := Std.RBSet ParentOcc (byKey ParentOcc.expr Expr.cmp)
+abbrev ParentOccSet := Std.RBSet ParentOcc (byKey ParentOcc.expr compare)
 
 abbrev Parents := RBExprMap ParentOccSet
 
@@ -518,7 +521,6 @@ structure CCState where
   congruences : Congruences := ∅
   symmCongruences : SymmCongruences := ∅
   subsingletonReprs : SubsingletonReprs := ∅
-  /- Porting note: This is an alternative of `defeq_canonizer` in Lean3. -/
   /-- Stores the root representatives of `.instImplicit` arguments. -/
   instImplicitReprs : InstImplicitReprs := ∅
   /-- The congruence closure module has a mode where the root of each equivalence class is marked as
@@ -732,7 +734,7 @@ def ppAC (ccs : CCState) : MessageData :=
 
 end CCState
 
-/-- The congruence_closure module (optionally) uses a normalizer.
+/-- The congruence closure module (optionally) uses a normalizer.
     The idea is to use it (if available) to normalize auxiliary expressions
     produced by internal propagation rules (e.g., subsingleton propagator).  -/
 structure CCNormalizer where
@@ -744,24 +746,21 @@ structure CCPropagationHandler where
       a new auxiliary term is created during propagation. -/
   newAuxCCTerm : Expr → MetaM Unit
 
-structure CC where
+structure CCStructure where
   state : CCState
   todo : Array TodoEntry := #[]
   acTodo : Array ACTodoEntry := #[]
   normalizer : Option CCNormalizer := none
   phandler : Option CCPropagationHandler := none
   cache : ExtCongrTheoremCache := ∅
-  /- Porting note: `congruence_closure` in Mathlib3 has more member variables but they're almost
-     the copies from `tactic_state`. We translate methods of `congruence_closure` using `MetaM` so
-     they are not needed. -/
   deriving Inhabited
 
-abbrev CCM := StateRefT CC MetaM
+abbrev CCM := StateRefT CCStructure MetaM
 
 namespace CCM
 
 @[inline]
-def run {α : Type} (x : CCM α) (c : CC) : MetaM (α × CC) := StateRefT'.run x c
+def run {α : Type} (x : CCM α) (c : CCStructure) : MetaM (α × CCStructure) := StateRefT'.run x c
 
 @[inline]
 def modifyState (f : CCState → CCState) : CCM Unit :=
@@ -1733,7 +1732,7 @@ def processAC : CCM Unit := do
           pushEq lhse rhse (.ofDExpr H)
 
     -- Orient
-    if lhs.cmp rhs == .lt then
+    if compare lhs rhs == .lt then
       H := .eqSymmOpt lhs rhs H
       (lhs, rhs) := (rhs, lhs)
 
@@ -1818,7 +1817,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
     if (← getState).config.values then return -- we treat values as atomic symbols
   else
     mkEntry e false gen
-    if (← getState).config.values && e.isValue then return -- we treat values as atomic symbols
+    if (← getState).config.values && isValue e then return -- we treat values as atomic symbols
   if let some (_, lhs, rhs) ← isSymmRelation e then
     internalizeCore lhs (some e) gen
     internalizeCore rhs (some e) gen
@@ -1827,7 +1826,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
     addSymmCongruenceTable e
   else if (← mkExtCongrTheorem e).isSome then
     let fn := e.getAppFn
-    let apps := e.getAppApps
+    let apps := getAppApps e
     guard (apps.size > 0)
     guard (apps.back == e)
     let mut pinfo : List ParamInfo := []
@@ -1906,8 +1905,6 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) (gen : Nat) : CCM
       if ← isProp e then
         mkEntry e false gen
     | .app _ _ | .lit _ => internalizeApp e gen
-    /- Porting note: `.proj` case is new in Lean4. We convert this to the `.app` of the
-       corresponsing projection function because cc is good at dealing with `.app`. -/
     | .proj sn i pe =>
       mkEntry e false gen
       let some fn := (getStructureFields (← getEnv) sn)[i]? | failure
@@ -2003,7 +2000,7 @@ partial def propagateImpUp (e : Expr) : CCM Unit := do
     pushEq e (.const ``True [])
       (mkApp3 (.const ``imp_eq_of_eq_true_right []) a b (← getEqTrueProof b))
   else if ← isEqFalse b then
-    if let (true, arg) := a.isNot then
+    if let (true, arg) := isNot a then
       if (← getState).config.em then
         -- `b = False → (Not a → b) = a`
         pushEq e arg
@@ -2444,8 +2441,8 @@ where
     if r₁.interpreted && r₂.interpreted then
       if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
         modifyState fun ccs => { ccs with inconsistent := true }
-      else if n₁.root.isNum && n₂.root.isNum then
-        valueInconsistency := n₁.root.toInt != n₂.root.toInt
+      else if isNum n₁.root && isNum n₂.root then
+        valueInconsistency := toInt n₁.root != toInt n₂.root
       else
         valueInconsistency := true
 
@@ -2587,7 +2584,7 @@ def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
 def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
   if (← getState).inconsistent then return
   modifyTodo fun _ => #[]
-  let (isNeg, p) := type.isNotOrNe
+  let (isNeg, p) := isNotOrNe type
   match p with
   | .app (.app (.app (.const ``Eq _) _) lhs) rhs =>
     if isNeg then
