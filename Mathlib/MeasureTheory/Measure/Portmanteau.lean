@@ -85,6 +85,151 @@ open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
 
+section EquivalentConditions
+
+/-! ### Portmanteau: the standard phrasings of the equivalent conditions
+
+To facilitate organization, this section gives a few standard phrasings of the various conditions
+whose equivalence is the statement of the portmanteau theorem.
+
+We fix a space `Ω` with a topology (later assumed to be pseudo-metrizable) and a sigma-algebra
+(later assumed to be at least as fine as the Borel sigma-algebra). We also fix an indexing
+type `ι` and a filter `L` on it (later assumed to be countably-generated and nontrivial), and
+a collection `Ps` of probability measures indexed by `ι` and a candidate limit probability
+measure `P` on `Ω`. For formalization purposes, it is convenient to occasionally consider the
+probability measures coerced to measures, so we also denote by `μs` a collection of measures
+indexed by `ι` and by `μ` a measure on `Ω`.
+
+Informally, the conditions are:
+
+  (L) The probability measures `Ps` converge weakly (i.e., in distribution) to `P`.
+
+  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` under the `Ps` is at most
+      its measure under `P`.
+
+  (O) For any open set `G` in `Ω` the liminf of the measures of `G` under the `Ps` is at least
+      its measure under `P`.
+
+  (B) For any Borel set `E` in `Ω` whose boundary `∂E` carries zero measure under `P`, the limit
+      of the measures of `E` under the `Ps` equals its measure under `P`.
+
+Variants of formal phrasings of these conditions are:
+-/
+
+variable {Ω ι : Type _} [TopologicalSpace Ω] [MeasurableSpace Ω] (L : Filter ι)
+variable (μ : Measure Ω) (μs : ι → Measure Ω)
+variable (P : ProbabilityMeasure Ω) (Ps : ι → ProbabilityMeasure Ω)
+
+namespace Portmanteau
+
+/-- The portmanteau condition (C): For any closed set `F`, the limsup of the measures of `F`
+under the `Ps` is at most its measure under `P`. -/
+private abbrev limsup_closed_le : Prop :=
+  ∀ (F : Set Ω), IsClosed F → L.limsup (fun i ↦ Ps i F) ≤ P F
+
+/-- The portmanteau condition (C'): For any closed set `F`, the limsup of the measures of `F`
+under the `μs` is at most its measure under `μ`. (This is meant to be applied to the coerctions
+of the probability measures to measures, the limsup is taken in `ℝ≥0∞`.) -/
+private abbrev limsup_closed_le' : Prop :=
+  ∀ (F : Set Ω), IsClosed F → L.limsup (fun i ↦ μs i F) ≤ μ F
+
+/-- The portmanteau condition (O): For any open set `G`, the liminf of the measures of `G`
+under the `Ps` is at least its measure under `P`. -/
+private abbrev le_liminf_open : Prop :=
+  ∀ (G : Set Ω), IsOpen G → P G ≤ L.liminf (fun i ↦ Ps i G)
+
+/-- The portmanteau condition (O'): For any open set `G`, the liminf of the measures of `G`
+under the `μs` is at least its measure under `μ`. (This is meant to be applied to the coerctions
+of the probability measures to measures, the liminf is taken in `ℝ≥0∞`.) -/
+private abbrev le_liminf_open' : Prop :=
+  ∀ (G : Set Ω), IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)
+
+/-- The portmanteau condition (B): For any Borel set `E` whose boundary `∂E` carries zero measure
+under `P`, the limit of the measures of `E` under the `Ps` equals its measure under `P`. -/
+private abbrev tendsto_measure_of_null_frontier : Prop :=
+  ∀ (E : Set Ω), MeasurableSet E → P (frontier E) = 0 → Tendsto (fun i ↦ Ps i E) L (𝓝 (P E))
+
+/-- The portmanteau condition (B'): For any Borel set `E` whose boundary `∂E` carries zero measure
+under `μ`, the limit of the measures of `E` under the `μs` equals its measure under `μ`. (This is
+meant to be applied to the coerctions of the probability measures to measures, the limit is taken
+in `ℝ≥0∞`.) -/
+private abbrev tendsto_measure_of_null_frontier' : Prop :=
+  ∀ (E : Set Ω), MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E))
+
+variable [OpensMeasurableSpace Ω]
+
+/-- The portmanteau condition (L): The probability measures `Ps` converge weakly
+(i.e., in distribution) to `P`. -/
+private abbrev tendsto_in_distribution := Tendsto Ps L (𝓝 P)
+
+lemma tendsto_probability_iff_tendsto_measure (E : Set Ω) :
+    Tendsto (fun i ↦ Ps i E) L (𝓝 (P E)) ↔
+      Tendsto (fun i ↦ (Ps i : Measure Ω) E) L (𝓝 ((P : Measure Ω) E)) := by
+  constructor <;> intro h
+  · convert (ENNReal.continuous_coe.tendsto _).comp h <;> simp
+  · convert (ENNReal.tendsto_toNNReal (show (P : Measure Ω) E ≠ ∞ from measure_ne_top P E)).comp h
+
+lemma limsup_probability_le_iff_limsup_measure_le [NeBot L] (F : Set Ω) :
+    L.limsup (fun i ↦ Ps i F) ≤ P F ↔
+      L.limsup (fun i ↦ (Ps i : Measure Ω) F) ≤ (P : Measure Ω) F := by
+  constructor <;> intro h
+  · apply ENNReal.le_of_forall_pos_le_add
+    intro ε ε_pos PF_lt_top
+    refine @limsup_le_of_le ℝ≥0∞ ι _ L (fun i ↦ (Ps i : Measure Ω) F) ((P : Measure Ω) F + ε) ?_ ?_
+    · exact isBounded_ge_of_bot.isCobounded_le
+    · have aux : P F < P F + ε := by simp [ε_pos]
+      --have := lt_of_le_of_lt h aux
+      have h' : L.limsup (fun i ↦ Ps i F) < P F + ε := lt_of_le_of_lt h aux
+      --filter_upwards [eventually_lt_of_limsup_lt h'] with i hi
+      have := @eventually_lt_of_limsup_lt ι ℝ≥0 L _ (fun i ↦ Ps i F) (P F + ε) h' ?_
+      swap
+      · simp only
+        use 1
+        simp only [eventually_map]
+        apply eventually_of_forall
+        intro i
+        have : (Ps i F) ≤ 1 := by sorry -- :facepalm:
+        exact this
+      filter_upwards [this] with i hi
+      simpa only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.coe_add]
+        using (@ENNReal.coe_le_coe (Ps i F) (P F + ε)).mpr hi.le
+  · apply _root_.le_of_forall_pos_le_add
+    intro ε ε_pos
+    refine @limsup_le_of_le ℝ≥0 ι _ L (fun i ↦ Ps i F) (P F + ε) ?_ ?_
+    · exact isBounded_ge_of_bot.isCobounded_le
+    · have aux : (P : Measure Ω) F < (P : Measure Ω) F + ε := by
+        convert (@ENNReal.add_lt_add_iff_left _ 0 ε _).mpr (by simp [ε_pos])
+        · simp only [add_zero]
+        · exact measure_ne_top P F
+      filter_upwards [eventually_lt_of_limsup_lt (lt_of_le_of_lt h aux)] with i hi
+      apply (@ENNReal.toNNReal_le_toNNReal (Ps i F) (P F + ε) ?_ ?_).mpr (by simp [hi.le]) <;>
+      simp [measure_ne_top]
+
+lemma le_liminf_probability_iff_le_liminf_measure (G : Set Ω) :
+    P G ≤ L.liminf (fun i ↦ Ps i G) ↔
+      (P : Measure Ω) G ≤ L.liminf (fun i ↦ (Ps i : Measure Ω) G) := by
+  constructor <;> intro h
+  · sorry
+  · apply _root_.le_of_forall_pos_le_add
+    intro ε ε_pos
+    refine @limsup_le_of_le ℝ≥0 ι _ L (fun i ↦ μs i F) (μ F + ε) ?_ ?_
+    · exact isBounded_ge_of_bot.isCobounded_le
+    · have aux : (μ : Measure α) F < (μ : Measure α) F + ε := by
+        convert (@ENNReal.add_lt_add_iff_left _ 0 ε _).mpr (by simp [ε_pos])
+        · simp only [add_zero]
+        · exact measure_ne_top μ F
+      filter_upwards [eventually_lt_of_limsup_lt (lt_of_le_of_lt key aux)] with i hi
+      apply (@ENNReal.toNNReal_le_toNNReal (μs i F) (μ F + ε) ?_ ?_).mpr (by simp [hi.le]) <;>
+      simp [measure_ne_top]
+    sorry
+
+--lemma le_liminf_open_iff_le_liminf_open' {G : Set Ω} :
+--  le_liminf_open
+
+end Portmanteau
+
+end EquivalentConditions
+
 section LimsupClosedLEAndLELiminfOpen
 
 /-! ### Portmanteau: limsup condition for closed sets iff liminf condition for open sets
