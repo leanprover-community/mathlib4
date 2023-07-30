@@ -92,10 +92,6 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 
 #align list.eq_or_ne_mem_of_mem List.eq_or_ne_mem_of_mem
 
--- porting note: from init.data.list.lemmas
-alias mem_cons ↔ eq_or_mem_of_mem_cons _
-#align list.eq_or_mem_of_mem_cons List.eq_or_mem_of_mem_cons
-
 #align list.not_mem_append List.not_mem_append
 
 #align list.ne_nil_of_mem List.ne_nil_of_mem
@@ -221,11 +217,6 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 #align list.length_eq_three List.length_eq_three
 
--- Porting note: Lean 3 core library had the name length_le_of_sublist
--- and data.list.basic the command `alias length_le_of_sublist ← sublist.length_le`,
--- but Std has the name Sublist.length_le instead.
-alias Sublist.length_le ← length_le_of_sublist
-#align list.length_le_of_sublist List.length_le_of_sublist
 #align list.sublist.length_le List.Sublist.length_le
 
 /-! ### set-theoretic notation of lists -/
@@ -3321,18 +3312,6 @@ theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
 end Lookmap
 
 /-! ### filter -/
--- Porting note: These lemmas are from Lean3 core
-
-#align list.filter_nil List.filter_nil
-
-#align list.filter_cons_of_pos List.filter_cons_of_pos
-
-#align list.filter_cons_of_neg List.filter_cons_of_neg
-
-#align list.filter_append List.filter_append
-
-#align list.filter_sublist List.filter_sublist
-
 /-! ### filterMap -/
 
 #align list.filter_map_nil List.filterMap_nil
