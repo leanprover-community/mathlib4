@@ -286,6 +286,19 @@ theorem bases_empty (h : ∅ ∈ G.bases s) :
   exact card_eq_zero.mp (bases_card_eq h h₁).symm
 
 @[simp]
+theorem bases_of_empty : G.bases ∅ = {∅} := by
+  ext t; constructor <;> intro h
+  . rw [Finset.mem_singleton]
+    simp only [bases, not_mem_empty, system_feasible_set_mem_mem, IsEmpty.forall_iff,
+      implies_true, and_true, Finset.mem_filter] at h
+    exact subset_empty.mp h.2
+  . rw [Finset.mem_singleton] at h
+    rw [h]
+    simp only [bases, not_mem_empty, system_feasible_set_mem_mem, IsEmpty.forall_iff,
+      implies_true, and_true, Finset.mem_filter, Finset.Subset.refl]
+    exact G.containsEmpty
+
+@[simp]
 theorem bases_empty_iff :
     ∅ ∈ G.bases s ↔ G.bases s = {∅} :=
   ⟨bases_empty, by simp_all⟩
@@ -355,6 +368,12 @@ theorem bases_of_feasible_eq_singleton (hs : s ∈ G) : G.bases s = {s} := by
   . rw [Finset.mem_singleton] at h
     rw [mem_bases_self_iff] at hs
     exact h ▸ hs
+
+theorem exists_subset_basis_of_subset_bases
+  {s₁ b₁ : Finset α} (h₁ : b₁ ∈ G.bases s₁)
+  {s₂ : Finset α} (h₂ : s₁ ⊆ s₂) :
+    ∃ b₂ ∈ G.bases s₂, b₁ ⊆ b₂ := by
+  sorry
 
 end Bases
 
@@ -576,68 +595,6 @@ def greedoidRankAxioms (r : Finset α → ℕ) :=
   (r ∅ = 0) ∧ (∀ {s}, r s ≤ s.card) ∧ (∀ {s t}, s ⊆ t → r s ≤ r t) ∧
   (∀ {s x y}, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
 
-
-set_option linter.unusedVariables false in
-protected def rank.toGreedoid' (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Finset (Finset α) :=
-  univ.filter fun s => r s = s.card
-
-theorem rank_toGreedoid'_greedoidRankAxioms_accessibleProperty
-  {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
-    _root_.accessibleProperty (rank.toGreedoid' r hr) := by
-  simp only [_root_.accessibleProperty, rank.toGreedoid', mem_univ, Finset.mem_filter, true_and]
-  intro s hs₁ hs₂
-  sorry
-
-theorem rank_toGreedoid'_greedoidRankAxioms_exchangeProperty
-  {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
-    _root_.exchangeProperty (rank.toGreedoid' r hr) := by
-  simp only [_root_.exchangeProperty, rank.toGreedoid', mem_univ, Finset.mem_filter, true_and,
-    mem_sdiff]
-  intro s₁ hs₁ s₂ hs₂ hs
-  sorry
-
-/-- Rank function satisfying `greedoidRankAxioms` generates a unique greedoid. -/
-protected def rank.toGreedoid (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Greedoid α :=
-  ⟨univ.filter fun s => r s = s.card, by
-    simp only [mem_univ, Finset.mem_filter, hr.1, card_empty], by
-    have := @rank_toGreedoid'_greedoidRankAxioms_accessibleProperty _ _ _ _ hr
-    simp only [rank.toGreedoid'] at this; simp only [this], by
-    have := @rank_toGreedoid'_greedoidRankAxioms_exchangeProperty _ _ _ _ hr
-    simp only [rank.toGreedoid'] at this; simp only [this]⟩
-
-theorem greedoidRankAxioms_unique_greedoid {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
-    ∃! G : Greedoid α, G.rank = r := by
-  exists rank.toGreedoid r hr
-  simp only [rank.toGreedoid, mem_univ, forall_true_left]
-  constructor
-  . ext s
-    simp only [rank]
-    apply Nat.le_antisymm
-    . simp only [mem_univ, forall_true_left, Finset.mem_filter, true_and, WithBot.unbot_le_iff]
-      apply Finset.max_le
-      intro a ha
-      rw [WithBot.coe_le_coe]
-      simp only [mem_univ, forall_true_left, Finset.mem_filter, true_and, mem_image] at ha
-      let ⟨b, ⟨hb₁, hb₂⟩, hb₃⟩ := ha
-      rw [← hb₃, ← hb₁]
-      exact hr.2.2.1 hb₂
-    . simp only [mem_univ, forall_true_left, Finset.mem_filter, true_and, WithBot.le_unbot_iff]
-      apply Finset.le_max
-      simp only [mem_univ, forall_true_left, Finset.mem_filter, true_and, mem_image]
-      sorry
-  . intro G' hG'
-    apply Greedoid.eq_of_veq
-    simp only [mem_univ, forall_true_left]
-    ext x; constructor <;> intro h
-    . simp [← hG', system_feasible_set_mem_mem.mp h]
-    . simp only [system_feasible_set_mem_mem, Finset.mem_filter, mem_univ, true_and] at *
-      rw [← hG', rank_eq_card_iff_feasible] at h
-      exact h
-
--- /-- Rank function satisfying `greedoidRankAxioms` generates a unique greedoid. -/
--- protected def rank.toGreedoid (r : Finset α → ℕ) (hr : greedoidRankAxioms r) : Greedoid α :=
---   Fintype.choose (fun G => G.rank = r) (greedoidRankAxioms_unique_greedoid hr)
-
 end rank
 
 /-- Closure of `s` is the largest set which contains `s` and have the same rank with `s`. -/
@@ -683,11 +640,14 @@ theorem self_subset_closure : s ⊆ G.closure s := by
   intro x hx
   simp only [mem_closure, insert_eq_of_mem hx]
 
-theorem closure_subset_of_subset (h : s ⊆ t) :
-    G.closure s ⊆ G.closure t := by
+theorem closure_subset_of_subset (h : s ⊆ t) : G.closure s ⊆ G.closure t := by
   intro x hx
   rw [mem_closure] at *
-  sorry
+  apply Nat.le_antisymm _ (rank_le_of_subset _)
+  . sorry
+  . intro _ h
+    have := sdiff_insert_insert_of_mem_of_not_mem h (not_mem_empty _)
+    simp_all only [Finset.mem_singleton, mem_insert, or_true]
 
 @[simp]
 theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.rank s := by
@@ -724,6 +684,25 @@ decreasing_by
   rw [← Nat.sub_sub]
   exact Nat.sub_lt (tsub_pos_iff_lt.mpr (card_lt_univ_of_not_mem hx.2)) (by decide)
 
+theorem closure_unique_largest_superset
+  (ht₁ : s ⊆ t) (ht₂ : G.rank s = G.rank t) (ht₃ : ∀ x, G.rank s = G.rank (insert x t) → x ∈ t) :
+    t = G.closure s := by
+  apply subset_antisymm
+  . intro x hx
+    rw [mem_closure]
+    have h₁ : G.rank s ≤ G.rank (insert x s) := rank_le_of_subset (subset_insert x s)
+    have h₂ : G.rank (insert x s) ≤ G.rank t := by
+      apply rank_le_of_subset
+      intro _ hy
+      exact (mem_insert.mp hy).elim (fun h => h ▸ hx) (fun h => ht₁ h)
+    rw [← ht₂] at h₂
+    exact Nat.le_antisymm h₂ h₁
+  . intro x hx
+    rw [mem_closure] at hx
+    apply ht₃
+    rw [ht₂]
+    sorry
+
 theorem feasible_iff_elem_notin_closure_minus_elem :
     s ∈ G ↔ ∀ x ∈ s, x ∉ G.closure (s \ {x}) := by
   constructor <;> intro h
@@ -737,10 +716,43 @@ theorem feasible_iff_elem_notin_closure_minus_elem :
     have : s.card - 1 < s.card := sub_lt (card_pos.mpr ⟨x, hx⟩) (by decide)
     rw [lt_iff_not_ge] at this
     exact this h₃
-  . sorry
+  . by_contra' h'
+    have ⟨b, hb₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+    have ⟨y, hy₁, hy₂⟩ : ∃ y ∈ s, y ∉ b := by
+      by_contra' h'
+      rw [subset_antisymm (basis_subset hb₁) h', ← mem_bases_self_iff] at hb₁
+      contradiction
+    apply h y hy₁
+    rw [mem_closure]
+    have : insert y (s \ {y}) = s := by
+      ext x; constructor <;> intro h <;>
+        simp only [mem_sdiff, Finset.mem_singleton, mem_insert] at *
+      . exact h.elim (fun h => h ▸ hy₁) (fun h => h.1)
+      . by_cases h₁ : x = y
+        . simp only [h₁, true_or]
+        . simp only [h, h₁]
+    rw [this]
+    apply Nat.le_antisymm _ (rank_le_of_subset (sdiff_subset _ _))
+    rw [rank_eq_bases_card hb₁, ← rank_of_feasible (basis_mem_feasible hb₁)]
+    apply rank_le_of_subset
+    intro z hz
+    simp only [mem_sdiff, Finset.mem_singleton]
+    apply And.intro (basis_subset hb₁ hz)
+    exact fun h => hy₂ (h ▸ hz)
 
 theorem closure_eq_of_subset_adj_closure (hst : s ⊆ G.closure t) (hts : t ⊆ G.closure s) :
-    G.closure s = G.closure t := sorry
+    G.closure s = G.closure t := by
+  have h₁ : G.rank s ≤ G.rank t := by
+    have := G.rank_le_of_subset hst
+    rw [rank_closure_eq_rank_self] at this
+    exact this
+  have h₂ : G.rank t ≤ G.rank s := by
+    have := G.rank_le_of_subset hts
+    rw [rank_closure_eq_rank_self] at this
+    exact this
+  apply subset_antisymm
+  . sorry
+  . sorry
 
 theorem closure_idempotent : G.closure (G.closure s) = G.closure s :=
   closure_eq_of_subset_adj_closure Subset.rfl
