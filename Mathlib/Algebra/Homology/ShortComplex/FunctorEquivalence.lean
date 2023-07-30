@@ -26,18 +26,18 @@ namespace FunctorEquivalence
 
 attribute [local simp] ShortComplex.Hom.comm₁₂ ShortComplex.Hom.comm₂₃
 
-/-- The obvious functor `(ShortComplex (J ⥤ C)) ⥤ (J ⥤ ShortComplex C)`. -/
+/-- The obvious functor `ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C`. -/
 @[simps]
-def functor : (ShortComplex (J ⥤ C)) ⥤ (J ⥤ ShortComplex C) where
+def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
   obj S :=
     { obj := fun j => S.map ((evaluation J C).obj j)
       map := fun f => S.mapNatTrans ((evaluation J C).map f) }
   map φ :=
     { app := fun j => ((evaluation J C).obj j).mapShortComplex.map φ }
 
-/-- The obvious functor `(J ⥤ ShortComplex C) ⥤ (ShortComplex (J ⥤ C))`. -/
+/-- The obvious functor `(J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C)`. -/
 @[simps]
-def inverse : (J ⥤ ShortComplex C) ⥤ (ShortComplex (J ⥤ C)) where
+def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
   obj F :=
     { f := whiskerLeft F π₁Toπ₂
       g := whiskerLeft F π₂Toπ₃
@@ -46,7 +46,7 @@ def inverse : (J ⥤ ShortComplex C) ⥤ (ShortComplex (J ⥤ C)) where
     (by aesop_cat) (by aesop_cat)
 
 /-- The unit isomorphism of the equivalence
-`ShortComplex.functorEquivalence : (ShortComplex (J ⥤ C)) ≌ (J ⥤ ShortComplex C)`. -/
+`ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps!]
 def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
   NatIso.ofComponents (fun _ => isoMk
@@ -56,7 +56,7 @@ def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
     (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
 /-- The counit isomorphism of the equivalence
-`ShortComplex.functorEquivalence : (ShortComplex (J ⥤ C)) ≌ (J ⥤ ShortComplex C)`. -/
+`ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps!]
 def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _:=
   NatIso.ofComponents (fun _ => NatIso.ofComponents
@@ -65,9 +65,9 @@ def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _:=
 
 end FunctorEquivalence
 
-/-- The obvious equivalence `(ShortComplex (J ⥤ C)) ≌ (J ⥤ ShortComplex C)`. -/
+/-- The obvious equivalence `ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps]
-def functorEquivalence : (ShortComplex (J ⥤ C)) ≌ (J ⥤ ShortComplex C) where
+def functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C where
   functor := FunctorEquivalence.functor J C
   inverse := FunctorEquivalence.inverse J C
   unitIso := FunctorEquivalence.unitIso J C
