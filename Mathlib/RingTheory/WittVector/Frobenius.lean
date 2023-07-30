@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.Perfect
 
 #align_import ring_theory.witt_vector.frobenius from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
