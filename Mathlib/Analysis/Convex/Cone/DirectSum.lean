@@ -2,11 +2,11 @@ import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.DirectSum.Module
 
-structure PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
+structure PointedCone [OrderedSemiring 𝕜] [Nontrivial 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
   extends ConvexCone 𝕜 E where
   is_pointed' : 0 ∈ carrier
 
-namespace PointedCone
+namespace ConvexCone.Pointed
 
 variable {𝕜} [OrderedSemiring 𝕜] [Nontrivial 𝕜]
 
@@ -23,6 +23,9 @@ variable {S} {S : ConvexCone 𝕜 E} [hS : Fact S.Pointed]
 
 @[simp]
 theorem mem_zero : (0 ∈ S) := hS.elim
+
+instance : Zero S where
+  zero := ⟨0, by simp⟩
 
 instance hasSmul : SMul 𝕜≥0 S where
   smul := fun ⟨c, hc⟩ ⟨x, hx⟩ => ⟨c • x, by
@@ -106,4 +109,4 @@ def DirectSum : ConvexCone 𝕜 (⨁ (i : ι), E i) :=
 
 end DirectSum
 
-end PointedCone
+end ConvexCone.Pointed
