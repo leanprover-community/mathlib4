@@ -18,7 +18,7 @@ Using `compute_degree` when the goal is of one of the five forms
 *  `degree f ≤ d`,
 *  `natDegree f = d`,
 *  `degree f = d`,
-*  `coeff f n = r`,
+*  `coeff f n = r`, if `n` is the degree of `f`,
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
