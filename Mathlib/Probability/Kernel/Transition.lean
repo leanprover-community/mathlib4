@@ -75,7 +75,7 @@ lemma kernel.compProd_zero_right [MeasurableSpace α] [MeasurableSpace β]
   · ext a s hs
     rw [kernel.compProd_apply _ _ _ hs]
     simp
-  · rw [kernel.compProd_undef_left _ _ h]
+  · rw [kernel.compProd_of_not_isSFiniteKernel_left _ _ h]
 
 @[simp]
 lemma kernel.compProd_zero_left [MeasurableSpace α] [MeasurableSpace β]
@@ -85,7 +85,7 @@ lemma kernel.compProd_zero_left [MeasurableSpace α] [MeasurableSpace β]
   · ext a s hs
     rw [kernel.compProd_apply _ _ _ hs]
     simp
-  · rw [kernel.compProd_undef_right _ _ h]
+  · rw [kernel.compProd_of_not_isSFiniteKernel_right _ _ h]
 
 @[simp]
 lemma kernel.map_zero_left (α : Type _) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
@@ -201,7 +201,7 @@ lemma compProd_zero_left (i : ι) (κ : kernel (M.node j) (M.path j k)) :
 lemma compProd_undef_left (κ : kernel (M.node i) (M.path i j))
     (η : kernel (M.node j) (M.path j k)) (hij : i < j) (hjk : j < k) (h : ¬ IsSFiniteKernel κ) :
     (κ ⊗ₖ[M] η) = 0 := by
-  rw [compProd_eq _ _ _ hij hjk, kernel.compProd_undef_left _ _ h]
+  rw [compProd_eq _ _ _ hij hjk, kernel.compProd_of_not_isSFiniteKernel_left _ _ h]
   simp
 
 lemma compProd_assoc (κ : kernel (M.node i) (M.path i j))
