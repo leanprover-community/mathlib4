@@ -191,10 +191,10 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
         fun n => by erw [← f.map_pow, Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p]⟩
       map_one' := ext fun n => (congr_arg f <| RingHom.iterate_map_one _ _).trans f.map_one
       map_mul' := fun x y =>
-        ext fun n => (congr_arg f <| RingHom.iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
+        ext fun n => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
       map_zero' := ext fun n => (congr_arg f <| RingHom.iterate_map_zero _ _).trans f.map_zero
       map_add' := fun x y =>
-        ext fun n => (congr_arg f <| RingHom.iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
+        ext fun n => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
   left_inv f := RingHom.ext fun r => rfl
   right_inv f := RingHom.ext fun r => ext fun n =>

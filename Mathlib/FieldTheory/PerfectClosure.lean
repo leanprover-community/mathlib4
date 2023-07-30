@@ -11,13 +11,6 @@ import Mathlib.FieldTheory.Perfect
 # The perfect closure of a field
 -/
 
--- TODO Replace the other `iterate_map_mul`s and `iterate_map_add`s with this
-@[to_additive]
-theorem iterate_map_mul {M F : Type _} [Monoid M]
-    (f : F) (n : ℕ) (x y : M) [MulHomClass F M M] :
-    f^[n] (x * y) = f^[n] x * f^[n] y :=
-  Function.Semiconj₂.iterate (map_mul f) n x y
-
 universe u v
 
 open Function
@@ -127,7 +120,7 @@ instance : CommMonoid (PerfectClosure K p) :=
           Quot.inductionOn g fun ⟨s, z⟩ => by
             simp only [quot_mk_eq_mk, mk_mul_mk] -- Porting note: added this line
             apply congr_arg (Quot.mk _)
-            simp only [add_assoc, mul_assoc, RingHom.iterate_map_mul, ← iterate_add_apply,
+            simp only [add_assoc, mul_assoc, iterate_map_mul, ← iterate_add_apply,
               add_comm, add_left_comm]
     one := mk K p (0, 1)
     one_mul := fun e =>
@@ -239,7 +232,7 @@ instance PerfectClosure.addCommGroup : AddCommGroup (PerfectClosure K p) :=
           Quot.inductionOn g fun ⟨s, z⟩ => by
             simp only [quot_mk_eq_mk, mk_add_mk] -- Porting note: added this line
             apply congr_arg (Quot.mk _)
-            simp only [RingHom.iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
+            simp only [iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
     zero := 0
     zero_add := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
@@ -276,7 +269,7 @@ instance PerfectClosure.commRing : CommRing (PerfectClosure K p) :=
             simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk] -- Porting note: added this line
             simp only [add_assoc, add_comm, add_left_comm]
             apply R.sound
-            simp only [RingHom.iterate_map_mul, RingHom.iterate_map_add, ← iterate_add_apply,
+            simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               mul_add, add_comm, add_left_comm]
     right_distrib := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
@@ -285,7 +278,7 @@ instance PerfectClosure.commRing : CommRing (PerfectClosure K p) :=
             simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk] -- Porting note: added this line
             simp only [add_assoc, add_comm _ s, add_left_comm _ s]
             apply R.sound
-            simp only [RingHom.iterate_map_mul, RingHom.iterate_map_add, ← iterate_add_apply,
+            simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               add_mul, add_comm, add_left_comm] }
 
 theorem eq_iff' (x y : ℕ × K) :
@@ -357,7 +350,7 @@ theorem frobenius_mk (x : ℕ × K) :
     rw [pow_succ, ih]
     symm
     apply R.sound
-    simp only [pow_succ, (frobenius _ _).iterate_map_mul]
+    simp only [pow_succ, iterate_map_mul]
 #align perfect_closure.frobenius_mk PerfectClosure.frobenius_mk
 
 /-- Embedding of `K` into `PerfectClosure K p` -/
@@ -411,7 +404,7 @@ instance : DivisionRing (PerfectClosure K p) :=
         rw [mk_inv, mk_mul_mk]
         refine (eq_iff K p _ _).2 ?_
         simp only [(frobenius _ _).iterate_map_one, (frobenius K p).iterate_map_zero,
-            iterate_zero_apply, ← (frobenius _ p).iterate_map_mul] at this ⊢
+            iterate_zero_apply, ← iterate_map_mul] at this ⊢
         rw [mul_inv_cancel this, (frobenius _ _).iterate_map_one]
     inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero]) }
 

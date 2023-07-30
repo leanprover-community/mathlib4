@@ -163,7 +163,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem iterate_derivative_add {f g : R[X]} {k : ℕ} :
     derivative^[k] (f + g) = derivative^[k] f + derivative^[k] g :=
-  derivative.toAddMonoidHom.iterate_map_add _ _ _
+  iterate_map_add _ _ _ _
 #align polynomial.iterate_derivative_add Polynomial.iterate_derivative_add
 
 --Porting note: removed `simp`: `simp` can prove it.
