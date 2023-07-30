@@ -12,13 +12,16 @@ In this file we prove basic theorems about `𝓝ˢ s`,
 where `s` is one of the intervals
 `Set.Ici`, `Set.Iic`, `Set.Ioi`, `Set.Iio`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`, and `Set.Icc`.
 
-First, we prove lemmas in terms of filter equalities,
-then we prove lemmas about `s ∈ 𝓝ˢ t`, where both `s` and `t` are intervals.
+First, we prove lemmas in terms of filter equalities.
+Then we prove lemmas about `s ∈ 𝓝ˢ t`, where both `s` and `t` are intervals.
+Finally, we prove a few lemmas about filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`.
 -/
 
 
 open Set Filter OrderDual
 open scoped Topology
+
+section OrderClosedTopology
 
 variable {α : Type _} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
 
@@ -154,3 +157,43 @@ theorem Ioc_mem_nhdsSet_Ioc (h : a ≤ b) (h' : c < d) : Ioc a d ∈ 𝓝ˢ (Ioc
 
 theorem Ico_mem_nhdsSet_Ioc (h : a ≤ b) (h' : c < d) : Ico a d ∈ 𝓝ˢ (Ioc b c) :=
   inter_mem (Ici_mem_nhdsSet_Ioc h) (Iio_mem_nhdsSet_Ioc h')
+
+end OrderClosedTopology
+
+/-!
+### Filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`
+-/
+
+variable {α : Type _} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+
+theorem hasBasis_nhdsSet_Iic_Iio (a : α) [h : Nonempty (Ioi a)] :
+    HasBasis (𝓝ˢ (Iic a)) (a < ·) Iio := by
+  refine ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨b, hab, hb⟩ ↦ mem_of_superset (Iio_mem_nhdsSet_Iic hab) hb⟩⟩
+  rw [nhdsSet_Iic, mem_sup, mem_principal] at hs
+  rcases exists_Ico_subset_of_mem_nhds hs.1 (Set.nonempty_coe_sort.1 h) with ⟨b, hab, hbs⟩
+  exact ⟨b, hab, Iio_subset_Iio_union_Ico.trans (union_subset hs.2 hbs)⟩
+
+theorem hasBasis_nhdsSet_Iic_Iic (a : α) [NeBot (𝓝[>] a)] :
+    HasBasis (𝓝ˢ (Iic a)) (a < ·) Iic := by
+  have : Nonempty (Ioi a) :=
+    (Filter.nonempty_of_mem (self_mem_nhdsWithin : Ioi a ∈ 𝓝[>] a)).to_subtype
+  refine (hasBasis_nhdsSet_Iic_Iio _).to_hasBasis
+    (fun c hc ↦ ?_) (fun _ h ↦ ⟨_, h, Iio_subset_Iic_self⟩)
+  simpa only [Iic_subset_Iio] using (Filter.nonempty_of_mem <| Ioo_mem_nhdsWithin_Ioi' hc)
+
+@[simp]
+theorem Iic_mem_nhdsSet_Iic_iff {a b : α} [NeBot (𝓝[>] b)] : Iic a ∈ 𝓝ˢ (Iic b) ↔ b < a :=
+  (hasBasis_nhdsSet_Iic_Iic b).mem_iff.trans
+    ⟨fun ⟨_c, hbc, hca⟩ ↦ hbc.trans_le (Iic_subset_Iic.1 hca), fun h ↦ ⟨_, h, Subset.rfl⟩⟩
+
+theorem hasBasis_nhdsSet_Ici_Ioi (a : α) [Nonempty (Iio a)] :
+    HasBasis (𝓝ˢ (Ici a)) (· < a) Ioi :=
+  have : Nonempty (Ioi (toDual a)) := ‹_›; hasBasis_nhdsSet_Iic_Iio (toDual a)
+
+theorem hasBasis_nhdsSet_Ici_Ici (a : α) [NeBot (𝓝[<] a)] :
+    HasBasis (𝓝ˢ (Ici a)) (· < a) Ici :=
+  have : NeBot (𝓝[>] (toDual a)) := ‹_›; hasBasis_nhdsSet_Iic_Iic (toDual a)
+
+@[simp]
+theorem Ici_mem_nhdsSet_Ici_iff {a b : α} [NeBot (𝓝[<] b)] : Ici a ∈ 𝓝ˢ (Ici b) ↔ a < b :=
+  have : NeBot (𝓝[>] (toDual b)) := ‹_›; Iic_mem_nhdsSet_Iic_iff (a := toDual a) (b := toDual b)
