@@ -42,7 +42,7 @@ Analogous results are also provided for `SheafedSpace` and `LocallyRingedSpace`.
 Almost the whole file is dedicated to showing tht `ι i` is an open immersion. The fact that
 this is an open embedding of topological spaces follows from `Mathlib/Topology/Gluing.lean`, and it
 remains to construct `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, ι i '' U)` for each `U ⊆ U i`.
-Since `Γ(𝒪_X, ι i '' U)` is the the limit of `diagram_over_open`, the components of the structure
+Since `Γ(𝒪_X, ι i '' U)` is the limit of `diagram_over_open`, the components of the structure
 sheafs of the spaces in the gluing diagram, we need to construct a map
 `ιInvApp_π_app : Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing diagram.
 

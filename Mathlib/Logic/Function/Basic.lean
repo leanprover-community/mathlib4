@@ -271,19 +271,18 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
-  | h => let ⟨D, e⟩ := h (λ a => ¬ f a a)
-        (@iff_not_self (f D D)) $ iff_of_eq (congr_fun e D)
+  | h => let ⟨D, e⟩ := h {a | ¬ f a a}
+        @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
 #align function.cantor_surjective Function.cantor_surjective
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
 theorem cantor_injective {α : Type _} (f : Set α → α) : ¬Injective f
-  | i => cantor_surjective (λ a b => ∀ U, a = f U → U b) $
-        RightInverse.surjective
-          (λ U => funext $ λ _a => propext ⟨λ h => h U rfl, λ h' _U e => i e ▸ h'⟩)
+  | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
+         RightInverse.surjective (λ U => Set.ext <| fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
 
-/-- There is no surjection from `α : Type u` into `Type u`. This theorem
+/-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
   demonstrates why `Type : Type` would be inconsistent in Lean. -/
 theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
   intro hf
