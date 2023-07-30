@@ -827,22 +827,22 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 
-instance toStarOrderedRing : StarOrderedRing K := by
-  apply StarOrderedRing.ofNonnegIff'
-  · intros x y hxy z
-    rw [IsROrC.le_iff_re_im] at *
-    simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy
-  · intro x
-    rw [IsROrC.le_iff_re_im, map_zero, map_zero, IsROrC.star_def, eq_comm]
-    constructor
-    · intro hx
-      use (Real.sqrt (IsROrC.re x))
-      rw [IsROrC.conj_ofReal, ← IsROrC.ofReal_mul, Real.mul_self_sqrt hx.1, IsROrC.ext_iff,
-        IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, true_and, hx.2]
-    · simp only [IsROrC.star_def, IsROrC.conj_mul, forall_exists_index]
-      intro y hy
-      rw [hy, IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
-      apply IsROrC.normSq_nonneg
+instance toStarOrderedRing : StarOrderedRing K :=
+  StarOrderedRing.ofNonnegIff'
+    (h_add := fun {x y} hxy z => by
+      rw [IsROrC.le_iff_re_im] at *
+      simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
+    (h_nonneg_iff := fun x => by
+      rw [IsROrC.le_iff_re_im, map_zero, map_zero, IsROrC.star_def, eq_comm]
+      constructor
+      · rintro ⟨hr, hi⟩
+        refine ⟨Real.sqrt (IsROrC.re x), ?_⟩
+        have := (IsROrC.is_real_TFAE x).out 2 3
+        rw [IsROrC.conj_ofReal, ← IsROrC.ofReal_mul, Real.mul_self_sqrt hr, eq_comm, this, hi]
+      · rintro ⟨s, rfl⟩
+        simp only [IsROrC.star_def, IsROrC.conj_mul]
+        rw [IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
+        apply IsROrC.normSq_nonneg)
 
 end Instances
 
