@@ -4595,108 +4595,195 @@ lemma eFin_apply {a : WithTop I} (ha : a ∈ J) :
   intro x
   exact congr_fun (eFin C J ha) x
 
+lemma Products.evalFacFin {l : Products (WithTop I)}
+    (h : ∀ a, a ∈ l.val → a ∈ J) :
+    l.eval (ResFin C J) ∘ ResFinSubset C J = l.eval C := by
+  ext x
+  dsimp [ResFinSubset]
+  rw [Products.eval_eq, Products.eval_eq]
+  split_ifs with h₁ h₂ h₂
+  · rfl
+  · exfalso
+    apply h₂
+    intro i hi
+    rw [← h₁ i hi]
+    dsimp [ProjFin]
+    split_ifs with h'
+    · rfl
+    · exfalso
+      exact h' (h i hi)
+  · exfalso
+    apply h₁
+    intro i hi
+    rw [← h₂ i hi]
+    dsimp [ProjFin]
+    split_ifs with h'
+    · rfl
+    · exfalso
+      exact h' (h i hi)
+  · rfl
 
--- lemma Products.evalFacFin {l : Products (WithTop I)}
---     (hlhead : l.val ≠ [] → (l.val.head!) ∈ J) :
---     l.eval (ResFin C J) ∘ ResFinSubset C J = l.eval C := by
---   obtain ⟨l, hl⟩ := l
---   induction l with
---   | nil => rfl
---   | cons a as ih =>
---     · ext ⟨f, hf⟩
---       rw [evalCons (ResFin C J) hl]
---       rw [evalCons C hl]
---       dsimp
---       specialize hlhead (List.cons_ne_nil a as)
---       dsimp at hlhead
---       rw [eFin_apply C J hlhead]
---       specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
---       dsimp at ih
---       congr! 1
---       by_cases has : as = []
---       · simp_rw [has]
---         rfl
---       · have : List.head! as ∈ J
---         · rw [← List.cons_head!_tail has] at hl
---           refine' lt_trans _ hlhead
---           dsimp [ord]
---           simp only [Ordinal.typein_lt_typein]
---           have := List.Chain'.rel_head hl
---           simp only [gt_iff_lt] at this
---           exact this
---         exact congr_fun (ih (fun _ ↦ this)) _
+lemma Products.mem_J_of_isGood {l : Products (WithTop I)}
+    (h : l.isGood (ResFin C J)) : ∀ a, a ∈ l.val → a ∈ J := by
+  intro i hi
+  by_contra h'
+  apply h
+  suffices : eval (ResFin C J) l = 0
+  · rw [this]
+    exact Submodule.zero_mem _
+  ext x
+  rw [eval_eq]
+  split_ifs with h
+  · exfalso
+    apply h'
+    specialize h i hi
+    obtain ⟨y, hy⟩ := x.prop
+    rw [← hy.2] at h
+    simp only [ProjFin, Bool.ite_eq_true_distrib, if_false_right_eq_and] at h
+    exact h.1
+  · rfl
 
--- lemma Products.head_lt_ord_of_isGood {l : Products (WithTop I)} {o : Ordinal}
---     (h : l.isGood (Res C o)) : l.val ≠ [] → ord I (l.val.head!) < o := by
---   intro hn
---   by_contra h'
---   apply h
---   obtain ⟨l,hl⟩ := l
---   dsimp at hn
---   have hl' : List.Chain' (·>·) (l.head! :: l.tail)
---   · rw [List.cons_head!_tail hn]
---     exact hl
---   have : (⟨l,hl⟩ : Products (WithTop I)) = ⟨l.head! :: l.tail, hl'⟩
---   · simp_rw [List.cons_head!_tail hn]
---   rw [this, evalCons (Res C o) hl']
---   have eZero : e (Res C o) (List.head! l) = 0
---   · dsimp [e]
---     ext ⟨f,hf⟩
---     dsimp [BoolToZ]
---     dsimp [Res, ProjOrd] at hf
---     obtain ⟨g, hg⟩ := hf
---     rw [← hg.2]
---     split_ifs
---     · exfalso
---       assumption
---     · rfl
---     · exfalso
---       assumption
---     · rfl
---   rw [eZero]
---   simp only [zero_mul, Submodule.zero_mem]
+lemma Products.goodEvalFacFin {l : Products (WithTop I)}
+    (hl : l.isGood (ResFin C J)) : l.eval (ResFin C J) ∘ ResFinSubset C J = l.eval C :=
+  evalFacFin C J (mem_J_of_isGood C J hl)
 
--- lemma Products.goodEvalFac {l : Products (WithTop I)} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
---     (hl : l.isGood (Res C o₁)) : l.eval (Res C o₁) ∘ ResOnSubsets C h = l.eval (Res C o₂) :=
---   evalFac C h (head_lt_ord_of_isGood C hl)
-
--- lemma Products.goodEvalFacC {l : Products (WithTop I)} {o : Ordinal}
---     (hl : l.isGood (Res C o)) : l.eval (Res C o) ∘ ResOnSubset C o = l.eval C :=
---   evalFacC C (head_lt_ord_of_isGood C hl)
-
--- lemma Products.eval_comapFac {l : Products (WithTop I)} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
---     (hl : l.isGood (Res C o₁)) :
---     LocallyConstant.comap (ResOnSubsets C h) (l.eval (Res C o₁)) = l.eval (Res C o₂) := by
---   ext f
---   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubsets _ _)]
---   exact congr_fun (goodEvalFac C h hl) _
-
--- lemma Products.eval_comapFacC {l : Products (WithTop I)} {o : Ordinal}
---     (hl : l.isGood (Res C o)) :
---     LocallyConstant.comap (ResOnSubset C o) (l.eval (Res C o)) = l.eval C := by
---   ext f
---   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
---   exact congr_fun (goodEvalFacC C hl) _
-
--- lemma Products.eval_comapFac' {l : Products (WithTop I)} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
---     (hlhead : l.val ≠ [] → ord I (l.val.head!) < o₁) :
---     LocallyConstant.comap (ResOnSubsets C h) (l.eval (Res C o₁)) = l.eval (Res C o₂) := by
---   ext f
---   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubsets _ _)]
---   exact congr_fun (evalFac C h hlhead) _
-
--- lemma Products.eval_comapFac'C {l : Products (WithTop I)} {o : Ordinal}
---     (hlhead : l.val ≠ [] → ord I (l.val.head!) < o) :
---     LocallyConstant.comap (ResOnSubset C o) (l.eval (Res C o)) = l.eval C := by
---   ext f
---   rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
---   exact congr_fun (evalFacC C hlhead) _
+lemma Products.eval_comapFacFin {l : Products (WithTop I)}
+    (hl : l.isGood (ResFin C J)) :
+    LocallyConstant.comap (ResFinSubset C J) (l.eval (ResFin C J)) = l.eval C := by
+  ext f
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_resFinSubset C J)]
+  exact congr_fun (goodEvalFacFin C J hl) _
 
 lemma linearResFin_of_eval (l : Products (WithTop I)) (hl : l.isGood (ResFin C J)) :
-  l.eval C = LinearResFin C J (l.eval (ResFin C J)) := sorry
+    l.eval C = LinearResFin C J (l.eval (ResFin C J)) := by
+  rw [← Products.eval_comapFacFin C J hl]
+  rfl
+
+lemma injective_linearResFin : Function.Injective (LinearResFin C J) :=
+LocallyConstant.comap_injective (ResFinSubset C J) (continuous_resFinSubset C J)
+  (surjective_resFinSubset C J)
+
+def Products.ofElementSet (x : ResFin C J) : Set (WithTop I) := {i | x.val i = true}
+
+lemma mem_J_of_x_true (x : ResFin C J) (i : WithTop I) : x.val i = true → i ∈ J := by
+  intro hi
+  obtain ⟨y, hx⟩ := x.prop
+  rw [← hx.2] at hi
+  simp only [ProjFin, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hi
+  exact hi.1
+
+def Products.ofElementFun (x : ResFin C J) : ofElementSet C J x → J :=
+fun ⟨i, hi⟩ ↦ ⟨i, mem_J_of_x_true C J x i hi⟩
+
+lemma Products.ofElementFunInjective (x : ResFin C J) :
+    Function.Injective (ofElementFun C J x) := by
+  intro i j h
+  rw [Subtype.ext_iff] at h
+  exact Subtype.ext h
+
+noncomputable
+instance (x : ResFin C J) : Fintype (Products.ofElementSet C J x) :=
+Fintype.ofInjective (Products.ofElementFun C J x) (Products.ofElementFunInjective C J x)
+
+noncomputable
+def Products.ofElementFinset (x : ResFin C J) := (ofElementSet C J x).toFinset
+
+noncomputable
+def Products.ofElementList (x : ResFin C J) :=
+  List.insertionSort (·≥·) (ofElementFinset C J x).toList
+
+lemma Products.ofElement_chain'_ge (x : ResFin C J) :
+    (ofElementList C J x).Chain' (·≥· : WithTop I → WithTop I → Prop) := by
+  rw [List.chain'_iff_pairwise]
+  exact List.sorted_insertionSort _ _
+
+lemma Products.ofElement_chain'_gt (x : ResFin C J) :
+    (ofElementList C J x).Chain' (·>· : WithTop I → WithTop I → Prop) := by
+  rw [List.chain'_iff_pairwise]
+  have : ∀ (a b : WithTop I), a > b ↔ a ≥ b ∧ a ≠ b
+  · intro a b
+    rw [gt_iff_lt, lt_iff_le_and_ne]
+    exact Iff.and Iff.rfl ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
+  have hr : (·>· : WithTop I → WithTop I → Prop) = (fun a b ↦ a ≥ b ∧ a ≠ b)
+  · ext a b
+    exact this a b
+  rw [hr, List.pairwise_and_iff]
+  refine' ⟨List.chain'_iff_pairwise.mp (ofElement_chain'_ge C J x), _⟩
+  have hn := (ofElementFinset C J x).nodup_toList
+  have h := List.perm_insertionSort (·≥·) (ofElementFinset C J x).toList
+  rw [List.Perm.nodup_iff h.symm] at hn
+  exact hn
+
+noncomputable
+def Products.ofElement (x : ResFin C J) : Products (WithTop I) :=
+⟨ofElementList C J x, ofElement_chain'_gt C J x⟩
+
+instance : Fintype (ResFin C J) := sorry
+
+noncomputable
+def Finsupp.resFin_to_Z (f : LocallyConstant {i // i ∈ ResFin C J} ℤ) : ResFin C J →₀ ℤ :=
+  Finsupp.onFinset (Finset.univ) f.toFun (fun _ _ ↦ Finset.mem_univ _)
+
+noncomputable
+def Products.finsuppOfElement (f : LocallyConstant {i // i ∈ ResFin C J} ℤ) :
+    Products (WithTop I) →₀ ℤ :=
+  (Finsupp.resFin_to_Z C J f).mapDomain (ofElement C J)
+
+lemma GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (ResFin C J))) := by
+  rw [span_iff_products]
+  intro f _
+  rw [Finsupp.mem_span_range_iff_exists_finsupp]
+  use Products.finsuppOfElement C J f
+  ext x
+  dsimp [Products.finsuppOfElement]
+  rw [Finsupp.sum_mapDomain_index_inj _]
+  · have hhh : ∀ α (map : α → LocallyConstant {i // i ∈ ResFin C J} ℤ) (d : α →₀ ℤ),
+      (d.sum (fun i (a : ℤ) ↦ a • map i)) x = d.sum (fun i a ↦ a • map i x) :=
+    fun _ _ _ ↦ map_finsupp_sum (LocconstEval (ResFin C J) x) _ _
+    rw [hhh]
+    simp_rw [Products.eval_eq]
+    apply Eq.symm
+    rw [← add_zero (f x)]
+    have hx : x ∈ (Finsupp.resFin_to_Z C J f).support := sorry
+    rw [Finsupp.sum, ← Finset.add_sum_erase _ _ hx]
+    congr
+    · simp only [smul_eq_mul, mul_ite, mul_one, mul_zero]
+      split_ifs with h
+      · rfl
+      · exfalso
+        apply h
+        intro i hi
+        have h' := List.perm_insertionSort (·≥·) (Products.ofElementFinset C J x).toList
+        dsimp [Products.ofElement, Products.ofElementList] at hi
+        rw [List.Perm.mem_iff h', Finset.mem_toList] at hi
+        simp only [Products.ofElementFinset, Set.mem_toFinset] at hi
+        exact hi
+    · apply Eq.symm ∘ Finset.sum_eq_zero
+      intro y hy
+      simp only [smul_eq_mul, mul_ite, mul_one, mul_zero, ite_eq_right_iff]
+      intro hi
+      dsimp [Finsupp.resFin_to_Z]
+      have : x = y := sorry
+      sorry
+  · sorry
+  -- let c : Products (WithTop I) → ℤ := fun l ↦
+
 
 lemma GoodProducts.spanAux (hC : IsClosed C) :
-    ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := sorry
+    ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
+  rw [span_iff_products]
+  intro f _
+  have hf : ∃ K f', f = LinearResFin C K f' := sorry
+  obtain ⟨K, f', hf⟩ := hf
+  rw [hf]
+  have hf' := spanFin C K (Submodule.mem_top : f' ∈ ⊤)
+  have := Submodule.apply_mem_span_image_of_mem_span (LinearResFin C K) hf'
+  refine' Submodule.span_mono _ this
+  intro l hl
+  obtain ⟨y, ⟨m, hm⟩, hy⟩ := hl
+  rw [← hm] at hy
+  rw [← hy]
+  exact ⟨m.val, linearResFin_of_eval C K m.val m.prop⟩
 
 end Span
 
