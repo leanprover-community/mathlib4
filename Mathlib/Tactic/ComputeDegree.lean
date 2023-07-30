@@ -182,14 +182,15 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
   subst coeff_eq deg_eq_deg coeff_eq_deg
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
-theorem degree_eq_of_le_of_coeff_ne_zero' {deg : WithBot ℕ} {m o : ℕ} {c : R} {p : R[X]}
-    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p o = c)
+theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R[X]}
+    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbot' 0 deg) = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
-  subst coeff_eq coeff_eq_deg
-  rw [Nat.cast_inj] at deg_eq_deg
-  subst ‹_›
-  exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
+  subst coeff_eq coeff_eq_deg deg_eq_deg
+  rcases eq_or_ne m ⊥ with rfl|hh
+  · exact bot_unique h_deg_le
+  · obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp hh
+    exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
 
@@ -467,7 +468,7 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
 *  `degree f = d`,
 *  `natDegree f ≤ d`,
 *  `degree f ≤ d`,
-*  `coeff f n = r`.
+*  `coeff f n = r`, if `n` is the degree of `f`.
 
 The tactic may leave goals of the form `d' = d` `d' ≤ d`, `r ≠ 0` or, where `d'` in `ℕ` or
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
@@ -509,12 +510,11 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]? $[-debug%$dbg]?) => f
       setGoals rfled
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
-      evalTactic (← `(tactic| any_goals conv_lhs => norm_num)) <|> pure ()
+      evalTactic (← `(tactic| try any_goals conv_lhs => (simp only [Nat.cast_withBot]; norm_num)))
       -- we save in `final_gls` the list of goals *before* `norm_num` has a chance
       -- to reduce them to `False`, so that we can get an informed error message
       let final_gls := ← getGoals
-      if bang.isSome then
-        evalTactic (← `(tactic| any_goals norm_num <;> try assumption)) <|> pure ()
+      if bang.isSome then evalTactic (← `(tactic| try (any_goals norm_num <;> try assumption)))
       done <|> unless deg.isNone do
         -- we extract, from the list `final_gls` of stored goals, the ones that are now `False`
         let false_goals := ← final_gls.filterM fun mv_before => do

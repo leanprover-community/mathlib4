@@ -36,6 +36,9 @@ example : degree
     ((C 1 * X ^ 2 + C 2 * X + C 3) * (C 0 * X ^ 0 + C 2 * X ^ 1 + C 1 * X ^ 5) ^ 4) = 22 := by
   compute_degree!
 
+--  Tests `Nat.cast_withBot`
+example [Semiring R] [Nontrivial R] {n : ℕ} : degree (X ^ n : R[X]) = n := by compute_degree!
+
 example [Nontrivial R] [Ring R] : degree
     (1 + X + X ^ 2 - X ^ 5 - X ^ 6 - 2 * X ^ 7 - X ^ 8 - X ^ 9 + X ^ 12 + X ^ 13 + X ^ 14 +
         X ^ 15 + X ^ 16 + X ^ 17 - X ^ 20 - X ^ 22 - X ^ 24 - X ^ 26 - X ^ 28 + X ^ 31 + X ^ 32 +
