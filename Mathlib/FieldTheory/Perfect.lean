@@ -92,11 +92,9 @@ theorem frobeniusEquiv_symm_comp_frobenius :
     ((frobeniusEquiv R p).symm : R →+* R).comp (frobenius R p) = RingHom.id R := by
   ext; simp
 
-/-- The `p`th root function for a perfect ring. TODO (probably) drop this. -/
-noncomputable abbrev pthRoot : R →+* R := (frobeniusEquiv R p).symm
-
-@[simp] lemma pthRoot_frobenius (x : R) : pthRoot R p (frobenius R p x) = x :=
-  RingEquiv.apply_symm_apply _ _
+@[simp]
+theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
+  frobenius_apply_frobeniusEquiv_symm R p x
 
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
 #align injective_pow_p injective_pow_p
