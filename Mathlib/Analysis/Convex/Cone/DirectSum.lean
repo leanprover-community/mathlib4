@@ -1,10 +1,14 @@
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
-
+import Mathlib.Algebra.DirectSum.Module
 
 namespace ConvexCone.Pointed
 
-variable [OrderedSemiring 𝕜] [Nontrivial 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable [OrderedSemiring 𝕜] [Nontrivial 𝕜]
+
+section Module
+
+variable [AddCommMonoid E] [Module 𝕜 E]
 
 instance : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
@@ -37,29 +41,65 @@ theorem coe_nsmul' (x : S) (n : ℕ) : n • x = (n : { c : 𝕜 // 0 ≤ c }) �
 theorem coe_nsmul'' (x : S) (n : ℕ) : n • (x : E) = (n : { c : 𝕜 // 0 ≤ c }) • (x : E) := by sorry
 
 @[simp]
-theorem coe_nsmul (x : S) (n : ℕ) : n • x = n • (x : E) := by simp
+theorem coe_nsmul (x : S) (n : ℕ) : (n • x : E) = n • (x : E) := by simp
 
 instance : AddCommMonoid S :=
   Function.Injective.addCommMonoid (Subtype.val : S → E) Subtype.coe_injective
     rfl
     (by aesop)
-    (coe_nsmul)
+    (by simp)
 
-def subtype : S →+ E where
+def subtype' : S →+ E where
   toFun := Subtype.val
   map_zero' := rfl
   map_add' := by aesop
 
 @[simp]
-theorem coeSubtype : (subtype : S → E) = Subtype.val := rfl
+theorem coeSubtype : (subtype' : S → E) = Subtype.val := rfl
 
 instance : Module { c : 𝕜 // 0 ≤ c } S := by
-  apply Function.Injective.module ({ c : 𝕜 // 0 ≤ c }) subtype
+  apply Function.Injective.module ({ c : 𝕜 // 0 ≤ c }) subtype'
   simp[Subtype.coe_injective]
   simp
 
+def subtype : S →ₗ[{ c : 𝕜 // 0 ≤ c }] E where
+  toFun := Subtype.val
+  map_add' := by simp
+  map_smul' := by simp
+
+  -- toFun := Subtype.val
+  -- map_smul' := by simp only [coe_smul, Subtype.forall, implies_true, forall_const]
+
+end Module
+
+section DirectSum
+
+variable {ι : Type _} [dec_ι : DecidableEq ι]
+
+open DirectSum Set
+
+variable {E : ι → Type _} [∀ i, AddCommMonoid (E i)] [∀ i, Module 𝕜 (E i)]
+
+variable {S : ∀ i, ConvexCone 𝕜 (E i)} [hS : ∀ i, Fact (S i).Pointed]
+
+#check DFinsupp.smul_apply
+
+def DirectSum : ConvexCone 𝕜 (⨁ i, E i) where
+  carrier := range <| DFinsupp.mapRange.linearMap <| fun i => ConvexCone.Pointed.subtype (S := S i)
+  smul_mem' := by
+    simp
+    rintro c hc a
+    use (⟨c, le_of_lt hc⟩ : { c : 𝕜 // 0 ≤ c }) • a
+    ext
+    sorry
+  add_mem' := by sorry
+
+#check DirectSum
+
+end DirectSum
 
 end ConvexCone.Pointed
+
 
 
 -- def ConvexCone.DirectSum (h : ∀ i, Pointed (S i)) : ConvexCone 𝕜 (⨁ i, E i) where
