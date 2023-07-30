@@ -29,8 +29,8 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
   then `((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀` tends to `g x₀` along the same filter.
 - `ContDiffBump.convolution_tendsto_right`: generalization of the above lemma.
 - `ContDiffBump.ae_convolution_tendsto_right_of_locally_integrable`: let `g` be a locally
-  integrable function. Then the convolution of `g` with a family of bump functions converges
-  almost everywhere to `g`.
+  integrable function. Then the convolution of `g` with a family of bump functions with
+  support tending to `0` converges almost everywhere to `g`.
 
 ## Keywords
 
