@@ -30,62 +30,6 @@ and `S.homology` (TODO).
 
 namespace CategoryTheory
 
-open Category
-
-/-namespace Limits
-
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
-
-/-- a colimit cokernel cofork gives a limit kernel fork in the opposite category -/
-def CokernelCofork.IsColimit.ofπOp {X Y Q : C} (p : Y ⟶ Q) {f : X ⟶ Y}
-    (w : f ≫ p = 0) (h : IsColimit (CokernelCofork.ofπ p w)) :
-    IsLimit (KernelFork.ofι p.op (show p.op ≫ f.op = 0 by rw [← op_comp, w, op_zero])) :=
-  KernelFork.IsLimit.ofι _ _
-    (fun x hx => (h.desc (CokernelCofork.ofπ x.unop (Quiver.Hom.op_inj hx))).op)
-    (fun x hx => Quiver.Hom.unop_inj (Cofork.IsColimit.π_desc h))
-    (fun x hx b hb => Quiver.Hom.unop_inj (Cofork.IsColimit.hom_ext h
-      (by simpa only [Quiver.Hom.unop_op, Cofork.IsColimit.π_desc] using Quiver.Hom.op_inj hb)))
-
-/-- a colimit cokernel cofork in the opposite category gives a limit kernel fork
-in the original category -/
-def CokernelCofork.IsColimit.ofπUnop {X Y Q : Cᵒᵖ} (p : Y ⟶ Q) {f : X ⟶ Y}
-    (w : f ≫ p = 0) (h : IsColimit (CokernelCofork.ofπ p w)) :
-    IsLimit (KernelFork.ofι p.unop (show p.unop ≫ f.unop = 0 by rw [← unop_comp, w, unop_zero])) :=
-  KernelFork.IsLimit.ofι _ _
-    (fun x hx => (h.desc (CokernelCofork.ofπ x.op (Quiver.Hom.unop_inj hx))).unop)
-    (fun x hx => Quiver.Hom.op_inj (Cofork.IsColimit.π_desc h))
-    (fun x hx b hb => Quiver.Hom.op_inj (Cofork.IsColimit.hom_ext h
-      (by simpa only [Quiver.Hom.op_unop, Cofork.IsColimit.π_desc] using Quiver.Hom.unop_inj hb)))
-
-/-- a limit kernel fork gives a colimit cokernel cofork in the opposite category -/
-def KernelFork.IsLimit.ofιOp {K X Y : C} (i : K ⟶ X) {f : X ⟶ Y}
-    (w : i ≫ f = 0) (h : IsLimit (KernelFork.ofι i w)) :
-    IsColimit (CokernelCofork.ofπ i.op
-      (show f.op ≫ i.op = 0 by rw [← op_comp, w, op_zero])) :=
-  CokernelCofork.IsColimit.ofπ _ _
-    (fun x hx => (h.lift (KernelFork.ofι x.unop (Quiver.Hom.op_inj hx))).op)
-    (fun x hx => Quiver.Hom.unop_inj (Fork.IsLimit.lift_ι h))
-    (fun x hx b hb => Quiver.Hom.unop_inj (Fork.IsLimit.hom_ext h (by
-      simpa only [Quiver.Hom.unop_op, Fork.IsLimit.lift_ι] using Quiver.Hom.op_inj hb)))
-
-/-- a limit kernel fork in the opposite category gives a colimit cokernel cofork
-in the original category -/
-def KernelFork.IsLimit.ofιUnop {K X Y : Cᵒᵖ} (i : K ⟶ X) {f : X ⟶ Y}
-    (w : i ≫ f = 0) (h : IsLimit (KernelFork.ofι i w)) :
-    IsColimit (CokernelCofork.ofπ i.unop
-      (show f.unop ≫ i.unop = 0 by rw [← unop_comp, w, unop_zero])) :=
-  CokernelCofork.IsColimit.ofπ _ _
-    (fun x hx => (h.lift (KernelFork.ofι x.op (Quiver.Hom.unop_inj hx))).unop)
-    (fun x hx => Quiver.Hom.op_inj (Fork.IsLimit.lift_ι h))
-    (fun x hx b hb => Quiver.Hom.op_inj (Fork.IsLimit.hom_ext h (by
-      simpa only [Quiver.Hom.op_unop, Fork.IsLimit.lift_ι] using Quiver.Hom.unop_inj hb)))
-
-end Limits-/
-
-end CategoryTheory
-
-namespace CategoryTheory
-
 open Category Limits
 
 namespace ShortComplex
@@ -261,17 +205,18 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
     simp only [hf, zero_comp]
   hπ := CokernelCofork.IsColimit.ofId _ hf
 
-@[simp]
-lemma ofZeros_f' (hf : S.f = 0) (hg : S.g = 0) :
+@[simp] lemma ofZeros_f' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
 
 end LeftHomologyData
 
-class HasLeftHomology : Prop :=
-(condition : Nonempty S.LeftHomologyData)
+/-- A short complex `S` has left homology when there exists a `S.LeftHomologyData` -/
+class HasLeftHomology : Prop where
+  condition : Nonempty S.LeftHomologyData
 
-noncomputable def leftHomologyData [HasLeftHomology S] :
+/-- A chosen `S.LeftHomologyData` for a short complex `S` that has left homology -/
+noncomputable def leftHomologyData [S.HasLeftHomology] :
   S.LeftHomologyData := HasLeftHomology.condition.some
 
 variable {S}
@@ -994,9 +939,10 @@ lemma liftCycles_i : S.liftCycles k hk ≫ S.iCycles = k :=
 
 @[reassoc]
 lemma comp_liftCycles {A' : C} (α : A' ⟶ A) :
-    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by
-  simp only [← cancel_mono S.iCycles, assoc, liftCycles_i]
+    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by aesop_cat
 
+/-- Via `S.iCycles : S.cycles ⟶ S.X₂`, the object `S.cycles` identifies to the
+kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
 noncomputable def cyclesIsKernel : IsLimit (KernelFork.ofι S.iCycles S.iCycles_g) :=
   S.leftHomologyData.hi
 

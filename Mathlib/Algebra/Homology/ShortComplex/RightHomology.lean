@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.CategoryTheory.Limits.Opposites
 
@@ -27,7 +28,7 @@ In `Homology.lean`, when `S` has two compatible left and right homology data
 
 namespace CategoryTheory
 
-open Category Limits ZeroObject
+open Category Limits
 
 namespace ShortComplex
 
