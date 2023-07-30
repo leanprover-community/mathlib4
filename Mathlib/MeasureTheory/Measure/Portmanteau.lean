@@ -114,6 +114,21 @@ Informally, the conditions are:
       of the measures of `E` under the `Ps` equals its measure under `P`.
 
 Variants of formal phrasings of these conditions are:
+
+  (L): `MeasureTheory.Portmanteau.tendsto_in_distribution`
+
+  (C): `MeasureTheory.Portmanteau.limsup_closed_le` (using probability measures)
+       `MeasureTheory.Portmanteau.limsup_closed_le'` (using measures)
+
+  (O): `MeasureTheory.Portmanteau.le_liminf_open` (using probability measures)
+       `MeasureTheory.Portmanteau.le_liminf_open'` (using measures)
+
+  (B): `MeasureTheory.Portmanteau.tendsto_measure_of_null_frontier` (using probability measures)
+       `MeasureTheory.Portmanteau.tendsto_measure_of_null_frontier'` (using measures)
+
+We include lemmas to translate between the formulations of the same mathematical condition
+formulated either using probability measures or measures. Limits (or liminfs or limsups) are
+correspondingly taken in either `ℝ≥0` or `ℝ≥0∞`, and some coercions are involved.
 -/
 
 variable {Ω ι : Type _} [TopologicalSpace Ω] [MeasurableSpace Ω] (L : Filter ι)
@@ -174,13 +189,11 @@ lemma limsup_probability_le_iff_limsup_measure_le [NeBot L] (F : Set Ω) :
       L.limsup (fun i ↦ (Ps i : Measure Ω) F) ≤ (P : Measure Ω) F := by
   constructor <;> intro h
   · apply ENNReal.le_of_forall_pos_le_add
-    intro ε ε_pos PF_lt_top
+    intro ε ε_pos _
     refine @limsup_le_of_le ℝ≥0∞ ι _ L (fun i ↦ (Ps i : Measure Ω) F) ((P : Measure Ω) F + ε) ?_ ?_
     · exact isBounded_ge_of_bot.isCobounded_le
     · have aux : P F < P F + ε := by simp [ε_pos]
-      --have := lt_of_le_of_lt h aux
       have h' : L.limsup (fun i ↦ Ps i F) < P F + ε := lt_of_le_of_lt h aux
-      --filter_upwards [eventually_lt_of_limsup_lt h'] with i hi
       have := @eventually_lt_of_limsup_lt ι ℝ≥0 L _ (fun i ↦ Ps i F) (P F + ε) h' ?_
       swap
       · simp only
@@ -188,8 +201,9 @@ lemma limsup_probability_le_iff_limsup_measure_le [NeBot L] (F : Set Ω) :
         simp only [eventually_map]
         apply eventually_of_forall
         intro i
-        have : (Ps i F) ≤ 1 := by sorry -- :facepalm:
-        exact this
+        --have : (Ps i F) ≤ 1 := by apply ProbabilityMeasure.apply_le_one
+        --                       -- Why don't `simp` and `exact?` work here?
+        apply (Ps i).apply_le_one
       filter_upwards [this] with i hi
       simpa only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.coe_add]
         using (@ENNReal.coe_le_coe (Ps i F) (P F + ε)).mpr hi.le
@@ -208,23 +222,7 @@ lemma limsup_probability_le_iff_limsup_measure_le [NeBot L] (F : Set Ω) :
 lemma le_liminf_probability_iff_le_liminf_measure (G : Set Ω) :
     P G ≤ L.liminf (fun i ↦ Ps i G) ↔
       (P : Measure Ω) G ≤ L.liminf (fun i ↦ (Ps i : Measure Ω) G) := by
-  constructor <;> intro h
-  · sorry
-  · apply _root_.le_of_forall_pos_le_add
-    intro ε ε_pos
-    refine @limsup_le_of_le ℝ≥0 ι _ L (fun i ↦ μs i F) (μ F + ε) ?_ ?_
-    · exact isBounded_ge_of_bot.isCobounded_le
-    · have aux : (μ : Measure α) F < (μ : Measure α) F + ε := by
-        convert (@ENNReal.add_lt_add_iff_left _ 0 ε _).mpr (by simp [ε_pos])
-        · simp only [add_zero]
-        · exact measure_ne_top μ F
-      filter_upwards [eventually_lt_of_limsup_lt (lt_of_le_of_lt key aux)] with i hi
-      apply (@ENNReal.toNNReal_le_toNNReal (μs i F) (μ F + ε) ?_ ?_).mpr (by simp [hi.le]) <;>
-      simp [measure_ne_top]
-    sorry
-
---lemma le_liminf_open_iff_le_liminf_open' {G : Set Ω} :
---  le_liminf_open
+  sorry
 
 end Portmanteau
 
@@ -235,14 +233,12 @@ section LimsupClosedLEAndLELiminfOpen
 /-! ### Portmanteau: limsup condition for closed sets iff liminf condition for open sets
 
 In this section we prove that for a sequence of Borel probability measures on a topological space
-and its candidate limit measure, the following two conditions are equivalent:
-  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` is at most the limit
-      measure of `F`.
-  (O) For any open set `G` in `Ω` the liminf of the measures of `G` is at least the limit
-      measure of `G`.
+and its candidate limit measure, the conditions (C) and (O) are equivalent.
+
 Either of these will later be shown to be equivalent to the weak convergence of the sequence
 of measures.
 -/
+
 
 variable {Ω : Type _} [MeasurableSpace Ω]
 
