@@ -96,7 +96,9 @@ theorem id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj :=
 #align category_theory.differential_object.id_f CategoryTheory.DifferentialObject.id_f
 
 @[simp]
-theorem comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).f = f.f ≫ g.f := rfl
+theorem comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) : 
+    (f ≫ g).f = f.f ≫ g.f := 
+  rfl
 #align category_theory.differential_object.comp_f CategoryTheory.DifferentialObject.comp_f
 
 @[simp]
