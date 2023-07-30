@@ -146,7 +146,8 @@ to the category of homological complexes in `V`.
 -/
 @[simps]
 def dgoEquivHomologicalComplex :
-    DifferentialObject ℤ (GradedObjectWithShift b V) ≌ HomologicalComplex V (ComplexShape.up' b) where
+    DifferentialObject ℤ (GradedObjectWithShift b V) ≌ 
+      HomologicalComplex V (ComplexShape.up' b) where
   functor := dgoToHomologicalComplex b V
   inverse := homologicalComplexToDGO b V
   unitIso := dgoEquivHomologicalComplexUnitIso b V
