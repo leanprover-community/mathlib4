@@ -310,6 +310,77 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         congr 2
         erw [← reassoc_of% h₂]
         rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄])
+  -- NatIso.ofComponents (normalizeIsoAux C) <| by
+  --   -- porting note: the proof has been mostly rewritten
+  --   -- FIXME revisit, this probably simplifies after https://github.com/leanprover/lean4/pull/2334
+  --   rintro X Y f
+  --   induction' f using Quotient.recOn with f ; swap ; rfl
+  --   induction' f with _ X₁ X₂ X₃ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂
+  --   . simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
+  --   . ext n
+  --     dsimp
+  --     rw [mk_α_hom]
+  --     dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
+  --     simp only [comp_tensor_id, associator_conjugation, tensor_id,
+  --       Category.comp_id]
+  --     simp only [← Category.assoc]
+  --     congr 4
+  --     simp only [Category.assoc, ← cancel_epi (𝟙 (inclusionObj n.as) ⊗ (α_ X₁ X₂ X₃).inv),
+  --       pentagon_inv_assoc (inclusionObj n.as) X₁ X₂ X₃,
+  --       tensor_inv_hom_id_assoc, tensor_id, Category.id_comp, Iso.inv_hom_id,
+  --       Category.comp_id]
+  --   . ext n
+  --     dsimp
+  --     rw [mk_α_inv]
+  --     dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
+  --     simp only [Category.assoc, comp_tensor_id, tensor_id, Category.comp_id,
+  --       pentagon_inv_assoc, ← associator_inv_naturality_assoc]
+  --   . ext n
+  --     dsimp [Functor.comp]
+  --     rw [mk_l_hom]
+  --     dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
+  --     simp only [triangle_assoc_comp_right_assoc, Category.assoc, Category.comp_id]
+  --     rfl
+  --   . ext n
+  --     dsimp [Functor.comp]
+  --     rw [mk_l_inv]
+  --     dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
+  --     simp only [triangle_assoc_comp_left_inv_assoc, inv_hom_id_tensor_assoc, tensor_id,
+  --       Category.id_comp, Category.comp_id]
+  --     rfl
+  --   . ext n
+  --     dsimp
+  --     rw [mk_ρ_hom]
+  --     dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
+  --     simp only [← (Iso.inv_comp_eq _).2 (rightUnitor_tensor _ _), Category.assoc,
+  --       ← rightUnitor_naturality, Category.comp_id]
+  --   . ext n
+  --     dsimp
+  --     rw [mk_ρ_inv]
+  --     dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
+  --     simp only [← (Iso.eq_comp_inv _).1 (rightUnitor_tensor_inv _ _), rightUnitor_conjugation,
+  --       Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
+  --       Discrete.functor, Category.comp_id, Function.comp]
+  --   . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
+  --   . ext ⟨n⟩
+  --     replace h₁ := NatTrans.congr_app h₁ ⟨n⟩
+  --     replace h₂ := NatTrans.congr_app h₂ ((Discrete.functor (normalizeObj X₁)).obj ⟨n⟩)
+  --     have h₃ := (normalizeIsoAux _ Y₂).hom.naturality ((normalizeMapAux f).app ⟨n⟩)
+  --     have h₄ : ∀ (X₃ Y₃ : N C) (φ : X₃ ⟶ Y₃), (Discrete.functor inclusionObj).map φ ⊗ 𝟙 Y₂ =
+  --         (Discrete.functor fun n ↦ inclusionObj n ⊗ Y₂).map φ := by
+  --       rintro ⟨X₃⟩ ⟨Y₃⟩ φ
+  --       obtain rfl : X₃ = Y₃ := φ.1.1
+  --       simp only [discrete_functor_map_eq_id, tensor_id]
+  --       rfl
+  --     rw [NatTrans.comp_app, NatTrans.comp_app] at h₁ h₂ ⊢
+  --     dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight,
+  --       Functor.comp, Discrete.natTrans] at h₁ h₂ h₃ ⊢
+  --     rw [mk_tensor, associator_inv_naturality_assoc, ← tensor_comp_assoc, h₁,
+  --       Category.assoc, Category.comp_id, ← @Category.id_comp (F C) _ _ _ (@Quotient.mk _ _ g),
+  --       tensor_comp, Category.assoc, Category.assoc, Functor.map_comp]
+  --     congr 2
+  --     erw [← reassoc_of% h₂]
+  --     rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄]
 #align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/
