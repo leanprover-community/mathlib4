@@ -430,7 +430,7 @@ return (progress.join, static ++ curr_static)
    (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
-Although inconsecuential for this function, the list of goals `false_goals` reduces to `False`
+Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
 *  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
