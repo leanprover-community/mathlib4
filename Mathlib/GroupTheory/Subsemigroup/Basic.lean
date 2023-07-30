@@ -3,15 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
-
-! This file was ported from Lean 3 source module group_theory.subsemigroup.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
+
+#align_import group_theory.subsemigroup.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
 /-!
 # Subsemigroups: definition and `CompleteLattice` structure
@@ -457,7 +454,7 @@ theorem mem_iSup {ι : Sort _} (p : ι → Subsemigroup M) {m : M} :
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort _} (p : ι → Subsemigroup M) :
-    (⨆ i, p i) = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
+    ⨆ i, p i = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Subsemigroup.closure_iUnion, Subsemigroup.closure_eq]
 #align subsemigroup.supr_eq_closure Subsemigroup.iSup_eq_closure
 #align add_subsemigroup.supr_eq_closure AddSubsemigroup.iSup_eq_closure

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.two_dim
-! leanprover-community/mathlib commit cd8fafa2fac98e1a67097e8a91ad9901cfde48af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Tactic.LinearCombination
+
+#align_import analysis.inner_product_space.two_dim from "leanprover-community/mathlib"@"cd8fafa2fac98e1a67097e8a91ad9901cfde48af"
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -126,7 +123,7 @@ theorem areaForm_swap (x y : E) : ω x y = -ω y x := by
 
 @[simp]
 theorem areaForm_neg_orientation : (-o).areaForm = -o.areaForm := by
-  ext (x y)
+  ext x y
   simp [areaForm_to_volumeForm]
 #align orientation.area_form_neg_orientation Orientation.areaForm_neg_orientation
 

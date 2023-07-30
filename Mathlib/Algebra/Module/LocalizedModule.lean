@@ -2,15 +2,14 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.module.localized_module
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Module
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.RingTheory.IsTensorProduct
+
+#align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Localized Module
@@ -21,7 +20,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 ## Main definitions
 
 * `LocalizedModule.r` : the equivalence relation defining this localization, namely
-  `(m, s) ≈ (m', s')` if and only if if there is some `u : S` such that `u • s' • m = u • s • m'`.
+  `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S` : the localized module by `S`.
 * `LocalizedModule.mk`  : the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
 * `LocalizedModule.liftOn` : any well defined function `f : M × S → α` respecting `r` descents to
@@ -34,6 +33,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
+* `IsLocalizedModule.IsBaseChange` : A localization of modules is a base change.
 
 ## Future work
 
@@ -63,7 +63,7 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
       -- Put everything in the same shape, sorting the terms using `simp`
       have hu1' := congr_arg ((· • ·) (u2 * s3)) hu1.symm
       have hu2' := congr_arg ((· • ·) (u1 * s1)) hu2.symm
-      simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2'⊢
+      simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
 #align localized_module.r.is_equiv LocalizedModule.r.isEquiv
@@ -247,7 +247,7 @@ instance {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
           rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
           rw [mk_eq]
           use u₁ * u₂
-          dsimp only at e₁ e₂⊢
+          dsimp only at e₁ e₂ ⊢
           rw [eq_comm]
           trans (u₁ • t₁ • a₁) • u₂ • t₂ • a₂
           rw [e₁, e₂]; swap; rw [eq_comm]
@@ -319,7 +319,7 @@ instance : SMul (Localization S) (LocalizedModule S M)
             refine' mk_eq.mpr ⟨u, _⟩
             have h' := congr_arg ((· • ·) (s • r)) h
             simp only [← mul_smul, smul_eq_mul, mul_comm, mul_left_comm, Submonoid.smul_def,
-              Submonoid.coe_mul] at h'⊢
+              Submonoid.coe_mul] at h' ⊢
             rw [h'])))
       (by
         induction' x using LocalizedModule.induction_on with m t
@@ -328,8 +328,8 @@ instance : SMul (Localization S) (LocalizedModule S M)
         obtain ⟨u, eq1⟩ := Localization.r_iff_exists.mp h
         use u
         have eq1' := congr_arg (· • t • m) eq1
-        simp only [← mul_smul, smul_assoc, Submonoid.smul_def, Submonoid.coe_mul] at eq1'⊢
-        ring_nf  at eq1'⊢
+        simp only [← mul_smul, smul_assoc, Submonoid.smul_def, Submonoid.coe_mul] at eq1' ⊢
+        ring_nf at eq1' ⊢
         rw [eq1']))
 
 theorem mk_smul_mk (r : R) (m : M) (s t : S) :
@@ -503,7 +503,7 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
     x.inductionOn <| by
       intro
       dsimp only
-      change liftOn (mk _ _) _ _  = r • (liftOn (mk _ _) _ _)
+      change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
       simp [LocalizedModule.liftOn_mk, smul'_mk]
 #align localized_module.div_by LocalizedModule.divBy
 
@@ -1081,6 +1081,32 @@ theorem mkOfAlgebra {R S S' : Type _} [CommRing R] [CommRing S] [CommRing S'] [A
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
+
+variable {A : Type _}
+  [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
+
+
+/-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
+`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
+bilinear map).
+In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
+given by `m/s ↦ (1/s) ⊗ₜ m`.
+-/
+theorem isBaseChange : IsBaseChange A f := by
+  refine' IsBaseChange.of_lift_unique _ (fun Q _ _ _ _ g ↦ _)
+  have := IsLocalizedModule.is_universal S f g <| by
+    intro s
+    simp_rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique,
+      Module.algebraMap_end_apply]
+    intro q
+    refine' ⟨(IsLocalization.mk' _ 1 s : A) • q, _, _⟩
+    · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
+    · rintro q rfl
+      simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
+  rcases this with ⟨ℓ, rfl, h₂⟩
+  refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
+  ext x
+  simp [← h₂ (LinearMap.restrictScalars R g'') h]
 
 end IsLocalizedModule
 

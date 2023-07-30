@@ -2,11 +2,6 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.module.torsion
-! leanprover-community/mathlib commit cdc34484a07418af43daf8198beaf5c00324bca8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.BigOperators
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Finiteness
+
+#align_import algebra.module.torsion from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 
 /-!
 # Torsion submodules
@@ -196,7 +193,7 @@ def torsion' (S : Type w) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S
     smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩}
 #align submodule.torsion' Submodule.torsion'
 
-/-- The torsion submodule, containing all elements `x` of `M` such that  `a • x = 0` for some
+/-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
 @[reducible]
 def torsion :=
@@ -394,7 +391,7 @@ variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
 theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
-    (⨆ i ∈ S, torsionBySet R M <| p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
+    ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
   cases' S.eq_empty_or_nonempty with h h
   · simp only [h]
     -- Porting note: converts were not cooperating
@@ -412,7 +409,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
       (mem_iSup_finset_iff_exists_sum _ _).mp
         ((Ideal.eq_top_iff_one _).mp <| (Ideal.iSup_iInf_eq_top_iff_pairwise h _).mpr hp)
     refine' ⟨fun i => ⟨(μ i : R) • x, _⟩, _⟩
-    · rw [mem_torsionBySet_iff] at hx⊢
+    · rw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
       suffices : a * μ i ∈ ⨅ i ∈ S, p i
@@ -446,7 +443,7 @@ theorem supIndep_torsionBySet_ideal [DecidableEq ι] : S.SupIndep fun i => torsi
 variable {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
 
 theorem iSup_torsionBy_eq_torsionBy_prod [DecidableEq ι] :
-    (⨆ i ∈ S, torsionBy R M <| q i) = torsionBy R M (∏ i in S, q i) := by
+    ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i in S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf]

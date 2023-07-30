@@ -4,24 +4,30 @@
  [{"git":
    {"url": "https://github.com/EdAyers/ProofWidgets4",
     "subDir?": null,
-    "rev": "c43db94a8f495dad37829e9d7ad65483d68c86b8",
+    "rev": "a0c2cd0ac3245a0dade4f925bcfa97e06dd84229",
     "name": "proofwidgets",
-    "inputRev?": "v0.0.11"}},
+    "inputRev?": "v0.0.13"}},
+  {"git":
+   {"url": "https://github.com/mhuisi/lean4-cli.git",
+    "subDir?": null,
+    "rev": "5a858c32963b6b19be0d477a30a1f4b6c120be7e",
+    "name": "Cli",
+    "inputRev?": "nightly"}},
   {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
-    "rev": "c71f94e34c1cda52eef5c93dc9da409ab2727420",
+    "rev": "81cc13c524a68d0072561dbac276cd61b65872a6",
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "ca73109cc40837bc61df8024c9016da4b4f99d4c",
+    "rev": "354432d437fb37738ed93ac6988669d78a870ed0",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "d5471b83378e8ace4845f9a029af92f8b0cf10cb",
+    "rev": "e3c2be331da9ddeef7f82ca363f072a68d7210b3",
     "name": "std",
     "inputRev?": "main"}}]}

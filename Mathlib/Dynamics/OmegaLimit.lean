@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
-
-! This file was ported from Lean 3 source module dynamics.omega_limit
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Flow
 import Mathlib.Tactic.Monotonicity
+
+#align_import dynamics.omega_limit from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # ω-limits
@@ -189,7 +186,7 @@ theorem omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s�
       omegaLimit_mono_right _ _ (subset_union_right _ _) hy]
 #align omega_limit_union omegaLimit_union
 
-theorem omegaLimit_iUnion (p : ι → Set α) : (⋃ i, ω f ϕ (p i)) ⊆ ω f ϕ (⋃ i, p i) := by
+theorem omegaLimit_iUnion (p : ι → Set α) : ⋃ i, ω f ϕ (p i) ⊆ ω f ϕ (⋃ i, p i) := by
   rw [iUnion_subset_iff]
   exact fun i ↦ omegaLimit_mono_right _ _ (subset_iUnion _ _)
 #align omega_limit_Union omegaLimit_iUnion
@@ -241,10 +238,10 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   let k := closure (image2 ϕ v s)
   have hk : IsCompact (k \ n) :=
     IsCompact.diff (isCompact_of_isClosed_subset hc₁ isClosed_closure hv₂) hn₁
-  let j u := closure (image2 ϕ (u ∩ v) s)ᶜ
+  let j u := (closure (image2 ϕ (u ∩ v) s))ᶜ
   have hj₁ : ∀ u ∈ f, IsOpen (j u) := fun _ _ ↦ isOpen_compl_iff.mpr isClosed_closure
   have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by
-    have : (⋃ u ∈ f, j u) = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
+    have : ⋃ u ∈ f, j u = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
     rw [this, diff_subset_comm, diff_iUnion]
     rw [omegaLimit_eq_iInter_inter _ _ _ hv₁] at hn₂
     simp_rw [diff_compl]
@@ -253,14 +250,14 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩
   let w := (⋂ u ∈ g, u) ∩ v
   have hw₂ : w ∈ f := by simpa [*]
-  have hw₃ : k \ n ⊆ closure (image2 ϕ w s)ᶜ := by
+  have hw₃ : k \ n ⊆ (closure (image2 ϕ w s))ᶜ := by
     apply Subset.trans hg₃
     simp only [iUnion_subset_iff, compl_subset_compl]
     intros u hu
     mono
     refine' iInter_subset_of_subset u (iInter_subset_of_subset hu _)
     all_goals exact Subset.rfl
-  have hw₄ : kᶜ ⊆ closure (image2 ϕ w s)ᶜ := by
+  have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
     simp only [compl_subset_compl]
     exact closure_mono (image2_subset (inter_subset_right _ _) Subset.rfl)
   have hnc : nᶜ ⊆ k \ n ∪ kᶜ := by rw [union_comm, ← inter_subset, diff_eq, inter_comm]

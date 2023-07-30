@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module representation_theory.Action
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.SingleObj
@@ -24,6 +19,8 @@ import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.FunctorCategory
+
+#align_import representation_theory.Action from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -162,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.comp_hom Action.comp_hom
 
 /-- Construct an isomorphism of `G` actions/representations
-from an isomorphism of the the underlying objects,
+from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
@@ -172,7 +169,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
       comm := comm }
   inv :=
     { hom := f.inv
-      comm := fun g => by have w := comm g =≫ f.inv; simp at w ; simp [w] }
+      comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
 set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 
@@ -321,10 +318,12 @@ def functorCategoryEquivalenceCompEvaluation :
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_comp_evaluation Action.functorCategoryEquivalenceCompEvaluation
 
-noncomputable instance [HasLimits V] : Limits.PreservesLimits (forget V G) :=
+noncomputable instance instPreservesLimitsForget [HasLimits V] :
+    Limits.PreservesLimits (forget V G) :=
   Limits.preservesLimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
-noncomputable instance [HasColimits V] : PreservesColimits (forget V G) :=
+noncomputable instance instPreservesColimitsForget [HasColimits V] :
+    PreservesColimits (forget V G) :=
   preservesColimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
 -- TODO construct categorical images?

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.metric_separated
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.EMetricSpace
+
+#align_import topology.metric_space.metric_separated from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Metric separated pairs of sets
@@ -82,7 +79,7 @@ theorem union_left {s'} (h : IsMetricSeparated s t) (h' : IsMetricSeparated s' t
     IsMetricSeparated (s ∪ s') t := by
   rcases h, h' with ⟨⟨r, r0, hr⟩, ⟨r', r0', hr'⟩⟩
   refine' ⟨min r r', _, fun x hx y hy => hx.elim _ _⟩
-  · rw [← pos_iff_ne_zero] at r0 r0'⊢
+  · rw [← pos_iff_ne_zero] at r0 r0' ⊢
     exact lt_min r0 r0'
   · exact fun hx => (min_le_left _ _).trans (hr _ hx _ hy)
   · exact fun hx => (min_le_right _ _).trans (hr' _ hx _ hy)

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Matej Penciak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matej Penciak, Moritz Doll, Fabien Clery
-
-! This file was ported from Lean 3 source module linear_algebra.symplectic_group
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+#align_import linear_algebra.symplectic_group from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The Symplectic Group
@@ -138,7 +135,7 @@ end SymplecticJ
 variable {A : Matrix (Sum l l) (Sum l l) R}
 
 theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
-  rw [mem_iff] at h⊢
+  rw [mem_iff] at h ⊢
   simp [h]
 #align symplectic_group.neg_mem SymplecticGroup.neg_mem
 
@@ -155,7 +152,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
 #align symplectic_group.symplectic_det SymplecticGroup.symplectic_det
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
-  rw [mem_iff] at hA⊢
+  rw [mem_iff] at hA ⊢
   rw [transpose_transpose]
   have huA := symplectic_det hA
   have huAT : IsUnit Aᵀ.det := by

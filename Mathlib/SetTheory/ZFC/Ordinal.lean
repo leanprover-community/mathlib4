@@ -2,13 +2,10 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.zfc.ordinal
-! leanprover-community/mathlib commit 98bbc3526516bca903bff09ea10c4206bf079e6b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.ZFC.Basic
+
+#align_import set_theory.zfc.ordinal from "leanprover-community/mathlib"@"98bbc3526516bca903bff09ea10c4206bf079e6b"
 
 /-!
 # Von Neumann ordinals
@@ -61,7 +58,7 @@ alias isTransitive_iff_mem_trans ↔ IsTransitive.mem_trans _
 
 protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∩ y).IsTransitive := fun z hz w hw => by
-  rw [mem_inter] at hz⊢
+  rw [mem_inter] at hz ⊢
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 #align Set.is_transitive.inter ZFSet.IsTransitive.inter
 
@@ -89,7 +86,7 @@ protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive)
 
 protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
   fun y hy z hz => by
-  rw [mem_powerset] at hy⊢
+  rw [mem_powerset] at hy ⊢
   exact h.subset_of_mem (hy hz)
 #align Set.is_transitive.powerset ZFSet.IsTransitive.powerset
 

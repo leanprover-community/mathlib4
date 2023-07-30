@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Simon Hudon
-
-! This file was ported from Lean 3 source module category_theory.monoidal.of_has_finite_products
-! leanprover-community/mathlib commit f153a85a8dc0a96ce9133fed69e34df72f7f191f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.monoidal.of_has_finite_products from "leanprover-community/mathlib"@"f153a85a8dc0a96ce9133fed69e34df72f7f191f"
 
 /-!
 # The natural monoidal structure on any category with finite (co)products.
@@ -25,12 +22,12 @@ and sometimes we want to think of a different monoidal structure entirely,
 we don't set up either construct as an instance.
 
 ## Implementation
-We had previously chosen to rely on `has_terminal` and `has_binary_products` instead of
-`has_finite_products`, because we were later relying on the definitional form of the tensor product.
+We had previously chosen to rely on `HasTerminal` and `HasBinaryProducts` instead of
+`HasBinaryProducts`, because we were later relying on the definitional form of the tensor product.
 Now that `has_limit` has been refactored to be a `Prop`,
 this issue is irrelevant and we could simplify the construction here.
 
-See `category_theory.monoidal.of_chosen_finite_products` for a variant of this construction
+See `CategoryTheory.monoidalOfChosenFiniteProducts` for a variant of this construction
 which allows specifying a particular choice of terminal object and binary products.
 -/
 
@@ -157,8 +154,8 @@ open MonoidalCategory
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
 @[simps]
-def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : SymmetricCategory C
-    where
+def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
+    SymmetricCategory C where
   braiding := Limits.coprod.braiding
   braiding_naturality f g := by dsimp [tensorHom]; simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts]; simp

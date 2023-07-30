@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.pi
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Logic.Equiv.Fin
+
+#align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Pi types of modules
@@ -148,7 +145,7 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
   map_add' f g := by simp only [Pi.add_apply, add_comp, Finset.sum_add_distrib]
   map_smul' c f := by simp only [Pi.smul_apply, smul_comp, Finset.smul_sum, RingHom.id_apply]
   left_inv f := by
-    ext (i x)
+    ext i x
     simp [apply_single]
   right_inv f := by
     ext x
@@ -217,7 +214,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
     rw [dif_neg this, zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
-    ext (b⟨j, hj⟩)
+    ext b ⟨j, hj⟩
     simp only [dif_pos, Function.comp_apply, Function.eval_apply, LinearMap.codRestrict_apply,
       LinearMap.coe_comp, LinearMap.coe_proj, LinearMap.pi_apply, Submodule.subtype_apply,
       Subtype.coe_prop]
@@ -298,19 +295,19 @@ theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q 
 #align submodule.pi_mono Submodule.pi_mono
 
 theorem biInf_comap_proj :
-    (⨅ i ∈ I, comap (proj i : ((i : ι) →  φ i) →ₗ[R] φ i) (p i)) = pi I p := by
+    ⨅ i ∈ I, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i) = pi I p := by
   ext x
   simp
 #align submodule.binfi_comap_proj Submodule.biInf_comap_proj
 
 theorem iInf_comap_proj :
-    (⨅ i, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i)) = pi Set.univ p := by
+    ⨅ i, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i) = pi Set.univ p := by
   ext x
   simp
 #align submodule.infi_comap_proj Submodule.iInf_comap_proj
 
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
-    (⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i)) = pi Set.univ p := by
+    ⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
   refine' (iSup_le fun i => _).antisymm _
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -

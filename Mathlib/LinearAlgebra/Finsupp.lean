@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module linear_algebra.finsupp
-! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Encodable
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Span
+
+#align_import linear_algebra.finsupp from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
 /-!
 # Properties of the module `α →₀ M`
@@ -134,7 +131,7 @@ theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :
 #align finsupp.ker_lsingle Finsupp.ker_lsingle
 
 theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
-    (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) ≤
+    ⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) ≤
       ⨅ a ∈ t, ker (lapply a : (α →₀ M) →ₗ[R] M) := by
   refine' iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 _
   simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
@@ -143,12 +140,12 @@ theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
   exact single_eq_of_ne this
 #align finsupp.lsingle_range_le_ker_lapply Finsupp.lsingle_range_le_ker_lapply
 
-theorem iInf_ker_lapply_le_bot : (⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] M)) ≤ ⊥ := by
+theorem iInf_ker_lapply_le_bot : ⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] M) ≤ ⊥ := by
   simp only [SetLike.le_def, mem_iInf, mem_ker, mem_bot, lapply_apply]
   exact fun a h => Finsupp.ext h
 #align finsupp.infi_ker_lapply_le_bot Finsupp.iInf_ker_lapply_le_bot
 
-theorem iSup_lsingle_range : (⨆ a, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) = ⊤ := by
+theorem iSup_lsingle_range : ⨆ a, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) = ⊤ := by
   refine' eq_top_iff.2 <| SetLike.le_def.2 fun f _ => _
   rw [← sum_single f]
   exact sum_mem fun a _ => Submodule.mem_iSup_of_mem a ⟨_, rfl⟩
@@ -160,8 +157,8 @@ theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
   -- Porting note: 2 placeholders are added to prevent timeout.
   refine'
     (Disjoint.mono
-      (lsingle_range_le_ker_lapply s (sᶜ) _)
-      (lsingle_range_le_ker_lapply t (tᶜ) _))
+      (lsingle_range_le_ker_lapply s sᶜ _)
+      (lsingle_range_le_ker_lapply t tᶜ _))
       _
   · apply disjoint_compl_right
   · apply disjoint_compl_right
@@ -254,7 +251,7 @@ end
 
 theorem restrictDom_comp_subtype (s : Set α) :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
-  ext (l a)
+  ext l a
   by_cases h : a ∈ s <;> simp [h]
   exact ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
@@ -518,7 +515,7 @@ section LComapDomain
 variable {β : Type _}
 
 /-- Given `f : α → β` and a proof `hf` that `f` is injective, `lcomapDomain f hf` is the linear map
-sending  `l : β →₀ M` to the finitely supported function from `α` to `M` given by composing
+sending `l : β →₀ M` to the finitely supported function from `α` to `M` given by composing
 `l` with `f`.
 
 This is the linear version of `Finsupp.comapDomain`. -/
@@ -1028,6 +1025,14 @@ theorem finsuppProdLEquiv_symm_apply {α β R M : Type _} [Semiring R] [AddCommM
 
 end Prod
 
+/-- If `R` is countable, then any `R`-submodule spanned by a countable family of vectors is
+countable. -/
+instance {ι : Type _} [Countable R] [Countable ι] (v : ι → M) :
+    Countable (Submodule.span R (Set.range v)) := by
+  refine Set.countable_coe_iff.mpr (Set.Countable.mono ?_ (Set.countable_range
+      (fun c : (ι →₀ R) => c.sum fun i _ => (c i) • v i)))
+  exact fun _ h => Finsupp.mem_span_range_iff_exists_finsupp.mp (SetLike.mem_coe.mp h)
+
 end Finsupp
 
 section Fintype
@@ -1099,7 +1104,7 @@ variable {v} {x : M}
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
 theorem mem_span_range_iff_exists_fun :
-    x ∈ span R (range v) ↔ ∃ c : α → R, (∑ i, c i • v i) = x := by
+    x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
   -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
@@ -1110,7 +1115,7 @@ theorem mem_span_range_iff_exists_fun :
 can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
 theorem top_le_span_range_iff_forall_exists_fun :
-    ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, (∑ i, c i • v i) = x := by
+    ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
 #align top_le_span_range_iff_forall_exists_fun top_le_span_range_iff_forall_exists_fun
@@ -1171,7 +1176,7 @@ theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule
 #align submodule.mem_supr_iff_exists_finset Submodule.mem_iSup_iff_exists_finset
 
 theorem mem_span_finset {s : Finset M} {x : M} :
-    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, (∑ i in s, f i • i) = x :=
+    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i in s, f i • i = x :=
   ⟨fun hx =>
     let ⟨v, hvs, hvx⟩ :=
       (Finsupp.mem_span_image_iff_total _).1
@@ -1187,8 +1192,6 @@ theorem mem_span_set {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔
       ∃ c : M →₀ R, (c.support : Set M) ⊆ s ∧ (c.sum fun mi r => r • mi) = m := by
   conv_lhs => rw [← Set.image_id s]
-  -- Porting note: `simp_rw [← exists_prop]` is not necessary because of the
-  --               new definition of `∃ x, p x`.
   exact Finsupp.mem_span_image_iff_total R (v := _root_.id (α := M))
 #align mem_span_set mem_span_set
 

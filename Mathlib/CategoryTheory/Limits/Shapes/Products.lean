@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.products
-! leanprover-community/mathlib commit e11bafa5284544728bd3b189942e930e0d4701de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.DiscreteCategory
+
+#align_import category_theory.limits.shapes.products from "leanprover-community/mathlib"@"e11bafa5284544728bd3b189942e930e0d4701de"
 
 /-!
 # Categorical (co)products
@@ -51,8 +48,6 @@ variable {C : Type u} [Category.{v} C]
 
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
 -- or `(Co)span`, since we already have `Discrete.functor`.
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
 abbrev Fan (f : β → C) :=
@@ -142,10 +137,10 @@ abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
 #align category_theory.limits.sigma_obj CategoryTheory.Limits.sigmaObj
 
 /-- notation for categorical products -/
-notation "∏ " f:20 => piObj f
+notation "∏ " f:60 => piObj f
 
 /-- notation for categorical coproducts -/
-notation "∐ " f:20 => sigmaObj f
+notation "∐ " f:60 => sigmaObj f
 
 /-- The `b`-th projection from the pi object over `f` has the form `∏ f ⟶ f b`. -/
 abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ f ⟶ f b :=
@@ -167,7 +162,7 @@ lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
 
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
-    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂ ) : g₁ = g₂ :=
+    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂) : g₁ = g₂ :=
   colimit.hom_ext (fun ⟨j⟩ => h j)
 
 /-- The fan constructed of the projections from the product is limiting. -/
@@ -260,7 +255,7 @@ theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
 of `f`, see `PreservesCoproduct.ofIsoComparison`. -/
 def sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] :
-    (∐ fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
+    ∐ (fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
   Sigma.desc fun b => G.map (Sigma.ι f b)
 #align category_theory.limits.sigma_comparison CategoryTheory.Limits.sigmaComparison
 
@@ -334,7 +329,7 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
         apply Subsingleton.elim)) }
   isLimit :=
     { lift := fun s => s.π.app default
-      fac := fun s j  => by
+      fac := fun s j => by
         have h := Subsingleton.elim j default
         subst h
         simp
@@ -347,7 +342,7 @@ instance (priority := 100) hasProduct_unique : HasProduct f :=
   HasLimit.mk (limitConeOfUnique f)
 #align category_theory.limits.has_product_unique CategoryTheory.Limits.hasProduct_unique
 
-/-- A product over a index type with exactly one term is just the object over that term. -/
+/-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def productUniqueIso : ∏ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit

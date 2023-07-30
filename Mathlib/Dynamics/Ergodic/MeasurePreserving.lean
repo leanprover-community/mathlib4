@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.ergodic.measure_preserving
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+
+#align_import dynamics.ergodic.measure_preserving from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Measure preserving maps
@@ -131,7 +128,7 @@ theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
 #align measure_theory.measure_preserving.measure_preimage_emb MeasureTheory.MeasurePreserving.measure_preimage_emb
 
 protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
-    ∀ n, MeasurePreserving (f^[n]) μa μa
+    ∀ n, MeasurePreserving f^[n] μa μa
   | 0 => MeasurePreserving.id μa
   | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 #align measure_theory.measure_preserving.iterate MeasureTheory.MeasurePreserving.iterate
@@ -142,7 +139,7 @@ variable {μ : Measure α} {f : α → α} {s : Set α}
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/
 theorem exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f μ μ)
     (hs : MeasurableSet s) {n : ℕ} (hvol : μ (Set.univ : Set α) < n * μ s) :
-    ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, (f^[m]) x ∈ s := by
+    ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, f^[m] x ∈ s := by
   have A : ∀ m, MeasurableSet (f^[m] ⁻¹' s) := fun m => (hf.iterate m).measurable hs
   have B : ∀ m, μ (f^[m] ⁻¹' s) = μ s := fun m => (hf.iterate m).measure_preimage hs
   have : μ (Set.univ : Set α) < (Finset.range n).sum fun m => μ (f^[m] ⁻¹' s) := by
@@ -152,7 +149,7 @@ theorem exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f �
   wlog hlt : i < j generalizing i j
   · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
   simp only [Set.mem_preimage, Finset.mem_range] at hi hj hxi hxj
-  refine' ⟨(f^[i]) x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, _⟩
+  refine' ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, _⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
 #align measure_theory.measure_preserving.exists_mem_image_mem_of_volume_lt_mul_volume MeasureTheory.MeasurePreserving.exists_mem_image_mem_of_volume_lt_mul_volume
 
@@ -161,7 +158,7 @@ theorem exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f �
 infinitely many times, see `MeasureTheory.MeasurePreserving.conservative` and theorems about
 `MeasureTheory.Conservative`. -/
 theorem exists_mem_image_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ μ)
-    (hs : MeasurableSet s) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ (m : _) (_ : m ≠ 0), (f^[m]) x ∈ s := by
+    (hs : MeasurableSet s) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ (m : _) (_ : m ≠ 0), f^[m] x ∈ s := by
   rcases ENNReal.exists_nat_mul_gt hs' (measure_ne_top μ (Set.univ : Set α)) with ⟨N, hN⟩
   rcases hf.exists_mem_image_mem_of_volume_lt_mul_volume hs hN with ⟨x, hx, m, hm, hmx⟩
   exact ⟨x, hx, m, hm.1.ne', hmx⟩

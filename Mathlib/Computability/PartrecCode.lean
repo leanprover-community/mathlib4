@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.partrec_code
-! leanprover-community/mathlib commit 6155d4351090a6fad236e3d2e4e0e4e7342668e8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Partrec
+
+#align_import computability.partrec_code from "leanprover-community/mathlib"@"6155d4351090a6fad236e3d2e4e0e4e7342668e8"
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.
@@ -821,7 +818,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
     induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
-        simp [eval, evaln, Bind.bind, Seq.seq] at h⊢ <;>
+        simp [eval, evaln, Bind.bind, Seq.seq] at h ⊢ <;>
       cases' h with _ h
     iterate 4 simpa [pure, PFun.pure, eq_comm] using h
     · -- pair cf cg

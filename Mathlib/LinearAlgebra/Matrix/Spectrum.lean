@@ -2,14 +2,11 @@
 Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.spectrum
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+
+#align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-! # Spectral theory of hermitian matrices
 
@@ -87,7 +84,7 @@ theorem eigenvectorMatrixInv_apply (i j : n) :
 #align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
 
 theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
-  ext (i j)
+  ext i j
   rw [conjTranspose_apply, eigenvectorMatrixInv_apply, eigenvectorMatrix_apply, star_star]
 #align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
 
@@ -103,7 +100,7 @@ For the spectral theorem on linear maps, see
 theorem spectral_theorem :
     hA.eigenvectorMatrixInv ⬝ A = diagonal ((↑) ∘ hA.eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
   rw [eigenvectorMatrixInv, PiLp.basis_toMatrix_basisFun_mul]
-  ext (i j)
+  ext i j
   have := isHermitian_iff_isSymmetric.1 hA
   convert this.eigenvectorBasis_apply_self_apply finrank_euclideanSpace (EuclideanSpace.single j 1)
     ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm i) using 1

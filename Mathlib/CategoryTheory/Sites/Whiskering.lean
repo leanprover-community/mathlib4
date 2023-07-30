@@ -2,13 +2,10 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.whiskering
-! leanprover-community/mathlib commit 9f9015c645d85695581237cc761981036be8bd37
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
+
+#align_import category_theory.sites.whiskering from "leanprover-community/mathlib"@"9f9015c645d85695581237cc761981036be8bd37"
 
 /-!
 
@@ -21,7 +18,7 @@ sheaf condition.
 
 The functor between sheaf categories is called `sheafCompose J F`.
 Given a natural transformation `η : F ⟶ G`, we obtain a natural transformation
-`sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η` (TODO).
+`sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η`.
 
 -/
 
@@ -42,7 +39,7 @@ variable {J : GrothendieckTopology C}
 
 variable {U : C} (R : Presieve U)
 
-variable (F : A ⥤ B)
+variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
 namespace GrothendieckTopology.Cover
 
@@ -118,10 +115,12 @@ def mapMultifork :
 end GrothendieckTopology.Cover
 
 variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F]
+variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan G]
+variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan H]
 
 theorem Presheaf.IsSheaf.comp {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) :
     Presheaf.IsSheaf J (P ⋙ F) := by
-  rw [Presheaf.isSheaf_iff_multifork] at hP⊢
+  rw [Presheaf.isSheaf_iff_multifork] at hP ⊢
   intro X S
   obtain ⟨h⟩ := hP X S
   replace h := isLimitOfPreserves F h
@@ -141,5 +140,21 @@ def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_compose CategoryTheory.sheafCompose
+
+variable {F G}
+
+/--
+If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
+`sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
+-/
+def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
+  app := fun X => .mk <| whiskerLeft _ η
+
+@[simp]
+lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
+
+@[simp]
+lemma sheafCompose_comp :
+  sheafCompose_map J (η ≫ γ) = sheafCompose_map J η ≫ sheafCompose_map J γ := rfl
 
 end CategoryTheory

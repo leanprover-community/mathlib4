@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.uniform_space.uniform_convergence_topology
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
+
+#align_import topology.uniform_space.uniform_convergence_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -434,7 +431,7 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
   constructor
   replace hf : (𝓤 β).comap (Prod.map f f) = _ := hf.comap_uniformity
   change comap (Prod.map (ofFun ∘ (f ∘ ·) ∘ toFun) (ofFun ∘ (f ∘ ·) ∘ toFun)) _ = _
-  rw [← uniformity_comap] at hf⊢
+  rw [← uniformity_comap] at hf ⊢
   congr
   rw [← uniformSpace_eq hf, UniformFun.comap_eq]
   rfl
@@ -449,7 +446,7 @@ protected def congrRight [UniformSpace γ] (e : γ ≃ᵤ β) : (α →ᵤ γ) �
     uniformContinuous_invFun := UniformFun.postcomp_uniformContinuous e.symm.uniformContinuous }
 #align uniform_fun.congr_right UniformFun.congrRight
 
-/-- Pre-composition by a any function is uniformly continuous for the uniform structures of
+/-- Pre-composition by any function is uniformly continuous for the uniform structures of
 uniform convergence.
 
 More precisely, for any `f : γ → α`, the function `(λ g, g ∘ f) : (α →ᵤ β) → (γ →ᵤ β)` is uniformly
@@ -777,7 +774,7 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
   constructor
   replace hf : (𝓤 β).comap (Prod.map f f) = _ := hf.comap_uniformity
   change comap (Prod.map (ofFun 𝔖 ∘ (· ∘ ·) f ∘ toFun 𝔖) (ofFun 𝔖 ∘ (· ∘ ·) f ∘ toFun 𝔖)) _ = _
-  rw [← uniformity_comap] at hf⊢
+  rw [← uniformity_comap] at hf ⊢
   congr
   rw [← uniformSpace_eq hf, UniformOnFun.comap_eq]
   rfl

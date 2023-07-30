@@ -3,13 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.pow.continuity
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+
+#align_import analysis.special_functions.pow.continuity from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Continuity of power functions
@@ -64,7 +61,7 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
       dsimp only
       rw [cpow_def_of_ne_zero hx]
   refine' IsOpen.eventually_mem _ hp_fst
-  change IsOpen ({ x : ℂ × ℂ | x.1 = 0 }ᶜ)
+  change IsOpen { x : ℂ × ℂ | x.1 = 0 }ᶜ
   rw [isOpen_compl_iff]
   exact isClosed_eq continuous_fst continuous_const
 #align cpow_eq_nhds' cpow_eq_nhds'
@@ -354,7 +351,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
           ((continuous_re.comp continuous_snd).tendsto _) _ <;>
       simp [hz, Real.zero_rpow hz.ne']
   · simp only [Function.comp, Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
-    rcases exists_gt (|im z|) with ⟨C, hC⟩
+    rcases exists_gt |im z| with ⟨C, hC⟩
     refine' ⟨Real.exp (π * C), eventually_map.2 _⟩
     refine'
       (((continuous_im.comp continuous_snd).abs.tendsto (_, z)).eventually (gt_mem_nhds hC)).mono

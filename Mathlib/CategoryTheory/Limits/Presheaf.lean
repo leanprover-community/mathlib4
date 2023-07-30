@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.presheaf
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Opposites
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Types
+
+#align_import category_theory.limits.presheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Colimit of representables
@@ -149,6 +146,7 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 -- stuck (and hence can see through definitional equalities). The previous lemma shows that
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext] lemma extendAlongYoneda_obj.hom_ext {P : Cᵒᵖ ⥤ Type u₁}
     {f f' : (extendAlongYoneda A).obj P ⟶ X}
     (w : ∀ j, colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f =
@@ -221,8 +219,7 @@ noncomputable def isExtensionAlongYoneda :
       -- porting note: this is slightly different to the `change` in mathlib3 which
       -- didn't work
       change (colimit.desc _ _ ≫ _) = colimit.desc _ _ ≫ _
-      apply colimit.hom_ext
-      intro j
+      ext
       rw [colimit.ι_desc_assoc, colimit.ι_desc_assoc]
       change (colimit.ι _ _ ≫ 𝟙 _) ≫ colimit.desc _ _ = _
       rw [comp_id, colimit.ι_desc]

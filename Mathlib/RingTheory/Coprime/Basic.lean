@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.coprime.basic
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.GroupPower.Ring
+
+#align_import ring_theory.coprime.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
 
 /-!
 # Coprime elements of a ring
@@ -112,7 +109,7 @@ theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime
 #align is_coprime.mul_left IsCoprime.mul_left
 
 theorem IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprime x (y * z) := by
-  rw [isCoprime_comm] at H1 H2⊢
+  rw [isCoprime_comm] at H1 H2 ⊢
   exact H1.mul_left H2
 #align is_coprime.mul_right IsCoprime.mul_right
 
@@ -137,7 +134,7 @@ theorem IsCoprime.of_mul_left_right (H : IsCoprime (x * y) z) : IsCoprime y z :=
 #align is_coprime.of_mul_left_right IsCoprime.of_mul_left_right
 
 theorem IsCoprime.of_mul_right_left (H : IsCoprime x (y * z)) : IsCoprime x y := by
-  rw [isCoprime_comm] at H⊢
+  rw [isCoprime_comm] at H ⊢
   exact H.of_mul_left_left
 #align is_coprime.of_mul_right_left IsCoprime.of_mul_right_left
 
@@ -192,7 +189,7 @@ theorem IsCoprime.of_add_mul_right_left (h : IsCoprime (x + z * y) y) : IsCoprim
 #align is_coprime.of_add_mul_right_left IsCoprime.of_add_mul_right_left
 
 theorem IsCoprime.of_add_mul_left_right (h : IsCoprime x (y + x * z)) : IsCoprime x y := by
-  rw [isCoprime_comm] at h⊢
+  rw [isCoprime_comm] at h ⊢
   exact h.of_add_mul_left_left
 #align is_coprime.of_add_mul_left_right IsCoprime.of_add_mul_left_right
 

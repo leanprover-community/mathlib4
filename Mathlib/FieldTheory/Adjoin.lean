@@ -2,16 +2,13 @@
 Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.adjoin
-! leanprover-community/mathlib commit df76f43357840485b9d04ed5dee5ab115d420e87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.RingTheory.TensorProduct
+
+#align_import field_theory.adjoin from "leanprover-community/mathlib"@"df76f43357840485b9d04ed5dee5ab115d420e87"
 
 /-!
 # Adjoining Elements to Fields
@@ -397,7 +394,7 @@ theorem adjoin_insert_adjoin (x : E) :
     adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
   le_antisymm
     (adjoin_le_iff.mpr
-      (Set.insert_subset.mpr
+      (Set.insert_subset_iff.mpr
         ⟨subset_adjoin _ _ (Set.mem_insert _ _),
           adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
     (adjoin.mono _ _ _ (Set.insert_subset_insert (subset_adjoin _ _)))
@@ -567,7 +564,7 @@ open scoped BigOperators
 
 /-- A compositum of splitting fields is a splitting field -/
 theorem isSplittingField_iSup {ι : Type _} {t : ι → IntermediateField F E} {p : ι → F[X]}
-    {s : Finset ι} (h0 : (∏ i in s, p i) ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField F (t i)) :
+    {s : Finset ι} (h0 : ∏ i in s, p i ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField F (t i)) :
     (∏ i in s, p i).IsSplittingField F (⨆ i ∈ s, t i : IntermediateField F E) := by
   let K : IntermediateField F E := ⨆ i ∈ s, t i
   have hK : ∀ i ∈ s, t i ≤ K := fun i hi => le_iSup_of_le i (le_iSup (fun _ => t i) hi)
@@ -629,7 +626,7 @@ theorem adjoin_finset_isCompactElement (S : Finset E) :
 -- Porting note: `exact` or `apply` timeout here
     refine' le_antisymm (adjoin_le_iff.mpr fun x hx => SetLike.mem_coe.mpr
       (adjoin_simple_le_iff.mp (le_iSup_of_le x (le_iSup_iff.2 (fun E1 hE1 => hE1 hx)))))
-        (iSup_le fun x => iSup_le fun hx =>  adjoin_simple_le_iff.mpr (subset_adjoin F S hx))
+        (iSup_le fun x => iSup_le fun hx => adjoin_simple_le_iff.mpr (subset_adjoin F S hx))
   rw [key, ← Finset.sup_eq_iSup]
   exact finset_sup_compact_of_compact S fun x _ => adjoin_simple_isCompactElement x
 #align intermediate_field.adjoin_finset_is_compact_element IntermediateField.adjoin_finset_isCompactElement
@@ -865,7 +862,6 @@ noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
   (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).basis.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
 #align intermediate_field.power_basis_aux IntermediateField.powerBasisAux
 
-set_option maxHeartbeats 300000 in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 @[simps]
@@ -888,15 +884,16 @@ theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
   rfl
 #align intermediate_field.adjoin.finrank IntermediateField.adjoin.finrank
 
-theorem minpoly.natDegree_le {x : L} [FiniteDimensional K L] (hx : IsIntegral K x) :
+theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank hx).symm K⟮x⟯.toSubmodule.finrank_le
-#align minpoly.nat_degree_le IntermediateField.minpoly.natDegree_le
+  le_of_eq_of_le (IntermediateField.adjoin.finrank (isIntegral_of_finite _ _)).symm
+    K⟮x⟯.toSubmodule.finrank_le
+#align minpoly.nat_degree_le minpoly.natDegree_le
 
-theorem minpoly.degree_le {x : L} [FiniteDimensional K L] (hx : IsIntegral K x) :
+theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).degree ≤ finrank K L :=
-  degree_le_of_natDegree_le (minpoly.natDegree_le hx)
-#align minpoly.degree_le IntermediateField.minpoly.degree_le
+  degree_le_of_natDegree_le (minpoly.natDegree_le x)
+#align minpoly.degree_le minpoly.degree_le
 
 end PowerBasis
 
@@ -1098,7 +1095,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
       exact congr_arg z.2 (Subtype.ext hst)⟩
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-set_option maxHeartbeats 410000 in
+set_option maxHeartbeats 350000 in
 -- Porting note: instance `alg` added by hand. The proof is very slow.
 /-- Extend a lift `x : Lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
 noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
@@ -1159,7 +1156,8 @@ theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F
 theorem algHom_mk_adjoin_splits
     (hK : ∀ s ∈ S, IsIntegral F (s : E) ∧ (minpoly F s).Splits (algebraMap F K)) :
     Nonempty (adjoin F S →ₐ[F] K) := by
-  obtain ⟨x : Lifts F E K, hx⟩ := zorn_partialOrder Lifts.exists_upper_bound
+  obtain ⟨x, hx⟩ : ∃ m : Lifts F E K, ∀ a, m ≤ a → a = m :=
+    zorn_partialOrder Lifts.exists_upper_bound
   refine'
     ⟨{ toFun := (fun s => x.2 ⟨s, adjoin_le_iff.mpr (fun s hs => _) s.mem⟩)
        map_one' := x.2.map_one
@@ -1211,7 +1209,7 @@ theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K
       (Field.toIsField K)
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
 
-set_option synthInstance.maxHeartbeats 30000
+set_option synthInstance.maxHeartbeats 30000 in
 instance finiteDimensional_sup [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val
@@ -1245,7 +1243,7 @@ instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → Intermediate
     {s : Finset ι} [h : ∀ i, FiniteDimensional K (f i)] :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
   haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i
-  have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
+  have : ⨆ i ∈ s, f i = ⨆ i : { i // i ∈ s }, f i :=
     le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite
@@ -1257,7 +1255,7 @@ theorem finiteDimensional_iSup_of_finset' {ι : Type _} {f : ι → Intermediate
     {s : Finset ι} (h : ∀ i, i ∈ s → FiniteDimensional K (f i)) :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
   haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i i.2
-  have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
+  have : ⨆ i ∈ s, f i = ⨆ i : { i // i ∈ s }, f i :=
     le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite

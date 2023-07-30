@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.structure_polynomial
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.NumberTheory.Basic
 import Mathlib.RingTheory.WittVector.WittPolynomial
+
+#align_import ring_theory.witt_vector.structure_polynomial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Witt structure polynomials
@@ -220,7 +217,7 @@ theorem bind₁_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : �
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_bind₁, map_rename, map_expand, rename_expand, map_wittPolynomial]
   have key := (wittStructureRat_prop p (map (Int.castRingHom ℚ) Φ) n).symm
-  apply_fun expand p  at key
+  apply_fun expand p at key
   simp only [expand_bind₁] at key
   rw [key]; clear key
   apply eval₂Hom_congr' rfl _ rfl
@@ -243,7 +240,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
       Nat.cast_one, Nat.zero_eq]
   -- prepare a useful equation for rewriting
   have key := bind₁_rename_expand_wittPolynomial Φ n IH
-  apply_fun map (Int.castRingHom (ZMod (p ^ (n + 1))))  at key
+  apply_fun map (Int.castRingHom (ZMod (p ^ (n + 1)))) at key
   conv_lhs at key => simp only [map_bind₁, map_rename, map_expand, map_wittPolynomial]
   -- clean up and massage
   rw [Nat.succ_eq_add_one, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_bind₁]
@@ -324,7 +321,7 @@ theorem eq_wittStructureInt (Φ : MvPolynomial idx ℤ) (φ : ℕ → MvPolynomi
   apply ExistsUnique.unique (wittStructureRat_existsUnique p (map (Int.castRingHom ℚ) Φ))
   · intro n
     specialize h n
-    apply_fun map (Int.castRingHom ℚ)  at h
+    apply_fun map (Int.castRingHom ℚ) at h
     simpa only [map_bind₁, ← eval₂Hom_map_hom, eval₂Hom_C_left, map_rename, map_wittPolynomial,
       AlgHom.coe_toRingHom] using h
   · intro n; apply wittStructureRat_prop

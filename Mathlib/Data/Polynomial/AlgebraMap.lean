@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.algebra_map
-! leanprover-community/mathlib commit e064a7bf82ad94c3c17b5128bbd860d1ec34874e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.algebra_map from "leanprover-community/mathlib"@"e064a7bf82ad94c3c17b5128bbd860d1ec34874e"
 
 /-!
 # Theory of univariate polynomials
@@ -335,7 +332,7 @@ theorem map_aeval_eq_aeval_map {S T U : Type _} [CommSemiring S] [CommSemiring T
 
 theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
-  rw [aeval_def, ← eval_map] at h₂⊢
+  rw [aeval_def, ← eval_map] at h₂ ⊢
   exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
 #align polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero Polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero
 

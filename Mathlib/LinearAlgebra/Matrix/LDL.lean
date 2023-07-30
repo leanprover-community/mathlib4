@@ -2,18 +2,15 @@
 Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.ldl
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
+#align_import linear_algebra.matrix.ldl from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
+
 /-! # LDL decomposition
 
-This file proves the LDL-decomposition of matricies: Any positive definite matrix `S` can be
+This file proves the LDL-decomposition of matrices: Any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix.
 
 ## Main definitions
@@ -64,7 +61,7 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
             (Pi.basisFun 𝕜 n)))ᵀ := by
   letI := NormedAddCommGroup.ofMatrix hS.transpose
   letI := InnerProductSpace.ofMatrix hS.transpose
-  ext (i j)
+  ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
 #align LDL.lower_inv_eq_gram_schmidt_basis LDL.lowerInv_eq_gramSchmidtBasis
@@ -103,7 +100,7 @@ theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 
 /-- Inverse statement of **LDL decomposition**: we can conjugate a positive definite matrix
 by some lower triangular matrix and get a diagonal matrix. -/
 theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS ⬝ S ⬝ (LDL.lowerInv hS)ᴴ := by
-  ext (i j)
+  ext i j
   by_cases hij : i = j
   · simp only [diag, diagEntries, EuclideanSpace.inner_piLp_equiv_symm, star_star, hij,
     diagonal_apply_eq, Matrix.mul_assoc]

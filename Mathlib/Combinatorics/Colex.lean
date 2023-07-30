@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov
-
-! This file was ported from Lean 3 source module combinatorics.colex
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Algebra.GeomSum
+
+#align_import combinatorics.colex from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Colex
@@ -396,7 +393,7 @@ instance [LinearOrder α] [Fintype α] : BoundedOrder (Finset.Colex α) :=
 /-- For subsets of ℕ, we can show that colex is equivalent to binary. -/
 theorem sum_two_pow_lt_iff_lt (A B : Finset ℕ) :
     ((∑ i in A, 2 ^ i) < ∑ i in B, 2 ^ i) ↔ A.toColex < B.toColex := by
-  have z : ∀ A B : Finset ℕ, A.toColex < B.toColex → (∑ i in A, 2 ^ i) < ∑ i in B, 2 ^ i := by
+  have z : ∀ A B : Finset ℕ, A.toColex < B.toColex → ∑ i in A, 2 ^ i < ∑ i in B, 2 ^ i := by
     intro A B
     rw [← sdiff_lt_sdiff_iff_lt, Colex.lt_def]
     rintro ⟨k, z, kA, kB⟩

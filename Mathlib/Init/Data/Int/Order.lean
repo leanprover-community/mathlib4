@@ -57,7 +57,6 @@ instance : LinearOrder ℤ where
 
 #align int.eq_nat_abs_of_zero_le Int.eq_natAbs_of_zero_le
 #align int.le_nat_abs Int.le_natAbs
-#align int.neg_succ_lt_zero Int.negSucc_lt_zero
 #align int.eq_neg_succ_of_lt_zero Int.eq_negSucc_of_lt_zero
 #align int.sub_eq_zero_iff_eq Int.sub_eq_zero
 

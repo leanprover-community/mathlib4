@@ -2,17 +2,14 @@
 Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.emetric_space
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+
+#align_import topology.metric_space.emetric_space from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Extended metric spaces
@@ -118,6 +115,11 @@ theorem edist_congr_left {x y z : α} (h : edist x y = 0) : edist z x = edist z 
   rw [edist_comm z x, edist_comm z y]
   apply edist_congr_right h
 #align edist_congr_left edist_congr_left
+
+-- new theorem
+theorem edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
+    edist w y = edist x z :=
+  (edist_congr_right hl).trans (edist_congr_left hr)
 
 theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t :=
   calc
@@ -512,8 +514,8 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetric
   uniformity_edist := by
     simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
       preimage_setOf_eq, comap_principal, edist_pi_def]
-    rw [iInf_comm]; congr ; funext ε
-    rw [iInf_comm]; congr ; funext εpos
+    rw [iInf_comm]; congr; funext ε
+    rw [iInf_comm]; congr; funext εpos
     simp [setOf_forall, εpos]
 #align pseudo_emetric_space_pi pseudoEMetricSpacePi
 
@@ -855,7 +857,7 @@ theorem secondCountable_of_sigmaCompact [SigmaCompactSpace α] : SecondCountable
 variable {α}
 
 theorem secondCountable_of_almost_dense_set
-    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ (⋃ x ∈ t, closedBall x ε) = univ) :
+    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
     SecondCountableTopology α := by
   suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
   have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε
@@ -1146,11 +1148,10 @@ end EMetric
 -/
 
 instance [PseudoEMetricSpace X] : EDist (UniformSpace.SeparationQuotient X) where
-  edist x y := Quotient.liftOn₂' x y edist fun x y x' y' hx hy =>
-    calc edist x y = edist x' y := edist_congr_right $
-      EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hx
-    _ = edist x' y' := edist_congr_left $
-      EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hy
+  edist x y := Quotient.liftOn₂' x y edist fun _ _ _ _ hx hy =>
+    edist_congr
+      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hx)
+      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hy)
 
 @[simp] theorem UniformSpace.SeparationQuotient.edist_mk [PseudoEMetricSpace X] (x y : X) :
     @edist (UniformSpace.SeparationQuotient X) _ (Quot.mk _ x) (Quot.mk _ y) = edist x y :=

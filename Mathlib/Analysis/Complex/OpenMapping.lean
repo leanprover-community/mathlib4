@@ -2,15 +2,12 @@
 Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
-
-! This file was ported from Lean 3 source module analysis.complex.open_mapping
-! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.AbsMax
+
+#align_import analysis.complex.open_mapping from "leanprover-community/mathlib"@"f9dd3204df14a0749cd456fac1e6849dfe7d2b88"
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -61,7 +58,7 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
       norm_sub_sub_norm_sub_le_norm_sub (f z) v (f z₀)]
   have h5 : ‖f z₀ - v‖ < ε / 2 := by simpa [← dist_eq_norm, dist_comm] using mem_ball.mp hv
   obtain ⟨z, hz1, hz2⟩ : ∃ z ∈ ball z₀ r, IsLocalMin (fun z => ‖f z - v‖) z
-  exact exists_local_min_mem_ball h2 (mem_closedBall_self hr.le) fun z hz => h5.trans_le (h4 z hz)
+  exact exists_isLocalMin_mem_ball h2 (mem_closedBall_self hr.le) fun z hz => h5.trans_le (h4 z hz)
   refine ⟨z, ball_subset_closedBall hz1, sub_eq_zero.mp ?_⟩
   have h6 := h1.differentiableOn.eventually_differentiableAt (isOpen_ball.mem_nhds hz1)
   refine (eventually_eq_or_eq_zero_of_isLocalMin_norm h6 hz2).resolve_left fun key => ?_

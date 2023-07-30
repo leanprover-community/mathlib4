@@ -2,17 +2,14 @@
 Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
-
-! This file was ported from Lean 3 source module data.complex.module
-! leanprover-community/mathlib commit c7bce2818663f456335892ddbdd1809f111a5b72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.SMul
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower
 import Mathlib.Algebra.CharP.Invertible
+
+#align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -52,27 +49,6 @@ namespace Complex
 open ComplexConjugate
 
 variable {R : Type _} {S : Type _}
-
-section
-
-variable [SMul R ℝ]
-
-/- The useless `0` multiplication in `smul` is to make sure that
-`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
-instance : SMul R ℂ where smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
-
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
-#align complex.smul_re Complex.smul_re
-
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
-#align complex.smul_im Complex.smul_im
-
-@[simp]
-theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
-  rfl
-#align complex.real_smul Complex.real_smul
-
-end
 
 instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
@@ -306,7 +282,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 @[simp]
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
-  ext (i j)
+  ext i j
   -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 #align complex.to_matrix_conj_ae Complex.toMatrix_conjAe
@@ -342,7 +318,7 @@ variable {A : Type _} [Ring A] [Algebra ℝ A]
 See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
-    ((Algebra.ofId ℝ A).toLinearMap.comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
+    ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
     (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [RingHom.map_one, zero_smul, add_zero])
     fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
     show

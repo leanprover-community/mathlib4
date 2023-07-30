@@ -2,16 +2,13 @@
 Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.homogeneous_ideal
-! leanprover-community/mathlib commit 4e861f25ba5ceef42ba0712d8ffeb32f38ad6441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import ring_theory.graded_algebra.homogeneous_ideal from "leanprover-community/mathlib"@"4e861f25ba5ceef42ba0712d8ffeb32f38ad6441"
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -170,7 +167,7 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
   rw [Ideal.span, Finsupp.span_eq_range_total] at hr
   rw [LinearMap.mem_range] at hr
   obtain ⟨s, rfl⟩ := hr
-  rw [Finsupp.total_apply, Finsupp.sum, decompose_sum, Dfinsupp.finset_sum_apply,
+  rw [Finsupp.total_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
     AddSubmonoidClass.coe_finset_sum]
   refine' Ideal.sum_mem _ _
   rintro z hz1
@@ -267,7 +264,7 @@ theorem inf {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
 
 theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous 𝒜) :
     (I ⊔ J).IsHomogeneous 𝒜 := by
-  rw [iff_exists] at HI HJ⊢
+  rw [iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
   refine' ⟨s₁ ∪ s₂, _⟩
   rw [Set.image_union]
@@ -276,7 +273,7 @@ theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
 
 protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨆ i, f i).IsHomogeneous 𝒜 := by
-  simp_rw [iff_exists] at h⊢
+  simp_rw [iff_exists] at h ⊢
   choose s hs using h
   refine' ⟨⋃ i, s i, _⟩
   simp_rw [Set.image_iUnion, Ideal.span_iUnion]
@@ -287,7 +284,7 @@ protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHo
 protected theorem iInf {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨅ i, f i).IsHomogeneous 𝒜 := by
   intro i x hx
-  simp only [Ideal.mem_iInf] at hx⊢
+  simp only [Ideal.mem_iInf] at hx ⊢
   exact fun j => h _ _ (hx j)
 #align ideal.is_homogeneous.infi Ideal.IsHomogeneous.iInf
 
@@ -454,7 +451,7 @@ variable (I : Ideal A)
 
 theorem Ideal.IsHomogeneous.mul {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous 𝒜) :
     (I * J).IsHomogeneous 𝒜 := by
-  rw [Ideal.IsHomogeneous.iff_exists] at HI HJ⊢
+  rw [Ideal.IsHomogeneous.iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
   rw [Ideal.span_mul_span']
   exact ⟨s₁ * s₂, congr_arg _ <| (Set.image_mul (homogeneousSubmonoid 𝒜).subtype).symm⟩

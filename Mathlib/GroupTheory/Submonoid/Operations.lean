@@ -3,16 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
-
-! This file was ported from Lean 3 source module group_theory.submonoid.operations
-! leanprover-community/mathlib commit cf8e77c636317b059a8ce20807a29cf3772a0640
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Cancel.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
+
+#align_import group_theory.submonoid.operations from "leanprover-community/mathlib"@"cf8e77c636317b059a8ce20807a29cf3772a0640"
 
 /-!
 # Operations on `Submonoid`s
@@ -1072,7 +1069,8 @@ theorem mrange_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ F
 #align add_monoid_hom.mrange_top_iff_surjective AddMonoidHom.mrange_top_iff_surjective
 
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
-@[to_additive "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
+@[to_additive (attr := simp)
+  "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
 theorem mrange_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
   mrange_top_iff_surjective.2 hf

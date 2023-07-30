@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.determinant
-! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.GeneralLinearGroup
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.FieldSimp
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Basis
+
+#align_import linear_algebra.determinant from "leanprover-community/mathlib"@"bd65478311e4dfd41f48bf38c7e3b02fb75d0163"
 
 /-!
 # Determinant of families of vectors
@@ -555,7 +552,7 @@ theorem is_basis_iff_det {v : ι → M} :
     set v' := Basis.mk hli hspan.ge
     rw [e.det_apply]
     convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
-    ext (i j)
+    ext i j
     simp
   · intro h
     rw [Basis.det_apply, Basis.toMatrix_eq_toMatrix_constr] at h
@@ -610,7 +607,7 @@ theorem Basis.det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M
     b'.det (f ∘ b) = LinearMap.det (f ∘ₗ (b'.equiv b (Equiv.refl ι) : M' →ₗ[A] M)) := by
   rw [Basis.det_apply, ← LinearMap.det_toMatrix b', LinearMap.toMatrix_comp _ b, Matrix.det_mul,
     LinearMap.toMatrix_basis_equiv, Matrix.det_one, mul_one]
-  congr 1; ext (i j)
+  congr 1; ext i j
   rw [Basis.toMatrix_apply, LinearMap.toMatrix_apply, Function.comp_apply]
 #align basis.det_comp_basis Basis.det_comp_basis
 

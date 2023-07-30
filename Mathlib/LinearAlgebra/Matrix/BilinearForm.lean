@@ -2,11 +2,6 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.bilinear_form
-! leanprover-community/mathlib commit 075b3f7d19b9da85a0b54b3e33055a74fc388dec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+
+#align_import linear_algebra.matrix.bilinear_form from "leanprover-community/mathlib"@"075b3f7d19b9da85a0b54b3e33055a74fc388dec"
 
 /-!
 # Bilinear form
@@ -145,7 +142,7 @@ def BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R�
     invFun := Matrix.toBilin'Aux
     left_inv := fun B ↦ by convert toBilin'Aux_toMatrixAux B
     right_inv := fun M => by
-      ext (i j)
+      ext i j
       simp only [toFun_eq_coe, BilinForm.toMatrixAux_apply, Matrix.toBilin'Aux_stdBasis] }
 #align bilin_form.to_matrix' BilinForm.toMatrix'
 
@@ -224,7 +221,7 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
 theorem BilinForm.toMatrix'_comp (B : BilinForm R₂ (n → R₂)) (l r : (o → R₂) →ₗ[R₂] n → R₂) :
     BilinForm.toMatrix' (B.comp l r) =
       (LinearMap.toMatrix' l)ᵀ ⬝ BilinForm.toMatrix' B ⬝ LinearMap.toMatrix' r := by
-  ext (i j)
+  ext i j
   simp only [BilinForm.toMatrix'_apply, BilinForm.comp_apply, transpose_apply, Matrix.mul_apply,
     LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
   rw [sum_comm]
@@ -365,7 +362,7 @@ variable [DecidableEq o]
 theorem BilinForm.toMatrix_comp (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R₂] M₂) :
     BilinForm.toMatrix c (B.comp l r) =
       (LinearMap.toMatrix c b l)ᵀ ⬝ BilinForm.toMatrix b B ⬝ LinearMap.toMatrix c b r := by
-  ext (i j)
+  ext i j
   simp only [BilinForm.toMatrix_apply, BilinForm.comp_apply, transpose_apply, Matrix.mul_apply,
     LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
   rw [sum_comm]

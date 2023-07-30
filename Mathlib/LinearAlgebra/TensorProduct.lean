@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_product
-! leanprover-community/mathlib commit b0c712376e4ef44c53c3b872157ef44dfe9f9599
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
+
+#align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -170,7 +167,7 @@ Note that `Module R' (M ⊗[R] N)` is available even without this typeclass on `
 needed if `TensorProduct.smul_tmul`, `TensorProduct.smul_tmul'`, or `TensorProduct.tmul_smul` is
 used.
 -/
-class CompatibleSMul [DistribMulAction R' N] where
+class CompatibleSMul [DistribMulAction R' N] : Prop where
   smul_tmul : ∀ (r : R') (m : M) (n : N), (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n)
 #align tensor_product.compatible_smul TensorProduct.CompatibleSMul
 
@@ -329,7 +326,17 @@ section
 
 -- Like `R'`, `R'₂` provides a `DistribMulAction R'₂ (M ⊗[R] N)`
 variable {R'₂ : Type _} [Monoid R'₂] [DistribMulAction R'₂ M]
-variable [SMulCommClass R R'₂ M] [SMul R'₂ R']
+variable [SMulCommClass R R'₂ M]
+
+/-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
+instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) where
+  smul_comm r' r'₂ x :=
+    TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
+      (fun m n => by simp_rw [smul_tmul', smul_comm]) fun x y ihx ihy => by
+      simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]
+#align tensor_product.smul_comm_class_left TensorProduct.smulCommClass_left
+
+variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
@@ -423,6 +430,17 @@ theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := 
   rw [← top_le_iff, ← span_tmul_eq_top, Submodule.map₂_eq_span_image2]
   exact Submodule.span_mono fun _ ⟨m, n, h⟩ => ⟨m, n, trivial, trivial, h⟩
 #align tensor_product.map₂_mk_top_top_eq_top TensorProduct.map₂_mk_top_top_eq_top
+
+theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
+    (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) :
+    ∃ m n, x = m ⊗ₜ n := by
+  induction' x using TensorProduct.induction_on with m n x y h₁ h₂
+  · use 0, 0
+    rw [TensorProduct.zero_tmul]
+  · use m, n
+  · obtain ⟨m₁, n₁, rfl⟩ := h₁
+    obtain ⟨m₂, n₂, rfl⟩ := h₂
+    apply h
 
 end Module
 
@@ -730,7 +748,7 @@ theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
   simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span, Set.mem_image,
     Set.mem_setOf_eq]
-  congr ; ext t
+  congr; ext t
   constructor
   · rintro ⟨_, ⟨⟨m, n, rfl⟩, rfl⟩⟩
     use m, n
@@ -1015,11 +1033,11 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
 def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
-    ext (x y)
+    ext x y
     simp only [compr₂_apply, mk_apply, add_apply, rTensor_tmul, add_tmul]
   map_smul' r f := by
     dsimp
-    ext (x y)
+    ext x y
     simp only [compr₂_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
 #align linear_map.rtensor_hom LinearMap.rTensorHom
 
@@ -1064,7 +1082,7 @@ theorem rTensor_smul (r : R) (f : N →ₗ[R] P) : (r • f).rTensor M = r • f
 #align linear_map.rtensor_smul LinearMap.rTensor_smul
 
 theorem lTensor_comp : (g.comp f).lTensor M = (g.lTensor M).comp (f.lTensor M) := by
-  ext (m n)
+  ext m n
   simp only [compr₂_apply, mk_apply, comp_apply, lTensor_tmul]
 #align linear_map.ltensor_comp LinearMap.lTensor_comp
 
@@ -1073,7 +1091,7 @@ theorem lTensor_comp_apply (x : M ⊗[R] N) :
 #align linear_map.ltensor_comp_apply LinearMap.lTensor_comp_apply
 
 theorem rTensor_comp : (g.comp f).rTensor M = (g.rTensor M).comp (f.rTensor M) := by
-  ext (m n)
+  ext m n
   simp only [compr₂_apply, mk_apply, comp_apply, rTensor_tmul]
 #align linear_map.rtensor_comp LinearMap.rTensor_comp
 

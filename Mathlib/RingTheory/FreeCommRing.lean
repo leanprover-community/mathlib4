@@ -2,16 +2,13 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.free_comm_ring
-! leanprover-community/mathlib commit 62c0a4ef1441edb463095ea02a06e87f3dfe135c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.RingTheory.FreeRing
+
+#align_import ring_theory.free_comm_ring from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
 /-!
 # Free commutative rings
@@ -66,7 +63,7 @@ def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
 #align free_comm_ring FreeCommRing
 
---Porting note: two instance below couldn't be derived
+--Porting note: two instances below couldn't be derived
 instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
   delta FreeCommRing; infer_instance
 #align free_comm_ring.comm_ring FreeCommRing.instCommRing
@@ -221,7 +218,7 @@ end IsSupported
 /-- The restriction map from `FreeCommRing α` to `FreeCommRing s` where `s : Set α`, defined
   by sending all variables not in `s` to zero. -/
 def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* FreeCommRing s :=
-  lift (fun a => if H : a ∈ s then of ⟨a, H⟩  else 0)
+  lift (fun a => if H : a ∈ s then of ⟨a, H⟩ else 0)
 #align free_comm_ring.restriction FreeCommRing.restriction
 
 section Restriction
@@ -258,7 +255,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       norm_cast
   specialize this (of p) hps
   rw [lift_of] at this
-  split_ifs  at this with h
+  split_ifs at this with h
   · exact h
   exfalso
   apply Ne.symm Int.zero_ne_one

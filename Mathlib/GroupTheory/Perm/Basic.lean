@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module group_theory.perm.basic
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Logic.Equiv.Set
+
+#align_import group_theory.perm.basic from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"
 
 /-!
 # The group of permutations (self-equivalences) of a type `α`
@@ -99,11 +96,14 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 #align equiv.perm.coe_one Equiv.Perm.coe_one
+
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
 #align equiv.perm.coe_mul Equiv.Perm.coe_mul
+
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 #align equiv.perm.coe_pow Equiv.Perm.coe_pow
+
 @[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := (coe_pow _ _).symm
 #align equiv.perm.iterate_eq_pow Equiv.Perm.iterate_eq_pow
 
@@ -122,6 +122,7 @@ theorem zpow_apply_comm {α : Type _} (σ : Perm α) (m n : ℤ) {x : α} :
 
 @[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
 #align equiv.perm.image_inv Equiv.Perm.image_inv
+
 @[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
   (f.image_eq_preimage _).symm
 #align equiv.perm.preimage_inv Equiv.Perm.preimage_inv
@@ -270,7 +271,7 @@ def sigmaCongrRightHom {α : Type _} (β : α → Type _) : (∀ a, Perm (β a))
 theorem sigmaCongrRightHom_injective {α : Type _} {β : α → Type _} :
     Function.Injective (sigmaCongrRightHom β) := by
   intro x y h
-  ext (a b)
+  ext a b
   simpa using Equiv.congr_fun h ⟨a, b⟩
 #align equiv.perm.sigma_congr_right_hom_injective Equiv.Perm.sigmaCongrRightHom_injective
 
@@ -601,9 +602,10 @@ section AddGroup
 variable [AddGroup α] (a b : α)
 
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
+#align equiv.add_left_zero Equiv.addLeft_zero
+
 @[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
 #align equiv.add_right_zero Equiv.addRight_zero
-#align equiv.add_left_zero Equiv.addLeft_zero
 
 @[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
   ext $ add_assoc _ _
@@ -614,9 +616,10 @@ variable [AddGroup α] (a b : α)
 #align equiv.add_right_add Equiv.addRight_add
 
 @[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
+#align equiv.inv_add_left Equiv.inv_addLeft
+
 @[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
 #align equiv.inv_add_right Equiv.inv_addRight
-#align equiv.inv_add_left Equiv.inv_addLeft
 
 @[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
   ext; simp [Perm.coe_pow]
@@ -642,27 +645,29 @@ variable [Group α] (a b : α)
 
 @[to_additive existing (attr := simp)]
 lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+#align equiv.mul_left_one Equiv.mulLeft_one
+
 @[to_additive existing (attr := simp)]
 lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 #align equiv.mul_right_one Equiv.mulRight_one
-#align equiv.mul_left_one Equiv.mulLeft_one
 
-@[to_additive existing (attr := simp)] lemma mulLeft_mul :
-  Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
-ext $ mul_assoc _ _
+@[to_additive existing (attr := simp)]
+lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
+  ext $ mul_assoc _ _
 #align equiv.mul_left_mul Equiv.mulLeft_mul
 
-@[to_additive existing (attr := simp)] lemma mulRight_mul :
-  Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
-ext $ fun _ ↦ (mul_assoc _ _ _).symm
+@[to_additive existing (attr := simp)]
+lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+  ext $ fun _ ↦ (mul_assoc _ _ _).symm
 #align equiv.mul_right_mul Equiv.mulRight_mul
 
 @[to_additive existing (attr := simp) inv_addLeft]
 lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
+#align equiv.inv_mul_left Equiv.inv_mulLeft
+
 @[to_additive existing (attr := simp) inv_addRight]
 lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 #align equiv.inv_mul_right Equiv.inv_mulRight
-#align equiv.inv_mul_left Equiv.inv_mulLeft
 
 @[to_additive existing (attr := simp) pow_addLeft]
 lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
