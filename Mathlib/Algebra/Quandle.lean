@@ -660,9 +660,9 @@ instance PreEnvelGroup.setoid (R : Type _) [Rack R] : Setoid (PreEnvelGroup R)
   r := PreEnvelGroupRel R
   iseqv := by
     constructor
-    apply PreEnvelGroupRel.refl
-    apply PreEnvelGroupRel.symm
-    apply PreEnvelGroupRel.trans
+    · apply PreEnvelGroupRel.refl
+    · apply PreEnvelGroupRel.symm
+    · apply PreEnvelGroupRel.trans
 #align rack.pre_envel_group.setoid Rack.PreEnvelGroup.setoid
 /-- The universal enveloping group for the rack R.
 -/

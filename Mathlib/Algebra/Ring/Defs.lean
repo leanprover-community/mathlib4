@@ -53,13 +53,13 @@ class Distrib (R : Type _) extends Mul R, Add R where
 #align distrib Distrib
 
 /-- A typeclass stating that multiplication is left distributive over addition. -/
-class LeftDistribClass (R : Type _) [Mul R] [Add R] where
+class LeftDistribClass (R : Type _) [Mul R] [Add R] : Prop where
   /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
 #align left_distrib_class LeftDistribClass
 
 /-- A typeclass stating that multiplication is right distributive over addition. -/
-class RightDistribClass (R : Type _) [Mul R] [Add R] where
+class RightDistribClass (R : Type _) [Mul R] [Add R] : Prop where
   /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align right_distrib_class RightDistribClass

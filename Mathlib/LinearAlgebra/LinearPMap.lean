@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Prod
 # Partially defined linear maps
 
 A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`.
-We define a `SemilatticeInf` with `OrderBot` instance on this this, and define three operations:
+We define a `SemilatticeInf` with `OrderBot` instance on this, and define three operations:
 
 * `mkSpanSingleton` defines a partial linear map defined on the span of a singleton.
 * `sup` takes two partial linear maps `f`, `g` that agree on the intersection of their
@@ -763,8 +763,7 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
       LinearMap.smul_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
-    use x_fst, y
-    simp [hy, h]
+    use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
@@ -789,8 +788,7 @@ theorem neg_graph (f : E →ₗ.[R] F) :
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
       LinearMap.neg_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
-    use x_fst, y
-    simp [hy, h]
+    use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
