@@ -25,12 +25,16 @@ lemma qlskjdfmlkdsqf {E 𝕜 : Type _} [NontriviallyNormedField 𝕜] [AddCommGr
   have A : ∀ (x : E), ∀ᶠ n in (atTop : Filter ℕ), x ∈ c^n • s := sorry
   have B : ∀ n, #(c^n • s) = #s := by
     intro n
+    have cn_ne : c^n ≠ 0 := by
+      apply pow_ne_zero
+      rintro rfl
+      simp only [norm_zero] at hc
+      exact lt_irrefl _ (hc.trans zero_lt_one)
     have : c^n • s ≃ s :=
-    { toFun := fun x ↦ ⟨(c^n)⁻¹ • x.1, sorry⟩
+    { toFun := fun x ↦ ⟨(c^n)⁻¹ • x.1, (mem_smul_set_iff_inv_smul_mem₀ cn_ne _ _).1 x.2⟩
       invFun := fun x ↦ ⟨(c^n) • x.1, sorry⟩
       left_inv := sorry
       right_inv := sorry }
-    exact?
   apply (Cardinal.mk_of_countable_eventually_mem A B).symm
 
 #exit
