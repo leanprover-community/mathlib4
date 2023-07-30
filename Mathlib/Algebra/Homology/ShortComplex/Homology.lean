@@ -53,9 +53,9 @@ attribute [reassoc (attr := simp)] HomologyData.comm
 
 variable (φ : S₁ ⟶ S₂) (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
 
-structure HomologyMapData :=
-(left : LeftHomologyMapData φ h₁.left h₂.left)
-(right : RightHomologyMapData φ h₁.right h₂.right)
+structure HomologyMapData where
+  left : LeftHomologyMapData φ h₁.left h₂.left
+  right : RightHomologyMapData φ h₁.right h₂.right
 
 namespace HomologyMapData
 
