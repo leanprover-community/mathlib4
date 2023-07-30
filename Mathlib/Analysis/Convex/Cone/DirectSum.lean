@@ -19,18 +19,17 @@ end ConvexCone
 
 namespace ConvexCone.Pointed
 
-variable [OrderedSemiring 𝕜] [Nontrivial 𝕜]
+variable {𝕜} [OrderedSemiring 𝕜] [Nontrivial 𝕜]
 
 set_option quotPrecheck false in
-notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
-
+scoped notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
 
 section Module
 
 
 variable [AddCommMonoid E] [Module 𝕜 E]
 
-instance : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
+instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
 variable {S : ConvexCone 𝕜 E} [hS : Fact S.Pointed]
 
@@ -40,7 +39,7 @@ theorem mem_zero : (0 ∈ S) := hS.elim
 instance : Zero S where
   zero := ⟨0, by simp⟩
 
-instance hasNonnegSmul : SMul { c : 𝕜 // 0 ≤ c } S where
+instance hasNonnegSmul : SMul 𝕜≥0 S where
   smul := fun ⟨c, hc⟩ ⟨x, hx⟩ => by
     use c • x
     cases' eq_or_lt_of_le hc with hzero hpos
@@ -48,17 +47,17 @@ instance hasNonnegSmul : SMul { c : 𝕜 // 0 ≤ c } S where
     . exact S.smul_mem hpos hx
 
 instance hasNsmul : SMul ℕ S where
-  smul := fun n x => (n : { c : 𝕜 // 0 ≤ c }) • x
+  smul := fun n x => (n : 𝕜≥0) • x
 
 
 @[simp]
-theorem coe_smul (x : S) (n : { c : 𝕜 // 0 ≤ c }) : n • x = n • (x : E) := rfl
+theorem coe_smul (x : S) (n : 𝕜≥0) : n • x = n • (x : E) := rfl
 
 @[simp]
-theorem coe_nsmul' (x : S) (n : ℕ) : n • x = (n : { c : 𝕜 // 0 ≤ c }) • x := rfl
+theorem coe_nsmul' (x : S) (n : ℕ) : n • x = (n : 𝕜≥0) • x := rfl
 
 @[simp]
-theorem coe_nsmul'' (x : S) (n : ℕ) : n • (x : E) = (n : { c : 𝕜 // 0 ≤ c }) • (x : E) := by sorry
+theorem coe_nsmul'' (x : S) (n : ℕ) : n • (x : E) = (n : 𝕜≥0) • (x : E) := by sorry
 
 @[simp]
 theorem coe_nsmul (x : S) (n : ℕ) : (n • x : E) = n • (x : E) := by simp
@@ -77,17 +76,17 @@ def subtype' : S →+ E where
 @[simp]
 theorem coeSubtype : (subtype' : S → E) = Subtype.val := rfl
 
-instance : Module { c : 𝕜 // 0 ≤ c } S := by
-  apply Function.Injective.module ({ c : 𝕜 // 0 ≤ c }) subtype'
+instance : Module 𝕜≥0 S := by
+  apply Function.Injective.module (𝕜≥0) subtype'
   simp[Subtype.coe_injective]
   simp
 
-def subtype : S →ₗ[{ c : 𝕜 // 0 ≤ c }] E where
+def subtype : S →ₗ[𝕜≥0] E where
   toFun := Subtype.val
   map_add' := by simp
   map_smul' := by simp
 
-def toPointed [AddCommMonoid M] [Module { c : 𝕜 // 0 ≤ c } M] (f : M →ₗ[{ c : 𝕜 // 0 ≤ c }] E): ConvexCone 𝕜 E where
+def toPointed [AddCommMonoid M] [Module 𝕜≥0 M] (f : M →ₗ[𝕜≥0] E): ConvexCone 𝕜 E where
   carrier := Set.range f
   smul_mem' := by
     simp
@@ -194,11 +193,11 @@ end ConvexCone.Pointed
 
 -- -- failed to synthesize instance
 -- -- AddCommMonoid { x // x ∈ S }
--- instance : Module { c : 𝕜 // 0 ≤ c } S := sorry
+-- instance : Module 𝕜≥0 S := sorry
 
 
 -- import Mathlib.Algebra.DirectSum.Module
-  -- haveI : Module { c : 𝕜 // 0 ≤ c } E := by
+  -- haveI : Module 𝕜≥0 E := by
   -- apply Function.Injective.module
 
 
