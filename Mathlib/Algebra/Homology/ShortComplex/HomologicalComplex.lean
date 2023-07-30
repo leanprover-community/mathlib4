@@ -6,7 +6,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 
-/-! The short complexes attached to homological complexes
+/-!
+# The short complexes attached to homological complexes
 
 In this file, we define a functor
 `shortComplexFunctor C c i : HomologicalComplex C c ⥤ ShortComplex C`.
