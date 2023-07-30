@@ -1,20 +1,20 @@
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Topology.Instances.Real
 import Mathlib.LinearAlgebra.Finrank
-import Mathlib.Analysis.Convolution-/
+import Mathlib.Analysis.Convolution
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.SetTheory.Cardinal.CountableCover
 
 set_option autoImplicit false
 
--- open LinearMap Set
+open LinearMap Set
 
--- open BigOperators Classical Convex Pointwise Filter
+open BigOperators Classical Convex Pointwise Filter
 
 universe u v
 
-open Cardinal Filter Set
+open Filter Set
 
 open scoped Cardinal Topology
 
@@ -22,6 +22,19 @@ open scoped Cardinal Topology
 lemma qlskjdfmlkdsqf {E 𝕜 : Type _} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] {s : Set E} (hs : s ∈ 𝓝 (0 : E)) : #s = #E := by
   obtain ⟨c, hc⟩ : ∃ x : 𝕜 , 1 < ‖x‖ := NormedField.exists_lt_norm 𝕜 1
+  have A : ∀ (x : E), ∀ᶠ n in (atTop : Filter ℕ), x ∈ c^n • s := sorry
+  have B : ∀ n, #(c^n • s) = #s := by
+    intro n
+    have : c^n • s ≃ s :=
+    { toFun := fun x ↦ ⟨(c^n)⁻¹ • x.1, sorry⟩
+      invFun := fun x ↦ ⟨(c^n) • x.1, sorry⟩
+      left_inv := sorry
+      right_inv := sorry }
+    exact?
+  apply (Cardinal.mk_of_countable_eventually_mem A B).symm
+
+#exit
+
   have A : ∀ n, #(c^n • s) = #s := sorry
   have B : univ ⊆ ⋃ (n : ℕ), c^n • s := by
     intro x hx
