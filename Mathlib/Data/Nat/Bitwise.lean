@@ -1,64 +1,45 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-
-Authors: Markus Himmel, Harun Khan, Abdalrhman M Mohamed
+Authors: Markus Himmel
 
 ! This file was ported from Lean 3 source module data.nat.bitwise
 ! leanprover-community/mathlib commit 6afc9b06856ad973f6a2619e3e8a0a8d537a58f2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
-
 -/
 import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
 
-#align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
-
 /-!
 # Bitwise operations on natural numbers
 
-In the first part of this file, we provide theorems for reasoning about natural numbers from their
-bitwise properties. In particular, we reason about unsigned less than and bitwise addition.
-In the second part of this file, we show properties of the bitwise operations
+In the first half of this file, we provide theorems for reasoning about natural numbers from their
+bitwise properties. In the second half of this file, we show properties of the bitwise operations
 `lor'`, `land'` and `lxor'`, which are defined in core.
 
 ## Main results
-
-* `mod_two_pow_succ` expresses a number modulo `2^(i+1)` in terms of its value modulo `2^i`.
 * `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.
 * `lt_of_testBit`: if `n` and `m` are numbers and `i` is a position such that the `i`-th bit of
   of `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
   `n < m`.
-* `of_lt_of_testBit`: if `x < y` then there exists a bit `i` such that
-  `x.testBit i = false` and `y.testBit i = true`.
-* `testBit_add`: the `testBit` of the sum of two bitvectors is equal to the bitwise
-  xor of the `testBit` of the two bitvectors and the `testBit` of their carry.
-
-## Notation
-
-`^^`: boolean `xor`
 
 ## Future work
 
 There is another way to express bitwise properties of natural number: `digits 2`. The two ways
 should be connected.
-Prove correctness of other bitwise operators: multiplication, negation, append etc.
 
 ## Keywords
 
 bitwise, and, or, xor
 -/
 
-infix:30 " ^^ " => xor
 
 open Function
 
@@ -80,36 +61,6 @@ theorem bit_true : bit true = bit1 :=
 theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
   cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
-
-lemma bit_toNat (b : Bool) : bit b 0 = b.toNat := by cases' b <;> simp
-
-@[simp]
-lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
-
-lemma shiftr_mod_two_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by
-  simp [Nat.testBit, Nat.mod_two_of_bodd]
-
-lemma div_add_mod_two_pow (m n : Nat) : n = 2^m * Nat.shiftr n m + n % (2^m) := by
-  simp_rw [Nat.shiftr_eq_div_pow, Nat.div_add_mod]
-
-lemma bit_lt_bit_iff : bit b n < bit b' m ↔ n < m ∨ (n = m ∧ b = false ∧ b' = true) := by
-  cases' b <;> cases' b'
-  <;> simp [le_iff_lt_or_eq]
-
-/-- `n % 2^(i+1)` can be espressed in terms of `n % (2^i)`.
-This is useful for induction on the most significant bit.-/
-theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (n.testBit i).toNat + n % (2^i) := by
-  have h1 := div_add_mod_two_pow i n
-  have h3 := div_add_mod (Nat.shiftr n i) 2
-  rw [← h3, mul_add, ← mul_assoc, ← pow_succ, shiftr_mod_two_eq_testBit] at h1
-  have h : 2 ^ i * Bool.toNat (testBit n i) + n % 2 ^ i < 2 ^ (i + 1) := by
-    rw [two_pow_succ]
-    exact add_lt_add_of_le_of_lt (by simp [Bool.toNat_le_one (n.testBit i)]) (by simp [mod_lt])
-  simp [(Nat.div_mod_unique (two_pow_pos (i + 1))).mpr ⟨add_rotate _ _ (n % (2^i)) ▸ h1.symm, h⟩]
-
-theorem bodd_eq_bodd_iff : bodd n = bodd m ↔ n % 2 = m % 2 := by
-  cases' hn : bodd n <;> cases' hm : bodd m
-  <;> simp [mod_two_of_bodd, hn, hm]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction' n using Nat.binaryRec with b n hn
@@ -187,30 +138,6 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     <;> linarith only [this]
 #align nat.lt_of_test_bit Nat.lt_of_testBit
 
-theorem exists_most_significant_bit_of_lt (h: n < m) : ∃ i, Nat.testBit n i = false ∧
-    Nat.testBit m i = true ∧ ∀ j, i < j → Nat.testBit m j = Nat.testBit n j := by
-  induction' n using Nat.binaryRec with b n ih generalizing m
-  · have ⟨i, _, _⟩ := exists_most_significant_bit (ne_of_lt h).symm
-    use i; simpa [*]
-  · rw [← bit_decomp m] at h ⊢
-    cases' bit_lt_bit_iff.mp h with h3 h3
-    · have ⟨i, iH⟩ := ih h3
-      use Nat.succ i; simp only [testBit_succ]
-      exact ⟨iH.1, iH.2.1, by
-             intros j hj; cases' j with j
-             · simp at hj
-             · simp [testBit_succ, iH.2.2 j (by linarith)]⟩
-    · use 0; simp only [testBit_zero]
-      exact ⟨ h3.2.1, h3.2.2, by intros j hj
-                                 have ⟨j', hj⟩ := exists_eq_add_of_le' hj
-                                 simp[hj, testBit_succ, h3.1]⟩
-
-theorem testBit_eq_false_of_lt (h: n < 2^i) : n.testBit i = false := by
-  simp [testBit, shiftr_eq_div_pow, Nat.div_eq_zero h]
-
-theorem lt_of_testBit_eq_true (h: n.testBit i = true) (hn : n < 2^w) : i < w := by
-  by_contra'; simp [testBit_eq_false_of_lt (lt_of_lt_of_le hn (pow_le_pow (by decide) this))] at h
-
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
   rw [testBit, shiftr_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
@@ -236,123 +163,6 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-theorem testBit_two_pow_mul_add (h: i < w) : Nat.testBit (2^w * b + n) i = Nat.testBit n i := by
-  simp only [testBit, shiftr_eq_div_pow, bodd_eq_bodd_iff]
-  rw [Nat.add_div_of_dvd_right (by simp [Dvd.dvd.mul_right, pow_dvd_pow, le_of_lt h]), add_mod]
-  have h1: (2^w / 2^i) % 2 = 0 := by
-    rw [← Nat.dvd_iff_mod_eq_zero]
-    use 2^(w - (i + 1))
-    rw [Nat.pow_div (by linarith) (by decide), mul_comm, ← pow_succ 2 _, succ_eq_add_one]
-    simp [← Nat.sub_add_comm, succ_le_of_lt h]
-  simp [mul_comm, Nat.mul_div_assoc b (pow_dvd_pow 2 (le_of_lt h)), mul_mod, h1]
-
-theorem testBit_two_pow_mul_toNat_add (h: n < 2^w) : Nat.testBit (2^w * b.toNat + n) w = b:= by
-  simp only [Nat.testBit, Nat.shiftr_eq_div_pow]
-  rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_zero h, add_zero]
-  cases' b <;> simp
-
-theorem testBit_two_pow_add (h : i < w) :
-  Nat.testBit (2^w + n) i = Nat.testBit n i := mul_one (2^w) ▸ (testBit_two_pow_mul_add h)
-
-theorem testBit_two_pow_add' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
-  mul_one (2^w) ▸ Bool.toNat_true ▸ (@testBit_two_pow_mul_toNat_add n w true h)
-
-/-- Generic method to create a natural number by appending bits tail-recursively.
-It takes a boolean function `f` on each bit and `z` the starting point and the number of bits `i`.
-It is almost always specialized with `z = 0` and `i = w`; the length of the binary representation.
-Note that `ofBits f z i = 2^i * z + ofBits f 0 i` which we prove next.
-This is an alternative to using `List`. It will be used for bitadd, bitneg, bitmul etc.-/
-def ofBits (f : Nat → Bool) (z : Nat) : Nat → Nat
-  | 0 => z
-  | i + 1 => ofBits f (z.bit (f i)) i
-
-theorem ofBits_eq_pow_mul_add : ofBits f z i = 2^i * z + ofBits f 0 i := by
-  induction' i with i ih generalizing z
-  · simp [ofBits, bit_val]
-  · simp only [ofBits, @ih (bit (f i) 0), @ih (bit (f i) z)]
-    rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
-    simp [bit_val, add_assoc]
-
-theorem ofBits_lt : ofBits f 0 i < 2^i := by
-  induction' i with i ih
-  · simp [ofBits, bit_val, lt_succ, Bool.toNat_le_one]
-  · simp only [ofBits]
-    rw [ofBits_eq_pow_mul_add]
-    cases' (f i) <;> simp [two_pow_succ, ih]; linarith
-
-/-- The `ith` bit of `ofBits` is the function at `i`.
-This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
-theorem testBit_ofBits (h1: i < j): (ofBits f 0 j).testBit i = f i := by
-  induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
-  · simp [lt_one_iff.1 h1, ofBits]
-  · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
-    · rw [← ih h1, ofBits, ofBits_eq_pow_mul_add, testBit_two_pow_mul_add h1]
-    · rw [h1, ofBits, ofBits_eq_pow_mul_add, bit_toNat, testBit_two_pow_mul_toNat_add (ofBits_lt)]
-
-
-/-! ### Unsigned Less Than-/
-
-/-- Unsigned less than criterion (`n < m`) for natural numbers `n`, `m`
-and `w` - the length of their binary representation.-/
-def bitult (n m w : Nat) := loop n m (w - 1)
-where
-  loop (n m : Nat) : Nat →  Prop
-    | 0     => ¬ n.testBit 0  ∧ m.testBit 0
-    | i + 1 => (¬ n.testBit (i + 1) ∧ m.testBit (i + 1))
-               ∨ (¬ (n.testBit (i + 1) ∧ ¬ m.testBit (i + 1)) ∧ loop n m i)
-
-theorem bitult_of_ult (hm: m < 2^w) (h1: n < m) : bitult n m w := by
-  have ⟨i, hi1, hi2, hi3⟩ := exists_most_significant_bit_of_lt h1
-  suffices goal: ∀ j, i + 1 ≤ j → bitult n m j from goal w (lt_of_testBit_eq_true hi2 hm)
-  apply le_induction
-  · cases' i <;> simp [bitult, bitult.loop, hi1, hi2]
-  · intros j hj ih
-    have ⟨j', hj'⟩ := exists_eq_add_of_le' (le_of_add_le_right hj)
-    simp only [bitult, bitult.loop, hj', succ_sub_one j'] at ih ⊢
-    simp [ih, hi3 (j' + 1) (by linarith)]
-
-
-/-! ### Addition-/
-
-/-- Carry function at the `i`th bit for binary addition on `n` and `m`.-/
-def addCarry (n m : Nat) : Nat → Bool
-  | 0     => false
-  | i + 1 => (n.testBit i && m.testBit i) || ((n.testBit i ^^ m.testBit i) && addCarry n m i)
-
-/-- Binary addition is `ofBits` specialized with the right function on the bits `f`.-/
-@[simp] def bitadd (n m i : Nat) :=
-  ofBits (λ j => (n.testBit j ^^ m.testBit j) ^^ addCarry n m j) 0 i
-
-lemma addCarry_def (n m i : Nat) : (addCarry n m (i + 1)).toNat =
-    ((Nat.testBit n i && Nat.testBit m i) ||
-    ((Nat.testBit n i ^^ Nat.testBit m i) && addCarry n m i)).toNat := by
-  simp [addCarry]
-
-lemma bitadd_add_two_pow_mul_addCarry : n % (2^i) + m % (2^i) =
-  bitadd n m i + 2^i * (addCarry n m i).toNat := by
-  induction' i with i hi
-  · simp [mod_one, ofBits, addCarry]
-  · rw [mod_two_pow_succ n, mod_two_pow_succ m]
-    rw [add_assoc, add_comm _ (m % 2^i), ← add_assoc (n % 2^i)]
-    rw [hi, addCarry_def n m i, two_pow_succ i]
-    cases' hn : Nat.testBit n i <;> cases' hm : Nat.testBit m i
-    <;> cases' hc : addCarry n m i
-    <;> simp [Bool.toNat, @ofBits_eq_pow_mul_add _ 1 i, two_pow_succ, hn, hm, hc, ofBits]
-    <;> ring
-
-theorem bitadd_eq_add : bitadd n m i = (n + m) % 2^i := by
-  rw [Nat.add_mod, bitadd_add_two_pow_mul_addCarry]
-  cases' i with i i
-  · simp [mod_one, ofBits]
-  · simp [bitadd, Nat.mod_eq_of_lt ofBits_lt]
-
-theorem testBit_add : (n + m).testBit i = ((n.testBit i ^^ m.testBit i) ^^ addCarry n m i):= by
-  have := lt_of_lt_of_le
-          (lt_trans (lt_two_pow (n + m)) (pow_lt_pow_succ (by decide) (n + m)))
-          (pow_le_pow_of_le_right (show 0 < 2 by decide) (@le_add_self _ _ _ i))
-  rw [← Nat.mod_eq_of_lt this, ← add_assoc, ← bitadd_eq_add]
-  simp [testBit_ofBits (show i < i + (n + m) + 1 by linarith)]
-
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
 theorem bitwise'_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b)
@@ -362,51 +172,6 @@ theorem bitwise'_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b'
     bitwise' f = bitwise' (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
     _ = swap (bitwise' f) := bitwise'_swap hf'
 #align nat.bitwise_comm Nat.bitwise'_comm
-
-lemma bitwise_eq_bitwise' (f: Bool → Bool → Bool ) (h: f false false = false) :
-  bitwise f = bitwise' f := by
-  funext x y
-  have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
-  induction' k using Nat.strongInductionOn with k ih generalizing x y
-  by_cases h1: x= 0
-  <;> by_cases h2: y= 0
-  · unfold bitwise
-    simp [h1, h2, h]
-  · unfold bitwise bitwise'; simp[h1]; aesop
-  · unfold bitwise; simp [h2]; aesop
-  · rw [← bit_decomp x, ← bit_decomp y]
-    unfold bitwise
-    rw [bit_decomp, bit_decomp, mod_two_of_bodd, mod_two_of_bodd]
-    nth_rewrite 8 [← bit_decomp x]
-    nth_rewrite 8 [← bit_decomp y]
-    rw [bitwise'_bit (show _ by simp[h])]
-    cases' hx: bodd x
-    <;> cases' hy: bodd y
-    <;> ring_nf
-    <;> rw [ih (div2 x + div2 y)
-            (by rw [hk, div2_val, div2_val]
-                simp[add_lt_add (bitwise_rec_lemma h1) (bitwise_rec_lemma h2)])
-            (x/2) (y/2) (by simp[div2_val])]
-    <;> simp [h1, h2, hx, hy, bit_val, div2_val, mul_comm, add_comm, h]
-    <;> aesop
-
-theorem bitwise_lt (hx : x < 2^n) (hy: y< 2^n) (h: f false false = false): bitwise f x y < 2^n := by
-  rw [bitwise_eq_bitwise' f h]
-  apply lt_of_testBit n (by simp [testBit_bitwise' h x y n,
-                                  testBit_eq_false_of_lt hx,
-                                  testBit_eq_false_of_lt hy, h])
-                        (testBit_two_pow_self n)
-  intro j hj; rw [testBit_bitwise' h x y j]
-  rw [testBit_eq_false_of_lt (lt_trans hx (pow_lt_pow_of_lt_right (by decide) hj))]
-  rw [testBit_eq_false_of_lt (lt_trans hy (pow_lt_pow_of_lt_right (by decide) hj)), h]
-  rw [testBit_two_pow_of_ne (ne_of_lt hj)]
-
-lemma append_lt (hx : x < 2^n) (hy: y< 2^m) : y <<< n ||| x < 2^(n+m) := by
-  have H: x < 2^(n+m) ∧ y*2^n < 2^(n+m):= by
-    apply And.intro
-    · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (by linarith))
-    · rw [pow_add, mul_comm]; simp[hy, mul_lt_mul_left (two_pow_pos n)]
-  simp only [lor, shiftLeft_eq]; exact bitwise_lt H.2 H.1 rfl
 
 theorem lor'_comm (n m : ℕ) : lor' n m = lor' m n :=
   bitwise'_comm Bool.or_comm rfl n m
@@ -537,7 +302,7 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
   -- If, say, `a` has a one bit at position `i`, then `a xor v` has a zero bit at position `i`, but
   -- the same bits as `a` in positions greater than `j`, so `a xor v < a`.
   rcases this with (h | h | h)
-  on_goal 1 => left; rw [hbc]
+  on_goal 1 => left ; rw [hbc]
   on_goal 2 => right; left; rw [hac]
   on_goal 3 => right; right; rw [hab]
   all_goals
