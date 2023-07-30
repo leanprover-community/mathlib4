@@ -723,6 +723,7 @@ theorem final_iff_comp_equivalence [IsEquivalence G] : Final F ↔ Final (F ⋙ 
 theorem final_iff_equivalence_comp [IsEquivalence F] : Final G ↔ Final (F ⋙ G) :=
   ⟨fun _ => final_equivalence_comp _ _, fun _ => final_of_equivalence_comp F _⟩
 
+/-- See also the strictly more general `initial_iff_comp_initial_full_faithful` below. -/
 theorem initial_iff_comp_equivalence [IsEquivalence G] : Initial F ↔ Initial (F ⋙ G) :=
   ⟨fun _ => initial_comp_equivalence _ _, fun _ => initial_of_comp_full_faithful _ G⟩
 
