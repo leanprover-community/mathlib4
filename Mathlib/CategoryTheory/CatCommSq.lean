@@ -76,12 +76,13 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
 
 /-- Horizontal inverse of a 2-commutative square -/
 @[simps! iso'_hom_app iso'_inv_app]
-def hInv'(h : CatCommSq T.inverse R L B.inverse) : CatCommSq T.functor L R B.functor :=
+def hInv' (h : CatCommSq T.inverse R L B.inverse) : CatCommSq T.functor L R B.functor :=
   hInv T.symm R L B.symm h
 
 /-- In a square of categories, when the top and bottom functors are part
 of equivalence of categorires, it is equivalent to show 2-commutativity for
 the functors of these equivalences or for their inverses. -/
+@[simps]
 def hInvEquiv : CatCommSq T.functor L R B.functor ≃ CatCommSq T.inverse R L B.inverse where
   toFun := hInv _ _ _ _
   invFun := hInv' _ _ _ _
