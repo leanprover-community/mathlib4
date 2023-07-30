@@ -12,7 +12,7 @@ import Mathlib.Logic.Basic
 /-!
 # The `congrm` tactic
 
-The `congrm` tactic ("`congr`"" with matching)
+The `congrm` tactic ("`congr` with matching")
 is a convenient frontend for `congr(...)` congruence quotations.
 Roughly, `congrm e` is `refine congr(e')`, where `e'` is `e` with every `?m` placeholder
 replaced by `$(?m)`.
@@ -54,9 +54,9 @@ example {a b : ℕ} (h : a = b) : (λ y : ℕ => ∀ z, a + a = z) = (λ x => �
 
 The `congrm` command is a convenient frontend to `congr(...)` congruence quotations.
 If the goal is an equality, `congrm e` is equivalent to `refine congr(e')` where `e'` is
-from replacing each placeholder `?m` with `$(?m)`.
+from replacing each placeholder `?m` by `$(?m)`.
 The pattern `e` is allowed to contain `$(...)` expressions to immediately substitute
-equality proofs into the congruence.
+equality proofs into the congruence, just like for congruence quotations.
 -/
 syntax (name := congrM) "congrm " term : tactic
 
