@@ -241,6 +241,9 @@ def _root_.Lean.Name.getHead : Name → Name
   | .str head _ => head
   | _ => .anonymous
 
+/-- `Lean.Expr.le? p` take `e : Expr` as input.
+If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
 @[inline] def _root_.Lean.Expr.le? (p : Expr) : Option (Expr × Expr × Expr) := do
   let (type, _, lhs, rhs) := ← p.app4? ``LE.le
   return (type, lhs, rhs)
@@ -459,16 +462,21 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
   | [] => []
 
 /--
-`compute_degree` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
+`compute_degree` is a tactic to solve goals of the form
+*  `natDegree f = d`,
+*  `degree f = d`,
+*  `natDegree f ≤ d`,
+*  `degree f ≤ d`,
+*  `coeff f n = r`.
 
-The tactic first replaces `natDegree f ≤ d` with `d' ≤ d`,
-where `d'` is an internally computed guess for which the tactic proves the inequality
-`natDegree f ≤ d'`.
+The tactic may leave goals of the form `d' = d` `d' ≤ d`, `r ≠ 0` or, where `d'` in `ℕ` or
+`WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
+leading coefficient of `f`.
 
-Next, it applies `norm_num` to `d'`, in the hope of closing also the `d' ≤ d` goal.
+`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to clos them.
 
 The variant `compute_degree!` first applies `compute_degree`.
-Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption`.
+Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.
 -/
 syntax (name := computeDegree) "compute_degree" "!"? "-debug"? : tactic
 
