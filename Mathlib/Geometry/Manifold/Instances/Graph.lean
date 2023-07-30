@@ -6,7 +6,7 @@ Authors: Michael Lee
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
-# The graph of a continuous function on a `C^k` manifold is a C^k manifold
+# The graph of a continuous function on a `C^k` manifold is a `C^k` manifold
 
 We show that for manifold `M` which has the structure groupoid `G`, the graph of any continuous
 function `f : M → M'`, defined as `{(x, f x) | x ∈ M} ⊆ M × M'`, has manifold structure with the
@@ -27,10 +27,8 @@ open scoped Manifold
 
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
-  [TopologicalSpace M] [HM : ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E']
-  [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
-  {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M'] {G : StructureGroupoid H}
-  {hM : HasGroupoid M G} (f : M → M') (hf : Continuous f)
+  [TopologicalSpace M] [HM : ChartedSpace H M] {M' : Type _} [TopologicalSpace M']
+  {G : StructureGroupoid H} {hM : HasGroupoid M G} (f : M → M') (hf : Continuous f)
 
 /-- A structure to hold the graph of a continuous function on a manifold -/
 structure cont_graph :=
