@@ -425,25 +425,6 @@ let progress := ← can_progress.mapM fun mv => do
   mv.applyConst <| lem
 return (progress.join, static ++ curr_static)
 
-/--
-`compute_degree` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
-
-The tactic first replaces `natDegree f ≤ d` with `d' ≤ d`,
-where `d'` is an internally computed guess for which the tactic proves the inequality
-`natDegree f ≤ d'`.
-
-Next, it applies `norm_num` to `d'`, in the hope of closing also the `d' ≤ d` goal.
-
-The variant `compute_degree!` first applies `compute_degree`.
-Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption`.
--/
-syntax (name := computeDegree) "compute_degree" "!"? "-debug"? : tactic
-
-@[inherit_doc computeDegree]
-macro "compute_degree!" "-debug"? : tactic => `(tactic| compute_degree ! -debug)
-@[inherit_doc computeDegree]
-macro "compute_degree!" : tactic => `(tactic| compute_degree !)
-
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
    (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
@@ -476,6 +457,25 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
       m!"* there may be a term of naïve degree {lhs}" :: rest
     else rest
   | [] => []
+
+/--
+`compute_degree` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
+
+The tactic first replaces `natDegree f ≤ d` with `d' ≤ d`,
+where `d'` is an internally computed guess for which the tactic proves the inequality
+`natDegree f ≤ d'`.
+
+Next, it applies `norm_num` to `d'`, in the hope of closing also the `d' ≤ d` goal.
+
+The variant `compute_degree!` first applies `compute_degree`.
+Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption`.
+-/
+syntax (name := computeDegree) "compute_degree" "!"? "-debug"? : tactic
+
+@[inherit_doc computeDegree]
+macro "compute_degree!" "-debug"? : tactic => `(tactic| compute_degree ! -debug)
+@[inherit_doc computeDegree]
+macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
 elab_rules : tactic | `(tactic| compute_degree $[!%$bang]? $[-debug%$dbg]?) => focus do
   let dbg := dbg.isSome
