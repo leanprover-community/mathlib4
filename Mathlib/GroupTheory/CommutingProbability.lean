@@ -101,9 +101,9 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
 variable (G : Type _) [Group G]
 
 theorem card_comm_eq_card_conjClasses_mul_card :
-    Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = Nat.card (ConjClasses G) * Nat.card G := by
+    Nat.card { p : G × G // Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
   rcases fintypeOrInfinite G; swap
-  . rw [Nat.card_eq_zero_of_infinite, @Nat.card_eq_zero_of_infinite G, mul_zero]
+  · rw [Nat.card_eq_zero_of_infinite, @Nat.card_eq_zero_of_infinite G, mul_zero]
   simp only [Nat.card_eq_fintype_card]
   -- Porting note: Changed `calc` proof into a `rw` proof.
   rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G ↦ Commute g h), card_sigma,
@@ -119,14 +119,11 @@ theorem card_comm_eq_card_conjClasses_mul_card :
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
   by_cases h : (Nat.card G : ℚ) = 0
-  . rw [h, zero_mul, div_zero, div_zero]
-  . exact mul_div_mul_right _ _ h
+  · rw [h, zero_mul, div_zero, div_zero]
+  · exact mul_div_mul_right _ _ h
 #align comm_prob_def' commProb_def'
 
 variable {G}
-
-section finite
-
 variable [Finite G] (H : Subgroup G)
 
 theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
