@@ -9,9 +9,9 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 /-!
 # The graph of a continuous function on a `C^k` manifold is a C^k manifold
 
-We show that for `C^k` manifold `M`, the graph of any continuous function `f : M → M'`, defined
-as `{(x, f x) | x ∈ M} ⊆ M × M'`, has a `C^k` manifold structure that is equivalent to the one on
-`M`.
+We show that for manifold `M` which has the structure groupoid `G`, the graph of any continuous
+function `f : M → M'`, defined as `{(x, f x) | x ∈ M} ⊆ M × M'`, has manifold structure with the
+structure groupoid `G` that is equivalent to the one on `M`.
 
 ## TODO
 
@@ -30,11 +30,10 @@ variable {n : ℕ∞} {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _
   [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
   [TopologicalSpace M] [HM : ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E']
   [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
-  {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  (hM : HasGroupoid M (contDiffGroupoid n I)) (f : M → M') (hf : Continuous f)
+  {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M'] {G : StructureGroupoid H}
+  (hM : HasGroupoid M G) (f : M → M') (hf : Continuous f)
 
-/-- A structure to hold the graph of a `k`-times continuously differentiable function between `C^k`
-  manifolds -/
+/-- A structure to hold the graph of a continuous function on a manifold -/
 structure cont_graph :=
   (f : M → M')
   (hf : Continuous f)
@@ -112,7 +111,7 @@ instance cont_graph_charted : ChartedSpace H (cont_graph.mk' f hf).graph where
     simp
 
 /-- The graph of `f : M → M'` has an atlas in the same groupoid as `M`. -/
-theorem cont_graph_mfld : HasGroupoid (cont_graph.mk' f hf).graph (contDiffGroupoid n I) where
+theorem cont_graph_mfld : HasGroupoid (cont_graph.mk' f hf).graph G where
   compatible := by
     intro e e' he he'
     cases he with
