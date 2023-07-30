@@ -28,9 +28,8 @@ universe v u
 
 namespace CategoryTheory
 
-variable (S : Type) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
+variable (S : Type _) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
 
--- TODO: generalize to `HasShift C S` for an arbitrary `[AddMonoidWithOne S]`
 variable [HasZeroMorphisms C] [HasShift C S]
 
 /-- A differential object in a category with zero morphisms and a shift is
@@ -181,7 +180,7 @@ variable (D : Type u') [Category.{v'} D]
 variable [HasZeroMorphisms D] [HasShift D S]
 
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
-morphisms can be lifted to a functor `DifferentialObject C ⥤ DifferentialObject D`. -/
+morphisms can be lifted to a functor `DifferentialObject S C ⥤ DifferentialObject S D`. -/
 @[simps]
 def mapDifferentialObject (F : C ⥤ D)
     (η : (shiftFunctor C (1 : S)).comp F ⟶ F.comp (shiftFunctor D (1 : S)))
@@ -257,7 +256,7 @@ variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section
 
-/-- The shift functor on `DifferentialObject C`. -/
+/-- The shift functor on `DifferentialObject S C`. -/
 @[simps]
 def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C where
   obj X :=
