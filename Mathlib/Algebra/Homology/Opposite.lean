@@ -30,7 +30,7 @@ opposite, chain complex, cochain complex, homology, cohomology, homological comp
 
 noncomputable section
 
-open Opposite CategoryTheory CategoryTheory.Limits
+open Opposite CategoryTheory Limits
 
 section
 

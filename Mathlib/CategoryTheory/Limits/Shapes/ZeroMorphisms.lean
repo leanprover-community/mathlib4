@@ -667,17 +667,3 @@ instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)
 #align category_theory.limits.is_split_epi_prod_snd CategoryTheory.Limits.isSplitEpi_prod_snd
 
 end CategoryTheory.Limits
-
-namespace CategoryTheory
-
-open Limits
-
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
-
-@[simp]
-lemma op_zero (X Y : C) : (0 : X ⟶ Y).op = 0 := rfl
-
-@[simp]
-lemma unop_zero (X Y : Cᵒᵖ) : (0 : X ⟶ Y).unop = 0 := rfl
-
-end CategoryTheory
