@@ -766,7 +766,7 @@ instance isIso_rightHomologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.Has
     IsIso (rightHomologyMap φ) :=
   (inferInstance : IsIso (rightHomologyMapIso (asIso φ)).hom)
 
-/-- The isomorphism `S₁.cycles ≅ S₂.cycles` induced by an isomorphism
+/-- The isomorphism `S₁.opcycles ≅ S₂.opcycles` induced by an isomorphism
 of short complexes `S₁ ≅ S₂`. -/
 @[simps]
 noncomputable def opcyclesMapIso (e : S₁ ≅ S₂) [S₁.HasRightHomology]
