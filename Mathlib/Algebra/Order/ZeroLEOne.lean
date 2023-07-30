@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.zero_le_one
-! leanprover-community/mathlib commit 07fee0ca54c320250c98bacf31ca5f288b2bcbe2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Algebra.NeZero
+
+#align_import algebra.order.zero_le_one from "leanprover-community/mathlib"@"07fee0ca54c320250c98bacf31ca5f288b2bcbe2"
 
 /-!
 # Typeclass expressing `0 ≤ 1`.
@@ -20,7 +17,7 @@ variable {α : Type _}
 open Function
 
 /-- Typeclass for expressing that the `0` of a type is less or equal to its `1`. -/
-class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] where
+class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] : Prop where
   /-- Zero is less than or equal to one. -/
   zero_le_one : (0 : α) ≤ 1
 #align zero_le_one_class ZeroLEOneClass

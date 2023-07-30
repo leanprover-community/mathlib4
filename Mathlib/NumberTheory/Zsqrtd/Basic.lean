@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module number_theory.zsqrtd.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Star.Unitary
+
+#align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-! # ℤ[√d]
 
@@ -279,7 +276,7 @@ theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
 #align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
 
 @[simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).re = n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
@@ -288,7 +285,7 @@ theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
 #align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
 
 @[simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).im = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
   rfl
 
 theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=

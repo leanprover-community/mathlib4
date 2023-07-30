@@ -2,17 +2,14 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module lean_core.data.vector
-! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+
+#align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 /-!
 The type `Vector` represents lists with fixed length.
@@ -180,7 +177,7 @@ open Prod
 variable {σ : Type}
 
 /-- Runs a function over a vector returning the intermediate results and a
-a final result.
+final result.
 -/
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
@@ -189,7 +186,7 @@ def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector
 #align vector.map_accumr Vector.mapAccumr
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
-a final result.
+final result.
 -/
 def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
     Vector α n → Vector β n → σ → σ × Vector φ n

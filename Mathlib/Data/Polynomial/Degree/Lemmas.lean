@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.degree.lemmas
-! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.degree.lemmas from "leanprover-community/mathlib"@"728baa2f54e6062c5879a3e397ac6bac323e506f"
 
 /-!
 # Theory of degrees of polynomials
