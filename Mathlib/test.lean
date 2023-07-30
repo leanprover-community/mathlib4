@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Topology.Instances.Real
 import Mathlib.LinearAlgebra.Finrank
@@ -7,6 +12,12 @@ import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.SetTheory.Cardinal.CountableCover
 import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Data.Real.Cardinality
+
+/-!
+# this is a test file
+
+But the header is still correctly formatted to appease the linter
+-/
 
 set_option autoImplicit false
 
