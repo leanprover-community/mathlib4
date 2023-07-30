@@ -34,7 +34,7 @@ namespace CategoryTheory.DifferentialObject
 
 variable {β : Type _} [AddCommGroup β] {b : β}
 variable {V : Type _} [Category V] [HasZeroMorphisms V]
-variable (X : DifferentialObject (GradedObjectWithShift b V))
+variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
 /-- Since `eqToHom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
 is used to aid the simplifier. -/
@@ -59,7 +59,7 @@ theorem objEqToHom_d {x y : β} (h : x = y) :
 theorem d_squared_apply : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
 
 @[reassoc (attr := simp)]
-theorem eqToHom_f' {X Y : DifferentialObject (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
+theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
     (h : x = y) : X.objEqToHom h ≫ f.f y = f.f x ≫ Y.objEqToHom h := by cases h; simp
 #align homological_complex.eq_to_hom_f' CategoryTheory.DifferentialObject.eqToHom_f'
 
@@ -85,7 +85,7 @@ set_option maxHeartbeats 800000 in
 -/
 @[simps]
 def dgoToHomologicalComplex :
-    DifferentialObject (GradedObjectWithShift b V) ⥤
+    DifferentialObject ℤ (GradedObjectWithShift b V) ⥤
       HomologicalComplex V (ComplexShape.up' b) where
   obj X :=
     { X := fun i => X.obj i
@@ -112,7 +112,7 @@ def dgoToHomologicalComplex :
 @[simps]
 def homologicalComplexToDGO :
     HomologicalComplex V (ComplexShape.up' b) ⥤
-      DifferentialObject (GradedObjectWithShift b V) where
+      DifferentialObject ℤ (GradedObjectWithShift b V) where
   obj X :=
     { obj := fun i => X.X i
       d := fun i => X.d i _ }
@@ -123,7 +123,7 @@ def homologicalComplexToDGO :
 -/
 @[simps!]
 def dgoEquivHomologicalComplexUnitIso :
-    𝟭 (DifferentialObject (GradedObjectWithShift b V)) ≅
+    𝟭 (DifferentialObject ℤ (GradedObjectWithShift b V)) ≅
       dgoToHomologicalComplex b V ⋙ homologicalComplexToDGO b V :=
   NatIso.ofComponents (fun X =>
     { hom := { f := fun i => 𝟙 (X.obj i) }
@@ -146,7 +146,7 @@ to the category of homological complexes in `V`.
 -/
 @[simps]
 def dgoEquivHomologicalComplex :
-    DifferentialObject (GradedObjectWithShift b V) ≌ HomologicalComplex V (ComplexShape.up' b) where
+    DifferentialObject ℤ (GradedObjectWithShift b V) ≌ HomologicalComplex V (ComplexShape.up' b) where
   functor := dgoToHomologicalComplex b V
   inverse := homologicalComplexToDGO b V
   unitIso := dgoEquivHomologicalComplexUnitIso b V
