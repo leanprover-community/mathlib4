@@ -2,17 +2,14 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.basic
-! leanprover-community/mathlib commit 9da1b3534b65d9661eb8f42443598a92bbb49211
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
 import Std.Data.List.Lemmas
+
+#align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
 
 /-!
 # Basic properties of lists
@@ -419,14 +416,18 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 /-! ### replicate -/
 
-attribute [simp] replicate_succ
-#align list.replicate_succ List.replicate_succ
-
 @[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
 #align list.replicate_zero List.replicate_zero
 
+attribute [simp] replicate_succ
+#align list.replicate_succ List.replicate_succ
+
 lemma replicate_one (a : α) : replicate 1 a = [a] := rfl
 #align list.replicate_one List.replicate_one
+
+#align list.length_replicate List.length_replicate
+#align list.mem_replicate List.mem_replicate
+#align list.eq_of_mem_replicate List.eq_of_mem_replicate
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
@@ -628,16 +629,12 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 #align list.map_reverse_core List.map_reverseAux
 
--- Porting TODO: Fix statement of `mem_reverse` in Std to match Lean3,
--- then deprecate/remove this one
-theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
-  List.mem_reverse _ _
-#align list.mem_reverse List.mem_reverse'
+#align list.mem_reverse List.mem_reverse
 
 @[simp] theorem reverse_replicate (n) (a : α) : reverse (replicate n a) = replicate n a :=
   eq_replicate.2
     ⟨by rw [length_reverse, length_replicate],
-     fun b h => eq_of_mem_replicate (mem_reverse'.1 h)⟩
+     fun b h => eq_of_mem_replicate (mem_reverse.1 h)⟩
 #align list.reverse_replicate List.reverse_replicate
 
 /-! ### empty -/
@@ -1169,10 +1166,9 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
   simp only [length, indexOf_cons]
-  by_cases h : a = b;
-  · rw [if_pos h]
-    exact Nat.zero_le _
-  rw [if_neg h]; exact succ_le_succ ih
+  by_cases h : a = b
+  · rw [if_pos h]; exact Nat.zero_le _
+  · rw [if_neg h]; exact succ_le_succ ih
 #align list.index_of_le_length List.indexOf_le_length
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
@@ -1888,9 +1884,6 @@ theorem take_zero (l : List α) : take 0 l = [] :=
   rfl
 #align list.take_zero List.take_zero
 
-@[simp]
-theorem take_nil : ∀ n, take n [] = ([] : List α)
-  | 0 | _ + 1 => rfl
 #align list.take_nil List.take_nil
 
 theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: take n l :=
@@ -2969,7 +2962,7 @@ theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.spli
   cases' h' : splitOnP (· == x) tl with hd' tl'; · exact (splitOnP_ne_nil _ tl h').elim
   rw [h'] at ih
   rw [splitOnP_cons]
-  split_ifs with h;
+  split_ifs with h
   · rw [beq_iff_eq] at h
     subst h
     simp [ih, join, h']
@@ -3113,9 +3106,9 @@ theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l :=
 @[simp]
 theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
   | ⟨a, h⟩ => by
-    have := mem_map.1 (by rw [attach_map_val] <;> exact h);
-      · rcases this with ⟨⟨_, _⟩, m, rfl⟩
-        exact m
+    have := mem_map.1 (by rw [attach_map_val] <;> exact h)
+    rcases this with ⟨⟨_, _⟩, m, rfl⟩
+    exact m
 #align list.mem_attach List.mem_attach
 
 @[simp]
@@ -3568,7 +3561,7 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 #align list.filter_filter List.filter_filter
 
 @[simp]
-theorem filter_true  (l : List α) :
+theorem filter_true (l : List α) :
     filter (fun _ => true) l = l := by induction l <;> simp [*, filter]
 #align list.filter_true List.filter_true
 

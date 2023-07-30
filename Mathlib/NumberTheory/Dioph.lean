@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module number_theory.dioph
-! leanprover-community/mathlib commit a66d07e27d5b5b8ac1147cacfe353478e5c14002
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.PFun
 import Mathlib.Data.Vector3
 import Mathlib.NumberTheory.PellMatiyasevic
+
+#align_import number_theory.dioph from "leanprover-community/mathlib"@"a66d07e27d5b5b8ac1147cacfe353478e5c14002"
 
 /-!
 # Diophantine functions and Matiyasevic's theorem

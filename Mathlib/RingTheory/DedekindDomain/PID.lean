@@ -2,14 +2,11 @@
 Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.pid
-! leanprover-community/mathlib commit 6010cf523816335f7bae7f8584cb2edaace73940
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Ideal
+
+#align_import ring_theory.dedekind_domain.pid from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"
 
 /-!
 # Proving a Dedekind domain is a PID

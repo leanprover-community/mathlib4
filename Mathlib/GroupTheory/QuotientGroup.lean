@@ -4,16 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Patrick Massot
 
 This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
-
-! This file was ported from Lean 3 source module group_theory.quotient_group
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.GroupTheory.Subgroup.Pointwise
+
+#align_import group_theory.quotient_group from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Quotients of groups by normal subgroups
@@ -210,7 +207,7 @@ theorem lift_mk {φ : G →* H} (HN : ∀ x ∈ N, φ x = 1) (g : G) : lift N φ
 @[to_additive (attr := simp)]
 theorem lift_mk' {φ : G →* H} (HN : ∀ x ∈ N, φ x = 1) (g : G) : lift N φ HN (mk g : Q ) = φ g :=
   rfl
--- TODO: replace `mk` with  `mk'`)
+-- TODO: replace `mk` with `mk'`)
 #align quotient_group.lift_mk' QuotientGroup.lift_mk'
 #align quotient_add_group.lift_mk' QuotientAddGroup.lift_mk'
 
@@ -474,7 +471,7 @@ theorem quotientMapSubgroupOfOfLe_mk {A' A B' B : Subgroup G} [_hAN : (A'.subgro
 If `A' = B'` and `A = B`, then the quotients `A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic.
 
 Applying this equiv is nicer than rewriting along the equalities, since the type of
-`(A'.subgroupOf A : Subgroup A)` depends on on `A`.
+`(A'.subgroupOf A : Subgroup A)` depends on `A`.
 -/
 @[to_additive "Let `A', A, B', B` be subgroups of `G`. If `A' = B'` and `A = B`, then the quotients
 `A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic. Applying this equiv is nicer than rewriting along

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.opposites
-! leanprover-community/mathlib commit 9ed4366659f4fcca0ee70310d26ac5518dcb6dd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+#align_import category_theory.limits.preserves.opposites from "leanprover-community/mathlib"@"9ed4366659f4fcca0ee70310d26ac5518dcb6dd0"
 
 /-!
 # Limit preservation properties of `functor.op` and related constructions

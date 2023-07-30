@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.noetherian_space
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Topology.Sets.Closeds
+
+#align_import topology.noetherian_space from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Noetherian space
@@ -213,7 +210,7 @@ theorem NoetherianSpace.exists_finset_irreducible [NoetherianSpace α] (s : Clos
 theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
   obtain ⟨S : Set (Set α), hSf, hSc, hSi, hSU⟩ :=
-    NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ
+    NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ (α := α)
   refine hSf.subset fun s hs => ?_
   lift S to Finset (Set α) using hSf
   rcases isIrreducible_iff_sUnion_closed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩

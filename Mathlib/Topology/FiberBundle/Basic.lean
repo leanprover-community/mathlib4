@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.fiber_bundle.basic
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.FiberBundle.Trivialization
+
+#align_import topology.fiber_bundle.basic from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # Fiber bundles
@@ -357,7 +354,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   cases' hc.2.eq_or_lt with heq hlt
   · exact ⟨ec, heq ▸ hec⟩
   suffices : ∃ d ∈ Ioc c b, ∃ e : Trivialization F (π F E), Icc a d ⊆ e.baseSet
-  · rcases this with  ⟨d, hdcb, hd⟩ -- porting note: todo: use `rsuffices`
+  · rcases this with ⟨d, hdcb, hd⟩ -- porting note: todo: use `rsuffices`
     exact ((hsc.1 ⟨⟨hc.1.trans hdcb.1.le, hdcb.2⟩, hd⟩).not_lt hdcb.1).elim
   /- Since the base set of `ec` is open, it includes `[c, d)` (hence, `[a, d)`) for some
     `d ∈ (c, b]`. -/

@@ -3,11 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
-
-! This file was ported from Lean 3 source module linear_algebra.basic
-! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Hom
@@ -16,6 +11,8 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
+
+#align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
 /-!
 # Linear algebra
@@ -323,12 +320,10 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
-@[simp]
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := by
-  induction' n with n ih
-  · rfl
-  · simp only [Function.comp_apply, Function.iterate_succ, LinearMap.mul_apply, pow_succ, ih]
-    exact (Function.Commute.iterate_self _ _ m).symm
+theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+#align linear_map.coe_pow LinearMap.coe_pow
+
+theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
 #align linear_map.pow_apply LinearMap.pow_apply
 
 theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
@@ -353,11 +348,6 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
 #align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
-
-theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
-  ext m
-  apply pow_apply
-#align linear_map.coe_pow LinearMap.coe_pow
 
 @[simp]
 theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
@@ -415,11 +405,9 @@ theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :
     --Porting note: ugly `HPow.hPow` instead of `^` notation
     HPow.hPow (f'.restrict h) n = (HPow.hPow f' n).restrict h' := by
-  dsimp [optParam] at h'
-  induction' n with n ih <;> ext
-  · simp [restrict_apply]
-  · rw [restrict_apply, LinearMap.iterate_succ, ih (pow_apply_mem_of_forall_mem n h)]
-    simp
+  ext x
+  have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ rfl
+  simp [coe_pow, this.iterate_right _ _]
 #align linear_map.pow_restrict LinearMap.pow_restrict
 
 end
@@ -1257,28 +1245,41 @@ theorem range_neg {R : Type _} {R₂ : Type _} {M : Type _} {M₂ : Type _} [Sem
 #align linear_map.range_neg LinearMap.range_neg
 
 /-- A linear map version of `toAddMonoidHom.eqLocus` -/
-def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
-  { f.toAddMonoidHom.eqLocusM g.toAddMonoidHom with
+def eqLocus (f g : F) : Submodule R M :=
+  { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      simpa only [LinearMap.map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
+      simpa only [map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
-theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus g ↔ f x = g x :=
+theorem mem_eqLocus {x : M} {f g : F} : x ∈ eqLocus f g ↔ f x = g x :=
   Iff.rfl
 #align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
-theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
-    (f.eqLocus g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
+theorem eqLocus_toAddSubmonoid (f g : F) :
+    (eqLocus f g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
   rfl
 #align linear_map.eq_locus_to_add_submonoid LinearMap.eqLocus_toAddSubmonoid
 
 @[simp]
-theorem eqLocus_same (f : M →ₛₗ[τ₁₂] M₂) : f.eqLocus f = ⊤ :=
-  SetLike.ext fun _ => by
-    simp only [mem_eqLocus, mem_top]
+theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
+    simp [SetLike.ext_iff, FunLike.ext_iff]
+
+@[simp]
+theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
 #align linear_map.eq_locus_same LinearMap.eqLocus_same
+
+theorem le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqOn f g S := Iff.rfl
+
+theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
+    Set.EqOn f g ↑(S ⊔ T) := by
+  rw [← le_eqLocus] at hS hT ⊢
+  exact sup_le hS hT
+
+theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
+    (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
+  FunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
 end
 
@@ -1481,7 +1482,7 @@ theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgro
   rfl
 #align linear_map.ker_to_add_subgroup LinearMap.ker_toAddSubgroup
 
-theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : f.eqLocus g = ker (f - g) :=
+theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=
   SetLike.ext fun _ => sub_eq_zero.symm
 #align linear_map.eq_locus_eq_ker_sub LinearMap.eqLocus_eq_ker_sub
 

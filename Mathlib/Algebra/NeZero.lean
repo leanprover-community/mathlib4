@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module algebra.ne_zero
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Logic.Basic
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Algebra.Order
+
+#align_import algebra.ne_zero from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
 # `NeZero` typeclass
