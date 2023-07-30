@@ -75,6 +75,21 @@ example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
   congrm a = ?_
   exact h
 
+example {b d : ℕ} (h : b = d) : (∀ a, a = b) ↔ (∀ c, c = d) := by
+  congrm ∀ a, _ = ?_
+  guard_target = b = d
+  exact h
+
+example {p q r s : Prop} (pr : p ↔ r) (qs : q ↔ s) : p ∧ q ↔ r ∧ s := by
+  congrm ?h1 ∧ ?h2
+  case h1 => guard_target = p ↔ r; assumption
+  case h2 => guard_target = q ↔ s; assumption
+
+example {f : ℕ → Prop} :
+    (∃ k, f (3 + 2 + k) ∨ f (8 + 1 + k)) ↔ ∃ k, f (1 + 4 + k) ∨ f (2 + 7 + k) := by
+  congrm (∃ k, f (?_ + k) ∨ f (?_ + k))
+  · guard_target =ₛ 3 + 2 = 1 + 4; simp
+  · guard_target =ₛ 8 + 1 = 2 + 7; simp
 
 example {a b : ℕ} (h : a = b) : (fun _ : ℕ => ∀ z, a + a = z) = (fun _ => ∀ z, b + a = z) := by
   congrm λ x => ∀ w, ?_ + a = w

@@ -12,7 +12,8 @@ import Mathlib.Logic.Basic
 /-!
 # The `congrm` tactic
 
-The `congrm` tactic is a convenient frontend for `congr(...)` congruence quotations.
+The `congrm` tactic ("`congr`"" with matching)
+is a convenient frontend for `congr(...)` congruence quotations.
 Roughly, `congrm e` is `refine congr(e')`, where `e'` is `e` with every `?m` placeholder
 replaced by `$(?m)`.
 -/
