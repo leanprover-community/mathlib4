@@ -369,11 +369,67 @@ theorem bases_of_feasible_eq_singleton (hs : s ∈ G) : G.bases s = {s} := by
     rw [mem_bases_self_iff] at hs
     exact h ▸ hs
 
+theorem basis_card_le_of_subset_bases
+  {s₁ b₁ : Finset α} (h₁ : b₁ ∈ G.bases s₁)
+  {s₂ b₂ : Finset α} (h₂ : b₂ ∈ G.bases s₂)
+  (h₃ : s₁ ⊆ s₂) :
+    b₁.card ≤ b₂.card := by
+  simp only [bases, system_feasible_set_mem_mem, Finset.mem_filter] at h₁ h₂
+  by_contra' h'
+  have ⟨x, hx₁, hx₂⟩ := G.exchangeProperty h₁.1 h₂.1 h'
+  rw [mem_sdiff] at hx₁
+  exact hx₁.2 (h₂.2.2 (subset_trans h₁.2.1 h₃ hx₁.1) hx₂)
+
+theorem basis_of_basis_card_eq_of_subset
+  {b' : Finset α} (hb'₁ : b'.card = b.card) (hb'₂ : b' ⊆ s) (hb'₃ : b' ∈ G) :
+    b' ∈ G.bases s := by
+  simp only [basis_def, hb'₃, hb'₂, true_and]
+  intro a ha₁ ha₂
+  by_contra' h'
+  have h := basis_max_card_of_feasible hb ha₂ (by
+    intro x hx
+    simp only [mem_insert] at hx
+    apply hx.elim _ (fun h => hb'₂ h)
+    intro h; rw [h]; exact ha₁)
+  simp only [h', card_insert_of_not_mem, hb'₁, add_le_iff_nonpos_right] at h
+
 theorem exists_subset_basis_of_subset_bases
   {s₁ b₁ : Finset α} (h₁ : b₁ ∈ G.bases s₁)
   {s₂ : Finset α} (h₂ : s₁ ⊆ s₂) :
     ∃ b₂ ∈ G.bases s₂, b₁ ⊆ b₂ := by
-  sorry
+  by_cases h : b₁ ∈ G.bases s₂
+  . exists b₁
+  . have ⟨b, hb⟩ : Nonempty (G.bases s₂) := bases_nonempty
+    have h₃: b₁.card < b.card := by
+      have h₃ := subset_trans (basis_subset h₁) h₂
+      have h₄ := card_le_of_subset h₃
+      by_contra' h'
+      apply h; clear h
+      have h₅ := basis_card_le_of_subset_bases h₁ hb h₂
+      exact basis_of_basis_card_eq_of_subset hb (Nat.le_antisymm h₅ h') h₃ (basis_mem_feasible h₁)
+    have ⟨x, hx₁, hx₂⟩ := G.exchangeProperty (basis_mem_feasible hb) (basis_mem_feasible h₁) h₃
+    rw [system_feasible_set_mem_mem] at hx₂
+    have h₄ : x ∈ s₂ ∧ x ∉ s₁ := by
+      rw [mem_sdiff] at hx₁
+      constructor
+      . apply basis_subset hb
+        exact hx₁.1
+      . intro h'
+        exact hx₁.2 (basis_maximal h₁ h' hx₂)
+    sorry
+--     have h₅ : insert x b₁ ∈ G.bases (insert x s₁) := insert_basis_of_insert_of_notin h₁ h₄.2 hx₂
+--     have ⟨b₂, hb₂⟩ := exists_subset_basis_of_subset_bases h₅ (insert_subset h₄.1 h₂)
+--     exists b₂
+--     simp only [hb₂, true_and]
+--     exact subset_trans (subset_insert x b₁) hb₂.2
+-- termination_by exists_subset_basis_of_subset_bases => s₂.card - b₁.card
+-- decreasing_by
+--   simp_wf
+--   simp_all only [mem_sdiff, system_feasible_set_mem_mem, card_insert_of_not_mem, h₄]
+--   rw [← Nat.sub_sub]
+--   apply sub_lt _ (by decide)
+--   rw [tsub_pos_iff_lt]
+--   exact lt_of_lt_of_le h₃ (card_le_of_subset (basis_subset hb))
 
 end Bases
 
