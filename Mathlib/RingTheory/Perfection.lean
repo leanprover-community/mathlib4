@@ -231,8 +231,10 @@ to its perfection. -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R] [CharP R p]
     {P : Type u₂} [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
-  Injective : ∀ ⦃x y : P⦄, (∀ n, π (((frobeniusEquiv P p).symm)^[n] x) = π (((frobeniusEquiv P p).symm)^[n] y)) → x = y
-  Surjective : ∀ f : ℕ → R, (∀ n, f (n + 1) ^ p = f n) → ∃ x : P, ∀ n, π (((frobeniusEquiv P p).symm)^[n] x) = f n
+  Injective : ∀ ⦃x y : P⦄,
+    (∀ n, π (((frobeniusEquiv P p).symm)^[n] x) = π (((frobeniusEquiv P p).symm)^[n] y)) → x = y
+  Surjective : ∀ f : ℕ → R, (∀ n, f (n + 1) ^ p = f n) → ∃ x : P, ∀ n,
+    π (((frobeniusEquiv P p).symm)^[n] x) = f n
 #align perfection_map PerfectionMap
 
 namespace PerfectionMap
@@ -271,8 +273,8 @@ theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
     Surjective := fun f hf =>
       ⟨f 0, fun n =>
         show ((frobeniusEquiv R p).symm)^[n] (f 0) = f n from
-          Nat.recOn n rfl fun n ih =>
-            injective_pow_p R p <| by rw [Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p, ih, hf]⟩ }
+          Nat.recOn n rfl fun n ih => injective_pow_p R p <| by
+            rw [Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p, ih, hf]⟩ }
 #align perfection_map.id PerfectionMap.id
 
 variable {p R P}
