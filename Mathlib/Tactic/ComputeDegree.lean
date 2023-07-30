@@ -385,7 +385,7 @@ match twoH with
     if debug then dbg_trace f!"{(π nas).getTail}\n{msg}"; π nas else π nas
 
 /-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
-lists: the goals containing some metavariables and the goal not containing any metavariable.
+lists: the goals containing some metavariables and the goals not containing any metavariable.
 
 If a goal containing a metavariable has the form `?_ = x`, `x = ?_`, where `?_` is a metavariable
 and `x` is an expression that does not involve metavariables, then it closes this goal using `rfl`,
@@ -393,13 +393,13 @@ effectively assigning the metavariable to `x`.
 
 If a goal does not contain metavariables, it tries `rfl` on it.
 
-It returns the corresponding list of `MVarId`s, first the ones that initially involved (`Expr`)
+It returns the list of `MVarId`s, beginning with the ones that initially involved (`Expr`)
 metavariables followed by the rest.
 -/
 def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
-  let (mv, nmv) := ← mvs.partitionM fun mv => return hasExprMVar (← mv.getDecl).type
-  let nrfl := ← nmv.mapM fun g => g.applyConst ``rfl <|> return [g]
-  let assignable := ← mv.mapM fun g => do
+  let (yesMV, noMV) := ← mvs.partitionM fun mv => return hasExprMVar (← mv.getDecl).type
+  let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
+  let assignable := ← yesMV.mapM fun g => do
     let tgt := ← instantiateMVars (← g.getDecl).type
     match tgt.eq? with
       | some (_, lhs, rhs) =>
@@ -409,7 +409,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
         else pure [g]
       | none =>
         return [g]
-  return (assignable.join ++ nrfl.join)
+  return (assignable.join ++ tried_rfl.join)
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
