@@ -26,7 +26,7 @@ for `Set α`, and some more set constructions.
 * `Set.completeAtomicBooleanAlgebra`: `Set α` is a `CompleteAtomicBooleanAlgebra` with `≤ = ⊆`,
   `< = ⊂`, `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference.
   See `Set.BooleanAlgebra`.
-* `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
+* `Set.kernImage`: For a function `f : α → β`, `s.kernImage f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
   of `f '' t` over all `f ∈ s`, where `t : Set α` and `s : Set (α → β)`.
@@ -182,6 +182,14 @@ instance Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α
     sInf_le := fun s t t_in a h => h _ t_in
     iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
+/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
+def kernImage (f : α → β) (s : Set α) : Set β :=
+  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
+#align set.kern_image Set.kernImage
+
+lemma subset_kernImage_iff {f : α → β} : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
+  ⟨fun h _ hx ↦ h hx rfl,
+    fun h _ hx y hy ↦ h (show f y ∈ s from hy.symm ▸ hx)⟩
 section GaloisConnection
 
 variable {f : α → β}
@@ -190,19 +198,47 @@ protected theorem image_preimage : GaloisConnection (image f) (preimage f) := fu
   image_subset_iff
 #align set.image_preimage Set.image_preimage
 
-/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
-def kernImage (f : α → β) (s : Set α) : Set β :=
-  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
-#align set.kern_image Set.kernImage
-
-protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun a _ =>
-  ⟨fun h _ hx y hy =>
-    have : f y ∈ a := hy.symm ▸ hx
-    h this,
-    fun h x (hx : f x ∈ a) => h hx rfl⟩
+protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun _ _ =>
+  subset_kernImage_iff.symm
 #align set.preimage_kern_image Set.preimage_kernImage
 
 end GaloisConnection
+
+section kernImage
+
+variable {f : α → β}
+
+lemma kernImage_mono : Monotone (kernImage f) :=
+  Set.preimage_kernImage.monotone_u
+
+lemma kernImage_eq_compl {s : Set α} : kernImage f s = (f '' sᶜ)ᶜ :=
+  Set.preimage_kernImage.u_unique (Set.image_preimage.compl)
+    (fun t ↦ compl_compl (f ⁻¹' t) ▸ Set.preimage_compl)
+
+lemma kernImage_compl {s : Set α} : kernImage f (sᶜ) = (f '' s)ᶜ := by
+  rw [kernImage_eq_compl, compl_compl]
+
+lemma kernImage_empty : kernImage f ∅ = (range f)ᶜ := by
+  rw [kernImage_eq_compl, compl_empty, image_univ]
+
+lemma kernImage_preimage_eq_iff {s : Set β} : kernImage f (f ⁻¹' s) = s ↔ (range f)ᶜ ⊆ s := by
+  rw [kernImage_eq_compl, ← preimage_compl, compl_eq_comm, eq_comm, image_preimage_eq_iff,
+      compl_subset_comm]
+
+lemma compl_range_subset_kernImage {s : Set α} : (range f)ᶜ ⊆ kernImage f s := by
+  rw [← kernImage_empty]
+  exact kernImage_mono (empty_subset _)
+
+lemma kernImage_union_preimage {s : Set α} {t : Set β} :
+    kernImage f (s ∪ f ⁻¹' t) = kernImage f s ∪ t := by
+  rw [kernImage_eq_compl, kernImage_eq_compl, compl_union, ← preimage_compl, image_inter_preimage,
+      compl_inter, compl_compl]
+
+lemma kernImage_preimage_union {s : Set α} {t : Set β} :
+    kernImage f (f ⁻¹' t ∪ s) = t ∪ kernImage f s := by
+  rw [union_comm, kernImage_union_preimage, union_comm]
+
+end kernImage
 
 /-! ### Union and intersection over an indexed family of sets -/
 
@@ -878,7 +914,7 @@ theorem mem_biInter {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, 
 theorem subset_biUnion_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
     u x ⊆ ⋃ x ∈ s, u x :=
 --Porting note: Why is this not just `subset_iUnion₂ x xs`?
-  @subset_iUnion₂ β α (. ∈ s) (fun i _ => u i) x xs
+  @subset_iUnion₂ β α (· ∈ s) (fun i _ => u i) x xs
 #align set.subset_bUnion_of_mem Set.subset_biUnion_of_mem
 
 /-- A specialization of `iInter₂_subset`. -/

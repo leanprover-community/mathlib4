@@ -307,34 +307,34 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 
 
 instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (. ≤ .) by infer_instance
+  show IsRefl (Set α) (· ≤ ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
-  show IsTrans (Set α) (. ≤ .) by infer_instance
+  show IsTrans (Set α) (· ≤ ·) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (. ≤ .) (. ≤ .) (. ≤ .) by infer_instance
+  show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
 
 instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  show IsAntisymm (Set α) (. ≤ .) by infer_instance
+  show IsAntisymm (Set α) (· ≤ ·) by infer_instance
 
 instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  show IsIrrefl (Set α) (. < .) by infer_instance
+  show IsIrrefl (Set α) (· < ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊂ ·) :=
-  show IsTrans (Set α) (. < .) by infer_instance
+  show IsTrans (Set α) (· < ·) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. < .) (. < .) by infer_instance
+  show Trans (· < ·) (· < ·) (· < ·) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. ≤ .) (. < .) by infer_instance
+  show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. ≤ .) (. < .) (. < .) by infer_instance
+  show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
 instance : IsAsymm (Set α) (· ⊂ ·) :=
-  show IsAsymm (Set α) (. < .) by infer_instance
+  show IsAsymm (Set α) (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
@@ -1699,6 +1699,10 @@ theorem compl_ne_univ : sᶜ ≠ univ ↔ s.Nonempty :=
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_not_mem s).symm
 #align set.nonempty_compl Set.nonempty_compl
+
+@[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := by
+  obtain ⟨y, hy⟩ := exists_ne x
+  exact ⟨y, by simp [hy]⟩
 
 theorem mem_compl_singleton_iff {a x : α} : x ∈ ({a} : Set α)ᶜ ↔ x ≠ a :=
   Iff.rfl
