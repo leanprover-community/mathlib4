@@ -2013,8 +2013,7 @@ theorem factorization_zero : factorization (0 : α) = 0 := by simp [factorizatio
 #align factorization_zero factorization_zero
 
 @[simp]
-theorem factorization_one : factorization (1 : α) = 0 := by
-  simp [factorization, map_zero Multiset.toFinsupp]
+theorem factorization_one : factorization (1 : α) = 0 := by simp [factorization]
 #align factorization_one factorization_one
 
 /-- The support of `factorization n` is exactly the Finset of normalized factors -/
