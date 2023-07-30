@@ -529,9 +529,10 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
 #align filter.map_prod_map_coprod_le Filter.map_prod_map_coprod_le
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, the first under the constant function `λ a, b` and the second under the identity function.
-Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this provides an
-example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict. -/
+`𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity
+function. Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this
+provides an example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict.
+-/
 theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :
     (map (fun _ => b) (𝓟 {a})).coprod (map id (𝓟 {i})) =
       𝓟 ((({b} : Set β) ×ˢ univ) ∪ (univ ×ˢ ({i} : Set ι))) := by
@@ -539,10 +540,9 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α)
     image_id, prod_univ, univ_prod, id]
 #align filter.map_const_principal_coprod_map_id_principal Filter.map_const_principal_coprod_map_id_principal
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, under the `prod.map` of two functions, respectively the constant function `λ a, b` and the
-identity function.  Together with the previous lemma,
+`𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a => b` and
+the identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
 in the lemma `map_prod_map_coprod_le` can be strict. -/
 theorem map_prod_map_const_id_principal_coprod_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :
