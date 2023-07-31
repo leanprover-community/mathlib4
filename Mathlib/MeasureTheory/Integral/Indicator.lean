@@ -8,8 +8,28 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 open MeasureTheory Set Filter Topology ENNReal NNReal BigOperators
 
+/-!
+# Results about indicator functions and measures
+
+## Main results
+
+The section "IndicatorConstMeasurable" contains simple results showing that if the indicator
+function of a set is a pointwise limit (resp. a.e.-limit) of indicators of measurable
+(resp. null-measurable) sets, then the set itself is measurable (resp. null-measurable).
+
+The section "Limits of measures of sets from limits of indicators" contains simple results showing
+that the pointwise convergence of indicator functions of sets implies the convergence of measures:
+limᵢ Aᵢ.indicator = A.indicator implies limᵢ μ(Aᵢ) = μ(A).
+
+## Tags
+
+indicator function, measure, dominated convergence
+
+-/
+
 /-
-Where should these results live?
+Where should these results live? Should they be put in different files or should a new file
+devoted to measure-theoretic lemmas about indicators be created?
 
 I believe those in section IndicatorConstMeasurable only have prerequisites
  * `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
@@ -19,8 +39,8 @@ I believe those in section IndicatorConstMeasurable only have prerequisites
 Those in section TendstoMeasureOfTendstoIndicator (except to the extent they rely on measurability)
 only have prerequisites
  * `Mathlib.MeasureTheory.Integral.Lebesgue`
+ -/
 
--/
 
 section IndicatorConstMeasurable
 
