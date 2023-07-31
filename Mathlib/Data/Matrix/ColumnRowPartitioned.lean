@@ -192,7 +192,8 @@ lemma fromRows_fromColumn_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ 
 
 /-- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
 lemma fromRows_mul_fromColumns (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
-    (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) : (fromRows A₁ A₂) ⬝ (fromColumns B₁ B₂) =
+    (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
+    (fromRows A₁ A₂) ⬝ (fromColumns B₁ B₂) =
       fromBlocks (A₁ ⬝ B₁) (A₁ ⬝ B₂) (A₂ ⬝ B₁) (A₂ ⬝ B₂) := by
   funext i j
   rw [fromRows, fromColumns]
@@ -273,8 +274,8 @@ variable [Star R]
 /- A column partioned matrix in a Star ring when conjugate transposed gives a row partitioned matrix
 with the columns of the initial matrix conjugate transposed to become rows. -/
 lemma conjTranspose_fromColumns_eq_fromRows_conjTranspose (A₁ : Matrix m n₁ R)
-    (A₂ : Matrix m n₂ R) : conjTranspose (fromColumns A₁ A₂) =
-      fromRows (conjTranspose A₁) (conjTranspose A₂) := by
+    (A₂ : Matrix m n₂ R) :
+    conjTranspose (fromColumns A₁ A₂) = fromRows (conjTranspose A₁) (conjTranspose A₂) := by
   rw [fromColumns, fromRows]
   funext i j
   cases' i with i i
