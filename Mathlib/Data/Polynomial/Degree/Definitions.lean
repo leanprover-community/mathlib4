@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Polynomial.Monomial
@@ -776,21 +777,9 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       _ ≤ _ := by rw [sup_insert, sup_eq_max]; exact max_le_max le_rfl ih
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
 
-theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q :=
-  calc
-    degree (p * q) ≤
-        p.support.sup fun i => degree (sum q fun j a => C (coeff p i * a) * X ^ (i + j)) := by
-      -- Porting note: Was `simp only [..]; convert ..; exact mul_eq_sum_sum`.
-      simp only [← C_mul_X_pow_eq_monomial.symm, mul_eq_sum_sum (p := p) (q := q)]
-      exact degree_sum_le _ _
-    _ ≤ p.support.sup fun i => q.support.sup fun j =>
-          degree (C (coeff p i * coeff q j) * X ^ (i + j)) :=
-      (Finset.sup_mono_fun fun i _hi => degree_sum_le _ _)
-    _ ≤ degree p + degree q := by
-      refine Finset.sup_le fun a ha ↦ Finset.sup_le fun b hb ↦ (degree_C_mul_X_pow_le _ _).trans ?_
-      rw [Nat.cast_add]
-      rw [mem_support_iff] at ha hb
-      exact add_le_add (le_degree_of_ne_zero ha) (le_degree_of_ne_zero hb)
+theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
+  simp_rw [degree, ←support_toFinsupp, toFinsupp_mul]
+  exact AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le p.toFinsupp q.toFinsupp
 #align polynomial.degree_mul_le Polynomial.degree_mul_le
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
