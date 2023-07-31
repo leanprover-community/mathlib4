@@ -225,6 +225,11 @@ theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
   Option.not_mem_none _ hb
 #align with_bot.not_coe_le_bot WithBot.not_coe_le_bot
 
+@[simp]
+theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
+  | (a : α) => by simp [not_coe_le_bot _]
+  | ⊥ => by simp
+
 theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ o ↔ a ≤ b)
   | _, rfl => coe_le_coe
 #align with_bot.coe_le WithBot.coe_le
@@ -386,11 +391,6 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (mono_iff : ∀ {
   | (a : α), ⊥ => by simp only [map_coe, map_bot, coe_ne_bot, not_coe_le_bot _]
   | (a : α), (b : α) => by simpa only [map_coe, coe_le_coe] using mono_iff
 #align with_bot.map_le_iff WithBot.map_le_iff
-
-@[simp]
-theorem le_bot_iff [Preorder α] : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
-  | (a : α) => by simp [not_coe_le_bot _]
-  | ⊥ => by simp
 
 theorem le_coe_unbot' [Preorder α] : ∀ (a : WithBot α) (b : α), a ≤ a.unbot' b
   | (a : α), _ => le_rfl
@@ -857,6 +857,11 @@ theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
   WithBot.not_coe_le_bot (toDual a)
 #align with_top.not_top_le_coe WithTop.not_top_le_coe
 
+@[simp]
+theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
+  | (a : α) => by simp [not_top_le_coe _]
+  | ⊤ => by simp
+
 theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
   | _, rfl => coe_le_coe
 #align with_top.le_coe WithTop.le_coe
@@ -1172,11 +1177,6 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α
   erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 #align with_top.map_le_iff WithTop.map_le_iff
-
-@[simp]
-theorem top_le_iff [Preorder α] : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
-  | (a : α) => by simp [not_top_le_coe _]
-  | ⊤ => by simp
 
 theorem coe_untop'_le [Preorder α] : ∀ (a : WithTop α) (b : α), a.untop' b ≤ a
   | (a : α), _ => le_rfl
