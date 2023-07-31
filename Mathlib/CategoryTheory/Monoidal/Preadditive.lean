@@ -303,13 +303,22 @@ theorem leftDistributor_ext_right {J : Type} [Fintype J] (X Y : C) (f : J → C)
 -- One might wonder how iterated tensor products we need simp lemmas for.
 -- The answer is two: this lemma is needed to verify the pentagon identity.
 @[ext]
-theorem leftDistributor_ext₂ {J : Type} [Fintype J]
+theorem leftDistributor_ext₂_left {J : Type} [Fintype J]
     (X Y Z : C) (f : J → C) (g h : X ⊗ (Y ⊗ ⨁ f) ⟶ Z)
     (w : ∀ j, (𝟙 X ⊗ (𝟙 Y ⊗ biproduct.ι f j)) ≫ g = (𝟙 X ⊗ (𝟙 Y ⊗ biproduct.ι f j)) ≫ h) :
     g = h := by
   apply (cancel_epi (α_ _ _ _).hom).mp
   ext
   simp_rw [← tensor_id, associator_naturality_assoc, w]
+
+@[ext]
+theorem leftDistributor_ext₂_right {J : Type} [Fintype J]
+    (X Y Z : C) (f : J → C) (g h : X ⟶ Y ⊗ (Z ⊗ ⨁ f))
+    (w : ∀ j, g ≫ (𝟙 Y ⊗ (𝟙 Z ⊗ biproduct.π f j)) = h ≫ (𝟙 Y ⊗ (𝟙 Z ⊗ biproduct.π f j))) :
+    g = h := by
+  apply (cancel_mono (α_ _ _ _).inv).mp
+  ext
+  simp_rw [← tensor_id, Category.assoc, ← associator_inv_naturality, ← Category.assoc, w]
 
 @[ext]
 theorem rightDistributor_ext_left {J : Type} [Fintype J]
@@ -337,12 +346,21 @@ theorem rightDistributor_ext_right {J : Type} [Fintype J]
   apply w
 
 @[ext]
-theorem rightDistributor_ext₂ {J : Type} [Fintype J]
+theorem rightDistributor_ext₂_left {J : Type} [Fintype J]
     (X Y Z : C) (f : J → C) (g h : ((⨁ f) ⊗ X) ⊗ Y ⟶ Z)
     (w : ∀ j, ((biproduct.ι f j ⊗ 𝟙 X) ⊗ 𝟙 Y) ≫ g = ((biproduct.ι f j ⊗ 𝟙 X) ⊗ 𝟙 Y) ≫ h) :
     g = h := by
   apply (cancel_epi (α_ _ _ _).inv).mp
   ext
   simp_rw [← tensor_id, associator_inv_naturality_assoc, w]
+
+@[ext]
+theorem rightDistributor_ext₂_right {J : Type} [Fintype J]
+    (X Y Z : C) (f : J → C) (g h : X ⟶ ((⨁ f) ⊗ Y) ⊗ Z)
+    (w : ∀ j, g ≫ ((biproduct.π f j ⊗ 𝟙 Y) ⊗ 𝟙 Z) = h ≫ ((biproduct.π f j ⊗ 𝟙 Y) ⊗ 𝟙 Z)) :
+    g = h := by
+  apply (cancel_mono (α_ _ _ _).hom).mp
+  ext
+  simp_rw [← tensor_id, Category.assoc, ← associator_naturality, ← Category.assoc, w]
 
 end CategoryTheory
