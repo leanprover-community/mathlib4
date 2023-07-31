@@ -627,11 +627,9 @@ theorem degree_le_zero_iff : degree p ≤ 0 ↔ p = C (coeff p 0) :=
   ⟨eq_C_of_degree_le_zero, fun h => h.symm ▸ degree_C_le⟩
 #align polynomial.degree_le_zero_iff Polynomial.degree_le_zero_iff
 
-theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) :=
-  calc
-    degree (p + q) = (p + q).support.sup WithBot.some := rfl
-    _ ≤ (p.support ∪ q.support).sup WithBot.some := (sup_mono support_add)
-    _ = p.support.sup WithBot.some ⊔ q.support.sup WithBot.some := sup_union
+theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) := by
+  simpa only [degree, ←support_toFinsupp, toFinsupp_add]
+    using AddMonoidAlgebra.sup_support_add_le _ _ _
 #align polynomial.degree_add_le Polynomial.degree_add_le
 
 theorem degree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : degree p ≤ n) (hq : degree q ≤ n) :
