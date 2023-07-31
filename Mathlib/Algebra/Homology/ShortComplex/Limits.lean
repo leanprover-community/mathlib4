@@ -47,9 +47,9 @@ def isLimitOfIsLimitπ (c : Cone F)
   fac s j := by ext <;> apply IsLimit.fac
   uniq s m hm := by
     ext
-    . exact h₁.uniq (π₁.mapCone s) _ (fun j => π₁.congr_map (hm j))
-    . exact h₂.uniq (π₂.mapCone s) _ (fun j => π₂.congr_map (hm j))
-    . exact h₃.uniq (π₃.mapCone s) _ (fun j => π₃.congr_map (hm j))
+    · exact h₁.uniq (π₁.mapCone s) _ (fun j => π₁.congr_map (hm j))
+    · exact h₂.uniq (π₂.mapCone s) _ (fun j => π₂.congr_map (hm j))
+    · exact h₃.uniq (π₃.mapCone s) _ (fun j => π₃.congr_map (hm j))
 
 section
 
