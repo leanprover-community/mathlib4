@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Ring
@@ -282,7 +281,7 @@ def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPrep
 tracing the result if `trace.linarith` is on.
 -/
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
-  (g : MVarId) (l : List Expr) : MetaM (List Branch) := do
+  (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
   let branches ← pp.transform g l
   if branches.length > 1 then
     trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"

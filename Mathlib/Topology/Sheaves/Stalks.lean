@@ -2,11 +2,6 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
-
-! This file was ported from Lean 3 source module topology.sheaves.stalks
-! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.OpenNhds
 import Mathlib.Topology.Sheaves.Presheaf
@@ -18,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Sites.Pushforward
+
+#align_import topology.sheaves.stalks from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Stalks

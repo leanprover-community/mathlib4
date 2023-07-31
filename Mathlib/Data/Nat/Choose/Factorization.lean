@@ -2,15 +2,12 @@
 Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
-
-! This file was ported from Lean 3 source module data.nat.choose.factorization
-! leanprover-community/mathlib commit dc9db541168768af03fe228703e758e649afdbfc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Multiplicity
+
+#align_import data.nat.choose.factorization from "leanprover-community/mathlib"@"dc9db541168768af03fe228703e758e649afdbfc"
 
 /-!
 # Factorization of Binomial Coefficients

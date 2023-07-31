@@ -2,13 +2,10 @@
 Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module order.well_founded
-! leanprover-community/mathlib commit 2c84c2c5496117349007d97104e7bbb471381592
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+
+#align_import order.well_founded from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
 /-!
 # Well-founded relations

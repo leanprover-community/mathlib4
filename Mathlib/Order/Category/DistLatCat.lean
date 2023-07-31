@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.DistLat
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.LatCat
+
+#align_import order.category.DistLat from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of distributive lattices

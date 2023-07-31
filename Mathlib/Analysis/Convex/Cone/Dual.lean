@@ -2,14 +2,11 @@
 Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module analysis.convex.cone.dual
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection
+
+#align_import analysis.convex.cone.dual from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Convex cones in inner product spaces

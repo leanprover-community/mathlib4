@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
-
-! This file was ported from Lean 3 source module data.set.finite
-! leanprover-community/mathlib commit 7fdd4f3746cb059edfdb5d52cba98f66fce418c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Finite.Basic
+
+#align_import data.set.finite from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
 
 /-!
 # Finite sets
@@ -23,7 +20,7 @@ about finite sets and gives ways to manipulate `Set.Finite` expressions.
 
 * `Set.Finite : Set α → Prop`
 * `Set.Infinite : Set α → Prop`
-* `Set.to_finite` to prove `Set.Finite` for a `Set` from a `Finite` instance.
+* `Set.toFinite` to prove `Set.Finite` for a `Set` from a `Finite` instance.
 * `Set.Finite.toFinset` to noncomputably produce a `Finset` from a `Set.Finite` proof.
   (See `Set.toFinset` for a computable version.)
 
@@ -857,8 +854,7 @@ theorem finite_pure (a : α) : (pure a : Set α).Finite :=
 #align set.finite_pure Set.finite_pure
 
 @[simp]
-protected -- Porting note: added
-theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite := by
+protected theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite := by
   cases hs
   apply toFinite
 #align set.finite.insert Set.Finite.insert
@@ -1267,12 +1263,8 @@ theorem card_range_of_injective [Fintype α] {f : α → β} (hf : Injective f) 
 #align set.card_range_of_injective Set.card_range_of_injective
 
 theorem Finite.card_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
-    h.toFinset.card = Fintype.card s := by
-  rw [← Finset.card_attach, Finset.attach_eq_univ, ← Fintype.card]
-  refine' Fintype.card_congr (Equiv.setCongr _)
-  ext x
-  show x ∈ h.toFinset ↔ x ∈ s
-  simp
+    h.toFinset.card = Fintype.card s :=
+  Eq.symm <| Fintype.card_of_finset' _ fun _ ↦ h.mem_toFinset
 #align set.finite.card_to_finset Set.Finite.card_toFinset
 
 theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :

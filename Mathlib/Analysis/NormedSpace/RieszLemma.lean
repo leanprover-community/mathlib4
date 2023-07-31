@@ -2,15 +2,12 @@
 Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.riesz_lemma
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import analysis.normed_space.riesz_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Applications of the Hausdorff distance in normed spaces

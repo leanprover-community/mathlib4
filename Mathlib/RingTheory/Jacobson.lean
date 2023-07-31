@@ -2,15 +2,12 @@
 Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module ring_theory.jacobson
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.JacobsonIdeal
+
+#align_import ring_theory.jacobson from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Jacobson Rings
@@ -650,7 +647,7 @@ variable {n : ℕ}
 -- Porting note: split out `aux_IH` and `quotient_mk_comp_C_isIntegral_of_jacobson'`
 -- from the long proof of `Ideal.MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson`
 
-/-- The constant coefficient as a R-linear morphism -/
+/-- The constant coefficient as an R-linear morphism -/
 private noncomputable def Cₐ (R : Type u) (S : Type v)
     [CommRing R] [CommRing S] [Algebra R S] : S →ₐ[R] S[X] :=
   { Polynomial.C with commutes' := fun r => by rfl }

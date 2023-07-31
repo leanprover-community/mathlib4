@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.biproducts
-! leanprover-community/mathlib commit a176cb1219e300e85793d44583dede42377b51af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Tactic.Abel
+
+#align_import category_theory.preadditive.biproducts from "leanprover-community/mathlib"@"a176cb1219e300e85793d44583dede42377b51af"
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -232,7 +229,7 @@ theorem biproduct.desc_eq {T : C} {g : ∀ j, f j ⟶ T} :
   simp [comp_sum, biproduct.ι_π_assoc, dite_comp]
 #align category_theory.limits.biproduct.desc_eq CategoryTheory.Limits.biproduct.desc_eq
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem biproduct.lift_desc {T U : C} {g : ∀ j, T ⟶ f j} {h : ∀ j, f j ⟶ U} :
     biproduct.lift g ≫ biproduct.desc h = ∑ j : J, g j ≫ h j := by
   simp [biproduct.lift_eq, biproduct.desc_eq, comp_sum, sum_comp, biproduct.ι_π_assoc, comp_dite,
@@ -245,20 +242,20 @@ theorem biproduct.map_eq [HasFiniteBiproducts C] {f g : J → C} {h : ∀ j, f j
   simp [biproduct.ι_π, biproduct.ι_π_assoc, comp_sum, sum_comp, comp_dite, dite_comp]
 #align category_theory.limits.biproduct.map_eq CategoryTheory.Limits.biproduct.map_eq
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem biproduct.matrix_desc {K : Type} [Fintype K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
     (m : ∀ j k, f j ⟶ g k) {P} (x : ∀ k, g k ⟶ P) :
     biproduct.matrix m ≫ biproduct.desc x = biproduct.desc fun j => ∑ k, m j k ≫ x k := by
   ext
-  simp
+  simp [lift_desc]
 #align category_theory.limits.biproduct.matrix_desc CategoryTheory.Limits.biproduct.matrix_desc
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem biproduct.lift_matrix {K : Type} [Fintype K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
     {P} (x : ∀ j, P ⟶ f j) (m : ∀ j k, f j ⟶ g k) :
     biproduct.lift x ≫ biproduct.matrix m = biproduct.lift fun k => ∑ j, x j ≫ m j k := by
   ext
-  simp
+  simp [biproduct.lift_desc]
 #align category_theory.limits.biproduct.lift_matrix CategoryTheory.Limits.biproduct.lift_matrix
 
 @[reassoc]
@@ -295,9 +292,9 @@ def biproduct.reindex {β γ : Type} [Fintype β] [DecidableEq β] [DecidableEq 
   inv_hom_id := by
     ext g g'
     by_cases h : g' = g <;>
-      simp [Preadditive.sum_comp, Preadditive.comp_sum, biproduct.ι_π, biproduct.ι_π_assoc,
-        comp_dite, Equiv.apply_eq_iff_eq_symm_apply, Finset.sum_dite_eq' Finset.univ (ε.symm g') _,
-        h]
+      simp [Preadditive.sum_comp, Preadditive.comp_sum, biproduct.lift_desc,
+        biproduct.ι_π, biproduct.ι_π_assoc, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
+        Finset.sum_dite_eq' Finset.univ (ε.symm g') _, h]
 #align category_theory.limits.biproduct.reindex CategoryTheory.Limits.biproduct.reindex
 
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
