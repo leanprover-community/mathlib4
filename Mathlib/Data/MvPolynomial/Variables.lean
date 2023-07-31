@@ -642,6 +642,7 @@ set_option linter.uppercaseLean3 false in
 theorem totalDegree_add (a b : MvPolynomial σ R) :
     (a + b).totalDegree ≤ max a.totalDegree b.totalDegree :=
   AddMonoidAlgebra.sup_support_add_le _ _ _
+#align mv_polynomial.total_degree_add MvPolynomial.totalDegree_add
 
 theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
     (h : q.totalDegree < p.totalDegree) : (p + q).totalDegree = p.totalDegree := by
