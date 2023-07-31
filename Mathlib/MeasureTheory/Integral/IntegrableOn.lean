@@ -46,7 +46,7 @@ theorem stronglyMeasurableAt_bot {f : α → β} : StronglyMeasurableAtFilter f 
 
 protected theorem StronglyMeasurableAtFilter.eventually (h : StronglyMeasurableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, AEStronglyMeasurable f (μ.restrict s) :=
-  (eventually_small_sets' fun _ _ => AEStronglyMeasurable.mono_set).2 h
+  (eventually_smallSets' fun _ _ => AEStronglyMeasurable.mono_set).2 h
 #align strongly_measurable_at_filter.eventually StronglyMeasurableAtFilter.eventually
 
 protected theorem StronglyMeasurableAtFilter.filter_mono (h : StronglyMeasurableAtFilter f l μ)
@@ -397,7 +397,7 @@ theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
 
 protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
-  Iff.mpr (eventually_small_sets' fun _s _t hst ht => ht.mono_set hst) h
+  Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
 #align measure_theory.integrable_at_filter.eventually MeasureTheory.IntegrableAtFilter.eventually
 
 protected theorem IntegrableAtFilter.add {f g : α → E}
