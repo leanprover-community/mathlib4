@@ -676,7 +676,6 @@ theorem totalDegree_mul (a b : MvPolynomial σ R) :
     (a * b).totalDegree ≤ a.totalDegree + b.totalDegree :=
   AddMonoidAlgebra.sup_support_mul_le
     (by exact (Finsupp.sum_add_index' (fun _ => rfl) (fun _ _ _ => rfl)).le) _ _
-
 #align mv_polynomial.total_degree_mul MvPolynomial.totalDegree_mul
 
 theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f : MvPolynomial σ S) :
