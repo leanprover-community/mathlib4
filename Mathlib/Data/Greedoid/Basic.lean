@@ -748,25 +748,6 @@ decreasing_by
   rw [← Nat.sub_sub]
   exact Nat.sub_lt (tsub_pos_iff_lt.mpr (card_lt_univ_of_not_mem hx.2)) (by decide)
 
-theorem closure_unique_largest_superset
-  (ht₁ : s ⊆ t) (ht₂ : G.rank s = G.rank t) (ht₃ : ∀ x, G.rank s = G.rank (insert x t) → x ∈ t) :
-    t = G.closure s := by
-  apply subset_antisymm
-  . intro x hx
-    rw [mem_closure]
-    have h₁ : G.rank s ≤ G.rank (insert x s) := rank_le_of_subset (subset_insert x s)
-    have h₂ : G.rank (insert x s) ≤ G.rank t := by
-      apply rank_le_of_subset
-      intro _ hy
-      exact (mem_insert.mp hy).elim (fun h => h ▸ hx) (fun h => ht₁ h)
-    rw [← ht₂] at h₂
-    exact Nat.le_antisymm h₂ h₁
-  . intro x hx
-    rw [mem_closure] at hx
-    apply ht₃
-    rw [ht₂]
-    sorry
-
 theorem feasible_iff_elem_notin_closure_minus_elem :
     s ∈ G ↔ ∀ x ∈ s, x ∉ G.closure (s \ {x}) := by
   constructor <;> intro h
@@ -814,9 +795,18 @@ theorem closure_eq_of_subset_adj_closure (hst : s ⊆ G.closure t) (hts : t ⊆ 
     have := G.rank_le_of_subset hts
     rw [rank_closure_eq_rank_self] at this
     exact this
-  apply subset_antisymm
-  . sorry
-  . sorry
+  have h₃ := Nat.le_antisymm h₁ h₂
+  have h₄ := G.rank_closure_eq_rank_self s
+  have h₅ := G.rank_closure_eq_rank_self t
+  apply subset_antisymm <;> intro x hx
+  . rw [mem_closure, ← h₃, ← h₄]
+    have h₆ : G.rank t ≤ G.rank (insert x t) := rank_le_of_subset (subset_insert x t)
+    rw [← h₃, ← h₄] at h₆
+    exact Nat.le_antisymm (rank_le_of_subset (insert_subset hx hts)) h₆
+  . rw [mem_closure, h₃, ← h₅]
+    have h₆ : G.rank s ≤ G.rank (insert x s) := rank_le_of_subset (subset_insert x s)
+    rw [h₃, ← h₅] at h₆
+    exact Nat.le_antisymm (rank_le_of_subset (insert_subset hx hst)) h₆
 
 theorem closure_idempotent : G.closure (G.closure s) = G.closure s :=
   closure_eq_of_subset_adj_closure Subset.rfl
