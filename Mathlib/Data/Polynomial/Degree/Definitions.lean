@@ -778,8 +778,8 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simp_rw [degree, ←support_toFinsupp, toFinsupp_mul]
-  exact AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le p.toFinsupp q.toFinsupp
+  simpa only [degree, ←support_toFinsupp, toFinsupp_mul]
+    using AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le _ _
 #align polynomial.degree_mul_le Polynomial.degree_mul_le
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
