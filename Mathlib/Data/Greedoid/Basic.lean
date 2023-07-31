@@ -402,7 +402,6 @@ theorem exists_subset_basis_of_subset_bases
   . have ⟨b, hb⟩ : Nonempty (G.bases s₂) := bases_nonempty
     have h₃: b₁.card < b.card := by
       have h₃ := subset_trans (basis_subset h₁) h₂
-      have h₄ := card_le_of_subset h₃
       by_contra' h'
       apply h; clear h
       have h₅ := basis_card_le_of_subset_bases h₁ hb h₂
