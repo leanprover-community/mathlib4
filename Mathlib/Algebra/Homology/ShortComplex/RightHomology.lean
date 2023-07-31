@@ -766,7 +766,7 @@ instance isIso_rightHomologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.Has
     IsIso (rightHomologyMap φ) :=
   (inferInstance : IsIso (rightHomologyMapIso (asIso φ)).hom)
 
-/-- The isomorphism `S₁.cycles ≅ S₂.cycles` induced by an isomorphism
+/-- The isomorphism `S₁.opcycles ≅ S₂.opcycles` induced by an isomorphism
 of short complexes `S₁ ≅ S₂`. -/
 @[simps]
 noncomputable def opcyclesMapIso (e : S₁ ≅ S₂) [S₁.HasRightHomology]
@@ -857,8 +857,7 @@ variable [HasKernels C] [HasCokernels C]
 short complex `S` is understood as a kernel of the obvious map `S.fromOpcycles : S.opcycles ⟶ S.X₃`
 where `S.opcycles` is a cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
 @[simps]
-noncomputable def rightHomologyFunctor :
-    ShortComplex C ⥤ C where
+noncomputable def rightHomologyFunctor : ShortComplex C ⥤ C where
   obj S := S.rightHomology
   map := rightHomologyMap
 
