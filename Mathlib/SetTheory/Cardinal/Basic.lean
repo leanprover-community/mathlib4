@@ -534,6 +534,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
+  nsmul := nsmulRec
   npow n c := c^n
   npow_zero := @power_zero
   npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
