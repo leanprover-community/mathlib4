@@ -581,7 +581,8 @@ def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
 /-- Two biproducts which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.
 
-Unfortunately there are two natural ways to define each direction of this isomorphism.
+Unfortunately there are two natural ways to define each direction of this isomorphism
+(because it is true for both products and coproducts separately).
 We give the alternative definitions as lemmas below.
 -/
 @[simps]
@@ -589,27 +590,16 @@ def biproduct.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j
     [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where
   hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
   inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
-  hom_inv_id := by
-    have : ∀ (j j' : J) (h : j = j'),
-        eqToHom (by simp [h]) ≫ (w j').hom = (w j).hom ≫ eqToHom (by simp [h]) := by
-      rintro _ _ rfl
-      simp
-    ext j j'
-    simp [reassoc_of% this]
 
 lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
     (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
     (biproduct.whisker_equiv e w).hom =
       biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
-  have p : ∀ (j j' : J) (h : j = j'),
-      (w j).inv ≫ eqToHom (by simp [h]) = eqToHom (by simp [h]) ≫ (w j').inv := by
-    rintro _ _ rfl
-    simp
   simp only [whisker_equiv_hom]
   ext k j
   by_cases h : k = e j
   · subst h
-    simp [p]
+    simp
   · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
     rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
     · simp
@@ -621,6 +611,7 @@ lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃
     (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
     (biproduct.whisker_equiv e w).inv =
       biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
+  -- One might hope `← eqToHom_iso_hom_naturality` suffices instead, but `simp` won't use it below.
   have p : ∀ (j j' : J) (h : j = j'),
         eqToHom (by simp [h]) ≫ (w j').hom = (w j).hom ≫ eqToHom (by simp [h]) := by
       rintro _ _ rfl

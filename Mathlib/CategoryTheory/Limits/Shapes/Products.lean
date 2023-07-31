@@ -175,6 +175,18 @@ def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocones.ext (Iso.refl _))
 #align category_theory.limits.coproduct_is_coproduct CategoryTheory.Limits.coproductIsCoproduct
 
+@[reassoc (attr := simp)]
+theorem Sigma.eqToHom_comp_ι (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
+    eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
+  cases w
+  simp
+
+@[reassoc (attr := simp)]
+theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
+    Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
+  cases w
+  simp
+
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ f`. -/
 abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ f :=
   limit.lift _ (Fan.mk P p)
@@ -242,6 +254,24 @@ def sigmaSigmaIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
     (∐ fun i => ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
   hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
   inv := Sigma.desc fun ⟨i, x⟩ => Sigma.ι (g i) x ≫ Sigma.ι (fun i => ∐ g i) i
+
+/-- Two products which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+-/
+@[simps]
+def Pi.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasProduct f] [HasProduct g] : ∏ f ≅ ∏ g where
+  hom := Pi.lift fun k => Pi.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp)
+  inv := Pi.lift fun j => Pi.π g (e j) ≫ (w j).hom
+
+/-- Two coproducts which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+-/
+@[simps]
+def Sigma.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
+  hom := Sigma.desc fun j => (w j).inv ≫ Sigma.ι g (e j)
+  inv := Sigma.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ Sigma.ι f _
 
 section Comparison
 
@@ -419,9 +449,7 @@ theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = 
   simp only [HasLimit.isoOfEquivalence_hom_π, Discrete.equivalence_inverse, Discrete.functor_obj,
     Function.comp_apply, Functor.id_obj, Discrete.equivalence_functor, Functor.comp_obj,
     Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
-  dsimp
-  simpa [eqToHom_map]
-    using limit.w (Discrete.functor (f ∘ ε)) (Discrete.eqToHom' (ε.symm_apply_apply b))
+  exact limit.w (Discrete.functor (f ∘ ε)) (Discrete.eqToHom' (ε.symm_apply_apply b))
 #align category_theory.limits.pi.reindex_hom_π CategoryTheory.Limits.Pi.reindex_hom_π
 
 @[reassoc (attr := simp)]
