@@ -41,8 +41,6 @@ namespace CatCommSq
 given by the 2-commutative square. -/
 def iso [h : CatCommSq T L R B] : T ⋙ R ≅ L ⋙ B := h.iso'
 
-variable {L T R B}
-
 /-- Horizontal composition of 2-commutative squares -/
 @[simps! iso'_hom_app iso'_inv_app]
 def hComp (T₁ : C₁ ⥤ C₂) (T₂ : C₂ ⥤ C₃) (V₁ : C₁ ⥤ C₄) (V₂ : C₂ ⥤ C₅) (V₃ : C₃ ⥤ C₆)
@@ -74,37 +72,32 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
       Functor.associator _ _ _  ) ≪≫ (Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ Functor.leftUnitor _
 
-/-- Horizontal inverse of a 2-commutative square -/
-@[simps! iso'_hom_app iso'_inv_app]
-def hInv' (h : CatCommSq T.inverse R L B.inverse) : CatCommSq T.functor L R B.functor :=
-  hInv T.symm R L B.symm h
+lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
+  hInv T.symm R L B.symm (hInv T L R B h) = h := by
+    ext X
+    erw [← cancel_mono (B.functor.map (L.map (T.unitIso.hom.app X))),
+      ← h.iso'.hom.naturality (T.unitIso.hom.app X), hInv_iso'_hom_app, hInv_iso'_inv_app]
+    dsimp
+    simp only [Functor.comp_obj, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
+      Equivalence.counitInv_app_functor, Functor.map_id]
+    simp only [Functor.map_comp, Equivalence.fun_inv_map, assoc,
+      Equivalence.counitInv_functor_comp, comp_id, Iso.inv_hom_id_app_assoc]
+    rfl
 
 /-- In a square of categories, when the top and bottom functors are part
 of equivalence of categorires, it is equivalent to show 2-commutativity for
 the functors of these equivalences or for their inverses. -/
-@[simps]
 def hInvEquiv : CatCommSq T.functor L R B.functor ≃ CatCommSq T.inverse R L B.inverse where
-  toFun := hInv _ _ _ _
-  invFun := hInv' _ _ _ _
-  left_inv h := by
-    ext X
-    have eq := h.iso'.hom.naturality (T.unitIso.hom.app X)
-    dsimp at eq
-    simp only [Functor.comp_obj, hInv'_iso'_hom_app, iso, hInv_iso'_inv_app, Functor.map_comp,
-      Equivalence.fun_inv_map, Functor.id_obj, Category.assoc,
-      Equivalence.counitInv_functor_comp, Category.comp_id, Iso.inv_hom_id_app_assoc]
-    rw [← cancel_mono (B.functor.map (L.map (T.unitIso.hom.app X))), ← eq,
-      assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, Iso.inv_hom_id_app]
-    simp only [Functor.comp_obj, Functor.map_id, comp_id, Equivalence.counitInv_app_functor]
-  right_inv h := by
-    ext X
-    have eq := h.iso'.hom.naturality (T.counitIso.hom.app X)
-    dsimp at eq
-    simp only [Functor.comp_obj, hInv_iso'_hom_app, iso, hInv'_iso'_inv_app, Functor.map_comp,
-      Equivalence.inv_fun_map, Functor.id_obj, assoc, Equivalence.unit_inverse_comp, comp_id,
-      Iso.hom_inv_id_app_assoc, ← eq, ← L.map_comp_assoc, Functor.map_id, id_comp]
+  toFun := hInv T L R B
+  invFun := hInv T.symm R L B.symm
+  left_inv := hInv_hInv T L R B
+  right_inv := hInv_hInv T.symm R L B.symm
 
 end
+
+instance hInv' [h : CatCommSq T L R B] [IsEquivalence T] [IsEquivalence B] :
+    CatCommSq T.inv R L B.inv :=
+  hInv T.asEquivalence L R B.asEquivalence h
 
 end CatCommSq
 
