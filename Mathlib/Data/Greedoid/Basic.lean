@@ -549,13 +549,20 @@ theorem bases_subset_of_rank_eq_of_subset
   (h₁ : s ⊆ t) (h₂ : G.rank s = G.rank t) :
     G.bases s ⊆ G.bases t := by
   intro b hb
-  rw [basis_def] at *
-  simp only [hb.1, subset_trans hb.2.1 h₁, true_and]
+  rw [basis_def]
+  simp only [basis_mem_feasible hb, subset_trans (basis_subset hb) h₁, true_and]
   intro a ha₁ ha₂
   by_contra' h'
-  rw [Nat.le_antisymm_iff] at h₂
-  have ⟨h₂, h₃⟩ := h₂
-  sorry
+  have ⟨b', hb'⟩ : Nonempty (G.bases t):= bases_nonempty
+  have h₃ := basis_max_card_of_feasible hb' ha₂ (by
+    intro x hx
+    rw [mem_insert] at hx
+    apply hx.elim <;> intro h
+    . rw [h]
+      exact ha₁
+    . exact h₁ (basis_subset hb h))
+  simp only [h', card_insert_of_not_mem, ← rank_eq_bases_card hb, ← rank_eq_bases_card hb'] at h₃
+  simp only [h₂, add_le_iff_nonpos_right] at h₃
 
 theorem local_submodularity
   (h₁ : G.rank s = G.rank (insert x s))
@@ -705,15 +712,6 @@ theorem mem_closure : x ∈ G.closure s ↔ G.rank (insert x s) = G.rank s :=
 theorem self_subset_closure : s ⊆ G.closure s := by
   intro x hx
   simp only [mem_closure, insert_eq_of_mem hx]
-
-theorem closure_subset_of_subset (h : s ⊆ t) : G.closure s ⊆ G.closure t := by
-  intro x hx
-  rw [mem_closure] at *
-  apply Nat.le_antisymm _ (rank_le_of_subset _)
-  . sorry
-  . intro _ h
-    have := sdiff_insert_insert_of_mem_of_not_mem h (not_mem_empty _)
-    simp_all only [Finset.mem_singleton, mem_insert, or_true]
 
 @[simp]
 theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.rank s := by
