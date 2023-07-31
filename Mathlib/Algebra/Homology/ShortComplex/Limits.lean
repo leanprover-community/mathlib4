@@ -140,11 +140,11 @@ instance preservesMonomorphisms_π₁ :
   CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape _
 
 instance preservesMonomorphisms_π₂ :
-  Functor.PreservesMonomorphisms (π₂ : _ ⥤ C) :=
+    Functor.PreservesMonomorphisms (π₂ : _ ⥤ C) :=
   CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape _
 
 instance preservesMonomorphisms_π₃ :
-  Functor.PreservesMonomorphisms (π₃ : _ ⥤ C) :=
+    Functor.PreservesMonomorphisms (π₃ : _ ⥤ C) :=
   CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape _
 
 end
