@@ -2,14 +2,11 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.module.submodule.bilinear
-! leanprover-community/mathlib commit 6010cf523816335f7bae7f8584cb2edaace73940
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.BilinearMap
+
+#align_import algebra.module.submodule.bilinear from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"
 
 /-!
 # Images of pairs of submodules under bilinear maps

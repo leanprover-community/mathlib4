@@ -2,15 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.integral.lebesgue
-! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.MeasureTheory.Measure.Count
+
+#align_import measure_theory.integral.lebesgue from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -43,42 +41,6 @@ open Function (support)
 open Classical Topology BigOperators NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
-
-section MoveThis
-
-variable {m : MeasurableSpace α} {μ ν : Measure α} {f : α → ℝ≥0∞} {s : Set α}
-
--- todo after the port: move to measure_theory/measure/measure_space
-theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
-  ext1 t ht
-  classical
-    simp only [Measure.restrict_apply ht, Measure.dirac_apply' _ (ht.inter hs), Set.indicator_apply,
-      Set.mem_inter_iff, Pi.one_apply]
-    by_cases has : a ∈ s
-    · simp only [has, and_true_iff, if_true]
-      split_ifs with hat
-      · rw [Measure.dirac_apply_of_mem hat]
-      · simp only [Measure.dirac_apply' _ ht, Set.indicator_apply, hat, if_false]
-    · simp only [has, and_false_iff, if_false, Measure.coe_zero, Pi.zero_apply]
-#align measure_theory.restrict_dirac' MeasureTheory.restrict_dirac'
-
--- todo after the port: move to measure_theory/measure/measure_space
-theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
-    (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
-  ext1 t ht
-  classical
-    simp only [Measure.restrict_apply ht, Measure.dirac_apply a, Set.indicator_apply,
-      Set.mem_inter_iff, Pi.one_apply]
-    by_cases has : a ∈ s
-    · simp only [has, and_true_iff, if_true]
-      split_ifs with hat
-      · rw [Measure.dirac_apply_of_mem hat]
-      · simp only [Measure.dirac_apply' _ ht, Set.indicator_apply, hat, if_false]
-    · simp only [has, and_false_iff, if_false, Measure.coe_zero, Pi.zero_apply]
-#align measure_theory.restrict_dirac MeasureTheory.restrict_dirac
-
-end MoveThis
 
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc

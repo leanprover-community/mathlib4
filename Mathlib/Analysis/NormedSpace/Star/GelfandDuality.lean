@@ -2,11 +2,6 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.gelfand_duality
-! leanprover-community/mathlib commit e65771194f9e923a70dfb49b6ca7be6e400d8b6f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.Normed.Group.Quotient
@@ -15,6 +10,8 @@ import Mathlib.Topology.ContinuousFunction.Units
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+
+#align_import analysis.normed_space.star.gelfand_duality from "leanprover-community/mathlib"@"e65771194f9e923a70dfb49b6ca7be6e400d8b6f"
 
 /-!
 # Gelfand Duality
@@ -162,31 +159,33 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).injective, _⟩
-  suffices (gelfandTransform ℂ A).range = ⊤ by
-    exact fun x => ((gelfandTransform ℂ A).mem_range).mp (this.symm ▸ Algebra.mem_top)
+  /- The range of `gelfandTransform ℂ A` is actually a `StarSubalgebra`. The key lemma below may be
+    hard to spot; it's `map_star` coming from `WeakDual.Complex.instStarHomClass`, which is a
+    nontrivial result. -/
+  let rng : StarSubalgebra ℂ C(characterSpace ℂ A, ℂ) :=
+    { toSubalgebra := (gelfandTransform ℂ A).range
+      star_mem' := by
+        rintro - ⟨a, rfl⟩
+        use star a
+        ext1 φ
+        simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, gelfandTransform_apply_apply, map_star,
+          IsROrC.star_def, ContinuousMap.star_apply] }
+  suffices rng = ⊤ from
+    fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the
     Stone-Weierstrass theorem, it suffices to show that the image of the Gelfand transform separates
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
-  have h : (gelfandTransform ℂ A).range.topologicalClosure = (gelfandTransform ℂ A).range :=
-    le_antisymm
-      (Subalgebra.topologicalClosure_minimal _ le_rfl
-        (gelfandTransform_isometry A).closedEmbedding.closed_range)
-      (Subalgebra.le_topologicalClosure _)
-  refine' h ▸ ContinuousMap.subalgebra_isROrC_topologicalClosure_eq_top_of_separatesPoints
-    _ (fun _ _ => _) fun f hf => _
+  have h : rng.topologicalClosure = rng := le_antisymm
+    (StarSubalgebra.topologicalClosure_minimal le_rfl
+      (gelfandTransform_isometry A).closedEmbedding.closed_range)
+    (StarSubalgebra.le_topologicalClosure _)
+  refine' h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
+    _ (fun _ _ => _)
   /- Separating points just means that elements of the `characterSpace` which agree at all points
     of `A` are the same functional, which is just extensionality. -/
-  · contrapose!
-    exact fun h => Subtype.ext (ContinuousLinearMap.ext fun a =>
-      h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
-  /- If `f = gelfandTransform ℂ A a`, then `star f` is also in the range of `gelfandTransform ℂ A`
-    using the argument `star a`. The key lemma below may be hard to spot; it's `map_star` coming
-    from `WeakDual.Complex.instStarHomClass`, which is a nontrivial result. -/
-  · obtain ⟨f, ⟨a, rfl⟩, rfl⟩ := Subalgebra.mem_map.mp hf
-    refine' ⟨star a, ContinuousMap.ext fun ψ => _⟩
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, gelfandTransform_apply_apply,
-      AlgEquiv.toAlgHom_eq_coe, AlgHom.compLeftContinuous_apply_apply, AlgHom.coe_coe,
-      IsROrC.conjAe_coe, map_star, starRingEnd_apply]
+  contrapose!
+  exact fun h => Subtype.ext (ContinuousLinearMap.ext fun a =>
+    h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
 #align gelfand_transform_bijective gelfandTransform_bijective
 
 /-- The Gelfand transform as a `StarAlgEquiv` between a commutative unital C⋆-algebra over `ℂ`

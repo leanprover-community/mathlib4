@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.basic
-! leanprover-community/mathlib commit b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Ring.Equiv
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.Tactic.Ring
+
+#align_import ring_theory.localization.basic from "leanprover-community/mathlib"@"b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec"
 
 /-!
 # Localizations of commutative rings
@@ -426,6 +423,17 @@ theorem mk'_mul_mk'_eq_one (x y : M) : mk' S (x : R) y * mk' S (y : R) x = 1 := 
 theorem mk'_mul_mk'_eq_one' (x : R) (y : M) (h : x ∈ M) : mk' S x y * mk' S (y : R) ⟨x, h⟩ = 1 :=
   mk'_mul_mk'_eq_one ⟨x, h⟩ _
 #align is_localization.mk'_mul_mk'_eq_one' IsLocalization.mk'_mul_mk'_eq_one'
+
+theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m  := by
+  nth_rw 2 [← one_mul m]
+  rw [mk'_mul, mk'_one, Algebra.smul_def]
+
+@[simp] theorem smul_mk'_one (x : R) (m : M) : x • mk' S 1 m = mk' S x m := by
+  rw [smul_mk', mul_one]
+
+@[simp] lemma smul_mk'_self {m : M} {r : R} :
+    (m : R) • mk' S r m = algebraMap R S r := by
+  rw [smul_mk', mk'_mul_cancel_left]
 
 section
 
@@ -1255,7 +1263,7 @@ theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocali
 
 variable {A}
 
-/-- The localization at of an integral domain to a set of non-zero elements is an integral domain.
+/-- The localization of an integral domain to a set of non-zero elements is an integral domain.
 See note [reducible non-instances]. -/
 @[reducible]
 theorem isDomain_localization {M : Submonoid A} (hM : M ≤ nonZeroDivisors A) :

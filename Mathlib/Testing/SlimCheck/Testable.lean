@@ -2,14 +2,11 @@
 Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
-
-! This file was ported from Lean 3 source module testing.slim_check.testable
-! leanprover-community/mathlib commit fdc286cc6967a012f41b87f76dcd2797b53152af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
+
+#align_import testing.slim_check.testable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
 /-!
 # `Testable` Class
@@ -63,7 +60,7 @@ instance : SampleableExt MyType :=
 
 Again, we take advantage of the fact that other types have useful
 `Shrinkable` implementations, in this case `Prod`. Note that the second
-proof is heavily based on `WellFoundedRelation` since its used for termination so
+proof is heavily based on `WellFoundedRelation` since it's used for termination so
 the first step you want to take is almost always to `simp_wf` in order to
 get through the `WellFoundedRelation`.
 
@@ -537,7 +534,7 @@ scoped elab "mk_decorations" : tactic => do
 end Decorations
 
 open Decorations in
-/-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
+/-- Run a test suite for `p` and throw an exception if `p` does not hold. -/
 def Testable.check (p : Prop) (cfg : Configuration := {})
     (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : MetaM PUnit := do
   match ← Testable.checkMetaM p' cfg with

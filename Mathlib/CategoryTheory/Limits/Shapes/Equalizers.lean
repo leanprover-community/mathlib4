@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.equalizers
-! leanprover-community/mathlib commit 4698e35ca56a0d4fa53aa5639c3364e0a77f4eba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.HasLimits
+
+#align_import category_theory.limits.shapes.equalizers from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
 
 /-!
 # Equalizers and coequalizers
@@ -811,8 +808,7 @@ noncomputable def equalizer.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) 
   ⟨equalizer.lift k h, equalizer.lift_ι _ _⟩
 #align category_theory.limits.equalizer.lift' CategoryTheory.Limits.equalizer.lift'
 
-/-- Two maps into an equalizer are equal if they are are equal when composed with the equalizer
-    map. -/
+/-- Two maps into an equalizer are equal if they are equal when composed with the equalizer map. -/
 @[ext]
 theorem equalizer.hom_ext {W : C} {k l : W ⟶ equalizer f g}
     (h : k ≫ equalizer.ι f g = l ≫ equalizer.ι f g) : k = l :=
