@@ -370,7 +370,8 @@ theorem add_eq_zero_iff {a b : Tropical (WithTop R)} : a + b = 0 ↔ a = 0 ∧ b
 instance [OrderTop R] : AddCommMonoid (Tropical R) :=
   { instZeroTropical, instAddCommSemigroupTropical with
     zero_add := fun _ => untrop_injective (min_top_left _)
-    add_zero := fun _ => untrop_injective (min_top_right _) }
+    add_zero := fun _ => untrop_injective (min_top_right _)
+    nsmul := nsmulRec }
 
 end Order
 
