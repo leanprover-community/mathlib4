@@ -13,7 +13,8 @@ import Mathlib.CategoryTheory.Skeletal
 # Essentially small categories.
 
 A category given by `(C : Type u) [Category.{v} C]` is `w`-essentially small
-if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]`.
+if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]` and an
+equivalence `C ≌ SmallModel C`.
 
 A category is `w`-locally small if every hom type is `w`-small.
 
