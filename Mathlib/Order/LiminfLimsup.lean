@@ -84,10 +84,10 @@ theorem isBounded_principal (s : Set α) : IsBounded r (𝓟 s) ↔ ∃ t, ∀ x
   simp [IsBounded, subset_def]
 #align filter.is_bounded_principal Filter.isBounded_principal
 
-theorem isBounded_sup [IsTrans α r] (hr : ∀ b₁ b₂, ∃ b, r b₁ b ∧ r b₂ b) :
+theorem isBounded_sup [IsTrans α r] [IsDirected α r] :
     IsBounded r f → IsBounded r g → IsBounded r (f ⊔ g)
   | ⟨b₁, h₁⟩, ⟨b₂, h₂⟩ =>
-    let ⟨b, rb₁b, rb₂b⟩ := hr b₁ b₂
+    let ⟨b, rb₁b, rb₂b⟩ := directed_of r b₁ b₂
     ⟨b, eventually_sup.mpr
       ⟨h₁.mono fun _ h => _root_.trans h rb₁b, h₂.mono fun _ h => _root_.trans h rb₂b⟩⟩
 #align filter.is_bounded_sup Filter.isBounded_sup
