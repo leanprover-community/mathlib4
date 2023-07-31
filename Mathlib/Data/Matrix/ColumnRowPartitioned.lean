@@ -24,44 +24,46 @@ column matrices, row matrices, column row block matrices
 
 namespace Matrix
 
-variable {R: Type _}
-variable {M M₁ M₂ N N₁ N₂: Type _}
-variable [Fintype M][Fintype M₁][Fintype M₂]
-variable [Fintype N][Fintype N₁][Fintype N₂]
-variable [DecidableEq M][DecidableEq M₁][DecidableEq M₂]
-variable [DecidableEq N][DecidableEq N₁][DecidableEq N₂]
+variable {R : Type _}
+variable {M M₁ M₂ N N₁ N₂ : Type _}
+variable [Fintype M] [Fintype M₁] [Fintype M₂]
+variable [Fintype N] [Fintype N₁] [Fintype N₂]
+variable [DecidableEq M] [DecidableEq M₁] [DecidableEq M₂]
+variable [DecidableEq N] [DecidableEq N₁] [DecidableEq N₂]
 
 /-- Concatenate together two matrices A₁[M₁ × N] and A₂[M₂ × N] with the same columns (N) to get a
 bigger matrix indexed by [(M₁ ⊕ M₂) × N] -/
 def fromRows (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R) : Matrix (M₁ ⊕ M₂) N R :=
-  Matrix.of (Sum.elim A₁ A₂)
+  of (Sum.elim A₁ A₂)
 
-/-- Concatenate together two matrices B₁[M × N₁] and B₂[M × N₂] with the same Rows (M) to get a
+/-- Concatenate together two matrices B₁[M × N₁] and B₂[M × N₂] with the same rows (M) to get a
 bigger matrix indexed by [M × (N₁ ⊕ N₂)] -/
 def fromColumns (B₁ : Matrix M N₁ R) (B₂ : Matrix M N₂ R) : Matrix M (N₁ ⊕ N₂) R :=
-  Matrix.of fun i => Sum.elim (B₁ i) (B₂ i)
+  of fun i => Sum.elim (B₁ i) (B₂ i)
 
 /-- Given a column partitioned matrix extract the first column -/
-def toColumns₁ (A : Matrix M (N₁ ⊕ N₂) R) : Matrix M N₁ R :=  of fun i j => (A i (Sum.inl j))
+def toColumns₁ (A : Matrix M (N₁ ⊕ N₂) R) : Matrix M N₁ R := of fun i j => (A i (Sum.inl j))
 
 /-- Given a column partitioned matrix extract the second column -/
-def toColumns₂ (A : Matrix M (N₁ ⊕ N₂) R) : Matrix M N₂ R :=  of fun i j => (A i (Sum.inr j))
+def toColumns₂ (A : Matrix M (N₁ ⊕ N₂) R) : Matrix M N₂ R := of fun i j => (A i (Sum.inr j))
 
 /-- Given a row partitioned matrix extract the first row -/
-def toRows₁ (A : Matrix (M₁ ⊕ M₂) N R) : Matrix M₁ N R :=  of fun i j => (A (Sum.inl i) j)
+def toRows₁ (A : Matrix (M₁ ⊕ M₂) N R) : Matrix M₁ N R := of fun i j => (A (Sum.inl i) j)
 
 /-- Given a row partitioned matrix extract the second row -/
-def toRows₂ (A : Matrix (M₁ ⊕ M₂) N R) : Matrix M₂ N R :=  of fun i j => (A (Sum.inr i) j)
+def toRows₂ (A : Matrix (M₁ ⊕ M₂) N R) : Matrix M₂ N R := of fun i j => (A (Sum.inr i) j)
 
+@[simp]
 lemma fromColumns_toColumns (A : Matrix M (N₁ ⊕ N₂) R) :
-    A = fromColumns A.toColumns₁ A.toColumns₂ := by
+    fromColumns A.toColumns₁ A.toColumns₂ = A := by
   unfold fromColumns toColumns₁ toColumns₂
   funext i j
   cases' j
   all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr])
 
 lemma fromColumns_ext_iff (A₁ : Matrix M N₁ R) (A₂ : Matrix M N₂ R) (B₁ : Matrix M N₁ R)
-    (B₂ : Matrix M N₂ R) : fromColumns A₁ A₂ = fromColumns B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := by
+    (B₂ : Matrix M N₂ R) :
+    fromColumns A₁ A₂ = fromColumns B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := by
   simp_rw [fromColumns, ← Matrix.ext_iff, of_apply, Sum.forall, Sum.elim_inl, Sum.elim_inr]
   exact ⟨(fun h => ⟨fun i j => (h i).1 j, fun _ _ => (h _).2 _⟩),
     (fun h => (fun _ => ⟨(h.1 _), (h.2 _)⟩))⟩
@@ -78,7 +80,7 @@ lemma fromRows_ext_iff (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R) (B₁ :
 
 /- A column partioned matrix when transposed gives a row partioned matrix with columns of the
 initial matrix tranposed to become rows. -/
-lemma transpose_fromColumns_eq_fromRows_transpose (A₁ : Matrix M N₁ R) (A₂ : Matrix M N₂ R) :
+lemma transpose_fromColumns (A₁ : Matrix M N₁ R) (A₂ : Matrix M N₂ R) :
     transpose (fromColumns A₁ A₂) = fromRows (transpose A₁) (transpose A₂) := by
   rw [fromColumns, fromRows]
   funext i j
@@ -99,14 +101,14 @@ section Semiring
 variable [Semiring R]
 
 lemma fromRows_mul (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R) (B : Matrix N M R) :
-    (fromRows A₁ A₂) ⬝ B = fromRows (A₁⬝B) (A₂⬝B) := by
+    (fromRows A₁ A₂) ⬝ B = fromRows (A₁ ⬝ B) (A₂ ⬝ B) := by
   unfold fromRows
   funext i j
   cases' i with i i
   all_goals (simp only [mul_apply, of_apply, Sum.elim_inl, Sum.elim_inr] )
 
 lemma mul_fromColumns (A : Matrix M N R) (B₁ : Matrix N N₁ R) (B₂ : Matrix N N₂ R) :
-    A ⬝ (fromColumns B₁ B₂) = fromColumns (A⬝B₁) (A⬝B₂) := by
+    A ⬝ (fromColumns B₁ B₂) = fromColumns (A ⬝ B₁) (A ⬝ B₂) := by
   unfold fromColumns
   funext i j
   cases' j with j j
@@ -126,7 +128,7 @@ lemma fromColumns_zero : fromColumns (0 : Matrix M N₁ R) (0 : Matrix M N₂ R)
 /-- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
 lemma fromRows_mul_fromColumns (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R)
     (B₁ : Matrix N N₁ R) (B₂ : Matrix N N₂ R) :
-    (fromRows A₁ A₂) ⬝ (fromColumns B₁ B₂) = fromBlocks (A₁⬝B₁) (A₁⬝B₂) (A₂⬝B₁) (A₂⬝B₂) := by
+    (fromRows A₁ A₂) ⬝ (fromColumns B₁ B₂) = fromBlocks (A₁ ⬝ B₁) (A₁ ⬝ B₂) (A₂ ⬝ B₁) (A₂ ⬝ B₂) := by
   funext i j
   rw [fromRows, fromColumns]
   cases i;
@@ -139,7 +141,7 @@ lemma fromRows_mul_fromColumns (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R)
 products of the block matrices -/
 lemma fromColumns_mul_fromRows (A₁ : Matrix M N₁ R) (A₂ : Matrix M N₂ R)
     (B₁ : Matrix N₁ N R) (B₂ : Matrix N₂ N R) :
-    fromColumns A₁ A₂ ⬝ fromRows B₁ B₂ = (A₁⬝B₁ + A₂⬝B₂) := by
+    fromColumns A₁ A₂ ⬝ fromRows B₁ B₂ = (A₁ ⬝ B₁ + A₂ ⬝ B₂) := by
   funext i j
   rw [fromRows, fromColumns]
   simp only [add_apply, mul_apply, of_apply, Fintype.sum_sum_type, Sum.elim_inl, Sum.elim_inr]
@@ -148,7 +150,7 @@ lemma fromColumns_mul_fromRows (A₁ : Matrix M N₁ R) (A₂ : Matrix M N₂ R)
 lemma fromColumns_mul_fromBlocks (A₁ : Matrix M M₁ R) (A₂ : Matrix M M₂ R)
     (B₁₁ : Matrix M₁ N₁ R) (B₁₂ : Matrix M₁ N₂ R) (B₂₁ : Matrix M₂ N₁ R) (B₂₂ : Matrix M₂ N₂ R) :
     (fromColumns A₁ A₂) ⬝ fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ =
-      fromColumns (A₁⬝B₁₁ + A₂⬝B₂₁) (A₁⬝B₁₂ + A₂⬝B₂₂) := by
+      fromColumns (A₁ ⬝ B₁₁ + A₂ ⬝ B₂₁) (A₁ ⬝ B₁₂ + A₂ ⬝ B₂₂) := by
   funext i j
   rw [fromColumns, fromColumns, fromBlocks]
   cases j
@@ -159,7 +161,7 @@ lemma fromColumns_mul_fromBlocks (A₁ : Matrix M M₁ R) (A₂ : Matrix M M₂ 
 lemma fromBlocks_mul_fromRows (A₁ : Matrix N₁ N R) (A₂ : Matrix N₂ N R)
     (B₁₁ : Matrix M₁ N₁ R) (B₁₂ : Matrix M₁ N₂ R) (B₂₁ : Matrix M₂ N₁ R) (B₂₂ : Matrix M₂ N₂ R) :
     fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ ⬝ (fromRows A₁ A₂) =
-      fromRows (B₁₁⬝A₁ + B₁₂⬝A₂) (B₂₁⬝A₁ + B₂₂⬝A₂) := by
+      fromRows (B₁₁ ⬝ A₁ + B₁₂ ⬝ A₂) (B₂₁ ⬝ A₁ + B₂₂ ⬝ A₂) := by
   funext i j
   rw [fromRows, fromRows, fromBlocks]
   cases i
@@ -172,11 +174,11 @@ section CommRing
 
 variable [CommRing R]
 
-/- Given that the index set N and the direct sum of the index sets N₁ and N₂ are in bijection then
-the matrix A : N × (N₁ ⊕ N₂) := Cols[A₁ A₂] is actually a "square". Hence, if its product with
-another matrix B : (N₁ ⊕ N₂) × N := Rows[B₁ B₂] matrix is one, the other matrix must be its inverse
-Mulitplication of a matrix by its inverse is commutative. This is column(row) partioned matrix form
-of `mul_eq_one_comm` -/
+/-- Multiplication of a matrix by its inverse is commutative.
+This is the column and row partitioned matrix form of `Matrix.mul_eq_one_comm`.
+
+The condition `e : N ≃ N₁ ⊕ N₂` states that `fromColumns A₁ A₂` and `fromRows B₁ B₂` are "square".
+-/
 lemma fromColumns_mul_fromRows_eq_one_comm (e : N ≃ N₁ ⊕ N₂)
     (A₁ : Matrix N N₁ R) (A₂ : Matrix N N₂ R) (B₁ : Matrix N₁ N R) (B₂ : Matrix N₂ N R) :
     fromColumns A₁ A₂ ⬝ fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ ⬝ fromColumns A₁ A₂ = 1 := by
