@@ -101,7 +101,7 @@ def associator (X Y Z : GradedObject ℕ V) :
 end MonoidalCategory
 
 open MonoidalCategory
-
+set_option says.verify true in
 set_option maxHeartbeats 0 in
 instance : MonoidalCategory (GradedObject ℕ V) where
   tensorObj := tensorObj
@@ -126,7 +126,10 @@ instance : MonoidalCategory (GradedObject ℕ V) where
     simp? says
       simp only [biproduct.lift_map, biproduct.map_desc_assoc, comp_tensor_id, id_tensor_comp,
         assoc, biproduct.lift_π, biproduct.ι_map_assoc, biproduct.lift_map_assoc]
-
-    -- simp [Preadditive.comp_sum, Preadditive.comp_sum_assoc, Preadditive.sum_comp, Preadditive.sum_comp_assoc]
+    simp only [← comp_tensor_id, ← id_tensor_comp, ← comp_tensor_id_assoc, ← id_tensor_comp_assoc]
+    simp? [-comp_tensor_id, -id_tensor_comp] says
+      simp only [biproduct.ι_map_assoc, biproduct.lift_π]
+    ext
+    sorry
 
 end GradedObject
