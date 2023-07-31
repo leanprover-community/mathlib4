@@ -122,6 +122,16 @@ set_option linter.uppercaseLean3 false in
 
 instance : Inhabited (ColimitType F) := ⟨Quot.mk _ <| .zero⟩
 
+instance : Zero (ColimitType F) where
+  zero := Quotient.mk _ zero
+
+instance : Neg (ColimitType F) where
+  neg := Quotient.map neg Relation.neg_1
+
+instance : Add (ColimitType F) where
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
+    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
+
 instance : AddCommGroup (ColimitType F) where
   zero := Quotient.mk _ zero
   neg := Quotient.map neg Relation.neg_1
@@ -133,6 +143,8 @@ instance : AddCommGroup (ColimitType F) where
   add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
   add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 instance : Module R (ColimitType F) where
   smul s := Quotient.map (smul s) <| Relation.smul_1 s

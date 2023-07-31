@@ -384,7 +384,8 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
     zero := 0
     zero_add := zero_nadd
     add_zero := nadd_zero
-    add_comm := nadd_comm }
+    add_comm := nadd_comm
+    nsmul := nsmulRec }
 
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary

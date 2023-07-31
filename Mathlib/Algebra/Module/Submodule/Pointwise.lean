@@ -161,6 +161,7 @@ instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M)
   zero_add _ := bot_sup_eq
   add_zero _ := sup_bot_eq
   add_comm _ _ := sup_comm
+  nsmul := letI : Zero (Submodule R M) := ⟨⊥⟩; letI : Add (Submodule R M) := ⟨Sup.sup⟩; nsmulRec
 #align submodule.pointwise_add_comm_monoid Submodule.pointwiseAddCommMonoid
 
 @[simp]
