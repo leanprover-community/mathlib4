@@ -122,13 +122,8 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 /-- `b i` is the `i`th basis vector. -/
 instance funLike : FunLike (Basis ι R M) ι fun _ => M where
   coe b i := b.repr.symm (Finsupp.single i 1)
-  coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <| by
-    ext x
-    rw [← Finsupp.sum_single x, map_finsupp_sum, map_finsupp_sum]
-    congr with (i r)
-    have := congr_fun h i
-    dsimp at this
-    rw [← mul_one r, ← Finsupp.smul_single', LinearEquiv.map_smul, LinearEquiv.map_smul, this]
+  coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
+    LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
 #align basis.fun_like Basis.funLike
 
 @[simp]
@@ -190,16 +185,24 @@ theorem repr_range : LinearMap.range (b.repr : M →ₗ[R] ι →₀ R) = Finsup
   rw [LinearEquiv.range, Finsupp.supported_univ]
 #align basis.repr_range Basis.repr_range
 
-theorem mem_span_repr_support {ι : Type _} (b : Basis ι R M) (m : M) :
-    m ∈ span R (b '' (b.repr m).support) :=
+theorem mem_span_repr_support (m : M) : m ∈ span R (b '' (b.repr m).support) :=
   (Finsupp.mem_span_image_iff_total _).2 ⟨b.repr m, by simp [Finsupp.mem_supported_support]⟩
 #align basis.mem_span_repr_support Basis.mem_span_repr_support
 
-theorem repr_support_subset_of_mem_span {ι : Type _} (b : Basis ι R M) (s : Set ι) {m : M}
+theorem repr_support_subset_of_mem_span (s : Set ι) {m : M}
     (hm : m ∈ span R (b '' s)) : ↑(b.repr m).support ⊆ s := by
-  rcases(Finsupp.mem_span_image_iff_total _).1 hm with ⟨l, hl, hlm⟩
-  rwa [← hlm, repr_total, ← Finsupp.mem_supported R l]
+  rcases (Finsupp.mem_span_image_iff_total _).1 hm with ⟨l, hl, rfl⟩
+  rwa [repr_total, ← Finsupp.mem_supported R l]
 #align basis.repr_support_subset_of_mem_span Basis.repr_support_subset_of_mem_span
+
+theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.repr m).support ⊆ s :=
+  ⟨repr_support_subset_of_mem_span _ _, fun h ↦
+    span_mono (image_subset _ h) (mem_span_repr_support b _)⟩
+
+@[simp]
+theorem self_mem_span_image [Nontrivial R] {i : ι} {s : Set ι} :
+    b i ∈ span R (b '' s) ↔ i ∈ s := by
+  simp [mem_span_image, Finsupp.support_single_ne_zero]
 
 end repr
 
@@ -563,11 +566,11 @@ protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
 #align basis.ne_zero Basis.ne_zero
 
-protected theorem mem_span (x : M) : x ∈ span R (range b) := by
-  rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
-  exact Submodule.sum_mem _ fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩)
+protected theorem mem_span (x : M) : x ∈ span R (range b) :=
+  span_mono (image_subset_range _ _) (mem_span_repr_support b x)
 #align basis.mem_span Basis.mem_span
 
+@[simp]
 protected theorem span_eq : span R (range b) = ⊤ :=
   eq_top_iff.mpr fun x _ => b.mem_span x
 #align basis.span_eq Basis.span_eq
