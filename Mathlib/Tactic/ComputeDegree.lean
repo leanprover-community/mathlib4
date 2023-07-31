@@ -220,28 +220,6 @@ section Tactic
 
 open Lean Elab Tactic Meta Expr
 
-/--  `Lean.Name.getTail name` takes `name : Name` as input.
-If `name = .str _ tail`, then it returns `tail`.
-For instance,
-```lean
-#eval Lean.Name.getTail `first.second.third  -- "third"
-```
--/
-def _root_.Lean.Name.getTail : Name → String
-  | .str _ tail => tail
-  | _ => ""
-
-/--  `Lean.Name.getHead name` takes `name : Name` as input.
-If `name = .str head _`, then it returns `head`.
-For instance,
-```lean
-#eval Lean.Name.getHead `first.second.third  -- "first.second"
-```
--/
-def _root_.Lean.Name.getHead : Name → Name
-  | .str head _ => head
-  | _ => .anonymous
-
 /-- `Lean.Expr.le? p` take `e : Expr` as input.
 If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
 otherwise, it returns `none`. -/
@@ -323,7 +301,7 @@ let nam := match twoH with
     | true, true   => ``id
   | _ => ``id
 if debug then
-  let natr := if nam.getTail == `trans then nam else nam.getTail
+  let natr := if nam.getString == `trans then nam else nam.getString
   dbg_trace f!"congr lemma: '{natr}'"
   nam
 else
@@ -382,7 +360,7 @@ match twoH with
         (``natDegree_C_le, ``degree_C_le, ``coeff_C)
       | `error => (.anonymous, .anonymous, .anonymous)
       | _ => (``le_rfl, ``le_rfl, ``rfl)
-    if debug then dbg_trace f!"{(π nas).getTail}\n{msg}"; π nas else π nas
+    if debug then dbg_trace f!"{(π nas).getString}\n{msg}"; π nas else π nas
 
 /-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goals not containing any metavariable.
@@ -503,7 +481,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]? $[-debug%$dbg]?) => f
           m!"There is support only for\n\n   'natDegree'   'degree'   or   'coeff'")
     | _ =>
       let lem := dispatchLemma twoH
-      if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getTail}'"
+      if dbg then logInfo f!"'compute_degree' first applies lemma '{lem.getString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while (! gls == []) do (gls, static) := ← splitApply gls static
       let rfled := ← try_rfl static
