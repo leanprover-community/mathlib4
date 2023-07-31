@@ -423,7 +423,7 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- They are used by `simp` in `biproduct.whisker_equiv` below.
-@[nolint simpNF, reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
   cases w
@@ -431,7 +431,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- They are used by `simp` in `biproduct.whisker_equiv` below.
-@[nolint simpNF, reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
   cases w
