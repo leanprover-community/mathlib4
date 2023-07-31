@@ -250,13 +250,32 @@ protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a
   rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
 #align rat.mul_nonneg Rat.mul_nonneg
 
-instance : LinearOrderedField ℚ :=
-  { Rat.field, Rat.linearOrder, Rat.semiring with
-    zero_le_one := by decide
-    add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
-    mul_pos := fun a b ha hb =>
-      lt_of_le_of_ne (Rat.mul_nonneg (le_of_lt ha) (le_of_lt hb))
-        (mul_ne_zero (ne_of_lt ha).symm (ne_of_lt hb).symm).symm }
+instance instLinearOrderedFieldRat : LinearOrderedField ℚ :=
+  { toLinearOrderedCommRing := {
+      toLinearOrderedRing := {
+        toRing := Rat.field.toRing
+        le_total := Rat.linearOrder.le_total
+        decidableLE := Rat.linearOrder.decidableLE
+        add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
+        zero_le_one := by decide
+        mul_pos := fun a b ha hb =>
+          lt_of_le_of_ne (Rat.mul_nonneg (le_of_lt ha) (le_of_lt hb))
+            (mul_ne_zero (ne_of_lt ha).symm (ne_of_lt hb).symm).symm }
+      mul_comm := Rat.field.mul_comm }
+    mul_inv_cancel := Rat.commGroupWithZero|>.mul_inv_cancel
+    inv_zero :=  Rat.commGroupWithZero|>.inv_zero
+    zpow := Rat.field.zpow
+    ratCast_mk := Rat.field.ratCast_mk }
+
+-- instance og : LinearOrderedField ℚ :=
+--   { Rat.field, Rat.linearOrder, Rat.semiring with
+--     zero_le_one := by decide
+--     add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
+--     mul_pos := fun a b ha hb =>
+--       lt_of_le_of_ne (Rat.mul_nonneg (le_of_lt ha) (le_of_lt hb))
+--         (mul_ne_zero (ne_of_lt ha).symm (ne_of_lt hb).symm).symm }
+
+-- example : instLinearOrderedFieldRat = og := rfl
 
 -- Extra instances to short-circuit type class resolution
 instance : LinearOrderedCommRing ℚ := by infer_instance

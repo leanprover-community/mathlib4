@@ -1289,9 +1289,9 @@ end
 def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ :=
   ⟨fun n => LinearMap.range (f ^ n), fun n m w x h => by
     obtain ⟨c, rfl⟩ := le_iff_exists_add.mp w
-    rw [LinearMap.mem_range] at h
+    erw [LinearMap.mem_range] at h
     obtain ⟨m, rfl⟩ := h
-    rw [LinearMap.mem_range]
+    erw [LinearMap.mem_range]
     use (f ^ c) m
     rw [pow_add, LinearMap.mul_apply]⟩
 #align linear_map.iterate_range LinearMap.iterateRange
@@ -1455,8 +1455,8 @@ theorem ker_eq_bot_of_injective {f : F} (hf : Injective f) : ker f = ⊥ := by
 def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M :=
   ⟨fun n => ker (f ^ n), fun n m w x h => by
     obtain ⟨c, rfl⟩ := le_iff_exists_add.mp w
-    rw [LinearMap.mem_ker] at h
-    rw [LinearMap.mem_ker, add_comm, pow_add, LinearMap.mul_apply, h, LinearMap.map_zero]⟩
+    erw [LinearMap.mem_ker] at h
+    erw [LinearMap.mem_ker, add_comm, pow_add, LinearMap.mul_apply, h, LinearMap.map_zero]⟩
 #align linear_map.iterate_ker LinearMap.iterateKer
 
 end AddCommMonoid

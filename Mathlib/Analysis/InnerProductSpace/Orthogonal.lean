@@ -106,7 +106,7 @@ variable (K)
 theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
-  rw [mem_inf]
+  erw [mem_inf]
   exact fun ⟨hx, ho⟩ => inner_self_eq_zero.1 (ho x hx)
 #align submodule.inf_orthogonal_eq_bot Submodule.inf_orthogonal_eq_bot
 
@@ -122,7 +122,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v :
     rintro ⟨v, hv⟩ w hw
     simpa using hw _ hv
   · intro v hv w hw
-    simp only [mem_iInf] at hv
+    erw [mem_iInf] at hv
     exact hv ⟨w, hw⟩
 #align submodule.orthogonal_eq_inter Submodule.orthogonal_eq_inter
 

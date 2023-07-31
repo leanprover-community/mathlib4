@@ -270,8 +270,10 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain
   apply le_antisymm
   · intro r hr
     by_cases hr0 : r = 0
-    · simp only [hr0, Submodule.zero_mem]
+    · erw [hr0]
+      apply Submodule.zero_mem
     obtain ⟨n, u, rfl⟩ := H hr0
+    erw [mem_span_singleton]
     simp only [mem_span_singleton, Units.isUnit, IsUnit.dvd_mul_right]
     apply pow_dvd_pow
     apply Nat.find_min'

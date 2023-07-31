@@ -28,8 +28,8 @@ variable {n : ℕ} (m : ℕ) [CharP R m]
 See note [reducible non-instances]. -/
 @[reducible]
 def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
-  { ZMod.castHom h R with
-    smul := fun a r => a * r
+  { smul := fun a r => a * r
+    toRingHom := ZMod.castHom h R
     commutes' := fun a r =>
       show (a * r : R) = r * a by
         rcases ZMod.int_cast_surjective a with ⟨k, rfl⟩

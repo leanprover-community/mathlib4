@@ -1064,7 +1064,7 @@ theorem sup_aeval_range_eq_top_of_coprime (f : M →ₗ[R] M) {p q : R[X]} (hpq 
     LinearMap.range (aeval f p) ⊔ LinearMap.range (aeval f q) = ⊤ := by
   rw [eq_top_iff]
   intro v _
-  rw [Submodule.mem_sup]
+  erw [Submodule.mem_sup]
   rcases hpq with ⟨p', q', hpq'⟩
   use aeval f (p * p') v
   use LinearMap.mem_range.2 ⟨aeval f p' v, by simp only [LinearMap.mul_apply, aeval_mul]⟩
@@ -1082,7 +1082,7 @@ theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
     rw [mul_comm, aeval_mul, LinearMap.mul_apply, LinearMap.mem_ker.1 hx, LinearMap.map_zero]
   have h_eval_y : aeval f (p * q) y = 0 := by
     rw [aeval_mul, LinearMap.mul_apply, LinearMap.mem_ker.1 hy, LinearMap.map_zero]
-  rw [LinearMap.mem_ker, ← hxy, LinearMap.map_add, h_eval_x, h_eval_y, add_zero]
+  erw [LinearMap.mem_ker, ← hxy, LinearMap.map_add, h_eval_x, h_eval_y, add_zero]
 #align polynomial.sup_ker_aeval_le_ker_aeval_mul Polynomial.sup_ker_aeval_le_ker_aeval_mul
 
 theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X]}
@@ -1090,7 +1090,7 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
     LinearMap.ker (aeval f p) ⊔ LinearMap.ker (aeval f q) = LinearMap.ker (aeval f (p * q)) := by
   apply le_antisymm sup_ker_aeval_le_ker_aeval_mul
   intro v hv
-  rw [Submodule.mem_sup]
+  erw [Submodule.mem_sup]
   rcases hpq with ⟨p', q', hpq'⟩
   have h_eval₂_qpp' :=
     calc

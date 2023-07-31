@@ -175,12 +175,27 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
 #align set.mem_Inter₂_of_mem Set.mem_iInter₂_of_mem
 
 instance Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
-  { instBooleanAlgebraSet with
+  { le_top := booleanAlgebra.le_top
+    bot_le := booleanAlgebra.bot_le
+    le_sup_inf := booleanAlgebra.le_sup_inf
+    inf_compl_le_bot := booleanAlgebra.inf_compl_le_bot
+    top_le_sup_compl := booleanAlgebra.top_le_sup_compl
+    himp_eq := booleanAlgebra.himp_eq
     le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
     sInf_le := fun s t t_in a h => h _ t_in
     iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
+
+-- instance og : CompleteAtomicBooleanAlgebra (Set α) :=
+--   { booleanAlgebra with
+--     le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
+--     sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
+--     le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
+--     sInf_le := fun s t t_in a h => h _ t_in
+--     iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
+--
+-- example : Set.completeAtomicBooleanAlgebra = og (α := α) := rfl
 
 /-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
 def kernImage (f : α → β) (s : Set α) : Set β :=

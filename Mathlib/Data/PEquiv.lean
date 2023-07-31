@@ -430,8 +430,8 @@ theorem le_def {f g : α ≃. β} : f ≤ g ↔ ∀ (a : α) (b : β), b ∈ f a
 instance : OrderBot (α ≃. β) :=
   { instBotPEquiv with bot_le := fun _ _ _ h => (not_mem_none _ h).elim }
 
-instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
-  { instPartialOrderPEquiv with
+instance instSemilatticeInf [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
+  { --instPartialOrderPEquiv with
     inf := fun f g =>
       { toFun := fun a => if f a = g a then f a else none
         invFun := fun b => if f.symm b = g.symm b then f.symm b else none
@@ -458,6 +458,37 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
       have hg := gh a b H
       simp only [Option.mem_def, PEquiv.coe_mk_apply] at *
       rw [hf, hg, if_pos rfl] }
+
+-- instance og [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
+--   { instPartialOrderPEquiv with
+--     inf := fun f g =>
+--       { toFun := fun a => if f a = g a then f a else none
+--         invFun := fun b => if f.symm b = g.symm b then f.symm b else none
+--         inv := fun a b => by
+--           have hf := @mem_iff_mem _ _ f a b
+--           have hg := @mem_iff_mem _ _ g a b
+--           simp only [Option.mem_def] at *
+--           split_ifs with h1 h2 h2 <;> try simp [hf]
+--           · contrapose! h2
+--             rw [h2]
+--             rw [← h1, hf, h2] at hg
+--             simp only [mem_def, true_iff_iff, eq_self_iff_true] at hg
+--             rw [hg]
+--           · contrapose! h1
+--             rw [h1] at hf h2
+--             rw [← h2] at hg
+--             simp only [iff_true] at hf hg
+--             rw [hf, hg] }
+--     inf_le_left := fun _ _ _ _ => by simp; split_ifs <;> simp [*]
+--     inf_le_right := fun _ _ _ _ => by simp; split_ifs <;> simp [*]
+--     le_inf := fun f g h fg gh a b => by
+--       intro H
+--       have hf := fg a b H
+--       have hg := gh a b H
+--       simp only [Option.mem_def, PEquiv.coe_mk_apply] at *
+--       rw [hf, hg, if_pos rfl] }
+--
+-- example [DecidableEq α] [DecidableEq β] : instSemilatticeInf = og (α := α) (β := β) := rfl
 
 end Order
 

@@ -676,7 +676,7 @@ theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
 
 theorem sup_mul_eq_of_coprime_left (h : I ⊔ J = ⊤) : I ⊔ J * K = I ⊔ K :=
   le_antisymm (sup_le_sup_left mul_le_left _) fun i hi => by
-    rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi ⊢
+    rw [eq_top_iff_one] at h; erw [Submodule.mem_sup] at h hi ⊢
     obtain ⟨i1, hi1, j, hj, h⟩ := h; obtain ⟨i', hi', k, hk, hi⟩ := hi
     refine' ⟨_, add_mem hi' (mul_mem_right k _ hi1), _, mul_mem_mul hj hk, _⟩
     rw [add_assoc, ← add_mul, h, one_mul, hi]
@@ -1620,7 +1620,7 @@ variable (hf : Function.Injective f)
 
 theorem comap_bot_le_of_injective : comap f ⊥ ≤ I := by
   refine' le_trans (fun x hx => _) bot_le
-  rw [mem_comap, Submodule.mem_bot, ← map_zero f] at hx
+  erw [mem_comap, Submodule.mem_bot, ← map_zero f] at hx
   exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
 #align ideal.comap_bot_le_of_injective Ideal.comap_bot_le_of_injective
 
@@ -2078,7 +2078,7 @@ theorem ker_isMaximal_of_surjective {R K F : Type _} [Ring R] [Field K] [RingHom
   have H : 1 = y * x - (y * x - 1) := (sub_sub_cancel _ _).symm
   rw [H]
   refine' J.sub_mem (J.mul_mem_left _ hxJ) (hJ _)
-  rw [mem_ker]
+  erw [mem_ker]
   simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel (mt (mem_ker f).mpr hxf), sub_self]
 #align ring_hom.ker_is_maximal_of_surjective RingHom.ker_isMaximal_of_surjective
 
@@ -2123,7 +2123,7 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     rcases (mem_map_iff_of_surjective f hf).1 (this J hJ) with ⟨x', hx', rfl⟩
     have : x - x' ∈ J := by
       apply h J hJ
-      rw [RingHom.mem_ker, map_sub, hx, sub_self]
+      erw [RingHom.mem_ker, map_sub, hx, sub_self]
     simpa only [sub_add_cancel] using J.add_mem this hx'
 #align ideal.map_Inf Ideal.map_sInf
 
@@ -2218,13 +2218,13 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C)
     map_one' := by
       rw [← map_one g, ← sub_eq_zero, ← map_sub g, ← mem_ker g]
       apply hg
-      rw [mem_ker f, map_sub f, sub_eq_zero, map_one f]
+      erw [mem_ker f, map_sub f, sub_eq_zero, map_one f]
       exact hf 1
     map_mul' := by
       intro x y
       rw [← map_mul g, ← sub_eq_zero, ← map_sub g, ← mem_ker g]
       apply hg
-      rw [mem_ker f, map_sub f, sub_eq_zero, map_mul f]
+      erw [mem_ker f, map_sub f, sub_eq_zero, map_mul f]
       simp only [hf _] }
 #align ring_hom.lift_of_right_inverse_aux RingHom.liftOfRightInverseAux
 

@@ -104,7 +104,7 @@ theorem innerDualCone_iUnion {ι : Sort _} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
   refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) _
   intro x hx y hy
-  rw [ConvexCone.mem_iInf] at hx
+  erw [ConvexCone.mem_iInf] at hx
   obtain ⟨j, hj⟩ := mem_iUnion.mp hy
   exact hx _ _ hj
 #align inner_dual_cone_Union innerDualCone_iUnion

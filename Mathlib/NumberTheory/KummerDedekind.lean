@@ -141,9 +141,9 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
       simp only [← add_mul, ← RingHom.map_add (algebraMap R S), hpq, map_one, one_mul]
     suffices z ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>) ↔
         (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
-      rw [← this, ← temp]
+      erw [← this, ← temp]
       obtain ⟨a, ha⟩ := (Set.mem_image _ _ _).mp (prod_mem_ideal_map_of_mem_conductor hp
-          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy ))
+          (show z ∈ I.map (algebraMap R S) by erw [Ideal.mem_comap] at hy; assumption ))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
           simp only [ha.right, map_add, AlgHom.map_mul, add_right_inj]; rfl⟩
@@ -178,8 +178,9 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
   · --the kernel of the map is clearly `(I * S) ∩ R<x>`. To get injectivity, we need to show that
     --this is contained in `I * R<x>`, which is the content of the previous lemma.
     refine RingHom.lift_injective_of_ker_le_ideal _ _ fun u hu => ?_
-    rwa [RingHom.mem_ker, RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem, ← Ideal.mem_comap,
+    erw [RingHom.mem_ker, RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem, ← Ideal.mem_comap,
       comap_map_eq_map_adjoin_of_coprime_conductor hx h_alg] at hu
+    assumption
   · -- Surjectivity follows from the surjectivity of the canonical map `R<x> → S ⧸ (I * S)`,
     -- which in turn follows from the fact that `I * S + (conductor R x) = S`.
     refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y => ?_

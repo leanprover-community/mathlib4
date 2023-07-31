@@ -1006,10 +1006,8 @@ protected theorem add_mul [Fintype m] (L M : Matrix l m α) (N : Matrix m n α) 
 #align matrix.add_mul Matrix.add_mul
 
 instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) :=
-  { Matrix.addCommMonoid with
+  { toAddCommMonoid := Matrix.addCommMonoid
     mul := (· * ·)
-    add := (· + ·)
-    zero := 0
     mul_zero := Matrix.mul_zero
     zero_mul := Matrix.zero_mul
     left_distrib := Matrix.mul_add
@@ -1112,7 +1110,7 @@ protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
 #align matrix.mul_one Matrix.mul_one
 
 instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
-  { Matrix.nonUnitalNonAssocSemiring with
+  { toNonUnitalNonAssocSemiring := Matrix.nonUnitalNonAssocSemiring
     one := 1
     one_mul := Matrix.one_mul
     mul_one := Matrix.mul_one
@@ -1303,7 +1301,7 @@ variable [Fintype n] [DecidableEq n]
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) :=
-  { (Matrix.scalar n).comp (algebraMap R α) with
+  { toRingHom := (Matrix.scalar n).comp (algebraMap R α)
     commutes' := fun r x => by
       ext
       simp [Matrix.scalar, Matrix.mul_apply, Matrix.one_apply, Algebra.commutes, smul_ite]

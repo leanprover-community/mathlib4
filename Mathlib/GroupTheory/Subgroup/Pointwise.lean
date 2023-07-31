@@ -58,7 +58,8 @@ theorem closure_toSubmonoid (S : Set G) :
       closure_induction hx
         (fun x hx => Submonoid.closure_mono (subset_union_left S S⁻¹) (Submonoid.subset_closure hx))
         (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => _
-    rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
+    erw [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
+    assumption
   · simp only [true_and_iff, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
 #align subgroup.closure_to_submonoid Subgroup.closure_toSubmonoid
 #align add_subgroup.closure_to_add_submonoid AddSubgroup.closure_toAddSubmonoid

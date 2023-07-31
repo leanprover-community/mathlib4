@@ -63,7 +63,7 @@ theorem mem_normalizer (m : M) : m ∈ N.normalizer ↔ ∀ x : L, ⁅x, m⁆ �
 
 theorem le_normalizer : N ≤ N.normalizer := by
   intro m hm
-  rw [mem_normalizer]
+  erw [mem_normalizer]
   exact fun x => N.lie_mem hm
 #align lie_submodule.le_normalizer LieSubmodule.le_normalizer
 
@@ -74,7 +74,7 @@ theorem normalizer_inf : (N₁ ⊓ N₂).normalizer = N₁.normalizer ⊓ N₂.n
 @[mono]
 theorem monotone_normalizer : Monotone (normalizer : LieSubmodule R L M → LieSubmodule R L M) := by
   intro N₁ N₂ h m hm
-  rw [mem_normalizer] at hm ⊢
+  erw [mem_normalizer] at hm ⊢
   exact fun x => h (hm x)
 #align lie_submodule.monotone_normalizer LieSubmodule.monotone_normalizer
 

@@ -1194,6 +1194,7 @@ def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
         rw [ker_int_castAddHom]
         constructor
         · rintro hf _ ⟨x, rfl⟩
+          erw [f.mem_ker]
           simp only [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
         · intro h
           refine' h (AddSubgroup.mem_zmultiples _)).trans <|

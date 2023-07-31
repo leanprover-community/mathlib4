@@ -2216,8 +2216,9 @@ theorem le_normalizer_comap (f : N →* G) :
 
 /-- The image of the normalizer is contained in the normalizer of the image. -/
 @[to_additive "The image of the normalizer is contained in the normalizer of the image."]
-theorem le_normalizer_map (f : G →* N) : H.normalizer.map f ≤ (H.map f).normalizer := fun _ => by
-  simp only [and_imp, exists_prop, mem_map, exists_imp, mem_normalizer_iff]
+theorem le_normalizer_map (f : G →* N) : H.normalizer.map f ≤ (H.map f).normalizer := fun x => by
+  erw [exists_imp, mem_normalizer_iff]
+  simp_rw [mem_map, and_imp]
   rintro x hx rfl n
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -3200,7 +3201,9 @@ theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
   le_antisymm (le_normalizer_comap f)
     (by
       intro x hx
-      simp only [mem_comap, mem_normalizer_iff] at *
+      erw [mem_comap]
+      erw [ mem_normalizer_iff] at *
+      simp_rw [mem_comap] at hx
       intro n
       rcases hf n with ⟨y, rfl⟩
       simp [hx y])
@@ -3275,7 +3278,7 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : G₁ →* G�
     intro x y
     rw [← g.map_mul, ← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
     apply hg
-    rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
+    erw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
     simp only [hf _]
 #align monoid_hom.lift_of_right_inverse_aux MonoidHom.liftOfRightInverseAux
 #align add_monoid_hom.lift_of_right_inverse_aux AddMonoidHom.liftOfRightInverseAux
@@ -3286,7 +3289,7 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
   dsimp [liftOfRightInverseAux]
   rw [← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
   apply hg
-  rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one]
+  erw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one]
   simp only [hf _]
 #align monoid_hom.lift_of_right_inverse_aux_comp_apply MonoidHom.liftOfRightInverseAux_comp_apply
 #align add_monoid_hom.lift_of_right_inverse_aux_comp_apply AddMonoidHom.liftOfRightInverseAux_comp_apply
@@ -3522,9 +3525,9 @@ theorem mem_closure_pair {x y z : C} :
 @[to_additive]
 instance : IsModularLattice (Subgroup C) :=
   ⟨fun {x} y z xz a ha => by
-    rw [mem_inf, mem_sup] at ha
+    erw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    rw [mem_sup]
+    erw [mem_sup]
     exact ⟨b, hb, c, mem_inf.2 ⟨hc, (mul_mem_cancel_left (xz hb)).1 haz⟩, rfl⟩⟩
 
 end Subgroup

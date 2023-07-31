@@ -317,7 +317,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   refine' ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => _, disjoint_supported_supported⟩
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
-  rw [mem_bot, single_eq_zero] at this
+  erw [mem_bot, single_eq_zero] at this
   exact hy this
 #align finsupp.disjoint_supported_supported_iff Finsupp.disjoint_supported_supported_iff
 
@@ -682,7 +682,7 @@ theorem span_image_eq_map_total (s : Set α) :
       · exact smul_mem _ _ (subset_span (Set.mem_image_of_mem _ h))
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
     -- Porting note: `rw` is required to infer metavariables in `sum_mem`.
-    rw [mem_comap, total_apply]
+    erw [mem_comap, total_apply]
     refine' sum_mem _
     simp [this]
 #align finsupp.span_image_eq_map_total Finsupp.span_image_eq_map_total

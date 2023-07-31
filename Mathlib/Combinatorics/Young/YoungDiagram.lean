@@ -162,7 +162,8 @@ instance : OrderBot YoungDiagram where
         simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
   bot_le _ _ := by
     intro y
-    simp only [mem_mk, Finset.not_mem_empty] at y
+    erw [mem_mk] at y
+    simp only [Finset.not_mem_empty] at y
 
 @[simp]
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=

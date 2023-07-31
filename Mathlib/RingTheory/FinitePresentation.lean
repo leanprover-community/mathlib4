@@ -260,7 +260,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
           MvPolynomial.aeval_C, ht', Subtype.coe_mk, sub_self]
     apply leI.antisymm
     intro x hx
-    rw [RingHom.mem_ker] at hx
+    erw [RingHom.mem_ker] at hx
     let s₀ := (MvPolynomial.map (algebraMap R A)) '' ↑s ∪ Set.range g
     change x ∈ Ideal.span s₀
     have : x ∈ (MvPolynomial.map (algebraMap R A) : _ →+* AX).range.toAddSubmonoid ⊔
@@ -367,11 +367,12 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         · exact add_mem (Ideal.mul_mem_right _ _ hy₁) (Ideal.mul_mem_left _ _ hy₂)
     obtain ⟨_, ⟨x, rfl⟩, y, hy, rfl⟩ := AddSubmonoid.mem_sup.mp this
     refine' add_mem _ hy
-    simp only [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
+    erw [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
       show f y = 0 from leI hy, add_zero, hh'] at hx
     suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by
       apply this
-      rwa [hs]
+      rw [hs]
+      assumption
     rw [Ideal.span_le]
     intro x hx
     apply Submodule.subset_span

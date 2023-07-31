@@ -244,7 +244,12 @@ theorem mem_sInf {s : Set (Subgroupoid C)} {p : Σ c d : C, c ⟶ d} :
 instance : CompleteLattice (Subgroupoid C) :=
   { completeLatticeOfInf (Subgroupoid C) (by
       refine' fun s => ⟨fun S Ss F => _, fun T Tl F fT => _⟩ <;> simp only [mem_sInf]
-      exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
+      · intro hp
+        erw [mem_sInf] at hp
+        exact hp S Ss
+      · erw [mem_sInf]
+        intro S Ss
+        exact Tl Ss fT ) with
     bot := ⊥
     bot_le := fun S => empty_subset _
     top := ⊤

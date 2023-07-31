@@ -139,7 +139,7 @@ variable [Mul α]
 
 --Porting note: dot notation no longer works
 instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
-  { (inferInstance : AddCommMonoid (SetSemiring α)) with
+  { toAddCommMonoid := (inferInstance : AddCommMonoid (SetSemiring α))
     mul := fun s t => Set.up (image2 (· * ·) (SetSemiring.down s) (SetSemiring.down t))
     zero_mul := fun _ => empty_mul
     mul_zero := fun _ => mul_empty
@@ -203,10 +203,10 @@ theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
 end One
 
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
-  { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
-    Set.mulOneClass with
-    one := 1
-    mul := (· * ·) }
+  { toNonUnitalNonAssocSemiring := (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α))
+    mul_one := Set.mulOneClass|>.mul_one
+    one_mul := Set.mulOneClass|>.one_mul
+    one := 1}
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }

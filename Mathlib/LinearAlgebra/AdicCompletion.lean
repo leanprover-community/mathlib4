@@ -286,7 +286,7 @@ open Finset
 
 theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
   intro x hx
-  rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
+  erw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
   intro y
   rw [add_comm]
   let f : ℕ → R := fun n => ∑ i in range n, (x * y) ^ i

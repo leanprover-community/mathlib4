@@ -151,7 +151,7 @@ theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : 
 
 theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
-  rw [lieIdeal_oper_eq_span, mem_lieSpan] at h; rw [lieIdeal_oper_eq_span, mem_lieSpan]
+  erw [lieIdeal_oper_eq_span, mem_lieSpan] at h; erw [lieIdeal_oper_eq_span, mem_lieSpan]
   intro N hN; apply h; rintro m' ⟨⟨x, hx⟩, ⟨n, hn⟩, hm⟩; rw [← hm]; apply hN
   use ⟨x, h₁ hx⟩, ⟨n, h₂ hn⟩
 #align lie_submodule.mono_lie LieSubmodule.mono_lie

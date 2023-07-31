@@ -444,7 +444,7 @@ instance : CompleteLattice (LieSubmodule R L M) :=
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
-    bot_le := fun N _ h ↦ by rw [mem_bot] at h; rw [h]; exact N.zero_mem'
+    bot_le := fun N _ h ↦ by erw [mem_bot] at h; rw [h]; exact N.zero_mem'
     top := ⊤
     le_top := fun _ _ _ ↦ trivial
     inf := (· ⊓ ·)
@@ -624,7 +624,7 @@ theorem submodule_span_le_lieSpan : Submodule.span R s ≤ lieSpan R L s := by
 theorem lieSpan_le {N} : lieSpan R L s ≤ N ↔ s ⊆ N := by
   constructor
   · exact Subset.trans subset_lieSpan
-  · intro hs m hm; rw [mem_lieSpan] at hm; exact hm _ hs
+  · intro hs m hm; erw [mem_lieSpan] at hm; exact hm _ hs
 #align lie_submodule.lie_span_le LieSubmodule.lieSpan_le
 
 theorem lieSpan_mono {t : Set M} (h : s ⊆ t) : lieSpan R L s ≤ lieSpan R L t := by
@@ -972,8 +972,8 @@ theorem mem_idealRange_iff (h : IsIdealMorphism f) {y : L'} :
 
 theorem le_ker_iff : I ≤ f.ker ↔ ∀ x, x ∈ I → f x = 0 := by
   constructor <;> intro h x hx
-  · specialize h hx; rw [mem_ker] at h; exact h
-  · rw [mem_ker]; apply h x hx
+  · specialize h hx; erw [mem_ker] at h; exact h
+  · erw [mem_ker]; apply h x hx
 #align lie_hom.le_ker_iff LieHom.le_ker_iff
 
 theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by

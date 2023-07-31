@@ -854,6 +854,7 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   refine' CompleteLattice.independent_def.mp fun i => _
   rw [disjoint_iff_inf_le]
   intro m hm
+  erw [mem_inf] at hm
   simp only [mem_inf, mem_span_singleton, iSup_subtype', ← span_range_eq_iSup] at hm
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]

@@ -170,8 +170,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 instance : Preorder (Sum α β) :=
-  { instLESum, instLTSum with
-    le_refl := fun x => LiftRel.refl _ _ _,
+  { le_refl := fun x => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
     lt_iff_le_not_le := fun a b => by
       refine' ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, _⟩, _⟩
@@ -197,7 +196,7 @@ theorem inr_strictMono : StrictMono (inr : β → Sum α β) := fun _ _ => LiftR
 end Preorder
 
 instance [PartialOrder α] [PartialOrder β] : PartialOrder (Sum α β) :=
-  { instPreorderSum with
+  { toPreorder := instPreorderSum
     le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm }
 
 instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (Sum α β) :=
@@ -378,8 +377,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 instance preorder : Preorder (α ⊕ₗ β) :=
-  { Lex.LE, Lex.LT with
-    le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
+  { le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
     lt_iff_le_not_le := fun a b => by
       refine' ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, _⟩, _⟩
@@ -418,12 +416,11 @@ theorem inr_strictMono : StrictMono (toLex ∘ inr : β → α ⊕ₗ β) :=
 end Preorder
 
 instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ₗ β) :=
-  { Lex.preorder with le_antisymm := fun _ _ => antisymm_of (Lex (· ≤ ·) (· ≤ ·)) }
+  { le_antisymm := fun _ _ => antisymm_of (Lex (· ≤ ·) (· ≤ ·)) }
 #align sum.lex.partial_order Sum.Lex.partialOrder
 
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
-  { Lex.partialOrder with
-    le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
+  { le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
     decidableLE := instDecidableRelSumLex,
     decidableEq := instDecidableEqSum }
 #align sum.lex.linear_order Sum.Lex.linearOrder

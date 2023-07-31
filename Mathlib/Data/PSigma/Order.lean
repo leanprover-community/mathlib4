@@ -52,7 +52,8 @@ instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
 #align psigma.lex.has_lt PSigma.Lex.lt
 
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
-  { Lex.le, Lex.lt with
+  { -- le := Lex.le|>.le
+    --lt := Lex.lt
     le_refl := fun ⟨i, a⟩ => Lex.right _ le_rfl,
     le_trans := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨a₃, b₃⟩ ⟨h₁r⟩ ⟨h₂r⟩
@@ -80,8 +81,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
 
 /-- Dictionary / lexicographic partial_order for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
-  { Lex.preorder with
-    le_antisymm := by
+  { le_antisymm := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (⟨_, _, hlt₁⟩ | ⟨_, hlt₁⟩) (⟨_, _, hlt₂⟩ | ⟨_, hlt₂⟩)
       · exact (lt_irrefl a₁ <| hlt₁.trans hlt₂).elim
       · exact (lt_irrefl a₁ hlt₁).elim
@@ -91,8 +91,7 @@ instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOr
 
 /-- Dictionary / lexicographic linear_order for pairs. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) :=
-  { Lex.partialOrder with
-    le_total := by
+  { le_total := by
       rintro ⟨i, a⟩ ⟨j, b⟩
       obtain hij | rfl | hji := lt_trichotomy i j
       · exact Or.inl (Lex.left _ _ hij)

@@ -344,8 +344,7 @@ instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [I
 #align polynomial.is_central_scalar Polynomial.isCentralScalar
 
 instance unique [Subsingleton R] : Unique R[X] :=
-  { Polynomial.inhabited with
-    uniq := by
+  { uniq := by
       rintro ⟨x⟩
       refine' congr_arg ofFinsupp _
       simp }

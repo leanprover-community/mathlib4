@@ -637,7 +637,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     rw [span_le, Set.singleton_subset_iff]
     exact subset_span ⟨x, x.prop, rfl⟩
   refine' this _
-  rw [mul_pow, mem_span_singleton]
+  erw [mul_pow, mem_span_singleton]
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 #align ideal.span_pow_eq_top Ideal.span_pow_eq_top
 

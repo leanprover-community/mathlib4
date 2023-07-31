@@ -417,7 +417,7 @@ theorem IsNoetherian.exists_endomorphism_iterate_ker_inf_range_eq_bot [I : IsNoe
   refine' ⟨n + 1, Nat.succ_ne_zero _, _⟩
   rw [eq_bot_iff]
   rintro - ⟨h, ⟨y, rfl⟩⟩
-  rw [mem_bot, ← LinearMap.mem_ker, w]
+  erw [mem_bot, ← LinearMap.mem_ker, w]
   erw [LinearMap.mem_ker] at h ⊢
   change (f ^ (n + 1) * f ^ (n + 1)) y = 0 at h
   rw [← pow_add] at h

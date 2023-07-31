@@ -572,7 +572,7 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance algebraPolynomial (R : Type _) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
-  { Polynomial.toLaurent with
+  { toRingHom := Polynomial.toLaurent
     commutes' := fun f l => by simp [mul_comm]
     smul_def' := fun f l => rfl }
 #align laurent_polynomial.algebra_polynomial LaurentPolynomial.algebraPolynomial

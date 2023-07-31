@@ -96,8 +96,7 @@ theorem lt_def [∀ i, LT (α i)] {a b : Σi, α i} : a < b ↔ ∃ h : a.1 = b.
 #align sigma.lt_def Sigma.lt_def
 
 protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
-  { Sigma.LE, Sigma.LT with
-    le_refl := fun ⟨i, a⟩ => Sigma.le.fiber i a a le_rfl,
+  { le_refl := fun ⟨i, a⟩ => Sigma.le.fiber i a a le_rfl,
     le_trans := by
       rintro _ _ _ ⟨i, a, b, hab⟩ ⟨_, _, c, hbc⟩
       exact le.fiber i a c (hab.trans hbc),
@@ -110,8 +109,7 @@ protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
         exact mk_lt_mk_iff.2 (hab.lt_of_not_le h) }
 
 instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
-  { Sigma.preorder with
-    le_antisymm := by
+  { le_antisymm := by
       rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
       exact ext rfl (heq_of_eq <| hab.antisymm hba) }
 
@@ -151,8 +149,7 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 
 /-- The lexicographical preorder on a sigma type. -/
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
-  { Sigma.Lex.LE, Sigma.Lex.LT with
-    le_refl := fun ⟨i, a⟩ => Lex.right a a le_rfl,
+  { le_refl := fun ⟨i, a⟩ => Lex.right a a le_rfl,
     le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
     lt_iff_le_not_le := by
       refine' fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, _⟩, _⟩
@@ -169,8 +166,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
 /-- The lexicographical partial order on a sigma type. -/
 instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
     PartialOrder (Σₗ i, α i) :=
-  { Lex.preorder with
-    le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
+  { le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
 #align sigma.lex.partial_order Sigma.Lex.partialOrder
 
 
@@ -178,8 +174,7 @@ instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
 /-- The lexicographical linear order on a sigma type. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
-  { Lex.partialOrder with
-    le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+  { le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
     decidableEq := Sigma.instDecidableEqSigma,
     decidableLE := Lex.decidable _ _ }
 #align sigma.lex.linear_order Sigma.Lex.linearOrder

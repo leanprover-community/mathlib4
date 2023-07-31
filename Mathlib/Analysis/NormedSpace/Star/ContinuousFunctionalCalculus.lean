@@ -189,9 +189,12 @@ theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClo
   refine' le_of_isClosed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) _
   haveI := (IsSelfAdjoint.star_mul_self x).isStarNormal
   have hx' := elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal hx
-  convert (↑hx'.unit⁻¹ : elementalStarAlgebra ℂ (star x * x)).prop using 1
-  refine left_inv_eq_right_inv hx.unit.inv_mul ?_
-  exact (congr_arg ((↑) : _ → A) hx'.unit.mul_inv)
+  have := left_inv_eq_right_inv hx.unit.inv_mul <| congr_arg ((↑) : _ → A) hx'.unit.mul_inv
+  rw [this]
+  -- have : ↑(IsUnit.unit hx)⁻¹ = ↑↑(IsUnit.unit hx')⁻¹ := sorry
+  apply (↑hx'.unit⁻¹ : elementalStarAlgebra ℂ (star x * x)).prop
+  -- refine left_inv_eq_right_inv hx.unit.inv_mul ?_
+  -- exact (congr_arg ((↑) : _ → A) hx'.unit.mul_inv)
 #align star_subalgebra.is_unit_coe_inv_mem StarSubalgebra.isUnit_coe_inv_mem
 
 /-- For a unital C⋆-subalgebra `S` of `A` and `x : S`, if `↑x : A` is invertible in `A`, then

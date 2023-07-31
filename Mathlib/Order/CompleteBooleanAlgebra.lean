@@ -479,12 +479,20 @@ class CompleteAtomicBooleanAlgebra (α : Type u) extends
 instance Prod.completeAtomicBooleanAlgebra (α β)
     [CompleteAtomicBooleanAlgebra α] [CompleteAtomicBooleanAlgebra β] :
     CompleteAtomicBooleanAlgebra (α × β) where
-  __ := Prod.booleanAlgebra α β
-  __ := Prod.completelyDistribLattice α β
+  toCompletelyDistribLattice := Prod.completelyDistribLattice α β
+  le_sup_inf := Prod.booleanAlgebra _ _ |>.le_sup_inf
+  inf_compl_le_bot := Prod.booleanAlgebra _ _ |>.inf_compl_le_bot
+  top_le_sup_compl := Prod.booleanAlgebra _ _ |>.top_le_sup_compl
+  sdiff_eq := Prod.booleanAlgebra _ _ |>.sdiff_eq
+  himp_eq := Prod.booleanAlgebra _ _ |>.himp_eq
 
 instance Pi.completeAtomicBooleanAlgebra {ι : Type _} {π : ι → Type _}
     [∀ i, CompleteAtomicBooleanAlgebra (π i)] : CompleteAtomicBooleanAlgebra (∀ i, π i) where
-  __ := Pi.completeBooleanAlgebra
+  le_sup_inf := Pi.completeBooleanAlgebra.le_sup_inf
+  inf_compl_le_bot := Pi.completeBooleanAlgebra.inf_compl_le_bot
+  top_le_sup_compl := Pi.completeBooleanAlgebra.top_le_sup_compl
+  sdiff_eq := Pi.completeBooleanAlgebra.sdiff_eq
+  himp_eq := Pi.completeBooleanAlgebra.himp_eq
   iInf_iSup_eq f := by ext; rw [iInf_iSup_eq]
 
 instance OrderDual.completeAtomicBooleanAlgebra (α) [CompleteAtomicBooleanAlgebra α] :

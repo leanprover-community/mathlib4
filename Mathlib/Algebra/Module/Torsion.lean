@@ -278,7 +278,7 @@ theorem torsionBySet_le_torsionBySet_of_subset {s t : Set R} (st : s ⊆ t) :
 theorem torsionBySet_eq_torsionBySet_span :
     torsionBySet R M s = torsionBySet R M (Ideal.span s) := by
   refine le_antisymm (fun x hx => ?_) (torsionBySet_le_torsionBySet_of_subset subset_span)
-  rw [mem_torsionBySet_iff] at hx ⊢
+  erw [mem_torsionBySet_iff] at hx ⊢
   suffices Ideal.span s ≤ Ideal.torsionOf R M x by
     rintro ⟨a, ha⟩
     exact this ha
@@ -300,7 +300,7 @@ theorem torsionBy_le_torsionBy_of_dvd (a b : R) (dvd : a ∣ b) :
 @[simp]
 theorem torsionBy_one : torsionBy R M 1 = ⊥ :=
   eq_bot_iff.mpr fun _ h => by
-    rw [mem_torsionBy_iff, one_smul] at h
+    erw [mem_torsionBy_iff, one_smul] at h
     exact h
 #align submodule.torsion_by_one Submodule.torsionBy_one
 
@@ -404,12 +404,12 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
     apply torsionBySet_le_torsionBySet_of_subset
     exact (iInf_le (fun i => ⨅ _ : i ∈ S, p i) i).trans (iInf_le _ is)
   · intro x hx
-    rw [mem_iSup_finset_iff_exists_sum]
+    erw [mem_iSup_finset_iff_exists_sum]
     obtain ⟨μ, hμ⟩ :=
       (mem_iSup_finset_iff_exists_sum _ _).mp
         ((Ideal.eq_top_iff_one _).mp <| (Ideal.iSup_iInf_eq_top_iff_pairwise h _).mpr hp)
     refine' ⟨fun i => ⟨(μ i : R) • x, _⟩, _⟩
-    · rw [mem_torsionBySet_iff] at hx ⊢
+    · erw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
       suffices : a * μ i ∈ ⨅ i ∈ S, p i
@@ -731,7 +731,7 @@ theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
   eq_bot_iff.mpr fun z =>
     Quotient.inductionOn' z fun x ⟨a, hax⟩ => by
       rw [Quotient.mk''_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero] at hax
-      rw [mem_bot, Quotient.mk''_eq_mk, Quotient.mk_eq_zero]
+      erw [mem_bot, Quotient.mk''_eq_mk, Quotient.mk_eq_zero]
       cases' hax with b h
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
 #align submodule.quotient_torsion.torsion_eq_bot Submodule.QuotientTorsion.torsion_eq_bot

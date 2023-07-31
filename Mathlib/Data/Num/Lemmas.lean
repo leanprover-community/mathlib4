@@ -397,7 +397,7 @@ instance addMonoid : AddMonoid Num where
 #align num.add_monoid Num.addMonoid
 
 instance addMonoidWithOne : AddMonoidWithOne Num :=
-  { Num.addMonoid with
+  { toAddMonoid := Num.addMonoid
     natCast := Num.ofNat'
     one := 1
     natCast_zero := ofNat'_zero

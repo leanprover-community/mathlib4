@@ -33,9 +33,20 @@ open Nat
 namespace Int
 
 instance linearOrderedCommRing : LinearOrderedCommRing ℤ :=
-  { instCommRingInt, instLinearOrderInt, instNontrivialInt with
+  { compare_eq_compareOfLessAndEq := instLinearOrderInt.compare_eq_compareOfLessAndEq
+    mul_comm := instCommRingInt.mul_comm
+    le_total := instLinearOrderInt.le_total
+    decidableLE := instLinearOrderInt.decidableLE
     add_le_add_left := @Int.add_le_add_left,
-    mul_pos := @Int.mul_pos, zero_le_one := le_of_lt Int.zero_lt_one }
+    mul_pos := @Int.mul_pos
+    zero_le_one := le_of_lt Int.zero_lt_one }
+
+-- instance og : LinearOrderedCommRing ℤ :=
+--   { instCommRingInt, instLinearOrderInt, instNontrivialInt with
+--     add_le_add_left := @Int.add_le_add_left,
+--     mul_pos := @Int.mul_pos, zero_le_one := le_of_lt Int.zero_lt_one }
+--
+-- example : linearOrderedCommRing = og := rfl
 
 /-! ### Extra instances to short-circuit type class resolution
 -/

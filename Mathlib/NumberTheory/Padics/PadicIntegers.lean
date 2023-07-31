@@ -597,8 +597,10 @@ theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
   apply le_antisymm
   · intro x hx
+    erw [LocalRing.mem_maximalIdeal, mem_nonunits] at hx
     simp only [LocalRing.mem_maximalIdeal, mem_nonunits] at hx
-    rwa [Ideal.mem_span_singleton, ← norm_lt_one_iff_dvd]
+    erw [Ideal.mem_span_singleton, ← norm_lt_one_iff_dvd] at *
+    assumption
   · rw [Ideal.span_le, Set.singleton_subset_iff]
     exact p_nonnunit
 #align padic_int.maximal_ideal_eq_span_p PadicInt.maximalIdeal_eq_span_p

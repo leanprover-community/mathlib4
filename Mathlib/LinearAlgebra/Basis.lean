@@ -1206,7 +1206,7 @@ theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [Dis
   rw [eq_top_iff]
   intro j hj
   rw [← hv] at hj
-  rw [Submodule.mem_span] at hj ⊢
+  erw [Submodule.mem_span] at hj ⊢
   refine' fun p hp => hj p fun u hu => _
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
@@ -1291,7 +1291,7 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
         rw [span_b] at hx
         exact hli c x hx hc))
     fun x _ => by
-      rw [Fin.range_cons, Submodule.mem_span_insert', span_b]
+      erw [Fin.range_cons, Submodule.mem_span_insert', span_b]
       exact hsp x
 #align basis.mk_fin_cons Basis.mkFinCons
 

@@ -160,7 +160,7 @@ def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ �
   liftQ _ (mapQ S T LinearMap.id h)
     (by
       rintro _ ⟨x, hx, rfl⟩
-      rw [LinearMap.mem_ker, mkQ_apply, mapQ_apply]
+      erw [LinearMap.mem_ker, mkQ_apply, mapQ_apply]
       exact (Quotient.mk_eq_zero _).mpr hx)
 #align submodule.quotient_quotient_equiv_quotient_aux Submodule.quotientQuotientEquivQuotientAux
 

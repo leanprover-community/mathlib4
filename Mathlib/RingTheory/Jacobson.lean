@@ -68,7 +68,7 @@ theorem IsJacobson.out {R} [CommRing R] :
 theorem isJacobson_iff_prime_eq : IsJacobson R ↔ ∀ P : Ideal R, IsPrime P → P.jacobson = P := by
   refine' isJacobson_iff.trans ⟨fun h I hI => h I hI.isRadical, _⟩
   refine fun h I hI ↦ le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ mem_sInf.mpr fun _ hJ ↦ hJ.left hx)
-  rw [← hI.radical, radical_eq_sInf I, mem_sInf]
+  erw [← hI.radical, radical_eq_sInf I, mem_sInf]
   intro P hP
   rw [Set.mem_setOf_eq] at hP
   erw [mem_sInf] at hx
