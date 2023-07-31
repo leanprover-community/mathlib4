@@ -101,11 +101,32 @@ lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
   K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
 
 @[reassoc (attr := simp)]
-lemma XIsoOfEq_trans_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
     (h₁₂ : p₁ = p₂) (h₂₃ : p₂ = p₃) :
     (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₁₂.trans h₂₃)).hom := by
   dsimp [XIsoOfEq]
-  simp [eqToHom_trans]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₁₂ : p₁ = p₂) (h₃₂ : p₃ = p₂) :
+    (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₁₂.trans h₃₂.symm)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₂₁ : p₂ = p₁) (h₂₃ : p₂ = p₃) :
+    (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₂₁.symm.trans h₂₃)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₂₁ : p₂ = p₁) (h₃₂ : p₃ = p₂) :
+    (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₃₂.trans h₂₁).symm).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_d (K : HomologicalComplex V c) {p₁ p₂ : ι} (h : p₁ = p₂) (p₃ : ι) :
