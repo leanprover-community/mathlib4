@@ -482,14 +482,6 @@ theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 #align alg_hom.mem_field_range AlgHom.mem_fieldRange
 
-/-- Restricting the codomain of `f` to `f.fieldRange`. -/
-noncomputable def toFieldRange : L →ₐ[K] f.fieldRange :=
-  f.codRestrict (S := f.fieldRange.toSubalgebra) (fun x => ⟨x, rfl⟩)
-
-@[simp]
-lemma toFieldRange_apply (x : L) : f.toFieldRange x = f x :=
-  rfl
-
 end AlgHom
 
 namespace IntermediateField
