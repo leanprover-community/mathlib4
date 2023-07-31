@@ -1,6 +1,3 @@
-import DividedPowers.DpAlgebra.Init
-import DividedPowers.DpAlgebra.Graded
-import DividedPowers.ForMathlib.RingTheory.SubmoduleMem
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.LinearAlgebra.Multilinear.Basic
