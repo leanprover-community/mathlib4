@@ -5,7 +5,9 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Module
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.RingTheory.IsTensorProduct
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -31,6 +33,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
+* `IsLocalizedModule.IsBaseChange` : A localization of modules is a base change.
 
 ## Future work
 
@@ -1078,6 +1081,32 @@ theorem mkOfAlgebra {R S S' : Type _} [CommRing R] [CommRing S] [CommRing S'] [A
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
+
+variable {A : Type _}
+  [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
+
+
+/-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
+`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
+bilinear map).
+In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
+given by `m/s ↦ (1/s) ⊗ₜ m`.
+-/
+theorem isBaseChange : IsBaseChange A f := by
+  refine' IsBaseChange.of_lift_unique _ (fun Q _ _ _ _ g ↦ _)
+  have := IsLocalizedModule.is_universal S f g <| by
+    intro s
+    simp_rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique,
+      Module.algebraMap_end_apply]
+    intro q
+    refine' ⟨(IsLocalization.mk' _ 1 s : A) • q, _, _⟩
+    · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
+    · rintro q rfl
+      simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
+  rcases this with ⟨ℓ, rfl, h₂⟩
+  refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
+  ext x
+  simp [← h₂ (LinearMap.restrictScalars R g'') h]
 
 end IsLocalizedModule
 

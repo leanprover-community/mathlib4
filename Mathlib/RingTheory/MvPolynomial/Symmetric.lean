@@ -272,7 +272,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       · rfl
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-    simpa using powerset_len_sup _ _ (Nat.lt_of_succ_le hn)
+    simpa using powersetLen_sup _ _ (Nat.lt_of_succ_le hn)
 #align mv_polynomial.degrees_esymm MvPolynomial.degrees_esymm
 
 end ElementarySymmetric
