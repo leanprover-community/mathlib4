@@ -93,7 +93,7 @@ lemma aeMeasurable_indicator_const_iff' [MeasurableSpace α] (A : Set α) [Decid
   constructor <;> intro h
   · by_cases hb : b = 0 <;> simp only [hb, true_or, false_or]
     obtain ⟨f, ⟨f_mble, f_eq⟩⟩ := h
-    have A_eq := @indicator_const_preimage_eq_union α β _ A {0}ᶜ b _ _
+    have A_eq := indicator_const_preimage_eq_union A {0}ᶜ b
     simp only [preimage_compl, mem_compl_iff, mem_singleton_iff, hb, not_false_eq_true,
                ite_true, not_true, ite_false, union_empty] at A_eq
     rw [←A_eq]
@@ -142,8 +142,8 @@ lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableS
   have obs := measurable_indicator_const_iff A (1 : ℝ≥0∞)
   simp only [one_ne_zero, false_or] at obs
   rw [←obs]
-  apply @measurable_of_tendsto_ennreal' α _ ι (fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
-    (A.indicator (fun _ ↦ (1 : ℝ≥0∞))) L _ _
+  apply measurable_of_tendsto_ennreal' (f := fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
+          (g := A.indicator (fun _ ↦ (1 : ℝ≥0∞))) L
   · intro i
     simp only [measurable_indicator_const_iff, one_ne_zero, As_mble i, or_true]
   · simpa [tendsto_pi_nhds] using h_lim
@@ -155,8 +155,7 @@ lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] (μ : Measure α)
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
     NullMeasurableSet A μ := by
-  have obs := @aeMeasurable_indicator_const_iff' α ℝ≥0∞ _ A _ _ _ _ _ _ _ _ μ
-                (MeasurableSet.singleton 0) 1
+  have obs := aeMeasurable_indicator_const_iff' A μ (MeasurableSet.singleton 0) (1 : ℝ≥0∞)
   simp only [one_ne_zero, false_or] at obs
   rw [←obs]
   refine aestronglyMeasurable_of_tendsto_ae (μ := μ) (u := L)
@@ -210,7 +209,7 @@ lemma tendsto_measure_of_tendsto_indicator [NeBot L] (μ : Measure α)
   apply tendsto_measure_of_tendsto_indicator' L μ ?_ As_mble B_mble B_finmeas As_le_B
   · apply eventually_of_forall
     simpa only [tendsto_pi_nhds] using h_lim
-  · exact @measurableSet_of_tendsto_indicator α _ A ι L _ As _ As_mble h_lim
+  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
 
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise to
 the indicator of a set `A`, then the measures `μ Aᵢ` tend to the measure `μ A`. -/
@@ -222,6 +221,6 @@ lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
   apply tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure' L μ ?_ As_mble
   · apply eventually_of_forall
     simpa only [tendsto_pi_nhds] using h_lim
-  · exact @measurableSet_of_tendsto_indicator α _ A ι L _ As _ As_mble h_lim
+  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
 
 end TendstoMeasureOfTendstoIndicator
