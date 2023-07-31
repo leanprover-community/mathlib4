@@ -23,7 +23,7 @@ section Semiring
 
 variable {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] {n : ℕ}
 
-/-- The subspace spanned -/
+/-- The subspace spanned by the first `k` vectors of the basis `b`. -/
 def flag (b : Basis (Fin n) R M) (k : Fin (n + 1)) : Submodule R M :=
   .span R <| b '' {i | i.castSucc < k}
 
