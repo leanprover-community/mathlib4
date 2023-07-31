@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group.with_one.defs
-! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
+
+#align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -125,9 +122,9 @@ def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) 
 attribute [elab_as_elim] WithZero.recZeroCoe
 
 
-/-- Deconstruct a `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
+/-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct a `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+      "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
 def unone {x : WithOne α} (hx : x ≠ 1) : α :=
   WithBot.unbot x hx
 #align with_one.unone WithOne.unone

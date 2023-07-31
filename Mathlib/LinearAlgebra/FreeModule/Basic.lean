@@ -2,17 +2,14 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.basic
-! leanprover-community/mathlib commit 4e7e7009099d4a88a750de710909b95487bf0124
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Logic.Small.Basic
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.TensorProductBasis
+
+#align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
 
 /-!
 
@@ -181,7 +178,7 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
 
 instance dfinsupp {ι : Type _} (M : ι → Type _) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
-  of_basis <| Dfinsupp.basis fun i => chooseBasis R (M i)
+  of_basis <| DFinsupp.basis fun i => chooseBasis R (M i)
 #align module.free.dfinsupp Module.Free.dfinsupp
 
 instance directSum {ι : Type _} (M : ι → Type _) [∀ i : ι, AddCommMonoid (M i)]

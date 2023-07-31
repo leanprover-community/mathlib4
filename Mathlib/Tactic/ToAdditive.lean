@@ -2,7 +2,6 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
-Ported by: E.W.Ayers
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
@@ -32,13 +31,13 @@ theory to an additive theory.
 
 open Lean Meta Elab Command Std
 
-/-- The  `to_additive_ignore_args` attribute. -/
+/-- The `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
-/-- The  `to_additive_relevant_arg` attribute. -/
+/-- The `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-/-- The  `to_additive_reorder` attribute. -/
+/-- The `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
-/-- The  `to_additive_change_numeral` attribute. -/
+/-- The `to_additive_change_numeral` attribute. -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
@@ -74,7 +73,7 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
@@ -95,7 +94,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        fun x ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -286,15 +285,13 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
-  let size := cacheSize
   let rec visit (e : Expr) (inApp := false) : OptionT FindM Unit := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
       else
         return
-    if ← visited e size then
-      failure
+    checkVisited e
     match e with
     | x@(.app e a)       =>
         visit e true <|> do
@@ -311,7 +308,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | _                  => failure
-  Option.isNone <| Id.run <| (visit e).run' initCache
+  Option.isNone <| Id.run <| (visit e).run' mkPtrSet
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant

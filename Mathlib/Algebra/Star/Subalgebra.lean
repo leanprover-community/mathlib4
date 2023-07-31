@@ -2,17 +2,15 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.subalgebra
-! leanprover-community/mathlib commit 160ef3e338a2a4f21a280e4c152d4016156e516d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Module
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import algebra.star.subalgebra from "leanprover-community/mathlib"@"160ef3e338a2a4f21a280e4c152d4016156e516d"
 
 /-!
 # Star subalgebras
@@ -66,7 +64,7 @@ instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Alg
 
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
 instance starRing (s : StarSubalgebra R A) : StarRing s :=
-  { StarMemClass.star s with
+  { StarMemClass.instStar s with
     star_involutive := fun r => Subtype.ext (star_star (r : A))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))
     star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
@@ -86,6 +84,9 @@ theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈
 theorem ext {S T : StarSubalgebra R A} (h : ∀ x : A, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align star_subalgebra.ext StarSubalgebra.ext
+
+@[simp]
+lemma coe_mk (S : Subalgebra R A) (h) : ((⟨S, h⟩ : StarSubalgebra R A) : Set A) = S := rfl
 
 @[simp]
 theorem mem_toSubalgebra {S : StarSubalgebra R A} {x} : x ∈ S.toSubalgebra ↔ x ∈ S :=
@@ -290,31 +291,27 @@ section Centralizer
 
 variable (R) -- porting note: redundant binder annotation update
 
-theorem _root_.Set.star_mem_centralizer {a : A} {s : Set A} (h : ∀ a : A, a ∈ s → star a ∈ s)
-    (ha : a ∈ Set.centralizer s) : star a ∈ Set.centralizer s := fun y hy => by
-  simpa using congr_arg star (ha _ (h _ hy)).symm
-#align set.star_mem_centralizer Set.star_mem_centralizer
-
-/-- The centralizer, or commutant, of a *-closed set as star subalgebra. -/
-def centralizer (s : Set A) (w : ∀ a : A, a ∈ s → star a ∈ s) : StarSubalgebra R A :=
-  { Subalgebra.centralizer R s with
-    star_mem' := Set.star_mem_centralizer w }
+/-- The centralizer, or commutant, of the star-closure of a set as a star subalgebra. -/
+def centralizer (s : Set A) : StarSubalgebra R A where
+  toSubalgebra := Subalgebra.centralizer R (s ∪ star s)
+  star_mem' := Set.star_mem_centralizer
 #align star_subalgebra.centralizer StarSubalgebra.centralizer
 
-@[simp]
-theorem coe_centralizer (s : Set A) (w : ∀ a : A, a ∈ s → star a ∈ s) :
-    (centralizer R s w : Set A) = s.centralizer :=
+@[simp, norm_cast]
+theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
   rfl
 #align star_subalgebra.coe_centralizer StarSubalgebra.coe_centralizer
 
-theorem mem_centralizer_iff {s : Set A} {w} {z : A} :
-    z ∈ centralizer R s w ↔ ∀ g ∈ s, g * z = z * g :=
-  Iff.rfl
+theorem mem_centralizer_iff {s : Set A} {z : A} :
+    z ∈ centralizer R s ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g := by
+  show (∀ g ∈ s ∪ star s, g * z = z * g) ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g
+  simp only [Set.mem_union, or_imp, forall_and, and_congr_right_iff]
+  exact fun _ =>
+    ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
 #align star_subalgebra.mem_centralizer_iff StarSubalgebra.mem_centralizer_iff
 
-theorem centralizer_le (s t : Set A) (ws : ∀ a : A, a ∈ s → star a ∈ s)
-    (wt : ∀ a : A, a ∈ t → star a ∈ t) (h : s ⊆ t) : centralizer R t wt ≤ centralizer R s ws :=
-  Set.centralizer_subset h
+theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
+  Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 #align star_subalgebra.centralizer_le StarSubalgebra.centralizer_le
 
 end Centralizer
@@ -385,13 +382,16 @@ variable {R}
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
 @[simps!]
-def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
-  { S ⊔ star S with
-    star_mem' := fun {a} ha => by
-      simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
-      rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
-      simpa using ha }
+def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
+  toSubalgebra := S ⊔ star S
+  star_mem' := fun {a} ha => by
+    simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
+    rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
+    simpa using ha
 #align subalgebra.star_closure Subalgebra.starClosure
+
+theorem starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
+  rfl
 
 theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
     S₁.starClosure ≤ S₂ :=
@@ -775,7 +775,7 @@ theorem ext_adjoin_singleton {a : A} [StarAlgHomClass F R (adjoin R ({a} : Set A
       h
 #align star_alg_hom.ext_adjoin_singleton StarAlgHom.ext_adjoin_singleton
 
-/-- Range of an `StarAlgHom` as a star subalgebra. -/
+/-- Range of a `StarAlgHom` as a star subalgebra. -/
 protected def range
     (φ : A →⋆ₐ[R] B) : StarSubalgebra R B where
   toSubalgebra := φ.toAlgHom.range

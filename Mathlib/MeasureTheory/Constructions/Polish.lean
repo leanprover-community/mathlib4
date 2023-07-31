@@ -2,15 +2,12 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
-
-! This file was ported from Lean 3 source module measure_theory.constructions.polish
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Topology.Perfect
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+#align_import measure_theory.constructions.polish from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -338,7 +335,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   choose F hFn hFx hFy using this
   let p0 : A := ⟨⟨0, fun _ => 0, fun _ => 0⟩, by simp [hfg]⟩
   -- construct inductively decreasing sequences of cylinders whose images are not separated
-  let p : ℕ → A := fun n => (F^[n]) p0
+  let p : ℕ → A := fun n => F^[n] p0
   have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
   have pn_fst : ∀ n, (p n).1.1 = n := by
@@ -432,7 +429,7 @@ theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [Opens
 /-- **Suslin's Theorem**: in a Hausdorff topological space, an analytic set with an analytic
 complement is measurable. -/
 theorem AnalyticSet.measurableSet_of_compl [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    {s : Set α} (hs : AnalyticSet s) (hsc : AnalyticSet (sᶜ)) : MeasurableSet s := by
+    {s : Set α} (hs : AnalyticSet s) (hsc : AnalyticSet sᶜ) : MeasurableSet s := by
   rcases hs.measurablySeparable hsc disjoint_compl_right with ⟨u, hsu, hdu, hmu⟩
   obtain rfl : s = u := hsu.antisymm (disjoint_compl_left_iff_subset.1 hdu)
   exact hmu
@@ -461,7 +458,7 @@ theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f 
   apply AnalyticSet.measurableSet_of_compl
   · rw [← image_preimage_eq s hsurj]
     exact h.analyticSet_image hf
-  · rw [← image_preimage_eq (sᶜ) hsurj]
+  · rw [← image_preimage_eq sᶜ hsurj]
     exact h.compl.analyticSet_image hf
 #align measurable.measurable_set_preimage_iff_of_surjective Measurable.measurableSet_preimage_iff_of_surjective
 
@@ -820,10 +817,8 @@ theorem isClopenable_iff_measurableSet : IsClopenable s ↔ MeasurableSet s := b
 theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
-  by_cases hl : l.NeBot
-  swap;
-  · rw [not_neBot] at hl
-    simp [hl]
+  rcases l.eq_or_neBot with rfl | hl
+  · simp
   letI := upgradePolishSpace γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]

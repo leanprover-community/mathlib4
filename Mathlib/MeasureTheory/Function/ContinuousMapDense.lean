@@ -2,16 +2,13 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.function.continuous_map_dense
-! leanprover-community/mathlib commit e0736bb5b48bdadbca19dbd857e12bee38ccfbb8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Integral.Bochner
+
+#align_import measure_theory.function.continuous_map_dense from "leanprover-community/mathlib"@"e0736bb5b48bdadbca19dbd857e12bee38ccfbb8"
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -379,13 +376,14 @@ end BoundedContinuousFunction
 
 namespace ContinuousMap
 
+/-- Continuous functions are dense in `MeasureTheory.Lp`, `1 ≤ p < ∞`. This theorem assumes that
+the domain is a compact space because otherwise `ContinuousMap.toLp` is undefined. Use
+`BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space.  -/
 theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ] :
     DenseRange (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ) := by
-  haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-  rw [denseRange_iff_closure_range]
-  suffices (LinearMap.range (toLp p μ 𝕜 : _ →L[𝕜] Lp E p μ)).toAddSubgroup.topologicalClosure = ⊤
-    by exact congr_arg ((↑) : AddSubgroup (Lp E p μ) → Set (Lp E p μ)) this
-  simpa [range_toLp p μ] using MeasureTheory.Lp.boundedContinuousFunction_dense E hp
+  refine (BoundedContinuousFunction.toLp_denseRange _ _ hp 𝕜).mono ?_
+  refine range_subset_iff.2 fun f ↦ ?_
+  exact ⟨f.toContinuousMap, rfl⟩
 set_option linter.uppercaseLean3 false in
 #align continuous_map.to_Lp_dense_range ContinuousMap.toLp_denseRange
 

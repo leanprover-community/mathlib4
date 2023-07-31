@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl
-
-! This file was ported from Lean 3 source module dynamics.fixed_points.topology
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Topology.Separation
+
+#align_import dynamics.fixed_points.topology from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Topological properties of fixed points
@@ -33,7 +30,7 @@ open Topology
 
 /-- If the iterates `f^[n] x` converge to `y` and `f` is continuous at `y`,
 then `y` is a fixed point for `f`. -/
-theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => (f^[n]) x) atTop (𝓝 y))
+theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => f^[n] x) atTop (𝓝 y))
     (hf : ContinuousAt f y) : IsFixedPt f y := by
   refine' tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).1 _) hy
   simp only [iterate_succ' f]
@@ -44,4 +41,3 @@ theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => (f^[n]) 
 theorem isClosed_fixedPoints (hf : Continuous f) : IsClosed (fixedPoints f) :=
   isClosed_eq hf continuous_id
 #align is_closed_fixed_points isClosed_fixedPoints
-

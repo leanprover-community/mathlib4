@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.big_operators.ring
-! leanprover-community/mathlib commit b2c89893177f66a48daf993b7ba5ef7cddeff8c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Powerset
+
+#align_import algebra.big_operators.ring from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
 /-!
 # Results about big operators with values in a (semi)ring
@@ -38,7 +35,7 @@ variable [CommMonoid β]
 open Classical
 
 theorem prod_pow_eq_pow_sum {x : β} {f : α → ℕ} :
-    ∀ {s : Finset α}, (∏ i in s, x ^ f i) = x ^ ∑ x in s, f x := by
+    ∀ {s : Finset α}, ∏ i in s, x ^ f i = x ^ ∑ x in s, f x := by
   apply Finset.induction
   · simp
   · intro a s has H
@@ -152,7 +149,7 @@ theorem prod_add (f g : α → β) (s : Finset α) :
             (fun a _ => a.1) (by simp) (by simp)
             (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp))
-        (fun t _ a  _ => a ∈ t)
+        (fun t _ a _ => a ∈ t)
         (by simp [Classical.em])
         (by simp [Function.funext_iff]; tauto)
         (by simp [Finset.ext_iff, @mem_filter _ _ (id _)]; tauto)
@@ -264,7 +261,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
       "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
       `card s = k`, for `k = 1, ..., card s`"]
 theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
-    (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
+    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
   rw [powerset_card_disjiUnion, prod_disjiUnion]
 #align finset.prod_powerset Finset.prod_powerset
 #align finset.sum_powerset Finset.sum_powerset

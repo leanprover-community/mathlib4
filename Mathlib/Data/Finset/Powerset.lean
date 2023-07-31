@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finset.powerset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Multiset.Powerset
+
+#align_import data.finset.powerset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # The powerset of a finset
@@ -336,7 +333,7 @@ theorem powersetLen_map {β : Type _} (f : α ↪ β) (n : ℕ) (s : Finset α) 
   ext <| fun t => by
     simp only [card_map, mem_powersetLen, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
-    . classical
+    · classical
       intro h
       have : map f (filter (fun x => (f x ∈ t)) s) = t := by
         ext x
@@ -345,7 +342,7 @@ theorem powersetLen_map {β : Type _} (f : α ↪ β) (n : ℕ) (s : Finset α) 
           fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
       refine' ⟨_, _, this⟩
       rw [← card_map f, this, h.2]; simp
-    . rintro ⟨a, ⟨has, rfl⟩, rfl⟩
+    · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       dsimp [RelEmbedding.coe_toEmbedding]
       --Porting note: Why is `rw` required here and not `simp`?
       rw [mapEmbedding_apply]

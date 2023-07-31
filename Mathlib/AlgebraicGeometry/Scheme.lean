@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.Scheme
-! leanprover-community/mathlib commit 06c75afebd8b612d3b20fe836424298f2387ca53
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.Ring.Constructions
+
+#align_import algebraic_geometry.Scheme from "leanprover-community/mathlib"@"88474d1b5af6d37c2ab728b757771bced7f5194c"
 
 /-!
 # The category of schemes
@@ -35,7 +32,7 @@ open Opposite
 
 namespace AlgebraicGeometry
 
-/-- We define `Scheme` as a `X : LocallyRingedSpace`,
+/-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
 so that that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
@@ -61,6 +58,10 @@ def Hom (X Y : Scheme) : Type _ :=
 -/
 instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
+
+-- porting note: added to ease automation
+@[continuity]
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -95,6 +96,15 @@ def forgetToTop : Scheme ⥤ TopCat :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
 #align algebraic_geometry.Scheme.forget_to_Top AlgebraicGeometry.Scheme.forgetToTop
 
+-- Porting note : Lean seems not able to find this coercion any more
+instance hasCoeToTopCat : CoeOut Scheme TopCat where
+  coe X := X.carrier
+
+-- Porting note : added this unification hint just in case
+/-- forgetful functor to `TopCat` is the same as coercion -/
+unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
+  forgetToTop.obj X ≟ (X : TopCat)
+
 @[simp]
 theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
   rfl
@@ -125,6 +135,11 @@ theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rfl
 #align algebraic_geometry.Scheme.comp_val_base AlgebraicGeometry.Scheme.comp_val_base
 
+theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).val.base x = g.val.base (f.val.base x) := by
+  simp
+#align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
+
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=
@@ -145,6 +160,12 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
   cases e
   rfl
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
+
+-- Porting note : in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
+-- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
+lemma presheaf_map_eqToHom_op (X : Scheme) (U V : Opens X) (i : U = V) :
+    X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
+  rw [eqToHom_op, eqToHom_map]
 
 instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     @IsIso LocallyRingedSpace _ _ _ f :=
@@ -208,6 +229,9 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
 -- porting note: removed @[simps]
+-- TODO: We need to decide whether `Spec_obj` or `Spec.obj` the simp-normal form.
+-- We probably want `Spec.obj`, but note
+-- `locallyRingedSpaceObj` is currently the simp-normal form of `toLocallyRingedSpace.obj`.
 def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
@@ -273,6 +297,15 @@ def basicOpen : Opens X.carrier :=
 theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
   RingedSpace.mem_basicOpen _ _ _
 #align algebraic_geometry.Scheme.mem_basic_open AlgebraicGeometry.Scheme.mem_basicOpen
+
+@[aesop norm simp (rule_sets [Restrict])]
+theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
+    x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
+  fconstructor
+  · rintro ⟨y, hy1, rfl⟩
+    exact ⟨y.2, hy1⟩
+  · rintro ⟨m, hm⟩
+    exact ⟨⟨x, m⟩, hm, rfl⟩
 
 @[simp]
 theorem mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :

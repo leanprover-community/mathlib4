@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module data.polynomial.expand
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
+
+#align_import data.polynomial.expand from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -88,7 +85,7 @@ theorem expand_one (f : R[X]) : expand R 1 f = f :=
     rw [AlgHom.map_mul, expand_C, AlgHom.map_pow, expand_X, pow_one]
 #align polynomial.expand_one Polynomial.expand_one
 
-theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p^[q]) f :=
+theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
   Nat.recOn q (by rw [pow_zero, expand_one, Function.iterate_zero, id]) fun n ih => by
     rw [Function.iterate_succ_apply', pow_succ, expand_mul, ih]
 #align polynomial.expand_pow Polynomial.expand_pow

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.sets.compacts
-! leanprover-community/mathlib commit 8c1b484d6a214e059531e22f1be9898ed6c1fd47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.QuasiSeparated
+
+#align_import topology.sets.compacts from "leanprover-community/mathlib"@"8c1b484d6a214e059531e22f1be9898ed6c1fd47"
 
 /-!
 # Compact sets
@@ -565,7 +562,7 @@ theorem coe_sdiff [T2Space α] (s t : CompactOpens α) : (↑(s \ t) : Set α) =
 #align topological_space.compact_opens.coe_sdiff TopologicalSpace.CompactOpens.coe_sdiff
 
 @[simp]
-theorem coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑(sᶜ) : Set α) = ↑sᶜ :=
+theorem coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑sᶜ : Set α) = (↑s)ᶜ :=
   rfl
 #align topological_space.compact_opens.coe_compl TopologicalSpace.CompactOpens.coe_compl
 

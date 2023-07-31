@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.finsupp.multiset
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.Order
+
+#align_import data.finsupp.multiset from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -232,6 +229,11 @@ variable (ι)
 theorem lt_wf : WellFounded (@LT.lt (ι →₀ ℕ) _) :=
   Subrelation.wf (sum_id_lt_of_lt _ _) <| InvImage.wf _ Nat.lt_wfRel.2
 #align finsupp.lt_wf Finsupp.lt_wf
+
+-- TODO: generalize to `[WellFoundedRelation α] → WellFoundedRelation (ι →₀ α)`
+instance : WellFoundedRelation (ι →₀ ℕ) where
+  rel := (· < ·)
+  wf := lt_wf _
 
 end Finsupp
 

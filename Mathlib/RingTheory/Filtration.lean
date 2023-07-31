@@ -2,11 +2,6 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.filtration
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
@@ -14,6 +9,8 @@ import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Data.Polynomial.Module
 import Mathlib.Order.Hom.Lattice
+
+#align_import ring_theory.filtration from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -471,7 +468,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing 
 
 /-- **Krull's intersection theorem** for noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h : I ≠ ⊤) :
-    (⨅ i : ℕ, I ^ i) = ⊥ := by
+    ⨅ i : ℕ, I ^ i = ⊥ := by
   convert I.iInf_pow_smul_eq_bot_of_localRing (M := R) h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
@@ -479,7 +476,7 @@ theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h
 
 /-- **Krull's intersection theorem** for noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
-    (⨅ i : ℕ, I ^ i) = ⊥ := by
+    ⨅ i : ℕ, I ^ i = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
   by_contra hx'
