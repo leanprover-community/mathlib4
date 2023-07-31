@@ -27,7 +27,7 @@ namespace HomologicalComplex
 
 variable (C : Type _) [Category C] [HasZeroMorphisms C] {ι : Type _} (c : ComplexShape ι)
 
-/-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends an homological
+/-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
 @[simps]
 def shortComplexFunctor' (i j k : ι) : HomologicalComplex C c ⥤ ShortComplex C where
@@ -37,7 +37,7 @@ def shortComplexFunctor' (i j k : ι) : HomologicalComplex C c ⥤ ShortComplex 
       τ₂ := f.f j
       τ₃ := f.f k }
 
-/-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends an homological
+/-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. -/
 @[simps!]
 noncomputable def shortComplexFunctor (i : ι) :=
