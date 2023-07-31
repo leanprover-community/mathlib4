@@ -72,7 +72,7 @@ def projChart (ch : LocalHomeomorph M H) : LocalHomeomorph (cont_graph.mk' f hf)
     have hinva := ch.left_inv ha
     exact And.intro hinva (Eq.subst (motive := fun a => b = f a) hinva.symm ab).symm
   right_inv' := by apply LocalHomeomorph.right_inv
-  open_source := IsOpen.preimage continuous_id.subtype_val.fst ch.open_source
+  open_source := ch.open_source.preimage continuous_id.subtype_val.fst
   open_target := ch.open_target
   continuous_toFun := by
     simp only [LocalHomeomorph.toFun_eq_coe]
@@ -86,7 +86,7 @@ def projChart (ch : LocalHomeomorph M H) : LocalHomeomorph (cont_graph.mk' f hf)
     apply continuousOn_iff'.mpr
     intro t ht
     have hu := hch (preimage ((cont_graph.mk' f hf).graphMap) t)
-      (IsOpen.preimage ((cont_graph.mk' f hf).graphMap_cont) ht)
+      (ht.preimage ((cont_graph.mk' f hf).graphMap_cont))
     cases hu with
     | intro u hu =>
       use u
