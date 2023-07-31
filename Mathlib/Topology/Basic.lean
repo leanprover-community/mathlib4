@@ -1772,6 +1772,7 @@ protected theorem Set.MapsTo.closure {s : Set α} {t : Set β} {f : α → β} (
   exact fun x hx => hx.map hc.continuousAt (tendsto_principal_principal.2 h)
 #align set.maps_to.closure Set.MapsTo.closure
 
+/-- See also `IsClosedMap.closure_image_eq_of_continuous`. -/
 theorem image_closure_subset_closure_image {f : α → β} {s : Set α} (h : Continuous f) :
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset

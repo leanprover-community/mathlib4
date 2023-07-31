@@ -547,6 +547,25 @@ theorem isClosedMap_iff_clusterPt [TopologicalSpace α] [TopologicalSpace β] {f
   simp [MapClusterPt, isClosedMap_iff_closure_image, subset_def, mem_closure_iff_clusterPt,
     and_comm]
 
+theorem IsClosedMap.closure_image_eq_of_continuous [TopologicalSpace α] [TopologicalSpace β]
+    {f : α → β} (f_closed : IsClosedMap f) (f_cont : Continuous f) (s : Set α) :
+    closure (f '' s) = f '' closure s :=
+  subset_antisymm (f_closed.closure_image_subset s) (image_closure_subset_closure_image f_cont)
+
+theorem IsClosedMap.lift'_closure_map_eq [TopologicalSpace α] [TopologicalSpace β]
+    {f : α → β} (f_closed : IsClosedMap f) (f_cont : Continuous f) (F : Filter α) :
+    (map f F).lift' closure = map f (F.lift' closure) := by
+  rw [map_lift'_eq2 (monotone_closure β), map_lift'_eq (monotone_closure α)]
+  congr
+  ext s : 1
+  exact f_closed.closure_image_eq_of_continuous f_cont s
+
+theorem IsClosedMap.mapClusterPt_iff_lift'_closure [TopologicalSpace α] [TopologicalSpace β]
+    {F : Filter α} {f : α → β} (f_closed : IsClosedMap f) (f_cont : Continuous f) {y : β} :
+    MapClusterPt y F f ↔ ((F.lift' closure) ⊓ 𝓟 (f ⁻¹' {y})).NeBot := by
+  rw [MapClusterPt, clusterPt_iff_lift'_closure', f_closed.lift'_closure_map_eq f_cont,
+      ← comap_principal, ← map_neBot_iff f, Filter.push_pull, principal_singleton]
+
 section OpenEmbedding
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
@@ -706,8 +725,7 @@ theorem ClosedEmbedding.comp {g : β → γ} {f : α → β} (hg : ClosedEmbeddi
 
 theorem ClosedEmbedding.closure_image_eq {f : α → β} (hf : ClosedEmbedding f) (s : Set α) :
     closure (f '' s) = f '' closure s :=
-  (hf.isClosedMap.closure_image_subset _).antisymm
-    (image_closure_subset_closure_image hf.continuous)
+  hf.isClosedMap.closure_image_eq_of_continuous hf.continuous s
 #align closed_embedding.closure_image_eq ClosedEmbedding.closure_image_eq
 
 end ClosedEmbedding

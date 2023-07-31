@@ -1303,22 +1303,3 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 #align continuous_within_at_prod_iff continuousWithinAt_prod_iff
-
-theorem IsClosedMap.image_closure_eq_of_continuous
-    {f : α → β} (f_closed : IsClosedMap f) (f_cont : Continuous f) (s : Set α) :
-    f '' closure s = closure (f '' s) :=
-  subset_antisymm f_cont.continuousOn.image_closure (f_closed.closure_image_subset s)
-
-theorem IsClosedMap.map_lift'_closure_eq
-    {f : α → β} (f_closed : IsClosedMap f) (f_cont : Continuous f) (F : Filter α) :
-    map f (F.lift' closure) = (map f F).lift' closure := by
-  rw [map_lift'_eq2 (monotone_closure β), map_lift'_eq (monotone_closure α)]
-  congr
-  ext s : 1
-  exact f_closed.image_closure_eq_of_continuous f_cont s
-
-theorem IsClosedMap.mapClusterPt_iff_lift'_closure
-    {F : Filter α} {f : α → β} (f_closed : IsClosedMap f) (f_cont : Continuous f) {y : β} :
-    MapClusterPt y F f ↔ ((F.lift' closure) ⊓ 𝓟 (f ⁻¹' {y})).NeBot := by
-  rw [MapClusterPt, clusterPt_iff_lift'_closure', ← f_closed.map_lift'_closure_eq f_cont,
-      ← comap_principal, ← map_neBot_iff f, Filter.push_pull, principal_singleton]

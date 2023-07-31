@@ -206,7 +206,7 @@ theorem isProperMap_iff_isClosedMap_and_compact_fibers :
     refine ⟨H.1, fun ℱ y hy ↦ ?_⟩
   -- That means that the singleton `pure y` meets the "closure" of `map f ℱ`, by which we mean
   -- `Filter.lift' (map f ℱ) closure`. But `f` is closed, so
-  -- `closure (map f ℱ) = map f (closure ℱ)` (see `IsClosedMap.map_lift'_closure_eq`).
+  -- `closure (map f ℱ) = map f (closure ℱ)` (see `IsClosedMap.lift'_closure_map_eq`).
   -- Thus `map f (closure ℱ ⊓ 𝓟 (f ⁻¹' {y})) = map f (closure ℱ) ⊓ 𝓟 {y} ≠ ⊥`, hence
   -- `closure ℱ ⊓ 𝓟 (f ⁻¹' {y}) ≠ ⊥`.
     rw [H.2.1.mapClusterPt_iff_lift'_closure H.1] at hy
