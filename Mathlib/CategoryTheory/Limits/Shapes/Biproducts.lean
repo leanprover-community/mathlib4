@@ -105,6 +105,8 @@ def toCone (B : Bicone F) : Cone (Discrete.functor F) where
   π := { app := fun j => B.π j.as }
 #align category_theory.limits.bicone.to_cone CategoryTheory.Limits.Bicone.toCone
 
+-- TODO Consider changing this API to `toFan (B : Bicone F) : Fan F`.
+
 @[simp]
 theorem toCone_pt (B : Bicone F) : B.toCone.pt = B.pt := rfl
 set_option linter.uppercaseLean3 false in
@@ -116,6 +118,9 @@ theorem toCone_π_app (B : Bicone F) (j : Discrete J) : B.toCone.π.app j = B.π
 
 theorem toCone_π_app_mk (B : Bicone F) (j : J) : B.toCone.π.app ⟨j⟩ = B.π j := rfl
 #align category_theory.limits.bicone.to_cone_π_app_mk CategoryTheory.Limits.Bicone.toCone_π_app_mk
+
+@[simp]
+theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 
 /-- Extract the cocone from a bicone. -/
 def toCocone (B : Bicone F) : Cocone (Discrete.functor F) where
@@ -132,6 +137,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem toCocone_ι_app (B : Bicone F) (j : Discrete J) : B.toCocone.ι.app j = B.ι j.as := rfl
 #align category_theory.limits.bicone.to_cocone_ι_app CategoryTheory.Limits.Bicone.toCocone_ι_app
+
+@[simp]
+theorem toCocone_proj (B : Bicone F) (j : J) : Cofan.proj B.toCocone j = B.ι j := rfl
 
 theorem toCocone_ι_app_mk (B : Bicone F) (j : J) : B.toCocone.ι.app ⟨j⟩ = B.ι j := rfl
 #align category_theory.limits.bicone.to_cocone_ι_app_mk CategoryTheory.Limits.Bicone.toCocone_ι_app_mk
@@ -574,6 +582,38 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   hom := biproduct.map fun b => (p b).hom
   inv := biproduct.map fun b => (p b).inv
 #align category_theory.limits.biproduct.map_iso CategoryTheory.Limits.biproduct.mapIso
+
+instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
+    [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
+    HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
+  exists_biproduct := Nonempty.intro
+    { bicone :=
+      { pt := ⨁ fun i => ⨁ g i
+        ι := fun X => biproduct.ι (g X.1) X.2 ≫ biproduct.ι (fun i => ⨁ g i) X.1
+        π := fun X => biproduct.π (fun i => ⨁ g i) X.1 ≫ biproduct.π (g X.1) X.2
+        ι_π := fun ⟨j, x⟩ ⟨j', y⟩ => by
+          split_ifs with h
+          · obtain ⟨rfl, rfl⟩ := h
+            simp
+          · simp at h
+            by_cases w : j = j'
+            · cases w
+              simp at h
+              simp [biproduct.ι_π_ne _ h]
+            · simp [biproduct.ι_π_ne_assoc _ w] }
+      isBilimit :=
+      { isLimit := mkFanLimit _
+          (fun s => biproduct.lift fun b => biproduct.lift fun c => s.proj ⟨b, c⟩)
+        isColimit := mkCofanColimit _
+          (fun s => biproduct.desc fun b => biproduct.desc fun c => s.proj ⟨b, c⟩) } }
+
+/-- An iterated biproduct is a biproduct over a sigma type. -/
+@[simps]
+def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
+    [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
+    (⨁ fun i => ⨁ g i) ≅ (⨁ fun p : Σ i, f i => g p.1 p.2) where
+  hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
+  inv := biproduct.lift fun i => biproduct.lift fun x => biproduct.π _ (⟨i, x⟩ : Σ i, f i)
 
 section πKernel
 
