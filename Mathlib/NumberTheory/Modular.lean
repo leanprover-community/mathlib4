@@ -370,8 +370,7 @@ theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * 
   conv_lhs => rw [Matrix.eta_fin_two (↑ₘg)]
   rw [hc, hg]
   simp only [coe_mul, coe_T_zpow, coe_S, mul_fin_two]
-  -- Porting note: Was `congrm !![_, _; _, _] <;> ring`.
-  congr! 3 <;> [skip; congr! 1; congr! 2] <;> ring
+  congrm !![?_, ?_; ?_, ?_] <;> ring
 #align modular_group.g_eq_of_c_eq_one ModularGroup.g_eq_of_c_eq_one
 
 set_option maxHeartbeats 250000 in

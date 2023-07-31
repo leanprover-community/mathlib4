@@ -221,8 +221,7 @@ def MDifferentiableAt (f : M → M') (x : M) :=
 
 theorem mdifferentiableAt_iff_liftPropAt (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ LiftPropAt (DifferentiableWithinAtProp I I') f x := by
-  -- porting note: was `congrm ∧`
-  apply Iff.and
+  congrm ?_ ∧ ?_
   · rw [continuousWithinAt_univ]
   · -- porting note: `rfl` wasn't needed
     simp [DifferentiableWithinAtProp, Set.univ_inter]; rfl

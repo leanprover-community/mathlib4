@@ -8,11 +8,29 @@ namespace Tests
 
 --set_option trace.Elab.congr true
 
+section congr_thms
+/-! Tests that `congr(...)` subsumes `congr_arg`/`congr_fun`/`congr`.
+Uses `(... :)` to make sure `congr(...)` is not seeing expected types. -/
+
 example {α β : Sort _} (f : α → β) (x y : α) (h : x = y) :
-  congr_arg f h = congr(f $h) := rfl
+    f x = f y := (congr(f $h) :)
 
 example {α : Sort _} {β : α → Sort _} (f g : (x : α) → β x) (h : f = g) (x : α) :
-  congr_fun h x = congr($h x) := rfl
+    f x = g x := (congr($h x) :)
+
+example {α β : Sort _} (f g : α → β) (hf : f = g) (x y : α) (hx : x = y) :
+    f x = g y := (congr($hf $hx) :)
+
+example {α β : Sort _} (f : α → β) (x y : α) (h : x = y) :
+    congr_arg f h = congr(f $h) := rfl
+
+example {α : Sort _} {β : α → Sort _} (f g : (x : α) → β x) (h : f = g) (x : α) :
+    congr_fun h x = congr($h x) := rfl
+
+example {α β : Sort _} (f g : α → β) (hf : f = g) (x y : α) (hx : x = y) :
+    congr hf hx = congr($hf $hx) := rfl
+
+end congr_thms
 
 example (x y : Nat) (h : x = y) : 1 + x = 1 + y := congr(_ + $h)
 
@@ -77,3 +95,46 @@ example (s : Foo) (h : 1 = 2) : True := by
   have := congr(({s with x := $h} : Foo))
   guard_hyp this : ({ x := 1, y := s.y } : Foo) = { x := 2, y := s.y }
   trivial
+
+example {s t : α → Prop} (h : s = t) :
+    (∀ (_ : Subtype s), True) ↔ (∀ (_ : Subtype t), True) :=
+  congr(∀ (_ : Subtype $h), True)
+
+example (f g : Nat → Nat → Prop) (h : f = g) :
+    (∀ x, ∃ y, f x y) ↔ (∀ x, ∃ y, g x y) :=
+  congr(∀ x, ∃ y, $h x y)
+
+example (f g : Nat → Nat → Prop) (h : f = g) :
+    (∀ x, ∃ y, f x y) ↔ (∀ x, ∃ y, g x y) :=
+  congr(∀ _, ∃ _, $h _ _)
+
+example (f g : Nat → Nat → Prop) (h : f = g) :
+    (∀ x, ∃ y, f x y) ↔ (∀ x, ∃ y, g x y) :=
+  congr(∀ _, ∃ _, $(by rw [h]))
+
+section limitations
+/-! Tests to document current limitations. -/
+
+/--
+error: Cannot generate congruence because we need
+  Subtype s
+to be definitionally equal to
+  Subtype t
+-/
+#guard_msgs in
+example {s t : α → Prop} (h : s = t) :
+    HEq (fun (n : Subtype s) => true) (fun (n : Subtype t) => true) :=
+  congr(fun (n : Subtype $h) => true)
+
+/--
+error: Cannot generate congruence because we need
+  Subtype s
+to be definitionally equal to
+  Subtype t
+-/
+#guard_msgs in
+example {s t : α → Prop} (h : s = t) (p : α → Prop) :
+    (∀ (n : Subtype s), p n) ↔ (∀ (n : Subtype t), p n) :=
+  congr(∀ (n : Subtype $h), p n)
+
+end limitations
