@@ -368,7 +368,7 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
 
 end Ring
 
-theorem eq_iff [CommRing K] [IsDomain K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
+theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
     Quot.mk (R K p) x = Quot.mk (R K p) y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
   (eq_iff' K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
