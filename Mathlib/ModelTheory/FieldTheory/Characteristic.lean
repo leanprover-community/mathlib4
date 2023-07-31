@@ -45,9 +45,19 @@ def modelFieldOfCharOfField {K : Type _} [Field K] (p : ℕ) [CharP K p] :
       constantMap, Structure.funMap]
     exact (not_iff_not.2 (CharP.cast_eq_zero_iff K p n)).2 hnp
 
-
-
 end
+
+def fieldOfModelFieldOfCharP {K : Type _} [Language.field.Structure K]
+    (h : (Theory.fieldOfChar p).Model K) : Field K :=
+  @fieldOfModelField _ _ (Theory.Model.mono h (by simp [Theory.fieldOfChar]))
+
+def charPOfModelFieldOfCharP {K : Type _} [Language.field.Structure K]
+    (h : (Theory.fieldOfChar p).Model K) : by
+      letI := fieldOfModelFieldOfCharP h; exact CharP K p := by
+  letI := fieldOfModelFieldOfCharP h
+  rw [charP_iff]
+  intro x
+
 
 end field
 
