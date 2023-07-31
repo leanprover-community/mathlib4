@@ -64,7 +64,7 @@ instance {J : Type u} [SmallCategory J] [IsFiltered J] :
   all_goals replace h : ∀ j : J, Exact (η.app j) (γ.app j) :=
     fun j => Functor.map_exact ((evaluation _ _).obj j) η γ h
   · rw [AddMonoidHom.range_le_ker_iff, ← comp_def]
-    exact colimit.hom_ext fun j => by simpa [reassoc_of% (h j).w] using comp_zero.symm
+    exact colimit.hom_ext fun j => by simp [reassoc_of% (h j).w]
   · intro x (hx : _ = _)
     rcases Concrete.colimit_exists_rep G x with ⟨j, y, rfl⟩
     erw [← comp_apply, colimit.ι_map, comp_apply,
