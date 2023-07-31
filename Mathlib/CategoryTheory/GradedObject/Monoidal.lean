@@ -122,7 +122,7 @@ def associator (X Y Z : GradedObject ℕ V) :
 end MonoidalCategory
 
 open MonoidalCategory
-set_option says.verify true in
+-- set_option says.verify true in
 set_option maxHeartbeats 0 in
 instance : MonoidalCategory (GradedObject ℕ V) where
   tensorObj := tensorObj
@@ -143,13 +143,16 @@ instance : MonoidalCategory (GradedObject ℕ V) where
       associator_distributor, associator_iterated,
       associator_underlying, associator_whisker_equiv, associator_iterated',
       associator_distributor']
-    ext ⟨⟨a, bcd⟩, wabcd⟩ ⟨⟨efg, h⟩, wefgh⟩ ⟨⟨ef, g⟩, wefg⟩ ⟨⟨e, f⟩, wef⟩ ⟨⟨b, cd⟩, wbcd⟩
-    ext
-    -- simp? says
-    --   simp only [biproduct.lift_map, biproduct.map_desc_assoc, comp_tensor_id, id_tensor_comp,
-    --     assoc, biproduct.lift_π, biproduct.ι_map_assoc, biproduct.lift_map_assoc]
-    -- simp only [← comp_tensor_id, ← id_tensor_comp, ← comp_tensor_id_assoc, ← id_tensor_comp_assoc]
-    -- simp? [-comp_tensor_id, -id_tensor_comp] says
+    ext ⟨⟨a, bcd⟩, wabcd⟩ ⟨⟨efg, h⟩, wefgh⟩ ⟨⟨ef, g⟩, wefg⟩ ⟨⟨e, f⟩, wef⟩ ⟨⟨b, cd⟩, wbcd⟩ ⟨⟨c, d⟩, wcd⟩
+    simp? says simp only [associator_conjugation, tensor_id, biproduct.lift_map, biproduct.map_desc_assoc,
+        comp_tensor_id, id_tensor_comp, assoc, biproduct.lift_π, biproduct.ι_map_assoc, biproduct.lift_map_assoc,
+        biproduct_ι_comp_rightDistributor_hom_assoc, leftDistributor_inv_comp_biproduct_π, Iso.cancel_iso_hom_left]
+    simp only [← tensor_id, ← comp_tensor_id, ← id_tensor_comp, ← comp_tensor_id_assoc, ← id_tensor_comp_assoc]
+    simp? [-tensor_id, -comp_tensor_id,
+        -id_tensor_comp] says simp only [biproduct.ι_map_assoc, biproduct.lift_π_assoc, assoc,
+        leftDistributor_inv_comp_biproduct_π, biproduct.lift_π]
+    simp only [associator_inv_naturality_assoc]
+    simp? says
     --   simp only [biproduct.ι_map_assoc, biproduct.lift_π]
     -- ext
     sorry
