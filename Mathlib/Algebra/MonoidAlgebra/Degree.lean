@@ -224,12 +224,13 @@ If `A` has a linear order, then this notion coincides with the usual one, using 
 the exponents. -/
 @[reducible]
 def supDegree (f : AddMonoidAlgebra R A) : WithBot A :=
-  f.support.sup coe
+  f.support.sup (↑)
 #align add_monoid_algebra.sup_degree AddMonoidAlgebra.supDegree
 
 theorem supDegree_add_le (f g : AddMonoidAlgebra R A) :
     (f + g).supDegree ≤ f.supDegree ⊔ g.supDegree :=
-  sup_support_add_le coe f g
+  --  Porting note: the coercion now needs the explicit type ascription
+  sup_support_add_le ((↑) : A → WithBot A) f g
 #align add_monoid_algebra.sup_degree_add_le AddMonoidAlgebra.supDegree_add_le
 
 variable [AddMonoid A] [CovariantClass A A (· + ·) (· ≤ ·)]
@@ -238,7 +239,7 @@ variable [AddMonoid A] [CovariantClass A A (· + ·) (· ≤ ·)]
 variable (f g : AddMonoidAlgebra R A)
 
 theorem supDegree_mul_le : (f * g).supDegree ≤ f.supDegree + g.supDegree :=
-  sup_support_mul_le (fun a b => (WithBot.coe_add _ _).le) f g
+  sup_support_mul_le (fun {_ _} => (WithBot.coe_add _ _).le) f g
 #align add_monoid_algebra.sup_degree_mul_le AddMonoidAlgebra.supDegree_mul_le
 
 end SupDegree
@@ -254,19 +255,20 @@ If `A` has a linear order, then this notion coincides with the usual one, using 
 the exponents. -/
 @[reducible]
 def infDegree (f : AddMonoidAlgebra R A) : WithTop A :=
-  f.support.inf coe
+  f.support.inf (↑)
 #align add_monoid_algebra.inf_degree AddMonoidAlgebra.infDegree
 
 theorem le_infDegree_add (f g : AddMonoidAlgebra R A) :
     f.infDegree ⊓ g.infDegree ≤ (f + g).infDegree :=
-  sup_support_add_le (coe : Aᵒᵈ → WithBot Aᵒᵈ) f g
+  --  Porting note: the coercion now needs the explicit type ascription
+  sup_support_add_le ((↑) : Aᵒᵈ → WithBot Aᵒᵈ) f g
 #align add_monoid_algebra.le_inf_degree_add AddMonoidAlgebra.le_infDegree_add
 
 variable [AddMonoid A] [CovariantClass A A (· + ·) (· ≤ ·)]
   [CovariantClass A A (Function.swap (· + ·)) (· ≤ ·)] (f g : AddMonoidAlgebra R A)
 
 theorem le_infDegree_mul : f.infDegree + g.infDegree ≤ (f * g).infDegree :=
-  sup_support_mul_le (fun a b : Aᵒᵈ => (WithBot.coe_add _ _).le) _ _
+  sup_support_mul_le (fun {_ _ : Aᵒᵈ} => (WithBot.coe_add _ _).le) _ _
 #align add_monoid_algebra.le_inf_degree_mul AddMonoidAlgebra.le_infDegree_mul
 
 end InfDegree
@@ -292,7 +294,7 @@ theorem maxDegree_add_le (f g : AddMonoidAlgebra R A) :
 
 theorem maxDegree_mul_le (f g : AddMonoidAlgebra R A) :
     (f * g).maxDegree D ≤ f.maxDegree D + g.maxDegree D :=
-  sup_support_mul_le (fun a b => (AddMonoidHom.map_add D _ _).le) f g
+  sup_support_mul_le (fun {_ _} => (AddMonoidHom.map_add D _ _).le) f g
 #align add_monoid_algebra.max_degree_mul_le AddMonoidAlgebra.maxDegree_mul_le
 
 end MaxDegree
@@ -318,7 +320,8 @@ theorem le_minDegree_add (f g : AddMonoidAlgebra R A) :
 
 theorem le_minDegree_mul (f g : AddMonoidAlgebra R A) :
     f.minDegree D + g.minDegree D ≤ (f * g).minDegree D :=
-  le_inf_support_mul (fun a b : A => (AddMonoidHom.map_add D _ _).ge) _ _
+  --  Porting note: added `a b` in `AddMonoidHom.map_add D a b`, was `AddMonoidHom.map_add D _ _`
+  le_inf_support_mul (fun {a b : A} => (AddMonoidHom.map_add D a b).ge) _ _
 #align add_monoid_algebra.le_min_degree_mul AddMonoidAlgebra.le_minDegree_mul
 
 end MinDegree
