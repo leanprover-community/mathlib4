@@ -1278,10 +1278,7 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
     sub := Fin.sub
-    zsmul := zsmulRec
-    zsmul_zero' := fun _n => rfl
-    zsmul_succ' := fun _n _x => rfl
-    zsmul_neg' := fun _n _x => rfl }
+    zsmul := zsmulRec }
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
 instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
