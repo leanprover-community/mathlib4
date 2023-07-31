@@ -552,7 +552,9 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
       exact neg_add_rev _ _
     neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
-      rw [neg_pure, neg_eq_of_add_eq_zero_right hab] }
+      rw [neg_pure, neg_eq_of_add_eq_zero_right hab]
+    -- TODO: use a better defeq
+    zsmul := zsmulRec }
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
@@ -601,7 +603,9 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
       rintro (_ | s) (_ | t) h <;>
         first
           | cases h
-          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h) }
+          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h)
+    -- TODO: use a better defeq
+    zsmul := zsmulRec }
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=

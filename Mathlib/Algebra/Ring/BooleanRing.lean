@@ -456,6 +456,8 @@ def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α]
   mul_comm _ _ := inf_comm
   left_distrib := inf_symmDiff_distrib_left
   right_distrib := inf_symmDiff_distrib_right
+  nsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; nsmulRec
+  zsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; letI : Neg α := ⟨id⟩; zsmulRec
 #align generalized_boolean_algebra.to_non_unital_comm_ring GeneralizedBooleanAlgebra.toNonUnitalCommRing
 
 instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
@@ -613,3 +615,5 @@ instance : BooleanRing Bool where
   mul_self := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
+  nsmul := letI : Zero Bool := ⟨false⟩; letI : Add Bool := ⟨xor⟩; nsmulRec
+  zsmul := letI : Zero Bool := ⟨false⟩; letI : Add Bool := ⟨xor⟩; letI : Neg Bool := ⟨id⟩; zsmulRec

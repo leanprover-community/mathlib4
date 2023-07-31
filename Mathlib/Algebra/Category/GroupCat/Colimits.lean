@@ -108,10 +108,8 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
-instance ColimitTypeInhabited : Inhabited (ColimitType.{v} F) :=
-  ⟨Quot.mk _ zero⟩
-
 instance : AddCommGroup (ColimitType F) where
+<<<<<<< HEAD
   zero := Quot.mk _ zero
   neg := by
     fapply @Quot.lift
@@ -170,6 +168,20 @@ instance : AddCommGroup (ColimitType F) where
     apply Quot.sound
     apply Relation.add_assoc
   nsmul := nsmulRec
+=======
+  zero := Quotient.mk _ zero
+  neg := Quotient.map neg Relation.neg_1
+  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+    Quotient.sound <| Relation.add_assoc _ _ _
+
+instance ColimitTypeInhabited : Inhabited (ColimitType.{v} F) := ⟨0⟩
+>>>>>>> origin/eric-wieser/tidy-ColimitType
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
