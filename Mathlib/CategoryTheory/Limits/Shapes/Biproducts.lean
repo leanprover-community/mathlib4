@@ -422,6 +422,7 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
 #align category_theory.limits.biproduct.ι_π_ne CategoryTheory.Limits.biproduct.ι_π_ne
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whisker_equiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
@@ -430,6 +431,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
   simp
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whisker_equiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
