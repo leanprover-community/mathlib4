@@ -1223,8 +1223,12 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 
 end lift
 
-instance (priority := 900) : (q : ℕ) → Fintype (ZMod q)ˣ
+instance (priority := 900) instFintypeUnits : (q : ℕ) → Fintype (ZMod q)ˣ
 | 0 => show Fintype ℤˣ from inferInstance
 | (_ + 1) => inferInstance
+
+example {q : ℕ} [NeZero q] : ZMod.instFintypeUnits q = _root_.instFintypeUnits := by
+  fail_if_success rfl -- The above causes an instance diamond
+  exact Subsingleton.elim _ _  -- but at lease propositionall they are equal
 
 end ZMod
