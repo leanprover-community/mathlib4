@@ -296,6 +296,9 @@ protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) 
     ENNReal.ofReal_toReal (snorm_ne_top (f - g))]
 
 @[simp]
+protected theorem toReal_edist (f g : Lp E p μ) : (edist f g).toReal = dist f g := by
+  simp only [MeasureTheory.Lp.edist_dist, toReal_ofReal_eq_iff, dist_def, toReal_nonneg]
+@[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     edist (hf.toLp f) (hg.toLp g) = snorm (f - g) p μ := by
   rw [edist_def]
