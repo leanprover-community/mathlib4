@@ -16,8 +16,8 @@ def eqZero (n : ℕ) : Language.field.Sentence :=
   Term.equal (ofNat n) 0
 
 def Theory.fieldOfChar (p : ℕ) : Language.field.Theory :=
-  {eqZero p} ∪ (⋃ (q : ℕ) (_ : q.Prime)
-    (_ : p ≠ q), {∼ (eqZero q)}) ∪ Theory.field
+  ({eqZero p} ∪ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)})) ∪
+   Theory.field
 
 section
 
@@ -29,18 +29,22 @@ theorem realize_ofNat {α K : Type _} [Field K] (p : ℕ) (v : α → K) :
     simp [ofNat, *, zero_def, structureFieldOfField, add_def, one_def,
       constantMap]
 
-def ModelFieldOfCharOfField {K : Type _} [Field K] (p : ℕ) [CharP K p] :
+def modelFieldOfCharOfField {K : Type _} [Field K] (p : ℕ) [CharP K p] :
     (Theory.fieldOfChar p).Model K := by
   rw [Theory.fieldOfChar]
   refine Theory.model_union_iff.2 ⟨?_, modelFieldOfField⟩
   refine Theory.model_union_iff.2 ⟨?_, ?_⟩
-  . simp [eqZero, Sentence.Realize, realize_ofNat,
-      zero_def, constantMap, structureFieldOfField]
-  . simp (config := {contextual := true}) [eqZero,
-      Sentence.Realize, realize_ofNat, structureFieldOfField,
-      zero_def, one_def, constantMap]
-    intro _ q hpq hq _
-    have :=
+  . simp [eqZero, Sentence.Realize, realize_ofNat, zero_def,
+      constantMap, Structure.funMap]
+  . simp only [Nat.isUnit_iff, Theory.model_iff, Set.mem_iUnion,
+      Set.mem_singleton_iff, exists_prop,
+      forall_exists_index, and_imp]
+    rintro φ n hnp rfl
+    simp only [Sentence.Realize, eqZero, zero_def, Formula.realize_not,
+      Formula.realize_equal, realize_ofNat, Term.realize_constants,
+      constantMap, Structure.funMap]
+    exact (not_iff_not.2 (CharP.cast_eq_zero_iff K p n)).2 hnp
+
 
 
 end
