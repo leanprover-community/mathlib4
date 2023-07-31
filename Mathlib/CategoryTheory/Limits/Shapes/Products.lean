@@ -177,7 +177,7 @@ def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- They are used by `simp` in `Pi.whisker_equiv` below.
-@[nolint simpNF, reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint simpNF)]
 theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
     Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
   cases w
@@ -185,7 +185,7 @@ theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') 
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- They are used by `simp` in `Sigma.whisker_equiv` below.
-@[nolint simpNF, reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint simpNF)]
 theorem Sigma.eqToHom_comp_ι (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
   cases w
