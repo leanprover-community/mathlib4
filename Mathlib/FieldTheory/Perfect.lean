@@ -110,6 +110,14 @@ theorem not_irreducible_expand (f : R[X]) : ¬ Irreducible (expand R p f) := by
   rw [polynomial_expand_eq]
   exact fun hf ↦ hf.not_unit $ (of_irreducible_pow hp.out.ne_one hf).pow p
 
+instance (S : Type _) [CommSemiring S] [CharP S p] [PerfectRing S p] :
+    PerfectRing (R × S) p := by
+  constructor
+  have : frobenius (R × S) p = Prod.map (frobenius R p) (frobenius S p) := by
+    ext <;> simp [frobenius_def]
+  rw [this]
+  exact Bijective.Prod_map (bijective_frobenius R p) (bijective_frobenius S p)
+
 end PerfectRing
 
 /-- A perfect field.
