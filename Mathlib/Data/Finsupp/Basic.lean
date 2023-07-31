@@ -121,9 +121,6 @@ theorem graph_eq_empty {f : α →₀ M} : f.graph = ∅ ↔ f = 0 :=
   (graph_injective α M).eq_iff' graph_zero
 #align finsupp.graph_eq_empty Finsupp.graph_eq_empty
 
-instance [Countable α] [Countable M] :
-    Countable (α →₀ M) := Function.Injective.countable (Finsupp.graph_injective α M)
-
 end Graph
 
 end Finsupp
@@ -1538,8 +1535,7 @@ instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ 
 #align finsupp.is_central_scalar Finsupp.isCentralScalar
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
-  { Finsupp.distribMulAction α M with
-    smul := (· • ·)
+  { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
 #align finsupp.module Finsupp.module

@@ -150,9 +150,13 @@ theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
 #align polynomial.degree_eq_iff_nat_degree_eq_of_pos Polynomial.degree_eq_iff_natDegree_eq_of_pos
 
 theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) : natDegree p = n :=
-  have hp0 : p ≠ 0 := fun hp0 => by rw [hp0] at h; exact Option.noConfusion h
-  Option.some_inj.1 <| show (natDegree p : WithBot ℕ) = n by rwa [← degree_eq_natDegree hp0]
+  -- Porting note: `Nat.cast_withBot` is required.
+  by rw [natDegree, h, Nat.cast_withBot, WithBot.unbot'_coe]
 #align polynomial.nat_degree_eq_of_degree_eq_some Polynomial.natDegree_eq_of_degree_eq_some
+
+theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
+  mt natDegree_eq_of_degree_eq_some
+#align polynomial.degree_ne_of_nat_degree_ne Polynomial.degree_ne_of_natDegree_ne
 
 @[simp]
 theorem degree_le_natDegree : degree p ≤ natDegree p :=
@@ -208,11 +212,6 @@ theorem degree_le_degree (h : coeff q (natDegree p) ≠ 0) : degree p ≤ degree
   · rw [degree_eq_natDegree hp]
     exact le_degree_of_ne_zero h
 #align polynomial.degree_le_degree Polynomial.degree_le_degree
-
-theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
-  -- Porting note: `Nat.cast_withBot` is required.
-  mt fun h => by rw [natDegree, h, Nat.cast_withBot, WithBot.unbot'_coe]
-#align polynomial.degree_ne_of_nat_degree_ne Polynomial.degree_ne_of_natDegree_ne
 
 theorem natDegree_le_iff_degree_le {n : ℕ} : natDegree p ≤ n ↔ degree p ≤ n :=
   WithBot.unbot'_bot_le_iff

@@ -77,7 +77,7 @@ instance : DenselyOrdered EReal :=
 
 namespace EReal
 
--- things unify with `WithBot.decidableLT` later if we we don't provide this explicitly.
+-- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
 instance decidableLt : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
   WithBot.decidableLT
 #align ereal.decidable_lt EReal.decidableLt

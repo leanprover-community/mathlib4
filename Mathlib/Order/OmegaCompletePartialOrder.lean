@@ -150,8 +150,8 @@ theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
   fun i => by simp [mem_map_iff]; intros; exists i; apply h
 #align omega_complete_partial_order.chain.map_le_map OmegaCompletePartialOrder.Chain.map_le_map
 
-/-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains that have the same
-index. -/
+/-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
+that have the same index. -/
 -- Porting note: `simps` doesn't work with type synonyms
 -- @[simps!]
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
@@ -250,7 +250,7 @@ variable [OmegaCompletePartialOrder γ]
 /-- A monotone function `f : α →o β` is continuous if it distributes over ωSup.
 
 In order to distinguish it from the (more commonly used) continuity from topology
-(see topology/basic.lean), the present definition is often referred to as
+(see `Mathlib/Topology/Basic.lean`), the present definition is often referred to as
 "Scott-continuity" (referring to Dana Scott). It corresponds to continuity
 in Scott topological spaces (not defined here). -/
 def Continuous (f : α →o β) : Prop :=
@@ -347,7 +347,7 @@ theorem ωSup_eq_none {c : Chain (Part α)} (h : ¬∃ a, some a ∈ c) : Part.�
 #align part.ωSup_eq_none Part.ωSup_eq_none
 
 theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ωSup c) : some a ∈ c := by
-  simp [Part.ωSup] at h; split_ifs at h with h_1
+  simp only [Part.ωSup] at h; split_ifs at h with h_1
   · have h' := Classical.choose_spec h_1
     rw [← eq_some_iff] at h
     rw [← h]
@@ -383,7 +383,7 @@ theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ 
     rintro ⟨⟨⟩⟩
     intro h'
     have hh := Classical.choose_spec h
-    simp at h'
+    simp only [mem_some_iff] at h'
     subst x
     exact hh
   · intro h
@@ -677,10 +677,11 @@ theorem map_continuous' {β γ : Type v} (f : β → γ) (g : α → Part β) (h
 
 theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α → Part β) (hf : Continuous' f)
     (hg : Continuous' g) : Continuous' fun x => f x <*> g x := by
-  simp only [seq_eq_bind_map]; apply bind_continuous' _ _ hf;
-        apply Pi.OmegaCompletePartialOrder.flip₂_continuous';
-      intro;
-    apply map_continuous' _ _ hg
+  simp only [seq_eq_bind_map]
+  apply bind_continuous' _ _ hf
+  apply Pi.OmegaCompletePartialOrder.flip₂_continuous'
+  intro
+  apply map_continuous' _ _ hg
 #align omega_complete_partial_order.continuous_hom.seq_continuous' OmegaCompletePartialOrder.ContinuousHom.seq_continuous'
 
 theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
@@ -841,8 +842,7 @@ theorem ωSup_apply_ωSup (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) :
 
 /-- A family of continuous functions yields a continuous family of functions. -/
 @[simps]
-def flip {α : Type _} (f : α → β →𝒄 γ) :
-    β →𝒄 α → γ where
+def flip {α : Type _} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
   toFun x y := f y x
   monotone' x y h a := (f a).monotone h
   cont := by intro _; ext x; change f _ _ = _; rw [(f _).continuous]; rfl

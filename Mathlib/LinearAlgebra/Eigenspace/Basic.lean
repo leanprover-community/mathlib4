@@ -145,7 +145,7 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.eigenspace := by
   classical
-  -- Define an operation from `Π₀ μ : K, f.eigenspace μ`, the vector space of of finitely-supported
+  -- Define an operation from `Π₀ μ : K, f.eigenspace μ`, the vector space of finitely-supported
   -- choices of an eigenvector from each eigenspace, to `V`, by sending a collection to its sum.
   let S : @LinearMap K K _ _ (RingHom.id K) (Π₀ μ : K, f.eigenspace μ) V
       (@DFinsupp.addCommMonoid K (fun μ => f.eigenspace μ) _) _
