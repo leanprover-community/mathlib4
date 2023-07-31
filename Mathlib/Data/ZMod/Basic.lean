@@ -1223,7 +1223,7 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 
 end lift
 
-instance : (q : ℕ) → Fintype (ZMod q)ˣ
+instance (priority := 900) : (q : ℕ) → Fintype (ZMod q)ˣ
 | 0 => show Fintype ℤˣ from inferInstance
 | (_ + 1) => inferInstance
 
