@@ -121,9 +121,10 @@ instance {n : Nat} : BoundedRandom (Fin n) where
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
 
 instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
-  randomR {g} lo hi h :=
-    (Equiv.ulift.{v}.trans (Equiv.uliftSubtypeEquivSubtypeULift _).symm)
-      <$> (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g _))
+  randomR {g} lo hi h := do
+    let ⟨v⟩
+      ← (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g _) : RandG g (ULift.{v} _))
+    pure ⟨ULift.up v.val, v.prop⟩
 
 end Random
 

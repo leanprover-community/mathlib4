@@ -764,15 +764,6 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
   (sigmaCongrRight fun _ => Equiv.ulift).trans (sigmaPLiftEquivSubtype P)
 #align equiv.sigma_ulift_plift_equiv_subtype Equiv.sigmaULiftPLiftEquivSubtype
 
-/-- `Subtype` of a universe-lifted type are equivalent to that type -/
-@[simps]
-def uliftSubtypeEquivSubtypeULift {α : Type v} (P : ULift.{u} α → Prop) :
-    Subtype P ≃ {a // P ⟨a⟩} where
-  toFun := fun x => ⟨x.val.down, x.prop⟩
-  invFun := fun x => ⟨⟨x⟩, x.prop⟩
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
-
 namespace Perm
 
 /-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
