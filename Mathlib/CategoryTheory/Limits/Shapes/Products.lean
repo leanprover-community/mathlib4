@@ -225,6 +225,24 @@ abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b
   colim.mapIso (Discrete.natIso fun X => p X.as)
 #align category_theory.limits.sigma.map_iso CategoryTheory.Limits.Sigma.mapIso
 
+/-- An iterated product is a product over a sigma type. -/
+@[simps]
+def piPiIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
+    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i]
+    [HasProduct fun p : Σ i, f i => g p.1 p.2] :
+    (∏ fun i => ∏ g i) ≅ (∏ fun p : Σ i, f i => g p.1 p.2) where
+  hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
+  inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
+
+/-- An iterated product is a product over a sigma type. -/
+@[simps]
+def sigmaSigmaIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
+    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i]
+    [HasCoproduct fun p : Σ i, f i => g p.1 p.2] :
+    (∐ fun i => ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
+  hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
+  inv := Sigma.desc fun ⟨i, x⟩ => Sigma.ι (g i) x ≫ Sigma.ι (fun i => ∐ g i) i
+
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)

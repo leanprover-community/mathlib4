@@ -557,6 +557,15 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   inv := biproduct.map fun b => (p b).inv
 #align category_theory.limits.biproduct.map_iso CategoryTheory.Limits.biproduct.mapIso
 
+/-- An iterated biroduct is a biproduct over a sigma type. -/
+@[simps]
+def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
+    [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i]
+    [HasBiproduct fun p : Σ i, f i => g p.1 p.2] :
+    (⨁ fun i => ⨁ g i) ≅ (⨁ fun p : Σ i, f i => g p.1 p.2) where
+  hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
+  inv := biproduct.lift fun i => biproduct.lift fun x => biproduct.π _ (⟨i, x⟩ : Σ i, f i)
+
 section πKernel
 
 section
