@@ -6,7 +6,7 @@ namespace Tests.Congrm
 
 section docs
 
--- These are the examples from the documentation of the tactic
+/-! These are the examples from the tactic documentation -/
 
 example {a b c d : ℕ} :
     Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by

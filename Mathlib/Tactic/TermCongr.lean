@@ -462,6 +462,14 @@ def CongrResult.mkDefault (lhs rhs : Expr) : MetaM CongrResult := do
     return CongrResult.mk' lhs rhs pf
   throwError "Could not generated congruence between{indentD lhs}\nand{indentD rhs}"
 
+/-- Does `CongrResult.mkDefault` but makes sure there are no lingering congruence holes. -/
+def CongrResult.mkDefault' (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM CongrResult := do
+  if let some h := hasCHole mvarCounterSaved lhs then
+    throwError "Left-hand side{indentD lhs}\nstill has a congruence hole{indentD h}"
+  if let some h := hasCHole mvarCounterSaved rhs then
+    throwError "Right-hand side{indentD rhs}\nstill has a congruence hole{indentD h}"
+  CongrResult.mkDefault lhs rhs
+
 /-- Throw an internal error. -/
 def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
   throwError "congr(...) failed with left-hand side{indentD lhs}\n{""
@@ -473,7 +481,7 @@ since nothing prevents congruence holes from leaking into the local context. -/
 def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option CongrResult) := do
   match cHole? lhs mvarCounterSaved, cHole? rhs mvarCounterSaved with
   | some (isLhs1, val1, pf1), some (isLhs2, val2, pf2) =>
-    trace[Tactic.congr] "mkCongrOfCHole, both holes"
+    trace[Elab.congr] "mkCongrOfCHole, both holes"
     unless isLhs1 == true do
       throwCongrEx lhs rhs "A RHS congruence hole leaked into the LHS"
     unless isLhs2 == false do
@@ -495,18 +503,23 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
     throwCongrEx lhs rhs "Left-hand side lost its congruence hole annotation."
   | none, none => return none
 
-/-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them. -/
+/-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
+
+Where they are desyncronized, we fall back to the base case (using `CongrResult.mkDefault'`)
+since it's likely due to unification with the expected type,
+from `_` placeholders or implicit arguments being filled in. -/
 partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     MetaM CongrResult := do
-  trace[Tactic.congr] "mkCongrOf: {depth}, {lhs}, {rhs}, {(← mkFreshExprMVar none).mvarId!}"
+  trace[Elab.congr] "mkCongrOf: {depth}, {lhs}, {rhs}, {(← mkFreshExprMVar none).mvarId!}"
   if depth > 1000 then
     throwError "congr(...) internal error: out of gas"
   -- Potentially metavariables get assigned as we process congruence holes,
-  -- so instantiate them to be safe.
+  -- so instantiate them to be safe. Placeholders and implicit arguments might
+  -- end up with congruence holes, so they indeed might need a nontrivial congruence.
   let lhs ← instantiateMVars lhs
   let rhs ← instantiateMVars rhs
   if let some res ← mkCongrOfCHole? mvarCounterSaved lhs rhs then
-    trace[Tactic.congr] "hole processing succeeded"
+    trace[Elab.congr] "hole processing succeeded"
     return res
   if (hasCHole mvarCounterSaved lhs).isNone && (hasCHole mvarCounterSaved rhs).isNone then
     -- It's safe to fastforward if the lhs and rhs are defeq and have no congruence holes.
@@ -518,16 +531,18 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     return ← CongrResult.mkDefault lhs rhs
   match lhs, rhs with
   | .app .., .app .. =>
-    trace[Tactic.congr] "app"
+    trace[Elab.congr] "app"
     let arity := lhs.getAppNumArgs
     unless arity == rhs.getAppNumArgs do
-      throwCongrEx lhs rhs "Both sides have different numbers of arguments."
+      trace[Elab.congr] "app desync (arity)"
+      return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
     let f := lhs.getAppFn
     let f' := rhs.getAppFn
     unless ← isDefEq (← inferType f) (← inferType f') do
-      throwCongrEx lhs rhs "The functions in each application have non-defeq types."
+      trace[Elab.congr] "app desync (function types)"
+      return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
     let fnRes ← mkCongrOf (depth + 1) mvarCounterSaved f f'
-    trace[Tactic.congr] "mkCongrOf functions {f}, {f'} has isRfl = {fnRes.isRfl}"
+    trace[Elab.congr] "mkCongrOf functions {f}, {f'} has isRfl = {fnRes.isRfl}"
     if !fnRes.isRfl then
       -- If there's a nontrivial proof, then since mkHCongrWithArity fixes the function
       -- we need to handle this ourselves.
@@ -579,7 +594,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
       -- `lhs` and `rhs` *should* be defeq, but use `mkDefault` just to be safe.
       CongrResult.mkDefault lhs rhs
   | .lam .., .lam .. =>
-    trace[Tactic.congr] "lam"
+    trace[Elab.congr] "lam"
     let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
     -- We do not yet support congruences in the binding domain for lambdas.
     discard <| resDom.defeq
@@ -595,7 +610,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
         let pf ← mkLambdaFVars #[x] (← resBody.eq)
         return CongrResult.mk' lhs rhs (← mkAppM ``funext #[pf])
   | .forallE .., .forallE .. =>
-    trace[Tactic.congr] "forallE"
+    trace[Elab.congr] "forallE"
     let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
     if lhs.isArrow && rhs.isArrow then
       let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingBody! rhs.bindingBody!
@@ -620,17 +635,17 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
           let pf ← mkLambdaFVars #[x] (← resBody.eq)
           return CongrResult.mk' lhs rhs (← mkAppM ``pi_congr #[pf])
   | .letE .., .letE .. =>
-    trace[Tactic.congr] "letE"
+    trace[Elab.congr] "letE"
     -- Just zeta reduce for now. Could look at `Lean.Meta.Simp.simp.simpLet`
     let lhs := lhs.letBody!.instantiate1 lhs.letValue!
     let rhs := rhs.letBody!.instantiate1 rhs.letValue!
     mkCongrOf (depth + 1) mvarCounterSaved lhs rhs
   | .mdata _ lhs', .mdata _ rhs' =>
-    trace[Tactic.congr] "mdata"
+    trace[Elab.congr] "mdata"
     let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
     return {res with lhs := lhs.updateMData! res.lhs, rhs := rhs.updateMData! res.rhs}
   | .proj n1 i1 e1, .proj n2 i2 e2 =>
-    trace[Tactic.congr] "proj"
+    trace[Elab.congr] "proj"
     -- Only handles defeq at the moment.
     unless n1 == n2 && i1 == i2 do
       throwCongrEx lhs rhs "Incompatible primitive projections"
@@ -638,12 +653,8 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     discard <| res.defeq
     return {lhs := lhs.updateProj! res.lhs, rhs := rhs.updateProj! res.rhs, pf? := none}
   | _, _ =>
-    trace[Tactic.congr] "base case"
-    if let some h := hasCHole mvarCounterSaved lhs then
-      throwError "Left-hand side{indentD lhs}\nstill has a congruence hole{indentD h}"
-    if let some h := hasCHole mvarCounterSaved rhs then
-      throwError "Right-hand side{indentD rhs}\nstill has a congruence hole{indentD h}"
-    CongrResult.mkDefault lhs rhs
+    trace[Elab.congr] "base case"
+    CongrResult.mkDefault' mvarCounterSaved lhs rhs
 
 /-! ### Elaborating congruence quotations -/
 
