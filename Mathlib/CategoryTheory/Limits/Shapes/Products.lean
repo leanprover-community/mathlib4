@@ -75,16 +75,24 @@ def Cofan.mk {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : Cofan f
   ι := Discrete.natTrans (fun X => p X.as)
 #align category_theory.limits.cofan.mk CategoryTheory.Limits.Cofan.mk
 
--- FIXME dualize as needed below (and rename?)
 /-- Get the `j`th map in the fan -/
 def Fan.proj {f : β → C} (p : Fan f) (j : β) : p.pt ⟶ f j :=
   p.π.app (Discrete.mk j)
 #align category_theory.limits.fan.proj CategoryTheory.Limits.Fan.proj
 
+/-- Get the `j`th map in the cofan -/
+def Cofan.proj {f : β → C} (p : Cofan f) (j : β) : f j ⟶ p.pt :=
+  p.ι.app (Discrete.mk j)
+
 @[simp]
 theorem fan_mk_proj {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) (j : β) : (Fan.mk P p).proj j = p j :=
   rfl
 #align category_theory.limits.fan_mk_proj CategoryTheory.Limits.fan_mk_proj
+
+@[simp]
+theorem cofan_mk_proj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) (j : β) :
+    (Cofan.mk P p).proj j = p j :=
+  rfl
 
 /-- An abbreviation for `HasLimit (Discrete.functor f)`. -/
 abbrev HasProduct (f : β → C) :=
@@ -100,11 +108,22 @@ abbrev HasCoproduct (f : β → C) :=
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
-    (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j)
-    (uniq : ∀ (s : Fan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, m ≫ t.proj j = s.proj j), m = lift s) :
+    (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j := by aesop_cat)
+    (uniq : ∀ (s : Fan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, m ≫ t.proj j = s.proj j),
+      m = lift s := by aesop_cat) :
     IsLimit t :=
   { lift }
 #align category_theory.limits.mk_fan_limit CategoryTheory.Limits.mkFanLimit
+
+/-- Make a cofan `f` into a colimit cofan by providing `desc`, `fac`, and `uniq` --
+  just a convenience lemma to avoid having to go through `Discrete` -/
+@[simps]
+def mkCofanColimit {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
+    (fac : ∀ (t : Cofan f) (j : β), s.proj j ≫ desc t = t.proj j := by aesop_cat)
+    (uniq : ∀ (t : Cofan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, s.proj j ≫ m = t.proj j),
+      m = desc t := by aesop_cat) :
+    IsColimit s :=
+  { desc }
 
 section
 
@@ -225,20 +244,33 @@ abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b
   colim.mapIso (Discrete.natIso fun X => p X.as)
 #align category_theory.limits.sigma.map_iso CategoryTheory.Limits.Sigma.mapIso
 
+instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
+    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
+    HasProduct fun p : Σ i, f i => g p.1 p.2 where
+  exists_limit := Nonempty.intro
+    { cone := Fan.mk (∏ fun i => ∏ g i) (fun X => Pi.π (fun i => ∏ g i) X.1 ≫ Pi.π (g X.1) X.2)
+      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩) }
+
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
 def piPiIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
-    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i]
-    [HasProduct fun p : Σ i, f i => g p.1 p.2] :
+    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
     (∏ fun i => ∏ g i) ≅ (∏ fun p : Σ i, f i => g p.1 p.2) where
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
-/-- An iterated product is a product over a sigma type. -/
+instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
+    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
+    HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
+  exists_colimit := Nonempty.intro
+    { cocone := Cofan.mk (∐ fun i => ∐ g i)
+        (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
+      isColimit := mkCofanColimit _ (fun s => Sigma.desc fun b => Sigma.desc fun c => s.proj ⟨b, c⟩) }
+
+/-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
 def sigmaSigmaIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
-    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i]
-    [HasCoproduct fun p : Σ i, f i => g p.1 p.2] :
+    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     (∐ fun i => ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
   hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
   inv := Sigma.desc fun ⟨i, x⟩ => Sigma.ι (g i) x ≫ Sigma.ι (fun i => ∐ g i) i
@@ -420,8 +452,7 @@ theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = 
     Function.comp_apply, Functor.id_obj, Discrete.equivalence_functor, Functor.comp_obj,
     Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
   dsimp
-  simpa [eqToHom_map]
-    using limit.w (Discrete.functor (f ∘ ε)) (Discrete.eqToHom' (ε.symm_apply_apply b))
+  exact limit.w (Discrete.functor (f ∘ ε)) (Discrete.eqToHom' (ε.symm_apply_apply b))
 #align category_theory.limits.pi.reindex_hom_π CategoryTheory.Limits.Pi.reindex_hom_π
 
 @[reassoc (attr := simp)]
