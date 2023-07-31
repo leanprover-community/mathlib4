@@ -262,7 +262,7 @@ theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (snorm f p μ) :=
 #align measure_theory.Lp.norm_def MeasureTheory.Lp.norm_def
 
 theorem nnnorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (snorm f p μ) :=
-  Subtype.eta _ _
+  rfl
 #align measure_theory.Lp.nnnorm_def MeasureTheory.Lp.nnnorm_def
 
 @[simp, norm_cast]
@@ -295,9 +295,9 @@ protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) 
   rw [edist_def, dist_def, ← snorm_congr_ae (coeFn_sub _ _),
     ENNReal.ofReal_toReal (snorm_ne_top (f - g))]
 
-@[simp]
-protected theorem toReal_edist (f g : Lp E p μ) : (edist f g).toReal = dist f g := by
-  simp only [MeasureTheory.Lp.edist_dist, toReal_ofReal_eq_iff, dist_def, toReal_nonneg]
+protected theorem dist_edist (f g : Lp E p μ) : dist f g = (edist f g).toReal :=
+  MeasureTheory.Lp.dist_def ..
+
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     edist (hf.toLp f) (hg.toLp g) = snorm (f - g) p μ := by
