@@ -169,14 +169,6 @@ lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 
 namespace DihedralGroup
 
--- PRed
-lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := sorry
-
--- PRed
-@[simp]
-theorem ZMod.add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
-    a + a = 0 ↔ a = 0 := sorry
-
 def myEquiv {n : ℕ} (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
   let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr (Nat.two_dvd_ne_zero.mpr (Nat.odd_iff.mp hn)))
