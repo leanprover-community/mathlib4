@@ -454,8 +454,11 @@ namespace Presheaf
 -- between 00VQ and 00VR.
 variable {C : Type u₁} [Category.{v₁} C]
 
+-- `A` is a general category; `A'` is a variant where the morphisms live in a large enough
+-- universe to guarantee that we can take limits in A of things coming from C.
+-- **TODO** can we use `UnivLE` to make these statements cleaner?
 variable {A : Type u₂} [Category.{v₂} A]
-variable {A' : Type u₂} [Category.{max v₁ u₁} A'] -- An alternative to `A` with universes satisfying inequalities.
+variable {A' : Type u₂} [Category.{max v₁ u₁} A']
 
 variable (J : GrothendieckTopology C)
 
