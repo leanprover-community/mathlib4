@@ -6,8 +6,6 @@ Authors: Kalle Kytölä
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
-open MeasureTheory Set Filter Topology ENNReal NNReal BigOperators
-
 /-!
 # Results about indicator functions and measures
 
@@ -41,6 +39,7 @@ only have prerequisites
  * `Mathlib.MeasureTheory.Integral.Lebesgue`
  -/
 
+open MeasureTheory Set Filter Topology ENNReal NNReal BigOperators
 
 section IndicatorConstMeasurable
 
