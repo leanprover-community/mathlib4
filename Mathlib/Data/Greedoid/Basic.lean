@@ -713,6 +713,16 @@ theorem self_subset_closure : s ⊆ G.closure s := by
   intro x hx
   simp only [mem_closure, insert_eq_of_mem hx]
 
+theorem subset_closure_of_subset (h : s ⊆ t) : s ⊆ G.closure t := by
+  intro x hx
+  simp only [mem_closure, h hx, insert_eq_of_mem]
+
+theorem mem_closure_of_insert : x ∈ G.closure (insert x s) :=
+  self_subset_closure (mem_insert_self x s)
+
+theorem subset_closure_of_insert : s ⊆ G.closure (insert x s) :=
+  subset_closure_of_subset (subset_insert _ _)
+
 @[simp]
 theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.rank s := by
   symm
@@ -813,16 +823,29 @@ theorem closure_idempotent : G.closure (G.closure s) = G.closure s :=
     (Finset.Subset.trans self_subset_closure self_subset_closure)
 
 theorem closure_exchange_property
-  (hx : x ∉ s) (hy : y ∉ s) (hs : s ∪ {x} ∈ G)
-  (h : x ∈ G.closure (s ∪ {y})) :
-    y ∈ G.closure (s ∪ {x}) := sorry
+  (hx : x ∉ s) (hy : y ∉ s) (hs : insert x s ∈ G)
+  (h : x ∈ G.closure (insert y s)) :
+    y ∈ G.closure (insert x s) := by
+  have : G.rank (insert y (insert x s)) = G.rank (insert x s) := by
+    apply Nat.le_antisymm _ (rank_le_of_subset (insert_subset _ _))
+    . rw [mem_closure, Finset.Insert.comm] at h
+      rw [h]
+      apply le_of_le_of_eq _ (rank_eq_card_iff_feasible.mpr hs).symm
+      simp only [hx, card_insert_of_not_mem]
+      apply le_of_le_of_eq rank_le_card
+      simp only [hy, card_insert_of_not_mem]
+    . simp only [mem_insert, Insert.comm, true_or]
+    . intro _ _; simp; tauto
+  exact mem_closure.mpr this
 
 /-- `cospanning` is an equivalence relation in `2^E`. -/
 def cospanning (G : Greedoid α) (s t : Finset α) := G.closure s = G.closure t
 
 section cospanning
 
-theorem cospanning_refl : ∀ s, G.cospanning s s := by simp [cospanning]
+variable (hx₀ : x ∉ s) (hy₀ : y ∉ s)
+
+theorem cospanning_refl : ∀ s, G.cospanning s s := by simp only [cospanning, forall_const]
 
 theorem cospanning_symm (h : G.cospanning s t) : G.cospanning t s := by
   simp only [cospanning] at h; simp only [cospanning, h]
@@ -838,14 +861,23 @@ theorem cospanning_trans {s t u : Finset α}
 theorem cospanning_eqv : Equivalence (G.cospanning) :=
   ⟨cospanning_refl, cospanning_symm, cospanning_trans⟩
 
-theorem cospanning_rel_left_union (h : G.cospanning s t) : G.cospanning s (s ∪ t) := sorry
+theorem cospanning_rel_left_union (h : G.cospanning s t) : G.cospanning s (s ∪ t) := by
+  simp only [cospanning] at *
+  apply closure_eq_of_subset_adj_closure (G.subset_closure_of_subset (subset_union_left s t))
+  intro x hx
+  rw [Finset.mem_union] at hx
+  exact hx.elim (fun h => self_subset_closure h) (fun h' => h.symm ▸ self_subset_closure h')
 
 theorem cospanning_rel_right_union (h : G.cospanning s t) : G.cospanning (s ∪ t) t :=
   cospanning_trans (cospanning_symm (cospanning_rel_left_union h)) h
 
 theorem cospanning_rel_between_subset_left {s t u : Finset α}
   (hst : s ⊆ t) (htu : t ⊆ u) (hsu : G.cospanning s u) :
-    G.cospanning s t := sorry
+    G.cospanning s t := by
+  simp only [cospanning] at *
+  apply closure_eq_of_subset_adj_closure (subset_trans hst self_subset_closure)
+  rw [hsu]
+  exact subset_trans htu self_subset_closure
 
 theorem cospanning_rel_between_subset_right {s t u : Finset α}
   (hst : s ⊆ t) (htu : t ⊆ u) (hsu : G.cospanning s u) :
@@ -853,15 +885,65 @@ theorem cospanning_rel_between_subset_right {s t u : Finset α}
   G.cospanning_trans (cospanning_symm (cospanning_rel_between_subset_left hst htu hsu)) hsu
 
 theorem cospanning_rel_ex
-  (h₁ : G.cospanning (s ∪ {y}) (s ∪ {x, y}))
-  (h₂ : ¬ G.cospanning (s ∪ {x}) (s ∪ {x, y})) :
-    ∃ z ∈ s ∪ {x}, G.cospanning ((s ∪ {x}) \ {z}) (s ∪ {x}) := sorry
+  (h₁ : G.cospanning (insert y s) (insert x (insert y s)))
+  (h₂ : ¬ G.cospanning (insert x s) (insert x (insert y s))) :
+    ∃ z ∈ insert x s, G.cospanning ((insert x s) \ {z}) (insert x s) := by
+  simp only [mem_insert, exists_eq_or_imp, insert_sdiff_of_mem, Finset.mem_singleton]
+  by_contra' h'
+  have h₃ : insert x s ∈ G := by
+    rw [feasible_iff_elem_notin_closure_minus_elem]
+    intro a ha₁ ha₂
+    rw [mem_insert] at ha₁
+    simp only [cospanning, mem_insert] at h'
+    apply ha₁.elim <;> intro ha₁
+    . simp only [ha₁, insert_sdiff_of_mem, Finset.mem_singleton] at ha₂
+      apply h'.1 (closure_eq_of_subset_adj_closure _ _)
+      . intro y hy
+        exact subset_closure_of_subset (subset_trans (sdiff_subset s {x}) (subset_insert x s)) hy
+      . intro y hy
+        rw [mem_insert] at hy
+        apply hy.elim (fun h => h.symm ▸ ha₂)
+        intro hy
+        by_cases h₃ : y = x
+        . exact h₃.symm ▸ ha₂
+        . have : y ∈ s \ {x} := by simp only [mem_sdiff, hy, Finset.mem_singleton, h₃]
+          exact self_subset_closure this
+    . apply h'.2 _ ha₁
+      apply closure_eq_of_subset_adj_closure
+      . intro _ hy
+        exact subset_closure_of_subset (sdiff_subset _ _) hy
+      . intro y hy
+        by_cases h : y = a
+        . simp only [h, ha₂]
+        . have : y ∈ insert x s \ {a} := by simp only [mem_sdiff, hy, Finset.mem_singleton, h]
+          exact self_subset_closure this
+  have h := closure_exchange_property hx₀ hy₀ h₃ (by
+    rw [h₁]
+    apply self_subset_closure
+    simp only [mem_insert, true_or])
+  apply h₂
+  apply closure_eq_of_subset_adj_closure
+  . have : insert x s ⊆ insert x (insert y s) := by
+      intro z hz
+      rw [mem_insert] at *
+      apply hz.elim (fun h => Or.inl h)
+      rw [mem_insert]
+      exact fun h => Or.inr (Or.inr h)
+    exact subset_trans this self_subset_closure
+  . intro z hz
+    rw [mem_insert] at hz
+    apply hz.elim <;> intro hz
+    . exact hz.symm ▸ mem_closure_of_insert
+    . rw [mem_insert] at hz
+      apply hz.elim <;> intro hz
+      . exact hz ▸ h
+      . exact subset_closure_of_insert hz
 
 theorem cospanning_rel_ex'
-  (h₁ : G.cospanning (s ∪ {y}) (s ∪ {x, y}))
-  (h₂ : ¬ G.cospanning (s ∪ {x}) (s ∪ {x, y})) :
-    ∃ z ∈ s ∪ {x}, G.cospanning (s ∪ {x}) ((s ∪ {x}) \ {z}) :=
-  let ⟨z, hz⟩ := cospanning_rel_ex h₁ h₂
+  (h₁ : G.cospanning (insert y s) (insert x (insert y s)))
+  (h₂ : ¬ G.cospanning (insert x s) (insert x (insert y s))) :
+    ∃ z ∈ insert x s, G.cospanning (insert x s) ((insert x s) \ {z}) :=
+  let ⟨z, hz⟩ := cospanning_rel_ex hx₀ hy₀ h₁ h₂
   ⟨z, hz.1, G.cospanning_symm hz.2⟩
 
 end cospanning
@@ -869,5 +951,3 @@ end cospanning
 end closure
 
 end Greedoid
-
-#lint
