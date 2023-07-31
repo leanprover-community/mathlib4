@@ -35,6 +35,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.Congrm
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -99,6 +100,7 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.TermCongr
 -- TFAE imports `Mathlib.Data.List.TFAE` and thence `Mathlib.Data.List.Basic`.
 -- import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.ToExpr
