@@ -237,6 +237,24 @@ abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b
   colim.mapIso (Discrete.natIso fun X => p X.as)
 #align category_theory.limits.sigma.map_iso CategoryTheory.Limits.Sigma.mapIso
 
+/-- Two products which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+-/
+@[simps]
+def Pi.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasProduct f] [HasProduct g] : ∏ f ≅ ∏ g where
+  hom := Pi.lift fun k => Pi.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp)
+  inv := Pi.lift fun j => Pi.π g (e j) ≫ (w j).hom
+
+/-- Two coproducts which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+-/
+@[simps]
+def Sigma.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
+  hom := Sigma.desc fun j => (w j).inv ≫ Sigma.ι g (e j)
+  inv := Sigma.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ Sigma.ι f _
+
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
