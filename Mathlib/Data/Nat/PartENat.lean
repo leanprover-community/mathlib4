@@ -96,6 +96,7 @@ instance addCommMonoid : AddCommMonoid PartENat where
   zero_add x := Part.ext' (true_and_iff _) fun _ _ => zero_add _
   add_zero x := Part.ext' (and_true_iff _) fun _ _ => add_zero _
   add_assoc x y z := Part.ext' and_assoc fun _ _ => add_assoc _ _ _
+  nsmul := nsmulRec
 
 instance : AddCommMonoidWithOne PartENat :=
   { PartENat.addCommMonoid with

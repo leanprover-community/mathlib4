@@ -169,6 +169,7 @@ instance : AddCommGroup (ColimitType F) where
     intros
     apply Quot.sound
     apply Relation.add_assoc
+  nsmul := nsmulRec
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=

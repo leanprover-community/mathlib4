@@ -148,6 +148,7 @@ instance instSemiring : Semiring (Language α) where
   natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
+  nsmul := nsmulRec
 
 @[simp]
 theorem add_self (l : Language α) : l + l = l :=

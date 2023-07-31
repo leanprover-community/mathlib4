@@ -733,6 +733,7 @@ instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
+  zsmul := zsmulRec
 
 @[simp]
 theorem neg_top : -(⊤ : EReal) = ⊥ :=

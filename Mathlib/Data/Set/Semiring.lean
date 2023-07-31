@@ -90,14 +90,16 @@ theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSem
   Iff.rfl
 #align set_semiring.down_ssubset_down SetSemiring.down_ssubset_down
 
+instance : Zero (SetSemiring α) where zero := Set.up (∅ : Set α)
+instance : Add (SetSemiring α) where add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
+
 --Porting note: dot notation no longer works
 instance : AddCommMonoid (SetSemiring α) where
-  add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
-  zero := Set.up (∅ : Set α)
   add_assoc := union_assoc
   zero_add := empty_union
   add_zero := union_empty
   add_comm := union_comm
+  nsmul := nsmulRec
 
 theorem zero_def : (0 : SetSemiring α) = Set.up ∅ :=
   rfl
