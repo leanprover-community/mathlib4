@@ -137,6 +137,10 @@ theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ 
   exact union_mem_sup h₁ h₂
 #align union_mem_nhds_set union_mem_nhdsSet
 
+@[simp]
+theorem nhdsSet_insert (x : α) (s : Set α) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ 𝓝ˢ s := by
+  rw [insert_eq, nhdsSet_union, nhdsSet_singleton]
+
 /-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
 provided that `f` maps `s` to `t`.  -/
 theorem Continuous.tendsto_nhdsSet {f : α → β} {t : Set β} (hf : Continuous f)
