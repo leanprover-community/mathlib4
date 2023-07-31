@@ -416,20 +416,19 @@ theorem exists_subset_basis_of_subset_bases
         exact hx₁.1
       . intro h'
         exact hx₁.2 (basis_maximal h₁ h' hx₂)
-    sorry
---     have h₅ : insert x b₁ ∈ G.bases (insert x s₁) := insert_basis_of_insert_of_notin h₁ h₄.2 hx₂
---     have ⟨b₂, hb₂⟩ := exists_subset_basis_of_subset_bases h₅ (insert_subset h₄.1 h₂)
---     exists b₂
---     simp only [hb₂, true_and]
---     exact subset_trans (subset_insert x b₁) hb₂.2
--- termination_by exists_subset_basis_of_subset_bases => s₂.card - b₁.card
--- decreasing_by
---   simp_wf
---   simp_all only [mem_sdiff, system_feasible_set_mem_mem, card_insert_of_not_mem, h₄]
---   rw [← Nat.sub_sub]
---   apply sub_lt _ (by decide)
---   rw [tsub_pos_iff_lt]
---   exact lt_of_lt_of_le h₃ (card_le_of_subset (basis_subset hb))
+    have h₅ : insert x b₁ ⊆ s₂ := insert_subset h₄.1 (subset_trans (basis_subset h₁) h₂)
+    have ⟨b₂, hb₂⟩ := exists_subset_basis_of_subset_bases (mem_bases_self_iff.mp hx₂) h₅
+    exists b₂
+    simp only [hb₂, true_and]
+    exact subset_trans (subset_insert x b₁) hb₂.2
+termination_by exists_subset_basis_of_subset_bases => s₂.card - b₁.card
+decreasing_by
+  simp_wf
+  simp_all only [mem_sdiff, system_feasible_set_mem_mem, card_insert_of_not_mem, h₄]
+  rw [← Nat.sub_sub]
+  apply sub_lt _ (by decide)
+  rw [tsub_pos_iff_lt]
+  exact lt_of_lt_of_le h₃ (card_le_of_subset (basis_subset hb))
 
 end Bases
 
