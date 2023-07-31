@@ -2633,6 +2633,7 @@ import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.RelSeries
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.IntervalSucc
