@@ -2,12 +2,15 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
+
+! This file was ported from Lean 3 source module data.bool.basic
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
-
-#align_import data.bool.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Booleans
@@ -372,22 +375,13 @@ def toNat (b : Bool) : Nat :=
   cond b 1 0
 #align bool.to_nat Bool.toNat
 
-
-lemma toNat_le_one (b: Bool) : b.toNat ≤ 1 := by cases' b <;> simp
-
-@[simp] lemma cond_eq_toNat : cond b 1 0 = b.toNat := by simp [cond, Bool.toNat]
-
-@[simp] lemma toNat_true : true.toNat = 1 := rfl
-
-@[simp] lemma toNat_false : false.toNat = 0 := rfl
-
-/-- convert a `ℕ` to a `bool`, `0 -> false`, everything else -> `true` -/
+/-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `true` -/
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat
 
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
-  simp only [ofNat, ne_eq, _root_.decide_not]
+  simp only [ofNat, ne_eq, _root_.decide_not];
   cases Nat.decEq n 0 with
   | isTrue hn => rw [decide_eq_true hn]; exact false_le
   | isFalse hn =>
@@ -399,7 +393,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
   cases h with
   | inl h => subst h; exact Nat.zero_le _
-  | inr h => subst h; cases b₀ <;> simp
+  | inr h => subst h; cases b₀ <;> simp;
 #align bool.to_nat_le_to_nat Bool.toNat_le_toNat
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
