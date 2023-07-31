@@ -5,7 +5,7 @@ Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Calculus.Dslope
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Uniqueness
 
