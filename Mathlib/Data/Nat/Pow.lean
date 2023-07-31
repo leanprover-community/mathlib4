@@ -2,10 +2,13 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.nat.pow
+! leanprover-community/mathlib commit 3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Order
-
-#align_import data.nat.pow from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
 
 /-! # `Nat.pow`
 
@@ -65,10 +68,6 @@ theorem one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n :=
 theorem one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
   one_le_pow n 2 (by decide)
 #align nat.one_le_two_pow Nat.one_le_two_pow
-
-theorem two_pow_pos (n : Nat) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
-
-theorem two_pow_succ (n : Nat) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
 
 theorem one_lt_pow (n m : ℕ) (h₀ : 0 < n) (h₁ : 1 < m) : 1 < m ^ n := by
   rw [← one_pow n]
