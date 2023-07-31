@@ -13,7 +13,7 @@ import Mathlib.Order.Filter.Cofinite
 # Proper maps between topological spaces
 
 This file develops the basic theory of proper maps between topological spaces. A map `f : X → Y`
-between two topological spaces is said to be **proper** if it is continuous and satisfies one of
+between two topological spaces is said to be **proper** if it is continuous and satisfies
 the following equivalent conditions:
 1. `f` is closed and has compact fibers.
 2. `f` is **universally closed**, in the sense that for any topological space `Z`, the map
@@ -21,7 +21,7 @@ the following equivalent conditions:
 3. For any `ℱ : Filter X`, all cluster points of `map f ℱ` are images by `f` of some cluster point
   of `ℱ`.
 
-We take 3. as the definition in `IsProperMap`, and we show the equivalence with 1., 2., and some
+We take 3 as the definition in `IsProperMap`, and we show the equivalence with 1, 2, and some
 other variations. We also show the usual characterization of proper maps to a locally compact
 Hausdorff space as continuous maps such that preimages of compact sets are compact.
 
@@ -47,7 +47,7 @@ align with that of [Stacks: Characterizing proper maps](https://stacks.math.colu
 instead our definition of `IsProperMap` coincides with what they call "Bourbaki-proper".
 
 Regarding the proofs, we don't really follow Bourbaki and go for more filter-heavy proofs,
-as usual. In particular, their arguments really heavily on restriction of closed maps (see
+as usual. In particular, their arguments rely heavily on restriction of closed maps (see
 `IsClosedMap.restrictPreimage`), which makes them somehow annoying to formalize in type theory.
 In contrast, the filter-based proofs work really well thanks to the existing API.
 
@@ -93,7 +93,7 @@ add_decl_doc isProperMap_iff_clusterPt
 lemma IsProperMap.continuous (h : IsProperMap f) : Continuous f := h.toContinuous
 
 /-- An homeomorphism is proper. -/
-lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e := by
+@[simp] lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e := by
   rw [isProperMap_iff_clusterPt]
   refine ⟨e.continuous, fun ℱ y ↦ ?_⟩
   simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, e.comap_nhds_eq,
@@ -101,7 +101,7 @@ lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e := by
   exact id
 
 /-- The identity is proper. -/
-lemma isProperMap_id : IsProperMap (id : X → X) := (Homeomorph.refl X).isProperMap
+@[simp] lemma isProperMap_id : IsProperMap (id : X → X) := (Homeomorph.refl X).isProperMap
 
 /-- A proper map is closed. -/
 lemma IsProperMap.isClosedMap (h : IsProperMap f) : IsClosedMap f := by
