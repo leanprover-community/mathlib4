@@ -2,14 +2,11 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.bicones
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.FinCategory
+
+#align_import category_theory.limits.bicones from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Bicones
@@ -84,13 +81,13 @@ instance biconeCategoryStruct : CategoryStruct (Bicone J)
   id j := Bicone.casesOn j BiconeHom.left_id BiconeHom.right_id fun k => BiconeHom.diagram (𝟙 k)
   comp f g := by
     rcases f with (_ | _ | _ | _ | f)
-    . exact g
-    . exact g
-    . cases g
+    · exact g
+    · exact g
+    · cases g
       apply BiconeHom.left
-    . cases g
+    · cases g
       apply BiconeHom.right
-    . rcases g with (_|_|_|_|g)
+    · rcases g with (_|_|_|_|g)
       exact BiconeHom.diagram (f ≫ g)
 #align category_theory.bicone_category_struct CategoryTheory.biconeCategoryStruct
 
@@ -115,51 +112,51 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
   obj X := Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j
   map f := by
     rcases f with (_|_|_|_|f)
-    . exact 𝟙 _
-    . exact 𝟙 _
-    . exact c₁.π.app _
-    . exact c₂.π.app _
-    . exact F.map f
+    · exact 𝟙 _
+    · exact 𝟙 _
+    · exact c₁.π.app _
+    · exact c₂.π.app _
+    · exact F.map f
   map_id X := by cases X <;> simp
   map_comp f g := by
     rcases f with (_|_|_|_|_)
-    . exact (Category.id_comp _).symm
-    . exact (Category.id_comp _).symm
-    . cases g
+    · exact (Category.id_comp _).symm
+    · exact (Category.id_comp _).symm
+    · cases g
       exact (Category.id_comp _).symm.trans (c₁.π.naturality _)
-    . cases g
+    · cases g
       exact (Category.id_comp _).symm.trans (c₂.π.naturality _)
-    . cases g
+    · cases g
       apply F.map_comp
 #align category_theory.bicone_mk CategoryTheory.biconeMk
 
 instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   cases j <;> cases k
-  . exact
+  · exact
       { elems := {BiconeHom.left_id}
         complete := fun f => by cases f; simp }
-  . exact
+  · exact
     { elems := ∅
       complete := fun f => by cases f }
-  . exact
+  · exact
     { elems := {BiconeHom.left _}
       complete := fun f => by cases f; simp }
-  . exact
+  · exact
     { elems := ∅
       complete := fun f => by cases f }
-  . exact
+  · exact
       { elems := {BiconeHom.right_id}
         complete := fun f => by cases f; simp }
-  . exact
+  · exact
     { elems := {BiconeHom.right _}
       complete := fun f => by cases f; simp }
-  . exact
+  · exact
     { elems := ∅
       complete := fun f => by cases f }
-  . exact
+  · exact
     { elems := ∅
       complete := fun f => by cases f }
-  . exact
+  · exact
     { elems := Finset.image BiconeHom.diagram Fintype.elems
       complete := fun f => by
         rcases f with (_|_|_|_|f)

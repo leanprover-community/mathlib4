@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.rename
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Basic
+
+#align_import data.mv_polynomial.rename from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Renaming variables of polynomials
@@ -236,8 +233,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
     exact ⟨∅, C r, by rw [rename_C]⟩
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine' ⟨s ∪ t, ⟨_, _⟩⟩
-    ·
-      refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
+    · refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
         simp (config := { contextual := true }) only [id.def, true_or_iff, or_true_iff,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, AlgHom.map_add]

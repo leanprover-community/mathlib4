@@ -2,16 +2,13 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module imo.imo2019_q4
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Tactic.GCongr
+
+#align_import imo.imo2019_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2019 Q4
@@ -42,7 +39,7 @@ namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
-  have h2 : (∑ i in range n, i) < k
+  have h2 : ∑ i in range n, i < k
   · suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
       simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
@@ -53,7 +50,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       PartENat.coe_lt_coe, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
-  calc ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ i in range n, (2:ℤ) ^ n := ?_
+  calc ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ in range n, (2:ℤ) ^ n := ?_
     _ < ↑ k ! := ?_
   · gcongr
     · intro i hi
@@ -63,7 +60,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     · apply sub_le_self
       positivity
   norm_cast
-  calc ∏ i in range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
+  calc ∏ __ in range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
     _ < (∑ i in range n, i)! := ?_
     _ ≤ k ! := by gcongr
   clear h h2
@@ -90,7 +87,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   -- The implication `←` holds.
   constructor
   swap
-  · rintro (h | h) <;> simp [Prod.ext_iff] at h  <;> rcases h with ⟨rfl, rfl⟩ <;>
+  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;>
     norm_num [prod_range_succ, succ_mul]
   intro h
   -- We know that n < 6.

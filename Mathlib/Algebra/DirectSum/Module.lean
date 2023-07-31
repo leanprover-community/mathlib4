@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.direct_sum.module
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.Dfinsupp
+import Mathlib.LinearAlgebra.DFinsupp
+
+#align_import algebra.direct_sum.module from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Direct sum of modules
@@ -43,33 +40,33 @@ variable {ι : Type v} [dec_ι : DecidableEq ι]
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
-  Dfinsupp.module
+  DFinsupp.module
 
 instance {S : Type _} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
     SMulCommClass R S (⨁ i, M i) :=
-  Dfinsupp.smulCommClass
+  DFinsupp.smulCommClass
 
 instance {S : Type _} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsScalarTower R S (M i)] :
     IsScalarTower R S (⨁ i, M i) :=
-  Dfinsupp.isScalarTower
+  DFinsupp.isScalarTower
 
 instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) :=
-  Dfinsupp.isCentralScalar
+  DFinsupp.isCentralScalar
 
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=
-  Dfinsupp.smul_apply _ _ _
+  DFinsupp.smul_apply _ _ _
 #align direct_sum.smul_apply DirectSum.smul_apply
 
 variable (R ι M)
 
 /-- Create the direct sum given a family `M` of `R` modules indexed over `ι`. -/
 def lmk : ∀ s : Finset ι, (∀ i : (↑s : Set ι), M i.val) →ₗ[R] ⨁ i, M i :=
-  Dfinsupp.lmk
+  DFinsupp.lmk
 #align direct_sum.lmk DirectSum.lmk
 
 /-- Inclusion of each component into the direct sum. -/
 def lof : ∀ i : ι, M i →ₗ[R] ⨁ i, M i :=
-  Dfinsupp.lsingle
+  DFinsupp.lsingle
 #align direct_sum.lof DirectSum.lof
 
 theorem lof_eq_of (i : ι) (b : M i) : lof R ι M i b = of M i b := rfl
@@ -77,7 +74,7 @@ theorem lof_eq_of (i : ι) (b : M i) : lof R ι M i b = of M i b := rfl
 
 variable {ι M}
 
-theorem single_eq_lof (i : ι) (b : M i) : Dfinsupp.single i b = lof R ι M i b := rfl
+theorem single_eq_lof (i : ι) (b : M i) : DFinsupp.single i b = lof R ι M i b := rfl
 #align direct_sum.single_eq_lof DirectSum.single_eq_lof
 
 /-- Scalar multiplication commutes with direct sums. -/
@@ -94,7 +91,7 @@ variable {R}
 
 theorem support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : ⨁ i, M i) :
     (c • v).support ⊆ v.support :=
-  Dfinsupp.support_smul _ _
+  DFinsupp.support_smul _ _
 #align direct_sum.support_smul DirectSum.support_smul
 
 variable {N : Type u₁} [AddCommMonoid N] [Module R N]
@@ -105,7 +102,7 @@ variable (R ι N)
 
 /-- The linear map constructed using the universal property of the coproduct. -/
 def toModule : (⨁ i, M i) →ₗ[R] N :=
-  FunLike.coe (Dfinsupp.lsum ℕ) φ
+  FunLike.coe (DFinsupp.lsum ℕ) φ
 #align direct_sum.to_module DirectSum.toModule
 
 /-- Coproducts in the categories of modules and additive monoids commute with the forgetful functor
@@ -139,7 +136,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
     (H : ∀ i, ψ.comp (lof R ι M i) = ψ'.comp (lof R ι M i)) : ψ = ψ' :=
-  Dfinsupp.lhom_ext' H
+  DFinsupp.lhom_ext' H
 #align direct_sum.linear_map_ext DirectSum.linearMap_ext
 
 /-- The inclusion of a subset of the direct summands
@@ -154,14 +151,14 @@ variable (ι M)
 between `⨁ i, M i` and `∀ i, M i`. -/
 @[simps apply]
 def linearEquivFunOnFintype [Fintype ι] : (⨁ i, M i) ≃ₗ[R] ∀ i, M i :=
-  { Dfinsupp.equivFunOnFintype with
+  { DFinsupp.equivFunOnFintype with
     toFun := (↑)
     map_add' := fun f g ↦ by
       ext
       rw [add_apply, Pi.add_apply]
     map_smul' := fun c f ↦ by
       simp_rw [RingHom.id_apply]
-      rw [Dfinsupp.coe_smul] }
+      rw [DFinsupp.coe_smul] }
 #align direct_sum.linear_equiv_fun_on_fintype DirectSum.linearEquivFunOnFintype
 
 variable {ι M}
@@ -170,15 +167,15 @@ variable {ι M}
 theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
   ext a
-  change (Dfinsupp.equivFunOnFintype (lof R ι M i m)) a = _
-  convert _root_.congr_fun (Dfinsupp.equivFunOnFintype_single i m) a
+  change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
+  convert _root_.congr_fun (DFinsupp.equivFunOnFintype_single i m) a
 #align direct_sum.linear_equiv_fun_on_fintype_lof DirectSum.linearEquivFunOnFintype_lof
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m := by
-  change (Dfinsupp.equivFunOnFintype.symm (Pi.single i m)) = _
-  rw [Dfinsupp.equivFunOnFintype_symm_single i m]
+  change (DFinsupp.equivFunOnFintype.symm (Pi.single i m)) = _
+  rw [DFinsupp.equivFunOnFintype_symm_single i m]
   rfl
 #align direct_sum.linear_equiv_fun_on_fintype_symm_single DirectSum.linearEquivFunOnFintype_symm_single
 
@@ -198,7 +195,7 @@ variable (ι M)
 
 /-- The projection map onto one component, as a linear map. -/
 def component (i : ι) : (⨁ i, M i) →ₗ[R] M i :=
-  Dfinsupp.lapply i
+  DFinsupp.lapply i
 #align direct_sum.component DirectSum.component
 
 variable {ι M}
@@ -208,7 +205,7 @@ theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i 
 
 @[ext]
 theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
-  Dfinsupp.ext h
+  DFinsupp.ext h
 #align direct_sum.ext DirectSum.ext
 
 theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
@@ -217,7 +214,7 @@ theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = com
 
 @[simp]
 theorem lof_apply (i : ι) (b : M i) : ((lof R ι M i) b) i = b :=
-  Dfinsupp.single_eq_same
+  DFinsupp.single_eq_same
 #align direct_sum.lof_apply DirectSum.lof_apply
 
 @[simp]
@@ -227,7 +224,7 @@ theorem component.lof_self (i : ι) (b : M i) : component R ι M i ((lof R ι M 
 
 theorem component.of (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
-  Dfinsupp.single_apply
+  DFinsupp.single_apply
 #align direct_sum.component.of DirectSum.component.of
 
 section CongrLeft
@@ -236,7 +233,7 @@ variable {κ : Type _}
 
 /-- Reindexing terms of a direct sum is linear. -/
 def lequivCongrLeft (h : ι ≃ κ) : (⨁ i, M i) ≃ₗ[R] ⨁ k, M (h.symm k) :=
-  { equivCongrLeft h with map_smul' := Dfinsupp.comapDomain'_smul h.invFun h.right_inv }
+  { equivCongrLeft h with map_smul' := DFinsupp.comapDomain'_smul h.invFun h.right_inv }
 #align direct_sum.lequiv_congr_left DirectSum.lequivCongrLeft
 
 @[simp]
@@ -255,7 +252,7 @@ variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert Dfinsupp.sigmaCurry_smul (δ := δ) r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 #align direct_sum.sigma_lcurry DirectSum.sigmaLcurry
 
 @[simp]
@@ -268,7 +265,7 @@ theorem sigmaLcurry_apply (f : ⨁ i : Σ_, _, δ i.1 i.2) (i : ι) (j : α i) :
 /-- `uncurry` as a linear map. -/
 noncomputable def sigmaLuncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ (i) (j), δ i j) →ₗ[R] ⨁ i : Σ_, _, δ i.1 i.2 :=
-  { sigmaUncurry with map_smul' := Dfinsupp.sigmaUncurry_smul }
+  { sigmaUncurry with map_smul' := DFinsupp.sigmaUncurry_smul }
 #align direct_sum.sigma_luncurry DirectSum.sigmaLuncurry
 
 @[simp]
@@ -293,7 +290,7 @@ variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)] [∀ i, Modul
 `Option ι`. -/
 @[simps]
 noncomputable def lequivProdDirectSum : (⨁ i, α i) ≃ₗ[R] α none × ⨁ i, α (some i) :=
-  { addEquivProdDirectSum with map_smul' := Dfinsupp.equivProdDfinsupp_smul }
+  { addEquivProdDirectSum with map_smul' := DFinsupp.equivProdDFinsupp_smul }
 #align direct_sum.lequiv_prod_direct_sum DirectSum.lequivProdDirectSum
 
 end Option
@@ -343,8 +340,8 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
     (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M
     where repr :=
     ((LinearEquiv.ofBijective (DirectSum.coeLinearMap A) h).symm ≪≫ₗ
-        Dfinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
-      (sigmaFinsuppLequivDfinsupp R).symm
+        DFinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
+      (sigmaFinsuppLequivDFinsupp R).symm
 #align direct_sum.is_internal.collected_basis DirectSum.IsInternal.collectedBasis
 
 @[simp]
@@ -353,21 +350,21 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
   funext a
   -- Porting note: was
   -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
-  --   Basis.repr_symm_apply, Dfinsupp.lsum_apply_apply, Dfinsupp.mapRange.linearEquiv_apply,
-  --   Dfinsupp.mapRange.linearEquiv_symm, Dfinsupp.mapRange_single, Finsupp.total_single,
+  --   Basis.repr_symm_apply, DFinsupp.lsum_apply_apply, DFinsupp.mapRange.linearEquiv_apply,
+  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, Finsupp.total_single,
   --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
-  --   sigmaFinsuppAddEquivDfinsupp_apply, sigmaFinsuppEquivDfinsupp_single,
-  --   sigmaFinsuppLequivDfinsupp_apply]
-  -- convert Dfinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
+  --   sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
+  --   sigmaFinsuppLequivDFinsupp_apply]
+  -- convert DFinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
   simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
-    LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDfinsupp_apply,
-    sigmaFinsuppEquivDfinsupp_single, LinearEquiv.ofBijective_apply,
-    sigmaFinsuppAddEquivDfinsupp_apply]
-  rw [Dfinsupp.mapRange.linearEquiv_symm]
-  erw [Dfinsupp.mapRange.linearEquiv_apply]
-  simp only [Dfinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul,
+    LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_apply,
+    sigmaFinsuppEquivDFinsupp_single, LinearEquiv.ofBijective_apply,
+    sigmaFinsuppAddEquivDFinsupp_apply]
+  rw [DFinsupp.mapRange.linearEquiv_symm]
+  erw [DFinsupp.mapRange.linearEquiv_apply]
+  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul,
     toModule]
-  erw [Dfinsupp.lsum_single]
+  erw [DFinsupp.lsum_single]
   simp only [Submodule.coeSubtype]
 #align direct_sum.is_internal.collected_basis_coe DirectSum.IsInternal.collectedBasis_coe
 

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.slash_invariant_forms
-! leanprover-community/mathlib commit 738054fa93d43512da144ec45ce799d18fd44248
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.ModularForms.SlashActions
+
+#align_import number_theory.modular_forms.slash_invariant_forms from "leanprover-community/mathlib"@"738054fa93d43512da144ec45ce799d18fd44248"
 
 /-!
 # Slash invariant forms
@@ -66,14 +63,17 @@ instance : CoeFun (SlashInvariantForm Γ k) fun _ => ℍ → ℂ :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem slashInvariantForm_toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
+theorem SlashInvariantForm.toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
   rfl
-#align slash_invariant_form_to_fun_eq_coe slashInvariantForm_toFun_eq_coe
+#align slash_invariant_form_to_fun_eq_coe SlashInvariantForm.toFun_eq_coe
+
+@[simp]
+theorem SlashInvariantForm.coe_mk (f : ℍ → ℂ) (hf : ∀ γ : Γ, f ∣[k] γ = f) : ⇑(mk f hf) = f := rfl
 
 @[ext]
-theorem slashInvariantForm_ext {f g : SlashInvariantForm Γ k} (h : ∀ x, f x = g x) : f = g :=
+theorem SlashInvariantForm.ext {f g : SlashInvariantForm Γ k} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
-#align slash_invariant_form_ext slashInvariantForm_ext
+#align slash_invariant_form_ext SlashInvariantForm.ext
 
 /-- Copy of a `SlashInvariantForm` with a new `toFun` equal to the old one.
 Useful to fix definitional equalities. -/
@@ -117,12 +117,12 @@ theorem SlashInvariantFormClass.coe_coe [SlashInvariantFormClass F Γ k] (f : F)
   rfl
 #align slash_invariant_form.slash_invariant_form_class.coe_coe SlashInvariantForm.SlashInvariantFormClass.coe_coe
 
-instance hasAdd : Add (SlashInvariantForm Γ k) :=
+instance instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g =>
     { toFun := f + g
       slash_action_eq' := fun γ => by
         rw [SlashAction.add_slash, slash_action_eqn, slash_action_eqn] }⟩
-#align slash_invariant_form.has_add SlashInvariantForm.hasAdd
+#align slash_invariant_form.has_add SlashInvariantForm.instAdd
 
 @[simp]
 theorem coe_add (f g : SlashInvariantForm Γ k) : ⇑(f + g) = f + g :=
@@ -134,10 +134,10 @@ theorem add_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f + g) z = f z + 
   rfl
 #align slash_invariant_form.add_apply SlashInvariantForm.add_apply
 
-instance hasZero : Zero (SlashInvariantForm Γ k) :=
+instance instZero : Zero (SlashInvariantForm Γ k) :=
   ⟨{toFun := 0
     slash_action_eq' := SlashAction.zero_slash _}⟩
-#align slash_invariant_form.has_zero SlashInvariantForm.hasZero
+#align slash_invariant_form.has_zero SlashInvariantForm.instZero
 
 @[simp]
 theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
@@ -148,11 +148,11 @@ section
 
 variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-instance hasSmul : SMul α (SlashInvariantForm Γ k) :=
+instance instSMul : SMul α (SlashInvariantForm Γ k) :=
   ⟨fun c f =>
     { toFun := c • ↑f
       slash_action_eq' := fun γ => by rw [SlashAction.smul_slash_of_tower, slash_action_eqn] }⟩
-#align slash_invariant_form.has_smul SlashInvariantForm.hasSmul
+#align slash_invariant_form.has_smul SlashInvariantForm.instSMul
 
 @[simp]
 theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -166,11 +166,11 @@ theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) 
 
 end
 
-instance hasNeg : Neg (SlashInvariantForm Γ k) :=
+instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := -f
       slash_action_eq' := fun γ => by rw [SlashAction.neg_slash, slash_action_eqn] }⟩
-#align slash_invariant_form.has_neg SlashInvariantForm.hasNeg
+#align slash_invariant_form.has_neg SlashInvariantForm.instNeg
 
 @[simp]
 theorem coe_neg (f : SlashInvariantForm Γ k) : ⇑(-f) = -f :=
@@ -182,9 +182,9 @@ theorem neg_apply (f : SlashInvariantForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 #align slash_invariant_form.neg_apply SlashInvariantForm.neg_apply
 
-instance hasSub : Sub (SlashInvariantForm Γ k) :=
+instance instSub : Sub (SlashInvariantForm Γ k) :=
   ⟨fun f g => f + -g⟩
-#align slash_invariant_form.has_sub SlashInvariantForm.hasSub
+#align slash_invariant_form.has_sub SlashInvariantForm.instSub
 
 @[simp]
 theorem coe_sub (f g : SlashInvariantForm Γ k) : ⇑(f - g) = f - g :=
@@ -224,5 +224,18 @@ theorem one_coe_eq_one : ((1 : SlashInvariantForm Γ 0) : ℍ → ℂ) = 1 :=
 
 instance : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
+
+/-- The slash invariant form of weight `k₁ + k₂` given by the product of two modular forms of
+weights `k₁` and `k₂`. -/
+def mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
+    (g : SlashInvariantForm Γ k₂) : SlashInvariantForm Γ (k₁ + k₂) where
+  toFun := f * g
+  slash_action_eq' A := by
+    simp_rw [ModularForm.mul_slash_subgroup, SlashInvariantFormClass.slash_action_eq]
+
+@[simp]
+theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
+    (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
+  rfl
 
 end SlashInvariantForm

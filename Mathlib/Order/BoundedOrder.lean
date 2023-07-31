@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.bounded_order
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
+
+#align_import order.bounded_order from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -811,6 +808,11 @@ instance top [Top α] [Top β] : Top (α × β) :=
 
 instance bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
+
+theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
+theorem snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
+theorem fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
+theorem snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
 
 instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))

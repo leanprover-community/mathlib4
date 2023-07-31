@@ -2,13 +2,10 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.adjunction.basic
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Equivalence
+
+#align_import category_theory.adjunction.basic from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
 /-!
 # Adjunctions between functors
@@ -279,23 +276,23 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : CoreHomEquiv F G) {X' X : C} {Y Y' :
 @[simp]
 theorem homEquiv_naturality_left_aux (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' (F.obj X)) (F.map f) ≫ G.map g = f ≫ (adj.homEquiv X Y) g := by
-  rw [← homEquiv_naturality_right, ← Equiv.eq_symm_apply] ; simp
+  rw [← homEquiv_naturality_right, ← Equiv.eq_symm_apply]; simp
 
 -- @[simp] -- Porting note: LHS simplifies, added aux lemma above
 theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
-  rw [← Equiv.eq_symm_apply] ; simp
+  rw [← Equiv.eq_symm_apply]; simp
 #align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_left CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_left
 
 @[simp]
 theorem homEquiv_naturality_right_symm_aux (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     F.map f ≫ (adj.homEquiv (G.obj Y) Y').symm (G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
-  rw [← homEquiv_naturality_left_symm, Equiv.symm_apply_eq] ; simp
+  rw [← homEquiv_naturality_left_symm, Equiv.symm_apply_eq]; simp
 
 -- @[simp] -- Porting note: LHS simplifies, added aux lemma above
 theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
-  rw [Equiv.symm_apply_eq] ; simp
+  rw [Equiv.symm_apply_eq]; simp
 #align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_right_symm CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_right_symm
 
 end CoreHomEquiv
@@ -499,7 +496,7 @@ variable (e : ∀ X Y, (F_obj X ⟶ Y) ≃ (X ⟶ G.obj Y))
 variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
 private theorem he' {X Y Y'} (f g) : (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
-  intros ; rw [Equiv.symm_apply_eq, he] ; simp
+  intros; rw [Equiv.symm_apply_eq, he]; simp
 -- #align category_theory.adjunction.he' category_theory.adjunction.he'
 
 /-- Construct a left adjoint functor to `G`, given the functor's value on objects `F_obj` and
@@ -546,7 +543,7 @@ variable (e : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G_obj Y))
 variable (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g)
 
 private theorem he'' {X' X Y} (f g) : F.map f ≫ (e X Y).symm g = (e X' Y).symm (f ≫ g) := by
-  intros ; rw [Equiv.eq_symm_apply, he] ; simp
+  intros; rw [Equiv.eq_symm_apply, he]; simp
 -- #align category_theory.adjunction.he' category_theory.adjunction.he'
 
 /-- Construct a right adjoint functor to `F`, given the functor's value on objects `G_obj` and

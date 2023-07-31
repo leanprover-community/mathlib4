@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module order.partial_sups
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
+#align_import order.partial_sups from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -160,7 +157,7 @@ theorem partialSups_eq_ciSup_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = 
 
 @[simp]
 theorem ciSup_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
-    (⨆ n, partialSups f n) = ⨆ n, f n := by
+    ⨆ n, partialSups f n = ⨆ n, f n := by
   refine' (ciSup_le fun n => _).antisymm (ciSup_mono _ <| le_partialSups f)
   · rw [partialSups_eq_ciSup_Iic]
     exact ciSup_le fun i => le_ciSup h _
@@ -178,18 +175,18 @@ theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ 
 #align partial_sups_eq_bsupr partialSups_eq_biSup
 
 -- Porting note: simp can prove this @[simp]
-theorem iSup_partialSups_eq (f : ℕ → α) : (⨆ n, partialSups f n) = ⨆ n, f n :=
+theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq iSup_partialSups_eq
 
 theorem iSup_le_iSup_of_partialSups_le_partialSups {f g : ℕ → α}
-    (h : partialSups f ≤ partialSups g) : (⨆ n, f n) ≤ ⨆ n, g n := by
+    (h : partialSups f ≤ partialSups g) : ⨆ n, f n ≤ ⨆ n, g n := by
   rw [← iSup_partialSups_eq f, ← iSup_partialSups_eq g]
   exact iSup_mono h
 #align supr_le_supr_of_partial_sups_le_partial_sups iSup_le_iSup_of_partialSups_le_partialSups
 
 theorem iSup_eq_iSup_of_partialSups_eq_partialSups {f g : ℕ → α}
-    (h : partialSups f = partialSups g) : (⨆ n, f n) = ⨆ n, g n := by
+    (h : partialSups f = partialSups g) : ⨆ n, f n = ⨆ n, g n := by
   simp_rw [← iSup_partialSups_eq f, ← iSup_partialSups_eq g, h]
 #align supr_eq_supr_of_partial_sups_eq_partial_sups iSup_eq_iSup_of_partialSups_eq_partialSups
 

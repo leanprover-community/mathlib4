@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.order.basic
-! leanprover-community/mathlib commit 3efd324a3a31eaa40c9d5bfc669c4fafee5f9423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Pointwise.Interval
@@ -14,6 +9,8 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Support
 import Mathlib.Topology.Algebra.Order.LeftRight
+
+#align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
 /-!
 # Theory of topology on ordered spaces
@@ -1021,7 +1018,7 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type _} [LinearO
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
 
 /-- A strictly monotone function between linear orders with order topology is a topological
-embedding provided that the range of `f` is  order-connected. -/
+embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
@@ -2073,7 +2070,7 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
   have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
   have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
   choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
-  refine ⟨fun k => v ((N^[k]) 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
+  refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
     hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _

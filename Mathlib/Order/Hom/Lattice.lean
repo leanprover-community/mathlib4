@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.hom.lattice
-! leanprover-community/mathlib commit 7581030920af3dcb241d1df0e36f6ec8289dd6be
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.SymmDiff
+
+#align_import order.hom.lattice from "leanprover-community/mathlib"@"7581030920af3dcb241d1df0e36f6ec8289dd6be"
 
 /-!
 # Lattice homomorphisms
@@ -285,7 +282,7 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BoundedLatticeHomClass F α β] (f : F)
 
 /-- Special case of `map_compl` for boolean algebras. -/
-theorem map_compl' (a : α) : f (aᶜ) = f aᶜ :=
+theorem map_compl' (a : α) : f aᶜ = (f a)ᶜ :=
   (isCompl_compl.map _).compl_eq.symm
 #align map_compl' map_compl'
 

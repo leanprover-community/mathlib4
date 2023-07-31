@@ -2,13 +2,10 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.mfderiv
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+
+#align_import geometry.manifold.mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # The derivative of functions between smooth manifolds
@@ -77,7 +74,7 @@ definition, differentiability implies continuity).
 
 *Warning*: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
 that one is given a smooth submanifold `N`, and a function which is smooth on `N` (i.e., its
-restriction to the subtype  `N` is smooth). Then, in the whole manifold `M`, the property
+restriction to the subtype `N` is smooth). Then, in the whole manifold `M`, the property
 `MDifferentiableOn I I' f N` holds. However, `mfderivWithin I I' f N` is not uniquely defined
 (what values would one choose for vectors that are transverse to `N`?), which can create issues down
 the road. The problem here is that knowing the value of `f` along `N` does not determine the
@@ -176,7 +173,7 @@ theorem differentiable_within_at_localInvariantProp :
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
       convert (this.differentiableWithinAt le_top).comp _ h _
       · ext y; simp only [mfld_simps]
-      · intro y hy; simp only [mfld_simps] at hy ; simpa only [hy, mfld_simps] using hs hy.1 }
+      · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 #align differentiable_within_at_local_invariant_prop differentiable_within_at_localInvariantProp
 
 /-- Predicate ensuring that, at a point and within a set, a function can have at most one
@@ -658,7 +655,7 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
     (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x
-  · rwa [mdifferentiableWithinAt_inter'] at h 
+  · rwa [mdifferentiableWithinAt_inter'] at h
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds I' (f x)
   rw [mdifferentiableWithinAt_iff]
@@ -757,19 +754,9 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
 #align tangent_map_within_proj tangentMapWithin_proj
 
 @[simp, mfld_simps]
-theorem tangentMapWithin_fst {p : TangentBundle I M} : (tangentMapWithin I I' f s p).1 = f p.1 :=
-  rfl
-#align tangent_map_within_fst tangentMapWithin_fst
-
-@[simp, mfld_simps]
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
 #align tangent_map_proj tangentMap_proj
-
-@[simp, mfld_simps]
-theorem tangentMap_fst {p : TangentBundle I M} : (tangentMap I I' f p).1 = f p.1 :=
-  rfl
-#align tangent_map_fst tangentMap_fst
 
 theorem MDifferentiableWithinAt.prod_mk {f : M → M'} {g : M → M''}
     (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x) :
@@ -911,8 +898,8 @@ theorem mfderivWithin_congr (hs : UniqueMDiffWithinAt I s x) (hL : ∀ x ∈ s, 
 theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s)
     (hs : UniqueMDiffWithinAt I s p.1) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
-  refine Sigma.ext (h p.1 hp) ?_
-  simp only [tangentMapWithin, h p.fst hp, mfderivWithin_congr hs h (h _ hp), HEq.refl]
+  refine TotalSpace.ext _ _ (h p.1 hp) ?_
+  simp only [tangentMapWithin, h p.1 hp, mfderivWithin_congr hs h (h _ hp), HEq.refl]
 #align tangent_map_within_congr tangentMapWithin_congr
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
@@ -1448,14 +1435,14 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 
 @[simp, mfld_simps]
 theorem tangentMap_prod_fst {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap (I.prod I') I Prod.fst p = totalSpaceMk p.proj.1 p.2.1 := by
+    tangentMap (I.prod I') I Prod.fst p = ⟨p.proj.1, p.2.1⟩ := by
   -- porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 #align tangent_map_prod_fst tangentMap_prod_fst
 
 theorem tangentMapWithin_prod_fst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
-    tangentMapWithin (I.prod I') I Prod.fst s p = totalSpaceMk p.proj.1 p.2.1 := by
+    tangentMapWithin (I.prod I') I Prod.fst s p = ⟨p.proj.1, p.2.1⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_fst]
   · rcases p with ⟨⟩; rfl
@@ -1520,14 +1507,14 @@ theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
 
 @[simp, mfld_simps]
 theorem tangentMap_prod_snd {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap (I.prod I') I' Prod.snd p = totalSpaceMk p.proj.2 p.2.2 := by
+    tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
   -- porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 #align tangent_map_prod_snd tangentMap_prod_snd
 
 theorem tangentMapWithin_prod_snd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
-    tangentMapWithin (I.prod I') I' Prod.snd s p = totalSpaceMk p.proj.2 p.2.2 := by
+    tangentMapWithin (I.prod I') I' Prod.snd s p = ⟨p.proj.2, p.2.2⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_snd]
   · rcases p with ⟨⟩; rfl
@@ -1590,7 +1577,7 @@ section Arithmetic
 
 /-! #### Arithmetic
 
-Note that in the in `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
+Note that in the `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
 `TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
 canonical, but in this case (the tangent space of a vector space) it is canonical.
  -/
@@ -1671,7 +1658,7 @@ theorem mfderiv_neg (f : M → E') (x : M) :
   simp_rw [mfderiv]
   by_cases hf : MDifferentiableAt I 𝓘(𝕜, E') f x
   · exact hf.hasMFDerivAt.neg.mfderiv
-  · rw [if_neg hf]; rw [← mdifferentiableAt_neg] at hf ; rw [if_neg hf, neg_zero]
+  · rw [if_neg hf]; rw [← mdifferentiableAt_neg] at hf; rw [if_neg hf, neg_zero]
 #align mfderiv_neg mfderiv_neg
 
 theorem HasMFDerivAt.sub (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')
@@ -1861,7 +1848,7 @@ theorem mdifferentiable_chart (x : M) : (chartAt H x).MDifferentiable I I :=
 the identification between the tangent bundle of the model space and the product space. -/
 theorem tangentMap_chart {p q : TangentBundle I M} (h : q.1 ∈ (chartAt H p.1).source) :
     tangentMap I I (chartAt H p.1) q =
-      (Equiv.sigmaEquivProd _ _).symm
+      (TotalSpace.toProd _ _).symm
         ((chartAt (ModelProd H E) p : TangentBundle I M → ModelProd H E) q) := by
   dsimp [tangentMap]
   rw [MDifferentiableAt.mfderiv]
@@ -1875,14 +1862,9 @@ the product space. -/
 theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
     (h : q.1 ∈ (chartAt H p.1).target) :
     tangentMap I I (chartAt H p.1).symm q =
-      (chartAt (ModelProd H E) p).symm ((Equiv.sigmaEquivProd H E) q) := by
+      (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
   dsimp only [tangentMap]
   rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm _ (chart_mem_atlas _ _) h)]
-  /- porting note: was
-  simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore, chartAt,
-    Sigma.mk.inj_iff, mfld_simps]
-  -/
-  refine congr_arg (Sigma.mk _) ?_
   simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
     mfld_simps, (· ∘ ·)]
   -- `simp` fails to apply `LocalEquiv.prod_symm` with `ModelProd`
@@ -2115,15 +2097,16 @@ theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : 
 open Bundle
 
 variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type _}
-  [TopologicalSpace (TotalSpace Z)] [∀ b, TopologicalSpace (Z b)] [∀ b, AddCommMonoid (Z b)]
+  [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [∀ b, AddCommMonoid (Z b)]
   [∀ b, Module 𝕜 (Z b)] [FiberBundle F Z] [VectorBundle 𝕜 F Z] [SmoothVectorBundle F Z I]
 
-theorem Trivialization.mdifferentiable (e : Trivialization F (π Z)) [MemTrivializationAtlas e] :
+theorem Trivialization.mdifferentiable (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
     e.toLocalHomeomorph.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨(e.smoothOn I).mdifferentiableOn, (e.smoothOn_symm I).mdifferentiableOn⟩
 
-theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace Z}
-    (hs : UniqueMDiffWithinAt I s p.proj) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π Z ⁻¹' s) p := by
+theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
+    (hs : UniqueMDiffWithinAt I s p.proj) :
+    UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
   set e := trivializationAt F Z p.proj
   have hp : p ∈ e.source := FiberBundle.mem_trivializationAt_proj_source
   have : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (s ×ˢ univ) (e p)
@@ -2137,20 +2120,20 @@ theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace Z}
 variable (Z)
 
 theorem UniqueMDiffWithinAt.smooth_bundle_preimage' {b : M} (hs : UniqueMDiffWithinAt I s b)
-    (x : Z b) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π Z ⁻¹' s) (totalSpaceMk b x) :=
-  hs.smooth_bundle_preimage (p := totalSpaceMk b x)
+    (x : Z b) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) ⟨b, x⟩ :=
+  hs.smooth_bundle_preimage (p := ⟨b, x⟩)
 
 /-- In a smooth fiber bundle, the preimage under the projection of a set with
 unique differential in the basis also has unique differential. -/
 theorem UniqueMDiffOn.smooth_bundle_preimage (hs : UniqueMDiffOn I s) :
-    UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π Z ⁻¹' s) := fun _p hp ↦
+    UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
   (hs _ hp).smooth_bundle_preimage
 #align unique_mdiff_on.smooth_bundle_preimage UniqueMDiffOn.smooth_bundle_preimage
 
 /-- The preimage under the projection from the tangent bundle of a set with unique differential in
 the basis also has unique differential. -/
 theorem UniqueMDiffOn.tangentBundle_proj_preimage (hs : UniqueMDiffOn I s) :
-    UniqueMDiffOn I.tangent (π (TangentSpace I) ⁻¹' s) :=
+    UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
   hs.smooth_bundle_preimage _
 #align unique_mdiff_on.tangent_bundle_proj_preimage UniqueMDiffOn.tangentBundle_proj_preimage
 
