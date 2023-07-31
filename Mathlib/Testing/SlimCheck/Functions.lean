@@ -49,11 +49,6 @@ their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
 
-
-universe u v w
-
-variable {α : Type} {β : Type} {γ : Sort}
-
 namespace SlimCheck
 
 /-- Data structure specifying a total function using a list of pairs
