@@ -135,23 +135,20 @@ lemma transpose_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
 section Semiring
 
 variable [Semiring R]
-/- The proofs are "shorter" with the unfolds instead of the simp lemmas above so I will continue
-with them for the next lemmas -/
+
 @[simp]
 lemma fromRows_mul (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :
     (fromRows A₁ A₂) ⬝ B = fromRows (A₁ ⬝ B) (A₂ ⬝ B) := by
-  unfold fromRows
   funext i j
   cases' i with i i
-  all_goals (simp only [mul_apply, of_apply, Sum.elim_inl, Sum.elim_inr] )
+  all_goals (simp only [mul_apply, fromRows_apply_inl, fromRows_apply_inr])
 
 @[simp]
 lemma mul_fromColumns (A : Matrix m n R) (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
     A ⬝ (fromColumns B₁ B₂) = fromColumns (A ⬝ B₁) (A ⬝ B₂) := by
-  unfold fromColumns
   funext i j
   cases' j with j j
-  all_goals (simp only [mul_apply, of_apply, Sum.elim_inl, Sum.elim_inr] )
+  all_goals (simp only [mul_apply, fromColumns_apply_inl, fromColumns_apply_inr] )
 
 @[simp]
 lemma fromRows_zero : fromRows (0 : Matrix m₁ n R) (0 : Matrix m₂ n R) = 0 := by
@@ -162,33 +159,31 @@ lemma fromRows_zero : fromRows (0 : Matrix m₁ n R) (0 : Matrix m₂ n R) = 0 :
 @[simp]
 lemma fromColumns_zero : fromColumns (0 : Matrix m n₁ R) (0 : Matrix m n₂ R) = 0 := by
   funext i j
-  unfold fromColumns
   cases' j with j j
-  all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr, zero_apply])
+  all_goals (simp only [fromColumns_apply_inl, fromColumns_apply_inr, zero_apply])
 
 @[simp]
 lemma fromColumns_fromRows_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R)
     (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     fromColumns (fromRows B₁₁ B₂₁) (fromRows B₁₂ B₂₂) = fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ := by
-    unfold fromRows fromColumns
-    funext i j
-    cases' i with i i
-    all_goals (
-      cases' j with j j;
-      all_goals ( simp only [of_apply, Sum.elim_inl, Sum.elim_inr, fromBlocks_apply₁₁,
-        fromBlocks_apply₁₂, fromBlocks_apply₂₁, fromBlocks_apply₂₂] ) )
+  funext i j
+  cases' i with i i
+  all_goals (
+    cases' j with j j
+    all_goals (simp only [fromColumns_apply_inl, fromColumns_apply_inr,
+      fromRows_apply_inl, fromRows_apply_inr, fromBlocks_apply₁₁, fromBlocks_apply₁₂,
+      fromBlocks_apply₂₁,  fromBlocks_apply₂₂] ) )
 
 @[simp]
 lemma fromRows_fromColumn_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R)
     (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     fromRows (fromColumns B₁₁ B₁₂) (fromColumns B₂₁ B₂₂) = fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ := by
-    unfold fromRows fromColumns
-    funext i j
-    cases' i with i i
-    all_goals (
-      cases' j with j j;
-      all_goals ( simp only [of_apply, Sum.elim_inl, Sum.elim_inr, fromBlocks_apply₁₁,
-        fromBlocks_apply₁₂, fromBlocks_apply₂₁, fromBlocks_apply₂₂] ) )
+  funext i j
+  cases' i with i i
+  all_goals (cases' j with j j)
+  all_goals (simp only [fromColumns_apply_inl, fromColumns_apply_inr,
+    fromRows_apply_inl, fromRows_apply_inr, fromBlocks_apply₁₁, fromBlocks_apply₁₂,
+    fromBlocks_apply₂₁,  fromBlocks_apply₂₂] )
 
 /-- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
 lemma fromRows_mul_fromColumns (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
@@ -196,11 +191,11 @@ lemma fromRows_mul_fromColumns (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
     (fromRows A₁ A₂) ⬝ (fromColumns B₁ B₂) =
       fromBlocks (A₁ ⬝ B₁) (A₁ ⬝ B₂) (A₂ ⬝ B₁) (A₂ ⬝ B₂) := by
   funext i j
-  rw [fromRows, fromColumns]
-  cases i;
-  all_goals (cases j)
-  all_goals (simp only [fromBlocks_apply₁₁, fromBlocks_apply₁₂, fromBlocks_apply₂₁,
-    fromBlocks_apply₂₂, mul_apply, of_apply, Sum.elim_inl, Sum.elim_inr] )
+  cases' i with i i;
+  all_goals (cases' j with j j)
+  all_goals ( simp only [mul_fromColumns, fromRows_mul, fromColumns_apply_inl,
+    fromColumns_apply_inr, fromRows_apply_inl, fromRows_apply_inr, fromBlocks_apply₁₁,
+    fromBlocks_apply₁₂, fromBlocks_apply₂₁, fromBlocks_apply₂₂] )
 
 /-- A column partitioned matrix mulitplied by a row partitioned matrix gives the sum of the "outer"
 products of the block matrices -/
@@ -276,16 +271,17 @@ with the columns of the initial matrix conjugate transposed to become rows. -/
 lemma conjTranspose_fromColumns_eq_fromRows_conjTranspose (A₁ : Matrix m n₁ R)
     (A₂ : Matrix m n₂ R) :
     conjTranspose (fromColumns A₁ A₂) = fromRows (conjTranspose A₁) (conjTranspose A₂) := by
-  rw [fromColumns, fromRows]
   funext i j
   cases' i with i i
-  all_goals (simp only [conjTranspose_apply, of_apply, Sum.elim_inl, Sum.elim_inr])
+  all_goals (simp only [conjTranspose_apply, fromColumns_apply_inl, fromRows_apply_inl,
+    fromColumns_apply_inr, fromRows_apply_inr] )
 
 /- A row partioned matrix in a Star ring when conjugate transposed gives a column partitioned matrix
 with the rows of the initial matrix conjugate transposed to become columns. -/
 lemma conjTranspose_fromRows_eq_fromColumns_conjTranspose (A₁ : Matrix m₁ n R)
     (A₂ : Matrix m₂ n R) : conjTranspose (fromRows A₁ A₂) =
       fromColumns (conjTranspose A₁) (conjTranspose A₂) := by
+  /- I left this one for comparison. I think this proof looks more compact (nice)! -/
   rw [fromColumns, fromRows]
   funext j i
   cases' i with i i
