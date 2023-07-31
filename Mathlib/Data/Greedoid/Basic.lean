@@ -545,6 +545,18 @@ theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
   apply this
   simp only [h, le_refl]
 
+theorem bases_subset_of_rank_eq_of_subset
+  (h₁ : s ⊆ t) (h₂ : G.rank s = G.rank t) :
+    G.bases s ⊆ G.bases t := by
+  intro b hb
+  rw [basis_def] at *
+  simp only [hb.1, subset_trans hb.2.1 h₁, true_and]
+  intro a ha₁ ha₂
+  by_contra' h'
+  rw [Nat.le_antisymm_iff] at h₂
+  have ⟨h₂, h₃⟩ := h₂
+  sorry
+
 theorem local_submodularity
   (h₁ : G.rank s = G.rank (insert x s))
   (h₂ : G.rank s = G.rank (insert y s)) :
