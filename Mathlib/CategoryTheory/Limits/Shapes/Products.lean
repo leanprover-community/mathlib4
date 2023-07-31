@@ -61,16 +61,14 @@ abbrev Cofan (f : β → C) :=
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
 @[simps! pt π_app]
-def Fan.mk {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : Fan f
-    where
+def Fan.mk {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : Fan f where
   pt := P
   π := Discrete.natTrans (fun X => p X.as)
 #align category_theory.limits.fan.mk CategoryTheory.Limits.Fan.mk
 
 /-- A cofan over `f : β → C` consists of a collection of maps from every `f b` to an object `P`. -/
 @[simps! pt ι_app]
-def Cofan.mk {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : Cofan f
-    where
+def Cofan.mk {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : Cofan f where
   pt := P
   ι := Discrete.natTrans (fun X => p X.as)
 #align category_theory.limits.cofan.mk CategoryTheory.Limits.Cofan.mk
