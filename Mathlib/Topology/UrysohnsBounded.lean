@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.urysohns_bounded
-! leanprover-community/mathlib commit af683b11d1bd89d1e85a03bf1eb5519379aabdc9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.ContinuousFunction.Bounded
+
+#align_import topology.urysohns_bounded from "leanprover-community/mathlib"@"af683b11d1bd89d1e85a03bf1eb5519379aabdc9"
 
 /-!
 # Urysohn's lemma for bounded continuous functions

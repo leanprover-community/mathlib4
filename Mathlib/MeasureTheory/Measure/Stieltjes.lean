@@ -2,14 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.measure.stieltjes
-! leanprover-community/mathlib commit 20d5763051978e9bc6428578ed070445df6a18b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.Algebra.Order.LeftRightLim
+
+#align_import measure_theory.measure.stieltjes from "leanprover-community/mathlib"@"20d5763051978e9bc6428578ed070445df6a18b3"
 
 /-!
 # Stieltjes measures on the real line
@@ -220,6 +217,9 @@ instance instCoeFun : CoeFun StieltjesFunction fun _ => ℝ → ℝ :=
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
+@[ext] lemma ext {f g : StieltjesFunction} (h : ∀ x, f x = g x) : f = g := by
+  exact (StieltjesFunction.mk.injEq ..).mpr (funext (by exact h))
+
 variable (f : StieltjesFunction)
 
 theorem mono : Monotone f :=
@@ -393,7 +393,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
     still covered by the sets `s i` and moreover `f b - f a'` is very close to `f b - f a`
     (up to `ε/2`).
     Also, by definition one can cover `s i` by a half-closed interval `(p i, q i]` with `f`-length
-    very close to  that of `s i` (within a suitably small `ε' i`, say). If one moves `q i` very
+    very close to that of `s i` (within a suitably small `ε' i`, say). If one moves `q i` very
     slightly to the right, then the `f`-length will change very little by right continuity, and we
     will get an open interval `(p i, q' i)` covering `s i` with `f (q' i) - f (p i)` within `ε' i`
     of the `f`-length of `s i`. -/
@@ -437,14 +437,14 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
   calc
     ofReal (f b - f a) = ofReal (f b - f a' + (f a' - f a)) := by rw [sub_add_sub_cancel]
     _ ≤ ofReal (f b - f a') + ofReal (f a' - f a) := ENNReal.ofReal_add_le
-    _ ≤ (∑' i, ofReal (f (g i).2 - f (g i).1)) + ofReal δ :=
+    _ ≤ ∑' i, ofReal (f (g i).2 - f (g i).1) + ofReal δ :=
       (add_le_add (f.length_subadditive_Icc_Ioo I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
-    _ ≤ (∑' i, f.length (s i) + ε' i) + δ :=
+    _ ≤ ∑' i, (f.length (s i) + ε' i) + δ :=
       (add_le_add (ENNReal.tsum_le_tsum fun i => (hg i).2.le)
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
-    _ = (∑' i, f.length (s i)) + (∑' i, (ε' i : ℝ≥0∞)) + δ := by rw [ENNReal.tsum_add]
-    _ ≤ (∑' i, f.length (s i)) + δ + δ := (add_le_add (add_le_add le_rfl hε.le) le_rfl)
-    _ = (∑' i : ℕ, f.length (s i)) + ε := by simp [add_assoc, ENNReal.add_halves]
+    _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [ENNReal.tsum_add]
+    _ ≤ ∑' i, f.length (s i) + δ + δ := (add_le_add (add_le_add le_rfl hε.le) le_rfl)
+    _ = ∑' i : ℕ, f.length (s i) + ε := by simp [add_assoc, ENNReal.add_halves]
 #align stieltjes_function.outer_Ioc StieltjesFunction.outer_Ioc
 
 theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
@@ -612,5 +612,39 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
 #align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
+
+lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction) {l : ℝ}
+    (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
+    f = g := by
+  ext x
+  have hf := measure_Iic f hfl x
+  rw [hfg, measure_Iic g hgl x, ENNReal.ofReal_eq_ofReal_iff, eq_comm] at hf
+  · simpa using hf
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto g.mono hgl x
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto f.mono hfl x
+
+lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
+    (hfg : f.measure = g.measure) (hy : f y = g y) :
+    f = g := by
+  ext x
+  cases le_total x y with
+  | inl hxy =>
+    have hf := measure_Ioc f x y
+    rw [hfg, measure_Ioc g x y, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
+  | inr hxy =>
+    have hf := measure_Ioc f y x
+    rw [hfg, measure_Ioc g y x, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
 
 end StieltjesFunction

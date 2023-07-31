@@ -2,13 +2,10 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module geometry.manifold.algebra.smooth_functions
-! leanprover-community/mathlib commit e5ab837fc252451f3eb9124ae6e7b6f57455e7b9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.Algebra.Structures
+
+#align_import geometry.manifold.algebra.smooth_functions from "leanprover-community/mathlib"@"e5ab837fc252451f3eb9124ae6e7b6f57455e7b9"
 
 /-!
 # Algebraic structures over smooth functions
@@ -105,7 +102,7 @@ instance monoid {G : Type _} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
 #align smooth_map.monoid SmoothMap.monoid
 #align smooth_map.add_monoid SmoothMap.addMonoid
 
-/-- Coercion to a function as an `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
+/-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) "Coercion to a function as an `AddMonoidHom`.
   Similar to `AddMonoidHom.coeFn`."]
 def coeFnMonoidHom {G : Type _} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]

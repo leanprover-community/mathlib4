@@ -2,13 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fintype.fin
-! leanprover-community/mathlib commit 759575657f189ccb424b990164c8b1fa9f55cdfe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Interval
+
+#align_import data.fintype.fin from "leanprover-community/mathlib"@"759575657f189ccb424b990164c8b1fa9f55cdfe"
 
 /-!
 # The structure of `Fintype (Fin n)`
@@ -45,7 +42,7 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
 
 @[simp]
-theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSucc.toEmbedding := by
+theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding := by
   apply Finset.map_injective Fin.valEmbedding
   rw [Finset.map_map, Fin.map_valEmbedding_Iio, Fin.val_last]
   exact map_valEmbedding_univ.symm
@@ -66,7 +63,8 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmbedding _).to
 #align fin.Ioi_succ Fin.Ioi_succ
 
 @[simp]
-theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSucc.toEmbedding := by
+theorem Iio_castSucc (i : Fin n) :
+    Iio (castSucc i) = (Iio i).map Fin.castSuccEmb.toEmbedding := by
   apply Finset.map_injective Fin.valEmbedding
   rw [Finset.map_map, Fin.map_valEmbedding_Iio]
   exact (Fin.map_valEmbedding_Iio i).symm

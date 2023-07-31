@@ -2,11 +2,6 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.continuous_function.ideals
-! leanprover-community/mathlib commit c2258f7bf086b17eac0929d635403780c39e239f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.Compact
@@ -14,6 +9,8 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Topology.Algebra.Module.CharacterSpace
+
+#align_import topology.continuous_function.ideals from "leanprover-community/mathlib"@"c2258f7bf086b17eac0929d635403780c39e239f"
 
 /-!
 # Ideals of continuous functions
@@ -96,11 +93,11 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
-theorem idealOfSet_closed [LocallyCompactSpace X] [T2Space R] (s : Set X) :
+theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
   exact isClosed_iInter fun x => isClosed_iInter fun _ =>
-    isClosed_eq (continuous_eval_const' x) continuous_const
+    isClosed_eq (continuous_eval_const x) continuous_const
 #align continuous_map.ideal_of_set_closed ContinuousMap.idealOfSet_closed
 
 variable {R}
@@ -422,7 +419,7 @@ def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
     ⟨{  toFun := fun f => f x
         map_add' := fun f g => rfl
         map_smul' := fun z f => rfl
-        cont := continuous_eval_const' x }, by
+        cont := continuous_eval_const x }, by
         rw [CharacterSpace.eq_set_map_one_map_mul]; exact ⟨rfl, fun f g => rfl⟩⟩
   continuous_toFun := Continuous.subtype_mk (continuous_of_continuous_eval map_continuous) _
 #align weak_dual.character_space.continuous_map_eval WeakDual.CharacterSpace.continuousMapEval

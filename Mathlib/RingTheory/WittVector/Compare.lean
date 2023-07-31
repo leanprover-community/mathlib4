@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.compare
-! leanprover-community/mathlib commit 168ad7fc5d8173ad38be9767a22d50b8ecf1cd00
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Identities
 import Mathlib.NumberTheory.Padics.RingHoms
+
+#align_import ring_theory.witt_vector.compare from "leanprover-community/mathlib"@"168ad7fc5d8173ad38be9767a22d50b8ecf1cd00"
 
 /-!
 
@@ -104,7 +101,7 @@ theorem commutes {m : ℕ} (hm : n ≤ m) :
 
 theorem commutes' {m : ℕ} (hm : n ≤ m) (x : ZMod (p ^ m)) :
     truncate hm (zmodEquivTrunc p m x) = zmodEquivTrunc p n (ZMod.castHom (pow_dvd_pow p hm) _ x) :=
-  show (truncate hm).comp (zmodEquivTrunc p m).toRingHom x = _ by rw [commutes _ _ hm] ; rfl
+  show (truncate hm).comp (zmodEquivTrunc p m).toRingHom x = _ by rw [commutes _ _ hm]; rfl
 #align truncated_witt_vector.commutes' TruncatedWittVector.commutes'
 
 theorem commutes_symm' {m : ℕ} (hm : n ≤ m) (x : TruncatedWittVector p m (ZMod p)) :
@@ -130,7 +127,7 @@ and the horizontal arrow at the bottom is `TruncatedWittVector.truncate`.
 theorem commutes_symm {m : ℕ} (hm : n ≤ m) :
     (zmodEquivTrunc p n).symm.toRingHom.comp (truncate hm) =
       (ZMod.castHom (pow_dvd_pow p hm) _).comp (zmodEquivTrunc p m).symm.toRingHom :=
-  by ext ; apply commutes_symm'
+  by ext; apply commutes_symm'
 #align truncated_witt_vector.commutes_symm TruncatedWittVector.commutes_symm
 
 end Iso

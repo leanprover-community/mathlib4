@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module set_theory.game.state
-! leanprover-community/mathlib commit b134b2f5cf6dd25d4bbfd3c498b6e36c11a17225
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Game.Short
+
+#align_import set_theory.game.state from "leanprover-community/mathlib"@"b134b2f5cf6dd25d4bbfd3c498b6e36c11a17225"
 
 /-!
 # Games described via "the state of the board".
@@ -94,23 +91,23 @@ def ofStateAuxRelabelling :
   | s, 0, 0, hn, hm => by
     dsimp [PGame.ofStateAux]
     fconstructor; rfl; rfl
-    · intro i; dsimp at i ; exfalso
+    · intro i; dsimp at i; exfalso
       exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp hn)
-    · intro j; dsimp at j ; exfalso
+    · intro j; dsimp at j; exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp hm)
   | s, 0, m + 1, hn, hm => by
     dsimp [PGame.ofStateAux]
     fconstructor; rfl; rfl
-    · intro i; dsimp at i ; exfalso
+    · intro i; dsimp at i; exfalso
       exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp hn)
-    · intro j; dsimp at j ; exfalso
+    · intro j; dsimp at j; exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp hn)
   | s, n + 1, 0, hn, hm => by
     dsimp [PGame.ofStateAux]
     fconstructor; rfl; rfl
-    · intro i; dsimp at i ; exfalso
+    · intro i; dsimp at i; exfalso
       exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp hm)
-    · intro j; dsimp at j ; exfalso
+    · intro j; dsimp at j; exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp hm)
   | s, n + 1, m + 1, hn, hm => by
     dsimp [PGame.ofStateAux]

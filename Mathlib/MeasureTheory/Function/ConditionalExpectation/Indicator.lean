@@ -2,13 +2,10 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.indicator
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+
+#align_import measure_theory.function.conditional_expectation.indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 
@@ -20,7 +17,7 @@ a restricted measure.
 
 ## Main result
 
-* `MeasureTheory.condexp_indicator`: If `s` is a `m`-measurable set, then the conditional
+* `MeasureTheory.condexp_indicator`: If `s` is an `m`-measurable set, then the conditional
   expectation of the indicator function of `s` is almost everywhere equal to the indicator
   of `s` of the conditional expectation. Namely, `𝔼[s.indicator f | m] = s.indicator 𝔼[f | m]` a.e.
 
@@ -143,7 +140,7 @@ theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
   · exact (stronglyMeasurable_condexp.indicator hs_m).aeStronglyMeasurable'
 #align measure_theory.condexp_restrict_ae_eq_restrict MeasureTheory.condexp_restrict_ae_eq_restrict
 
-/-- If the restriction to a `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
+/-- If the restriction to an `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
 to `s` of another σ-algebra `m₂` (hypothesis `hs`), then `μ[f | m] =ᵐ[μ.restrict s] μ[f | m₂]`. -/
 theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableSpace α}
     {μ : Measure α} (hm : m ≤ m0) (hm₂ : m₂ ≤ m0) [SigmaFinite (μ.trim hm)]

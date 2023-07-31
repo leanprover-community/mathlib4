@@ -2,13 +2,10 @@
 Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.pointwise
-! leanprover-community/mathlib commit e96bdfbd1e8c98a09ff75f7ac6204d142debc840
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+
+#align_import linear_algebra.affine_space.pointwise from "leanprover-community/mathlib"@"e96bdfbd1e8c98a09ff75f7ac6204d142debc840"
 
 /-! # Pointwise instances on `AffineSubspace`s
 

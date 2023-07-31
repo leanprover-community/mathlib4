@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.open_immersion.Scheme
-! leanprover-community/mathlib commit 533f62f4dd62a5aad24a04326e6e787c8f7e98b1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+
+#align_import algebraic_geometry.open_immersion.Scheme from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
 /-!
 # Open immersions of schemes
@@ -58,7 +55,7 @@ protected def scheme (X : LocallyRingedSpace)
     skip
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    . exact Opens.openEmbedding _ -- Porting note : was `infer_instance`
+    · exact Opens.openEmbedding _ -- Porting note : was `infer_instance`
 #align algebraic_geometry.LocallyRingedSpace.IsOpenImmersion.Scheme AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.scheme
 
 end LocallyRingedSpace.IsOpenImmersion
@@ -215,8 +212,8 @@ instance basic_open_isOpenImmersion {R : CommRingCat} (f : R) :
     AlgebraicGeometry.IsOpenImmersion
       (Scheme.Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f))).op) := by
   apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
-  . exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
-  . intro x
+  · exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
+  · intro x
     exact Spec_map_localization_isIso R (Submonoid.powers f) x
 #align algebraic_geometry.Scheme.basic_open_IsOpenImmersion AlgebraicGeometry.Scheme.basic_open_isOpenImmersion
 
@@ -236,7 +233,7 @@ def affineBasisCoverOfAffine (R : CommRingCat) : OpenCover (Spec.obj (Opposite.o
   IsOpen x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
 #align algebraic_geometry.Scheme.affine_basis_cover_of_affine AlgebraicGeometry.Scheme.affineBasisCoverOfAffine
 
-/-- We may bind the basic open sets of an open affine cover to form a affine cover that is also
+/-- We may bind the basic open sets of an open affine cover to form an affine cover that is also
 a basis. -/
 def affineBasisCover (X : Scheme) : OpenCover X :=
   X.affineCover.bind fun _ => affineBasisCoverOfAffine _
@@ -258,7 +255,7 @@ theorem affineBasisCover_map_range (X : Scheme) (x : X)
       (X.affineCover.map x).1.base '' (PrimeSpectrum.basicOpen r).1 := by
   erw [coe_comp, Set.range_comp]
   -- Porting note : `congr` fails to see the goal is comparing image of the same function
-  refine congr_arg (_ '' .) ?_
+  refine congr_arg (_ '' ·) ?_
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
 #align algebraic_geometry.Scheme.affine_basis_cover_map_range AlgebraicGeometry.Scheme.affineBasisCover_map_range
 
@@ -272,7 +269,7 @@ theorem affineBasisCover_is_basis (X : Scheme) :
   · rintro a U haU hU
     rcases X.affineCover.Covers a with ⟨x, e⟩
     let U' := (X.affineCover.map (X.affineCover.f a)).1.base ⁻¹' U
-    have hxU' : x ∈ U' := by rw [← e] at haU ; exact haU
+    have hxU' : x ∈ U' := by rw [← e] at haU; exact haU
     rcases PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU'
         ((X.affineCover.map (X.affineCover.f a)).1.base.continuous_toFun.isOpen_preimage _
           hU) with
@@ -439,7 +436,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme} (f : X ⟶ Y
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.1.base)).openEmbedding⟩
 #align algebraic_geometry.is_iso_iff_stalk_iso AlgebraicGeometry.isIso_iff_stalk_iso
 
-/-- A open immersion induces an isomorphism from the domain onto the image -/
+/-- An open immersion induces an isomorphism from the domain onto the image -/
 def isoRestrict : X ≅ (Z.restrict H.base_open : _) :=
   ⟨(LocallyRingedSpace.IsOpenImmersion.isoRestrict H).hom,
     (LocallyRingedSpace.IsOpenImmersion.isoRestrict H).inv,
@@ -538,7 +535,7 @@ instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetT
   delta Scheme.forgetToTop
   apply @Limits.compPreservesLimit (K := cospan f g) (F := forget)
     (G := LocallyRingedSpace.forgetToTop) ?_ ?_
-  . infer_instance
+  · infer_instance
   apply @preservesLimitOfIsoDiagram (F := _) _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
   dsimp [LocallyRingedSpace.forgetToTop]
   infer_instance
@@ -1030,7 +1027,7 @@ theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : O
     ext1; exact Set.preimage_image_eq _ Subtype.coe_injective
   have : _ ≫ X.presheaf.map _ = _ :=
     (((f ∣_ U).1.c.naturality (eqToHom e).op).symm.trans ?_).trans this
-  . rw [← IsIso.eq_comp_inv, ← Functor.map_inv, Category.assoc] at this
+  · rw [← IsIso.eq_comp_inv, ← Functor.map_inv, Category.assoc] at this
     rw [this]
     congr 1
     erw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
@@ -1049,7 +1046,7 @@ theorem Γ_map_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
   congr
 #align algebraic_geometry.Γ_map_morphism_restrict AlgebraicGeometry.Γ_map_morphismRestrict
 
-/-- Restricting a morphism onto the the image of an open immersion is isomorphic to the base change
+/-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
 def morphismRestrictOpensRange {X Y U : Scheme} (f : X ⟶ Y) (g : U ⟶ Y) [hg : IsOpenImmersion g] :
     Arrow.mk (f ∣_ Scheme.Hom.opensRange g) ≅ Arrow.mk (pullback.snd : pullback f g ⟶ _) := by
@@ -1092,10 +1089,10 @@ def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Ope
         ((Category.comp_id _).trans (Category.id_comp _).symm) (by aesop_cat) ≫
       (pullbackRightPullbackFstIso _ _ _).hom ≫ (pullbackSymmetry _ _).hom
   have i3 : IsIso h
-  . repeat
+  · repeat
       apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
   have : (f ∣_ U ∣_ V) ≫ (Iso.refl _).hom = (asIso h).hom ≫ pullback.snd (f := f) (g := g)
-  . simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_fst, Iso.refl_hom,
+  · simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_fst, Iso.refl_hom,
       Category.assoc, pullbackSymmetry_hom_comp_snd, asIso_hom, pullback.lift_fst,
       pullbackSymmetry_hom_comp_fst]
     rfl
@@ -1105,7 +1102,7 @@ def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Ope
   ext1
   dsimp
   rw [coe_comp, Set.range_comp]
-  apply congr_arg (U.inclusion '' .)
+  apply congr_arg (U.inclusion '' ·)
   exact Subtype.range_val
 #align algebraic_geometry.morphism_restrict_restrict AlgebraicGeometry.morphismRestrictRestrict
 
@@ -1152,7 +1149,7 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
     erw [PresheafedSpace.stalkMap_germ _ (U.openEmbedding.isOpenMap.functor.obj V)
       ⟨x.1, ⟨⟨f.1.base x.1, x.2⟩, _, rfl⟩⟩]
     swap
-    . rw [morphismRestrict_val_base] at hxV
+    · rw [morphismRestrict_val_base] at hxV
       exact hxV
     erw [PresheafedSpace.restrictStalkIso_hom_eq_germ]
     rw [morphismRestrict_c_app, Category.assoc, TopCat.Presheaf.germ_res]

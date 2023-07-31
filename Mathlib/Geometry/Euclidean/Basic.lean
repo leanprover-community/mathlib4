@@ -2,15 +2,12 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
-
-! This file was ported from Lean 3 source module geometry.euclidean.basic
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
+
+#align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Euclidean spaces
@@ -83,8 +80,8 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
 theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
-    (h₁ : (∑ i in s₁, w₁ i) = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
-    (h₂ : (∑ i in s₂, w₂ i) = 0) :
+    (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
+    (h₂ : ∑ i in s₂, w₂ i = 0) :
     ⟪s₁.weightedVSub p₁ w₁, s₂.weightedVSub p₂ w₂⟫ =
       (-∑ i₁ in s₁, ∑ i₂ in s₂, w₁ i₁ * w₂ i₂ * (dist (p₁ i₁) (p₂ i₂) * dist (p₁ i₁) (p₂ i₂))) /
         2 := by
@@ -98,7 +95,7 @@ theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ 
 in terms of the pairwise distances between the points in that
 combination. -/
 theorem dist_affineCombination {ι : Type _} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
-    (h₁ : (∑ i in s, w₁ i) = 1) (h₂ : (∑ i in s, w₂ i) = 1) : by
+    (h₁ : ∑ i in s, w₁ i = 1) (h₂ : ∑ i in s, w₂ i = 1) : by
       have a₁ := s.affineCombination ℝ p w₁
       have a₂ := s.affineCombination ℝ p w₂
       exact dist a₁ a₂ * dist a₁ a₂ = (-∑ i₁ in s, ∑ i₂ in s,
@@ -217,8 +214,8 @@ subspace, whose direction is complete, as an unbundled function. This
 definition is only intended for use in setting up the bundled version
 `orthogonalProjection` and should not be used once that is
 defined. -/
-def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction]
-    (p : P) : P :=
+def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) : P :=
   Classical.choose <|
     inter_eq_singleton_of_nonempty_of_isCompl (nonempty_subtype.mp ‹_›)
       (mk'_nonempty p s.directionᗮ)
@@ -233,7 +230,7 @@ point onto the subspace. This lemma is only intended for use in
 setting up the bundled version and should not be used once that is
 defined. -/
 theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] (p : P) :
+    [HasOrthogonalProjection s.direction] (p : P) :
     (s : Set P) ∩ mk' p s.directionᗮ = {orthogonalProjectionFn s p} :=
   Classical.choose_spec <|
     inter_eq_singleton_of_nonempty_of_isCompl (nonempty_subtype.mp ‹_›)
@@ -246,8 +243,8 @@ theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [No
 /-- The `orthogonalProjectionFn` lies in the given subspace. This
 lemma is only intended for use in setting up the bundled version and
 should not be used once that is defined. -/
-theorem orthogonalProjectionFn_mem {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction]
-    (p : P) : orthogonalProjectionFn s p ∈ s := by
+theorem orthogonalProjectionFn_mem {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) : orthogonalProjectionFn s p ∈ s := by
   rw [← mem_coe, ← Set.singleton_subset_iff, ← inter_eq_singleton_orthogonalProjectionFn]
   exact Set.inter_subset_left _ _
 #align euclidean_geometry.orthogonal_projection_fn_mem EuclideanGeometry.orthogonalProjectionFn_mem
@@ -256,7 +253,8 @@ theorem orthogonalProjectionFn_mem {s : AffineSubspace ℝ P} [Nonempty s] [Comp
 subspace. This lemma is only intended for use in setting up the
 bundled version and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem_orthogonal {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] (p : P) : orthogonalProjectionFn s p ∈ mk' p s.directionᗮ := by
+    [HasOrthogonalProjection s.direction] (p : P) :
+    orthogonalProjectionFn s p ∈ mk' p s.directionᗮ := by
   rw [← mem_coe, ← Set.singleton_subset_iff, ← inter_eq_singleton_orthogonalProjectionFn]
   exact Set.inter_subset_right _ _
 #align euclidean_geometry.orthogonal_projection_fn_mem_orthogonal EuclideanGeometry.orthogonalProjectionFn_mem_orthogonal
@@ -266,7 +264,8 @@ result in the orthogonal direction. This lemma is only intended for
 use in setting up the bundled version and should not be used once that
 is defined. -/
 theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] (p : P) : orthogonalProjectionFn s p -ᵥ p ∈ s.directionᗮ :=
+    [HasOrthogonalProjection s.direction] (p : P) :
+    orthogonalProjectionFn s p -ᵥ p ∈ s.directionᗮ :=
   direction_mk' p s.directionᗮ ▸
     vsub_mem_direction (orthogonalProjectionFn_mem_orthogonal p) (self_mem_mk' _ _)
 #align euclidean_geometry.orthogonal_projection_fn_vsub_mem_direction_orthogonal EuclideanGeometry.orthogonalProjectionFn_vsub_mem_direction_orthogonal
@@ -279,8 +278,8 @@ subspace, whose direction is complete. The corresponding linear map
 points whose difference is that vector) is the `orthogonalProjection`
 for real inner product spaces, onto the direction of the affine
 subspace being projected onto. -/
-nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] :
-    P →ᵃ[ℝ] s where
+nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] : P →ᵃ[ℝ] s where
   toFun p := ⟨orthogonalProjectionFn s p, orthogonalProjectionFn_mem p⟩
   linear := orthogonalProjection s.direction
   map_vadd' p v := by
@@ -307,15 +306,16 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s] [Complet
 #align euclidean_geometry.orthogonal_projection EuclideanGeometry.orthogonalProjection
 
 @[simp]
-theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction]
-    (p : P) : orthogonalProjectionFn s p = orthogonalProjection s p :=
+theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    orthogonalProjectionFn s p = orthogonalProjection s p :=
   rfl
 #align euclidean_geometry.orthogonal_projection_fn_eq EuclideanGeometry.orthogonalProjectionFn_eq
 
 /-- The linear map corresponding to `orthogonalProjection`. -/
 @[simp]
 theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] :
+    [HasOrthogonalProjection s.direction] :
     (orthogonalProjection s).linear = _root_.orthogonalProjection s.direction :=
   rfl
 #align euclidean_geometry.orthogonal_projection_linear EuclideanGeometry.orthogonalProjection_linear
@@ -324,21 +324,22 @@ theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
 through the given point is the `orthogonalProjection` of that point
 onto the subspace. -/
 theorem inter_eq_singleton_orthogonalProjection {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] (p : P) :
+    [HasOrthogonalProjection s.direction] (p : P) :
     (s : Set P) ∩ mk' p s.directionᗮ = {↑(orthogonalProjection s p)} := by
   rw [← orthogonalProjectionFn_eq]
   exact inter_eq_singleton_orthogonalProjectionFn p
 #align euclidean_geometry.inter_eq_singleton_orthogonal_projection EuclideanGeometry.inter_eq_singleton_orthogonalProjection
 
 /-- The `orthogonalProjection` lies in the given subspace. -/
-theorem orthogonalProjection_mem {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction]
-    (p : P) : ↑(orthogonalProjection s p) ∈ s :=
+theorem orthogonalProjection_mem {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) : ↑(orthogonalProjection s p) ∈ s :=
   (orthogonalProjection s p).2
 #align euclidean_geometry.orthogonal_projection_mem EuclideanGeometry.orthogonalProjection_mem
 
 /-- The `orthogonalProjection` lies in the orthogonal subspace. -/
 theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
-    [CompleteSpace s.direction] (p : P) : ↑(orthogonalProjection s p) ∈ mk' p s.directionᗮ :=
+    [HasOrthogonalProjection s.direction] (p : P) :
+    ↑(orthogonalProjection s p) ∈ mk' p s.directionᗮ :=
   orthogonalProjectionFn_mem_orthogonal p
 #align euclidean_geometry.orthogonal_projection_mem_orthogonal EuclideanGeometry.orthogonalProjection_mem_orthogonal
 
@@ -346,7 +347,7 @@ theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace ℝ P) [Nonempty
 `orthogonalProjection` produces a result in the direction of the
 given subspace. -/
 theorem orthogonalProjection_vsub_mem_direction {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
+    [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
     ↑(orthogonalProjection s p2 -ᵥ ⟨p1, hp1⟩ : s.direction) ∈ s.direction :=
   (orthogonalProjection s p2 -ᵥ ⟨p1, hp1⟩ : s.direction).2
 #align euclidean_geometry.orthogonal_projection_vsub_mem_direction EuclideanGeometry.orthogonalProjection_vsub_mem_direction
@@ -354,7 +355,7 @@ theorem orthogonalProjection_vsub_mem_direction {s : AffineSubspace ℝ P} [None
 /-- Subtracting the `orthogonalProjection` from a point in the given
 subspace produces a result in the direction of the given subspace. -/
 theorem vsub_orthogonalProjection_mem_direction {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
+    [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
     ↑((⟨p1, hp1⟩ : s) -ᵥ orthogonalProjection s p2 : s.direction) ∈ s.direction :=
   ((⟨p1, hp1⟩ : s) -ᵥ orthogonalProjection s p2 : s.direction).2
 #align euclidean_geometry.vsub_orthogonal_projection_mem_direction EuclideanGeometry.vsub_orthogonalProjection_mem_direction
@@ -362,7 +363,7 @@ theorem vsub_orthogonalProjection_mem_direction {s : AffineSubspace ℝ P} [None
 /-- A point equals its orthogonal projection if and only if it lies in
 the subspace. -/
 theorem orthogonalProjection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p : P} : ↑(orthogonalProjection s p) = p ↔ p ∈ s := by
+    [HasOrthogonalProjection s.direction] {p : P} : ↑(orthogonalProjection s p) = p ↔ p ∈ s := by
   constructor
   · exact fun h => h ▸ orthogonalProjection_mem p
   · intro h
@@ -374,7 +375,7 @@ theorem orthogonalProjection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
 
 @[simp]
 theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] (p : s) : orthogonalProjection s p = p := by
+    [HasOrthogonalProjection s.direction] (p : s) : orthogonalProjection s p = p := by
   ext
   rw [orthogonalProjection_eq_self_iff]
   exact p.2
@@ -383,7 +384,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 /-- Orthogonal projection is idempotent. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
-    [CompleteSpace s.direction] (p : P) :
+    [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
   ext
   rw [orthogonalProjection_eq_self_iff]
@@ -391,36 +392,39 @@ theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [No
 #align euclidean_geometry.orthogonal_projection_orthogonal_projection EuclideanGeometry.orthogonalProjection_orthogonalProjection
 
 theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s]
-    [Nonempty s'] [CompleteSpace s.direction] [CompleteSpace s'.direction] (h : s = s') (p : P) :
-    (orthogonalProjection s p : P) = (orthogonalProjection s' p : P) := by
+    [Nonempty s'] [HasOrthogonalProjection s.direction] [HasOrthogonalProjection s'.direction]
+    (h : s = s') (p : P) : (orthogonalProjection s p : P) = (orthogonalProjection s' p : P) := by
   subst h
   rfl
 #align euclidean_geometry.eq_orthogonal_projection_of_eq_subspace EuclideanGeometry.eq_orthogonalProjection_of_eq_subspace
 
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
 theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p : P} : dist p (orthogonalProjection s p) = 0 ↔ p ∈ s := by
+    [HasOrthogonalProjection s.direction] {p : P} :
+    dist p (orthogonalProjection s p) = 0 ↔ p ∈ s := by
   rw [dist_comm, dist_eq_zero, orthogonalProjection_eq_self_iff]
 #align euclidean_geometry.dist_orthogonal_projection_eq_zero_iff EuclideanGeometry.dist_orthogonalProjection_eq_zero_iff
 
 /-- The distance between a point and its orthogonal projection is
 nonzero if it does not lie in the subspace. -/
 theorem dist_orthogonalProjection_ne_zero_of_not_mem {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p : P} (hp : p ∉ s) : dist p (orthogonalProjection s p) ≠ 0 :=
+    [HasOrthogonalProjection s.direction] {p : P} (hp : p ∉ s) :
+    dist p (orthogonalProjection s p) ≠ 0 :=
   mt dist_orthogonalProjection_eq_zero_iff.mp hp
 #align euclidean_geometry.dist_orthogonal_projection_ne_zero_of_not_mem EuclideanGeometry.dist_orthogonalProjection_ne_zero_of_not_mem
 
 /-- Subtracting `p` from its `orthogonalProjection` produces a result
 in the orthogonal direction. -/
 theorem orthogonalProjection_vsub_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
-    [CompleteSpace s.direction] (p : P) : (orthogonalProjection s p : P) -ᵥ p ∈ s.directionᗮ :=
+    [HasOrthogonalProjection s.direction] (p : P) :
+    (orthogonalProjection s p : P) -ᵥ p ∈ s.directionᗮ :=
   orthogonalProjectionFn_vsub_mem_direction_orthogonal p
 #align euclidean_geometry.orthogonal_projection_vsub_mem_direction_orthogonal EuclideanGeometry.orthogonalProjection_vsub_mem_direction_orthogonal
 
 /-- Subtracting the `orthogonalProjection` from `p` produces a result
 in the orthogonal direction. -/
 theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
-    [CompleteSpace s.direction] (p : P) : p -ᵥ orthogonalProjection s p ∈ s.directionᗮ :=
+    [HasOrthogonalProjection s.direction] (p : P) : p -ᵥ orthogonalProjection s p ∈ s.directionᗮ :=
   direction_mk' p s.directionᗮ ▸
     vsub_mem_direction (self_mem_mk' _ _) (orthogonalProjection_mem_orthogonal s p)
 #align euclidean_geometry.vsub_orthogonal_projection_mem_direction_orthogonal EuclideanGeometry.vsub_orthogonalProjection_mem_direction_orthogonal
@@ -428,7 +432,7 @@ theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace �
 /-- Subtracting the `orthogonalProjection` from `p` produces a result in the kernel of the linear
 part of the orthogonal projection. -/
 theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
-    [CompleteSpace s.direction] (p : P) :
+    [HasOrthogonalProjection s.direction] (p : P) :
     _root_.orthogonalProjection s.direction (p -ᵥ orthogonalProjection s p) = 0 := by
   apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
   intro c hc
@@ -440,7 +444,7 @@ theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P
 orthogonal projection, produces the original point if the vector was
 in the orthogonal direction. -/
 theorem orthogonalProjection_vadd_eq_self {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) :
+    [HasOrthogonalProjection s.direction] {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) :
     orthogonalProjection s (v +ᵥ p) = ⟨p, hp⟩ := by
   have h := vsub_orthogonalProjection_mem_direction_orthogonal s (v +ᵥ p)
   rw [vadd_vsub_assoc, Submodule.add_mem_iff_right _ hv] at h
@@ -455,7 +459,7 @@ orthogonal projection, produces the original point if the vector is a
 multiple of the result of subtracting a point's orthogonal projection
 from that point. -/
 theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspace ℝ P}
-    [Nonempty s] [CompleteSpace s.direction] {p1 : P} (p2 : P) (r : ℝ) (hp : p1 ∈ s) :
+    [Nonempty s] [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P) (r : ℝ) (hp : p1 ∈ s) :
     orthogonalProjection s (r • (p2 -ᵥ orthogonalProjection s p2 : V) +ᵥ p1) = ⟨p1, hp⟩ :=
   orthogonalProjection_vadd_eq_self hp
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
@@ -465,7 +469,7 @@ theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubs
 sum of the squares of the distances of the two points to the
 `orthogonalProjection`. -/
 theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
-    {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction] {p1 : P} (p2 : P)
+    {s : AffineSubspace ℝ P} [Nonempty s] [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P)
     (hp1 : p1 ∈ s) :
     dist p1 p2 * dist p1 p2 =
       dist p1 (orthogonalProjection s p2) * dist p1 (orthogonalProjection s p2) +
@@ -506,7 +510,8 @@ specifically reflection in a codimension-one subspace, and sometimes
 more generally to cover operations such as reflection in a point. The
 definition here, of reflection in an affine subspace, is a more
 general sense of the word that includes both those common cases. -/
-def reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] : P ≃ᵃⁱ[ℝ] P :=
+def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction] :
+    P ≃ᵃⁱ[ℝ] P :=
   AffineIsometryEquiv.mk'
     (fun p => ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
     (_root_.reflection s.direction) (↑(Classical.arbitrary s))
@@ -525,22 +530,22 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.directio
 #align euclidean_geometry.reflection EuclideanGeometry.reflection
 
 /-- The result of reflecting. -/
-theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] (p : P) :
-    reflection s p = ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
+theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
+    (p : P) : reflection s p = ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
   rfl
 #align euclidean_geometry.reflection_apply EuclideanGeometry.reflection_apply
 
 theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] [Nonempty s']
-    [CompleteSpace s.direction] [CompleteSpace s'.direction] (h : s = s') (p : P) :
-    (reflection s p : P) = (reflection s' p : P) := by
+    [HasOrthogonalProjection s.direction] [HasOrthogonalProjection s'.direction] (h : s = s')
+    (p : P) : (reflection s p : P) = (reflection s' p : P) := by
   subst h
   rfl
 #align euclidean_geometry.eq_reflection_of_eq_subspace EuclideanGeometry.eq_reflection_of_eq_subspace
 
 /-- Reflecting twice in the same subspace. -/
 @[simp]
-theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction]
-    (p : P) : reflection s (reflection s p) = p := by
+theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) : reflection s (reflection s p) = p := by
   have : ∀ a : s, ∀ b : V, (_root_.orthogonalProjection s.direction) b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro _ _ h
@@ -551,23 +556,22 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteS
 
 /-- Reflection is its own inverse. -/
 @[simp]
-theorem reflection_symm (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] :
-    (reflection s).symm = reflection s := by
+theorem reflection_symm (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] : (reflection s).symm = reflection s := by
   ext
   rw [← (reflection s).injective.eq_iff]
   simp
 #align euclidean_geometry.reflection_symm EuclideanGeometry.reflection_symm
 
 /-- Reflection is involutive. -/
-theorem reflection_involutive (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction] :
-    Function.Involutive (reflection s) :=
+theorem reflection_involutive (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] : Function.Involutive (reflection s) :=
   reflection_reflection s
 #align euclidean_geometry.reflection_involutive EuclideanGeometry.reflection_involutive
 
-/-- A point is its own reflection if and only if it is in the
-subspace. -/
-theorem reflection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction]
-    (p : P) : reflection s p = p ↔ p ∈ s := by
+/-- A point is its own reflection if and only if it is in the subspace. -/
+theorem reflection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) : reflection s p = p ↔ p ∈ s := by
   rw [← orthogonalProjection_eq_self_iff, reflection_apply]
   constructor
   · intro h
@@ -583,7 +587,8 @@ theorem reflection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s] [Complete
 and only if the point has the same orthogonal projection in each of
 those subspaces. -/
 theorem reflection_eq_iff_orthogonalProjection_eq (s₁ s₂ : AffineSubspace ℝ P) [Nonempty s₁]
-    [Nonempty s₂] [CompleteSpace s₁.direction] [CompleteSpace s₂.direction] (p : P) :
+    [Nonempty s₂] [HasOrthogonalProjection s₁.direction] [HasOrthogonalProjection s₂.direction]
+    (p : P) :
     reflection s₁ p = reflection s₂ p ↔
       (orthogonalProjection s₁ p : P) = orthogonalProjection s₂ p := by
   rw [reflection_apply, reflection_apply]
@@ -600,7 +605,7 @@ theorem reflection_eq_iff_orthogonalProjection_eq (s₁ s₂ : AffineSubspace �
 
 /-- The distance between `p₁` and the reflection of `p₂` equals that
 between the reflection of `p₁` and `p₂`. -/
-theorem dist_reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction]
+theorem dist_reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
     (p₁ p₂ : P) : dist p₁ (reflection s p₂) = dist (reflection s p₁) p₂ := by
   conv_lhs => rw [← reflection_reflection s p₁]
   exact (reflection s).dist_map _ _
@@ -608,8 +613,9 @@ theorem dist_reflection (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s
 
 /-- A point in the subspace is equidistant from another point and its
 reflection. -/
-theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s] [CompleteSpace s.direction]
-    {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) : dist p₁ (reflection s p₂) = dist p₁ p₂ := by
+theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
+    dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁
   convert(reflection s).dist_map p₁ p₂
   rw [hp₁]
@@ -618,7 +624,8 @@ theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s] [Compl
 /-- The reflection of a point in a subspace is contained in any larger
 subspace containing both the point and the subspace reflected in. -/
 theorem reflection_mem_of_le_of_mem {s₁ s₂ : AffineSubspace ℝ P} [Nonempty s₁]
-    [CompleteSpace s₁.direction] (hle : s₁ ≤ s₂) {p : P} (hp : p ∈ s₂) : reflection s₁ p ∈ s₂ := by
+    [HasOrthogonalProjection s₁.direction] (hle : s₁ ≤ s₂) {p : P} (hp : p ∈ s₂) :
+    reflection s₁ p ∈ s₂ := by
   rw [reflection_apply]
   have ho : ↑(orthogonalProjection s₁ p) ∈ s₂ := hle (orthogonalProjection_mem p)
   exact vadd_mem_of_mem_direction (vsub_mem_direction ho hp) ho
@@ -626,8 +633,9 @@ theorem reflection_mem_of_le_of_mem {s₁ s₂ : AffineSubspace ℝ P} [Nonempty
 
 /-- Reflecting an orthogonal vector plus a point in the subspace
 produces the negation of that vector plus the point. -/
-theorem reflection_orthogonal_vadd {s : AffineSubspace ℝ P} [Nonempty s] [CompleteSpace s.direction]
-    {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) : reflection s (v +ᵥ p) = -v +ᵥ p := by
+theorem reflection_orthogonal_vadd {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) :
+    reflection s (v +ᵥ p) = -v +ᵥ p := by
   rw [reflection_apply, orthogonalProjection_vadd_eq_self hp hv, vsub_vadd_eq_vsub_sub]
   simp
 #align euclidean_geometry.reflection_orthogonal_vadd EuclideanGeometry.reflection_orthogonal_vadd
@@ -637,7 +645,7 @@ negation of that vector plus the point if the vector is a multiple of
 the result of subtracting a point's orthogonal projection from that
 point. -/
 theorem reflection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p₁ : P} (p₂ : P) (r : ℝ) (hp₁ : p₁ ∈ s) :
+    [HasOrthogonalProjection s.direction] {p₁ : P} (p₂ : P) (r : ℝ) (hp₁ : p₁ ∈ s) :
     reflection s (r • (p₂ -ᵥ orthogonalProjection s p₂) +ᵥ p₁) =
       -(r • (p₂ -ᵥ orthogonalProjection s p₂)) +ᵥ p₁ :=
   reflection_orthogonal_vadd hp₁

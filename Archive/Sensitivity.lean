@@ -3,11 +3,6 @@ Copyright (c) 2019 Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert 
 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert Y. Lewis, Patrick Massot
-
-! This file was ported from Lean 3 source module sensitivity
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.ApplyFun
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Data.Real.Sqrt
+
+#align_import sensitivity from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # Huang's sensitivity theorem
@@ -149,7 +146,8 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
   · rintro ⟨i, h_eq, h_uni⟩
     use i.succ, h_eq
     intro y hy
-    rw [← Fin.pred_inj (ha := ?ha) (hb := ?hb), Fin.pred_succ]
+    rw [← Fin.pred_inj (ha := (?ha : y ≠ 0)) (hb := (?hb : i.succ ≠ 0)),
+      Fin.pred_succ]
     case ha =>
       contrapose! hy
       rw [hy, h₀]
@@ -230,7 +228,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction' n with n ih
-  · dsimp [ε] at h ; exact h fun _ => true
+  · dsimp [ε] at h; exact h fun _ => true
   · cases' v with v₁ v₂
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);

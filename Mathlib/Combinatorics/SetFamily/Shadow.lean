@@ -2,14 +2,11 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.shadow
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Slice
 import Mathlib.Logic.Function.Iterate
+
+#align_import combinatorics.set_family.shadow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Shadows
@@ -63,7 +60,6 @@ def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => s.image (erase s)
 #align finset.shadow Finset.shadow
 
--- mathport name: finset.shadow
 -- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
 -- Porting note: had to open FinsetFamily
@@ -87,7 +83,7 @@ theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Fins
   sup_mono
 #align finset.shadow_monotone Finset.shadow_monotone
 
-/-- `s` is in the shadow of `𝒜` iff there is an `t ∈ 𝒜` from which we can remove one element to
+/-- `s` is in the shadow of `𝒜` iff there is a `t ∈ 𝒜` from which we can remove one element to
 get `s`. -/
 theorem mem_shadow_iff : s ∈ ∂ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ a ∈ t, erase t a = s := by
   simp only [shadow, mem_sup, mem_image]
@@ -133,8 +129,8 @@ theorem mem_shadow_iff_exists_mem_card_add_one :
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} :=
       card_eq_one.1 (by rw [card_sdiff hst, h, add_tsub_cancel_left])
     exact
-      ⟨a, fun hat => not_mem_sdiff_of_mem_right hat ((ha.ge : _ ⊆ _) <| mem_singleton_self a), by
-        rwa [insert_eq a s, ← ha, sdiff_union_of_subset hst]⟩
+      ⟨a, fun hat => not_mem_sdiff_of_mem_right hat (ha.superset <| mem_singleton_self a),
+       by rwa [insert_eq a s, ← ha, sdiff_union_of_subset hst]⟩
 #align finset.mem_shadow_iff_exists_mem_card_add_one Finset.mem_shadow_iff_exists_mem_card_add_one
 
 /-- Being in the shadow of `𝒜` means we have a superset in `𝒜`. -/
@@ -181,13 +177,12 @@ section UpShadow
 variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {s t : Finset α} {a : α} {k r : ℕ}
 
 /-- The upper shadow of a set family `𝒜` is all sets we can get by adding one element to any set in
-`𝒜`, and the (`k` times) iterated upper shadow (`up_shadow^[k]`) is all sets we can get by adding
+`𝒜`, and the (`k` times) iterated upper shadow (`upShadow^[k]`) is all sets we can get by adding
 `k` elements from any set in `𝒜`. -/
 def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => sᶜ.image fun a => insert a s
 #align finset.up_shadow Finset.upShadow
 
--- mathport name: finset.up_shadow
 -- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂⁺ " => Finset.upShadow
 
@@ -203,7 +198,7 @@ theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (
   fun _ _ => sup_mono
 #align finset.up_shadow_monotone Finset.upShadow_monotone
 
-/-- `s` is in the upper shadow of `𝒜` iff there is an `t ∈ 𝒜` from which we can remove one element
+/-- `s` is in the upper shadow of `𝒜` iff there is a `t ∈ 𝒜` from which we can remove one element
 to get `s`. -/
 theorem mem_upShadow_iff : s ∈ ∂⁺ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ (a : _) (_ : a ∉ t), insert a t = s := by
   simp_rw [upShadow, mem_sup, mem_image, exists_prop, mem_compl]

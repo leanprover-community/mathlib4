@@ -2,16 +2,13 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module algebra.category.Mon.adjunctions
-! leanprover-community/mathlib commit 4bcba0da3d97399ce99260794213e69ccdf886ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.SemigroupCat.Basic
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
+
+#align_import algebra.category.Mon.adjunctions from "leanprover-community/mathlib"@"4bcba0da3d97399ce99260794213e69ccdf886ee"
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -51,8 +48,8 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align has_forget_to_AddSemigroup hasForgetToAddSemigroup
 
-/-- The adjoin_one-forgetful adjunction from `SemigroupCat` to `MonCat`.-/
-@[to_additive "The adjoin_one-forgetful adjunction from `AddSemigroupCat` to `AddMonCat`"]
+/-- The `adjoinOne`-forgetful adjunction from `SemigroupCat` to `MonCat`.-/
+@[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigroupCat` to `AddMonCat`"]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun S M => WithOne.lift.symm
@@ -62,8 +59,8 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
         simp only [Equiv.symm_symm, adjoinOne_map, coe_comp]
         simp_rw [WithOne.map]
         cases x
-        . rfl
-        . simp
+        · rfl
+        · simp
           rfl }
 #align adjoin_one_adj adjoinOneAdj
 #align adjoin_zero_adj adjoinZeroAdj

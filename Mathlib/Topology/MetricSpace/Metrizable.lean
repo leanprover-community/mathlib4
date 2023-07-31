@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.metrizable
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.UniformSpace.Cauchy
+
+#align_import topology.metric_space.metrizable from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Metrizability of a T₃ topological space with second countable topology
@@ -141,6 +138,12 @@ instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (�
   letI := fun i => metrizableSpaceMetric (π i)
   infer_instance
 #align topological_space.metrizable_space_pi TopologicalSpace.metrizableSpace_pi
+
+theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X}
+    (hs : IsSeparable s) : SecondCountableTopology s := by
+  letI := pseudoMetrizableSpacePseudoMetric X
+  have := hs.separableSpace
+  exact UniformSpace.secondCountable_of_separable s
 
 variable (X)
 variable [T3Space X] [SecondCountableTopology X]
