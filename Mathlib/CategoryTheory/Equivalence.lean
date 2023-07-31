@@ -85,7 +85,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   unitIso : 𝟭 C ≅ functor ⋙ inverse
   /-- The composition `inverse ⋙ functor` is also isomorphic to the identity -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /-- The natural isomorphisms compose to the identity -/
+  /-- The natural isomorphisms compose to the identity. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
@@ -477,7 +477,7 @@ class IsEquivalence (F : C ⥤ D) where mk' ::
   unitIso : 𝟭 C ≅ F ⋙ inverse
   /-- Composition `inverse ⋙ F` is isomorphic to the identity. -/
   counitIso : inverse ⋙ F ≅ 𝟭 D
-  /-- The natural isomorphisms are inverse -/
+  /-- The natural isomorphisms are inverse. -/
   functor_unitIso_comp :
     ∀ X : C,
       F.map ((unitIso.hom : 𝟭 C ⟶ F ⋙ inverse).app X) ≫ counitIso.hom.app (F.obj X) =
