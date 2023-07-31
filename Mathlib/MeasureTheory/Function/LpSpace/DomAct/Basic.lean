@@ -10,8 +10,8 @@ import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 # Action of `Mᵈᵐᵃ` on `Lᵖ` spaces
 
 In this file we define action of `Mᵈᵐᵃ` on `MeasureTheory.Lp E p μ`
-If `f : α → E` is a function representing an equivalence class in `Lᵖ(α, E)`, `M` acts on `α`, and
-`c : Mᵈᵐᵃ`, then `c • [f]` is represented by the function `a ↦ f (c • a)`.
+If `f : α → E` is a function representing an equivalence class in `Lᵖ(α, E)`, `M` acts on `α`,
+and `c : M`, then `(.mk c : Mᵈᵐᵃ) • [f]` is represented by the function `a ↦ f (c • a)`.
 
 We also prove basic properties of this action.
 -/
