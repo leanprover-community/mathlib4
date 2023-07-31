@@ -211,7 +211,8 @@ theorem rightDistributor_assoc {J : Type} [Fintype J] (f : J → C) (X Y : C) :
   simp only [← tensor_id, associator_inv_naturality, Iso.hom_inv_id_assoc]
 #align category_theory.right_distributor_assoc CategoryTheory.rightDistributor_assoc
 
-theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J] (X : C) (f : J → C) (Y : C) :
+theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J]
+    (X : C) (f : J → C) (Y : C) :
     (leftDistributor X f ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
       α_ X (⨁ f) Y ≪≫
         (asIso (𝟙 X) ⊗ rightDistributor _ Y) ≪≫
@@ -267,7 +268,8 @@ theorem rightDistributor_ext_left {J : Type} [Fintype J] (X Y : C) (f : J → C)
   apply w
 
 @[ext]
-theorem rightDistributor_ext_right {J : Type} [Fintype J] (X Y : C) (f : J → C) (g h : X ⟶ (⨁ f) ⊗ Y)
+theorem rightDistributor_ext_right {J : Type} [Fintype J]
+    (X Y : C) (f : J → C) (g h : X ⟶ (⨁ f) ⊗ Y)
     (w : ∀ j, g ≫ (biproduct.π f j ⊗ 𝟙 Y) = h ≫ (biproduct.π f j ⊗ 𝟙 Y)) : g = h := by
   apply (cancel_mono (rightDistributor f Y).hom).mp
   ext
