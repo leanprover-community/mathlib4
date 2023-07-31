@@ -2,10 +2,6 @@ import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.DirectSum.Module
 
-structure PointedCone [OrderedSemiring 𝕜] [Nontrivial 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
-  extends ConvexCone 𝕜 E where
-  is_pointed' : 0 ∈ carrier
-
 namespace ConvexCone.Pointed
 
 variable {𝕜} [OrderedSemiring 𝕜] [Nontrivial 𝕜]
@@ -22,15 +18,15 @@ instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 variable {S} {S : ConvexCone 𝕜 E} [hS : Fact S.Pointed]
 
 @[simp]
-theorem mem_zero : (0 ∈ S) := hS.elim
+theorem zero_mem : (0 ∈ S) := hS.elim
 
 instance : Zero S where
-  zero := ⟨0, by simp⟩
+  zero := ⟨0, hS.elim⟩
 
 instance hasSmul : SMul 𝕜≥0 S where
   smul := fun ⟨c, hc⟩ ⟨x, hx⟩ => ⟨c • x, by
     cases' eq_or_lt_of_le hc with hzero hpos
-    . simp_rw [← hzero, zero_smul, mem_zero]
+    . simp_rw [← hzero, zero_smul, zero_mem]
     . exact S.smul_mem hpos hx⟩
 
 instance hasNsmul : SMul ℕ S where
@@ -49,7 +45,8 @@ theorem coe_nsmul (x : S) (n : ℕ) : (n • x : E) = n • (x : E) := by
   simp_rw [Pointed.coe_smul, Pointed.nsmul_eq_smul_cast] ; rfl
 
 @[simp]
-theorem coe_add : ∀ (x y : { x // x ∈ S }), (x + y : E) = ↑x + ↑y := by aesop
+theorem coe_add : ∀ (x y : { x // x ∈ S }), (x + y : E) = ↑x + ↑y := by
+  aesop
 
 instance : AddCommMonoid S :=
   Function.Injective.addCommMonoid (Subtype.val : S → E) Subtype.coe_injective rfl coe_add coe_nsmul
@@ -76,11 +73,9 @@ end Module
 
 section ofModule
 
-variable {E} [AddCommMonoid E] [Module 𝕜 E]
-variable {M} [AddCommMonoid M] [Module { c : 𝕜 // 0 ≤ c } M] -- notation not working
-
-variable {F} [AddCommMonoid F] [Module 𝕜 F]
-variable {N} [AddCommMonoid N] [Module { c : 𝕜 // 0 ≤ c } N] -- notation not working
+variable {E M}
+variable [AddCommMonoid E] [Module 𝕜 E]
+variable [AddCommMonoid M] [Module { c : 𝕜 // 0 ≤ c } M] -- notation not working
 
 def ofModule (f : M →ₗ[𝕜≥0] E) : ConvexCone 𝕜 E where
   carrier := Set.range f
@@ -90,7 +85,9 @@ def ofModule (f : M →ₗ[𝕜≥0] E) : ConvexCone 𝕜 E where
 theorem isPointed (f : M →ₗ[𝕜≥0] E) : (ofModule f).Pointed :=
   ⟨0, LinearMap.map_zero f⟩
 
-def map (f : M →ₗ[𝕜≥0] E) (g : E →ₗ[𝕜≥0] F) : ConvexCone 𝕜 F := ofModule (g.comp f)
+def map {F} [AddCommMonoid F] [Module 𝕜 F] (f : M →ₗ[𝕜≥0] E) (g : E →ₗ[𝕜≥0] F) :
+    ConvexCone 𝕜 F :=
+  ofModule (g.comp f)
 
 end ofModule
 
