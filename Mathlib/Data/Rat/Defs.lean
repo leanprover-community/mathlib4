@@ -319,6 +319,8 @@ instance commRing : CommRing ℚ where
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   intCast := fun n => n
   natCast n := Int.cast n
   natCast_zero := rfl
