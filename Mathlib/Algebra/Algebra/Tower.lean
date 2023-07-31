@@ -41,7 +41,16 @@ variable {A}
 on the `S`-module `M`.
 
 This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
-called `Algebra.toModuleEnd`. -/
+called `Algebra.toModuleEnd`.
+
+Note this can be used to get the fact that left-multiplication by `A` is right `A`-linear, and vice
+versa, as
+```lean
+example : A →ₐ[R] Module.End Aᵐᵒᵖ A := Algebra.lsmul R Aᵐᵒᵖ A
+example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
+```
+respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
+-/
 def lsmul : A →ₐ[R] Module.End S M where
   toFun := DistribMulAction.toLinearMap S M
   map_one' := LinearMap.ext fun _ => one_smul A _
