@@ -175,6 +175,18 @@ def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocones.ext (Iso.refl _))
 #align category_theory.limits.coproduct_is_coproduct CategoryTheory.Limits.coproductIsCoproduct
 
+@[reassoc (attr := simp)]
+theorem Sigma.eqToHom_comp_ι (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
+    eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
+  cases w
+  simp
+
+@[reassoc (attr := simp)]
+theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
+    Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
+  cases w
+  simp
+
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ f`. -/
 abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ f :=
   limit.lift _ (Fan.mk P p)

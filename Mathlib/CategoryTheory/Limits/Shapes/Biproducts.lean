@@ -421,6 +421,18 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
     biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [biproduct.ι_π, h]
 #align category_theory.limits.biproduct.ι_π_ne CategoryTheory.Limits.biproduct.ι_π_ne
 
+@[reassoc (attr := simp)]
+theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
+    eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
+  cases w
+  simp
+
+@[reassoc (attr := simp)]
+theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
+    biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
+  cases w
+  simp
+
 /-- Given a collection of maps into the summands, we obtain a map into the biproduct. -/
 abbrev biproduct.lift {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ⨁ f :=
   (biproduct.isLimit f).lift (Fan.mk P p)
