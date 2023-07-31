@@ -545,6 +545,13 @@ def Subtype.val (p : α → Prop) : Subtype p →o α :=
 #align order_hom.subtype.val OrderHom.Subtype.val
 #align order_hom.subtype.val_coe OrderHom.Subtype.val_coe
 
+/-- `Subtype.impEmbedding` as an order embedding. -/
+@[simps!]
+def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
+    {x // p x} ↪o {x // q x} :=
+  { Subtype.impEmbedding _ _ h with
+    map_rel_iff' := by aesop }
+
 /-- There is a unique monotone map from a subsingleton to itself. -/
 instance unique [Subsingleton α] : Unique (α →o α) where
   default := OrderHom.id
