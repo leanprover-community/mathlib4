@@ -11,11 +11,11 @@ import Mathlib.Algebra.Homology.ShortComplex.Homology
 
 In this file, we define a functor
 `shortComplexFunctor C c i : HomologicalComplex C c ⥤ ShortComplex C`.
-By definition, the image of an homological complex `K` by this functor
+By definition, the image of a homological complex `K` by this functor
 is the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`.
 
 When the homology refactor is completed (TODO @joelriou), the homology
-of an homological complex `K` in degree `i` shall be the homology
+of a homological complex `K` in degree `i` shall be the homology
 of the short complex `(shortComplexFunctor C c i).obj K`, which can be
 abbreviated as `K.sc i`.
 
