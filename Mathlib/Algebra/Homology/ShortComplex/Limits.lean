@@ -136,7 +136,7 @@ section
 variable [HasLimitsOfShape WalkingCospan C]
 
 instance preservesMonomorphisms_π₁ :
-  Functor.PreservesMonomorphisms (π₁ : _ ⥤ C) :=
+    Functor.PreservesMonomorphisms (π₁ : _ ⥤ C) :=
   CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape _
 
 instance preservesMonomorphisms_π₂ :
