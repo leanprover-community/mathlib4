@@ -209,6 +209,11 @@ abbrev HashMap := Lean.HashMap FilePath UInt64
 
 namespace HashMap
 
+/-- Filter the hashmap by whether the entries exist as files in the cache directory.
+
+If `keep` is true, the result will contain the entries that do exist;
+if `keep` is false, the result will contain the entries that do not exist.
+-/
 def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
   hashMap.foldM (init := default) fun acc path hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
