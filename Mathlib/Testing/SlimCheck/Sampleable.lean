@@ -94,7 +94,7 @@ and suggest simpler examples. -/
 class Shrinkable (α : Type u) where
   shrink : (x : α) → List α := λ _ => []
 
-variable (m : Type → Type) [Monad m] [MonadLiftT (ST IO.RealWorld) m]
+variable (m : Type v → Type u) [Monad m] -- [MonadLiftT (ST IO.RealWorld) m]
 
 /-- `SampleableExt` can be used in two ways. The first (and most common)
 is to simply generate values of a type directly using the `Gen` monad,
@@ -108,8 +108,8 @@ counter-examples cannot be shrunken or printed meaningfully.
 For that purpose, `SampleableExt` provides a proxy representation
 `proxy` that can be printed and shrunken as well
 as interpreted (using `interp`) as an object of the right type. -/
-class SampleableExt (α : Sort u) where
-  proxy : Type
+class SampleableExt (α : Sort w) where
+  proxy : Type v
   [proxyRepr : Repr proxy]
   [shrink : Shrinkable proxy]
   sample : Gen m proxy
@@ -124,7 +124,7 @@ namespace SampleableExt
 
 /-- Use to generate instance whose purpose is to simply generate values
 of a type directly using the `Gen` monad -/
-def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen m α) : SampleableExt m α where
+def mkSelfContained {α : Type v} [Repr α] [Shrinkable α] (sample : Gen m α) : SampleableExt m α where
   proxy := α
   proxyRepr := inferInstance
   shrink := inferInstance
@@ -133,7 +133,7 @@ def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen m α) : SampleableEx
 
 /-- First samples a proxy value and interprets it. Especially useful if
 the proxy and target type are the same. -/
-def interpSample (α : Type) [SampleableExt m α] : Gen m α :=
+def interpSample (α : Type v) [SampleableExt m α] : Gen m α :=
   SampleableExt.interp <$> SampleableExt.sample
 
 end SampleableExt
@@ -193,18 +193,22 @@ section Samplers
 
 open SampleableExt
 
-instance Nat.sampleableExt : SampleableExt m Nat :=
-  mkSelfContained (do choose Nat 0 (←getSize) (Nat.zero_le _))
+section univ_zero
+variable {m : Type → Type v} [Monad m]
 
-instance Fin.sampleableExt {n : Nat} : SampleableExt m (Fin (n.succ)) :=
-  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
+instance Nat.sampleableExt : SampleableExt m Nat :=
+  mkSelfContained (do choose Nat 0 (←getSize).down (Nat.zero_le _))
+
+instance Fin.sampleableExt {n : Nat} :
+    SampleableExt m (Fin (n.succ)) :=
+  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize).down) (by
     simp [Fin.ofNat, LE.le]
     exact Nat.zero_le _
   ))
 
 instance Int.sampleableExt : SampleableExt m Int :=
   mkSelfContained (do
-    choose Int (-(←getSize)) (←getSize)
+    choose Int (-(←getSize).down) (←getSize).down
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
 
 instance Bool.sampleableExt : SampleableExt m Bool :=
@@ -226,20 +230,26 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
 instance Char.sampleableDefault : SampleableExt m Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
-instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt m α] [SampleableExt m β] :
-    SampleableExt m (α × β) where
-  proxy := Prod (proxy _ α) (proxy _ β)
-  proxyRepr := inferInstance
-  shrink := inferInstance
-  sample := prodOf sample sample
-  interp := Prod.map interp interp
-
 instance Prop.sampleableExt : SampleableExt m Prop where
   proxy := Bool
   proxyRepr := inferInstance
   sample := interpSample Bool
   shrink := inferInstance
   interp := Coe.coe
+end univ_zero
+
+class ULiftableFrom (f : outParam <| Type u₀ → Type u₁) (g : Type v₀ → Type v₁) extends ULiftable f g
+
+instance Prod.sampleableExt{α : Type u₁} {β : Type u₂}
+  {m₁ : Type u₁ → Type v} {m₂ : Type u₂ → Type v} {m : Type (max u₁ u₂) → Type v}
+  [ULiftableFrom m₁ m] [ULiftableFrom m₂ m] [Monad m₁] [Monad m₂] [Monad m]
+  [SampleableExt m₁ α] [SampleableExt m₂ β] :
+    SampleableExt m (α × β) where
+  proxy := Prod (proxy _ α) (proxy _ β)
+  proxyRepr := inferInstance
+  shrink := inferInstance
+  sample := prodOf (sample (m := m₁)) (sample (m := m₂))
+  interp := Prod.map interp interp
 
 instance List.sampleableExt [SampleableExt m α] : SampleableExt m (List α) where
   proxy := List (proxy _ α)
@@ -337,4 +347,5 @@ elab "#sample " e:term : command =>
     let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) printSamples
     _ ← code
 
+#sample Nat × Nat
 end SlimCheck

@@ -73,9 +73,8 @@ lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ h
 /-- Generate a `Nat` example between `x` and `y` (exclusively). -/
 def chooseNatLt (lo hi : Nat) (h : lo < hi) :
     Gen m (ULift.{u} {a // lo ≤ a ∧ a < hi}) := do
-  let ⟨⟨n⟩, hl, hh⟩ ← choose (ULift Nat) (ULift.up lo.succ) (ULift.up hi) (Nat.succ_le_of_lt h)
-  let ⟨hl, hh⟩ := chooseNatLt_aux n.pred _
-  return ULift.up ⟨n, _, _⟩
+  let ⟨⟨n⟩, h⟩ ← choose (ULift Nat) (ULift.up lo.succ) (ULift.up hi) (Nat.succ_le_of_lt h)
+  return ULift.up ⟨n.pred, chooseNatLt_aux n h⟩
 
 /-- Get access to the size parameter of the `Gen` monad. -/
 def getSize : Gen m (ULift Nat) :=
@@ -103,27 +102,30 @@ def listOf (x : Gen m α) : Gen m (List α) :=
 
 /-- Given a list of example generators, choose one to create an example. -/
 def oneOf (xs : Array (Gen m α)) (pos : 0 < xs.size := by decide) : Gen m α := do
-  let ⟨x, _, h2⟩ ← chooseNatLt (ULift.up 0) ⟨xs.size⟩ pos
+  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.size pos
   xs.get ⟨x, h2⟩
 
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen m α := do
-  let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
+  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.length pos
   pure $ xs.get ⟨x, h2⟩
 
 open List in
 /-- Generate a random permutation of a given list. -/
-def permutationOf : (xs : List α) → Gen m { ys // ys ~ xs }
+def permutationOf : (xs : List α) → Gen m { ys // xs ~ ys }
   | [] => pure ⟨[], Perm.nil⟩
   | x::xs => do
     let ⟨ys, h1⟩ ← permutationOf xs
-    let ⟨n, _, h3⟩ ← ULiftable.up <| choose Nat 0 ys.length (Nat.zero_le _)
+    let ⟨⟨n⟩, _, (h3 : n ≤ ys.length)⟩ ← choose (ULift Nat) ⟨0⟩ ⟨ys.length⟩ (Nat.zero_le _)
     pure ⟨insertNth n x ys, Perm.trans (Perm.cons _ h1) (perm_insertNth _ _ h3).symm⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
-def prodOf {α β : Type u} (x : Gen m α) (y : Gen m β) : Gen m (α × β) := do
-  let ⟨a⟩ ← (ULiftable.up x : Gen m (ULift.{max u v} α))
-  let ⟨b⟩ ← (ULiftable.up y : Gen m (ULift.{max u v} β))
+def prodOf {α : Type u₁} {β : Type u₂}
+  {m₁ : Type u₁ → Type v} {m₂ : Type u₂ → Type v} {m : Type (max u₁ u₂) → Type v}
+  [ULiftable m₁ m] [ULiftable m₂ m] [Monad m₁] [Monad m₂] [Monad m]
+  (x : Gen m₁ α) (y : Gen m₂ β) : Gen m (α × β) := do
+  let ⟨a⟩ ← (ULiftable.up x : Gen m (ULift.{max u₁ u₂} α))
+  let ⟨b⟩ ← (ULiftable.up y : Gen m (ULift.{max u₁ u₂} β))
   pure (a, b)
 
 end Gen

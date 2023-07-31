@@ -10,6 +10,7 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Control.ULiftable
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Order.ULift
 
 #align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -105,9 +106,6 @@ instance {α : Type u} [Random α] : Random (ULift.{v} α) where
 
 instance : Random Bool where
   random := randBool
-
-instance {α : Type u} [Preorder α] : Preorder (ULift.{v} α) :=
-  Preorder.lift ULift.down
 
 instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
   randomR {g} lo hi h := do
