@@ -22,7 +22,7 @@ But the header is still correctly formatted to appease the linter
 
 set_option autoImplicit false
 
-open LinearMap Set
+open LinearMap Set Function
 
 open BigOperators Classical Convex Pointwise Filter
 
@@ -52,34 +52,8 @@ lemma segment_inter_eq_endpoint_of_linearIndependent
   · have A : s = t := by simpa [mul_eq_mul_left_iff, hq0'.ne'] using (h.eq_of_pair H').2
     exact (hs A).elim
 
-theorem JoinedIn_of_segment_subset {E : Type _} [AddCommGroup E] [Module ℝ E]
-    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-    {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
-  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
-  apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
-  convert h
-  rw [segment_eq_image ℝ x y]
-
 open Function
 
-theorem countable_nonempty_setOf_of_disjoint {α : Type u} {ι : Type v} {f : ι → Set α}
-    (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
-    Set.Countable {t | (f t).Nonempty} := by
-  rw [← Set.countable_coe_iff] at hs ⊢
-  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.1 ∈ f t := by
-    rintro ⟨t, ⟨x, hx⟩⟩
-    exact ⟨⟨x, (h'f t hx)⟩, hx⟩
-  choose F hF using this
-  have A : Injective F := by
-    rintro ⟨t, ht⟩ ⟨t', ht'⟩ htt'
-    have A : (f t ∩ f t').Nonempty := by
-      refine ⟨F ⟨t, ht⟩, hF _, ?_⟩
-      rw [htt']
-      exact hF _
-    simp only [Subtype.mk.injEq]
-    by_contra H
-    exact not_disjoint_iff_nonempty_inter.2 A (hf H)
-  exact Injective.countable A
 
 section
 
