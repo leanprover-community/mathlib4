@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.matrix
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.Determinant
+
+#align_import linear_algebra.affine_space.matrix from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Matrix results for barycentric co-ordinates
@@ -56,7 +53,7 @@ theorem toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := 
 
 variable {ι' : Type _} [Fintype ι'] [Fintype ι] (b₂ : AffineBasis ι k P)
 
-theorem toMatrix_row_sum_one {ι' : Type _} (q : ι' → P) (i : ι') : (∑ j, b.toMatrix q i j) = 1 := by
+theorem toMatrix_row_sum_one {ι' : Type _} (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
   simp
 #align affine_basis.to_matrix_row_sum_one AffineBasis.toMatrix_row_sum_one
 
@@ -88,9 +85,9 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (
     rintro q ⟨i, rfl⟩
     exact this i
   intro i
-  have hAi : (∑ j, A i j) = 1 := by
+  have hAi : ∑ j, A i j = 1 := by
     calc
-      (∑ j, A i j) = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
+      ∑ j, A i j = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
       _ = ∑ j, ∑ l, A i j * b.toMatrix p j l := by simp_rw [Finset.mul_sum]
       _ = ∑ l, ∑ j, A i j * b.toMatrix p j l := by rw [Finset.sum_comm]
       _ = ∑ l, (A ⬝ b.toMatrix p) i l := rfl

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.exterior_algebra.of_alternating
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+
+#align_import linear_algebra.exterior_algebra.of_alternating from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Extending an alternating map to the exterior algebra
@@ -35,9 +32,10 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
-instance AlternatingMap.ModuleAddCommGroup {ι : Type _} : Module R (AlternatingMap R M N ι) := by
+instance AlternatingMap.instModuleAddCommGroup {ι : Type _} :
+    Module R (AlternatingMap R M N ι) := by
   infer_instance
-#align alternating_map.module_add_comm_group AlternatingMap.ModuleAddCommGroup
+#align alternating_map.module_add_comm_group AlternatingMap.instModuleAddCommGroup
 
 namespace ExteriorAlgebra
 

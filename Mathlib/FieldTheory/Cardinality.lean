@@ -2,11 +2,6 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module field_theory.cardinality
-! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Data.MvPolynomial.Cardinal
@@ -16,6 +11,8 @@ import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.SetTheory.Cardinal.Divisibility
+
+#align_import field_theory.cardinality from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Cardinality of Fields
@@ -69,7 +66,7 @@ set_option synthInstance.maxHeartbeats 50000 in
 /-- Any infinite type can be endowed a field structure. -/
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   letI K := FractionRing (MvPolynomial α <| ULift.{u} ℚ)
-  suffices (#α) = (#K) by
+  suffices #α = #K by
     obtain ⟨e⟩ := Cardinal.eq.1 this
     exact ⟨e.field⟩
   rw [← IsLocalization.card (MvPolynomial α <| ULift.{u} ℚ)⁰ K le_rfl]
@@ -81,7 +78,7 @@ theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α
 #align infinite.nonempty_field Infinite.nonempty_field
 
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
-theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow (#α) := by
+theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by
   rw [Cardinal.isPrimePow_iff]
   cases' fintypeOrInfinite α with h h
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',

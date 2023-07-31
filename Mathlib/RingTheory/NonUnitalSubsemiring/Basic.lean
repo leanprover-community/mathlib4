@@ -2,11 +2,6 @@
 Copyright (c) 2022 Jireh Loreaux All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module ring_theory.non_unital_subsemiring.basic
-! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
@@ -14,6 +9,8 @@ import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Subsemigroup.Membership
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
+
+#align_import ring_theory.non_unital_subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
 /-!
 # Bundled non-unital subsemirings
@@ -33,7 +30,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
 class NonUnitalSubsemiringClass (S : Type _) (R : Type u) [NonUnitalNonAssocSemiring R]
-  [SetLike S R] extends AddSubmonoidClass S R where
+  [SetLike S R] extends AddSubmonoidClass S R : Prop where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 #align non_unital_subsemiring_class NonUnitalSubsemiringClass
 
@@ -115,7 +112,6 @@ instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   mul_mem {s} := mul_mem' s
 
-@[simp high]
 theorem mem_carrier {s : NonUnitalSubsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align non_unital_subsemiring.mem_carrier NonUnitalSubsemiring.mem_carrier
@@ -265,6 +261,11 @@ theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubsemiring R) :=
 theorem coe_top : ((⊤ : NonUnitalSubsemiring R) : Set R) = Set.univ :=
   rfl
 #align non_unital_subsemiring.coe_top NonUnitalSubsemiring.coe_top
+
+/-- The ring equiv between the top element of `NonUnitalSubsemiring R` and `R`. -/
+@[simps!]
+def topEquiv : (⊤ : NonUnitalSubsemiring R) ≃+* R :=
+  { Subsemigroup.topEquiv, AddSubmonoid.topEquiv with }
 
 /-- The preimage of a non-unital subsemiring along a non-unital ring homomorphism is a
 non-unital subsemiring. -/
@@ -500,7 +501,8 @@ theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
 #align non_unital_subsemiring.center_eq_top NonUnitalSubsemiring.center_eq_top
 
 /-- The center is commutative. -/
-instance {R} [NonUnitalSemiring R] : NonUnitalCommSemiring (center R) :=
+instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
+    NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
 
@@ -830,7 +832,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubse
       (⨆ i, (S i).toAddSubmonoid)
       (AddSubmonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
   -- Porting note `@this` doesn't work
-  suffices H : (⨆ i, S i) ≤ U; simpa using @H x
+  suffices H : ⨆ i, S i ≤ U; simpa using @H x
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align non_unital_subsemiring.mem_supr_of_directed NonUnitalSubsemiring.mem_iSup_of_directed
 
@@ -855,15 +857,18 @@ end NonUnitalSubsemiring
 namespace NonUnitalRingHom
 
 variable {F : Type _} [NonUnitalNonAssocSemiring T] [NonUnitalRingHomClass F R S]
+  {S' : Type _} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 
 open NonUnitalSubsemiringClass NonUnitalSubsemiring
 
 /-- Restriction of a non-unital ring homomorphism to a non-unital subsemiring of the codomain. -/
-def codRestrict (f : F) (s : NonUnitalSubsemiring S) (h : ∀ x, f x ∈ s) : R →ₙ+* s :=
-  { (f : R →ₙ* S).codRestrict s.toSubsemigroup h, (f : R →+ S).codRestrict s.toAddSubmonoid h with
-    toFun := fun n => ⟨f n, h n⟩ }
-#align non_unital_ring_hom.cod_restrict NonUnitalRingHom.codRestrict
+def codRestrict (f : F) (s : S') (h : ∀ x, f x ∈ s) : R →ₙ+* s where
+  toFun n := ⟨f n, h n⟩
+  map_mul' x y := Subtype.eq (map_mul f x y)
+  map_add' x y := Subtype.eq (map_add f x y)
+  map_zero' := Subtype.eq (map_zero f)
+#align non_unital_ring_hom.cod_restrict NonUnitalRingHom.codRestrictₓ
 
 /-- Restriction of a non-unital ring homomorphism to its range interpreted as a
 non-unital subsemiring.

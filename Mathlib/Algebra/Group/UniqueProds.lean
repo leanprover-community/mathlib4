@@ -2,16 +2,13 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.group.unique_prods
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Preimage
 
+#align_import algebra.group.unique_prods from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
+
 /-!
-#  Unique products and related notions
+# Unique products and related notions
 
 A group `G` has *unique products* if for any two non-empty finite subsets `A, B ⊂ G`, there is an
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element
@@ -21,7 +18,7 @@ introduce the analogous "additive" companion, `UniqueSums` and link the two so t
 converts `UniqueProds` into `UniqueSums`.
 
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`infer_instance` uses `covariants.to_uniqueProds` and `covariants.to_uniqueSums`).
+(`infer_instance` uses `Covariants.to_uniqueProds` and `Covariants.to_uniqueSums`).
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic

@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.ring.aut
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.ring.aut from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Ring automorphisms
@@ -81,30 +78,24 @@ instance : Inhabited (RingAut R) :=
   ⟨1⟩
 
 /-- Monoid homomorphism from ring automorphisms to additive automorphisms. -/
-def toAddAut : RingAut R →* AddAut R :=
+def toAddAut : RingAut R →* AddAut R := by
+  refine'
   { toFun := RingEquiv.toAddEquiv
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl }
-  -- Porting note: old proof was
-  --`by refine_struct { toFun := RingEquiv.toAddEquiv } <;> intros <;> rfl`
+    .. } <;> (intros; rfl)
 #align ring_aut.to_add_aut RingAut.toAddAut
 
 /-- Monoid homomorphism from ring automorphisms to multiplicative automorphisms. -/
-def toMulAut : RingAut R →* MulAut R :=
+def toMulAut : RingAut R →* MulAut R := by
+  refine'
   { toFun := RingEquiv.toMulEquiv
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl }
-  --Porting note: old proof was
-  --=`by refine_struct { toFun := RingEquiv.toMulEquiv } <;> intros <;> rfl`
+    .. } <;> (intros; rfl)
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
-def toPerm : RingAut R →* Equiv.Perm R :=
+def toPerm : RingAut R →* Equiv.Perm R :=by
+  refine'
   { toFun := RingEquiv.toEquiv
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl }
-  -- Porting note: old proof was
-  --`by refine_struct { toFun := RingEquiv.toEquiv } <;> intros <;> rfl`
+    .. } <;> (intros; rfl)
 #align ring_aut.to_perm RingAut.toPerm
 
 end mul_add

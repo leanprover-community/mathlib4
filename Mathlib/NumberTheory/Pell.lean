@@ -2,16 +2,13 @@
 Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.pell
-! leanprover-community/mathlib commit 7ad820c4997738e2f542f8a20f32911f52020e26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Qify
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.DiophantineApproximation
 import Mathlib.NumberTheory.Zsqrtd.Basic
+
+#align_import number_theory.pell from "leanprover-community/mathlib"@"7ad820c4997738e2f542f8a20f32911f52020e26"
 
 /-!
 # Pell's Equation
@@ -20,7 +17,7 @@ import Mathlib.NumberTheory.Zsqrtd.Basic
 that is not a square, and one is interested in solutions in integers $x$ and $y$.
 
 In this file, we aim at providing all of the essential theory of Pell's Equation for general $d$
-(as opposed to the contents of `number_theory.pell_matiyasevic`, which is specific to the case
+(as opposed to the contents of `NumberTheory.PellMatiyasevic`, which is specific to the case
 $d = a^2 - 1$ for some $a > 1$).
 
 We begin by defining a type `Pell.Solution₁ d` for solutions of the equation,
@@ -456,7 +453,7 @@ to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, a ≠ 1 ∧ a ≠ -1 := by
   obtain ⟨x, y, prop, hy⟩ := exists_of_not_isSquare h₀ hd
-  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H  <;>
+  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H <;>
     simp [hy] at H
 #align pell.solution₁.exists_nontrivial_of_not_is_square Pell.Solution₁.exists_nontrivial_of_not_isSquare
 
@@ -465,7 +462,7 @@ to the Pell equation `x^2 - d*y^2 = 1` with `x > 1` and `y > 0`. -/
 theorem exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, 1 < a.x ∧ 0 < a.y := by
   obtain ⟨x, y, h, hy⟩ := exists_of_not_isSquare h₀ hd
-  refine' ⟨mk (|x|) (|y|) (by rwa [sq_abs, sq_abs]), _, abs_pos.mpr hy⟩
+  refine' ⟨mk |x| |y| (by rwa [sq_abs, sq_abs]), _, abs_pos.mpr hy⟩
   rw [x_mk, ← one_lt_sq_iff_one_lt_abs, eq_add_of_sub_eq h, lt_add_iff_pos_right]
   exact mul_pos h₀ (sq_pos_of_ne_zero y hy)
 #align pell.solution₁.exists_pos_of_not_is_square Pell.Solution₁.exists_pos_of_not_isSquare

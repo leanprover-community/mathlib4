@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
+import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Order.Filter.Basic
@@ -273,7 +274,6 @@ syntax termList := " [" term,* "]"
 /- E -/ syntax (name := uniqueDiffWithinAt_Ici_Iic_univ) "uniqueDiffWithinAt_Ici_Iic_univ" : tactic
 
 /- M -/ syntax (name := ghostFunTac) "ghost_fun_tac " term ", " term : tactic
-/- M -/ syntax (name := initRing) "init_ring" (" using " term)? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
@@ -306,8 +306,6 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Parser.Term.optType : command
-
-/- S -/ syntax (name := «where») "#where" : command
 
 /- M -/ syntax (name := reassocAxiom) "reassoc_axiom " ident : command
 

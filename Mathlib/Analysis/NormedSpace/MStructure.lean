@@ -2,15 +2,12 @@
 Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module analysis.normed_space.M_structure
-! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Tactic.NoncommRing
+
+#align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
 /-!
 # M-structure
@@ -177,7 +174,7 @@ instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
-theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑(Pᶜ) = (1 : M) - ↑P :=
+theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑P :=
   rfl
 #align is_Lprojection.coe_compl IsLprojection.coe_compl
 
@@ -260,22 +257,22 @@ theorem coe_top [FaithfulSMul M X] :
   rfl
 #align is_Lprojection.coe_top IsLprojection.coe_top
 
-theorem compl_mul {P : { P : M // IsLprojection X P }} {Q : M} : ↑(Pᶜ) * Q = Q - ↑P * Q := by
+theorem compl_mul {P : { P : M // IsLprojection X P }} {Q : M} : ↑Pᶜ * Q = Q - ↑P * Q := by
   rw [coe_compl, sub_mul, one_mul]
 #align is_Lprojection.compl_mul IsLprojection.compl_mul
 
-theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑(Pᶜ) = 0 := by
+theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑Pᶜ = 0 := by
   rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
 #align is_Lprojection.mul_compl_self IsLprojection.mul_compl_self
 
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
-    ((↑P : M) + ↑(Pᶜ) * R) * (↑P + ↑Q * ↑R * ↑(Pᶜ)) = ↑P + ↑Q * ↑R * ↑(Pᶜ) := by
-  rw [add_mul, mul_add, mul_add, (mul_assoc _ (R : M) (↑Q * ↑R * ↑(Pᶜ))),
+    ((↑P : M) + ↑Pᶜ * R) * (↑P + ↑Q * ↑R * ↑Pᶜ) = ↑P + ↑Q * ↑R * ↑Pᶜ := by
+  rw [add_mul, mul_add, mul_add, (mul_assoc _ (R : M) (↑Q * ↑R * ↑Pᶜ)),
     ← mul_assoc (R : M) (↑Q * ↑R) _, ← coe_inf Q, (Pᶜ.prop.commute R.prop).eq,
-    ((Q ⊓ R).prop.commute (Pᶜ).prop).eq, (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q,
+    ((Q ⊓ R).prop.commute Pᶜ.prop).eq, (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q,
     mul_assoc (Q : M), ←mul_assoc, mul_assoc (R : M), (Pᶜ.prop.commute P.prop).eq, mul_compl_self,
     MulZeroClass.zero_mul, MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq,
-    R.prop.proj.eq, ←coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute (Pᶜ).prop).eq, ← mul_assoc,
+    R.prop.proj.eq, ←coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc,
     Pᶜ.prop.proj.eq]
 #align is_Lprojection.distrib_lattice_lemma IsLprojection.distrib_lattice_lemma
 
@@ -307,15 +304,15 @@ instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
 instance Subtype.distribLattice [FaithfulSMul M X] :
     DistribLattice { P : M // IsLprojection X P } where
   le_sup_inf P Q R := by
-    have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑(Pᶜ) := by
+    have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑Pᶜ := by
       rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
-        mul_add, ((Pᶜ).prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q: M),
-        ((Pᶜ).prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul, MulZeroClass.mul_zero,
-        zero_add, add_zero, ← mul_assoc, mul_assoc (Q : M), P.prop.proj.eq, (Pᶜ).prop.proj.eq,
-        mul_assoc, ((Pᶜ).prop.commute R.prop).eq, ← mul_assoc]
-    have e₂ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) * ↑(P ⊔ Q ⊓ R) = (P : M) + ↑Q * ↑R * ↑(Pᶜ) := by
+        mul_add, (Pᶜ.prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q: M),
+        (Pᶜ.prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul, MulZeroClass.mul_zero,
+        zero_add, add_zero, ← mul_assoc, mul_assoc (Q : M), P.prop.proj.eq, Pᶜ.prop.proj.eq,
+        mul_assoc, (Pᶜ.prop.commute R.prop).eq, ← mul_assoc]
+    have e₂ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) * ↑(P ⊔ Q ⊓ R) = (P : M) + ↑Q * ↑R * ↑Pᶜ := by
       rw [coe_inf, coe_sup, coe_sup, coe_sup, ← add_sub, ← add_sub, ← add_sub, ← compl_mul, ←
-        compl_mul, ← compl_mul, ((Pᶜ).prop.commute (Q ⊓ R).prop).eq, coe_inf, mul_assoc,
+        compl_mul, ← compl_mul, (Pᶜ.prop.commute (Q ⊓ R).prop).eq, coe_inf, mul_assoc,
         distrib_lattice_lemma, (Q.prop.commute R.prop).eq, distrib_lattice_lemma]
     rw [le_def, e₁, coe_inf, e₂]
 

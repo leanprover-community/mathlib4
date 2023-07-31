@@ -2,11 +2,6 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.group.measure
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Measure.Regular
@@ -15,6 +10,8 @@ import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.Topology.ContinuousFunction.CocompactMap
+
+#align_import measure_theory.group.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Measures on Groups
@@ -623,7 +620,7 @@ theorem measure_univ_of_isMulLeftInvariant [LocallyCompactSpace G] [NoncompactSp
   have A : ∀ L : Set G, IsCompact L → ∃ g : G, Disjoint L (g • K) := fun L hL =>
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
-  set L : ℕ → Set G := fun n => ((fun T => T ∪ g T • K)^[n]) K
+  set L : ℕ → Set G := fun n => (fun T => T ∪ g T • K)^[n] K
   have Lcompact : ∀ n, IsCompact (L n) := by
     intro n
     induction' n with n IH

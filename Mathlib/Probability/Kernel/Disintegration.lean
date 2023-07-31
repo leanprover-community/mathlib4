@@ -2,15 +2,12 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.disintegration
-! leanprover-community/mathlib commit 6315581f5650ffa2fbdbbbedc41243c8d7070981
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.Probability.Kernel.IntegralCompProd
+
+#align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
 
 /-!
 # Disintegration of measures on product spaces
@@ -108,7 +105,7 @@ theorem set_lintegral_condKernelReal_prod {s : Set α} (hs : MeasurableSet s) {t
     exact set_lintegral_condKernelReal_Iic ρ q hs
   · intro t ht ht_lintegral
     calc
-      ∫⁻ a in s, condKernelReal ρ a (tᶜ) ∂ρ.fst =
+      ∫⁻ a in s, condKernelReal ρ a tᶜ ∂ρ.fst =
           ∫⁻ a in s, condKernelReal ρ a univ - condKernelReal ρ a t ∂ρ.fst := by
         congr with a; rw [measure_compl ht (measure_ne_top (condKernelReal ρ a) _)]
       _ = ∫⁻ a in s, condKernelReal ρ a univ ∂ρ.fst - ∫⁻ a in s, condKernelReal ρ a t ∂ρ.fst := by
@@ -169,7 +166,7 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
   · intro t ht ht_eq
     calc
       ∫⁻ a, condKernelReal ρ a {x : ℝ | (a, x) ∈ tᶜ} ∂ρ.fst =
-          ∫⁻ a, condKernelReal ρ a ({x : ℝ | (a, x) ∈ t}ᶜ) ∂ρ.fst := rfl
+          ∫⁻ a, condKernelReal ρ a {x : ℝ | (a, x) ∈ t}ᶜ ∂ρ.fst := rfl
       _ = ∫⁻ a, condKernelReal ρ a univ - condKernelReal ρ a {x : ℝ | (a, x) ∈ t} ∂ρ.fst := by
         congr with a : 1
         exact measure_compl (measurable_prod_mk_left ht) (measure_ne_top (condKernelReal ρ a) _)
@@ -183,7 +180,7 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
         rw [lintegral_condKernelReal_univ]
         exact measure_lt_top ρ univ
       _ = ρ univ - ρ t := by rw [ht_eq, lintegral_condKernelReal_univ]
-      _ = ρ (tᶜ) := (measure_compl ht (measure_ne_top _ _)).symm
+      _ = ρ tᶜ := (measure_compl ht (measure_ne_top _ _)).symm
   · intro f hf_disj hf_meas hf_eq
     have h_eq : ∀ a, {x | (a, x) ∈ ⋃ i, f i} = ⋃ i, {x | (a, x) ∈ f i} := by
       intro a
@@ -246,7 +243,7 @@ theorem ae_condKernelReal_eq_one {s : Set ℝ} (hs : MeasurableSet s) (hρ : ρ 
   rw [kernel.const_apply] at h
   simp only [mem_compl_iff, mem_setOf_eq, kernel.prodMkLeft_apply'] at h
   filter_upwards [h] with a ha
-  change condKernelReal ρ a (sᶜ) = 0 at ha
+  change condKernelReal ρ a sᶜ = 0 at ha
   rwa [prob_compl_eq_zero_iff hs] at ha
 #align probability_theory.ae_cond_kernel_real_eq_one ProbabilityTheory.ae_condKernelReal_eq_one
 
@@ -265,21 +262,20 @@ variable {Ω : Type _} [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace �
 
 /-- Existence of a conditional kernel. Use the definition `condKernel` to get that kernel. -/
 theorem exists_cond_kernel (γ : Type _) [MeasurableSpace γ] :
-    ∃ (η : kernel α Ω) (h : IsMarkovKernel η), kernel.const γ ρ =
-      @kernel.compProd γ α _ _ Ω _ (kernel.const γ ρ.fst) _ (kernel.prodMkLeft γ η)
-        (by haveI := h; infer_instance) := by
+    ∃ (η : kernel α Ω) (_h : IsMarkovKernel η), kernel.const γ ρ =
+      kernel.compProd (kernel.const γ ρ.fst) (kernel.prodMkLeft γ η) := by
   obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
   let ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f)
   -- The general idea is to define `η = kernel.comapRight (condKernelReal ρ') hf`. There is
   -- however an issue: that `η` may not be a Markov kernel since its value is only a
   -- probability distribution almost everywhere with respect to `ρ.fst`, not everywhere.
   -- We modify it to obtain a Markov kernel which is almost everywhere equal.
-  let ρ_set := toMeasurable ρ.fst ({a | condKernelReal ρ' a (range f) = 1}ᶜ)ᶜ
+  let ρ_set := (toMeasurable ρ.fst {a | condKernelReal ρ' a (range f) = 1}ᶜ)ᶜ
   have hm : MeasurableSet ρ_set := (measurableSet_toMeasurable _ _).compl
   have h_eq_one_of_mem : ∀ a ∈ ρ_set, condKernelReal ρ' a (range f) = 1 := by
     intro a ha
     rw [mem_compl_iff] at ha
-    have h_ss := subset_toMeasurable ρ.fst ({a : α | condKernelReal ρ' a (range f) = 1}ᶜ)
+    have h_ss := subset_toMeasurable ρ.fst {a : α | condKernelReal ρ' a (range f) = 1}ᶜ
     suffices ha' : a ∉ {a : α | condKernelReal ρ' a (range f) = 1}ᶜ
     · rwa [not_mem_compl_iff] at ha'
     exact not_mem_subset h_ss ha
