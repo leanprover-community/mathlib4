@@ -692,8 +692,6 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
   nsmul := nsmulRec
-  nsmul_zero := fun _n => rfl
-  nsmul_succ := fun _n _x => rfl
   __ := Fin.addCommSemigroup n
 #align fin.add_comm_monoid Fin.addCommMonoid
 

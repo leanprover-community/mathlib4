@@ -644,6 +644,7 @@ instance : OrderedCancelAddCommMonoid (Multiset α) where
   add_zero := fun s => Quotient.inductionOn s fun l => congr_arg _ <| append_nil l
   add_le_add_left := fun s₁ s₂ => add_le_add_left
   le_of_add_le_add_left := fun s₁ s₂ s₃ => le_of_add_le_add_left
+  nsmul := nsmulRec
 
 theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
 #align multiset.le_add_right Multiset.le_add_right
