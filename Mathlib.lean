@@ -47,6 +47,7 @@ import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 import Mathlib.Algebra.Category.GroupCat.Images
 import Mathlib.Algebra.Category.GroupCat.Injective
+import Mathlib.Algebra.Category.GroupCat.Kernels
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Algebra.Category.GroupCat.Subobject
