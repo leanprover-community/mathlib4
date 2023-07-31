@@ -72,6 +72,8 @@ class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing 
   le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
 #align is_R_or_C IsROrC
 
+attribute [instance 100] IsROrC.toPartialOrder
+
 end
 
 variable {K E : Type _} [IsROrC K]
