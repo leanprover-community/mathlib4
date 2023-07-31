@@ -2198,22 +2198,17 @@ theorem IsLittleO.nat_cast_atTop {R : Type _} [StrictOrderedSemiring R] [Archime
   IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
 
 theorem isBigO_atTop_iff_dep_const {α : Type _} [SemilatticeSup α] [Nonempty α]
-    {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by
-  refine ⟨fun h => ?mp, fun h => ?mpr⟩
-  case mp =>
-    rw [eventually_atTop]
-    obtain ⟨c, hc⟩ := isBigO_iff.mp h
-    rw [eventually_atTop] at hc
-    obtain ⟨n₀, hc⟩ := hc
-    exact ⟨n₀, fun n₁ hn₁ => ⟨c, fun n hn => hc n <| hn₁.trans hn⟩⟩
-  case mpr =>
-    rw [isBigO_iff]
-    rw [eventually_atTop] at h
-    obtain ⟨n₀, h⟩ := h
-    obtain ⟨c, h⟩ := h n₀ (le_refl _)
-    refine ⟨c, ?_⟩
-    rw [eventually_atTop]
-    exact ⟨n₀, h⟩
+    {f : α → E} {g : α → F} :
+    f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by
+  rw [isBigO_iff]
+  --calc  f =O[atTop] g
+  --  _ ↔ ∃ c, ∀ᶠ n in atTop, ‖f n‖ ≤ c * ‖g n‖ := isBigO_iff
+  --  _ ↔ ∃ c, ∀ᶠ s in atTop.smallSets, ∀ n ∈ s, ‖f n‖ ≤ c * ‖g n‖ :=
+  --        exists_congr fun _ ↦ eventually_smallSets_forall.symm
+  --  _ ↔ ∃ c, ∃ s ∈ atTop, ∀ n ∈ s, ‖f n‖ ≤ c * ‖g n‖ :=
+  --        exists_congr fun c ↦ eventually_smallSets' fun s t ↦ ?_
+  --  _ ↔ ∃ c, ∃ n₀ : α, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ :=
+  --        exists_congr fun c ↦ by rw [atTop_basis.exists_iff]
 
 theorem isBigO_atTop_iff_dep_const' {α : Type _}
     [SemilatticeSup α] [Nonempty α] {f : α → G} {g : α → G'} :
@@ -2234,6 +2229,7 @@ theorem isBigO_atTop_iff_dep_const' {α : Type _}
     rw [eventually_atTop]
     exact ⟨n₀, hc⟩
 
+#exit
 
 end Asymptotics
 

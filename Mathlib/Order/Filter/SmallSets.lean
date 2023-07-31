@@ -86,6 +86,11 @@ theorem HasAntitoneBasis.tendsto_smallSets {ι} [Preorder ι] {s : ι → Set α
   tendsto_smallSets_iff.2 fun _t ht => hl.eventually_subset ht
 #align filter.has_antitone_basis.tendsto_small_sets Filter.HasAntitoneBasis.tendsto_smallSets
 
+theorem HasAntitoneBasis.smallSets_eq_map {ι} [SemilatticeSup ι] [Nonempty ι] {s : ι → Set α}
+    (hl : l.HasAntitoneBasis s) : comap s l.smallSets = atTop := by
+  refine le_antisymm ?_ hl.tendsto_smallSets.le_comap
+  rw [(hl.smallSets.comap s).le_basis_iff atTop_basis]
+
 @[mono]
 theorem monotone_smallSets : Monotone (@smallSets α) :=
   monotone_lift' monotone_id monotone_const
@@ -167,6 +172,19 @@ theorem eventually_smallSets_forall {p : α → Prop} :
 alias eventually_smallSets_forall ↔ Eventually.of_smallSets Eventually.smallSets
 #align filter.eventually.of_small_sets Filter.Eventually.of_smallSets
 #align filter.eventually.small_sets Filter.Eventually.smallSets
+
+theorem exists_eventually_swap_smallSets {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in l, r a b) ↔ ∀ᶠ s in l.smallSets, ∃ b, ∀ a ∈ s, r a b := by
+  have : ∀ ⦃s t : Set α⦄, s ⊆ t → (∃ b, ∀ a ∈ t, r a b) → (∃ b, ∀ a ∈ s, r a b) :=
+    fun s t hst ⟨b, hb⟩ ↦ ⟨b, fun a has ↦ hb a (hst has)⟩
+  simp_rw [eventually_smallSets' this, ← exists_and_left, exists_swap (α := Set α)]
+  refine exists_congr fun b ↦ ?_
+  rw [← eventually_smallSets_forall, eventually_smallSets']
+  exact fun s t hst h a has ↦ h a (hst has)
+
+theorem exists_eventually_swap_atTop [SemilatticeSup α] [Nonempty α] {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
+  rw [exists_eventually_swap_smallSets, ← eventually_smallSets_forall (l := atTop)]
 
 @[simp]
 theorem eventually_smallSets_subset {s : Set α} : (∀ᶠ t in l.smallSets, t ⊆ s) ↔ s ∈ l :=
