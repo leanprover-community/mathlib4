@@ -68,14 +68,14 @@ def projChart (ch : LocalHomeomorph M H) : LocalHomeomorph (cont_graph.mk' f hf)
   left_inv' := by
     simp only [Subtype.forall, Subtype.mk.injEq, Prod.forall, Prod.mk.injEq]
     intro a b ab ha
-    simp only [cont_graph.mk', mem_setOf_eq] at ab
+    simp only [cont_graph.mk'] at ab
     have hinva := ch.left_inv ha
     exact And.intro hinva (Eq.subst (motive := fun a => b = f a) hinva.symm ab).symm
   right_inv' := by apply LocalHomeomorph.right_inv
   open_source := ch.open_source.preimage continuous_id.subtype_val.fst
   open_target := ch.open_target
   continuous_toFun := by
-    simp only [LocalHomeomorph.toFun_eq_coe]
+    simp only []
     apply ContinuousOn.comp
     · exact ch.continuous_toFun
     · exact continuous_id.subtype_val.fst.continuousOn
@@ -85,7 +85,7 @@ def projChart (ch : LocalHomeomorph M H) : LocalHomeomorph (cont_graph.mk' f hf)
     have hch := continuousOn_iff'.mp ch.continuous_invFun
     apply continuousOn_iff'.mpr
     intro t ht
-    have hu := hch (preimage ((cont_graph.mk' f hf).graphMap) t)
+    have hu := hch (t.preimage ((cont_graph.mk' f hf).graphMap))
       (ht.preimage ((cont_graph.mk' f hf).graphMap_cont))
     cases hu with
     | intro u hu =>
@@ -103,7 +103,6 @@ instance cont_graph_charted : ChartedSpace H (cont_graph.mk' f hf).graph where
   chartAt x := projChart f hf (HM.chartAt x.1.fst)
   mem_chart_source x := by simp [projChart]
   chart_mem_atlas x := by
-    simp only [mem_setOf_eq]
     use HM.chartAt x.1.fst
     simp
 
