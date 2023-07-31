@@ -497,7 +497,8 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
         Int.ofNat.inj (add_right_injective _ h)
     let r : InjectiveFunction ℤ :=
-      InjectiveFunction.mk xs' ys.1 ys.2.symm (ys.2.symm.nodup_iff.1 <| (List.nodup_range _).map Hinj)
+      InjectiveFunction.mk xs' ys.1 ys.2.symm
+        (ys.2.symm.nodup_iff.1 <| (List.nodup_range _).map Hinj)
     pure r
   shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 #align slim_check.injective_function.pi_injective.sampleable_ext SlimCheck.InjectiveFunction.PiInjective.sampleableExt
