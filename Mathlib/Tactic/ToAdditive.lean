@@ -2,7 +2,6 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
-Ported by: E.W.Ayers
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
@@ -32,13 +31,13 @@ theory to an additive theory.
 
 open Lean Meta Elab Command Std
 
-/-- The  `to_additive_ignore_args` attribute. -/
+/-- The `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
-/-- The  `to_additive_relevant_arg` attribute. -/
+/-- The `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-/-- The  `to_additive_reorder` attribute. -/
+/-- The `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
-/-- The  `to_additive_change_numeral` attribute. -/
+/-- The `to_additive_change_numeral` attribute. -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
@@ -74,7 +73,7 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=

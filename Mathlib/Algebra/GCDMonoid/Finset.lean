@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.finset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Fold
 import Mathlib.Algebra.GCDMonoid.Multiset
+
+#align_import algebra.gcd_monoid.finset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # GCD and LCM operations on finsets
@@ -100,8 +97,8 @@ theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁
     fun a s _ ih ↦ by rw [insert_union, lcm_insert, lcm_insert, ih, lcm_assoc]
 #align finset.lcm_union Finset.lcm_union
 
-theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a)
-    : s₁.lcm f = s₂.lcm g := by
+theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
+    s₁.lcm f = s₂.lcm g := by
   subst hs
   exact Finset.fold_congr hfg
 #align finset.lcm_congr Finset.lcm_congr

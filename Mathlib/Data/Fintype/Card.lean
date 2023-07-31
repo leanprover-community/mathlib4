@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.card
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Tactic.Positivity
+
+#align_import data.fintype.card from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 
 /-!
 # Cardinalities of finite types
@@ -911,20 +908,20 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
     Subrelation.wf (this _ _) (measure _).wf
 #align finite.well_founded_of_trans_of_irrefl Finite.wellFounded_of_trans_of_irrefl
 
-theorem Preorder.wellFounded_lt [Preorder α] : WellFounded ((· < ·) : α → α → Prop) :=
-  wellFounded_of_trans_of_irrefl _
-#align finite.preorder.well_founded_lt Finite.Preorder.wellFounded_lt
+-- See note [lower instance priority]
+instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
+  ⟨wellFounded_of_trans_of_irrefl _⟩
+#align finite.finite.to_well_founded_lt Finite.to_wellFoundedLT
 
-theorem Preorder.wellFounded_gt [Preorder α] : WellFounded ((· > ·) : α → α → Prop) :=
-  wellFounded_of_trans_of_irrefl _
-#align finite.preorder.well_founded_gt Finite.Preorder.wellFounded_gt
+-- See note [lower instance priority]
+instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
+  ⟨wellFounded_of_trans_of_irrefl _⟩
+#align finite.finite.to_well_founded_gt Finite.to_wellFoundedGT
 
-instance (priority := 10) LinearOrder.isWellOrder_lt [LinearOrder α] : IsWellOrder α (· < ·)
-    where wf := Preorder.wellFounded_lt
+instance (priority := 10) LinearOrder.isWellOrder_lt [LinearOrder α] : IsWellOrder α (· < ·) := {}
 #align finite.linear_order.is_well_order_lt Finite.LinearOrder.isWellOrder_lt
 
-instance (priority := 10) LinearOrder.isWellOrder_gt [LinearOrder α] : IsWellOrder α (· > ·)
-    where wf := Preorder.wellFounded_gt
+instance (priority := 10) LinearOrder.isWellOrder_gt [LinearOrder α] : IsWellOrder α (· > ·) := {}
 #align finite.linear_order.is_well_order_gt Finite.LinearOrder.isWellOrder_gt
 
 end Finite

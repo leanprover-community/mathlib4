@@ -2,14 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finset.basic
-! leanprover-community/mathlib commit eba7871095e834365616b5e43c8c7bb0b37058d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
+
+#align_import data.finset.basic from "leanprover-community/mathlib"@"d9e96a3e3e0894e93e10aff5244f4c96655bac1c"
 
 /-!
 # Finite sets
@@ -1451,6 +1448,12 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
   ext fun x => mem_union.trans <| by simp
 #align finset.empty_union Finset.empty_union
 
+theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
+  h.mono $ subset_union_left s t
+
+theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
+  h.mono $ subset_union_right s t
+
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
 #align finset.insert_eq Finset.insert_eq
@@ -1846,8 +1849,10 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
 
 end Lattice
 
-/-! ### erase -/
+instance isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
+instance isDirected_subset : IsDirected (Finset α) (· ⊆ ·) := isDirected_le
 
+/-! ### erase -/
 
 section Erase
 
@@ -3198,6 +3203,11 @@ theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
 #align multiset.to_finset_eq_empty Multiset.toFinset_eq_empty
 
 @[simp]
+theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
+  simp only [toFinset_eq_empty, Ne.def, Finset.nonempty_iff_ne_empty]
+#align multiset.to_finset_nonempty Multiset.toFinset_nonempty
+
+@[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp only [Finset.subset_iff, Multiset.subset_iff, Multiset.mem_toFinset]
 #align multiset.to_finset_subset Multiset.toFinset_subset
@@ -3348,6 +3358,11 @@ theorem toFinset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l
 theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
   cases l <;> simp
 #align list.to_finset_eq_empty_iff List.toFinset_eq_empty_iff
+
+@[simp]
+theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
+  simp [Finset.nonempty_iff_ne_empty]
+#align list.to_finset_nonempty_iff List.toFinset_nonempty_iff
 
 end List
 

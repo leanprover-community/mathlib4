@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.biproducts
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+
+#align_import category_theory.limits.shapes.biproducts from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Biproducts and binary biproducts
@@ -67,14 +64,14 @@ variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
 /-- A `c : Bicone F` is:
 * an object `c.pt` and
-* morphisms `π j : pt ⟶ F j` and `ι j : F j ⟶  pt` for each `j`,
+* morphisms `π j : pt ⟶ F j` and `ι j : F j ⟶ pt` for each `j`,
 * such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 -/
 -- @[nolint has_nonempty_instance] Porting note: removed
 structure Bicone (F : J → C) where
   pt : C
   π : ∀ j, pt ⟶ F j
-  ι : ∀ j, F j ⟶  pt
+  ι : ∀ j, F j ⟶ pt
   ι_π : ∀ j j', ι j ≫ π j' =
     if h : j = j' then eqToHom (congrArg F h) else 0 := by aesop
 #align category_theory.limits.bicone CategoryTheory.Limits.Bicone
@@ -423,6 +420,24 @@ theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
 theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
     biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [biproduct.ι_π, h]
 #align category_theory.limits.biproduct.ι_π_ne CategoryTheory.Limits.biproduct.ι_π_ne
+
+-- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- https://github.com/leanprover-community/mathlib4/issues/5049
+-- They are used by `simp` in `biproduct.whisker_equiv` below.
+@[reassoc (attr := simp, nolint simpNF)]
+theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
+    eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
+  cases w
+  simp
+
+-- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- https://github.com/leanprover-community/mathlib4/issues/5049
+-- They are used by `simp` in `biproduct.whisker_equiv` below.
+@[reassoc (attr := simp, nolint simpNF)]
+theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
+    biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
+  cases w
+  simp
 
 /-- Given a collection of maps into the summands, we obtain a map into the biproduct. -/
 abbrev biproduct.lift {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ⨁ f :=
@@ -1679,7 +1694,7 @@ def biprod.fstKernelFork : KernelFork (biprod.fst : X ⊞ Y ⟶ X) :=
 #align category_theory.limits.biprod.fst_kernel_fork CategoryTheory.Limits.biprod.fstKernelFork
 
 @[simp]
-theorem biprod.fstKernelFork_ι : Fork.ι (biprod.fstKernelFork X Y) = (biprod.inr : Y ⟶  X ⊞ Y) :=
+theorem biprod.fstKernelFork_ι : Fork.ι (biprod.fstKernelFork X Y) = (biprod.inr : Y ⟶ X ⊞ Y) :=
   rfl
 #align category_theory.limits.biprod.fst_kernel_fork_ι CategoryTheory.Limits.biprod.fstKernelFork_ι
 
@@ -1695,7 +1710,7 @@ def biprod.sndKernelFork : KernelFork (biprod.snd : X ⊞ Y ⟶ Y) :=
 #align category_theory.limits.biprod.snd_kernel_fork CategoryTheory.Limits.biprod.sndKernelFork
 
 @[simp]
-theorem biprod.sndKernelFork_ι : Fork.ι (biprod.sndKernelFork X Y) = (biprod.inl : X ⟶  X ⊞ Y) :=
+theorem biprod.sndKernelFork_ι : Fork.ι (biprod.sndKernelFork X Y) = (biprod.inl : X ⟶ X ⊞ Y) :=
   rfl
 #align category_theory.limits.biprod.snd_kernel_fork_ι CategoryTheory.Limits.biprod.sndKernelFork_ι
 

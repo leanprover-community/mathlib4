@@ -2,15 +2,12 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module canonically_ordered_comm_semiring_two_mul
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.Algebra.Order.Monoid.Basic
+
+#align_import canonically_ordered_comm_semiring_two_mul from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 

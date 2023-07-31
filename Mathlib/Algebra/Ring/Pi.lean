@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.ring.pi
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Hom.Ring
+
+#align_import algebra.ring.pi from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
 /-!
 # Pi instances for ring
@@ -39,6 +36,10 @@ instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
     left_distrib := by intros; ext; exact mul_add _ _ _
     right_distrib := by intros; ext; exact add_mul _ _ _}
 #align pi.distrib Pi.distrib
+
+instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
+  neg_mul _ _ := funext fun _ ↦ neg_mul _ _
+  mul_neg _ _ := funext fun _ ↦ mul_neg _ _
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=

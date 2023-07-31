@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.regular_mono
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.Lean.Expr.Basic
+
+#align_import category_theory.limits.shapes.regular_mono from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
