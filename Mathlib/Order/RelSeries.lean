@@ -69,24 +69,24 @@ lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
   rcases y with ⟨ny, fy⟩
   dsimp at length_eq toFun_eq
   subst length_eq
-  rw [Fin.cast_refl, OrderIso.coe_refl, Function.comp.right_id] at toFun_eq
+  rw [Fin.cast_refl, Function.comp.right_id] at toFun_eq
   subst toFun_eq
   rfl
 
 lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
     r (x i) (x j) := by
   induction i using Fin.inductionOn generalizing j with
-  | h0 => induction j using Fin.inductionOn with
-    | h0 => cases lt_irrefl _ h
-    | hs j ihj =>
+  | zero => induction j using Fin.inductionOn with
+    | zero => cases lt_irrefl _ h
+    | succ j ihj =>
       by_cases H : 0 < Fin.castSucc j
       . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
       . simp only [not_lt, Fin.le_zero_iff] at H
         rw [← H]
         exact x.step _
-  | hs i _ => induction j using Fin.inductionOn with
-    | h0 => cases not_lt_of_lt (Fin.succ_pos i) h
-    | hs j ihj =>
+  | succ i _ => induction j using Fin.inductionOn with
+    | zero => cases not_lt_of_lt (Fin.succ_pos i) h
+    | succ j ihj =>
       obtain (H|H) : i.succ = Fin.castSucc j ∨ i.succ < Fin.castSucc j
       . change (i + 1 : ℕ) < (j + 1 : ℕ) at h
         rw [Nat.lt_succ_iff, le_iff_lt_or_eq] at h
@@ -145,7 +145,10 @@ corresponds to each other.-/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
   toFun := fun x => ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun := fun x => fromListChain' _ x.2.1 x.2.2
-  left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by ext f; simp
+  left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by
+    ext f
+    simp only [fromListChain'_toFun, Function.comp_apply, List.get_ofFn]
+    rfl
   right_inv := by
     intro x
     refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
