@@ -106,7 +106,7 @@ set_option maxHeartbeats 0 in
 instance : MonoidalCategory (GradedObject ℕ V) where
   tensorObj := tensorObj
   tensorHom := tensorHom
-  tensorUnit' := fun | 0 => (𝟙_ V) | _ => 0
+  tensorUnit' := fun | 0 => (𝟙_ V) | _ => sorry
   tensor_id := sorry
   tensor_comp := sorry
   associator := associator
@@ -122,9 +122,11 @@ instance : MonoidalCategory (GradedObject ℕ V) where
       associator_distributor, associator_iterated,
       associator_underlying, associator_whisker_equiv, associator_iterated',
       associator_distributor']
-    ext
-    simp only [biproduct.lift_map, biproduct.map_desc_assoc, biproduct.lift_desc_assoc, assoc, comp_tensor_id,
-      id_tensor_comp, biproduct.lift_π, biproduct.ι_map_assoc, biproduct.lift_map_assoc]
+    ext ⟨⟨a, bc⟩, w₁⟩ ⟨⟨de, f⟩, w₂⟩ ⟨⟨d, e⟩, w₃⟩ ⟨⟨b, c⟩, w₄⟩
+    simp? says
+      simp only [biproduct.lift_map, biproduct.map_desc_assoc, comp_tensor_id, id_tensor_comp,
+        assoc, biproduct.lift_π, biproduct.ι_map_assoc, biproduct.lift_map_assoc]
+
     -- simp [Preadditive.comp_sum, Preadditive.comp_sum_assoc, Preadditive.sum_comp, Preadditive.sum_comp_assoc]
 
 end GradedObject
