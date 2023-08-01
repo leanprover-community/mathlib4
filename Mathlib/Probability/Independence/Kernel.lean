@@ -591,9 +591,9 @@ section IndepSet
 
 /-! ### Independence of measurable sets
 
-We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
-* `IndepSetₖ s t μ ↔ μ (s ∩ t) = μ s * μ t`,
-* `IndepSetₖ s t μ ↔ IndepSetsₖ {s} {t} μ`.
+We prove the following equivalences on `IndepSetₖ`, for measurable sets `s, t`.
+* `IndepSetₖ s t κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t`,
+* `IndepSetₖ s t κ μ ↔ IndepSetsₖ {s} {t} κ μ`.
 -/
 
 
