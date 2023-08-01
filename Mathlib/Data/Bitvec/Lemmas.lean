@@ -50,37 +50,4 @@ theorem testBit_eq_rep' {x: Nat} (i : Nat) (h: i< w) (h2: x< 2^w):
   (BitVec.ofNat w x)[i] = testBit x i := by
   simp [BitVec.ofNat, GetElem.getElem, get, extract, Fin.ofNat', mod_eq_of_lt, h2]
 
-
-/-! ## Equivalence between bitwise and BitVec operations -/
-
-theorem BV_add {x y : BitVec w}: bitadd x.val y.val w = (x + y).val := by
-  rw [bitadd_eq_add]
-  norm_cast
-
--- theorem BV_neg {x : BitVec w}: bitwise_neg x.val w = x.neg.val := by
---   simp only [bitwise_neg_eq_neg, x.isLt]
---   norm_cast
-
--- theorem BV_mul {x y : BitVec w} (h : 0 < w): bitwise_mul x.val y.val w = (x * y).val := by
---   rw [bitwise_mul_eq_mul h]
---   norm_cast
-
--- theorem BV_extract {x : BitVec w} : bitwise_extract x.val i j = (extract i j x).val := by
---   rw [bitwise_extract_eq_extract]
---   norm_cast
-
--- theorem BV_concat {x : BitVec w} {y : BitVec v} :
---  bitwise_concat y.val x.val v w  = (x ++ y).val := by
---   rw [bitwise_concat_eq_concat y.isLt x.isLt]
---   norm_cast
-
--- theorem BV_eq {x y : BitVec w} (h: 0 < w): bitwise_eq x.val y.val w = (x = y) := by
---   simp [← bitwise_eq_eq h x.isLt y.isLt]
-
-theorem BV_ult {x y : BitVec w} (h1: x < y) :
-  bitult x.val y.val w:= bitult_of_ult y.isLt (val_bitvec_lt.mpr h1)
-
--- theorem BV_slt {x y : BitVec w} (h1: x < y) : bitwise_slt x.val y.val w:= sorry
-
--- theorem BV_signExtend {x : BitVec w} (h: 0 < w) :
--- (signExtend i x).val = bitwise_ext x.val w i := sorry
+end BitVec
