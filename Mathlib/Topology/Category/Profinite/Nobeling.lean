@@ -1596,7 +1596,7 @@ def ModProducts.equiv_smaller_toFun (o : Ordinal) : ModProducts (Res C o) → sm
 fun x ↦ ⟨(↑(LocallyConstant.comapLinear (ResOnSubset C o) (continuous_ResOnSubset _ _) :
     LocallyConstant {i // i ∈ Res C o} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) :
     LocallyConstant {i // i ∈ Res C o} ℤ → LocallyConstant {i // i ∈ C} ℤ) ↑x,
-    by { dsimp [smaller] ; use x.val ; exact ⟨x.property, rfl⟩  } ⟩
+    by { dsimp [smaller]; use x.val; exact ⟨x.property, rfl⟩  } ⟩
 
 lemma ModProducts.equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (equiv_smaller_toFun C o) := by
