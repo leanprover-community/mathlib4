@@ -1,4 +1,4 @@
-import Mathlib.ModelTheory.FieldTheory.Basic
+import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Nat.Prime
 

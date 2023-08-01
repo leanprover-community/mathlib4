@@ -1,4 +1,4 @@
-import Mathlib.ModelTheory.FieldTheory.CharP
+import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.FreeCommRing
 
