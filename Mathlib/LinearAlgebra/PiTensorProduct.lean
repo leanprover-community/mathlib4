@@ -124,7 +124,7 @@ namespace PiTensorProduct
 section Module
 
 instance : AddCommMonoid (⨂[R] i, s i) :=
-  { (addConGen (PiTensorProduct.Eqv R s)).addMonoid with
+  { toAddMonoid := (addConGen (PiTensorProduct.Eqv R s)).addMonoid
     add_comm := fun x y ↦
       AddCon.induction_on₂ x y fun _ _ ↦
         Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }

@@ -1116,11 +1116,15 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
 #align multilinear_map.sub_apply MultilinearMap.sub_apply
 
 instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
-  { MultilinearMap.addCommMonoid with
-    zero := (0 : MultilinearMap R M₁ M₂)
+  { zero := (0 : MultilinearMap R M₁ M₂)
     add := (· + ·)
-    neg := Neg.neg
-    sub := Sub.sub
+    add_assoc := MultilinearMap.addCommMonoid.add_assoc
+    zero_add := MultilinearMap.addCommMonoid.zero_add
+    add_zero := MultilinearMap.addCommMonoid.add_zero
+    add_comm := MultilinearMap.addCommMonoid.add_comm
+    nsmul := MultilinearMap.addCommMonoid.nsmul
+    nsmul_zero := MultilinearMap.addCommMonoid.nsmul_zero
+    nsmul_succ := MultilinearMap.addCommMonoid.nsmul_succ
     add_left_neg := fun a => MultilinearMap.ext fun v => add_left_neg _
     sub_eq_add_neg := fun a b => MultilinearMap.ext fun v => sub_eq_add_neg _ _
     zsmul := fun n f =>

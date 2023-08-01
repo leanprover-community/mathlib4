@@ -448,7 +448,8 @@ theorem coe_toAddSubgroup : (s.toAddSubgroup : Set K) = s :=
 
 /-- The subfield of `K` containing all elements of `K`. -/
 instance : Top (Subfield K) :=
-  ⟨{ (⊤ : Subring K) with inv_mem' := fun x _ => Subring.mem_top x }⟩
+  ⟨{ toSubring := (⊤ : Subring K)
+     inv_mem' := fun x _ => Subring.mem_top x }⟩
 
 instance : Inhabited (Subfield K) :=
   ⟨⊤⟩
@@ -583,7 +584,7 @@ namespace Subfield
 /-- The inf of two subfields is their intersection. -/
 instance : Inf (Subfield K) :=
   ⟨fun s t =>
-    { s.toSubring ⊓ t.toSubring with
+    { toSubring := s.toSubring ⊓ t.toSubring
       inv_mem' := fun _ hx =>
         Subring.mem_inf.mpr
           ⟨s.inv_mem (Subring.mem_inf.mp hx).1, t.inv_mem (Subring.mem_inf.mp hx).2⟩ }⟩
@@ -600,7 +601,7 @@ theorem mem_inf {p p' : Subfield K} {x : K} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
 
 instance : InfSet (Subfield K) :=
   ⟨fun S =>
-    { sInf (Subfield.toSubring '' S) with
+    { toSubring := sInf (Subfield.toSubring '' S)
       inv_mem' := by
         rintro x hx
         apply Subring.mem_sInf.mpr

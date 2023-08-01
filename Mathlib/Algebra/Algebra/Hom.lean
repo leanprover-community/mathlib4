@@ -64,8 +64,7 @@ variable {R : Type _} {A : Type _} {B : Type _} [CommSemiring R] [Semiring A] [S
 
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
-  { ‹AlgHomClass F R A B› with
-    map_smulₛₗ := fun f r x => by
+  { map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 

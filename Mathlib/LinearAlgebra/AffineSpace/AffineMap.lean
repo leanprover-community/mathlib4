@@ -743,8 +743,7 @@ variable [Semiring R] [Module R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps taking values in an `R`-module is an `R`-module. -/
 instance : Module R (P1 →ᵃ[k] V2) :=
-  { AffineMap.distribMulAction with
-    smul := (· • ·)
+  { toDistribMulAction := AffineMap.distribMulAction
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }
 

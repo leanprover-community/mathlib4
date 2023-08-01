@@ -92,10 +92,12 @@ def addMonoid : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
 instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
+  { add_zero := (addConGen (TensorProduct.Eqv R M N)).addMonoid.add_zero
+    zero_add := (addConGen (TensorProduct.Eqv R M N)).addMonoid.zero_add }
+  -- { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
 instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
+  { toAddSemigroup := (addConGen (TensorProduct.Eqv R M N)).addMonoid.toAddSemigroup
     add_comm := fun x y =>
       AddCon.induction_on₂ x y fun _ _ =>
         Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
@@ -269,18 +271,29 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 #align tensor_product.add_smul TensorProduct.add_smul
 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
-  { TensorProduct.addCommSemigroup _ _,
-    TensorProduct.addZeroClass _ _ with
+  { add_comm := TensorProduct.addCommSemigroup _ _|>.add_comm
+    zero_add := TensorProduct.addZeroClass _ _|>.zero_add
+    add_zero := TensorProduct.addZeroClass _ _|>.add_zero
     nsmul := fun n v => n • v
     nsmul_zero := by simp [TensorProduct.zero_smul]
     nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
       forall_const] }
 
+-- def addCommMonoid' : AddCommMonoid (M ⊗[R] N) :=
+--   { TensorProduct.addCommSemigroup _ _,
+--     TensorProduct.addZeroClass _ _ with
+--     nsmul := fun n v => n • v
+--     nsmul_zero := by simp [TensorProduct.zero_smul]
+--     nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+--       forall_const] }
+--
+-- example : addCommMonoid = addCommMonoid' (R := R) (M := M) (N := N) := rfl
+
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
-  have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
   { smul := (· • ·)
     smul_add := fun r x y => TensorProduct.smul_add r x y
     mul_smul := fun r s x =>
+      have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
       x.induction_on (by simp_rw [TensorProduct.smul_zero])
         (fun m n => by simp_rw [this, mul_smul]) fun x y ihx ihy => by
         simp_rw [TensorProduct.smul_add]
@@ -307,8 +320,7 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
 #align tensor_product.smul_tmul_smul TensorProduct.smul_tmul_smul
 
 instance leftModule : Module R'' (M ⊗[R] N) :=
-  { TensorProduct.leftDistribMulAction with
-    smul := (· • ·)
+  { toDistribMulAction := TensorProduct.leftDistribMulAction
     add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
 #align tensor_product.left_module TensorProduct.leftModule
@@ -1244,9 +1256,7 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
 #align tensor_product.add_left_neg TensorProduct.add_left_neg
 
 instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
-  { TensorProduct.addCommMonoid with
-    neg := Neg.neg
-    sub := _
+  { add_comm := addCommMonoid.add_comm
     sub_eq_add_neg := fun _ _ => rfl
     add_left_neg := fun x => TensorProduct.add_left_neg x
     zsmul := fun n v => n • v
@@ -1257,6 +1267,23 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
       rw [← zero_add (_ • x), ← TensorProduct.add_left_neg ((n.succ : ℤ) • x), add_assoc,
         ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
       rfl }
+
+-- def addCommGroup'  : AddCommGroup (M ⊗[R] N) :=
+--   { TensorProduct.addCommMonoid with
+--     neg := Neg.neg
+--     sub := _
+--     sub_eq_add_neg := fun _ _ => rfl
+--     add_left_neg := fun x => TensorProduct.add_left_neg x
+--     zsmul := fun n v => n • v
+--     zsmul_zero' := by simp [TensorProduct.zero_smul]
+--     zsmul_succ' := by simp [Nat.succ_eq_one_add, TensorProduct.one_smul, TensorProduct.add_smul]
+--     zsmul_neg' := fun n x => by
+--       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
+--       rw [← zero_add (_ • x), ← TensorProduct.add_left_neg ((n.succ : ℤ) • x), add_assoc,
+--         ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
+--       rfl }
+--
+-- example : addCommGroup = addCommGroup' (R := R) (M := M) (N := N) := rfl
 
 theorem neg_tmul (m : M) (n : N) : (-m) ⊗ₜ n = -m ⊗ₜ[R] n :=
   rfl

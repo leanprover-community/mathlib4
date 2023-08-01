@@ -209,7 +209,9 @@ theorem inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ sym
 #align symplectic_group.inv_eq_symplectic_inv SymplecticGroup.inv_eq_symplectic_inv
 
 instance : Group (symplecticGroup l R) :=
-  { SymplecticGroup.hasInv, Submonoid.toMonoid _ with
+  { toDivInvMonoid := {
+      toMonoid := Submonoid.toMonoid _
+      inv := SymplecticGroup.hasInv.inv}
     mul_left_inv := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]

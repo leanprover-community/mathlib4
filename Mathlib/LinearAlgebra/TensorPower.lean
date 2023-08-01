@@ -218,8 +218,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
 
 -- for now we just use the default for the `gnpow` field as it's easier.
 instance gmonoid : GradedMonoid.GMonoid fun i => (⨂[R]^i) M :=
-  { TensorPower.gMul, TensorPower.gOne with
-    one_mul := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
+  { one_mul := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
     mul_one := fun a => gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
     mul_assoc := fun a b c => gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _) }
 #align tensor_power.gmonoid TensorPower.gmonoid

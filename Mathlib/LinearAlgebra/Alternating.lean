@@ -249,7 +249,7 @@ variable {S : Type _} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
 instance smul : SMul S (AlternatingMap R M N ι) :=
   ⟨fun c f =>
-    { c • (f : MultilinearMap R (fun _ : ι => M) N) with
+    { toMultilinearMap := c • (f : MultilinearMap R (fun _ : ι => M) N)
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 #align alternating_map.has_smul AlternatingMap.smul
 
@@ -326,7 +326,7 @@ theorem coe_smulRight {R M₁ M₂ ι : Type _} [CommSemiring R] [AddCommMonoid 
 
 instance add : Add (AlternatingMap R M N ι) :=
   ⟨fun a b =>
-    { (a + b : MultilinearMap R (fun _ : ι => M) N) with
+    { toMultilinearMap := (a + b : MultilinearMap R (fun _ : ι => M) N)
       map_eq_zero_of_eq' := fun v i j h hij => by
         simp [a.map_eq_zero_of_eq v h hij, b.map_eq_zero_of_eq v h hij] }⟩
 #align alternating_map.has_add AlternatingMap.add
@@ -342,8 +342,9 @@ theorem coe_add : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' 
 #align alternating_map.coe_add AlternatingMap.coe_add
 
 instance zero : Zero (AlternatingMap R M N ι) :=
-  ⟨{ (0 : MultilinearMap R (fun _ : ι => M) N) with
-      map_eq_zero_of_eq' := fun v i j _ _ => by simp }⟩
+  ⟨{ --note: this doesn't parse correctly if moved up to this line
+    toMultilinearMap := (0 : MultilinearMap R (fun _ : ι => M) N)
+    map_eq_zero_of_eq' := fun v i j _ _ => by simp }⟩
 #align alternating_map.has_zero AlternatingMap.zero
 
 @[simp]
@@ -371,7 +372,7 @@ instance addCommMonoid : AddCommMonoid (AlternatingMap R M N ι) :=
 
 instance neg : Neg (AlternatingMap R M N' ι) :=
   ⟨fun f =>
-    { -(f : MultilinearMap R (fun _ : ι => M) N') with
+    { toMultilinearMap := -(f : MultilinearMap R (fun _ : ι => M) N')
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 #align alternating_map.has_neg AlternatingMap.neg
 
@@ -387,7 +388,7 @@ theorem coe_neg : ((-g : AlternatingMap R M N' ι) : MultilinearMap R (fun _ : �
 
 instance sub : Sub (AlternatingMap R M N' ι) :=
   ⟨fun f g =>
-    { (f - g : MultilinearMap R (fun _ : ι => M) N') with
+    { toMultilinearMap := (f - g : MultilinearMap R (fun _ : ι => M) N')
       map_eq_zero_of_eq' := fun v i j h hij => by
         simp [f.map_eq_zero_of_eq v h hij, g.map_eq_zero_of_eq v h hij] }⟩
 #align alternating_map.has_sub AlternatingMap.sub

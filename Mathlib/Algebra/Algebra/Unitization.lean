@@ -429,8 +429,7 @@ theorem inr_mul_inl [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction
 
 instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] :
     MulOneClass (Unitization R A) :=
-  { Unitization.instOne, Unitization.instMul with
-    one_mul := fun x =>
+  { one_mul := fun x =>
       ext (one_mul x.1) <|
         show (1 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = x.2 by
           rw [one_smul, smul_zero, add_zero, MulZeroClass.zero_mul, add_zero]
@@ -442,8 +441,8 @@ instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAct
 
 instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
     NonAssocSemiring (Unitization R A) :=
-  { Unitization.instMulOneClass,
-    Unitization.instAddCommMonoid with
+  { one_mul := Unitization.instMulOneClass.one_mul
+    mul_one := Unitization.instMulOneClass.mul_one
     zero_mul := fun x =>
       ext (MulZeroClass.zero_mul x.1) <|
         show (0 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = 0 by
@@ -465,9 +464,38 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
           simp only [add_smul, smul_add, add_mul]
           abel }
 
+-- def instNonAssocSemiring' [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
+--     NonAssocSemiring (Unitization R A) :=
+--   { Unitization.instMulOneClass,
+--     Unitization.instAddCommMonoid with
+--     zero_mul := fun x =>
+--       ext (MulZeroClass.zero_mul x.1) <|
+--         show (0 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = 0 by
+--           rw [zero_smul, zero_add, smul_zero, MulZeroClass.zero_mul, add_zero]
+--     mul_zero := fun x =>
+--       ext (MulZeroClass.mul_zero x.1) <|
+--         show x.1 • (0 : A) + (0 : R) • x.2 + x.2 * 0 = 0 by
+--           rw [smul_zero, zero_add, zero_smul, MulZeroClass.mul_zero, add_zero]
+--     left_distrib := fun x₁ x₂ x₃ =>
+--       ext (mul_add x₁.1 x₂.1 x₃.1) <|
+--         show x₁.1 • (x₂.2 + x₃.2) + (x₂.1 + x₃.1) • x₁.2 + x₁.2 * (x₂.2 + x₃.2) =
+--             x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 + (x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2) by
+--           simp only [smul_add, add_smul, mul_add]
+--           abel
+--     right_distrib := fun x₁ x₂ x₃ =>
+--       ext (add_mul x₁.1 x₂.1 x₃.1) <|
+--         show (x₁.1 + x₂.1) • x₃.2 + x₃.1 • (x₁.2 + x₂.2) + (x₁.2 + x₂.2) * x₃.2 =
+--             x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2 + (x₂.1 • x₃.2 + x₃.1 • x₂.2 + x₂.2 * x₃.2) by
+--           simp only [add_smul, smul_add, add_mul]
+--           abel }
+--
+-- example [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
+-- instNonAssocSemiring = instNonAssocSemiring' (R := R) (A := A) := rfl
+
 instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Monoid (Unitization R A) :=
-  { Unitization.instMulOneClass with
+  { one_mul := Unitization.instMulOneClass.one_mul
+    mul_one := Unitization.instMulOneClass.mul_one
     mul_assoc := fun x y z =>
       ext (mul_assoc x.1 y.1 z.1) <|
         show (x.1 * y.1) • z.2 + z.1 • (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) +
@@ -480,10 +508,28 @@ instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
           rw [mul_comm z.1 y.1]
           abel }
 
+-- def instMonoid' [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
+--     [IsScalarTower R A A] [SMulCommClass R A A] : Monoid (Unitization R A) :=
+--   { Unitization.instMulOneClass with
+--     mul_assoc := fun x y z =>
+--       ext (mul_assoc x.1 y.1 z.1) <|
+--         show (x.1 * y.1) • z.2 + z.1 • (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) +
+--             (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) * z.2 =
+--             x.1 • (y.1 • z.2 + z.1 • y.2 + y.2 * z.2) + (y.1 * z.1) • x.2 +
+--             x.2 * (y.1 • z.2 + z.1 • y.2 + y.2 * z.2) by
+--           simp only [smul_add, mul_add, add_mul, smul_smul, smul_mul_assoc, mul_smul_comm,
+--             mul_assoc]
+--           rw [mul_comm z.1 x.1]
+--           rw [mul_comm z.1 y.1]
+--           abel }
+--
+-- example [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
+--     [IsScalarTower R A A] [SMulCommClass R A A] :
+--   instMonoid = instMonoid' (R := R) (A := A) := rfl
+
 instance instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : CommMonoid (Unitization R A) :=
-  { Unitization.instMonoid with
-    mul_comm := fun x₁ x₂ =>
+  { mul_comm := fun x₁ x₂ =>
       ext (mul_comm x₁.1 x₂.1) <|
         show x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 = x₂.1 • x₁.2 + x₁.1 • x₂.2 + x₂.2 * x₁.2 by
           rw [add_comm (x₁.1 • x₂.2), mul_comm] }
