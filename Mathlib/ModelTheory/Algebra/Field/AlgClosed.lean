@@ -7,9 +7,12 @@ namespace FirstOrder
 
 namespace Language
 
+open field FreeCommRing BigOperators
+
 variable {K : Type _} [Field K]
 
-
+def genMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
+  of 0 ^ n + ∑ i : Fin n, of i.castSucc * of 0 ^ (i : ℕ)
 
 end Language
 
