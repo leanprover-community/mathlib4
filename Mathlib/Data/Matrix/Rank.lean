@@ -1,13 +1,13 @@
 /-
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Eric Wieer
+Authors: Johan Commelin, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.Data.Complex.Module
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
@@ -277,32 +277,27 @@ theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m
 
 section MulNonsingInv
 
-/-! ### Lemmas about pre or post multiplying by an invertible matrix. -/
+/-! ### Lemmas about left or right multiplying by an invertible matrix. -/
 
 /-- Right multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_eq_left_of_isUnit  [DecidableEq n] [CommRing R]
+lemma rank_mul_eq_left_of_isUnitDet [DecidableEq n] [CommRing R]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B ⬝ A).rank = B.rank := by
-  have hlT : LinearMap.range (mulVecLin A) = ⊤ := by
-    rw [LinearMap.range_eq_top]
-    intro x
-    use ((A⁻¹).mulVecLin x)
-    rw [mulVecLin_apply, mulVecLin_apply, mulVec_mulVec, mul_nonsing_inv _ hA, one_mulVec]
-  rw [Matrix.rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _ hlT, ←Matrix.rank]
+  suffices : Function.Surjective A.mulVecLin
+  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+    (LinearMap.range_eq_top.mpr this), ← rank]
+  intro v
+  exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
 /-- Left multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_eq_right_of_isUnit  [DecidableEq m] [Field R]
-    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det):
+lemma rank_mul_eq_right_of_isUnitDet [DecidableEq m] [CommRing R]
+    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (A ⬝ B).rank = B.rank := by
-  suffices h: LinearMap.ker ((A⬝B).mulVecLin) = LinearMap.ker (B.mulVecLin)
-  · have hB := LinearMap.finrank_range_add_finrank_ker (B.mulVecLin)
-    rw [← LinearMap.finrank_range_add_finrank_ker ((A⬝B).mulVecLin), h, add_left_inj] at hB
-    rw [Matrix.rank, Matrix.rank, hB]
-  rw [mulVecLin_mul, LinearMap.ker_comp_of_ker_eq_bot]
-  simp_rw [LinearMap.ker_eq_bot, Function.Injective, mulVecLin_apply]
-  intros x y h
-  apply_fun Matrix.mulVec (A⁻¹) at h
-  simpa [mulVec_mulVec, nonsing_inv_mul A hA, one_mulVec] using h
+  let b : Basis m R (m → R) := Pi.basisFun R m
+  replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
+    convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
+  have hAB : mulVecLin (A ⬝ B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
+  rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
 end MulNonsingInv
 
