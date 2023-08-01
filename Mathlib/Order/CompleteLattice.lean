@@ -20,9 +20,9 @@ import Mathlib.Mathport.Notation
 * `sSup` and `sInf` are the supremum and the infimum of a set;
 * `iSup (f : ι → α)` and `iInf (f : ι → α)` are indexed supremum and infimum of a function,
   defined as `sSup` and `sInf` of the range of this function;
-* `class CompleteLattice`: a bounded lattice such that `sSup s` is always the least upper boundary
+* class `CompleteLattice`: a bounded lattice such that `sSup s` is always the least upper boundary
   of `s` and `sInf s` is always the greatest lower boundary of `s`;
-* `class CompleteLinearOrder`: a linear ordered complete lattice.
+* class `CompleteLinearOrder`: a linear ordered complete lattice.
 
 ## Naming conventions
 
