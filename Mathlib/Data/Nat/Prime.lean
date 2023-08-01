@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.Parity
-import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Nat.Factorial.Basic
@@ -780,8 +779,6 @@ theorem coe_nat_injective : Function.Injective (fun (a : Nat.Primes) ↦ (a : �
 theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
   Subtype.ext_iff.symm
 #align nat.primes.coe_nat_inj Nat.Primes.coe_nat_inj
-
-instance countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
 end Primes
 

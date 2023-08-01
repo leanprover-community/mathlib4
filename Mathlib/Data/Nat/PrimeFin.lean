@@ -25,9 +25,7 @@ theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
 
 instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
 
-open scoped Cardinal
-
-theorem Primes.cardinal_mk_eq_aleph0 : #Primes = ℵ₀ := Cardinal.mk_eq_aleph0 Primes
+instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
 /-- If `a`, `b` are positive, the prime divisors of `a * b` are the union of those of `a` and `b` -/
 theorem factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
