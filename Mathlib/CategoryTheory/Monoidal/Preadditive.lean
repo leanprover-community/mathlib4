@@ -300,7 +300,7 @@ theorem leftDistributor_ext_right {J : Type} [Fintype J] (X Y : C) (f : J → C)
       ite_true]
   apply w
 
--- One might wonder how iterated tensor products we need simp lemmas for.
+-- One might wonder how many iterated tensor products we need simp lemmas for.
 -- The answer is two: this lemma is needed to verify the pentagon identity.
 @[ext]
 theorem leftDistributor_ext₂_left {J : Type} [Fintype J]
