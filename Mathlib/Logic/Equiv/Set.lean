@@ -198,7 +198,6 @@ def image {α β : Type _} (e : α ≃ β) (s : Set α) :
 
 namespace Set
 
-
 --Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
 protected def univ (α) : @univ α ≃ α :=

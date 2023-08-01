@@ -264,6 +264,8 @@ theorem fourierSubalgebra_coe :
     exact fourier_add
 #align fourier_subalgebra_coe fourierSubalgebra_coe
 
+/- a post-port refactor made `fourierSubalgebra` into a `StarSubalgebra`, and eliminated
+`conjInvariantSubalgebra` entirely, making this lemma irrelevant. -/
 #noalign fourier_subalgebra_conj_invariant
 
 variable [hT : Fact (0 < T)]

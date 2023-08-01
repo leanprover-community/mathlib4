@@ -162,7 +162,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
   /- The range of `gelfandTransform ℂ A` is actually a `StarSubalgebra`. The key lemma below may be
     hard to spot; it's `map_star` coming from `WeakDual.Complex.instStarHomClass`, which is a
     nontrivial result. -/
-  letI rng : StarSubalgebra ℂ C(characterSpace ℂ A, ℂ) :=
+  let rng : StarSubalgebra ℂ C(characterSpace ℂ A, ℂ) :=
     { toSubalgebra := (gelfandTransform ℂ A).range
       star_mem' := by
         rintro - ⟨a, rfl⟩

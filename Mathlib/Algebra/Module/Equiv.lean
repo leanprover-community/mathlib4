@@ -635,6 +635,18 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
 
 end RestrictScalars
 
+theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
+    IsUnit f ↔ Function.Bijective f :=
+  ⟨fun h =>
+    Function.bijective_iff_has_inverse.mpr <|
+      ⟨h.unit.inv,
+        ⟨Module.End_isUnit_inv_apply_apply_of_isUnit h,
+        Module.End_isUnit_apply_inv_apply_of_isUnit h⟩⟩,
+    fun H =>
+    let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
+    ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
+#align module.End_is_unit_iff Module.End_isUnit_iff
+
 section Automorphisms
 
 variable [Module R M]
