@@ -75,7 +75,6 @@ variable (V : Type _) [Category V] [HasZeroMorphisms V]
 -- Porting note: this should be moved to an earlier file.
 -- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version
 -- do not simplify under themselves
--- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
@@ -101,7 +100,8 @@ def dgoToHomologicalComplex :
       comm' := fun i j h => by
         dsimp at h ⊢
         subst h
-        simp? [-eqToHom_naturality]
+        simp [Category.comp_id, eqToHom_refl, dif_pos rfl, Category.assoc,
+          eqToHom_f']
         -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         rw [reassoc_of% this] }
@@ -146,7 +146,7 @@ to the category of homological complexes in `V`.
 -/
 @[simps]
 def dgoEquivHomologicalComplex :
-    DifferentialObject ℤ (GradedObjectWithShift b V) ≌
+    DifferentialObject ℤ (GradedObjectWithShift b V) ≌ 
       HomologicalComplex V (ComplexShape.up' b) where
   functor := dgoToHomologicalComplex b V
   inverse := homologicalComplexToDGO b V
