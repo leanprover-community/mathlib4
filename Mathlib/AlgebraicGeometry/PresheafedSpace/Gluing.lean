@@ -110,11 +110,11 @@ local notation "π₁ " i ", " j ", " k => @pullback.fst _ _ _ _ _ (D.f i j) (D.
 
 local notation "π₂ " i ", " j ", " k => @pullback.snd _ _ _ _ _ (D.f i j) (D.f i k) _
 
-set_option quotPrecheck false in
+set_option quotPrecheck false
 local notation "π₁⁻¹ " i ", " j ", " k =>
   (PresheafedSpace.IsOpenImmersion.pullbackFstOfRight (D.f i j) (D.f i k)).invApp
 
-set_option quotPrecheck false in
+set_option quotPrecheck false
 local notation "π₂⁻¹ " i ", " j ", " k =>
   (PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft (D.f i j) (D.f i k)).invApp
 
