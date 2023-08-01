@@ -168,8 +168,8 @@ def fieldOfModelField {K : Type _} [Language.field.Structure K]
 
 open FieldFunctions
 
-def structureFieldOfField {K : Type _} [Field K] :
-    Language.field.Structure K :=
+@[simps]
+instance {K : Type _} [Field K] : Language.field.Structure K :=
   { funMap := fun {n} f =>
       match n, f with
       | _, add => fun x => x 0 + x 1
@@ -180,10 +180,8 @@ def structureFieldOfField {K : Type _} [Field K] :
       | _, one => fun _ => 1,
     RelMap := fun i => Empty.elim i }
 
-attribute [local instance] structureFieldOfField
-
-def modelFieldOfField {K : Type _} [Field K] : Theory.field.Model K := by
-  simp [Theory.field, structureFieldOfField, addFunction,
+instance {K : Type _} [Field K] : Theory.field.Model K := by
+  simp [Theory.field, addFunction,
     add_assoc, mulFunction, mul_assoc, add_comm, add_left_comm,
     mul_comm, mul_left_comm, mul_assoc, mul_add, add_mul, zero_def,
     one_def, constantMap]
