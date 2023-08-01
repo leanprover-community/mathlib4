@@ -620,8 +620,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
   trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
-    erw [@Finsupp.lmapDomain_total (Fin 1 → G) k k (⊤_ Type u) k _ _ _ _ _ (fun _ => (1 : k))
-        (fun _ => (1 : k))
+    erw [Finsupp.lmapDomain_total (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
+        (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
         (terminal.from
           ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)
         LinearMap.id fun i => rfl,
