@@ -321,12 +321,27 @@ instance commMonoid {α : Type _} [StrictOrderedCommSemiring α] [Nontrivial α]
 
 instance cancelMonoid {α : Type _} [StrictOrderedRing α] [IsDomain α] :
     CancelMonoid (Ioc (0 : α) 1) :=
-  { Set.Ioc.monoid with
+  { npow := Set.Ioc.monoid.npow
+    npow_zero := Set.Ioc.monoid.npow_zero
+    npow_succ := Set.Ioc.monoid.npow_succ
+    one_mul := Set.Ioc.monoid.one_mul
+    mul_one := Set.Ioc.monoid.mul_one
     mul_left_cancel := fun a _ _ h =>
       Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h : _)
     mul_right_cancel := fun _ b _ h =>
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
 #align set.Ioc.cancel_monoid Set.Ioc.cancelMonoid
+
+-- instance cancelMonoid' {α : Type _} [StrictOrderedRing α] [IsDomain α] :
+--     CancelMonoid (Ioc (0 : α) 1) :=
+--   { Set.Ioc.monoid with
+--     mul_left_cancel := fun a _ _ h =>
+--       Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h : _)
+--     mul_right_cancel := fun _ b _ h =>
+--       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
+--
+-- example {α : Type _} [StrictOrderedRing α] [IsDomain α] :
+-- cancelMonoid = cancelMonoid' (α := α) := rfl
 
 instance cancelCommMonoid {α : Type _} [StrictOrderedCommRing α] [IsDomain α] :
     CancelCommMonoid (Ioc (0 : α) 1) :=

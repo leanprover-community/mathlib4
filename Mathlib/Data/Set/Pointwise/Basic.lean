@@ -879,7 +879,8 @@ variable [MulOneClass α]
 /-- `Set α` is a `MulOneClass` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddZeroClass` under pointwise operations if `α` is."]
 protected noncomputable def mulOneClass : MulOneClass (Set α) :=
-  { Set.one, Set.mul with
+  { one := Set.one.one
+    mul := Set.mul.mul
     mul_one := image2_right_identity mul_one
     one_mul := image2_left_identity one_mul }
 #align set.mul_one_class Set.mulOneClass
@@ -1052,7 +1053,11 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 @[to_additive subtractionMonoid
     "`Set α` is a subtraction monoid under pointwise operations if `α` is."]
 protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
-  { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
+  { toMonoid := Set.monoid
+    inv := Set.involutiveInv.inv
+    inv_inv := Set.involutiveInv.inv_inv
+    div := Set.div.div,
+    zpow := fun z s => Set.ZPow (α := α)|>.pow s z
     mul_inv_rev := fun s t => by
       simp_rw [← image_inv]
       exact image_image2_antidistrib mul_inv_rev
@@ -1064,6 +1069,26 @@ protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
       exact image_image2_distrib_right div_eq_mul_inv }
 #align set.division_monoid Set.divisionMonoid
 #align set.subtraction_monoid Set.subtractionMonoid
+
+-- protected noncomputable def divisionMonoid' : DivisionMonoid (Set α) :=
+--   -- { toMonoid := Set.monoid
+--     -- inv := Set.involutiveInv.inv
+--     -- inv_inv := Set.involutiveInv.inv_inv
+--     -- div := Set.div.div,
+--     -- zpow := fun z s => Set.ZPow (α := α)|>.pow s z
+--   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
+--     mul_inv_rev := fun s t => by
+--       simp_rw [← image_inv]
+--       exact image_image2_antidistrib mul_inv_rev
+--     inv_eq_of_mul := fun s t h => by
+--       obtain ⟨a, b, rfl, rfl, hab⟩ := Set.mul_eq_one_iff.1 h
+--       rw [inv_singleton, inv_eq_of_mul_eq_one_right hab]
+--     div_eq_mul_inv := fun s t => by
+--       rw [← image_id (s / t), ← image_inv]
+--       exact image_image2_distrib_right div_eq_mul_inv }
+--
+-- example : Set.divisionMonoid = Set.divisionMonoid' (α := α) := rfl
+
 
 @[to_additive (attr := simp 500)]
 theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
@@ -1091,7 +1116,8 @@ protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
 
 /-- `Set α` has distributive negation if `α` has. -/
 protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) :=
-  { Set.involutiveNeg with
+  { neg := Set.involutiveNeg.neg
+    neg_neg := Set.involutiveNeg.neg_neg
     neg_mul := fun _ _ => by
       simp_rw [← image_neg]
       exact image2_image_left_comm neg_mul

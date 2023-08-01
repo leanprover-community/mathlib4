@@ -327,12 +327,10 @@ theorem Nonempty.fst : (s ×ˢ t).Nonempty → s.Nonempty := fun ⟨x, hx⟩ => 
 theorem Nonempty.snd : (s ×ˢ t).Nonempty → t.Nonempty := fun ⟨x, hx⟩ => ⟨x.2, hx.2⟩
 #align set.nonempty.snd Set.Nonempty.snd
 
-@[simp]
 theorem prod_nonempty_iff : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod h.2⟩
 #align set.prod_nonempty_iff Set.prod_nonempty_iff
 
-@[simp]
 theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
   simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or]
 #align set.prod_eq_empty_iff Set.prod_eq_empty_iff

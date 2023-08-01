@@ -150,9 +150,6 @@ instance linearOrder (α β : Type _) [LinearOrder α] [LinearOrder β] : Linear
     decidableEq := Lex.decidableEq _ _, }
 #align prod.lex.linear_order Prod.Lex.linearOrder
 
-instance [Ord α] [Ord β] : Ord (α ×ₗ β) where
-  compare := compareLex (compareOn (·.1)) (compareOn (·.2))
-
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
   bot := toLex ⊥
   bot_le _ := toLex_mono bot_le

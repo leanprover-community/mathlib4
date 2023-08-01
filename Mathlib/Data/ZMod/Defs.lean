@@ -44,7 +44,7 @@ open Nat.ModEq Int
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
-  { inferInstanceAs (Mul (Fin n)) with
+  { mul := (inferInstanceAs (Mul (Fin n)) : Mul _).mul
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_veq <|
         calc
@@ -64,24 +64,34 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
 
 /-- Commutative ring structure on `Fin n`. -/
 instance instDistrib (n : ℕ) : Distrib (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
+  { add := Fin.addCommSemigroup n|>.add
+    mul := Fin.instCommSemigroup n|>.mul
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 #align fin.distrib Fin.instDistrib
 
-/-- Commutative ring structure on `fin n`. -/
+/-- Commutative ring structure on `Fin n`. -/
 instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
+  { natCast := Fin.instAddMonoidWithOne n|>.natCast
+    natCast_zero := Fin.instAddMonoidWithOne n|>.natCast_zero
+    natCast_succ := Fin.instAddMonoidWithOne n|>.natCast_succ
+    sub_eq_add_neg := (Fin.addCommGroup n).toSubNegMonoid.sub_eq_add_neg
+    mul_comm := mul_comm
+    mul_assoc := mul_assoc
+    add_left_neg := add_left_neg
+    left_distrib := left_distrib
+    right_distrib := right_distrib
     one_mul := Fin.one_mul'
     mul_one := Fin.mul_one',
     -- porting note: new, see
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/
+    -- topic/ring.20vs.20Ring/near/322876462
     zero_mul := Fin.zero_mul'
     mul_zero := Fin.mul_zero' }
 #align fin.comm_ring Fin.instCommRing
 
-/-- Note this is more general than `fin.comm_ring` as it applies (vacuously) to `fin 0` too. -/
+/-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
   { toInvolutiveNeg := Fin.instInvolutiveNeg n
     mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
@@ -175,7 +185,6 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
     Nat.casesOn n (@right_distrib Int _ _ _) fun n => @right_distrib (Fin n.succ) _ _ _
   mul_comm := Nat.casesOn n (@mul_comm Int _) fun n => @mul_comm (Fin n.succ) _
   -- porting note: new, see
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
   zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
   -- porting note: all npow fields are new, but probably should be backported

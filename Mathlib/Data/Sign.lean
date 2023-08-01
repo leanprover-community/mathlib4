@@ -71,17 +71,17 @@ instance : Mul SignType :=
     | zero => zero
     | pos => y⟩
 
-/-- The less-than-or-equal relation on signs. -/
-protected inductive LE : SignType → SignType → Prop
-  | of_neg (a) : SignType.LE neg a
-  | zero : SignType.LE zero zero
-  | of_pos (a) : SignType.LE a pos
-#align sign_type.le SignType.LE
+/-- The less-than relation on signs. -/
+inductive Le : SignType → SignType → Prop
+  | of_neg (a) : Le neg a
+  | zero : Le zero zero
+  | of_pos (a) : Le a pos
+#align sign_type.le SignType.Le
 
 instance : LE SignType :=
-  ⟨SignType.LE⟩
+  ⟨Le⟩
 
-instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
+instance Le.decidableRel : DecidableRel Le := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 instance decidableEq : DecidableEq SignType := fun a b => by
@@ -120,14 +120,14 @@ instance : LinearOrder SignType where
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm
   le_trans := le_trans
-  decidableLE := LE.decidableRel
+  decidableLE := Le.decidableRel
   decidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1
-  le_top := LE.of_pos
+  le_top := Le.of_pos
   bot := -1
-  bot_le := LE.of_neg
+  bot_le := Le.of_neg
 
 instance : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl
@@ -135,7 +135,8 @@ instance : HasDistribNeg SignType :=
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
 
 /-- `SignType` is equivalent to `Fin 3`. -/
-def fin3Equiv : SignType ≃* Fin 3 where
+def fin3Equiv : SignType ≃* Fin 3
+    where
   toFun a :=
     match a with
     | 0 => ⟨0, by simp⟩
@@ -270,7 +271,8 @@ end cast
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
 @[simps]
-def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α where
+def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
+    where
   toFun := cast
   map_zero' := rfl
   map_one' := rfl
@@ -278,8 +280,8 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α w
 #align sign_type.cast_hom SignType.castHom
 
 --Porting note: new theorem
-theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
-  decide
+theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} :=
+  by decide
 
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
   classical rw [← Fintype.coe_image_univ, univ_eq]

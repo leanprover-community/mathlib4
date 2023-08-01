@@ -41,7 +41,7 @@ instance isROrC_to_real : FiniteDimensional ℝ K :=
   ⟨⟨{1, I}, by
       rw [eq_top_iff]
       intro a _
-      rw [Finset.coe_insert, Finset.coe_singleton, Submodule.mem_span_insert]
+      erw [Finset.coe_insert, Finset.coe_singleton, Submodule.mem_span_insert]
       refine' ⟨re a, im a • I, _, _⟩
       · rw [Submodule.mem_span_singleton]
         use im a

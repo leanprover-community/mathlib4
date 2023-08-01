@@ -226,7 +226,7 @@ instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, Parti
 @[to_additive]
 instance Lex.orderedCommGroup [LinearOrder ι] [∀ a, OrderedCommGroup (β a)] :
     OrderedCommGroup (Lex (∀ i, β i)) :=
-  { Pi.commGroup with
+  { toCommGroup := Pi.commGroup
     mul_le_mul_left := fun x y hxy z =>
       hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
         Or.inr ⟨i, fun j hji =>

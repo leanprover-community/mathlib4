@@ -178,7 +178,7 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 #align set_like.eta SetLike.eta
 
-instance (priority := 100) : PartialOrder A :=
+instance (priority := 100) og : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
     le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
 

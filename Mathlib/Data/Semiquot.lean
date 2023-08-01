@@ -190,7 +190,7 @@ instance partialOrder : PartialOrder (Semiquot α) where
   le_antisymm s t h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
 
 instance : SemilatticeSup (Semiquot α) :=
-  { Semiquot.partialOrder with
+  { toPartialOrder := Semiquot.partialOrder
     sup := fun s => blur s.s
     le_sup_left := fun _ _ => Set.subset_union_left _ _
     le_sup_right := fun _ _ => Set.subset_union_right _ _
