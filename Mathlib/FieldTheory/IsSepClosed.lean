@@ -42,16 +42,16 @@ see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 class IsSepClosed : Prop where
   splits_of_separable : ∀ p : k[X], p.Separable → (p.Splits <| RingHom.id k)
 
-/-- Every separable polynomial splits in the field extension `f : K →+* k` if `k` is
+/-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
 
-See also `IsSepClosed.splits_domain` for the case where `K` is separably closed.
+See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
-theorem IsSepClosed.splits_codomain {k K : Type _} [Field k] [IsSepClosed k] [Field K] {f : K →+* k}
-    (p : K[X]) (h : p.Separable) : p.Splits f := by
+theorem IsSepClosed.splits_codomain {k K : Type _} [Field k] [Field K] [IsSepClosed K]  {f : k →+* K}
+    (p : k[X]) (h : p.Separable) : p.Splits f := by
   convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
 
-/-- Every separable polynomial splits in the field extension `f : K →+* k` if `K` is
+/-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
 separably closed.
 
 See also `IsSepClosed.splits_codomain` for the case where `k` is separably closed.
@@ -74,13 +74,12 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) {n : ℕ} (hn : (n : k) ≠ 0)
     exact hn rfl
   have : degree (X ^ n - C x) ≠ 0 := by
     rw [degree_X_pow_sub_C hn' x]
-    exact ne_of_gt (WithBot.coe_lt_coe.2 hn')
+    exact (WithBot.coe_lt_coe.2 hn').ne'
   by_cases hx : x = 0
   · exact ⟨0, by rw [hx, pow_eq_zero_iff hn']⟩
   · obtain ⟨z, hz⟩ := exists_root _ this <| separable_X_pow_sub_C x hn hx
     use z
-    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
-    exact sub_eq_zero.1 hz
+    simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
 
 theorem exists_eq_mul_self [IsSepClosed k] (x : k) (h2 : (2 : k) ≠ 0) : ∃ z, x = z * z := by
   rcases exists_pow_nat_eq x h2 with ⟨z, rfl⟩
@@ -118,7 +117,7 @@ theorem exists_aeval_eq_zero {R : Type _} [Field R] [IsSepClosed k] [Algebra R k
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p ↦ (fun hsep ↦ Or.inr ?_)⟩
+  refine ⟨fun p hsep ↦ Or.inr ?_⟩
   intro q hq hdvd
   simp only [map_id] at hdvd 
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
@@ -139,7 +138,7 @@ theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
 theorem algebraMap_surjective_of_isIntegral {k K : Type _} [Field k] [Ring K] [IsDomain K]
     [hk : IsSepClosed k] [Algebra k K] [IsSeparable k K] (hf : Algebra.IsIntegral k K) :
     Function.Surjective (algebraMap k K) := by
-  refine' fun x => ⟨-(minpoly k x).coeff 0, _⟩
+  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (hf x)
   have hsep : (minpoly k x).Separable := IsSeparable.separable k x
   have h : (minpoly k x).degree = 1 :=
@@ -169,6 +168,6 @@ theorem isSepClosure_iff (K : Type v) [Field K] [Algebra k K] :
 instance (priority := 100) IsSepClosure.normal (R K : Type _) [Field R] [Field K] [Algebra R K]
     [IsSepClosure R K] : Normal R K :=
   ⟨fun x => by apply IsIntegral.isAlgebraic; exact IsSepClosure.separable.isIntegral' x,
-    fun x => @IsSepClosed.splits_codomain _ _ _ (IsSepClosure.sep_closed R) _ _ _ (by
+    fun x => @IsSepClosed.splits_codomain _ _ _ _ (IsSepClosure.sep_closed R) _ _ (by
       have : IsSeparable R K := IsSepClosure.separable
       exact IsSeparable.separable R x)⟩
