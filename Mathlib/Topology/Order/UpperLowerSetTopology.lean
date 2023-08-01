@@ -143,10 +143,7 @@ theorem toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b
 
 /-- `ofUpper` as an `OrderIso` -/
 def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α :=
-{ toFun := ofUpperSet,
-  invFun := toUpperSet,
-  left_inv := toUpperSet_ofUpperSet,
-  right_inv := ofUpperSet_toUpperSet,
+{ ofUpperSet with
   map_rel_iff' := ofUpperSet_le_iff }
 
 /-- `toUpper` as an `OrderIso` -/
