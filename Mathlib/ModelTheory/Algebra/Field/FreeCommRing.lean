@@ -1,11 +1,9 @@
-import Mathlib.ModelTheory.Algebra.Ring.Basic
+import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.RingTheory.FreeCommRing
 
 namespace FirstOrder
 
 namespace Language
-
-namespace ring
 
 theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
     ∃ t : Language.ring.Term α,
@@ -23,7 +21,6 @@ noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term 
 
 variable {R : Type _} [CommRing R]
 
-@[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
     (termOfFreeCommRing p).realize v = FreeCommRing.lift v p := by
   have : (termOfFreeCommRing p).realize FreeCommRing.of = p :=
@@ -32,8 +29,6 @@ theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
   induction termOfFreeCommRing p with
   | var _ => simp
   | func f _ ih => cases f <;> simp_all
-
-end ring
 
 end Language
 

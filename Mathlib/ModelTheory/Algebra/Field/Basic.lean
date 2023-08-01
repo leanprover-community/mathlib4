@@ -1,6 +1,6 @@
 import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Algebra.Ring
+import Mathlib.ModelTheory.Algebra.Ring.Basic
 
 namespace FirstOrder
 
@@ -71,6 +71,17 @@ instance (α : Type _) : Inv (Language.field.Term α) :=
 
 theorem inv_def (α : Type _) (t : Language.field.Term α) :
     t⁻¹ = invFunction.apply₁ t := rfl
+
+@[simp]
+instance : Language.ring.Structure (Language.field.Term α) :=
+  { RelMap := Empty.elim,
+    funMap := fun {n} f =>
+      match n, f with
+      | _, .add => fun x => x 0 + x 1
+      | _, .mul => fun x => x 0 * x 1
+      | _, .neg => fun x => -x 0
+      | _, .zero => fun _ => 0
+      | _, .one => fun _ => 1 }
 
 end field
 
