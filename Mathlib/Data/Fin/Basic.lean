@@ -1391,15 +1391,6 @@ section SuccAbove
 def succAbove (p : Fin (n + 1)) (i : Fin n) : Fin (n + 1) :=
   if i.1 < p.1 then castSucc i else succ i
 
-/-- `predAbove p i` embeds `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`. -/
-def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
-  if h : castSucc p < i then i.pred ((ne_iff_vne i 0).mpr (Nat.not_eq_zero_of_lt h))
-  else i.castLT (Nat.lt_of_le_of_lt (Nat.ge_of_not_lt h) p.2)
-
-/-- `castPred` embeds `i : Fin (n + 2)` into `Fin (n + 1)`
-by lowering just `last (n + 1)` to `last n`. -/
-def castPred (i : Fin (n + 2)) : Fin (n + 1) := predAbove (last n) i
-
 theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   (castSuccEmb : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
     (fun _ _ hij hj => lt_trans ((castSuccEmb : Fin n ↪o _).lt_iff_lt.2 hij) hj) fun i =>
