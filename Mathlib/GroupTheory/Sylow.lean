@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.sylow
-! leanprover-community/mathlib commit bd365b1a4901dbd878e86cb146c2bd86533df468
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.SetLike.Fintype
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Order.Atoms.Finite
+
+#align_import group_theory.sylow from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # Sylow theorems
@@ -373,17 +370,18 @@ theorem Sylow.stabilizer_eq_normalizer (P : Sylow p G) :
 #align sylow.stabilizer_eq_normalizer Sylow.stabilizer_eq_normalizer
 
 theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite (Sylow p G)]
-    (P : Sylow p G) (x g : G) (hx : x ∈ (P : Subgroup G).centralizer)
-    (hy : g⁻¹ * x * g ∈ (P : Subgroup G).centralizer) :
+    (P : Sylow p G) (x g : G) (hx : x ∈ centralizer (P : Set G))
+    (hy : g⁻¹ * x * g ∈ centralizer (P : Set G)) :
     ∃ n ∈ (P : Subgroup G).normalizer, g⁻¹ * x * g = n⁻¹ * x * n := by
-  have h1 : ↑P ≤ (zpowers x).centralizer := by rwa [le_centralizer_iff, zpowers_le]
-  have h2 : ↑(g • P) ≤ (zpowers x).centralizer := by
+  have h1 : ↑P ≤ centralizer (zpowers x : Set G) := by rwa [le_centralizer_iff, zpowers_le]
+  have h2 : ↑(g • P) ≤ centralizer (zpowers x : Set G) := by
     rw [le_centralizer_iff, zpowers_le]
     rintro - ⟨z, hz, rfl⟩
     specialize hy z hz
     rwa [← mul_assoc, ← eq_mul_inv_iff_mul_eq, mul_assoc, mul_assoc, mul_assoc, ← mul_assoc,
       eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc] at hy
-  obtain ⟨h, hh⟩ := exists_smul_eq (zpowers x).centralizer ((g • P).subtype h2) (P.subtype h1)
+  obtain ⟨h, hh⟩ :=
+    exists_smul_eq (centralizer (zpowers x : Set G)) ((g • P).subtype h2) (P.subtype h1)
   simp_rw [Sylow.smul_subtype, Subgroup.smul_def, smul_smul] at hh
   refine' ⟨h * g, Sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), _⟩
   rw [← mul_assoc, Commute.right_comm (h.prop x (mem_zpowers x)), mul_inv_rev, inv_mul_cancel_right]
@@ -824,7 +822,7 @@ noncomputable def directProductOfNormal [Fintype G]
         exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_factorization hp⟩ (P p)
       _ = ∏ p in ps, p ^ (card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
-      _ = (card G).factorization.prod (. ^ .) := rfl
+      _ = (card G).factorization.prod (· ^ ·) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero
 
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal

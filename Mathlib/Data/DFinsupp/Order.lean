@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.dfinsupp.order
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.Basic
+
+#align_import data.dfinsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Pointwise order on finitely supported dependent functions
@@ -34,12 +31,6 @@ namespace DFinsupp
 
 
 section Zero
-
--- porting note: The unusedVariables linter has false positives in code like
---    variable (α) [∀ i, Zero (α i)]
--- marking the `i` as unused. The linter is fine when the code is split into 2 lines.
--- Likely issue https://github.com/leanprover/lean4/issues/2088, so combine lines when that is fixed
-variable (α)
 variable [∀ i, Zero (α i)]
 
 section LE
@@ -48,8 +39,6 @@ variable [∀ i, LE (α i)]
 
 instance : LE (Π₀ i, α i) :=
   ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
-
-variable {α}
 
 theorem le_def {f g : Π₀ i, α i} : f ≤ g ↔ ∀ i, f i ≤ g i :=
   Iff.rfl
@@ -113,11 +102,25 @@ theorem sup_apply [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) (i : ι) 
   zipWith_apply _ _ _ _ _
 #align dfinsupp.sup_apply DFinsupp.sup_apply
 
-instance lattice [∀ i, Lattice (α i)] : Lattice (Π₀ i, α i) :=
+section Lattice
+variable [∀ i, Lattice (α i)] (f g : Π₀ i, α i)
+
+instance lattice : Lattice (Π₀ i, α i) :=
   { (inferInstance : SemilatticeInf (DFinsupp α)),
     (inferInstance : SemilatticeSup (DFinsupp α)) with }
 #align dfinsupp.lattice DFinsupp.lattice
 
+variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)]
+
+theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
+  coe_injective $ compl_injective $ by ext; simp [inf_eq_and_sup_eq_iff]
+#align dfinsupp.support_inf_union_support_sup DFinsupp.support_inf_union_support_sup
+
+theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
+  (union_comm _ _).trans $ support_inf_union_support_sup _ _
+#align dfinsupp.support_sup_union_support_inf DFinsupp.support_sup_union_support_inf
+
+end Lattice
 end Zero
 
 /-! ### Algebraic order structures -/

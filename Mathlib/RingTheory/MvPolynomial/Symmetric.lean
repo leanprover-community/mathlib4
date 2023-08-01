@@ -2,15 +2,12 @@
 Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.symmetric
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+
+#align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -75,7 +72,7 @@ variable {σ : Type _} {R : Type _}
 variable {τ : Type _} {S : Type _}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
-permutations of its variables by the  `rename` operation -/
+permutations of its variables by the `rename` operation -/
 def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
   ∀ e : Perm σ, rename e φ = φ
 #align mv_polynomial.is_symmetric MvPolynomial.IsSymmetric
@@ -275,7 +272,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       · rfl
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-    simpa using powerset_len_sup _ _ (Nat.lt_of_succ_le hn)
+    simpa using powersetLen_sup _ _ (Nat.lt_of_succ_le hn)
 #align mv_polynomial.degrees_esymm MvPolynomial.degrees_esymm
 
 end ElementarySymmetric

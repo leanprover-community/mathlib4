@@ -2,14 +2,11 @@
 Copyright (c) Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.equivalence
-! leanprover-community/mathlib commit ea74dc9f981009c33b9971f3389509a88c95cf07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.limits.shapes.equivalence from "leanprover-community/mathlib"@"ea74dc9f981009c33b9971f3389509a88c95cf07"
 
 /-!
 # Transporting existence of specific limits across equivalences

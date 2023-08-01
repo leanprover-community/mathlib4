@@ -2,15 +2,12 @@
 Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.eigenspace.basic
-! leanprover-community/mathlib commit 6b0169218d01f2837d79ea2784882009a0da1aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
+
+#align_import linear_algebra.eigenspace.basic from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # Eigenvectors and eigenvalues
@@ -141,14 +138,14 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     _ = LinearMap.ker (f - b⁻¹ • algebraMap K (End K V) a) := rfl
     _ = LinearMap.ker (b • (f - b⁻¹ • algebraMap K (End K V) a)) := by
         rw [LinearMap.ker_smul _ b hb]
-    _ =  LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
+    _ = LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
 #align module.End.eigenspace_div Module.End.eigenspace_div
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `V`.  That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.eigenspace := by
   classical
-  -- Define an operation from `Π₀ μ : K, f.eigenspace μ`, the vector space of of finitely-supported
+  -- Define an operation from `Π₀ μ : K, f.eigenspace μ`, the vector space of finitely-supported
   -- choices of an eigenvector from each eigenspace, to `V`, by sending a collection to its sum.
   let S : @LinearMap K K _ _ (RingHom.id K) (Π₀ μ : K, f.eigenspace μ) V
       (@DFinsupp.addCommMonoid K (fun μ => f.eigenspace μ) _) _
@@ -159,7 +156,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
   suffices ∀ l : Π₀ μ, f.eigenspace μ, S l = 0 → l = 0 by
     rw [CompleteLattice.independent_iff_dfinsupp_lsum_injective]
     change Function.Injective S
-    rw [←  @LinearMap.ker_eq_bot K K (Π₀ μ, f.eigenspace μ) V _ _
+    rw [← @LinearMap.ker_eq_bot K K (Π₀ μ, f.eigenspace μ) V _ _
       (@DFinsupp.addCommGroup K (fun μ => f.eigenspace μ) _)]
     rw [eq_bot_iff]
     exact this
@@ -356,7 +353,7 @@ theorem eigenspace_le_generalizedEigenspace {f : End R M} {μ : R} {k : ℕ} (hk
 theorem hasGeneralizedEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
     (hμ : f.HasEigenvalue μ) : f.HasGeneralizedEigenvalue μ k := by
   apply hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le hk
-  rw [HasGeneralizedEigenvalue, generalizedEigenspace, OrderHom.coe_fun_mk, pow_one]
+  rw [HasGeneralizedEigenvalue, generalizedEigenspace, OrderHom.coe_mk, pow_one]
   exact hμ
 #align module.End.has_generalized_eigenvalue_of_has_eigenvalue Module.End.hasGeneralizedEigenvalue_of_hasEigenvalue
 
@@ -395,7 +392,7 @@ theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : �
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
     generalizedEigenspace (LinearMap.restrict f hfp) μ k =
       Submodule.comap p.subtype (f.generalizedEigenspace μ k) := by
-  simp only [generalizedEigenspace, OrderHom.coe_fun_mk, ← LinearMap.ker_comp]
+  simp only [generalizedEigenspace, OrderHom.coe_mk, ← LinearMap.ker_comp]
   induction' k with k ih
   · rw [pow_zero, pow_zero, LinearMap.one_eq_id]
     apply (Submodule.ker_subtype _).symm
@@ -422,7 +419,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
         (f.generalizedEigenspace μ (finrank K V)) =
           LinearMap.ker ((f - algebraMap _ _ μ) ^ finrank K V *
             (f - algebraMap K (End K V) μ) ^ finrank K V) := by
-              rw [generalizedEigenspace, OrderHom.coe_fun_mk, ← LinearMap.ker_comp]; rfl
+              rw [generalizedEigenspace, OrderHom.coe_mk, ← LinearMap.ker_comp]; rfl
       _ = f.generalizedEigenspace μ (finrank K V + finrank K V) := by rw [← pow_add]; rfl
       _ = f.generalizedEigenspace μ (finrank K V) := by
         rw [generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le]; linarith
