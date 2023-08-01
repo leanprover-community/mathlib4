@@ -275,8 +275,6 @@ theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
 #align matrix.rank_eq_finrank_span_row Matrix.rank_eq_finrank_span_row
 
-section MulNonsingInv
-
 /-! ### Lemmas about left or right multiplying by an invertible matrix. -/
 
 /-- Right multiplying by an invertible matrix does not change the rank -/
@@ -298,7 +296,5 @@ lemma rank_mul_eq_right_of_isUnitDet [DecidableEq m] [CommRing R]
     convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
   have hAB : mulVecLin (A ⬝ B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
-
-end MulNonsingInv
 
 end Matrix
