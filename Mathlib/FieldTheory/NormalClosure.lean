@@ -6,6 +6,7 @@ Authors: Thomas Browning
 
 import Mathlib.FieldTheory.Normal
 
+#align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 /-!
 # Normal closures
 The normal closure of a tower of fields `L/K/F` is the smallest intermediate field of `L/K` that
