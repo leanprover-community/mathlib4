@@ -1396,36 +1396,9 @@ end Finite
 -- As the instances below are noncomputable,
 -- we make them low priority so when alternative constructions are available they are preferred.
 -- Someone may like to upgrade these instances to computable ones.
+-- open Classical
 
-noncomputable instance (priority := low) [Preorder α] [LocallyFiniteOrder α] :
-    LocallyFiniteOrder { x : α // x ≤ y } :=
-  LocallyFiniteOrder.ofFiniteIcc fun a b =>
-    Set.Finite.of_finite_image
-      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
-      Set.injOn_subtype_val
-
-noncomputable instance (priority := low) [Preorder α] [LocallyFiniteOrder α] :
-    LocallyFiniteOrder { x : α // x < y } :=
-  LocallyFiniteOrder.ofFiniteIcc fun a b =>
-    Set.Finite.of_finite_image
-      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
-      Set.injOn_subtype_val
-
-noncomputable instance (priority := low) [Preorder α] [LocallyFiniteOrder α] :
-    LocallyFiniteOrder { x : α // y ≤ x } :=
-  LocallyFiniteOrder.ofFiniteIcc fun a b =>
-    Set.Finite.of_finite_image
-      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
-      Set.injOn_subtype_val
-
-noncomputable instance (priority := low) [Preorder α] [LocallyFiniteOrder α] :
-    LocallyFiniteOrder { x : α // y < x } :=
-  LocallyFiniteOrder.ofFiniteIcc fun a b =>
-    Set.Finite.of_finite_image
-      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
-      Set.injOn_subtype_val
-
-noncomputable instance (priority := low) [Preorder α] [LocallyFiniteOrder α] :
+instance (priority := low) [Preorder α] [DecidableRel ((· : α) ≤ ·)] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where
   finsetIoi a := Finset.Ioc a ⟨y, by rfl⟩
   finsetIci a := Finset.Icc a ⟨y, by rfl⟩
@@ -1447,7 +1420,7 @@ noncomputable instance (priority := low) [Preorder α] [LocallyFiniteOrder α] :
     simp only [Finset.mem_preimage, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_left_iff_imp]
     exact fun _ => b.property
 
-noncomputable instance (priority := low) [Preorder α] [LocallyFiniteOrder α] :
+instance (priority := low) [Preorder α] [DecidableRel ((· : α) ≤ ·)] [LocallyFiniteOrder α] :
     LocallyFiniteOrderBot { x : α // y ≤ x } where
   finsetIio a := Finset.Ico ⟨y, by rfl⟩ a
   finsetIic a := Finset.Icc ⟨y, by rfl⟩ a
