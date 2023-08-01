@@ -169,7 +169,7 @@ then there is a chain of length `n + m + 1` given by
 `a_0 < a_1 < ... < a_n < b_0 < b_1 < ... < b_m`.
 -/
 @[simps]
-def append (p q : RelSeries r) (h : r (p (Fin.last _)) (q 0)) : RelSeries r where
+def append (p q : RelSeries r) (connect : r (p (Fin.last _)) (q 0)) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by ring)
   step := fun i => by
