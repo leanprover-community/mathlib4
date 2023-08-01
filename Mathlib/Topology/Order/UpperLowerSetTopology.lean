@@ -206,10 +206,7 @@ def ofLowerSetOrderIso : OrderIso (WithLowerSetTopology α) α :=
 
 /-- `toLower` as an `OrderIso` -/
 def toLowerSetOrderIso : OrderIso α (WithLowerSetTopology α) :=
-{ toFun := toLowerSet,
-  invFun := ofLowerSet,
-  left_inv := ofLowerSet_toLowerSet,
-  right_inv := toLowerSet_ofLowerSet,
+{ toLowerSet with
   map_rel_iff' := toLowerSet_le_iff }
 
 end WithLowerSetTopology
