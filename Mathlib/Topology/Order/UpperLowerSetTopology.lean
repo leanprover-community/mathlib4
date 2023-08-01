@@ -279,10 +279,9 @@ lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
 
 -- Alexandrov property, set formulation
 theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
-  rw [IsOpen_iff_IsUpperSet]
+  simp_rw [IsOpen_iff_IsUpperSet] at *
   apply isUpperSet_sInter
   intros s hs
-  rw [← IsOpen_iff_IsUpperSet]
   exact hf _ hs
 
 -- Alexandrov property, index formulation
