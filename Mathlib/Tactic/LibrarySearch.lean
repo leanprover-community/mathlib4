@@ -249,6 +249,8 @@ syntax (name := exact?') "exact?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
 syntax (name := exact?!) "exact?!" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
+syntax (name := exact!?) "exact!?" (config)? (simpArgs)?
+  (" using " (colGt term),+)? : tactic
 
 syntax (name := apply?') "apply?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
@@ -271,7 +273,7 @@ def exact? (tk : Syntax) (required : Option (Array (TSyntax `term))) (requireClo
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta (addSubgoalsMsg := true)
-      if suggestions.isEmpty then logError "exact? didn't find any relevant lemmas"
+      if suggestions.isEmpty then logError "apply? didn't find any relevant lemmas"
       admitGoal goal
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
