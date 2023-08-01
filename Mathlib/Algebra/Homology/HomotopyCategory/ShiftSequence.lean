@@ -63,7 +63,7 @@ lemma shiftShortComplexFunctorIso_add'_hom_app
   ext <;> dsimp <;>
     simp only [comp_zsmul, zsmul_comp, smul_smul,
       shiftFunctorAdd'_hom_app_f', ← hmn, ε_add,
-      XIsoOfEq_shift, XIsoOfEq_trans_hom]
+      XIsoOfEq_shift, XIsoOfEq_hom_comp_XIsoOfEq_hom]
 
 variable [CategoryWithHomology C]
 

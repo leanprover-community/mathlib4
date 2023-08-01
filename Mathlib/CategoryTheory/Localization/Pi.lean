@@ -34,7 +34,7 @@ instance pi [Finite J] :
     let E := pi_equivalence_of_equiv C₂ e
     let E' := pi_equivalence_of_equiv D₂ e
     haveI : CatCommSq E.functor (Functor.pi L₁) (Functor.pi L₂) E'.functor :=
-      CatCommSq.hInv' _ _ _ _ ⟨Iso.refl _⟩
+      (CatCommSq.hInvEquiv E (Functor.pi L₁) (Functor.pi L₂) E').symm ⟨Iso.refl _⟩
     refine' IsLocalization.of_equivalences (Functor.pi L₁)
       (MorphismProperty.pi W₁) (Functor.pi L₂) (MorphismProperty.pi W₂) E E' _
       (MorphismProperty.IsInvertedBy.pi _ _ (fun j => Localization.inverts _ _))

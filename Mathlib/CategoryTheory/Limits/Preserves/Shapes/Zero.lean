@@ -121,6 +121,9 @@ lemma preservesZeroMorphisms_of_fac_of_essSurj (F : C ⥤ D) (G : D ⥤ E) (H : 
   erw [(F ⋙ G).map_zero]
   simp only [zero_comp, comp_zero]⟩
 
+instance preservesZeroMorphisms_evaluation_obj (j : D) :
+    PreservesZeroMorphisms ((evaluation D C).obj j) where
+
 end ZeroMorphisms
 
 section ZeroObject
