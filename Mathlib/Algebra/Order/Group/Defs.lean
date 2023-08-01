@@ -51,8 +51,6 @@ class OrderedAddCommGroupWithOne (α : Type _) extends AddCommGroupWithOne α, P
   /-- One is nonnegative in an `OrderedAddCommGroupWithOne`. -/
   protected zero_le_one : (0 : α) ≤ 1
 
-section OrderedInstances
-
 -- See note [lower instance priority]
 instance (priority := 100) OrderedAddCommGroupWithOne.toOrderedAddCommGroup {M : Type _}
     [OrderedAddCommGroupWithOne M] : OrderedAddCommGroup M where
