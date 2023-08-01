@@ -288,7 +288,7 @@ lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n] [CommRing R]
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
 /-- Left multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_eq_right_of_isUnitDet [DecidableEq m] [CommRing R]
+lemma rank_mul_eq_right_of_isUnit_det [DecidableEq m] [CommRing R]
     (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (A ⬝ B).rank = B.rank := by
   let b : Basis m R (m → R) := Pi.basisFun R m
