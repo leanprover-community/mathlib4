@@ -286,10 +286,9 @@ theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (
 
 -- Alexandrov property, index formulation
 theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
-  rw [IsOpen_iff_IsUpperSet]
+  simp_rw [IsOpen_iff_IsUpperSet] at *
   apply isUpperSet_iInter
   intros i
-  rw [← IsOpen_iff_IsUpperSet]
   exact hf i
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
