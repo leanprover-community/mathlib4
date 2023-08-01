@@ -385,7 +385,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
       (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
     revert e
     rw [bodd_bit, div2_bit]
-    intros ; rfl
+    intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq
 
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
