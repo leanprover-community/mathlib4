@@ -11,8 +11,8 @@ open field FreeCommRing BigOperators Polynomial
 
 variable {K : Type _} [Field K]
 
-def genericPoly (supp : Finset ℕ) : FreeCommRing (Fin (n + 1)) :=
-  ∑ i ∈ supp, of
+def genericPoly (supp : Finset ℕ) : FreeCommRing (Option supp) :=
+  ∑ i : supp, of (some i) * of none ^ (i : ℕ)
 
 theorem lift_genericMonicPoly (p : Polynomial K)
     (hm : p.Monic) (x : K) : FreeCommRing.lift
