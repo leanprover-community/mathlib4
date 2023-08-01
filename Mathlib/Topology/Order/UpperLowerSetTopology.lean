@@ -331,9 +331,8 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [UpperSetTopology 
     simp_rw [continuous_def, IsOpen_iff_IsUpperSet]
     exact fun _ hs ↦ IsUpperSet.preimage hs hf
   · intro hf a b hab
-    rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
+    rw [← mem_Iic, ← closure_singleton] at hab ⊢
     apply (Continuous.closure_preimage_subset hf {f b})
-    rw [← mem_Iic, ← closure_singleton] at hab
     apply mem_of_mem_of_subset hab
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
