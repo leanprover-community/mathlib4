@@ -110,7 +110,7 @@ theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyC
     intro h x hx
     exact Set.mem_range.mp (Algebra.mem_bot.mp (h hx))
   · intro h x hx
-    erw [Algebra.mem_bot, Set.mem_range]
+    rw [Algebra.mem_bot, Set.mem_range]
     exact isIntegral_iff.mp hx
 #align is_integrally_closed.integral_closure_eq_bot_iff IsIntegrallyClosed.integralClosure_eq_bot_iff
 

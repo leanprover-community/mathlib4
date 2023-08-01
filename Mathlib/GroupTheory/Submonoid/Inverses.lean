@@ -70,7 +70,6 @@ theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rintro x ⟨⟨y, z, h₁⟩, h₂ : x * y = 1⟩
   convert z.prop
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
-  rfl
 #align submonoid.left_inv_left_inv_le Submonoid.leftInv_leftInv_le
 #align add_submonoid.left_neg_left_neg_le AddSubmonoid.leftNeg_leftNeg_le
 

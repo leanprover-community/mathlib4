@@ -1030,7 +1030,6 @@ instance : Unique (Subalgebra R R) :=
       intro S
       refine' le_antisymm ?_ bot_le
       intro _ _
-      erw [mem_bot]
       simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.

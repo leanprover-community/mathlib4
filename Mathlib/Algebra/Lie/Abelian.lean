@@ -145,7 +145,7 @@ theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
   refine' ⟨fun h => _, fun h m hm => _⟩
   · rw [← le_bot_iff, ← ideal_oper_maxTrivSubmodule_eq_bot R L M ⊤]
     exact LieSubmodule.mono_lie_right _ _ ⊤ h
-  · erw [mem_maxTrivSubmodule]
+  · rw [mem_maxTrivSubmodule]
     rw [LieSubmodule.lie_eq_bot_iff] at h
     exact fun x => h x (LieSubmodule.mem_top x) m hm
 #align lie_module.le_max_triv_iff_bracket_eq_bot LieModule.le_max_triv_iff_bracket_eq_bot

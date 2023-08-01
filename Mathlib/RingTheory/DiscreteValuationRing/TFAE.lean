@@ -81,7 +81,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing 
     apply hs₂
     by_cases hs₃ : s = 0; · rw [hs₃]; exact zero_mem _
     obtain ⟨n, u, rfl⟩ := H' s hs₃ (le_maximalIdeal hI' hs₁)
-    erw [mul_comm, Ideal.unit_mul_mem_iff_mem _ u.isUnit] at hs₁ ⊢
+    rw [mul_comm, Ideal.unit_mul_mem_iff_mem _ u.isUnit] at hs₁ ⊢
     apply Ideal.pow_le_pow (Nat.find_min' this hs₁)
     apply Ideal.pow_mem_pow
     exact (H _).mpr (dvd_refl _)

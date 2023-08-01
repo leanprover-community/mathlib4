@@ -119,7 +119,6 @@ theorem rootsOfUnity.coe_mkOfPowEq {ζ : M} {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) 
 theorem rootsOfUnity_le_of_dvd (h : k ∣ l) : rootsOfUnity k M ≤ rootsOfUnity l M := by
   obtain ⟨d, rfl⟩ := h
   intro ζ h
-  erw [mem_rootsOfUnity] at *
   simp_all only [mem_rootsOfUnity, PNat.mul_coe, pow_mul, one_pow]
 #align roots_of_unity_le_of_dvd rootsOfUnity_le_of_dvd
 
@@ -673,7 +672,6 @@ theorem pow_sub_one_eq [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 
     Nat.succ_pred_eq_of_pos (pos_of_gt hk), hζ.geom_sum_eq_zero hk]
 #align is_primitive_root.pow_sub_one_eq IsPrimitiveRoot.pow_sub_one_eq
 
-set_option maxHeartbeats 0 in
 /-- The (additive) monoid equivalence between `ZMod k`
 and the powers of a primitive root of unity `ζ`. -/
 def zmodEquivZpowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup.zpowers ζ) :=
@@ -682,7 +680,6 @@ def zmodEquivZpowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
       ⟨{  toFun := fun i => Additive.ofMul (⟨_, i, rfl⟩ : Subgroup.zpowers ζ)
           map_zero' := by simp only [zpow_zero]; rfl
           map_add' := by intro i j; simp only [zpow_add]; rfl }, fun i hi => by
-        erw [AddMonoidHom.mem_ker] at *
         simp only [AddMonoidHom.mem_ker, CharP.int_cast_eq_zero_iff (ZMod k) k, AddMonoidHom.coe_mk,
           Int.coe_castAddHom] at hi ⊢
         obtain ⟨i, rfl⟩ := hi

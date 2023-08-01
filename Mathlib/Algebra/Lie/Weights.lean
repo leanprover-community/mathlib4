@@ -105,7 +105,6 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
       preWeightSpace M₃ (χ₁ + χ₂) := by
   -- Unpack the statement of the goal.
   intro m₃
-  erw [LinearMap.mem_range, mem_preWeightSpace]
   simp only [LieModuleHom.coe_toLinearMap, Pi.add_apply, Function.comp_apply, mem_preWeightSpace,
     LinearMap.coe_comp, TensorProduct.mapIncl, exists_imp, LinearMap.mem_range]
   rintro t rfl x
@@ -175,7 +174,6 @@ theorem lie_mem_preWeightSpace_of_mem_preWeightSpace {χ₁ χ₂ : L → R} {x 
     (hx : x ∈ preWeightSpace L χ₁) (hm : m ∈ preWeightSpace M χ₂) :
     ⁅x, m⁆ ∈ preWeightSpace M (χ₁ + χ₂) := by
   apply LieModule.weight_vector_multiplication L L M M (toModuleHom R L M) χ₁ χ₂
-  erw [LinearMap.mem_range]
   simp only [LieModuleHom.coe_toLinearMap, Function.comp_apply, LinearMap.coe_comp,
     TensorProduct.mapIncl, LinearMap.mem_range]
   use ⟨x, hx⟩ ⊗ₜ ⟨m, hm⟩
@@ -315,7 +313,6 @@ variable {H M}
 theorem lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {m : M}
     (hx : x ∈ rootSpace H χ₁) (hm : m ∈ weightSpace M χ₂) : ⁅x, m⁆ ∈ weightSpace M (χ₁ + χ₂) := by
   apply LieModule.weight_vector_multiplication H L M M ((toModuleHom R L M).restrictLie H) χ₁ χ₂
-  erw [LinearMap.mem_range]
   simp only [LieModuleHom.coe_toLinearMap, Function.comp_apply, LinearMap.coe_comp,
     TensorProduct.mapIncl, LinearMap.mem_range]
   use ⟨x, hx⟩ ⊗ₜ ⟨m, hm⟩
@@ -416,8 +413,7 @@ theorem mem_zeroRootSubalgebra (x : L) :
 
 theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 := by
   intro x hx
-  erw [LieSubalgebra.mem_toLieSubmodule] at hx
-  erw [mem_weightSpace,mem_preWeightSpace]
+  simp only [LieSubalgebra.mem_toLieSubmodule] at hx
   simp only [mem_weightSpace, mem_preWeightSpace, Pi.zero_apply, sub_zero, zero_smul]
   intro y
   obtain ⟨k, hk⟩ := (inferInstance : IsNilpotent R H)

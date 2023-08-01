@@ -449,7 +449,7 @@ theorem isCompl_range_inl_inr : IsCompl (range $ inl R M M₂) (range $ inr R M 
     exact ⟨hy.1.symm, hx.2.symm⟩
   · rw [codisjoint_iff_le_sup]
     rintro ⟨x, y⟩ -
-    erw [mem_sup]
+    simp only [mem_sup, mem_range, exists_prop]
     refine' ⟨(x, 0), ⟨x, rfl⟩, (0, y), ⟨y, rfl⟩, _⟩
     simp
 #align linear_map.is_compl_range_inl_inr LinearMap.isCompl_range_inl_inr
@@ -468,8 +468,8 @@ theorem map_coprod_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (p : Su
   · rw [SetLike.le_def]
     rintro _ ⟨x, ⟨h₁, h₂⟩, rfl⟩
     exact mem_sup.2 ⟨_, ⟨_, h₁, rfl⟩, _, ⟨_, h₂, rfl⟩, rfl⟩
-  · exact fun x hx => ⟨(x, 0), by simp; exact hx⟩
-  · exact fun x hx => ⟨(0, x), by simp; exact hx⟩
+  · exact fun x hx => ⟨(x, 0), by simp [hx]⟩
+  · exact fun x hx => ⟨(0, x), by simp [hx]⟩
 #align linear_map.map_coprod_prod LinearMap.map_coprod_prod
 
 theorem comap_prod_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) (p : Submodule R M₂)
@@ -522,7 +522,7 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type _} [AddCommGroup M₂] [Module
     use -z
     rwa [eq_comm, map_neg, ← sub_eq_zero, sub_neg_eq_add]
   rw [hd.eq_bot, mem_bot] at this
-  simp_rw [this] at h
+  rw [this] at h
   simpa [this] using h
 #align linear_map.ker_coprod_of_disjoint_range LinearMap.ker_coprod_of_disjoint_range
 
@@ -624,7 +624,6 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where -- Porting note: proofs 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
   -- Porting note: was `tidy`
   rw [eq_top_iff]; rintro x -
-  erw [mem_map]
   simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
     Prod.exists, exists_eq_left, exists_eq]
 #align submodule.fst_map_fst Submodule.fst_map_fst
@@ -632,8 +631,7 @@ theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = �
 theorem fst_map_snd : (Submodule.fst R M M₂).map (LinearMap.snd R M M₂) = ⊥ := by
   -- Porting note: was `tidy`
   rw [eq_bot_iff]; intro x
-  erw [mem_map]
-  simp [fst, comap_bot, mem_map, mem_ker, snd_apply, eq_comm, Prod.exists, exists_eq_left,
+  simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, eq_comm, Prod.exists, exists_eq_left,
     exists_const, mem_bot, imp_self]
 #align submodule.fst_map_snd Submodule.fst_map_snd
 
@@ -661,15 +659,13 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where -- Porting note: proo
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
   -- Porting note: was `tidy`
   rw [eq_bot_iff]; intro x
-  erw [mem_map]
-  simp [snd, comap_bot, mem_map, mem_ker, fst_apply, eq_comm, Prod.exists, exists_eq_left,
+  simp only [snd, comap_bot, mem_map, mem_ker, fst_apply, eq_comm, Prod.exists, exists_eq_left,
     exists_const, mem_bot, imp_self]
 #align submodule.snd_map_fst Submodule.snd_map_fst
 
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
   -- Porting note: was `tidy`
   rw [eq_top_iff]; rintro x -
-  erw [mem_map]
   simp only [snd, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
     Prod.exists, exists_eq_right, exists_eq]
 #align submodule.snd_map_snd Submodule.snd_map_snd
@@ -686,8 +682,7 @@ theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
 theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
   -- Porting note: was `tidy`
   rw [eq_bot_iff]; rintro ⟨x, y⟩
-  erw [mem_inf]
-  simp [fst, comap_bot, snd, ge_iff_le, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
+  simp only [fst, comap_bot, snd, ge_iff_le, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
     Prod.mk_eq_zero, and_comm, imp_self]
 #align submodule.fst_inf_snd Submodule.fst_inf_snd
 

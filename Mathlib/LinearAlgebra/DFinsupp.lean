@@ -321,7 +321,6 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
   apply le_antisymm
   · apply iSup_le _
     intro i y hy
-    erw [LinearMap.mem_range]
     simp only [LinearMap.mem_range, lsum_apply_apply]
     exact ⟨DFinsupp.single i ⟨y, hy⟩, DFinsupp.sumAddHom_single _ _ _⟩
   · rintro x ⟨v, rfl⟩

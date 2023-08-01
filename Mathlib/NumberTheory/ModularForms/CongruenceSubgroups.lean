@@ -196,7 +196,6 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
 
 theorem Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
   intro x HA
-  erw [Gamma0_mem, Gamma1_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply] at *
   simp only [Gamma0_mem, Gamma1_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply] at *
   exact HA.2.2
 #align Gamma1_in_Gamma0 Gamma1_in_Gamma0
@@ -222,7 +221,6 @@ theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=
 theorem Gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma1 N) := by
   refine' ⟨N, _⟩
   intro A hA
-  erw [Gamma1_mem, Gamma_mem] at *
   simp only [Gamma1_mem, Gamma_mem] at *
   simp only [hA, eq_self_iff_true, and_self_iff]
 #align Gamma1_is_congruence Gamma1_is_congruence

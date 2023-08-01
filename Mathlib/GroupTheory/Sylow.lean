@@ -389,12 +389,8 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
 
 theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     [_hP : (P : Subgroup G).IsCommutative] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
-    ∃ n ∈ (P : Subgroup G).normalizer, g⁻¹ * x * g = n⁻¹ * x * n := by
-  apply P.conj_eq_normalizer_conj_of_mem_centralizer x g
-  · apply le_centralizer --P hx
-    apply hx
-  · apply le_centralizer -- P hy
-    apply hy
+    ∃ n ∈ (P : Subgroup G).normalizer, g⁻¹ * x * g = n⁻¹ * x * n :=
+  P.conj_eq_normalizer_conj_of_mem_centralizer x g (le_centralizer P hx) (le_centralizer P hy)
 #align sylow.conj_eq_normalizer_conj_of_mem Sylow.conj_eq_normalizer_conj_of_mem
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/
@@ -627,7 +623,7 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
     simp only [exists_prop, Subgroup.coeSubtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine' ⟨⟨y, le_normalizer hy⟩, ⟨0, _⟩, rfl⟩
     dsimp only
-    erw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
+    rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
     simpa using hy⟩
 #align sylow.exists_subgroup_card_pow_succ Sylow.exists_subgroup_card_pow_succ
 

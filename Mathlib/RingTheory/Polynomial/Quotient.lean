@@ -175,7 +175,7 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
   have hi' : RingHom.ker (Polynomial.mapRingHom i) ≤ I := by
     refine' fun f hf => polynomial_mem_ideal_of_coeff_mem_ideal I f fun n => _
     rw [mem_comap, ← Quotient.eq_zero_iff_mem, ← RingHom.comp_apply]
-    erw [RingHom.mem_ker, coe_mapRingHom] at hf
+    rw [RingHom.mem_ker, coe_mapRingHom] at hf
     replace hf := congr_arg (fun f : Polynomial _ => f.coeff n) hf
     simp only [coeff_map, coeff_zero] at hf
     rwa [Subtype.ext_iff, RingHom.coe_rangeRestrict] at hf
@@ -187,7 +187,7 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     obtain ⟨f, hf⟩ := mem_image_of_mem_map_of_surjective (Polynomial.mapRingHom i)
       (Polynomial.map_surjective _ (RingHom.rangeRestrict_surjective ((Quotient.mk I).comp C))) this
     refine' sub_add_cancel (C y) f ▸ I.add_mem (hi' _ : C y - f ∈ I) hf.1
-    erw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_mapRingHom, map_C]
+    rw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_mapRingHom, map_C]
   exact hx
 #align ideal.eq_zero_of_polynomial_mem_map_range Ideal.eq_zero_of_polynomial_mem_map_range
 

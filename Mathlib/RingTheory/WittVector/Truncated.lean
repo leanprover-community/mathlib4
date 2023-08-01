@@ -369,8 +369,7 @@ def truncate {m : ℕ} (hm : n ≤ m) : TruncatedWittVector p m R →+* Truncate
   RingHom.liftOfRightInverse (WittVector.truncate m) out truncateFun_out
     ⟨WittVector.truncate n, by
       intro x
-      erw [WittVector.mem_ker_truncate]
-      erw [WittVector.mem_ker_truncate]
+      simp only [WittVector.mem_ker_truncate]
       intro h i hi
       exact h i (lt_of_lt_of_le hi hm)⟩
 #align truncated_witt_vector.truncate TruncatedWittVector.truncate

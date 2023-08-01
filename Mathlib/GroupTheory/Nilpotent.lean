@@ -195,7 +195,7 @@ theorem ascending_central_series_le_upper (H : ℕ → Subgroup G) (hH : IsAscen
   | 0 => hH.1.symm ▸ le_refl ⊥
   | n + 1 => by
     intro x hx
-    erw [mem_upperCentralSeries_succ_iff]
+    rw [mem_upperCentralSeries_succ_iff]
     exact fun y => ascending_central_series_le_upper H hH n (hH.2 x n hx y)
 #align ascending_central_series_le_upper ascending_central_series_le_upper
 
@@ -311,7 +311,6 @@ instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) :
 
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine' antitone_nat_of_succ_le fun n x hx => _
-  erw [mem_lowerCentralSeries_succ_iff] at hx
   simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
     true_and_iff] at hx
   refine'

@@ -876,7 +876,7 @@ theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph
 theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ g := by
   constructor
   · intro x hx
-    erw [mem_domain_iff] at hx ⊢
+    rw [mem_domain_iff] at hx ⊢
     cases' hx with y hx
     use y
     exact h hx
@@ -885,13 +885,13 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
   refine' h _
   simp only [Submodule.coe_mk] at hxy
   rw [hxy] at hx
-  erw [← image_iff hx]
+  rw [← image_iff hx]
   simp [hxy]
 #align linear_pmap.le_of_le_graph LinearPMap.le_of_le_graph
 
 theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.graph := by
   intro x hx
-  erw [mem_graph_iff] at hx ⊢
+  rw [mem_graph_iff] at hx ⊢
   cases' hx with y hx
   use ⟨y, h.1 y.2⟩
   simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and_iff]

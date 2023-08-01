@@ -833,10 +833,10 @@ theorem dualAnnihilator_gc (R M : Type _) [CommSemiring R] [AddCommMonoid M] [Mo
   simp only [Function.comp_apply, OrderDual.toDual_le_toDual, OrderDual.ofDual_toDual]
   constructor <;>
     · intro h x hx
-      erw [mem_dualAnnihilator] --, mem_dualCoannihilator]
+      simp only [mem_dualAnnihilator, mem_dualCoannihilator]
       intro y hy
       have := h hy
-      erw [mem_dualAnnihilator] at this
+      simp only [mem_dualAnnihilator, mem_dualCoannihilator] at this
       exact this x hx
 #align submodule.dual_annihilator_gc Submodule.dualAnnihilator_gc
 
@@ -854,8 +854,7 @@ theorem dualAnnihilator_bot : (⊥ : Submodule R M).dualAnnihilator = ⊤ :=
 theorem dualAnnihilator_top : (⊤ : Submodule R M).dualAnnihilator = ⊥ := by
   rw [eq_bot_iff]
   intro v
-  erw [mem_dualAnnihilator, mem_bot]
-  simp_rw [mem_top, forall_true_left]
+  simp_rw [mem_dualAnnihilator, mem_bot, mem_top, forall_true_left]
   exact fun h => LinearMap.ext h
 #align submodule.dual_annihilator_top Submodule.dualAnnihilator_top
 
@@ -952,9 +951,7 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
   refine' le_antisymm _ (le_dualAnnihilator_dualCoannihilator _)
   intro v
-  erw [mem_dualAnnihilator]
-  simp_rw [mem_dualAnnihilator]
-  -- simp only [mem_dualAnnihilator, mem_dualCoannihilator]
+  simp only [mem_dualAnnihilator, mem_dualCoannihilator]
   contrapose!
   intro hv
   obtain ⟨W', hW⟩ := Submodule.exists_isCompl W
@@ -965,11 +962,10 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
   have hw'nz : w' ≠ 0 := by
     rintro rfl
     exact hw'n (Submodule.zero_mem W)
-  erw [Ne.def, ← Module.forall_dual_apply_eq_zero_iff K w'] at hw'nz
+  rw [Ne.def, ← Module.forall_dual_apply_eq_zero_iff K w'] at hw'nz
   push_neg at hw'nz
   obtain ⟨φ, hφ⟩ := hw'nz
   exists ((LinearMap.ofIsComplProd hW).comp (LinearMap.inr _ _ _)) φ
-  dsimp
   simp only [coe_comp, coe_inr, Function.comp_apply, ofIsComplProd_apply, map_add,
     ofIsCompl_left_apply, zero_apply, ofIsCompl_right_apply, zero_add, Ne.def]
   refine' ⟨_, hφ⟩
@@ -1183,7 +1179,7 @@ theorem ker_dualMap_eq_dualAnnihilator_range :
 theorem range_dualMap_le_dualAnnihilator_ker :
     LinearMap.range f.dualMap ≤ f.ker.dualAnnihilator := by
   rintro _ ⟨ψ, rfl⟩
-  erw [Submodule.mem_dualAnnihilator]  --, mem_ker]
+  simp_rw [Submodule.mem_dualAnnihilator, mem_ker]
   rintro x hx
   rw [dualMap_apply, hx, map_zero]
 #align linear_map.range_dual_map_le_dual_annihilator_ker LinearMap.range_dualMap_le_dualAnnihilator_ker
@@ -1424,9 +1420,9 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
   have : LinearMap.ker F = W ⊓ W' := by simp only [LinearMap.ker_prod, ker_mkQ]
   rw [← this, ← LinearMap.range_dualMap_eq_dualAnnihilator_ker]
   intro φ
-  erw [LinearMap.mem_range]
+  rw [LinearMap.mem_range]
   rintro ⟨x, rfl⟩
-  erw [Submodule.mem_sup]
+  rw [Submodule.mem_sup]
   obtain ⟨⟨a, b⟩, rfl⟩ := (dualProdDualEquivDual K (V₁ ⧸ W) (V₁ ⧸ W')).surjective x
   obtain ⟨a', rfl⟩ := (dualQuotEquivDualAnnihilator W).symm.surjective a
   obtain ⟨b', rfl⟩ := (dualQuotEquivDualAnnihilator W').symm.surjective b

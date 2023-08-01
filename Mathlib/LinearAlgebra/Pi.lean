@@ -320,7 +320,7 @@ theorem iSup_map_single [DecidableEq ι] [Finite ι] :
 theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {i} :
     p i ≤ Submodule.comap (LinearMap.single i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
   intro x hx
-  erw [Submodule.mem_comap, Submodule.mem_pi]
+  rw [Submodule.mem_comap, Submodule.mem_pi]
   rintro j -
   by_cases h : j = i
   · rwa [h, LinearMap.coe_single, Pi.single_eq_same]

@@ -93,15 +93,8 @@ theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤
   -- Porting note: in Lean3, introducing `x` would just give `x ∈ J⁻¹ → x ∈ I⁻¹`, but
   --  in Lean4, it goes all the way down to the subtypes
   intro x
-  erw [mem_coe, mem_coe]
-  dsimp
-  erw [mem_coe, mem_coe]
   simp only [val_eq_coe, mem_coe, mem_inv_iff hJ, mem_inv_iff hI]
-  intro h
-  erw [mem_coe, mem_inv_iff hI]
-  intro y hy
-  exact h y (hIJ hy)
-  -- exact fun h y hy => h y (hIJ hy)
+  exact fun h y hy => h y (hIJ hy)
 #align fractional_ideal.inv_anti_mono FractionalIdeal.inv_anti_mono
 
 theorem le_self_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : FractionalIdeal R₁⁰ K)) :
@@ -512,7 +505,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
     intro b hb
     rw [mem_inv_iff]
     dsimp only at hx
-    erw [val_eq_coe, mem_coe, mem_inv_iff] at hx
+    rw [val_eq_coe, mem_coe, mem_inv_iff] at hx
     swap; · exact hJ0
     swap; · exact coeIdeal_ne_zero.mpr hI0
     simp only [mul_assoc, mul_comm b] at hx ⊢

@@ -180,8 +180,8 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
     hφ ((Ideal.Quotient.mk I) (X s))
   refine' ⟨x, (IsMaximal.eq_of_le (by infer_instance) hI.ne_top _).symm⟩
   intro p hp
-  erw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
-  erw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
+  rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
+  rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
   simpa only [ϕ.map_sum, ϕ.map_mul, ϕ.map_prod, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
 #align mv_polynomial.is_maximal_iff_eq_vanishing_ideal_singleton MvPolynomial.isMaximal_iff_eq_vanishingIdeal_singleton
 

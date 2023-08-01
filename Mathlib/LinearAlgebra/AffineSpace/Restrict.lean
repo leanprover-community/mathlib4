@@ -66,9 +66,7 @@ theorem AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubs
 
 theorem AffineMap.restrict.linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) :
-    have : ∀ (x : V₁), x ∈ AffineSubspace.direction E → φ.linear x ∈ AffineSubspace.direction F :=
-      AffineMap.restrict.linear_aux hEF
-    (φ.restrict hEF).linear = φ.linear.restrict this :=
+    (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict.linear_aux hEF) :=
   rfl
 #align affine_map.restrict.linear AffineMap.restrict.linear
 

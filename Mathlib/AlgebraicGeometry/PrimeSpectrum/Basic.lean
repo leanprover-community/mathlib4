@@ -387,7 +387,7 @@ theorem zeroLocus_singleton_pow (f : R) (n : ℕ) (hn : 0 < n) :
 theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
     vanishingIdeal t ⊔ vanishingIdeal t' ≤ vanishingIdeal (t ∩ t') := by
   intro r
-  erw [Submodule.mem_sup, mem_vanishingIdeal]
+  rw [Submodule.mem_sup, mem_vanishingIdeal]
   rintro ⟨f, hf, g, hg, rfl⟩ x ⟨hxt, hxt'⟩
   rw [mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
@@ -730,8 +730,7 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
       refine' p.asIdeal.sub_mem hx' (hp _)
-      erw [mem_ker, map_sub, sub_eq_zero]
-      assumption
+      rwa [mem_ker, map_sub, sub_eq_zero]
 #align prime_spectrum.image_comap_zero_locus_eq_zero_locus_comap PrimeSpectrum.image_comap_zeroLocus_eq_zeroLocus_comap
 
 theorem range_comap_of_surjective (hf : Surjective f) :

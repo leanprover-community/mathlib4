@@ -89,7 +89,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type _} [CommR
       exact I.zero_mem
     · rw [hs]
       intro n hn
-      erw [mem_comap]
+      rw [mem_comap]
       change (1 : R) • n ∈ I • N
       rw [one_smul]
       exact hin hn
@@ -100,15 +100,14 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type _} [CommR
   · rcases H with ⟨r, hr1, hrn, _⟩
     refine' ⟨r, hr1, fun n hn => _⟩
     specialize hrn hn
-    erw [mem_comap, span_empty, smul_bot, mem_bot] at hrn
-    assumption
+    rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
   apply ih
   rcases H with ⟨r, hr1, hrn, hs⟩
   rw [← Set.singleton_union, span_union, smul_sup] at hrn
   rw [Set.insert_subset_iff] at hs
   have : ∃ c : R, c - 1 ∈ I ∧ c • i ∈ I • span R s := by
     specialize hrn hs.1
-    erw [mem_comap, mem_sup] at hrn
+    rw [mem_comap, mem_sup] at hrn
     rcases hrn with ⟨y, hy, z, hz, hyz⟩
     dsimp at hyz
     rw [mem_smul_span_singleton] at hy
@@ -124,12 +123,11 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type _} [CommR
   · simpa only [mul_sub, mul_one, sub_add_sub_cancel] using I.add_mem (I.mul_mem_left c hr1) hc1
   · intro n hn
     specialize hrn hn
-    erw [mem_comap, mem_sup] at hrn
+    rw [mem_comap, mem_sup] at hrn
     rcases hrn with ⟨y, hy, z, hz, hyz⟩
     dsimp at hyz
     rw [mem_smul_span_singleton] at hy
     rcases hy with ⟨d, _, rfl⟩
-    erw [mem_comap]
     simp only [mem_comap, LinearMap.lsmul_apply]
     rw [mul_smul, ← hyz, smul_add, smul_smul, mul_comm, mul_smul]
     exact add_mem (smul_mem _ _ hci) (smul_mem _ _ hz)

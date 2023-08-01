@@ -199,7 +199,7 @@ noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
   localizationAlgebraOfSubmonoidLe _ _ x.primeCompl (nonZeroDivisors R)
     (by
       intro a ha
-      erw [mem_nonZeroDivisors_iff_ne_zero]
+      rw [mem_nonZeroDivisors_iff_ne_zero]
       exact fun h => ha (h.symm ▸ x.zero_mem))
 
 /-- If `M ≤ N` are submonoids of `R`, then `N⁻¹S` is also the localization of `M⁻¹S` at `N`. -/
@@ -297,7 +297,7 @@ theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type _)
   haveI := (algebraMap S T).domain_nontrivial
   apply isFractionRing_of_isLocalization M S T
   intro x hx
-  erw [mem_nonZeroDivisors_iff_ne_zero]
+  rw [mem_nonZeroDivisors_iff_ne_zero]
   intro hx'
   apply @zero_ne_one S
   rw [← (algebraMap R S).map_one, ← @mk'_one R _ M, @comm _ Eq, mk'_eq_zero_iff]

@@ -135,7 +135,7 @@ theorem eq_jacobson_iff_sInf_maximal :
   use fun hI => ⟨{ J : Ideal R | I ≤ J ∧ J.IsMaximal }, ⟨fun _ hJ => Or.inl hJ.right, hI.symm⟩⟩
   rintro ⟨M, hM, hInf⟩
   refine le_antisymm (fun x hx => ?_) le_jacobson
-  erw [hInf, mem_sInf]
+  rw [hInf, mem_sInf]
   intro I hI
   cases' hM I hI with is_max is_top
   · exact (mem_sInf.1 hx) ⟨le_sInf_iff.1 (le_of_eq hInf) I hI, is_max⟩

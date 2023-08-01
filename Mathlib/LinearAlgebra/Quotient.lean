@@ -530,7 +530,7 @@ def Quotient.equiv {N : Type _} [AddCommGroup N] [Module R N] (P : Submodule R M
     toFun := P.mapQ Q (f : M →ₗ[R] N) fun x hx => hf ▸ Submodule.mem_map_of_mem hx
     invFun :=
       Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx => by
-        erw [← hf, Submodule.mem_map] at hx
+        rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
     left_inv := fun x => Quotient.inductionOn' x (by simp)

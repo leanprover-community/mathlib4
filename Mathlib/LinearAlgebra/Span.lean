@@ -852,9 +852,9 @@ theorem mem_span_insert' {x y} {s : Set M} :
 
 instance : IsModularLattice (Submodule R M) :=
   ⟨fun y z xz a ha => by
-    erw [mem_inf, mem_sup] at ha
+    rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    erw [mem_sup]
+    rw [mem_sup]
     refine' ⟨b, hb, c, mem_inf.2 ⟨hc, _⟩, rfl⟩
     rw [← add_sub_cancel c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
