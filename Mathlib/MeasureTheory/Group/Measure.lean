@@ -795,8 +795,7 @@ theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : 
     rw [map_apply (measurable_mul_const _) hK.measurableSet]
     apply IsCompact.measure_lt_top _
     rwa [← Homeomorph.coe_mulRight g, Homeomorph.isCompact_preimage _]
-  toIsOpenPosMeasure := by
-    exact (continuous_mul_right g).isOpenPosMeasure_map (mul_right_surjective g)
+  toIsOpenPosMeasure := (continuous_mul_right g).isOpenPosMeasure_map (mul_right_surjective g)
 }
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
