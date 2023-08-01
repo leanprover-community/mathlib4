@@ -7,6 +7,12 @@ Authors: Jujian Zhang, Fangming Li
 import Mathlib.Order.RelSeries
 import Mathlib.Order.WithBot
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Module.LocalizedModule
 
 /-!
 # Krull dimension of a preordered set
@@ -46,3 +52,65 @@ noncomputable def height (a : α) : WithBot (WithTop ℕ) := krullDim (Set.Iic a
 Coheight of an element `a` of a pre-ordered set `α` is the Krull dimension of the subset `[a, +∞)`
 -/
 noncomputable def coheight (a : α) : WithBot (WithTop ℕ) := krullDim (Set.Ici a)
+
+noncomputable
+
+section Preorder
+
+variable {α β : Type _}
+
+variable [Preorder α] [Preorder β]
+
+/--
+For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
+can be pushed out to a strict chain of `β` by
+`a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
+-/
+def Map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β where
+  length := p.length
+  toFun := f.comp p
+  step := sorry
+
+lemma krullDim_le_of_StrictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β := by
+  exact iSup_le $ λ p ↦ le_sSup ⟨Map p f hf, rfl⟩
+
+end Preorder
+
+noncomputable
+
+/-
+The ring theoretic Krull dimension is the Krull dimension of prime spectrum ordered by inclusion.
+-/
+def ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop ℕ) :=
+  krullDim (PrimeSpectrum R)
+
+namespace ringKrullDim
+
+/--
+If `R ⟶ S` is a surjective ring homomorphism, then `ringKrullDim S ≤ ringKrullDim R`.
+-/
+theorem le_of_Surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
+  (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R := by
+{ refine' krullDim_le_of_StrictMono (PrimeSpectrum.comap f)
+    (Monotone.strictMono_of_injective ?_ (PrimeSpectrum.comap_injective_of_surjective f hf))
+  . intro a b hab
+    change ((PrimeSpectrum.comap f) a).asIdeal ≤ ((PrimeSpectrum.comap f) b).asIdeal
+    rw [PrimeSpectrum.comap_asIdeal, PrimeSpectrum.comap_asIdeal]
+    exact Ideal.comap_mono hab }
+
+/--
+If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringDrullDim R`.
+-/
+theorem le_of_Quot (R : Type _) [CommRing R] (I : PrimeSpectrum R) :
+  ringKrullDim (R ⧸ I.asIdeal) ≤ ringKrullDim R :=
+le_of_Surj _ _ (Ideal.Quotient.mk I.asIdeal) Ideal.Quotient.mk_surjective
+
+/--
+If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`.
+-/
+theorem eq_of_RingEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S) :
+  ringKrullDim R = ringKrullDim S :=
+le_antisymm (le_of_Surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
+  (le_of_Surj R S e (EquivLike.surjective e))
+
+end ringKrullDim
