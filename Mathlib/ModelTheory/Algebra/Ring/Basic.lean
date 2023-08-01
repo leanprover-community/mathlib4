@@ -62,4 +62,15 @@ instance (α : Type _) : Neg (Language.ring.Term α) :=
 theorem neg_def (α : Type _) (t : Language.ring.Term α) :
     -t = negFunction.apply₁ t := rfl
 
+@[simps]
+instance {R : Type _} [Ring R] : Language.ring.Structure R :=
+  { funMap := fun {n} f =>
+      match n, f with
+      | _, add => fun x => x 0 + x 1
+      | _, mul => fun x => x 0 * x 1
+      | _, neg => fun x => - x 0
+      | _, zero => fun _ => 0
+      | _, one => fun _ => 1,
+    RelMap := Empty.elim }
+
 end ring
