@@ -8,12 +8,19 @@ import Mathlib.LinearAlgebra.Dimension
 import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
-# this is a test file
+# Connectedness of subsets of vector spaces
 
-But the header is still correctly formatted to appease the linter
+We show several results related to the (path)-connectedness of subsets of real vector spaces:
+* `Set.Countable.isPathConnected_compl_of_one_lt_rank` asserts that the complement of a countable
+  set is path-connected in a space of dimension `> 1`.
+* `isPathConnected_compl_singleton_of_one_lt_rank` is the special case of the complement of a
+  singleton.
+* `isPathConnected_sphere` shows that any sphere is path-connected in dimension `> 1`.
+
+Statements with connectedness instead of path-connectedness are also given.
 -/
 
-open Convex Set
+open Convex Set Metric
 
 section TopologicalVectorSpace
 
@@ -94,8 +101,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     convert hy.units_smul ![-1, 1]
     simp [← List.ofFn_inj]
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
-                       ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ :=
-    (A.union B).dense_compl.nonempty
+      ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := (A.union B).dense_compl.nonempty
   let z := c + t • y
   simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_nonempty_iff_eq_empty]
     at ht
@@ -113,22 +119,19 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is
 connected. -/
-theorem Set.Countable.isConnected_compl_of_one_lt_rank
-    (h : 1 < Module.rank ℝ E) {s : Set E} (hs : s.Countable) :
-    IsConnected sᶜ :=
+theorem Set.Countable.isConnected_compl_of_one_lt_rank (h : 1 < Module.rank ℝ E) {s : Set E}
+    (hs : s.Countable) : IsConnected sᶜ :=
   (hs.isPathConnected_compl_of_one_lt_rank h).isConnected
 
 /-- In a real vector space of dimension `> 1`, the complement of a singleton is path
 connected. -/
-theorem isPathConnected_compl_singleton_of_one_lt_rank
-    (h : 1 < Module.rank ℝ E) (x : E) :
+theorem isPathConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsPathConnected {x}ᶜ :=
   Set.Countable.isPathConnected_compl_of_one_lt_rank h (countable_singleton x)
 
 /-- In a real vector space of dimension `> 1`, the complement of a singleton is
 connected. -/
-theorem isConnected_compl_singleton_of_one_lt_rank
-    (h : 1 < Module.rank ℝ E) (x : E) :
+theorem isConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsConnected {x}ᶜ :=
   (isPathConnected_compl_singleton_of_one_lt_rank h x).isConnected
 
@@ -136,54 +139,46 @@ end TopologicalVectorSpace
 
 section NormedSpace
 
-open Metric
-
-/-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
-def Path.map' {X : Type _} [TopologicalSpace X] {x y : X}
-    (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y} (h : ContinuousOn f (range γ)) :
-    Path (f x) (f y) where
-  toFun := f ∘ γ
-  continuous_toFun := h.comp_continuous γ.continuous (fun x ↦ mem_range_self x)
-  source' := by simp
-  target' := by simp
-
-
-theorem IsPathConnected.image' {X Y : Type _} {F : Set X}
-    [TopologicalSpace X] [TopologicalSpace Y] (hF : IsPathConnected F) {f : X → Y}
-    (hf : ContinuousOn f F) : IsPathConnected (f '' F) := by
-  rcases hF with ⟨x, x_in, hx⟩
-  use f x, mem_image_of_mem f x_in
-  rintro _ ⟨y, y_in, rfl⟩
-  refine ⟨(hx y_in).somePath.map' ?_, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
-  exact hf.mono (range_subset_iff.2 (hx y_in).somePath_mem)
-
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) :
-    IsPathConnected (sphere (0 : E) 1) := by
-  let f : E → E := fun x ↦ ‖x‖⁻¹ • x
+theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
+    IsPathConnected (sphere x r) := by
+  /- when `r > 0`, we write the sphere as the image of `{0}ᶜ` under the map
+  `y ↦ x + (r * ‖y‖⁻¹) • y`. Since the image under a continuous map of a path connected set
+  is path connected, this concludes the proof. -/
+  rcases hr.eq_or_lt with rfl|rpos
+  · simpa using isPathConnected_singleton x
+  let f : E → E := fun y ↦ x + (r * ‖y‖⁻¹) • y
   have A : ContinuousOn f {0}ᶜ := by
-    intro x hx
-    apply ((ContinuousAt.inv₀ continuousAt_id.norm ?_).smul continuousAt_id).continuousWithinAt
-    simpa using hx
+    intro y hy
+    apply (continuousAt_const.add _).continuousWithinAt
+    apply (continuousAt_const.mul (ContinuousAt.inv₀ continuousAt_id.norm ?_)).smul continuousAt_id
+    simpa using hy
   have B : IsPathConnected ({0}ᶜ : Set E) := isPathConnected_compl_singleton_of_one_lt_rank h 0
   have C : IsPathConnected (f '' {0}ᶜ) := B.image' A
-  have : f '' {0}ᶜ = sphere (0 : E) 1 := by
+  have : f '' {0}ᶜ = sphere x r := by
     apply Subset.antisymm
     · rintro - ⟨y, hy, rfl⟩
       have : ‖y‖ ≠ 0 := by simpa using hy
-      simpa [norm_smul] using inv_mul_cancel this
-    · intro x hx
-      refine ⟨x, ?_, ?_⟩
-      · rintro rfl
-        simp at hx
-      · simp at hx
-        simp [hx]
+      simp [norm_smul, abs_of_nonneg hr, mul_assoc, inv_mul_cancel this]
+    · intro y hy
+      refine ⟨y - x, ?_, ?_⟩
+      · intro H
+        simp only [mem_singleton_iff, sub_eq_zero] at H
+        simp only [H, mem_sphere_iff_norm, sub_self, norm_zero] at hy
+        exact rpos.ne hy
+      · simp at hy
+        simp [hy, mul_inv_cancel rpos.ne']
   rwa [this] at C
 
+theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
+    IsConnected (sphere x r) :=
+  (isPathConnected_sphere h x hr).isConnected
 
-
-
-
+theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
+    IsPreconnected (sphere x r) := by
+  rcases le_or_lt 0 r with hr|hr
+  · exact (isConnected_sphere h x hr).isPreconnected
+  · simpa [hr] using isPreconnected_empty
 
 end NormedSpace

@@ -410,13 +410,17 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
         rwa [γ₂.extend_extends]
 #align path.trans_range Path.trans_range
 
-/-- Image of a path from `x` to `y` by a continuous map -/
-def map (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y} (h : Continuous f) :
-    Path (f x) (f y) where
+/-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
+def map' (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y}
+    (h : ContinuousOn f (range γ)) : Path (f x) (f y) where
   toFun := f ∘ γ
-  continuous_toFun := by continuity
+  continuous_toFun := h.comp_continuous γ.continuous (fun x ↦ mem_range_self x)
   source' := by simp
   target' := by simp
+
+/-- Image of a path from `x` to `y` by a continuous map -/
+def map (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y} (h : Continuous f) :
+    Path (f x) (f y) := γ.map' h.continuousOn
 #align path.map Path.map
 
 @[simp]
@@ -974,12 +978,16 @@ theorem isPathConnected_iff :
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
 #align is_path_connected_iff isPathConnected_iff
 
-theorem IsPathConnected.image {Y : Type _} [TopologicalSpace Y] (hF : IsPathConnected F) {f : X → Y}
-    (hf : Continuous f) : IsPathConnected (f '' F) := by
+theorem IsPathConnected.image' {Y : Type _} [TopologicalSpace Y] (hF : IsPathConnected F)
+    {f : X → Y} (hf : ContinuousOn f F) : IsPathConnected (f '' F) := by
   rcases hF with ⟨x, x_in, hx⟩
   use f x, mem_image_of_mem f x_in
   rintro _ ⟨y, y_in, rfl⟩
-  exact ⟨(hx y_in).somePath.map hf, fun t => ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
+  refine ⟨(hx y_in).somePath.map' ?_, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
+  exact hf.mono (range_subset_iff.2 (hx y_in).somePath_mem)
+
+theorem IsPathConnected.image {Y : Type _} [TopologicalSpace Y] (hF : IsPathConnected F) {f : X → Y}
+    (hf : Continuous f) : IsPathConnected (f '' F) := hF.image' hf.continuousOn
 #align is_path_connected.image IsPathConnected.image
 
 theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
@@ -990,6 +998,11 @@ theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ 
 theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) :
     F ⊆ pathComponent x := fun _y y_in => h.mem_pathComponent x_in y_in
 #align is_path_connected.subset_path_component IsPathConnected.subset_pathComponent
+
+theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
+  refine ⟨x, rfl, ?_⟩
+  rintro y rfl
+  exact JoinedIn.refl rfl
 
 theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPathConnected V)
     (hUV : (U ∩ V).Nonempty) : IsPathConnected (U ∪ V) := by
