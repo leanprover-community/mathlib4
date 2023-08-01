@@ -67,8 +67,7 @@ end KernelFork
 section Kernels
 
 variable (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
-  {X Y Z : C} {f : X ⟶ Y}
-  {h : Z ⟶ X} (w : h ≫ f = 0)
+  {X Y Z : C} {f : X ⟶ Y} {h : Z ⟶ X} (w : h ≫ f = 0)
 
 /-- The map of a kernel fork is a limit iff
 the kernel fork consisting of the mapped morphisms is a limit.
