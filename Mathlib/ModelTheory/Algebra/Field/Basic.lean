@@ -1,5 +1,6 @@
 import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Algebra.Ring
 
 namespace FirstOrder
 

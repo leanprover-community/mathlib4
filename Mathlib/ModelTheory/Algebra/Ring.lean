@@ -62,10 +62,4 @@ instance (α : Type _) : Neg (Language.ring.Term α) :=
 theorem neg_def (α : Type _) (t : Language.ring.Term α) :
     -t = negFunction.apply₁ t := rfl
 
-instance (α : Type _) : Inv (Language.ring.Term α) :=
-{ inv := invFunction.apply₁ }
-
-theorem inv_def (α : Type _) (t : Language.ring.Term α) :
-    t⁻¹ = invFunction.apply₁ t := rfl
-
 end ring
