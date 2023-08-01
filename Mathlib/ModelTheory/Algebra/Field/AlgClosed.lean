@@ -43,37 +43,46 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
       ext i
       simp only [coeff_add, coeff_X_pow, finset_sum_coeff, coeff_C_mul,
         mul_ite, mul_one, mul_zero]
-      split_ifs with hin₁ hin₂ hin₃
+      by_cases hin : i = n
       . subst i
-        simp [lt_irrefl] at hin₂
-      . subst i
-        rw [add_right_eq_self]
+        simp only [ite_true, lt_self_iff_false, dite_false, add_right_eq_self]
         exact Finset.sum_eq_zero (fun i _ => by rw [if_neg (ne_of_gt i.2)])
-      . simp only [zero_add]
-        rw [Finset.sum_eq_single ⟨i, hin₃⟩]
-        . simp
-        . simp only [Finset.mem_univ, ne_eq, ite_eq_right_iff,
-            forall_true_left]
-          rintro _ _ rfl
-          simp_all
-        . simp
-      . rw [add_right_eq_self]
-        exact Finset.sum_eq_zero (fun i _ => by rw [if_neg (ne_of_gt i.2)])
+      . by_cases hin₂ : i < n
+        . simp only [hin, ite_false, zero_add, hin₂, dite_true]
+          rw [Finset.sum_eq_single ⟨i, hin₂⟩]
+          . simp
+          . simp only [Finset.mem_univ, ne_eq, ite_eq_right_iff, forall_true_left]
+            rintro _ _ rfl
+            simp_all
+          . simp
+        . simp only [hin, ite_false, zero_add, hin₂, dite_false]
+          refine Finset.sum_eq_zero (fun i _ => ?_)
+          simp [ne_of_gt (lt_of_lt_of_le i.2 (le_of_not_lt hin₂))]
     have hpn : p.natDegree = n := by
-      rw [natDegree_add_eq_left_of_natDegree_lt, natDegree_X_pow]
-      rw [natDegree_X_pow]
-      sorry
+      refine le_antisymm ?_ ?_
+      . refine natDegree_le_iff_coeff_eq_zero.2 ?_
+        rw [hpc]
+        intro i hi
+        simp [not_lt_of_gt hi, ne_of_gt hi]
+      . refine le_natDegree_of_ne_zero ?_
+        simp only [coeff_add, coeff_X_pow_self, finset_sum_coeff, coeff_C_mul, ne_eq]
+        rw [Finset.sum_eq_zero, add_zero]
+        . simp
+        . rintro ⟨i, hi⟩ _
+          simp [coeff_X_pow, ne_of_gt hi]
     have hpm : p.Monic := by
       simp only [Monic.def, leadingCoeff, hpn, coeff_add, coeff_X_pow_self, finset_sum_coeff,
         coeff_C_mul, add_right_eq_self]
       exact Finset.sum_eq_zero (fun i _ =>
         by rw [coeff_X_pow, if_neg (ne_of_gt i.2), mul_zero])
-    rcases h p hpn hpm with x
-    simp [lift_genericPoly hpm]
-
-
-
-
+    rcases h p hpn hpm with ⟨x, hx⟩
+    use x
+    rw [← lift_genericPoly hpm] at hx
+    convert hx
+    rw [hpn]
+    congr
+    rw [hpc]
+    simp
 
 end Language
 
