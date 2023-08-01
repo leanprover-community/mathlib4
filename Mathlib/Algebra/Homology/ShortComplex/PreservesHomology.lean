@@ -8,84 +8,6 @@ open Category Limits ZeroObject
 
 variable {C D : Type _} [Category C] [Category D]
 
-namespace Limits
-
-variable [HasZeroMorphisms C] [HasZeroMorphisms D]
-
-variable {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (c' : CokernelCofork f)
-  (hc : IsLimit c) (hc' : IsColimit c') (F : C ⥤ D) [F.PreservesZeroMorphisms]
-
-@[reassoc (attr := simp)]
-lemma KernelFork.map_condition : F.map c.ι ≫ F.map f = 0 := by
-  rw [← F.map_comp, c.condition, F.map_zero]
-
-def KernelFork.map : KernelFork (F.map f) :=
-  KernelFork.ofι (F.map c.ι) (c.map_condition F)
-
-@[simp]
-lemma KernelFork.map_ι : (c.map F).ι = F.map c.ι := rfl
-
-@[reassoc (attr := simp)]
-lemma CokernelCofork.map_condition : F.map f ≫ F.map c'.π = 0 := by
-  rw [← F.map_comp, c'.condition, F.map_zero]
-
-def CokernelCofork.map : CokernelCofork (F.map f) :=
-  CokernelCofork.ofπ (F.map c'.π) (c'.map_condition F)
-
-@[simp]
-lemma CokernelCofork.map_π : (c'.map F).π = F.map c'.π := rfl
-
-def KernelFork.mapIsLimit [PreservesLimit (parallelPair f 0) F] :
-    IsLimit (c.map F) := by
-  let e : parallelPair f 0 ⋙ F ≅ parallelPair (F.map f) 0 :=
-    parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
-  refine' IsLimit.postcomposeInvEquiv e (c.map F)
-    (IsLimit.ofIsoLimit (isLimitOfPreserves F hc) _)
-  exact Cones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
-
-def CokernelCofork.mapIsColimit [PreservesColimit (parallelPair f 0) F] :
-    IsColimit (c'.map F) := by
-  let e : parallelPair f 0 ⋙ F ≅ parallelPair (F.map f) 0 :=
-    parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
-  refine' IsColimit.precomposeHomEquiv e (c'.map F)
-    (IsColimit.ofIsoColimit (isColimitOfPreserves F hc') _)
-  exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
-
-variable (X Y)
-
-noncomputable instance preserves_kernel_zero :
-    PreservesLimit (parallelPair (0 : X ⟶ Y) 0) F := ⟨fun {c} hc => by
-    have := KernelFork.IsLimit.isIso_ι c hc rfl
-    let e : parallelPair (0 : X ⟶ Y) 0 ⋙ F ≅ parallelPair (F.map 0) 0 :=
-      parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
-    refine' IsLimit.postcomposeHomEquiv e _ _
-    refine' IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (F.map_zero _ _)) _
-    exact Iso.symm (Fork.ext (F.mapIso (asIso (Fork.ι c))) rfl)⟩
-
-noncomputable instance preserves_cokernel_zero :
-    PreservesColimit (parallelPair (0 : X ⟶ Y) 0) F := ⟨fun {c} hc => by
-    have := CokernelCofork.IsColimit.isIso_π c hc rfl
-    let e : parallelPair (0 : X ⟶ Y) 0 ⋙ F ≅ parallelPair (F.map 0) 0 :=
-      parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
-    refine' IsColimit.precomposeInvEquiv e _ _
-    refine' IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (F.map_zero _ _)) _
-    exact (Cofork.ext (F.mapIso (asIso (Cofork.π c))) rfl)⟩
-
-variable {X Y}
-
-noncomputable def preserves_kernel_zero' (f : X ⟶ Y) (hf : f = 0) :
-    PreservesLimit (parallelPair f 0) F := by
-  rw [hf]
-  infer_instance
-
-noncomputable def preserves_cokernel_zero' (f : X ⟶ Y) (hf : f = 0) :
-    PreservesColimit (parallelPair f 0) F := by
-  rw [hf]
-  infer_instance
-
-end Limits
-
-
 namespace Functor
 
 variable (F : C ⥤ D)
@@ -758,14 +680,14 @@ noncomputable def preservesLeftHomologyOf_of_zero_left (hf : S.f = 0)
     [PreservesLimit (parallelPair S.g 0) F] :
     F.PreservesLeftHomologyOf S := ⟨fun h =>
   { g := by infer_instance
-    f' := Limits.preserves_cokernel_zero' _ _
+    f' := Limits.preservesCokernelZero' _ _
       (by rw [← cancel_mono h.i, h.f'_i, zero_comp, hf]) }⟩
 
 noncomputable def preservesRightHomologyOf_of_zero_right (hg : S.g = 0)
     [PreservesColimit (parallelPair S.f 0) F] :
     F.PreservesRightHomologyOf S := ⟨fun h =>
   { f := by infer_instance
-    g' := Limits.preserves_kernel_zero' _ _
+    g' := Limits.preservesKernelZero' _ _
       (by rw [← cancel_epi h.p, h.p_g', comp_zero, hg]) }⟩
 
 noncomputable def preservesLeftHomologyOf_of_zero_right (hg : S.g = 0)
