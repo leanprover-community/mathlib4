@@ -114,6 +114,46 @@ lemma fromColumns_apply_inr (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (i
   unfold fromColumns
   simp only [of_apply, Sum.elim_inr]
 
+@[simp]
+lemma toRows₁_apply (A : Matrix (m₁ ⊕ m₂) n R) (i : m₁) (j : n) :
+    (toRows₁ A) i j = A (Sum.inl i) j := by rw [toRows₁, of_apply]
+
+@[simp]
+lemma toRows₂_apply (A : Matrix (m₁ ⊕ m₂) n R) (i : m₂) (j : n) :
+    (toRows₂ A) i j = A (Sum.inr i) j := by rw [toRows₂, of_apply]
+
+@[simp]
+lemma toRows₁_fromRows  (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
+    toRows₁ (fromRows A₁ A₂) = A₁ := by
+  funext i j
+  simp only [toRows₁_apply, fromRows_apply_inl]
+
+@[simp]
+lemma toRows₂_fromRows  (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
+    toRows₂ (fromRows A₁ A₂) = A₂ := by
+  funext i j
+  simp only [toRows₂_apply, fromRows_apply_inr]
+
+@[simp]
+lemma toColumns₁_apply (A : Matrix m (n₁ ⊕ n₂) R) (i : m) (j : n₁) :
+    (toColumns₁ A) i j = A i (Sum.inl j) := by rw [toColumns₁, of_apply]
+
+@[simp]
+lemma toColumns₂_apply (A : Matrix m (n₁ ⊕ n₂) R) (i : m) (j : n₂) :
+    (toColumns₂ A) i j = A i (Sum.inr j) := by rw [toColumns₂, of_apply]
+
+@[simp]
+lemma toColumns₁_fromColumns  (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
+    toColumns₁ (fromColumns A₁ A₂) = A₁ := by
+    funext i j
+    simp only [toColumns₁_apply, fromColumns_apply_inl]
+
+@[simp]
+lemma toColumns₂_fromColumns  (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
+    toColumns₂ (fromColumns A₁ A₂) = A₂ := by
+    ext i j
+    simp only [toColumns₂_apply, fromColumns_apply_inr]
+
 /- A column partioned matrix when transposed gives a row partioned matrix with columns of the
 initial matrix tranposed to become rows. -/
 lemma transpose_fromColumns (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
