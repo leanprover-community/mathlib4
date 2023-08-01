@@ -59,27 +59,27 @@ end
 section
 variable [Preorder α] [Preorder β]
 
-theorem Monotone.image_Icc_subset (h : Monotone f):
+theorem Monotone.image_Icc_subset (h : Monotone f) :
     f '' Icc a b ⊆ Icc (f a) (f b) :=
   h.mapsTo_Icc.image_subset
 
-theorem Monotone.image_Ioo_subset (h : StrictMono f):
+theorem StrictMono.image_Ioo_subset (h : StrictMono f) :
     f '' Ioo a b ⊆ Ioo (f a) (f b) :=
   h.mapsTo_Ioo.image_subset
 
-theorem Monotone.image_Ici_subset (h : Monotone f):
+theorem Monotone.image_Ici_subset (h : Monotone f) :
     f '' Ici a ⊆ Ici (f a) :=
   h.mapsTo_Ici.image_subset
 
-theorem Monotone.image_Iic_subset (h : Monotone f):
+theorem Monotone.image_Iic_subset (h : Monotone f) :
     f '' Iic a ⊆ Iic (f a) :=
   h.mapsTo_Iic.image_subset
 
-theorem Monotone.image_Ioi_subset (h : StrictMono f):
+theorem StrictMono.image_Ioi_subset (h : StrictMono f) :
     f '' Ioi a ⊆ Ioi (f a) :=
   h.mapsTo_Ioi.image_subset
 
-theorem Monotone.image_Iio_subset (h : StrictMono f):
+theorem StrictMono.image_Iio_subset (h : StrictMono f) :
     f '' Iio a ⊆ Iio (f a) :=
   h.mapsTo_Iio.image_subset
 
@@ -88,11 +88,11 @@ end
 section
 variable [PartialOrder α] [Preorder β]
 
-theorem Monotone.imageIco_subset (h : StrictMono f):
+theorem StrictMono.imageIco_subset (h : StrictMono f) :
     f '' Ico a b ⊆ Ico (f a) (f b) :=
   h.mapsTo_Ico.image_subset
 
-theorem Monotone.imageIoc_subset (h : StrictMono f):
+theorem StrictMono.imageIoc_subset (h : StrictMono f) :
     f '' Ioc a b ⊆ Ioc (f a) (f b) :=
   h.mapsTo_Ioc.image_subset
 
