@@ -228,11 +228,3 @@ def smulMonoidWithZeroHom {α β : Type _} [MonoidWithZero α] [MulZeroOneClass 
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
 #align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply
-
-/-- If `R` contains a unique element and acts multiplicatively on `M` then `M` contains a unique
-element.
-
-The typical application is that the only module over the zero ring is the zero module. -/
-def unique_of_mulActionWithZero_of_subsingleton (R M : Type _)
-    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Subsingleton R] : Unique M :=
-⟨⟨0⟩, fun m ↦ by rw [← one_smul R m, Subsingleton.allEq 1 0, zero_smul]; rfl⟩

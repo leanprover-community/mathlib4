@@ -593,14 +593,14 @@ class IsReflexive : Prop where
   bijective_dual_eval' : Bijective $ Dual.eval R M
 
 lemma IsReflexive.bijective_dual_eval [IsReflexive R M] : Bijective $ Dual.eval R M :=
-bijective_dual_eval'
+  bijective_dual_eval'
 
 instance IsReflexive.of_finite_of_free [Finite R M] [Free R M] : IsReflexive R M := by
   by_cases h : Nontrivial R
   · exact ⟨⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
             LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩⟩
   · rw [not_nontrivial_iff_subsingleton] at h
-    have := unique_of_mulActionWithZero_of_subsingleton R M
+    have := Module.subsingleton R M
     exact ⟨⟨fun x y _ ↦ by simp, fun x ↦ ⟨0, by simp⟩⟩⟩
 
 variable [IsReflexive R M]
