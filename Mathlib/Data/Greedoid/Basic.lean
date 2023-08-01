@@ -818,6 +818,7 @@ theorem closure_eq_of_subset_adj_closure (hst : s ⊆ G.closure t) (hts : t ⊆ 
     rw [h₃, ← h₅] at h₆
     exact Nat.le_antisymm (rank_le_of_subset (insert_subset hx hst)) h₆
 
+@[simp]
 theorem closure_idempotent : G.closure (G.closure s) = G.closure s :=
   closure_eq_of_subset_adj_closure Subset.rfl
     (Finset.Subset.trans self_subset_closure self_subset_closure)
@@ -947,6 +948,32 @@ theorem cospanning_rel_ex'
   ⟨z, hz.1, G.cospanning_symm hz.2⟩
 
 end cospanning
+
+theorem closure_union_eq_of_closure_eq_left (h : G.closure s = G.closure t) :
+    G.closure (s ∪ t) = G.closure s := by
+  rw [cospanning_rel_left_union h]
+
+theorem closure_union_eq_of_closure_eq_right (h : G.closure s = G.closure t) :
+    G.closure (s ∪ t) = G.closure t := by
+  rw [cospanning_rel_right_union h]
+
+theorem eq_closure_left_of_eq_closure_of_subset_of_subset
+  {s t u : Finset α} (hst : s ⊆ t) (htu : t ⊆ u)
+  (hsu : G.closure s = G.closure u) :
+    G.closure s = G.closure t := by
+  rw [cospanning_rel_between_subset_left hst htu hsu]
+
+theorem eq_closure_right_of_eq_closure_of_subset_of_subset
+  {s t u : Finset α} (hst : s ⊆ t) (htu : t ⊆ u)
+  (hsu : G.closure s = G.closure u) :
+    G.closure t = G.closure u := by
+  rw [cospanning_rel_between_subset_right hst htu hsu]
+
+theorem closure_weak_exchange_property {x y : α} (hx₀ : x ∉ s) (hy₀ : y ∉ s)
+  (h₁ : G.closure (insert y s) = G.closure (insert x (insert y s)))
+  (h₂ : G.closure (insert x s) ≠ G.closure (insert x (insert y s))) :
+    ∃ z ∈ insert x s, G.closure (insert x s \ {z}) = G.closure (insert x s) :=
+  cospanning_rel_ex hx₀ hy₀ h₁ h₂
 
 end closure
 
