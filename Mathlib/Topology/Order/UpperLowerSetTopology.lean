@@ -148,10 +148,7 @@ def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α :=
 
 /-- `toUpper` as an `OrderIso` -/
 def toUpperSetOrderIso : OrderIso α (WithUpperSetTopology α) :=
-{ toFun := toUpperSet,
-  invFun := ofUpperSet,
-  left_inv := ofUpperSet_toUpperSet,
-  right_inv := toUpperSet_ofUpperSet,
+{ toUpperSet with
   map_rel_iff' := toUpperSet_le_iff }
 
 end WithUpperSetTopology
