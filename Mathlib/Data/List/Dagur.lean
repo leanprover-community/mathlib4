@@ -6,9 +6,20 @@ import Mathlib.Order.OrderIsoNat
 
 variable (α : Type _) [LinearOrder α]
 
-lemma Antitone.eventually_constant [WellFoundedLT α] (f : ℕ → α) (h : Antitone f) :
+lemma Antitone.eventually_constant [wfa : WellFoundedLT α] (f : ℕ → α) (h : Antitone f) :
     ∃ N a, ∀ n, N ≤ n → f n = a := by
-  sorry
+  let a := WellFounded.min ((IsWellFounded_iff α (·<·)).mp inferInstance)
+    (Set.range f) (Set.range_nonempty f)
+  have ha : (f ⁻¹' {a}).Nonempty
+  · refine Iff.mpr Set.preimage_singleton_nonempty ?_
+    exact WellFounded.min_mem _ (Set.range f) (Set.range_nonempty f)
+  let N := ha.choose
+  refine' ⟨N, a, _⟩
+  intro n hn
+  rw [← ha.choose_spec]
+  refine' eq_of_le_of_not_lt (h hn) _
+  rw [ha.choose_spec]
+  exact WellFounded.not_lt_min _ _ _ (Set.mem_range_self n)
 
 theorem wellFoundedLT_iff_not_strictAnti : WellFoundedLT α ↔ ∀ f : ℕ → α, ¬ StrictAnti f := by
   dsimp [WellFoundedLT]
@@ -33,8 +44,6 @@ theorem wellFoundedLT_iff_not_strictAnti : WellFoundedLT α ↔ ∀ f : ℕ → 
     apply h f.toEmbedding
     intro a b hab
     rwa [f.map_rel_iff']
-
-
 
 variable {α}
 
