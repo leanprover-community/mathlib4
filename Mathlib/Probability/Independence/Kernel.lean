@@ -675,28 +675,28 @@ theorem iIndepFunₖ_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι �
   refine' ⟨fun h S sets h_meas => h _ fun i hi_mem => ⟨sets i, h_meas i hi_mem, rfl⟩, _⟩
   intro h S setsΩ h_meas
   classical
-    let setsβ : ∀ i : ι, Set (β i) := fun i =>
-      dite (i ∈ S) (fun hi_mem => (h_meas i hi_mem).choose) fun _ => Set.univ
-    have h_measβ : ∀ i ∈ S, MeasurableSet[m i] (setsβ i) := by
-      intro i hi_mem
-      simp_rw [dif_pos hi_mem]
-      exact (h_meas i hi_mem).choose_spec.1
-    have h_preim : ∀ i ∈ S, setsΩ i = f i ⁻¹' setsβ i := by
-      intro i hi_mem
-      simp_rw [dif_pos hi_mem]
-      exact (h_meas i hi_mem).choose_spec.2.symm
-    have h_left_eq : ∀ a, κ a (⋂ i ∈ S, setsΩ i) = κ a (⋂ i ∈ S, (f i) ⁻¹' (setsβ i)) := by
-      intro a
-      congr with x
-      simp_rw [Set.mem_iInter]
-      constructor <;> intro h i hi_mem <;> specialize h i hi_mem
-      · rwa [h_preim i hi_mem] at h
-      · rwa [h_preim i hi_mem]
-    have h_right_eq : ∀ a, (∏ i in S, κ a (setsΩ i)) = ∏ i in S, κ a ((f i) ⁻¹' (setsβ i)) := by
-      refine' fun a ↦ Finset.prod_congr rfl fun i hi_mem => _
-      rw [h_preim i hi_mem]
-    filter_upwards [h S h_measβ] with a ha
-    rw [h_left_eq a, h_right_eq a, ha]
+  let setsβ : ∀ i : ι, Set (β i) := fun i =>
+    dite (i ∈ S) (fun hi_mem => (h_meas i hi_mem).choose) fun _ => Set.univ
+  have h_measβ : ∀ i ∈ S, MeasurableSet[m i] (setsβ i) := by
+    intro i hi_mem
+    simp_rw [dif_pos hi_mem]
+    exact (h_meas i hi_mem).choose_spec.1
+  have h_preim : ∀ i ∈ S, setsΩ i = f i ⁻¹' setsβ i := by
+    intro i hi_mem
+    simp_rw [dif_pos hi_mem]
+    exact (h_meas i hi_mem).choose_spec.2.symm
+  have h_left_eq : ∀ a, κ a (⋂ i ∈ S, setsΩ i) = κ a (⋂ i ∈ S, (f i) ⁻¹' (setsβ i)) := by
+    intro a
+    congr with x
+    simp_rw [Set.mem_iInter]
+    constructor <;> intro h i hi_mem <;> specialize h i hi_mem
+    · rwa [h_preim i hi_mem] at h
+    · rwa [h_preim i hi_mem]
+  have h_right_eq : ∀ a, (∏ i in S, κ a (setsΩ i)) = ∏ i in S, κ a ((f i) ⁻¹' (setsβ i)) := by
+    refine' fun a ↦ Finset.prod_congr rfl fun i hi_mem => _
+    rw [h_preim i hi_mem]
+  filter_upwards [h S h_measβ] with a ha
+  rw [h_left_eq a, h_right_eq a, ha]
 
 theorem indepFunₖ_iff_indepSetₖ_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :
@@ -830,27 +830,27 @@ theorem iIndepFunₖ.indepFunₖ_prod [IsMarkovKernel κ] {ι : Type _} {β : ι
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFunₖ (fun a => (f i a, f j a)) (f k) κ μ := by
   classical
-    have h_right : f k =
-      (fun p : ∀ j : ({k} : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘
-      fun a (j : ({k} : Finset ι)) => f j a := rfl
-    have h_meas_right :  Measurable fun p : ∀ j : ({k} : Finset ι),
-      β j => p ⟨k, Finset.mem_singleton_self k⟩ := measurable_pi_apply _
-    let s : Finset ι := {i, j}
-    have h_left : (fun ω => (f i ω, f j ω)) = (fun p : ∀ l : s, β l =>
-      (p ⟨i, Finset.mem_insert_self i _⟩,
-      p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩)) ∘ fun a (j : s) => f j a := by
-      ext1 a
-      simp only [Prod.mk.inj_iff]
-      constructor
-    have h_meas_left : Measurable fun p : ∀ l : s, β l =>
-      (p ⟨i, Finset.mem_insert_self i _⟩,
-      p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩) :=
-        Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
-    rw [h_left, h_right]
-    refine' (hf_Indepₖ.indepFunₖ_finset s {k} _ hf_meas).comp h_meas_left h_meas_right
-    rw [Finset.disjoint_singleton_right]
-    simp only [Finset.mem_insert, Finset.mem_singleton, not_or]
-    exact ⟨hik.symm, hjk.symm⟩
+  have h_right : f k =
+    (fun p : ∀ j : ({k} : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘
+    fun a (j : ({k} : Finset ι)) => f j a := rfl
+  have h_meas_right :  Measurable fun p : ∀ j : ({k} : Finset ι),
+    β j => p ⟨k, Finset.mem_singleton_self k⟩ := measurable_pi_apply _
+  let s : Finset ι := {i, j}
+  have h_left : (fun ω => (f i ω, f j ω)) = (fun p : ∀ l : s, β l =>
+    (p ⟨i, Finset.mem_insert_self i _⟩,
+    p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩)) ∘ fun a (j : s) => f j a := by
+    ext1 a
+    simp only [Prod.mk.inj_iff]
+    constructor
+  have h_meas_left : Measurable fun p : ∀ l : s, β l =>
+    (p ⟨i, Finset.mem_insert_self i _⟩,
+    p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩) :=
+      Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
+  rw [h_left, h_right]
+  refine' (hf_Indepₖ.indepFunₖ_finset s {k} _ hf_meas).comp h_meas_left h_meas_right
+  rw [Finset.disjoint_singleton_right]
+  simp only [Finset.mem_insert, Finset.mem_singleton, not_or]
+  exact ⟨hik.symm, hjk.symm⟩
 
 @[to_additive]
 theorem iIndepFunₖ.mul [IsMarkovKernel κ] {ι : Type _} {β : Type _} {m : MeasurableSpace β}
@@ -869,22 +869,22 @@ theorem iIndepFunₖ.indepFunₖ_finset_prod_of_not_mem [IsMarkovKernel κ] {ι 
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFunₖ (∏ j in s, f j) (f i) κ μ := by
   classical
-    have h_right : f i =
-      (fun p : ∀ _j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
-      fun a (j : ({i} : Finset ι)) => f j a := rfl
-    have h_meas_right : Measurable fun p : ∀ _j : ({i} : Finset ι), β
-      => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
-    have h_left : ∏ j in s, f j = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
-      ext1 a
-      simp only [Function.comp_apply]
-      have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]
-      rw [this, Finset.prod_coe_sort]
-    have h_meas_left : Measurable fun p : ∀ _j : s, β => ∏ j, p j :=
-      Finset.univ.measurable_prod fun (j : ↥s) (_H : j ∈ Finset.univ) => measurable_pi_apply j
-    rw [h_left, h_right]
-    exact
-      (hf_Indepₖ.indepFunₖ_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
-        h_meas_left h_meas_right
+  have h_right : f i =
+    (fun p : ∀ _j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
+    fun a (j : ({i} : Finset ι)) => f j a := rfl
+  have h_meas_right : Measurable fun p : ∀ _j : ({i} : Finset ι), β
+    => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
+  have h_left : ∏ j in s, f j = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
+    ext1 a
+    simp only [Function.comp_apply]
+    have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]
+    rw [this, Finset.prod_coe_sort]
+  have h_meas_left : Measurable fun p : ∀ _j : s, β => ∏ j, p j :=
+    Finset.univ.measurable_prod fun (j : ↥s) (_H : j ∈ Finset.univ) => measurable_pi_apply j
+  rw [h_left, h_right]
+  exact
+    (hf_Indepₖ.indepFunₖ_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
+      h_meas_left h_meas_right
 
 @[to_additive]
 theorem iIndepFunₖ.indepFunₖ_prod_range_succ [IsMarkovKernel κ] {β : Type _}
