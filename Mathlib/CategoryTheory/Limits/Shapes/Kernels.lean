@@ -1072,7 +1072,8 @@ section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
 
-variable (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
+variable (c : KernelFork f) (hc : IsLimit c) (c' : CokernelCofork f) (hc' : IsColimit c')
+  (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
 /-- The comparison morphism for the kernel of `f`.
 This is an isomorphism iff `G` preserves the kernel of `f`; see
@@ -1109,6 +1110,32 @@ theorem kernelComparison_comp_kernel_map {X' Y' : C} [HasKernel f] [HasKernel (G
     (by simp only [← G.map_comp]; exact G.congr_map (kernel.lift_ι _ _ _).symm) _
 #align category_theory.limits.kernel_comparison_comp_kernel_map CategoryTheory.Limits.kernelComparison_comp_kernel_map
 
+variable {f}
+
+@[reassoc (attr := simp)]
+lemma KernelFork.map_condition : G.map c.ι ≫ G.map f = 0 := by
+  rw [← G.map_comp, c.condition, G.map_zero]
+
+/-- A kernel fork for `f` is mapped to a kernel fork for `G.map f` if `G` is a functor
+which preserves zero morphisms. -/
+def KernelFork.map : KernelFork (G.map f) :=
+  KernelFork.ofι (G.map c.ι) (c.map_condition G)
+
+@[simp]
+lemma KernelFork.map_ι : (c.map G).ι = G.map c.ι := rfl
+
+/-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
+preserves the corresponding limit. -/
+def KernelFork.mapIsLimit [PreservesLimit (parallelPair f 0) G] :
+    IsLimit (c.map G) := by
+  let e : parallelPair f 0 ⋙ G ≅ parallelPair (G.map f) 0 :=
+    parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+  refine' IsLimit.postcomposeInvEquiv e (c.map G)
+    (IsLimit.ofIsoLimit (isLimitOfPreserves G hc) _)
+  exact Cones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+
+variable (f)
+
 /-- The comparison morphism for the cokernel of `f`. -/
 def cokernelComparison [HasCokernel f] [HasCokernel (G.map f)] :
     cokernel (G.map f) ⟶ G.obj (cokernel f) :=
@@ -1141,6 +1168,66 @@ theorem cokernel_map_comp_cokernelComparison {X' Y' : C} [HasCokernel f] [HasCok
     (by rw [← G.map_comp, cokernel.condition, G.map_zero]) _ _ _ _
     (by simp only [← G.map_comp]; exact G.congr_map (cokernel.π_desc _ _ _))
 #align category_theory.limits.cokernel_map_comp_cokernel_comparison CategoryTheory.Limits.cokernel_map_comp_cokernelComparison
+
+variable {f}
+
+@[reassoc (attr := simp)]
+lemma CokernelCofork.map_condition : G.map f ≫ G.map c'.π = 0 := by
+  rw [← G.map_comp, c'.condition, G.map_zero]
+
+/-- A cokernel cofork for `f` is mapped to a cokernel cofork for `G.map f` if `G` is a functor
+which preserves zero morphisms. -/
+def CokernelCofork.map : CokernelCofork (G.map f) :=
+  CokernelCofork.ofπ (G.map c'.π) (c'.map_condition G)
+
+@[simp]
+lemma CokernelCofork.map_π : (c'.map G).π = G.map c'.π := rfl
+
+/-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
+when this functor preserves the corresponding colimit. -/
+def CokernelCofork.mapIsColimit [PreservesColimit (parallelPair f 0) G] :
+    IsColimit (c'.map G) := by
+  let e : parallelPair f 0 ⋙ G ≅ parallelPair (G.map f) 0 :=
+    parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+  refine' IsColimit.precomposeHomEquiv e (c'.map G)
+    (IsColimit.ofIsoColimit (isColimitOfPreserves G hc') _)
+  exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+
+variable (X Y)
+
+noncomputable instance preservesKernelZero :
+    PreservesLimit (parallelPair (0 : X ⟶ Y) 0) G where
+  preserves {c} hc := by
+    have := KernelFork.IsLimit.isIso_ι c hc rfl
+    let e : parallelPair (0 : X ⟶ Y) 0 ⋙ G ≅ parallelPair (G.map 0) 0 :=
+      parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+    refine' IsLimit.postcomposeHomEquiv e _ _
+    refine' IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) _
+    exact Iso.symm (Fork.ext (G.mapIso (asIso (Fork.ι c))) rfl)
+
+noncomputable instance preservesCokernelZero :
+    PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
+  preserves {c} hc := by
+    have := CokernelCofork.IsColimit.isIso_π c hc rfl
+    let e : parallelPair (0 : X ⟶ Y) 0 ⋙ G ≅ parallelPair (G.map 0) 0 :=
+      parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+    refine' IsColimit.precomposeInvEquiv e _ _
+    refine' IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (G.map_zero _ _)) _
+    exact (Cofork.ext (G.mapIso (asIso (Cofork.π c))) rfl)
+
+variable {X Y}
+
+/-- The kernel of a zero map is preserved by any functor which preserves zero morphisms. -/
+noncomputable def preservesKernelZero' (f : X ⟶ Y) (hf : f = 0) :
+    PreservesLimit (parallelPair f 0) G := by
+  rw [hf]
+  infer_instance
+
+/-- The cokernel of a zero map is preserved by any functor which preserves zero morphisms. -/
+noncomputable def preservesCokernelZero' (f : X ⟶ Y) (hf : f = 0) :
+    PreservesColimit (parallelPair f 0) G := by
+  rw [hf]
+  infer_instance
 
 end Comparison
 
