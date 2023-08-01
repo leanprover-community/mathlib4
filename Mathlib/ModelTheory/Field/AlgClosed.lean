@@ -1,4 +1,4 @@
-import Mathlib.ModelTheory.Algebra.Field.CharP
+import Mathlib.ModelTheory.Field.CharP
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.FreeCommRing
 
@@ -7,6 +7,10 @@ namespace FirstOrder
 namespace Language
 
 variable {K : Type _} [Field K]
+
+/-- We make the `FreeCommRing` a Structure for the language of fields by
+sending `inv` to the identity. -/
+def fieldStructureFreeCommRing (α : Type _) :
 
 theorem exists_term_realize_eq_freeCommRing_lift (p : FreeCommRing α) :
     ∃ t : Language.field.Term α, ∀ v : α → K, (t.realize v : K) =
