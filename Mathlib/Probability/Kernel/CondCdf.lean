@@ -454,7 +454,7 @@ theorem tendsto_preCdf_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
     ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCdf ρ r a) atBot (𝓝 0) := by
   -- We show first that `preCdf` has a limit in ℝ≥0∞ almost everywhere.
   -- We then show that the integral of `pre_cdf` tends to 0, and that it also tends
-  -- to the integral of the limit. Since the limit is has integral 0, it is equal to 0 a.e.
+  -- to the integral of the limit. Since the limit has integral 0, it is equal to 0 a.e.
   suffices ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCdf ρ (-r) a) atTop (𝓝 0) by
     filter_upwards [this] with a ha
     have h_eq_neg : (fun r : ℚ => preCdf ρ r a) = fun r : ℚ => preCdf ρ (- -r) a := by

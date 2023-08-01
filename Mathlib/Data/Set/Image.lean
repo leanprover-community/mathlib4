@@ -2,7 +2,6 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-Ported by: Winston Yin
 -/
 import Mathlib.Data.Set.Basic
 
@@ -70,6 +69,7 @@ theorem preimage_congr {f g : α → β} {s : Set β} (h : ∀ x : α, f x = g x
   simp [h]
 #align set.preimage_congr Set.preimage_congr
 
+@[gcongr]
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f ⁻¹' s ⊆ f ⁻¹' t := fun _ hx => h hx
 #align set.preimage_mono Set.preimage_mono
 
@@ -295,6 +295,7 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
 
 /-- Image is monotone with respect to `⊆`. See `Set.monotone_image` for the statement in
 terms of `≤`. -/
+@[gcongr]
 theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b := by
   simp only [subset_def, mem_image]
   exact fun x => fun ⟨w, h1, h2⟩ => ⟨w, h h1, h2⟩
@@ -505,7 +506,6 @@ theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
   · calc
       f '' (s ∩ f ⁻¹' t) ⊆ f '' s ∩ f '' (f ⁻¹' t) := image_inter_subset _ _ _
       _ ⊆ f '' s ∩ t := inter_subset_inter_right _ (image_preimage_subset f t)
-
   · rintro _ ⟨⟨x, h', rfl⟩, h⟩
     exact ⟨x, ⟨h', h⟩, rfl⟩
 #align set.image_inter_preimage Set.image_inter_preimage
@@ -982,6 +982,9 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 #align set.range_quotient_mk' Set.range_quotient_mk'
+
+@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+  range_quotient_mk
 
 @[simp]
 theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
@@ -1634,3 +1637,17 @@ theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (ra
 end Set
 
 end Disjoint
+
+section Sigma
+
+variable {α : Type _} {β : α → Type _} {i j : α} {s : Set (β i)}
+
+lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' s) = ∅ := by
+  change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ s} = ∅
+  simp [h]
+
+lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s := by
+  change Sigma.mk i ⁻¹' {⟨i, u⟩ | u ∈ s} = s
+  simp
+
+end Sigma

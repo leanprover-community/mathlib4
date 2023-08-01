@@ -85,6 +85,9 @@ def finZeroElim {α : Fin 0 → Sort _} (x : Fin 0) : α x :=
 
 namespace Fin
 
+instance : CanLift ℕ (Fin n) Fin.val (· < n) where
+  prf k hk := ⟨⟨k, hk⟩, rfl⟩
+
 /-- A non-dependent variant of `elim0`. -/
 def elim0' {α : Sort _} (x : Fin 0) : α :=
   x.elim0
@@ -307,15 +310,37 @@ instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 #align fin.coe_zero Fin.val_zero
 
+/--
+The `Fin.val_zero` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
 @[simp]
 theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
 #align fin.val_zero' Fin.val_zero'
+
 #align fin.mk_zero Fin.mk_zero
-#align fin.zero_le Fin.zero_le
+
+/--
+The `Fin.zero_le` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
+  Nat.zero_le a.val
+#align fin.zero_le Fin.zero_le'
+
 #align fin.zero_lt_one Fin.zero_lt_one
 #align fin.not_lt_zero Fin.not_lt_zero
-#align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero
+
+/--
+The `Fin.pos_iff_ne_zero` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
+  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero']
+#align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero'
+
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
@@ -722,13 +747,21 @@ theorem succ_zero_eq_one' [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one'
 
 #align fin.succ_zero_eq_one' Fin.succ_zero_eq_one
-#align fin.succ_one_eq_two Fin.succ_one_eq_two
 
-/-- Version of `succ_one_eq_two` to be used by `dsimp` -/
-@[simp, nolint simpNF]
-theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
-  rfl
-#align fin.succ_one_eq_two' Fin.succ_one_eq_two'
+/--
+The `Fin.succ_one_eq_two` in `Std` only applies in `Fin (n+2)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
+  cases n
+  · exact (NeZero.ne 0 rfl).elim
+  · rfl
+#align fin.succ_one_eq_two Fin.succ_one_eq_two'
+
+-- Version of `succ_one_eq_two` to be used by `dsimp`.
+-- Note the `'` swapped around due to a move to std4.
+#align fin.succ_one_eq_two' Fin.succ_one_eq_two
 
 #align fin.succ_mk Fin.succ_mk
 #align fin.mk_succ_pos Fin.mk_succ_pos
@@ -737,7 +770,16 @@ theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
 #align fin.add_one_le_iff Fin.add_one_le_iff
 #align fin.last_le_iff Fin.last_le_iff
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
-#align fin.le_zero_iff Fin.le_zero_iff
+
+/--
+The `Fin.le_zero_iff` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
+  ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
+#align fin.le_zero_iff Fin.le_zero_iff'
+
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
 #align fin.cast_lt Fin.castLT
 #align fin.coe_cast_lt Fin.coe_castLT
@@ -855,7 +897,7 @@ def castAddEmb (m) : Fin n ↪o Fin (n + m) :=
 
 /-- For rewriting in the reverse direction, see `Fin.castIso_castAdd_left`. -/
 theorem castAdd_castIso {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
-    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (. + m) h) (castAdd m i) :=
+    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (· + m) h) (castAdd m i) :=
   ext rfl
 #align fin.cast_add_cast Fin.castAdd_castIso
 
@@ -922,19 +964,41 @@ theorem castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) :=
 #align fin.cast_succ_inj Fin.castSucc_inj
 #align fin.cast_succ_lt_last Fin.castSucc_lt_last
 
+/--
+The `Fin.castSucc_zero` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
 @[simp]
 theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
   ext rfl
 #align fin.cast_succ_zero Fin.castSucc_zero'
 #align fin.cast_succ_one Fin.castSucc_one
 
-/-- `castSucc i` is positive when `i` is positive -/
+/-- `castSucc i` is positive when `i` is positive.
+
+The `Fin.castSucc_pos` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.-/
 theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos'
 
-#align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff
+/--
+The `Fin.castSucc_eq_zero_iff` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
+  Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
+#align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff'
+
+/--
+The `Fin.castSucc_ne_zero_iff` in `Std` only applies in `Fin (n+1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
+  not_iff_not.mpr <| castSucc_eq_zero_iff' a
 #align fin.cast_succ_ne_zero_iff Fin.castSucc_ne_zero_iff
+
 #align fin.cast_succ_fin_succ Fin.castSucc_fin_succ
 
 @[norm_cast, simp]
@@ -984,7 +1048,7 @@ theorem castIso_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
 
 /-- For rewriting in the reverse direction, see `Fin.castIso_addNat_left`. -/
 theorem addNat_castIso {n n' m : ℕ} (i : Fin n') (h : n' = n) :
-    addNat (castIso h i) m = castIso (congr_arg (. + m) h) (addNat i m) :=
+    addNat (castIso h i) m = castIso (congr_arg (· + m) h) (addNat i m) :=
   ext rfl
 #align fin.add_nat_cast Fin.addNat_castIso
 
@@ -1581,6 +1645,10 @@ end SuccAbove
 
 section PredAbove
 
+/-- `predAbove p i` embeds `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`. -/
+def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
+  if h : castSucc p < i then i.pred ((ne_iff_vne i 0).mpr (Nat.not_eq_zero_of_lt h))
+  else i.castLT (Nat.lt_of_le_of_lt (Nat.ge_of_not_lt h) p.2)
 #align fin.pred_above Fin.predAbove
 
 theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
@@ -1607,6 +1675,9 @@ theorem predAbove_left_monotone (i : Fin (n + 1)) :
   · rfl
 #align fin.pred_above_left_monotone Fin.predAbove_left_monotone
 
+/-- `castPred` embeds `i : Fin (n + 2)` into `Fin (n + 1)`
+by lowering just `last (n + 1)` to `last n`. -/
+def castPred (i : Fin (n + 2)) : Fin (n + 1) := predAbove (last n) i
 #align fin.cast_pred Fin.castPred
 
 @[simp]

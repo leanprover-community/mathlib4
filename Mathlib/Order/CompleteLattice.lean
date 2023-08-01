@@ -151,6 +151,7 @@ theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_sSup hb)
 #align le_Sup_of_le le_sSup_of_le
 
+@[gcongr]
 theorem sSup_le_sSup (h : s ⊆ t) : sSup s ≤ sSup t :=
   (isLUB_sSup s).mono (isLUB_sSup t) h
 #align Sup_le_Sup sSup_le_sSup
@@ -219,6 +220,7 @@ theorem sInf_le_of_le (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
   le_trans (sInf_le hb) h
 #align Inf_le_of_le sInf_le_of_le
 
+@[gcongr]
 theorem sInf_le_sInf (h : s ⊆ t) : sInf t ≤ sInf s :=
   (isGLB_sInf s).mono (isGLB_sInf t) h
 #align Inf_le_Inf sInf_le_sInf
@@ -372,11 +374,11 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (. ≤ . : α → α → Prop)
+  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (. < . : α → α → Prop) :=
+  decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
 #align complete_linear_order CompleteLinearOrder
 
@@ -832,10 +834,12 @@ theorem iInf_le_iInf₂ (κ : ι → Sort _) (f : ι → α) : ⨅ i, f i ≤ �
   le_iInf₂ fun i _ => iInf_le f i
 #align infi_le_infi₂ iInf_le_iInf₂
 
+@[gcongr]
 theorem iSup_mono (h : ∀ i, f i ≤ g i) : iSup f ≤ iSup g :=
   iSup_le fun i => le_iSup_of_le i <| h i
 #align supr_mono iSup_mono
 
+@[gcongr]
 theorem iInf_mono (h : ∀ i, f i ≤ g i) : iInf f ≤ iInf g :=
   le_iInf fun i => iInf_le_of_le i <| h i
 #align infi_mono iInf_mono
@@ -1971,3 +1975,34 @@ protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [
     bot := ⊥
     bot_le := fun _ => map_bot.le.trans bot_le }
 #align function.injective.complete_lattice Function.Injective.completeLattice
+
+namespace ULift
+
+instance supSet [SupSet α] : SupSet (ULift.{v} α) where sSup s := ULift.up (sSup <| ULift.up ⁻¹' s)
+
+theorem down_sSup [SupSet α] (s : Set (ULift.{v} α)) : (sSup s).down = sSup (ULift.up ⁻¹' s) := rfl
+theorem up_sSup [SupSet α] (s : Set α) : up (sSup s) = sSup (ULift.down ⁻¹' s) := rfl
+
+instance infSet [InfSet α] : InfSet (ULift.{v} α) where sInf s := ULift.up (sInf <| ULift.up ⁻¹' s)
+
+theorem down_sInf [InfSet α] (s : Set (ULift.{v} α)) : (sInf s).down = sInf (ULift.up ⁻¹' s) := rfl
+theorem up_sInf [InfSet α] (s : Set α) : up (sInf s) = sInf (ULift.down ⁻¹' s) := rfl
+
+theorem down_iSup [SupSet α] (f : ι → ULift.{v} α) : (⨆ i, f i).down = ⨆ i, (f i).down :=
+  congr_arg sSup <| (preimage_eq_iff_eq_image ULift.up_bijective).mpr <|
+    Eq.symm (range_comp _ _).symm
+theorem up_iSup [SupSet α] (f : ι → α) : up (⨆ i, f i) = ⨆ i, up (f i) :=
+  congr_arg ULift.up <| (down_iSup _).symm
+
+theorem down_iInf [InfSet α] (f : ι → ULift.{v} α) : (⨅ i, f i).down = ⨅ i, (f i).down :=
+  congr_arg sInf <| (preimage_eq_iff_eq_image ULift.up_bijective).mpr <|
+    Eq.symm (range_comp _ _).symm
+theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) :=
+  congr_arg ULift.up <| (down_iInf _).symm
+
+instance completeLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
+  ULift.down_injective.completeLattice _ down_sup down_inf
+    (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
+    (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
+
+end ULift

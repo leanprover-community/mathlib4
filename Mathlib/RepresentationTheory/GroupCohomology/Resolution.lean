@@ -342,7 +342,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
-set_option maxHeartbeats 800000
+set_option maxHeartbeats 400000 in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -700,9 +700,7 @@ def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
               (GroupCohomology.resolution k G)).homology
-          n).unop := by
-  let E := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
+          n).unop := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
      (GroupCohomology.projectiveResolution k G)).unop.symm
-  exact E
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso GroupCohomology.extIso

@@ -914,6 +914,7 @@ theorem compl_anti : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
 #align compl_anti compl_anti
 
+@[gcongr]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
   compl_anti h
 #align compl_le_compl compl_le_compl

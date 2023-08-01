@@ -153,7 +153,7 @@ theorem sublists_eq_sublistsAux (l : List α) :
 #noalign list.sublists_aux_cons_append
 
 theorem sublists_append (l₁ l₂ : List α) :
-    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (. ++ x)) := by
+    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
   simp only [sublists_eq_sublistsAux, foldr_append, sublistsAux_eq_bind]
   induction l₁
   · case nil => simp
@@ -221,7 +221,7 @@ theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
 
 /-- Auxiliary function to construct the list of all sublists of a given length. Given an
 integer `n`, a list `l`, a function `f` and an auxiliary list `L`, it returns the list made of
-of `f` applied to all sublists of `l` of length `n`, concatenated with `L`. -/
+`f` applied to all sublists of `l` of length `n`, concatenated with `L`. -/
 def sublistsLenAux {α β : Type _} : ℕ → List α → (List α → β) → List β → List β
   | 0, _, f, r => f [] :: r
   | _ + 1, [], _, r => r
@@ -388,7 +388,7 @@ alias nodup_sublists' ↔ nodup.of_sublists' nodup.sublists'
 --attribute [protected] nodup.sublists nodup.sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
-  have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
+  have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
     (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 #align list.nodup_sublists_len List.nodup_sublistsLen

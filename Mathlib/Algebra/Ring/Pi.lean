@@ -37,6 +37,10 @@ instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
     right_distrib := by intros; ext; exact add_mul _ _ _}
 #align pi.distrib Pi.distrib
 
+instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
+  neg_mul _ _ := funext fun _ ↦ neg_mul _ _
+  mul_neg _ _ := funext fun _ ↦ mul_neg _ _
+
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
   { Pi.distrib, Pi.addCommMonoid, Pi.mulZeroClass with }

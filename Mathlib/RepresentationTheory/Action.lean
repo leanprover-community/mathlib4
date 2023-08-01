@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.comp_hom Action.comp_hom
 
 /-- Construct an isomorphism of `G` actions/representations
-from an isomorphism of the the underlying objects,
+from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
