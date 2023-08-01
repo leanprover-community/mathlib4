@@ -44,6 +44,7 @@ instance {K : Type _} [Field K] (p : ℕ) [CharP K p] :
       constantMap, Structure.funMap]
     exact (not_iff_not.2 (CharP.cast_eq_zero_iff K p n)).2 hnp
 
+@[reducible]
 def fieldOfModelFieldOfCharP {K : Type _} [Language.field.Structure K]
     (h : (Theory.fieldOfChar p).Model K) : Field K :=
   @fieldOfModelField _ _ (Theory.Model.mono h (by simp [Theory.fieldOfChar]))
