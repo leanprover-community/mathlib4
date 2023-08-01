@@ -60,8 +60,7 @@ a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any s
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `∀ᵐ a ∂μ, κ a (⋂ i in s, f i) = ∏ i in s, κ a (f i)`.
 It will be used for families of pi_systems. -/
 def iIndepSets {_mΩ : MeasurableSpace Ω}
-    (π : ι → Set (Set Ω)) (κ : kernel α Ω) (μ : Measure α := by volume_tac) :
-    Prop :=
+    (π : ι → Set (Set Ω)) (κ : kernel α Ω) (μ : Measure α := by volume_tac) : Prop :=
   ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
   ∀ᵐ a ∂μ, κ a (⋂ i ∈ s, f i) = ∏ i in s, κ a (f i)
 
@@ -87,31 +86,31 @@ def Indep (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (κ : ker
 /-- A family of sets is independent if the family of measurable space structures they generate is
 independent. For a set `s`, the generated measurable space has measurable sets `∅, s, sᶜ, univ`. -/
 def iIndepSet {_mΩ : MeasurableSpace Ω} (s : ι → Set Ω) (κ : kernel α Ω)
-  (μ : Measure α := by volume_tac) : Prop :=
-iIndep (fun i ↦ generateFrom {s i}) κ μ
+    (μ : Measure α := by volume_tac) : Prop :=
+  iIndep (fun i ↦ generateFrom {s i}) κ μ
 
 /-- Two sets are independent if the two measurable space structures they generate are independent.
 For a set `s`, the generated measurable space structure has measurable sets `∅, s, sᶜ, univ`. -/
 def IndepSet {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (κ : kernel α Ω)
-  (μ : Measure α := by volume_tac) : Prop :=
-Indep (generateFrom {s}) (generateFrom {t}) κ μ
+    (μ : Measure α := by volume_tac) : Prop :=
+  Indep (generateFrom {s}) (generateFrom {t}) κ μ
 
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
 spaces, each with a measurable space structure, is independent if the family of measurable space
 structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
 space structure `m`, the generated measurable space structure is `measurable_space.comap g m`. -/
 def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
-  (f : ∀ x : ι, Ω → β x) (κ : kernel α Ω)
-  (μ : Measure α := by volume_tac) : Prop :=
-iIndep (fun x ↦ MeasurableSpace.comap (f x) (m x)) κ μ
+    (f : ∀ x : ι, Ω → β x) (κ : kernel α Ω)
+    (μ : Measure α := by volume_tac) : Prop :=
+  iIndep (fun x ↦ MeasurableSpace.comap (f x) (m x)) κ μ
 
 /-- Two functions are independent if the two measurable space structures they generate are
 independent. For a function `f` with codomain having measurable space structure `m`, the generated
 measurable space structure is `MeasurableSpace.comap f m`. -/
 def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
-  (f : Ω → β) (g : Ω → γ) (κ : kernel α Ω)
-  (μ : Measure α := by volume_tac) : Prop :=
-Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) κ μ
+    (f : Ω → β) (g : Ω → γ) (κ : kernel α Ω)
+    (μ : Measure α := by volume_tac) : Prop :=
+  Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) κ μ
 
 end Definitions
 
