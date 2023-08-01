@@ -4331,8 +4331,3 @@ lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
 @NobelingProof.Nobeling {C : Set S // IsClopen C} (IsWellOrder.linearOrder WellOrderingRel)
   WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S)
-
-/-
-'Nobeling' depends on axioms: [Quot.sound, propext, Classical.choice]
--/
-#print axioms Nobeling
