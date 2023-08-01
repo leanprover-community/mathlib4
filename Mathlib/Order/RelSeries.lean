@@ -80,24 +80,24 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
     | zero => cases lt_irrefl _ h
     | succ j ihj =>
       by_cases H : 0 < Fin.castSucc j
-      . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
-      . simp only [not_lt, Fin.le_zero_iff] at H
+      · exact IsTrans.trans _ _ _ (ihj H) (x.step _)
+      · simp only [not_lt, Fin.le_zero_iff] at H
         rw [← H]
         exact x.step _
   | succ i _ => induction j using Fin.inductionOn with
     | zero => cases not_lt_of_lt (Fin.succ_pos i) h
     | succ j ihj =>
       obtain (H|H) : i.succ = Fin.castSucc j ∨ i.succ < Fin.castSucc j
-      . change (i + 1 : ℕ) < (j + 1 : ℕ) at h
+      · change (i + 1 : ℕ) < (j + 1 : ℕ) at h
         rw [Nat.lt_succ_iff, le_iff_lt_or_eq] at h
         rcases h with (h|h)
-        . exact Or.inr h
-        . left
+        · exact Or.inr h
+        · left
           ext
           exact h
-      . rw [H]
+      · rw [H]
         exact x.step _
-      . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
+      · exact IsTrans.trans _ _ _ (ihj H) (x.step _)
 
 lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     r (x i) (x j) ∨ x i = x j :=
@@ -127,8 +127,7 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   intros i h
   have h' : i < x.length := by simpa [List.length_ofFn] using h
   convert x.step ⟨i, h'⟩ <;>
-  . rw [List.get_ofFn]
-    congr 1
+  · rw [List.get_ofFn]; congr 1
 
 lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
@@ -152,11 +151,11 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} w
   right_inv := by
     intro x
     refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
-    . dsimp
+    · dsimp
       rw [List.length_ofFn, fromListChain'_length, ←Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
       rw [List.length_pos]
       exact x.2.1
-    . rw [List.get_ofFn, fromListChain'_toFun, Function.comp_apply]
+    · rw [List.get_ofFn, fromListChain'_toFun, Function.comp_apply]
       congr
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
