@@ -18,7 +18,7 @@ Linear algebra:
     linear map: 'LinearMap'
     range of a linear map: 'LinearMap.range'
     kernel of a linear map: 'LinearMap.ker'
-    algebra of endomorphisms of a vector space: 'Module.instAlgebraEndToSemiringSemiring'
+    algebra of endomorphisms of a vector space: 'Module.End.instAlgebra'
     general linear group: 'LinearMap.GeneralLinearGroup'
   Duality:
     dual vector space: 'Module.Dual'
