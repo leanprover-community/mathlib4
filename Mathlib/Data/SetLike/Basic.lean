@@ -178,14 +178,9 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 #align set_like.eta SetLike.eta
 
-instance (priority := 100) instPartialOrder : PartialOrder A :=
-  PartialOrder.lift (SetLike.coe : A → Set B) coe_injective
-
--- instance (priority := 100) og : PartialOrder A :=
---   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
---     le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
---
--- example : instPartialOrder = og (A := A) (B := B) := rfl
+instance (priority := 100) og : PartialOrder A :=
+  { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
+    le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
 
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
   Iff.rfl
