@@ -111,7 +111,7 @@ theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self,
 
 -- Note [lower instance priority]
 instance (priority := 100) BooleanRing.toCommRing : CommRing α :=
-  { (inferInstance : BooleanRing α) with
+  { toRing := (inferInstance : BooleanRing α).toRing
     mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
 #align boolean_ring.to_comm_ring BooleanRing.toCommRing
 

@@ -48,9 +48,9 @@ instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
 
 instance nonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring (ULift α) :=
   { ULift.addMonoidWithOne with
-      zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·),
-      nsmul := AddMonoid.nsmul, natCast := fun n => ULift.up n, add_comm, left_distrib,
-      right_distrib, zero_mul, mul_zero, one_mul, mul_one }
+    zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·),
+    nsmul := AddMonoid.nsmul, natCast := fun n => ULift.up n, add_comm, left_distrib,
+    right_distrib, zero_mul, mul_zero, one_mul, mul_one }
 #align ulift.non_assoc_semiring ULift.nonAssocSemiring
 
 instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring (ULift α) :=
@@ -62,9 +62,9 @@ instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring (ULift α)
 
 instance semiring [Semiring α] : Semiring (ULift α) :=
   { ULift.addMonoidWithOne with
-      zero := (0 : ULift α), one := 1, add := (· + ·), mul := (· * ·), nsmul := AddMonoid.nsmul,
-      npow := Monoid.npow, natCast := fun n => ULift.up n, add_comm, left_distrib, right_distrib,
-      zero_mul, mul_zero, mul_assoc, one_mul, mul_one, npow_zero := fun _ => Monoid.npow_zero _,
+    zero := (0 : ULift α), one := 1, add := (· + ·), mul := (· * ·), nsmul := AddMonoid.nsmul,
+    npow := Monoid.npow, natCast := fun n => ULift.up n, add_comm, left_distrib, right_distrib,
+    zero_mul, mul_zero, mul_assoc, one_mul, mul_one, npow_zero := fun _ => Monoid.npow_zero _,
       npow_succ := fun _ _ => Monoid.npow_succ _ _ }
 #align ulift.semiring ULift.semiring
 
