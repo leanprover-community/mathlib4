@@ -218,24 +218,24 @@ theorem rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) :
 #align category_theory.right_distributor_inv CategoryTheory.rightDistributor_inv
 
 @[reassoc (attr := simp)]
-theorem rightDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
+theorem rightDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
     (rightDistributor f X).hom ≫ biproduct.π _ j = biproduct.π _ j ⊗ 𝟙 X := by
   simp [rightDistributor_hom, Preadditive.sum_comp, biproduct.ι_π, comp_dite]
 
 @[reassoc (attr := simp)]
-theorem biproduct_ι_comp_rightDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
+theorem biproduct_ι_comp_rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
     (biproduct.ι _ j ⊗ 𝟙 X) ≫ (rightDistributor f X).hom = biproduct.ι (fun j => f j ⊗ X) j := by
   simp [rightDistributor_hom, Preadditive.comp_sum, ← comp_tensor_id_assoc, biproduct.ι_π,
     dite_tensor, dite_comp]
 
 @[reassoc (attr := simp)]
-theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
+theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
     (rightDistributor f X).inv ≫ (biproduct.π _ j ⊗ 𝟙 X) = biproduct.π _ j := by
   simp [rightDistributor_inv, Preadditive.sum_comp, ← comp_tensor_id, biproduct.ι_π, dite_tensor,
     comp_dite]
 
 @[reassoc (attr := simp)]
-theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
+theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
     biproduct.ι _ j ≫ (rightDistributor f X).inv = biproduct.ι _ j ⊗ 𝟙 X := by
   simp [rightDistributor_inv, Preadditive.comp_sum, ← id_tensor_comp, biproduct.ι_π_assoc,
     dite_comp]
@@ -278,7 +278,7 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J]
 #align category_theory.left_distributor_right_distributor_assoc CategoryTheory.leftDistributor_rightDistributor_assoc
 
 @[ext]
-theorem leftDistributor_ext_left {J : Type} [Fintype J] (X Y : C) (f : J → C) (g h : X ⊗ ⨁ f ⟶ Y)
+theorem leftDistributor_ext_left {J : Type} [Fintype J] {X Y : C} {f : J → C} {g h : X ⊗ ⨁ f ⟶ Y}
     (w : ∀ j, (𝟙 X ⊗ biproduct.ι f j) ≫ g = (𝟙 X ⊗ biproduct.ι f j) ≫ h) : g = h := by
   apply (cancel_epi (leftDistributor X f).inv).mp
   ext
@@ -289,7 +289,7 @@ theorem leftDistributor_ext_left {J : Type} [Fintype J] (X Y : C) (f : J → C) 
   apply w
 
 @[ext]
-theorem leftDistributor_ext_right {J : Type} [Fintype J] (X Y : C) (f : J → C) (g h : X ⟶ Y ⊗ ⨁ f)
+theorem leftDistributor_ext_right {J : Type} [Fintype J] {X Y : C} {f : J → C} {g h : X ⟶ Y ⊗ ⨁ f}
     (w : ∀ j, g ≫ (𝟙 Y ⊗ biproduct.π f j) = h ≫ (𝟙 Y ⊗ biproduct.π f j)) : g = h := by
   apply (cancel_mono (leftDistributor Y f).hom).mp
   ext
@@ -304,7 +304,7 @@ theorem leftDistributor_ext_right {J : Type} [Fintype J] (X Y : C) (f : J → C)
 -- The answer is two: this lemma is needed to verify the pentagon identity.
 @[ext]
 theorem leftDistributor_ext₂_left {J : Type} [Fintype J]
-    (X Y Z : C) (f : J → C) (g h : X ⊗ (Y ⊗ ⨁ f) ⟶ Z)
+    {X Y Z : C} {f : J → C} {g h : X ⊗ (Y ⊗ ⨁ f) ⟶ Z}
     (w : ∀ j, (𝟙 X ⊗ (𝟙 Y ⊗ biproduct.ι f j)) ≫ g = (𝟙 X ⊗ (𝟙 Y ⊗ biproduct.ι f j)) ≫ h) :
     g = h := by
   apply (cancel_epi (α_ _ _ _).hom).mp
@@ -313,7 +313,7 @@ theorem leftDistributor_ext₂_left {J : Type} [Fintype J]
 
 @[ext]
 theorem leftDistributor_ext₂_right {J : Type} [Fintype J]
-    (X Y Z : C) (f : J → C) (g h : X ⟶ Y ⊗ (Z ⊗ ⨁ f))
+    {X Y Z : C} {f : J → C} {g h : X ⟶ Y ⊗ (Z ⊗ ⨁ f)}
     (w : ∀ j, g ≫ (𝟙 Y ⊗ (𝟙 Z ⊗ biproduct.π f j)) = h ≫ (𝟙 Y ⊗ (𝟙 Z ⊗ biproduct.π f j))) :
     g = h := by
   apply (cancel_mono (α_ _ _ _).inv).mp
@@ -322,7 +322,7 @@ theorem leftDistributor_ext₂_right {J : Type} [Fintype J]
 
 @[ext]
 theorem rightDistributor_ext_left {J : Type} [Fintype J]
-    (X Y : C) (f : J → C) (g h : (⨁ f) ⊗ X ⟶ Y)
+    {f : J → C} {X Y : C} {g h : (⨁ f) ⊗ X ⟶ Y}
     (w : ∀ j, (biproduct.ι f j ⊗ 𝟙 X) ≫ g = (biproduct.ι f j ⊗ 𝟙 X) ≫ h) : g = h := by
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
@@ -334,7 +334,7 @@ theorem rightDistributor_ext_left {J : Type} [Fintype J]
 
 @[ext]
 theorem rightDistributor_ext_right {J : Type} [Fintype J]
-    (X Y : C) (f : J → C) (g h : X ⟶ (⨁ f) ⊗ Y)
+    {f : J → C} {X Y : C} {g h : X ⟶ (⨁ f) ⊗ Y}
     (w : ∀ j, g ≫ (biproduct.π f j ⊗ 𝟙 Y) = h ≫ (biproduct.π f j ⊗ 𝟙 Y)) : g = h := by
   apply (cancel_mono (rightDistributor f Y).hom).mp
   ext
@@ -347,7 +347,7 @@ theorem rightDistributor_ext_right {J : Type} [Fintype J]
 
 @[ext]
 theorem rightDistributor_ext₂_left {J : Type} [Fintype J]
-    (X Y Z : C) (f : J → C) (g h : ((⨁ f) ⊗ X) ⊗ Y ⟶ Z)
+    {f : J → C} {X Y Z : C} {g h : ((⨁ f) ⊗ X) ⊗ Y ⟶ Z}
     (w : ∀ j, ((biproduct.ι f j ⊗ 𝟙 X) ⊗ 𝟙 Y) ≫ g = ((biproduct.ι f j ⊗ 𝟙 X) ⊗ 𝟙 Y) ≫ h) :
     g = h := by
   apply (cancel_epi (α_ _ _ _).inv).mp
@@ -356,7 +356,7 @@ theorem rightDistributor_ext₂_left {J : Type} [Fintype J]
 
 @[ext]
 theorem rightDistributor_ext₂_right {J : Type} [Fintype J]
-    (X Y Z : C) (f : J → C) (g h : X ⟶ ((⨁ f) ⊗ Y) ⊗ Z)
+    {f : J → C} {X Y Z : C} {g h : X ⟶ ((⨁ f) ⊗ Y) ⊗ Z}
     (w : ∀ j, g ≫ ((biproduct.π f j ⊗ 𝟙 Y) ⊗ 𝟙 Z) = h ≫ ((biproduct.π f j ⊗ 𝟙 Y) ⊗ 𝟙 Z)) :
     g = h := by
   apply (cancel_mono (α_ _ _ _).hom).mp
