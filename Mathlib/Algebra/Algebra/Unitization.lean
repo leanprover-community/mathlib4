@@ -479,13 +479,15 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
 --     left_distrib := fun x₁ x₂ x₃ =>
 --       ext (mul_add x₁.1 x₂.1 x₃.1) <|
 --         show x₁.1 • (x₂.2 + x₃.2) + (x₂.1 + x₃.1) • x₁.2 + x₁.2 * (x₂.2 + x₃.2) =
---             x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 + (x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2) by
+--             x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 +
+--             (x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2) by
 --           simp only [smul_add, add_smul, mul_add]
 --           abel
 --     right_distrib := fun x₁ x₂ x₃ =>
 --       ext (add_mul x₁.1 x₂.1 x₃.1) <|
 --         show (x₁.1 + x₂.1) • x₃.2 + x₃.1 • (x₁.2 + x₂.2) + (x₁.2 + x₂.2) * x₃.2 =
---             x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2 + (x₂.1 • x₃.2 + x₃.1 • x₂.2 + x₂.2 * x₃.2) by
+--             x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2 +
+--             (x₂.1 • x₃.2 + x₃.1 • x₂.2 + x₂.2 * x₃.2) by
 --           simp only [add_smul, smul_add, add_mul]
 --           abel }
 --
@@ -613,9 +615,19 @@ instance instStarModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAdd
 
 instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : StarRing (Unitization R A) :=
-  { Unitization.instStarAddMonoid with
+  { star_add := Unitization.instStarAddMonoid.star_add
     star_mul := fun x y =>
       ext (by simp [-star_mul']) (by simp [-star_mul', add_comm (star x.fst • star y.snd)]) }
+
+-- def instStarRing' [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A] [Module R A]
+--     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : StarRing (Unitization R A) :=
+--   { star_add := Unitization.instStarAddMonoid.star_add
+--     star_mul := fun x y =>
+--       ext (by simp [-star_mul']) (by simp [-star_mul', add_comm (star x.fst • star y.snd)]) }
+--
+-- example [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A] [Module R A]
+--     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] :
+--     instStarRing = instStarRing' (R := R) (A := A) := rfl
 
 end Star
 
@@ -629,7 +641,7 @@ variable (S R A : Type _) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A
   [IsScalarTower S R A]
 
 instance instAlgebra : Algebra S (Unitization R A) :=
-  { (Unitization.inlRingHom R A).comp (algebraMap S R) with
+  { toRingHom := (Unitization.inlRingHom R A).comp (algebraMap S R)
     commutes' := fun s x => by
       induction' x using Unitization.ind with r a
       show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)

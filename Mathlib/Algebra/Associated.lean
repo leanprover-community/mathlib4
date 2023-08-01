@@ -1092,7 +1092,7 @@ instance instOrderedCommMonoid : OrderedCommMonoid (Associates α) where
     mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) :=
-{ (by infer_instance : CommMonoidWithZero (Associates α)) with
+{ toCommMonoidWithZero := (by infer_instance : CommMonoidWithZero (Associates α))
   mul_left_cancel_of_ne_zero := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
     rcases Quotient.exact' h with ⟨u, hu⟩

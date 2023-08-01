@@ -184,9 +184,8 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
   prod_mem h
 #align subalgebra.prod_mem Subalgebra.prod_mem
 
-instance {R A : Type _} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
-  { Subalgebra.SubsemiringClass with
-    neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
+instance {R A : Type _} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A where
+  neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _
 
 protected theorem neg_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) {x : A} (hx : x ∈ S) : -x ∈ S :=
@@ -368,11 +367,10 @@ instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScal
 
 instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A] :
     Algebra R' S :=
-  { (algebraMap R' A).codRestrict S fun x => by
+  { toRingHom := (algebraMap R' A).codRestrict S fun x => by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
         Algebra.algebraMap_eq_smul_one]
-      exact algebraMap_mem S
-          _ with
+      exact algebraMap_mem S _
     commutes' := fun c x => Subtype.eq <| Algebra.commutes _ _
     smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
 #align subalgebra.algebra' Subalgebra.algebra'
@@ -1024,13 +1022,12 @@ theorem range_val : S.val.range = S :=
   ext <| Set.ext_iff.1 <| S.val.coe_range.trans Subtype.range_val
 #align subalgebra.range_val Subalgebra.range_val
 
-instance : Unique (Subalgebra R R) :=
-  { inferInstanceAs (Inhabited (Subalgebra R R)) with
-    uniq := by
-      intro S
-      refine' le_antisymm ?_ bot_le
-      intro _ _
-      simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
+instance : Unique (Subalgebra R R) where
+  uniq := by
+    intro S
+    refine' le_antisymm ?_ bot_le
+    intro _ _
+    simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default]
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 

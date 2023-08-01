@@ -266,8 +266,7 @@ theorem mul_map_seq (x y : FreeMagma α) :
 
 @[to_additive]
 instance : LawfulTraversable FreeMagma.{u} :=
-  { instLawfulMonadFreeMagmaInstMonadFreeMagma with
-    id_traverse := fun x ↦
+  { id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
@@ -682,8 +681,7 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
 
 @[to_additive]
 instance : LawfulTraversable FreeSemigroup.{u} :=
-  { instLawfulMonadFreeSemigroupInstMonadFreeSemigroup with
-    id_traverse := fun x ↦
+  { id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦

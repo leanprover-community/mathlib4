@@ -39,7 +39,7 @@ variable (I f)
 
 instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
     Algebra R (∀ i : I, f i) :=
-  { (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i) with
+  { toRingHom := (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i)
     commutes' := fun a f => by ext; simp [Algebra.commutes]
     smul_def' := fun a f => by ext; simp [Algebra.smul_def] }
 #align pi.algebra Pi.algebra

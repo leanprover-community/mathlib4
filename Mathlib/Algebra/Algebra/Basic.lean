@@ -500,7 +500,7 @@ end ULift
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
 instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
   toRingHom := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
+  -- smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 #align algebra.of_subsemiring Algebra.ofSubsemiring

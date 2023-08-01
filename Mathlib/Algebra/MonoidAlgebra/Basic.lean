@@ -166,10 +166,8 @@ theorem mul_def {f g : MonoidAlgebra k G} :
 #align monoid_algebra.mul_def MonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
-  { Finsupp.addCommMonoid with
-    zero := 0
+  { toAddCommMonoid := Finsupp.addCommMonoid
     mul := (· * ·)
-    add := (· + ·)
     -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
@@ -304,7 +302,7 @@ end Semiring
 
 instance nonUnitalCommSemiring [CommSemiring k] [CommSemigroup G] :
     NonUnitalCommSemiring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalSemiring with
+  { toNonUnitalSemiring := MonoidAlgebra.nonUnitalSemiring
     mul_comm := fun f g => by
       simp only [mul_def, Finsupp.sum, mul_comm]
       rw [Finset.sum_comm]
@@ -321,7 +319,8 @@ instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial (Monoi
 section DerivedInstances
 
 instance commSemiring [CommSemiring k] [CommMonoid G] : CommSemiring (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalCommSemiring, MonoidAlgebra.semiring with }
+  { toSemiring := MonoidAlgebra.semiring
+    mul_comm := mul_comm}
 #align monoid_algebra.comm_semiring MonoidAlgebra.commSemiring
 
 instance unique [Semiring k] [Subsingleton k] : Unique (MonoidAlgebra k G) :=
@@ -364,7 +363,8 @@ instance nonUnitalCommRing [CommRing k] [CommSemigroup G] :
 #align monoid_algebra.non_unital_comm_ring MonoidAlgebra.nonUnitalCommRing
 
 instance commRing [CommRing k] [CommMonoid G] : CommRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.nonUnitalCommRing, MonoidAlgebra.ring with }
+  { toRing := MonoidAlgebra.ring
+    mul_comm := mul_comm }
 #align monoid_algebra.comm_ring MonoidAlgebra.commRing
 
 variable {S : Type _}
@@ -792,7 +792,7 @@ In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 -/
 instance algebra {A : Type _} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     Algebra k (MonoidAlgebra A G) :=
-  { singleOneRingHom.comp (algebraMap k A) with
+  { toRingHom := singleOneRingHom.comp (algebraMap k A)
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
       refine Finsupp.ext fun _ => ?_
@@ -1328,10 +1328,7 @@ section Semigroup
 variable [Semiring k] [AddSemigroup G]
 
 instance nonUnitalSemiring : NonUnitalSemiring (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
+  { toNonUnitalNonAssocSemiring := AddMonoidAlgebra.nonUnitalNonAssocSemiring
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
@@ -1350,11 +1347,8 @@ section MulOneClass
 variable [Semiring k] [AddZeroClass G]
 
 instance nonAssocSemiring : NonAssocSemiring (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
+  { toNonUnitalNonAssocSemiring := AddMonoidAlgebra.nonUnitalNonAssocSemiring
     one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
     natCast := fun n => single 0 n
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
@@ -1407,7 +1401,7 @@ end Semiring
 
 instance nonUnitalCommSemiring [CommSemiring k] [AddCommSemigroup G] :
     NonUnitalCommSemiring (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.nonUnitalSemiring with
+  { toNonUnitalSemiring := AddMonoidAlgebra.nonUnitalSemiring
     mul_comm := @mul_comm (MonoidAlgebra k <| Multiplicative G) _ }
 #align add_monoid_algebra.non_unital_comm_semiring AddMonoidAlgebra.nonUnitalCommSemiring
 
@@ -1421,7 +1415,8 @@ instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial (AddMo
 section DerivedInstances
 
 instance commSemiring [CommSemiring k] [AddCommMonoid G] : CommSemiring (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.nonUnitalCommSemiring, AddMonoidAlgebra.semiring with }
+  { toSemiring := AddMonoidAlgebra.semiring
+    mul_comm := mul_comm }
 #align add_monoid_algebra.comm_semiring AddMonoidAlgebra.commSemiring
 
 instance unique [Semiring k] [Subsingleton k] : Unique (AddMonoidAlgebra k G) :=
@@ -1460,11 +1455,13 @@ instance ring [Ring k] [AddMonoid G] : Ring (AddMonoidAlgebra k G) :=
 
 instance nonUnitalCommRing [CommRing k] [AddCommSemigroup G] :
     NonUnitalCommRing (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.nonUnitalCommSemiring, AddMonoidAlgebra.nonUnitalRing with }
+  { toNonUnitalRing := AddMonoidAlgebra.nonUnitalRing
+    mul_comm := mul_comm }
 #align add_monoid_algebra.non_unital_comm_ring AddMonoidAlgebra.nonUnitalCommRing
 
 instance commRing [CommRing k] [AddCommMonoid G] : CommRing (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.nonUnitalCommRing, AddMonoidAlgebra.ring with }
+  { toRing := AddMonoidAlgebra.ring
+    mul_comm := mul_comm }
 #align add_monoid_algebra.comm_ring AddMonoidAlgebra.commRing
 
 variable {S : Type _}
@@ -1881,7 +1878,7 @@ In particular this provides the instance `Algebra k (AddMonoidAlgebra k G)`.
 -/
 instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     Algebra R (AddMonoidAlgebra k G) :=
-  { singleZeroRingHom.comp (algebraMap R k) with
+  { toRingHom := singleZeroRingHom.comp (algebraMap R k)
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
       refine Finsupp.ext fun _ => ?_

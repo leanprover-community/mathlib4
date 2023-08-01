@@ -33,8 +33,7 @@ variable (R A B)
 open Algebra
 
 instance algebra : Algebra R (A × B) :=
-  { Prod.module,
-    RingHom.prod (algebraMap R A) (algebraMap R B) with
+  { toRingHom := RingHom.prod (algebraMap R A) (algebraMap R B)
     commutes' := by
       rintro r ⟨a, b⟩
       dsimp
@@ -44,6 +43,20 @@ instance algebra : Algebra R (A × B) :=
       dsimp
       rw [Algebra.smul_def r a, Algebra.smul_def r b] }
 #align prod.algebra Prod.algebra
+
+-- def algebra' : Algebra R (A × B) :=
+--   { Prod.module,
+--     RingHom.prod (algebraMap R A) (algebraMap R B) with
+--     commutes' := by
+--       rintro r ⟨a, b⟩
+--       dsimp
+--       rw [commutes r a, commutes r b]
+--     smul_def' := by
+--       rintro r ⟨a, b⟩
+--       dsimp
+--       rw [Algebra.smul_def r a, Algebra.smul_def r b] }
+--
+-- example : algebra = algebra' := rfl
 
 variable {R A B}
 
