@@ -11,16 +11,16 @@ open field FreeCommRing BigOperators Polynomial
 
 variable {K : Type _} [Field K]
 
-def genericPoly (supp : Finset ℕ) : FreeCommRing (Option supp) :=
-  ∑ i : supp, of (some i) * of none ^ (i : ℕ)
+def genericMonicPoly (n : ℕ) : FreeCommRing (Option (Fin n)) :=
+    of none ^ n + ∑ i : Fin n, of (some i) * of none ^ (i : ℕ)
 
-theorem lift_genericPoly (p : Polynomial K) (x : K) :
-   FreeCommRing.lift
-    (fun i => Option.elim i x (fun (i : p.support) => p.coeff i))
-    (genericPoly p.support) = p.eval x := by
-  simp only [genericPoly, Finset.univ_eq_attach, Option.elim, map_sum,
-    map_mul, lift_of, map_pow, Polynomial.eval_eq_sum, Polynomial.sum]
-  exact @Finset.sum_attach _ _ _ _ (fun i => p.coeff i * x ^ (i : ℕ))
+theorem lift_genericPoly (p : Polynomial K) (hpm : p.Monic) (x : K) :
+    FreeCommRing.lift
+      (fun i => Option.elim i x (fun (i : Fin p.natDegree) => p.coeff i))
+      (genericMonicPoly p.natDegree) = p.eval x := by
+  simp only [genericMonicPoly, Option.elim, map_add, map_pow, lift_of,
+    map_sum, map_mul, eval_eq_sum_range, Finset.sum_range_succ]
+  rw [← leadingCoeff, Monic.def.1 hpm, add_comm, one_mul, Finset.sum_range]
 
 noncomputable def genMonicPolyHasRoot (n : ℕ) : Language.field.Sentence :=
   (∃' ((termOfFreeCommRing (genericPoly n)).relabel Sum.inr =' 0)).alls
