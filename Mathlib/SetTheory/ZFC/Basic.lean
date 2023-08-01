@@ -1455,8 +1455,8 @@ namespace Class
 
 -- Porting note: this is no longer an automatically derived instance.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
-protected def sep (p : Class → Prop) (A : Class) : Class :=
-  {y | A y ∧ p A}
+protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
+  {y | A y ∧ p y}
 
 @[ext]
 theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=

@@ -234,7 +234,7 @@ def pseudoZero {P : C} : P :=
 #align category_theory.abelian.pseudoelement.pseudo_zero CategoryTheory.Abelian.Pseudoelement.pseudoZero
 
 -- Porting note: in mathlib3, we couldn't make this an instance
--- as it would have fired on on `coe_sort`.
+-- as it would have fired on `coe_sort`.
 -- However now that coercions are treated differently, this is a structural instance triggered by
 -- the appearance of `Pseudoelement`.
 instance hasZero {P : C} : Zero P :=
