@@ -596,12 +596,11 @@ lemma bijective_dual_eval [IsReflexive R M] : Bijective $ Dual.eval R M :=
   IsReflexive.bijective_dual_eval'
 
 instance IsReflexive.of_finite_of_free [Finite R M] [Free R M] : IsReflexive R M := by
-  by_cases h : Nontrivial R
+  cases' h : subsingleton_or_nontrivial R
+  · have := Module.subsingleton R M
+    exact ⟨⟨fun x y _ ↦ by simp, fun x ↦ ⟨0, by simp⟩⟩⟩
   · exact ⟨⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
             LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩⟩
-  · rw [not_nontrivial_iff_subsingleton] at h
-    have := Module.subsingleton R M
-    exact ⟨⟨fun x y _ ↦ by simp, fun x ↦ ⟨0, by simp⟩⟩⟩
 
 variable [IsReflexive R M]
 
@@ -625,7 +624,7 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   ext; simp
 
 /-- The dual of a reflexive module is reflexive. -/
-instance IsReflexiveDual : IsReflexive R (Dual R M) :=
+instance IsReflexive_dual : IsReflexive R (Dual R M) :=
 ⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
 
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
