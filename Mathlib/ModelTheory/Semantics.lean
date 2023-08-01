@@ -912,6 +912,43 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 #align first_order.language.bounded_formula.realize_exs FirstOrder.Language.BoundedFormula.realize_exs
 
 @[simp]
+theorem realize_allsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) (v : β → M) : (φ.allsᵢ f).Realize v ↔
+      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  rw [allsᵢ]
+  simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
+    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+  refine Equiv.forall_congr ?_ ?_
+  . exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+      fun _ => by simp [Function.comp],
+      fun _ => by simp [Function.comp]⟩
+  . intro x
+    rw [Formula.Realize, iff_iff_eq]
+    congr
+    . funext i
+      exact i.elim0
+
+@[simp]
+theorem realize_exsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) (v : β → M) : (φ.exsᵢ f).Realize v ↔
+      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  rw [exsᵢ]
+  simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
+    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+  rw [← not_iff_not, not_exists, not_exists]
+  refine Equiv.forall_congr ?_ ?_
+  . exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+      fun _ => by simp [Function.comp],
+      fun _ => by simp [Function.comp]⟩
+  . intro x
+    rw [Formula.Realize, iff_iff_eq]
+    congr
+    . funext i
+      exact i.elim0
+
+@[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 a8 a9 a0
