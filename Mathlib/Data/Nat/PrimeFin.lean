@@ -3,9 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Set.Finite
-import Mathlib.SetTheory.Cardinal.Basic
 
 #align_import data.nat.prime_fin from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
