@@ -445,7 +445,7 @@ theorem unbot_le_iff [LE α] {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   . exact h
   . simp only [WithBot.unbot_coe, WithBot.coe_le_coe]
 
-section rank
+section Rank
 
 variable {s t : Finset α} {x y : α}
 
@@ -564,6 +564,13 @@ theorem bases_subset_of_rank_eq_of_subset
   simp only [h', card_insert_of_not_mem, ← rank_eq_bases_card hb, ← rank_eq_bases_card hb'] at h₃
   simp only [h₂, add_le_iff_nonpos_right] at h₃
 
+theorem rank_eq_of_subset_of_subset {s t u : Finset α}
+  (hst : s ⊆ t) (htu : t ⊆ u) (hsu : G.rank s = G.rank u) :
+    G.rank s = G.rank t := by
+  apply Nat.le_antisymm (rank_le_of_subset hst)
+  rw [hsu]
+  exact (rank_le_of_subset htu)
+
 theorem local_submodularity
   (h₁ : G.rank s = G.rank (insert x s))
   (h₂ : G.rank s = G.rank (insert y s)) :
@@ -668,7 +675,7 @@ def greedoidRankAxioms (r : Finset α → ℕ) :=
   (r ∅ = 0) ∧ (∀ {s}, r s ≤ s.card) ∧ (∀ {s t}, s ⊆ t → r s ≤ r t) ∧
   (∀ {s x y}, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
 
-end rank
+end Rank
 
 /-- Closure of `s` is the largest set which contains `s` and have the same rank with `s`. -/
 def closure (G : Greedoid α) (s : Finset α) : Finset α :=
@@ -702,7 +709,7 @@ theorem feasibleContinuations_eq (hs : s ∈ G):
         exact h₁
       exact Nat.le_antisymm rank_le_card (h₂ ▸ card_insert_le _ _)
 
-section closure
+section Closure
 
 variable {s t : Finset α} {x y : α}
 
@@ -969,12 +976,83 @@ theorem eq_closure_right_of_eq_closure_of_subset_of_subset
     G.closure t = G.closure u := by
   rw [cospanning_rel_between_subset_right hst htu hsu]
 
+-- TODO: change name
 theorem closure_weak_exchange_property {x y : α} (hx₀ : x ∉ s) (hy₀ : y ∉ s)
   (h₁ : G.closure (insert y s) = G.closure (insert x (insert y s)))
   (h₂ : G.closure (insert x s) ≠ G.closure (insert x (insert y s))) :
     ∃ z ∈ insert x s, G.closure (insert x s \ {z}) = G.closure (insert x s) :=
   cospanning_rel_ex hx₀ hy₀ h₁ h₂
 
-end closure
+end Closure
+
+def partialAlphabets (G : Greedoid α) : Finset (Finset α) :=
+  univ.filter fun s => ∃ S : Finset (Finset α), s = S.biUnion id ∧ ∀ t ∈ S, t ∈ G
+
+def kernelClosureOperator (G : Greedoid α) (s : Finset α) : Finset α :=
+  (G.feasibleSet.filter fun t => G.rank (s ∪ t) = G.rank s).biUnion id
+
+def kernel (G : Greedoid α) (s : Finset α) : Finset α :=
+  (s.powerset.filter fun t => t ∈ G).biUnion id
+
+section Kernel
+
+variable {s : Finset α}
+
+theorem kernelClosureOperator_def_rank :
+    G.kernelClosureOperator s =
+      (G.feasibleSet.filter fun t => G.rank (s ∪ t) = G.rank s).biUnion id := rfl
+
+theorem kernelClosureOperator_def_closure :
+    G.kernelClosureOperator s =
+      (G.feasibleSet.filter fun t => t ⊆ G.closure s).biUnion id := by
+  rw [kernelClosureOperator_def_rank]
+  ext x
+  simp only [system_feasible_set_mem_mem, mem_biUnion, Finset.mem_filter, id_eq]
+  constructor <;> rintro ⟨t, ht₁, ht₂⟩ <;> exists t
+  . let ⟨ht₁, ht₃⟩ := ht₁
+    simp only [ht₁, ht₂, true_and, and_true]
+    intro a ha
+    rw [mem_closure]
+    symm
+    apply rank_eq_of_subset_of_subset (subset_insert _ _) _ ht₃.symm
+    apply insert_subset_iff.mpr
+    constructor <;> simp only [Finset.mem_union, ha, or_true, subset_union_left]
+  . let ⟨ht₁, ht₃⟩ := ht₁
+    simp only [ht₁, ht₂, true_and, and_true]
+    symm
+    apply rank_eq_of_subset_of_subset (subset_union_left _ _)
+      (union_subset self_subset_closure ht₃)
+    rw [rank_closure_eq_rank_self]
+
+theorem mem_kernel {x : α} :
+    x ∈ G.kernel s ↔ ∃ t ∈ G, t ⊆ s ∧ x ∈ t := by
+  constructor <;> intro h <;> simp [kernel] at * <;> let ⟨a, _⟩ := h <;> exists a <;> tauto
+
+
+theorem kernelClosureOperator_eq_kernel_closure :
+    G.kernelClosureOperator s = G.kernel (G.closure s) := by
+  ext x; constructor <;> intro h
+  . simp only [kernelClosureOperator_def_closure, system_feasible_set_mem_mem, mem_biUnion,
+      Finset.mem_filter, id_eq] at h
+    let ⟨a, ⟨ha₁, ha₂⟩, ha₃⟩ := h
+    rw [mem_kernel]
+    exists a
+  . rw [mem_kernel] at h
+    simp only [kernelClosureOperator_def_closure, system_feasible_set_mem_mem, mem_biUnion,
+      Finset.mem_filter, id_eq]
+    let ⟨a, _, _, _⟩ := h
+    exists a
+
+@[simp]
+theorem closure_kernel_eq_closure :
+    G.kernel (G.closure s) = G.closure s := by
+  ext x; constructor <;> intro h
+  . rw [mem_kernel] at h
+    let ⟨_, _, h₁, h₂⟩ := h
+    exact h₁ h₂
+  . rw [mem_kernel]
+    sorry
+
+end Kernel
 
 end Greedoid
