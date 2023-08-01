@@ -11,8 +11,8 @@ import Mathlib.Topology.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Lattice
-import Mathlib.Topology.Order.UpperSetTopology
-import Mathlib.Topology.Order.LowerTopology
+import Mathlib.Topology.Order.UpperLowerSetTopology
+import Mathlib.Topology.Order.LowerUpperTopology
 
 /-!
 # Scott topology
