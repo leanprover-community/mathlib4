@@ -2,6 +2,7 @@ import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.OrderIsoNat
 
 variable (α : Type _) [LinearOrder α]
 
@@ -9,8 +10,31 @@ lemma Antitone.eventually_constant [WellFoundedLT α] (f : ℕ → α) (h : Anti
     ∃ N a, ∀ n, N ≤ n → f n = a := by
   sorry
 
-theorem wellFoundedLT_iff_not_strictAnti : WellFoundedLT α ↔ ∀ f : ℕ → α, ¬ StrictAnti f :=
-  sorry
+theorem wellFoundedLT_iff_not_strictAnti : WellFoundedLT α ↔ ∀ f : ℕ → α, ¬ StrictAnti f := by
+  dsimp [WellFoundedLT]
+  rw [IsWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+  constructor
+  <;> intro h
+  · intro f hf
+    rw [isEmpty_iff] at h
+    apply h
+    refine' ⟨⟨f, hf.injective⟩,_⟩
+    intro a b
+    refine' ⟨_, fun h ↦ hf h⟩
+    intro hfab
+    dsimp at hfab
+    by_contra hab
+    simp only [gt_iff_lt, not_lt] at hab
+    have := hf.antitone hab
+    rw [← not_lt] at this
+    exact this hfab
+  · rw [isEmpty_iff]
+    intro f
+    apply h f.toEmbedding
+    intro a b hab
+    rwa [f.map_rel_iff']
+
+
 
 variable {α}
 
