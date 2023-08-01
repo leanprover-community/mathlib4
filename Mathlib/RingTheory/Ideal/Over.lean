@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.ideal.over
-! leanprover-community/mathlib commit 198cb64d5c961e1a8d0d3e219feb7058d5353861
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Integral
+
+#align_import ring_theory.ideal.over from "leanprover-community/mathlib"@"198cb64d5c961e1a8d0d3e219feb7058d5353861"
 
 /-!
 # Ideals over/under ideals
@@ -99,7 +96,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
 commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
-in the file `ring_theory/jacobson`.
+in the file `RingTheory.Jacobson`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
     ((Quotient.mk (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)).comp C).comp

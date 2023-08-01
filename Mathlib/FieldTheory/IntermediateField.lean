@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module field_theory.intermediate_field
-! leanprover-community/mathlib commit c596622fccd6e0321979d94931c964054dea2d26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
+
+#align_import field_theory.intermediate_field from "leanprover-community/mathlib"@"c596622fccd6e0321979d94931c964054dea2d26"
 
 /-!
 # Intermediate fields

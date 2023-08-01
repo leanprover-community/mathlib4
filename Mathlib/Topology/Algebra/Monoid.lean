@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.algebra.monoid from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Theory of topological monoids
@@ -57,7 +54,6 @@ Continuity in only the left/right argument can be stated using
 class ContinuousMul (M : Type u) [TopologicalSpace M] [Mul M] : Prop where
   continuous_mul : Continuous fun p : M × M => p.1 * p.2
 #align has_continuous_mul ContinuousMul
--- #align has_continuous_add ContinuousAdd
 
 section ContinuousMul
 
@@ -238,16 +234,16 @@ instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
 
 @[to_additive]
 instance Pi.continuousMul {C : ι → Type _} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
-    [∀ i, ContinuousMul (C i)] : ContinuousMul (∀ i, C i)
-    where continuous_mul :=
+    [∀ i, ContinuousMul (C i)] : ContinuousMul (∀ i, C i) where
+  continuous_mul :=
     continuous_pi fun i => (continuous_apply i).fst'.mul (continuous_apply i).snd'
 #align pi.has_continuous_mul Pi.continuousMul
 #align pi.has_continuous_add Pi.continuousAdd
 
-/-- A version of `pi.continuousMul` for non-dependent functions. It is needed because sometimes
-Lean 3 fails to use `pi.continuousMul` for non-dependent functions. -/
-@[to_additive "A version of `pi.continuousAdd` for non-dependent functions. It is needed
-because sometimes Lean fails to use `pi.continuousAdd` for non-dependent functions."]
+/-- A version of `Pi.continuousMul` for non-dependent functions. It is needed because sometimes
+Lean 3 fails to use `Pi.continuousMul` for non-dependent functions. -/
+@[to_additive "A version of `Pi.continuousAdd` for non-dependent functions. It is needed
+because sometimes Lean fails to use `Pi.continuousAdd` for non-dependent functions."]
 instance Pi.continuousMul' : ContinuousMul (ι → M) :=
   Pi.continuousMul
 #align pi.has_continuous_mul' Pi.continuousMul'
@@ -430,8 +426,7 @@ theorem Submonoid.top_closure_mul_self_eq (s : Submonoid M) :
 itself a submonoid. -/
 @[to_additive "The (topological-space) closure of an additive submonoid of a space `M` with
 `ContinuousAdd` is itself an additive submonoid."]
-def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M
-    where
+def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
   carrier := _root_.closure (s : Set M)
   one_mem' := _root_.subset_closure s.one_mem
   mul_mem' ha hb := s.top_closure_mul_self_subset ⟨_, _, ha, hb, rfl⟩
@@ -441,7 +436,7 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M
 -- Porting note: new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
-  (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := by rfl
+  (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
 
 @[to_additive]
 theorem Submonoid.le_topologicalClosure (s : Submonoid M) : s ≤ s.topologicalClosure :=
@@ -655,9 +650,9 @@ Notably, this instances applies when `R = A`, or when `[Algebra R A]` is availab
 continuous affine addition by constants."]
 instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type _} [Monoid A] [SMul R A]
     [IsScalarTower R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
-    continuous_const_smul q := by
-      simp (config := { singlePass := true }) only [← smul_one_mul q (_ : A)]
-      exact continuous_const.mul continuous_id
+  continuous_const_smul q := by
+    simp (config := { singlePass := true }) only [← smul_one_mul q (_ : A)]
+    exact continuous_const.mul continuous_id
 #align is_scalar_tower.has_continuous_const_smul IsScalarTower.continuousConstSMul
 #align vadd_assoc_class.has_continuous_const_vadd VAddAssocClass.continuousConstVAdd
 
@@ -671,9 +666,9 @@ continuous addition implies continuous affine addition by constants.
 Notably, this instances applies when `R = Aᵃᵒᵖ`."]
 instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type _} [Monoid A] [SMul R A]
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
-    continuous_const_smul q := by
-      simp (config := { singlePass := true }) only [← mul_smul_one q (_ : A)]
-      exact continuous_id.mul continuous_const
+  continuous_const_smul q := by
+    simp (config := { singlePass := true }) only [← mul_smul_one q (_ : A)]
+    exact continuous_id.mul continuous_const
 #align smul_comm_class.has_continuous_const_smul SMulCommClass.continuousConstSMul
 #align vadd_comm_class.has_continuous_const_vadd VAddCommClass.continuousConstVAdd
 
@@ -781,7 +776,7 @@ theorem eventuallyEq_prod {X M : Type _} [CommMonoid M] {s : Finset ι} {l : Fil
     {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
   replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x
   · rwa [eventually_all_finset]
-  filter_upwards [hs]with x hx
+  filter_upwards [hs] with x hx
   simp only [Finset.prod_apply, Finset.prod_congr rfl hx]
 #align eventually_eq_prod eventuallyEq_prod
 #align eventually_eq_sum eventuallyEq_sum
@@ -829,11 +824,11 @@ theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀
 
 end
 
-instance [TopologicalSpace M] [Mul M] [ContinuousMul M] : ContinuousAdd (Additive M)
-    where continuous_add := @continuous_mul M _ _ _
+instance [TopologicalSpace M] [Mul M] [ContinuousMul M] : ContinuousAdd (Additive M) where
+  continuous_add := @continuous_mul M _ _ _
 
-instance [TopologicalSpace M] [Add M] [ContinuousAdd M] : ContinuousMul (Multiplicative M)
-    where continuous_mul := @continuous_add M _ _ _
+instance [TopologicalSpace M] [Add M] [ContinuousAdd M] : ContinuousMul (Multiplicative M) where
+  continuous_mul := @continuous_add M _ _ _
 
 section LatticeOps
 

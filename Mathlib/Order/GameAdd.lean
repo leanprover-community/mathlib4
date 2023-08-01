@@ -2,14 +2,11 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module order.game_add
-! leanprover-community/mathlib commit fee218fb033b2fd390c447f8be27754bc9093be9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Logic.Relation
+
+#align_import order.game_add from "leanprover-community/mathlib"@"fee218fb033b2fd390c447f8be27754bc9093be9"
 
 /-!
 # Game addition relation

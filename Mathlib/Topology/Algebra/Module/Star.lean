@@ -2,15 +2,12 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module topology.algebra.module.star
-! leanprover-community/mathlib commit ad84a13c884fd19e286fb7abb36f4b9ba7e2f615
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Module
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Star
+
+#align_import topology.algebra.module.star from "leanprover-community/mathlib"@"ad84a13c884fd19e286fb7abb36f4b9ba7e2f615"
 
 /-!
 # The star operation, bundled as a continuous star-linear equiv

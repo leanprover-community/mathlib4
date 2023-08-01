@@ -2,15 +2,12 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
-
-! This file was ported from Lean 3 source module data.fin.tuple.basic
-! leanprover-community/mathlib commit ef997baa41b5c428be3fb50089a7139bf4ee886b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
+
+#align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
 
 /-!
 # Operation on tuples
@@ -49,7 +46,6 @@ section Tuple
 /-- There is exactly one tuple of size zero. -/
 example (α : Fin 0 → Sort u) : Unique (∀ i : Fin 0, α i) := by infer_instance
 
-@[simp]
 theorem tuple0_le {α : ∀ _ : Fin 0, Type _} [∀ i, Preorder (α i)] (f g : ∀ i, α i) : f ≤ g :=
   finZeroElim
 #align fin.tuple0_le Fin.tuple0_le
@@ -295,13 +291,13 @@ def append {α : Type _} (a : Fin m → α) (b : Fin n → α) : Fin (m + n) →
 @[simp]
 theorem append_left {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
     append u v (Fin.castAdd n i) = u i :=
-  addCases_left _ _ _
+  addCases_left _
 #align fin.append_left Fin.append_left
 
 @[simp]
 theorem append_right {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
     append u v (natAdd m i) = v i :=
-  addCases_right _ _ _
+  addCases_right _
 #align fin.append_right Fin.append_right
 
 theorem append_right_nil {α : Type _} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
@@ -342,11 +338,13 @@ theorem append_assoc {p : ℕ} {α : Type _} (a : Fin m → α) (b : Fin n → �
   · rw [append_left]
     refine' Fin.addCases (fun ll => _) (fun lr => _) l
     · rw [append_left]
-      simp [castAdd_castAdd]
+      -- TODO: we need to decide the simp normal form here
+      -- and potentially add `@[simp]` to `castIso_eq_cast`.
+      simp [castAdd_castAdd, castIso_eq_cast]
     · rw [append_right]
-      simp [castAdd_natAdd]
+      simp [castAdd_natAdd, castIso_eq_cast]
   · rw [append_right]
-    simp [← natAdd_natAdd]
+    simp [← natAdd_natAdd, castIso_eq_cast]
 #align fin.append_assoc Fin.append_assoc
 
 /-- Appending a one-tuple to the left is the same as `Fin.cons`. -/
@@ -427,7 +425,8 @@ inductively from `Fin n` starting from the left, not from the right. This implie
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
--- Porting note: `i.castSucc` does not work like it did in Lean 3; `(castSucc i)` must be used.
+-- Porting note: `i.castSucc` does not work like it did in Lean 3;
+-- `(castSucc i)` must be used.
 variable {α : Fin (n + 1) → Type u} (x : α (last n)) (q : ∀ i, α i)
   (p : ∀ i : Fin n, α (castSucc i)) (i : Fin n) (y : α (castSucc i)) (z : α (last n))
 
@@ -566,7 +565,7 @@ theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) 
   by_cases h : j = i
   · rw [h]
     simp [init]
-  · simp [init, h]
+  · simp [init, h, castSucc_inj]
 #align fin.init_update_cast_succ Fin.init_update_castSucc
 
 /-- `tail` and `init` commute. We state this lemma in a non-dependent setting, as otherwise it
@@ -594,6 +593,7 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
     have : j = castSucc k := by rw [jk, castSucc_castLT]
     rw [this, ← castSucc_fin_succ, snoc]
     simp [pred, snoc, cons]
+    rfl
   rw [eq_last_of_not_lt h', succ_last]
   simp
 #align fin.cons_snoc_eq_snoc_cons Fin.cons_snoc_eq_snoc_cons
@@ -675,7 +675,7 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
     rw [castLT_succAbove hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
-    generalize hk : pred ((succAbove i).toEmbedding j) H₁ = k
+    generalize hk : pred ((succAboveEmb i).toEmbedding j) H₁ = k
     erw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
     intro; rfl
 #align fin.insert_nth_apply_succ_above Fin.insertNth_apply_succAbove

@@ -2,17 +2,14 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.basic
-! leanprover-community/mathlib commit 9da1b3534b65d9661eb8f42443598a92bbb49211
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
 import Std.Data.List.Lemmas
+
+#align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
 
 /-!
 # Basic properties of lists
@@ -94,10 +91,6 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 #align decidable.list.eq_or_ne_mem_of_mem Decidable.List.eq_or_ne_mem_of_mem
 
 #align list.eq_or_ne_mem_of_mem List.eq_or_ne_mem_of_mem
-
--- porting note: from init.data.list.lemmas
-alias mem_cons ↔ eq_or_mem_of_mem_cons _
-#align list.eq_or_mem_of_mem_cons List.eq_or_mem_of_mem_cons
 
 #align list.not_mem_append List.not_mem_append
 
@@ -224,11 +217,6 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 #align list.length_eq_three List.length_eq_three
 
--- Porting note: Lean 3 core library had the name length_le_of_sublist
--- and data.list.basic the command `alias length_le_of_sublist ← sublist.length_le`,
--- but Std has the name Sublist.length_le instead.
-alias Sublist.length_le ← length_le_of_sublist
-#align list.length_le_of_sublist List.length_le_of_sublist
 #align list.sublist.length_le List.Sublist.length_le
 
 /-! ### set-theoretic notation of lists -/
@@ -419,14 +407,18 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 /-! ### replicate -/
 
-attribute [simp] replicate_succ
-#align list.replicate_succ List.replicate_succ
-
 @[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
 #align list.replicate_zero List.replicate_zero
 
+attribute [simp] replicate_succ
+#align list.replicate_succ List.replicate_succ
+
 lemma replicate_one (a : α) : replicate 1 a = [a] := rfl
 #align list.replicate_one List.replicate_one
+
+#align list.length_replicate List.length_replicate
+#align list.mem_replicate List.mem_replicate
+#align list.eq_of_mem_replicate List.eq_of_mem_replicate
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
@@ -490,35 +482,6 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 #align list.replicate_left_inj List.replicate_left_inj
 
 /-! ### pure -/
-
--- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
-instance : Monad List := { pure := @List.ret, bind := @List.bind, map := @List.map }
-
--- Porting note: simp can prove this
--- @[simp]
-theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
-  append_nil (f x)
-#align list.bind_singleton List.bind_singleton
-
-@[simp] theorem bind_singleton' (l : List α) : (l.bind fun x => [x]) = l := by
-  induction l <;> simp [*]
-#align list.bind_singleton' List.bind_singleton'
-
-theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
-  simp_rw [←map_singleton]
-  rw [← bind_singleton' l, bind_map, bind_singleton']
-#align list.map_eq_bind List.map_eq_bind
-
-theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List γ) :
-    (l.bind f).bind g = l.bind fun x => (f x).bind g := by induction l <;> simp [*]
-#align list.bind_assoc List.bind_assoc
-
--- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
-instance : LawfulMonad List := LawfulMonad.mk'
-  (id_map := map_id)
-  (pure_bind := fun _ _ => List.append_nil _)
-  (bind_assoc := List.bind_assoc)
-  (bind_pure_comp := fun _ _ => (map_eq_bind _ _).symm)
 
 @[simp]
 theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y :=
@@ -657,16 +620,12 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 #align list.map_reverse_core List.map_reverseAux
 
--- Porting TODO: Fix statement of `mem_reverse` in Std to match Lean3,
--- then deprecate/remove this one
-theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
-  List.mem_reverse _ _
-#align list.mem_reverse List.mem_reverse'
+#align list.mem_reverse List.mem_reverse
 
 @[simp] theorem reverse_replicate (n) (a : α) : reverse (replicate n a) = replicate n a :=
   eq_replicate.2
     ⟨by rw [length_reverse, length_replicate],
-     fun b h => eq_of_mem_replicate (mem_reverse'.1 h)⟩
+     fun b h => eq_of_mem_replicate (mem_reverse.1 h)⟩
 #align list.reverse_replicate List.reverse_replicate
 
 /-! ### empty -/
@@ -1198,10 +1157,9 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
   simp only [length, indexOf_cons]
-  by_cases h : a = b;
-  · rw [if_pos h]
-    exact Nat.zero_le _
-  rw [if_neg h]; exact succ_le_succ ih
+  by_cases h : a = b
+  · rw [if_pos h]; exact Nat.zero_le _
+  · rw [if_neg h]; exact succ_le_succ ih
 #align list.index_of_le_length List.indexOf_le_length
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
@@ -1917,9 +1875,6 @@ theorem take_zero (l : List α) : take 0 l = [] :=
   rfl
 #align list.take_zero List.take_zero
 
-@[simp]
-theorem take_nil : ∀ n, take n [] = ([] : List α)
-  | 0 | _ + 1 => rfl
 #align list.take_nil List.take_nil
 
 theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: take n l :=
@@ -2998,7 +2953,7 @@ theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.spli
   cases' h' : splitOnP (· == x) tl with hd' tl'; · exact (splitOnP_ne_nil _ tl h').elim
   rw [h'] at ih
   rw [splitOnP_cons]
-  split_ifs with h;
+  split_ifs with h
   · rw [beq_iff_eq] at h
     subst h
     simp [ih, join, h']
@@ -3142,9 +3097,9 @@ theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l :=
 @[simp]
 theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
   | ⟨a, h⟩ => by
-    have := mem_map.1 (by rw [attach_map_val] <;> exact h);
-      · rcases this with ⟨⟨_, _⟩, m, rfl⟩
-        exact m
+    have := mem_map.1 (by rw [attach_map_val] <;> exact h)
+    rcases this with ⟨⟨_, _⟩, m, rfl⟩
+    exact m
 #align list.mem_attach List.mem_attach
 
 @[simp]
@@ -3357,18 +3312,6 @@ theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
 end Lookmap
 
 /-! ### filter -/
--- Porting note: These lemmas are from Lean3 core
-
-#align list.filter_nil List.filter_nil
-
-#align list.filter_cons_of_pos List.filter_cons_of_pos
-
-#align list.filter_cons_of_neg List.filter_cons_of_neg
-
-#align list.filter_append List.filter_append
-
-#align list.filter_sublist List.filter_sublist
-
 /-! ### filterMap -/
 
 #align list.filter_map_nil List.filterMap_nil
@@ -3597,7 +3540,7 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 #align list.filter_filter List.filter_filter
 
 @[simp]
-theorem filter_true  (l : List α) :
+theorem filter_true (l : List α) :
     filter (fun _ => true) l = l := by induction l <;> simp [*, filter]
 #align list.filter_true List.filter_true
 

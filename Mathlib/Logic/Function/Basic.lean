@@ -2,15 +2,12 @@
 Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.function.basic
-! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
+
+#align_import logic.function.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -274,19 +271,18 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
-  | h => let ⟨D, e⟩ := h (λ a => ¬ f a a)
-        (@iff_not_self (f D D)) $ iff_of_eq (congr_fun e D)
+  | h => let ⟨D, e⟩ := h {a | ¬ f a a}
+        @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
 #align function.cantor_surjective Function.cantor_surjective
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
 theorem cantor_injective {α : Type _} (f : Set α → α) : ¬Injective f
-  | i => cantor_surjective (λ a b => ∀ U, a = f U → U b) $
-        RightInverse.surjective
-          (λ U => funext $ λ _a => propext ⟨λ h => h U rfl, λ h' _U e => i e ▸ h'⟩)
+  | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
+         RightInverse.surjective (λ U => Set.ext <| fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
 
-/-- There is no surjection from `α : Type u` into `Type u`. This theorem
+/-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
   demonstrates why `Type : Type` would be inconsistent in Lean. -/
 theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
   intro hf
@@ -438,6 +434,10 @@ theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
 #align function.inv_fun_eq Function.invFun_eq
 
+theorem apply_invFun_apply {α : Type u₁} {β : Type u₂} {f : α → β} {a : α} :
+    f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
+  @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
+
 theorem invFun_neg (h : ¬∃ a, f a = b) : invFun f b = Classical.choice ‹_› :=
   dif_neg h
 #align function.inv_fun_neg Function.invFun_neg
@@ -553,7 +553,7 @@ by have h2 : (h : a = a') → Eq.rec (motive := λ _ _ => β) b h.symm = b :=
      by intro h
         rw [eq_rec_constant]
    have h3 : (λ h : a = a' => Eq.rec (motive := λ _ _ => β) b h.symm) =
-             (λ _ : a = a' =>  b) := funext h2
+             (λ _ : a = a' => b) := funext h2
    let f := λ x => dite (a = a') x (λ (_: ¬ a = a') => (f a))
    exact congrArg f h3
 #align function.update_apply Function.update_apply

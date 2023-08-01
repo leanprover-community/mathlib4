@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module linear_algebra.smodeq
-! leanprover-community/mathlib commit 146d3d1fa59c091fedaad8a4afa09d6802886d24
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import linear_algebra.smodeq from "leanprover-community/mathlib"@"146d3d1fa59c091fedaad8a4afa09d6802886d24"
 
 /-!
 # modular equivalence for submodule
