@@ -592,8 +592,8 @@ class IsReflexive : Prop where
   /-- A reflexive module is one for which the natural map to its double dual is a bijection. -/
   bijective_dual_eval' : Bijective $ Dual.eval R M
 
-lemma IsReflexive.bijective_dual_eval [IsReflexive R M] : Bijective $ Dual.eval R M :=
-  bijective_dual_eval'
+lemma bijective_dual_eval [IsReflexive R M] : Bijective $ Dual.eval R M :=
+  IsReflexive.bijective_dual_eval'
 
 instance IsReflexive.of_finite_of_free [Finite R M] [Free R M] : IsReflexive R M := by
   by_cases h : Nontrivial R
@@ -607,7 +607,7 @@ variable [IsReflexive R M]
 
 /-- The bijection between a reflexive module and its double dual, bundled as a `LinearEquiv`. -/
 def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
-LinearEquiv.ofBijective _ $ IsReflexive.bijective_dual_eval R M
+  LinearEquiv.ofBijective _ $ bijective_dual_eval R M
 #align module.eval_equiv Module.evalEquiv
 
 @[simp] lemma evalEquiv_toLinearMap : evalEquiv R M = Dual.eval R M := rfl
@@ -644,6 +644,17 @@ theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
     (mapEvalEquiv R M).symm W'' = W''.comap (Dual.eval R M) :=
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
+
+instance IsReflexive.prod {N : Type _} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+    IsReflexive R (M × N) := by
+  constructor
+  let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
+    (dualProdDualEquivDual R M N).dualMap.trans (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
+  have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
+    ext m f <;> simp
+  simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+    coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+  exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
 
 end IsReflexive
 
