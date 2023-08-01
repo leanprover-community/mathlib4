@@ -1,5 +1,4 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
+/- Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
@@ -395,7 +394,6 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)]
     apply hx
   · apply le_centralizer -- P hy
     apply hy
-  -- Sylow.conj_eq_normalizer_conj_of_mem_centralizer P x g (le_centralizer P hx) (le_centralizer hy)
 #align sylow.conj_eq_normalizer_conj_of_mem Sylow.conj_eq_normalizer_conj_of_mem
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/

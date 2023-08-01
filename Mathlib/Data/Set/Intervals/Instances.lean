@@ -340,7 +340,8 @@ instance cancelMonoid {α : Type _} [StrictOrderedRing α] [IsDomain α] :
 --     mul_right_cancel := fun _ b _ h =>
 --       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
 --
--- example {α : Type _} [StrictOrderedRing α] [IsDomain α] : cancelMonoid = cancelMonoid' (α := α) := rfl
+-- example {α : Type _} [StrictOrderedRing α] [IsDomain α] :
+-- cancelMonoid = cancelMonoid' (α := α) := rfl
 
 instance cancelCommMonoid {α : Type _} [StrictOrderedCommRing α] [IsDomain α] :
     CancelCommMonoid (Ioc (0 : α) 1) :=

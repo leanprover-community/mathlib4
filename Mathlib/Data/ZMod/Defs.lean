@@ -85,23 +85,11 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
     one_mul := Fin.one_mul'
     mul_one := Fin.mul_one',
     -- porting note: new, see
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/
+    -- topic/ring.20vs.20Ring/near/322876462
     zero_mul := Fin.zero_mul'
     mul_zero := Fin.mul_zero' }
 #align fin.comm_ring Fin.instCommRing
-
--- -- original instance
--- instance instCommRing' (n : ℕ) [NeZero n] : CommRing (Fin n) :=
---   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
---   -- { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
---     one_mul := Fin.one_mul'
---     mul_one := Fin.mul_one',
---     -- porting note: new, see
---     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
---     zero_mul := Fin.zero_mul'
---     mul_zero := Fin.mul_zero' }
---
--- example (n : ℕ) [NeZero n] : instCommRing n = instCommRing' n := rfl
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
@@ -197,7 +185,6 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
     Nat.casesOn n (@right_distrib Int _ _ _) fun n => @right_distrib (Fin n.succ) _ _ _
   mul_comm := Nat.casesOn n (@mul_comm Int _) fun n => @mul_comm (Fin n.succ) _
   -- porting note: new, see
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
   zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
   -- porting note: all npow fields are new, but probably should be backported
