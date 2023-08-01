@@ -1238,7 +1238,8 @@ end OrderIso
 
 variable [Preorder α] (p : α → Prop) [DecidablePred p]
 
-instance [LocallyFiniteOrder α] : LocallyFiniteOrder (Subtype p) where
+instance Subtype.instLocallyFiniteOrder [LocallyFiniteOrder α] :
+    LocallyFiniteOrder (Subtype p) where
   finsetIcc a b := (Icc (a : α) b).subtype p
   finsetIco a b := (Ico (a : α) b).subtype p
   finsetIoc a b := (Ioc (a : α) b).subtype p
@@ -1250,13 +1251,15 @@ instance [LocallyFiniteOrder α] : LocallyFiniteOrder (Subtype p) where
     simp_rw [Finset.mem_subtype, mem_Ioc, Subtype.coe_le_coe, Subtype.coe_lt_coe]
   finset_mem_Ioo a b x := by simp_rw [Finset.mem_subtype, mem_Ioo, Subtype.coe_lt_coe]
 
-instance [LocallyFiniteOrderTop α] : LocallyFiniteOrderTop (Subtype p) where
+instance Subtype.instLocallyFiniteOrderTop [LocallyFiniteOrderTop α] :
+    LocallyFiniteOrderTop (Subtype p) where
   finsetIci a := (Ici (a : α)).subtype p
   finsetIoi a := (Ioi (a : α)).subtype p
   finset_mem_Ici a x := by simp_rw [Finset.mem_subtype, mem_Ici, Subtype.coe_le_coe]
   finset_mem_Ioi a x := by simp_rw [Finset.mem_subtype, mem_Ioi, Subtype.coe_lt_coe]
 
-instance [LocallyFiniteOrderBot α] : LocallyFiniteOrderBot (Subtype p) where
+instance Subtype.instLocallyFiniteOrderBot [LocallyFiniteOrderBot α] :
+    LocallyFiniteOrderBot (Subtype p) where
   finsetIic a := (Iic (a : α)).subtype p
   finsetIio a := (Iio (a : α)).subtype p
   finset_mem_Iic a x := by simp_rw [Finset.mem_subtype, mem_Iic, Subtype.coe_le_coe]
