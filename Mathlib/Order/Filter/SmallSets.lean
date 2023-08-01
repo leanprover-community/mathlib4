@@ -72,6 +72,16 @@ theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t
     exists_congr fun s => Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
 #align filter.eventually_small_sets' Filter.eventually_smallSets'
 
+protected theorem HasBasis.eventually_smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s)
+    {q : Set α → Prop} :
+    (∀ᶠ s in l.smallSets, q s) ↔ ∃ i, p i ∧ ∀ t, t ⊆ s i → q t := by
+  rw [h.smallSets.eventually_iff]; rfl
+
+protected theorem HasBasis.eventually_smallSets' {p : ι → Prop} {s : ι → Set α}
+    (h : HasBasis l p s) {q : Set α → Prop} (hq : ∀ ⦃s t⦄, s ⊆ t → q t → q s) :
+    (∀ᶠ s in l.smallSets, q s) ↔ ∃ i, p i ∧ q (s i) := by
+  rw [eventually_smallSets' hq, h.exists_iff hq]
+
 theorem frequently_smallSets {p : Set α → Prop} :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, ∃ s, s ⊆ t ∧ p s :=
   l.hasBasis_smallSets.frequently_iff
@@ -85,11 +95,6 @@ theorem HasAntitoneBasis.tendsto_smallSets {ι} [Preorder ι] {s : ι → Set α
     (hl : l.HasAntitoneBasis s) : Tendsto s atTop l.smallSets :=
   tendsto_smallSets_iff.2 fun _t ht => hl.eventually_subset ht
 #align filter.has_antitone_basis.tendsto_small_sets Filter.HasAntitoneBasis.tendsto_smallSets
-
-theorem HasAntitoneBasis.smallSets_eq_map {ι} [SemilatticeSup ι] [Nonempty ι] {s : ι → Set α}
-    (hl : l.HasAntitoneBasis s) : comap s l.smallSets = atTop := by
-  refine le_antisymm ?_ hl.tendsto_smallSets.le_comap
-  rw [(hl.smallSets.comap s).le_basis_iff atTop_basis]
 
 @[mono]
 theorem monotone_smallSets : Monotone (@smallSets α) :=
@@ -184,7 +189,10 @@ theorem exists_eventually_swap_smallSets {r : α → β → Prop} :
 
 theorem exists_eventually_swap_atTop [SemilatticeSup α] [Nonempty α] {r : α → β → Prop} :
     (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
-  rw [exists_eventually_swap_smallSets, ← eventually_smallSets_forall (l := atTop)]
+  simp_rw [eventually_atTop, ← exists_swap (α := α), ← iInf_Prop_eq]
+  refine exists_congr fun a ↦ ?_
+  --rw [exists_eventually_swap_smallSets, atTop_basis.eventually_smallSets']
+  --simp_rw [true_and, eventually_atTop]
 
 @[simp]
 theorem eventually_smallSets_subset {s : Set α} : (∀ᶠ t in l.smallSets, t ⊆ s) ↔ s ∈ l :=
