@@ -386,7 +386,7 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
   (hf.injOn s).encard_image
 
 theorem _root_.Function.Embedding.enccard_le (e : s ↪ t) : s.encard ≤ t.encard := by
-  rw [←encard_univ_coe, ←(e.injective).encard_image, ←(Subtype.coe_injective).encard_image]
+  rw [←encard_univ_coe, ←e.injective.encard_image, ←Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
 
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
