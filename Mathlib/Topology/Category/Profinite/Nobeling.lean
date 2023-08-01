@@ -214,7 +214,7 @@ theorem SDS.dropQ_apply (n m : ℕ) (L : SDS α) (w : Q n L) :
 
 variable {L : SDS α}
 
-theorem Q_succ (n : ℕ) (L : SDS α) (w' : Q n L) (w₁ : Q 1 (L.dropQ n w')) : Q (n+1) L := by
+def Q_succ (n : ℕ) (L : SDS α) (w' : Q n L) (w₁ : Q 1 (L.dropQ n w')) : Q (n+1) L := by
   obtain ⟨N', S', s', w'⟩ := w'
   obtain ⟨N₁, S₁, s₁, w₁⟩ := w₁
   use N' + N₁
@@ -271,7 +271,8 @@ theorem Q_one : Nonempty (Q 1 L) := by
   simp [SDS.head, SDS.head?, Option.get?_eq_some] at w
   simpa [List.take_one_eq_singleton_iff]
 
-theorem main (L : SDS α) : P L := by
+noncomputable
+def main (L : SDS α) : P L := by
   intro n
   apply Nonempty.some
   induction n using Nat.strong_induction_on generalizing L
@@ -988,8 +989,6 @@ def P' (o : Ordinal) : Prop :=
   (∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
     LinearIndependent ℤ (GoodProducts.eval C))
 
-variable {I}
-
 instance : IsWellFounded (WithTop I) (·<·) := inferInstance
 
 instance : IsEmpty { i // i ∈ (∅ : Set (WithTop I → Bool)) } := by
@@ -1007,6 +1006,8 @@ instance : Subsingleton (LocallyConstant { i // i ∈ (∅ : Set (WithTop I → 
   intros f g
   ext x
   exact isEmptyElim x
+
+variable {I}
 
 instance GoodProducts.emptyEmpty :
     IsEmpty { l // Products.isGood (∅ : Set (WithTop I → Bool)) l } := by
@@ -4037,7 +4038,7 @@ def FinsetsToProfinite :
     dsimp
     rw [resFinSubsets_eq_comp]
 
-instance CCompact (hC : IsClosed C) :
+lemma CCompact (hC : IsClosed C) :
     CompactSpace C := by
   rw [← isCompact_iff_compactSpace]
   exact hC.isCompact
@@ -4248,7 +4249,7 @@ variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
 noncomputable
 def homeoClosed₁ : S ≃ₜ Set.range ι := Homeomorph.ofEmbedding ι hι.toEmbedding
 
-def rι.embedding : ClosedEmbedding (r I ∘ ι) := ClosedEmbedding.comp (r.embedding I) hι
+lemma rι.embedding : ClosedEmbedding (r I ∘ ι) := ClosedEmbedding.comp (r.embedding I) hι
 
 noncomputable
 def homeoClosed₂ : S ≃ₜ Set.range (r I ∘ ι) :=
