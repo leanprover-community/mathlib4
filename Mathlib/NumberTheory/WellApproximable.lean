@@ -342,7 +342,7 @@ See also `AddCircle.exists_norm_nsmul_le`. -/
 lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type _}
     [NormedAddCommGroup A] [CompactSpace A] [ConnectedSpace A]
     [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
-    (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : (n + 1) • μ (closedBall (0 : A) (δ/2)) = μ univ) :
+    (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ/2))) :
     ∃ j ∈ Ioc 0 n, ‖j • ξ‖ ≤ δ := by
   have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
   let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)
@@ -357,14 +357,17 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type _}
   by_contra h
   apply hn.ne'
   have h' : ⋃ j, B j = univ := by
-    simp_rw [← (isClosed_iUnion hB).measure_eq_univ_iff_eq (μ := μ),
-      measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
+    rw [← (isClosed_iUnion hB).measure_eq_univ_iff_eq (μ := μ)]
+    refine' le_antisymm (μ.mono (subset_univ _)) _
+    simp_rw [measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
       μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
-      tsub_zero, hδ]
+      tsub_zero]
+    exact hδ
   replace hδ : 0 ≤ δ/2 := by
     by_contra contra
     suffices : μ (closedBall 0 (δ/2)) = 0
-    · apply isOpen_univ.measure_ne_zero μ univ_nonempty; simpa [← hδ]
+    · apply isOpen_univ.measure_ne_zero μ univ_nonempty $ le_zero_iff.mp $ le_trans hδ _
+      simp [this]
     rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
     simp [contra]
   have h'' : ∀ j, (B j).Nonempty := by intro j; rwa [nonempty_closedBall]
