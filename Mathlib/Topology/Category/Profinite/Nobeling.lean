@@ -994,13 +994,6 @@ instance : IsWellFounded (WithTop I) (·<·) := inferInstance
 instance : IsEmpty { i // i ∈ (∅ : Set (WithTop I → Bool)) } := by
   simp only [Set.mem_empty_iff_false, isEmpty_subtype, forall_const]
 
-instance : ¬ Nontrivial (LocallyConstant { i // i ∈ (∅ : Set (WithTop I → Bool)) } ℤ) := by
-  rw [nontrivial_iff]
-  push_neg
-  intros f g
-  ext x
-  exact isEmptyElim x
-
 instance : Subsingleton (LocallyConstant { i // i ∈ (∅ : Set (WithTop I → Bool)) } ℤ) := by
   rw [subsingleton_iff]
   intros f g
