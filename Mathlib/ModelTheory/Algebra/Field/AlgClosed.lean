@@ -14,20 +14,16 @@ variable {K : Type _} [Field K]
 def genericPoly (supp : Finset ℕ) : FreeCommRing (Option supp) :=
   ∑ i : supp, of (some i) * of none ^ (i : ℕ)
 
-theorem lift_genericMonicPoly (p : Polynomial K)
-    (hm : p.Monic) (x : K) : FreeCommRing.lift
-    (fun i => Fin.cases x (fun i => p.coeff i) i)
-    (genericMonicPoly p.natDegree) = p.eval x := by
-  simp only [genericMonicPoly, map_add, map_pow, lift_of,
-    Fin.cases_zero]
-  rw [map_sum]
-  simp
-
-
-
+theorem lift_genericPoly (p : Polynomial K) (x : K) :
+   FreeCommRing.lift
+    (fun i => Option.elim i x (fun (i : p.support) => p.coeff i))
+    (genericPoly p.support) = p.eval x := by
+  simp only [genericPoly, Finset.univ_eq_attach, Option.elim, map_sum,
+    map_mul, lift_of, map_pow, Polynomial.eval_eq_sum, Polynomial.sum]
+  exact @Finset.sum_attach _ _ _ _ (fun i => p.coeff i * x ^ (i : ℕ))
 
 noncomputable def genMonicPolyHasRoot (n : ℕ) : Language.field.Sentence :=
-  (∃' ((termOfFreeCommRing (genericMonicPoly n)).relabel Sum.inr =' 0)).alls
+  (∃' ((termOfFreeCommRing (genericPoly n)).relabel Sum.inr =' 0)).alls
 
 theorem realize_genMonicPolyHasRoot (n : ℕ) :
     K ⊨ genMonicPolyHasRoot n ↔ ∀ p : K[X],
