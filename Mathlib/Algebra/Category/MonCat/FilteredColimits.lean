@@ -366,7 +366,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 
 @[to_additive]
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F):=
-  { (M.{v, u} F) with
+  { inferInstanceAs (Monoid (M.{v, u} F)) with
     mul_comm := fun x y => by
       refine Quot.induction_on₂ x y ?_
       clear x y

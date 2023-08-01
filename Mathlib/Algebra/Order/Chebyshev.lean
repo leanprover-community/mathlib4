@@ -69,6 +69,7 @@ other is antitone), the scalar product of their sum is less than the size of the
 scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
     (s.card • ∑ i in s, f i • g i) ≤ (∑ i in s, f i) • ∑ i in s, g i := by
+  letI : OrderedSMul α βᵒᵈ := inferInstance
   refine hfg.dual_right.sum_smul_sum_le_card_smul_sum
 #align antivary_on.card_smul_sum_le_sum_smul_sum AntivaryOn.card_smul_sum_le_sum_smul_sum
 
@@ -87,6 +88,7 @@ other is antitone), the scalar product of their sum is less than the size of the
 scalar product. -/
 theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
     (Fintype.card ι • ∑ i, f i • g i) ≤ (∑ i, f i) • ∑ i, g i := by
+  letI : OrderedSMul α βᵒᵈ := inferInstance
   refine (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
 #align antivary.card_smul_sum_le_sum_smul_sum Antivary.card_smul_sum_le_sum_smul_sum
 

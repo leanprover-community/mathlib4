@@ -602,7 +602,7 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
 theorem liftNC_smul [MulOneClass G] {R : Type _} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices :
-    (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
+    (liftNC (f.toAddMonoidHom) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g)
   exact FunLike.congr_fun this φ
   -- Porting note: `ext` couldn't a find appropriate theorem.

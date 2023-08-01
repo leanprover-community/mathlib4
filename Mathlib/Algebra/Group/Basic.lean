@@ -15,7 +15,6 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Algebra/Group/Defs.lean`.
 -/
 
-
 open Function
 
 universe u

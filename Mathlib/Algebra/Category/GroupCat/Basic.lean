@@ -40,7 +40,7 @@ namespace GroupCat
 
 @[to_additive]
 instance : BundledHom.ParentProjection
-  (fun {α : Type _} (h : Group α) => h.toDivInvMonoid.toMonoid) := ⟨⟩
+  (fun {α} (_ : Group α) => inferInstanceAs (Monoid α)) := ⟨⟩
 
 deriving instance LargeCategory for GroupCat
 attribute [to_additive] instGroupCatLargeCategory

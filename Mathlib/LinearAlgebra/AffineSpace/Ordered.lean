@@ -90,6 +90,7 @@ theorem left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
 #align left_lt_line_map_iff_lt left_lt_lineMap_iff_lt
 
 theorem lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @left_lt_lineMap_iff_lt k Eᵒᵈ _ _ _ _ _ _ _ h
 #align line_map_lt_left_iff_lt lineMap_lt_left_iff_lt
 
@@ -98,6 +99,7 @@ theorem lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
 #align line_map_lt_right_iff_lt lineMap_lt_right_iff_lt
 
 theorem right_lt_lineMap_iff_lt (h : r < 1) : b < lineMap a b r ↔ b < a :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @lineMap_lt_right_iff_lt k Eᵒᵈ _ _ _ _ _ _ _ h
 #align right_lt_line_map_iff_lt right_lt_lineMap_iff_lt
 
@@ -140,6 +142,7 @@ theorem left_le_midpoint : a ≤ midpoint k a b ↔ a ≤ b :=
 #align left_le_midpoint left_le_midpoint
 
 theorem lineMap_le_left_iff_le (h : 0 < r) : lineMap a b r ≤ a ↔ b ≤ a :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @left_le_lineMap_iff_le k Eᵒᵈ _ _ _ _ _ _ _ h
 #align line_map_le_left_iff_le lineMap_le_left_iff_le
 
@@ -158,6 +161,7 @@ theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
 #align midpoint_le_right midpoint_le_right
 
 theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @lineMap_le_right_iff_le k Eᵒᵈ _ _ _ _ _ _ _ h
 #align right_le_line_map_iff_le right_le_lineMap_iff_le
 
@@ -218,6 +222,7 @@ theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f a b ≤ slope f a c :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @map_le_lineMap_iff_slope_le_slope_left k Eᵒᵈ _ _ _ _ f a b r h
 #align line_map_le_map_iff_slope_le_slope_left lineMap_le_map_iff_slope_le_slope_left
 
@@ -233,6 +238,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f a b < slope f a c :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @map_lt_lineMap_iff_slope_lt_slope_left k Eᵒᵈ _ _ _ _ f a b r h
 #align line_map_lt_map_iff_slope_lt_slope_left lineMap_lt_map_iff_slope_lt_slope_left
 
@@ -252,6 +258,7 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a b`. -/
 theorem lineMap_le_map_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a b :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @map_le_lineMap_iff_slope_le_slope_right k Eᵒᵈ _ _ _ _ f a b r h
 #align line_map_le_map_iff_slope_le_slope_right lineMap_le_map_iff_slope_le_slope_right
 
@@ -267,6 +274,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a b`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a b :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @map_lt_lineMap_iff_slope_lt_slope_right k Eᵒᵈ _ _ _ _ f a b r h
 #align line_map_lt_map_iff_slope_lt_slope_right lineMap_lt_map_iff_slope_lt_slope_right
 
@@ -282,6 +290,7 @@ theorem map_le_lineMap_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a c :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @map_le_lineMap_iff_slope_le_slope k Eᵒᵈ _ _ _ _ _ _ _ _ hab h₀ h₁
 #align line_map_le_map_iff_slope_le_slope lineMap_le_map_iff_slope_le_slope
 
@@ -297,6 +306,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a c :=
+  letI : OrderedSMul k Eᵒᵈ := inferInstance
   @map_lt_lineMap_iff_slope_lt_slope k Eᵒᵈ _ _ _ _ _ _ _ _ hab h₀ h₁
 #align line_map_lt_map_iff_slope_lt_slope lineMap_lt_map_iff_slope_lt_slope
 

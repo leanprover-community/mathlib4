@@ -83,7 +83,8 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
 
 /-- Note this is more general than `fin.comm_ring` as it applies (vacuously) to `fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
-  { toInvolutiveNeg := Fin.instInvolutiveNeg n
+  { Fin.instInvolutiveNeg n with
+    neg := Neg.neg
     mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
     neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
 #align fin.has_distrib_neg Fin.instHasDistribNeg

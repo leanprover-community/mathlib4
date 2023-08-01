@@ -92,6 +92,7 @@ theorem smul_nonpos_of_nonpos_of_nonneg (hc : c ≤ 0) (ha : 0 ≤ a) : c • a 
 #align smul_nonpos_of_nonpos_of_nonneg smul_nonpos_of_nonpos_of_nonneg
 
 theorem smul_nonneg_of_nonpos_of_nonpos (hc : c ≤ 0) (ha : a ≤ 0) : 0 ≤ c • a :=
+  letI : OrderedSMul k Mᵒᵈ := inferInstance
   @smul_nonpos_of_nonpos_of_nonneg k Mᵒᵈ _ _ _ _ _ _ hc ha
 #align smul_nonneg_of_nonpos_of_nonpos smul_nonneg_of_nonpos_of_nonpos
 

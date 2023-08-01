@@ -100,7 +100,7 @@ variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
 of `A` which squares to `0`.
 
 This isomorphism is named to match the very similar `Complex.lift`. -/
-@[simps!]
+@[simps! symm_apply]
 def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
   Equiv.trans
     (show { e : A // e * e = 0 } ≃ { f : R →ₗ[R] A // ∀ x y, f x * f y = 0 } from
@@ -110,6 +110,10 @@ def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
         refine' ⟨fun h x y => h.symm ▸ smul_zero _, fun h => by simpa using h 1 1⟩)
     TrivSqZeroExt.lift
 #align dual_number.lift DualNumber.lift
+
+@[simp]
+lemma lift_apply_apply (e : { e : A // e * e = 0 }) (x : R[ε]) :
+  lift e x = algebraMap R A (fst x) + snd x • e.val := rfl
 
 -- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0.
 -- @[simp] -- Porting note: simp can prove this
