@@ -24,28 +24,30 @@ and non-conditional independence.
 
 ## Main definitions
 
-* `iIndepSetsₖ`: independence of a family of sets of sets.
-  Variant for two sets of sets: `IndepSetsₖ`.
-* `iIndepₖ`: independence of a family of σ-algebras. Variant for two σ-algebras: `Indepₖ`.
-* `iIndepSetₖ`: independence of a family of sets. Variant for two sets: `IndepSetₖ`.
-* `iIndepFunₖ`: independence of a family of functions (random variables).
-  Variant for two functions: `IndepFunₖ`.
+* `ProbabilityTheory.kernel.iIndepSets`: independence of a family of sets of sets.
+  Variant for two sets of sets: `ProbabilityTheory.kernel.IndepSets`.
+* `ProbabilityTheory.kernel.iIndep`: independence of a family of σ-algebras. Variant for two
+  σ-algebras: `Indep`.
+* `ProbabilityTheory.kernel.iIndepSet`: independence of a family of sets. Variant for two sets:
+  `ProbabilityTheory.kernel.IndepSet`.
+* `ProbabilityTheory.kernel.iIndepFun`: independence of a family of functions (random variables).
+  Variant for two functions: `ProbabilityTheory.kernel.IndepFun`.
 
 See the file `Basic.lean` for a more detailed discussion of these definitions in the
 particular case of the usual independence notion.
 
 ## Main statements
 
-* `iIndepSetsₖ.iIndepₖ`: if π-systems are independent as sets of sets, then the
-  measurable space structures they generate are independent.
-* `IndepSetsₖ.Indepₖ`: variant with two π-systems.
+* `ProbabilityTheory.kernel.iIndepSets.iIndep`: if π-systems are independent as sets of sets,
+  then the measurable space structures they generate are independent.
+* `ProbabilityTheory.kernel.IndepSets.Indep`: variant with two π-systems.
 -/
 
 open MeasureTheory MeasurableSpace
 
 open scoped BigOperators MeasureTheory ENNReal
 
-namespace ProbabilityTheory
+namespace ProbabilityTheory.kernel
 
 variable {α Ω ι : Type _}
 
@@ -57,7 +59,7 @@ variable {_mα : MeasurableSpace α}
 a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `∀ᵐ a ∂μ, κ a (⋂ i in s, f i) = ∏ i in s, κ a (f i)`.
 It will be used for families of pi_systems. -/
-def iIndepSetsₖ {_mΩ : MeasurableSpace Ω}
+def iIndepSets {_mΩ : MeasurableSpace Ω}
     (π : ι → Set (Set Ω)) (κ : kernel α Ω) (μ : Measure α := by volume_tac) :
     Prop :=
   ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
@@ -65,51 +67,51 @@ def iIndepSetsₖ {_mΩ : MeasurableSpace Ω}
 
 /-- Two sets of sets `s₁, s₂` are independent with respect to a kernel `κ` and a measure `μ` if for
 any sets `t₁ ∈ s₁, t₂ ∈ s₂`, then `∀ᵐ a ∂μ, κ a (t₁ ∩ t₂) = κ a (t₁) * κ a (t₂)` -/
-def IndepSetsₖ {_mΩ : MeasurableSpace Ω}
+def IndepSets {_mΩ : MeasurableSpace Ω}
     (s1 s2 : Set (Set Ω)) (κ : kernel α Ω) (μ : Measure α := by volume_tac) : Prop :=
   ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (∀ᵐ a ∂μ, κ a (t1 ∩ t2) = κ a t1 * κ a t2)
 
 /-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
 kernel `κ` and a measure `μ` if the family of sets of measurable sets they define is independent. -/
-def iIndepₖ (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (κ : kernel α Ω)
+def iIndep (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (κ : kernel α Ω)
     (μ : Measure α := by volume_tac) : Prop :=
-  iIndepSetsₖ (fun x ↦ {s | MeasurableSet[m x] s}) κ μ
+  iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) κ μ
 
 /-- Two measurable space structures (or σ-algebras) `m₁, m₂` are independent with respect to a
 kernel `κ` and a measure `μ` if for any sets `t₁ ∈ m₁, t₂ ∈ m₂`,
 `∀ᵐ a ∂μ, κ a (t₁ ∩ t₂) = κ a (t₁) * κ a (t₂)` -/
-def Indepₖ (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (κ : kernel α Ω)
+def Indep (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (κ : kernel α Ω)
     (μ : Measure α := by volume_tac) : Prop :=
-  IndepSetsₖ {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} κ μ
+  IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} κ μ
 
 /-- A family of sets is independent if the family of measurable space structures they generate is
 independent. For a set `s`, the generated measurable space has measurable sets `∅, s, sᶜ, univ`. -/
-def iIndepSetₖ {_mΩ : MeasurableSpace Ω} (s : ι → Set Ω) (κ : kernel α Ω)
+def iIndepSet {_mΩ : MeasurableSpace Ω} (s : ι → Set Ω) (κ : kernel α Ω)
   (μ : Measure α := by volume_tac) : Prop :=
-iIndepₖ (fun i ↦ generateFrom {s i}) κ μ
+iIndep (fun i ↦ generateFrom {s i}) κ μ
 
 /-- Two sets are independent if the two measurable space structures they generate are independent.
 For a set `s`, the generated measurable space structure has measurable sets `∅, s, sᶜ, univ`. -/
-def IndepSetₖ {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (κ : kernel α Ω)
+def IndepSet {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (κ : kernel α Ω)
   (μ : Measure α := by volume_tac) : Prop :=
-Indepₖ (generateFrom {s}) (generateFrom {t}) κ μ
+Indep (generateFrom {s}) (generateFrom {t}) κ μ
 
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
 spaces, each with a measurable space structure, is independent if the family of measurable space
 structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
 space structure `m`, the generated measurable space structure is `measurable_space.comap g m`. -/
-def iIndepFunₖ {_mΩ : MeasurableSpace Ω} {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
+def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
   (f : ∀ x : ι, Ω → β x) (κ : kernel α Ω)
   (μ : Measure α := by volume_tac) : Prop :=
-iIndepₖ (fun x ↦ MeasurableSpace.comap (f x) (m x)) κ μ
+iIndep (fun x ↦ MeasurableSpace.comap (f x) (m x)) κ μ
 
 /-- Two functions are independent if the two measurable space structures they generate are
 independent. For a function `f` with codomain having measurable space structure `m`, the generated
 measurable space structure is `MeasurableSpace.comap f m`. -/
-def IndepFunₖ {β γ} {_mΩ : MeasurableSpace Ω} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
+def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
   (f : Ω → β) (g : Ω → γ) (κ : kernel α Ω)
   (μ : Measure α := by volume_tac) : Prop :=
-Indepₖ (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) κ μ
+Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) κ μ
 
 end Definitions
 
@@ -118,22 +120,22 @@ section Indep
 variable {_mα : MeasurableSpace α}
 
 @[symm]
-theorem IndepSetsₖ.symm {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α}
-    {s₁ s₂ : Set (Set Ω)} (h : IndepSetsₖ s₁ s₂ κ μ) :
-    IndepSetsₖ s₂ s₁ κ μ := by
+theorem IndepSets.symm {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α}
+    {s₁ s₂ : Set (Set Ω)} (h : IndepSets s₁ s₂ κ μ) :
+    IndepSets s₂ s₁ κ μ := by
   intros t1 t2 ht1 ht2
   filter_upwards [h t2 t1 ht2 ht1] with a ha
   rwa [Set.inter_comm, mul_comm]
 
 @[symm]
-theorem Indepₖ.symm {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω}
-    {μ : Measure α} (h : Indepₖ m₁ m₂ κ μ) :
-    Indepₖ m₂ m₁ κ μ :=
-  IndepSetsₖ.symm h
+theorem Indep.symm {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω}
+    {μ : Measure α} (h : Indep m₁ m₂ κ μ) :
+    Indep m₂ m₁ κ μ :=
+  IndepSets.symm h
 
-theorem indepₖ_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
+theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] :
-    Indepₖ m' ⊥ κ μ := by
+    Indep m' ⊥ κ μ := by
   intros s t _ ht
   rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
   refine Filter.eventually_of_forall (fun a ↦ ?_)
@@ -141,110 +143,110 @@ theorem indepₖ_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
   · rw [ht, Set.inter_empty, measure_empty, MulZeroClass.mul_zero]
   · rw [ht, Set.inter_univ, measure_univ, mul_one]
 
-theorem indepₖ_bot_left (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
+theorem indep_bot_left (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] :
-    Indepₖ ⊥ m' κ μ := (indepₖ_bot_right m').symm
+    Indep ⊥ m' κ μ := (indep_bot_right m').symm
 
-theorem indepSetₖ_empty_right {_mΩ : MeasurableSpace Ω}
+theorem indepSet_empty_right {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] (s : Set Ω) :
-    IndepSetₖ s ∅ κ μ := by
-  simp only [IndepSetₖ, generateFrom_singleton_empty];
-  exact indepₖ_bot_right _
+    IndepSet s ∅ κ μ := by
+  simp only [IndepSet, generateFrom_singleton_empty];
+  exact indep_bot_right _
 
-theorem indepSetₖ_empty_left {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω}
+theorem indepSet_empty_left {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω}
     {μ : Measure α} [IsMarkovKernel κ] (s : Set Ω) :
-    IndepSetₖ ∅ s κ μ :=
-  (indepSetₖ_empty_right s).symm
+    IndepSet ∅ s κ μ :=
+  (indepSet_empty_right s).symm
 
-theorem indepSetsₖ_of_indepSetsₖ_of_le_left {s₁ s₂ s₃ : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (h_indep : IndepSetsₖ s₁ s₂ κ μ) (h31 : s₃ ⊆ s₁) :
-    IndepSetsₖ s₃ s₂ κ μ :=
+theorem indepSets_of_indepSets_of_le_left {s₁ s₂ s₃ : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (h_indep : IndepSets s₁ s₂ κ μ) (h31 : s₃ ⊆ s₁) :
+    IndepSets s₃ s₂ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 (Set.mem_of_subset_of_mem h31 ht1) ht2
 
-theorem indepSetsₖ_of_indepSetsₖ_of_le_right {s₁ s₂ s₃ : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (h_indep : IndepSetsₖ s₁ s₂ κ μ) (h32 : s₃ ⊆ s₂) :
-    IndepSetsₖ s₁ s₃ κ μ :=
+theorem indepSets_of_indepSets_of_le_right {s₁ s₂ s₃ : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (h_indep : IndepSets s₁ s₂ κ μ) (h32 : s₃ ⊆ s₂) :
+    IndepSets s₁ s₃ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 ht1 (Set.mem_of_subset_of_mem h32 ht2)
 
-theorem indepₖ_of_indepₖ_of_le_left {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (h_indep : Indepₖ m₁ m₂ κ μ) (h31 : m₃ ≤ m₁) :
-    Indepₖ m₃ m₂ κ μ :=
+theorem indep_of_indep_of_le_left {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ) (h31 : m₃ ≤ m₁) :
+    Indep m₃ m₂ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 (h31 _ ht1) ht2
 
-theorem indepₖ_of_indepₖ_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (h_indep : Indepₖ m₁ m₂ κ μ) (h32 : m₃ ≤ m₂) :
-    Indepₖ m₁ m₃ κ μ :=
+theorem indep_of_indep_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ) (h32 : m₃ ≤ m₂) :
+    Indep m₁ m₃ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 ht1 (h32 _ ht2)
 
-theorem IndepSetsₖ.union {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+theorem IndepSets.union {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α}
-    (h₁ : IndepSetsₖ s₁ s' κ μ) (h₂ : IndepSetsₖ s₂ s' κ μ) :
-    IndepSetsₖ (s₁ ∪ s₂) s' κ μ := by
+    (h₁ : IndepSets s₁ s' κ μ) (h₂ : IndepSets s₂ s' κ μ) :
+    IndepSets (s₁ ∪ s₂) s' κ μ := by
   intro t1 t2 ht1 ht2
   cases' (Set.mem_union _ _ _).mp ht1 with ht1₁ ht1₂
   · exact h₁ t1 t2 ht1₁ ht2
   · exact h₂ t1 t2 ht1₂ ht2
 
 @[simp]
-theorem IndepSetsₖ.union_iff {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+theorem IndepSets.union_iff {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} :
-    IndepSetsₖ (s₁ ∪ s₂) s' κ μ ↔ IndepSetsₖ s₁ s' κ μ ∧ IndepSetsₖ s₂ s' κ μ :=
+    IndepSets (s₁ ∪ s₂) s' κ μ ↔ IndepSets s₁ s' κ μ ∧ IndepSets s₂ s' κ μ :=
   ⟨fun h =>
-    ⟨indepSetsₖ_of_indepSetsₖ_of_le_left h (Set.subset_union_left s₁ s₂),
-      indepSetsₖ_of_indepSetsₖ_of_le_left h (Set.subset_union_right s₁ s₂)⟩,
-    fun h => IndepSetsₖ.union h.left h.right⟩
+    ⟨indepSets_of_indepSets_of_le_left h (Set.subset_union_left s₁ s₂),
+      indepSets_of_indepSets_of_le_left h (Set.subset_union_right s₁ s₂)⟩,
+    fun h => IndepSets.union h.left h.right⟩
 
-theorem IndepSetsₖ.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (hyp : ∀ n, IndepSetsₖ (s n) s' κ μ) :
-    IndepSetsₖ (⋃ n, s n) s' κ μ := by
+theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (hyp : ∀ n, IndepSets (s n) s' κ μ) :
+    IndepSets (⋃ n, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   rw [Set.mem_iUnion] at ht1
   cases' ht1 with n ht1
   exact hyp n t1 t2 ht1 ht2
 
-theorem IndepSetsₖ.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} {u : Set ι} (hyp : ∀ n ∈ u, IndepSetsₖ (s n) s' κ μ) :
-    IndepSetsₖ (⋃ n ∈ u, s n) s' κ μ := by
+theorem IndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} {u : Set ι} (hyp : ∀ n ∈ u, IndepSets (s n) s' κ μ) :
+    IndepSets (⋃ n ∈ u, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   simp_rw [Set.mem_iUnion] at ht1
   rcases ht1 with ⟨n, hpn, ht1⟩
   exact hyp n hpn t1 t2 ht1 ht2
 
-theorem IndepSetsₖ.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (h₁ : IndepSetsₖ s₁ s' κ μ) :
-    IndepSetsₖ (s₁ ∩ s₂) s' κ μ :=
+theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (h₁ : IndepSets s₁ s' κ μ) :
+    IndepSets (s₁ ∩ s₂) s' κ μ :=
   fun t1 t2 ht1 ht2 => h₁ t1 t2 ((Set.mem_inter_iff _ _ _).mp ht1).left ht2
 
-theorem IndepSetsₖ.iInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (h : ∃ n, IndepSetsₖ (s n) s' κ μ) :
-    IndepSetsₖ (⋂ n, s n) s' κ μ := by
+theorem IndepSets.iInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (h : ∃ n, IndepSets (s n) s' κ μ) :
+    IndepSets (⋂ n, s n) s' κ μ := by
   intro t1 t2 ht1 ht2; cases' h with n h; exact h t1 t2 (Set.mem_iInter.mp ht1 n) ht2
 
-theorem IndepSetsₖ.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} {u : Set ι} (h : ∃ n ∈ u, IndepSetsₖ (s n) s' κ μ) :
-    IndepSetsₖ (⋂ n ∈ u, s n) s' κ μ := by
+theorem IndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} {u : Set ι} (h : ∃ n ∈ u, IndepSets (s n) s' κ μ) :
+    IndepSets (⋂ n ∈ u, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   rcases h with ⟨n, hn, h⟩
   exact h t1 t2 (Set.biInter_subset_of_mem hn ht1) ht2
 
-theorem indepSetsₖ_singleton_iff {s t : Set Ω} {_mΩ : MeasurableSpace Ω}
+theorem indepSets_singleton_iff {s t : Set Ω} {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} :
-    IndepSetsₖ {s} {t} κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t :=
+    IndepSets {s} {t} κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t :=
   ⟨fun h ↦ h s t rfl rfl, fun h s1 t1 hs1 ht1 ↦ by
     rwa [Set.mem_singleton_iff.mp hs1, Set.mem_singleton_iff.mp ht1]⟩
 
 end Indep
 
-/-! ### Deducing `Indepₖ` from `iIndepₖ` -/
+/-! ### Deducing `Indep` from `iIndep` -/
 
 
 section FromiIndepToIndep
 
 variable {_mα : MeasurableSpace α}
 
-theorem iIndepSetsₖ.indepSetsₖ {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} (h_indep : iIndepSetsₖ s κ μ) {i j : ι} (hij : i ≠ j) :
-    IndepSetsₖ (s i) (s j) κ μ := by
+theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} (h_indep : iIndepSets s κ μ) {i j : ι} (hij : i ≠ j) :
+    IndepSets (s i) (s j) κ μ := by
   classical
   intro t₁ t₂ ht₁ ht₂
   have hf_m : ∀ x : ι, x ∈ ({i, j} : Finset ι) → ite (x = i) t₁ t₂ ∈ s x := by
@@ -267,17 +269,17 @@ theorem iIndepSetsₖ.indepSetsₖ {s : ι → Set (Set Ω)} {_mΩ : MeasurableS
   nth_rw 4 [h2]
   rw [← h_inter, ← h_prod, h_indep']
 
-theorem iIndepₖ.indepₖ {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α}
-    (h_indep : iIndepₖ m κ μ) {i j : ι} (hij : i ≠ j) : Indepₖ (m i) (m j) κ μ := by
-  change IndepSetsₖ ((fun x => MeasurableSet[m x]) i) ((fun x => MeasurableSet[m x]) j) κ μ
-  exact iIndepSetsₖ.indepSetsₖ h_indep hij
+    (h_indep : iIndep m κ μ) {i j : ι} (hij : i ≠ j) : Indep (m i) (m j) κ μ := by
+  change IndepSets ((fun x => MeasurableSet[m x]) i) ((fun x => MeasurableSet[m x]) j) κ μ
+  exact iIndepSets.indepSets h_indep hij
 
-theorem iIndepFunₖ.indepFunₖ {_mΩ : MeasurableSpace Ω}
+theorem iIndepFun.indepFun {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} {β : ι → Type _}
-    {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} (hf_Indepₖ : iIndepFunₖ m f κ μ) {i j : ι}
-    (hij : i ≠ j) : IndepFunₖ (f i) (f j) κ μ :=
-  hf_Indepₖ.indepₖ hij
+    {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun m f κ μ) {i j : ι}
+    (hij : i ≠ j) : IndepFun (f i) (f j) κ μ :=
+  hf_Indep.indep hij
 
 end FromiIndepToIndep
 
@@ -294,18 +296,18 @@ section FromMeasurableSpacesToSetsOfSets
 
 variable {_mα : MeasurableSpace α}
 
-theorem iIndepₖ.iIndepSetsₖ {_mΩ : MeasurableSpace Ω}
+theorem iIndep.iIndepSets {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} {m : ι → MeasurableSpace Ω}
-    {s : ι → Set (Set Ω)} (hms : ∀ n, m n = generateFrom (s n)) (h_indep : iIndepₖ m κ μ) :
-    iIndepSetsₖ s κ μ :=
+    {s : ι → Set (Set Ω)} (hms : ∀ n, m n = generateFrom (s n)) (h_indep : iIndep m κ μ) :
+    iIndepSets s κ μ :=
   fun S f hfs =>
   h_indep S fun x hxS =>
     ((hms x).symm ▸ measurableSet_generateFrom (hfs x hxS) : MeasurableSet[m x] (f x))
 
-theorem Indepₖ.indepSetsₖ {_mΩ : MeasurableSpace Ω}
+theorem Indep.indepSets {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} {s1 s2 : Set (Set Ω)}
-    (h_indep : Indepₖ (generateFrom s1) (generateFrom s2) κ μ) :
-    IndepSetsₖ s1 s2 κ μ :=
+    (h_indep : Indep (generateFrom s1) (generateFrom s2) κ μ) :
+    IndepSets s1 s2 κ μ :=
   fun t1 t2 ht1 ht2 =>
   h_indep t1 t2 (measurableSet_generateFrom ht1) (measurableSet_generateFrom ht2)
 
@@ -317,9 +319,9 @@ section FromPiSystemsToMeasurableSpaces
 
 variable {_mα : MeasurableSpace α}
 
-theorem IndepSetsₖ.indepₖ_aux {m₂ m : MeasurableSpace Ω}
+theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] {p1 p2 : Set (Set Ω)} (h2 : m₂ ≤ m)
-    (hp2 : IsPiSystem p2) (hpm2 : m₂ = generateFrom p2) (hyp : IndepSetsₖ p1 p2 κ μ) {t1 t2 : Set Ω}
+    (hp2 : IsPiSystem p2) (hpm2 : m₂ = generateFrom p2) (hyp : IndepSets p1 p2 κ μ) {t1 t2 : Set Ω}
     (ht1 : t1 ∈ p1) (ht1m : MeasurableSet[m] t1) (ht2m : MeasurableSet[m₂] t2) :
     ∀ᵐ a ∂μ, κ a (t1 ∩ t2) = κ a t1 * κ a t2 := by
   refine @induction_on_inter _ (fun t ↦ ∀ᵐ a ∂μ, κ a (t1 ∩ t) = κ a t1 * κ a t) _
@@ -349,11 +351,11 @@ theorem IndepSetsₖ.indepₖ_aux {m₂ m : MeasurableSpace Ω}
     · exact fun i ↦ ht1m.inter (h2 _ (hf_meas i))
 
 /-- The measurable space structures generated by independent pi-systems are independent. -/
-theorem IndepSetsₖ.indepₖ {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α}
+theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α}
     [IsMarkovKernel κ] {p1 p2 : Set (Set Ω)} (h1 : m1 ≤ m) (h2 : m2 ≤ m) (hp1 : IsPiSystem p1)
     (hp2 : IsPiSystem p2) (hpm1 : m1 = generateFrom p1) (hpm2 : m2 = generateFrom p2)
-    (hyp : IndepSetsₖ p1 p2 κ μ) :
-    Indepₖ m1 m2 κ μ := by
+    (hyp : IndepSets p1 p2 κ μ) :
+    Indep m1 m2 κ μ := by
   intros t1 t2 ht1 ht2
   refine @induction_on_inter _ (fun t ↦ ∀ᵐ (a : α) ∂μ, κ a (t ∩ t2) = κ a t * κ a t2) _ m1 hpm1 hp1
     ?_ ?_ ?_ ?_ _ ht1
@@ -364,7 +366,7 @@ theorem IndepSetsₖ.indepₖ {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω}
       refine h1 _ ?_
       rw [hpm1]
       exact measurableSet_generateFrom ht_mem_p1
-    exact IndepSetsₖ.indepₖ_aux h2 hp2 hpm2 hyp ht_mem_p1 ht1 ht2
+    exact IndepSets.indep_aux h2 hp2 hpm2 hyp ht_mem_p1 ht1 ht2
   · intros t ht h
     filter_upwards [h] with a ha
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
@@ -387,18 +389,18 @@ theorem IndepSetsₖ.indepₖ {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω}
       exact Disjoint.inter_left _ (Disjoint.inter_right _ (hf_disj hij))
     · exact fun i ↦ (h2 _ ht2).inter (h1 _ (hf_meas i))
 
-theorem IndepSetsₖ.indepₖ' {_mΩ : MeasurableSpace Ω}
+theorem IndepSets.indep' {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ]
     {p1 p2 : Set (Set Ω)} (hp1m : ∀ s ∈ p1, MeasurableSet s) (hp2m : ∀ s ∈ p2, MeasurableSet s)
-    (hp1 : IsPiSystem p1) (hp2 : IsPiSystem p2) (hyp : IndepSetsₖ p1 p2 κ μ) :
-    Indepₖ (generateFrom p1) (generateFrom p2) κ μ :=
-  hyp.indepₖ (generateFrom_le hp1m) (generateFrom_le hp2m) hp1 hp2 rfl rfl
+    (hp1 : IsPiSystem p1) (hp2 : IsPiSystem p2) (hyp : IndepSets p1 p2 κ μ) :
+    Indep (generateFrom p1) (generateFrom p2) κ μ :=
+  hyp.indep (generateFrom_le hp1m) (generateFrom_le hp2m) hp1 hp2 rfl rfl
 
 variable {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α}
 
-theorem indepSetsₖ_piiUnionInter_of_disjoint [IsMarkovKernel κ] {s : ι → Set (Set Ω)}
-    {S T : Set ι} (h_indep : iIndepSetsₖ s κ μ) (hST : Disjoint S T) :
-    IndepSetsₖ (piiUnionInter s S) (piiUnionInter s T) κ μ := by
+theorem indepSets_piiUnionInter_of_disjoint [IsMarkovKernel κ] {s : ι → Set (Set Ω)}
+    {S T : Set ι} (h_indep : iIndepSets s κ μ) (hST : Disjoint S T) :
+    IndepSets (piiUnionInter s S) (piiUnionInter s T) κ μ := by
   rintro t1 t2 ⟨p1, hp1, f1, ht1_m, ht1_eq⟩ ⟨p2, hp2, f2, ht2_m, ht2_eq⟩
   classical
   let g i := ite (i ∈ p1) (f1 i) Set.univ ∩ ite (i ∈ p2) (f2 i) Set.univ
@@ -435,35 +437,35 @@ theorem indepSetsₖ_piiUnionInter_of_disjoint [IsMarkovKernel κ] {s : ι → S
     Finset.prod_ite_mem (p1 ∪ p2) p2 (fun x => κ a (f2 x)), Finset.union_inter_cancel_right, ht1_eq,
       ← ha1, ht2_eq, ← ha2]
 
-theorem iIndepSetₖ.indepₖ_generateFrom_of_disjoint [IsMarkovKernel κ] {s : ι → Set Ω}
-    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSetₖ s κ μ) (S T : Set ι) (hST : Disjoint S T) :
-    Indepₖ (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) κ μ := by
+theorem iIndepSet.indep_generateFrom_of_disjoint [IsMarkovKernel κ] {s : ι → Set Ω}
+    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (S T : Set ι) (hST : Disjoint S T) :
+    Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) κ μ := by
   rw [← generateFrom_piiUnionInter_singleton_left, ← generateFrom_piiUnionInter_singleton_left]
   refine'
-    IndepSetsₖ.indepₖ'
+    IndepSets.indep'
       (fun t ht => generateFrom_piiUnionInter_le _ _ _ _ (measurableSet_generateFrom ht))
       (fun t ht => generateFrom_piiUnionInter_le _ _ _ _ (measurableSet_generateFrom ht)) _ _ _
   · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
   · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
-  · classical exact indepSetsₖ_piiUnionInter_of_disjoint (iIndepₖ.iIndepSetsₖ (fun n => rfl) hs) hST
+  · classical exact indepSets_piiUnionInter_of_disjoint (iIndep.iIndepSets (fun n => rfl) hs) hST
 
-theorem indepₖ_iSup_of_disjoint [IsMarkovKernel κ] {m : ι → MeasurableSpace Ω}
-    (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndepₖ m κ μ) {S T : Set ι} (hST : Disjoint S T) :
-    Indepₖ (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) κ μ := by
+theorem indep_iSup_of_disjoint [IsMarkovKernel κ] {m : ι → MeasurableSpace Ω}
+    (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {S T : Set ι} (hST : Disjoint S T) :
+    Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) κ μ := by
   refine'
-    IndepSetsₖ.indepₖ (iSup₂_le fun i _ => h_le i) (iSup₂_le fun i _ => h_le i) _ _
+    IndepSets.indep (iSup₂_le fun i _ => h_le i) (iSup₂_le fun i _ => h_le i) _ _
       (generateFrom_piiUnionInter_measurableSet m S).symm
       (generateFrom_piiUnionInter_measurableSet m T).symm _
   · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
   · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
-  · classical exact indepSetsₖ_piiUnionInter_of_disjoint h_indep hST
+  · classical exact indepSets_piiUnionInter_of_disjoint h_indep hST
 
-theorem indepₖ_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : MeasurableSpace Ω}
-    {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] (h_indep : ∀ i, Indepₖ (m i) m' κ μ)
+theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] (h_indep : ∀ i, Indep (m i) m' κ μ)
     (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0) (hm : Directed (· ≤ ·) m) :
-    Indepₖ (⨆ i, m i) m' κ μ := by
+    Indep (⨆ i, m i) m' κ μ := by
   let p : ι → Set (Set Ω) := fun n => { t | MeasurableSet[m n] t }
   have hp : ∀ n, IsPiSystem (p n) := fun n => @isPiSystem_measurableSet Ω (m n)
   have h_gen_n : ∀ n, m n = generateFrom (p n) := fun n =>
@@ -473,52 +475,52 @@ theorem indepₖ_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0
   have hp'_pi : IsPiSystem p' := @isPiSystem_measurableSet Ω m'
   have h_gen' : m' = generateFrom p' := (@generateFrom_measurableSet Ω m').symm
   -- the π-systems defined are independent
-  have h_pi_system_indep : IndepSetsₖ (⋃ n, p n) p' κ μ := by
-    refine IndepSetsₖ.iUnion ?_
+  have h_pi_system_indep : IndepSets (⋃ n, p n) p' κ μ := by
+    refine IndepSets.iUnion ?_
     conv at h_indep =>
       intro i
       rw [h_gen_n i, h_gen']
-    exact fun n => (h_indep n).indepSetsₖ
+    exact fun n => (h_indep n).indepSets
   -- now go from π-systems to σ-algebras
-  refine' IndepSetsₖ.indepₖ (iSup_le h_le) h_le' hp_supr_pi hp'_pi _ h_gen' h_pi_system_indep
+  refine' IndepSets.indep (iSup_le h_le) h_le' hp_supr_pi hp'_pi _ h_gen' h_pi_system_indep
   exact (generateFrom_iUnion_measurableSet _).symm
 
-theorem iIndepSetₖ.indepₖ_generateFrom_lt [Preorder ι] [IsMarkovKernel κ] {s : ι → Set Ω}
-    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSetₖ s κ μ) (i : ι) :
-    Indepₖ (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) κ μ := by
-  convert iIndepSetₖ.indepₖ_generateFrom_of_disjoint hsm hs {i} { j | j < i }
+theorem iIndepSet.indep_generateFrom_lt [Preorder ι] [IsMarkovKernel κ] {s : ι → Set Ω}
+    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) :
+    Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) κ μ := by
+  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {i} { j | j < i }
     (Set.disjoint_singleton_left.mpr (lt_irrefl _))
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
 
-theorem iIndepSetₖ.indepₖ_generateFrom_le [LinearOrder ι] [IsMarkovKernel κ] {s : ι → Set Ω}
-    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSetₖ s κ μ) (i : ι) {k : ι} (hk : i < k) :
-    Indepₖ (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
-  convert iIndepSetₖ.indepₖ_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
+theorem iIndepSet.indep_generateFrom_le [LinearOrder ι] [IsMarkovKernel κ] {s : ι → Set Ω}
+    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
+    Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
+  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
       (Set.disjoint_singleton_left.mpr hk.not_le)
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
 
-theorem iIndepSetₖ.indepₖ_generateFrom_le_nat [IsMarkovKernel κ] {s : ℕ → Set Ω}
-    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSetₖ s κ μ) (n : ℕ) :
-    Indepₖ (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) κ μ :=
-  iIndepSetₖ.indepₖ_generateFrom_le hsm hs _ n.lt_succ_self
+theorem iIndepSet.indep_generateFrom_le_nat [IsMarkovKernel κ] {s : ℕ → Set Ω}
+    (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (n : ℕ) :
+    Indep (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) κ μ :=
+  iIndepSet.indep_generateFrom_le hsm hs _ n.lt_succ_self
 
-theorem indepₖ_iSup_of_monotone [SemilatticeSup ι] {Ω} {m : ι → MeasurableSpace Ω}
+theorem indep_iSup_of_monotone [SemilatticeSup ι] {Ω} {m : ι → MeasurableSpace Ω}
     {m' m0 : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ]
-    (h_indep : ∀ i, Indepₖ (m i) m' κ μ) (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0)
+    (h_indep : ∀ i, Indep (m i) m' κ μ) (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0)
     (hm : Monotone m) :
-    Indepₖ (⨆ i, m i) m' κ μ :=
-  indepₖ_iSup_of_directed_le h_indep h_le h_le' (Monotone.directed_le hm)
+    Indep (⨆ i, m i) m' κ μ :=
+  indep_iSup_of_directed_le h_indep h_le h_le' (Monotone.directed_le hm)
 
-theorem indepₖ_iSup_of_antitone [SemilatticeInf ι] {Ω} {m : ι → MeasurableSpace Ω}
+theorem indep_iSup_of_antitone [SemilatticeInf ι] {Ω} {m : ι → MeasurableSpace Ω}
     {m' m0 : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ]
-    (h_indep : ∀ i, Indepₖ (m i) m' κ μ) (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0)
+    (h_indep : ∀ i, Indep (m i) m' κ μ) (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0)
     (hm : Antitone m) :
-    Indepₖ (⨆ i, m i) m' κ μ :=
-  indepₖ_iSup_of_directed_le h_indep h_le h_le' (directed_of_inf hm)
+    Indep (⨆ i, m i) m' κ μ :=
+  indep_iSup_of_directed_le h_indep h_le h_le' (directed_of_inf hm)
 
-theorem iIndepSetsₖ.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
-    (hp_ind : iIndepSetsₖ π κ μ) (haS : a ∉ S) :
-    IndepSetsₖ (piiUnionInter π S) (π a) κ μ := by
+theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
+    (hp_ind : iIndepSets π κ μ) (haS : a ∉ S) :
+    IndepSets (piiUnionInter π S) (π a) κ μ := by
   rintro t1 t2 ⟨s, hs_mem, ft1, hft1_mem, ht1_eq⟩ ht2_mem_pia
   rw [Finset.coe_subset] at hs_mem
   classical
@@ -555,10 +557,10 @@ theorem iIndepSetsₖ.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : �
   simp only [ite_true]
 
 /-- The measurable space structures generated by independent pi-systems are independent. -/
-theorem iIndepSetsₖ.iIndepₖ [IsMarkovKernel κ] (m : ι → MeasurableSpace Ω)
+theorem iIndepSets.iIndep [IsMarkovKernel κ] (m : ι → MeasurableSpace Ω)
     (h_le : ∀ i, m i ≤ _mΩ) (π : ι → Set (Set Ω)) (h_pi : ∀ n, IsPiSystem (π n))
-    (h_generate : ∀ i, m i = generateFrom (π i)) (h_ind : iIndepSetsₖ π κ μ) :
-    iIndepₖ m κ μ := by
+    (h_generate : ∀ i, m i = generateFrom (π i)) (h_ind : iIndepSets π κ μ) :
+    iIndep m κ μ := by
   classical
   intro s f
   refine Finset.induction ?_ ?_ s
@@ -569,12 +571,12 @@ theorem iIndepSetsₖ.iIndepₖ [IsMarkovKernel κ] (m : ι → MeasurableSpace 
     have hf_m_S : ∀ x ∈ S, MeasurableSet[m x] (f x) := fun x hx => hf_m x (by simp [hx])
     let p := piiUnionInter π S
     set m_p := generateFrom p with hS_eq_generate
-    have h_indep : Indepₖ m_p (m a) κ μ := by
+    have h_indep : Indep m_p (m a) κ μ := by
       have hp : IsPiSystem p := isPiSystem_piiUnionInter π h_pi S
       have h_le' : ∀ i, generateFrom (π i) ≤ _mΩ := fun i ↦ (h_generate i).symm.trans_le (h_le i)
       have hm_p : m_p ≤ _mΩ := generateFrom_piiUnionInter_le π h_le' S
-      exact IndepSetsₖ.indepₖ hm_p (h_le a) hp (h_pi a) hS_eq_generate (h_generate a)
-        (iIndepSetsₖ.piiUnionInter_of_not_mem h_ind ha_notin_S)
+      exact IndepSets.indep hm_p (h_le a) hp (h_pi a) hS_eq_generate (h_generate a)
+        (iIndepSets.piiUnionInter_of_not_mem h_ind ha_notin_S)
     have h := h_indep.symm (f a) (⋂ n ∈ S, f n) (hf_m a (Finset.mem_insert_self a S)) ?_
     · filter_upwards [h_rec hf_m_S, h] with a' ha' h'
       rwa [Finset.set_biInter_insert, Finset.prod_insert ha_notin_S, ← ha']
@@ -592,42 +594,42 @@ section IndepSet
 
 /-! ### Independence of measurable sets
 
-We prove the following equivalences on `IndepSetₖ`, for measurable sets `s, t`.
-* `IndepSetₖ s t κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t`,
-* `IndepSetₖ s t κ μ ↔ IndepSetsₖ {s} {t} κ μ`.
+We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
+* `IndepSet s t κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t`,
+* `IndepSet s t κ μ ↔ IndepSets {s} {t} κ μ`.
 -/
 
 
 variable {s t : Set Ω} (S T : Set (Set Ω)) {_mα : MeasurableSpace α}
 
-theorem indepSetₖ_iff_indepSetsₖ_singleton {m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
+theorem indepSet_iff_indepSets_singleton {m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (κ : kernel α Ω) (μ : Measure α)
     [IsMarkovKernel κ] :
-    IndepSetₖ s t κ μ ↔ IndepSetsₖ {s} {t} κ μ :=
-  ⟨Indepₖ.indepSetsₖ, fun h =>
-    IndepSetsₖ.indepₖ
+    IndepSet s t κ μ ↔ IndepSets {s} {t} κ μ :=
+  ⟨Indep.indepSets, fun h =>
+    IndepSets.indep
       (generateFrom_le fun u hu => by rwa [Set.mem_singleton_iff.mp hu])
       (generateFrom_le fun u hu => by rwa [Set.mem_singleton_iff.mp hu])
       (IsPiSystem.singleton s) (IsPiSystem.singleton t) rfl rfl h⟩
 
-theorem indepSetₖ_iff_measure_inter_eq_mul {_m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
+theorem indepSet_iff_measure_inter_eq_mul {_m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (κ : kernel α Ω) (μ : Measure α)
     [IsMarkovKernel κ] :
-    IndepSetₖ s t κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t :=
-  (indepSetₖ_iff_indepSetsₖ_singleton hs_meas ht_meas κ μ).trans indepSetsₖ_singleton_iff
+    IndepSet s t κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t :=
+  (indepSet_iff_indepSets_singleton hs_meas ht_meas κ μ).trans indepSets_singleton_iff
 
-theorem IndepSetsₖ.indepSetₖ_of_mem {_m0 : MeasurableSpace Ω} (hs : s ∈ S) (ht : t ∈ T)
+theorem IndepSets.indepSet_of_mem {_m0 : MeasurableSpace Ω} (hs : s ∈ S) (ht : t ∈ T)
     (hs_meas : MeasurableSet s) (ht_meas : MeasurableSet t)
     (κ : kernel α Ω) (μ : Measure α) [IsMarkovKernel κ]
-    (h_indep : IndepSetsₖ S T κ μ) :
-    IndepSetₖ s t κ μ :=
-  (indepSetₖ_iff_measure_inter_eq_mul hs_meas ht_meas κ μ).mpr (h_indep s t hs ht)
+    (h_indep : IndepSets S T κ μ) :
+    IndepSet s t κ μ :=
+  (indepSet_iff_measure_inter_eq_mul hs_meas ht_meas κ μ).mpr (h_indep s t hs ht)
 
-theorem Indepₖ.indepSetₖ_of_measurableSet {m₁ m₂ m0 : MeasurableSpace Ω} {κ : kernel α Ω}
+theorem Indep.indepSet_of_measurableSet {m₁ m₂ m0 : MeasurableSpace Ω} {κ : kernel α Ω}
     {μ : Measure α}
-    (h_indep : Indepₖ m₁ m₂ κ μ) {s t : Set Ω} (hs : MeasurableSet[m₁] s)
+    (h_indep : Indep m₁ m₂ κ μ) {s t : Set Ω} (hs : MeasurableSet[m₁] s)
     (ht : MeasurableSet[m₂] t) :
-    IndepSetₖ s t κ μ := by
+    IndepSet s t κ μ := by
   refine fun s' t' hs' ht' => h_indep s' t' ?_ ?_
   · refine @generateFrom_induction _ (fun u => MeasurableSet[m₁] u) {s} ?_ ?_ ?_ ?_ _ hs'
     · simp only [Set.mem_singleton_iff, forall_eq, hs]
@@ -640,10 +642,10 @@ theorem Indepₖ.indepSetₖ_of_measurableSet {m₁ m₂ m0 : MeasurableSpace Ω
     · exact fun u hu => hu.compl
     · exact fun f hf => MeasurableSet.iUnion hf
 
-theorem indepₖ_iff_forall_indepSetₖ (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
+theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (κ : kernel α Ω) (μ : Measure α) :
-    Indepₖ m₁ m₂ κ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSetₖ s t κ μ :=
-  ⟨fun h => fun _s _t hs ht => h.indepSetₖ_of_measurableSet hs ht, fun h s t hs ht =>
+    Indep m₁ m₂ κ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t κ μ :=
+  ⟨fun h => fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
     h s t hs ht s t (measurableSet_generateFrom (Set.mem_singleton s))
       (measurableSet_generateFrom (Set.mem_singleton t))⟩
 
@@ -659,18 +661,18 @@ section IndepFun
 variable {β β' γ γ' : Type _} {_mα : MeasurableSpace α} {_mΩ : MeasurableSpace Ω}
   {κ : kernel α Ω} {μ : Measure α} {f : Ω → β} {g : Ω → β'}
 
-theorem indepFunₖ_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
+theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
     {mβ' : MeasurableSpace β'} :
-    IndepFunₖ f g κ μ ↔
+    IndepFun f g κ μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t
         → ∀ᵐ a ∂μ, κ a (f ⁻¹' s ∩ g ⁻¹' t) = κ a (f ⁻¹' s) * κ a (g ⁻¹' t) := by
   constructor <;> intro h
   · refine' fun s t hs ht => h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
   · rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩; exact h s t hs ht
 
-theorem iIndepFunₖ_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι → Type _}
+theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι → Type _}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) :
-    iIndepFunₖ m f κ μ ↔
+    iIndepFun m f κ μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
         ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, (f i) ⁻¹' (sets i)) = ∏ i in S, κ a ((f i) ⁻¹' (sets i)) := by
   refine' ⟨fun h S sets h_meas => h _ fun i hi_mem => ⟨sets i, h_meas i hi_mem, rfl⟩, _⟩
@@ -699,44 +701,44 @@ theorem iIndepFunₖ_iff_measure_inter_preimage_eq_mul {ι : Type _} {β : ι �
   filter_upwards [h S h_measβ] with a ha
   rw [h_left_eq a, h_right_eq a, ha]
 
-theorem indepFunₖ_iff_indepSetₖ_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :
-    IndepFunₖ f g κ μ ↔
-      ∀ s t, MeasurableSet s → MeasurableSet t → IndepSetₖ (f ⁻¹' s) (g ⁻¹' t) κ μ := by
-  refine' indepFunₖ_iff_measure_inter_preimage_eq_mul.trans _
+    IndepFun f g κ μ ↔
+      ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) κ μ := by
+  refine' indepFun_iff_measure_inter_preimage_eq_mul.trans _
   constructor <;> intro h s t hs ht <;> specialize h s t hs ht
-  · rwa [indepSetₖ_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
-  · rwa [← indepSetₖ_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
+  · rwa [indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
+  · rwa [← indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
 
 @[symm]
-nonrec theorem IndepFunₖ.symm {_ : MeasurableSpace β} {f g : Ω → β} (hfg : IndepFunₖ f g κ μ) :
-    IndepFunₖ g f κ μ := hfg.symm
+nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β} (hfg : IndepFun f g κ μ) :
+    IndepFun g f κ μ := hfg.symm
 
-theorem IndepFunₖ.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hfg : IndepFunₖ f g κ μ)
+theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hfg : IndepFun f g κ μ)
     (hf : ∀ᵐ a ∂μ, f =ᵐ[κ a] f') (hg : ∀ᵐ a ∂μ, g =ᵐ[κ a] g') :
-    IndepFunₖ f' g' κ μ := by
+    IndepFun f' g' κ μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   filter_upwards [hf, hg, hfg _ _ ⟨_, hA, rfl⟩ ⟨_, hB, rfl⟩] with a hf' hg' hfg'
   have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp A
   have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
-theorem IndepFunₖ.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
-    (hfg : IndepFunₖ f g κ μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
-    IndepFunₖ (φ ∘ f) (ψ ∘ g) κ μ := by
+    (hfg : IndepFun f g κ μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
+    IndepFun (φ ∘ f) (ψ ∘ g) κ μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   apply hfg
   · exact ⟨φ ⁻¹' A, hφ hA, Set.preimage_comp.symm⟩
   · exact ⟨ψ ⁻¹' B, hψ hB, Set.preimage_comp.symm⟩
 
-/-- If `f` is a family of mutually independent random variables (`iIndepFunₖ m f μ`) and `S, T` are
+/-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
-theorem iIndepFunₖ.indepFunₖ_finset [IsMarkovKernel κ] {ι : Type _} {β : ι → Type _}
+theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] {ι : Type _} {β : ι → Type _}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
-    (hf_Indepₖ : iIndepFunₖ m f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
-    IndepFunₖ (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
+    (hf_Indep : iIndepFun m f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
+    IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
   -- We introduce π-systems, build from the π-system of boxes which generates `MeasurableSpace.pi`.
   let πSβ := Set.pi (Set.univ : Set S) ''
     Set.pi (Set.univ : Set S) fun i => { s : Set (β i) | MeasurableSet[m i] s }
@@ -753,7 +755,7 @@ theorem iIndepFunₖ.indepFunₖ_finset [IsMarkovKernel κ] {ι : Type _} {β : 
     rw [generateFrom_pi.symm, comap_generateFrom]
     congr
   -- To prove independence, we prove independence of the generating π-systems.
-  refine IndepSetsₖ.indepₖ (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i))
+  refine IndepSets.indep (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i))
     (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
     ?_
   rintro _ _ ⟨s, ⟨sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨sets_t, ht1, ht2⟩, rfl⟩
@@ -788,7 +790,7 @@ theorem iIndepFunₖ.indepFunₖ_finset [IsMarkovKernel κ] {ι : Type _} {β : 
     constructor <;> intro h
     · intro i hi; simp_rw [dif_pos hi]; exact h ⟨i, hi⟩
     · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [dif_pos hi] at h; exact h
-  rw [iIndepFunₖ_iff_measure_inter_preimage_eq_mul] at hf_Indepₖ
+  rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :
     ((⋂ i ∈ S, f i ⁻¹' sets_s' i) ∩ ⋂ i ∈ T, f i ⁻¹' sets_t' i) =
       ⋂ i ∈ S ∪ T, f i ⁻¹' (sets_s' i ∩ sets_t' i) := by
@@ -812,7 +814,7 @@ theorem iIndepFunₖ.indepFunₖ_finset [IsMarkovKernel κ] {ι : Type _} {β : 
       exact h_meas_s' i hi_mem
     · rw [h_sets_s'_univ hi_mem, Set.univ_inter]
       exact h_meas_t' i hi_mem
-  filter_upwards [hf_Indepₖ S h_meas_s', hf_Indepₖ T h_meas_t', hf_Indepₖ (S ∪ T) h_meas_inter]
+  filter_upwards [hf_Indep S h_meas_s', hf_Indep T h_meas_t', hf_Indep (S ∪ T) h_meas_inter]
     with a h_indepS h_indepT h_indepST -- todo: this unfolded sets_s', sets_t'?
   rw [h_eq_inter_S, h_eq_inter_T, h_indepS, h_indepT, h_Inter_inter, h_indepST,
     Finset.prod_union hST]
@@ -826,10 +828,10 @@ theorem iIndepFunₖ.indepFunₖ_finset [IsMarkovKernel κ] {ι : Type _} {β : 
     show κ a (f i ⁻¹' (sets_s' i ∩ sets_t' i)) = κ a (f i ⁻¹' (sets_t' i))
     rw [h_sets_s'_univ hi, Set.univ_inter]
 
-theorem iIndepFunₖ.indepFunₖ_prod [IsMarkovKernel κ] {ι : Type _} {β : ι → Type _}
-    {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indepₖ : iIndepFunₖ m f κ μ)
+theorem iIndepFun.indepFun_prod [IsMarkovKernel κ] {ι : Type _} {β : ι → Type _}
+    {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun m f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFunₖ (fun a => (f i a, f j a)) (f k) κ μ := by
+    IndepFun (fun a => (f i a, f j a)) (f k) κ μ := by
   classical
   have h_right : f k =
     (fun p : ∀ j : ({k} : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘
@@ -848,27 +850,27 @@ theorem iIndepFunₖ.indepFunₖ_prod [IsMarkovKernel κ] {ι : Type _} {β : ι
     p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩) :=
       Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
   rw [h_left, h_right]
-  refine' (hf_Indepₖ.indepFunₖ_finset s {k} _ hf_meas).comp h_meas_left h_meas_right
+  refine' (hf_Indep.indepFun_finset s {k} _ hf_meas).comp h_meas_left h_meas_right
   rw [Finset.disjoint_singleton_right]
   simp only [Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
 
 @[to_additive]
-theorem iIndepFunₖ.mul [IsMarkovKernel κ] {ι : Type _} {β : Type _} {m : MeasurableSpace β}
-    [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β} (hf_Indepₖ : iIndepFunₖ (fun _ => m) f κ μ)
+theorem iIndepFun.mul [IsMarkovKernel κ] {ι : Type _} {β : Type _} {m : MeasurableSpace β}
+    [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β} (hf_Indep : iIndepFun (fun _ => m) f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFunₖ (f i * f j) (f k) κ μ := by
-  have : IndepFunₖ (fun ω => (f i ω, f j ω)) (f k) κ μ :=
-    hf_Indepₖ.indepFunₖ_prod hf_meas i j k hik hjk
-  change IndepFunₖ ((fun p : β × β => p.fst * p.snd) ∘ fun ω => (f i ω, f j ω)) (id ∘ f k) κ μ
-  exact IndepFunₖ.comp this (measurable_fst.mul measurable_snd) measurable_id
+    IndepFun (f i * f j) (f k) κ μ := by
+  have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
+    hf_Indep.indepFun_prod hf_meas i j k hik hjk
+  change IndepFun ((fun p : β × β => p.fst * p.snd) ∘ fun ω => (f i ω, f j ω)) (id ∘ f k) κ μ
+  exact IndepFun.comp this (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
-theorem iIndepFunₖ.indepFunₖ_finset_prod_of_not_mem [IsMarkovKernel κ] {ι : Type _} {β : Type _}
+theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsMarkovKernel κ] {ι : Type _} {β : Type _}
     {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
-    (hf_Indepₖ : iIndepFunₖ (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i))
+    (hf_Indep : iIndepFun (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i))
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
-    IndepFunₖ (∏ j in s, f j) (f i) κ μ := by
+    IndepFun (∏ j in s, f j) (f i) κ μ := by
   classical
   have h_right : f i =
     (fun p : ∀ _j : ({i} : Finset ι), β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
@@ -884,21 +886,21 @@ theorem iIndepFunₖ.indepFunₖ_finset_prod_of_not_mem [IsMarkovKernel κ] {ι 
     Finset.univ.measurable_prod fun (j : ↥s) (_H : j ∈ Finset.univ) => measurable_pi_apply j
   rw [h_left, h_right]
   exact
-    (hf_Indepₖ.indepFunₖ_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
+    (hf_Indep.indepFun_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
       h_meas_left h_meas_right
 
 @[to_additive]
-theorem iIndepFunₖ.indepFunₖ_prod_range_succ [IsMarkovKernel κ] {β : Type _}
+theorem iIndepFun.indepFun_prod_range_succ [IsMarkovKernel κ] {β : Type _}
     {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ℕ → Ω → β}
-    (hf_Indepₖ : iIndepFunₖ (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
-    IndepFunₖ (∏ j in Finset.range n, f j) (f n) κ μ :=
-  hf_Indepₖ.indepFunₖ_finset_prod_of_not_mem hf_meas Finset.not_mem_range_self
+    (hf_Indep : iIndepFun (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
+    IndepFun (∏ j in Finset.range n, f j) (f n) κ μ :=
+  hf_Indep.indepFun_finset_prod_of_not_mem hf_meas Finset.not_mem_range_self
 
-theorem iIndepSetₖ.iIndepFunₖ_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
-    (hs : iIndepSetₖ s κ μ) :
-    iIndepFunₖ (fun _n => m) (fun n => (s n).indicator fun _ω => 1) κ μ := by
+theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
+    (hs : iIndepSet s κ μ) :
+    iIndepFun (fun _n => m) (fun n => (s n).indicator fun _ω => 1) κ μ := by
   classical
-  rw [iIndepFunₖ_iff_measure_inter_preimage_eq_mul]
+  rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
   rintro S π _hπ
   simp_rw [Set.indicator_const_preimage_eq_union]
   refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => _
@@ -912,4 +914,4 @@ theorem iIndepSetₖ.iIndepFunₖ_indicator [Zero β] [One β] {m : MeasurableSp
 
 end IndepFun
 
-end ProbabilityTheory
+end ProbabilityTheory.kernel
