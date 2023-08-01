@@ -33,6 +33,7 @@ step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
 
 namespace RelSeries
 
+-- TODO : change to `FunLike`
 instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
