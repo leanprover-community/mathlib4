@@ -201,10 +201,7 @@ theorem toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b
 
 /-- `ofLower` as an `OrderIso` -/
 def ofLowerSetOrderIso : OrderIso (WithLowerSetTopology α) α :=
-{ toFun := ofLowerSet,
-  invFun := toLowerSet,
-  left_inv := toLowerSet_ofLowerSet,
-  right_inv := ofLowerSet_toLowerSet,
+{ ofLowerSet with
   map_rel_iff' := ofLowerSet_le_iff }
 
 /-- `toLower` as an `OrderIso` -/
