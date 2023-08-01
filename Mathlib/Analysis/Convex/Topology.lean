@@ -348,7 +348,7 @@ protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne
     IsPathConnected s := by
   refine' isPathConnected_iff.mpr ⟨hne, _⟩
   intro x x_in y y_in
-  sorry
+  exact JoinedIn_of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
 
 /-- A nonempty convex set is connected. -/
