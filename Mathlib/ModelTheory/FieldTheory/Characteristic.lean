@@ -24,10 +24,6 @@ end field
 
 open field
 
-def Sentence.ofChat (p : ℕ) : Language.field.Sentence :=
-  (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)}) &&
-  Theory.field
-
 def Theory.fieldOfChar (p : ℕ) : Language.field.Theory :=
   ({eqZero p} ∪ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)})) ∪
    Theory.field
@@ -52,18 +48,43 @@ def fieldOfModelFieldOfCharP {K : Type _} [Language.field.Structure K]
     (h : (Theory.fieldOfChar p).Model K) : Field K :=
   @fieldOfModelField _ _ (Theory.Model.mono h (by simp [Theory.fieldOfChar]))
 
+theorem realize_ofNat' {K : Type _} [Language.field.Structure K]
+    (h : (Theory.field).Model K)
+    (p : ℕ) (v : α → K) : by
+    letI := fieldOfModelField K;
+      exact (Term.realize v (@ofNat α p) : K) = p := by
+  induction p <;>
+    simp [ofNat, *, zero_def, add_def, one_def, constantMap] <;> rfl
+
 def charPOfModelFieldOfCharP {K : Type _} [Language.field.Structure K]
     (h : (Theory.fieldOfChar p).Model K) : by
       letI := fieldOfModelFieldOfCharP h; exact CharP K p := by
   letI := fieldOfModelFieldOfCharP h
   rw [charP_iff]
   intro x
-  have h := (Theory.fieldOfChar p).realize_sentence_of_mem (M := K)
-      (show ({eqZero p} ∪ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)}) : Language.Field.Sentence)
-        ∈ Theory.fieldOfChar p by simp [Theory.fieldOfChar])
-
-
-end field
+  constructor
+  . intro hx
+    have h : K ⊨ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)}) :=
+      Theory.Model.mono h
+        (Set.subset_union_of_subset_left (Set.subset_union_right _ _) _)
+    simp only [Nat.isUnit_iff, Theory.model_iff, Set.mem_iUnion,
+      Set.mem_singleton_iff, exists_prop, Sentence.Realize,
+      forall_exists_index, and_imp] at h
+    by_contra hpx
+    have := h _ x hpx rfl
+    rw [eqZero, Formula.realize_not, Formula.realize_equal,
+      realize_ofNat'] at this
+    erw [Term.realize, funMap_eq_coe_constants] at this
+    exact this hx
+  . rintro ⟨y, rfl⟩
+    have h : K ⊨ {eqZero p} :=
+      Theory.Model.mono h
+        (Set.subset_union_of_subset_left (Set.subset_union_left _ _) _)
+    simp only [eqZero._eq_1, Theory.model_iff, Set.mem_singleton_iff,
+      Sentence.Realize, forall_eq, Formula.realize_equal] at h
+    rw [realize_ofNat'] at h
+    erw [Nat.cast_mul, h, Term.realize, funMap_eq_coe_constants]
+    exact zero_mul _
 
 end Language
 

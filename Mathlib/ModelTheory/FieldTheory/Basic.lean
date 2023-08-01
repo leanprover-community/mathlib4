@@ -97,7 +97,7 @@ def Theory.field : Language.field.Theory :=
     (Term.equal 0 1).not}
 
 set_option maxHeartbeats 20000000 in
-def fieldOfModelField {K : Type _} [Language.field.Structure K]
+def fieldOfModelField (K : Type _) [Language.field.Structure K]
     [Theory.field.Model K] : Field K :=
 { add := fun x y => funMap addFunction ![x, y],
   zero := constantMap (L := Language.field) (M := K) 0,
