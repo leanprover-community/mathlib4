@@ -343,13 +343,13 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type _}
     [NormedAddCommGroup A] [CompactSpace A] [ConnectedSpace A]
     [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
     (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ/2))) :
-    ∃ j ∈ Ioc 0 n, ‖j • ξ‖ ≤ δ := by
+    ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
   have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
   let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)
   have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_ball
   suffices : ¬ Pairwise (Disjoint on B)
   · obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise_disjoint this
-    refine' ⟨j - i, ⟨by rwa [tsub_pos_iff_lt, Subtype.coe_lt_coe], _⟩, _⟩
+    refine' ⟨j - i, ⟨le_tsub_of_add_le_left hij, _⟩, _⟩
     · simpa only [tsub_le_iff_right] using j.property.2.trans le_self_add
     · rw [sub_nsmul _ (Subtype.coe_le_coe.mpr hij.le), ← sub_eq_add_neg, ← dist_eq_norm]
       refine' (dist_triangle (↑j • ξ) x (↑i • ξ)).trans _
@@ -377,7 +377,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type _}
 
 See also `Real.exists_rat_abs_sub_le_and_den_le`. -/
 lemma exists_norm_nsmul_le (ξ : 𝕊) {n : ℕ} (hn : 0 < n) :
-    ∃ j ∈ Ioc 0 n, ‖j • ξ‖ ≤ T / ↑(n + 1) := by
+    ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ T / ↑(n + 1) := by
   apply NormedAddCommGroup.exists_norm_nsmul_le (μ := volume) ξ hn
   rw [AddCircle.measure_univ, volume_closedBall, ← ENNReal.ofReal_nsmul,
     mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le $ by simp), nsmul_eq_mul,
