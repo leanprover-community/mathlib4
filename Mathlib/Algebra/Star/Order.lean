@@ -186,3 +186,19 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
 end NonUnitalSemiring
+
+section Unital
+
+-- see note [lower instance priority]
+instance (priority := 100) toOrderedAddCommMonoidWithOne [Semiring R] [PartialOrder R]
+    [StarOrderedRing R] : OrderedAddCommMonoidWithOne R where
+  add_le_add_left _ _ := add_le_add_left
+  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+
+-- see note [lower instance priority]
+instance (priority := 100) toOrderedAddCommGroupWithOne [Ring R] [PartialOrder R]
+    [StarOrderedRing R] : OrderedAddCommGroupWithOne R where
+  add_le_add_left _ _ := add_le_add_left
+  zero_le_one := zero_le_one
+
+end Unital

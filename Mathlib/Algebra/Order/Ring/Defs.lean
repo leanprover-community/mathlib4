@@ -218,9 +218,12 @@ section OrderedSemiring
 variable [OrderedSemiring α] {a b c d : α}
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderedSemiring.zeroLEOneClass : ZeroLEOneClass α :=
+instance (priority := 100) OrderedSemiring.toOrderedAddCommMonoidWithOne :
+    OrderedAddCommMonoidWithOne α :=
   { ‹OrderedSemiring α› with }
-#align ordered_semiring.zero_le_one_class OrderedSemiring.zeroLEOneClass
+
+-- no longer necessary because this instance is found via `OrderedAddCommMonoidWithOne` above.
+#noalign ordered_semiring.zero_le_one_class
 
 -- see Note [lower instance priority]
 instance (priority := 200) OrderedSemiring.toPosMulMono : PosMulMono α :=
@@ -343,6 +346,11 @@ instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
     mul_le_mul_of_nonneg_right := fun a b c h hc => by
       simpa only [sub_mul, sub_nonneg] using OrderedRing.mul_nonneg _ _ (sub_nonneg.2 h) hc }
 #align ordered_ring.to_ordered_semiring OrderedRing.toOrderedSemiring
+
+-- see Note [lower instance priority]
+instance (priority := 100) OrderedRing.toOrderedAddCommGroupWithOne :
+    OrderedAddCommGroupWithOne α :=
+  { ‹OrderedRing α› with }
 
 theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
   simpa only [neg_mul, neg_le_neg_iff] using mul_le_mul_of_nonneg_left h (neg_nonneg.2 hc)

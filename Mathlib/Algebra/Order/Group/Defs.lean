@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Order.Hom.Basic
 
 #align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
@@ -41,6 +42,27 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
+
+/-- An ordered (additive) commutative group *with one* is an additive commutative group with one
+with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone) and `0 ≤ 1`. -/
+class OrderedAddCommGroupWithOne (α : Type _) extends AddCommGroupWithOne α, PartialOrder α where
+  /-- Addition is monotone in an `OrderedAddCommGroupWithOne`. -/
+  protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
+  /-- One is nonnegative in an `OrderedAddCommGroupWithOne`. -/
+  protected zero_le_one : (0 : α) ≤ 1
+
+section OrderedInstances
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderedAddCommGroupWithOne.toOrderedAddCommGroup {M : Type _}
+    [OrderedAddCommGroupWithOne M] : OrderedAddCommGroup M where
+  add_le_add_left := OrderedAddCommGroupWithOne.add_le_add_left
+
+-- see Note [lower instance priority]
+instance (priority := 100) OrderedAddCommGroupWithOne.toOrderedAddCommMonoidWithOne {M : Type _}
+    [OrderedAddCommGroupWithOne M] : OrderedAddCommMonoidWithOne M where
+  add_le_add_left := OrderedAddCommGroupWithOne.add_le_add_left
+  zero_le_one := OrderedAddCommGroupWithOne.zero_le_one
 
 attribute [to_additive] OrderedCommGroup
 

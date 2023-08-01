@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.BoundedOrder
 
 #align_import algebra.order.monoid.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -40,7 +41,25 @@ class OrderedAddCommMonoid (α : Type _) extends AddCommMonoid α, PartialOrder 
 
 attribute [to_additive] OrderedCommMonoid
 
+/-- An ordered (additive) commutative monoid *with one* is an additive commutative monoid with one
+with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone) and `0 ≤ 1`. -/
+class OrderedAddCommMonoidWithOne (α : Type _) extends AddCommMonoidWithOne α, PartialOrder α where
+  /-- Addition is monotone in an `OrderedAddCommMonoidWithOne`. -/
+  protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
+  /-- One is nonnegative in an `OrderedAddCommMonoidWithOne`. -/
+  protected zero_le_one : (0 : α) ≤ 1
+
 section OrderedInstances
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderedAddCommMonoidWithOne.toOrderedAddCommMonoid {M : Type _}
+    [OrderedAddCommMonoidWithOne M] : OrderedAddCommMonoid M where
+  add_le_add_left := OrderedAddCommMonoidWithOne.add_le_add_left
+
+-- see Note [lower instance priority]
+instance (priority := 100) OrderedAddCommMonoidWithOne.zeroLEOneClass {M : Type _}
+    [OrderedAddCommMonoidWithOne M] : ZeroLEOneClass M where
+  zero_le_one := OrderedAddCommMonoidWithOne.zero_le_one
 
 @[to_additive]
 instance OrderedCommMonoid.to_covariantClass_left (M : Type _) [OrderedCommMonoid M] :
