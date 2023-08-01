@@ -178,13 +178,13 @@ instance {K : Type _} [Field K] : Language.field.Structure K :=
       | _, inv => fun x => (x 0)⁻¹
       | _, zero => fun _ => 0
       | _, one => fun _ => 1,
-    RelMap := fun i => Empty.elim i }
+    RelMap := Empty.elim }
 
 instance {K : Type _} [Field K] : Theory.field.Model K := by
   simp [Theory.field, addFunction,
     add_assoc, mulFunction, mul_assoc, add_comm, add_left_comm,
-    mul_comm, mul_left_comm, mul_assoc, mul_add, add_mul, zero_def,
-    one_def, constantMap]
+    mul_comm, mul_left_comm, mul_assoc, mul_add, add_mul, one_def,
+    zero_def]
   simpa [Sentence.Realize, Formula.Realize, Term.equal,
     constantMap] using (fun _ => @mul_inv_cancel K _ _)
 
