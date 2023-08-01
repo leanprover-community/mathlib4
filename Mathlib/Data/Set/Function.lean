@@ -665,7 +665,7 @@ alias injOn_of_injective ← _root_.Function.Injective.injOn
 
 -- A specialization of `injOn_of_injective` for `Subtype.val`.
 theorem injOn_subtype_val {s : Set { x // p x }} : Set.InjOn Subtype.val s :=
-  injOn_of_injective Subtype.coe_injective s
+  Subtype.coe_injective.injOn s
 
 lemma injOn_id (s : Set α) : InjOn id s := injective_id.injOn _
 #align set.inj_on_id Set.injOn_id
