@@ -278,7 +278,7 @@ theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m
 /-! ### Lemmas about left or right multiplying by an invertible matrix. -/
 
 /-- Right multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_eq_left_of_isUnitDet [DecidableEq n] [CommRing R]
+lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n] [CommRing R]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B ⬝ A).rank = B.rank := by
   suffices : Function.Surjective A.mulVecLin
