@@ -64,14 +64,14 @@ theorem stirlingSeq_one : stirlingSeq 1 = exp 1 / Real.sqrt 2 := by
   rw [stirlingSeq, pow_one, factorial_one, cast_one, mul_one, mul_one_div, one_div_div]
 #align stirling.stirling_seq_one Stirling.stirlingSeq_one
 
-/-- We have the expression
-`log (stirlingSeq (n + 1)) =
-  log (n + 1) ! - 1 / 2 * log (2 * (n + 1)) - (n + 1) * log ((n + 1) / exp 1)`.
--/
-theorem log_stirlingSeq_formula (n : ℕ) : log (stirlingSeq (n + 1)) =
-    Real.log ↑(n + 1) ! - 1 / 2 * Real.log (2 * ↑(n + 1)) - ↑(n + 1) * log (↑(n + 1) / exp 1) := by
-  rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub] <;> positivity
-#align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formula
+theorem log_stirlingSeq_formula (n : ℕ) :
+    log (stirlingSeq n) = Real.log n ! - 1 / 2 * Real.log (2 * n) - n * log (n / exp 1) := by
+  cases n
+  · simp
+  · rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub]
+      <;> positivity
+-- porting note: generalized from `n.succ` to `n`
+#align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formulaₓ
 
 -- Porting note: the custom discharger of the simp in the theorem below has
 -- unreachable tactics for some of its invocations
