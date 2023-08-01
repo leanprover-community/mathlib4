@@ -397,16 +397,17 @@ theorem le_coe_unbot' [Preorder α] : ∀ (a : WithBot α) (b : α), a ≤ a.unb
   | ⊥, _ => bot_le
 #align with_bot.le_coe_unbot' WithBot.le_coe_unbot'
 
-theorem unbot'_bot_le_iff [LE α] [OrderBot α] {a : WithBot α} {b : α} :
-    a.unbot' ⊥ ≤ b ↔ a ≤ b := by
-  cases a <;> simp [none_eq_bot, some_eq_coe]
-#align with_bot.unbot'_bot_le_iff WithBot.unbot'_bot_le_iff
-
-theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (ha : a ≠ ⊥) : a.unbot' b < c ↔ a < c := by
+theorem unbot'_le_iff [LE α] {a : WithBot α} {b c : α} (h : a ≠ ⊥ ∨ b ≤ c) :
+    a.unbot' b ≤ c ↔ a ≤ c := by
   cases a
-  · exact (ha rfl).elim
-  · rw [some_eq_coe, unbot'_coe, coe_lt_coe]
-#align with_bot.unbot'_lt_iff WithBot.unbot'_lt_iff
+  · simpa using h.elim (absurd rfl) id
+  · simp [some_eq_coe]
+
+theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (h : a ≠ ⊥ ∨ b < c) :
+    a.unbot' b < c ↔ a < c := by
+  cases a
+  · simpa [bot_lt_coe] using h.elim (absurd rfl) id
+  · simp [some_eq_coe]
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
@@ -1182,14 +1183,17 @@ theorem coe_untop'_le [Preorder α] : ∀ (a : WithTop α) (b : α), a.untop' b 
   | (a : α), _ => le_rfl
   | ⊤, _ => le_top
 
-theorem le_untop'_top_iff [LE α] [OrderTop α] {a : WithTop α} {b : α} :
-    b ≤ a.untop' ⊤ ↔ b ≤ a := by
-  cases a <;> simp [none_eq_top, some_eq_coe]
-
-theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (ha : a ≠ ⊤) : c < a.untop' b ↔ c < a := by
+theorem le_untop'_iff [LE α] {a : WithTop α} {b c : α} (h : a ≠ ⊤ ∨ c ≤ b) :
+    c ≤ a.untop' b ↔ c ≤ a := by
   cases a
-  · exact (ha rfl).elim
-  · rw [some_eq_coe, untop'_coe, coe_lt_coe]
+  · simpa using h.elim (absurd rfl) id
+  · simp [some_eq_coe]
+
+theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (h : a ≠ ⊤ ∨ c < b) :
+    c < a.untop' b ↔ c < a := by
+  cases a
+  · simpa [none_eq_top, coe_lt_top] using h.elim (absurd rfl) id
+  · simp [some_eq_coe]
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with
