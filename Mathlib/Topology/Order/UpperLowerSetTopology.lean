@@ -434,7 +434,7 @@ open OrderDual
 protected lemma monotone_iff_continuous [TopologicalSpace α] [LowerSetTopology α]
     [TopologicalSpace β] [LowerSetTopology β] {f : α → β} :
     Monotone f ↔ Continuous f := by
-  rw [Monotone.dual_iff]
+  rw [← monotone_dual_iff]
   exact UpperSetTopology.monotone_iff_continuous (α := αᵒᵈ) (β := βᵒᵈ)
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
 
@@ -443,7 +443,7 @@ lemma Monotone_to_LowerTopology_Continuous [TopologicalSpace α]
     Continuous f := by
   apply UpperSetTopology.Monotone_to_UpperTopology_Continuous (α := αᵒᵈ) (β := βᵒᵈ)
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
-  exact Iff.mp Monotone.dual_iff hf
+  exact Monotone.dual hf
 
 lemma LowerSetLELower {t₁ : TopologicalSpace α} [@LowerSetTopology α t₁ _]
     {t₂ : TopologicalSpace α} [@LowerTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
