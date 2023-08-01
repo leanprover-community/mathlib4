@@ -442,7 +442,7 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
   obtain ⟨f, hf, hinj⟩ := hs.exists_injOn_of_encard_le h.le; use f
   convert hinj.bijOn_image
   rw [(hs.image f).eq_of_subset_of_encard_le' (image_subset_iff.mpr hf)
-    (h.symm.trans (hinj.encard_image).symm).le]
+    (h.symm.trans hinj.encard_image.symm).le]
 
 end Function
 
