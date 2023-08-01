@@ -92,15 +92,15 @@ theorem Option.get?_eq_some (o : Option α) (w : o.isSome) (a : α) : o.get w = 
   · simp at w
   · simp
 
-/-- TODO: bump mathlib to get this -/
+/-- TODO: merge master to get this -/
 theorem List.maximum_ne_bot_of_length_pos {l : List α} (h : 0 < l.length) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
 
-/-- TODO: bump mathlib to get this. The maximum value in a non-empty `List`. -/
+/-- TODO: merge master to get this. The maximum value in a non-empty `List`. -/
 def List.maximum_of_length_pos {l : List α} (h : 0 < l.length) : α :=
   WithBot.unbot l.maximum (maximum_ne_bot_of_length_pos h)
 
-/-- TODO: bump mathlib to get this -/
+/-- TODO: merge master to get this -/
 @[simp]
 lemma List.coe_maximum_of_length_pos {l : List α} (h : 0 < l.length) :
     (l.maximum_of_length_pos h : α) = l.maximum :=
@@ -129,19 +129,19 @@ theorem List.get_eq_get_of_take_eq_take (la lb : List α) (n m : ℕ)
   · aesop
   · aesop
 
-/-- TODO: bump mathlib to get this -/
+/-- TODO: merge master to get this -/
 theorem WithBot.le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
     a ≤ unbot b h ↔ (a : WithBot α) ≤ b := by
   match b, h with
   | some _, _ => simp only [unbot_coe, coe_le_coe]
 
-/-- TODO: bump mathlib to get this -/
+/-- TODO: merge master to get this -/
 @[simp]
 theorem List.le_maximum_of_length_pos_iff {l : List α} {b : α} (h : 0 < l.length) :
     b ≤ maximum_of_length_pos h ↔ b ≤ l.maximum :=
   WithBot.le_unbot_iff _
 
-/-- TODO: bump mathlib to get this -/
+/-- TODO: merge master to get this -/
 theorem List.le_maximum_of_length_pos_of_mem {l : List α} {a : α} (h : a ∈ l) (w : 0 < l.length) :
      a ≤ l.maximum_of_length_pos w := by
   simp [le_maximum_of_length_pos_iff]
@@ -4616,7 +4616,7 @@ lemma GoodProducts.maxTail_isGood (l : StartingWithMax C o)
       rw [Finsupp.sum_mapDomain_index_inj hfi]
       rfl
 
--- TODO: bump mathlib to get this theorem
+-- TODO: merge master to get this theorem
 theorem Submodule.apply_mem_span_image_iff_mem_span {R : Type _}  {R₂ : Type _}
     {M : Type _}  {M₂ : Type _} [inst : Semiring R]  [inst : AddCommMonoid M]
     [inst : Module R M] [inst : Semiring R₂]  {σ₁₂ : R →+* R₂}
@@ -5522,43 +5522,6 @@ def FinsetsToProfinite :
     dsimp
     rw [resFinSubsets_eq_comp]
 
-def ResFin_to_DQ (hC : IsClosed C) (J : Finset (WithTop I))  :
-    DiscreteQuotient (@Profinite.of {i // i ∈ C} _ (CCompact C hC) _ _) :=
-  haveI : DiscreteTopology (ResFin C J) := discrete_of_t1_of_finite
-  DiscreteQuotient.comap (CResFinSubset C J) ⊥
-
-lemma finset_to_dq_le (hC : IsClosed C) {J K : Finset (WithTop I)} (h : J ⊆ K) :
-    ResFin_to_DQ C hC K ≤
-    ResFin_to_DQ C hC J := by
-  simp only [ResFin_to_DQ]
-  rw [← cresFinSubsets_comp_cresFinSubset C h]
-  sorry
-  -- have : ContinuousMap.mk (ResFinSubsets C h ∘ ResFinSubset C K) =
-  --   ContinuousMap.comp ⟨ResFinSubsets C h, continuous_resFinSubsets C h⟩
-  --   ⟨ResFinSubset C K, continuous_resFinSubset C K⟩
-  -- · rfl
--- begin
---   have : g.hom = f.hom ≫ to_Profinite.map φ.right :=
---     by simp only [structured_arrow.w],
---   rw this,
---   have h : hom_to_dq (f.hom ≫ to_Profinite.map φ.right) =
---     comap (⊥ : discrete_quotient (to_Profinite.obj g.right))
---     (continuous.comp (to_Profinite.map φ.right).continuous f.hom.continuous) :=
---     by refl,
---   rw comap_comp at h,
---   rw h,
---   unfold hom_to_dq,
---   exact comap_mono _ bot_le,
--- end
-
-def FinsetsToDQ (hC : IsClosed C) : (Finset (WithTop I))ᵒᵖ ⥤
-    DiscreteQuotient (@Profinite.of {i // i ∈ C} _ (CCompact C hC) _ _) where
-  obj J :=
-    haveI : DiscreteTopology (ResFin C (unop J)) := discrete_of_t1_of_finite
-    DiscreteQuotient.comap ⟨ResFinSubset C (unop J), continuous_resFinSubset _ _⟩ ⊥
-  map := @fun J K h ↦ sorry
-  -- homOfLE (DiscreteQuotient.comap_mono _ (leOfHom h.unop))
-
 noncomputable
 def FinsetsCone (hC : IsClosed C) :
     Cone (FinsetsToProfinite C) :=
@@ -5579,63 +5542,79 @@ def FinsetsCone (hC : IsClosed C) :
         exact hhh (leOfHom h.unop hh)
       · rfl } }
 
+lemma C_eq_of_forall_proj_eq (a b : C) (h : ∀ J, ResFinSubset C J a = ResFinSubset C J b) :
+    a = b := by
+  ext i
+  specialize h {i}
+  dsimp [ResFinSubset, ProjFin] at h
+  rw [Subtype.ext_iff] at h
+  have hh := congr_fun h i
+  dsimp at hh
+  split_ifs at hh with hhh
+  · exact hh
+  · exfalso
+    apply hhh
+    simp only [Finset.mem_singleton]
+
+open Profinite in
+instance isIso_finsetsCone_lift (hC : IsClosed C) :
+    IsIso ((limitConeIsLimit (FinsetsToProfinite C)).lift (FinsetsCone C hC)) :=
+  haveI : CompactSpace {i // i ∈ C} := CCompact C hC
+  isIso_of_bijective _
+    (by
+      refine' ⟨fun a b h ↦ _, fun a ↦ _⟩
+      · refine' C_eq_of_forall_proj_eq C a b (fun J ↦ _)
+        apply_fun fun f : (limitCone (FinsetsToProfinite C)).pt => f.val (op J) at h
+        exact h
+      · suffices : ∃ (x : C), ∀ (J : Finset (WithTop I)), ResFinSubset C J x = a.val (op J)
+        · obtain ⟨b, hb⟩ := this
+          use b
+          apply Subtype.ext
+          apply funext
+          rintro J
+          exact hb (unop J)
+        have hc : ∀ J s, IsClosed ((ResFinSubset C J) ⁻¹' s)
+        · intro J s
+          refine' IsClosed.preimage (continuous_resFinSubset C J) _
+          haveI : DiscreteTopology (ResFin C J) := discrete_of_t1_of_finite
+          exact isClosed_discrete _
+        have H₁ : ∀ Q₁ Q₂, Q₁ ≤ Q₂ →
+            ResFinSubset C Q₁ ⁻¹' {a.val (op Q₁)} ⊇ ResFinSubset C Q₂ ⁻¹' {a.val (op Q₂)}
+        · intro J K h x hx
+          simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
+          rw [← resFinSubsets_comp_resFinSubset C h, Function.comp_apply,
+            hx, ← a.prop (homOfLE h).op]
+          rfl
+        obtain ⟨x, hx⟩ : Set.Nonempty (⋂ J, ResFinSubset C J ⁻¹' {a.val (op J)}) :=
+          IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+            (fun J : Finset (WithTop I) => ResFinSubset C J ⁻¹' {a.val (op J)}) (directed_of_sup H₁)
+            (fun J => (Set.singleton_nonempty _).preimage (surjective_resFinSubset _ _))
+            (fun J => (hc J {a.val (op J)}).isCompact) fun J => hc J _
+        exact ⟨x, Set.mem_iInter.1 hx⟩
+      )
+
 noncomputable
-def FinsetConeLiftFunAux (s : Cone (FinsetsToProfinite C)) : s.pt → ((WithTop I) → Bool) :=
-fun x i ↦ (s.π.app (op ({i} : Finset (WithTop I))) x).val i
+def isoFinsetsConeLift (hC : IsClosed C) :
+    @Profinite.of {i // i ∈ C} _ (CCompact C hC) _ _ ≅
+    (Profinite.limitCone (FinsetsToProfinite C)).pt :=
+  asIso <| (Profinite.limitConeIsLimit _).lift (FinsetsCone C hC)
 
-lemma finsetConeLiftFunAux_mem (hC : IsClosed C) (s : Cone (FinsetsToProfinite C)) (x : s.pt) :
-    FinsetConeLiftFunAux C s x ∈ C := by
-  dsimp [FinsetConeLiftFunAux]
-  have hs := fun J ↦ (s.π.app J x).prop
-  let f := fun i ↦ (hs (Opposite.op i)).choose
-  have hf := fun i ↦ (hs (Opposite.op i)).choose_spec
-  let S : Finset (WithTop I) → Set (Finset (WithTop I)) := fun J ↦ {K | J ⊆ K}
-  let b : Filter (Finset (WithTop I)) := Filter.generate (Set.range S)
-  have : b.NeBot := sorry
-  refine' @IsClosed.mem_of_tendsto _ _ _ f b _ C _ hC _
-    (Filter.eventually_of_forall (fun i ↦ (hf i).1))
-  rw [nhds_pi, Filter.tendsto_pi]
-  intro i
-  rw [Filter.tendsto_def]
-  sorry
+noncomputable
+def asLimitFinsetsConeIso (hC : IsClosed C) : FinsetsCone C hC ≅ Profinite.limitCone _ :=
+  Limits.Cones.ext (isoFinsetsConeLift _ hC) fun _ => rfl
 
-lemma finsetsCone_isLimit (hC : IsClosed C) : IsLimit (FinsetsCone C hC) where
-  lift := sorry
-  fac := sorry
-  uniq := sorry
+noncomputable
+def finsetsCone_isLimit (hC : IsClosed C) : CategoryTheory.Limits.IsLimit (FinsetsCone C hC) :=
+  Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitFinsetsConeIso C hC).symm
 
--- lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit)
---     (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
---     (hC : IsClosed C)
---     (hsC : Support C ⊆ { j | ord I j < o })
---     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ (e : {o' // o' < o})
---     (g : LocallyConstant {i // i ∈ Res C e.val} ℤ), g.comap (ResOnSubset C e.val) = f := by
---   obtain ⟨i, g, h⟩ := @Profinite.exists_locallyConstant {i : WithTop I // ord I i < o}ᵒᵖ _
---     (ICofiltered ho) _ (OrdCone C o hC) _
---     (OrdConeIsLimit C ho hto hC hsC) f
---   use ⟨ord I i.unop.val, i.unop.prop⟩
---   use g
---   rw [h]
---   congr
-
--- lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit)
---     (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
---     (hC : IsClosed C)
---     (hsC : Support C ⊆ { j | ord I j < o })
---     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
---     ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ), g.comap (ResOnSubset C o') = f := by
---   obtain ⟨e, g, h⟩ := comapJointlySurjectiveAuxSubtype C ho hto hC hsC f
---   exact ⟨e.val, e.prop,⟨g,h⟩⟩
-
--- lemma comapLinearJointlySurjective {o : Ordinal} (ho : o.IsLimit)
---     (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
---     (hC : IsClosed C)
---     (hsC : Support C ⊆ { j | ord I j < o })
---     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
---     ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ),
---     (LocallyConstant.comapLinear (ResOnSubset C o') (continuous_ResOnSubset _ _) :
---     LocallyConstant {i // i ∈ Res C o'} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) g = f :=
---   comapJointlySurjective C ho hto hC hsC f
+lemma fin_comap_jointlySurjective
+    (hC : IsClosed C)
+    (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ (J : Finset (WithTop I))
+    (g : LocallyConstant {i // i ∈ ResFin C J} ℤ), f = g.comap (ResFinSubset C J) := by
+  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset (WithTop I))ᵒᵖ _
+    _ _ (FinsetsCone C hC) _
+    (finsetsCone_isLimit C hC) f
+  exact ⟨(unop J), g, h⟩
 
 end JointlySurjectiveFin
 
@@ -5643,7 +5622,7 @@ lemma GoodProducts.spanAux (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
   rw [span_iff_products]
   intro f _
-  have hf : ∃ K f', f = LinearResFin C K f' := sorry
+  have hf : ∃ K f', f = LinearResFin C K f' := fin_comap_jointlySurjective C hC f
   obtain ⟨K, f', hf⟩ := hf
   rw [hf]
   have hf' := spanFin C K (Submodule.mem_top : f' ∈ ⊤)
@@ -5656,83 +5635,6 @@ lemma GoodProducts.spanAux (hC : IsClosed C) :
   exact ⟨m.val, linearResFin_of_eval C K m.val m.prop⟩
 
 end Span
-
--- lemma Res_oo'₁ {o o' : Ordinal} (h : o < o') (hsC : Support C ⊆ {j | ord I j < Order.succ o}) :
---   Res C o' = C := by sorry
-
--- lemma Res_oo'₂ {o o' : Ordinal} (h : o ≤ o')
---     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
---     Res (C' C ho) o' = C' C ho := by
---   refine' (supportResEq (C' C ho) o' _).symm
---   refine' subset_trans (support_C' C ho) _
---   intro j hj
---   simp only [Set.mem_setOf_eq]
---   exact lt_of_lt_of_le hj h
-
--- lemma Res_oo'₃ {o o' : Ordinal} (h : o = o') : Res C o' = Res C o := by rw [h]
-
--- lemma Res_oo'₄ {o o' : Ordinal} (h : o' < o) (hsC : Support C ⊆ {j | ord I j < Order.succ o})
---     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
---     Res (C' C ho) o' = C' C ho := by sorry
-
-
--- lemma GoodProducts.Tlimit {o o' : Ordinal}
---     (hlo : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
---     (ho : o.IsLimit) (hS : T (Res C o)) (ho' : o' < o) : T (Res C o') := sorry
-
--- lemma GoodProducts.h_one' {o : Ordinal} (hS : T C) (hC : IsClosed C)
---     (hsC : Support C ⊆ {i | ord I i < Order.succ o})
---     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
---     T (Res C o) := by
---   dsimp [T] at *
---   sorry
-
-
-  -- intro o'
-  -- by_cases o' ≤ o
-  -- · have : Res (Res C o) o' = Res C o' := sorry
-  --   rw [this]
-  --   exact hS o'
-  -- · have : Res (Res C o) o' = Res C o := sorry
-  --   rw [this]
-  --   exact hS o
-
--- lemma GoodProducts.h_one'' {o : Ordinal} (hS : T C)
---     (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop))
---     (hsC : Support C ⊆ {j | ord I j < Order.succ o}) :
---     T (C' C ho) := by
---   sorry
-  -- intro o'
-  -- by_cases h : o ≤ o'
-  -- · have : Res (C' C ho) o' = C' C ho := Res_oo'₂ C h ho
-  --   rw [this]
-  --   specialize hS (Order.succ o)
-  --   rw [← supportResEq C (Order.succ o) hsC] at hS
-  --   sorry
-  -- · simp only [not_le] at h
-  --   have hso' : Order.succ o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop)
-  --   · refine' lt_of_le_of_lt _ ho
-  --     simpa only [Order.succ_le_iff]
-  --   have ho' : o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop) := lt_trans h ho
-  --   have : Res (C' C ho) o' = C' (Res C (Order.succ o')) ho'
-  --   · ext f
-  --     constructor
-  --     <;> intro hf
-  --     · obtain ⟨g, hf⟩ := hf
-  --       obtain ⟨r, hg⟩ := hf.1.2
-  --       dsimp [C', C0, C1] at hf hg ⊢
-  --       refine' ⟨⟨⟨g, ⟨hf.1.1.1,_⟩⟩, _⟩, _⟩
-  --       · sorry
-  --       · sorry
-  --       · sorry
-  --     · sorry
-  -- specialize hS o'
-  --   · simp only [not_lt] at h
-
-  -- rw [this]
-  -- set W := Res C o'
-  -- sorry
-  -- have hsurj : Function.Surjective (Linear_CC) ... bla
 
 lemma GoodProducts.Plimit :
     ∀ (o : Ordinal), Ordinal.IsLimit o → (∀ (o' : Ordinal), o' < o → P' I o') → P' I o := by
@@ -5750,8 +5652,7 @@ lemma GoodProducts.Plimit :
   rw [ModProducts.smaller_linear_independent_iff] at h'
   exact h'
 
-lemma GoodProducts.linearIndependentAux (i : WithTop I) : P' I (ord I i) := by -- (basisAux i).2
-  -- rw [PIffP I i]
+lemma GoodProducts.linearIndependentAux (i : WithTop I) : P' I (ord I i) := by
   refine' Ordinal.limitRecOn (ord I i) P0 _
       (fun o ho h ↦ (GoodProducts.Plimit o ho (fun o' ho' ↦ (h o' ho'))))
   intro o h
@@ -5781,7 +5682,6 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P' I (ord I i) := by -
     simp only [Set.mem_empty_iff_false, false_and, exists_false, Set.setOf_false] at hi
 
 #print axioms GoodProducts.linearIndependentAux
-
 
 variable {C₁ : Set (I → Bool)}
 
@@ -5912,129 +5812,11 @@ lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     apply decide_eq_true
     exact h₁.1
 
--- def Nobeling.index : Type u := Σ (C : Set S), (C → C → Prop)
-
--- def Nobeling.I : Type u := Σ (i : index S), Set (Quot i.snd)
-
--- def Nobeling.setι : {C : Set S // IsClopen C} → I S := fun C ↦ ⟨⟨C.val, fun a b ↦ a = b⟩, Set.univ⟩
-
--- noncomputable
--- def Nobeling.ι₂ : ({C : Set S // IsClopen C} → Bool) → (I S → Bool) := by
---   intro f i
---   exact if h : IsClopen i.fst.fst then f ⟨i.fst.fst, h⟩ else false
-
--- noncomputable
--- def Nobeling.ι : S → (I S → Bool) := Nobeling.ι₂ S ∘ Nobeling.ι' S
-
--- lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
---   refine' ClosedEmbedding.comp _ (embedding' S)
---   apply Continuous.closedEmbedding
---   · apply continuous_pi
---     intro i
---     dsimp [ι₂]
---     split_ifs with h
---     · continuity
---     · exact continuous_const
---   · intro a b h
---     dsimp [ι₂] at h
---     ext x
---     have hh := congrFun h (setι S x)
---     split_ifs at hh with h'
---     · exact hh
---     · dsimp [setι] at h'
---       exfalso
---       exact h' x.prop
-
--- noncomputable
--- instance : LinearOrder (Nobeling.I S) := IsWellOrder.linearOrder WellOrderingRel
-
--- open NobelingProof GoodProducts in
--- lemma Nobeling.T : @NobelingProof.T (I S) (IsWellOrder.linearOrder WellOrderingRel)
---     ((NobelingProof.r (I S) '' Set.range (ι S))) := by
---   intro V hsV hCV W π hcπ hsπ hW
---   rw [span_iff_products]
---   intro f _
---   let i : S → (WithTop (I S) → Bool) := r (I S) ∘ (ι S)
---   let C : Set S := i ⁻¹' V
---   have hmem : ∀ (a : C), i a.val ∈ V := by simp
---   let r : C → C → Prop := fun a b ↦ π ⟨i a.val, hmem a⟩  = π ⟨i b.val, hmem b⟩
---   let a : index S := ⟨C, r⟩
---   let c' : C → W := fun a ↦ π ⟨i a.val, hmem a⟩
---   let c : Quot r → W := Quot.lift c' (fun _ _ h ↦ h)
---   haveI : Fintype (Set.range f) := sorry
---   let b : (Set.range f).toFinset → Set (Quot r) := (fun s ↦ c ⁻¹' s) ∘ (fun n ↦ f ⁻¹' {n.val})
---   let d : (Set.range f).toFinset → WithTop (I S) := fun n ↦ some ⟨a, b n⟩
---   let p : (Set.range f).toFinset → Products (WithTop (I S)) :=
---       fun n ↦ ⟨[(d n)], List.chain'_singleton _⟩
---   have hp : p.Injective
---   · intro x y h
---     rw [Subtype.ext_iff, List.cons_eq_cons, Option.some_inj] at h
---     suffices : b.Injective
---     · have h' := h.1
---       apply_fun Sigma.snd at h'
---       exact this h'
---     intro X Y H
---     sorry
---   let g : Products (WithTop (I S)) → ℤ :=
---     fun l ↦ if h : l ∈ Set.range p then (Equiv.ofInjective p hp).symm ⟨l, h⟩ else 0
---   have hg : ∀ l, g l ≠ 0 → l ∈ Finset.image p Finset.univ := sorry
---   let q := Finsupp.onFinset (Finset.image p Finset.univ) g hg
---   rw [Finsupp.mem_span_range_iff_exists_finsupp]
---   refine' ⟨q, _⟩
---   ext x
---   have hhh : ∀ α (map : α → LocallyConstant {i // i ∈ W} ℤ) (d : α →₀ ℤ),
---       (d.sum (fun i (a : ℤ) ↦ a • map i)) x = d.sum (fun i a ↦ a • map i x) :=
---     fun _ _ _ ↦ map_finsupp_sum (LocconstEval W x) _ _
---   rw [hhh, Finsupp.sum]
---   have hfr : f x ∈ (Set.range f).toFinset := by simp
---   have haf : ⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ ∈ q.support := sorry
---   have hz := (add_zero (f x)).symm
---   rw [hz, ← Finset.add_sum_erase _ _ haf]
---   congr
---   · set l := (⟨[d ⟨f x, hfr⟩], List.chain'_singleton _⟩ : Products (WithTop (I S)) ) with hl
---     have hpl : Products.eval W l x = 1
---     · rw [Products.eval_eq]
---       split_ifs with hh
---       · rfl
---       · exfalso
---         push_neg at hh
---         simp only [Function.comp_apply, List.mem_singleton, ne_eq, Bool.not_eq_true,
---           exists_eq_left] at hh
---         rw [← Bool.not_eq_true] at hh
---         apply hh
---         sorry
---     suffices : q l = f x
---     · rw [this, hpl]
---       simp only [smul_eq_mul, mul_one]
---     simp only [Function.comp_apply, Finset.univ_eq_attach, Set.mem_range, Subtype.exists,
---       Set.mem_toFinset, Eq.ndrec, id_eq, exists_prop, Finsupp.onFinset_apply]
---     split_ifs with hh
---     · sorry
---     · sorry
---   · apply Finset.sum_eq_zero
---     intro l hl
---     simp only [smul_eq_mul, mul_eq_zero]
---     right
---     rw [Products.eval_eq]
---     split_ifs with hh
---     · exfalso
---       sorry
---     · rfl
-  -- have hQ : (Quot.mk r : C → Quot r).Surjective
-  -- · intro a
-  --   obtain ⟨a', h'⟩ := hsπ (c a)
-  -- have hci : c.Injective
-  -- · intro a b h
-  --   sorry
-
-  -- haveI : CompactSpace W := sorry
-  -- let T : Profinite := Profinite.of W
-  -- let g : T → W := fun t ↦ t
-  -- have hg : Continuous g := continuous_id'
-  -- let f' : LocallyConstant T ℤ := f.comap g
-
-  -- use CoeffsFinsupp T f' --  universe issues...?
-
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
 @NobelingProof.Nobeling {C : Set S // IsClopen C} (IsWellOrder.linearOrder WellOrderingRel)
   WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S)
+
+/-
+'Nobeling' depends on axioms: [Quot.sound, propext, Classical.choice]
+-/
+#print axioms Nobeling
