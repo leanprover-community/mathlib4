@@ -3,8 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Fixed
+import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 #align_import field_theory.galois from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"

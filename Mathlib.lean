@@ -1878,6 +1878,7 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
@@ -2098,6 +2099,7 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.SMap
 import Mathlib.Lean.System.IO
+import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -3293,6 +3295,7 @@ import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Order.NhdsSet
 import Mathlib.Topology.Order.Priestley
+import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartitionOfUnity

@@ -2093,9 +2093,9 @@ theorem smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t 
   image_sdiff _ _ <| MulAction.injective₀ ha
 #align finset.smul_finset_sdiff₀ Finset.smul_finset_sdiff₀
 
-theorem smul_finset_symm_diff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
+theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff _ _ <| MulAction.injective₀ ha
-#align finset.smul_finset_symm_diff₀ Finset.smul_finset_symm_diff₀
+#align finset.smul_finset_symm_diff₀ Finset.smul_finset_symmDiff₀
 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
