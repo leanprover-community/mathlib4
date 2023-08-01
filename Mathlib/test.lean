@@ -3,15 +3,8 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Convex.Segment
-import Mathlib.Topology.Instances.Real
-import Mathlib.LinearAlgebra.Finrank
-import Mathlib.Analysis.Convolution
-import Mathlib.SetTheory.Cardinal.Ordinal
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.LinearAlgebra.Dimension
 import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
@@ -20,22 +13,14 @@ import Mathlib.Topology.Algebra.Module.Cardinality
 But the header is still correctly formatted to appease the linter
 -/
 
-set_option autoImplicit false
+open Convex Set
 
-open LinearMap Set Function
+section TopologicalVectorSpace
 
-open BigOperators Classical Convex Pointwise Filter
-
-universe u v
-
-open Filter Set
-
-open scoped Cardinal Topology
-
+variable {E : Type _} [AddCommGroup E] [Module ℝ E]
 
 lemma segment_inter_eq_endpoint_of_linearIndependent
-    {E : Type _} [AddCommGroup E] [Module ℝ E] {x y : E} (h : LinearIndependent ℝ ![x, y])
-    {s t : ℝ} (hs : s ≠ t) (c : E) :
+    {x y : E} (h : LinearIndependent ℝ ![x, y]) {s t : ℝ} (hs : s ≠ t) (c : E) :
     [c + x -[ℝ] c + t • y] ∩ [c + x -[ℝ] c + s • y] ⊆ {c + x} := by
   intro z ⟨hzt, hzs⟩
   rw [segment_eq_image, mem_image] at hzt hzs
@@ -52,15 +37,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent
   · have A : s = t := by simpa [mul_eq_mul_left_iff, hq0'.ne'] using (h.eq_of_pair H').2
     exact (hs A).elim
 
-open Function
-
-
-section
-
-variable {E : Type _} [AddCommGroup E] [Module ℝ E]
-  [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-
-
+variable [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
@@ -154,3 +131,59 @@ theorem isConnected_compl_singleton_of_one_lt_rank
     (h : 1 < Module.rank ℝ E) (x : E) :
     IsConnected {x}ᶜ :=
   (isPathConnected_compl_singleton_of_one_lt_rank h x).isConnected
+
+end TopologicalVectorSpace
+
+section NormedSpace
+
+open Metric
+
+/-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
+def Path.map' {X : Type _} [TopologicalSpace X] {x y : X}
+    (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y} (h : ContinuousOn f (range γ)) :
+    Path (f x) (f y) where
+  toFun := f ∘ γ
+  continuous_toFun := h.comp_continuous γ.continuous (fun x ↦ mem_range_self x)
+  source' := by simp
+  target' := by simp
+
+
+theorem IsPathConnected.image' {X Y : Type _} {F : Set X}
+    [TopologicalSpace X] [TopologicalSpace Y] (hF : IsPathConnected F) {f : X → Y}
+    (hf : ContinuousOn f F) : IsPathConnected (f '' F) := by
+  rcases hF with ⟨x, x_in, hx⟩
+  use f x, mem_image_of_mem f x_in
+  rintro _ ⟨y, y_in, rfl⟩
+  refine ⟨(hx y_in).somePath.map' ?_, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
+  exact hf.mono (range_subset_iff.2 (hx y_in).somePath_mem)
+
+variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) :
+    IsPathConnected (sphere (0 : E) 1) := by
+  let f : E → E := fun x ↦ ‖x‖⁻¹ • x
+  have A : ContinuousOn f {0}ᶜ := by
+    intro x hx
+    apply ((ContinuousAt.inv₀ continuousAt_id.norm ?_).smul continuousAt_id).continuousWithinAt
+    simpa using hx
+  have B : IsPathConnected ({0}ᶜ : Set E) := isPathConnected_compl_singleton_of_one_lt_rank h 0
+  have C : IsPathConnected (f '' {0}ᶜ) := B.image' A
+  have : f '' {0}ᶜ = sphere (0 : E) 1 := by
+    apply Subset.antisymm
+    · rintro - ⟨y, hy, rfl⟩
+      have : ‖y‖ ≠ 0 := by simpa using hy
+      simpa [norm_smul] using inv_mul_cancel this
+    · intro x hx
+      refine ⟨x, ?_, ?_⟩
+      · rintro rfl
+        simp at hx
+      · simp at hx
+        simp [hx]
+  rwa [this] at C
+
+
+
+
+
+
+end NormedSpace
