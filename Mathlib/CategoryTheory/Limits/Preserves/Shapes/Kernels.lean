@@ -31,26 +31,26 @@ variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
 
 namespace CategoryTheory.Limits
 
-section KernelFork
+namespace KernelFork
 
 variable {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
   (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
 @[reassoc (attr := simp)]
-lemma KernelFork.map_condition : G.map c.ι ≫ G.map f = 0 := by
+lemma map_condition : G.map c.ι ≫ G.map f = 0 := by
   rw [← G.map_comp, c.condition, G.map_zero]
 
 /-- A kernel fork for `f` is mapped to a kernel fork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
-def KernelFork.map : KernelFork (G.map f) :=
+def map : KernelFork (G.map f) :=
   KernelFork.ofι (G.map c.ι) (c.map_condition G)
 
 @[simp]
-lemma KernelFork.map_ι : (c.map G).ι = G.map c.ι := rfl
+lemma map_ι : (c.map G).ι = G.map c.ι := rfl
 
 /-- The underlying cone of a kernel fork is mapped to a limit cone if and only if
 the mapped kernel fork is limit. -/
-def KernelFork.isLimitMapConeEquiv :
+def isLimitMapConeEquiv :
     IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
   refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
   refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
@@ -58,7 +58,7 @@ def KernelFork.isLimitMapConeEquiv :
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
 preserves the corresponding limit. -/
-def KernelFork.mapIsLimit [PreservesLimit (parallelPair f 0) G] :
+def mapIsLimit [PreservesLimit (parallelPair f 0) G] :
     IsLimit (c.map G) :=
   c.isLimitMapConeEquiv G (isLimitOfPreserves G hc)
 
@@ -158,26 +158,26 @@ theorem kernel_map_comp_preserves_kernel_iso_inv {X' Y' : C} (g : X' ⟶ Y') [Ha
 
 end Kernels
 
-section CokernelCofork
+namespace CokernelCofork
 
 variable {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
   (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
 @[reassoc (attr := simp)]
-lemma CokernelCofork.map_condition : G.map f ≫ G.map c.π = 0 := by
+lemma map_condition : G.map f ≫ G.map c.π = 0 := by
   rw [← G.map_comp, c.condition, G.map_zero]
 
 /-- A cokernel cofork for `f` is mapped to a cokernel cofork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
-def CokernelCofork.map : CokernelCofork (G.map f) :=
+def map : CokernelCofork (G.map f) :=
   CokernelCofork.ofπ (G.map c.π) (c.map_condition G)
 
 @[simp]
-lemma CokernelCofork.map_π : (c.map G).π = G.map c.π := rfl
+lemma map_π : (c.map G).π = G.map c.π := rfl
 
 /-- The underlying cocone of a cokernel cofork is mapped to a colimit cocone if and only if
 the mapped cokernel cofork is colimit. -/
-def CokernelCofork.isColimitMapCoconeEquiv :
+def isColimitMapCoconeEquiv :
     IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
   refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
   refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
@@ -185,7 +185,7 @@ def CokernelCofork.isColimitMapCoconeEquiv :
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
-def CokernelCofork.mapIsColimit [PreservesColimit (parallelPair f 0) G] :
+def mapIsColimit [PreservesColimit (parallelPair f 0) G] :
     IsColimit (c.map G) :=
   c.isColimitMapCoconeEquiv G (isColimitOfPreserves G hc)
 
