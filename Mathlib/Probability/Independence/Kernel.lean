@@ -64,7 +64,7 @@ def iIndepSetsₖ {_mΩ : MeasurableSpace Ω}
   ∀ᵐ a ∂μ, κ a (⋂ i ∈ s, f i) = ∏ i in s, κ a (f i)
 
 /-- Two sets of sets `s₁, s₂` are independent with respect to a kernel `κ` and a measure `μ` if for
-any sets `t₁ ∈ p₁, t₂ ∈ s₂`, then `∀ᵐ a ∂μ, κ a (t₁ ∩ t₂) = κ a (t₁) * κ a (t₂)` -/
+any sets `t₁ ∈ s₁, t₂ ∈ s₂`, then `∀ᵐ a ∂μ, κ a (t₁ ∩ t₂) = κ a (t₁) * κ a (t₂)` -/
 def IndepSetsₖ {_mΩ : MeasurableSpace Ω}
     (s1 s2 : Set (Set Ω)) (κ : kernel α Ω) (μ : Measure α := by volume_tac) : Prop :=
   ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (∀ᵐ a ∂μ, κ a (t1 ∩ t2) = κ a t1 * κ a t2)
@@ -72,16 +72,14 @@ def IndepSetsₖ {_mΩ : MeasurableSpace Ω}
 /-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
 kernel `κ` and a measure `μ` if the family of sets of measurable sets they define is independent. -/
 def iIndepₖ (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (κ : kernel α Ω)
-    (μ : Measure α := by volume_tac) :
-    Prop :=
+    (μ : Measure α := by volume_tac) : Prop :=
   iIndepSetsₖ (fun x ↦ {s | MeasurableSet[m x] s}) κ μ
 
 /-- Two measurable space structures (or σ-algebras) `m₁, m₂` are independent with respect to a
 kernel `κ` and a measure `μ` if for any sets `t₁ ∈ m₁, t₂ ∈ m₂`,
 `∀ᵐ a ∂μ, κ a (t₁ ∩ t₂) = κ a (t₁) * κ a (t₂)` -/
 def Indepₖ (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (κ : kernel α Ω)
-    (μ : Measure α := by volume_tac) :
-    Prop :=
+    (μ : Measure α := by volume_tac) : Prop :=
   IndepSetsₖ {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} κ μ
 
 /-- A family of sets is independent if the family of measurable space structures they generate is
@@ -240,7 +238,7 @@ end Indep
 /-! ### Deducing `Indepₖ` from `iIndepₖ` -/
 
 
-section FromIndepToIndep
+section FromiIndepToIndep
 
 variable {_mα : MeasurableSpace α}
 
@@ -281,7 +279,7 @@ theorem iIndepFunₖ.indepFunₖ {_mΩ : MeasurableSpace Ω}
     (hij : i ≠ j) : IndepFunₖ (f i) (f j) κ μ :=
   hf_Indepₖ.indepₖ hij
 
-end FromIndepToIndep
+end FromiIndepToIndep
 
 /-!
 ## π-system lemma
@@ -319,7 +317,7 @@ section FromPiSystemsToMeasurableSpaces
 
 variable {_mα : MeasurableSpace α}
 
-private theorem IndepSetsₖ.indepₖ_aux {m₂ m : MeasurableSpace Ω}
+theorem IndepSetsₖ.indepₖ_aux {m₂ m : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] {p1 p2 : Set (Set Ω)} (h2 : m₂ ≤ m)
     (hp2 : IsPiSystem p2) (hpm2 : m₂ = generateFrom p2) (hyp : IndepSetsₖ p1 p2 κ μ) {t1 t2 : Set Ω}
     (ht1 : t1 ∈ p1) (ht1m : MeasurableSet[m] t1) (ht2m : MeasurableSet[m₂] t2) :
