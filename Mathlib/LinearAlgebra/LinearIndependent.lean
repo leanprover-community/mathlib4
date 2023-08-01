@@ -552,7 +552,6 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
     rfl
 #align linear_independent.units_smul LinearIndependent.units_smul
 
-
 lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     {s t s' t' : R} (h' : s • x + t • y = s' • x + t' • y) : s = s' ∧ t = t' := by
   have : (s - s') • x + (t - t') • y = 0 := by

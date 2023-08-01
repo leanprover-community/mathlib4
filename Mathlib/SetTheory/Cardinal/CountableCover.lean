@@ -6,14 +6,17 @@ Authors: Sébastien Gouëzel
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Order.Filter.Basic
 
-
 /-!
 # Cardinality of a set with a countable cover
 
+Assume that a set `t` is eventually covered by a countable family of sets, all with
+cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved in
+`Cardinal.mk_subtype_le_of_countable_eventually_mem`.
+
+Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
 
 open Set Order Filter
-
 open scoped Cardinal
 
 namespace Cardinal

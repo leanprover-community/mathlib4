@@ -141,21 +141,6 @@ theorem Set.Countable.isConnected_compl_of_one_lt_rank
     IsConnected sᶜ :=
   (hs.isPathConnected_compl_of_one_lt_rank h).isConnected
 
-/-- In a real vector space of finite dimension `> 1`, the complement of any countable set is path
-connected. -/
-theorem Set.Countable.isPathConnected_compl_of_one_lt_finrank
-    (h : 1 < FiniteDimensional.finrank ℝ E) {s : Set E} (hs : s.Countable) :
-    IsPathConnected sᶜ := by
-  apply hs.isPathConnected_compl_of_one_lt_rank
-  simpa using FiniteDimensional.rank_lt_of_finrank_lt h
-
-/-- In a real vector space of finite dimension `> 1`, the complement of any countable set is
-connected. -/
-theorem Set.Countable.isConnected_compl_of_one_lt_finrank
-    (h : 1 < FiniteDimensional.finrank ℝ E) {s : Set E} (hs : s.Countable) :
-    IsConnected sᶜ :=
-  (hs.isPathConnected_compl_of_one_lt_finrank h).isConnected
-
 /-- In a real vector space of dimension `> 1`, the complement of a singleton is path
 connected. -/
 theorem isPathConnected_compl_singleton_of_one_lt_rank
@@ -169,17 +154,3 @@ theorem isConnected_compl_singleton_of_one_lt_rank
     (h : 1 < Module.rank ℝ E) (x : E) :
     IsConnected {x}ᶜ :=
   (isPathConnected_compl_singleton_of_one_lt_rank h x).isConnected
-
-/-- In a real vector space of finite dimension `> 1`, the complement of any countable set is path
-connected. -/
-theorem isPathConnected_compl_singleton_of_one_lt_finrank
-    (h : 1 < FiniteDimensional.finrank ℝ E) (x : E) :
-    IsPathConnected {x}ᶜ :=
-  Set.Countable.isPathConnected_compl_of_one_lt_finrank h (countable_singleton x)
-
-/-- In a real vector space of finite dimension `> 1`, the complement of any countable set is
-connected. -/
-theorem isConnected_compl_singleton_of_one_lt_finrank
-    (h : 1 < FiniteDimensional.finrank ℝ E) (x : E) :
-    IsConnected {x}ᶜ :=
-  (isPathConnected_compl_singleton_of_one_lt_finrank h x).isConnected
