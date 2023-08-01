@@ -166,7 +166,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
     rw [get_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
-    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le _ _ M.succ_pos hMl
+    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine' (ihn _ hlen_lt _ y _ hlen).trans _
     rw [cons_get_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=

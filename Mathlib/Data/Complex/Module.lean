@@ -318,7 +318,7 @@ variable {A : Type _} [Ring A] [Algebra ℝ A]
 See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
-    ((Algebra.ofId ℝ A).toLinearMap.comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
+    ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
     (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [RingHom.map_one, zero_smul, add_zero])
     fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
     show

@@ -121,7 +121,7 @@ scoped macro_rules (kind := bigsumin)
   | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
   | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
 
-/-- `∏ x, f x` is notation for `Finset.prod s f`. It is the sum of `f x`,
+/-- `∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
 where `x` ranges over the finite set `s`. -/
 scoped syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
 scoped macro_rules (kind := bigprodin)

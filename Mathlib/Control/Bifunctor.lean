@@ -38,7 +38,7 @@ class Bifunctor (F : Type u₀ → Type u₁ → Type u₂) where
 export Bifunctor (bimap)
 
 /-- Bifunctor. This typeclass asserts that a lawless `Bifunctor` is lawful. -/
-class LawfulBifunctor (F : Type u₀ → Type u₁ → Type u₂) [Bifunctor F] where
+class LawfulBifunctor (F : Type u₀ → Type u₁ → Type u₂) [Bifunctor F] : Prop where
   id_bimap : ∀ {α β} (x : F α β), bimap id id x = x
   bimap_bimap :
     ∀ {α₀ α₁ α₂ β₀ β₁ β₂} (f : α₀ → α₁) (f' : α₁ → α₂) (g : β₀ → β₁) (g' : β₁ → β₂) (x : F α₀ β₀),
