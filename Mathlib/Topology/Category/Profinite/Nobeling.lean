@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
@@ -9,11 +14,32 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Connected
 
-set_option autoImplicit false
+/-!
+
+# Nöbeling's theorem
+
+This file proves Nöbeling's theorem,
+
+## Main result
+
+- `Nobeling`: For `S : Profinite`, the ℤ-module `LocallyConstant S ℤ` is free.
+
+## Implementation Details
+
+We follow the proof of theorem 5.4 in [scholze2019condensed], ordinal induction, etc.
+
+**TODO:** Write more details here.
+
+## References
+
+- [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
+
+-/
 
 universe u
 
 section Scott
+-- This section is PR #6278
 
 variable (α : Type _) [LinearOrder α]
 
@@ -329,76 +355,6 @@ instance wellFoundedLT_sorted [WellFoundedLT α] :
 
 end Scott
 
-def setHomeoSubtype {X : Type _} [TopologicalSpace X] (s : Set X) : s ≃ₜ {x // x ∈ s} :=
-{ toFun := fun x ↦ ⟨x.val, x.prop⟩
-  invFun := fun x ↦ x
-  left_inv := by
-    intro x
-    dsimp
-  right_inv := by
-    intro x
-    dsimp }
-
-namespace Function
-
-open Classical
-
-noncomputable
-def ExtendBy {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y) : X → Y :=
-fun x ↦ if hx : x ∈ C then f ⟨x, hx⟩ else junk
-
-lemma restrict_extendBy_eq_self {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y) :
-    C.restrict (f.ExtendBy junk) = f := by
-  ext x
-  dsimp [ExtendBy]
-  simp only [Subtype.coe_prop, Subtype.coe_eta, dite_eq_ite, ite_true]
-
-lemma extendBy_preimage_of_junk_ne_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
-    (s : Set Y) (hj : ¬ junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) := by
-  ext x
-  dsimp [ExtendBy]
-  simp only [Set.mem_preimage, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  constructor
-  <;> intro hx
-  · split_ifs at hx with h
-    · use h
-    · exfalso
-      exact hj hx
-  · obtain ⟨hx,hfx⟩ := hx
-    split_ifs
-    exact hfx
-
-lemma extendBy_preimage_of_junk_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
-    (s : Set Y) (hj : junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) ∪ Cᶜ := by
-  ext x
-  dsimp [ExtendBy]
-  simp only [Set.mem_preimage, Set.mem_union, Set.mem_image, Subtype.exists, exists_and_right,
-    exists_eq_right, Set.mem_compl_iff]
-  constructor
-  <;> intro hx
-  · split_ifs at hx with h
-    · left
-      use h
-    · right
-      exact h
-  · obtain ⟨hx,hfx⟩ := hx
-    split_ifs
-    · exact hfx
-    · split_ifs
-      assumption
-
-end Function
-
-namespace Set
-
-open Classical
-
-noncomputable
-def piecewise' {X Y : Type _} {C : Set X} {p : X → Prop} (f : {i // i ∈ C} → Y)
-    (g : (Subtype p) → Y) (junk : Y) : X → Y := C.piecewise (f.ExtendBy junk) (g.ExtendBy junk)
-
-end Set
-
 namespace ModuleCat
 
 variable {I : Type _} {J : Type _} {R : Type _} [Ring R] {N P : ModuleCat R} {v : I → N} {w : J → P}
@@ -471,6 +427,66 @@ lemma linearIndependent_leftExact : LinearIndependent R u := by
 end LinearIndependent
 
 end ModuleCat
+
+namespace Function
+
+open Classical
+
+noncomputable
+def ExtendBy {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y) : X → Y :=
+fun x ↦ if hx : x ∈ C then f ⟨x, hx⟩ else junk
+
+lemma restrict_extendBy_eq_self {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y) :
+    C.restrict (f.ExtendBy junk) = f := by
+  ext x
+  dsimp [ExtendBy]
+  simp only [Subtype.coe_prop, Subtype.coe_eta, dite_eq_ite, ite_true]
+
+lemma extendBy_preimage_of_junk_ne_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
+    (s : Set Y) (hj : ¬ junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) := by
+  ext x
+  dsimp [ExtendBy]
+  simp only [Set.mem_preimage, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  constructor
+  <;> intro hx
+  · split_ifs at hx with h
+    · use h
+    · exfalso
+      exact hj hx
+  · obtain ⟨hx,hfx⟩ := hx
+    split_ifs
+    exact hfx
+
+lemma extendBy_preimage_of_junk_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
+    (s : Set Y) (hj : junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) ∪ Cᶜ := by
+  ext x
+  dsimp [ExtendBy]
+  simp only [Set.mem_preimage, Set.mem_union, Set.mem_image, Subtype.exists, exists_and_right,
+    exists_eq_right, Set.mem_compl_iff]
+  constructor
+  <;> intro hx
+  · split_ifs at hx with h
+    · left
+      use h
+    · right
+      exact h
+  · obtain ⟨hx,hfx⟩ := hx
+    split_ifs
+    · exact hfx
+    · split_ifs
+      assumption
+
+end Function
+
+namespace Set
+
+open Classical
+
+noncomputable
+def piecewise' {X Y : Type _} {C : Set X} {p : X → Prop} (f : {i // i ∈ C} → Y)
+    (g : (Subtype p) → Y) (junk : Y) : X → Y := C.piecewise (f.ExtendBy junk) (g.ExtendBy junk)
+
+end Set
 
 namespace LocallyConstant
 
@@ -680,7 +696,8 @@ def equivLinear (e : X ≃ₜ Y) : LocallyConstant X Z ≃ₗ[R] LocallyConstant
   right_inv := (equiv e).right_inv }
 
 noncomputable
-def LinearSumEquivProd : LocallyConstant (X ⊕ Y) Z ≃ₗ[R] LocallyConstant X Z × LocallyConstant Y Z :=
+def LinearSumEquivProd :
+    LocallyConstant (X ⊕ Y) Z ≃ₗ[R] LocallyConstant X Z × LocallyConstant Y Z :=
 { toFun := SumEquivProd.toFun
   map_smul' := by
     intro r f
@@ -2101,7 +2118,8 @@ Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr
 
 lemma GoodProducts.huw : Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr = w C hsC ho := by rfl
 
-lemma swapTrue_swapFalse (x : WithTop I → Bool) (hx : x ∈ Res (C1 C ho) o) : SwapFalse o (SwapTrue o x) = x := by
+lemma swapTrue_swapFalse (x : WithTop I → Bool) (hx : x ∈ Res (C1 C ho) o) :
+    SwapFalse o (SwapTrue o x) = x := by
   ext i
   dsimp [SwapTrue, SwapFalse]
   split_ifs with h
