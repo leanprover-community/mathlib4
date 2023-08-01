@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Kenny Lau, 2023 Jz Pan. All rights reserved.
+Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Jz Pan
+Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
@@ -23,6 +23,24 @@ polynomial in `k` splits.
 ## Tags
 
 separable closure, separably closed
+
+## TODO
+
+- `IsSepClosed.lift` is a map from a separable extension `L` of `R`, into any separably
+  closed extension of `R`.
+
+- `IsSepClosed.equiv` is a proof that any two separable closures of the
+  same field are isomorphic.
+
+- If `K` is a separably closed field (or algebraically closed field) containing `k`, then all
+  elements of `K` which are separable over `k` form a separable closure of `k`.
+  In particular, separable closure exists.
+
+- If `k` is a perefect field, then its separable closure coincide with its algebraic closure.
+
+- An algebraic extension of a separably closed field is purely inseparable.
+
+- Maximal separable subextension ...
 
 -/
 
@@ -47,7 +65,7 @@ separably closed.
 
 See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
-theorem IsSepClosed.splits_codomain {k K : Type _} [Field k] [Field K] [IsSepClosed K]  {f : k →+* K}
+theorem IsSepClosed.splits_codomain {k K : Type _} [Field k] [Field K] [IsSepClosed K] {f : k →+* K}
     (p : k[X]) (h : p.Separable) : p.Splits f := by
   convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
 
