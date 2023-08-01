@@ -624,7 +624,7 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   ext; simp
 
 /-- The dual of a reflexive module is reflexive. -/
-instance IsReflexive_dual : IsReflexive R (Dual R M) :=
+instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
 ⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
 
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
@@ -644,16 +644,30 @@ theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
 
-instance IsReflexive.prod {N : Type _} [AddCommGroup N] [Module R N] [IsReflexive R N] :
-    IsReflexive R (M × N) := by
-  constructor
-  let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
-    (dualProdDualEquivDual R M N).dualMap.trans (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
-  have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
-    ext m f <;> simp
-  simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
-    coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-  exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+instance _root_.Prod.instModuleIsReflexive {N : Type _} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+    IsReflexive R (M × N) where
+  bijective_dual_eval' := by
+    let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
+      (dualProdDualEquivDual R M N).dualMap.trans (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
+    have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
+      ext m f <;> simp
+    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+      coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+    exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+
+instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) where
+  bijective_dual_eval' := by
+    let e : Dual R (Dual R (MulOpposite M)) ≃ₗ[R] Dual R (Dual R M) :=
+      LinearEquiv.dualMap <| LinearEquiv.dualMap <| MulOpposite.opLinearEquiv _ |>.symm
+    have : Dual.eval R (MulOpposite M) = e.symm.comp ((Dual.eval R M).comp
+        <| MulOpposite.opLinearEquiv _ |>.symm.toLinearMap) := by
+      ext m f; rfl
+    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+      coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+    refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
+
+-- TODO: add `ULift.instModuleIsReflexive : IsReflexive R (ULift.{v} M)` once we have
+-- `LinearEquiv.ulift`
 
 end IsReflexive
 
