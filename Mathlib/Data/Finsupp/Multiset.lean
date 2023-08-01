@@ -70,7 +70,7 @@ theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {
 
 theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
     Finsupp.toMultiset (∑ i in s, f i) = ∑ i in s, Finsupp.toMultiset (f i) :=
-  map_sum _ _ _
+  map_sum Finsupp.toMultiset _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 
 theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :

@@ -448,8 +448,8 @@ theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) 
 #align set.maps_to.iterate_restrict Set.MapsTo.iterate_restrict
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
-  MapsTo f s t :=
-fun a ha ↦ Subsingleton.mem_iff_nonempty.2 $ h ⟨a, ha⟩
+    MapsTo f s t :=
+  fun a ha ↦ Subsingleton.mem_iff_nonempty.2 $ h ⟨a, ha⟩
 #align set.maps_to_of_subsingleton' Set.mapsTo_of_subsingleton'
 
 lemma mapsTo_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : MapsTo f s s :=
@@ -671,9 +671,9 @@ theorem InjOn.comp (hg : InjOn g t) (hf : InjOn f s) (h : MapsTo f s t) : InjOn 
 #align set.inj_on.comp Set.InjOn.comp
 
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
-  ∀ n, InjOn f^[n] s
-| 0 => injOn_id _
-| (n + 1) => (h.iterate hf n).comp h hf
+    ∀ n, InjOn f^[n] s
+  | 0 => injOn_id _
+  | (n + 1) => (h.iterate hf n).comp h hf
 #align set.inj_on.iterate Set.InjOn.iterate
 
 lemma injOn_of_subsingleton [Subsingleton α] (f : α → β) (s : Set α) : InjOn f s :=
@@ -841,13 +841,13 @@ lemma SurjOn.comp_left (hf : SurjOn f s t) (g : β → γ) : SurjOn (g ∘ f) s 
 #align set.surj_on.comp_left Set.SurjOn.comp_left
 
 lemma SurjOn.comp_right {s : Set β} {t : Set γ} (hf : Surjective f) (hg : SurjOn g s t) :
-  SurjOn (g ∘ f) (f ⁻¹' s) t :=
-by rwa [SurjOn, image_comp g f, image_preimage_eq _ hf]
+    SurjOn (g ∘ f) (f ⁻¹' s) t := by
+  rwa [SurjOn, image_comp g f, image_preimage_eq _ hf]
 #align set.surj_on.comp_right Set.SurjOn.comp_right
 
 lemma surjOn_of_subsingleton' [Subsingleton β] (f : α → β) (h : t.Nonempty → s.Nonempty) :
-  SurjOn f s t :=
-fun _ ha ↦ Subsingleton.mem_iff_nonempty.2 $ (h ⟨_, ha⟩).image _
+    SurjOn f s t :=
+  fun _ ha ↦ Subsingleton.mem_iff_nonempty.2 $ (h ⟨_, ha⟩).image _
 #align set.surj_on_of_subsingleton' Set.surjOn_of_subsingleton'
 
 lemma surjOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : SurjOn f s s :=
@@ -989,8 +989,8 @@ lemma BijOn.iterate {f : α → α} {s : Set α} (h : BijOn f s s) : ∀ n, BijO
 #align set.bij_on.iterate Set.BijOn.iterate
 
 lemma bijOn_of_subsingleton' [Subsingleton α] [Subsingleton β] (f : α → β)
-  (h : s.Nonempty ↔ t.Nonempty) : BijOn f s t :=
-⟨mapsTo_of_subsingleton' _ h.1, injOn_of_subsingleton _ _, surjOn_of_subsingleton' _ h.2⟩
+    (h : s.Nonempty ↔ t.Nonempty) : BijOn f s t :=
+  ⟨mapsTo_of_subsingleton' _ h.1, injOn_of_subsingleton _ _, surjOn_of_subsingleton' _ h.2⟩
 #align set.bij_on_of_subsingleton' Set.bijOn_of_subsingleton'
 
 lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : BijOn f s s :=
@@ -1179,9 +1179,9 @@ lemma invOn_id (s : Set α) : InvOn id id s s := ⟨s.leftInvOn_id, s.rightInvOn
 #align set.inv_on_id Set.invOn_id
 
 lemma InvOn.comp (hf : InvOn f' f s t) (hg : InvOn g' g t p) (fst : MapsTo f s t)
-  (g'pt : MapsTo g' p t) :
-  InvOn (f' ∘ g') (g ∘ f) s p :=
-⟨hf.1.comp hg.1 fst, hf.2.comp hg.2 g'pt⟩
+    (g'pt : MapsTo g' p t) :
+    InvOn (f' ∘ g') (g ∘ f) s p :=
+  ⟨hf.1.comp hg.1 fst, hf.2.comp hg.2 g'pt⟩
 #align set.inv_on.comp Set.InvOn.comp
 
 theorem InvOn.symm (h : InvOn f' f s t) : InvOn f f' t s :=
@@ -1724,35 +1724,35 @@ namespace Set
 variable {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} {g g₁ g₂ : Perm α} {s t : Set α}
 
 protected lemma MapsTo.extendDomain (h : MapsTo g s t) :
-  MapsTo (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
+    MapsTo (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
   rintro _ ⟨a, ha, rfl⟩; exact ⟨_, h ha, by simp_rw [Function.comp_apply, extendDomain_apply_image]⟩
 #align set.maps_to.extend_domain Set.MapsTo.extendDomain
 
 protected lemma SurjOn.extendDomain (h : SurjOn g s t) :
-  SurjOn (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
+    SurjOn (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
   rintro _ ⟨a, ha, rfl⟩
   obtain ⟨b, hb, rfl⟩ := h ha
   exact ⟨_, ⟨_, hb, rfl⟩, by simp_rw [Function.comp_apply, extendDomain_apply_image]⟩
 #align set.surj_on.extend_domain Set.SurjOn.extendDomain
 
 protected lemma BijOn.extendDomain (h : BijOn g s t) :
-  BijOn (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) :=
-⟨h.mapsTo.extendDomain, (g.extendDomain f).injective.injOn _, h.surjOn.extendDomain⟩
+    BijOn (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) :=
+  ⟨h.mapsTo.extendDomain, (g.extendDomain f).injective.injOn _, h.surjOn.extendDomain⟩
 #align set.bij_on.extend_domain Set.BijOn.extendDomain
 
 protected lemma LeftInvOn.extendDomain (h : LeftInvOn g₁ g₂ s) :
-  LeftInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) := by
+    LeftInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) := by
   rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
 #align set.left_inv_on.extend_domain Set.LeftInvOn.extendDomain
 
 protected lemma RightInvOn.extendDomain (h : RightInvOn g₁ g₂ t) :
-  RightInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' t) := by
+    RightInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' t) := by
   rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
 #align set.right_inv_on.extend_domain Set.RightInvOn.extendDomain
 
 protected lemma InvOn.extendDomain (h : InvOn g₁ g₂ s t) :
-  InvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) :=
-⟨h.1.extendDomain, h.2.extendDomain⟩
+    InvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) :=
+  ⟨h.1.extendDomain, h.2.extendDomain⟩
 #align set.inv_on.extend_domain Set.InvOn.extendDomain
 
 end Set
@@ -1789,8 +1789,10 @@ alias bijOn_symm ↔ _root_.Set.BijOn.of_equiv_symm _root_.Set.BijOn.equiv_symm
 variable [DecidableEq α] {a b : α}
 
 lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
-  (swap a b).bijOn $ fun x ↦ by obtain rfl | hxa := eq_or_ne x a <;>
-    obtain rfl | hxb := eq_or_ne x b <;> simp [*, swap_apply_of_ne_of_ne]
+  (swap a b).bijOn $ fun x ↦ by
+    obtain rfl | hxa := eq_or_ne x a <;>
+    obtain rfl | hxb := eq_or_ne x b <;>
+    simp [*, swap_apply_of_ne_of_ne]
 #align equiv.bij_on_swap Equiv.bijOn_swap
 
 end Equiv

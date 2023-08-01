@@ -50,7 +50,7 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
   then it is an extremum of the same type for their sum;
 * `is**.neg` : if `x` is an extremum for `f`, then it is an extremum
   of the opposite type for `-f`;
-* `is**.sub` : if `x` is an a minimum for `f` and a maximum for `g`,
+* `is**.sub` : if `x` is a minimum for `f` and a maximum for `g`,
   then it is a minimum for `f - g` and a maximum for `g - f`;
 * `is**.max`, `is**.min`, `is**.sup`, `is**.inf` : similarly for `is**.add`
   for pointwise `max`, `min`, `sup`, `inf`, respectively.
