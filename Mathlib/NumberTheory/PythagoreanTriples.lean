@@ -460,13 +460,11 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   · exact h.isPrimitiveClassified_of_coprime_of_zero_left hc h0
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
-  have hz : z ≠ 0
-  apply ne_of_gt hzpos
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    field_simp [hz, sq]
+    field_simp [sq]
     norm_cast
   have hvz : v ≠ 0 := by
-    field_simp [hz]
+    field_simp
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1

@@ -175,7 +175,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   have := factorial_mul_factorial_dvd_factorial_add i j
   field_simp [mul_comm _ (bernoulli' i), mul_assoc, add_choose]
   norm_cast
-  rw [mul_comm (j + 1), mul_div_assoc, ← mul_assoc]
+  simp [mul_comm (j + 1)]
 #align bernoulli'_power_series_mul_exp_sub_one bernoulli'PowerSeries_mul_exp_sub_one
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
@@ -373,7 +373,7 @@ theorem sum_range_pow (n p : ℕ) :
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine' sum_congr rfl fun x _ => _
-  field_simp [mul_right_comm _ ↑p !, ← mul_assoc _ _ ↑p !, cast_add_one_ne_zero, hne]
+  field_simp [mul_right_comm _ ↑p !, ← mul_assoc _ _ ↑p !]
   ring
 #align sum_range_pow sum_range_pow
 
