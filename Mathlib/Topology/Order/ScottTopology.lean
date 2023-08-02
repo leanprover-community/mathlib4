@@ -262,7 +262,7 @@ lemma isOpen_iff_upper_and_inaccessible_by_directed_joins {u : Set α} :
 
 lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
     ↔ (IsLowerSet s ∧
-    ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
+    ∀ ⦃d : Set α⦄ ⦃a : α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
   rw [← isOpen_compl_iff, isOpen_iff_upper_and_inaccessible_by_directed_joins,
     isLowerSet_compl.symm, compl_compl]
   apply and_congr_right'
@@ -278,7 +278,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
   · intros h d a d₁ d₂ d₃ d₄
     rw [inter_compl_nonempty_iff]
     by_contra h'
-    have c1: a ∈ s := h d a d₁ d₂ d₃ h'
+    have c1: a ∈ s := h d₁ d₂ d₃ h'
     contradiction
 
 lemma isUpperSet_of_isOpen {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
@@ -390,22 +390,22 @@ lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
     {u : Set α} : IsOpen u ↔
-    IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u →
+    IsUpperSet u ∧  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u →
     (d∩u).Nonempty := by
   rw [ScottTopology.isOpen_iff_upper_and_inaccessible_by_directed_joins]
   apply and_congr_right'
   constructor
   · exact fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃
-  · exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
+  · exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
 lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
     ↔ IsLowerSet s ∧
-    ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
+    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
   rw [ScottTopology.isClosed_iff_lower_and_subset_implies_LUB_mem]
   apply and_congr_right'
   constructor
-  · exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
-  · exact fun h d a h₁ h₂ h₃ ha => Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h d h₁ h₂ ha)
+  · exact fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃
+  · exact fun h d a h₁ h₂ h₃ ha => Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h h₁ h₂ ha)
 
 
 end complete_lattice
