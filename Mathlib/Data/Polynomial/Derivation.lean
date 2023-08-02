@@ -16,16 +16,16 @@ builds a derivation from its value on `X`, and a linear equivalence
 `Polynomial.mkDerivationEquiv` between `A` and `Derivation (Polynomial R) A`.
 -/
 
+noncomputable section
+
 namespace Polynomial
 
 open scoped BigOperators
 
-noncomputable section
-
 variable {R A : Type _} [CommSemiring R]
 
-/-- ## Derivative as a derivation -/
-
+/-- `Polynomial.derivative` as a derivation. -/
+@[simps]
 def derivative' : Derivation R R[X] R[X] where
   toFun := derivative
   map_add' _ _ := derivative_add
@@ -34,8 +34,6 @@ def derivative' : Derivation R R[X] R[X] where
   leibniz' f g := by simp [mul_comm, add_comm, derivative_mul]
 
 variable [AddCommMonoid A] [Module R A] [Module (Polynomial R) A]
-
-section
 
 @[simp]
 theorem derivation_C (D : Derivation R R[X] A) (a : R) : D (C a) = 0 :=
@@ -60,11 +58,15 @@ variable (R)
 def mkDerivation (a : A) : Derivation R R[X] A :=
   (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
 
+lemma mkDerivation_apply (a : A) (f : R[X]) :
+    mkDerivation R a f = derivative f • a := by
+  rfl
+
 @[simp]
-theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation, derivative']
+theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation_apply]
 
 lemma mkDerivation_one_eq_derivative' : mkDerivation R (1 : R[X]) = derivative' := by
-  apply derivation_ext
+  ext : 1
   simp [derivative']
 
 lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = derivative f := by
@@ -81,9 +83,11 @@ def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
       left_inv := fun _ => derivation_ext <| mkDerivation_X _ _
       right_inv := fun _ => mkDerivation_X _ _ }
 
-@[simp] lemma mkDerivationEquiv_apply_toFun (a : A) (f : R[X]) :
-    ((mkDerivationEquiv R) a) f = Polynomial.derivative f • a := by
+@[simp] lemma mkDerivationEquiv_apply (a : A) :
+    mkDerivationEquiv R a = mkDerivation R a := by
   rfl
 
 @[simp] lemma mkDerivationEquiv_symm_apply (D : Derivation R R[X] A) :
     (mkDerivationEquiv R).symm D = D X := rfl
+
+end Polynomial
