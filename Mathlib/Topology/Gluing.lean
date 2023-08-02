@@ -50,8 +50,6 @@ provided.
 * `TopCat.GlueData.ι_openEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
-set_option autoImplicit false
-
 
 noncomputable section
 

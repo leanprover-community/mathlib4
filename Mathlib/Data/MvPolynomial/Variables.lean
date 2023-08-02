@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
+import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.MvPolynomial.Rename
 
@@ -640,13 +641,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem totalDegree_add (a b : MvPolynomial σ R) :
     (a + b).totalDegree ≤ max a.totalDegree b.totalDegree :=
-  Finset.sup_le fun n hn => by
-    classical
-    have := Finsupp.support_add hn
-    rw [Finset.mem_union] at this
-    cases' this with h h
-    · exact le_max_of_le_left (le_totalDegree h)
-    · exact le_max_of_le_right (le_totalDegree h)
+  AddMonoidAlgebra.sup_support_add_le _ _ _
 #align mv_polynomial.total_degree_add MvPolynomial.totalDegree_add
 
 theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
@@ -679,18 +674,8 @@ theorem totalDegree_add_eq_right_of_totalDegree_lt {p q : MvPolynomial σ R}
 
 theorem totalDegree_mul (a b : MvPolynomial σ R) :
     (a * b).totalDegree ≤ a.totalDegree + b.totalDegree :=
-  Finset.sup_le fun n hn => by
-    classical
-    have := AddMonoidAlgebra.support_mul a b hn
-    simp only [Finset.mem_biUnion, Finset.mem_singleton] at this
-    rcases this with ⟨a₁, h₁, a₂, h₂, rfl⟩
-    rw [Finsupp.sum_add_index']
-    · dsimp [totalDegree]
-      exact add_le_add (le_totalDegree h₁) (le_totalDegree h₂)
-    · intro _
-      rfl
-    · intro _ b₁ b₂
-      rfl
+  AddMonoidAlgebra.sup_support_mul_le
+    (by exact (Finsupp.sum_add_index' (fun _ => rfl) (fun _ _ _ => rfl)).le) _ _
 #align mv_polynomial.total_degree_mul MvPolynomial.totalDegree_mul
 
 theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f : MvPolynomial σ S) :
