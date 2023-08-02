@@ -168,6 +168,11 @@ theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
   Basis.localizationLocalization_apply ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K) i
 #align number_field.integral_basis_apply NumberField.integralBasis_apply
 
+theorem mem_span_integralBasis {x : K} :
+    x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ 𝓞 K := by
+  rw [integralBasis, Basis.localizationLocalization_span, Subalgebra.range_isScalarTower_toAlgHom,
+    Subalgebra.mem_toSubmodule]
+
 theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
 #align number_field.ring_of_integers.rank NumberField.RingOfIntegers.rank
