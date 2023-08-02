@@ -544,6 +544,10 @@ theorem HasFPowerSeriesAt.add (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSer
   exact ⟨r, hr.1.add hr.2⟩
 #align has_fpower_series_at.add HasFPowerSeriesAt.add
 
+theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 g x :=
+  let ⟨_, hpf⟩ := hf
+  (hpf.congr hg).analyticAt
+
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
   let ⟨_, hpf⟩ := hf
   let ⟨_, hqf⟩ := hg
@@ -587,6 +591,10 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
 theorem AnalyticOn.mono {s t : Set E} (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun z hz => hf z (hst hz)
 #align analytic_on.mono AnalyticOn.mono
+
+theorem AnalyticOn.congr {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : ∀ z ∈ s, f =ᶠ[𝓝 z] g) :
+    AnalyticOn 𝕜 g s :=
+  fun z hz => (hf z hz).congr (hg z hz)
 
 theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
