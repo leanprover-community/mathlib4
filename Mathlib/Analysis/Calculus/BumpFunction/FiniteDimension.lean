@@ -157,7 +157,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       _ = M⁻¹ * δ n * ‖iteratedFDeriv ℝ i (g n) x‖ := by
         rw [norm_smul, Real.norm_of_nonneg]; positivity
       _ ≤ M⁻¹ * δ n * M := (mul_le_mul_of_nonneg_left ((hR i x).trans (IR i hi)) (by positivity))
-      _ = δ n := by field_simp [M_pos.ne']
+      _ = δ n := by field_simp
   choose r rpos hr using this
   have S : ∀ x, Summable fun n => (r n • g n) x := by
     intro x
@@ -329,7 +329,7 @@ variable (E)
 theorem w_integral {D : ℝ} (Dpos : 0 < D) : ∫ x : E, w D x ∂μ = 1 := by
   simp_rw [w, integral_smul]
   rw [integral_comp_inv_smul_of_nonneg μ (u : E → ℝ) Dpos.le, abs_of_nonneg Dpos.le, mul_comm]
-  field_simp [Dpos.ne', (u_int_pos E).ne']
+  field_simp [(u_int_pos E).ne']
 #align exists_cont_diff_bump_base.W_integral ExistsContDiffBumpBase.w_integral
 
 theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 D := by
