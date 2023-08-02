@@ -156,4 +156,28 @@ theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 
     exact ⟨g, g_norm.le, g_eq⟩
 #align exists_dual_vector'' exists_dual_vector''
 
+/-- Variant of Hahn-Banach for a pair of vectors, giving a linear form `g` satisfying
+`g x = 1` and `g y ≠ 0` for any two nonzero vectors `x` and `y`-/
+theorem exists_dual_vector_pair {x y : E} (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ g : E →L[𝕜] 𝕜, g x = 1 ∧ g y ≠ 0 := by
+  obtain ⟨u, ux⟩ : ∃ u : E →L[𝕜] 𝕜, u x = 1 := by
+    rcases exists_dual_vector 𝕜 x hx with ⟨u, -, ux⟩
+    refine ⟨‖x‖⁻¹ • u, ?_⟩
+    simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, ux, IsROrC.real_smul_ofReal,
+      IsROrC.ofReal_inv, ne_eq, algebraMap.lift_map_eq_zero_iff, norm_eq_zero]
+    rw [inv_mul_cancel]
+    simp [hx]
+  rcases ne_or_eq (u y) 0 with uy|uy
+  · refine ⟨u, ux, uy⟩
+  obtain ⟨v, vy⟩ : ∃ v : E →L[𝕜] 𝕜, v y = 1 := by
+    rcases exists_dual_vector 𝕜 y hy with ⟨v, -, vy⟩
+    refine ⟨‖y‖⁻¹ • v, ?_⟩
+    simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, vy, IsROrC.real_smul_ofReal,
+      IsROrC.ofReal_inv, ne_eq, algebraMap.lift_map_eq_zero_iff, norm_eq_zero]
+    rw [inv_mul_cancel]
+    simp [hy]
+  rcases ne_or_eq (v x) 0 with vx|vx
+  · exact ⟨(v x)⁻¹ • v, by simp [inv_mul_cancel vx], by simp [vx, vy]⟩
+  · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
+
 end DualVector
