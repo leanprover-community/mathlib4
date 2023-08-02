@@ -50,15 +50,11 @@ noncomputable def traceForm : L →ₗ[R] L →ₗ[R] R :=
     traceForm R L M x y = trace R _ (φ x ∘ₗ φ y) :=
   rfl
 
-@[simp] lemma traceForm_flip :
-    (traceForm R L M).flip = traceForm R L M := by
-  ext x y
-  simp only [LinearMap.flip_apply, traceForm_apply_apply]
-  exact LinearMap.trace_mul_comm R (φ y) (φ x)
+lemma traceForm_symm_apply_apply (x y : L) : traceForm R L M x y = traceForm R L M y x :=
+  LinearMap.trace_mul_comm R (φ x) (φ y)
 
-lemma traceForm_symm_apply_apply (x y : L) :
-    traceForm R L M x y = traceForm R L M y x := by
-  rw [← (traceForm R L M).flip_apply x y, traceForm_flip, traceForm_apply_apply]
+@[simp] lemma traceForm_flip : (traceForm R L M).flip = traceForm R L M :=
+  Eq.symm <| LinearMap.ext₂ <| traceForm_symm_apply_apply R L M
 
 lemma traceForm_apply_lie_apply (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
