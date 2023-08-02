@@ -84,8 +84,9 @@ instance is_finiteDimensional [FiniteDimensional F K] :
   apply IntermediateField.finiteDimensional_iSup_of_finite
 
 noncomputable instance algebra : Algebra K (normalClosure F K L) :=
-  ((inclusion (toAlgHom F K L).fieldRange_le_normalClosure).comp
-    (toAlgHom F K L).rangeRestrict).toAlgebra
+  IntermediateField.algebra
+    { (⨆ f : K →ₐ[F] L, f.fieldRange) with
+      algebraMap_mem' := fun r => (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
 instance : IsScalarTower F K (normalClosure F K L) := by
   apply of_algebraMap_eq'
