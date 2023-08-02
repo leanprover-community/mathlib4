@@ -22,9 +22,9 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 -/
 
 
-universe u v w
+universe u v w uι uR uA uM₁ uM₂
 
-variable {ι : Type _} {R A : Type _} {M₁ M₂ : Type _}
+variable {ι : Type _} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
 
@@ -34,7 +34,7 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁]
-variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [SMulCommClass R A A] [IsScalarTower R A M₁]
+variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
 variable [Module R M₂]
 
 /-- The tensor product of two bilinear forms injects into bilinear forms on tensor products.
@@ -45,7 +45,7 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
   ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
     ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm
     ≪≫ₗ LinearMap.toBilin).toLinearMap
-  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _
+  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv A _ _ _)
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)).toLinearMap
@@ -62,8 +62,21 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]
 protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinForm A (M₁ ⊗[R] M₂) :=
-  tensorDistrib (R := R) (B₁ ⊗ₜ[R] B₂)
+  tensorDistrib (A := A) (B₁ ⊗ₜ[R] B₂)
 #align bilin_form.tmul BilinForm.tmul
+
+/-- The base change of a bilinear form -/
+protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) := by
+  let why := BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.toBilin <| LinearMap.mul A A) B
+  exact why -- `exact why` fails!
+
+@[simp]
+theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
+    (a' : A) (m₂' : M₂) :
+    tensorDistrib (A := A) (B₁ ⊗ₜ B₂) (a ⊗ₜ m₂) (a' ⊗ₜ m₂')
+      = (a * a') * algebraMap R A (B₂ m₂ m₂') :=
+  rfl
+#align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmulₓ
 
 end CommSemiring
 
