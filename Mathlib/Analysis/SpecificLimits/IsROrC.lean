@@ -16,5 +16,5 @@ variable (𝕜 : Type _) [IsROrC 𝕜]
 
 theorem IsROrC.tendsto_inverse_atTop_nhds_0_nat : 
     Tendsto (fun n : ℕ => (n : 𝕜)⁻¹) atTop (nhds 0) := by
-  rw [show (fun n : ℕ => (n : 𝕜)⁻¹) = (↑) ∘ fun n : ℕ => (n : ℝ)⁻¹ by ext1 n; simp]
-  exact tendsto_algebraMap_inverse_atTop_nhds_0_nat 𝕜
+  convert tendsto_algebraMap_inverse_atTop_nhds_0_nat 𝕜
+  simp
