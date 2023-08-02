@@ -34,7 +34,6 @@ step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
 
 namespace RelSeries
 
--- TODO : change to `FunLike`
 instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
@@ -165,21 +164,22 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} w
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
 /--
-If `a_0 < a_1 < ... < a_n` and `b_0 < b_1 < ... < b_m` are two strict series such that `a_n < b_0`,
-then there is a chain of length `n + m + 1` given by
-`a_0 < a_1 < ... < a_n < b_0 < b_1 < ... < b_m`.
+If `a_0 --r-> a_1 --r-> ... --r-> a_n` and `b_0 --r-> b_1 --r-> ... --r-> b_m` are two strict series
+such that `r a_n b_0`, then there is a chain of length `n + m + 1` given by
+`a_0 --r-> a_1 --r-> ... --r-> a_n --r-> b_0 --r-> b_1 --r-> ... --r-> b_m`.
 -/
 @[simps]
 def append (p q : RelSeries r) (connect : r (p (Fin.last _)) (q 0)) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by ring)
   step := fun i => by
-    obtain (hi|rfl|hi) := lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
+    obtain (hi|rfl|hi) :=
+      lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
     · rw [Function.comp_apply, Function.comp_apply]
       convert p.step ⟨i.1, hi⟩ <;>
       · convert Fin.append_left p q _
         rfl
-    . convert connect
+    · convert connect
       rw [Function.comp_apply]
       convert Fin.append_left p q _
       · rfl
@@ -199,13 +199,12 @@ def append (p q : RelSeries r) (connect : r (p (Fin.last _)) (q 0)) : RelSeries 
         by
           apply Nat.sub_lt_left_of_lt_add (le_of_lt hi)
           exact i.2⟩
-      . ext
+      · ext
         change _ = _ + (_ - _)
         dsimp only [Fin.cast_succ_eq, Nat.add_eq, Nat.add_zero, Nat.rawCast, Nat.cast_id]
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc]
         rw [Nat.add_sub_cancel']
-        swap
-        . exact le_of_lt hi
+        swap; exact le_of_lt hi
         conv_rhs => rw [add_comm]
       rw [hx, Fin.append_right, hy, Fin.append_right]
       convert q.step _
@@ -217,14 +216,16 @@ def append (p q : RelSeries r) (connect : r (p (Fin.last _)) (q 0)) : RelSeries 
         rw [Nat.succ_eq_add_one]
         ring
       · rfl
-      . dsimp
+      · dsimp
         rw [Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
           Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
         exact hi
 
 /--
-If `a_0 < a_1 < ... < a_n` is a strict series and `a` is such that `a_i < a < a_{i + 1}`, then
-`a_0 < a_1 < ... < a_i < a < a_{i + 1} < ... < a_n` is another strict series
+If `a_0 --r-> a_1 --r-> ... --r-> a_n` is an `r`-series and `a` is such that
+`a_i --r-> a --r-> a_{i + 1}`, then
+`a_0 --r-> a_1 --r-> ... --r-> a_i --r-> a --r-> a_{i + 1} --r-> ... --r-> a_n`
+is another `r`-series
 -/
 @[simps]
 def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
@@ -235,7 +236,7 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
     set x := _; set y := _
     change r x y
     obtain (hm|hm|hm) := lt_trichotomy m.1 i.1
-    . have hx : x = p m
+    · have hx : x = p m
       · change Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
         swap; exact hm.trans (lt_add_one _)
@@ -248,7 +249,7 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
       congr
       change m.1 + 1 < i.1 + 1
       simpa only [add_lt_add_iff_right]
-    . have hx : x = p m
+    · have hx : x = p m
       · change Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
         swap
@@ -263,7 +264,7 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
         have H : m.succ = i.succ.castSucc
         · ext; change _ + 1 = _ + 1; rw [hm]
         rw [H, Fin.insertNth_apply_same]
-    . rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
+    · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
       obtain (hm|hm) := hm
       · have hx : x = p ⟨m.1 - 1, (Nat.sub_lt (by linarith) (by linarith)).trans m.2⟩
         · change Fin.insertNth _ _ _ _ = _
@@ -302,9 +303,9 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
 variable {β} (s : Rel β β)
 
 /--
-For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict series of `α`
-can be pushed out to a strict series of `β` by
-`a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
+For two sets `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
+`r`-series can be pushed out to an `s`-series by
+`a₀ --r-> a₁ --r-> ... --r-> aₙ ↦ f a₀ --s-> f a₁ --s-> ... --s-> f aₙ`
 -/
 @[simps]
 def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
@@ -313,8 +314,8 @@ def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s
   step := (map <| p.step .)
 
 /--
-A strict series `a_0 < a_1 < ... < a_n` in `α` gives a strict series in `αᵒᵈ` by reversing the
-series `a_n < a_{n - 1} < ... < a_1 < a_0`.
+A strict series `a_0 --r-> a_1 --r-> ... --r-> a_n` in `α` gives a strict series in `αᵒᵈ` by reversing the
+series `a_n <-r-- a_{n - 1} <-r-- ... <-r-- a_1 <-r-- a_0`.
 -/
 def rev (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
   length := p.length
@@ -337,8 +338,8 @@ def rev (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
     exact Nat.sub_lt_self (by linarith) hi
 
 /--
-given a series `a_0 < a_1 < ... < a_n` and an `a` that is smaller than `a_0`, there is a series of
-length `n+1`: `a < a_0 < a_1 < ... < a_n`.
+given a series `a_0 --r-> a_1 --r-> ... --r-> a_n` and an `a` such that `r a_0 a` holds, there is
+a series of length `n+1`: `a --r-> a_0 --r-> a_1 --r-> ... --r-> a_n`.
 -/
 @[simps!]
 def cons (p : RelSeries r) (a : α) (rel : r a (p 0)) : RelSeries r :=
@@ -347,7 +348,6 @@ def cons (p : RelSeries r) (a : α) (rel : r a (p 0)) : RelSeries r :=
 lemma cons_zero (p : RelSeries r) (a : α) (rel : r a (p 0)) : p.cons a rel 0 = a := by
   rw [cons_toFun]
   exact Fin.append_left _ _ 0
-
 
 lemma cons_succ (p : RelSeries r) (a : α) (rel : r a (p 0)) (x) :
   p.cons a rel x.succ = p x := by
@@ -360,8 +360,8 @@ lemma cons_succ (p : RelSeries r) (a : α) (rel : r a (p 0)) (x) :
   simp only [cons_length, Nat.one_mod, Nat.mod_add_mod, Nat.mod_succ_eq_iff_lt, Nat.succ_eq_add_one]
   linarith [x.2]
 /--
-given a series `a_0 < a_1 < ... < a_n` and an `a` that is greater than `a_n`, there is a series of
-length `n+1`: `a_0 < a_1 < ... < a_n < a`.
+given a series `a_0 --r-> a_1 --r-> ... --r-> a_n` and an `a` such that `r a_n a`, there is a series
+of length `n+1`: `a_0 --r-> a_1 --r-> ... --r-> a_n --r-> a`.
 -/
 @[simps!]
 def snoc (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) : RelSeries r :=
@@ -373,7 +373,7 @@ lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
   exact Fin.append_right _ _ 0
 
 /--
-If a series `a_0 < a_1 < ...` has positive length, then `a_1 < ...` is another series
+If a series `a_0 --r-> a_1 --r-> ...` has positive length, then `a_1 --r-> ...` is another series
 -/
 @[simps]
 def tail (p : RelSeries r) (h : p.length ≠ 0) : RelSeries r where
@@ -409,9 +409,10 @@ namespace LTSeries
 
 variable {α β}
 
-def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α where
-  toFun := toFun
-  step := fun i => strictMono <| lt_add_one i.1
+/-- an alternative constructor of `LTSeries` using `StrictMono` functions. -/
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
+{ toFun := toFun
+  step := fun i => strictMono <| lt_add_one i.1 }
 
 lemma strictMono (x : LTSeries α) : StrictMono x :=
   Fin.strictMono_iff_lt_succ.mpr <| x.step
