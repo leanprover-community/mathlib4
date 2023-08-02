@@ -308,12 +308,8 @@ private inductive OrderRel : Type
 end Meta.Positivity
 namespace Meta.Positivity
 
-/-- The main entry point to the `positivity` tactic. Given a goal `goal` of the form `0 [≤/</≠] e`,
-attempts to recurse on the structure of `e` to prove the goal.
-It will either close `goal` or fail. -/
-def positivity (goal : MVarId) : MetaM Unit := do
-  let t : Q(Prop) ← withReducible goal.getType'
-  let rest {u : Level} (α : Q(Type u)) z e (relDesired : OrderRel) : MetaM Unit := do
+def solve (t : Q(Prop)) : MetaM Expr := do
+  let rest {u : Level} (α : Q(Type u)) z e (relDesired : OrderRel) : MetaM Expr := do
     let zα ← synthInstanceQ q(Zero $α)
     assumeInstancesCommute
     let .true ← isDefEq z q(0 : $α) | throwError "not a positivity goal"
@@ -336,7 +332,7 @@ def positivity (goal : MVarId) : MetaM Unit := do
     | .ne, .nonnegative _
     | .ne', .nonnegative _ => throw "nonzeroness" "nonnegativity"
     | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
-    goal.assign p
+    pure p
   match t with
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
@@ -348,6 +344,14 @@ def positivity (goal : MVarId) : MetaM Unit := do
       let .true ← isDefEq a q((0 : $α)) | throwError "not a positivity goal"
       rest α a b .ne'
   | _ => throwError "not a positivity goal"
+
+/-- The main entry point to the `positivity` tactic. Given a goal `goal` of the form `0 [≤/</≠] e`,
+attempts to recurse on the structure of `e` to prove the goal.
+It will either close `goal` or fail. -/
+def positivity (goal : MVarId) : MetaM Unit := do
+  let t : Q(Prop) ← withReducible goal.getType'
+  let p ← solve t
+  goal.assign p
 
 end Meta.Positivity
 
