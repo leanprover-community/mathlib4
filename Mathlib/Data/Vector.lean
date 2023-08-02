@@ -207,7 +207,7 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
 
 end Accum
 
-/- # Shift Primitives-/
+/-! ### Shift Primitives-/
 section Shift
 
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
@@ -231,7 +231,7 @@ def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
 end Shift
 
 
-/- # Basic Theorems -/
+/-! ### Basic Theorems -/
 /-- Vector is determined by the underlying list. -/
 protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
