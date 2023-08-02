@@ -44,8 +44,8 @@ scalar action of `R` on `M`.
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead.
 -/
-class SMulMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [SMul R M] [SetLike S M] :
-    Prop where
+class SMulMemClass (S : Type _) (R : outParam <| Type _) (M : outParam <| Type _)
+    [SMul R M] [SetLike S M] : Prop where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
 #align smul_mem_class SMulMemClass
@@ -55,8 +55,8 @@ additive action of `R` on `M`.
 
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead. -/
-class VAddMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [VAdd R M] [SetLike S M] :
-    Prop where
+class VAddMemClass (S : Type _) (R : outParam <| Type _) (M : outParam <| Type _)
+    [VAdd R M] [SetLike S M] : Prop where
   /-- Addition by a scalar with an element of the set remains in the set. -/
   vadd_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r +ᵥ m ∈ s
 #align vadd_mem_class VAddMemClass
