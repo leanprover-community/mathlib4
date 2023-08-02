@@ -289,7 +289,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
     have c1: a ∈ s := h d a d₁ d₂ d₃ h'
     contradiction
 
-lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
+lemma isUpperSet_of_isOpen {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
   (isOpen_iff_upper_and_Scott_Hausdorff_Open.mp h).left
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
