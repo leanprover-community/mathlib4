@@ -193,7 +193,7 @@ section preorder
 variable [Preorder α]
 
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' {u : Set α} :
-  IsOpen (WithScottTopology.ofScott ⁻¹' u) ↔ (IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u) :=
+  IsOpen (WithScottTopology.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u :=
 by rfl
 
 variable [TopologicalSpace α] [ScottTopology α]
