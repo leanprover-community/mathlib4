@@ -79,8 +79,8 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
 
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
-  have : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange :=
-    fun f => f.toLinearMap.finiteDimensional_range
+  haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f =>
+    f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
 
 noncomputable instance algebra : Algebra K (normalClosure F K L) :=
