@@ -203,7 +203,7 @@ def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
 
 end preorder
 
-/-
+
 section morphisms
 
 variable [Preorder α] [Preorder β]
@@ -212,9 +212,9 @@ open TopologicalSpace
 
 lemma upperSetTopology_coinduced' {t₁ : TopologicalSpace α} [UpperSetTopology α]
     (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
-  rw [ScottTopology']
   apply le_sup_of_le_left
-  rwa [← continuous_iff_coinduced_le, ← UpperSetTopology.monotone_iff_continuous]
+  rwa [← continuous_iff_coinduced_le,
+    ← @UpperSetTopology.monotone_iff_continuous α β _ _ t₁ _ (upperSetTopology' β) _ _ ]
 
 lemma Monotone_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology α]
     {t₂ : TopologicalSpace β} [ScottTopology β] (hf : Monotone f) : coinduced f t₁ ≤ t₂ := by
@@ -227,7 +227,7 @@ lemma Monotone_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
   apply Monotone_coinduced hf
 
 end morphisms
--/
+
 
 section preorder
 
