@@ -236,12 +236,6 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have ha : 1 - a ≠ 0 := by
     have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
     linarith
-  have : 2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2 ≠ 0 := by
-    refine' ne_of_gt _
-    have : (0 : ℝ) < (1 - a) ^ 2 := sq_pos_of_ne_zero (1 - a) ha
-    -- Porting note: nlinarith needed a little help
-    change 0 < 4 * _ + 4 * _
-    nlinarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
     -- Porting note: used to be `field_simp; simp only [Submodule.coe_norm] at *; nlinarith`
@@ -275,10 +269,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
-    have : ‖(w : E)‖ ^ 2 + 4 ≠ 0 := by nlinarith
-    have : (4 : ℝ) + 4 ≠ 0 := by nlinarith
-    field_simp
-    ring
+    field_simp; ring
   convert congr_arg (· • w) this
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v

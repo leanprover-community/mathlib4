@@ -292,12 +292,11 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
   refine' congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) _)
   rw [mem_antidiagonal] at h
-  have hj : (x.2 + 1 : ℚ) ≠ 0 := by norm_cast; exact succ_ne_zero _
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
-  field_simp [mul_ne_zero hj (hfact x.2), hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc,
-    Nat.factorial_ne_zero, hj]
+  field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]
   -- porting note: was `cc`, which was not yet ported
   simp only
+  left
   left
   ring
 #align bernoulli_power_series_mul_exp_sub_one bernoulliPowerSeries_mul_exp_sub_one

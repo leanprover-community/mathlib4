@@ -90,8 +90,6 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
   · ext k
     rw [← pow_mul, pow_add]
     push_cast
-    have : 2 * (k : ℝ) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero (2 * k)
-    have : 2 * ((m : ℝ) + 1) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero (2 * m.succ)
     field_simp
     ring
   · have h : ∀ (x : ℝ) (_ : x ≠ 0), 1 + x⁻¹ = (x + 1) / x := by
