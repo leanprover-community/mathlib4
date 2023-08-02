@@ -54,7 +54,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
-  show Tendsto (fun z => b^z) atTop (nhds 0)
+  show Tendsto (fun z => b^z) atTop (𝓝 0)
   rcases le_or_gt b 0 with hb | hb
   case inl =>   -- b ≤ 0
     simp_rw [Real.rpow_def_of_nonpos hb]
