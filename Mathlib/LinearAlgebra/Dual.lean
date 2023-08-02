@@ -1162,7 +1162,7 @@ noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
   LinearEquiv.quotEquivOfQuotEquiv <| LinearEquiv.trans W.quotAnnihilatorEquiv W.dualEquivDual
 #align subspace.quot_dual_equiv_annihilator Subspace.quotDualEquivAnnihilator
 
-open Classical in
+open scoped Classical in
 /-- The quotient by a subspace is isomorphic to its dual annihilator. -/
 noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] W.dualAnnihilator :=
   let φ := (Basis.ofVectorSpace K W).toDualEquiv.trans W.dualEquivDual

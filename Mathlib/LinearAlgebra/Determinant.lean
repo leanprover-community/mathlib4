@@ -168,7 +168,7 @@ theorem detAux_comp (b : Trunc <| Basis ι A M) (f g : M →ₗ[A] M) :
 
 section
 
-open Classical in
+open scoped Classical in
 -- Discourage the elaborator from unfolding `det` and producing a huge term by marking it
 -- as irreducible.
 /-- The determinant of an endomorphism independent of basis.
@@ -180,7 +180,7 @@ protected irreducible_def det : (M →ₗ[A] M) →* A :=
   else 1
 #align linear_map.det LinearMap.det
 
-open Classical in
+open scoped Classical in
 theorem coe_det [DecidableEq M] :
     ⇑(LinearMap.det : (M →ₗ[A] M) →* A) =
       if H : ∃ s : Finset M, Nonempty (Basis s A M) then
