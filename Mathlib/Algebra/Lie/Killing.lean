@@ -68,7 +68,7 @@ lemma traceForm_apply_lie_apply (x y z : L) :
   · simp only [LieHom.map_lie, Ring.lie_def, ← LinearMap.mul_eq_comp]
   · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
   · -- TODO: write `LinearMap.trace_mul_cycle' to match `Matrix.trace_mul_cycle`
-   simp only [LinearMap.trace_mul_comm R (φ y) (φ x * φ z), mul_assoc]
+    simp only [LinearMap.trace_mul_comm R (φ y) (φ x * φ z), mul_assoc]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← LinearMap.mul_eq_comp]
 
