@@ -1065,7 +1065,7 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
 #align prod.infinite_of_left Prod.infinite_of_left
 
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
-    Infinite { p : α × α // Commute p.1 p.2 } :=
+    Infinite { p : α × α // _root_.Commute p.1 p.2 } :=
   Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
 
 namespace Infinite
