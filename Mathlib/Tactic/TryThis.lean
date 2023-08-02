@@ -16,8 +16,8 @@ This file could be upstreamed to `Std`.
 open Lean Elab Elab.Tactic PrettyPrinter Meta Std.Tactic.TryThis
 
 /-- Add a suggestion for `have : t := e`. -/
-def addHaveSuggestion (ref : Syntax) (t? : Option Expr) (e : Expr) :
-    TermElabM Unit := do
+def addHaveSuggestion (ref : Syntax) (t? : Option Expr) (e : Expr)
+  (origSpan? : Option Syntax := none) : TermElabM Unit := do
   let estx ← delabToRefinableSyntax e
   let prop ← isProp (← inferType e)
   let tac ← if let some t := t? then
@@ -31,7 +31,7 @@ def addHaveSuggestion (ref : Syntax) (t? : Option Expr) (e : Expr) :
       `(tactic| have := $estx)
     else
       `(tactic| let this := $estx)
-  addSuggestion ref tac
+  addSuggestion ref tac none origSpan?
 
 open Lean.Parser.Tactic
 open Lean.Syntax

@@ -120,7 +120,7 @@ changes their types to be `h : n + 1 + 1 = 2` and `h' : n + 2 + 1 = 4`.
 Change is like `refine` in that every placeholder needs to be solved for by unification,
 but you can use named placeholders and `?_` where you want `change` to create new goals.
 
-The the tactic `show e` is interchangeable with `change e`, where the pattern `e` is applied to
+The tactic `show e` is interchangeable with `change e`, where the pattern `e` is applied to
 the main goal. -/
 elab_rules : tactic
   | `(tactic| change $newType:term $[$loc:location]?) => do

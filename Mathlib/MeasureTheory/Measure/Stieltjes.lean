@@ -217,6 +217,9 @@ instance instCoeFun : CoeFun StieltjesFunction fun _ => ℝ → ℝ :=
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
+@[ext] lemma ext {f g : StieltjesFunction} (h : ∀ x, f x = g x) : f = g := by
+  exact (StieltjesFunction.mk.injEq ..).mpr (funext (by exact h))
+
 variable (f : StieltjesFunction)
 
 theorem mono : Monotone f :=
@@ -609,5 +612,39 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
 #align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
+
+lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction) {l : ℝ}
+    (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
+    f = g := by
+  ext x
+  have hf := measure_Iic f hfl x
+  rw [hfg, measure_Iic g hgl x, ENNReal.ofReal_eq_ofReal_iff, eq_comm] at hf
+  · simpa using hf
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto g.mono hgl x
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto f.mono hfl x
+
+lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
+    (hfg : f.measure = g.measure) (hy : f y = g y) :
+    f = g := by
+  ext x
+  cases le_total x y with
+  | inl hxy =>
+    have hf := measure_Ioc f x y
+    rw [hfg, measure_Ioc g x y, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
+  | inr hxy =>
+    have hf := measure_Ioc f y x
+    rw [hfg, measure_Ioc g y x, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
 
 end StieltjesFunction
