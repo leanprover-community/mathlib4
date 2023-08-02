@@ -73,7 +73,7 @@ theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
 
 theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
-  exact _root_.map_zpow _ x n
+  exact map_zpow _ x n
 
 theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
 
