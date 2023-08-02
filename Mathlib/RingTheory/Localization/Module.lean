@@ -142,13 +142,11 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type _} (b : Basis 
 
 theorem Basis.localizationLocalization_span {ι : Type _} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
-      Submodule.map (IsScalarTower.toAlgHom R A Aₛ) ⊤ := by
-  convert congrArg (Submodule.map (IsScalarTower.toAlgHom R A Aₛ)) b.span_eq
-  rw [Submodule.map_span]
-  congr
-  ext
-  simp only [Set.mem_range, localizationLocalization_apply, Set.mem_image, exists_exists_eq_and]
-  rfl
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) :=
+  calc span R (Set.range ↑(localizationLocalization Rₛ S Aₛ b))
+    _ = span R (↑(IsScalarTower.toAlgHom R A Aₛ) '' Set.range ↑b) := by congr; ext; simp
+    _ = map (IsScalarTower.toAlgHom R A Aₛ) (span R (Set.range b)) := by rw [Submodule.map_span]
+    _ = LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := by rw [b.span_eq, Submodule.map_top]
 
 end LocalizationLocalization
 
