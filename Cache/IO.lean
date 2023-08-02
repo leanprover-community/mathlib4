@@ -43,7 +43,13 @@ def IRDIR : FilePath :=
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "XDG_CACHE_HOME" with
   | some path => return path / "mathlib"
-  | none => match ← IO.getEnv "HOME" with
+  | none =>
+    let home ← if System.Platform.isWindows then
+      let drive ← IO.getEnv "HOMEDRIVE"
+      let path ← IO.getEnv "HOMEPATH"
+      pure <| return (← drive) ++ (← path)
+    else IO.getEnv "HOME"
+    match home with
     | some path => return path / ".cache" / "mathlib"
     | none => pure ⟨".cache"⟩
 
