@@ -250,21 +250,15 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     -- clear_value because field_simp does zeta-reduction (by design?) and is annoying
     clear_value a y
     field_simp
-    rw [div_eq_iff, duh]
-    · ring
-    · apply mul_ne_zero_iff.mpr ⟨?_,ha⟩
-      convert this using 2; rw [Submodule.coe_norm]; ring
+    rw [duh]
+    ring
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
     -- Porting note: field_simp is not behaving as in ml3
     -- see porting note above; previous proof used trans and was comparably complicated
     clear_value a y
     field_simp
-    rw [div_eq_iff, duh]
-    ring_nf
-    -- Porting note: shouldn't repeat myself but getting the coercion right is annoying
-    apply mul_ne_zero_iff.mpr ⟨?_,?_⟩
-    · convert this using 2; rw [Submodule.coe_norm]; ring
-    · apply pow_ne_zero _ ha
+    rw [duh]
+    ring
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
   · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
