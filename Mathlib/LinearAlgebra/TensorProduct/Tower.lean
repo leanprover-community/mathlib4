@@ -52,8 +52,8 @@ universe uR uA uB uM uN uP uQ
 variable {R : Type uR} {A : Type uA} {B : Type uB}
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
-open Algebra (lsmul)
 open LinearMap
+open Algebra (lsmul)
 
 section Semiring
 
