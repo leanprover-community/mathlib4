@@ -65,6 +65,10 @@ theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank K V = ↑n) : finrank K
   exact_mod_cast h
 #align finite_dimensional.finrank_eq_of_rank_eq FiniteDimensional.finrank_eq_of_rank_eq
 
+lemma rank_eq_one_iff_finrank_eq_one :
+    Module.rank K V = 1 ↔ FiniteDimensional.finrank K V = 1 := by
+  simp [FiniteDimensional.finrank]
+
 theorem finrank_le_of_rank_le {n : ℕ} (h : Module.rank K V ≤ ↑n) : finrank K V ≤ n := by
   rwa [← Cardinal.toNat_le_iff_le_of_lt_aleph0, toNat_cast] at h
   · exact h.trans_lt (nat_lt_aleph0 n)
