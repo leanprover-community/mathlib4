@@ -7,7 +7,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Complex.ReImTopology
 
 /-!
-# A collection of specific limit computations for is_R_or_C
+# A collection of specific limit computations for `IsROrC`
+
 -/
 
 open Set Algebra Filter
