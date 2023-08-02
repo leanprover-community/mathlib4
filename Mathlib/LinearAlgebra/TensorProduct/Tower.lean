@@ -14,8 +14,8 @@ import Mathlib.Algebra.Algebra.Tower
 When `M` is both an `R`-module and an `A`-module, and `Algebra R A`, then many of the morphisms
 preserve the actions by `A`.
 
-This file provides more general versions of the definitions already in
-`LinearAlgebra/TensorProduct`.
+The `Module` instance itself is provided elsewhere as `TensorProduct.leftModule`. This file provides
+more general versions of the definitions already in `LinearAlgebra/TensorProduct`.
 
 In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules, but only `M` and
 `P` are simultaneously `A`-modules.
@@ -223,6 +223,7 @@ variable (R A B M N P Q)
 /-- Heterobasic version of `TensorProduct.map_bilinear` -/
 def mapBilinear : (M →ₗ[A] P) →ₗ[B] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
   LinearMap.mk₂' _ _ map map_add_left map_smul_left map_add_right map_smul_right
+
 variable {R A B M N P Q}
 
 @[simp]
@@ -245,8 +246,8 @@ variable {R A B M N P Q}
 /-- Heterobasic version of `TensorProduct.congr` -/
 def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
-    (ext fun m n => by simp)
-    (ext fun m n => by simp)
+    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
+    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
 
 @[simp] theorem congr_tmul (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) (m : M) (n : N) :
     congr f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
@@ -281,7 +282,10 @@ variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
 
-Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
+Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`.
+
+Note this is especially useful with `A = R` (where it is a "more linear" version of
+`TensorProduct.assoc`), or with `B = A`. -/
 def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear
     (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
@@ -338,12 +342,12 @@ def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
     (TensorProduct.lift <| lift <| LinearMap.flip <|
       (TensorProduct.lcurry A M P ((M ⊗[A] P) ⊗[R] Q)).restrictScalars R
         ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
-    (by
-      refine (TensorProduct.ext <| ext <| fun m q => LinearMap.ext <| fun p => ?_)
-      exact Eq.refl ((m ⊗ₜ[R] q) ⊗ₜ[A] p))
-    (by
-      refine (curry_injective <| TensorProduct.ext' <| fun m p => LinearMap.ext <| fun q => ?_)
-      exact Eq.refl ((m ⊗ₜ[A] p) ⊗ₜ[R] q))
+    -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
+    -- letting us prove the result as an equality of pure tensors.
+    (TensorProduct.ext <| ext <| fun m q => LinearMap.ext <| fun p => Eq.refl <|
+      (m ⊗ₜ[R] q) ⊗ₜ[A] p)
+    (curry_injective <| TensorProduct.ext' <| fun m p => LinearMap.ext <| fun q => Eq.refl <|
+      (m ⊗ₜ[A] p) ⊗ₜ[R] q)
 
 variable {M N P Q}
 
