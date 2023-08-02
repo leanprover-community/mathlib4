@@ -36,8 +36,6 @@ noncomputable def norm [IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   ((Algebra.norm K).restrict (𝓞 L)).codRestrict (𝓞 K) fun x => isIntegral_norm K x.2
 #align ring_of_integers.norm RingOfIntegers.norm
 
-attribute [local instance] NumberField.ringOfIntegersAlgebra
-
 theorem coe_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
   rfl
