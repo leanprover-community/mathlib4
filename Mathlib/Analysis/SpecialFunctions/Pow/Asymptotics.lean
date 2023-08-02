@@ -55,36 +55,34 @@ open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
   show Tendsto (fun z => b^z) atTop (𝓝 0)
-  rcases le_or_gt b 0 with hb | hb
-  case inl =>   -- b ≤ 0
-    simp_rw [Real.rpow_def_of_nonpos hb]
-    rcases lt_or_eq_of_le hb with hb | rfl
-    case inl =>  -- b < 0
-      simp only [hb.ne, ite_false]
-      rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero]
-      have H : (1:ℝ) = 1 * 1 := by simp
-      rw [H]
-      refine IsLittleO.mul_isBigO ?exp ?cos
-      case exp =>
-        rw [isLittleO_const_iff one_ne_zero]
-        have h₀ : log b = log (- -b) := by simp
-        rw [h₀, log_neg_eq_log]
-        have hb' : 0 < -b := by linarith
-        have h₁ : log (-b) < 0 := by rw [log_neg_iff hb']; linarith
-        refine tendsto_exp_atBot.comp ?_
-        rw [tendsto_const_mul_atBot_of_neg h₁]
-        show atTop ≤ atTop
-        rfl
-      case cos =>
-        rw [isBigO_iff]
-        exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
-    case inr =>  -- b = 0
-      simp only [log_zero, zero_mul, exp_zero, one_mul, ite_true]
-      refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
-      rw [tendsto_pure]
-      filter_upwards [eventually_ne_atTop 0] with _ hx
-      simp [hx]
-  case inr =>   -- b > 0
+  rcases lt_trichotomy b 0 with hb|rfl|hb
+  case inl =>   -- b < 0
+    simp_rw [Real.rpow_def_of_nonpos hb.le]
+    simp only [hb.ne, ite_false]
+    rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero]
+    have H : (1:ℝ) = 1 * 1 := by simp
+    rw [H]
+    refine IsLittleO.mul_isBigO ?exp ?cos
+    case exp =>
+      rw [isLittleO_const_iff one_ne_zero]
+      have h₀ : log b = log (- -b) := by simp
+      rw [h₀, log_neg_eq_log]
+      have hb' : 0 < -b := by linarith
+      have h₁ : log (-b) < 0 := by rw [log_neg_iff hb']; linarith
+      refine tendsto_exp_atBot.comp ?_
+      rw [tendsto_const_mul_atBot_of_neg h₁]
+      show atTop ≤ atTop
+      rfl
+    case cos =>
+      rw [isBigO_iff]
+      exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
+  case inr.inl =>  -- b = 0
+    simp only [log_zero, zero_mul, exp_zero, one_mul, ite_true]
+    refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
+    rw [tendsto_pure]
+    filter_upwards [eventually_ne_atTop 0] with _ hx
+    simp [hx]
+  case inr.inr =>   -- b > 0
     simp_rw [Real.rpow_def_of_pos hb]
     have h₁ : log b < 0 := by rw [log_neg_iff hb]; exact hb₁
     refine tendsto_exp_atBot.comp ?_
