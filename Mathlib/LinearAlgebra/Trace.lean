@@ -157,13 +157,14 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 
 variable (R M)
 
-variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N] [Nontrivial R]
+variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
 @[simp]
-theorem trace_eq_contract : LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M :=
-  trace_eq_contract_of_basis (Module.Free.chooseBasis R M)
+theorem trace_eq_contract : LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
+  cases subsingleton_or_nontrivial R; simp
+  · exact trace_eq_contract_of_basis (Module.Free.chooseBasis R M)
 #align linear_map.trace_eq_contract LinearMap.trace_eq_contract
 
 @[simp]
@@ -176,7 +177,7 @@ open Classical
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
-theorem trace_eq_contract' :
+theorem trace_eq_contract' [Nontrivial R] :
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap :=
   trace_eq_contract_of_basis' (Module.Free.chooseBasis R M)
 #align linear_map.trace_eq_contract' LinearMap.trace_eq_contract'
@@ -184,6 +185,7 @@ theorem trace_eq_contract' :
 /-- The trace of the identity endomorphism is the dimension of the free module -/
 @[simp]
 theorem trace_one : trace R M 1 = (finrank R M : R) := by
+  cases subsingleton_or_nontrivial R; simp
   have b := Module.Free.chooseBasis R M
   rw [trace_eq_matrix_trace R b, toMatrix_one, finrank_eq_card_chooseBasisIndex]
   simp
@@ -196,6 +198,7 @@ theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, tra
 
 @[simp]
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
+  cases subsingleton_or_nontrivial R; simp
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
@@ -205,6 +208,7 @@ theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose
 theorem trace_prodMap :
     trace R (M × N) ∘ₗ prodMapLinear R M N M N R =
       (coprod id id : R × R →ₗ[R] R) ∘ₗ prodMap (trace R M) (trace R N) := by
+  cases subsingleton_or_nontrivial R; simp
   let e := (dualTensorHomEquiv R M M).prod (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
@@ -235,6 +239,7 @@ open TensorProduct Function
 
 theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N)) =
     compl₁₂ (lsmul R R : R →ₗ[R] R →ₗ[R] R) (trace R M) (trace R N) := by
+  cases subsingleton_or_nontrivial R; simp
   apply
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
         (show Surjective (dualTensorHom R N N) from (dualTensorHomEquiv R N N).surjective)).1
@@ -247,6 +252,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N
 
 theorem trace_comp_comm :
     compr₂ (llcomp R M N M) (trace R M) = compr₂ (llcomp R N M N).flip (trace R N) := by
+  cases subsingleton_or_nontrivial R; simp
   apply
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
