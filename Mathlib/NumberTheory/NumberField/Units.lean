@@ -40,8 +40,6 @@ variable (K : Type _) [Field K]
 
 section IsUnit
 
-attribute [local instance] NumberField.ringOfIntegersAlgebra
-
 variable {K}
 
 theorem isUnit_iff_norm [NumberField K] (x : 𝓞 K) :
