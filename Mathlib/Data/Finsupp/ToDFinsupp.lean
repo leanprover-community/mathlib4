@@ -320,7 +320,8 @@ theorem sigmaFinsuppEquivDFinsupp_support [DecidableEq ι] [Zero N]
 #align sigma_finsupp_equiv_dfinsupp_support sigmaFinsuppEquivDFinsupp_support
 
 @[simp]
-theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η i) (n : N) :
+theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [∀ i, DecidableEq (η i)] [Zero N]
+    (a : Σi, η i) (n : N) :
     sigmaFinsuppEquivDFinsupp (Finsupp.single a n) =
       @DFinsupp.single _ (fun i => η i →₀ N) _ _ a.1 (Finsupp.single a.2 n) := by
   obtain ⟨i, a⟩ := a

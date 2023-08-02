@@ -23,13 +23,15 @@ noncomputable instance Finsupp.fintype {ι π : Sort _} [DecidableEq ι] [Zero �
 #align finsupp.fintype Finsupp.fintype
 
 instance Finsupp.infinite_of_left {ι π : Sort _} [Nontrivial π] [Zero π] [Infinite ι] :
-    Infinite (ι →₀ π) :=
+    Infinite (ι →₀ π) := by
+  classical
   let ⟨_, hm⟩ := exists_ne (0 : π)
-  Infinite.of_injective _ <| Finsupp.single_left_injective hm
+  exact Infinite.of_injective _ <| Finsupp.single_left_injective hm
 #align finsupp.infinite_of_left Finsupp.infinite_of_left
 
 instance Finsupp.infinite_of_right {ι π : Sort _} [Infinite π] [Zero π] [Nonempty ι] :
-    Infinite (ι →₀ π) :=
-  Infinite.of_injective (fun i => Finsupp.single (Classical.arbitrary ι) i)
+    Infinite (ι →₀ π) := by
+  classical
+  exact Infinite.of_injective (fun i => Finsupp.single (Classical.arbitrary ι) i)
     (Finsupp.single_injective (Classical.arbitrary ι))
 #align finsupp.infinite_of_right Finsupp.infinite_of_right

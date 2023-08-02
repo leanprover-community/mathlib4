@@ -176,7 +176,7 @@ theorem multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.s
   rfl
 #align finsupp.multinomial_eq Finsupp.multinomial_eq
 
-theorem multinomial_update (a : α) (f : α →₀ ℕ) :
+theorem multinomial_update [DecidableEq α] (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical
@@ -199,16 +199,16 @@ variable {α : Type _}
 /-- Alternative definition of multinomial based on `Multiset` delegating to the
   finsupp definition
 -/
-noncomputable def multinomial (m : Multiset α) : ℕ :=
+def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 #align multiset.multinomial Multiset.multinomial
 
 theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     m.multinomial = m.card.choose (m.count a) * (m.filter ((· ≠ ·) a)).multinomial := by
+  classical
   dsimp only [multinomial]
   convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
-  · simp only [toFinsupp_apply]
   · ext1 a
     rw [toFinsupp_apply, count_filter, Finsupp.coe_update]
     split_ifs with h
