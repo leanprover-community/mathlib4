@@ -111,13 +111,13 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
               ((hasDerivAt_const x (r : ℝ)⁻¹).mul (hasDerivAt_id' x)))).add
         ((hasDerivAt_id' x).mul ((((hasDerivAt_id' x).pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
       using 1
-    · have h : sqrt ((1 : ℝ) - x ^ 2 / (r : ℝ) ^ 2) * r = sqrt ((r : ℝ) ^ 2 - x ^ 2) := by
-        rw [← sqrt_sq hle, ← sqrt_mul, sub_mul, sqrt_sq hle, mul_comm_div,
-          div_self (pow_ne_zero 2 hlt.ne'), one_mul, mul_one]
-        simpa [sqrt_sq hle, div_le_one (pow_pos hlt 2)] using sq_le_sq' hx1.le hx2.le
+    · have h₁ : (r:ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
+      have h : sqrt ((r:ℝ) ^ 2 - x ^ 2) ^ 3 = ((r:ℝ) ^ 2 - x ^ 2) * sqrt ((r: ℝ) ^ 2 - x ^ 2) := by
+        rw [pow_three, ← mul_assoc, mul_self_sqrt]
       field_simp
-      rw [h, mul_left_comm, ← sq, neg_mul_eq_mul_neg, mul_div_mul_left (-x ^ 2) _ two_ne_zero,
-        add_left_comm, div_add_div_same, ← sub_eq_add_neg, div_sqrt, two_mul]
+      ring_nf
+      rw [h]
+      ring
     · suffices -(1 : ℝ) < (r : ℝ)⁻¹ * x by exact this.ne'
       calc
         -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel hlt.ne']
