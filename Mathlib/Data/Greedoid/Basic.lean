@@ -369,6 +369,11 @@ theorem bases_of_feasible_eq_singleton (hs : s ∈ G) : G.bases s = {s} := by
     rw [mem_bases_self_iff] at hs
     exact h ▸ hs
 
+theorem basis_bases_subset_bases : G.bases b ⊆ G.bases s := by
+  intro _ h
+  simp only [bases_of_feasible_eq_singleton (basis_mem_feasible hb), Finset.mem_singleton] at h
+  exact h ▸ hb
+
 theorem basis_card_le_of_subset_bases
   {s₁ b₁ : Finset α} (h₁ : b₁ ∈ G.bases s₁)
   {s₂ b₂ : Finset α} (h₂ : b₂ ∈ G.bases s₂)
@@ -451,7 +456,7 @@ variable {s t : Finset α} {x y : α}
 
 open Nat List Finset Greedoid
 
-theorem rank_eq_bases_card
+theorem rank_eq_basis_card
   {b : Finset α} (hb : b ∈ G.bases s) :
     G.rank s = b.card := by
   apply Eq.symm (Nat.le_antisymm _ _)
@@ -469,11 +474,11 @@ theorem rank_eq_bases_card
 
 @[simp]
 theorem rank_of_empty : G.rank ∅ = 0 := by
-  simp only [rank_eq_bases_card (mem_bases_self_iff.mp G.containsEmpty), card_empty]
+  simp only [rank_eq_basis_card (mem_bases_self_iff.mp G.containsEmpty), card_empty]
 
 theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
   have ⟨_, h⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
-  rw [rank_eq_bases_card h]
+  rw [rank_eq_basis_card h]
   apply (bases_of_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
 
 @[simp]
@@ -482,7 +487,7 @@ theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1
   intro h
   exfalso
   have ⟨_, h'⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
-  rw [rank_eq_bases_card h'] at h
+  rw [rank_eq_basis_card h'] at h
   simp only [lt_one_iff, card_eq_zero] at h
   simp only [h, bases_empty_iff] at h'
   have := bases_singleton_of_feasible ha
@@ -498,7 +503,7 @@ theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} =
   simp only [h, one_ne_zero]
   apply ha
   have ⟨_, h'⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
-  rw [rank_eq_bases_card h'] at h
+  rw [rank_eq_basis_card h'] at h
   exact basis_mem_feasible (eq_of_subset_of_card_le (basis_subset h') (by simp [h]) ▸ h')
 
 theorem rank_le_card : G.rank s ≤ s.card := by
@@ -527,14 +532,14 @@ theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card :=
       simp only [system_feasible_set_mem_mem]
       intro _ _ h₁ _ h₂ _
       rw [card_insert_of_not_mem h₁]
-      simp only [h₁, rank_eq_bases_card (mem_bases_self_iff.mp h₂), card_insert_of_not_mem])
+      simp only [h₁, rank_eq_basis_card (mem_bases_self_iff.mp h₂), card_insert_of_not_mem])
 
 theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := by
   apply lt_of_le_of_ne rank_le_card
   intro h
   apply hs
   have ⟨_, hb⟩ : Nonempty (G.bases s) := G.bases_nonempty
-  exact mem_bases_self_iff.mpr (bases_of_card_eq hb (rank_eq_bases_card hb ▸ h) ▸ hb)
+  exact mem_bases_self_iff.mpr (bases_of_card_eq hb (rank_eq_basis_card hb ▸ h) ▸ hb)
 
 @[simp]
 theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
@@ -561,7 +566,7 @@ theorem bases_subset_of_rank_eq_of_subset
     . rw [h]
       exact ha₁
     . exact h₁ (basis_subset hb h))
-  simp only [h', card_insert_of_not_mem, ← rank_eq_bases_card hb, ← rank_eq_bases_card hb'] at h₃
+  simp only [h', card_insert_of_not_mem, ← rank_eq_basis_card hb, ← rank_eq_basis_card hb'] at h₃
   simp only [h₂, add_le_iff_nonpos_right] at h₃
 
 theorem rank_eq_of_subset_of_subset {s t u : Finset α}
@@ -570,6 +575,13 @@ theorem rank_eq_of_subset_of_subset {s t u : Finset α}
   apply Nat.le_antisymm (rank_le_of_subset hst)
   rw [hsu]
   exact (rank_le_of_subset htu)
+
+theorem rank_eq_of_bases_nonempty_subset_bases
+  (hst : G.bases s ⊆ G.bases t) :
+    G.rank s = G.rank t := by
+  have ⟨b, hs⟩ : Nonempty (G.bases s) := bases_nonempty
+  have ht := hst hs
+  simp only [rank_eq_basis_card hs, rank_eq_basis_card ht]
 
 theorem local_submodularity
   (h₁ : G.rank s = G.rank (insert x s))
@@ -581,10 +593,10 @@ theorem local_submodularity
   by_contra' h'
   simp only [mem_insert, h'.symm, or_false] at h; clear h'
   have ⟨b₁, hb₁₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
-  have hb₁₂ := rank_eq_bases_card hb₁₁
+  have hb₁₂ := rank_eq_basis_card hb₁₁
   have hb₁₃ := basis_mem_feasible hb₁₁
   have ⟨b₂, hb₂₁⟩ : Nonempty (G.bases (insert x (insert y s))) := G.bases_nonempty
-  have hb₂₂ := rank_eq_bases_card hb₂₁
+  have hb₂₂ := rank_eq_basis_card hb₂₁
   have hb₂₃ := basis_mem_feasible hb₂₁
   rw [hb₁₂, hb₂₂] at h
   have ⟨a, ha₁, ha₂⟩ := G.exchangeProperty hb₂₃ hb₁₃ h
@@ -623,11 +635,11 @@ theorem stronger_local_submodularity_left
   by_contra' h'
   have ⟨_, hb₁₁⟩ : Nonempty (G.bases (s ∪ t)) := G.bases_nonempty
   have ⟨_, hb₂₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
-  have hb₂₂ := rank_eq_bases_card hb₂₁
+  have hb₂₂ := rank_eq_basis_card hb₂₁
   have ⟨b₃, hb₃₁⟩ : Nonempty (G.bases (s ∩ t)) := G.bases_nonempty
-  have hb₃₂ := rank_eq_bases_card hb₃₁
+  have hb₃₂ := rank_eq_basis_card hb₃₁
   have h' := lt_of_le_of_ne (G.rank_le_of_subset (subset_union_left s t)) h'.symm
-  rw [rank_eq_bases_card hb₁₁] at h'
+  rw [rank_eq_basis_card hb₁₁] at h'
   have ⟨x, hx₁, hx₂⟩ := G.exchangeProperty
     (basis_mem_feasible hb₁₁) (basis_mem_feasible hb₃₁) (hb₃₂ ▸ h₁ ▸ h')
   rw [system_feasible_set_mem_mem] at hx₂
@@ -663,7 +675,7 @@ theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.ran
   exfalso
   have h₁ := bases_of_feasible_eq_singleton hs
   have ⟨_, hb₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
-  have hb₂ := rank_eq_bases_card hb₁
+  have hb₂ := rank_eq_basis_card hb₁
   rw [h₁, Finset.mem_singleton] at hb₁
   rw [hb₂, hb₁] at h'
   have h₂ : s.card ≤ t.card := (h') ▸ rank_le_card
@@ -795,7 +807,7 @@ theorem feasible_iff_elem_notin_closure_minus_elem :
         . simp only [h, h₁]
     rw [this]
     apply Nat.le_antisymm _ (rank_le_of_subset (sdiff_subset _ _))
-    rw [rank_eq_bases_card hb₁, ← rank_of_feasible (basis_mem_feasible hb₁)]
+    rw [rank_eq_basis_card hb₁, ← rank_of_feasible (basis_mem_feasible hb₁)]
     apply rank_le_of_subset
     intro z hz
     simp only [mem_sdiff, Finset.mem_singleton]
@@ -1028,7 +1040,6 @@ theorem mem_kernel {x : α} :
     x ∈ G.kernel s ↔ ∃ t ∈ G, t ⊆ s ∧ x ∈ t := by
   constructor <;> intro h <;> simp [kernel] at * <;> let ⟨a, _⟩ := h <;> exists a <;> tauto
 
-
 theorem kernelClosureOperator_eq_kernel_closure :
     G.kernelClosureOperator s = G.kernel (G.closure s) := by
   ext x; constructor <;> intro h
@@ -1043,15 +1054,53 @@ theorem kernelClosureOperator_eq_kernel_closure :
     let ⟨a, _, _, _⟩ := h
     exists a
 
+theorem kernel_subset : G.kernel s ⊆ s := by
+  intro _ h
+  have ⟨_, _, h₁, h₂⟩ := mem_kernel.mp h
+  exact h₁ h₂
+
+@[simp]
+theorem kernel_empty : G.kernel ∅ = ∅ := subset_antisymm kernel_subset (empty_subset _)
+
+theorem bases_subset_bases_kernel : G.bases s ⊆ G.bases (G.kernel s) := by
+  intro b hb
+  rw [basis_def] at *
+  constructor <;> try exact hb.1
+  constructor <;> intro _ hx
+  . rw [mem_kernel]
+    exists b
+    simp only [hb, hx]
+  . intro h
+    let ⟨_, h'⟩ := mem_kernel.mp hx
+    exact hb.2.2 _ (h'.2.1 h'.2.2) h
+
+@[simp]
+theorem rank_kernel : G.rank (G.kernel s) = G.rank s := by
+  symm
+  apply rank_eq_of_bases_nonempty_subset_bases
+  intro _ h
+  rw [basis_def]
+  simp only [basis_mem_feasible h, basis_subset (bases_subset_bases_kernel h), true_and]
+  intro _ h₁ h₂
+  exact basis_maximal h (kernel_subset h₁) h₂
+
+theorem kernel_eq_empty_iff : G.kernel s = ∅ ↔ G.bases s = {∅} := by
+  constructor <;> intro h
+  . have : G.bases (G.kernel s) = {∅} := by simp only [h, bases_of_empty]
+    apply subset_antisymm (this.symm ▸ bases_subset_bases_kernel)
+    simp [← this, bases_subset_of_rank_eq_of_subset kernel_subset rank_kernel]
+  . apply subset_antisymm _ (empty_subset _)
+    intro x hx
+    let ⟨b, hb₁, hb₂, hb₃⟩ := mem_kernel.mp hx
+    sorry
+
 @[simp]
 theorem closure_kernel_eq_closure :
-    G.kernel (G.closure s) = G.closure s := by
-  ext x; constructor <;> intro h
-  . rw [mem_kernel] at h
-    let ⟨_, _, h₁, h₂⟩ := h
-    exact h₁ h₂
-  . rw [mem_kernel]
-    sorry
+    G.closure (G.kernel s) = G.closure s := by
+  apply closure_eq_of_subset_adj_closure (subset_trans kernel_subset G.self_subset_closure)
+  intro x hx
+  rw [mem_closure]
+  sorry
 
 end Kernel
 
