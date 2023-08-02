@@ -18,12 +18,20 @@ with field operations (StarRing) such that the stared vector product (in 1st arg
 if the vector is zero.
 -/
 
-class StarDotProductSpace (n K) [Fintype n][Field K][StarRing K] : Prop where
-  dotProduct_star_self_eq_zero (v : n → K) : Matrix.dotProduct (star v) v = 0 ↔ v = 0
-
 open BigOperators Matrix
 
+class StarDotProductSpace (n K) [Fintype n][Ring K][StarRing K] : Prop where
+  dotProduct_star_self_eq_zero (v : n → K) : Matrix.dotProduct (star v) v = 0 ↔ v = 0
+
 variable {n : Type _}[Fintype n]
+
+lemma dotProduct_self_star_eq_zero  (v : n → K) [Ring K] [StarRing K]
+  [StarDotProductSpace n K] : Matrix.dotProduct v (star v) = 0 ↔ v = 0 := by
+  have : ∃ (w : n → K), star v = w := by simp only [exists_eq']
+  obtain ⟨w, hw ⟩ := this
+  replace h := congr_arg (fun x => star x) hw
+  simp only [star_star] at h
+  rw [h, star_star, star_eq_zero, StarDotProductSpace.dotProduct_star_self_eq_zero]
 
 section IsROrCFields
 
