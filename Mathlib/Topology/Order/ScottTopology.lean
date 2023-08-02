@@ -211,6 +211,7 @@ def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
 
 end preorder
 
+/-
 section morphisms
 
 variable [Preorder α] [Preorder β]
@@ -233,9 +234,8 @@ lemma Monotone_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
   rw [continuous_iff_coinduced_le]
   apply Monotone_coinduced hf
 
-
-
 end morphisms
+-/
 
 section preorder
 
