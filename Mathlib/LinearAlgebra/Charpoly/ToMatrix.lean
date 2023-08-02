@@ -36,6 +36,7 @@ namespace LinearMap
 
 section Basic
 
+set_option maxHeartbeats 250000 in
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
 theorem charpoly_toMatrix {ι : Type w} [Fintype ι] (b : Basis ι R M) :
