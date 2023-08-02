@@ -418,6 +418,28 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   rwa [← hn (n + 1) (Nat.le_succ _)]
 #align is_artinian_ring.is_nilpotent_jacobson_bot IsArtinianRing.isNilpotent_jacobson_bot
 
+instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
+  Ideal.Quotient.maximal_of_isField _
+  { exists_pair_ne := ⟨0, 1, zero_ne_one⟩
+    mul_comm := mul_comm
+    mul_inv_cancel := fun {x} hx => by
+      have : IsArtinianRing (R ⧸ p) := (@Ideal.Quotient.mk_surjective R _ p).isArtinianRing
+      obtain ⟨n, hn⟩ : ∃ (n : ℕ), Ideal.span {x^n} = Ideal.span {x^(n+1)}
+      · obtain ⟨n, h⟩ := IsArtinian.monotone_stabilizes (R := R ⧸ p) (M := R ⧸ p)
+          ⟨fun m => OrderDual.toDual (Ideal.span {x^m}), fun m n h y hy => by
+            dsimp [OrderDual.toDual] at *
+            rw [Ideal.mem_span_singleton] at hy ⊢
+            obtain ⟨z, rfl⟩ := hy
+            exact dvd_mul_of_dvd_left (pow_dvd_pow _ h) _⟩
+        exact ⟨n, h (n + 1) <| by norm_num⟩
+      have H : x^n ∈ Ideal.span {x^(n+1)}
+      { rw [← hn]; refine Submodule.subset_span (Set.mem_singleton _) }
+      rw [Ideal.mem_span_singleton] at H
+      obtain ⟨y, hy⟩ := H
+      rw [pow_add, mul_assoc, pow_one] at hy
+      conv_lhs at hy => rw [←mul_one (x^n)]
+      exact ⟨y, mul_left_cancel₀ (pow_ne_zero _ hx) hy.symm⟩ }
+
 section Localization
 
 variable (S : Submonoid R) (L : Type _) [CommRing L] [Algebra R L] [IsLocalization S L]
