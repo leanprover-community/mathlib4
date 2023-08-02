@@ -146,10 +146,8 @@ variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
 is generalized to the case of any finite dimensional domain
 in `LinearMap.toContinuousLinearMap`. -/
 def LinearMap.toContinuousLinearMap₁ (f : 𝕜 →ₗ[𝕜] E) : 𝕜 →L[𝕜] E :=
-  f.mkContinuous ‖f 1‖ fun x =>
-    le_of_eq <| by
-      conv_lhs => rw [← mul_one x]
-      rw [← smul_eq_mul, f.map_smul, norm_smul, mul_comm]
+  f.mkContinuous ‖f 1‖ fun x => by conv_lhs => rw [← mul_one x];
+    rw [← smul_eq_mul, f.map_smul, mul_comm]; exact norm_smul_le _ _
 #align linear_map.to_continuous_linear_map₁ LinearMap.toContinuousLinearMap₁
 
 @[simp]
