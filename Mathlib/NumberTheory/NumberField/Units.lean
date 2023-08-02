@@ -63,42 +63,21 @@ namespace NumberField.Units
 
 section coe
 
-/-- The `MonoidHom` from the group of units `(𝓞 K)ˣ` to the field `K`. -/
-def coe_to_field : (𝓞 K)ˣ →* K := (Units.coeHom K).comp (map (algebraMap (𝓞 K) K))
+theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
+  fun _ _ h => by rwa [SetLike.coe_eq_coe, Units.eq_iff] at h
 
 variable {K}
 
-/-- The coercion of `x : (𝓞 K)ˣ` into `K`. -/
-@[coe] def to_field (x : (𝓞 K)ˣ) : K := coe_to_field K x
+theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
+  rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
 
-variable (K)
+theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
+  change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
+  exact _root_.map_zpow _ x n
 
-theorem coe_to_field_injective : Function.Injective (coe_to_field K) :=
-  fun _ _ h => Units.eq_iff.mp (SetCoe.ext h)
+theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
 
-/-- There is a natural coercion from `(𝓞 K)ˣ` to `(𝓞 K)` and then from `(𝓞 K)` to `K` but it is
-useful to also have a direct one from `(𝓞 K)ˣ` to `K`. -/
-instance : Coe (𝓞 K)ˣ K := ⟨to_field⟩
-
-@[ext]
-theorem ext {x y : (𝓞 K)ˣ} (h : (x : K) = y) : x = y := (coe_to_field_injective K).eq_iff.mp h
-
-@[simp]
-theorem coe_coe (x : (𝓞 K)ˣ) : ((x : 𝓞 K) : K) = (x : K) := rfl
-
-@[simp]
-theorem map_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n :=
-  _root_.map_pow (coe_to_field K) x n
-
-@[simp]
-theorem map_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n :=
-  _root_.map_zpow (coe_to_field K) x n
-
-@[simp]
-theorem map_one : ((1 : (𝓞 K)ˣ) : K) = 1 := rfl
-
-@[simp]
-theorem ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
+theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
   Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
 
 end coe
@@ -115,9 +94,9 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, h_pos, h_eq⟩ φ => ?_, fun h => ?_⟩
   · refine norm_map_one_of_pow_eq_one φ.toMonoidHom (k := ⟨n, h_pos⟩) ?_
-    rw [PNat.mk_coe, ← map_pow, h_eq, map_one]
+    rw [PNat.mk_coe, ← coe_pow, h_eq, coe_one]
   · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
-    exact ⟨n, hn, by ext; rwa [map_pow, map_one]⟩
+    exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
 
 /-- Shortcut instance because Lean tends to time out before finding the general instance. -/
 instance : Nonempty (torsion K) := One.nonempty
@@ -125,7 +104,7 @@ instance : Nonempty (torsion K) := One.nonempty
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
   refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
-  refine Set.Finite.of_finite_image ?_ ((coe_to_field_injective K).injOn _)
+  refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
     (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
   · rw [← h_ua]
