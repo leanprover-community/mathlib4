@@ -172,7 +172,7 @@ instance instNorm : Norm (ProdLp p α β) where
     else if p = ∞ then ‖f.fst‖ ⊔ ‖f.snd‖
     else (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal)
 
-variable {p β}
+variable {p α β}
 
 theorem norm_eq_card (f : ProdLp 0 α β) : ‖f‖ = 0 :=
   if_pos rfl
@@ -207,7 +207,7 @@ explaining why having definitionally the right uniformity is often important.
 -/
 
 
-variable [Fact (1 ≤ p)] --[∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
+variable [Fact (1 ≤ p)]
 
 /-- Endowing the space `PiLp p β` with the `L^p` pseudoemetric structure. This definition is not
 satisfactory, as it does not register the fact that the topology and the uniform structure coincide
@@ -449,3 +449,135 @@ theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     (by
       simpa only [ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero, ENNReal.coe_one,
         one_mul] using antilipschitzWith_equiv ∞ α β x y)
+
+/-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
+norm. -/
+instance instSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+    SeminormedAddCommGroup (ProdLp p α β) :=
+  { Prod.instAddCommGroupSum with
+    dist_eq := fun x y => by
+      rcases p.dichotomy with (rfl | h)
+      · simp only [dist_eq_sup, norm_eq_sup, dist_eq_norm]
+        rfl
+      · have : p ≠ ∞ := by
+          intro hp
+          rw [hp, ENNReal.top_toReal] at h
+          linarith
+        simp only [dist_eq_add (zero_lt_one.trans_le h), norm_eq_add (zero_lt_one.trans_le h),
+          dist_eq_norm]
+        rfl }
+
+/-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
+instance normedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
+    NormedAddCommGroup (ProdLp p α β) :=
+  { ProdLp.instSeminormedAddCommGroup p α β with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+
+section norm_of
+
+variable {p α β}
+variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+
+theorem nnnorm_eq_add (hp : p ≠ ∞) (f : ProdLp p α β) :
+    ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
+  ext
+  simp [norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]
+
+theorem nnnorm_eq_sup (f : ProdLp ∞ α β) : ‖f‖₊ = ‖f.fst‖₊ ⊔  ‖f.snd‖₊ := by
+  ext
+  norm_cast
+
+theorem norm_eq_of_nat (n : ℕ) (h : p = n) (f : ProdLp p α β) :
+    ‖f‖ = (‖f.fst‖ ^ n + ‖f.snd‖ ^ n) ^ (1 / (n : ℝ)) := by
+  have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.nat_ne_top n)
+  simp only [one_div, h, Real.rpow_nat_cast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
+    norm_eq_add this]
+
+theorem norm_eq_of_L2 (x : ProdLp 2 α β) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
+  rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
+  rw [Real.sqrt_eq_rpow]
+  norm_cast
+
+theorem nnnorm_eq_of_L2 (x : ProdLp 2 α β) : ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
+  -- Porting note: was `Subtype.ext`
+  NNReal.eq <| by
+    push_cast
+    exact norm_eq_of_L2 x
+
+variable (α β)
+
+theorem norm_sq_eq_of_L2 (x : ProdLp 2 α β) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
+  suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
+    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
+  rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
+
+variable {α β}
+
+theorem dist_eq_of_L2 (x y : ProdLp 2 α β) :
+    dist x y = (dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2).sqrt := by
+  simp_rw [dist_eq_norm, norm_eq_of_L2, Pi.sub_apply]
+  rfl -- Porting note: `Pi.sub_apply` doesn't work
+
+theorem nndist_eq_of_L2 (x y : ProdLp 2 α β) :
+    nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
+  -- Porting note: was `Subtype.ext`
+  NNReal.eq <| by
+    push_cast
+    exact dist_eq_of_L2 _ _
+
+theorem edist_eq_of_L2 (x y : ProdLp 2 α β) :
+    edist x y = (edist x.fst y.fst ^ 2 + edist x.snd y.snd ^ 2) ^ (1 / 2 : ℝ) := by
+  simp [ProdLp.edist_eq_add]
+
+end norm_of
+
+variable [NormedField 𝕜] [NormedField 𝕜']
+
+section normed_space_inst
+
+variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
+  [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
+
+-- Porting note: added
+instance instModule : Module 𝕜 (ProdLp p α β) :=
+  { Prod.module with }
+
+/-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
+instance instNormedSpace :
+    NormedSpace 𝕜 (ProdLp p α β) :=
+  { instModule p 𝕜 α β with
+    norm_smul_le := fun c f => by
+      rcases p.dichotomy with (rfl | hp)
+      · letI : Module 𝕜 (ProdLp ∞ α β) := Prod.module
+        suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
+        simp only [nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
+        -- Porting note: added
+        congr
+      · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
+        -- Porting note: added to replace Pi.smul_apply
+        --have smul_apply : ∀ i : ι, (c • f) i = c • (f i) := fun i => rfl
+        simp only [norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg]
+        rw [mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
+          Real.rpow_one]
+        exact Finset.sum_nonneg fun i _ => rpow_nonneg_of_nonneg (norm_nonneg _) _ }
+
+section towers
+
+variable [NormedSpace 𝕜' α] [NormedSpace 𝕜' β]
+
+instance isScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' α] [IsScalarTower 𝕜 𝕜' β] :
+    IsScalarTower 𝕜 𝕜' (ProdLp p α β) :=
+  Prod.isScalarTower
+
+instance smulCommClass [SMulCommClass 𝕜 𝕜' α] [SMulCommClass 𝕜 𝕜' β] :
+    SMulCommClass 𝕜 𝕜' (ProdLp p α β) :=
+  Prod.smulCommClass
+
+end towers
+
+instance finiteDimensional [FiniteDimensional 𝕜 α] [FiniteDimensional 𝕜 α] :
+    FiniteDimensional 𝕜 (ProdLp p α β) :=
+  FiniteDimensional.finiteDimensional_prod' _ _
+
+
+end normed_space_inst
