@@ -521,13 +521,14 @@ lemma real_ae_all_of_rat {p : Ω → ℝ → Prop} (hp : ∀ t : ℝ, ∀ᵐ ω 
   simp_rw [ae_all_iff]
   exact fun q => hp q
 
+
 lemma Real.exists_rat_seq_antitone_tendsto (x : ℝ) :
     ∃ u : ℕ → ℚ, Antitone u ∧ Filter.Tendsto (fun n => (u n : ℝ)) Filter.atTop (𝓝 x) := by
   have hemp : {y : ℝ | ∃ q : ℚ, ↑q = y ∧ x < q}.Nonempty
-  . obtain ⟨q, hq⟩ := exists_rat_gt x
+  · obtain ⟨q, hq⟩ := exists_rat_gt x
     exact ⟨↑q, _, rfl, hq⟩
   suffices : IsGLB {y : ℝ | ∃ q : ℚ, ↑q = y ∧ x < q} x
-  . obtain ⟨u, hmono, _, htends, hmem⟩ := this.exists_seq_antitone_tendsto hemp
+  · obtain ⟨u, hmono, _, htends, hmem⟩ := this.exists_seq_antitone_tendsto hemp
     choose v hv _ using hmem
     refine' ⟨v, fun n m hnm => Rat.cast_le.1 <| (hv n).symm ▸ (hv m).symm ▸ hmono hnm, _⟩
     simpa only [hv]
@@ -552,16 +553,16 @@ lemma eq_condKernel_of_measure_eq_compProd_real_Iic (ρ : Measure (α × ℝ)) [
   obtain ⟨u, hmono, htends⟩ := Real.exists_rat_seq_antitone_tendsto t
   have : ∀ μ : Measure ℝ, IsFiniteMeasure μ →
     Filter.Tendsto (fun n => μ (Set.Iic ↑(u n))) Filter.atTop (𝓝 (μ (Set.Iic t)))
-  . intros μ hμ
+  · intros μ hμ
     haveI := hμ
     rw [(_ : Set.Iic t = ⋂ n, Set.Iic ↑(u n))]
-    . rw [measure_iInter_eq_iInf (fun n => measurableSet_Iic)]
-      . exact tendsto_atTop_iInf <| fun n m hnm => measure_mono <| Set.Iic_subset_Iic.2
+    · rw [measure_iInter_eq_iInf (fun n => measurableSet_Iic)]
+      · exact tendsto_atTop_iInf <| fun n m hnm => measure_mono <| Set.Iic_subset_Iic.2
           <| Rat.cast_le.2 <| hmono hnm
-      . exact Antitone.directed_ge <| fun n m hnm => Set.Iic_subset_Iic.2
+      · exact Antitone.directed_ge <| fun n m hnm => Set.Iic_subset_Iic.2
           <| Rat.cast_le.2 <| hmono hnm
-      . exact ⟨0, measure_ne_top _ _⟩
-    . ext1 x
+      · exact ⟨0, measure_ne_top _ _⟩
+    · ext1 x
       simp only [Set.mem_Iic, Set.mem_iInter]
       exact ⟨fun hle n => hle.trans <| Antitone.le_of_tendsto
         (fun n m hnm => Rat.cast_le.2 <| hmono hnm) htends n,
@@ -577,15 +578,15 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
   have huniv : ∀ᵐ x ∂ρ.fst, κ x Set.univ = ρ.condKernel x Set.univ :=
     eq_condKernel_of_measure_eq_compProd' ρ κ hκ MeasurableSet.univ
   suffices : ∀ᵐ x ∂ρ.fst, ∀ ⦃t⦄, MeasurableSet t → κ x t = ρ.condKernel x t
-  . filter_upwards [this] with x hx
+  · filter_upwards [this] with x hx
     ext t ht; exact hx ht
   apply MeasurableSpace.ae_induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic
-  . simp only [OuterMeasure.empty', Filter.eventually_true]
-  . simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff',
+  · simp only [OuterMeasure.empty', Filter.eventually_true]
+  · simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff',
       eq_condKernel_of_measure_eq_compProd_real_Iic ρ κ hκ]
-  . filter_upwards [huniv] with x hxuniv t ht heq
+  · filter_upwards [huniv] with x hxuniv t ht heq
     rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
-  . refine' ae_of_all _ (fun x f hdisj hf heq => _)
+  · refine' ae_of_all _ (fun x f hdisj hf heq => _)
     rw [measure_iUnion hdisj hf, measure_iUnion hdisj hf]
     exact tsum_congr heq
 
@@ -599,35 +600,35 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
   obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
   set ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f) with hρ'def
   have hρ' : ρ'.fst = ρ.fst
-  . ext s hs
+  · ext s hs
     rw [hρ'def, Measure.fst_apply, Measure.fst_apply, Measure.map_apply]
     exacts [rfl, Measurable.prod measurable_fst <| hf.measurable.comp measurable_snd,
       measurable_fst hs, hs, hs]
   have hρ'' : ∀ᵐ x ∂ρ'.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x
-  . refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
+  · refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
     ext s hs
     simp only [Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
     conv_lhs => congr; rw [hκ]
     rw [kernel.compProd_apply _ _ _ hs, kernel.compProd_apply _ _ _
       (measurable_id.prod_map hf.measurable hs), (_ : (ρ.map (Prod.map id f)).fst = ρ.fst)]
-    . congr
+    · congr
       ext x
       simp only [Set.mem_preimage, Prod_map, id_eq, kernel.prodMkLeft_apply, kernel.map_apply]
       rw [Measure.map_apply hf.measurable]
-      . rfl
-      . exact measurable_prod_mk_left hs
-    . exact Measure.fst_map_prod_mk measurable_fst (hf.measurable.comp measurable_snd)
+      · rfl
+      · exact measurable_prod_mk_left hs
+    · exact Measure.fst_map_prod_mk measurable_fst (hf.measurable.comp measurable_snd)
   rw [hρ'] at hρ''
   suffices : ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s →
     ((ρ.map (Prod.map id f)).condKernel x) s = (ρ.condKernel x) (f ⁻¹' s)
-  . filter_upwards [hρ'', this] with x hx h
+  · filter_upwards [hρ'', this] with x hx h
     rw [kernel.map_apply] at hx
     ext s hs
     rw [← Set.preimage_image_eq s hf.injective,
       ← Measure.map_apply hf.measurable <| hf.measurableSet_image.2 hs, hx,
       h _ <| hf.measurableSet_image.2 hs]
   have hprod : (ρ.map (Prod.map id f)).fst = ρ.fst
-  . ext s hs
+  · ext s hs
     rw [Measure.fst_apply hs,
       Measure.map_apply (measurable_id.prod_map hf.measurable) (measurable_fst hs),
       ← Set.preimage_comp, Measure.fst_apply hs]
@@ -635,23 +636,23 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
   suffices : ρ.map (Prod.map id f) =
     (kernel.const Unit (ρ.map (Prod.map id f)).fst ⊗ₖ
      kernel.prodMkLeft Unit (kernel.map (Measure.condKernel ρ) f hf.measurable)) ()
-  . have heq := eq_condKernel_of_measure_eq_compProd_real _ _ this
+  · have heq := eq_condKernel_of_measure_eq_compProd_real _ _ this
     rw [hprod] at heq
     filter_upwards [heq] with x hx s hs
     rw [← hx, kernel.map_apply, Measure.map_apply hf.measurable hs]
   ext s hs
   have hinteq : ∀ x, (ρ.condKernel x).map f {c | (x, c) ∈ s} =
       ρ.condKernel x {c | (x, c) ∈ Prod.map id f ⁻¹' s}
-  . intro x
+  · intro x
     rw [Measure.map_apply hf.measurable]
-    . rfl
-    . exact measurable_prod_mk_left hs
+    · rfl
+    · exact measurable_prod_mk_left hs
   simp only [hprod, kernel.compProd_apply _ _ _ hs, kernel.prodMkLeft_apply,
     kernel.map_apply _ hf.measurable, hinteq, Set.mem_preimage, Prod_map, id_eq,
     kernel.lintegral_const]
   rw [Measure.map_apply (measurable_id.prod_map hf.measurable) hs, ← lintegral_condKernel_mem]
-  . rfl
-  . exact measurable_id.prod_map hf.measurable hs
+  · rfl
+  · exact measurable_id.prod_map hf.measurable hs
 
 end Unqiue
 
