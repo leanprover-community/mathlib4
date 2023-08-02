@@ -8,6 +8,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Series of a relation
@@ -310,6 +311,88 @@ def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s
   length := p.length
   toFun := f.comp p
   step := (map <| p.step .)
+
+/--
+A strict series `a_0 < a_1 < ... < a_n` in `α` gives a strict series in `αᵒᵈ` by reversing the
+series `a_n < a_{n - 1} < ... < a_1 < a_0`.
+-/
+def rev (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
+  length := p.length
+  toFun := p ∘ Fin.rev
+    -- p ∘ (Sub.sub ⟨p.length, lt_add_one _⟩)
+  step := fun i => by
+    rw [Function.comp_apply, Function.comp_apply]
+    have hi : i.1 + 1 ≤ p.length
+    · linarith [i.2]
+    convert p.step ⟨p.length - (i.1 + 1), _⟩
+    · ext
+      simp only [Fin.val_rev, Fin.val_succ, ge_iff_le, add_le_add_iff_right,
+        Nat.succ_sub_succ_eq_sub, Fin.coe_castSucc]
+    · ext
+      simp only [Fin.val_rev, Fin.coe_castSucc, ge_iff_le, add_le_add_iff_right,
+        Nat.succ_sub_succ_eq_sub, Fin.val_succ]
+      rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel]
+      · assumption
+      · linarith
+    exact Nat.sub_lt_self (by linarith) hi
+
+/--
+given a series `a_0 < a_1 < ... < a_n` and an `a` that is smaller than `a_0`, there is a series of
+length `n+1`: `a < a_0 < a_1 < ... < a_n`.
+-/
+@[simps!]
+def cons (p : RelSeries r) (a : α) (rel : r a (p 0)) : RelSeries r :=
+  (singleton r a).append p rel
+
+lemma cons_zero (p : RelSeries r) (a : α) (rel : r a (p 0)) : p.cons a rel 0 = a := by
+  rw [cons_toFun]
+  exact Fin.append_left _ _ 0
+
+
+lemma cons_succ (p : RelSeries r) (a : α) (rel : r a (p 0)) (x) :
+  p.cons a rel x.succ = p x := by
+  rw [cons_toFun]
+  convert Fin.append_right _ _ _
+  ext
+  simp only [Fin.val_succ, Nat.cast_add, Nat.cast_one, Fin.coe_cast, Fin.coe_natAdd, zero_add]
+  rw [add_comm 1 x.1]
+  change _ % _ = _
+  simp only [cons_length, Nat.one_mod, Nat.mod_add_mod, Nat.mod_succ_eq_iff_lt, Nat.succ_eq_add_one]
+  linarith [x.2]
+/--
+given a series `a_0 < a_1 < ... < a_n` and an `a` that is greater than `a_n`, there is a series of
+length `n+1`: `a_0 < a_1 < ... < a_n < a`.
+-/
+@[simps!]
+def snoc (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) : RelSeries r :=
+p.append (singleton r a) rel
+
+lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
+  p.snoc a rel (Fin.last _) = a := by
+  rw [snoc_toFun]
+  exact Fin.append_right _ _ 0
+
+/--
+If a series `a_0 < a_1 < ...` has positive length, then `a_1 < ...` is another series
+-/
+@[simps]
+def tail (p : StrictSeries α) (h : p.length ≠ 0) : StrictSeries α :=
+{ length := p.length.pred,
+  toFun := fun j ↦ p ⟨j + 1, Nat.succ_lt_succ (by
+    have hj := j.2
+    conv_rhs at hj =>
+      rw [← Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero h)]
+    exact hj)⟩
+  StrictMono := fun _ _ H ↦ p.StrictMono (Nat.succ_lt_succ H) }
+
+lemma tail_zero (p : StrictSeries α) (h : p.length ≠ 0) : p.tail h 0 = p 1 := by
+  rw [tail_toFun]
+  congr
+  change (0 : ℕ) % (p.length.pred + 1) + 1 = 1 % (p.length + 1)
+  rw [Nat.zero_mod, zero_add, Nat.mod_eq_of_lt]
+  rw [lt_add_iff_pos_left]
+  exact Nat.pos_of_ne_zero h
+
 
 end RelSeries
 
