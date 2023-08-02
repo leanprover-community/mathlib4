@@ -298,7 +298,7 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
         ext
         exact hm.symm
 
-variable {β}
+variable {β} (s : Rel β β)
 
 /--
 For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict series of `α`
@@ -306,31 +306,16 @@ can be pushed out to a strict series of `β` by
 `a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
 -/
 @[simps]
-def map (p : StrictSeries α) (f : α → β) (hf : _root_.StrictMono f) : StrictSeries β :=
-{ length := p.length
+def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
+  length := p.length
   toFun := f.comp p
-  StrictMono := hf.comp p.StrictMono }
-
-/--
-For two pre-ordered sets `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
-strict series of `β` can be pulled back to a strict chain of `α` by
-`b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the
-preimage of `f⁻¹ {bᵢ}`.
--/
-@[simps]
-noncomputable def comap (p : StrictSeries β) (f : α → β)
-  (hf1 : ∀ ⦃x y⦄, f x < f y → x < y)
-  (hf2 : Function.Surjective f) :
-  StrictSeries α :=
-{ length := p.length
-  toFun := fun i ↦ (hf2 (p i)).choose
-  StrictMono := fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.StrictMono h) }
+  step := (map <| p.step .)
 
 end RelSeries
 
 section LTSeries
 
-variable (α) [Preorder α]
+variable (α β) [Preorder α] [Preorder β]
 /--
 If `α` is a preordered set, a series ordered by less than is a relation series of the less than
 relation.
@@ -339,7 +324,27 @@ abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 
 namespace LTSeries
 
-variable {α}
+variable {α β}
+
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α where
+  toFun := toFun
+  step := fun i => strictMono <| lt_add_one i.1
+
+lemma strictMono (x : LTSeries α) : StrictMono x :=
+  Fin.strictMono_iff_lt_succ.mpr <| x.step
+
+/--
+For two pre-ordered sets `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
+strict series of `β` can be pulled back to a strict chain of `α` by
+`b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the
+preimage of `f⁻¹ {bᵢ}`.
+-/
+@[simps!]
+noncomputable def comap (p : LTSeries β) (f : α → β)
+  (hf1 : ∀ ⦃x y⦄, f x < f y → x < y)
+  (hf2 : Function.Surjective f) :
+  LTSeries α := mk p.length (fun i ↦ (hf2 (p i)).choose)
+    (fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.strictMono h))
 
 lemma top_len_unique [OrderTop (LTSeries α)] (p : LTSeries α) (hp : IsTop p) :
     p.length = (⊤ : LTSeries α).length :=
