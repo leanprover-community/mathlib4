@@ -62,7 +62,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj
 #align zmod.Ico_map_val_min_abs_nat_abs_eq_Ico_map_id ZMod.Ico_map_valMinAbs_natAbs_eq_Ico_map_id
 
-private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : ℤ}
+private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (a ^ (p / 2) * (p / 2)! : ZMod p) =
     (-1 : ZMod p) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
       ¬(a * x : ZMod p).val ≤ p / 2).card * (p / 2)! :=
@@ -93,7 +93,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {
         Ico_map_valMinAbs_natAbs_eq_Ico_map_id p a hap, ← Finset.prod_eq_multiset_prod,
         prod_Ico_id_eq_factorial]
 
-theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] [Fact (p % 2 = 1)] {a : ℤ}
+theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (↑a ^ (p / 2) : ZMod p) =
     (-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
@@ -107,7 +107,7 @@ theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] [Fact (p % 2 = 1)] {a : �
 theorem gauss_lemma {p : ℕ} [h : Fact p.Prime] {a : ℤ} (hp : p ≠ 2) (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = (-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
       p / 2 < (a * x : ZMod p).val).card := by
-  replace hp : Odd p := h.odd_of_ne_two hp
+  replace hp : Odd p := h.out.odd_of_ne_two hp
   have : (legendreSym p a : ZMod p) = (((-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
       p / 2 < (a * x : ZMod p).val).card : ℤ) : ZMod p) := by
     rw [legendreSym.eq_pow, gauss_lemma_aux p ha0]
