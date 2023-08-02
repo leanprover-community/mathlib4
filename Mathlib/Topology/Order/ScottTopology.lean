@@ -412,7 +412,7 @@ end complete_lattice
 
 variable [Preorder α]
 
-lemma Scott_Hausdorff_le_Scott [TopologicalSpace α] [ScottTopology α] :
+lemma scottHausdorffTopology_le_of_scottTopology [TopologicalSpace α] [ScottTopology α] :
     ScottHausdorffTopology ≤ ‹TopologicalSpace α› := by
   rw [ScottTopology.topology_eq α, ScottTopology']
   apply le_sup_right
