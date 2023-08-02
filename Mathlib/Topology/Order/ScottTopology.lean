@@ -262,7 +262,7 @@ IsOpen u ↔ (IsUpperSet u ∧ inaccessible_by_directed_joins u) := by
     constructor
     · exact h.1
     · intros d a d₁ d₂ d₃ ha
-      obtain ⟨b, e1_h_w, e1_h_h⟩ := h.2 d a d₁ d₂ d₃ ha
+      obtain ⟨b, e1_h_w, e1_h_h⟩ := h.2 d₁ d₂ d₃ ha
       use b
       constructor
       · exact e1_h_w
@@ -277,7 +277,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
   constructor
   · intros h d a d₁ d₂ d₃ d₄
     by_contra h'
-    have c1: (d ∩ sᶜ).Nonempty := h d a d₁ d₂ d₃ h'
+    have c1: (d ∩ sᶜ).Nonempty := h d₁ d₂ d₃ h'
     have c2: (d ∩ sᶜ) =  ∅ := by
       rw [← subset_empty_iff, ← inter_compl_self s]
       exact inter_subset_inter_left _ d₄
@@ -328,7 +328,7 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
   have s1 : IsOpen u
   { rw [isOpen_compl_iff, ← closure_singleton]
     exact isClosed_closure }
-  have u3 : b ∈ (f⁻¹'  u) := isOpen_isUpperSet (IsOpen.preimage hf s1) hab h
+  have u3 : b ∈ (f⁻¹'  u) := isUpperSet_of_isOpen (IsOpen.preimage hf s1) hab h
   have c1 : f b ∈ (Iic (f b))ᶜ := by
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
@@ -340,16 +340,16 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
     intros u hu
     rw [isOpen_iff_upper_and_inaccessible_by_directed_joins]
     constructor
-    · exact IsUpperSet.preimage (isOpen_isUpperSet hu) h.monotone
+    · exact IsUpperSet.preimage (isUpperSet_of_isOpen hu) h.monotone
     · intros d a hd₁ hd₂ hd₃ ha
       rw [isOpen_iff_upper_and_inaccessible_by_directed_joins] at hu
-      exact image_inter_nonempty_iff.mp $ hu.2 _ _ (hd₁.image f)
+      exact image_inter_nonempty_iff.mp $ hu.2 (hd₁.image f)
           (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
           (h hd₁ hd₂ hd₃) ha
   · intros hf d d₁ d₂ a d₃
     rw [IsLUB]
     constructor
-    · apply Monotone.mem_upperBounds_image (continuous_monotone hf) ((isLUB_le_iff d₃).mp le_rfl)
+    · apply Monotone.mem_upperBounds_image (monotone_of_continuous hf) ((isLUB_le_iff d₃).mp le_rfl)
     · rw [lowerBounds, mem_setOf_eq]
       intros b hb
       let u := (Iic b)ᶜ
@@ -359,7 +359,7 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
         exact isClosed_closure
       have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
       rw [isOpen_iff_upper_and_inaccessible_by_directed_joins] at s2
-      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ h
+      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d₁ d₂ d₃ h
       simp at h_1_right
       rw [upperBounds] at hb
       simp at hb
@@ -403,7 +403,7 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   rw [ScottTopology.isOpen_iff_upper_and_inaccessible_by_directed_joins]
   apply and_congr_right'
   constructor
-  · exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
+  · exact fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃
   · exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
 lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
