@@ -146,7 +146,8 @@ variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
 is generalized to the case of any finite dimensional domain
 in `LinearMap.toContinuousLinearMap`. -/
 def LinearMap.toContinuousLinearMap₁ (f : 𝕜 →ₗ[𝕜] E) : 𝕜 →L[𝕜] E :=
-  f.mkContinuous ‖f 1‖ fun x => by conv_lhs => rw [← mul_one x];
+  f.mkContinuous ‖f 1‖ fun x => by
+    conv_lhs => rw [← mul_one x]
     rw [← smul_eq_mul, f.map_smul, mul_comm]; exact norm_smul_le _ _
 #align linear_map.to_continuous_linear_map₁ LinearMap.toContinuousLinearMap₁
 
@@ -181,7 +182,7 @@ end Normed
 section Seminormed
 variable [Ring 𝕜] [Ring 𝕜₂]
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
-variable [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F]
+variable [Module 𝕜 E] [Module 𝕜₂ F]
 variable {σ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ] F)
 
 /-- A (semi-)linear map which is a homothety is a continuous linear map.
@@ -250,7 +251,7 @@ theorem toSpanNonzeroSingleton_homothety (x : E) (h : x ≠ 0) (c : 𝕜) :
 end Seminormed
 
 section Normed
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
     continuous linear equivalence from `E₁` to the span of `x`.-/
