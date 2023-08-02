@@ -16,11 +16,11 @@ section IsROrCFields
 variable {K: Type _} [IsROrC K]
 
 @[simp, isROrC_simps]
-theorem re_sum (f : n → K) : IsROrC.re (∑ i in s, f i) = ∑ i in s, IsROrC.re (f i) := by
+theorem IsROrC.re_sum (f : n → K) : IsROrC.re (∑ i in s, f i) = ∑ i in s, IsROrC.re (f i) := by
   apply map_sum _ _
 
 @[simp, isROrC_simps]
-theorem im_sum (f : n → K) : IsROrC.im (∑ i in s, f i) = ∑ i in s, IsROrC.im (f i) := by
+theorem IsROrC.im_sum (f : n → K) : IsROrC.im (∑ i in s, f i) = ∑ i in s, IsROrC.im (f i) := by
   apply map_sum _ _
 
 open IsROrC
