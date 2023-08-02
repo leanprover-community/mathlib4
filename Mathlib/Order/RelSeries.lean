@@ -226,44 +226,77 @@ If `a_0 < a_1 < ... < a_n` is a strict series and `a` is such that `a_i < a < a_
 `a_0 < a_1 < ... < a_i < a < a_{i + 1} < ... < a_n` is another strict series
 -/
 @[simps]
-def insert_nth (p : StrictSeries α) (i : Fin p.length) (a : α) (a_lt : p (Fin.castSucc i) < a)
-  (lt_a : a < p i.succ) : StrictSeries α :=
-{ length := p.length + 1
+def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
+  (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
+  length := p.length + 1
   toFun :=  (Fin.castSucc i.succ).insertNth a p
-  StrictMono := by
-    intros m n h
-    obtain (hm|rfl|hm) := lt_trichotomy m (Fin.castSucc i.succ)
-    . rw [Fin.insertNth_apply_below hm]
-      obtain (hn|rfl|hn) := lt_trichotomy n (Fin.castSucc i.succ)
-      . rw [Fin.insertNth_apply_below hn]
-        simpa only [Fin.coe_castSucc, eq_rec_constant] using p.StrictMono h
-      . rw [Fin.insertNth_apply_same]
-        simp only [Fin.coe_castSucc, eq_rec_constant]
-        refine lt_of_le_of_lt (p.StrictMono.monotone $ Nat.lt_succ_iff.mp ?_) a_lt
-        exact h
-      . rw [Fin.insertNth_apply_above hn]
-        simp only [Fin.coe_castSucc, eq_rec_constant]
-        generalize_proofs h1 h2
-        refine lt_trans (lt_of_le_of_lt (p.StrictMono.monotone ?_) a_lt)
-          (lt_of_lt_of_le lt_a $ p.StrictMono.monotone $ show (i : ℕ) + 1 ≤ (n : ℕ) - 1 from ?_)
-        . change (m : ℕ) ≤ _
-          change (m : ℕ) < _ at hm
-          simp only [Fin.coe_castSucc] at hm ⊢
-          linarith [show (m : ℕ) < i + 1 from hm]
-        rwa [Nat.succ_le_iff, ←Nat.pred_eq_sub_one, Nat.lt_pred_iff, Nat.succ_eq_add_one]
-    . rw [Fin.insertNth_apply_same, Fin.insertNth_apply_above h]
-      simp only [Fin.coe_castSucc, eq_rec_constant]
-      refine lt_of_lt_of_le lt_a (p.StrictMono.monotone $ show ↑i + 1 ≤ ↑n - 1 from ?_)
-      change (_ : ℕ) < _ at h
-      simp only [Fin.coe_castSucc, Fin.val_succ] at h
-      rwa [Nat.succ_le_iff, ←Nat.pred_eq_sub_one, Nat.lt_pred_iff, Nat.succ_eq_add_one]
-    . rw [Fin.insertNth_apply_above hm, Fin.insertNth_apply_above (lt_trans hm h)]
-      simp only [Fin.coe_castSucc, eq_rec_constant]
-      refine p.StrictMono ?_
-      change (_ : ℕ) < _ at hm h ⊢
-      simp only [Fin.coe_castSucc, Fin.val_succ, Fin.val_fin_lt, Fin.coe_pred, ge_iff_le] at hm h ⊢
-      refine Nat.pred_lt_pred (?_ : (m : ℕ) ≠ 0) h
-      linarith }
+  step := fun m => by
+    set x := _; set y := _
+    change r x y
+    obtain (hm|hm|hm) := lt_trichotomy m.1 i.1
+    . have hx : x = p m
+      · change Fin.insertNth _ _ _ _ = _
+        rw [Fin.insertNth_apply_below]
+        swap; exact hm.trans (lt_add_one _)
+        simp only [Fin.coe_castSucc, Fin.castLT_castSucc, eq_rec_constant]
+      rw [hx]
+      convert p.step ⟨m, hm.trans i.2⟩
+      change Fin.insertNth _ _ _ _ = _
+      rw [Fin.insertNth_apply_below]
+      simp only [Fin.coe_castSucc, eq_rec_constant, Fin.succ_mk]
+      congr
+      change m.1 + 1 < i.1 + 1
+      simpa only [add_lt_add_iff_right]
+    . have hx : x = p m
+      · change Fin.insertNth _ _ _ _ = _
+        rw [Fin.insertNth_apply_below]
+        swap
+        · change m.1 < i.1 + 1
+          rw [hm]
+          exact lt_add_one _
+        simp only [Fin.coe_castSucc, Fin.castLT_castSucc, eq_rec_constant]
+      rw [hx]
+      convert prev_connect
+      · ext; exact hm
+      · change Fin.insertNth _ _ _ _ = _
+        have H : m.succ = i.succ.castSucc
+        · ext; change _ + 1 = _ + 1; rw [hm]
+        rw [H, Fin.insertNth_apply_same]
+    . rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
+      obtain (hm|hm) := hm
+      · have hx : x = p ⟨m.1 - 1, (Nat.sub_lt (by linarith) (by linarith)).trans m.2⟩
+        · change Fin.insertNth _ _ _ _ = _
+          rw [Fin.insertNth_apply_above]
+          swap; exact hm
+          simp only [eq_rec_constant, ge_iff_le]
+          congr
+        rw [hx]
+        have hy : y = p m
+        · change Fin.insertNth _ _ _ _ = _
+          rw [Fin.insertNth_apply_above]
+          swap; exact hm.trans (lt_add_one _)
+          simp only [Nat.zero_eq, Fin.pred_succ, eq_rec_constant]
+        rw [hy]
+        convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
+        ext
+        change m.1 = (m.1 - 1) + 1
+        symm
+        exact Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
+      · have hx : x = a
+        · change Fin.insertNth _ _ _ _ = _
+          have H : m.castSucc = i.succ.castSucc
+          · ext; change m.1 = i.1 + 1; rw [hm]
+          rw [H, Fin.insertNth_apply_same]
+        rw [hx]
+        have hy : y = p m
+        · change Fin.insertNth _ _ _ _ = _
+          rw [Fin.insertNth_apply_above]
+          swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
+          simp
+        rw [hy]
+        convert connect_next
+        ext
+        exact hm.symm
 
 variable {β}
 
