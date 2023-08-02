@@ -1,8 +1,22 @@
+/-
+Copyright (c) 2023 Mohanad ahmed. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mohanad Ahmed
+-/
+
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.IsROrC.Basic
+import Mathlib.Data.Matrix.Rank
+
+/-! # Fields with Star Inner Product (dotProduct or vector Product) as Norm
+
+This file defines the class type `StarDotProductSpace` i.e. fields with star operation compatible
+with field operations (StarRing) such that the stared vector product (in 1st argument) is zero only
+if the vector is zero.
+-/
 
 class StarDotProductSpace (n K) [Fintype n][Field K][StarRing K] : Prop where
   dotProduct_star_self_eq_zero (v : n → K) : Matrix.dotProduct (star v) v = 0 ↔ v = 0
@@ -105,3 +119,47 @@ def instStarDotProduct_starOrderedRing [Field K] [PartialOrder K] [StarOrderedRi
     simp only [Finset.mem_univ, Pi.star_apply, mul_eq_zero, star_eq_zero, or_self, forall_true_left,
       Pi.zero_apply]
     simp only [Finset.mem_univ, Pi.star_apply, forall_true_left, star_mul_self_nonneg, implies_true]
+
+section RankLemmas
+variable {m : Type _} [Fintype m]
+variable {R : Type _} [Field R] [StarRing R] [StarDotProductSpace m R] [StarDotProductSpace n R]
+open FiniteDimensional
+
+
+theorem ker_mulVecLin_conjTranspose_mul_self' (A : Matrix m n R) :
+    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) := by
+  ext x
+  simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
+  constructor
+  · intro h
+    replace h := congr_arg (dotProduct (star x)) h
+    haveI : NoZeroDivisors R := inferInstance
+    rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
+      StarDotProductSpace.dotProduct_star_self_eq_zero] at h
+  · intro h
+    rw [h, mulVec_zero]
+
+@[simp]
+theorem rank_conjTranspose_mul_self' (A : Matrix m n R) :
+    (Aᴴ ⬝ A).rank = A.rank := by
+  dsimp only [Matrix.rank]
+  refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
+  dsimp only
+  trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ ⬝ A)) } +
+    finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ ⬝ A)) }
+  · rw [ker_mulVecLin_conjTranspose_mul_self']
+  · simp only [LinearMap.finrank_range_add_finrank_ker]
+
+@[simp]
+theorem rank_conjTranspose' (A : Matrix m n R) : Aᴴ.rank = A.rank :=
+  le_antisymm
+    (((rank_conjTranspose_mul_self' _).symm.trans_le <| rank_mul_le_left _ _).trans_eq <|
+      congr_arg _ <| conjTranspose_conjTranspose _)
+    ((rank_conjTranspose_mul_self' _).symm.trans_le <| rank_mul_le_left _ _)
+
+@[simp]
+theorem rank_self_mul_conjTranspose' (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank := by
+  simpa only [rank_conjTranspose', conjTranspose_conjTranspose] using
+    rank_conjTranspose_mul_self' Aᴴ
+
+end RankLemmas
