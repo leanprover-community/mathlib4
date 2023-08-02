@@ -31,10 +31,10 @@ In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules,
  * `TensorProduct.AlgebraTensorModule.map`
  * `TensorProduct.AlgebraTensorModule.mapBilinear`
  * `TensorProduct.AlgebraTensorModule.congr`
- * `TensorProduct.AlgebraTensorModule.mapBilinear`
  * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
  * `TensorProduct.AlgebraTensorModule.assoc`
  * `TensorProduct.AlgebraTensorModule.leftComm`
+ * `TensorProduct.AlgebraTensorModule.rightComm`
  * `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
 
 ## Implementation notes
@@ -187,10 +187,10 @@ variable {R A B M N P Q}
 
 /-- Heterobasic version of `TensorProduct.map` -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
-  lift $ (show (Q →ₗ[R] P ⊗ Q) →ₗ[A] N →ₗ[R] P ⊗[R] Q from
-  { toFun := fun h => h ∘ₗ g,
-    map_add' := fun h₁ h₂ => LinearMap.add_comp g h₂ h₁,
-    map_smul' := fun c h => LinearMap.smul_comp c h g }) ∘ₗ mk R A P Q ∘ₗ f
+  lift <|
+    { toFun := fun h => h ∘ₗ g,
+      map_add' := fun h₁ h₂ => LinearMap.add_comp g h₂ h₁,
+      map_smul' := fun c h => LinearMap.smul_comp c h g } ∘ₗ mk R A P Q ∘ₗ f
 
 @[simp] theorem map_tmul (f : M →ₗ[A] P) (g : N →ₗ[R] Q) (m : M) (n : N) :
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
@@ -213,7 +213,7 @@ theorem map_smul_right (r : R) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map f (
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, tmul_smul]
 
-theorem map_smul_left (r : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (r • f) g = r • map f g := by
+theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b • f) g = b • map f g := by
   ext
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, smul_tmul']
@@ -222,13 +222,7 @@ variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.map_bilinear` -/
 def mapBilinear : (M →ₗ[A] P) →ₗ[B] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
-  { toFun := fun f =>
-    { toFun := fun g => map f g
-      map_add' := fun _g₁ _g₂ => map_add_right _ _ _
-      map_smul' := fun _c _g => map_smul_right _ _ _ }
-    map_add' := fun _f₁ _f₂ => LinearMap.ext <| fun _g => map_add_left _ _ _
-    map_smul' := fun _c _f => LinearMap.ext <| fun _g => map_smul_left _ _ _ }
-
+  LinearMap.mk₂' _ _ map map_add_left map_smul_left map_add_right map_smul_right
 variable {R A B M N P Q}
 
 @[simp]
@@ -317,8 +311,8 @@ section leftComm
 def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
   let e₁ := (assoc R A A M P Q).symm
   let e₂ := congr (TensorProduct.comm A M P) (1 : Q ≃ₗ[R] Q)
-  let e₃ := (assoc R A A P M Q)
-  e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
+  let e₃ := assoc R A A P M Q
+  e₁ ≪≫ₗ e₂ ≪≫ₗ e₃
 
 variable {M N P Q}
 
