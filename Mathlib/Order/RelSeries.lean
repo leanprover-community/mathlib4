@@ -8,7 +8,6 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Series of a relation

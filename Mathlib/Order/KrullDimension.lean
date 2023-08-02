@@ -5,14 +5,7 @@ Authors: Jujian Zhang, Fangming Li
 -/
 
 import Mathlib.Order.RelSeries
-import Mathlib.Order.WithBot
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Data.Fin.Basic
-import Mathlib.Tactic.Linarith
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Algebra.Module.LocalizedModule
 
 /-!
 # Krull dimension of a preordered set
@@ -87,7 +80,7 @@ theorem le_of_Surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
     exact Ideal.comap_mono hab }
 
 /--
-If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringDrullDim R`.
+If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`.
 -/
 theorem le_of_Quot (R : Type _) [CommRing R] (I : PrimeSpectrum R) :
   ringKrullDim (R ⧸ I.asIdeal) ≤ ringKrullDim R :=
