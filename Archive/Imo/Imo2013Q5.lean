@@ -60,7 +60,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
   have hNp : 0 < N := by exact_mod_cast (one_div_pos.mpr hxmy).trans hN
   have :=
     calc
-      1 = (x - y) * (1 / (x - y)) := by field_simp [ne_of_gt hxmy]
+      1 = (x - y) * (1 / (x - y)) := by field_simp
       _ < (x - y) * N := by gcongr
       _ ≤ x ^ N - y ^ N := hn N hNp
   linarith [h N hNp]
