@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.RingTheory.TensorProduct
 
 #align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
@@ -94,9 +95,9 @@ noncomputable section
 namespace Module
 
 -- Porting note: max u v universe issues so name and specific below
-universe u v v' v'' w u₁ u₂
+universe u uA v v' v'' w u₁ u₂
 
-variable (R : Type u) (M : Type v)
+variable (R : Type u) (A : Type uA) (M : Type v)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -1571,7 +1572,7 @@ end VectorSpace
 
 namespace TensorProduct
 
-variable (R : Type _) (M : Type _) (N : Type _)
+variable (R A : Type _) (M : Type _) (N : Type _)
 
 variable {ι κ : Type _}
 
@@ -1612,6 +1613,25 @@ theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
 #align tensor_product.dual_distrib_apply TensorProduct.dualDistrib_apply
 
 end
+
+namespace AlgebraTensorModule
+set_option autoImplicit false
+variable [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [AddCommMonoid N]
+
+variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
+
+/-- Heterobasic version of `TensorProduct.dualDistrib` -/
+def dualDistrib : Dual A M ⊗[R] Dual R N →ₗ[A] Dual A (M ⊗[R] N) :=
+  compRight (Algebra.TensorProduct.rid R A A) ∘ₗ homTensorHomMap R A A M N A R
+
+variable {R M N}
+
+@[simp]
+theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
+    dualDistrib R A M N (f ⊗ₜ g) (m ⊗ₜ n) = f m * algebraMap _ _ (g n) :=
+  rfl
+
+end AlgebraTensorModule
 
 variable {R M N}
 

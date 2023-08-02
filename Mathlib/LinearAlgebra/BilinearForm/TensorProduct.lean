@@ -37,12 +37,15 @@ variable [Algebra R A] [Module R M₁] [Module A M₁]
 variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [SMulCommClass R A A] [IsScalarTower R A M₁]
 variable [Module R M₂]
 
-/-- The tensor product of two bilinear forms injects into bilinear forms on tensor products. -/
+/-- The tensor product of two bilinear forms injects into bilinear forms on tensor products.
+
+Note this is heterobasic; the bilinear form on the left can take values in a larger ring than
+the one on the right. -/
 def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
   ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
     ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm
     ≪≫ₗ LinearMap.toBilin).toLinearMap
-  ∘ₗ sorry -- TensorProduct.AlgebraTensorModule.dualDistrib R _ _
+  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv A _ _ _)
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)).toLinearMap

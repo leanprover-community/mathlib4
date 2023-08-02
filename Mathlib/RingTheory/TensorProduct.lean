@@ -31,7 +31,7 @@ In this file we:
 -/
 
 
-universe u v₁ v₂ v₃ v₄
+universe u uS v₁ v₂ v₃ v₄
 
 open scoped TensorProduct
 
@@ -468,24 +468,24 @@ section Monoidal
 
 section
 
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} {S : Type uS} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
-variable {A : Type v₁} [Semiring A] [Algebra R A]
+variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 variable {B : Type v₂} [Semiring B] [Algebra R B]
 
-variable {C : Type v₃} [Semiring C] [Algebra R C]
+variable {C : Type v₃} [Semiring C] [Algebra R C] [Algebra S C]
 
 variable {D : Type v₄} [Semiring D] [Algebra R D]
 
 /-- Build an algebra morphism from a linear map out of a tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
-def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C)
+def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     (w₁ : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
-    (w₂ : ∀ r, f ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R C) r) : A ⊗[R] B →ₐ[R] C :=
+    (w₂ : ∀ r, f ((algebraMap S A) r ⊗ₜ[R] 1) = (algebraMap S C) r) : A ⊗[R] B →ₐ[S] C :=
   { f with
-    map_one' := by rw [← (algebraMap R C).map_one, ← w₂, (algebraMap R A).map_one]; rfl
+    map_one' := by rw [← (algebraMap S C).map_one, ← w₂, (algebraMap S A).map_one]; rfl
     map_zero' := by simp only; rw [LinearMap.toFun_eq_coe, map_zero]
     map_mul' := fun x y => by
       simp only
@@ -506,22 +506,22 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C)
 
 @[simp]
 theorem algHomOfLinearMapTensorProduct_apply (f w₁ w₂ x) :
-    (algHomOfLinearMapTensorProduct f w₁ w₂ : A ⊗[R] B →ₐ[R] C) x = f x :=
+    (algHomOfLinearMapTensorProduct f w₁ w₂ : A ⊗[R] B →ₐ[S] C) x = f x :=
   rfl
 #align algebra.tensor_product.alg_hom_of_linear_map_tensor_product_apply Algebra.TensorProduct.algHomOfLinearMapTensorProduct_apply
 
 /-- Build an algebra equivalence from a linear equivalence out of a tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
-def algEquivOfLinearEquivTensorProduct (f : A ⊗[R] B ≃ₗ[R] C)
+def algEquivOfLinearEquivTensorProduct (f : A ⊗[R] B ≃ₗ[S] C)
     (w₁ : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
-    (w₂ : ∀ r, f ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R C) r) : A ⊗[R] B ≃ₐ[R] C :=
-  { algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C) w₁ w₂, f with }
+    (w₂ : ∀ r, f ((algebraMap S A) r ⊗ₜ[R] 1) = (algebraMap S C) r) : A ⊗[R] B ≃ₐ[S] C :=
+  { algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C) w₁ w₂, f with }
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct
 
 @[simp]
 theorem algEquivOfLinearEquivTensorProduct_apply (f w₁ w₂ x) :
-    (algEquivOfLinearEquivTensorProduct f w₁ w₂ : A ⊗[R] B ≃ₐ[R] C) x = f x :=
+    (algEquivOfLinearEquivTensorProduct f w₁ w₂ : A ⊗[R] B ≃ₐ[S] C) x = f x :=
   rfl
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_tensor_product_apply Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct_apply
 
@@ -561,9 +561,9 @@ theorem algEquivOfLinearEquivTripleTensorProduct_apply (f w₁ w₂ x) :
 
 end
 
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} {S : Type uS} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
-variable {A : Type v₁} [Semiring A] [Algebra R A]
+variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 variable {B : Type v₂} [Semiring B] [Algebra R B]
 
@@ -590,19 +590,30 @@ theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r �
   simp [TensorProduct.lid]
 #align algebra.tensor_product.lid_tmul Algebra.TensorProduct.lid_tmul
 
+variable (S)
+
 /-- The base ring is a right identity for the tensor product of algebra, up to algebra isomorphism.
+
+Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
-protected nonrec def rid : A ⊗[R] R ≃ₐ[R] A :=
-  algEquivOfLinearEquivTensorProduct (TensorProduct.rid R A) (by
-    simp [mul_smul]
-    simp_rw [← mul_smul, mul_comm]
-    simp)
-    (by simp [Algebra.smul_def])
+protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
+  let act : R →ₗ[R] A →ₗ[S] A :=
+    (Algebra.lsmul (A := A) S Aᵐᵒᵖ A).toLinearMap.flip.restrictScalars R ∘ₗ Algebra.linearMap R A
+  let lin : A ⊗[R] R ≃ₗ[S] A := LinearEquiv.ofLinear
+    (AlgebraTensorModule.lift <| LinearMap.flip <| act)
+    ((AlgebraTensorModule.mk R A A R).flip 1)
+    (LinearMap.ext <| fun x => show x * algebraMap R A 1 = x by simp)
+    (AlgebraTensorModule.ext <| fun x y => show (x * algebraMap R A y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y
+      by rw [←Algebra.commutes, ←_root_.Algebra.smul_def, smul_tmul, smul_eq_mul, mul_one])
+  algEquivOfLinearEquivTensorProduct lin
+    (fun a₁ a₂ r₁ r₂ => by
+      show a₁ * a₂ * algebraMap R A (r₁ * r₂) = a₁ * algebraMap R A r₁ * (a₂ * algebraMap R A r₂)
+      simp_rw [←Algebra.commutes, ←Algebra.smul_def, smul_mul_smul])
+    (fun s => show algebraMap S A s * algebraMap R A 1 = algebraMap S A s by simp)
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
 
 @[simp]
-theorem rid_tmul (r : R) (a : A) : (TensorProduct.rid R A : A ⊗ R → A) (a ⊗ₜ r) = r • a := by
-  simp [TensorProduct.rid]
+theorem rid_tmul (r : R) (a : A) : TensorProduct.rid R S A (a ⊗ₜ r) = a * algebraMap _ _ r := rfl
 #align algebra.tensor_product.rid_tmul Algebra.TensorProduct.rid_tmul
 
 section
