@@ -61,17 +61,15 @@ variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
 
-lemma krullDim_le_of_StrictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β := by
-  exact iSup_le $ λ p ↦ le_sSup ⟨Map p f hf, rfl⟩
+lemma krullDim_le_of_StrictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
+  iSup_le $ λ p ↦ le_sSup ⟨p.map f hf, rfl⟩
 
 end Preorder
 
-noncomputable
-
-/-
+/--
 The ring theoretic Krull dimension is the Krull dimension of prime spectrum ordered by inclusion.
 -/
-def ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop ℕ) :=
+noncomputable def ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop ℕ) :=
   krullDim (PrimeSpectrum R)
 
 namespace ringKrullDim
@@ -83,7 +81,7 @@ theorem le_of_Surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
   (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R := by
 { refine' krullDim_le_of_StrictMono (PrimeSpectrum.comap f)
     (Monotone.strictMono_of_injective ?_ (PrimeSpectrum.comap_injective_of_surjective f hf))
-  . intro a b hab
+  · intro a b hab
     change ((PrimeSpectrum.comap f) a).asIdeal ≤ ((PrimeSpectrum.comap f) b).asIdeal
     rw [PrimeSpectrum.comap_asIdeal, PrimeSpectrum.comap_asIdeal]
     exact Ideal.comap_mono hab }
