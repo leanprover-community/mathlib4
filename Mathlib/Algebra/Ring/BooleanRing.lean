@@ -306,7 +306,7 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
   rfl
 #align of_boolalg_sdiff ofBoolAlg_sdiff
 
-private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
+private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc
     (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
       by ring
@@ -315,7 +315,7 @@ private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a *
 @[simp]
 theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
   rw [symmDiff_eq_sup_sdiff_inf]
-  exact of_boolalg_symm_diff_aux _ _
+  exact of_boolalg_symmDiff_aux _ _
 #align of_boolalg_symm_diff ofBoolAlg_symmDiff
 
 @[simp]
@@ -555,7 +555,7 @@ protected def BoundedLatticeHom.asBoolRing (f : BoundedLatticeHom α β) :
   toFun := toBoolRing ∘ f ∘ ofBoolRing
   map_zero' := f.map_bot'
   map_one' := f.map_top'
-  map_add' := map_symm_diff' f
+  map_add' := map_symmDiff' f
   map_mul' := f.map_inf'
 #align bounded_lattice_hom.as_boolring BoundedLatticeHom.asBoolRing
 

@@ -97,7 +97,7 @@ An interested reader may like to formalise some of the material from
 
 open Function Relation
 
--- This is fine, we'd like to be able to use multi-character auto-implicits.
+-- We'd like to be able to use multi-character auto-implicits in this file.
 set_option relaxedAutoImplicit true
 
 /-! ### Pre-game moves -/

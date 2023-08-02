@@ -221,6 +221,8 @@ import Mathlib.Algebra.Homology.ModuleCat
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.Algebra.Homology.ShortComplex.RightHomology
@@ -861,6 +863,7 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation
 import Mathlib.CategoryTheory.Bicategory.SingleObj
 import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.CatCommSq
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
@@ -1510,6 +1513,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.CharP
+import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
@@ -1875,6 +1879,7 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
@@ -1943,6 +1948,7 @@ import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
@@ -1953,7 +1959,6 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup
-import Mathlib.GroupTheory.FreeProduct
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.GroupTheory.GroupAction.ConjAct
@@ -2095,6 +2100,7 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.SMap
 import Mathlib.Lean.System.IO
+import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -2210,6 +2216,7 @@ import Mathlib.LinearAlgebra.Multilinear.Basis
 import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.LinearAlgebra.Orientation
+import Mathlib.LinearAlgebra.PerfectPairing
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.LinearAlgebra.Prod
@@ -2329,6 +2336,7 @@ import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Function.LpOrder
 import Mathlib.MeasureTheory.Function.LpSeminorm
 import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
@@ -2638,6 +2646,7 @@ import Mathlib.Order.SuccPred.Relation
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
+import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
@@ -2654,6 +2663,7 @@ import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Density
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
+import Mathlib.Probability.Independence.Kernel
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
 import Mathlib.Probability.Kernel.Basic
@@ -2954,6 +2964,7 @@ import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Explode
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
+import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
@@ -3288,6 +3299,7 @@ import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Order.NhdsSet
 import Mathlib.Topology.Order.Priestley
+import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartitionOfUnity
