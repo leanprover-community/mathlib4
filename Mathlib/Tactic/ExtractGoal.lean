@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, Damiano Testa
+Authors: Simon Hudon, Kyle Miller, Damiano Testa
 -/
-import Mathlib.Lean.Expr.Basic
+import Std.Lean.Meta.Inaccessible
 
 /-!
 #  `extract_goal`: Format the current goal as a stand-alone example
@@ -12,78 +12,102 @@ Useful for testing tactics or creating
 [minimal working examples](https://leanprover-community.github.io/mwe.html).
 
 ```lean
-example (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
+example (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
   extract_goal
 
 /-
-example (i j k : ℕ)
-    (h₀ : i ≤ j)
-    (h₁ : j ≤ k) :
-    i ≤ k := by
-  sorry
+theorem extracted_1 (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry
 -/
 ```
 
-* TODO: Deal with `let`
-* TODO: Add functionality to produce a named `theorem` via `extract_goal thmName`
 * TODO: Add tactic code actions?
+* Output may produce lines with more than 100 characters
 
-Check that these issues are resolved:
-* Deal with universes of auto-implicit Sorts -- fixed?
-* Deal with named instances -- fixed?
+### Caveat
+
+The extracted goal may depend on imports, since it relies on delaboration(?).
+Also, the extracted goal may not be equivalent to the given goal.
+
+```lean
+-- `theorem int_eq_nat` is the output of the `extract_goal` from the example below
+-- the type ascription is removed and the `↑` is replaced by `Int.ofNat`:
+-- Lean infers the correct (false) statement
+theorem int_eq_nat {z : Int} : ∃ n, Int.ofNat n = z := sorry
+
+example {z : Int} : ∃ n : Nat, ↑n = z := by
+  extract_goal  -- produces `int_eq_nat`
+  apply int_eq_nat  -- works
+```
+
+However, importing `Std.Classes.Cast`, makes `extract_goal` produce a different theorem
+
+```lean
+import Std.Classes.Cast
+
+-- `theorem extracted_1` is the output of the `extract_goal` from the example below
+-- the type ascription is erased and the `↑` is untouched:
+-- Lean infers a different statement, since it fills in `↑` with `id` and uses `n : Int`
+theorem extracted_1 {z : Int} : ∃ n, ↑n = z := ⟨_, rfl⟩
+
+example {z : Int} : ∃ n : Nat, ↑n = z := by
+  extract_goal
+  apply extracted_1
+/-
+tactic 'apply' failed, failed to unify
+  ∃ n, n = ?z
+with
+  ∃ n, ↑n = z
+z: Int
+⊢ ∃ n, ↑n = z
+-/
+```
+
+Similarly, the extracted goal may fail to type-check:
+```lean
+example (a : α) : ∃ f : α → α, f a = a := by
+  extract_goal
+  exact ⟨id, rfl⟩
+
+theorem extracted_1.{u_1} {α : Sort u_1} (a : α) : ∃ f, f a = a := sorry
+-- `f` is uninterpreted: `⊢ ∃ f, sorryAx α true = a`
+```
 -/
 
-open Lean LocalDecl Elab Meta Tactic BinderInfo
-
-/--  `qToUnder S T?` takes as input a string `S` and, optionally, another string `T?`.
-It returns
-* `Type T?` if `S` begins with `S = Type ?u.`;
-* `Sort T?` if `S` begins with `S = Sort ?u.`;
-otherwise, it leave `S` unchanged.  If the optional string `T?` is not given, it uses `T? := "_"`.
--/
-def qToUnder (S : String) (T : String := "_") : String :=
-if      "Type ?u.".isPrefixOf S then "Type " ++ T
-else if "Sort ?u.".isPrefixOf S then "Sort " ++ T
-else S
-
-/-- `oneBlock L` assumes that `L` is a list of `LocalDecl` that all have the same
-binder type (i.e. (strict) implicit, explicit, instance) and all have the same
-type and returns the Format for printing it.
-Example: `oneBlock [x,y,z] = {x y z : ℕ}`.
--/
-def Lean.LocalDecl.oneBlock : List LocalDecl → MetaM Format
-  | []    => pure ""
-  | ls@(d::_) => do
-    let (bi, type) := (d.binderInfo, d.type)
-    let (l,r) := bi.brackets
-    let comp := ls.map ((toString ∘ LocalDecl.userName) ·)
-    let new := comp.map fun x =>
-      let xspl := x.splitOn "."
-      if bi != instImplicit && xspl.contains "_hyg" then xspl[0]! ++ "_hyg" else x
-    let middle := " ".intercalate new
-    let ppt := (← ppExpr type).pretty
-    let pptype := if type.isSort then qToUnder ppt ("univ_" ++ new.getD 0 "bug!") else ppt
-    let middle := if bi == instImplicit && (middle.splitOn ".").contains "_hyg" then ""
-                  else (middle ++ " : ")
-    -- is it possible to get the pretty-printed type, without going via `MetaM`?
-    pure (l ++ middle ++ pptype ++ r )
-
-def Lean.MetavarDecl.formatMVarDecls (decl : MetavarDecl) : MetaM Format := do
-  let dcls := decl.lctx.decls.toList.reduceOption.drop 1
-  let dgps := dcls.groupBy (fun x y => x.binderInfo == y.binderInfo ∧ x.type == y.type)
-  let fmts := ← dgps.mapM (oneBlock ·)
-  let indt := f!"\n    "
-  let fmts := fmts.intersperse indt
-  let coln := if (fmts.length = 0) then f!":" else f!" :"
-  let finf := (fmts.foldr (· ++ ·) coln) ++ indt ++ (← ppExpr decl.type)
-  -- a miserable hack to replace the hygienic dagger `✝` with `_hyg` so that it can be pasted.
-  return (finf.pretty.replace "✝" "_hyg") ++ f!" := by\n  sorry"
+open Lean Elab Tactic
 
 /--
-`extract_goal` formats the current goal as a stand-alone example.
-
+`extract_goal` formats the current goal as a stand-alone theorem or definition.
 It tries to produce an output that can be copy-pasted and just work.
-It renames a "hygienic" variable `n✝` to `n_hyg`.
+
+By default it cleans up the local context. To use the full local context, use `extract_goal*`.
 -/
-elab (name := extractGoal) name:"extract_goal" : tactic => withMainContext do
-  logInfoAt name (f!"example " ++ (← (← getMainDecl).formatMVarDecls))
+elab (name := extractGoal) "extract_goal" full?:&"*"? name?:(colGt ppSpace ident)? : tactic => do
+  let name ← if let some name := name?
+             then pure name.getId
+             else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
+  let msg ← withoutModifyingEnv <| withoutModifyingState do
+    let mut g ← getMainGoal
+    unless full?.isSome do
+      g ← g.cleanup
+    (g, _) ← g.renameInaccessibleFVars
+    (_, g) ← g.revert (clearAuxDeclsInsteadOfRevert := true) (← g.getDecl).lctx.getFVarIds
+    let ty ← instantiateMVars (← g.getType)
+    if ty.hasExprMVar then
+      -- TODO: turn metavariables into new hypotheses?
+      throwError "Extracted goal has metavariables: {ty}"
+    let ty ← Term.levelMVarToParam ty
+    let seenLevels := collectLevelParams {} ty
+    let levels := (← Term.getLevelNames).filter
+                    fun u => seenLevels.visitedLevel.contains (.param u)
+    addAndCompile <| Declaration.axiomDecl
+      { name := name
+        levelParams := levels
+        isUnsafe := false
+        type := ty }
+    let sig ← addMessageContext <| MessageData.ofPPFormat { pp := fun
+                | some ctx => ctx.runMetaM <| PrettyPrinter.ppSignature name
+                | none     => unreachable!
+              }
+    let cmd := if ← Meta.isProp ty then "theorem" else "def"
+    pure m!"{cmd} {sig} := sorry"
+  logInfo msg
