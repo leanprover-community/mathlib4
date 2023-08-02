@@ -213,9 +213,9 @@ elab_rules : tactic |
       if lucky.isSome then
         match results[0]? with
         | some r => do
-            setMCtx r.mctx
-            let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
-            replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
+           withMCtx r.mctx do
+              let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
+              replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
         | _ => failure
     -- See https://github.com/leanprover/lean4/issues/2150
     do withMainContext do
