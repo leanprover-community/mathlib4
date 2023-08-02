@@ -164,7 +164,7 @@ the isomorphism `End(M) ≃ M* ⊗ M`-/
 @[simp]
 theorem trace_eq_contract : LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   cases subsingleton_or_nontrivial R; simp
-  · exact trace_eq_contract_of_basis (Module.Free.chooseBasis R M)
+  exact trace_eq_contract_of_basis (Module.Free.chooseBasis R M)
 #align linear_map.trace_eq_contract LinearMap.trace_eq_contract
 
 @[simp]
