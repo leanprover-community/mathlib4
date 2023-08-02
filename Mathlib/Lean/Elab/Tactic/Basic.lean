@@ -19,20 +19,26 @@ def getMainTarget'' : TacticM Expr := do
   (← getMainGoal).getType''
 
 /--
+Like `done` but takes a scope (e.g. a tactic name) as an argument
+to produce more detailed error messages.
+-/
+def doneWithScope (scope : MessageData) : TacticM Unit := do
+  let gs ← getUnsolvedGoals
+  unless gs.isEmpty do
+    logError m!"{scope} failed to solve some goals.\n"
+    Term.reportUnsolvedGoals gs
+    throwAbortTactic
+
+/--
 Like `focusAndDone` but takes a scope (e.g. tactic name) as an argument to
 produce more detailed error messages
 -/
 def focusAndDoneWithScope (scope : MessageData) (tactic : TacticM α) : TacticM α :=
   focus do
-    -- TODO: Should add error message with the scope if the tactic (block) fails
-    let a ← tactic
-
-    -- This is essentially the code of `done` with an additional error message
-    let gs ← getUnsolvedGoals
-    unless gs.isEmpty do
-      logError m!"{scope} failed to solve some goals.\n"
-      Term.reportUnsolvedGoals gs
-      throwAbortTactic
+    let a ← try tactic catch e =>
+      if isAbortTacticException e then throw e
+      else throwError "{scope} failed.\n{← nestedExceptionToMessageData e}"
+    doneWithScope scope
 
     pure a
 
