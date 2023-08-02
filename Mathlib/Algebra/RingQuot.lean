@@ -155,7 +155,7 @@ namespace RingQuot
 
 variable (r : R → R → Prop)
 
--- can't be irreducible, causes diamonds in ℤ-algebras
+-- can't be irreducible, causes diamonds in ℕ-algebras
 private def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
