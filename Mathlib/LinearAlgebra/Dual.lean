@@ -644,11 +644,13 @@ theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
 
-instance _root_.Prod.instModuleIsReflexive {N : Type _} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+instance _root_.Prod.instModuleIsReflexive
+    {N : Type _} [AddCommGroup N] [Module R N] [IsReflexive R N] :
     IsReflexive R (M × N) where
   bijective_dual_eval' := by
     let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
-      (dualProdDualEquivDual R M N).dualMap.trans (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
+      (dualProdDualEquivDual R M N).dualMap.trans
+        (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
     have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
       ext m f <;> simp
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
