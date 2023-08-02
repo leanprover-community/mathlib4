@@ -89,7 +89,7 @@ def ScottHausdorffTopology : TopologicalSpace α :=
     obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
     refine ⟨c, hc_w, ?_⟩
     · calc
-        Ici c ∩ d ⊆ (Ici b₁ ∩ Ici b₂) ∩ d := by
+        Ici c ∩ d ⊆ Ici b₁ ∩ Ici b₂ ∩ d := by
         { apply inter_subset_inter_left d
           apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
         _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
@@ -211,18 +211,18 @@ variable [Preorder α] [Preorder β]
 open TopologicalSpace
 
 lemma upperSetTopology_coinduced' {t₁ : TopologicalSpace α} [UpperSetTopology α]
-  (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
+    (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
   rw [ScottTopology']
   apply le_sup_of_le_left
   rwa [← continuous_iff_coinduced_le, ← UpperSetTopology.monotone_iff_continuous]
 
 lemma Monotone_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology α]
-  {t₂ : TopologicalSpace β} [ScottTopology β] (hf : Monotone f) : coinduced f t₁ ≤ t₂ := by
+    {t₂ : TopologicalSpace β} [ScottTopology β] (hf : Monotone f) : coinduced f t₁ ≤ t₂ := by
   rw [ScottTopology.topology_eq β]
   apply upperSetTopology_coinduced' hf
 
 lemma Monotone_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
-  {t₂ : TopologicalSpace β} [ScottTopology β] {f : α → β} (hf : Monotone f)  : Continuous f := by
+    {t₂ : TopologicalSpace β} [ScottTopology β] {f : α → β} (hf : Monotone f)  : Continuous f := by
   rw [continuous_iff_coinduced_le]
   apply Monotone_coinduced hf
 
@@ -234,7 +234,7 @@ section preorder
 variable [Preorder α] [TopologicalSpace α] [ScottTopology α]
 
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open {u : Set α} : IsOpen u
-  ↔ (IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u) := by erw [topology_eq α]; rfl
+  ↔ IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_inaccessible_by_directed_joins {u : Set α} :
     IsOpen u ↔ IsUpperSet u ∧ inaccessible_by_directed_joins u := by
@@ -270,7 +270,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
   · intros h d a d₁ d₂ d₃ d₄
     by_contra h'
     have c1: (d ∩ sᶜ).Nonempty := h d₁ d₂ d₃ h'
-    have c2: (d ∩ sᶜ) =  ∅ := by
+    have c2: d ∩ sᶜ =  ∅ := by
       rw [← subset_empty_iff, ← inter_compl_self s]
       exact inter_subset_inter_left _ d₄
     rw [c2] at c1
@@ -289,7 +289,7 @@ lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h
 
 lemma lowerClosure_le_closure (s : Set α) : lowerClosure s ≤ closure s := by
   convert closure.mono (@upper_le_Scott α _)
-  rw [(@UpperSetTopology.closure_eq_lowerClosure α _ (upperSetTopology' α) ?_ s)]
+  rw [@UpperSetTopology.closure_eq_lowerClosure α _ (upperSetTopology' α) ?_ s]
   exact instUpperSetTopologyUpperSetTopology'
   exact topology_eq α
 
@@ -320,7 +320,7 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
   have s1 : IsOpen u
   { rw [isOpen_compl_iff, ← closure_singleton]
     exact isClosed_closure }
-  have u3 : b ∈ (f⁻¹'  u) := isUpperSet_of_isOpen (IsOpen.preimage hf s1) hab h
+  have u3 : b ∈ f⁻¹'  u := isUpperSet_of_isOpen (IsOpen.preimage hf s1) hab h
   have c1 : f b ∈ (Iic (f b))ᶜ := by
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
@@ -380,8 +380,8 @@ section complete_lattice
 variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
-    IsOpen u ↔ (IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
-    d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
+    IsOpen u ↔ IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
+    d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u := by
   rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open]
   apply and_congr_right'
   constructor
@@ -390,8 +390,8 @@ lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
     {u : Set α} : IsOpen u ↔
-    (IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u →
-    (d∩u).Nonempty) := by
+    IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u →
+    (d∩u).Nonempty := by
   rw [ScottTopology.isOpen_iff_upper_and_inaccessible_by_directed_joins]
   apply and_congr_right'
   constructor
@@ -399,13 +399,13 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   · exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
 lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
-    ↔ (IsLowerSet s ∧
-    ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s ) := by
+    ↔ IsLowerSet s ∧
+    ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
   rw [ScottTopology.isClosed_iff_lower_and_subset_implies_LUB_mem]
   apply and_congr_right'
   constructor
   · exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
-  · exact fun h d a h₁ h₂ h₃ ha => (Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h d h₁ h₂ ha))
+  · exact fun h d a h₁ h₂ h₃ ha => Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h d h₁ h₂ ha)
 
 
 end complete_lattice
