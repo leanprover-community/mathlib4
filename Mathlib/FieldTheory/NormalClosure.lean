@@ -106,17 +106,13 @@ namespace IntermediateField
 variable {F L}
 variable (K : IntermediateField F L)
 
-lemma le_normalClosure (K : IntermediateField F L) : K ≤ normalClosure F K L :=
+lemma le_normalClosure : K ≤ normalClosure F K L :=
 K.fieldRange_val.symm.trans_le K.val.fieldRange_le_normalClosure
 
-lemma normalClosure_of_normal (K : IntermediateField F L) [Normal F K] : normalClosure F K L = K :=
+lemma normalClosure_of_normal [Normal F K] : normalClosure F K L = K :=
 by simp only [normalClosure_def, AlgHom.fieldRange_of_normal, iSup_const]
 
 variable [Normal F L]
-
-lemma normalClosure_normalClosure :
-  normalClosure F (normalClosure F K L) L = normalClosure F K L :=
-IntermediateField.normalClosure_of_normal (normalClosure F K L)
 
 lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f := by
   refine' (normalClosure_def F K L).trans (le_antisymm (iSup_le (fun f ↦ _)) (iSup_le (fun f ↦ _)))
