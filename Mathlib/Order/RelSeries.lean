@@ -376,16 +376,16 @@ lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
 If a series `a_0 < a_1 < ...` has positive length, then `a_1 < ...` is another series
 -/
 @[simps]
-def tail (p : StrictSeries α) (h : p.length ≠ 0) : StrictSeries α :=
-{ length := p.length.pred,
+def tail (p : RelSeries r) (h : p.length ≠ 0) : RelSeries r where
+  length := p.length.pred
   toFun := fun j ↦ p ⟨j + 1, Nat.succ_lt_succ (by
     have hj := j.2
     conv_rhs at hj =>
       rw [← Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero h)]
     exact hj)⟩
-  StrictMono := fun _ _ H ↦ p.StrictMono (Nat.succ_lt_succ H) }
+  step := fun i => p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
 
-lemma tail_zero (p : StrictSeries α) (h : p.length ≠ 0) : p.tail h 0 = p 1 := by
+lemma tail_zero (p : RelSeries r) (h : p.length ≠ 0) : p.tail h 0 = p 1 := by
   rw [tail_toFun]
   congr
   change (0 : ℕ) % (p.length.pred + 1) + 1 = 1 % (p.length + 1)
