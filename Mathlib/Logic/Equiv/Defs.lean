@@ -356,26 +356,32 @@ theorem leftInverse_symm (f : Equiv α β) : LeftInverse f.symm f := f.left_inv
 theorem rightInverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := f.right_inv
 #align equiv.right_inverse_symm Equiv.rightInverse_symm
 
+@[simp]
 theorem injective_comp (e : α ≃ β) (f : β → γ) : Injective (f ∘ e) ↔ Injective f :=
   EquivLike.injective_comp e f
 #align equiv.injective_comp Equiv.injective_comp
 
+@[simp]
 theorem comp_injective (f : α → β) (e : β ≃ γ) : Injective (e ∘ f) ↔ Injective f :=
   EquivLike.comp_injective f e
 #align equiv.comp_injective Equiv.comp_injective
 
+@[simp]
 theorem surjective_comp (e : α ≃ β) (f : β → γ) : Surjective (f ∘ e) ↔ Surjective f :=
   EquivLike.surjective_comp e f
 #align equiv.surjective_comp Equiv.surjective_comp
 
+@[simp]
 theorem comp_surjective (f : α → β) (e : β ≃ γ) : Surjective (e ∘ f) ↔ Surjective f :=
   EquivLike.comp_surjective f e
 #align equiv.comp_surjective Equiv.comp_surjective
 
+@[simp]
 theorem bijective_comp (e : α ≃ β) (f : β → γ) : Bijective (f ∘ e) ↔ Bijective f :=
   EquivLike.bijective_comp e f
 #align equiv.bijective_comp Equiv.bijective_comp
 
+@[simp]
 theorem comp_bijective (f : α → β) (e : β ≃ γ) : Bijective (e ∘ f) ↔ Bijective f :=
   EquivLike.comp_bijective f e
 #align equiv.comp_bijective Equiv.comp_bijective
