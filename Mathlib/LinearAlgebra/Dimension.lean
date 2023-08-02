@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
