@@ -31,27 +31,28 @@ open TensorProduct
 namespace BilinForm
 
 section CommSemiring
-variables [CommSemiring R] [CommSemiring A]
-variables [AddCommMonoid M₁] [AddCommMonoid M₂]
-variables [Algebra R A] [Module R M₁] [Module A M₁]
-variables [SMulCommClass R A M₁] [SMulCommClass A R M₁] [SMulCommClass R A A] [IsScalarTower R A M₁]
-variables [Module R M₂]
+variable [CommSemiring R] [CommSemiring A]
+variable [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [Algebra R A] [Module R M₁] [Module A M₁]
+variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [SMulCommClass R A A] [IsScalarTower R A M₁]
+variable [Module R M₂]
 
 /-- The tensor product of two bilinear forms injects into bilinear forms on tensor products. -/
-def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[R] BilinForm A (M₁ ⊗[R] M₂) :=
+def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
   ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
     ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm
     ≪≫ₗ LinearMap.toBilin).toLinearMap
-  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _
+  ∘ₗ sorry -- TensorProduct.AlgebraTensorModule.dualDistrib R _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-    (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)
+    (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv A _ _ _)
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)).toLinearMap
 #align bilin_form.tensor_distrib BilinForm.tensorDistrib
 
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
-    tensorDistrib (R := R) (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂') = B₁ m₁ m₁' * B₂ m₂ m₂' :=
+    tensorDistrib (A := A) (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
+      = B₁ m₁ m₁' * algebraMap R A (B₂ m₂ m₂') :=
   rfl
 #align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmul
 
@@ -91,7 +92,7 @@ noncomputable def tensorDistribEquiv :
 
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
-    tensorDistribEquiv (R := R) (M₁ := M₁) (M₂ := M₂) B = tensorDistrib (R := R) B :=
+    tensorDistribEquiv (R := R) (M₁ := M₁) (M₂ := M₂) B = tensorDistrib (A := R) B :=
   rfl
 #align bilin_form.tensor_distrib_equiv_apply BilinForm.tensorDistribEquiv_apply
 
