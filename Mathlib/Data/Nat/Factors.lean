@@ -21,8 +21,6 @@ This file deals with the factors of natural numbers.
 
 -/
 
-set_option autoImplicit false
-
 open Bool Subtype
 
 open Nat

@@ -52,7 +52,7 @@ theorem coe_of (α : Type _) [Frame α] : ↥(of α) = α := rfl
 instance : Inhabited FrmCat :=
   ⟨of PUnit⟩
 
-/-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `completeLattice`.
+/-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `CompleteLattice`.
 Necessary for the category theory machinery. -/
 abbrev Hom (α β : Type _) [Frame α] [Frame β] : Type _ :=
   FrameHom α β
