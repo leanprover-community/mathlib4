@@ -119,7 +119,8 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
     exact ⟨n, hn, by ext; rwa [map_pow, map_one]⟩
 
-instance : Nonempty (torsion K) := ⟨1⟩
+/-- Shortcut instance because Lean tends to time out before finding the general instance. -/
+instance : Nonempty (torsion K) := One.nonempty
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
