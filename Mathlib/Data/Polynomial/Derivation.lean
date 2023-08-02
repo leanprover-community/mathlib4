@@ -40,7 +40,7 @@ theorem derivation_C (D : Derivation R R[X] A) (a : R) : D (C a) = 0 :=
   D.map_algebraMap a
 
 @[simp]
-theorem derivation_C_mul (D : Derivation R R[X] A) (a : R) (f : Polynomial R) :
+theorem C_smul_derivation_apply (D : Derivation R R[X] A) (a : R) (f : R[X]) :
     C a • D f = a • D f := by
   have : C a • D f = D (C a * f) := by simp
   rw [this, C_mul', D.map_smul]
@@ -55,8 +55,10 @@ variable [IsScalarTower R (Polynomial R) A]
 variable (R)
 
 /-- The derivation on `R[X]` that takes the value `a` on `X`. -/
-def mkDerivation (a : A) : Derivation R R[X] A :=
-  (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
+def mkDerivation : A →ₗ[R] Derivation R R[X] A where
+  toFun := fun a ↦ (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
+  map_add' := fun a b ↦ by ext; simp
+  map_smul' := fun t a ↦ by ext; simp
 
 lemma mkDerivation_apply (a : A) (f : R[X]) :
     mkDerivation R a f = derivative f • a := by
