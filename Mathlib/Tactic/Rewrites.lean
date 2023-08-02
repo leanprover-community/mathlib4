@@ -134,6 +134,9 @@ Find lemmas which can rewrite the goal.
 This core function returns a monadic list, to allow the caller to decide how long to search.
 See also `rewrites` for a more convenient interface.
 -/
+-- We need to supply the current `MetavarContext` (which will be reused for each lemma application)
+-- because `ListM.squash` executes lazily,
+-- so there is no opportunity for `← getMCtx` to record the context at the call site.
 def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (ctx : MetavarContext) (goal : MVarId) (target : Expr) :
     ListM MetaM RewriteResult := ListM.squash do
