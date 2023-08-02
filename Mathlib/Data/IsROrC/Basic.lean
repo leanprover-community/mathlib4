@@ -51,7 +51,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K,
+class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K, PartialOrder K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -69,7 +69,10 @@ class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing 
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
+  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
 #align is_R_or_C IsROrC
+
+attribute [instance 100] IsROrC.toPartialOrder
 
 end
 
@@ -822,11 +825,29 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_I_ax z := by simp only [MulZeroClass.mul_zero, AddMonoidHom.zero_apply]
+  le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 
 end Instances
 
 namespace IsROrC
+
+instance toStarOrderedRing : StarOrderedRing K :=
+  StarOrderedRing.ofNonnegIff'
+    (h_add := fun {x y} hxy z => by
+      rw [IsROrC.le_iff_re_im] at *
+      simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
+    (h_nonneg_iff := fun x => by
+      rw [IsROrC.le_iff_re_im, map_zero, map_zero, IsROrC.star_def, eq_comm]
+      constructor
+      · rintro ⟨hr, hi⟩
+        refine ⟨Real.sqrt (IsROrC.re x), ?_⟩
+        have := (IsROrC.is_real_TFAE x).out 2 3
+        rw [IsROrC.conj_ofReal, ← IsROrC.ofReal_mul, Real.mul_self_sqrt hr, eq_comm, this, hi]
+      · rintro ⟨s, rfl⟩
+        simp only [IsROrC.star_def, IsROrC.conj_mul]
+        rw [IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
+        apply IsROrC.normSq_nonneg)
 
 open ComplexConjugate
 

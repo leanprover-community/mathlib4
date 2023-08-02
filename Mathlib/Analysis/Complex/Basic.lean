@@ -422,6 +422,8 @@ noncomputable instance : IsROrC ℂ where
   conj_I_ax := conj_I
   norm_sq_eq_def_ax z := (normSq_eq_abs z).symm
   mul_im_I_ax _ := mul_one _
+  toPartialOrder := Complex.partialOrder
+  le_iff_re_im := Iff.rfl
 
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
