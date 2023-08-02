@@ -71,6 +71,21 @@ example (a : α) : ∃ f : α → α, f a = a := by
 theorem extracted_1.{u_1} {α : Sort u_1} (a : α) : ∃ f, f a = a := sorry
 -- `f` is uninterpreted: `⊢ ∃ f, sorryAx α true = a`
 ```
+and also
+```lean
+import Mathlib.Data.Polynomial.Basic
+
+--  The `extract_goal` below produces this statement:
+theorem extracted_1 : X = X := sorry
+-- Yet, Lean is unable to figure out what is the coefficients Semiring for `X`
+/-
+typeclass instance problem is stuck, it is often due to metavariables
+  Semiring ?m.28495
+-/
+
+example : (X : Nat[X]) = X := by
+  extract_goal
+```
 -/
 
 open Lean Elab Tactic
