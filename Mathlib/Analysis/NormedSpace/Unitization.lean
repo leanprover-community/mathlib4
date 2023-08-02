@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Unitization norms
@@ -50,7 +51,11 @@ inheritance. The same is true of the bornology.
 variable (𝕜 A : Type _) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
-open ContinuousLinearMap
+open ContinuousLinearMap Filter Topology
+
+lemma uniformInducing_iff_uniformSpace [UniformSpace α] [UniformSpace β] {f : α → β} :
+    UniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› :=
+  ⟨UniformInducing.comap_uniformSpace, fun H ↦ ⟨congr_arg (fun u ↦ 𝓤[u]) H⟩⟩
 
 /-- Multiplication on the left in a non-unital algebra `A` as a non-unital algebra homomorphism
 into the algebra of *continuous* linear maps. This has more algebraic structure than
@@ -97,9 +102,8 @@ theorem splitMul_injective_of_clm_mul_injective
   intro x hx
   induction x using Unitization.ind
   rw [map_add] at hx
-  simp only [Prod.mk_add_mk, add_zero, fst_inl, splitMul_apply,
-    snd_inl, snd_inr, Prod.mk_eq_zero, zero_add, fst_inr,
-    map_zero, splitMul_apply, add_zero, Prod.mk_eq_zero] at hx
+  simp only [splitMul_apply, fst_inl, snd_inl, map_zero, add_zero, fst_inr, snd_inr, zero_add,
+    Prod.mk_add_mk, Prod.mk_eq_zero] at hx
   obtain ⟨rfl, hx⟩ := hx
   simp only [map_zero, zero_add, inl_zero] at hx ⊢
   rw [← map_zero (mul 𝕜 A)] at hx
@@ -114,6 +118,44 @@ theorem splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
   splitMul_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
 
 variable {𝕜 A}
+
+/-- The identity map between `Unitization 𝕜 A` and `𝕜 × A` as an `AddEquiv`. -/
+protected def linearEquiv : Unitization 𝕜 A ≃ₗ[𝕜] 𝕜 × A :=
+  LinearEquiv.refl _ _
+
+/-- The uniformity on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
+instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
+  instUniformSpaceProd.comap Unitization.linearEquiv
+
+instance : UniformAddGroup (Unitization 𝕜 A) :=
+  uniformAddGroup_comap _
+
+instance : ContinuousSMul 𝕜 (Unitization 𝕜 A) :=
+  continuousSMul_induced _
+
+protected lemma uniformInducing_linearEquiv :
+    UniformInducing (Unitization.linearEquiv : Unitization 𝕜 A ≃ₗ[𝕜] 𝕜 × A) :=
+  ⟨rfl⟩
+
+-- this may be a bad idea: this is a technical definition, it should not pollute the simp set
+@[simps]
+protected def shearRight : (𝕜 × (A →L[𝕜] A)) ≃ᵤ (𝕜 × (A →L[𝕜] A)) where
+  toFun := fun (k, T) ↦ (k, algebraMap 𝕜 (A →L[𝕜] A) k + T)
+  invFun := fun (k, T) ↦ (k, T - algebraMap 𝕜 (A →L[𝕜] A) k)
+  left_inv := fun (k, T) ↦ by simp only [add_sub_cancel']
+  right_inv := fun (k, T) ↦ by simp only [add_sub_cancel'_right]
+  uniformContinuous_toFun := uniformContinuous_fst.prod_mk <|
+    ((algebraMapClm 𝕜 (A →L[𝕜] A)).uniformContinuous.comp uniformContinuous_fst).add
+    uniformContinuous_snd
+  uniformContinuous_invFun := uniformContinuous_fst.prod_mk <| uniformContinuous_snd.sub
+    ((algebraMapClm 𝕜 (A →L[𝕜] A)).uniformContinuous.comp uniformContinuous_fst)
+
+protected theorem uniformInducing_splitMul : UniformInducing (splitMul 𝕜 A) := by
+  convert Unitization.shearRight.uniformInducing.comp <|
+    (uniformInducing_id.prod (isometry_mul 𝕜 A).uniformEmbedding.toUniformInducing).comp
+    Unitization.uniformInducing_linearEquiv
+  ext <;>
+  simp <;> rfl
 
 section Aux
 
@@ -239,7 +281,7 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
-    rw [norm_def, map_smul, norm_smul, ← norm_def]
+    rw [norm_def, SMulHomClass.map_smul, norm_smul, ← norm_def]
 
 -- this should go in `Algebra.Algebra.Unitization`
 instance instNontrivial {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
