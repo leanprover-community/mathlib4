@@ -1501,6 +1501,7 @@ import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.ToFinsupp
+import Mathlib.Data.List.WellFoundedSorted
 import Mathlib.Data.List.Zip
 import Mathlib.Data.ListM.Basic
 import Mathlib.Data.ListM.BestFirst
