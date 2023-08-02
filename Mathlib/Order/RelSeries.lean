@@ -446,14 +446,11 @@ lemma top_len_unique [OrderTop (LTSeries α)] (p : LTSeries α) (hp : IsTop p) :
 lemma top_len_unique' (H1 H2 : OrderTop (LTSeries α)) : H1.top.length = H2.top.length :=
   le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
 
-lemma StrictMono (x : LTSeries α) : StrictMono x :=
-  fun _ _ h => x.rel_of_lt h
-
 section PartialOrder
 
 variable {β : Type _} [PartialOrder β]
 
-lemma Monotone (x : LTSeries β) : Monotone x :=
+lemma monotone (x : LTSeries β) : Monotone x :=
   fun _ _ h => le_iff_lt_or_eq.mpr $ x.rel_or_eq_of_le h
 
 end PartialOrder
