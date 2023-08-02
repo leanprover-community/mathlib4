@@ -1612,6 +1612,7 @@ theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t
     disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
 #align disjoint.of_image Disjoint.of_image
 
+@[simp]
 theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_image, disjoint_image_of_injective hf⟩
 #align set.disjoint_image_iff Set.disjoint_image_iff
@@ -1622,6 +1623,7 @@ theorem _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
     image_empty]
 #align disjoint.of_preimage Disjoint.of_preimage
 
+@[simp]
 theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_preimage hf, Disjoint.preimage _⟩
