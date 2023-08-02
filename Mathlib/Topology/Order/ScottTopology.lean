@@ -320,8 +320,7 @@ lemma closure_singleton (a : α) : closure {a} = Iic a := by
 
 variable [Preorder β] [TopologicalSpace β] [ScottTopology β]
 
-lemma continuous_monotone {f : α → β}
-  (hf : Continuous f) : Monotone f := by
+lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f := by
   rw [Monotone]
   intros a b hab
   let u := (Iic (f b))ᶜ
