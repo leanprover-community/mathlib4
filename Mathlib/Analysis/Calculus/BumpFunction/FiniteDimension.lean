@@ -559,7 +559,7 @@ instance (priority := 100) {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ 
         calc
           2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) * 1 :=
             mul_le_mul_of_nonneg_left hx (div_nonneg zero_le_two A.le)
-          _ = 1 - (R - 1) / (R + 1) := by field_simp [A.ne']; ring
+          _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
         have A' : 0 < R + 1 := by linarith
@@ -567,8 +567,7 @@ instance (priority := 100) {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ 
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine' congr (congr_arg ball (Eq.refl 0)) _
-        field_simp [A'.ne']
-        ring }
+        field_simp; ring }
 
 end ExistsContDiffBumpBase
 
