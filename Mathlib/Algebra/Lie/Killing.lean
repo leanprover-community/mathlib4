@@ -80,6 +80,6 @@ variable [Module.Free R L] [Module.Finite R L]
 /-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
-noncomputable def killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
+noncomputable abbrev killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
 
 end LieAlgebra
