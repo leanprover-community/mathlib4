@@ -10,11 +10,13 @@ open scoped MonoidalCategory
 
 -- Internal tactics
 
+example (X₁ X₂ : C) : (𝟙 X₁) ▷ X₂ = 𝟙 (X₁ ⊗ X₂) := by monoidal_simps
+
 example (X₁ X₂ : C) :
     ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
       (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv) =
     𝟙 (𝟙_ C) ⊗ ((λ_ X₁).inv ⊗ 𝟙 X₂) := by
-  pure_coherence
+  coherence
   -- This is just running:
   -- change projectMap id _ _ (LiftHom.lift (((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
   --     (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫ (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv))) =
