@@ -216,7 +216,8 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
           dsimp
           rw [PresheafedSpace.id_c_app, map_id]
           erw [id_comp]
-          rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app, eqToHom_app,
+          rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, NatTrans.whiskerRight_app,
+            eqToHom_app,
             ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
             NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
           dsimp
@@ -303,7 +304,7 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
   · simp [desc]
   · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
-    rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
+    rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, NatTrans.whiskerRight_app]
     dsimp [desc, descCApp]
     simp only [eqToHom_app, op_obj, Opens.map_comp_obj, eqToHom_map, Functor.leftOp, assoc]
     rw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc]
@@ -336,7 +337,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       dsimp only [colimitCocone_pt, colimit_carrier, leftOp_obj, pushforwardDiagramToColimit_obj,
         comp_obj, forget_obj, unop_op, op_obj, desc, colimit_presheaf, descCApp, mapCocone_pt,
         pushforwardObj_obj, const_obj_obj, id_eq, evaluation_obj_obj, Eq.ndrec, eq_mpr_eq_cast]
-      rw [NatTrans.comp_app, whiskerRight_app]
+      rw [NatTrans.comp_app, NatTrans.whiskerRight_app]
       simp only [pushforwardObj_obj, op_obj, comp_obj, eqToHom_app, eqToHom_map, assoc,
         limitObjIsoLimitCompEvaluation_inv_π_app, limit.lift_π]
       rw [PresheafedSpace.congr_app (w (unop j)).symm U]

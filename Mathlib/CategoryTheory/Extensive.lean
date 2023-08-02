@@ -534,7 +534,7 @@ theorem IsVanKampenColimit.of_map {D : Type _} [Category D] (G : C ⥤ D) {F : J
     [PreservesColimitsOfShape J G] [ReflectsColimitsOfShape J G]
     (H : IsVanKampenColimit (G.mapCocone c)) : IsVanKampenColimit c := by
   intro F' c' α f h hα
-  refine' (Iff.trans _ (H (G.mapCocone c') (whiskerRight α G) (G.map f)
+  refine' (Iff.trans _ (H (G.mapCocone c') (NatTrans.whiskerRight α G) (G.map f)
       (by ext j; simpa using G.congr_map (NatTrans.congr_app h j))
       (hα.whiskerRight G))).trans (forall_congr' fun j => _)
   · exact ⟨fun h => ⟨isColimitOfPreserves G h.some⟩, fun h => ⟨isColimitOfReflects G h.some⟩⟩
@@ -545,7 +545,7 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
     (c : Cocone F) (hc : ∀ x : C, IsVanKampenColimit (((evaluation C D).obj x).mapCocone c)) :
     IsVanKampenColimit c := by
   intro F' c' α f e hα
-  have := fun x => hc x (((evaluation C D).obj x).mapCocone c') (whiskerRight α _)
+  have := fun x => hc x (((evaluation C D).obj x).mapCocone c') (NatTrans.whiskerRight α _)
       (((evaluation C D).obj x).map f)
       (by
         ext y

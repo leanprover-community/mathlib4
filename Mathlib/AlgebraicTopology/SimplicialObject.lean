@@ -28,6 +28,8 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
+open CategoryTheory.NatTrans
+
 universe v u v' u'
 
 namespace CategoryTheory

@@ -345,7 +345,8 @@ protected def counit :
   naturality x y f := colimit.hom_ext fun U => by
     erw [← Category.assoc, colimit.ι_map, colimit.isoColimitCocone_ι_hom_assoc,
       skyscraperPresheafCoconeOfSpecializes_ι_app (h := specializes_rfl), Category.assoc,
-      colimit.ι_desc, whiskeringLeft_obj_map, whiskerLeft_app, SkyscraperPresheafFunctor.map'_app,
+      colimit.ι_desc, whiskeringLeft_obj_map, NatTrans.whiskerLeft_app,
+      SkyscraperPresheafFunctor.map'_app,
       dif_pos U.unop.2, skyscraperPresheafCoconeOfSpecializes_ι_app (h := specializes_rfl),
       comp_eqToHom_iff, Category.assoc, eqToHom_comp_iff, ← Category.assoc, eqToHom_trans,
       eqToHom_refl, Category.id_comp, comp_eqToHom_iff, Category.assoc, eqToHom_trans, eqToHom_refl,
@@ -383,7 +384,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
   homEquiv_counit {𝓕} c α := by
     -- Porting note : added a `dsimp`
     dsimp; ext U; simp only [Equiv.coe_fn_symm_mk, counit_app]
-    erw [colimit.ι_desc, ← Category.assoc, colimit.ι_map, whiskerLeft_app, Category.assoc,
+    erw [colimit.ι_desc, ← Category.assoc, colimit.ι_map, NatTrans.whiskerLeft_app, Category.assoc,
       colimit.ι_desc]
     rfl
 #align skyscraper_presheaf_stalk_adjunction skyscraperPresheafStalkAdjunction

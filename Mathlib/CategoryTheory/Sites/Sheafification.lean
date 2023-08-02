@@ -521,7 +521,7 @@ theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 /-- The canonical map from `P` to its sheafification, as a natural transformation.
 *Note:* We only show this is a sheaf under additional hypotheses on `D`. -/
 noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
-  J.toPlusNatTrans D ≫ whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
+  J.toPlusNatTrans D ≫ NatTrans.whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
 #align category_theory.grothendieck_topology.to_sheafification CategoryTheory.GrothendieckTopology.toSheafification
 
 @[simp]

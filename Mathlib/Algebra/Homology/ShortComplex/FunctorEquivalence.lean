@@ -16,7 +16,7 @@ that `C` has zero morphisms), then there is an equivalence of categories
 
 namespace CategoryTheory
 
-open Limits
+open Limits NatTrans
 
 variable (J C : Type _) [Category J] [Category C] [HasZeroMorphisms C]
 

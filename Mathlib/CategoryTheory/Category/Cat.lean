@@ -63,8 +63,8 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u}
   id C := 𝟭 C
   comp F G := F ⋙ G
   homCategory := fun _ _ => Functor.category
-  whiskerLeft {C} {D} {E} F G H η := whiskerLeft F η
-  whiskerRight {C} {D} {E} F G η H := whiskerRight η H
+  whiskerLeft {C} {D} {E} F G H η := NatTrans.whiskerLeft F η
+  whiskerRight {C} {D} {E} F G η H := NatTrans.whiskerRight η H
   associator {A} {B} {C} D := Functor.associator
   leftUnitor {A} B := Functor.leftUnitor
   rightUnitor {A} B := Functor.rightUnitor

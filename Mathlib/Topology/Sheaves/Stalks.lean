@@ -59,6 +59,8 @@ open TopCat
 
 open CategoryTheory.Limits
 
+open CategoryTheory.NatTrans
+
 open TopologicalSpace
 
 open Opposite

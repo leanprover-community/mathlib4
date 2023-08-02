@@ -113,11 +113,11 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
   Hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
       colimitLimitToLimitColimit (uncurry.obj G : _) ≫
-        lim.map (whiskerRight (currying.unitIso.app G).inv colim)
+        lim.map (NatTrans.whiskerRight (currying.unitIso.app G).inv colim)
   w j := by
     dsimp
     ext1 k
-    simp only [Category.assoc, limMap_π, Functor.comp_obj, colim_obj, whiskerRight_app,
+    simp only [Category.assoc, limMap_π, Functor.comp_obj, colim_obj, NatTrans.whiskerRight_app,
       colim_map, ι_colimMap_assoc, lim_obj, limitIsoSwapCompLim_hom_app,
       ι_colimitLimitToLimitColimit_π_assoc, curry_obj_obj_obj, Prod.swap_obj,
       uncurry_obj_obj, ι_colimMap, currying_unitIso_inv_app_app_app, Category.id_comp,

@@ -130,6 +130,8 @@ theorem Presheaf.IsSheaf.comp {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) :
 
 variable (J)
 
+open NatTrans
+
 /-- Composing a sheaf with a functor preserving the appropriate limits yields a functor
 between sheaf categories. -/
 @[simps]

@@ -54,7 +54,7 @@ def γ : D ⋙ T.forget ⋙ ↑T ⟶ D ⋙ T.forget where app j := (D.obj j).a
 @[simps! π_app]
 def newCone : Cone (D ⋙ forget T) where
   pt := T.obj c.pt
-  π := (Functor.constComp _ _ (T : C ⥤ C)).inv ≫ whiskerRight c.π (T : C ⥤ C) ≫ γ D
+  π := (Functor.constComp _ _ (T : C ⥤ C)).inv ≫ NatTrans.whiskerRight c.π (T : C ⥤ C) ≫ γ D
 #align category_theory.monad.forget_creates_limits.new_cone CategoryTheory.Monad.ForgetCreatesLimits.newCone
 
 /-- The algebra structure which will be the apex of the new limit cone for `D`. -/

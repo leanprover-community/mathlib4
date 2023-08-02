@@ -129,7 +129,7 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶
     ext
     -- Porting note : was one liner
     -- `dsimp, rw category_theory.functor.map_id, rw category.comp_id, erw comap_comp f g, refl`
-    rw [NatTrans.comp_app, sheafedSpaceMap_c_app, whiskerRight_app, eqToHom_refl]
+    rw [NatTrans.comp_app, sheafedSpaceMap_c_app, NatTrans.whiskerRight_app, eqToHom_refl]
     erw [(sheafedSpaceObj T).presheaf.map_id, Category.comp_id, comap_comp]
     rfl
 set_option linter.uppercaseLean3 false in

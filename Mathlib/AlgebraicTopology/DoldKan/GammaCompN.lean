@@ -164,7 +164,8 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
 lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
-    whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
+    NatTrans.whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom =
+      N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
   let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀
   have h := ((whiskeringLeft _ _ (Karoubi (ChainComplex C ℕ))).obj
     (toKaroubi (ChainComplex C ℕ))).image_preimage e.hom

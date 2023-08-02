@@ -36,6 +36,8 @@ open CategoryTheory
 
 open CategoryTheory.Functor
 
+open CategoryTheory.NatTrans
+
 open CategoryTheory.Limits
 
 universe v u v₁ v₂ v₀ u₁ u₂

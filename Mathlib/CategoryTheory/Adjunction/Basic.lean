@@ -36,7 +36,7 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 namespace CategoryTheory
 
-open Category
+open Category NatTrans
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃

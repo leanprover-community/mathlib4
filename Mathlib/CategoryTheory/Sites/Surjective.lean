@@ -26,7 +26,7 @@ import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 
 universe v u w v' u' w'
 
-open Opposite CategoryTheory CategoryTheory.GrothendieckTopology
+open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.NatTrans
 
 namespace CategoryTheory
 

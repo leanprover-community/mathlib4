@@ -321,7 +321,7 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
   have : IsIso (colimitLimitToLimitColimitCone F).Hom := by
     suffices : IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
-      lim.map (whiskerRight (currying.unitIso.app F).inv colim))
+      lim.map (NatTrans.whiskerRight (currying.unitIso.app F).inv colim))
     apply IsIso.comp_isIso
     infer_instance
   apply Cones.cone_iso_of_hom_iso

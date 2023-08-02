@@ -540,13 +540,13 @@ end
 variable {G : J ⥤ C} (α : F ⟶ G)
 
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
-    lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
+    lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (NatTrans.whiskerLeft E α) := by
   ext
   simp
 #align category_theory.limits.limit.map_pre CategoryTheory.Limits.limit.map_pre
 
 theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
-    limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
+    limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (NatTrans.whiskerRight α F) := by
   ext1; simp [← category.assoc]
 #align category_theory.limits.limit.map_pre' CategoryTheory.Limits.limit.map_pre'
 
@@ -557,9 +557,10 @@ theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.lef
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
      H (limit F) ⟶ limit (F ⋙ H) ⟶ limit (G ⋙ H) -/
-    H.map (limMap α) ≫ limit.post G H = limit.post F H ≫ limMap (whiskerRight α H) := by
+    H.map (limMap α) ≫ limit.post G H = limit.post F H ≫ limMap (NatTrans.whiskerRight α H) := by
   ext
-  simp only [whiskerRight_app, limMap_π, assoc, limit.post_π_assoc, limit.post_π, ← H.map_comp]
+  simp only [NatTrans.whiskerRight_app, limMap_π, assoc, limit.post_π_assoc, limit.post_π,
+    ← H.map_comp]
 #align category_theory.limits.limit.map_post CategoryTheory.Limits.limit.map_post
 
 /-- The isomorphism between
@@ -1112,14 +1113,14 @@ theorem colimit.map_desc (c : Cocone G) :
 #align category_theory.limits.colimit.map_desc CategoryTheory.Limits.colimit.map_desc
 
 theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
-    colimit.pre F E ≫ colim.map α = colim.map (whiskerLeft E α) ≫ colimit.pre G E := by
+    colimit.pre F E ≫ colim.map α = colim.map (NatTrans.whiskerLeft E α) ≫ colimit.pre G E := by
   ext
   rw [← assoc, colimit.ι_pre, colimit.ι_map, ← assoc, colimit.ι_map, assoc, colimit.ι_pre]
   rfl
 #align category_theory.limits.colimit.pre_map CategoryTheory.Limits.colimit.pre_map
 
 theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
-    colimit.pre F E₁ = colim.map (whiskerRight α F) ≫ colimit.pre F E₂ := by
+    colimit.pre F E₁ = colim.map (NatTrans.whiskerRight α F) ≫ colimit.pre F E₂ := by
   ext1; simp [← Category.assoc]
 #align category_theory.limits.colimit.pre_map' CategoryTheory.Limits.colimit.pre_map'
 
@@ -1133,7 +1134,7 @@ theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D
           colimit.post
           F H ≫
         H.map (colim.map α) =
-      colim.map (whiskerRight α H) ≫ colimit.post G H := by
+      colim.map (NatTrans.whiskerRight α H) ≫ colimit.post G H := by
   ext
   rw [← assoc, colimit.ι_post, ← H.map_comp, colimit.ι_map, H.map_comp]
   rw [← assoc, colimit.ι_map, assoc, colimit.ι_post]

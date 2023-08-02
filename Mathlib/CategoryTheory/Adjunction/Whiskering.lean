@@ -19,7 +19,7 @@ and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 namespace CategoryTheory.Adjunction
 
-open CategoryTheory
+open CategoryTheory NatTrans
 
 variable (C : Type _) {D E : Type _} [Category C] [Category D] [Category E] {F : D ⥤ E} {G : E ⥤ D}
 

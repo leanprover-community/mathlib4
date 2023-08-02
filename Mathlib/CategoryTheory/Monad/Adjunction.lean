@@ -28,7 +28,7 @@ Finally we prove that reflective functors are `MonadicRightAdjoint`.
 
 namespace CategoryTheory
 
-open Category
+open Category NatTrans
 
 universe v₁ v₂ u₁ u₂
 

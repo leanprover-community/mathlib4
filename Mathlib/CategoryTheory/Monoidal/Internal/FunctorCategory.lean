@@ -188,7 +188,7 @@ def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
   obj F :=
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon_.forget₂Mon_ D) with
       mul_comm := by ext X; exact (F.obj X).mul_comm }
-  map α := (monFunctorCategoryEquivalence C D).inverse.map (whiskerRight α _)
+  map α := (monFunctorCategoryEquivalence C D).inverse.map (NatTrans.whiskerRight α _)
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal.CommMon_functor_category_equivalence.inverse CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.inverse
 

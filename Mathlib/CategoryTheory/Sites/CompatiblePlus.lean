@@ -22,7 +22,7 @@ noncomputable section
 
 namespace CategoryTheory.GrothendieckTopology
 
-open CategoryTheory Limits Opposite
+open CategoryTheory Limits Opposite NatTrans
 
 universe w₁ w₂ v u
 

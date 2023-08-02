@@ -230,7 +230,7 @@ instance : IsEquivalence (whiskeringLeftFunctor L W E) := by
             rw [Construction.fac]))
       fun τ => by
         ext
-        dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
+        dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, NatTrans.whiskerLeft]
         erw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl,
           eqToHom_refl, comp_id, id_comp]
         · rfl

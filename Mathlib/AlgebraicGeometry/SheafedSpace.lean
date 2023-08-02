@@ -94,7 +94,8 @@ instance : Category (SheafedSpace C) :=
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
-    (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
+    (h : α.c ≫ NatTrans.whiskerRight
+      (eqToHom (show (Opens.map α.base).op = (Opens.map β.base).op by rw [w])) _ = β.c) : α = β :=
   PresheafedSpace.ext α β w h
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/

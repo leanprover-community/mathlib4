@@ -55,6 +55,8 @@ open CategoryTheory.Category
 
 open CategoryTheory.Functor
 
+open CategoryTheory.NatTrans
+
 open Opposite
 
 namespace CategoryTheory

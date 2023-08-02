@@ -125,9 +125,9 @@ theorem sheafificationWhiskerRightIso_inv_app :
 
 @[simp, reassoc]
 theorem whiskerRight_toSheafify_sheafifyCompIso_hom :
-    whiskerRight (J.toSheafify _) _ ≫ (J.sheafifyCompIso F P).hom = J.toSheafify _ := by
+    NatTrans.whiskerRight (J.toSheafify _) _ ≫ (J.sheafifyCompIso F P).hom = J.toSheafify _ := by
   dsimp [sheafifyCompIso]
-  erw [whiskerRight_comp, Category.assoc]
+  erw [NatTrans.whiskerRight_comp, Category.assoc]
   slice_lhs 2 3 => rw [plusCompIso_whiskerRight]
   rw [Category.assoc, ← J.plusMap_comp, whiskerRight_toPlus_comp_plusCompIso_hom, ←
     Category.assoc, whiskerRight_toPlus_comp_plusCompIso_hom]
@@ -136,7 +136,7 @@ theorem whiskerRight_toSheafify_sheafifyCompIso_hom :
 
 @[simp, reassoc]
 theorem toSheafify_comp_sheafifyCompIso_inv :
-    J.toSheafify _ ≫ (J.sheafifyCompIso F P).inv = whiskerRight (J.toSheafify _) _ := by
+    J.toSheafify _ ≫ (J.sheafifyCompIso F P).inv = NatTrans.whiskerRight (J.toSheafify _) _ := by
   rw [Iso.comp_inv_eq]; simp
 #align category_theory.grothendieck_topology.to_sheafify_comp_sheafify_comp_iso_inv CategoryTheory.GrothendieckTopology.toSheafify_comp_sheafifyCompIso_inv
 
@@ -149,7 +149,8 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 @[simp]
 theorem sheafifyCompIso_inv_eq_sheafifyLift :
     (J.sheafifyCompIso F P).inv =
-      J.sheafifyLift (whiskerRight (J.toSheafify P) F) ((J.sheafify_isSheaf _).comp _) := by
+      J.sheafifyLift (NatTrans.whiskerRight (J.toSheafify P) F)
+        ((J.sheafify_isSheaf _).comp _) := by
   apply J.sheafifyLift_unique
   rw [Iso.comp_inv_eq]
   simp

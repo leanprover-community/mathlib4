@@ -25,7 +25,7 @@ The duals of all the above are also given.
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits NatTrans
 
 universe w' w v u₁ u₂ u₃
 

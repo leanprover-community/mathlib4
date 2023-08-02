@@ -35,7 +35,7 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
+open CategoryTheory CategoryTheory.Category CategoryTheory.Functor NatTrans Opposite
 
 namespace CategoryTheory.Limits
 

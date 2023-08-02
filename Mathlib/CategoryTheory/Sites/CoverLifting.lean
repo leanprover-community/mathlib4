@@ -58,6 +58,8 @@ open CategoryTheory.Presieve
 
 open CategoryTheory.Limits
 
+open CategoryTheory.NatTrans
+
 namespace CategoryTheory
 
 section CoverLifting

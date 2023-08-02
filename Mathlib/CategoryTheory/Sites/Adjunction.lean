@@ -127,7 +127,7 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
     (Y : SheafOfTypes J) :
     ((adjunctionToTypes J adj).unit.app Y).val =
       (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
-        whiskerRight (J.toSheafify _) (forget D) := by
+        NatTrans.whiskerRight (J.toSheafify _) (forget D) := by
   dsimp [adjunctionToTypes, Adjunction.comp]
   simp
   rfl

@@ -32,6 +32,8 @@ universe v₁ v₂ u₁ u₂
 
 open Category
 
+open NatTrans
+
 open Opposite
 
 variable {C : Type u₁} [Category.{v₁} C]

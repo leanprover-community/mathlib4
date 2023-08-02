@@ -129,7 +129,7 @@ theorem functorPullback_pushforward_covering [Full G] (H : CoverDense K G) {X : 
 @[simps!]
 def homOver {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) (X : A) :
     G.op ⋙ ℱ ⋙ coyoneda.obj (op X) ⟶ G.op ⋙ (sheafOver ℱ' X).val :=
-  whiskerRight α (coyoneda.obj (op X))
+  NatTrans.whiskerRight α (coyoneda.obj (op X))
 #align category_theory.cover_dense.hom_over CategoryTheory.CoverDense.homOver
 
 /-- (Implementation). Given an iso between the pullbacks of two sheaves, we can whisker it with
@@ -400,7 +400,7 @@ noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op
 /-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`.
 -/
 theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
-    whiskerLeft G.op (sheafHom H α) = α := by
+    NatTrans.whiskerLeft G.op (sheafHom H α) = α := by
   ext X
   apply yoneda.map_injective
   ext U
@@ -427,13 +427,13 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 /-- If the pullback map is obtained via whiskering,
 then the result `sheaf_hom (whisker_left G.op α)` is equal to `α`.
 -/
-theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom H (whiskerLeft G.op α) = α := by
+theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom H (NatTrans.whiskerLeft G.op α) = α := by
   ext X
   apply yoneda.map_injective
   -- porting note: deleted next line as it's not needed in Lean 4
   ext U
   -- porting note: Lean 3 didn't need to be told the explicit input to image_preimage
-  erw [yoneda.image_preimage ((H.sheafYonedaHom (whiskerLeft G.op α)).app X)]
+  erw [yoneda.image_preimage ((H.sheafYonedaHom (NatTrans.whiskerLeft G.op α)).app X)]
   symm
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (unop X)) from _) = _
   apply sheaf_eq_amalgamation ℱ' (H.is_cover _)
@@ -450,7 +450,7 @@ morphisms over the restrictions via `G`.
 -/
 noncomputable def restrictHomEquivHom : (G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) ≃ (ℱ ⟶ ℱ'.val) where
   toFun := sheafHom H
-  invFun := whiskerLeft G.op
+  invFun := NatTrans.whiskerLeft G.op
   left_inv := sheafHom_restrict_eq H
   right_inv := sheafHom_eq H
 #align category_theory.cover_dense.restrict_hom_equiv_hom CategoryTheory.CoverDense.restrictHomEquivHom
@@ -458,9 +458,10 @@ noncomputable def restrictHomEquivHom : (G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) ≃
 /-- Given a full and cover-dense functor `G` and a natural transformation of sheaves `α : ℱ ⟶ ℱ'`,
 if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
-theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
-    IsIso α := by
-  convert IsIso.of_iso (sheafIso H (asIso (whiskerLeft G.op α.val))) using 1
+theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ')
+    (i : IsIso (NatTrans.whiskerLeft G.op α.val)) :
+      IsIso α := by
+  convert IsIso.of_iso (sheafIso H (asIso (NatTrans.whiskerLeft G.op α.val))) using 1
   ext1
   apply (sheafHom_eq H _).symm
 #align category_theory.cover_dense.iso_of_restrict_iso CategoryTheory.CoverDense.iso_of_restrict_iso

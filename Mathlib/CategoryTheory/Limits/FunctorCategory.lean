@@ -22,7 +22,7 @@ We also show that `F : D ⥤ K ⥤ C` preserves (co)limits if it does so for eac
 -/
 
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Functor
+open CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.NatTrans
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 universe w' w v₁ v₂ u₁ u₂ v v' u u'

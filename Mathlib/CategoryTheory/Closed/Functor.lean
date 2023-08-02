@@ -60,7 +60,7 @@ We will show that if `C` and `D` are cartesian closed, then this morphism is an 
 -/
 def frobeniusMorphism (h : L ⊣ F) (A : C) :
     prod.functor.obj (F.obj A) ⋙ L ⟶ L ⋙ prod.functor.obj A :=
-  prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft _ (prod.functor.map (h.counit.app _))
+  prodComparisonNatTrans L (F.obj A) ≫ NatTrans.whiskerLeft _ (prod.functor.map (h.counit.app _))
 #align category_theory.frobenius_morphism CategoryTheory.frobeniusMorphism
 
 /-- If `F` is full and faithful and has a left adjoint `L` which preserves binary products, then the
@@ -109,8 +109,8 @@ theorem uncurry_expComparison (A B : C) :
 
 /-- The exponential comparison map is natural in `A`. -/
 theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
-    expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
-      whiskerRight (pre f) _ ≫ expComparison F A' := by
+    expComparison F A ≫ NatTrans.whiskerLeft _ (pre (F.map f)) =
+      NatTrans.whiskerRight (pre f) _ ≫ expComparison F A' := by
   ext B
   dsimp
   apply uncurry_injective

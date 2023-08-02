@@ -88,7 +88,7 @@ def preservesLimitNatIso : lim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ lim :
       intro _ _ f
       apply limit.hom_ext; intro j
       dsimp
-      simp only [preservesLimitsIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
+      simp only [preservesLimitsIso_hom_π, NatTrans.whiskerRight_app, limMap_π, Category.assoc,
         preservesLimitsIso_hom_π_assoc, ← G.map_comp])
 #align category_theory.preserves_limit_nat_iso CategoryTheory.preservesLimitNatIso
 
@@ -147,7 +147,7 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
       apply colimit.hom_ext; intro j
       dsimp
       erw [ι_colimMap_assoc]
-      simp only [ι_preservesColimitsIso_inv, whiskerRight_app, Category.assoc,
+      simp only [ι_preservesColimitsIso_inv, NatTrans.whiskerRight_app, Category.assoc,
         ι_preservesColimitsIso_inv_assoc, ← G.map_comp]
       erw [ι_colimMap])
 #align category_theory.preserves_colimit_nat_iso CategoryTheory.preservesColimitNatIso
