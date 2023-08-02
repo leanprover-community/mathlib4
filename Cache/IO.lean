@@ -195,7 +195,7 @@ def validateLeanTar : IO Unit := do
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
   let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
     "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  let _ ← IO.FS.rename ((IO.CACHEDIR / s!"leantar{EXE}").toString) LEANTARBIN.toString
+  IO.FS.rename (IO.CACHEDIR / s!"leantar{EXE}").toString LEANTARBIN.toString
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
