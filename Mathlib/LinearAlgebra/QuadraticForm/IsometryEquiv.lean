@@ -32,7 +32,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
-/-- An isometry equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
+/-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
 -- Porting note: not implemented @[nolint has_nonempty_instance]
 structure IsometryEquiv (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
@@ -76,20 +76,20 @@ theorem map_app (f : Q₁.IsometryEquiv Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :
   f.map_app' m
 #align quadratic_form.isometry.map_app QuadraticForm.IsometryEquiv.map_app
 
-/-- The identity isometry from a quadratic form to itself. -/
+/-- The identity isometric equivalence between a quadratic form and itself. -/
 @[refl]
 def refl (Q : QuadraticForm R M) : Q.IsometryEquiv Q :=
   { LinearEquiv.refl R M with map_app' := fun _ => rfl }
 #align quadratic_form.isometry.refl QuadraticForm.IsometryEquiv.refl
 
-/-- The inverse isometry of an isometry between two quadratic forms. -/
+/-- The inverse isometric equivalence of an isometric equivalence between two quadratic forms. -/
 @[symm]
 def symm (f : Q₁.IsometryEquiv Q₂) : Q₂.IsometryEquiv Q₁ :=
   { (f : M₁ ≃ₗ[R] M₂).symm with
     map_app' := by intro m; rw [← f.map_app]; congr; exact f.toLinearEquiv.apply_symm_apply m }
 #align quadratic_form.isometry.symm QuadraticForm.IsometryEquiv.symm
 
-/-- The composition of two isometries between quadratic forms. -/
+/-- The composition of two isometric equivalences between quadratic forms. -/
 @[trans]
 def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.IsometryEquiv Q₃ :=
   { (f : M₁ ≃ₗ[R] M₂).trans (g : M₂ ≃ₗ[R] M₃) with
@@ -139,7 +139,7 @@ noncomputable def isometryEquivBasisRepr (Q : QuadraticForm R M) (v : Basis ι R
 
 variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 
-/-- Given an orthogonal basis, a quadratic form is isometric with a weighted sum of squares. -/
+/-- Given an orthogonal basis, a quadratic form is isometrically equivalent with a weighted sum of squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (FiniteDimensional.finrank K V)) K V)
     (hv₁ : (associated (R₁ := K) Q).iIsOrtho v) :
