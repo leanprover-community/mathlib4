@@ -180,17 +180,6 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
 def toList (s : CompositionSeries X) : List X := RelSeries.toList s
 #align composition_series.to_list CompositionSeries.toList
 
-/-- Two `CompositionSeries` are equal if they are the same length and
-have the same `i`th element for every `i` -/
--- theorem ext_fun {s₁ s₂ : CompositionSeries X} (hl : s₁.length = s₂.length)
---     (h : ∀ i, s₁ i = s₂ (Fin.castIso (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
---   cases s₁; cases s₂
---   -- Porting note: `dsimp at *` doesn't work. Why?
---   dsimp at hl h
---   subst hl
---   simpa [Function.funext_iff] using h
--- #align composition_series.ext_fun CompositionSeries.ext_fun
-
 @[simp]
 theorem length_toList (s : CompositionSeries X) : s.toList.length = s.length + 1 :=
   RelSeries.length_toList s
@@ -582,7 +571,7 @@ theorem eq_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero {s₁ s₂ : Compositio
 such that `x` is maximal inside `s.top` there is a series, `t`,
 such that `t.top = x`, `t.bot = s.bot`
 and `snoc t s.top _` is equivalent to `s`. -/
-theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : IsMaximal x s.top)
+theorem exists_top_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : IsMaximal x s.top)
     (hb : s.bot ≤ x) :
     ∃ t : CompositionSeries X,
       t.bot = s.bot ∧ t.length + 1 = s.length ∧
@@ -619,7 +608,6 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
       · exact
           second_iso_of_eq (isMaximal_eraseTop_top h0s)
             (sup_eq_of_isMaximal (isMaximal_eraseTop_top h0s) hm hetx) (by rw [inf_comm, htt])
-#align composition_series.exists_top_eq_snoc_equivalant CompositionSeries.exists_top_eq_snoc_equivalant
 
 /-- The **Jordan-Hölder** theorem, stated for any `JordanHolderLattice`.
 If two composition series start and finish at the same place, they are equivalent. -/
@@ -629,7 +617,7 @@ theorem jordan_holder (s₁ s₂ : CompositionSeries X) (hb : s₁.bot = s₂.bo
   · rw [eq_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero hb ht hle]
   · have h0s₂ : 0 < s₂.length :=
       length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos hb ht (hle.symm ▸ Nat.succ_pos _)
-    rcases exists_top_eq_snoc_equivalant s₁ s₂.eraseTop.top
+    rcases exists_top_eq_snoc_equivalent s₁ s₂.eraseTop.top
         (ht.symm ▸ isMaximal_eraseTop_top h0s₂)
         (hb.symm ▸ s₂.bot_eraseTop ▸ bot_le_of_mem (top_mem _)) with
       ⟨t, htb, htl, htt, hteq⟩

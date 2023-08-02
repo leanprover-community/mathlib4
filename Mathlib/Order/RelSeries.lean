@@ -165,8 +165,8 @@ theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y
   simp only [not_lt, nonpos_iff_eq_zero] at hxy
   congr
   apply_fun Fin.castIso (by rw [hxy, zero_add] : s.length + 1 = 1)
-  . exact Subsingleton.elim (α := Fin 1) _ _
-  . exact OrderIso.injective _
+  · exact Subsingleton.elim (α := Fin 1) _ _
+  · exact OrderIso.injective _
 
 theorem forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
     (hx : x ∈ s) (hy : y ∈ s) : x = y := by
@@ -174,8 +174,8 @@ theorem forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x
   rcases hy with ⟨j, rfl⟩
   congr
   apply_fun Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1)
-  . exact Subsingleton.elim (α := Fin 1) _ _
-  . exact OrderIso.injective _
+  · exact Subsingleton.elim (α := Fin 1) _ _
+  · exact OrderIso.injective _
 
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
@@ -427,7 +427,8 @@ theorem snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last x)
 theorem head_snoc (s : RelSeries r) (a : α) (connect : r s.last x) :
     (snoc s x connect).head = s.head := by
   unfold snoc head
-  simp only [append_toFun, singleton_length, Nat.add_zero, Fin.cast_refl, Function.comp_apply, id_eq]
+  simp only [append_toFun, singleton_length, Nat.add_zero, Fin.cast_refl,
+    Function.comp_apply, id_eq]
   exact Fin.append_left _ _ 0
 
 theorem mem_snoc {s : RelSeries r} {x y : α} (connect : r s.last x) :
@@ -534,10 +535,13 @@ Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combine
 @[simps]
 def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
-  toFun := fun i => if H : i.1 < p.length then p ⟨i.1, H.trans (lt_add_one _)⟩ else q ⟨i.1 - p.length, by
-    apply Nat.sub_lt_left_of_lt_add
-    · rwa [not_lt] at H
-    · rw [← add_assoc]; exact i.2⟩
+  toFun := fun i =>
+    if H : i.1 < p.length
+    then p ⟨i.1, H.trans (lt_add_one _)⟩
+    else q ⟨i.1 - p.length, by
+      apply Nat.sub_lt_left_of_lt_add
+      · rwa [not_lt] at H
+      · rw [← add_assoc]; exact i.2⟩
   step := fun i => by
     dsimp only []
     by_cases h₂ : i.1 + 1 < p.length
