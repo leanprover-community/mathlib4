@@ -684,6 +684,7 @@ protected theorem congr {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 
   refine continuous_from_bounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
     LinearMap.id (by assumption)
 
+set_option synthInstance.maxHeartbeats 24000 in
 protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E]
     (hp : WithSeminorms p) : WithSeminorms (fun s : Finset ι ↦ s.sup p) := by
   refine hp.congr ?_ ?_
@@ -696,6 +697,7 @@ protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E
     rw [Finset.sup_singleton, Finset.sup_singleton, one_smul]
     rfl
 
+set_option synthInstance.maxHeartbeats 24000 in
 protected theorem partial_sups [Preorder ι] [LocallyFiniteOrderBot ι] {p : SeminormFamily 𝕜 E ι}
     [TopologicalSpace E] (hp : WithSeminorms p) : WithSeminorms (fun i ↦ (Finset.Iic i).sup p) := by
   refine hp.congr ?_ ?_
@@ -708,6 +710,7 @@ protected theorem partial_sups [Preorder ι] [LocallyFiniteOrderBot ι] {p : Sem
     rw [Finset.sup_singleton, one_smul]
     exact (Finset.le_sup (Finset.mem_Iic.mpr le_rfl) : p i ≤ (Finset.Iic i).sup p)
 
+set_option synthInstance.maxHeartbeats 24000 in
 protected theorem congr_equiv {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
     (hp : WithSeminorms p) (e : ι' ≃ ι) : WithSeminorms (p ∘ e) := by
   refine hp.congr ?_ ?_ <;>
