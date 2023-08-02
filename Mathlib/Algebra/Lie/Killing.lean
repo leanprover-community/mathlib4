@@ -44,12 +44,7 @@ local notation "φ" => toEndomorphism R L M
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace Form. See also `killingForm`. -/
 noncomputable def traceForm : L →ₗ[R] L →ₗ[R] R :=
-{ toFun := fun x ↦
-    { toFun := fun y ↦ trace R _ (φ x ∘ₗ φ y)
-      map_add' := fun y z ↦ by simp [LinearMap.comp_add]
-      map_smul' := fun t y ↦ by simp [LinearMap.comp_smul] }
-  map_add' := fun x y ↦ by ext z; simp [LinearMap.add_comp]
-  map_smul' := fun t x ↦ by ext y; simp [LinearMap.smul_comp] }
+  ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 
 @[simp] lemma traceForm_apply_apply (x y : L) :
     traceForm R L M x y = trace R _ (φ x ∘ₗ φ y) :=
