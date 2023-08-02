@@ -174,24 +174,52 @@ def append (p q : RelSeries r) (connect : r (p (Fin.last _)) (q 0)) : RelSeries 
   toFun := Fin.append p q ∘ Fin.cast (by ring)
   step := fun i => by
     obtain (hi|rfl|hi) := lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
-    -- StrictMono.comp (by
-    -- refine Fin.addCases (fun i ↦ Fin.addCases (fun j H ↦ ?_) (fun j _ ↦ ?_))
-    --   (fun i ↦ (Fin.addCases (fun j H ↦ ?_) (fun j H ↦ ?_)))
-    -- . rw [Fin.append_left, Fin.append_left]
-    --   exact p.StrictMono H
-    -- . rw [Fin.append_left, Fin.append_right]
-    --   refine lt_of_lt_of_le (lt_of_le_of_lt (p.StrictMono.monotone ?_) h) (q.StrictMono.monotone ?_)
-    --   . show (i : ℕ) ≤ p.length
-    --     linarith [i.2]
-    --   . norm_num
-    -- . rw [Fin.append_right, Fin.append_left]
-    --   change (p.length + 1 + i : ℕ) < (j : ℕ) at H
-    --   exfalso
-    --   linarith [j.2]
-    -- . rw [Fin.append_right, Fin.append_right]
-    --   refine q.StrictMono (?_ : (i : ℕ) < (j : ℕ))
-    --   change p.length + 1 + ↑i < p.length + 1 + ↑j at H
-    --   linarith ) (OrderIso.strictMono _)
+    · rw [Function.comp_apply, Function.comp_apply]
+      convert p.step ⟨i.1, hi⟩ <;>
+      · convert Fin.append_left p q _
+        rfl
+    . convert connect
+      rw [Function.comp_apply]
+      convert Fin.append_left p q _
+      · rfl
+      · convert Fin.append_right p q _
+        rfl
+    · rw [Function.comp_apply, Function.comp_apply]
+      set x := _; set y := _
+      change r (Fin.append p q x) (Fin.append p q y)
+      have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
+        i.2.trans <| by linarith⟩
+      · ext
+        change _ = _ + (_ - _)
+        rw [Nat.add_sub_cancel']
+        dsimp
+        exact hi
+      have hy : y = Fin.natAdd _ ⟨i - p.length,
+        by
+          apply Nat.sub_lt_left_of_lt_add (le_of_lt hi)
+          exact i.2⟩
+      . ext
+        change _ = _ + (_ - _)
+        dsimp only [Fin.cast_succ_eq, Nat.add_eq, Nat.add_zero, Nat.rawCast, Nat.cast_id]
+        conv_rhs => rw [Nat.add_comm p.length 1, add_assoc]
+        rw [Nat.add_sub_cancel']
+        swap
+        . exact le_of_lt hi
+        conv_rhs => rw [add_comm]
+      rw [hx, Fin.append_right, hy, Fin.append_right]
+      convert q.step _
+      pick_goal 3
+      · refine ⟨i - (p.length + 1), ?_⟩
+        apply Nat.sub_lt_left_of_lt_add hi
+        convert i.2 using 1
+        dsimp
+        rw [Nat.succ_eq_add_one]
+        ring
+      · rfl
+      . dsimp
+        rw [Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
+          Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
+        exact hi
 
 /--
 If `a_0 < a_1 < ... < a_n` is a strict series and `a` is such that `a_i < a < a_{i + 1}`, then
