@@ -120,7 +120,21 @@ theorem isAlgClosedOfModelACF {p : ℕ} (M : Type _)
     rw [← realize_genericMonicPolyHasRoot]
     convert this
     ext _ f x
-    . cases f <;> simp
+    . cases f <;> simp [HAdd.hAdd, Distrib.toAdd, Add.add,
+      NonUnitalNonAssocSemiring.toDistrib, AddSemigroup.toAdd,
+      AddMonoid.toAddSemigroup, AddCommMonoid.toAddMonoid,
+      NonUnitalNonAssocSemiring.toAddCommMonoid,
+      NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring,
+      SubNegMonoid.toAddMonoid, AddGroup.toSubNegMonoid,
+      AddCommGroup.toAddGroup, NonUnitalNonAssocRing.toAddCommGroup,
+      NonUnitalNonAssocSemiring.toDistrib,
+      NonAssocRing.toNonUnitalNonAssocRing, Ring.toNonAssocRing,
+      NonUnitalSemiring.toNonUnitalNonAssocSemiring,
+      Semiring.toNonUnitalSemiring, Ring.toSemiring,
+      DivisionRing.toRing, Field.toDivisionRing, CommRing.toRing,
+      Field.toCommRing, fieldOfModelACF,
+      fieldOfModelFieldOfCharP, fieldOfModelField,
+      instStructureField, Matrix.vecCons]
 
 
 
