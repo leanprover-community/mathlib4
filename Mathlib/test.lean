@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.LinearAlgebra.FiniteDimensional
 
 /-!
 # Empty header
@@ -11,7 +12,14 @@ import Mathlib.Analysis.NormedSpace.Connected
 To appease the linter
 -/
 
-open Submodule
+universe u
+
+open Submodule FiniteDimensional
+
+
+lemma rank_eq_one_iff_finrank_eq_one {E 𝕜 : Type _} [AddCommGroup E] [Field 𝕜] [Module 𝕜 E] :
+    Module.rank 𝕜 E = 1 ↔ FiniteDimensional.finrank 𝕜 E = 1 := by
+  simp [FiniteDimensional.finrank]
 
 lemma bar {E 𝕜 : Type _} [AddCommGroup E] [Field 𝕜] [Module 𝕜 E](x y : E)
     (h : Module.rank 𝕜 E = 1) (hx : x ≠ 0) :
@@ -20,7 +28,8 @@ lemma bar {E 𝕜 : Type _} [AddCommGroup E] [Field 𝕜] [Module 𝕜 E](x y : 
     have A : Submodule.span 𝕜 {x} ≤ ⊤ := sorry
     have B : Module.rank (Submodule.span 𝕜 {x}) = 1 := sorry
     have C : Module.rank (⊤ : Submodule 𝕜 E) = 1 := sorry
-    have Z := FiniteDimensional.eq_top_of_finrank_eq
+    have : FiniteDimensional 𝕜 E := by exact finiteDimensional_of_rank_eq_one h
+    apply eq_top_of_finrank_eq
 
   have : y ∈ Submodule.span 𝕜 {x} := by
     rw [this]; trivial
