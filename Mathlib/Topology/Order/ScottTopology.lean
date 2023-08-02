@@ -22,9 +22,9 @@ This file introduces the Scott topology on a preorder.
 
 ## Main statements
 
-- `ScottTopology.isOpen_isUpper` - Scott open sets are upper.
-- `ScottTopology.isClosed_isLower` - Scott closed sets are lower.
-- `ScottTopology.continuous_monotone` - functions continuous wrt the Scott topology are
+- `ScottTopology.isUpperSet_of_isOpen` - Scott open sets are upper.
+- `ScottTopology.isLowerSet_of_isClosed` - Scott closed sets are lower.
+- `ScottTopology.monotone_of_continuous` - functions continuous wrt the Scott topology are
   monotone.
 - `ScottTopology.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least
   upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
@@ -284,7 +284,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
 lemma isUpperSet_of_isOpen {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
   (isOpen_iff_upper_and_Scott_Hausdorff_Open.mp h).left
 
-lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
+lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
 
 lemma lowerClosure_le_closure (s : Set α) : lowerClosure s ≤ closure s := by
