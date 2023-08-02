@@ -492,8 +492,8 @@ This theorem in the case of finite kernels is weaker than `eq_condKernel_of_meas
 which asserts that the kernels are equal almost everywhere and not just on a given measurable
 set. -/
 theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKernel κ]
-  (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ())
-  {s : Set Ω} (hs : MeasurableSet s) :
+    (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ())
+    {s : Set Ω} (hs : MeasurableSet s) :
     ∀ᵐ x ∂ρ.fst, κ x s = ρ.condKernel x s := by
   refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite
     (kernel.measurable_coe κ hs) (kernel.measurable_coe ρ.condKernel hs) _
@@ -509,21 +509,18 @@ theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKern
 section Real
 
 lemma real_ae_all_of_rat_aux {p : Ω → ℝ → Prop}
-  (hp : ∀ᵐ ω ∂μ, (∀ q : ℚ, p ω q) → ∀ t, p ω t)
-  (hRat : ∀ᵐ ω ∂μ, ∀ q : ℚ, p ω q):
+    (hp : ∀ᵐ ω ∂μ, (∀ q : ℚ, p ω q) → ∀ t, p ω t)
+    (hRat : ∀ᵐ ω ∂μ, ∀ q : ℚ, p ω q):
     ∀ᵐ ω ∂μ, ∀ t, p ω t := by
   filter_upwards [hp, hRat] with ω hq using hq
 
 lemma real_ae_all_of_rat {p : Ω → ℝ → Prop} (hp : ∀ t : ℝ, ∀ᵐ ω ∂μ, p ω t)
-  (hp' : ∀ᵐ ω ∂μ, (∀ q : ℚ, p ω q) → ∀ t, p ω t) :
+    (hp' : ∀ᵐ ω ∂μ, (∀ q : ℚ, p ω q) → ∀ t, p ω t) :
     ∀ᵐ ω ∂μ, ∀ t, p ω t := by
   refine' real_ae_all_of_rat_aux hp' _
   simp_rw [ae_all_iff]
   exact fun q => hp q
 
-end Real
-
--- Move
 lemma Real.exists_rat_seq_antitone_tendsto (x : ℝ) :
     ∃ u : ℕ → ℚ, Antitone u ∧ Filter.Tendsto (fun n => (u n : ℝ)) Filter.atTop (𝓝 x) := by
   have hemp : {y : ℝ | ∃ q : ℚ, ↑q = y ∧ x < q}.Nonempty
@@ -542,10 +539,12 @@ lemma Real.exists_rat_seq_antitone_tendsto (x : ℝ) :
   specialize hz ↑q ⟨q, rfl, not_le.1 hlt'⟩
   linarith
 
+end Real
+
 -- The next two lemmas establishes uniqueness of the disintegration kernel on ℝ
 lemma eq_condKernel_of_measure_eq_compProd_real_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
-  (κ : kernel α ℝ) [IsFiniteKernel κ]
-  (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    (κ : kernel α ℝ) [IsFiniteKernel κ]
+    (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
     ∀ᵐ x ∂ρ.fst, ∀ r : ℝ, κ x (Set.Iic r) = ρ.condKernel x (Set.Iic r) := by
   refine' real_ae_all_of_rat
     (fun t => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic)
@@ -572,8 +571,8 @@ lemma eq_condKernel_of_measure_eq_compProd_real_Iic (ρ : Measure (α × ℝ)) [
   exact this _ (by infer_instance)
 
 lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
-  (κ : kernel α ℝ) [IsFiniteKernel κ]
-  (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    (κ : kernel α ℝ) [IsFiniteKernel κ]
+    (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
     ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
   have huniv : ∀ᵐ x ∂ρ.fst, κ x Set.univ = ρ.condKernel x Set.univ :=
     eq_condKernel_of_measure_eq_compProd' ρ κ hκ MeasurableSet.univ
@@ -593,7 +592,7 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
 /-- A finite kernel which satisfies the disintegration property is almost everywhere equal to the
 disintegration kernel. -/
 theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel κ]
-  (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
     ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
 -- The idea is to transporting the question to `ℝ` from `Ω` using `exists_measurableEmbedding_real`
 -- and then constructing a measure on `α × ℝ` using the obtained measurable embedding
