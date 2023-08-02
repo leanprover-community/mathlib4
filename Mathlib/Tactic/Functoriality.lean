@@ -424,6 +424,18 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : MySeqCo
     MySeqCompact Y := by
   transport hX along f
 
-example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : CompactSpace X) :
-    CompactSpace Y := by
-  transport hX along f
+attribute [functor] Filter.comap -- Adding `Filter.map` as well causes trouble! :-)
+
+-- set_option maxHeartbeats 0 in
+-- example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : CompactSpace X) :
+--     CompactSpace Y := by
+--   transport hX along f
+
+-- Filter.comap f✝ f = ⊥
+--                                   to
+--                                     f = ⊥
+-- #eval 0
+-- attribute [simp] Filter.comap_surjective_eq_bot
+-- theorem Filter.comap_eq_bot_iff (f : X → Y) (hf : f.Surjective) (s : Filter Y) : s.comap f = ⊥ ↔ s = ⊥ := by
+--   simp [hf] -- does nothing, why? I thought we fixed this.
+--   simp [Filter.comap_surjective_eq_bot hf]
