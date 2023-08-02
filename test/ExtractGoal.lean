@@ -1,6 +1,8 @@
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Data.Nat.Basic
 
+set_option pp.unicode.fun true
+
 -- the example in the documentation for the tactic.
 /-- info: theorem extracted_1 (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry -/
 #guard_msgs (info) in
@@ -40,7 +42,7 @@ example : n = n := by
 
 /--
 info: theorem extracted_1 {z : Int} :
-  @Exists.{1} Nat fun (n : Nat) => @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
+  @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
 ---
 warning: declaration uses 'sorry'
 -/
