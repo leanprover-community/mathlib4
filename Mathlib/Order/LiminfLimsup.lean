@@ -37,9 +37,7 @@ In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
 
 
-open Filter Set
-
-open Filter
+open Filter Set Function
 
 variable {α β γ ι : Type _}
 
@@ -116,9 +114,33 @@ theorem isBoundedUnder_const [IsRefl α r] {l : Filter β} {a : α} : IsBoundedU
 #align filter.is_bounded_under_const Filter.isBoundedUnder_const
 
 theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
-    (hf : ∀ a₀ a₁, r a₀ a₁ → q (u a₀) (u a₁)) : f.IsBounded r → f.IsBoundedUnder q u
-  | ⟨b, h⟩ => ⟨u b, show ∀ᶠ x in f, q (u x) (u b) from h.mono fun x => hf x b⟩
+    (hu : ∀ a₀ a₁, r a₀ a₁ → q (u a₀) (u a₁)) : f.IsBounded r → f.IsBoundedUnder q u
+  | ⟨b, h⟩ => ⟨u b, show ∀ᶠ x in f, q (u x) (u b) from h.mono fun x => hu x b⟩
 #align filter.is_bounded.is_bounded_under Filter.IsBounded.isBoundedUnder
+
+theorem IsBoundedUnder.comp {l : Filter γ} {q : β → β → Prop} {u : γ → α} {v : α → β}
+    (hv : ∀ a₀ a₁, r a₀ a₁ → q (v a₀) (v a₁)) : l.IsBoundedUnder r u → l.IsBoundedUnder q (v ∘ u)
+  | ⟨a, h⟩ => ⟨v a, show ∀ᶠ x in map u l, q (v x) (v a) from h.mono fun x => hv x a⟩
+
+theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
+    {v : α → β} (hv : Monotone v) (hl : l.IsBoundedUnder (· ≤ ·) u) :
+    l.IsBoundedUnder (· ≤ ·) (v ∘ u) :=
+  hl.comp hv
+
+theorem _root_.Monotone.isBoundedUnder_ge_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
+    {v : α → β} (hv : Monotone v) (hl : l.IsBoundedUnder (· ≥ ·) u) :
+    l.IsBoundedUnder (· ≥ ·) (v ∘ u) :=
+  hl.comp (swap hv)
+
+theorem _root_.Antitone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
+    {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (· ≥ ·) u) :
+    l.IsBoundedUnder (· ≤ ·) (v ∘ u) :=
+  hl.comp (swap hv)
+
+theorem _root_.Antitone.isBoundedUnder_ge_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
+    {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (· ≤ ·) u) :
+    l.IsBoundedUnder (· ≥ ·) (v ∘ u) :=
+  hl.comp hv
 
 theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : α → β} {l : Filter α}
     [l.NeBot] (hf : Tendsto f l atTop) : ¬IsBoundedUnder (· ≤ ·) l f := by
@@ -209,6 +231,18 @@ theorem IsBounded.isCobounded_le [Preorder α] [NeBot f] (h : f.IsBounded (· �
     f.IsCobounded (· ≤ ·) :=
   h.isCobounded_flip
 #align filter.is_bounded.is_cobounded_le Filter.IsBounded.isCobounded_le
+
+theorem IsBoundedUnder.isCoboundedUnder_flip {l : Filter γ} [IsTrans α r] [NeBot l]
+    (h : l.IsBoundedUnder r u) : l.IsCoboundedUnder (flip r) u :=
+  h.isCobounded_flip
+
+theorem IsBoundedUnder.isCoboundedUnder_le {u : γ → α} {l : Filter γ} [Preorder α] [NeBot l]
+    (h : l.IsBoundedUnder (· ≥ ·) u) : l.IsCoboundedUnder (· ≤ ·) u :=
+  h.isCoboundedUnder_flip
+
+theorem IsBoundedUnder.isCoboundedUnder_ge {u : γ → α} {l : Filter γ} [Preorder α] [NeBot l]
+    (h : l.IsBoundedUnder (· ≤ ·) u) : l.IsCoboundedUnder (· ≥ ·) u :=
+  h.isCoboundedUnder_flip
 
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 #align filter.is_cobounded_bot Filter.isCobounded_bot
@@ -1200,32 +1234,32 @@ section Order
 
 open Filter
 
-theorem Monotone.isBoundedUnder_le_comp [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
+theorem Monotone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atTop atTop) :
     IsBoundedUnder (· ≤ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≤ ·) l f := by
   refine' ⟨_, fun h => h.isBoundedUnder (α := β) hg⟩
   rintro ⟨c, hc⟩; rw [eventually_map] at hc
   obtain ⟨b, hb⟩ : ∃ b, ∀ a ≥ b, c < g a := eventually_atTop.1 (hg'.eventually_gt_atTop c)
   exact ⟨b, hc.mono fun x hx => not_lt.1 fun h => (hb _ h.le).not_le hx⟩
-#align monotone.is_bounded_under_le_comp Monotone.isBoundedUnder_le_comp
+#align monotone.is_bounded_under_le_comp Monotone.isBoundedUnder_le_comp_iff
 
-theorem Monotone.isBoundedUnder_ge_comp [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
+theorem Monotone.isBoundedUnder_ge_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atBot atBot) :
     IsBoundedUnder (· ≥ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≥ ·) l f :=
-  hg.dual.isBoundedUnder_le_comp hg'
-#align monotone.is_bounded_under_ge_comp Monotone.isBoundedUnder_ge_comp
+  hg.dual.isBoundedUnder_le_comp_iff hg'
+#align monotone.is_bounded_under_ge_comp Monotone.isBoundedUnder_ge_comp_iff
 
-theorem Antitone.isBoundedUnder_le_comp [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
+theorem Antitone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Antitone g) (hg' : Tendsto g atBot atTop) :
     IsBoundedUnder (· ≤ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≥ ·) l f :=
-  hg.dual_right.isBoundedUnder_ge_comp hg'
-#align antitone.is_bounded_under_le_comp Antitone.isBoundedUnder_le_comp
+  hg.dual_right.isBoundedUnder_ge_comp_iff hg'
+#align antitone.is_bounded_under_le_comp Antitone.isBoundedUnder_le_comp_iff
 
-theorem Antitone.isBoundedUnder_ge_comp [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
+theorem Antitone.isBoundedUnder_ge_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Antitone g) (hg' : Tendsto g atTop atBot) :
     IsBoundedUnder (· ≥ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≤ ·) l f :=
-  hg.dual_right.isBoundedUnder_le_comp hg'
-#align antitone.is_bounded_under_ge_comp Antitone.isBoundedUnder_ge_comp
+  hg.dual_right.isBoundedUnder_le_comp_iff hg'
+#align antitone.is_bounded_under_ge_comp Antitone.isBoundedUnder_ge_comp_iff
 
 theorem GaloisConnection.l_limsup_le [ConditionallyCompleteLattice β]
     [ConditionallyCompleteLattice γ] {f : Filter α} {v : α → β} {l : β → γ} {u : γ → β}

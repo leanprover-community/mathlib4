@@ -395,7 +395,7 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 variable (α)
 
 /-- A `CanonicallyOrderedAddMonoid` with ordered subtraction and order-reflecting addition is
-cancellative. This is not an instance at it would form a typeclass loop.
+cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
 @[reducible]
