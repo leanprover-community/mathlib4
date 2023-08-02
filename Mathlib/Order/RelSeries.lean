@@ -418,6 +418,15 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
   Fin.strictMono_iff_lt_succ.mpr <| x.step
 
 /--
+For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
+can be pushed out to a strict chain of `β` by
+`a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
+-/
+@[simps!]
+def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
+  LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
+
+/--
 For two pre-ordered sets `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
 strict series of `β` can be pulled back to a strict chain of `α` by
 `b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the

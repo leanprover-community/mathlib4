@@ -61,16 +61,6 @@ variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
 
-/--
-For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
-can be pushed out to a strict chain of `β` by
-`a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
--/
-def Map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β where
-  length := p.length
-  toFun := f.comp p
-  step := sorry
-
 lemma krullDim_le_of_StrictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β := by
   exact iSup_le $ λ p ↦ le_sSup ⟨Map p f hf, rfl⟩
 
