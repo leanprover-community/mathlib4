@@ -39,7 +39,8 @@ example : n = n := by
   rfl
 
 /--
-info: theorem extracted_1 {z : ℤ} : ∃ n, ↑n = z := sorry
+info: theorem extracted_1 {z : Int} :
+  @Exists.{1} Nat fun (n : Nat) => @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
 ---
 warning: declaration uses 'sorry'
 -/
