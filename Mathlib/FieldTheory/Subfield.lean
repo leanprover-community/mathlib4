@@ -68,8 +68,8 @@ universe u v w
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Field M]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
-class SubfieldClass (S K : Type _) [Field K] [SetLike S K] extends SubringClass S K,
-  InvMemClass S K : Prop
+class SubfieldClass (S : Type _) (K : outParam <| Type _) [Field K] [SetLike S K] extends
+  SubringClass S K, InvMemClass S K : Prop
 #align subfield_class SubfieldClass
 
 namespace SubfieldClass

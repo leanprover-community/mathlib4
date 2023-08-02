@@ -85,7 +85,7 @@ to normalize terms.
 
 If you declare an unbundled subclass of `SetLike`, for example:
 ```
-class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] where
+class MulMemClass (S : Type _) (M : outParam <| Type _) [Mul M] [SetLike S M] where
   ...
 ```
 Then you should *not* repeat the `outParam` declaration so `SetLike` will supply the value instead.

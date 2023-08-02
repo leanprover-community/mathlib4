@@ -54,7 +54,7 @@ export Star (star)
 add_decl_doc star
 
 /-- `StarMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under star. -/
-class StarMemClass (S R : Type _) [Star R] [SetLike S R] : Prop where
+class StarMemClass (S : Type _) (R : outParam <| Type _) [Star R] [SetLike S R] : Prop where
   /-- Closure under star. -/
   star_mem : ∀ {s : S} {r : R}, r ∈ s → star r ∈ s
 #align star_mem_class StarMemClass
