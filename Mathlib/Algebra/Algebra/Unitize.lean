@@ -18,7 +18,7 @@ This file takes unital and non-unital structures and relates them.
 
 * `NonUnitalSubalgebra.unitization s : Unitization R s →ₐ[R] Algebra.adjoin R (s : Set A)`:
   where `s` is a non-unital subalgebra of a unital `R`-algebra `A`, this is the natural algebra
-  homomorphism sending `(r, a)` to `r • 1 + a`. This is always surjective.#check
+  homomorphism sending `(r, a)` to `r • 1 + a`. This is always surjective.
 * `NonUnitalSubalgebra.unitizationAlgEquiv s : Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A)`:
   when `R` is a field and `1 ∉ s`, the above homomorphism is injective is upgraded to
   an `AlgEquiv`.
