@@ -100,8 +100,7 @@ lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
   refine tendsto_exp_atBot.comp ?_
   have h₁ : 0 < log b := by rw [log_pos_iff (by positivity)]; aesop
   rw [tendsto_const_mul_atBot_of_pos h₁]
-  show atBot ≤ atBot
-  rfl
+  exact tendsto_id
 
 lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) :
     Tendsto (rpow b) atBot atTop := by
