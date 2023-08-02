@@ -92,6 +92,10 @@ instance : IsScalarTower F K (normalClosure F K L) := by
 instance : IsScalarTower K (normalClosure F K L) L :=
   of_algebraMap_eq' rfl
 
+lemma restrictScalars_eq :
+    (toAlgHom K (normalClosure F K L) L).fieldRange.restrictScalars F = normalClosure F K L :=
+  SetLike.ext' Subtype.range_val
+
 end normalClosure
 
 namespace IntermediateField
