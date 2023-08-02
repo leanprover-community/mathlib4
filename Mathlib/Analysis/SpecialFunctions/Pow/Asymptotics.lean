@@ -60,8 +60,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     simp_rw [Real.rpow_def_of_nonpos hb]
     rcases lt_or_eq_of_le hb with hb | rfl
     case inl =>  -- b < 0
-      have hb_ne : b ≠ 0 := by aesop
-      simp only [hb_ne, ite_false]
+      simp only [hb.ne, ite_false]
       rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero]
       have H : (1:ℝ) = 1 * 1 := by simp
       rw [H]
