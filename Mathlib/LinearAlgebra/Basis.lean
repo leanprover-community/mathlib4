@@ -120,9 +120,10 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 #align basis.repr_injective Basis.repr_injective
 
 /-- `b i` is the `i`th basis vector. -/
-instance funLike : FunLike (Basis ι R M) ι fun _ => M where
+instance funLike [DecidableEq ι] : FunLike (Basis ι R M) ι fun _ => M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <| by
+    classical
     ext x
     rw [← Finsupp.sum_single x, map_finsupp_sum, map_finsupp_sum]
     congr with (i r)
@@ -132,19 +133,19 @@ instance funLike : FunLike (Basis ι R M) ι fun _ => M where
 #align basis.fun_like Basis.funLike
 
 @[simp]
-theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
-  rfl
+theorem coe_ofRepr [DecidableEq ι] (e : M ≃ₗ[R] ι →₀ R) :
+    ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) := by simp [FunLike.coe]
 #align basis.coe_of_repr Basis.coe_ofRepr
 
-protected theorem injective [Nontrivial R] : Injective b :=
+protected theorem injective [DecidableEq ι] [Nontrivial R] : Injective b :=
   b.repr.symm.injective.comp fun _ _ => (Finsupp.single_left_inj (one_ne_zero : (1 : R) ≠ 0)).mp
 #align basis.injective Basis.injective
 
-theorem repr_symm_single_one : b.repr.symm (Finsupp.single i 1) = b i :=
+theorem repr_symm_single_one [DecidableEq ι] : b.repr.symm (Finsupp.single i 1) = b i :=
   rfl
 #align basis.repr_symm_single_one Basis.repr_symm_single_one
 
-theorem repr_symm_single : b.repr.symm (Finsupp.single i c) = c • b i :=
+theorem repr_symm_single [DecidableEq ι] : b.repr.symm (Finsupp.single i c) = c • b i :=
   calc
     b.repr.symm (Finsupp.single i c) = b.repr.symm (c • Finsupp.single i (1 : R)) := by
       { rw [Finsupp.smul_single', mul_one] }
@@ -152,16 +153,16 @@ theorem repr_symm_single : b.repr.symm (Finsupp.single i c) = c • b i :=
 #align basis.repr_symm_single Basis.repr_symm_single
 
 @[simp]
-theorem repr_self : b.repr (b i) = Finsupp.single i 1 :=
+theorem repr_self [DecidableEq ι] : b.repr (b i) = Finsupp.single i 1 :=
   LinearEquiv.apply_symm_apply _ _
 #align basis.repr_self Basis.repr_self
 
-theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then 1 else 0 := by
+theorem repr_self_apply [DecidableEq ι] (j) : b.repr (b i) j = if i = j then 1 else 0 := by
   rw [repr_self, Finsupp.single_apply]
 #align basis.repr_self_apply Basis.repr_self_apply
 
 @[simp]
-theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total ι M R b v :=
+theorem repr_symm_apply [DecidableEq ι] (v) : b.repr.symm v = Finsupp.total ι M R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
     _ = ∑ i in v.support, b.repr.symm (Finsupp.single i (v i)) :=
@@ -170,18 +171,18 @@ theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total ι M R b v :=
 #align basis.repr_symm_apply Basis.repr_symm_apply
 
 @[simp]
-theorem coe_repr_symm : ↑b.repr.symm = Finsupp.total ι M R b :=
+theorem coe_repr_symm [DecidableEq ι] : ↑b.repr.symm = Finsupp.total ι M R b :=
   LinearMap.ext fun v => b.repr_symm_apply v
 #align basis.coe_repr_symm Basis.coe_repr_symm
 
 @[simp]
-theorem repr_total (v) : b.repr (Finsupp.total _ _ _ b v) = v := by
+theorem repr_total [DecidableEq ι] (v) : b.repr (Finsupp.total _ _ _ b v) = v := by
   rw [← b.coe_repr_symm]
   exact b.repr.apply_symm_apply v
 #align basis.repr_total Basis.repr_total
 
 @[simp]
-theorem total_repr : Finsupp.total _ _ _ b (b.repr x) = x := by
+theorem total_repr [DecidableEq ι] : Finsupp.total _ _ _ b (b.repr x) = x := by
   rw [← b.coe_repr_symm]
   exact b.repr.symm_apply_apply x
 #align basis.total_repr Basis.total_repr
@@ -190,12 +191,13 @@ theorem repr_range : LinearMap.range (b.repr : M →ₗ[R] ι →₀ R) = Finsup
   rw [LinearEquiv.range, Finsupp.supported_univ]
 #align basis.repr_range Basis.repr_range
 
-theorem mem_span_repr_support {ι : Type _} (b : Basis ι R M) (m : M) :
+theorem mem_span_repr_support {ι : Type _} [DecidableEq ι] (b : Basis ι R M) (m : M) :
     m ∈ span R (b '' (b.repr m).support) :=
   (Finsupp.mem_span_image_iff_total _).2 ⟨b.repr m, by simp [Finsupp.mem_supported_support]⟩
 #align basis.mem_span_repr_support Basis.mem_span_repr_support
 
-theorem repr_support_subset_of_mem_span {ι : Type _} (b : Basis ι R M) (s : Set ι) {m : M}
+theorem repr_support_subset_of_mem_span
+    {ι : Type _} [DecidableEq ι] (b : Basis ι R M) (s : Set ι) {m : M}
     (hm : m ∈ span R (b '' s)) : ↑(b.repr m).support ⊆ s := by
   rcases(Finsupp.mem_span_image_iff_total _).1 hm with ⟨l, hl, hlm⟩
   rwa [← hlm, repr_total, ← Finsupp.mem_supported R l]
@@ -250,7 +252,7 @@ theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i,
 #align basis.coe_sum_coords_of_fintype Basis.coe_sumCoords_of_fintype
 
 @[simp]
-theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by
+theorem sumCoords_self_apply [DecidableEq ι] : b.sumCoords (b i) = 1 := by
   simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id.def, Basis.repr_self,
     Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Finsupp.sum_single_index]
 #align basis.sum_coords_self_apply Basis.sumCoords_self_apply
@@ -259,7 +261,8 @@ theorem dvd_coord_smul (i : ι) (m : M) (r : R) : r ∣ b.coord i (r • m) :=
   ⟨b.coord i m, by simp⟩
 #align basis.dvd_coord_smul Basis.dvd_coord_smul
 
-theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) : b.coord i (b.repr.symm f) = f i :=
+theorem coord_repr_symm [DecidableEq ι] (b : Basis ι R M) (i : ι) (f : ι →₀ R) :
+    b.coord i (b.repr.symm f) = f i :=
   by simp only [repr_symm_apply, coord_apply, repr_total]
 #align basis.coord_repr_symm Basis.coord_repr_symm
 
@@ -272,14 +275,14 @@ variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 variable {M₁ : Type _} [AddCommMonoid M₁] [Module R₁ M₁]
 
 /-- Two linear maps are equal if they are equal on basis vectors. -/
-theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
+theorem ext [DecidableEq ι] {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
   simp only [LinearMap.map_sum, LinearMap.map_smulₛₗ, h]
 #align basis.ext Basis.ext
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
-theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
+theorem ext' [DecidableEq ι] {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
   simp only [LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ, h]
@@ -293,22 +296,22 @@ theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
 alias ext_elem_iff ↔ _ _root_.Basis.ext_elem
 #align basis.ext_elem Basis.ext_elem
 
-theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
+theorem repr_eq_iff [DecidableEq ι] {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
     ↑b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
   ⟨fun h i => h ▸ b.repr_self i, fun h => b.ext fun i => (b.repr_self i).trans (h i).symm⟩
 #align basis.repr_eq_iff Basis.repr_eq_iff
 
-theorem repr_eq_iff' {b : Basis ι R M} {f : M ≃ₗ[R] ι →₀ R} :
+theorem repr_eq_iff' [DecidableEq ι] {b : Basis ι R M} {f : M ≃ₗ[R] ι →₀ R} :
     b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
   ⟨fun h i => h ▸ b.repr_self i, fun h => b.ext' fun i => (b.repr_self i).trans (h i).symm⟩
 #align basis.repr_eq_iff' Basis.repr_eq_iff'
 
-theorem apply_eq_iff {b : Basis ι R M} {x : M} {i : ι} : b i = x ↔ b.repr x = Finsupp.single i 1 :=
+theorem apply_eq_iff [DecidableEq ι] {b : Basis ι R M} {x : M} {i : ι} : b i = x ↔ b.repr x = Finsupp.single i 1 :=
   ⟨fun h => h ▸ b.repr_self i, fun h => b.repr.injective ((b.repr_self i).trans h.symm)⟩
 #align basis.apply_eq_iff Basis.apply_eq_iff
 
 /-- An unbundled version of `repr_eq_iff` -/
-theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f y)
+theorem repr_apply_eq [DecidableEq ι] (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f y)
     (hsmul : ∀ (c : R) (x : M), f (c • x) = c • f x) (f_eq : ∀ i, f (b i) = Finsupp.single i 1)
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
@@ -334,7 +337,7 @@ theorem eq_ofRepr_eq_repr {b₁ b₂ : Basis ι R M} (h : ∀ x i, b₁.repr x i
 
 /-- Two bases are equal if their basis vectors are the same. -/
 @[ext]
-theorem eq_of_apply_eq {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
+theorem eq_of_apply_eq [DecidableEq ι] {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
   FunLike.ext _ _
 #align basis.eq_of_apply_eq Basis.eq_of_apply_eq
 
@@ -351,7 +354,7 @@ protected def map : Basis ι R M' :=
 #align basis.map Basis.map
 
 @[simp]
-theorem map_apply (i) : b.map f i = f (b i) :=
+theorem map_apply [DecidableEq ι] (i) : b.map f i = f (b i) :=
   rfl
 #align basis.map_apply Basis.map_apply
 
@@ -382,7 +385,7 @@ def mapCoeffs : Basis ι R' M := by
     Finsupp.mapRange.linearEquiv (Module.compHom.toLinearEquiv f.symm).symm
 #align basis.map_coeffs Basis.mapCoeffs
 
-theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
+theorem mapCoeffs_apply [DecidableEq ι] (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by
     -- Porting note: in Lean 3, these were automatically inferred from the definition of
     -- `mapCoeffs`.
@@ -397,7 +400,7 @@ theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
 #align basis.map_coeffs_apply Basis.mapCoeffs_apply
 
 @[simp]
-theorem coe_mapCoeffs : (b.mapCoeffs f h : ι → M) = b :=
+theorem coe_mapCoeffs [DecidableEq ι] : (b.mapCoeffs f h : ι → M) = b :=
   funext <| b.mapCoeffs_apply f h
 #align basis.coe_map_coeffs Basis.coe_mapCoeffs
 
@@ -414,7 +417,7 @@ def reindex : Basis ι' R M :=
   .ofRepr (b.repr.trans (Finsupp.domLCongr e))
 #align basis.reindex Basis.reindex
 
-theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
+theorem reindex_apply [DecidableEq ι] [DecidableEq ι'] (i' : ι') : b.reindex e i' = b (e.symm i') :=
   show (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
     b.repr.symm (Finsupp.single (e.symm i') 1)
   by rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
