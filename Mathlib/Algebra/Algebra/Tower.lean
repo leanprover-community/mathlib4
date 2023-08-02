@@ -376,12 +376,12 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring S] [Algebra R A]
-variable [AddCommGroup M] [SMul R S] [Module R M] [Module S M] [Module A M]
-variable [IsScalarTower R A M] [IsScalarTower R S M] [SMulCommClass S R M] [SMulCommClass A S M]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
-    Function.Injective (lsmul R S M x) :=
+    Function.Injective (lsmul R B M x) :=
   smul_right_injective M hx
 #align algebra.lsmul_injective Algebra.lsmul_injective
 
