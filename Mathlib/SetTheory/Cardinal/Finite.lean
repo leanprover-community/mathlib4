@@ -175,6 +175,7 @@ theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set
   card_congr (Equiv.Set.imageOfInjOn f s h).symm
 #align part_enat.card_image_of_inj_on PartENat.card_image_of_injOn
 
+@[simp]
 theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s :=
   card_image_of_injOn (Set.injOn_of_injective h s)

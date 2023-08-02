@@ -1552,6 +1552,7 @@ variable (hf : Function.Surjective f)
 
 open Function
 
+@[simp]
 theorem map_comap_of_surjective (I : Ideal S) : map f (comap f I) = I :=
   le_antisymm (map_le_iff_le_comap.2 le_rfl) fun s hsi =>
     let ⟨r, hfrs⟩ := hf s
@@ -1573,18 +1574,22 @@ theorem comap_injective_of_surjective : Injective (comap f) :=
   (giMapComap f hf).u_injective
 #align ideal.comap_injective_of_surjective Ideal.comap_injective_of_surjective
 
+@[simp]
 theorem map_sup_comap_of_surjective (I J : Ideal S) : (I.comap f ⊔ J.comap f).map f = I ⊔ J :=
   (giMapComap f hf).l_sup_u _ _
 #align ideal.map_sup_comap_of_surjective Ideal.map_sup_comap_of_surjective
 
+@[simp]
 theorem map_iSup_comap_of_surjective (K : ι → Ideal S) : (⨆ i, (K i).comap f).map f = iSup K :=
   (giMapComap f hf).l_iSup_u _
 #align ideal.map_supr_comap_of_surjective Ideal.map_iSup_comap_of_surjective
 
+@[simp]
 theorem map_inf_comap_of_surjective (I J : Ideal S) : (I.comap f ⊓ J.comap f).map f = I ⊓ J :=
   (giMapComap f hf).l_inf_u _ _
 #align ideal.map_inf_comap_of_surjective Ideal.map_inf_comap_of_surjective
 
+@[simp]
 theorem map_iInf_comap_of_surjective (K : ι → Ideal S) : (⨅ i, (K i).comap f).map f = iInf K :=
   (giMapComap f hf).l_iInf_u _
 #align ideal.map_infi_comap_of_surjective Ideal.map_iInf_comap_of_surjective
@@ -1624,6 +1629,7 @@ theorem comap_bot_le_of_injective : comap f ⊥ ≤ I := by
   exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
 #align ideal.comap_bot_le_of_injective Ideal.comap_bot_le_of_injective
 
+@[simp]
 theorem comap_bot_of_injective : Ideal.comap f ⊥ = ⊥ :=
   le_bot_iff.mp (Ideal.comap_bot_le_of_injective f hf)
 #align ideal.comap_bot_of_injective Ideal.comap_bot_of_injective
@@ -1696,6 +1702,7 @@ theorem comap_isMaximal_of_surjective {K : Ideal S} [H : IsMaximal K] : IsMaxima
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 #align ideal.comap_is_maximal_of_surjective Ideal.comap_isMaximal_of_surjective
 
+@[simp]
 theorem comap_le_comap_iff_of_surjective (I J : Ideal S) : comap f I ≤ comap f J ↔ I ≤ J :=
   ⟨fun h => (map_comap_of_surjective f hf I).symm.le.trans (map_le_of_le_comap h), fun h =>
     le_comap_of_map_le ((map_comap_of_surjective f hf I).le.trans h)⟩
@@ -2144,6 +2151,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
 #align ideal.map_is_prime_of_surjective Ideal.map_isPrime_of_surjective
 
+@[simp]
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by
   rw [map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot f).mp hf, le_bot_iff]

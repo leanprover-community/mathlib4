@@ -57,7 +57,7 @@ noncomputable def relindex : ℕ :=
 #align subgroup.relindex Subgroup.relindex
 #align add_subgroup.relindex AddSubgroup.relindex
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem index_comap_of_surjective {G' : Type _} [Group G'] {f : G' →* G}
     (hf : Function.Surjective f) : (H.comap f).index = H.index := by
   letI := QuotientGroup.leftRel H

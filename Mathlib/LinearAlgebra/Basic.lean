@@ -882,6 +882,7 @@ def giMapComap : GaloisInsertion (map f) (comap f) :=
     exact ⟨y, hx, rfl⟩
 #align submodule.gi_map_comap Submodule.giMapComap
 
+@[simp]
 theorem map_comap_eq_of_surjective (p : Submodule R₂ M₂) : (p.comap f).map f = p :=
   (giMapComap hf).l_u_eq _
 #align submodule.map_comap_eq_of_surjective Submodule.map_comap_eq_of_surjective
@@ -894,26 +895,31 @@ theorem comap_injective_of_surjective : Function.Injective (comap f) :=
   (giMapComap hf).u_injective
 #align submodule.comap_injective_of_surjective Submodule.comap_injective_of_surjective
 
+@[simp]
 theorem map_sup_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊔ q.comap f).map f = p ⊔ q :=
   (giMapComap hf).l_sup_u _ _
 #align submodule.map_sup_comap_of_surjective Submodule.map_sup_comap_of_surjective
 
-theorem map_iSup_comap_of_sujective {ι : Sort _} (S : ι → Submodule R₂ M₂) :
+@[simp]
+theorem map_iSup_comap_of_surjective {ι : Sort _} (S : ι → Submodule R₂ M₂) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
-#align submodule.map_supr_comap_of_sujective Submodule.map_iSup_comap_of_sujective
+#align submodule.map_supr_comap_of_sujective Submodule.map_iSup_comap_of_surjective
 
+@[simp]
 theorem map_inf_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊓ q.comap f).map f = p ⊓ q :=
   (giMapComap hf).l_inf_u _ _
 #align submodule.map_inf_comap_of_surjective Submodule.map_inf_comap_of_surjective
 
+@[simp]
 theorem map_iInf_comap_of_surjective {ι : Sort _} (S : ι → Submodule R₂ M₂) :
     (⨅ i, (S i).comap f).map f = iInf S :=
   (giMapComap hf).l_iInf_u _
 #align submodule.map_infi_comap_of_surjective Submodule.map_iInf_comap_of_surjective
 
+@[simp]
 theorem comap_le_comap_iff_of_surjective (p q : Submodule R₂ M₂) : p.comap f ≤ q.comap f ↔ p ≤ q :=
   (giMapComap hf).u_le_u_iff
 #align submodule.comap_le_comap_iff_of_surjective Submodule.comap_le_comap_iff_of_surjective
@@ -937,6 +943,7 @@ def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
     rwa [← hxy]
 #align submodule.gci_map_comap Submodule.gciMapComap
 
+@[simp]
 theorem comap_map_eq_of_injective (p : Submodule R M) : (p.map f).comap f = p :=
   (gciMapComap hf).u_l_eq _
 #align submodule.comap_map_eq_of_injective Submodule.comap_map_eq_of_injective
@@ -949,24 +956,29 @@ theorem map_injective_of_injective : Function.Injective (map f) :=
   (gciMapComap hf).l_injective
 #align submodule.map_injective_of_injective Submodule.map_injective_of_injective
 
+@[simp]
 theorem comap_inf_map_of_injective (p q : Submodule R M) : (p.map f ⊓ q.map f).comap f = p ⊓ q :=
   (gciMapComap hf).u_inf_l _ _
 #align submodule.comap_inf_map_of_injective Submodule.comap_inf_map_of_injective
 
+@[simp]
 theorem comap_iInf_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
     (⨅ i, (S i).map f).comap f = iInf S :=
   (gciMapComap hf).u_iInf_l _
 #align submodule.comap_infi_map_of_injective Submodule.comap_iInf_map_of_injective
 
+@[simp]
 theorem comap_sup_map_of_injective (p q : Submodule R M) : (p.map f ⊔ q.map f).comap f = p ⊔ q :=
   (gciMapComap hf).u_sup_l _ _
 #align submodule.comap_sup_map_of_injective Submodule.comap_sup_map_of_injective
 
+@[simp]
 theorem comap_iSup_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
     (⨆ i, (S i).map f).comap f = iSup S :=
   (gciMapComap hf).u_iSup_l _
 #align submodule.comap_supr_map_of_injective Submodule.comap_iSup_map_of_injective
 
+@[simp]
 theorem map_le_map_iff_of_injective (p q : Submodule R M) : p.map f ≤ q.map f ↔ p ≤ q :=
   (gciMapComap hf).l_le_l_iff
 #align submodule.map_le_map_iff_of_injective Submodule.map_le_map_iff_of_injective

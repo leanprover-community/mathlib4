@@ -324,6 +324,7 @@ open Function
 
 variable [Semiring S] {f : R →+* S} (hf : Injective f)
 
+@[simp]
 theorem degree_map_eq_of_injective (p : R[X]) : degree (p.map f) = degree p :=
   if h : p = 0 then by simp [h]
   else
@@ -331,6 +332,7 @@ theorem degree_map_eq_of_injective (p : R[X]) : degree (p.map f) = degree p :=
       (by rw [← f.map_zero]; exact mt hf.eq_iff.1 (mt leadingCoeff_eq_zero.1 h))
 #align polynomial.degree_map_eq_of_injective Polynomial.degree_map_eq_of_injective
 
+@[simp]
 theorem natDegree_map_eq_of_injective (p : R[X]) : natDegree (p.map f) = natDegree p :=
   natDegree_eq_of_degree_eq (degree_map_eq_of_injective hf p)
 #align polynomial.nat_degree_map_eq_of_injective Polynomial.natDegree_map_eq_of_injective
@@ -346,6 +348,7 @@ theorem nextCoeff_map (p : R[X]) : (p.map f).nextCoeff = f p.nextCoeff := by
   split_ifs <;> simp [*]
 #align polynomial.next_coeff_map Polynomial.nextCoeff_map
 
+@[simp]
 theorem leadingCoeff_of_injective (p : R[X]) : leadingCoeff (p.map f) = f (leadingCoeff p) := by
   delta leadingCoeff
   rw [coeff_map f, natDegree_map_eq_of_injective hf p]

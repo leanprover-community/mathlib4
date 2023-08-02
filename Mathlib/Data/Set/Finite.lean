@@ -1231,6 +1231,7 @@ theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (
     _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
 #align set.card_image_of_inj_on Set.card_image_of_inj_on
 
+@[simp]
 theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
     (H : Function.Injective f) : Fintype.card (f '' s) = Fintype.card s :=
   card_image_of_inj_on fun _ _ _ _ h => H h
@@ -1257,6 +1258,7 @@ theorem eq_of_subset_of_card_le {s t : Set α} [Fintype s] [Fintype t] (hsub : s
   (eq_or_ssubset_of_subset hsub).elim id fun h => absurd hcard <| not_le_of_lt <| card_lt_card h
 #align set.eq_of_subset_of_card_le Set.eq_of_subset_of_card_le
 
+@[simp]
 theorem card_range_of_injective [Fintype α] {f : α → β} (hf : Injective f) [Fintype (range f)] :
     Fintype.card (range f) = Fintype.card α :=
   Eq.symm <| Fintype.card_congr <| Equiv.ofInjective f hf

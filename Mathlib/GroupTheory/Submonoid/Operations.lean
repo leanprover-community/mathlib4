@@ -376,7 +376,7 @@ def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
 #align submonoid.gci_map_comap Submonoid.gciMapComap
 #align add_submonoid.gci_map_comap AddSubmonoid.gciMapComap
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_map_eq_of_injective (S : Submonoid M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
 #align submonoid.comap_map_eq_of_injective Submonoid.comap_map_eq_of_injective
@@ -394,31 +394,31 @@ theorem map_injective_of_injective : Function.Injective (map f) :=
 #align submonoid.map_injective_of_injective Submonoid.map_injective_of_injective
 #align add_submonoid.map_injective_of_injective AddSubmonoid.map_injective_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_inf_map_of_injective (S T : Submonoid M) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
   (gciMapComap hf).u_inf_l _ _
 #align submonoid.comap_inf_map_of_injective Submonoid.comap_inf_map_of_injective
 #align add_submonoid.comap_inf_map_of_injective AddSubmonoid.comap_inf_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_iInf_map_of_injective (S : ι → Submonoid M) : (⨅ i, (S i).map f).comap f = iInf S :=
   (gciMapComap hf).u_iInf_l _
 #align submonoid.comap_infi_map_of_injective Submonoid.comap_iInf_map_of_injective
 #align add_submonoid.comap_infi_map_of_injective AddSubmonoid.comap_iInf_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_sup_map_of_injective (S T : Submonoid M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 #align submonoid.comap_sup_map_of_injective Submonoid.comap_sup_map_of_injective
 #align add_submonoid.comap_sup_map_of_injective AddSubmonoid.comap_sup_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_iSup_map_of_injective (S : ι → Submonoid M) : (⨆ i, (S i).map f).comap f = iSup S :=
   (gciMapComap hf).u_iSup_l _
 #align submonoid.comap_supr_map_of_injective Submonoid.comap_iSup_map_of_injective
 #align add_submonoid.comap_supr_map_of_injective AddSubmonoid.comap_iSup_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_le_map_iff_of_injective {S T : Submonoid M} : S.map f ≤ T.map f ↔ S ≤ T :=
   (gciMapComap hf).l_le_l_iff
 #align submonoid.map_le_map_iff_of_injective Submonoid.map_le_map_iff_of_injective
@@ -445,7 +445,7 @@ def giMapComap : GaloisInsertion (map f) (comap f) :=
 #align submonoid.gi_map_comap Submonoid.giMapComap
 #align add_submonoid.gi_map_comap AddSubmonoid.giMapComap
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_comap_eq_of_surjective (S : Submonoid N) : (S.comap f).map f = S :=
   (giMapComap hf).l_u_eq _
 #align submonoid.map_comap_eq_of_surjective Submonoid.map_comap_eq_of_surjective
@@ -463,31 +463,31 @@ theorem comap_injective_of_surjective : Function.Injective (comap f) :=
 #align submonoid.comap_injective_of_surjective Submonoid.comap_injective_of_surjective
 #align add_submonoid.comap_injective_of_surjective AddSubmonoid.comap_injective_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_inf_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊓ T.comap f).map f = S ⊓ T :=
   (giMapComap hf).l_inf_u _ _
 #align submonoid.map_inf_comap_of_surjective Submonoid.map_inf_comap_of_surjective
 #align add_submonoid.map_inf_comap_of_surjective AddSubmonoid.map_inf_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_iInf_comap_of_surjective (S : ι → Submonoid N) : (⨅ i, (S i).comap f).map f = iInf S :=
   (giMapComap hf).l_iInf_u _
 #align submonoid.map_infi_comap_of_surjective Submonoid.map_iInf_comap_of_surjective
 #align add_submonoid.map_infi_comap_of_surjective AddSubmonoid.map_iInf_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_sup_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊔ T.comap f).map f = S ⊔ T :=
   (giMapComap hf).l_sup_u _ _
 #align submonoid.map_sup_comap_of_surjective Submonoid.map_sup_comap_of_surjective
 #align add_submonoid.map_sup_comap_of_surjective AddSubmonoid.map_sup_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_iSup_comap_of_surjective (S : ι → Submonoid N) : (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
 #align submonoid.map_supr_comap_of_surjective Submonoid.map_iSup_comap_of_surjective
 #align add_submonoid.map_supr_comap_of_surjective AddSubmonoid.map_iSup_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_le_comap_iff_of_surjective {S T : Submonoid N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
   (giMapComap hf).u_le_u_iff
 #align submonoid.comap_le_comap_iff_of_surjective Submonoid.comap_le_comap_iff_of_surjective

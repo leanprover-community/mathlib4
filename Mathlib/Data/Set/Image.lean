@@ -337,6 +337,7 @@ theorem image_inter {f : α → β} {s t : Set α} (H : Injective f) : f '' (s �
   image_inter_on fun _ _ _ _ h => H h
 #align set.image_inter Set.image_inter
 
+@[simp]
 theorem image_univ_of_surjective {ι : Type _} {f : ι → β} (H : Surjective f) : f '' univ = univ :=
   eq_univ_of_forall <| by simpa [image]
 #align set.image_univ_of_surjective Set.image_univ_of_surjective

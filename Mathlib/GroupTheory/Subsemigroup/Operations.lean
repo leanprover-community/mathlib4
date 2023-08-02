@@ -380,7 +380,7 @@ def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
 #align subsemigroup.gci_map_comap Subsemigroup.gciMapComap
 #align add_subsemigroup.gci_map_comap AddSubsemigroup.gciMapComap
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_map_eq_of_injective (S : Subsemigroup M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
 #align subsemigroup.comap_map_eq_of_injective Subsemigroup.comap_map_eq_of_injective
@@ -398,33 +398,33 @@ theorem map_injective_of_injective : Function.Injective (map f) :=
 #align subsemigroup.map_injective_of_injective Subsemigroup.map_injective_of_injective
 #align add_subsemigroup.map_injective_of_injective AddSubsemigroup.map_injective_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_inf_map_of_injective (S T : Subsemigroup M) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
   (gciMapComap hf).u_inf_l _ _
 #align subsemigroup.comap_inf_map_of_injective Subsemigroup.comap_inf_map_of_injective
 #align add_subsemigroup.comap_inf_map_of_injective AddSubsemigroup.comap_inf_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_iInf_map_of_injective (S : ι → Subsemigroup M) :
     (⨅ i, (S i).map f).comap f = iInf S :=
   (gciMapComap hf).u_iInf_l _
 #align subsemigroup.comap_infi_map_of_injective Subsemigroup.comap_iInf_map_of_injective
 #align add_subsemigroup.comap_infi_map_of_injective AddSubsemigroup.comap_iInf_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_sup_map_of_injective (S T : Subsemigroup M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 #align subsemigroup.comap_sup_map_of_injective Subsemigroup.comap_sup_map_of_injective
 #align add_subsemigroup.comap_sup_map_of_injective AddSubsemigroup.comap_sup_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_iSup_map_of_injective (S : ι → Subsemigroup M) :
     (⨆ i, (S i).map f).comap f = iSup S :=
   (gciMapComap hf).u_iSup_l _
 #align subsemigroup.comap_supr_map_of_injective Subsemigroup.comap_iSup_map_of_injective
 #align add_subsemigroup.comap_supr_map_of_injective AddSubsemigroup.comap_iSup_map_of_injective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_le_map_iff_of_injective {S T : Subsemigroup M} : S.map f ≤ T.map f ↔ S ≤ T :=
   (gciMapComap hf).l_le_l_iff
 #align subsemigroup.map_le_map_iff_of_injective Subsemigroup.map_le_map_iff_of_injective
@@ -451,7 +451,7 @@ def giMapComap : GaloisInsertion (map f) (comap f) :=
 #align subsemigroup.gi_map_comap Subsemigroup.giMapComap
 #align add_subsemigroup.gi_map_comap AddSubsemigroup.giMapComap
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_comap_eq_of_surjective (S : Subsemigroup N) : (S.comap f).map f = S :=
   (giMapComap hf).l_u_eq _
 #align subsemigroup.map_comap_eq_of_surjective Subsemigroup.map_comap_eq_of_surjective
@@ -469,35 +469,35 @@ theorem comap_injective_of_surjective : Function.Injective (comap f) :=
 #align subsemigroup.comap_injective_of_surjective Subsemigroup.comap_injective_of_surjective
 #align add_subsemigroup.comap_injective_of_surjective AddSubsemigroup.comap_injective_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_inf_comap_of_surjective (S T : Subsemigroup N) :
     (S.comap f ⊓ T.comap f).map f = S ⊓ T :=
   (giMapComap hf).l_inf_u _ _
 #align subsemigroup.map_inf_comap_of_surjective Subsemigroup.map_inf_comap_of_surjective
 #align add_subsemigroup.map_inf_comap_of_surjective AddSubsemigroup.map_inf_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_iInf_comap_of_surjective (S : ι → Subsemigroup N) :
     (⨅ i, (S i).comap f).map f = iInf S :=
   (giMapComap hf).l_iInf_u _
 #align subsemigroup.map_infi_comap_of_surjective Subsemigroup.map_iInf_comap_of_surjective
 #align add_subsemigroup.map_infi_comap_of_surjective AddSubsemigroup.map_iInf_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_sup_comap_of_surjective (S T : Subsemigroup N) :
     (S.comap f ⊔ T.comap f).map f = S ⊔ T :=
   (giMapComap hf).l_sup_u _ _
 #align subsemigroup.map_sup_comap_of_surjective Subsemigroup.map_sup_comap_of_surjective
 #align add_subsemigroup.map_sup_comap_of_surjective AddSubsemigroup.map_sup_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_iSup_comap_of_surjective (S : ι → Subsemigroup N) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
 #align subsemigroup.map_supr_comap_of_surjective Subsemigroup.map_iSup_comap_of_surjective
 #align add_subsemigroup.map_supr_comap_of_surjective AddSubsemigroup.map_iSup_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_le_comap_iff_of_surjective {S T : Subsemigroup N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
   (giMapComap hf).u_le_u_iff
 #align subsemigroup.comap_le_comap_iff_of_surjective Subsemigroup.comap_le_comap_iff_of_surjective

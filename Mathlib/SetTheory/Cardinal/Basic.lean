@@ -2097,20 +2097,24 @@ theorem mk_range_le_lift {α : Type u} {β : Type v} {f : α → β} :
   lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_range⟩
 #align cardinal.mk_range_le_lift Cardinal.mk_range_le_lift
 
+@[simp]
 theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
   mk_congr (Equiv.ofInjective f h).symm
 #align cardinal.mk_range_eq Cardinal.mk_range_eq
 
+@[simp]
 theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{u} #(range f) = lift.{v} #α :=
   lift_mk_eq'.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 #align cardinal.mk_range_eq_of_injective Cardinal.mk_range_eq_of_injective
 
+@[simp]
 theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{max u w} #(range f) = lift.{max v w} #α :=
   lift_mk_eq.{v,u,w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 #align cardinal.mk_range_eq_lift Cardinal.mk_range_eq_lift
 
+@[simp]
 theorem mk_image_eq {α β : Type u} {f : α → β} {s : Set α} (hf : Injective f) : #(f '' s) = #s :=
   mk_congr (Equiv.Set.image f s hf).symm
 #align cardinal.mk_image_eq Cardinal.mk_image_eq

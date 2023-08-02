@@ -602,6 +602,7 @@ theorem map_le_restrict_range {β} {ma : OuterMeasure α} {mb : OuterMeasure β}
   ⟨fun h => h.trans (restrict_le_self _ _), fun h s => by simpa using h (s ∩ range f)⟩
 #align measure_theory.outer_measure.map_le_restrict_range MeasureTheory.OuterMeasure.map_le_restrict_range
 
+@[simp]
 theorem map_comap_of_surjective {β} {f : α → β} (hf : Surjective f) (m : OuterMeasure β) :
     map f (comap f m) = m :=
   ext fun s => by rw [map_apply, comap_apply, hf.image_preimage]
@@ -611,6 +612,7 @@ theorem le_comap_map {β} (f : α → β) (m : OuterMeasure α) : m ≤ comap f 
   m.mono <| subset_preimage_image _ _
 #align measure_theory.outer_measure.le_comap_map MeasureTheory.OuterMeasure.le_comap_map
 
+@[simp]
 theorem comap_map {β} {f : α → β} (hf : Injective f) (m : OuterMeasure α) : comap f (map f m) = m :=
   ext fun s => by rw [comap_apply, map_apply, hf.preimage_image]
 #align measure_theory.outer_measure.comap_map MeasureTheory.OuterMeasure.comap_map

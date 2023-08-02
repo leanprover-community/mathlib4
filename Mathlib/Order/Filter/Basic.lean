@@ -2333,11 +2333,13 @@ theorem comap_le_comap_iff {f g : Filter β} {m : α → β} (hf : range m ∈ f
   ⟨fun h => map_comap_of_mem hf ▸ (map_mono h).trans map_comap_le, fun h => comap_mono h⟩
 #align filter.comap_le_comap_iff Filter.comap_le_comap_iff
 
+@[simp]
 theorem map_comap_of_surjective {f : α → β} (hf : Surjective f) (l : Filter β) :
     map f (comap f l) = l :=
   map_comap_of_mem <| by simp only [hf.range_eq, univ_mem]
 #align filter.map_comap_of_surjective Filter.map_comap_of_surjective
 
+@[simp]
 theorem _root_.Function.Surjective.filter_map_top {f : α → β} (hf : Surjective f) : map f ⊤ = ⊤ :=
   (congr_arg _ comap_top).symm.trans <| map_comap_of_surjective hf ⊤
 #align function.surjective.filter_map_top Function.Surjective.filter_map_top
@@ -2357,6 +2359,7 @@ theorem image_coe_mem_of_mem_comap {f : Filter α} {U : Set α} (h : U ∈ f) {W
   image_mem_of_mem_comap (by simp [h]) W_in
 #align filter.image_coe_mem_of_mem_comap Filter.image_coe_mem_of_mem_comap
 
+@[simp]
 theorem comap_map {f : Filter α} {m : α → β} (h : Injective m) : comap m (map m f) = f :=
   le_antisymm
     (fun s hs =>
@@ -2379,6 +2382,7 @@ theorem map_le_map_iff_of_injOn {l₁ l₂ : Filter α} {f : α → β} {s : Set
     fun h => map_mono h⟩
 #align filter.map_le_map_iff_of_inj_on Filter.map_le_map_iff_of_injOn
 
+@[simp]
 theorem map_le_map_iff {f g : Filter α} {m : α → β} (hm : Injective m) :
     map m f ≤ map m g ↔ f ≤ g := by rw [map_le_iff_le_comap, comap_map hm]
 #align filter.map_le_map_iff Filter.map_le_map_iff
@@ -2389,6 +2393,7 @@ theorem map_eq_map_iff_of_injOn {f g : Filter α} {m : α → β} {s : Set α} (
     map_le_map_iff_of_injOn hsg hsf hm]
 #align filter.map_eq_map_iff_of_inj_on Filter.map_eq_map_iff_of_injOn
 
+@[simp]
 theorem map_inj {f g : Filter α} {m : α → β} (hm : Injective m) : map m f = map m g ↔ f = g :=
   map_eq_map_iff_of_injOn univ_mem univ_mem (hm.injOn _)
 #align filter.map_inj Filter.map_inj
@@ -2420,11 +2425,13 @@ theorem comap_eq_bot_iff_compl_range {f : Filter β} {m : α → β} : comap m f
   not_iff_not.mp <| neBot_iff.symm.trans comap_neBot_iff_compl_range
 #align filter.comap_eq_bot_iff_compl_range Filter.comap_eq_bot_iff_compl_range
 
+@[simp]
 theorem comap_surjective_eq_bot {f : Filter β} {m : α → β} (hm : Surjective m) :
     comap m f = ⊥ ↔ f = ⊥ := by
   rw [comap_eq_bot_iff_compl_range, hm.range_eq, compl_univ, empty_mem_iff_bot]
 #align filter.comap_surjective_eq_bot Filter.comap_surjective_eq_bot
 
+@[simp]
 theorem disjoint_comap_iff (h : Surjective m) :
     Disjoint (comap m g₁) (comap m g₂) ↔ Disjoint g₁ g₂ := by
   rw [disjoint_iff, disjoint_iff, ← comap_inf, comap_surjective_eq_bot h]
@@ -2513,6 +2520,7 @@ theorem map_eq_bot_iff : map m f = ⊥ ↔ f = ⊥ :=
     exact id, fun h => by simp only [h, map_bot]⟩
 #align filter.map_eq_bot_iff Filter.map_eq_bot_iff
 
+@[simp]
 theorem map_neBot_iff (f : α → β) {F : Filter α} : NeBot (map f F) ↔ NeBot F := by
   simp only [neBot_iff, Ne, map_eq_bot_iff]
 #align filter.map_ne_bot_iff Filter.map_neBot_iff

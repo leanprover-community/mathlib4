@@ -1152,21 +1152,21 @@ theorem MonoidWithZeroHom.comp_assoc {Q : Type _} [MulZeroOneClass M] [MulZeroOn
   (h.comp g).comp f = h.comp (g.comp f) := rfl
 #align monoid_with_zero_hom.comp_assoc MonoidWithZeroHom.comp_assoc
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem OneHom.cancel_right [One M] [One N] [One P] {g₁ g₂ : OneHom N P} {f : OneHom M N}
   (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => OneHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align one_hom.cancel_right OneHom.cancel_right
 #align zero_hom.cancel_right ZeroHom.cancel_right
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem MulHom.cancel_right [Mul M] [Mul N] [Mul P] {g₁ g₂ : N →ₙ* P} {f : M →ₙ* N}
   (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => MulHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align mul_hom.cancel_right MulHom.cancel_right
 #align add_hom.cancel_right AddHom.cancel_right
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem MonoidHom.cancel_right [MulOneClass M] [MulOneClass N] [MulOneClass P]
   {g₁ g₂ : N →* P} {f : M →* N} (hf : Function.Surjective f) :
   g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
@@ -1174,13 +1174,14 @@ theorem MonoidHom.cancel_right [MulOneClass M] [MulOneClass N] [MulOneClass P]
 #align monoid_hom.cancel_right MonoidHom.cancel_right
 #align add_monoid_hom.cancel_right AddMonoidHom.cancel_right
 
+@[simp]
 theorem MonoidWithZeroHom.cancel_right [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneClass P]
   {g₁ g₂ : N →*₀ P} {f : M →*₀ N} (hf : Function.Surjective f) :
   g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => MonoidWithZeroHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align monoid_with_zero_hom.cancel_right MonoidWithZeroHom.cancel_right
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem OneHom.cancel_left [One M] [One N] [One P] {g : OneHom N P} {f₁ f₂ : OneHom M N}
   (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => OneHom.ext fun x => hg <| by rw [← OneHom.comp_apply, h, OneHom.comp_apply],
@@ -1188,7 +1189,7 @@ theorem OneHom.cancel_left [One M] [One N] [One P] {g : OneHom N P} {f₁ f₂ :
 #align one_hom.cancel_left OneHom.cancel_left
 #align zero_hom.cancel_left ZeroHom.cancel_left
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem MulHom.cancel_left [Mul M] [Mul N] [Mul P] {g : N →ₙ* P} {f₁ f₂ : M →ₙ* N}
   (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => MulHom.ext fun x => hg <| by rw [← MulHom.comp_apply, h, MulHom.comp_apply],
@@ -1196,7 +1197,7 @@ theorem MulHom.cancel_left [Mul M] [Mul N] [Mul P] {g : N →ₙ* P} {f₁ f₂ 
 #align mul_hom.cancel_left MulHom.cancel_left
 #align add_hom.cancel_left AddHom.cancel_left
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem MonoidHom.cancel_left [MulOneClass M] [MulOneClass N] [MulOneClass P]
   {g : N →* P} {f₁ f₂ : M →* N} (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => MonoidHom.ext fun x => hg <| by rw [← MonoidHom.comp_apply, h, MonoidHom.comp_apply],
@@ -1204,6 +1205,7 @@ theorem MonoidHom.cancel_left [MulOneClass M] [MulOneClass N] [MulOneClass P]
 #align monoid_hom.cancel_left MonoidHom.cancel_left
 #align add_monoid_hom.cancel_left AddMonoidHom.cancel_left
 
+@[simp]
 theorem MonoidWithZeroHom.cancel_left [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneClass P]
   {g : N →*₀ P} {f₁ f₂ : M →*₀ N} (hg : Function.Injective g) :
   g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=

@@ -1539,6 +1539,7 @@ theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f 
   Set.mem_image_of_mem _ h
 #align affine_subspace.mem_map_of_mem AffineSubspace.mem_map_of_mem
 
+@[simp]
 theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image

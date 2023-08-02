@@ -119,6 +119,7 @@ theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = 
 
 #align list.mem_map_of_mem List.mem_map_of_memₓ -- implicits order
 
+@[simp]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩

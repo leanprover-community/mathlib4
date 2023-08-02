@@ -1267,6 +1267,7 @@ theorem map_eq_cons [DecidableEq α] (f : α → β) (s : Multiset α) (t : Mult
     rw [Multiset.erase_cons_head, h]
 #align multiset.map_eq_cons Multiset.map_eq_cons
 
+@[simp]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {s : Multiset α} :
     f a ∈ map f s ↔ a ∈ s :=
   Quot.inductionOn s fun _l => List.mem_map_of_injective H

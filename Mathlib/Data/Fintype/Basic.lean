@@ -251,6 +251,7 @@ theorem insert_inj_on' (s : Finset α) : Set.InjOn (fun a => insert a s) (sᶜ :
   exact s.insert_inj_on
 #align finset.insert_inj_on' Finset.insert_inj_on'
 
+@[simp]
 theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f) :
     univ.image f = univ :=
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_image_of_mem _ <| mem_univ _
@@ -258,6 +259,7 @@ theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f
 
 end BooleanAlgebra
 
+@[simp]
 theorem map_univ_of_surjective [Fintype β] {f : β ↪ α} (hf : Surjective f) : univ.map f = univ :=
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_map_of_mem _ <| mem_univ _
 #align finset.map_univ_of_surjective Finset.map_univ_of_surjective

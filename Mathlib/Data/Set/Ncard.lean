@@ -661,6 +661,7 @@ theorem ncard_image_iff (hs : s.Finite := by toFinite_tac) :
   ⟨fun h ↦ injOn_of_ncard_image_eq h hs, ncard_image_of_injOn⟩
 #align set.ncard_image_iff Set.ncard_image_iff
 
+@[simp]
 theorem ncard_image_of_injective (s : Set α) (H : f.Injective) : (f '' s).ncard = s.ncard :=
   ncard_image_of_injOn fun _ _ _ _ h ↦ H h
 #align set.ncard_image_of_injective Set.ncard_image_of_injective

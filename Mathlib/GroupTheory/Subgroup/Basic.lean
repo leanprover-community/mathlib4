@@ -2960,7 +2960,7 @@ theorem map_eq_bot_iff {f : G →* N} : H.map f = ⊥ ↔ H ≤ f.ker :=
 #align subgroup.map_eq_bot_iff Subgroup.map_eq_bot_iff
 #align add_subgroup.map_eq_bot_iff AddSubgroup.map_eq_bot_iff
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_eq_bot_iff_of_injective {f : G →* N} (hf : Function.Injective f) :
     H.map f = ⊥ ↔ H = ⊥ := by rw [map_eq_bot_iff, f.ker_eq_bot_iff.mpr hf, le_bot_iff]
 #align subgroup.map_eq_bot_iff_of_injective Subgroup.map_eq_bot_iff_of_injective
@@ -3027,7 +3027,7 @@ theorem map_comap_eq_self {f : G →* N} {H : Subgroup N} (h : H ≤ f.range) : 
 #align subgroup.map_comap_eq_self Subgroup.map_comap_eq_self
 #align add_subgroup.map_comap_eq_self AddSubgroup.map_comap_eq_self
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_comap_eq_self_of_surjective {f : G →* N} (h : Function.Surjective f) (H : Subgroup N) :
     map f (comap f H) = H :=
   map_comap_eq_self ((range_top_of_surjective _ h).symm ▸ le_top)
@@ -3041,14 +3041,14 @@ theorem comap_le_comap_of_le_range {f : G →* N} {K L : Subgroup N} (hf : K ≤
 #align subgroup.comap_le_comap_of_le_range Subgroup.comap_le_comap_of_le_range
 #align add_subgroup.comap_le_comap_of_le_range AddSubgroup.comap_le_comap_of_le_range
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_le_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Function.Surjective f) :
     K.comap f ≤ L.comap f ↔ K ≤ L :=
   comap_le_comap_of_le_range (le_top.trans (f.range_top_of_surjective hf).ge)
 #align subgroup.comap_le_comap_of_surjective Subgroup.comap_le_comap_of_surjective
 #align add_subgroup.comap_le_comap_of_surjective AddSubgroup.comap_le_comap_of_surjective
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Function.Surjective f) :
     K.comap f < L.comap f ↔ K < L := by simp_rw [lt_iff_le_not_le, comap_le_comap_of_surjective hf]
 #align subgroup.comap_lt_comap_of_surjective Subgroup.comap_lt_comap_of_surjective
@@ -3066,7 +3066,7 @@ theorem comap_map_eq_self {f : G →* N} {H : Subgroup G} (h : f.ker ≤ H) : co
 #align subgroup.comap_map_eq_self Subgroup.comap_map_eq_self
 #align add_subgroup.comap_map_eq_self AddSubgroup.comap_map_eq_self
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem comap_map_eq_self_of_injective {f : G →* N} (h : Function.Injective f) (H : Subgroup G) :
     comap f (map f H) = H :=
   comap_map_eq_self (((ker_eq_bot_iff _).mpr h).symm ▸ bot_le)
@@ -3098,7 +3098,7 @@ theorem map_eq_range_iff {f : G →* N} {H : Subgroup G} : H.map f = f.range ↔
 #align subgroup.map_eq_range_iff Subgroup.map_eq_range_iff
 #align add_subgroup.map_eq_range_iff AddSubgroup.map_eq_range_iff
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_le_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} :
     H.map f ≤ K.map f ↔ H ≤ K := by rw [map_le_iff_le_comap, comap_map_eq_self_of_injective hf]
 #align subgroup.map_le_map_iff_of_injective Subgroup.map_le_map_iff_of_injective

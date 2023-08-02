@@ -1366,6 +1366,7 @@ theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.sup
   exact RingHom.map_zero f
 #align mv_polynomial.support_map_subset MvPolynomial.support_map_subset
 
+@[simp]
 theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf : Injective f) :
     (map f p).support = p.support := by
   apply Finset.Subset.antisymm

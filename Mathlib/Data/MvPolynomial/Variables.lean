@@ -249,11 +249,13 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   rw [Finsupp.single_apply, if_neg hi]
 #align mv_polynomial.degrees_rename MvPolynomial.degrees_rename
 
+@[simp]
 theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
     (hf : Injective f) : (map f p).degrees = p.degrees := by
   simp only [degrees, MvPolynomial.support_map_of_injective _ hf]
 #align mv_polynomial.degrees_map_of_injective MvPolynomial.degrees_map_of_injective
 
+@[simp]
 theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
     degrees (rename f p) = (degrees p).map f := by
   classical
@@ -456,6 +458,7 @@ theorem vars_map : (map f p).vars ⊆ p.vars := by classical simp [vars_def, deg
 
 variable {f}
 
+@[simp]
 theorem vars_map_of_injective (hf : Injective f) : (map f p).vars = p.vars := by
   simp [vars, degrees_map_of_injective _ hf]
 #align mv_polynomial.vars_map_of_injective MvPolynomial.vars_map_of_injective

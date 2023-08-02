@@ -561,6 +561,7 @@ def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 #align first_order.language.substructure.gci_map_comap FirstOrder.Language.Substructure.gciMapComap
 
+@[simp]
 theorem comap_map_eq_of_injective (S : L.Substructure M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
 #align first_order.language.substructure.comap_map_eq_of_injective FirstOrder.Language.Substructure.comap_map_eq_of_injective
@@ -573,24 +574,29 @@ theorem map_injective_of_injective : Function.Injective (map f) :=
   (gciMapComap hf).l_injective
 #align first_order.language.substructure.map_injective_of_injective FirstOrder.Language.Substructure.map_injective_of_injective
 
+@[simp]
 theorem comap_inf_map_of_injective (S T : L.Substructure M) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
   (gciMapComap hf).u_inf_l _ _
 #align first_order.language.substructure.comap_inf_map_of_injective FirstOrder.Language.Substructure.comap_inf_map_of_injective
 
+@[simp]
 theorem comap_iInf_map_of_injective (S : ι → L.Substructure M) :
     (⨅ i, (S i).map f).comap f = iInf S :=
   (gciMapComap hf).u_iInf_l _
 #align first_order.language.substructure.comap_infi_map_of_injective FirstOrder.Language.Substructure.comap_iInf_map_of_injective
 
+@[simp]
 theorem comap_sup_map_of_injective (S T : L.Substructure M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 #align first_order.language.substructure.comap_sup_map_of_injective FirstOrder.Language.Substructure.comap_sup_map_of_injective
 
+@[simp]
 theorem comap_iSup_map_of_injective (S : ι → L.Substructure M) :
     (⨆ i, (S i).map f).comap f = iSup S :=
   (gciMapComap hf).u_iSup_l _
 #align first_order.language.substructure.comap_supr_map_of_injective FirstOrder.Language.Substructure.comap_iSup_map_of_injective
 
+@[simp]
 theorem map_le_map_iff_of_injective {S T : L.Substructure M} : S.map f ≤ T.map f ↔ S ≤ T :=
   (gciMapComap hf).l_le_l_iff
 #align first_order.language.substructure.map_le_map_iff_of_injective FirstOrder.Language.Substructure.map_le_map_iff_of_injective
@@ -612,6 +618,7 @@ def giMapComap : GaloisInsertion (map f) (comap f) :=
     mem_map.2 ⟨y, by simp [hy, h]⟩
 #align first_order.language.substructure.gi_map_comap FirstOrder.Language.Substructure.giMapComap
 
+@[simp]
 theorem map_comap_eq_of_surjective (S : L.Substructure N) : (S.comap f).map f = S :=
   (giMapComap hf).l_u_eq _
 #align first_order.language.substructure.map_comap_eq_of_surjective FirstOrder.Language.Substructure.map_comap_eq_of_surjective
@@ -624,26 +631,31 @@ theorem comap_injective_of_surjective : Function.Injective (comap f) :=
   (giMapComap hf).u_injective
 #align first_order.language.substructure.comap_injective_of_surjective FirstOrder.Language.Substructure.comap_injective_of_surjective
 
+@[simp]
 theorem map_inf_comap_of_surjective (S T : L.Substructure N) :
     (S.comap f ⊓ T.comap f).map f = S ⊓ T :=
   (giMapComap hf).l_inf_u _ _
 #align first_order.language.substructure.map_inf_comap_of_surjective FirstOrder.Language.Substructure.map_inf_comap_of_surjective
 
+@[simp]
 theorem map_iInf_comap_of_surjective (S : ι → L.Substructure N) :
     (⨅ i, (S i).comap f).map f = iInf S :=
   (giMapComap hf).l_iInf_u _
 #align first_order.language.substructure.map_infi_comap_of_surjective FirstOrder.Language.Substructure.map_iInf_comap_of_surjective
 
+@[simp]
 theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
     (S.comap f ⊔ T.comap f).map f = S ⊔ T :=
   (giMapComap hf).l_sup_u _ _
 #align first_order.language.substructure.map_sup_comap_of_surjective FirstOrder.Language.Substructure.map_sup_comap_of_surjective
 
+@[simp]
 theorem map_iSup_comap_of_surjective (S : ι → L.Substructure N) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
 #align first_order.language.substructure.map_supr_comap_of_surjective FirstOrder.Language.Substructure.map_iSup_comap_of_surjective
 
+@[simp]
 theorem comap_le_comap_iff_of_surjective {S T : L.Substructure N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
   (giMapComap hf).u_le_u_iff
 #align first_order.language.substructure.comap_le_comap_iff_of_surjective FirstOrder.Language.Substructure.comap_le_comap_iff_of_surjective
