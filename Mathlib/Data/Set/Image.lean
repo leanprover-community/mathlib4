@@ -1321,6 +1321,7 @@ theorem Surjective.image_surjective (hf : Surjective f) : Surjective (image f) :
   rw [hf.image_preimage]
 #align function.surjective.image_surjective Function.Surjective.image_surjective
 
+@[simp]
 theorem Surjective.nonempty_preimage (hf : Surjective f) {s : Set β} :
     (f ⁻¹' s).Nonempty ↔ s.Nonempty := by rw [← nonempty_image_iff, hf.image_preimage]
 #align function.surjective.nonempty_preimage Function.Surjective.nonempty_preimage
