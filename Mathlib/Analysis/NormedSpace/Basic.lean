@@ -2,11 +2,6 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Normed spaces
@@ -179,52 +176,6 @@ instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
       AddSubgroup.coe_mk, AddSubgroup.coe_zero, norm_zsmul ℚ k e, Int.norm_cast_rat,
       Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ←
       @Int.cast_one ℝ _, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
-
-/-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
-This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
-
-In many cases the actual implementation is not important, so we don't mark the projection lemmas
-`homeomorphUnitBall_apply_coe` and `homeomorphUnitBall_symm_apply` as `@[simp]`.
-
-See also `contDiff_homeomorphUnitBall` and `contDiffOn_homeomorphUnitBall_symm` for
-smoothness properties that hold when `E` is an inner-product space. -/
-@[simps (config := { isSimp := false })]
-noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E) 1 where
-  toFun x :=
-    ⟨(1 + ‖x‖ ^ 2).sqrt⁻¹ • x, by
-      have : 0 < 1 + ‖x‖ ^ 2 := by positivity
-      rw [mem_ball_zero_iff, norm_smul, Real.norm_eq_abs, abs_inv, ← _root_.div_eq_inv_mul,
-        div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm x, ← sq_lt_sq,
-        abs_norm, Real.sq_sqrt this.le]
-      exact lt_one_add _⟩
-  invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
-  left_inv x := by
-    field_simp [norm_smul, smul_smul, (zero_lt_one_add_norm_sq x).ne', sq_abs,
-      Real.sq_sqrt (zero_lt_one_add_norm_sq x).le, ← Real.sqrt_div (zero_lt_one_add_norm_sq x).le]
-  right_inv y := by
-    have : 0 < 1 - ‖(y : E)‖ ^ 2 := by
-      nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
-    field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le,
-      ← Real.sqrt_div this.le]
-  continuous_toFun := by
-    suffices : Continuous fun (x:E) => (1 + ‖x‖ ^ 2).sqrt⁻¹;
-    exact (this.smul continuous_id).subtype_mk _
-    refine' Continuous.inv₀ _ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
-    continuity
-  continuous_invFun := by
-    suffices ∀ y : ball (0 : E) 1, (1 - ‖(y : E)‖ ^ 2).sqrt ≠ 0 by
-      apply Continuous.smul (Continuous.inv₀
-        (continuous_const.sub ?_).sqrt this) continuous_induced_dom
-      continuity -- Porting note: was just this tactic for `suffices`
-    intro y
-    rw [Real.sqrt_ne_zero']
-    nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
-#align homeomorph_unit_ball homeomorphUnitBall
-
-@[simp]
-theorem coe_homeomorphUnitBall_apply_zero [NormedSpace ℝ E] :
-    (homeomorphUnitBall (0 : E) : E) = 0 := by simp [homeomorphUnitBall_apply_coe]
-#align coe_homeomorph_unit_ball_apply_zero coe_homeomorphUnitBall_apply_zero
 
 open NormedField
 

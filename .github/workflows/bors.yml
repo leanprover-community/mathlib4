@@ -148,6 +148,11 @@ jobs:
       - name: build counterexamples
         run: lake build Counterexamples
 
+      - name: check declarations in db files
+        run: |
+          python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
+          build/bin/checkYaml
+
       - name: test mathlib
         run: make -j 8 test
 

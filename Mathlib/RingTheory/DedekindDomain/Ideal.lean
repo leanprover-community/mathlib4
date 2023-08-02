@@ -2,11 +2,6 @@
 Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.ideal
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
@@ -16,6 +11,8 @@ import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.FractionalIdeal
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.ChainOfDivisors
+
+#align_import ring_theory.dedekind_domain.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 # Dedekind domains and ideals
@@ -309,7 +306,7 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
 
 open Ring
 
-theorem dimensionLEOne : DimensionLEOne A := by
+theorem dimensionLEOne : DimensionLEOne A := ⟨by
   -- We're going to show that `P` is maximal because any (maximal) ideal `M`
   -- that is strictly larger would be `⊤`.
   rintro P P_ne hP
@@ -343,7 +340,7 @@ theorem dimensionLEOne : DimensionLEOne A := by
   obtain ⟨zy, hzy, zy_eq⟩ := (mem_coeIdeal A⁰).mp zy_mem
   rw [IsFractionRing.injective A (FractionRing A) zy_eq] at hzy
   -- But `P` is a prime ideal, so `z ∉ P` implies `y ∈ P`, as desired.
-  exact mem_coeIdeal_of_mem A⁰ (Or.resolve_left (hP.mem_or_mem hzy) hzp)
+  exact mem_coeIdeal_of_mem A⁰ (Or.resolve_left (hP.mem_or_mem hzy) hzp)⟩
 #align is_dedekind_domain_inv.dimension_le_one IsDedekindDomainInv.dimensionLEOne
 
 /-- Showing one side of the equivalence between the definitions
@@ -384,7 +381,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
       rwa [Ne.def, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
     -- By maximality of `P` and `M`, we have that `P ≤ M` implies `P = M`.
-    have hPM' := (IsDedekindDomain.dimensionLEOne _ hP0 P.IsPrime).eq_of_le hM.ne_top hPM
+    have hPM' := (P.IsPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩
@@ -992,7 +989,7 @@ variable (v : HeightOneSpectrum R) {R}
 
 namespace HeightOneSpectrum
 
-instance isMaximal : v.asIdeal.IsMaximal := dimensionLEOne v.asIdeal v.ne_bot v.isPrime
+instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 #align is_dedekind_domain.height_one_spectrum.is_maximal IsDedekindDomain.HeightOneSpectrum.isMaximal
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
@@ -1008,7 +1005,7 @@ theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
 
 /-- An equivalence between the height one and maximal spectra for rings of Krull dimension 1. -/
 def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpectrum R where
-  toFun v := ⟨v.asIdeal, dimensionLEOne v.asIdeal v.ne_bot v.isPrime⟩
+  toFun v := ⟨v.asIdeal, v.isPrime.isMaximal v.ne_bot⟩
   invFun v :=
     ⟨v.asIdeal, v.IsMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.IsMaximal hR⟩
   left_inv := fun ⟨_, _, _⟩ => rfl
@@ -1032,7 +1029,7 @@ theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
     exact fun _ => Algebra.mem_bot.mpr ⟨algebra_map_inv x, algebra_map_right_inv x⟩
   all_goals rw [← MaximalSpectrum.iInf_localization_eq_bot, Algebra.mem_iInf]
   · exact fun hx ⟨v, hv⟩ => hx ((equivMaximalSpectrum hR).symm ⟨v, hv⟩)
-  · exact fun hx ⟨v, hv, hbot⟩ => hx ⟨v, dimensionLEOne v hbot hv⟩
+  · exact fun hx ⟨v, hv, hbot⟩ => hx ⟨v, hv.isMaximal hbot⟩
 #align is_dedekind_domain.height_one_spectrum.infi_localization_eq_bot IsDedekindDomain.HeightOneSpectrum.iInf_localization_eq_bot
 
 end HeightOneSpectrum
@@ -1049,9 +1046,9 @@ variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
   a homomorphism `f : R/I →+* A/J` -/
-@[simps]
+@[simps] -- Porting note: use `Subtype` instead of `Set` to make linter happy
 def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjective f) :
-    { p : Ideal R | p ∣ I } →o { p : Ideal A | p ∣ J } where
+    {p : Ideal R // p ∣ I} →o {p : Ideal A // p ∣ J} where
   toFun X := ⟨comap (Ideal.Quotient.mk J) (map f (map (Ideal.Quotient.mk I) X)), by
     have : RingHom.ker (Ideal.Quotient.mk J) ≤
         comap (Ideal.Quotient.mk J) (map f (map (Ideal.Quotient.mk I) X)) :=
@@ -1069,13 +1066,14 @@ def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjecti
     rwa [map_le_iff_le_comap, comap_map_of_surjective (Ideal.Quotient.mk I)
       Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot, mk_ker, sup_eq_left.mpr <| le_of_dvd hY]
 #align ideal_factors_fun_of_quot_hom idealFactorsFunOfQuotHom
+#align ideal_factors_fun_of_quot_hom_coe_coe idealFactorsFunOfQuotHom_coe_coe
 
 @[simp]
 theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
   OrderHom.ext _ _
     (funext fun X => by
-      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_fun_mk, OrderHom.id_coe, id.def,
+      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id.def,
         comap_map_of_surjective (Ideal.Quotient.mk J) Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
@@ -1088,8 +1086,8 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
     (idealFactorsFunOfQuotHom hg).comp (idealFactorsFunOfQuotHom hf) =
       idealFactorsFunOfQuotHom (show Function.Surjective (g.comp f) from hg.comp hf) := by
   refine OrderHom.ext _ _ (funext fun x => ?_)
-  rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_fun_mk,
-    OrderHom.coe_fun_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_fun_mk,
+  rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_mk,
+    OrderHom.coe_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_mk,
     Subtype.mk_eq_mk, Subtype.coe_mk, map_comap_of_surjective (Ideal.Quotient.mk J)
     Quotient.mk_surjective, map_map]
 #align ideal_factors_fun_of_quot_hom_comp idealFactorsFunOfQuotHom_comp
@@ -1195,9 +1193,9 @@ open scoped BigOperators
 
 variable {R}
 
-theorem Ring.DimensionLeOne.prime_le_prime_iff_eq (h : Ring.DimensionLEOne R) {P Q : Ideal R}
+theorem Ring.DimensionLeOne.prime_le_prime_iff_eq [Ring.DimensionLEOne R] {P Q : Ideal R}
     [hP : P.IsPrime] [hQ : Q.IsPrime] (hP0 : P ≠ ⊥) : P ≤ Q ↔ P = Q :=
-  ⟨(h P hP0 hP).eq_of_le hQ.ne_top, Eq.le⟩
+  ⟨(hP.isMaximal hP0).eq_of_le hQ.ne_top, Eq.le⟩
 #align ring.dimension_le_one.prime_le_prime_iff_eq Ring.DimensionLeOne.prime_le_prime_iff_eq
 
 theorem Ideal.coprime_of_no_prime_ge {I J : Ideal R} (h : ∀ P, I ≤ P → J ≤ P → ¬IsPrime P) :
@@ -1293,9 +1291,9 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type _} (s : Finset ι) (f 
   haveI := Ideal.isPrime_of_prime (prime b (Finset.mem_insert_of_mem hb))
   refine coprime a (Finset.mem_insert_self a s) b (Finset.mem_insert_of_mem hb) ?_ ?_
   · rintro rfl; contradiction
-  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq IsDedekindDomain.dimensionLEOne ?_).mp
+  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
       (Ideal.le_of_pow_le_prime hPa)).trans
-      ((Ring.DimensionLeOne.prime_le_prime_iff_eq IsDedekindDomain.dimensionLEOne ?_).mp
+      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
       (Ideal.le_of_pow_le_prime hPb)).symm
     exact (prime a (Finset.mem_insert_self a s)).ne_zero
     exact (prime b (Finset.mem_insert_of_mem hb)).ne_zero
@@ -1317,9 +1315,9 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type _} [Fintyp
       haveI := Ideal.isPrime_of_prime (prime i)
       haveI := Ideal.isPrime_of_prime (prime j)
       refine coprime i j hij ?_
-      refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq IsDedekindDomain.dimensionLEOne ?_).mp
+      refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
         (Ideal.le_of_pow_le_prime hPi)).trans
-        ((Ring.DimensionLeOne.prime_le_prime_iff_eq IsDedekindDomain.dimensionLEOne ?_).mp
+        ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
           (Ideal.le_of_pow_le_prime hPj)).symm
       exact (prime i).ne_zero
       exact (prime j).ne_zero)

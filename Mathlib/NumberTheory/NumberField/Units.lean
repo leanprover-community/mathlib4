@@ -2,16 +2,13 @@
 Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
-
-! This file was ported from Lean 3 source module number_theory.number_field.units
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Torsion
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.RootsOfUnity.Basic
+
+#align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Units of a number field

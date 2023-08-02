@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.enat.basic
-! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
+
+#align_import data.enat.basic from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -94,6 +91,10 @@ theorem coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) :=
 instance canLift : CanLift ℕ∞ ℕ (↑) fun n => n ≠ ⊤ :=
   WithTop.canLift
 #align enat.can_lift ENat.canLift
+
+instance : WellFoundedRelation ℕ∞ where
+  rel := (· < ·)
+  wf := IsWellFounded.wf
 
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNat : MonoidWithZeroHom ℕ∞ ℕ
@@ -204,6 +205,9 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 #align enat.le_of_lt_add_one ENat.le_of_lt_add_one
+
+theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
+  WithTop.le_coe_iff
 
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)

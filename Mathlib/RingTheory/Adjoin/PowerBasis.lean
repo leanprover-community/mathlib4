@@ -2,15 +2,12 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.adjoin.power_basis
-! leanprover-community/mathlib commit 825edd3cd735e87495b0c2a2114fc3929eefce41
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.LinearAlgebra.Matrix.Basis
+
+#align_import ring_theory.adjoin.power_basis from "leanprover-community/mathlib"@"825edd3cd735e87495b0c2a2114fc3929eefce41"
 
 /-!
 # Power basis for `Algebra.adjoin R {x}`
@@ -150,7 +147,7 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
   refine' repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
-/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be and element
+/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element
 with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
 all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case
 if `R` is a GCD domain and `S` is its fraction ring. -/

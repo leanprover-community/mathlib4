@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.radical
-! leanprover-community/mathlib commit f1944b30c97c5eb626e498307dec8b022a05bd0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+
+#align_import ring_theory.graded_algebra.radical from "leanprover-community/mathlib"@"f1944b30c97c5eb626e498307dec8b022a05bd0a"
 
 /-!
 
@@ -23,8 +20,8 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
   `I.homogeneous_core 𝒜` (i.e. the largest homogeneous ideal contained in `I`) is also prime.
 * `Ideal.IsHomogeneous.radical`: for any `I : Ideal A`, if `I` is homogeneous, then the
   radical of `I` is homogeneous as well.
-* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the the
-  radical of `I` as a `HomogeneousIdeal 𝒜`
+* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the
+  radical of `I` as a `HomogeneousIdeal 𝒜`.
 
 ## Implementation details
 

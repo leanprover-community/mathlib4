@@ -2,13 +2,10 @@
 Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module topology.algebra.constructions
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.algebra.constructions from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
 /-!
 # Topological space structure on the opposite monoid and on the units group

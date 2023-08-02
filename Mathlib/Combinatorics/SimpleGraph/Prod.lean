@@ -2,13 +2,10 @@
 Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.prod
-! leanprover-community/mathlib commit 2985fa3c31a27274aed06c433510bc14b73d6488
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+
+#align_import combinatorics.simple_graph.prod from "leanprover-community/mathlib"@"2985fa3c31a27274aed06c433510bc14b73d6488"
 
 /-!
 # Graph products
