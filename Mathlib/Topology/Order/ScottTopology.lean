@@ -73,7 +73,7 @@ the least upper bound of a directed set `d` lies in `u` then there is a tail of 
 subset of `u`.
 -/
 def ScottHausdorffTopology : TopologicalSpace α :=
-{ IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
+{ IsOpen := fun u => ∀ ⦃d : Set α⦄ ⦃a : α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
   isOpen_univ := by
     intros d _ hd₁ _ _ _
@@ -84,8 +84,8 @@ def ScottHausdorffTopology : TopologicalSpace α :=
     · exact (Ici b ∩ d).subset_univ,
   isOpen_inter := by
     intros s t hs ht d a hd₁ hd₂ hd₃ ha
-    obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
-    obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
+    obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs hd₁ hd₂ hd₃ ha.1
+    obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht hd₁ hd₂ hd₃ ha.2
     obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
     refine ⟨c, hc_w, ?_⟩
     · calc
@@ -97,7 +97,7 @@ def ScottHausdorffTopology : TopologicalSpace α :=
   isOpen_sUnion := by
     intros s h d a hd₁ hd₂ hd₃ ha
     obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
-    obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
+    obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w hd₁ hd₂ hd₃ hs₀_h
     use b
     constructor
     · exact hb_w
@@ -242,7 +242,7 @@ IsOpen u ↔ (IsUpperSet u ∧ inaccessible_by_directed_joins u) := by
   constructor
   · refine' And.imp_right _
     intros h d a d₁ d₂ d₃ ha
-    obtain ⟨b, h_1_w, h_1_h⟩ := h d a d₁ d₂ d₃ ha
+    obtain ⟨b, h_1_w, h_1_h⟩ := h d₁ d₂ d₃ ha
     use b
     constructor
     · exact h_1_w
@@ -385,7 +385,7 @@ lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open]
   apply and_congr_right'
   constructor
-  · exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
+  · exact fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃
   · exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
