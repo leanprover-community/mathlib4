@@ -19,13 +19,16 @@ promoted to an order isomorphism.
 
 open Finset
 
-open BigOperators Classical
+open BigOperators
 
 noncomputable section
 
 variable {α β ι : Type _}
 
 namespace Finsupp
+
+variable [DecidableEq α]
+
 /-- Given `f : α →₀ ℕ`, `f.toMultiset` is the multiset with multiplicities given by the values of
 `f` on the elements of `α`. We define this function as an `AddEquiv`. -/
 def toMultiset : (α →₀ ℕ) ≃+ Multiset α where
@@ -55,12 +58,11 @@ theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n
 #align finsupp.to_multiset_apply Finsupp.toMultiset_apply
 
 @[simp]
-theorem toMultiset_symm_apply [DecidableEq α] (s : Multiset α) (x : α) :
+theorem toMultiset_symm_apply (s : Multiset α) (x : α) :
     Finsupp.toMultiset.symm s x = s.count x := by
     -- Porting note: proof used to be `convert rfl`
     have : Finsupp.toMultiset.symm s x = Finsupp.toMultiset.invFun s x := rfl
     simp_rw [this, toMultiset, coe_mk]
-    congr
 #align finsupp.to_multiset_symm_apply Finsupp.toMultiset_symm_apply
 
 @[simp]
@@ -73,7 +75,7 @@ theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
   map_sum Finsupp.toMultiset _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 
-theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
+theorem toMultiset_sum_single (s : Finset α) (n : ℕ) :
     Finsupp.toMultiset (∑ i in s, single i n) = n • s.val := by
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
 #align finsupp.to_multiset_sum_single Finsupp.toMultiset_sum_single
@@ -82,7 +84,7 @@ theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.s
   simp [toMultiset_apply, map_finsupp_sum, Function.id_def]
 #align finsupp.card_to_multiset Finsupp.card_toMultiset
 
-theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
+theorem toMultiset_map [DecidableEq β] (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
   refine' f.induction _ _
   · rw [toMultiset_zero, Multiset.map_zero, mapDomain_zero, toMultiset_zero]
@@ -137,6 +139,8 @@ end Finsupp
 
 namespace Multiset
 
+variable [DecidableEq α]
+
 /-- Given a multiset `s`, `s.toFinsupp` returns the finitely supported function on `ℕ` given by
 the multiplicities of the elements of `s`. -/
 def toFinsupp : Multiset α ≃+ (α →₀ ℕ) :=
@@ -182,7 +186,7 @@ theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
 end Multiset
 
 @[simp]
-theorem Finsupp.toMultiset_toFinsupp (f : α →₀ ℕ) :
+theorem Finsupp.toMultiset_toFinsupp [DecidableEq α] (f : α →₀ ℕ) :
     Multiset.toFinsupp (Finsupp.toMultiset f) = f :=
   Finsupp.toMultiset.symm_apply_apply f
 #align finsupp.to_multiset_to_finsupp Finsupp.toMultiset_toFinsupp
@@ -191,6 +195,8 @@ theorem Finsupp.toMultiset_toFinsupp (f : α →₀ ℕ) :
 
 
 namespace Finsupp
+variable [DecidableEq ι]
+
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
 def orderIsoMultiset : (ι →₀ ℕ) ≃o Multiset ι where
   toEquiv := toMultiset.toEquiv
@@ -204,7 +210,7 @@ def orderIsoMultiset : (ι →₀ ℕ) ≃o Multiset ι where
 #align finsupp.order_iso_multiset Finsupp.orderIsoMultiset
 
 @[simp]
-theorem coe_orderIsoMultiset : ⇑(@orderIsoMultiset ι) = toMultiset :=
+theorem coe_orderIsoMultiset : ⇑(@orderIsoMultiset ι _) = toMultiset :=
   rfl
 #align finsupp.coe_order_iso_multiset Finsupp.coe_orderIsoMultiset
 
@@ -213,7 +219,7 @@ theorem coe_orderIsoMultiset_symm : ⇑(@orderIsoMultiset ι).symm = Multiset.to
   rfl
 #align finsupp.coe_order_iso_multiset_symm Finsupp.coe_orderIsoMultiset_symm
 
-theorem toMultiset_strictMono : StrictMono (@toMultiset ι) :=
+theorem toMultiset_strictMono : StrictMono (@toMultiset ι _) :=
   (@orderIsoMultiset ι).strictMono
 #align finsupp.to_multiset_strict_mono Finsupp.toMultiset_strictMono
 
@@ -237,6 +243,6 @@ instance : WellFoundedRelation (ι →₀ ℕ) where
 
 end Finsupp
 
-theorem Multiset.toFinsupp_strictMono : StrictMono (@Multiset.toFinsupp ι) :=
+theorem Multiset.toFinsupp_strictMono [DecidableEq ι] : StrictMono (@Multiset.toFinsupp ι _) :=
   (@Finsupp.orderIsoMultiset ι).symm.strictMono
 #align multiset.to_finsupp_strict_mono Multiset.toFinsupp_strictMono

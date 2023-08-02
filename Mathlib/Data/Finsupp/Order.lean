@@ -266,7 +266,7 @@ theorem sub_single_one_add [DecidableEq ι] {a : ι} {u u' : ι →₀ ℕ} (h :
   tsub_add_eq_add_tsub <| single_le_iff.mpr <| Nat.one_le_iff_ne_zero.mpr h
 #align finsupp.sub_single_one_add Finsupp.sub_single_one_add
 
-theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
+theorem add_sub_single_one [DecidableEq ι] {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
     u + (u' - single a 1) = u + u' - single a 1 :=
   (add_tsub_assoc_of_le (single_le_iff.mpr <| Nat.one_le_iff_ne_zero.mpr h) _).symm
 #align finsupp.add_sub_single_one Finsupp.add_sub_single_one

@@ -116,7 +116,7 @@ theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : 
 #align alist.insert_lookup_finsupp AList.insert_lookupFinsupp
 
 @[simp]
-theorem singleton_lookupFinsupp (a : α) (m : M) :
+theorem singleton_lookupFinsupp [DecidableEq α] (a : α) (m : M) :
     (singleton a m).lookupFinsupp = Finsupp.single a m := by
   classical
   -- porting note: was `simp [←AList.insert_empty]` but timeout issues
