@@ -31,7 +31,7 @@ def doneWithScope (scope : MessageData) : TacticM Unit := do
 
 /--
 Like `focusAndDone` but takes a scope (e.g. tactic name) as an argument to
-produce more detailed error messages
+produce more detailed error messages.
 -/
 def focusAndDoneWithScope (scope : MessageData) (tactic : TacticM α) : TacticM α :=
   focus do
@@ -39,7 +39,6 @@ def focusAndDoneWithScope (scope : MessageData) (tactic : TacticM α) : TacticM 
       if isAbortTacticException e then throw e
       else throwError "{scope} failed.\n{← nestedExceptionToMessageData e}"
     doneWithScope scope
-
     pure a
 
 end Lean.Elab.Tactic
