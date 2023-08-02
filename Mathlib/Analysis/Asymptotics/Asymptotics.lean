@@ -2197,7 +2197,7 @@ theorem IsLittleO.nat_cast_atTop {R : Type _} [StrictOrderedSemiring R] [Archime
     (fun (n:ℕ) => f n) =o[atTop] (fun n => g n) :=
   IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
 
-theorem isBigO_atTop_iff_dep_const {α : Type _} [SemilatticeSup α] [Nonempty α]
+theorem isBigO_atTop_iff_eventually_exists {α : Type _} [SemilatticeSup α] [Nonempty α]
     {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by
   refine ⟨fun h => ?mp, fun h => ?mpr⟩
   case mp =>
@@ -2215,7 +2215,7 @@ theorem isBigO_atTop_iff_dep_const {α : Type _} [SemilatticeSup α] [Nonempty �
     rw [eventually_atTop]
     exact ⟨n₀, h⟩
 
-theorem isBigO_atTop_iff_dep_const' {α : Type _}
+theorem isBigO_atTop_iff_eventually_exists_pos {α : Type _}
     [SemilatticeSup α] [Nonempty α] {f : α → G} {g : α → G'} :
     f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c > 0, ∀ n ≥ n₀, c * ‖f n‖ ≤ ‖g n‖ := by
   refine ⟨fun h => ?mp, fun h => ?mpr⟩

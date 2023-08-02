@@ -589,6 +589,22 @@ theorem Antitone.ball {P : β → α → Prop} {s : Set β} (hP : ∀ x ∈ s, A
     Antitone fun y => ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
 #align antitone.ball Antitone.ball
 
+theorem Monotone.exists {P : β → α → Prop} (hP : ∀ x, Monotone (P x)) :
+    Monotone fun y => ∃ x, P x y :=
+  fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
+
+theorem Antitone.exists {P : β → α → Prop} (hP : ∀ x, Antitone (P x)) :
+    Antitone fun y => ∃ x, P x y :=
+  fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
+
+theorem forall_ge_iff {P : α → Prop} {x₀ : α} (hP : Monotone P) :
+    (∀ x ≥ x₀, P x) ↔ P x₀ :=
+  ⟨fun H ↦ H x₀ le_rfl, fun H _ hx ↦ hP hx H⟩
+
+theorem forall_le_iff {P : α → Prop} {x₀ : α} (hP : Antitone P) :
+    (∀ x ≤ x₀, P x) ↔ P x₀ :=
+  ⟨fun H ↦ H x₀ le_rfl, fun H _ hx ↦ hP hx H⟩
+
 end Preorder
 
 section SemilatticeSup
