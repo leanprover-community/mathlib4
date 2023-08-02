@@ -283,7 +283,7 @@ end Basic
 
 section Single
 
-variable [Zero M] {a a' : α} {b : M}
+variable [DecidableEq α] [Zero M] {a a' : α} {b : M}
 
 /-- `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. -/
 def single (a : α) (b : M) : α →₀ M
@@ -291,9 +291,7 @@ def single (a : α) (b : M) : α →₀ M
   support :=
     haveI := Classical.decEq M
     if b = 0 then ∅ else {a}
-  toFun :=
-    haveI := Classical.decEq α
-    Pi.single a b
+  toFun := Pi.single a b
   mem_support_toFun a' := by
     classical
       obtain rfl | hb := eq_or_ne b 0
@@ -304,17 +302,19 @@ def single (a : α) (b : M) : α →₀ M
       simp [Pi.single_eq_of_ne' ha.symm, ha]
 #align finsupp.single Finsupp.single
 
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
+theorem single_apply : single a b a' = if a = a' then b else 0 := by
   classical
   simp_rw [@eq_comm _ a a']
   convert Pi.single_apply a b a'
 #align finsupp.single_apply Finsupp.single_apply
 
-theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
+theorem single_apply_left [DecidableEq β]
+    {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 #align finsupp.single_apply_left Finsupp.single_apply_left
 
-theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
+theorem single_eq_set_indicator :
+    ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
   simp [single_apply, Set.indicator, @eq_comm _ a]
@@ -330,13 +330,12 @@ theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
   classical exact Pi.single_eq_of_ne' h _
 #align finsupp.single_eq_of_ne Finsupp.single_eq_of_ne
 
-theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
+theorem single_eq_update (a : α) (b : M) :
     ⇑(single a b) = Function.update (0 : _) a b :=
   by classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 #align finsupp.single_eq_update Finsupp.single_eq_update
 
-theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
-  single_eq_update a b
+theorem single_eq_pi_single (a : α) (b : M) : ⇑(single a b) = Pi.single a b := rfl
 #align finsupp.single_eq_pi_single Finsupp.single_eq_pi_single
 
 @[simp]
@@ -373,24 +372,29 @@ theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
 
 /-- `Finsupp.single a b` is injective in `b`. For the statement that it is injective in `a`, see
 `Finsupp.single_left_injective` -/
-theorem single_injective (a : α) : Function.Injective (single a : M → α →₀ M) := fun b₁ b₂ eq => by
+theorem single_injective (a : α) :
+    Function.Injective (single a : M → α →₀ M) := fun b₁ b₂ eq => by
   have : (single a b₁ : α →₀ M) a = (single a b₂ : α →₀ M) a := by rw [eq]
   rwa [single_eq_same, single_eq_same] at this
 #align finsupp.single_injective Finsupp.single_injective
 
-theorem single_apply_eq_zero {a x : α} {b : M} : single a b x = 0 ↔ x = a → b = 0 := by
+theorem single_apply_eq_zero {a x : α} {b : M} :
+    single a b x = 0 ↔ x = a → b = 0 := by
   simp [single_eq_set_indicator]
 #align finsupp.single_apply_eq_zero Finsupp.single_apply_eq_zero
 
-theorem single_apply_ne_zero {a x : α} {b : M} : single a b x ≠ 0 ↔ x = a ∧ b ≠ 0 := by
+theorem single_apply_ne_zero {a x : α} {b : M} :
+    single a b x ≠ 0 ↔ x = a ∧ b ≠ 0 := by
   simp [single_apply_eq_zero]
 #align finsupp.single_apply_ne_zero Finsupp.single_apply_ne_zero
 
-theorem mem_support_single (a a' : α) (b : M) : a ∈ (single a' b).support ↔ a = a' ∧ b ≠ 0 := by
+theorem mem_support_single (a a' : α) (b : M) :
+    a ∈ (single a' b).support ↔ a = a' ∧ b ≠ 0 := by
   simp [single_apply_eq_zero, not_or]
 #align finsupp.mem_support_single Finsupp.mem_support_single
 
-theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
+theorem eq_single_iff {f : α →₀ M} {a b} :
+    f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
   refine' ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, _⟩
   rintro ⟨h, rfl⟩
   ext x
@@ -507,14 +511,14 @@ theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
 #align finsupp.card_support_le_one' Finsupp.card_support_le_one'
 
 @[simp]
-theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
+theorem equivFunOnFinite_single [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite (Finsupp.single x m) = Pi.single x m := by
   ext
   simp [Finsupp.single_eq_pi_single, equivFunOnFinite]
 #align finsupp.equiv_fun_on_finite_single Finsupp.equivFunOnFinite_single
 
 @[simp]
-theorem equivFunOnFinite_symm_single [DecidableEq α] [Finite α] (x : α) (m : M) :
+theorem equivFunOnFinite_symm_single [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite.symm (Pi.single x m) = Finsupp.single x m := by
   rw [← equivFunOnFinite_single, Equiv.symm_apply_apply]
 #align finsupp.equiv_fun_on_finite_symm_single Finsupp.equivFunOnFinite_symm_single
@@ -526,7 +530,7 @@ end Single
 
 section Update
 
-variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
+variable [DecidableEq α] [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
 
 /-- Replace the value of a `α →₀ M` at a given point `a : α` by a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the `Finsupp.support`.
@@ -535,11 +539,9 @@ Otherwise, if `a` was not in the `Finsupp.support`, it is added to it.
 This is the finitely-supported version of `Function.update`. -/
 def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
   support := by
-    haveI := Classical.decEq α; haveI := Classical.decEq M
+    haveI := Classical.decEq M
     exact if b = 0 then f.support.erase a else insert a f.support
-  toFun :=
-    haveI := Classical.decEq α
-    Function.update f a b
+  toFun := Function.update f a b
   mem_support_toFun i := by
     classical
     simp [Function.update, Ne.def]
@@ -556,11 +558,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
 #align finsupp.update Finsupp.update
 
 @[simp]
-theorem coe_update [DecidableEq α] : (f.update a b : α → M) = Function.update f a b := by
-  delta update Function.update
-  ext
-  dsimp
-  split_ifs <;> simp
+theorem coe_update [DecidableEq α] : (f.update a b : α → M) = Function.update f a b := rfl
 #align finsupp.coe_update Finsupp.coe_update
 
 @[simp]
@@ -580,24 +578,19 @@ theorem zero_update : update 0 a b = single a b := by
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
-  classical
-  dsimp [update]; congr <;> apply Subsingleton.elim
+  dsimp [update]; congr
 #align finsupp.support_update Finsupp.support_update
 
 @[simp]
 theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
-  classical
   simp only [update, ite_true, mem_support_iff, ne_eq, not_not]
-  congr; apply Subsingleton.elim
 #align finsupp.support_update_zero Finsupp.support_update_zero
 
 variable {b}
 
 theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
     support (f.update a b) = insert a f.support := by
-  classical
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
-  congr; apply Subsingleton.elim
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
 end Update
@@ -607,21 +600,17 @@ end Update
 
 section Erase
 
-variable [Zero M]
+variable [DecidableEq α] [Zero M]
 
 /--
 `erase a f` is the finitely supported function equal to `f` except at `a` where it is equal to `0`.
 If `a` is not in the support of `f` then `erase a f = f`.
 -/
 def erase (a : α) (f : α →₀ M) : α →₀ M where
-  support :=
-    haveI := Classical.decEq α
-    f.support.erase a
+  support := f.support.erase a
   toFun a' :=
-    haveI := Classical.decEq α
     if a' = a then 0 else f a'
   mem_support_toFun a' := by
-    classical
     rw [mem_erase, mem_support_iff]; dsimp
     split_ifs with h
     exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
@@ -630,20 +619,17 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
 
 @[simp]
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
-    (f.erase a).support = f.support.erase a := by
-  classical
-  dsimp [erase]
-  congr; apply Subsingleton.elim
+    (f.erase a).support = f.support.erase a := rfl
 #align finsupp.support_erase Finsupp.support_erase
 
 @[simp]
 theorem erase_same {a : α} {f : α →₀ M} : (f.erase a) a = 0 := by
-  classical simp only [erase, coe_mk, ite_true]
+  simp only [erase, coe_mk, ite_true]
 #align finsupp.erase_same Finsupp.erase_same
 
 @[simp]
 theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' = f a' := by
-  classical simp only [erase, coe_mk, h, ite_false]
+  simp only [erase, coe_mk, h, ite_false]
 #align finsupp.erase_ne Finsupp.erase_ne
 
 @[simp]
@@ -742,7 +728,6 @@ end OfSupportFinite
 
 /-! ### Declarations about `mapRange` -/
 
-
 section MapRange
 
 variable [Zero M] [Zero N] [Zero P]
@@ -792,7 +777,7 @@ theorem support_mapRange {f : M → N} {hf : f 0 = 0} {g : α →₀ M} :
 #align finsupp.support_map_range Finsupp.support_mapRange
 
 @[simp]
-theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
+theorem mapRange_single [DecidableEq α] {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
     mapRange f hf (single a b) = single a (f b) :=
   ext fun a' => by
     classical simpa only [single_eq_pi_single] using Pi.apply_single _ (fun _ => hf) a _ a'
@@ -812,7 +797,7 @@ end MapRange
 
 section EmbDomain
 
-variable [Zero M] [Zero N]
+variable [DecidableEq β] [Zero M] [Zero N]
 
 /-- Given `f : α ↪ β` and `v : α →₀ M`, `Finsupp.embDomain f v : β →₀ M`
 is the finitely supported function whose value at `f a : β` is `v a`.
@@ -820,7 +805,6 @@ For a `b : β` outside the range of `f`, it is zero. -/
 def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   support := v.support.map f
   toFun a₂ :=
-    haveI := Classical.decEq β
     if h : a₂ ∈ v.support.map f then
       v
         (v.support.choose (fun a₁ => f a₁ = a₂)
@@ -888,7 +872,8 @@ theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg :
   · rw [mapRange_apply, embDomain_notin_range, embDomain_notin_range, ← hg] <;> assumption
 #align finsupp.emb_domain_map_range Finsupp.embDomain_mapRange
 
-theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b : M) (hb : b ≠ 0)
+theorem single_of_embDomain_single [DecidableEq α]
+    (l : α →₀ M) (f : α ↪ β) (a : β) (b : M) (hb : b ≠ 0)
     (h : l.embDomain f = single a b) : ∃ x, l = single x b ∧ f x = a := by
   classical
     have h_map_support : Finset.map f l.support = {a} := by
@@ -908,7 +893,7 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
 #align finsupp.single_of_emb_domain_single Finsupp.single_of_embDomain_single
 
 @[simp]
-theorem embDomain_single (f : α ↪ β) (a : α) (m : M) :
+theorem embDomain_single [DecidableEq α] (f : α ↪ β) (a : α) (m : M) :
     embDomain f (single a m) = single (f a) m := by
   classical
     ext b
@@ -994,7 +979,8 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 #align finsupp.support_add_eq Finsupp.support_add_eq
 
 @[simp]
-theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
+theorem single_add [DecidableEq α] (a : α) (b₁ b₂ : M) :
+    single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   ext fun a' => by
     by_cases h : a = a'
     · rw [h, add_apply, single_eq_same, single_eq_same, single_eq_same]
@@ -1009,7 +995,7 @@ instance addZeroClass : AddZeroClass (α →₀ M) :=
 
 See `Finsupp.lsingle` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
 @[simps]
-def singleAddHom (a : α) : M →+ α →₀ M where
+def singleAddHom [DecidableEq α] (a : α) : M →+ α →₀ M where
   toFun := single a
   map_zero' := single_zero a
   map_add' := single_add a
@@ -1035,7 +1021,7 @@ noncomputable def coeFnAddHom : (α →₀ M) →+ α → M where
 #align finsupp.coe_fn_add_hom Finsupp.coeFnAddHom
 #align finsupp.coe_fn_add_hom_apply Finsupp.coeFnAddHom_apply
 
-theorem update_eq_single_add_erase (f : α →₀ M) (a : α) (b : M) :
+theorem update_eq_single_add_erase [DecidableEq α] (f : α →₀ M) (a : α) (b : M) :
     f.update a b = single a b + f.erase a := by
   classical
     ext j
@@ -1044,7 +1030,7 @@ theorem update_eq_single_add_erase (f : α →₀ M) (a : α) (b : M) :
     · simp [Function.update_noteq h.symm, single_apply, h, erase_ne, h.symm]
 #align finsupp.update_eq_single_add_erase Finsupp.update_eq_single_add_erase
 
-theorem update_eq_erase_add_single (f : α →₀ M) (a : α) (b : M) :
+theorem update_eq_erase_add_single [DecidableEq α] (f : α →₀ M) (a : α) (b : M) :
     f.update a b = f.erase a + single a b := by
   classical
     ext j
@@ -1053,16 +1039,17 @@ theorem update_eq_erase_add_single (f : α →₀ M) (a : α) (b : M) :
     · simp [Function.update_noteq h.symm, single_apply, h, erase_ne, h.symm]
 #align finsupp.update_eq_erase_add_single Finsupp.update_eq_erase_add_single
 
-theorem single_add_erase (a : α) (f : α →₀ M) : single a (f a) + f.erase a = f := by
+theorem single_add_erase [DecidableEq α] (a : α) (f : α →₀ M) : single a (f a) + f.erase a = f := by
   rw [← update_eq_single_add_erase, update_self]
 #align finsupp.single_add_erase Finsupp.single_add_erase
 
-theorem erase_add_single (a : α) (f : α →₀ M) : f.erase a + single a (f a) = f := by
+theorem erase_add_single [DecidableEq α] (a : α) (f : α →₀ M) : f.erase a + single a (f a) = f := by
   rw [← update_eq_erase_add_single, update_self]
 #align finsupp.erase_add_single Finsupp.erase_add_single
 
 @[simp]
-theorem erase_add (a : α) (f f' : α →₀ M) : erase a (f + f') = erase a f + erase a f' := by
+theorem erase_add [DecidableEq α] (a : α) (f f' : α →₀ M) :
+    erase a (f + f') = erase a f + erase a f' := by
   ext s; by_cases hs : s = a
   · rw [hs, add_apply, erase_same, erase_same, erase_same, add_zero]
   rw [add_apply, erase_ne hs, erase_ne hs, erase_ne hs, add_apply]
@@ -1070,14 +1057,14 @@ theorem erase_add (a : α) (f f' : α →₀ M) : erase a (f + f') = erase a f +
 
 /-- `Finsupp.erase` as an `AddMonoidHom`. -/
 @[simps]
-def eraseAddHom (a : α) : (α →₀ M) →+ α →₀ M where
+def eraseAddHom [DecidableEq α] (a : α) : (α →₀ M) →+ α →₀ M where
   toFun := erase a
   map_zero' := erase_zero a
   map_add' := erase_add a
 #align finsupp.erase_add_hom Finsupp.eraseAddHom
 
 @[elab_as_elim]
-protected theorem induction {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
+protected theorem induction [DecidableEq α] {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), a ∉ f.support → b ≠ 0 → p f → p (single a b + f)) : p f :=
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
   fun s =>
@@ -1093,7 +1080,7 @@ protected theorem induction {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 :
         rw [support_erase, hf, Finset.erase_cons]
 #align finsupp.induction Finsupp.induction
 
-theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
+theorem induction₂ [DecidableEq α] {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), a ∉ f.support → b ≠ 0 → p f → p (f + single a b)) : p f :=
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
   fun s =>
@@ -1109,13 +1096,13 @@ theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
         rw [support_erase, hf, Finset.erase_cons]
 #align finsupp.induction₂ Finsupp.induction₂
 
-theorem induction_linear {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
+theorem induction_linear [DecidableEq α] {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
     (hadd : ∀ f g : α →₀ M, p f → p g → p (f + g)) (hsingle : ∀ a b, p (single a b)) : p f :=
   induction₂ f h0 fun _a _b _f _ _ w => hadd _ _ w (hsingle _ _)
 #align finsupp.induction_linear Finsupp.induction_linear
 
 @[simp]
-theorem add_closure_setOf_eq_single :
+theorem add_closure_setOf_eq_single [DecidableEq α] :
     AddSubmonoid.closure { f : α →₀ M | ∃ a b, f = single a b } = ⊤ :=
   top_unique fun x _hx =>
     Finsupp.induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb hf =>
@@ -1124,7 +1111,7 @@ theorem add_closure_setOf_eq_single :
 
 /-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
 then they are equal. -/
-theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
+theorem addHom_ext [DecidableEq α] [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x y, f (single x y) = g (single x y)) : f = g := by
   refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_setOf_eq_single _
   rintro _ ⟨x, y, rfl⟩
@@ -1138,17 +1125,17 @@ We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can app
 extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`. -/
 @[ext high]
-theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
+theorem addHom_ext' [DecidableEq α] [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
   addHom_ext fun x => FunLike.congr_fun (H x)
 #align finsupp.add_hom_ext' Finsupp.addHom_ext'
 
-theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
+theorem mulHom_ext [DecidableEq α] [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
     f = g :=
   MonoidHom.ext <|
     FunLike.congr_fun <| by
-      have := @addHom_ext α M (Additive N) _ _
+      have := @addHom_ext α M (Additive N) _ _ _
         (MonoidHom.toAdditive'' f) (MonoidHom.toAdditive'' g) H
       ext
       rw [FunLike.ext_iff] at this
@@ -1156,7 +1143,7 @@ theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N�
 #align finsupp.mul_hom_ext Finsupp.mulHom_ext
 
 @[ext]
-theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
+theorem mulHom_ext' [DecidableEq α] [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
     (H : ∀ x, f.comp (AddMonoidHom.toMultiplicative (singleAddHom x)) =
               g.comp (AddMonoidHom.toMultiplicative (singleAddHom x))) :
     f = g :=
@@ -1176,7 +1163,7 @@ theorem mapRange_add' [AddZeroClass N] [AddMonoidHomClass β M N] {f : β} (v₁
 
 /-- Bundle `Finsupp.embDomain f` as an additive map from `α →₀ M` to `β →₀ M`. -/
 @[simps]
-def embDomain.addMonoidHom (f : α ↪ β) : (α →₀ M) →+ β →₀ M where
+def embDomain.addMonoidHom [DecidableEq β] (f : α ↪ β) : (α →₀ M) →+ β →₀ M where
   toFun v := embDomain f v
   map_zero' := by simp
   map_add' v w := by
@@ -1189,7 +1176,7 @@ def embDomain.addMonoidHom (f : α ↪ β) : (α →₀ M) →+ β →₀ M wher
 #align finsupp.emb_domain.add_monoid_hom Finsupp.embDomain.addMonoidHom
 
 @[simp]
-theorem embDomain_add (f : α ↪ β) (v w : α →₀ M) :
+theorem embDomain_add [DecidableEq β] (f : α ↪ β) (v w : α →₀ M) :
     embDomain f (v + w) = embDomain f v + embDomain f w :=
   (embDomain.addMonoidHom f).map_add v w
 #align finsupp.emb_domain_add Finsupp.embDomain_add
@@ -1279,8 +1266,8 @@ instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
     rfl
 #align finsupp.add_comm_group Finsupp.addCommGroup
 
-theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}
-    (hu : u ≠ 0) (hv : v ≠ 0) :
+theorem single_add_single_eq_single_add_single [DecidableEq α] [AddCommMonoid M]
+    {k l m n : α} {u v : M} (hu : u ≠ 0) (hv : v ≠ 0) :
     single k u + single l v = single m u + single n v ↔
       (k = m ∧ l = n) ∨ (u = v ∧ k = n ∧ l = m) ∨ (u + v = 0 ∧ k = l ∧ m = n) := by
   classical
@@ -1303,14 +1290,15 @@ theorem support_sub [DecidableEq α] [AddGroup G] {f g : α →₀ G} :
   exact support_add
 #align finsupp.support_sub Finsupp.support_sub
 
-theorem erase_eq_sub_single [AddGroup G] (f : α →₀ G) (a : α) : f.erase a = f - single a (f a) := by
+theorem erase_eq_sub_single [DecidableEq α] [AddGroup G] (f : α →₀ G) (a : α) :
+    f.erase a = f - single a (f a) := by
   ext a'
   rcases eq_or_ne a a' with (rfl | h)
   · simp
   · simp [erase_ne h.symm, single_eq_of_ne h]
 #align finsupp.erase_eq_sub_single Finsupp.erase_eq_sub_single
 
-theorem update_eq_sub_add_single [AddGroup G] (f : α →₀ G) (a : α) (b : G) :
+theorem update_eq_sub_add_single [DecidableEq α] [AddGroup G] (f : α →₀ G) (a : α) (b : G) :
     f.update a b = f - single a (f a) + single a b := by
   rw [update_eq_erase_add_single, erase_eq_sub_single]
 #align finsupp.update_eq_sub_add_single Finsupp.update_eq_sub_add_single
