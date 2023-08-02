@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 #align_import linear_algebra.quadratic_form.isometry from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
-# Isometries with respect to quadratic forms
+# Isometric equivalences with respect to quadratic forms
 
 ## Main definitions
 
@@ -32,7 +32,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
-/-- An isometry between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
+/-- An isometry equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
 -- Porting note: not implemented @[nolint has_nonempty_instance]
 structure IsometryEquiv (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
@@ -131,7 +131,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticForm R M) (f : M₁ ≃ₗ[R] M
         LinearEquiv.apply_symm_apply, f.apply_symm_apply] }
 #align quadratic_form.isometry_of_comp_linear_equiv QuadraticForm.isometryEquivOfCompLinearEquiv
 
-/-- A quadratic form is isometric to its bases representations. -/
+/-- A quadratic form is isometrically equivalent to its bases representations. -/
 noncomputable def isometryEquivBasisRepr (Q : QuadraticForm R M) (v : Basis ι R M) :
     IsometryEquiv Q (Q.basisRepr v) :=
   isometryEquivOfCompLinearEquiv Q v.equivFun.symm
