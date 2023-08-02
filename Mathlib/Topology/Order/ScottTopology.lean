@@ -4,15 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Order.Directed
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Topology.Basic
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.Order
-import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.UpperLowerSetTopology
-import Mathlib.Topology.Order.LowerUpperTopology
 
 /-!
 # Scott topology
