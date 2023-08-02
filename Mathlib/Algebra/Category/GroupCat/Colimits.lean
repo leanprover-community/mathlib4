@@ -108,67 +108,19 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
-instance ColimitTypeInhabited : Inhabited (ColimitType.{v} F) :=
-  ⟨Quot.mk _ zero⟩
-
 instance : AddCommGroup (ColimitType F) where
-  zero := Quot.mk _ zero
-  neg := by
-    fapply @Quot.lift
-    · intro x
-      exact Quot.mk _ (neg x)
-    · intro x x' r
-      apply Quot.sound
-      exact Relation.neg_1 _ _ r
-  add := by
-    fapply @Quot.lift _ _ (ColimitType F → ColimitType F)
-    · intro x
-      fapply @Quot.lift
-      · intro y
-        exact Quot.mk _ (add x y)
-      · intro y y' r
-        apply Quot.sound
-        exact Relation.add_2 _ _ _ r
-    · intro x x' r
-      funext y
-      refine' y.induction_on _
-      intro a
-      dsimp
-      apply Quot.sound
-      · exact Relation.add_1 _ _ _ r
-  zero_add x := by
-    refine x.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.zero_add
-  add_zero x := by
-    refine x.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_zero
-  add_left_neg x := by
-    refine x.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_left_neg
-  add_comm x y := by
-    refine x.induction_on ?_
-    refine y.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_comm
-  add_assoc x y z := by
-    refine x.induction_on ?_
-    refine y.induction_on ?_
-    refine z.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_assoc
+  zero := Quotient.mk _ zero
+  neg := Quotient.map neg Relation.neg_1
+  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+    Quotient.sound <| Relation.add_assoc _ _ _
+
+instance ColimitTypeInhabited : Inhabited (ColimitType.{v} F) := ⟨0⟩
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
