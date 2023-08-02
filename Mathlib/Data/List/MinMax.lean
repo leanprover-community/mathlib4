@@ -455,6 +455,26 @@ theorem minimum_of_length_pos_le_getElem (w : i < l.length) (h := (Nat.zero_lt_o
     l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
+theorem maximum_of_length_pos_mem (l : List α) (h : 0 < l.length) :
+    l.maximum_of_length_pos h ∈ l := by
+  apply maximum_mem
+  simp
+
+theorem minimum_of_length_pos_mem (l : List α) (h : 0 < l.length) :
+    l.minimum_of_length_pos h ∈ l := by
+  apply minimum_mem
+  simp
+
+theorem exists_mem_eq_maximum_of_length_pos (l : List α) (h : 0 < l.length) :
+    ∃ a, a ∈ l ∧ a = l.maximum_of_length_pos h := by
+  simp only [exists_eq_right]
+  exact maximum_of_length_pos_mem l h
+
+theorem exists_mem_eq_minimum_of_length_pos (l : List α) (h : 0 < l.length) :
+    ∃ a, a ∈ l ∧ a = l.minimum_of_length_pos h := by
+  simp only [exists_eq_right]
+  exact minimum_of_length_pos_mem l h
+
 end LinearOrder
 
 end MaximumMinimum

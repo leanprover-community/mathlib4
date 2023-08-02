@@ -55,6 +55,11 @@ theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option
   Option.some_get h
 #align option.coe_get Option.coe_get
 
+theorem get?_eq_some (o : Option α) (w : o.isSome) : o.get w = a ↔ o = some a := by
+  cases o
+  · simp at w
+  · simp
+
 theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a ∈ o2) : o1 = o2 :=
   h1.trans h2.symm
 #align option.eq_of_mem_of_mem Option.eq_of_mem_of_mem

@@ -1,107 +1,38 @@
+/-
+Copyright (c) 2023 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison, Dagur Asgeirsson
+-/
 import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.OrderIsoNat
 
-variable (α : Type _) [LinearOrder α]
+/-!
+# Decreasing lists in a well founded linear order are well founded.
 
-lemma Antitone.eventually_constant [wfa : WellFoundedLT α] (f : ℕ → α) (h : Antitone f) :
-    ∃ N a, ∀ n, N ≤ n → f n = a := by
-  let a := WellFounded.min ((IsWellFounded_iff α (·<·)).mp inferInstance)
-    (Set.range f) (Set.range_nonempty f)
-  have ha : (f ⁻¹' {a}).Nonempty
-  · refine Iff.mpr Set.preimage_singleton_nonempty ?_
-    exact WellFounded.min_mem _ (Set.range f) (Set.range_nonempty f)
-  let N := ha.choose
-  refine' ⟨N, a, _⟩
-  intro n hn
-  rw [← ha.choose_spec]
-  refine' eq_of_le_of_not_lt (h hn) _
-  rw [ha.choose_spec]
-  exact WellFounded.not_lt_min _ _ _ (Set.mem_range_self n)
+If `α` is linearly ordered with `[WellFoundedLT α]`, then the lexicographic ordering on
+"decreasing lists" (i.e. `{l : List α // l.Sorted (· > ·)}`) is well founded.
 
-theorem wellFoundedLT_iff_not_strictAnti : WellFoundedLT α ↔ ∀ f : ℕ → α, ¬ StrictAnti f := by
-  dsimp [WellFoundedLT]
-  rw [IsWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
-  constructor
-  <;> intro h
-  · intro f hf
-    rw [isEmpty_iff] at h
-    apply h
-    refine' ⟨⟨f, hf.injective⟩,_⟩
-    intro a b
-    refine' ⟨_, fun h ↦ hf h⟩
-    intro hfab
-    dsimp at hfab
-    by_contra hab
-    simp only [gt_iff_lt, not_lt] at hab
-    have := hf.antitone hab
-    rw [← not_lt] at this
-    exact this hfab
-  · rw [isEmpty_iff]
-    intro f
-    apply h f.toEmbedding
-    intro a b hab
-    rwa [f.map_rel_iff']
+## See also
 
-variable {α}
+Related files are:
+* `Mathlib.Data.List.Lex`: Lexicographic order on lists.
+* `Mathlib.Order.OrderIsoNat`: Results about antitone sequences in well founded orders
 
-@[simp] theorem List.cons_lt (a : α) (x y : List α) : a :: x < a :: y ↔ x < y := by
-  constructor
-  · intro h
-    cases h
-    case cons h =>
-      exact h
-    case rel h =>
-      simp at h
-  · intro h
-    apply Lex.cons h
+-/
 
-@[simp] theorem List.append_lt (x y z : List α) : x ++ y < x ++ z ↔ y < z := by
-  induction x
-  · case nil => rfl
-  · case cons h t ih =>
-      simpa
+variable (α : Type _)
 
-@[simp]
-theorem List.head?_isNone_iff : l.head?.isNone ↔ l = [] := by cases l <;> simp
+theorem wellFoundedLT_iff_not_strictAnti [Preorder α] :
+    WellFoundedLT α ↔ ∀ f : ℕ → α, ¬ StrictAnti f := by
+  rw [WellFoundedLT, IsWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+  refine' ⟨fun h f hf ↦ isEmpty_iff.mp h (RelEmbedding.natGT f (fun n ↦ hf (Nat.lt_succ_self n))),
+    fun h ↦ isEmpty_iff.mpr (fun f ↦ h f.toEmbedding (fun _ _ _ ↦ _))⟩
+  rwa [f.map_rel_iff']
 
-@[simp] theorem List.lt_nil_iff (l : List α) : ¬ l < [] := by
-  cases l
-  · simp
-  · exact of_decide_eq_false rfl
-
-theorem List.take_one_eq_singleton_iff (l : List α) : l.take 1 = [a] ↔ l.head? = some a := by
-  cases l <;> simp
-
-theorem Option.get?_eq_some (o : Option α) (w : o.isSome) : o.get w = a ↔ o = some a := by
-  cases o
-  · simp at w
-  · simp
-
-theorem List.maximum_of_length_pos_mem (l : List α) (h : 0 < l.length) :
-    l.maximum_of_length_pos h ∈ l := by
-  apply maximum_mem
-  simp
-
-theorem List.exists_mem_eq_maximum_of_length_pos (l : List α) (h : 0 < l.length) :
-    ∃ a, a ∈ l ∧ a = l.maximum_of_length_pos h := by
-  simp only [exists_eq_right]
-  exact maximum_of_length_pos_mem l h
-
-theorem List.some_get_eq_get? (l : List α) (x : Fin l.length) : some (l.get x) = l.get? x.1 := by
-  rw [List.get?_eq_get]
-
-theorem List.get_eq_get_of_take_eq_take (la lb : List α) (n : ℕ)
-    (ha : n < la.length) (hb : n < lb.length) (lt : n < m) (w : la.take m = lb.take m) :
-    la.get ⟨n, ha⟩ = lb.get ⟨n, hb⟩ := by
-  rw [List.get_eq_iff]
-  simp only [some_get_eq_get?]
-  rw [← List.take_append_drop m la, ← List.take_append_drop m lb]
-  rw [List.get?_append, List.get?_append, w]
-  · aesop
-  · aesop
+variable {α} [LinearOrder α]
 
 /--
 Constructs the smallest monotone function larger than a given function,
@@ -135,13 +66,15 @@ namespace wellFoundedLT_sorted
 variable (α)
 variable [WellFoundedLT α]
 
-def IncreasingList := { l : List α // l.Sorted (· > · ) }
+def DecreasingList := { l : List α // l.Sorted (· > · ) }
 
-instance : LinearOrder (IncreasingList α) := inferInstanceAs <| LinearOrder { _l : List α // _ }
+def DecreasingList' (b : WithTop α) := { l : List {a : (WithTop α) // a < b} // l.Sorted (· > · ) }
 
-@[simp] lemma IncreasingList.lt_iff (x y : IncreasingList α) : x < y ↔ x.1 < y.1 := Iff.rfl
+instance : LinearOrder (DecreasingList α) := inferInstanceAs <| LinearOrder { _l : List α // _ }
 
-def SDS := { f : ℕ → IncreasingList α // StrictAnti f }
+@[simp] lemma DecreasingList.lt_iff (x y : DecreasingList α) : x < y ↔ x.1 < y.1 := Iff.rfl
+
+def SDS := { f : ℕ → DecreasingList α // StrictAnti f }
 
 variable {α}
 
@@ -150,7 +83,7 @@ def Q (n : ℕ) (L : SDS α) :=
 
 def P (L : SDS α) := ∀ n, Q n L
 
-def IncreasingList.drop (l : IncreasingList α) (m : ℕ) : IncreasingList α :=
+def DecreasingList.drop (l : DecreasingList α) (m : ℕ) : DecreasingList α :=
   ⟨l.1.drop m, l.2.drop⟩
 
 def SDS.drop₁ (L : SDS α) (m : ℕ) : SDS α :=
@@ -173,9 +106,7 @@ def SDS.dropQ (L : SDS α) (w : Q n L) : SDS α := by
 theorem SDS.dropQ_apply (L : SDS α) (w : Q n L) : ((L.dropQ w).1 m).1 = (L.1 (m + w.1)).1.drop n :=
   rfl
 
-variable {L : SDS α}
-
-theorem Q_succ (L : SDS α) (w' : Q n L) (w₁ : Q 1 (L.dropQ w')) : Q (n+1) L := by
+def Q_succ (L : SDS α) (w' : Q n L) (w₁ : Q 1 (L.dropQ w')) : Q (n+1) L := by
   obtain ⟨N', S', s', w'⟩ := w'
   obtain ⟨N₁, S₁, s₁, w₁⟩ := w₁
   use N' + N₁
@@ -200,28 +131,19 @@ lemma SDS.head?_isSome (L : SDS α) (n : ℕ) : (L.head? n).isSome := by
 
 def SDS.head (L : SDS α) : ℕ → α := fun n => (L.head? n).get (L.head?_isSome n)
 
-lemma aux (l₁ l₂ : List α) (h₁ : l₁.head?.isSome) (h₂ : l₂.head?.isSome) : l₁ < l₂ →
-    l₁.head?.get h₁ ≤ l₂.head?.get h₂ := by
-  match l₁, h₁, l₂, h₂ with
-  | x₁ :: t₁, _, x₂ :: t₂, _ =>
-    intro h
-    cases h
-    case cons => rfl
-    case rel h =>
-      exact h.le
-
 lemma SDS.head_antitone (L : SDS α) : Antitone L.head := by
   intro a b h
   rcases lt_or_eq_of_le h with (h | rfl)
   · have := L.2 h
     simp [SDS.head, SDS.head?]
-    apply aux _ _ _ _ this
+    apply List.head?_get_mono _ _ _ _ this
   · rfl
 
-lemma SDS.head_eventually_constant (L : SDS α) : ∃ N a, ∀ n, N ≤ n → L.head n = a :=
-  Antitone.eventually_constant α _ L.head_antitone
+lemma SDS.head_eventually_constant (L : SDS α) : ∃ N a, ∀ n, N ≤ n → L.head n = a := by
+  obtain ⟨N, hN⟩ := WellFounded.antitone_chain_condition.mp IsWellFounded.wf _ L.head_antitone
+  exact ⟨N, L.head N, hN⟩
 
-theorem Q_one : Nonempty (Q 1 L) := by
+theorem Q_one {L : SDS α} : Nonempty (Q 1 L) := by
   obtain ⟨N, a, w⟩ := L.head_eventually_constant
   apply Nonempty.intro
   use N
@@ -232,7 +154,8 @@ theorem Q_one : Nonempty (Q 1 L) := by
   simp [SDS.head, SDS.head?, Option.get?_eq_some] at w
   simpa [List.take_one_eq_singleton_iff]
 
-theorem main (L : SDS α) : P L := by
+noncomputable
+def PSDS (L : SDS α) : P L := by
   intro n
   apply Nonempty.some
   induction n using Nat.strong_induction_on generalizing L
@@ -261,8 +184,8 @@ theorem main (L : SDS α) : P L := by
 def P' (L : SDS α) :=
   ∃ g : ℕ →o ℕ, ∀ n, ∃ S : List α, S.length = n ∧ ∀ (m), g n ≤ m → (L.1 m).1.take n = S
 
-theorem main' (L : SDS α) : P' L := by
-  let this := main L
+theorem P'SDS (L : SDS α) : P' L := by
+  let this := PSDS L
   use leastOrderHom fun n => (this n).1
   intro n
   use (this n).2.1
@@ -276,8 +199,8 @@ def P'' (L : SDS α) :=
     ∀ m₂, g n ≤ m₂ → ∀ x, x < n → (h₁ : _) → (h₂ : _) →
       (L.1 m₁).1.get ⟨x, h₁⟩ = (L.1 m₂).1.get ⟨x, h₂⟩
 
-theorem main'' (L : SDS α) : P'' L := by
-  obtain ⟨g, w⟩ := main' L
+theorem main (L : SDS α) : P'' L := by
+  obtain ⟨g, w⟩ := P'SDS L
   use g
   intro n m₁ mh₁
   constructor
@@ -299,7 +222,7 @@ open wellFoundedLT_sorted
 instance wellFoundedLT_sorted [WellFoundedLT α] :
     WellFoundedLT { l : List α // l.Sorted (· > · ) } :=
   (wellFoundedLT_iff_not_strictAnti _).mpr (fun f w => by
-    obtain ⟨g, h⟩ := main'' ⟨f, w⟩
+    obtain ⟨g, h⟩ := main ⟨f, w⟩
     have lt_length : ∀ n, n < (f (g (n + 1))).1.length :=
       fun n => lt_of_lt_of_le (Nat.lt_succ_self n) (h (n + 1) (g (n + 1)) (le_refl _)).1
     let z : ℕ → α := fun n => (f (g (n + 1))).1.get ⟨n, lt_length n⟩

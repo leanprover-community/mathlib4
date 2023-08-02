@@ -898,6 +898,9 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
   · simp
 #align list.tail_append_of_ne_nil List.tail_append_of_ne_nil
 
+@[simp]
+theorem head?_isNone_iff : l.head?.isNone ↔ l = [] := by cases l <;> simp
+
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
 
@@ -2021,6 +2024,22 @@ theorem take_add (l : List α) (m n : ℕ) : l.take (m + n) = l.take m ++ (l.dro
     · apply length_take_le
     · simp
 #align list.take_add List.take_add
+
+theorem take_one_eq_singleton_iff (l : List α) : l.take 1 = [a] ↔ l.head? = some a := by
+  cases l <;> simp
+
+theorem some_get_eq_get? (l : List α) (x : Fin l.length) : some (l.get x) = l.get? x.1 := by
+  rw [List.get?_eq_get]
+
+theorem get_eq_get_of_take_eq_take (la lb : List α) (n : ℕ)
+    (ha : n < la.length) (hb : n < lb.length) (lt : n < m) (w : la.take m = lb.take m) :
+    la.get ⟨n, ha⟩ = lb.get ⟨n, hb⟩ := by
+  rw [List.get_eq_iff]
+  simp only [some_get_eq_get?]
+  rw [← List.take_append_drop m la, ← List.take_append_drop m lb]
+  rw [List.get?_append, List.get?_append, w]
+  · aesop
+  · aesop
 
 theorem dropLast_eq_take (l : List α) : l.dropLast = l.take l.length.pred := by
   cases' l with x l
