@@ -314,8 +314,8 @@ def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s
   step := (map <| p.step .)
 
 /--
-A strict series `a_0 --r-> a_1 --r-> ... --r-> a_n` in `α` gives a strict series in `αᵒᵈ` by reversing the
-series `a_n <-r-- a_{n - 1} <-r-- ... <-r-- a_1 <-r-- a_0`.
+A strict series `a_0 --r-> a_1 --r-> ... --r-> a_n` in `α` gives a strict series in `αᵒᵈ` by
+reversing the series `a_n <-r-- a_{n - 1} <-r-- ... <-r-- a_1 <-r-- a_0`.
 -/
 def rev (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
   length := p.length
