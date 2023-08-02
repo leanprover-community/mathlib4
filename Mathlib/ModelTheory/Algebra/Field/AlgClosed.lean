@@ -103,7 +103,7 @@ def fieldOfModelACF {K : Type _} [Language.field.Structure K]
     (h : (Theory.ACF p).Model K) : Field K :=
   @fieldOfModelFieldOfCharP p _ _ (Theory.Model.mono h (by simp [Theory.ACF]))
 
-def IsAlgClosedOfModelACF {p : ℕ} (M : Type _)
+theorem isAlgClosedOfModelACF {p : ℕ} (M : Type _)
     [Language.field.Structure M] [h : (Theory.ACF p).Model M] : by
     letI := fieldOfModelACF h; exact IsAlgClosed M := by
   letI := fieldOfModelACF h
@@ -120,7 +120,7 @@ def IsAlgClosedOfModelACF {p : ℕ} (M : Type _)
     rw [← realize_genericMonicPolyHasRoot]
     convert this
     ext _ f x
-    . cases f <;> simp [Structure.funMap, HAdd.hAdd, Add.add]
+    . cases f <;> simp
 
 
 
