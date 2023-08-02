@@ -90,23 +90,14 @@ instance instTrivialQStar : TrivialStar ℚ where
     simp only [Rat.cast_eq_id, id_eq]
 
 def instQStarRing_def : StarRing ℚ where
-  star_mul := by
-    intros r s
-    unfold star InvolutiveStar.toStar
-    simp only
-    unfold instQStar instQStar_def
-    simp only
-    exact mul_comm _ _
+  star_mul := fun r s ↦ mul_comm r s
   star_add := by
     intros r s
-    unfold star InvolutiveStar.toStar
-    simp only
-    unfold instQStar instQStar_def
-    simp only
+    unfold star InvolutiveStar.toStar instQStar instQStar_def
+    dsimp
   star_involutive := by
     intros x
-    unfold star instQStar instQStar_def
-    simp only [Rat.cast_eq_id, id_eq]
+    simp only [star_trivial]
 
 instance instQStarRing : StarRing ℚ := instQStarRing_def
 
