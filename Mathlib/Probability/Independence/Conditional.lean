@@ -73,14 +73,14 @@ See `ProbabilityTheory.iCondIndepSets_iff`.
 It will be used for families of pi_systems. -/
 def iCondIndepSets (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
-  iIndepSetsₖ π (condexpKernel μ m') (μ.trim hm')
+  kernel.iIndepSets π (condexpKernel μ m') (μ.trim hm')
 
 /-- Two sets of sets `s₁, s₂` are conditionally independent given `m'` with respect to a measure
 `μ` if for any sets `t₁ ∈ p₁, t₂ ∈ s₂`, then `μ⟦t₁ ∩ t₂ | m'⟧ =ᵐ[μ] μ⟦t₁ | m'⟧ * μ⟦t₂ | m'⟧`.
 See `ProbabilityTheory.condIndepSets_iff`. -/
 def CondIndepSets (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
-  IndepSetsₖ s1 s2 (condexpKernel μ m') (μ.trim hm')
+  kernel.IndepSets s1 s2 (condexpKernel μ m') (μ.trim hm')
 
 /-- A family of measurable space structures (i.e. of σ-algebras) is conditionally independent given
 `m'` with respect to a measure `μ` (typically defined on a finer σ-algebra) if the family of sets of
@@ -91,7 +91,7 @@ any sets `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then
 See `ProbabilityTheory.iCondIndep_iff`. -/
 def iCondIndep (m : ι → MeasurableSpace Ω) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
-  iIndepₖ m (condexpKernel μ m') (μ.trim hm')
+  kernel.iIndep m (condexpKernel μ m') (μ.trim hm')
 
 end
 
@@ -102,7 +102,7 @@ See `ProbabilityTheory.condIndep_iff`. -/
 def CondIndep (m' m₁ m₂ : MeasurableSpace Ω)
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     (hm' : m' ≤ mΩ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
-  Indepₖ m₁ m₂ (condexpKernel μ m') (μ.trim hm')
+  kernel.Indep m₁ m₂ (condexpKernel μ m') (μ.trim hm')
 
 section
 
@@ -115,14 +115,14 @@ generate is conditionally independent. For a set `s`, the generated measurable s
 sets `∅, s, sᶜ, univ`.
 See `ProbabilityTheory.iCondIndepSet_iff`. -/
 def iCondIndepSet (s : ι → Set Ω) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
-  iIndepSetₖ s (condexpKernel μ m') (μ.trim hm')
+  kernel.iIndepSet s (condexpKernel μ m') (μ.trim hm')
 
 /-- Two sets are conditionally independent if the two measurable space structures they generate are
 conditionally independent. For a set `s`, the generated measurable space structure has measurable
 sets `∅, s, sᶜ, univ`.
 See `ProbabilityTheory.condIndepSet_iff`. -/
 def CondIndepSet (s t : Set Ω) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
-  IndepSetₖ s t (condexpKernel μ m') (μ.trim hm')
+  kernel.IndepSet s t (condexpKernel μ m') (μ.trim hm')
 
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
 spaces, each with a measurable space structure, is conditionally independent if the family of
@@ -132,7 +132,7 @@ with codomain having measurable space structure `m`, the generated measurable sp
 See `ProbabilityTheory.iCondIndepFun_iff`. -/
 def iCondIndepFun {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
     (f : ∀ x : ι, Ω → β x) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
-  iIndepFunₖ m f (condexpKernel μ m') (μ.trim hm')
+  kernel.iIndepFun m f (condexpKernel μ m') (μ.trim hm')
 
 /-- Two functions are conditionally independent if the two measurable space structures they generate
 are conditionally independent. For a function `f` with codomain having measurable space structure
@@ -140,13 +140,13 @@ are conditionally independent. For a function `f` with codomain having measurabl
 See `ProbabilityTheory.condIndepFun_iff`. -/
 def CondIndepFun [MeasurableSpace β] [MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
-  IndepFunₖ f g (condexpKernel μ m') (μ.trim hm')
+  kernel.IndepFun f g (condexpKernel μ m') (μ.trim hm')
 
 end
 
 end Definitions
 
-section Definition_lemmas
+section DefinitionLemmas
 
 section
 variable (m' : MeasurableSpace Ω)
@@ -157,7 +157,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndepSets m' hm' π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
       μ⟦⋂ i ∈ s, f i | m'⟧ =ᵐ[μ] ∏ i in s, (μ⟦f i | m'⟧) := by
-  simp only [iCondIndepSets, iIndepSetsₖ]
+  simp only [iCondIndepSets, kernel.iIndepSets]
   have h_eq' : ∀ (s : Finset ι) (f : ι → Set Ω) (_H : ∀ i, i ∈ s → f i ∈ π i) i (_hi : i ∈ s),
       (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω (f i))) =ᵐ[μ] μ⟦f i | m'⟧ :=
     fun s f H i hi ↦ condexpKernel_ae_eq_condexp hm' (hπ i (f i) (H i hi))
@@ -196,7 +196,7 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
   (hs2 : ∀ s ∈ s2, MeasurableSet s) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSets m' hm' s1 s2 μ ↔ ∀ (t1 t2 : Set Ω) (_ : t1 ∈ s1) (_ : t2 ∈ s2),
       (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
-  simp only [CondIndepSets, IndepSetsₖ]
+  simp only [CondIndepSets, kernel.IndepSets]
   have hs1_eq : ∀ s ∈ s1, (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω s)) =ᵐ[μ] μ⟦s | m'⟧ :=
     fun s hs ↦ condexpKernel_ae_eq_condexp hm' (hs1 s hs)
   have hs2_eq : ∀ s ∈ s2, (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω s)) =ᵐ[μ] μ⟦s | m'⟧ :=
@@ -223,7 +223,7 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
 lemma iCondIndep_iff_iCondIndepSets (m : ι → MeasurableSpace Ω)
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndep m' hm' m μ ↔ iCondIndepSets m' hm' (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
-  simp only [iCondIndep, iCondIndepSets, iIndepₖ]
+  simp only [iCondIndep, iCondIndepSets, kernel.iIndep]
 
 lemma iCondIndep_iff (m : ι → MeasurableSpace Ω) (hm : ∀ i, m i ≤ mΩ)
     (μ : Measure Ω) [IsFiniteMeasure μ] :
@@ -243,7 +243,7 @@ lemma condIndep_iff_condIndepSets (m' m₁ m₂ : MeasurableSpace Ω)
     (hm' : m' ≤ mΩ) (μ : Measure Ω ) [IsFiniteMeasure μ] :
     CondIndep m' m₁ m₂ hm' μ
       ↔ CondIndepSets m' hm' {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
-  simp only [CondIndep, CondIndepSets, Indepₖ]
+  simp only [CondIndep, CondIndepSets, kernel.Indep]
 
 lemma condIndep_iff (m' m₁ m₂ : MeasurableSpace Ω)
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
@@ -264,7 +264,7 @@ variable (m' : MeasurableSpace Ω)
 
 lemma iCondIndepSet_iff_iCondIndep (s : ι → Set Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndepSet m' hm' s μ ↔ iCondIndep m' hm' (fun i ↦ generateFrom {s i}) μ := by
-  simp only [iCondIndepSet, iCondIndep, iIndepSetₖ]
+  simp only [iCondIndepSet, iCondIndep, kernel.iIndepSet]
 
 lemma iCondIndepSet_iff (s : ι → Set Ω) (hs : ∀ i, MeasurableSet (s i))
     (μ : Measure Ω) [IsFiniteMeasure μ] :
@@ -283,7 +283,7 @@ lemma iCondIndepSet_iff (s : ι → Set Ω) (hs : ∀ i, MeasurableSet (s i))
 
 lemma condIndepSet_iff_condIndep (s t : Set Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSet m' hm' s t μ ↔ CondIndep m' (generateFrom {s}) (generateFrom {t}) hm' μ := by
-  simp only [CondIndepSet, CondIndep, IndepSetₖ]
+  simp only [CondIndepSet, CondIndep, kernel.IndepSet]
 
 lemma condIndepSet_iff (s t : Set Ω) (hs : MeasurableSet s) (ht : MeasurableSet t)
     (μ : Measure Ω) [IsFiniteMeasure μ] :
@@ -301,7 +301,7 @@ lemma iCondIndepFun_iff_iCondIndep {β : ι → Type _}
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndepFun m' hm' m f μ
       ↔ iCondIndep m' hm' (fun x ↦ MeasurableSpace.comap (f x) (m x)) μ := by
-  simp only [iCondIndepFun, iCondIndep, iIndepFunₖ]
+  simp only [iCondIndepFun, iCondIndep, kernel.iIndepFun]
 
 lemma iCondIndepFun_iff {β : ι → Type _}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (hf : ∀ i, Measurable (f i))
@@ -317,7 +317,7 @@ lemma condIndepFun_iff_condIndep [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepFun m' hm' f g μ
       ↔ CondIndep m' (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) hm' μ := by
-  simp only [CondIndepFun, CondIndep, IndepFunₖ]
+  simp only [CondIndepFun, CondIndep, kernel.IndepFun]
 
 lemma condIndepFun_iff [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (hf : Measurable f) (hg : Measurable g)
@@ -327,7 +327,7 @@ lemma condIndepFun_iff [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
         → (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
   rw [condIndepFun_iff_condIndep, condIndep_iff _ _ _ _ hf.comap_le hg.comap_le]
 
-end Definition_lemmas
+end DefinitionLemmas
 
 section CondIndepSets
 
@@ -338,53 +338,53 @@ variable {m' : MeasurableSpace Ω}
 @[symm]
 theorem CondIndepSets.symm {s₁ s₂ : Set (Set Ω)}
     (h : CondIndepSets m' hm' s₁ s₂ μ) : CondIndepSets m' hm' s₂ s₁ μ :=
-  IndepSetsₖ.symm h
+  kernel.IndepSets.symm h
 
 theorem condIndepSets_of_condIndepSets_of_le_left {s₁ s₂ s₃ : Set (Set Ω)}
     (h_indep : CondIndepSets m' hm' s₁ s₂ μ) (h31 : s₃ ⊆ s₁) :
     CondIndepSets m' hm' s₃ s₂ μ :=
-  indepSetsₖ_of_indepSetsₖ_of_le_left h_indep h31
+  kernel.indepSets_of_indepSets_of_le_left h_indep h31
 
 theorem condIndepSets_of_condIndepSets_of_le_right {s₁ s₂ s₃ : Set (Set Ω)}
     (h_indep : CondIndepSets m' hm' s₁ s₂ μ) (h32 : s₃ ⊆ s₂) :
     CondIndepSets m' hm' s₁ s₃ μ :=
-  indepSetsₖ_of_indepSetsₖ_of_le_right h_indep h32
+  kernel.indepSets_of_indepSets_of_le_right h_indep h32
 
 theorem CondIndepSets.union {s₁ s₂ s' : Set (Set Ω)}
     (h₁ : CondIndepSets m' hm' s₁ s' μ) (h₂ : CondIndepSets m' hm' s₂ s' μ) :
     CondIndepSets m' hm' (s₁ ∪ s₂) s' μ :=
-  IndepSetsₖ.union h₁ h₂
+  kernel.IndepSets.union h₁ h₂
 
 @[simp]
 theorem CondIndepSets.union_iff {s₁ s₂ s' : Set (Set Ω)}  :
     CondIndepSets m' hm' (s₁ ∪ s₂) s' μ
       ↔ CondIndepSets m' hm' s₁ s' μ ∧ CondIndepSets m' hm' s₂ s' μ :=
-  IndepSetsₖ.union_iff
+  kernel.IndepSets.union_iff
 
 theorem CondIndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     (hyp : ∀ n, CondIndepSets m' hm' (s n) s' μ) :
     CondIndepSets m' hm' (⋃ n, s n) s' μ :=
-  IndepSetsₖ.iUnion hyp
+  kernel.IndepSets.iUnion hyp
 
 theorem CondIndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     {u : Set ι} (hyp : ∀ n ∈ u, CondIndepSets m' hm' (s n) s' μ) :
     CondIndepSets m' hm' (⋃ n ∈ u, s n) s' μ :=
-  IndepSetsₖ.bUnion hyp
+  kernel.IndepSets.bUnion hyp
 
 theorem CondIndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω))
     (h₁ : CondIndepSets m' hm' s₁ s' μ) :
     CondIndepSets m' hm' (s₁ ∩ s₂) s' μ :=
-  IndepSetsₖ.inter s₂ h₁
+  kernel.IndepSets.inter s₂ h₁
 
 theorem CondIndepSets.iInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     (h : ∃ n, CondIndepSets m' hm' (s n) s' μ) :
     CondIndepSets m' hm' (⋂ n, s n) s' μ :=
-  IndepSetsₖ.iInter h
+  kernel.IndepSets.iInter h
 
 theorem CondIndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     {u : Set ι} (h : ∃ n ∈ u, CondIndepSets m' hm' (s n) s' μ) :
     CondIndepSets m' hm' (⋂ n ∈ u, s n) s' μ :=
-  IndepSetsₖ.bInter h
+  kernel.IndepSets.bInter h
 
 theorem condIndepSets_singleton_iff {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
@@ -405,9 +405,11 @@ variable {m' : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
 
-theorem condIndepSet_empty_right (s : Set Ω) : CondIndepSet m' hm' s ∅ μ := indepSetₖ_empty_right s
+theorem condIndepSet_empty_right (s : Set Ω) : CondIndepSet m' hm' s ∅ μ :=
+  kernel.indepSet_empty_right s
 
-theorem condIndepSet_empty_left (s : Set Ω) : CondIndepSet m' hm' ∅ s μ := indepSetₖ_empty_left s
+theorem condIndepSet_empty_left (s : Set Ω) : CondIndepSet m' hm' ∅ s μ :=
+  kernel.indepSet_empty_left s
 
 end CondIndepSet
 
@@ -425,34 +427,34 @@ theorem condIndep_bot_right (m₁ : MeasurableSpace Ω) {m' : MeasurableSpace Ω
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ] :
     CondIndep m' m₁ ⊥ hm' μ :=
-  indepₖ_bot_right m₁
+  kernel.indep_bot_right m₁
 
 theorem condIndep_bot_left (m₁ : MeasurableSpace Ω) {m' : MeasurableSpace Ω}
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ] :
     CondIndep m' ⊥ m₁ hm' μ :=
-  (indepₖ_bot_right m₁).symm
+  (kernel.indep_bot_right m₁).symm
 
 theorem condIndep_of_condIndep_of_le_left
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
     (h_indep : CondIndep m' m₁ m₂ hm' μ) (h31 : m₃ ≤ m₁) :
     CondIndep m' m₃ m₂ hm' μ :=
-  indepₖ_of_indepₖ_of_le_left h_indep h31
+  kernel.indep_of_indep_of_le_left h_indep h31
 
 theorem condIndep_of_condIndep_of_le_right
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
     (h_indep : CondIndep m' m₁ m₂ hm' μ) (h32 : m₃ ≤ m₂) :
     CondIndep m' m₁ m₃ hm' μ :=
-  indepₖ_of_indepₖ_of_le_right h_indep h32
+  kernel.indep_of_indep_of_le_right h_indep h32
 
 end CondIndep
 
 /-! ### Deducing `CondIndep` from `iCondIndep` -/
 
 
-section FromIndepToIndep
+section FromiCondIndepToCondIndep
 
 variable {m' : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
@@ -461,20 +463,20 @@ variable {m' : MeasurableSpace Ω}
 theorem iCondIndepSets.condIndepSets {s : ι → Set (Set Ω)}
     (h_indep : iCondIndepSets m' hm' s μ) {i j : ι} (hij : i ≠ j) :
     CondIndepSets m' hm' (s i) (s j) μ :=
-  iIndepSetsₖ.indepSetsₖ h_indep hij
+  kernel.iIndepSets.indepSets h_indep hij
 
 theorem iCondIndep.condIndep {m : ι → MeasurableSpace Ω}
     (h_indep : iCondIndep m' hm' m μ) {i j : ι} (hij : i ≠ j) :
       CondIndep m' (m i) (m j) hm' μ :=
-  iIndepₖ.indepₖ h_indep hij
+  kernel.iIndep.indep h_indep hij
 
 theorem iCondIndepFun.condIndepFun {β : ι → Type _}
     {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i}
     (hf_Indep : iCondIndepFun m' hm' m f μ) {i j : ι} (hij : i ≠ j) :
     CondIndepFun m' hm' (f i) (f j) μ :=
-  iIndepFunₖ.indepFunₖ hf_Indep hij
+  kernel.iIndepFun.indepFun hf_Indep hij
 
-end FromIndepToIndep
+end FromiCondIndepToCondIndep
 
 /-!
 ## π-system lemma
@@ -497,12 +499,12 @@ theorem iCondIndep.iCondIndepSets {m : ι → MeasurableSpace Ω}
     {s : ι → Set (Set Ω)} (hms : ∀ n, m n = generateFrom (s n))
     (h_indep : iCondIndep m' hm' m μ) :
     iCondIndepSets m' hm' s μ :=
-  iIndepₖ.iIndepSetsₖ hms h_indep
+  kernel.iIndep.iIndepSets hms h_indep
 
 theorem CondIndep.condIndepSets {s1 s2 : Set (Set Ω)}
     (h_indep : CondIndep m' (generateFrom s1) (generateFrom s2) hm' μ) :
     CondIndepSets m' hm' s1 s2 μ :=
-  Indepₖ.indepSetsₖ h_indep
+  kernel.Indep.indepSets h_indep
 
 end FromMeasurableSpacesToSetsOfSets
 
@@ -520,68 +522,68 @@ theorem CondIndepSets.condIndep {p1 p2 : Set (Set Ω)} (h1 : m1 ≤ mΩ) (h2 : m
     (hpm1 : m1 = generateFrom p1) (hpm2 : m2 = generateFrom p2)
     (hyp : CondIndepSets m' hm' p1 p2 μ) :
     CondIndep m' m1 m2 hm' μ :=
-  IndepSetsₖ.indepₖ h1 h2 hp1 hp2 hpm1 hpm2 hyp
+  kernel.IndepSets.indep h1 h2 hp1 hp2 hpm1 hpm2 hyp
 
 theorem CondIndepSets.condIndep'
     {p1 p2 : Set (Set Ω)} (hp1m : ∀ s ∈ p1, MeasurableSet s) (hp2m : ∀ s ∈ p2, MeasurableSet s)
     (hp1 : IsPiSystem p1) (hp2 : IsPiSystem p2) (hyp : CondIndepSets m' hm' p1 p2 μ) :
     CondIndep m' (generateFrom p1) (generateFrom p2) hm' μ :=
-  IndepSetsₖ.indepₖ' hp1m hp2m hp1 hp2 hyp
+  kernel.IndepSets.indep' hp1m hp2m hp1 hp2 hyp
 
 theorem condIndepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
     {S T : Set ι} (h_indep : iCondIndepSets m' hm' s μ) (hST : Disjoint S T) :
     CondIndepSets m' hm' (piiUnionInter s S) (piiUnionInter s T) μ :=
-  indepSetsₖ_piiUnionInter_of_disjoint h_indep hST
+  kernel.indepSets_piiUnionInter_of_disjoint h_indep hST
 
 theorem iCondIndepSet.condIndep_generateFrom_of_disjoint {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (S T : Set ι)
     (hST : Disjoint S T) :
     CondIndep m' (generateFrom { t | ∃ n ∈ S, s n = t })
       (generateFrom { t | ∃ k ∈ T, s k = t }) hm' μ :=
-  iIndepSetₖ.indepₖ_generateFrom_of_disjoint hsm hs S T hST
+  kernel.iIndepSet.indep_generateFrom_of_disjoint hsm hs S T hST
 
 theorem condIndep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ mΩ) (h_indep : iCondIndep m' hm' m μ) {S T : Set ι} (hST : Disjoint S T) :
     CondIndep m' (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) hm' μ :=
-  indepₖ_iSup_of_disjoint h_le h_indep hST
+  kernel.indep_iSup_of_disjoint h_le h_indep hST
 
 theorem condIndep_iSup_of_directed_le {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ)
     (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ) (hm : Directed (· ≤ ·) m) :
     CondIndep m' (⨆ i, m i) m₁ hm' μ :=
-  indepₖ_iSup_of_directed_le h_indep h_le h_le' hm
+  kernel.indep_iSup_of_directed_le h_indep h_le h_le' hm
 
 theorem iCondIndepSet.condIndep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (i : ι) :
     CondIndep m' (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) hm' μ :=
-  iIndepSetₖ.indepₖ_generateFrom_lt hsm hs i
+  kernel.iIndepSet.indep_generateFrom_lt hsm hs i
 
 theorem iCondIndepSet.condIndep_generateFrom_le [LinearOrder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (i : ι) {k : ι} (hk : i < k) :
     CondIndep m' (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) hm' μ :=
-  iIndepSetₖ.indepₖ_generateFrom_le hsm hs i hk
+  kernel.iIndepSet.indep_generateFrom_le hsm hs i hk
 
 theorem iCondIndepSet.condIndep_generateFrom_le_nat {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (n : ℕ) :
     CondIndep m' (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) hm' μ :=
-  iIndepSetₖ.indepₖ_generateFrom_le_nat hsm hs n
+  kernel.iIndepSet.indep_generateFrom_le_nat hsm hs n
 
 theorem condIndep_iSup_of_monotone [SemilatticeSup ι]{m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ) (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ)
     (hm : Monotone m) :
     CondIndep m' (⨆ i, m i) m₁ hm' μ :=
-  indepₖ_iSup_of_monotone h_indep h_le h_le' hm
+  kernel.indep_iSup_of_monotone h_indep h_le h_le' hm
 
 theorem condIndep_iSup_of_antitone [SemilatticeInf ι] {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ) (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ)
     (hm : Antitone m) :
     CondIndep m' (⨆ i, m i) m₁ hm' μ :=
-  indepₖ_iSup_of_antitone h_indep h_le h_le' hm
+  kernel.indep_iSup_of_antitone h_indep h_le h_le' hm
 
 theorem iCondIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
     (hp_ind : iCondIndepSets m' hm' π μ) (haS : a ∉ S) :
     CondIndepSets m' hm' (piiUnionInter π S) (π a) μ :=
-  iIndepSetsₖ.piiUnionInter_of_not_mem hp_ind haS
+  kernel.iIndepSets.piiUnionInter_of_not_mem hp_ind haS
 
 /-- The σ-algebras generated by conditionally independent pi-systems are conditionally independent.
 -/
@@ -589,11 +591,11 @@ theorem iCondIndepSets.iCondIndep (m : ι → MeasurableSpace Ω)
     (h_le : ∀ i, m i ≤ mΩ) (π : ι → Set (Set Ω)) (h_pi : ∀ n, IsPiSystem (π n))
     (h_generate : ∀ i, m i = generateFrom (π i)) (h_ind : iCondIndepSets m' hm' π μ) :
     iCondIndep m' hm' m μ :=
-  iIndepSetsₖ.iIndepₖ m h_le π h_pi h_generate h_ind
+  kernel.iIndepSets.iIndep m h_le π h_pi h_generate h_ind
 
 end FromPiSystemsToMeasurableSpaces
 
-section IndepSet
+section CondIndepSet
 
 /-! ### Conditional independence of measurable sets
 
@@ -610,7 +612,7 @@ variable {m' : MeasurableSpace Ω}
 theorem condIndepSet_iff_condIndepSets_singleton (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSet m' hm' s t μ ↔ CondIndepSets m' hm' {s} {t} μ :=
-  indepSetₖ_iff_indepSetsₖ_singleton hs_meas ht_meas _ _
+  kernel.indepSet_iff_indepSets_singleton hs_meas ht_meas _ _
 
 theorem condIndepSet_iff_measure_inter_eq_mul (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (μ : Measure Ω) [IsFiniteMeasure μ] :
@@ -622,22 +624,22 @@ theorem CondIndepSets.condIndepSet_of_mem (hs : s ∈ S) (ht : t ∈ T)
     (hs_meas : MeasurableSet s) (ht_meas : MeasurableSet t) (μ : Measure Ω) [IsFiniteMeasure μ]
     (h_indep : CondIndepSets m' hm' S T μ) :
     CondIndepSet m' hm' s t μ :=
-  IndepSetsₖ.indepSetₖ_of_mem _ _ hs ht hs_meas ht_meas _ _ h_indep
+  kernel.IndepSets.indepSet_of_mem _ _ hs ht hs_meas ht_meas _ _ h_indep
 
 theorem CondIndep.condIndepSet_of_measurableSet {μ : Measure Ω} [IsFiniteMeasure μ]
     (h_indep : CondIndep m' m₁ m₂ hm' μ) {s t : Set Ω} (hs : MeasurableSet[m₁] s)
     (ht : MeasurableSet[m₂] t) :
     CondIndepSet m' hm' s t μ :=
-  Indepₖ.indepSetₖ_of_measurableSet h_indep hs ht
+  kernel.Indep.indepSet_of_measurableSet h_indep hs ht
 
 theorem condIndep_iff_forall_condIndepSet (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndep m' m₁ m₂ hm' μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t
       → CondIndepSet m' hm' s t μ :=
-  indepₖ_iff_forall_indepSetₖ m₁ m₂ _ _
+  kernel.indep_iff_forall_indepSet m₁ m₂ _ _
 
-end IndepSet
+end CondIndepSet
 
-section IndepFun
+section CondIndepFun
 
 /-! ### Conditional independence of random variables
 
@@ -685,7 +687,7 @@ theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' 
     (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → CondIndepSet m' hm' (f ⁻¹' s) (g ⁻¹' t) μ := by
-  simp only [CondIndepFun, CondIndepSet, indepFunₖ_iff_indepSetₖ_preimage hf hg]
+  simp only [CondIndepFun, CondIndepSet, kernel.indepFun_iff_indepSet_preimage hf hg]
 
 @[symm]
 nonrec theorem CondIndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β}
@@ -697,7 +699,7 @@ theorem CondIndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace �
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : CondIndepFun m' hm' f g μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
     CondIndepFun m' hm' (φ ∘ f) (ψ ∘ g) μ :=
-  IndepFunₖ.comp hfg hφ hψ
+  kernel.IndepFun.comp hfg hφ hψ
 
 /-- If `f` is a family of mutually conditionally independent random variables
 (`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint finite index sets, then the tuple formed
@@ -706,20 +708,20 @@ theorem iCondIndepFun.condIndepFun_finset {β : ι → Type _}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iCondIndepFun m' hm' m f μ) (hf_meas : ∀ i, Measurable (f i)) :
     CondIndepFun m' hm' (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ :=
-  iIndepFunₖ.indepFunₖ_finset S T hST hf_Indep hf_meas
+  kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 
 theorem iCondIndepFun.condIndepFun_prod {β : ι → Type _}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iCondIndepFun m' hm' m f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
-  iIndepFunₖ.indepFunₖ_prod hf_Indep hf_meas i j k hik hjk
+  kernel.iIndepFun.indepFun_prod hf_Indep hf_meas i j k hik hjk
 
 @[to_additive]
 theorem iCondIndepFun.mul {m : MeasurableSpace β}
     [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β} (hf_Indep : iCondIndepFun m' hm' (fun _ => m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     CondIndepFun m' hm' (f i * f j) (f k) μ :=
-  iIndepFunₖ.mul hf_Indep hf_meas i j k hik hjk
+  kernel.iIndepFun.mul hf_Indep hf_meas i j k hik hjk
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_finset_prod_of_not_mem
@@ -727,20 +729,20 @@ theorem iCondIndepFun.condIndepFun_finset_prod_of_not_mem
     (hf_Indep : iCondIndepFun m' hm' (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i))
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j in s, f j) (f i) μ :=
-  iIndepFunₖ.indepFunₖ_finset_prod_of_not_mem hf_Indep hf_meas hi
+  kernel.iIndepFun.indepFun_finset_prod_of_not_mem hf_Indep hf_meas hi
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ
     {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ℕ → Ω → β}
     (hf_Indep : iCondIndepFun m' hm' (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
     CondIndepFun m' hm' (∏ j in Finset.range n, f j) (f n) μ :=
-  iIndepFunₖ.indepFunₖ_prod_range_succ hf_Indep hf_meas n
+  kernel.iIndepFun.indepFun_prod_range_succ hf_Indep hf_meas n
 
 theorem iCondIndepSet.iCondIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β}
     {s : ι → Set Ω} (hs : iCondIndepSet m' hm' s μ) :
     iCondIndepFun m' hm' (fun _n => m) (fun n => (s n).indicator fun _ω => 1) μ :=
-  iIndepSetₖ.iIndepFunₖ_indicator hs
+  kernel.iIndepSet.iIndepFun_indicator hs
 
-end IndepFun
+end CondIndepFun
 
 end ProbabilityTheory
