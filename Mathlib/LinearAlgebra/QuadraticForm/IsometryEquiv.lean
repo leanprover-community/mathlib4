@@ -41,9 +41,9 @@ structure IsometryEquiv (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M�
 #align quadratic_form.isometry QuadraticForm.IsometryEquiv
 
 /-- Two quadratic forms over a ring `R` are equivalent
-if there exists an isometry between them:
+if there exists an isometric equivalence between them:
 a linear equivalence that transforms one quadratic form into the other. -/
-def Equivalent (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :=
+def Equivalent (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Prop :=
   Nonempty (Q₁.IsometryEquiv Q₂)
 #align quadratic_form.equivalent QuadraticForm.Equivalent
 
