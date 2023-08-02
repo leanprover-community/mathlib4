@@ -346,7 +346,7 @@ theorem finrank_zero_iff [FiniteDimensional K V] : finrank K V = 0 ↔ Subsingle
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
-theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
+theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
     (h : finrank K S = finrank K V) : S = ⊤ := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
@@ -371,8 +371,8 @@ theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
   have := bS.span_eq
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
   rw [this, map_top (Submodule.subtype S), range_subtype]
-#align finite_dimensional.eq_top_of_finrank_eq FiniteDimensional.eq_top_of_finrank_eq
-#align submodule.eq_top_of_finrank_eq FiniteDimensional.eq_top_of_finrank_eq
+#align finite_dimensional.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
+#align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 
 variable (K)
 
