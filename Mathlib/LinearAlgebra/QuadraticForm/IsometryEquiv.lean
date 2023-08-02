@@ -139,7 +139,8 @@ noncomputable def isometryEquivBasisRepr (Q : QuadraticForm R M) (v : Basis ι R
 
 variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 
-/-- Given an orthogonal basis, a quadratic form is isometrically equivalent with a weighted sum of squares. -/
+/-- Given an orthogonal basis, a quadratic form is isometrically equivalent with a weighted sum of
+squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (FiniteDimensional.finrank K V)) K V)
     (hv₁ : (associated (R₁ := K) Q).iIsOrtho v) :
