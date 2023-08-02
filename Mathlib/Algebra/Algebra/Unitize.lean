@@ -22,10 +22,6 @@ This file takes unital and non-unital structures and relates them.
 * `NonUnitalSubalgebra.unitizationAlgEquiv s : Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A)`:
   when `R` is a field and `1 ∉ s`, the above homomorphism is injective is upgraded to
   an `AlgEquiv`.
-* `Subsemiring.closureEquivAdjoinNat : Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s`: the
-  identity map between these subsemirings, viewed as `ℕ`-algebras.
-* `Subring.closureEquivAdjoinInt : Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s`: the
-  identity map between these subsemirings, viewed as `ℤ`-algebras.
 * `NonUnitalSubsemiring.unitization : Unitization ℕ S →ₐ[ℕ] Subsemiring.closure (S : Set R)`:
   the natural `ℕ`-algebra homomorphism between the unitization of a non-unital subsemiring `S` and
   its `Subsemiring.closure`. This is just `NonUnitalSubalgebra.unitization S` where we replace the
@@ -59,17 +55,10 @@ theorem NonUnitalSubalgebra.unitization_apply_coe (x : Unitization R s) :
   rfl
 
 theorem NonUnitalSubalgebra.unitization_surjective :
-    Function.Surjective (NonUnitalSubalgebra.unitization s) := by
-  apply Algebra.adjoin_induction'
-  · refine' fun x hx => ⟨(0, ⟨x, hx⟩), Subtype.ext _⟩
-    simp only [NonUnitalSubalgebra.unitization_apply_coe, Subtype.coe_mk]
-    change (algebraMap R { x // x ∈ Algebra.adjoin R (s : Set A) } 0 : A) + x = x
-    rw [map_zero, Subsemiring.coe_zero, zero_add]
-  · exact fun r => ⟨algebraMap R (Unitization R s) r, AlgHom.commutes _ r⟩
-  · rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-    exact ⟨x + y, map_add _ _ _⟩
-  · rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-    exact ⟨x * y, map_mul _ _ _⟩
+    Function.Surjective (NonUnitalSubalgebra.unitization s) :=
+  have : Algebra.adjoin R s ≤ ((Algebra.adjoin R (s : Set A)).val.comp (unitization s)).range :=
+    Algebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : s), by simp⟩
+  fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
 variable {R S A : Type _} [Field R] [Ring A] [Algebra R A]
     [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
@@ -135,25 +124,6 @@ theorem NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnital
     (h1 : (1 : R) ∈ S) : (NonUnitalSubsemiring.toSubsemiring S h1).toNonUnitalSubsemiring = S := by
   cases S; rfl
 
-/-- The `ℕ`-algebra equivalence between `Subsemiring.closure s` and `Algebra.adjoin ℕ s` given
-by the identity map. -/
-def Subsemiring.closureEquivAdjoinNat {R : Type _} [Semiring R] (s : Set R) :
-    Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s
-    where
-  toFun := Subtype.map id fun r hr => Subsemiring.closure_induction hr Algebra.subset_adjoin
-    (zero_mem _) (one_mem _) (fun _ _ => add_mem) fun _ _ => mul_mem
-  invFun := Subtype.map id fun r hr => Algebra.adjoin_induction hr Subsemiring.subset_closure
-    (natCast_mem _) (fun _ _ => add_mem) fun _ _ => mul_mem
-  -- Note: `Subtype.ext rfl` proves all of these, but, depressingly, it's too slow.
-  left_inv _ := Subtype.ext <| by simp only [Subtype.map_coe, id_eq]
-  right_inv _ := Subtype.ext <| by simp only [Subtype.map_coe, id_eq]
-  map_mul' _ _ := Subtype.ext <| by
-    simp only [Subtype.map_coe, Submonoid.coe_mul, coe_toSubmonoid, id_eq,
-      Subalgebra.coe_toSubsemiring]
-  map_add' _ _ := Subtype.ext <| by
-    simp only [Subtype.map_coe, coe_add, id_eq, Subalgebra.coe_toSubsemiring]
-  commutes' _ := Subtype.ext rfl
-
 /-- The natural `ℕ`-algebra homomorphism from the unitization of a non-unital subsemiring to
 its `Subsemiring.closure`. -/
 def NonUnitalSubsemiring.unitization {R : Type _} [Semiring R] (S : NonUnitalSubsemiring R) :
@@ -198,28 +168,6 @@ theorem Subring.toNonUnitalSubring_toSubring (S : Subring R) :
 
 theorem NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
     (NonUnitalSubring.toSubring S h1).toNonUnitalSubring = S := by cases S; rfl
-
--- why don't we have this theorem?
-theorem int_cast_mem {S : Type _} {R : Type _} [AddGroupWithOne R] [SetLike S R] (s : S)
-    [AddSubmonoidWithOneClass S R] [NegMemClass S R] (n : ℤ) : (n : R) ∈ s := by
-  cases n with
-  | ofNat n => simpa only [Int.cast_ofNat, Int.ofNat_eq_coe] using natCast_mem s n
-  | negSucc n => simpa only [Int.cast_negSucc] using neg_mem (natCast_mem s (n + 1))
-
-/-- The `ℤ`-algebra equivalence between `Subring.closure s` and `Algebra.adjoin ℤ s` given by
-the identity map. -/
-def Subring.closureEquivAdjoinInt (s : Set R) : Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s
-    where
-  toFun := Subtype.map id fun _r hr => Subring.closure_induction hr Algebra.subset_adjoin
-    (zero_mem _) (one_mem _) (fun _ _ => add_mem) (fun _ => neg_mem) fun _ _ => mul_mem
-  invFun :=
-    Subtype.map id fun _r hr => Algebra.adjoin_induction hr Subring.subset_closure
-      (int_cast_mem _) (fun _ _ => add_mem) fun _ _ => mul_mem
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := Subtype.ext rfl
-  map_mul' _ _ := Subtype.ext rfl
-  map_add' _ _ := Subtype.ext rfl
-  commutes' _ := Subtype.ext rfl
 
 /-- The natural `ℤ`-algebra homomorphism from the unitization of a non-unital subring to
 its `Subring.closure`. -/
