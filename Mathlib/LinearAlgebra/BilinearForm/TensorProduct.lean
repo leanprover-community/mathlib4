@@ -57,7 +57,7 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
     tensorDistrib (A := A) (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
       = B₁ m₁ m₁' * algebraMap R A (B₂ m₂ m₂') :=
   rfl
-#align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmul
+#align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmulₓ
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]
@@ -65,18 +65,15 @@ protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinFo
   tensorDistrib (A := A) (B₁ ⊗ₜ[R] B₂)
 #align bilin_form.tmul BilinForm.tmul
 
-/-- The base change of a bilinear form -/
-protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) := by
-  let why := BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.toBilin <| LinearMap.mul A A) B
-  exact why -- `exact why` fails!
+/-- The base change of a bilinear form. -/
+protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
+  BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.toBilin <| LinearMap.mul A A) B
 
 @[simp]
 theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
-    tensorDistrib (A := A) (B₁ ⊗ₜ B₂) (a ⊗ₜ m₂) (a' ⊗ₜ m₂')
-      = (a * a') * algebraMap R A (B₂ m₂ m₂') :=
+    B₂.baseChange (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') * algebraMap R A (B₂ m₂ m₂') :=
   rfl
-#align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmulₓ
 
 end CommSemiring
 
