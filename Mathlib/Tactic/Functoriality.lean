@@ -414,7 +414,16 @@ example (f : X → Y) (hf : f.Surjective) (y : Y) : (by transport y along f : X)
 example (f : X → Y) (hf : f.Surjective) (y : Y) : f (by transport y along f : X) = y := by simp
 
 
-variable {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y] in
+variable {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
+
 example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : MyCompact X) :
     MyCompact Y := by
+  transport hX along f
+
+example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : MySeqCompact X) :
+    MySeqCompact Y := by
+  transport hX along f
+
+example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : CompactSpace X) :
+    CompactSpace Y := by
   transport hX along f
