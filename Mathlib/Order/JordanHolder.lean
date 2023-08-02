@@ -135,27 +135,15 @@ and `s.bot` is the least element.
 -/
 abbrev CompositionSeries (X : Type u) [Lattice X] [JordanHolderLattice X] : Type u :=
 RelSeries (IsMaximal (X := X))
--- where
---   length : ℕ
---   series : Fin (length + 1) → X
---   step' : ∀ i : Fin length, IsMaximal (series (Fin.castSucc i)) (series (Fin.succ i))
 #align composition_series CompositionSeries
 
 namespace CompositionSeries
 
 variable {X : Type u} [Lattice X] [JordanHolderLattice X]
 
--- instance coeFun : CoeFun (CompositionSeries X) fun x => Fin (x.length + 1) → X := inferInstance
--- #align composition_series.has_coe_to_fun CompositionSeries.coeFun
-
 instance inhabited [Inhabited X] : Inhabited (CompositionSeries X) :=
   inferInstanceAs <| Inhabited <| RelSeries _
 #align composition_series.has_inhabited CompositionSeries.inhabited
-
--- theorem step (s : CompositionSeries X) :
---     ∀ i : Fin s.length, IsMaximal (s (Fin.castSucc i)) (s (Fin.succ i)) :=
---   s.step'
--- #align composition_series.step CompositionSeries.step
 
 -- @[simp] -- Porting note: dsimp can prove this
 theorem coeFn_mk (length : ℕ) (series step) :
@@ -189,8 +177,7 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
 #align composition_series.total CompositionSeries.total
 
 /-- The ordered `List X` of elements of a `CompositionSeries X`. -/
-def toList (s : CompositionSeries X) : List X :=
-  List.ofFn s
+def toList (s : CompositionSeries X) : List X := RelSeries.toList s
 #align composition_series.to_list CompositionSeries.toList
 
 /-- Two `CompositionSeries` are equal if they are the same length and
@@ -205,42 +192,23 @@ have the same `i`th element for every `i` -/
 -- #align composition_series.ext_fun CompositionSeries.ext_fun
 
 @[simp]
-theorem length_toList (s : CompositionSeries X) : s.toList.length = s.length + 1 := by
-  rw [toList, List.length_ofFn]
+theorem length_toList (s : CompositionSeries X) : s.toList.length = s.length + 1 :=
+  RelSeries.length_toList s
 #align composition_series.length_to_list CompositionSeries.length_toList
 
-theorem toList_ne_nil (s : CompositionSeries X) : s.toList ≠ [] := by
-  rw [← List.length_pos_iff_ne_nil, length_toList]; exact Nat.succ_pos _
+theorem toList_ne_nil (s : CompositionSeries X) : s.toList ≠ [] :=
+  RelSeries.toList_ne_empty s
 #align composition_series.to_list_ne_nil CompositionSeries.toList_ne_nil
 
-theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) :=
-  fun s₁ s₂ (h : List.ofFn s₁ = List.ofFn s₂) => by
-  have h₁ : s₁.length = s₂.length :=
-    Nat.succ_injective
-      ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
-  have h₂ : ∀ i : Fin s₁.length.succ, s₁ i = s₂ (Fin.castIso (congr_arg Nat.succ h₁) i) :=
-    -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
-    --               different type, so we do golf here.
-    congr_fun <| List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
-  cases s₁
-  cases s₂
-  -- Porting note: `dsimp at *` doesn't work. Why?
-  dsimp at h h₁ h₂
-  subst h₁
-  -- Porting note: `[heq_iff_eq, eq_self_iff_true, true_and_iff]`
-  --             → `[mk.injEq, heq_eq_eq, true_and]`
-  simp only [RelSeries.mk.injEq, heq_eq_eq, true_and]
-  simp only [Fin.castIso_refl] at h₂
-  exact funext h₂
+theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) := fun p q h => by
+  apply (RelSeries.Equiv (r := IsMaximal (X := X))).injective _
+  ext1
+  rw [RelSeries.Equiv_apply_coe, RelSeries.Equiv_apply_coe]
+  exact h
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
 theorem chain'_toList (s : CompositionSeries X) : List.Chain' IsMaximal s.toList :=
-  List.chain'_iff_get.2
-    (by
-      intro i hi
-      simp only [toList, List.get_ofFn]
-      rw [length_toList] at hi
-      exact s.step ⟨i, hi⟩)
+  RelSeries.toList_chain' s
 #align composition_series.chain'_to_list CompositionSeries.chain'_toList
 
 theorem toList_sorted (s : CompositionSeries X) : s.toList.Sorted (· < ·) :=
@@ -255,8 +223,8 @@ theorem toList_nodup (s : CompositionSeries X) : s.toList.Nodup :=
 #align composition_series.to_list_nodup CompositionSeries.toList_nodup
 
 @[simp]
-theorem mem_toList {s : CompositionSeries X} {x : X} : x ∈ s.toList ↔ x ∈ s := by
-  rw [toList, List.mem_ofFn, mem_def]; rfl
+theorem mem_toList {s : CompositionSeries X} {x : X} : x ∈ s.toList ↔ x ∈ s :=
+  RelSeries.mem_toList
 #align composition_series.mem_to_list CompositionSeries.mem_toList
 
 /-- Make a `CompositionSeries X` from the ordered list of its elements. -/
@@ -270,30 +238,19 @@ theorem length_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
 #align composition_series.length_of_list CompositionSeries.length_ofList
 
 theorem ofList_toList (s : CompositionSeries X) :
-    ofList s.toList s.toList_ne_nil s.chain'_toList = s := by
-  refine' RelSeries.ext _ (funext _)
-  · rw [length_ofList, length_toList, Nat.succ_sub_one]
-  · rintro ⟨i, hi⟩
-    -- Porting note: Was `dsimp [ofList, toList]; rw [List.nthLe_ofFn']`.
-    simp [ofList, toList, -List.ofFn_succ]
+    ofList s.toList s.toList_ne_nil s.chain'_toList = s :=
+  (RelSeries.Equiv (r := IsMaximal (X := X))).left_inv s
 #align composition_series.of_list_to_list CompositionSeries.ofList_toList
 
 @[simp]
 theorem ofList_toList' (s : CompositionSeries X) :
-    ofList s.toList s.toList_ne_nil s.chain'_toList = s :=
-  ofList_toList s
+    ofList s.toList s.toList_ne_nil s.chain'_toList = s := ofList_toList s
 #align composition_series.of_list_to_list' CompositionSeries.ofList_toList'
 
 @[simp]
 theorem toList_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) :
-    toList (ofList l hl hc) = l := by
-  refine' List.ext_get _ _
-  · rw [length_toList, length_ofList,
-      tsub_add_cancel_of_le (Nat.succ_le_of_lt <| List.length_pos_of_ne_nil hl)]
-  · intro i hi hi'
-    dsimp [ofList, toList]
-    rw [List.get_ofFn]
-    rfl
+    toList (ofList l hl hc) = l :=
+  Subtype.ext_iff.mp ((RelSeries.Equiv (r := IsMaximal (X := X))).right_inv ⟨l, hl, hc⟩)
 #align composition_series.to_list_of_list CompositionSeries.toList_ofList
 
 /-- Two `CompositionSeries` are equal if they have the same elements. See also `ext_fun`. -/
@@ -313,8 +270,7 @@ def top (s : CompositionSeries X) : X :=
   s (Fin.last _)
 #align composition_series.top CompositionSeries.top
 
-theorem top_mem (s : CompositionSeries X) : s.top ∈ s :=
-  mem_def.2 (Set.mem_range.2 ⟨Fin.last _, rfl⟩)
+theorem top_mem (s : CompositionSeries X) : s.top ∈ s := RelSeries.last_mem _ s
 #align composition_series.top_mem CompositionSeries.top_mem
 
 @[simp]
@@ -328,12 +284,10 @@ theorem le_top_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : x ≤ s
 #align composition_series.le_top_of_mem CompositionSeries.le_top_of_mem
 
 /-- The smallest element of a `CompositionSeries` -/
-def bot (s : CompositionSeries X) : X :=
-  s 0
+def bot (s : CompositionSeries X) : X := RelSeries.head _ s
 #align composition_series.bot CompositionSeries.bot
 
-theorem bot_mem (s : CompositionSeries X) : s.bot ∈ s :=
-  mem_def.2 (Set.mem_range.2 ⟨0, rfl⟩)
+theorem bot_mem (s : CompositionSeries X) : s.bot ∈ s := RelSeries.head_mem _ s
 #align composition_series.bot_mem CompositionSeries.bot_mem
 
 @[simp]
@@ -348,17 +302,12 @@ theorem bot_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.bot �
 
 theorem length_pos_of_mem_ne {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s)
     (hxy : x ≠ y) : 0 < s.length :=
-  let ⟨i, hi⟩ := hx
-  let ⟨j, hj⟩ := hy
-  have hij : i ≠ j := mt s.inj.2 fun h => hxy (hi ▸ hj ▸ h)
-  hij.lt_or_lt.elim
-    (fun hij => lt_of_le_of_lt (zero_le (i : ℕ)) (lt_of_lt_of_le hij (Nat.le_of_lt_succ j.2)))
-      fun hji => lt_of_le_of_lt (zero_le (j : ℕ)) (lt_of_lt_of_le hji (Nat.le_of_lt_succ i.2))
+  RelSeries.length_pos_of_mem_ne hx hy hxy
 #align composition_series.length_pos_of_mem_ne CompositionSeries.length_pos_of_mem_ne
 
 theorem forall_mem_eq_of_length_eq_zero {s : CompositionSeries X} (hs : s.length = 0) {x y}
     (hx : x ∈ s) (hy : y ∈ s) : x = y :=
-  by_contradiction fun hxy => pos_iff_ne_zero.1 (length_pos_of_mem_ne hx hy hxy) hs
+  RelSeries.forall_mem_eq_of_length_eq_zero hs hx hy
 #align composition_series.forall_mem_eq_of_length_eq_zero CompositionSeries.forall_mem_eq_of_length_eq_zero
 
 /-- Remove the largest element from a `CompositionSeries`. If the series `s`
@@ -382,13 +331,7 @@ theorem bot_eraseTop (s : CompositionSeries X) : s.eraseTop.bot = s.bot :=
 #align composition_series.bot_erase_top CompositionSeries.bot_eraseTop
 
 theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ s.top) (hxs : x ∈ s) :
-    x ∈ s.eraseTop := by
-  rcases hxs with ⟨i, rfl⟩
-  have hi : (i : ℕ) < (s.length - 1).succ := by
-    conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx), Nat.succ_sub_one]
-    exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [top, s.inj, Fin.ext_iff] using hx)
-  refine' ⟨Fin.castSucc (n := s.length + 1) i, _⟩
-  simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
+    x ∈ s.eraseTop := RelSeries.mem_eraseLast_of_ne_of_mem hx hxs
 #align composition_series.mem_erase_top_of_ne_of_mem CompositionSeries.mem_eraseTop_of_ne_of_mem
 
 theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
@@ -537,7 +480,7 @@ theorem bot_snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) :
 #align composition_series.bot_snoc CompositionSeries.bot_snoc
 
 theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} :
-    y ∈ snoc s x hsat ↔ y ∈ s ∨ y = x := RelSeries.mem_snoc
+    y ∈ snoc s x hsat ↔ y ∈ s ∨ y = x := RelSeries.mem_snoc hsat
 #align composition_series.mem_snoc CompositionSeries.mem_snoc
 
 theorem eq_snoc_eraseTop {s : CompositionSeries X} (h : 0 < s.length) :

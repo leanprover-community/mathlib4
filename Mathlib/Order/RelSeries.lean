@@ -8,6 +8,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Series of a relation
@@ -54,9 +55,10 @@ lemma lt_def (x y : RelSeries r) : x < y ↔ x.length < y.length :=
 
 /-- start of a series -/
 def head (x : RelSeries r) : α := x 0
-
 /-- end of a series -/
 def last (x : RelSeries r) : α := x <| Fin.last _
+lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
+lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
 /--
 For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
@@ -137,6 +139,9 @@ lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
 /-- Every relation series gives a list -/
 abbrev toList (x : RelSeries r) : List α := List.ofFn x
 
+lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 := by
+  rw [toList, List.length_ofFn]
+
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
   intros i h
@@ -147,6 +152,30 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
 lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
+@[simp]
+theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+  rw [toList, List.mem_ofFn, mem_def]
+
+theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+    (hxy : x ≠ y) : 0 < s.length := by
+  obtain ⟨i, rfl⟩ := hx
+  obtain ⟨j, rfl⟩ := hy
+  contrapose! hxy
+  simp only [not_lt, nonpos_iff_eq_zero] at hxy
+  congr
+  apply_fun Fin.castIso (by rw [hxy, zero_add] : s.length + 1 = 1)
+  . exact Subsingleton.elim (α := Fin 1) _ _
+  . exact OrderIso.injective _
+
+theorem forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
+    (hx : x ∈ s) (hy : y ∈ s) : x = y := by
+  rcases hx with ⟨i, rfl⟩
+  rcases hy with ⟨j, rfl⟩
+  congr
+  apply_fun Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1)
+  . exact Subsingleton.elim (α := Fin 1) _ _
+  . exact OrderIso.injective _
+
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
 def fromListChain' (x : List α) (x_ne_empty : x ≠ ∅) (hx : x.Chain' r) : RelSeries r where
@@ -156,6 +185,7 @@ def fromListChain' (x : List α) (x_ne_empty : x ≠ ∅) (hx : x.Chain' r) : Re
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other.-/
+@[simps]
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
   toFun := fun x => ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun := fun x => fromListChain' _ x.2.1 x.2.2
@@ -474,10 +504,32 @@ lemma rel_last_eraseLast_last_of_pos_length (p : RelSeries r) (h : 0 < p.length)
   dsimp
   exact (Nat.succ_pred_eq_of_pos <| by linarith).symm
 
-/--
-Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combined together to form
-`a₀ --r-> ... --r-> x --r-> b ...`
--/
+theorem mem_eraseLast_of_ne_of_mem {s : RelSeries r} {x : α} (hx : x ≠ s.last) (hxs : x ∈ s) :
+    x ∈ s.eraseLast := by
+  rcases hxs with ⟨i, rfl⟩
+  refine ⟨i, ?_⟩
+  dsimp
+  congr
+  by_cases H : s.length = 0
+  · simp only [H, ge_iff_le, tsub_eq_zero_of_le, zero_add, Nat.mod_succ_eq_iff_lt, Nat.lt_one_iff]
+    have H' := i.2
+    simp_rw [H, zero_add] at H'
+    linarith
+  · have H' : s.length - 1 + 1 = s.length
+    · exact Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero H)
+    simp_rw [H']
+    rw [Nat.mod_eq_of_lt]
+    have H'' := i.2
+    rw [Nat.lt_succ_iff, le_iff_lt_or_eq] at H''
+    refine H''.elim id <| fun h => (False.elim <| hx ?_)
+    congr
+    ext
+    exact h
+
+-- /--
+-- Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combined together to form
+-- `a₀ --r-> ... --r-> x --r-> b ...`
+-- -/
 -- def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
 --   length := p.length + q.length
 --   toFun := fun i => @Fin.addCases p.length (q.length + 1) (fun _ => α) (fun i => p i.castSucc) q <|
@@ -529,7 +581,6 @@ Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combine
 --   unfold combine
 --   split_ifs with h
 --   ·
-
 
 end RelSeries
 
