@@ -729,6 +729,7 @@ theorem coeff_C_zero : coeff (C a) 0 = a :=
 theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
 #align polynomial.coeff_C_ne_zero Polynomial.coeff_C_ne_zero
 
+@[simp]
 theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
