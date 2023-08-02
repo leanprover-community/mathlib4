@@ -965,9 +965,12 @@ noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     rw [Prod.smul_mk] at hav'
     exact (existsUnique_from_graph @hg hsmul).unique hav hav'
 
-open Classical
+open Classical in
 
-/-- Define a `LinearPMap` from its graph. -/
+/-- Define a `LinearPMap` from its graph.
+
+In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map
+is just the zero map. -/
 noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F
     where
   domain := g.map (LinearMap.fst R E F)
