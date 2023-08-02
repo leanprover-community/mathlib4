@@ -19,7 +19,8 @@ example {α : Type u} {β : Type v} [Add α] [h : Sub β] (f : α → β) ⦃_g 
   rfl
 
 -- an example with a hygienic variable
-/-- info: theorem extracted_1 (n : ℕ) : Nat.succ n = Nat.succ n := sorry
+/--
+info: theorem extracted_1 (n : ℕ) : Nat.succ n = Nat.succ n := sorry
 -/
 #guard_msgs in
 example (n : ℕ) : n = n := by
@@ -29,15 +30,16 @@ example (n : ℕ) : n = n := by
   rfl
 
 -- an example with auto-implicit `Sort` and variable
-/-- info: theorem extracted_1.{u_1} {α : Sort u_1} {n : α} : n = n := sorry
+/--
+info: theorem extracted_1.{u_1} {α : Sort u_1} {n : α} : n = n := sorry
 -/
 #guard_msgs in
 example : n = n := by
   extract_goal
   rfl
 
-/-- info: theorem extracted_1 {z : Int} :
-  @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
+/--
+info: theorem extracted_1 {z : ℤ} : ∃ n, ↑n = z := sorry
 ---
 warning: declaration uses 'sorry'
 -/
