@@ -411,6 +411,12 @@ theorem ae_all_iff {ι : Sort _} [Countable ι] {p : α → ι → Prop} :
   eventually_countable_forall
 #align measure_theory.ae_all_iff MeasureTheory.ae_all_iff
 
+theorem all_ae_of {ι : Sort _} {p : α → ι → Prop} (hp : ∀ᵐ a ∂μ, ∀ i, p a i) (i : ι) :
+    ∀ᵐ a ∂μ, p a i := by
+  change μ { a | ¬ ∀ i, p a i } = 0 at hp
+  simp_rw [not_forall, Set.setOf_exists fun i x => ¬p x i] at hp
+  exact le_zero_iff.1 <| hp ▸ measure_mono (Set.subset_iUnion (fun i => {a | ¬p a i}) i)
+
 theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : ∀ (_x : α), ∀ i ∈ S, Prop} :
     (∀ᵐ x ∂μ, ∀ i (hi : i ∈ S), p x i hi) ↔ ∀ i (hi : i ∈ S), ∀ᵐ x ∂μ, p x i hi :=
   eventually_countable_ball hS
@@ -546,6 +552,17 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   convert ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
+
+theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
+    {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
+    (h_eq : m = MeasurableSpace.generateFrom s)
+    (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)
+    (h_compl : ∀ᵐ x ∂μ, ∀ t, MeasurableSet t → C x t → C x tᶜ)
+    (h_union : ∀ᵐ x ∂μ, ∀ f : ℕ → Set α,
+        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
+    ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
+  filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
+    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
 
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α} :

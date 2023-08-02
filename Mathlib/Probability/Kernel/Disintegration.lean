@@ -505,32 +505,25 @@ theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKern
   by_cases hx : x ∈ t
   all_goals simp [hx]
 
-section move
+-- Cannot move to `ae_all_iff` since that file does not import the instance showing `ℚ` is countable
+section Real
 
-lemma ae_all_of_aux {p : Ω → ℝ → Prop}
+lemma real_ae_all_of_rat_aux {p : Ω → ℝ → Prop}
   (hp : ∀ᵐ ω ∂μ, (∀ q : ℚ, p ω q) → ∀ t, p ω t)
   (hRat : ∀ᵐ ω ∂μ, ∀ q : ℚ, p ω q):
     ∀ᵐ ω ∂μ, ∀ t, p ω t := by
   filter_upwards [hp, hRat] with ω hq using hq
 
-lemma ae_all_of {p : Ω → ℝ → Prop} (hp : ∀ t : ℝ, ∀ᵐ ω ∂μ, p ω t)
+lemma real_ae_all_of_rat {p : Ω → ℝ → Prop} (hp : ∀ t : ℝ, ∀ᵐ ω ∂μ, p ω t)
   (hp' : ∀ᵐ ω ∂μ, (∀ q : ℚ, p ω q) → ∀ t, p ω t) :
     ∀ᵐ ω ∂μ, ∀ t, p ω t := by
-  refine' ae_all_of_aux hp' _
+  refine' real_ae_all_of_rat_aux hp' _
   simp_rw [ae_all_iff]
   exact fun q => hp q
 
-theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
-  {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
-  (h_eq : m = MeasurableSpace.generateFrom s)
-  (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)
-  (h_compl : ∀ᵐ x ∂μ, ∀ t, MeasurableSet t → C x t → C x tᶜ)
-  (h_union : ∀ᵐ x ∂μ, ∀ f : ℕ → Set α,
-        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
-    ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
-  filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
-    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
+end Real
 
+-- Move
 lemma Real.exists_rat_seq_antitone_tendsto (x : ℝ) :
     ∃ u : ℕ → ℚ, Antitone u ∧ Filter.Tendsto (fun n => (u n : ℝ)) Filter.atTop (𝓝 x) := by
   have hemp : {y : ℝ | ∃ q : ℚ, ↑q = y ∧ x < q}.Nonempty
@@ -549,14 +542,13 @@ lemma Real.exists_rat_seq_antitone_tendsto (x : ℝ) :
   specialize hz ↑q ⟨q, rfl, not_le.1 hlt'⟩
   linarith
 
-end move
-
 -- The next two lemmas establishes uniqueness of the disintegration kernel on ℝ
 lemma eq_condKernel_of_measure_eq_compProd_real_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
   (κ : kernel α ℝ) [IsFiniteKernel κ]
   (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
     ∀ᵐ x ∂ρ.fst, ∀ r : ℝ, κ x (Set.Iic r) = ρ.condKernel x (Set.Iic r) := by
-  refine' ae_all_of (fun t => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic)
+  refine' real_ae_all_of_rat
+    (fun t => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic)
     (ae_of_all _ (fun ω hω t => _))
   obtain ⟨u, hmono, htends⟩ := Real.exists_rat_seq_antitone_tendsto t
   have : ∀ μ : Measure ℝ, IsFiniteMeasure μ →
