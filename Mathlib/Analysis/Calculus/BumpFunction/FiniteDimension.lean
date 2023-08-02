@@ -139,7 +139,6 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       exact ⟨R, fun x => hR (mem_range_self _)⟩
     choose R hR using this
     let M := max (((Finset.range (n + 1)).image R).max' (by simp)) 1
-    have M_pos : 0 < M := zero_lt_one.trans_le (le_max_right _ _)
     have δnpos : 0 < δ n := δpos n
     have IR : ∀ i ≤ n, R i ≤ M := by
       intro i hi
