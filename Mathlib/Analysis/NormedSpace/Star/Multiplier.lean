@@ -424,12 +424,9 @@ variable [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [NormedStarGroup A]
 `(star a).toProd = (star ∘ a.snd ∘ star, star ∘ a.fst ∘ star)`. -/
 instance instStar : Star 𝓜(𝕜, A) where
   star a :=
-    { fst :=
-        (((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A).comp a.snd).comp
-          ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
-      snd :=
-        (((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A).comp a.fst).comp
-          ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
+    { toProd :=
+        (((starₗᵢ 𝕜 (E := A) : A →L⋆[𝕜] A).comp a.snd).comp (starₗᵢ 𝕜 (E := A) : A →L⋆[𝕜] A),
+        ((starₗᵢ 𝕜 (E := A) : A →L⋆[𝕜] A).comp a.fst).comp (starₗᵢ 𝕜 (E := A) : A →L⋆[𝕜] A))
       central := fun x y => by
         simpa only [star_mul, star_star] using (congr_arg star (a.central (star y) (star x))).symm }
 
@@ -475,12 +472,10 @@ maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`
 Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
 `algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
 `DoubleCentralizer.coe_eq_algebraMap` below. -/
--- porting note: added `noncomputable` because an IR check failed?
 @[coe]
-protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
-  { fst := ContinuousLinearMap.mul 𝕜 A a
-    snd := (ContinuousLinearMap.mul 𝕜 A).flip a
-    central := fun _x _y => mul_assoc _ _ _ }
+protected def coe (a : A) : 𝓜(𝕜, A) where
+  toProd := (mul 𝕜 A a, (mul 𝕜 A).flip a)
+  central _ _ := mul_assoc _ _ _
 
 variable {𝕜}
 
@@ -494,19 +489,17 @@ noncomputable instance : CoeTC A 𝓜(𝕜, A) where
   coe := DoubleCentralizer.coe 𝕜
 
 @[simp, norm_cast]
-theorem coe_fst (a : A) : (a : 𝓜(𝕜, A)).fst = ContinuousLinearMap.mul 𝕜 A a :=
+theorem coe_toProd (a : A) : (a : 𝓜(𝕜, A)).toProd = (mul 𝕜 A a, (mul 𝕜 A).flip a) :=
   rfl
-#align double_centralizer.coe_fst DoubleCentralizer.coe_fst
 
-@[simp, norm_cast]
-theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul 𝕜 A).flip a :=
-  rfl
-#align double_centralizer.coe_snd DoubleCentralizer.coe_snd
+-- note: removeed in favor of `DoubleCentralizer.coe_toProd`
+#noalign double_centralizer.coe_fst
+#noalign double_centralizer.coe_snd
 
 theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
   ext <;>
-  simp only [coe_fst, mul_apply', mul_one, algebraMap_toProd, Prod.algebraMap_apply, coe_snd,
-    flip_apply, one_mul] <;>
+  simp only [coe_toProd, flip_apply, mul_apply', one_mul, mul_one, algebraMap_toProd,
+    Prod.algebraMap_apply] <;>
   simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply, smul_eq_mul, mul_one]
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 
@@ -515,18 +508,20 @@ homomorphism. -/
 @[simps]
 noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [NormedStarGroup A] :
     A →⋆ₙₐ[𝕜] 𝓜(𝕜, A) where
-  toFun a := a
-  map_smul' k a := by
-    ext <;> simp only [coe_fst, coe_snd, ContinuousLinearMap.map_smul, smul_fst, smul_snd]
-  map_zero' := by ext <;> simp only [coe_fst, coe_snd, map_zero, zero_fst, zero_snd]
-  map_add' a b := by ext <;> simp only [coe_fst, coe_snd, map_add, add_fst, add_snd]
-  map_mul' a b := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', flip_apply, mul_fst, mul_snd,
-        ContinuousLinearMap.coe_mul, Function.comp_apply, mul_assoc]
-  map_star' a := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', star_fst, star_snd, flip_apply, star_mul, star_star]
+  toNonUnitalAlgHom :=
+    { toFun := fun a ↦ DoubleCentralizer.coe 𝕜 a
+      map_smul' := fun k a ↦ ext 𝕜 A _ _ <| by simp
+      map_add' := fun a b ↦ ext 𝕜 A _ _  <| by simp
+      map_zero' := ext 𝕜 A _ _ <| by simp
+      map_mul' := fun a b ↦ by
+        simp only -- this helps speed things up
+        ext x <;>
+        simp only [mul_fst, mul_snd, coe_toProd, mul_apply', ContinuousLinearMap.coe_mul,
+          Function.comp_apply, mul_assoc, flip_apply] }
+  map_star' := fun a ↦ by
+    simp only -- this helps speed things up
+    ext x <;>
+    simp only [mul_apply', star_fst, star_snd, coe_toProd, flip_apply, star_mul, star_star]
 #align double_centralizer.coe_hom DoubleCentralizer.coeHom
 
 /-!
