@@ -168,20 +168,10 @@ theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
   Basis.localizationLocalization_apply ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K) i
 #align number_field.integral_basis_apply NumberField.integralBasis_apply
 
--- This should be moved, perhaps to Mathlib.Algebra.Algebra.Subalgebra.Tower?
-@[simp]
-lemma _root_.Subalgebra.range_isScalarTower_toAlgHom {R A} [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) :
-    LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
-  ext
-  simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
-    IsScalarTower.coe_toAlgHom', Subalgebra.mem_toSubmodule]
-  rfl
-
 theorem mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ 𝓞 K := by
   rw [integralBasis, Basis.localizationLocalization_span, Subalgebra.range_isScalarTower_toAlgHom,
-      Subalgebra.mem_toSubmodule]
+    Subalgebra.mem_toSubmodule]
 
 theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
