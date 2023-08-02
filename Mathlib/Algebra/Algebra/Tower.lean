@@ -30,29 +30,41 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring S] [Algebra R A]
-variable [AddCommMonoid M] [SMul R S] [Module R M] [Module S M] [Module A M]
-variable [IsScalarTower R A M] [IsScalarTower R S M] [SMulCommClass S R M] [SMulCommClass A S M]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 variable {A}
 
 
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
-on the `S`-module `M`.
+on the `B`-module `M`.
 
 This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
 called `Algebra.toModuleEnd`.
 
-Note this can be used to get the fact that left-multiplication by `A` is right `A`-linear, and vice
-versa, as
+The typeclasses correspond to the situation where the types act on each other as
+```
+R ----→ B
+| ⟍     |
+|   ⟍   |
+↓     ↘ ↓
+A ----→ M
+```
+where the diagram commutes, the action by `R` commutes with everything, and the action by `A` and
+`B` on `M` commute.
+
+Typically this is most useful with `B = R` as `Algebra.lsmul R R A : A →ₐ[R] Module.End R M`.
+However this can be used to get the fact that left-multiplication by `A` is right `A`-linear, and
+vice versa, as
 ```lean
 example : A →ₐ[R] Module.End Aᵐᵒᵖ A := Algebra.lsmul R Aᵐᵒᵖ A
 example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
 ```
 respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
 -/
-def lsmul : A →ₐ[R] Module.End S M where
-  toFun := DistribMulAction.toLinearMap S M
+def lsmul : A →ₐ[R] Module.End B M where
+  toFun := DistribMulAction.toLinearMap B M
   map_one' := LinearMap.ext fun _ => one_smul A _
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _
@@ -61,7 +73,7 @@ def lsmul : A →ₐ[R] Module.End S M where
 #align algebra.lsmul Algebra.lsmulₓ
 
 @[simp]
-theorem lsmul_coe (a : A) : (lsmul R S M a : M → M) = (· • ·) a := rfl
+theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (· • ·) a := rfl
 #align algebra.lsmul_coe Algebra.lsmul_coe
 
 end Algebra
