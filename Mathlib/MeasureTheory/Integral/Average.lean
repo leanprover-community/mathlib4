@@ -782,7 +782,6 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
     simp only [integral_undef hi, lt_self_iff_false, not_false_eq_true]
   have I : ∀ᶠ i in l, ∫ y, g i y • (f y - c) ∂μ + (∫ y, g i y ∂μ) • c = ∫ y, g i y • f y ∂μ := by
     filter_upwards [f_int, g_int, g_supp, g_bound] with i hif hig hisupp hibound
-    dsimp
     rw [← integral_smul_const, ← integral_add]
     · simp only [smul_sub, sub_add_cancel]
     · simp_rw [smul_sub]

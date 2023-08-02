@@ -153,9 +153,8 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     use fun i ↦ if i = a then u else v * μ i
     have hμ' : (∑ i in t, v * ((μ i * ∏ j in t \ {i}, s j) * s a)) = v * s a := by
       rw [← mul_sum, ← sum_mul, hμ, one_mul]
-    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat]
-    dsimp
-    rw [if_pos rfl, ← huv, ← hμ', sum_congr rfl]
+    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat, if_pos rfl,
+      ← huv, ← hμ', sum_congr rfl]
     intro x hx
     rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
     rw [mul_assoc]
