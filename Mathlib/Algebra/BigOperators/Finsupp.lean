@@ -70,7 +70,7 @@ theorem prod_fintype [Fintype α] (f : α →₀ M) (g : α → M → N) (h : �
 #align finsupp.sum_fintype Finsupp.sum_fintype
 
 @[to_additive (attr := simp)]
-theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 = 1) :
+theorem prod_single_index [DecidableEq α] {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 = 1) :
     (single a b).prod h = h a b :=
   calc
     (single a b).prod h = ∏ x in {a}, h x (single a b x) :=
@@ -170,7 +170,7 @@ theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : 
 @[to_additive
       " Taking a sum over over `f : α →₀ M` is the same as adding the value on a
       single element `y ∈ f.support` to the sum over `erase y f`. "]
-theorem mul_prod_erase (f : α →₀ M) (y : α) (g : α → M → N) (hyf : y ∈ f.support) :
+theorem mul_prod_erase [DecidableEq α] (f : α →₀ M) (y : α) (g : α → M → N) (hyf : y ∈ f.support) :
     g y (f y) * (erase y f).prod g = f.prod g := by
   classical
     rw [Finsupp.prod, Finsupp.prod, ← Finset.mul_prod_erase _ _ hyf, Finsupp.support_erase,
@@ -187,7 +187,8 @@ then its product over `f : α →₀ M` is the same as multiplying the value on 
       " Generalization of `Finsupp.add_sum_erase`: if `g` maps a second argument of 0
       to 0, then its sum over `f : α →₀ M` is the same as adding the value on any element
       `y : α` to the sum over `erase y f`. "]
-theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
+theorem mul_prod_erase' [DecidableEq α]
+    (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
     g y (f y) * (erase y f).prod g = f.prod g := by
   classical
     by_cases hyf : y ∈ f.support
@@ -270,13 +271,13 @@ theorem MonoidHom.finsupp_prod_apply [Zero β] [Monoid N] [CommMonoid P] (f : α
 
 namespace Finsupp
 
-theorem single_multiset_sum [AddCommMonoid M] (s : Multiset M) (a : α) :
+theorem single_multiset_sum [DecidableEq α] [AddCommMonoid M] (s : Multiset M) (a : α) :
     single a s.sum = (s.map (single a)).sum :=
   Multiset.induction_on s (single_zero _) fun a s ih => by
     rw [Multiset.sum_cons, single_add, ih, Multiset.map_cons, Multiset.sum_cons]
 #align finsupp.single_multiset_sum Finsupp.single_multiset_sum
 
-theorem single_finset_sum [AddCommMonoid M] (s : Finset ι) (f : ι → M) (a : α) :
+theorem single_finset_sum [DecidableEq α] [AddCommMonoid M] (s : Finset ι) (f : ι → M) (a : α) :
     single a (∑ b in s, f b) = ∑ b in s, single a (f b) := by
   trans
   · apply single_multiset_sum
@@ -284,7 +285,7 @@ theorem single_finset_sum [AddCommMonoid M] (s : Finset ι) (f : ι → M) (a : 
     rfl
 #align finsupp.single_finset_sum Finsupp.single_finset_sum
 
-theorem single_sum [Zero M] [AddCommMonoid N] (s : ι →₀ M) (f : ι → M → N) (a : α) :
+theorem single_sum [DecidableEq α] [Zero M] [AddCommMonoid N] (s : ι →₀ M) (f : ι → M → N) (a : α) :
     single a (s.sum f) = s.sum fun d c => single a (f d c) :=
   single_finset_sum _ _ _
 #align finsupp.single_sum Finsupp.single_sum
@@ -414,7 +415,7 @@ theorem prod_hom_add_index [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
 
 /-- The canonical isomorphism between families of additive monoid homomorphisms `α → (M →+ N)`
 and monoid homomorphisms `(α →₀ M) →+ N`. -/
-def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α →₀ M) →+ N)
+def liftAddHom [DecidableEq α] [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α →₀ M) →+ N)
     where
   toFun F :=
     { toFun := fun f ↦ f.sum fun x ↦ F x
@@ -434,36 +435,39 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
 #align finsupp.lift_add_hom Finsupp.liftAddHom
 
 @[simp]
-theorem liftAddHom_apply [AddCommMonoid M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :
+theorem liftAddHom_apply [DecidableEq α] [AddCommMonoid M] [AddCommMonoid N]
+    (F : α → M →+ N) (f : α →₀ M) :
     (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x => F x :=
   rfl
 #align finsupp.lift_add_hom_apply Finsupp.liftAddHom_apply
 
 @[simp]
-theorem liftAddHom_symm_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α) :
+theorem liftAddHom_symm_apply [DecidableEq α] [AddCommMonoid M] [AddCommMonoid N]
+    (F : (α →₀ M) →+ N) (x : α) :
     (liftAddHom (α := α) (M := M) (N := N)).symm F x = F.comp (singleAddHom x) :=
   rfl
 #align finsupp.lift_add_hom_symm_apply Finsupp.liftAddHom_symm_apply
 
-theorem liftAddHom_symm_apply_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α)
+theorem liftAddHom_symm_apply_apply [DecidableEq α] [AddCommMonoid M] [AddCommMonoid N]
+    (F : (α →₀ M) →+ N) (x : α)
     (y : M) : (liftAddHom (α := α) (M := M) (N := N)).symm F x y = F (single x y) :=
   rfl
 #align finsupp.lift_add_hom_symm_apply_apply Finsupp.liftAddHom_symm_apply_apply
 
 @[simp]
-theorem liftAddHom_singleAddHom [AddCommMonoid M] :
+theorem liftAddHom_singleAddHom [DecidableEq α] [AddCommMonoid M] :
     (liftAddHom (α := α) (M := M) (N := α →₀ M)) (singleAddHom : α → M →+ α →₀ M) =
       AddMonoidHom.id _ :=
   liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
 #align finsupp.lift_add_hom_single_add_hom Finsupp.liftAddHom_singleAddHom
 
 @[simp]
-theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
+theorem sum_single [DecidableEq α] [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
   FunLike.congr_fun liftAddHom_singleAddHom f
 #align finsupp.sum_single Finsupp.sum_single
 
 @[simp]
-theorem sum_univ_single [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
+theorem sum_univ_single [DecidableEq α] [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     (∑ j : α, (single i m) j) = m := by
 -- Porting note: rewrite due to leaky classical in lean3
   classical rw [single, coe_mk, Finset.sum_pi_single']
@@ -471,7 +475,7 @@ theorem sum_univ_single [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 #align finsupp.sum_univ_single Finsupp.sum_univ_single
 
 @[simp]
-theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
+theorem sum_univ_single' [DecidableEq α] [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     (∑ j : α, (single j m) i) = m := by
 -- Porting note: rewrite due to leaky classical in lean3
   simp_rw [single, coe_mk]
@@ -481,19 +485,21 @@ theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
-    (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
+theorem liftAddHom_apply_single [DecidableEq α] [AddCommMonoid M] [AddCommMonoid N]
+    (f : α → M →+ N) (a : α) (b : M) :
+    (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
   sum_single_index (f a).map_zero
 #align finsupp.lift_add_hom_apply_single Finsupp.liftAddHom_apply_single
 
 @[simp]
-theorem liftAddHom_comp_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α) :
+theorem liftAddHom_comp_single [DecidableEq α] [AddCommMonoid M] [AddCommMonoid N]
+    (f : α → M →+ N) (a : α) :
     ((liftAddHom (α := α) (M := M) (N := N)) f).comp (singleAddHom a) = f a :=
   AddMonoidHom.ext fun b => liftAddHom_apply_single f a b
 #align finsupp.lift_add_hom_comp_single Finsupp.liftAddHom_comp_single
 
-theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g : N →+ P)
-    (f : α → M →+ N) :
+theorem comp_liftAddHom [DecidableEq α] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+    (g : N →+ P) (f : α → M →+ N) :
     g.comp ((liftAddHom (α := α) (M := M) (N := N)) f) =
       (liftAddHom (α := α) (M := M) (N := P)) fun a => g.comp (f a) :=
   liftAddHom.symm_apply_eq.1 <|
@@ -501,14 +507,16 @@ theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 #align finsupp.comp_lift_add_hom Finsupp.comp_liftAddHom
 
-theorem sum_sub_index [AddCommGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : α → β → γ}
-    (h_sub : ∀ a b₁ b₂, h a (b₁ - b₂) = h a b₁ - h a b₂) : (f - g).sum h = f.sum h - g.sum h :=
+theorem sum_sub_index [DecidableEq α] [AddCommGroup β] [AddCommGroup γ]
+    {f g : α →₀ β} {h : α → β → γ} (h_sub : ∀ a b₁ b₂, h a (b₁ - b₂) = h a b₁ - h a b₂) :
+    (f - g).sum h = f.sum h - g.sum h :=
   ((liftAddHom (α := α) (M := β) (N := γ)) fun a =>
     AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
 #align finsupp.sum_sub_index Finsupp.sum_sub_index
 
 @[to_additive]
-theorem prod_embDomain [Zero M] [CommMonoid N] {v : α →₀ M} {f : α ↪ β} {g : β → M → N} :
+theorem prod_embDomain [DecidableEq β] [Zero M] [CommMonoid N]
+    {v : α →₀ M} {f : α ↪ β} {g : β → M → N} :
     (v.embDomain f).prod g = v.prod fun a b => g (f a) b := by
   rw [prod, prod, support_embDomain, Finset.prod_map]
   simp_rw [embDomain_apply]
@@ -598,7 +606,7 @@ theorem prod_dvd_prod_of_subset_of_dvd [AddCommMonoid M] [CommMonoid N] {f1 f2 :
     exact h2
 #align finsupp.prod_dvd_prod_of_subset_of_dvd Finsupp.prod_dvd_prod_of_subset_of_dvd
 
-lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : ∀ a ∈ s, M) :
+lemma indicator_eq_sum_single [DecidableEq α] [AddCommMonoid M] (s : Finset α) (f : ∀ a ∈ s, M) :
     indicator s f = ∑ x in s.attach, single ↑x (f x x.2) := by
   rw [← sum_single (indicator s f), sum, sum_subset (support_indicator_subset _ _), ← sum_attach]
   · refine' Finset.sum_congr rfl (fun _ _ => _)
@@ -608,7 +616,7 @@ lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : ∀ a ∈ s
 #align finsupp.indicator_eq_sum_single Finsupp.indicator_eq_sum_single
 
 @[to_additive (attr := simp)]
-lemma prod_indicator_index [Zero M] [CommMonoid N]
+lemma prod_indicator_index [DecidableEq α] [Zero M] [CommMonoid N]
     {s : Finset α} (f : ∀ a ∈ s, M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s f).prod h = ∏ x in s.attach, h ↑x (f x x.2) := by
   rw [prod_of_support_subset _ (support_indicator_subset _ _) h h_zero, ← prod_attach]

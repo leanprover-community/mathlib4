@@ -178,7 +178,7 @@ instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →
 #align finsupp.decidable_le Finsupp.decidableLE
 
 @[simp]
-theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=
+theorem single_le_iff [DecidableEq ι] {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=
   (le_iff' _ _ support_single_subset).trans <| by simp
 #align finsupp.single_le_iff Finsupp.single_le_iff
 
@@ -209,7 +209,7 @@ theorem tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=
 #align finsupp.tsub_apply Finsupp.tsub_apply
 
 @[simp]
-theorem single_tsub : single i (a - b) = single i a - single i b := by
+theorem single_tsub [DecidableEq ι] : single i (a - b) = single i a - single i b := by
   ext j
   obtain rfl | h := eq_or_ne i j
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
@@ -261,7 +261,7 @@ end CanonicallyLinearOrderedAddMonoid
 
 section Nat
 
-theorem sub_single_one_add {a : ι} {u u' : ι →₀ ℕ} (h : u a ≠ 0) :
+theorem sub_single_one_add [DecidableEq ι] {a : ι} {u u' : ι →₀ ℕ} (h : u a ≠ 0) :
     u - single a 1 + u' = u + u' - single a 1 :=
   tsub_add_eq_add_tsub <| single_le_iff.mpr <| Nat.one_le_iff_ne_zero.mpr h
 #align finsupp.sub_single_one_add Finsupp.sub_single_one_add

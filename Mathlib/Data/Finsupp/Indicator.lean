@@ -26,13 +26,12 @@ variable {ι α : Type _}
 
 namespace Finsupp
 
-variable [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
+variable [DecidableEq ι] [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
 
 /-- Create an element of `ι →₀ α` from a finset `s` and a function `f` defined on this finset. -/
 def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α
     where
   toFun i :=
-    haveI := Classical.decEq ι
     if H : i ∈ s then f i H else 0
   support :=
     haveI := Classical.decEq α
@@ -52,9 +51,8 @@ theorem indicator_of_not_mem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s 
 variable (s i)
 
 @[simp]
-theorem indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s then f i hi else 0 := by
-  simp only [indicator, ne_eq, coe_mk]
-  congr
+theorem indicator_apply :
+  indicator s f i = if hi : i ∈ s then f i hi else 0 := rfl
 #align finsupp.indicator_apply Finsupp.indicator_apply
 
 theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f := by
