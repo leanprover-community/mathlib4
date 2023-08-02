@@ -1064,6 +1064,10 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
   Infinite.of_surjective Prod.fst Prod.fst_surjective
 #align prod.infinite_of_left Prod.infinite_of_left
 
+instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
+    Infinite { p : α × α // _root_.Commute p.1 p.2 } :=
+  Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
+
 namespace Infinite
 
 private noncomputable def natEmbeddingAux (α : Type _) [Infinite α] : ℕ → α

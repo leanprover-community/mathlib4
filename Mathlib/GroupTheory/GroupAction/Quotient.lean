@@ -405,10 +405,6 @@ end Subgroup
 
 section conjClasses
 
-instance instInfiniteProdSubtypeCommute {M : Type _} [Mul M] [Infinite M] :
-    Infinite { p : M × M // _root_.Commute p.1 p.2 } :=
-  Infinite.of_injective (fun m => ⟨⟨m, m⟩, rfl⟩) (by intro; simp)
-
 open Fintype
 
 theorem card_comm_eq_card_conjClasses_mul_card (G : Type _) [Group G] :
