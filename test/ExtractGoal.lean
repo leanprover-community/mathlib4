@@ -35,3 +35,14 @@ example (n : ℕ) : n = n := by
 example : n = n := by
   extract_goal
   rfl
+
+/-- info: theorem extracted_1 {z : Int} :
+  @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example {z : Int} : ∃ n : Nat, ↑n = z := by
+  set_option pp.all true in
+  extract_goal
+  sorry
