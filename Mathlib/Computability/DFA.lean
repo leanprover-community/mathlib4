@@ -2,15 +2,12 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.DFA
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Computability.Language
 import Mathlib.Tactic.NormNum
+
+#align_import computability.DFA from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Deterministic Finite Automata
@@ -95,7 +92,7 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 #align DFA.eval_from_of_append DFA.evalFrom_of_append
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
-def accepts : Language α := fun x => M.eval x ∈ M.accept
+def accepts : Language α := {x | M.eval x ∈ M.accept}
 #align DFA.accepts DFA.accepts
 
 theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl

@@ -2,11 +2,6 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.cast.basic
-! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Group.Opposite
+
+#align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -87,8 +84,12 @@ theorem _root_.Commute.ofNat_right [NonAssocSemiring α] (x : α) (n : ℕ) [n.A
   n.commute_cast x
 
 section OrderedSemiring
+/- Note: even though the section indicates `OrderedSemiring`, which is the common use case,
+we use a generic collection of instances so that it applies in other settings (e.g., in a
+`StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
-variable [OrderedSemiring α]
+variable [AddCommMonoidWithOne α] [PartialOrder α]
+variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
 
 @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
@@ -96,21 +97,30 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
-@[simp]
-theorem cast_nonneg (n : ℕ) : 0 ≤ (n : α) :=
+@[simp low]
+theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
   @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
+
+-- without this more specific version Lean often chokes
+@[simp]
+theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
+  cast_nonneg' n
 #align nat.cast_nonneg Nat.cast_nonneg
 
 section Nontrivial
 
-variable [Nontrivial α]
+variable [NeZero (1 : α)]
 
 theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
-  zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg
+  zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg'
 #align nat.cast_add_one_pos Nat.cast_add_one_pos
 
+@[simp low]
+theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
+
+-- without this more specific version Lean often chokes
 @[simp]
-theorem cast_pos {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
+theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
 #align nat.cast_pos Nat.cast_pos
 
 end Nontrivial
@@ -266,8 +276,8 @@ theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
 
 --Porting note: new theorem
 @[simp]
-theorem map_ofNat [RingHomClass F R S] (f : F)  (n : ℕ) [Nat.AtLeastTwo n] :
-    (f (OfNat.ofNat n) : S) = OfNat.ofNat n :=
+theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
+    (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
   map_natCast f n
 
 theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
@@ -327,6 +337,9 @@ theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
 theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.coe_nat
+
+@[simp]
+theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 
 end Pi
 

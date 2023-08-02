@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module category_theory.category.PartialFun
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.Data.PFun
+
+#align_import category_theory.category.PartialFun from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # The category of types with partial functions
@@ -96,7 +93,7 @@ instance : Faithful typeToPartialFun where
   map_injective {_ _} := PFun.lift_injective
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
-This the computable part of the equivalence `PartialFunEquivPointed`. -/
+This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := { x : X // x ≠ X.point }
@@ -115,7 +112,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
 #align Pointed_to_PartialFun pointedToPartialFun
 
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
-pointed types. This the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
+pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
 be computable because `= Option.none` is decidable while the domain of a general `part` isn't. -/
 @[simps map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by

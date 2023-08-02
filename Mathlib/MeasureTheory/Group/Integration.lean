@@ -2,15 +2,11 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.group.integration
-! leanprover-community/mathlib commit ec247d43814751ffceb33b758e8820df2372bf6f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Group.Action
+
+#align_import measure_theory.group.integration from "leanprover-community/mathlib"@"ec247d43814751ffceb33b758e8820df2372bf6f"
 
 /-!
 # Integration on Groups

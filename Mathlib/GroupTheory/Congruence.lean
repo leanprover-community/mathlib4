@@ -2,16 +2,13 @@
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
-
-! This file was ported from Lean 3 source module group_theory.congruence
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
+
+#align_import group_theory.congruence from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Congruence relations
@@ -257,7 +254,7 @@ variable (c)
 @[to_additive "Defining the quotient by an additive congruence relation of a type with
 an addition."]
 protected def Quotient :=
-  Quotient <| c.toSetoid
+  Quotient c.toSetoid
 #align con.quotient Con.Quotient
 #align add_con.quotient AddCon.Quotient
 
@@ -882,16 +879,11 @@ theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
 #align con.mrange_mk' Con.mrange_mk'
 #align add_con.mrange_mk' AddCon.mrange_mk'
 
-/-- The elements related to `x ∈ M`, `M` a monoid, by the kernel of a monoid homomorphism are
-    those in the preimage of `f(x)` under `f`. -/
-@[to_additive "The elements related to `x ∈ M`, `M` an `AddMonoid`, by the kernel of
-an `AddMonoid` homomorphism are those in the preimage of `f(x)` under `f`. "]
-theorem ker_apply_eq_preimage {f : M →* P} (x) : (ker f) x = f ⁻¹' {f x} :=
-  Set.ext fun _ =>
-    ⟨fun h => Set.mem_preimage.2 <| Set.mem_singleton_iff.2 h.symm, fun h =>
-      (Set.mem_singleton_iff.1 <| Set.mem_preimage.1 h).symm⟩
-#align con.ker_apply_eq_preimage Con.ker_apply_eq_preimage
-#align add_con.ker_apply_eq_preimage AddCon.ker_apply_eq_preimage
+-- Porting note: used to abuse defeq between sets and predicates
+@[to_additive]
+theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
+#noalign con.ker_apply_eq_preimage
+#noalign add_con.ker_apply_eq_preimage
 
 /-- Given a monoid homomorphism `f : N → M` and a congruence relation `c` on `M`, the congruence
     relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism composed with

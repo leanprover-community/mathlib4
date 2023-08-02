@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measure.measure_space_def
-! leanprover-community/mathlib commit 146a2eed7ad5887ade571e073d0805d2ac618043
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.OuterMeasure
 import Mathlib.Order.Filter.CountableInter
+
+#align_import measure_theory.measure.measure_space_def from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
 /-!
 # Measure spaces
@@ -204,6 +201,12 @@ theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = 
   top_unique <| h₁ ▸ measure_mono h
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
+@[simp, mono]
+theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono $ subset_union_left s t
+
+@[simp, mono]
+theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono $ subset_union_right s t
+
 /-- For every set there exists a measurable superset of the same measure. -/
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s := by
@@ -332,12 +335,15 @@ theorem exists_measure_pos_of_not_measure_iUnion_null [Countable β] {s : β →
   exact measure_iUnion_null fun n => nonpos_iff_eq_zero.1 (hs n)
 #align measure_theory.exists_measure_pos_of_not_measure_Union_null MeasureTheory.exists_measure_pos_of_not_measure_iUnion_null
 
+theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
+  lt_of_le_of_lt (μ.mono hst) hs.lt_top
+
 theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
-  (measure_mono (Set.inter_subset_left s t)).trans_lt hs_finite.lt_top
+  measure_lt_top_of_subset (inter_subset_left s t) hs_finite
 #align measure_theory.measure_inter_lt_top_of_left_ne_top MeasureTheory.measure_inter_lt_top_of_left_ne_top
 
 theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ :=
-  inter_comm t s ▸ measure_inter_lt_top_of_left_ne_top ht_finite
+  measure_lt_top_of_subset (inter_subset_right s t) ht_finite
 #align measure_theory.measure_inter_lt_top_of_right_ne_top MeasureTheory.measure_inter_lt_top_of_right_ne_top
 
 theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0) : μ (S ∩ T) = 0 :=
@@ -551,11 +557,11 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
 @[to_additive]
-theorem Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α}
-    (h : s.mulIndicator f =ᵐ[μ] 1) : μ (s ∩ Function.mulSupport f) = 0 := by
-  simpa [Filter.EventuallyEq, ae_iff] using h
-#align set.mul_indicator_ae_eq_one MeasureTheory.Set.mulIndicator_ae_eq_one
-#align set.indicator_ae_eq_zero MeasureTheory.Set.indicator_ae_eq_zero
+theorem _root_.Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α} :
+    s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
+  simp [EventuallyEq, eventually_iff, Measure.ae, compl_setOf]; rfl
+#align set.mul_indicator_ae_eq_one Set.mulIndicator_ae_eq_one
+#align set.indicator_ae_eq_zero Set.indicator_ae_eq_zero
 
 /-- If `s ⊆ t` modulo a set of measure `0`, then `μ s ≤ μ t`. -/
 @[mono]
@@ -631,7 +637,7 @@ class MeasureSpace (α : Type _) extends MeasurableSpace α where
 
 export MeasureSpace (volume)
 
-/-- `volume` is the canonical  measure on `α`. -/
+/-- `volume` is the canonical measure on `α`. -/
 add_decl_doc volume
 
 section MeasureSpace

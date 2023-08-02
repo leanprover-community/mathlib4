@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.ideal.quotient
-! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.Prod
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Tactic.FinCases
+
+#align_import ring_theory.ideal.quotient from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
 /-!
 # Ideal quotients
@@ -76,28 +73,24 @@ protected def ringCon (I : Ideal R) : RingCon R :=
 #align ideal.quotient.ring_con Ideal.Quotient.ringCon
 
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
-  { @Submodule.Quotient.addCommGroup _ _ (id _) (id _) (id _) I,
-    inferInstanceAs (CommRing (Quotient.ringCon I).Quotient) with }
+    inferInstanceAs (CommRing (Quotient.ringCon I).Quotient)
 #align ideal.quotient.comm_ring Ideal.Quotient.commRing
+
+-- Sanity test to make sure no diamonds have emerged in `commRing`
+example : (commRing I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
 
 -- this instance is harder to find than the one via `Algebra α (R ⧸ I)`, so use a lower priority
 instance (priority := 100) isScalarTower_right {α} [SMul α R] [IsScalarTower α R R] :
-    -- porting note: added `letI` since otherwise this instance can't be found
-    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
     IsScalarTower α (R ⧸ I) (R ⧸ I) :=
   (Quotient.ringCon I).isScalarTower_right
 #align ideal.quotient.is_scalar_tower_right Ideal.Quotient.isScalarTower_right
 
 instance smulCommClass {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass α R R] :
-    -- porting note: added `letI` since otherwise this instance can't be found
-    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
     SMulCommClass α (R ⧸ I) (R ⧸ I) :=
   (Quotient.ringCon I).smulCommClass
 #align ideal.quotient.smul_comm_class Ideal.Quotient.smulCommClass
 
 instance smulCommClass' {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass R α R] :
-    -- porting note: added `letI` since otherwise this instance can't be found
-    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
     SMulCommClass (R ⧸ I) α (R ⧸ I) :=
   (Quotient.ringCon I).smulCommClass'
 #align ideal.quotient.smul_comm_class' Ideal.Quotient.smulCommClass'
@@ -212,9 +205,6 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
 
 open Classical
 
--- porting note: the original proof uses `(by infer_instance : MonoidWithZero (R ⧸ I))`;
--- this doesn't work, `(inferInstance : MonoidWithZero (R ⧸ I))` does, but the statement with
--- `..Quotient.commRing I` feels nicer.
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
 
@@ -222,9 +212,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) :=
-  { Quotient.commRing I,
-    Quotient.isDomain I with
-    inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
+  { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl }
@@ -439,8 +427,6 @@ theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
       apply hgi
     · intro j hjs hji
       rw [← Quotient.eq_zero_iff_mem, map_prod]
-      -- Porting note: Added the below line to help instance inference
-      letI : CommMonoidWithZero (R ⧸ f j) := CommSemiring.toCommMonoidWithZero
       refine' Finset.prod_eq_zero (Finset.mem_erase_of_ne_of_mem hji hjs) _
       rw [Quotient.eq_zero_iff_mem]
       exact hgj j hjs hji

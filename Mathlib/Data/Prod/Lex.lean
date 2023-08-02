@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Minchao Wu
-
-! This file was ported from Lean 3 source module data.prod.lex
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
+
+#align_import data.prod.lex from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Lexicographic order
@@ -152,6 +149,9 @@ instance linearOrder (α β : Type _) [LinearOrder α] [LinearOrder β] : Linear
     decidableLT := Prod.Lex.decidable _ _,
     decidableEq := Lex.decidableEq _ _, }
 #align prod.lex.linear_order Prod.Lex.linearOrder
+
+instance [Ord α] [Ord β] : Ord (α ×ₗ β) where
+  compare := compareLex (compareOn (·.1)) (compareOn (·.2))
 
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
   bot := toLex ⊥

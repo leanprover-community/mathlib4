@@ -5,7 +5,7 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Sites.Coherent
-import Mathlib.Topology.Category.CompHaus.ExplicitLimits
+import Mathlib.Topology.Category.CompHaus.Limits
 
 /-!
 
@@ -153,7 +153,7 @@ def structAux : EffectiveEpiFamilyStruct X (π' π) where
 lemma π'_comp_ι_hom (a : α) : π' π a ≫ (ι _ surj).hom = π a := by ext; rfl
 
 @[reassoc]
-lemma π_comp_ι_inv (a : α) : π a ≫ (ι _ surj).inv = π' π a :=  by
+lemma π_comp_ι_inv (a : α) : π a ≫ (ι _ surj).inv = π' π a := by
   rw [Iso.comp_inv_eq]
   exact π'_comp_ι_hom _ surj _
 

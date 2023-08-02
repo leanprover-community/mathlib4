@@ -2,16 +2,13 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.ring.boolean_ring
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
+
+#align_import algebra.ring.boolean_ring from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Boolean rings
@@ -309,7 +306,7 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
   rfl
 #align of_boolalg_sdiff ofBoolAlg_sdiff
 
-private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
+private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc
     (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
       by ring
@@ -318,7 +315,7 @@ private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a *
 @[simp]
 theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
   rw [symmDiff_eq_sup_sdiff_inf]
-  exact of_boolalg_symm_diff_aux _ _
+  exact of_boolalg_symmDiff_aux _ _
 #align of_boolalg_symm_diff ofBoolAlg_symmDiff
 
 @[simp]
@@ -556,7 +553,7 @@ protected def BoundedLatticeHom.asBoolRing (f : BoundedLatticeHom α β) :
   toFun := toBoolRing ∘ f ∘ ofBoolRing
   map_zero' := f.map_bot'
   map_one' := f.map_top'
-  map_add' := map_symm_diff' f
+  map_add' := map_symmDiff' f
   map_mul' := f.map_inf'
 #align bounded_lattice_hom.as_boolring BoundedLatticeHom.asBoolRing
 

@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finset.image
-! leanprover-community/mathlib commit b685f506164f8d17a6404048bc4d696739c5d976
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Order.Basic
+
+#align_import data.finset.image from "leanprover-community/mathlib"@"b685f506164f8d17a6404048bc4d696739c5d976"
 
 /-! # Image and map operations on finite sets
 
@@ -539,7 +536,7 @@ theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : 
     (s ∆ t).image f = s.image f ∆ t.image f :=
   coe_injective <| by
     push_cast
-    exact Set.image_symm_diff hf _ _
+    exact Set.image_symmDiff hf _ _
 #align finset.image_symm_diff Finset.image_symmDiff
 
 @[simp]
@@ -606,8 +603,7 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
     Disjoint (s.image f) (t.image f) ↔ Disjoint s t := by
-  -- Porting note: was `convert`
-  rw [←disjoint_map ⟨_, hf⟩]
+  convert disjoint_map ⟨_, hf⟩ using 1
   simp [map_eq_image]
 #align finset.disjoint_image Finset.disjoint_image
 

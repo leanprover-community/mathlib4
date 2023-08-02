@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.part_enat
-! leanprover-community/mathlib commit 114ff8a4a7935cb7531062200bff375e7b1d6d85
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Part
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Tactic.NormNum
+
+#align_import data.nat.part_enat from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
 /-!
 # Natural numbers with infinity
@@ -229,7 +226,7 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 #align part_enat.decidable_le PartENat.decidableLe
 
-/-- The coercion `ℕ → partENat` preserves `0` and addition. -/
+/-- The coercion `ℕ → PartENat` preserves `0` and addition. -/
 def natCast_AddMonoidHom : ℕ →+ PartENat where
   toFun := some
   map_zero' := Nat.cast_zero
@@ -401,7 +398,7 @@ theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
       rfl
 #align part_enat.pos_iff_one_le PartENat.pos_iff_one_le
 
-instance isTotal: IsTotal PartENat (· ≤ ·) where
+instance isTotal : IsTotal PartENat (· ≤ ·) where
   total x y :=
     PartENat.casesOn (P := fun z => z ≤ y ∨ y ≤ z) x (Or.inr le_top)
       (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
@@ -418,17 +415,17 @@ noncomputable instance linearOrder : LinearOrder PartENat :=
       rw [@sup_eq_maxDefault PartENat _ (id _) _]
       rfl }
 
-instance boundedOrder: BoundedOrder PartENat :=
+instance boundedOrder : BoundedOrder PartENat :=
   { PartENat.orderTop, PartENat.orderBot with }
 
-noncomputable instance lattice: Lattice PartENat :=
+noncomputable instance lattice : Lattice PartENat :=
   { PartENat.semilatticeSup with
     inf := min
     inf_le_left := min_le_left
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance orderedAddCommMonoid: OrderedAddCommMonoid PartENat :=
+noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
   { PartENat.linearOrder, PartENat.addCommMonoid with
     add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
       PartENat.casesOn c (by simp) fun c =>
@@ -525,8 +522,8 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   norm_cast; apply Nat.lt_succ_of_le; norm_cast at h
 #align part_enat.lt_add_one_iff_lt PartENat.lt_add_one_iff_lt
 
-lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n :=
-by rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, lt_add_one_iff_lt hx]
+lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n := by
+  rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, lt_add_one_iff_lt hx]
 #align part_enat.lt_coe_succ_iff_le PartENat.lt_coe_succ_iff_le
 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
@@ -770,9 +767,9 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
 instance : WellFoundedLT PartENat :=
   ⟨lt_wf⟩
 
-instance isWellOrder: IsWellOrder PartENat (· < ·) := {}
+instance isWellOrder : IsWellOrder PartENat (· < ·) := {}
 
-instance wellFoundedRelation: WellFoundedRelation PartENat :=
+instance wellFoundedRelation : WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩
 
 section Find
