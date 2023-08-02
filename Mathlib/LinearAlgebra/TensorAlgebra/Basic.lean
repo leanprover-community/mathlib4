@@ -67,12 +67,38 @@ def TensorAlgebra :=
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
 instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabitedRingQuot _
 instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
-instance : Algebra R (TensorAlgebra R M) := RingQuot.instAlgebraRingQuotInstSemiring _
+
+-- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
+@[nolint unusedArguments]
+instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+    [Algebra R A] [Module R M] [Module A M]
+    [IsScalarTower R A M] :
+    Algebra R (TensorAlgebra A M) :=
+  RingQuot.instAlgebraRingQuotInstSemiring _
+
+-- verify there is no diamond
+example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
+
+instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+    [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
+    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    SMulCommClass R S (TensorAlgebra A M) :=
+  RingQuot.instSMulCommClassRingQuotInstSMulRingQuotInstSMulRingQuot _
+
+instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+    [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
+    [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
+    IsScalarTower R S (TensorAlgebra A M) :=
+  RingQuot.instIsScalarTowerRingQuotInstSMulRingQuotInstSMulRingQuot _
 
 namespace TensorAlgebra
 
 instance {S : Type _} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
+
+-- verify there is no diamond
+variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
+example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
 variable {M}
 

@@ -44,7 +44,7 @@ isomorphism theorems, quotient groups
 
 open Function
 
-universe u v
+universe u v w
 
 namespace QuotientGroup
 
@@ -122,6 +122,12 @@ theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 
 #align quotient_group.eq_one_iff QuotientGroup.eq_one_iff
 #align quotient_add_group.eq_zero_iff QuotientAddGroup.eq_zero_iff
 
+@[to_additive]
+theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
+    g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
+  ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
+    fun h x hx => (eq_one_iff _).mp <| by exact FunLike.congr_fun h ⟨x, hx⟩⟩
+
 @[to_additive (attr := simp)]
 theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
   Subgroup.ext eq_one_iff
@@ -141,7 +147,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 
 @[to_additive]
 instance Quotient.commGroup {G : Type _} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
-  { @QuotientGroup.Quotient.group _ _ N N.normal_of_comm with
+  { toGroup := @QuotientGroup.Quotient.group _ _ N N.normal_of_comm
     mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
 #align quotient_group.quotient.comm_group QuotientGroup.Quotient.commGroup
 #align quotient_add_group.quotient.add_comm_group QuotientAddGroup.Quotient.addCommGroup
