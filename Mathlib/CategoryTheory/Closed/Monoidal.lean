@@ -70,10 +70,7 @@ def unitClosed : Closed (𝟙_ C) where
               { toFun := fun a => (leftUnitor X).inv ≫ a
                 invFun := fun a => (leftUnitor X).hom ≫ a
                 left_inv := by aesop_cat
-                right_inv := by aesop_cat }
-            homEquiv_naturality_left_symm := fun f g => by
-              dsimp
-              rw [leftUnitor_naturality_assoc] } }
+                right_inv := by aesop_cat } } }
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}
@@ -115,13 +112,13 @@ theorem ihom_adjunction_unit : (ihom.adjunction A).unit = coev A :=
 
 @[reassoc (attr := simp)]
 theorem ev_naturality {X Y : C} (f : X ⟶ Y) :
-    (𝟙 A ⊗ (ihom A).map f) ≫ (ev A).app Y = (ev A).app X ≫ f :=
+    A ◁ (ihom A).map f ≫ (ev A).app Y = (ev A).app X ≫ f :=
   (ev A).naturality f
 #align category_theory.ihom.ev_naturality CategoryTheory.ihom.ev_naturality
 
 @[reassoc (attr := simp)]
 theorem coev_naturality {X Y : C} (f : X ⟶ Y) :
-    f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (𝟙 A ⊗ f) :=
+    f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (A ◁ f) :=
   (coev A).naturality f
 #align category_theory.ihom.coev_naturality CategoryTheory.ihom.coev_naturality
 
@@ -130,8 +127,8 @@ set_option quotPrecheck false in
 notation A " ⟶[" C "] " B:10 => (@ihom C _ _ A _).obj B
 
 @[reassoc (attr := simp)]
-theorem ev_coev : (𝟙 A ⊗ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
-  Adjunction.left_triangle_components (ihom.adjunction A)
+theorem ev_coev : (A ◁ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
+  (ihom.adjunction A).left_triangle_components
 #align category_theory.ihom.ev_coev CategoryTheory.ihom.ev_coev
 
 @[reassoc (attr := simp)]
@@ -173,7 +170,7 @@ theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
 #align category_theory.monoidal_closed.hom_equiv_symm_apply_eq CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
 
 @[reassoc]
-theorem curry_natural_left (f : X ⟶ X') (g : A ⊗ X' ⟶ Y) : curry ((𝟙 _ ⊗ f) ≫ g) = f ≫ curry g :=
+theorem curry_natural_left (f : X ⟶ X') (g : A ⊗ X' ⟶ Y) : curry (_ ◁ f ≫ g) = f ≫ curry g :=
   Adjunction.homEquiv_naturality_left _ _ _
 #align category_theory.monoidal_closed.curry_natural_left CategoryTheory.MonoidalClosed.curry_natural_left
 
@@ -191,7 +188,7 @@ theorem uncurry_natural_right (f : X ⟶ A ⟶[C] Y) (g : Y ⟶ Y') :
 
 @[reassoc]
 theorem uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟶[C] Y) :
-    uncurry (f ≫ g) = (𝟙 _ ⊗ f) ≫ uncurry g :=
+    uncurry (f ≫ g) = _ ◁ f ≫ uncurry g :=
   Adjunction.homEquiv_naturality_left_symm _ _ _
 #align category_theory.monoidal_closed.uncurry_natural_left CategoryTheory.MonoidalClosed.uncurry_natural_left
 
@@ -214,7 +211,7 @@ theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : g = curry f �
 #align category_theory.monoidal_closed.eq_curry_iff CategoryTheory.MonoidalClosed.eq_curry_iff
 
 -- I don't think these two should be simp.
-theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (𝟙 A ⊗ g) ≫ (ihom.ev A).app X :=
+theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (A ◁ g) ≫ (ihom.ev A).app X :=
   Adjunction.homEquiv_counit _
 #align category_theory.monoidal_closed.uncurry_eq CategoryTheory.MonoidalClosed.uncurry_eq
 
@@ -233,7 +230,7 @@ theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) →
 variable (A X)
 
 theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
-  rw [uncurry_eq, tensor_id, id_comp]
+  simp [uncurry_eq]
 #align category_theory.monoidal_closed.uncurry_id_eq_ev CategoryTheory.MonoidalClosed.uncurry_id_eq_ev
 
 theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
@@ -252,19 +249,19 @@ def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=
 
 @[reassoc (attr := simp)]
 theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
-    (𝟙 B ⊗ (pre f).app X) ≫ (ihom.ev B).app X = (f ⊗ 𝟙 (A ⟶[C] X)) ≫ (ihom.ev A).app X :=
+    B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
   transferNatTransSelf_counit _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.id_tensor_pre_app_comp_ev CategoryTheory.MonoidalClosed.id_tensor_pre_app_comp_ev
 
 @[simp]
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
-    MonoidalClosed.uncurry ((pre f).app X) = (f ⊗ 𝟙 _) ≫ (ihom.ev A).app X := by
-  rw [uncurry_eq, id_tensor_pre_app_comp_ev]
+    MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
+  simp [uncurry_eq]
 #align category_theory.monoidal_closed.uncurry_pre CategoryTheory.MonoidalClosed.uncurry_pre
 
 @[reassoc (attr := simp)]
 theorem coev_app_comp_pre_app (f : B ⟶ A) :
-    (ihom.coev A).app X ≫ (pre f).app (A ⊗ X) = (ihom.coev B).app X ≫ (ihom B).map (f ⊗ 𝟙 _) :=
+    (ihom.coev A).app X ≫ (pre f).app (A ⊗ X) = (ihom.coev B).app X ≫ (ihom B).map (f ▷ _) :=
   unit_transferNatTransSelf _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.coev_app_comp_pre_app CategoryTheory.MonoidalClosed.coev_app_comp_pre_app
 

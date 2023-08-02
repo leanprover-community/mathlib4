@@ -268,15 +268,15 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 set_option maxHeartbeats 1600000 in
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
-    (𝟙 V' ⊗ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ⊗ 𝟙 V') =
+    (V' ◁ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ▷ V') =
       (ρ_ V').hom ≫ (λ_ V').inv := by
   apply contractLeft_assoc_coevaluation K V
 
 -- Porting note: extremely slow, was fast in mathlib3.
 set_option maxHeartbeats 1600000 in
 private theorem evaluation_coevaluation :
-    (FGModuleCatCoevaluation K V ⊗ 𝟙 V) ≫
-        (α_ V (FGModuleCatDual K V) V).hom ≫ (𝟙 V ⊗ FGModuleCatEvaluation K V) =
+    (FGModuleCatCoevaluation K V ▷ V) ≫
+        (α_ V (FGModuleCatDual K V) V).hom ≫ (V ◁ FGModuleCatEvaluation K V) =
       (λ_ V).hom ≫ (ρ_ V).inv := by
   apply contractLeft_assoc_coevaluation' K V
 

@@ -32,7 +32,9 @@ with tensor product given by composition of functors
 -/
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
-  tensorHom α β := α ◫ β
+  whiskerLeft X _ _ F := whiskerLeft X F
+  whiskerRight F X := whiskerRight F X
+  -- tensorHom α β := α ◫ β
   tensorUnit' := 𝟭 C
   associator F G H := Functor.associator F G H
   leftUnitor F := Functor.leftUnitor F
@@ -58,6 +60,14 @@ attribute [local instance] endofunctorMonoidalCategory
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
     (α ⊗ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+
+@[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
+    {F G H : C ⥤ C} {α : F ⟶ G} (X : C) :
+    (H ◁ α).app X = α.app (H.obj X) := rfl
+
+@[simp] theorem endofunctorMonoidalCategory_whiskerRight_app
+    {F G H : C ⥤ C} {α : F ⟶ G} (X : C) :
+    (α ▷ H).app X = H.map (α.app X) := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_associator_hom_app (F G H : C ⥤ C) (X : C) :
   (α_ F G H).hom.app X = 𝟙 _ := rfl
@@ -87,22 +97,10 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
     μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
-    μ_natural := fun f g => by
-      ext Z
-      dsimp
-      simp only [← id_tensor_comp_tensor_id g f, id_tensor_comp, ← tensor_id, Category.assoc,
-        associator_naturality, associator_naturality_assoc]
-    associativity := fun X Y Z => by
-      ext W
-      simp [pentagon]
     μ_isIso := fun X Y =>
       -- We could avoid needing to do this explicitly by
       -- constructing a partially applied analogue of `associatorNatIso`.
-      ⟨⟨{ app := fun Z => (α_ Z X Y).inv
-          naturality := fun Z Z' f => by
-            dsimp
-            rw [← associator_inv_naturality]
-            simp },
+      ⟨⟨{ app := fun Z => (α_ Z X Y).inv },
           by aesop_cat⟩⟩ }
 #align category_theory.tensoring_right_monoidal CategoryTheory.tensoringRightMonoidal
 
@@ -168,23 +166,23 @@ theorem μ_naturality₂ {m n m' n' : M} (f : m ⟶ m') (g : n ⟶ n') (X : C) :
 @[reassoc (attr := simp)]
 theorem μ_naturalityₗ {m n m' : M} (f : m ⟶ m') (X : C) :
     (F.obj n).map ((F.map f).app X) ≫ (F.μ m' n).app X =
-      (F.μ m n).app X ≫ (F.map (f ⊗ 𝟙 n)).app X := by
-  rw [← μ_naturality₂ F f (𝟙 n) X]
+      (F.μ m n).app X ≫ (F.map (f ▷ n)).app X := by
+  rw [← tensorHom_id, ← μ_naturality₂ F f (𝟙 n) X]
   simp
 #align category_theory.μ_naturalityₗ CategoryTheory.μ_naturalityₗ
 
 @[reassoc (attr := simp)]
 theorem μ_naturalityᵣ {m n n' : M} (g : n ⟶ n') (X : C) :
     (F.map g).app ((F.obj m).obj X) ≫ (F.μ m n').app X =
-      (F.μ m n).app X ≫ (F.map (𝟙 m ⊗ g)).app X := by
-  rw [← μ_naturality₂ F (𝟙 m) g X]
+      (F.μ m n).app X ≫ (F.map (m ◁ g)).app X := by
+  rw [← id_tensorHom, ← μ_naturality₂ F (𝟙 m) g X]
   simp
 #align category_theory.μ_naturalityᵣ CategoryTheory.μ_naturalityᵣ
 
 @[reassoc (attr := simp)]
 theorem μ_inv_naturalityₗ {m n m' : M} (f : m ⟶ m') (X : C) :
     (F.μIso m n).inv.app X ≫ (F.obj n).map ((F.map f).app X) =
-      (F.map (f ⊗ 𝟙 n)).app X ≫ (F.μIso m' n).inv.app X := by
+      (F.map (f ▷ n)).app X ≫ (F.μIso m' n).inv.app X := by
   rw [← IsIso.comp_inv_eq, Category.assoc, ← IsIso.eq_inv_comp]
   simp
 #align category_theory.μ_inv_naturalityₗ CategoryTheory.μ_inv_naturalityₗ
@@ -192,7 +190,7 @@ theorem μ_inv_naturalityₗ {m n m' : M} (f : m ⟶ m') (X : C) :
 @[reassoc (attr := simp)]
 theorem μ_inv_naturalityᵣ {m n n' : M} (g : n ⟶ n') (X : C) :
     (F.μIso m n).inv.app X ≫ (F.map g).app ((F.obj m).obj X) =
-      (F.map (𝟙 m ⊗ g)).app X ≫ (F.μIso m n').inv.app X := by
+      (F.map (m ◁ g)).app X ≫ (F.μIso m n').inv.app X := by
   rw [← IsIso.comp_inv_eq, Category.assoc, ← IsIso.eq_inv_comp]
   simp
 #align category_theory.μ_inv_naturalityᵣ CategoryTheory.μ_inv_naturalityᵣ
@@ -317,7 +315,7 @@ noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) : F.ob
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]
 noncomputable def equivOfTensorIsoUnit (m n : M) (h₁ : m ⊗ n ≅ 𝟙_ M) (h₂ : n ⊗ m ≅ 𝟙_ M)
-    (H : (h₁.hom ⊗ 𝟙 m) ≫ (λ_ m).hom = (α_ m n m).hom ≫ (𝟙 m ⊗ h₂.hom) ≫ (ρ_ m).hom) : C ≌ C
+    (H : (h₁.hom ▷ m) ≫ (λ_ m).hom = (α_ m n m).hom ≫ (m ◁ h₂.hom) ≫ (ρ_ m).hom) : C ≌ C
     where
   functor := F.obj m
   inverse := F.obj n

@@ -24,21 +24,23 @@ namespace CategoryTheory.MonoidalCategory
 
 variable {C : Type _} [Category C] [MonoidalCategory C]
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]
-theorem leftUnitor_tensor' (X Y : C) :
+theorem leftUnitor_tensor'' (X Y : C) :
     (α_ (𝟙_ C) X Y).hom ≫ (λ_ (X ⊗ Y)).hom = (λ_ X).hom ⊗ 𝟙 Y := by
   coherence
-#align category_theory.monoidal_category.left_unitor_tensor' CategoryTheory.MonoidalCategory.leftUnitor_tensor'
+#align category_theory.monoidal_category.left_unitor_tensor' CategoryTheory.MonoidalCategory.leftUnitor_tensor''
 
-@[reassoc, simp]
-theorem leftUnitor_tensor (X Y : C) :
+@[reassoc]
+theorem leftUnitor_tensor' (X Y : C) :
     (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ ((λ_ X).hom ⊗ 𝟙 Y) := by
   coherence
 #align category_theory.monoidal_category.left_unitor_tensor CategoryTheory.MonoidalCategory.leftUnitor_tensor
 
 @[reassoc]
-theorem leftUnitor_tensor_inv (X Y : C) :
+theorem leftUnitor_tensor_inv' (X Y : C) :
     (λ_ (X ⊗ Y)).inv = ((λ_ X).inv ⊗ 𝟙 Y) ≫ (α_ (𝟙_ C) X Y).hom := by coherence
 #align category_theory.monoidal_category.left_unitor_tensor_inv CategoryTheory.MonoidalCategory.leftUnitor_tensor_inv
 
@@ -60,7 +62,7 @@ theorem pentagon_inv_inv_hom (W X Y Z : C) :
 #align category_theory.monoidal_category.pentagon_inv_inv_hom CategoryTheory.MonoidalCategory.pentagon_inv_inv_hom
 
 @[reassoc (attr := simp)]
-theorem triangle_assoc_comp_right_inv (X Y : C) :
+theorem triangle_assoc_comp_right_inv' (X Y : C) :
     ((ρ_ X).inv ⊗ 𝟙 Y) ≫ (α_ X (𝟙_ C) Y).hom = 𝟙 X ⊗ (λ_ Y).inv := by
   coherence
 #align category_theory.monoidal_category.triangle_assoc_comp_right_inv CategoryTheory.MonoidalCategory.triangle_assoc_comp_right_inv

@@ -39,15 +39,12 @@ open Bicategory
 attribute [local simp] EndMonoidal in
 instance (X : C) : MonoidalCategory (EndMonoidal X) where
   tensorObj f g := f ≫ g
-  tensorHom {f g} h i η θ := η ▷ h ≫ g ◁ θ
+  whiskerLeft {f g h} η := f ◁ η
+  whiskerRight {f g} η h := η ▷ h
   tensorUnit' := 𝟙 _
   associator f g h := α_ f g h
   leftUnitor f := λ_ f
   rightUnitor f := ρ_ f
-  tensor_comp := by
-    intros
-    dsimp
-    rw [Bicategory.whiskerLeft_comp, Bicategory.comp_whiskerRight, Category.assoc, Category.assoc,
-      Bicategory.whisker_exchange_assoc]
+  whisker_exchange := whisker_exchange
 
 end CategoryTheory

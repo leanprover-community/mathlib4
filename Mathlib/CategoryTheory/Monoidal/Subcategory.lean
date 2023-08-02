@@ -53,23 +53,51 @@ When `P` is a monoidal predicate, the full subcategory for `P` inherits the mono
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  tensorHom := @fun X₁ Y₁ X₂ Y₂ f g => by
-    change X₁.1 ⊗ X₂.1 ⟶ Y₁.1 ⊗ Y₂.1
-    change X₁.1 ⟶ Y₁.1 at f; change X₂.1 ⟶ Y₂.1 at g; exact f ⊗ g
+  whiskerLeft := fun X _ _ f ↦ X.1 ◁ f
+  whiskerRight := fun f Y ↦ (fun f ↦ f ▷ Y.1) f
   tensorUnit' := ⟨𝟙_ C, prop_id⟩
-  associator X Y Z :=
-    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
-      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
   leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
   rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
-  tensor_id X Y := tensor_id X.1 Y.1
-  tensor_comp f₁ f₂ g₁ g₂ := @tensor_comp C _ _ _ _ _ _ _ _ f₁ f₂ g₁ g₂
-  associator_naturality f₁ f₂ f₃ := @associator_naturality C _ _ _ _ _ _ _ _ f₁ f₂ f₃
-  leftUnitor_naturality f := @leftUnitor_naturality C _ _ _ _ f
-  rightUnitor_naturality f := @rightUnitor_naturality C _ _ _ _ f
+  associator X Y Z :=
+      ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
+        inv_hom_id (α_ X.1 Y.1 Z.1)⟩
+  whiskerLeft_id X Y := whiskerLeft_id X.1 Y.1
+  whiskerLeft_comp _ _ _ _ f g := whiskerLeft_comp (C := C) _ f g
+  id_whiskerLeft f := id_whiskerLeft (C := C) f
+  tensor_whiskerLeft _ _ _ _ f := tensor_whiskerLeft (C := C) _ _ f
+  id_whiskerRight X Y := id_whiskerRight X.1 Y.1
+  comp_whiskerRight f g _ := comp_whiskerRight (C := C) f g _
+  whiskerRight_id f := whiskerRight_id (C := C) f
+  whiskerRight_tensor f _ _ := whiskerRight_tensor (C := C) f _ _
+  whisker_assoc _ _ _ f _ := whisker_assoc (C := C) _ f _
+  whisker_exchange f g := whisker_exchange (C := C) f g
   pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
   triangle X Y := triangle X.1 Y.1
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
+
+-- /--
+-- When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
+--   `C`.
+-- -/
+-- instance fullMonoidalSubcategory''' : MonoidalCategory (FullSubcategory P) where
+--   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
+--   whiskerLeft := @fun X Y₁ Y₂ f => by
+--     change X₁.1 ⊗ X₂.1 ⟶ Y₁.1 ⊗ Y₂.1
+--     change X₁.1 ⟶ Y₁.1 at f; change X₂.1 ⟶ Y₂.1 at g; exact f ⊗ g
+--   tensorUnit' := ⟨𝟙_ C, prop_id⟩
+--   associator X Y Z :=
+--     ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
+--       inv_hom_id (α_ X.1 Y.1 Z.1)⟩
+--   leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
+--   rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
+--   tensor_id X Y := tensor_id X.1 Y.1
+--   tensor_comp f₁ f₂ g₁ g₂ := @tensor_comp C _ _ _ _ _ _ _ _ f₁ f₂ g₁ g₂
+--   associator_naturality f₁ f₂ f₃ := @associator_naturality C _ _ _ _ _ _ _ _ f₁ f₂ f₃
+--   leftUnitor_naturality f := @leftUnitor_naturality C _ _ _ _ f
+--   rightUnitor_naturality f := @rightUnitor_naturality C _ _ _ _ f
+--   pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
+--   triangle X Y := triangle X.1 Y.1
+-- #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).

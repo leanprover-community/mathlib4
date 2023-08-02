@@ -56,9 +56,9 @@ structure HalfBraiding (X : C) where
   β : ∀ U, X ⊗ U ≅ U ⊗ X
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
-        ((β U).hom ⊗ 𝟙 U') ≫ (α_ _ _ _).hom ≫ (𝟙 U ⊗ (β U').hom) ≫ (α_ _ _ _).inv := by
+        ((β U).hom ▷ U') ≫ (α_ _ _ _).hom ≫ (U ◁ (β U').hom) ≫ (α_ _ _ _).inv := by
     aesop_cat
-  naturality : ∀ {U U'} (f : U ⟶ U'), (𝟙 X ⊗ f) ≫ (β U').hom = (β U).hom ≫ (f ⊗ 𝟙 X) := by
+  naturality : ∀ {U U'} (f : U ⟶ U'), (X ◁ f) ≫ (β U').hom = (β U).hom ≫ (f ▷ X) := by
     aesop_cat
 #align category_theory.half_braiding CategoryTheory.HalfBraiding
 
@@ -84,7 +84,7 @@ variable {C}
 @[ext] -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure Hom (X Y : Center C) where
   f : X.1 ⟶ Y.1
-  comm : ∀ U, (f ⊗ 𝟙 U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (𝟙 U ⊗ f) := by aesop_cat
+  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
 #align category_theory.center.hom CategoryTheory.Center.Hom
 
 attribute [reassoc (attr := simp)] Hom.comm
@@ -118,7 +118,8 @@ a morphism whose underlying morphism is an isomorphism.
 def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
   hom := f
   inv := ⟨inv f.f,
-    fun U => by simp [← cancel_epi (f.f ⊗ 𝟙 U), ← comp_tensor_id_assoc, ← id_tensor_comp]⟩
+    fun U => by simp [← cancel_epi (f.f ▷ U), ← comp_whiskerRight_assoc,
+      ← MonoidalCategory.whiskerLeft_comp] ⟩
 #align category_theory.center.iso_mk CategoryTheory.Center.isoMk
 
 instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
@@ -126,38 +127,43 @@ instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :
   infer_instance
 #align category_theory.center.is_iso_of_f_is_iso CategoryTheory.Center.isIso_of_f_isIso
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=
   ⟨X.1 ⊗ Y.1,
     { β := fun U =>
         α_ _ _ _ ≪≫
-          (Iso.refl X.1 ⊗ Y.2.β U) ≪≫ (α_ _ _ _).symm ≪≫ (X.2.β U ⊗ Iso.refl Y.1) ≪≫ α_ _ _ _
+          (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
+            (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _
       monoidal := fun U U' => by
-        dsimp
-        simp only [comp_tensor_id, id_tensor_comp, Category.assoc, HalfBraiding.monoidal]
-        -- On the RHS, we'd like to commute `((X.snd.β U).hom ⊗ 𝟙 Y.fst) ⊗ 𝟙 U'`
-        -- and `𝟙 U ⊗ 𝟙 X.fst ⊗ (Y.snd.β U').hom` past each other,
-        -- but there are some associators we need to get out of the way first.
-        slice_rhs 6 8 => rw [pentagon]
-        slice_rhs 5 6 => rw [associator_naturality]
-        slice_rhs 7 8 => rw [← associator_naturality]
-        slice_rhs 6 7 =>
-          rw [tensor_id, tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id,
-            ← tensor_id, ← tensor_id]
-        -- Now insert associators as needed to make the four half-braidings look identical
-        slice_rhs 10 10 => rw [associator_inv_conjugation]
-        slice_rhs 7 7 => rw [associator_inv_conjugation]
-        slice_rhs 6 6 => rw [associator_conjugation]
-        slice_rhs 3 3 => rw [associator_conjugation]
-        -- Finish with an application of the coherence theorem.
-        coherence
-      naturality := fun f => by
-        dsimp
-        rw [Category.assoc, Category.assoc, Category.assoc, Category.assoc,
-          id_tensor_associator_naturality_assoc, ← id_tensor_comp_assoc, HalfBraiding.naturality,
-          id_tensor_comp_assoc, associator_inv_naturality_assoc, ← comp_tensor_id_assoc,
-          HalfBraiding.naturality, comp_tensor_id_assoc, associator_naturality, ← tensor_id] }⟩
+        dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
+        simp only [HalfBraiding.monoidal]
+        -- We'd like to commute `X.1 ◁ U ◁ (HalfBraiding.β Y.2 U').hom`
+        -- and `((HalfBraiding.β X.2 U).hom ▷ U' ▷ Y.1)` past each other.
+        -- We do this with the help of the monoidal composition `⊗≫`.
+        calc
+          _ = 𝟙 _ ⊗≫
+            X.1 ◁ (HalfBraiding.β Y.2 U).hom ▷ U' ⊗≫
+              (_ ◁ (HalfBraiding.β Y.2 U').hom ≫ (HalfBraiding.β X.2 U).hom ▷ _) ⊗≫
+                U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := ?eq1
+          _ = _ := ?eq2
+        case eq1 => coherence
+        case eq2 => rw [whisker_exchange]; coherence
+      naturality := fun {U U'} f => by
+        dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
+        calc
+          _ = 𝟙 _ ⊗≫
+            (X.1 ◁ (Y.1 ◁ f ≫ (HalfBraiding.β Y.2 U').hom)) ⊗≫
+              (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := ?eq1
+          _ = 𝟙 _ ⊗≫
+            X.1 ◁ (HalfBraiding.β Y.2 U).hom ⊗≫
+              (X.1 ◁ f ≫ (HalfBraiding.β X.2 U').hom) ▷ Y.1 ⊗≫ 𝟙 _ := ?eq2
+          _ = _ := ?eq3
+        case eq1 => coherence
+        case eq2 => rw [HalfBraiding.naturality]; coherence
+        case eq3 => rw [HalfBraiding.naturality]; coherence }⟩
 #align category_theory.center.tensor_obj CategoryTheory.Center.tensorObj
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
@@ -166,55 +172,66 @@ def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶
     tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂ where
   f := f.f ⊗ g.f
   comm U := by
-    dsimp
-    rw [Category.assoc, Category.assoc, Category.assoc, Category.assoc, associator_naturality_assoc,
-      ← tensor_id_comp_id_tensor, Category.assoc, ← id_tensor_comp_assoc, g.comm,
-      id_tensor_comp_assoc, tensor_id_comp_id_tensor_assoc, ← id_tensor_comp_tensor_id,
-      Category.assoc, associator_inv_naturality_assoc, id_tensor_associator_inv_naturality_assoc,
-      tensor_id, id_tensor_comp_tensor_id_assoc, ← tensor_id_comp_id_tensor g.f, Category.assoc,
-      ← comp_tensor_id_assoc, f.comm, comp_tensor_id_assoc, id_tensor_associator_naturality,
-      associator_naturality_assoc, ← id_tensor_comp, tensor_id_comp_id_tensor]
+    sorry
 #align category_theory.center.tensor_hom CategoryTheory.Center.tensorHom
+
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
+def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
+    tensorObj X Y₁ ⟶ tensorObj X Y₂ where
+  f := X.1 ◁ f.f
+  comm U := by
+    dsimp only [tensorObj_fst, tensorObj_snd_β, Iso.trans_hom, whiskerLeftIso_hom,
+      Iso.symm_hom, whiskerRightIso_hom]
+    calc
+      _ = 𝟙 _ ⊗≫
+        X.fst ◁ (f.f ▷ U ≫ (HalfBraiding.β Y₂.snd U).hom) ⊗≫
+          (HalfBraiding.β X.snd U).hom ▷ Y₂.fst ⊗≫ 𝟙 _ := ?_
+      _ = 𝟙 _ ⊗≫
+        X.fst ◁ (HalfBraiding.β Y₁.snd U).hom ⊗≫
+          ((X.fst ⊗ U) ◁ f.f ≫ (HalfBraiding.β X.snd U).hom ▷ Y₂.fst) ⊗≫ 𝟙 _ := ?eq1
+      _ = _ := ?eq2
+    case eq1 => rw [f.comm]; coherence
+    case eq2 => rw [whisker_exchange]; coherence
+    any_goals coherence
+
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
+def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
+    tensorObj X₁ Y ⟶ tensorObj X₂ Y where
+  f := f.f ▷ Y.1
+  comm U := by
+    dsimp only [tensorObj_fst, tensorObj_snd_β, Iso.trans_hom, whiskerLeftIso_hom,
+      Iso.symm_hom, whiskerRightIso_hom]
+    calc
+      _ = 𝟙 _ ⊗≫
+        (f.f ▷ (Y.fst ⊗ U) ≫ X₂.fst ◁ (HalfBraiding.β Y.snd U).hom) ⊗≫
+            (HalfBraiding.β X₂.snd U).hom ▷ Y.fst ⊗≫ 𝟙 _ := ?_
+      _ = 𝟙 _ ⊗≫
+        X₁.fst ◁ (HalfBraiding.β Y.snd U).hom ⊗≫
+          (f.f ▷ U ≫ (HalfBraiding.β X₂.snd U).hom) ▷ Y.fst ⊗≫ 𝟙 _ := ?eq1
+      _ = _ := ?eq2
+    case eq1 => rw [← whisker_exchange]; coherence
+    case eq2 => rw [f.comm]; coherence
+    any_goals coherence
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorUnit : Center C :=
-  ⟨𝟙_ C,
-    { β := fun U => λ_ U ≪≫ (ρ_ U).symm
-      monoidal := fun U U' => by simp
-      naturality := fun f => by
-        dsimp
-        rw [leftUnitor_naturality_assoc, rightUnitor_inv_naturality, Category.assoc] }⟩
+  ⟨𝟙_ C, { β := fun U => λ_ U ≪≫ (ρ_ U).symm }⟩
 #align category_theory.center.tensor_unit CategoryTheory.Center.tensorUnit
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
-  isoMk
-    ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by
-      dsimp
-      simp only [comp_tensor_id, id_tensor_comp, ← tensor_id, associator_conjugation]
-      coherence⟩
+  isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
 #align category_theory.center.associator CategoryTheory.Center.associator
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
-  isoMk
-    ⟨(λ_ X.1).hom, fun U => by
-      dsimp
-      simp only [Category.comp_id, Category.assoc, tensor_inv_hom_id, comp_tensor_id,
-        tensor_id_comp_id_tensor, triangle_assoc_comp_right_inv]
-      rw [← leftUnitor_tensor, leftUnitor_naturality, leftUnitor_tensor'_assoc]⟩
+  isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
 #align category_theory.center.left_unitor CategoryTheory.Center.leftUnitor
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
-  isoMk
-    ⟨(ρ_ X.1).hom, fun U => by
-      dsimp
-      simp only [tensor_id_comp_id_tensor_assoc, triangle_assoc, id_tensor_comp, Category.assoc]
-      rw [← tensor_id_comp_id_tensor_assoc (ρ_ U).inv, cancel_epi, ← rightUnitor_tensor_inv_assoc,
-        ← rightUnitor_inv_naturality_assoc]
-      simp⟩
+  isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
 #align category_theory.center.right_unitor CategoryTheory.Center.rightUnitor
 
 section
@@ -223,13 +240,17 @@ attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_n
 
 attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 
+attribute [local simp] Center.whiskerLeft Center.whiskerRight
+
 instance : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
-  tensorHom f g := tensorHom f g
+  whiskerLeft X _ _ f := whiskerLeft X f
+  whiskerRight f X := whiskerRight f X
   tensorUnit' := tensorUnit
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
+  whisker_exchange := by intros; ext; simp [whisker_exchange]
 
 @[simp]
 theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
@@ -240,13 +261,24 @@ theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
 theorem tensor_β (X Y : Center C) (U : C) :
     (X ⊗ Y).2.β U =
       α_ _ _ _ ≪≫
-        (Iso.refl X.1 ⊗ Y.2.β U) ≪≫ (α_ _ _ _).symm ≪≫ (X.2.β U ⊗ Iso.refl Y.1) ≪≫ α_ _ _ _ :=
+        (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
+          (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _ :=
   rfl
 #align category_theory.center.tensor_β CategoryTheory.Center.tensor_β
 
 @[simp]
-theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
+theorem whiskerLeft_f (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
+    (X ◁ f).f = X.1 ◁ f.f:= by
   rfl
+
+@[simp]
+theorem whiskerRight_f {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
+    (f ▷ Y).f = f.f ▷ Y.1 := by
+  rfl
+
+@[simp]
+theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f := by
+  rw [tensorHom_def, tensorHom_def, comp_f, whiskerLeft_f, whiskerRight_f]
 #align category_theory.center.tensor_f CategoryTheory.Center.tensor_f
 
 @[simp]
@@ -323,9 +355,9 @@ instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
   braiding_naturality f g := by
     ext
-    dsimp
-    rw [← tensor_id_comp_id_tensor, Category.assoc, HalfBraiding.naturality, f.comm_assoc,
-      id_tensor_comp_tensor_id]
+    dsimp only [comp_f, braiding_hom_f]
+    erw [tensorHom_def', Category.assoc, HalfBraiding.naturality, f.comm_assoc, ← tensorHom_def,
+      tensor_f]
 #align category_theory.center.braided_category_center CategoryTheory.Center.braidedCategoryCenter
 
 -- `aesop_cat` handles the hexagon axioms

@@ -64,6 +64,8 @@ open CategoryTheory MonoidalCategory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 noncomputable section
 
 namespace CategoryTheory
@@ -76,10 +78,10 @@ class ExactPairing (X Y : C) where
   coevaluation' : 𝟙_ C ⟶ X ⊗ Y
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
-    (𝟙 Y ⊗ coevaluation') ≫ (α_ _ _ _).inv ≫ (evaluation' ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
+    (Y ◁ coevaluation') ≫ (α_ _ _ _).inv ≫ (evaluation' ▷ Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
     aesop_cat
   evaluation_coevaluation' :
-    (coevaluation' ⊗ 𝟙 X) ≫ (α_ _ _ _).hom ≫ (𝟙 X ⊗ evaluation') = (λ_ X).hom ≫ (ρ_ X).inv := by
+    (coevaluation' ▷ X) ≫ (α_ _ _ _).hom ≫ (X ◁ evaluation') = (λ_ X).hom ≫ (ρ_ X).inv := by
     aesop_cat
 #align category_theory.exact_pairing CategoryTheory.ExactPairing
 
@@ -100,12 +102,22 @@ notation "η_" => ExactPairing.coevaluation
 notation "ε_" => ExactPairing.evaluation
 
 lemma coevaluation_evaluation :
-    (𝟙 Y ⊗ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv :=
+    (Y ◁ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ▷ Y) = (ρ_ Y).hom ≫ (λ_ Y).inv :=
   coevaluation_evaluation'
 
 lemma evaluation_coevaluation :
-    (η_ _ _ ⊗ 𝟙 X) ≫ (α_ _ _ _).hom ≫ (𝟙 X ⊗ ε_ _ Y) = (λ_ X).hom ≫ (ρ_ X).inv :=
+    (η_ _ _ ▷ X) ≫ (α_ _ _ _).hom ≫ (X ◁ ε_ _ Y) = (λ_ X).hom ≫ (ρ_ X).inv :=
   evaluation_coevaluation'
+
+-- temporary lemma
+lemma coevaluation_evaluation'' :
+    (𝟙 Y ⊗ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
+  simp [coevaluation_evaluation]
+
+-- temporary lemma
+lemma evaluation_coevaluation'' :
+    (η_ _ _ ⊗ 𝟙 X) ≫ (α_ _ _ _).hom ≫ (𝟙 X ⊗ ε_ _ Y) = (λ_ X).hom ≫ (ρ_ X).inv := by
+  simp [evaluation_coevaluation]
 
 end ExactPairing
 
@@ -115,8 +127,8 @@ attribute [reassoc (attr := simp)] ExactPairing.evaluation_coevaluation
 instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation' := (ρ_ _).inv
   evaluation' := (ρ_ _).hom
-  coevaluation_evaluation' := by coherence
-  evaluation_coevaluation' := by coherence
+  coevaluation_evaluation' := by rw [← id_tensorHom, ← tensorHom_id]; coherence
+  evaluation_coevaluation' := by rw [← id_tensorHom, ← tensorHom_id]; coherence
 #align category_theory.exact_pairing_unit CategoryTheory.exactPairingUnit
 
 /-- A class of objects which have a right dual. -/
@@ -167,12 +179,12 @@ theorem rightDual_leftDual {X : C} [HasLeftDual X] : (ᘁX)ᘁ = X :=
 
 /-- The right adjoint mate `fᘁ : Xᘁ ⟶ Yᘁ` of a morphism `f : X ⟶ Y`. -/
 def rightAdjointMate {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) : Yᘁ ⟶ Xᘁ :=
-  (ρ_ _).inv ≫ (𝟙 _ ⊗ η_ _ _) ≫ (𝟙 _ ⊗ f ⊗ 𝟙 _) ≫ (α_ _ _ _).inv ≫ (ε_ _ _ ⊗ 𝟙 _) ≫ (λ_ _).hom
+  (ρ_ _).inv ≫ (_ ◁ η_ _ _) ≫ (_ ◁ f ▷ _) ≫ (α_ _ _ _).inv ≫ (ε_ _ _ ▷ _) ≫ (λ_ _).hom
 #align category_theory.right_adjoint_mate CategoryTheory.rightAdjointMate
 
 /-- The left adjoint mate `ᘁf : ᘁY ⟶ ᘁX` of a morphism `f : X ⟶ Y`. -/
 def leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) : ᘁY ⟶ ᘁX :=
-  (λ_ _).inv ≫ (η_ (ᘁX) X ⊗ 𝟙 _) ≫ ((𝟙 _ ⊗ f) ⊗ 𝟙 _) ≫ (α_ _ _ _).hom ≫ (𝟙 _ ⊗ ε_ _ _) ≫ (ρ_ _).hom
+  (λ_ _).inv ≫ (η_ (ᘁX) X ▷ _) ≫ ((_ ◁ f) ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ ε_ _ _) ≫ (ρ_ _).hom
 #align category_theory.left_adjoint_mate CategoryTheory.leftAdjointMate
 
 notation f "ᘁ" => rightAdjointMate f
@@ -180,25 +192,24 @@ notation "ᘁ" f => leftAdjointMate f
 
 @[simp]
 theorem rightAdjointMate_id {X : C} [HasRightDual X] : (𝟙 X)ᘁ = 𝟙 (Xᘁ) := by
-  simp only [rightAdjointMate, MonoidalCategory.tensor_id, Category.id_comp,
-    coevaluation_evaluation_assoc, Category.comp_id, Iso.inv_hom_id]
+  simp [rightAdjointMate]
 #align category_theory.right_adjoint_mate_id CategoryTheory.rightAdjointMate_id
 
 @[simp]
 theorem leftAdjointMate_id {X : C} [HasLeftDual X] : (ᘁ(𝟙 X)) = 𝟙 (ᘁX) := by
-  simp only [leftAdjointMate, MonoidalCategory.tensor_id, Category.id_comp,
-    evaluation_coevaluation_assoc, Category.comp_id, Iso.inv_hom_id]
+  simp [leftAdjointMate]
 #align category_theory.left_adjoint_mate_id CategoryTheory.leftAdjointMate_id
 
 theorem rightAdjointMate_comp {X Y Z : C} [HasRightDual X] [HasRightDual Y] {f : X ⟶ Y}
     {g : Xᘁ ⟶ Z} :
     fᘁ ≫ g =
       (ρ_ (Yᘁ)).inv ≫
-        (𝟙 _ ⊗ η_ X (Xᘁ)) ≫ (𝟙 _ ⊗ f ⊗ g) ≫ (α_ (Yᘁ) Y Z).inv ≫ (ε_ Y (Yᘁ) ⊗ 𝟙 _) ≫ (λ_ Z).hom := by
+        (_ ◁ η_ X (Xᘁ)) ≫ (_ ◁ (f ⊗ g)) ≫ (α_ (Yᘁ) Y Z).inv ≫ ε_ Y (Yᘁ) ▷ _ ≫ (λ_ Z).hom := by
   dsimp only [rightAdjointMate]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   rw [Category.assoc, Category.assoc, associator_inv_naturality_assoc,
     associator_inv_naturality_assoc, ← tensor_id_comp_id_tensor g, Category.assoc, Category.assoc,
-    Category.assoc, Category.assoc, id_tensor_comp_tensor_id_assoc, ← leftUnitor_naturality,
+    Category.assoc, Category.assoc, id_tensor_comp_tensor_id_assoc, ← leftUnitor_naturality',
     tensor_id_comp_id_tensor_assoc]
 #align category_theory.right_adjoint_mate_comp CategoryTheory.rightAdjointMate_comp
 
@@ -206,11 +217,12 @@ theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X 
     {g : (ᘁX) ⟶ Z} :
     (ᘁf) ≫ g =
       (λ_ _).inv ≫
-        (η_ (ᘁX) X ⊗ 𝟙 _) ≫ ((g ⊗ f) ⊗ 𝟙 _) ≫ (α_ _ _ _).hom ≫ (𝟙 _ ⊗ ε_ _ _) ≫ (ρ_ _).hom := by
+        (η_ (ᘁX) X ▷ _) ≫ ((g ⊗ f) ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ ε_ _ _) ≫ (ρ_ _).hom := by
   dsimp only [leftAdjointMate]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   rw [Category.assoc, Category.assoc, associator_naturality_assoc, associator_naturality_assoc, ←
     id_tensor_comp_tensor_id _ g, Category.assoc, Category.assoc, Category.assoc, Category.assoc,
-    tensor_id_comp_id_tensor_assoc, ← rightUnitor_naturality, id_tensor_comp_tensor_id_assoc]
+    tensor_id_comp_id_tensor_assoc, ← rightUnitor_naturality', id_tensor_comp_tensor_id_assoc]
 #align category_theory.left_adjoint_mate_comp CategoryTheory.leftAdjointMate_comp
 
 /-- The composition of right adjoint mates is the adjoint mate of the composition. -/
@@ -218,6 +230,7 @@ theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X 
 theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [HasRightDual Z]
     {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g)ᘁ = gᘁ ≫ fᘁ := by
   rw [rightAdjointMate_comp]
+  simp_rw [rightAdjointMate, ← id_tensorHom, ← tensorHom_id]
   simp only [rightAdjointMate, comp_tensor_id, Iso.cancel_iso_inv_left, id_tensor_comp,
     Category.assoc]
   symm
@@ -235,20 +248,16 @@ theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [Has
     rw [← @id_tensor_comp C]
   congr 1
   rw [← id_tensor_comp_tensor_id (λ_ (Xᘁ)).hom g, id_tensor_rightUnitor_inv, Category.assoc,
-    Category.assoc, rightUnitor_inv_naturality_assoc, ← associator_naturality_assoc, tensor_id,
+    Category.assoc, rightUnitor_inv_naturality'_assoc, ← associator_naturality_assoc, tensor_id,
     tensor_id_comp_id_tensor_assoc, ← associator_naturality_assoc]
   slice_rhs 2 3 =>
     rw [← tensor_comp, tensor_id, Category.comp_id, ← Category.id_comp (η_ Y (Yᘁ)), tensor_comp]
   rw [← id_tensor_comp_tensor_id _ (η_ Y (Yᘁ)), ← tensor_id]
-  repeat' rw [@Category.assoc C]
-  rw [pentagon_hom_inv_assoc, ← associator_naturality_assoc, associator_inv_naturality_assoc]
-  slice_rhs 5 7 => rw [← comp_tensor_id, ← comp_tensor_id, evaluation_coevaluation, comp_tensor_id]
-  rw [associator_inv_naturality_assoc]
-  slice_rhs 4 5 => rw [← tensor_comp, leftUnitor_naturality, tensor_comp]
-  repeat' rw [@Category.assoc C]
-  rw [triangle_assoc_comp_right_inv_assoc, ← leftUnitor_tensor_assoc, leftUnitor_naturality_assoc,
-    unitors_equal, ← Category.assoc, ← Category.assoc]
-  simp
+  simp only [tensorHom_id, id_tensorHom, id_whiskerLeft, id_whiskerRight, whiskerRight_tensor, Category.assoc,
+    Iso.inv_hom_id_assoc, pentagon_hom_hom_inv_hom_hom]
+  rw [← associator_naturality_middle_assoc]
+  simp_rw [← comp_whiskerRight_assoc, evaluation_coevaluation]
+  coherence
 #align category_theory.comp_right_adjoint_mate CategoryTheory.comp_rightAdjointMate
 
 /-- The composition of left adjoint mates is the adjoint mate of the composition. -/
@@ -256,6 +265,7 @@ theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [Has
 theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLeftDual Z] {f : X ⟶ Y}
     {g : Y ⟶ Z} : (ᘁf ≫ g) = (ᘁg) ≫ ᘁf := by
   rw [leftAdjointMate_comp]
+  simp_rw [leftAdjointMate, ← id_tensorHom, ← tensorHom_id]
   simp only [leftAdjointMate, id_tensor_comp, Iso.cancel_iso_inv_left, comp_tensor_id,
     Category.assoc]
   symm
@@ -273,20 +283,15 @@ theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLef
     rw [← @comp_tensor_id C]
   congr 1
   rw [← tensor_id_comp_id_tensor g (ρ_ (ᘁX)).hom, leftUnitor_inv_tensor_id, Category.assoc,
-    Category.assoc, leftUnitor_inv_naturality_assoc, ← associator_inv_naturality_assoc, tensor_id,
+    Category.assoc, leftUnitor_inv_naturality'_assoc, ← associator_inv_naturality_assoc, tensor_id,
     id_tensor_comp_tensor_id_assoc, ← associator_inv_naturality_assoc]
   slice_rhs 2 3 =>
     rw [← tensor_comp, tensor_id, Category.comp_id, ← Category.id_comp (η_ (ᘁY) Y), tensor_comp]
   rw [← tensor_id_comp_id_tensor (η_ (ᘁY) Y), ← tensor_id]
   repeat' rw [@Category.assoc C]
   rw [pentagon_inv_hom_assoc, ← associator_inv_naturality_assoc, associator_naturality_assoc]
-  slice_rhs 5 7 => rw [← id_tensor_comp, ← id_tensor_comp, coevaluation_evaluation, id_tensor_comp]
-  rw [associator_naturality_assoc]
-  slice_rhs 4 5 => rw [← tensor_comp, rightUnitor_naturality, tensor_comp]
-  repeat' rw [@Category.assoc C]
-  rw [triangle_assoc_comp_left_inv_assoc, ← rightUnitor_tensor_assoc,
-    rightUnitor_naturality_assoc, ← unitors_equal, ← Category.assoc, ← Category.assoc]
-  simp
+  slice_rhs 5 7 => rw [← id_tensor_comp, ← id_tensor_comp, coevaluation_evaluation'']
+  coherence
 #align category_theory.comp_left_adjoint_mate CategoryTheory.comp_leftAdjointMate
 
 /-- Given an exact pairing on `Y Y'`,
@@ -299,10 +304,11 @@ This adjunction is often referred to as "Frobenius reciprocity" in the
 fusion categories / planar algebras / subfactors literature.
 -/
 def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃ (X ⟶ Y ⊗ Z) where
-  toFun f := (λ_ _).inv ≫ (η_ _ _ ⊗ 𝟙 _) ≫ (α_ _ _ _).hom ≫ (𝟙 _ ⊗ f)
-  invFun f := (𝟙 Y' ⊗ f) ≫ (α_ _ _ _).inv ≫ (ε_ _ _ ⊗ 𝟙 _) ≫ (λ_ _).hom
+  toFun f := (λ_ _).inv ≫ (η_ _ _ ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ f)
+  invFun f := (Y' ◁ f) ≫ (α_ _ _ _).inv ≫ (ε_ _ _ ▷ _) ≫ (λ_ _).hom
   left_inv f := by
     dsimp
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     simp only [id_tensor_comp]
     slice_lhs 4 5 => rw [associator_inv_naturality]
     slice_lhs 5 6 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
@@ -311,13 +317,14 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
       (α_ Y' (Y ⊗ Y') X).hom ≫
           (𝟙 Y' ⊗ (α_ Y Y' X).hom) ≫ (α_ Y' Y (Y' ⊗ X)).inv ≫ (α_ (Y' ⊗ Y) Y' X).inv =
         (α_ _ _ _).inv ⊗ 𝟙 _
-    pure_coherence
+    coherence
     slice_lhs 4 7 => rw [c]
-    slice_lhs 3 5 => rw [← comp_tensor_id, ← comp_tensor_id, coevaluation_evaluation]
+    slice_lhs 3 5 => rw [← comp_tensor_id, ← comp_tensor_id, coevaluation_evaluation'']
     simp only [leftUnitor_conjugation]
     coherence
   right_inv f := by
     dsimp
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     simp only [id_tensor_comp]
     slice_lhs 3 4 => rw [← associator_naturality]
     slice_lhs 2 3 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
@@ -326,9 +333,9 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
       (α_ (Y ⊗ Y') Y Z).hom ≫
           (α_ Y Y' (Y ⊗ Z)).hom ≫ (𝟙 Y ⊗ (α_ Y' Y Z).inv) ≫ (α_ Y (Y' ⊗ Y) Z).inv =
         (α_ _ _ _).hom ⊗ 𝟙 Z
-    pure_coherence
+    coherence
     slice_lhs 5 8 => rw [c]
-    slice_lhs 4 6 => rw [← comp_tensor_id, ← comp_tensor_id, evaluation_coevaluation]
+    slice_lhs 4 6 => rw [← comp_tensor_id, ← comp_tensor_id, evaluation_coevaluation'']
     simp only [leftUnitor_conjugation]
     coherence
 #align category_theory.tensor_left_hom_equiv CategoryTheory.tensorLeftHomEquiv
@@ -338,10 +345,11 @@ we get a bijection on hom-sets `(X ⊗ Y ⟶ Z) ≃ (X ⟶ Z ⊗ Y')`
 by "pulling the string on the right" up or down.
 -/
 def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃ (X ⟶ Z ⊗ Y') where
-  toFun f := (ρ_ _).inv ≫ (𝟙 _ ⊗ η_ _ _) ≫ (α_ _ _ _).inv ≫ (f ⊗ 𝟙 _)
-  invFun f := (f ⊗ 𝟙 _) ≫ (α_ _ _ _).hom ≫ (𝟙 _ ⊗ ε_ _ _) ≫ (ρ_ _).hom
+  toFun f := (ρ_ _).inv ≫ (_ ◁ η_ _ _) ≫ (α_ _ _ _).inv ≫ (f ▷ _)
+  invFun f := (f ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ ε_ _ _) ≫ (ρ_ _).hom
   left_inv f := by
     dsimp
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     simp only [comp_tensor_id]
     slice_lhs 4 5 => rw [associator_naturality]
     slice_lhs 5 6 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
@@ -350,13 +358,14 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
       (α_ X (Y ⊗ Y') Y).inv ≫
           ((α_ X Y Y').inv ⊗ 𝟙 Y) ≫ (α_ (X ⊗ Y) Y' Y).hom ≫ (α_ X Y (Y' ⊗ Y)).hom =
         𝟙 _ ⊗ (α_ _ _ _).hom
-    pure_coherence
+    coherence
     slice_lhs 4 7 => rw [c]
-    slice_lhs 3 5 => rw [← id_tensor_comp, ← id_tensor_comp, evaluation_coevaluation]
+    slice_lhs 3 5 => rw [← id_tensor_comp, ← id_tensor_comp, evaluation_coevaluation'']
     simp only [rightUnitor_conjugation]
     coherence
   right_inv f := by
     dsimp
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     simp only [comp_tensor_id]
     slice_lhs 3 4 => rw [← associator_inv_naturality]
     slice_lhs 2 3 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
@@ -365,41 +374,37 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
       (α_ Z Y' (Y ⊗ Y')).inv ≫
           (α_ (Z ⊗ Y') Y Y').inv ≫ ((α_ Z Y' Y).hom ⊗ 𝟙 Y') ≫ (α_ Z (Y' ⊗ Y) Y').hom =
         𝟙 _ ⊗ (α_ _ _ _).inv
-    pure_coherence
+    coherence
     slice_lhs 5 8 => rw [c]
-    slice_lhs 4 6 => rw [← id_tensor_comp, ← id_tensor_comp, coevaluation_evaluation]
+    slice_lhs 4 6 => rw [← id_tensor_comp, ← id_tensor_comp, coevaluation_evaluation'']
     simp only [rightUnitor_conjugation]
     coherence
 #align category_theory.tensor_right_hom_equiv CategoryTheory.tensorRightHomEquiv
 
 theorem tensorLeftHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : Y' ⊗ X ⟶ Z)
     (g : Z ⟶ Z') :
-    (tensorLeftHomEquiv X Y Y' Z') (f ≫ g) = (tensorLeftHomEquiv X Y Y' Z) f ≫ (𝟙 Y ⊗ g) := by
-  dsimp [tensorLeftHomEquiv]
-  simp only [id_tensor_comp, Category.assoc]
+    (tensorLeftHomEquiv X Y Y' Z') (f ≫ g) = (tensorLeftHomEquiv X Y Y' Z) f ≫ (Y ◁ g) := by
+  simp [tensorLeftHomEquiv]
 #align category_theory.tensor_left_hom_equiv_naturality CategoryTheory.tensorLeftHomEquiv_naturality
 
 theorem tensorLeftHomEquiv_symm_naturality {X X' Y Y' Z : C} [ExactPairing Y Y'] (f : X ⟶ X')
     (g : X' ⟶ Y ⊗ Z) :
     (tensorLeftHomEquiv X Y Y' Z).symm (f ≫ g) =
-      (𝟙 _ ⊗ f) ≫ (tensorLeftHomEquiv X' Y Y' Z).symm g := by
-  dsimp [tensorLeftHomEquiv]
-  simp only [id_tensor_comp, Category.assoc]
+      (_ ◁ f) ≫ (tensorLeftHomEquiv X' Y Y' Z).symm g := by
+  simp [tensorLeftHomEquiv]
 #align category_theory.tensor_left_hom_equiv_symm_naturality CategoryTheory.tensorLeftHomEquiv_symm_naturality
 
 theorem tensorRightHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⊗ Y ⟶ Z)
     (g : Z ⟶ Z') :
-    (tensorRightHomEquiv X Y Y' Z') (f ≫ g) = (tensorRightHomEquiv X Y Y' Z) f ≫ (g ⊗ 𝟙 Y') := by
-  dsimp [tensorRightHomEquiv]
-  simp only [comp_tensor_id, Category.assoc]
+    (tensorRightHomEquiv X Y Y' Z') (f ≫ g) = (tensorRightHomEquiv X Y Y' Z) f ≫ (g ▷ Y') := by
+  simp [tensorRightHomEquiv]
 #align category_theory.tensor_right_hom_equiv_naturality CategoryTheory.tensorRightHomEquiv_naturality
 
 theorem tensorRightHomEquiv_symm_naturality {X X' Y Y' Z : C} [ExactPairing Y Y'] (f : X ⟶ X')
     (g : X' ⟶ Z ⊗ Y') :
     (tensorRightHomEquiv X Y Y' Z).symm (f ≫ g) =
-      (f ⊗ 𝟙 Y) ≫ (tensorRightHomEquiv X' Y Y' Z).symm g := by
-  dsimp [tensorRightHomEquiv]
-  simp only [comp_tensor_id, Category.assoc]
+      (f ▷ Y) ≫ (tensorRightHomEquiv X' Y Y' Z).symm g := by
+  simp [tensorRightHomEquiv]
 #align category_theory.tensor_right_hom_equiv_symm_naturality CategoryTheory.tensorRightHomEquiv_symm_naturality
 
 /-- If `Y Y'` have an exact pairing,
@@ -442,12 +447,7 @@ theorem tensorLeftHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : 
     (g : X' ⟶ Z') :
     (tensorLeftHomEquiv (X ⊗ X') Y Y' (Z ⊗ Z')).symm ((f ⊗ g) ≫ (α_ _ _ _).hom) =
       (α_ _ _ _).inv ≫ ((tensorLeftHomEquiv X Y Y' Z).symm f ⊗ g) := by
-  dsimp [tensorLeftHomEquiv]
-  simp only [id_tensor_comp]
-  simp only [associator_inv_conjugation]
-  slice_lhs 2 2 => rw [← id_tensor_comp_tensor_id]
-  conv_rhs => rw [← id_tensor_comp_tensor_id, comp_tensor_id, comp_tensor_id]
-  simp; coherence
+  simp [tensorLeftHomEquiv, tensorHom_def]
 #align category_theory.tensor_left_hom_equiv_tensor CategoryTheory.tensorLeftHomEquiv_tensor
 
 /-- `tensorRightHomEquiv` commutes with tensoring on the left -/
@@ -456,29 +456,31 @@ theorem tensorRightHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f :
     (tensorRightHomEquiv (X' ⊗ X) Y Y' (Z' ⊗ Z)).symm ((g ⊗ f) ≫ (α_ _ _ _).inv) =
       (α_ _ _ _).hom ≫ (g ⊗ (tensorRightHomEquiv X Y Y' Z).symm f) := by
   dsimp [tensorRightHomEquiv]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   simp only [comp_tensor_id]
   simp only [associator_conjugation]
   slice_lhs 2 2 => rw [← tensor_id_comp_id_tensor]
   conv_rhs => rw [← tensor_id_comp_id_tensor, id_tensor_comp, id_tensor_comp]
   simp only [← tensor_id, associator_conjugation]
-  simp; coherence
+  simp
 #align category_theory.tensor_right_hom_equiv_tensor CategoryTheory.tensorRightHomEquiv_tensor
 
 @[simp]
 theorem tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor {Y Y' Z : C} [ExactPairing Y Y']
-    (f : Y' ⟶ Z) : (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ (𝟙 Y ⊗ f)) = (ρ_ _).hom ≫ f := by
+    (f : Y' ⟶ Z) : (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ (Y ◁ f)) = (ρ_ _).hom ≫ f := by
   dsimp [tensorLeftHomEquiv]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   rw [id_tensor_comp]
   slice_lhs 2 3 => rw [associator_inv_naturality]
   slice_lhs 3 4 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
-  slice_lhs 1 3 => rw [coevaluation_evaluation]
+  slice_lhs 1 3 => rw [coevaluation_evaluation'']
   simp
 #align category_theory.tensor_left_hom_equiv_symm_coevaluation_comp_id_tensor CategoryTheory.tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor
 
 @[simp]
 theorem tensorLeftHomEquiv_symm_coevaluation_comp_tensor_id {X Y : C} [HasRightDual X]
     [HasRightDual Y] (f : X ⟶ Y) :
-    (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ (f ⊗ 𝟙 (Xᘁ))) = (ρ_ _).hom ≫ fᘁ := by
+    (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ (f ▷ (Xᘁ))) = (ρ_ _).hom ≫ fᘁ := by
   dsimp [tensorLeftHomEquiv, rightAdjointMate]
   simp
 #align category_theory.tensor_left_hom_equiv_symm_coevaluation_comp_tensor_id CategoryTheory.tensorLeftHomEquiv_symm_coevaluation_comp_tensor_id
@@ -486,99 +488,104 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_tensor_id {X Y : C} [HasRightD
 @[simp]
 theorem tensorRightHomEquiv_symm_coevaluation_comp_id_tensor {X Y : C} [HasLeftDual X]
     [HasLeftDual Y] (f : X ⟶ Y) :
-    (tensorRightHomEquiv _ (ᘁY) _ _).symm (η_ (ᘁX) X ≫ (𝟙 (ᘁX) ⊗ f)) = (λ_ _).hom ≫ ᘁf := by
+    (tensorRightHomEquiv _ (ᘁY) _ _).symm (η_ (ᘁX) X ≫ ((ᘁX) ◁ f)) = (λ_ _).hom ≫ ᘁf := by
   dsimp [tensorRightHomEquiv, leftAdjointMate]
   simp
 #align category_theory.tensor_right_hom_equiv_symm_coevaluation_comp_id_tensor CategoryTheory.tensorRightHomEquiv_symm_coevaluation_comp_id_tensor
 
 @[simp]
 theorem tensorRightHomEquiv_symm_coevaluation_comp_tensor_id {Y Y' Z : C} [ExactPairing Y Y']
-    (f : Y ⟶ Z) : (tensorRightHomEquiv _ Y _ _).symm (η_ Y Y' ≫ (f ⊗ 𝟙 Y')) = (λ_ _).hom ≫ f := by
+    (f : Y ⟶ Z) : (tensorRightHomEquiv _ Y _ _).symm (η_ Y Y' ≫ (f ▷ Y')) = (λ_ _).hom ≫ f := by
   dsimp [tensorRightHomEquiv]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   rw [comp_tensor_id]
   slice_lhs 2 3 => rw [associator_naturality]
   slice_lhs 3 4 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
-  slice_lhs 1 3 => rw [evaluation_coevaluation]
+  slice_lhs 1 3 => rw [evaluation_coevaluation'']
   simp
 #align category_theory.tensor_right_hom_equiv_symm_coevaluation_comp_tensor_id CategoryTheory.tensorRightHomEquiv_symm_coevaluation_comp_tensor_id
 
 @[simp]
 theorem tensorLeftHomEquiv_id_tensor_comp_evaluation {Y Z : C} [HasLeftDual Z] (f : Y ⟶ ᘁZ) :
-    (tensorLeftHomEquiv _ _ _ _) ((𝟙 Z ⊗ f) ≫ ε_ _ _) = f ≫ (ρ_ _).inv := by
+    (tensorLeftHomEquiv _ _ _ _) ((Z ◁ f) ≫ ε_ _ _) = f ≫ (ρ_ _).inv := by
   dsimp [tensorLeftHomEquiv]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   rw [id_tensor_comp]
   slice_lhs 3 4 => rw [← associator_naturality]
   slice_lhs 2 3 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
-  slice_lhs 3 5 => rw [evaluation_coevaluation]
+  slice_lhs 3 5 => rw [evaluation_coevaluation'']
   simp
 #align category_theory.tensor_left_hom_equiv_id_tensor_comp_evaluation CategoryTheory.tensorLeftHomEquiv_id_tensor_comp_evaluation
 
 @[simp]
 theorem tensorLeftHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y]
-    (f : X ⟶ Y) : (tensorLeftHomEquiv _ _ _ _) ((f ⊗ 𝟙 _) ≫ ε_ _ _) = (ᘁf) ≫ (ρ_ _).inv := by
+    (f : X ⟶ Y) : (tensorLeftHomEquiv _ _ _ _) ((f ▷ _) ≫ ε_ _ _) = (ᘁf) ≫ (ρ_ _).inv := by
   dsimp [tensorLeftHomEquiv, leftAdjointMate]
   simp
 #align category_theory.tensor_left_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorLeftHomEquiv_tensor_id_comp_evaluation
 
 @[simp]
 theorem tensorRightHomEquiv_id_tensor_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDual Y]
-    (f : X ⟶ Y) : (tensorRightHomEquiv _ _ _ _) ((𝟙 (Yᘁ) ⊗ f) ≫ ε_ _ _) = fᘁ ≫ (λ_ _).inv := by
+    (f : X ⟶ Y) : (tensorRightHomEquiv _ _ _ _) (((Yᘁ) ◁ f) ≫ ε_ _ _) = fᘁ ≫ (λ_ _).inv := by
   dsimp [tensorRightHomEquiv, rightAdjointMate]
   simp
 #align category_theory.tensor_right_hom_equiv_id_tensor_comp_evaluation CategoryTheory.tensorRightHomEquiv_id_tensor_comp_evaluation
 
 @[simp]
 theorem tensorRightHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasRightDual X] (f : Y ⟶ Xᘁ) :
-    (tensorRightHomEquiv _ _ _ _) ((f ⊗ 𝟙 X) ≫ ε_ X (Xᘁ)) = f ≫ (λ_ _).inv := by
+    (tensorRightHomEquiv _ _ _ _) ((f ▷ X) ≫ ε_ X (Xᘁ)) = f ≫ (λ_ _).inv := by
   dsimp [tensorRightHomEquiv]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   rw [comp_tensor_id]
   slice_lhs 3 4 => rw [← associator_inv_naturality]
   slice_lhs 2 3 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
-  slice_lhs 3 5 => rw [coevaluation_evaluation]
+  slice_lhs 3 5 => rw [coevaluation_evaluation'']
   simp
 #align category_theory.tensor_right_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorRightHomEquiv_tensor_id_comp_evaluation
 
 -- Next four lemmas passing `fᘁ` or `ᘁf` through (co)evaluations.
 theorem coevaluation_comp_rightAdjointMate {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) :
-    η_ Y (Yᘁ) ≫ (𝟙 _ ⊗ fᘁ) = η_ _ _ ≫ (f ⊗ 𝟙 _) := by
+    η_ Y (Yᘁ) ≫ (_ ◁ fᘁ) = η_ _ _ ≫ (f ▷ _) := by
   apply_fun (tensorLeftHomEquiv _ Y (Yᘁ) _).symm
   simp
 #align category_theory.coevaluation_comp_right_adjoint_mate CategoryTheory.coevaluation_comp_rightAdjointMate
 
 theorem leftAdjointMate_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
-    (𝟙 X ⊗ ᘁf) ≫ ε_ _ _ = (f ⊗ 𝟙 _) ≫ ε_ _ _ := by
+    (X ◁ ᘁf) ≫ ε_ _ _ = (f ▷ _) ≫ ε_ _ _ := by
   apply_fun tensorLeftHomEquiv _ (ᘁX) X _
   simp
 #align category_theory.left_adjoint_mate_comp_evaluation CategoryTheory.leftAdjointMate_comp_evaluation
 
 theorem coevaluation_comp_leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
-    η_ (ᘁY) Y ≫ ((ᘁf) ⊗ 𝟙 Y) = η_ (ᘁX) X ≫ (𝟙 (ᘁX) ⊗ f) := by
+    η_ (ᘁY) Y ≫ ((ᘁf) ▷ Y) = η_ (ᘁX) X ≫ ((ᘁX) ◁ f) := by
   apply_fun (tensorRightHomEquiv _ (ᘁY) Y _).symm
   simp
 #align category_theory.coevaluation_comp_left_adjoint_mate CategoryTheory.coevaluation_comp_leftAdjointMate
 
 theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) :
-    (fᘁ ⊗ 𝟙 X) ≫ ε_ X (Xᘁ) = (𝟙 (Yᘁ) ⊗ f) ≫ ε_ Y (Yᘁ) := by
+    (fᘁ ▷ X) ≫ ε_ X (Xᘁ) = ((Yᘁ) ◁ f) ≫ ε_ Y (Yᘁ) := by
   apply_fun tensorRightHomEquiv _ X (Xᘁ) _
   simp
 #align category_theory.right_adjoint_mate_comp_evaluation CategoryTheory.rightAdjointMate_comp_evaluation
 
 /-- Transport an exact pairing across an isomorphism in the first argument. -/
 def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : ExactPairing X Y where
-  evaluation' := (𝟙 Y ⊗ i.hom) ≫ ε_ _ _
-  coevaluation' := η_ _ _ ≫ (i.inv ⊗ 𝟙 Y)
+  evaluation' := (Y ◁ i.hom) ≫ ε_ _ _
+  coevaluation' := η_ _ _ ≫ (i.inv ▷ Y)
   evaluation_coevaluation' := by
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     rw [id_tensor_comp, comp_tensor_id]
     slice_lhs 2 3 => rw [associator_naturality]
     slice_lhs 3 4 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
     slice_lhs 4 5 => rw [tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
     slice_lhs 2 3 => rw [← associator_naturality]
     slice_lhs 1 2 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
-    slice_lhs 2 4 => rw [evaluation_coevaluation]
-    slice_lhs 1 2 => rw [leftUnitor_naturality]
-    slice_lhs 3 4 => rw [← rightUnitor_inv_naturality]
+    slice_lhs 2 4 => rw [evaluation_coevaluation'']
+    slice_lhs 1 2 => rw [leftUnitor_naturality']
+    slice_lhs 3 4 => rw [← rightUnitor_inv_naturality']
     simp
   coevaluation_evaluation' := by
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     rw [id_tensor_comp, comp_tensor_id]
     simp only [Iso.inv_hom_id_assoc, associator_conjugation, Category.assoc]
     slice_lhs 2 3 =>
@@ -589,9 +596,10 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
-  evaluation' := (i.hom ⊗ 𝟙 X) ≫ ε_ _ _
-  coevaluation' := η_ _ _ ≫ (𝟙 X ⊗ i.inv)
+  evaluation' := (i.hom ▷ X) ≫ ε_ _ _
+  coevaluation' := η_ _ _ ≫ (X ◁ i.inv)
   evaluation_coevaluation' := by
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     rw [id_tensor_comp, comp_tensor_id]
     simp only [Iso.inv_hom_id_assoc, associator_conjugation, Category.assoc]
     slice_lhs 3 4 =>
@@ -599,15 +607,16 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       simp
     simp
   coevaluation_evaluation' := by
+    simp_rw [← id_tensorHom, ← tensorHom_id]
     rw [id_tensor_comp, comp_tensor_id]
     slice_lhs 3 4 => rw [← associator_inv_naturality]
     slice_lhs 2 3 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
     slice_lhs 1 2 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
     slice_lhs 3 4 => rw [associator_inv_naturality]
     slice_lhs 4 5 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
-    slice_lhs 2 4 => rw [coevaluation_evaluation]
-    slice_lhs 1 2 => rw [rightUnitor_naturality]
-    slice_lhs 3 4 => rw [← leftUnitor_inv_naturality]
+    slice_lhs 2 4 => rw [coevaluation_evaluation'']
+    slice_lhs 1 2 => rw [rightUnitor_naturality']
+    slice_lhs 3 4 => rw [← leftUnitor_inv_naturality']
     simp
 #align category_theory.exact_pairing_congr_right CategoryTheory.exactPairingCongrRight
 

@@ -34,24 +34,20 @@ Note we don't `extend Preadditive C` here, as `Abelian C` already extends it,
 and we'll need to have both typeclasses sometimes.
 -/
 class MonoidalPreadditive : Prop where
-  /-- tensoring on the right with a zero morphism gives zero -/
-  tensor_zero : ∀ {W X Y Z : C} (f : W ⟶ X), f ⊗ (0 : Y ⟶ Z) = 0 := by aesop_cat
-  /-- tensoring on the left with a zero morphism gives zero -/
-  zero_tensor : ∀ {W X Y Z : C} (f : Y ⟶ Z), (0 : W ⟶ X) ⊗ f = 0 := by aesop_cat
-  /-- left tensoring with a morphism is compatible with addition -/
-  tensor_add : ∀ {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z), f ⊗ (g + h) = f ⊗ g + f ⊗ h := by
-    aesop_cat
-  /-- right tensoring with a morphism is compatible with addition -/
-  add_tensor : ∀ {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z), (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
-    aesop_cat
+  whiskerLeft_zero : ∀ {X Y Z : C}, X ◁ (0 : Y ⟶ Z) = 0 := by aesop_cat
+  zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ▷ X = 0 := by aesop_cat
+  whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by aesop_cat
+  add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by aesop_cat
 #align category_theory.monoidal_preadditive CategoryTheory.MonoidalPreadditive
 
-attribute [simp] MonoidalPreadditive.tensor_zero MonoidalPreadditive.zero_tensor
+-- attribute [simp] MonoidalPreadditive.tensor_zero MonoidalPreadditive.zero_tensor
+attribute [simp] MonoidalPreadditive.whiskerLeft_zero MonoidalPreadditive.zero_whiskerRight
+attribute [simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
 
 variable {C}
 variable [MonoidalPreadditive C]
 
-attribute [local simp] MonoidalPreadditive.tensor_add MonoidalPreadditive.add_tensor
+-- attribute [local simp] MonoidalPreadditive.tensor_add MonoidalPreadditive.add_tensor
 
 instance tensorLeft_additive (X : C) : (tensorLeft X).Additive where
 #align category_theory.tensor_left_additive CategoryTheory.tensorLeft_additive
@@ -70,46 +66,46 @@ ensures that the domain is monoidal preadditive. -/
 theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
     (F : MonoidalFunctor D C) [Faithful F.toFunctor] [F.toFunctor.Additive] :
     MonoidalPreadditive D :=
-  { tensor_zero := by
+  { whiskerLeft_zero := by
       intros
       apply F.toFunctor.map_injective
-      simp [F.map_tensor]
-    zero_tensor := by
+      simp [F.map_whiskerLeft]
+    zero_whiskerRight := by
       intros
       apply F.toFunctor.map_injective
-      simp [F.map_tensor]
-    tensor_add := by
+      simp [F.map_whiskerRight]
+    whiskerLeft_add := by
       intros
       apply F.toFunctor.map_injective
-      simp only [F.map_tensor, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.tensor_add]
-    add_tensor := by
+      simp only [F.map_whiskerLeft, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
+        MonoidalPreadditive.whiskerLeft_add]
+    add_whiskerRight := by
       intros
       apply F.toFunctor.map_injective
-      simp only [F.map_tensor, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.add_tensor] }
+      simp only [F.map_whiskerRight, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
+        MonoidalPreadditive.add_whiskerRight] }
 #align category_theory.monoidal_preadditive_of_faithful CategoryTheory.monoidalPreadditive_of_faithful
 
 open BigOperators
 
+attribute [local simp] tensorHom_def
+
+theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type _} (s : Finset J) (g : J → (Q ⟶ R)) :
+    P ◁ ∑ j in s, g j = ∑ j in s, P ◁ g j :=
+  map_sum ((tensoringLeft C).obj P).mapAddHom g s
+
+theorem sum_whiskerRight {Q R : C} {J : Type _} (s : Finset J) (g : J → (Q ⟶ R)) (P : C) :
+    (∑ j in s, g j) ▷ P = ∑ j in s, g j ▷ P :=
+  map_sum ((tensoringRight C).obj P).mapAddHom g s
+
 theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by
-  rw [← tensor_id_comp_id_tensor]
-  let tQ := (((tensoringLeft C).obj Q).mapAddHom : (R ⟶ S) →+ _)
-  change _ ≫ tQ _ = _
-  rw [tQ.map_sum, Preadditive.comp_sum]
-  dsimp [Functor.mapAddHom]
-  simp only [tensor_id_comp_id_tensor]
+  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.sum_comp]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
 
 theorem sum_tensor {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f := by
-  rw [← tensor_id_comp_id_tensor]
-  let tQ := (((tensoringRight C).obj P).mapAddHom : (R ⟶ S) →+ _)
-  change tQ _ ≫ _ = _
-  rw [tQ.map_sum, Preadditive.sum_comp]
-  dsimp [Functor.mapAddHom]
-  simp only [tensor_id_comp_id_tensor]
+  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.comp_sum]
 #align category_theory.sum_tensor CategoryTheory.sum_tensor
 
 -- In a closed monoidal category, this would hold because
@@ -120,6 +116,8 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
     { preserves := fun {f} =>
         { preserves := fun {b} i => isBilimitOfTotal _ (by
             dsimp
+            simp_rw [← whiskerLeft_comp]
+            simp_rw [← tensorHom_id, ← id_tensorHom]
             simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
               IsBilimit.total i]) } }
 
@@ -128,6 +126,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
     { preserves := fun {f} =>
         { preserves := fun {b} i => isBilimitOfTotal _ (by
             dsimp
+            simp_rw [← tensorHom_id, ← id_tensorHom]
             simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
                IsBilimit.total i]) } }
 
@@ -141,7 +140,7 @@ def leftDistributor {J : Type} [Fintype J] (X : C) (f : J → C) : X ⊗ ⨁ f �
 @[simp]
 theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
     (leftDistributor X f).hom =
-      ∑ j : J, (𝟙 X ⊗ biproduct.π f j) ≫ biproduct.ι (fun j => X ⊗ f j) j := by
+      ∑ j : J, (X ◁ biproduct.π f j) ≫ biproduct.ι (fun j => X ⊗ f j) j := by
   ext
   dsimp [leftDistributor, Functor.mapBiproduct, Functor.mapBicone]
   erw [biproduct.lift_π]
@@ -151,7 +150,7 @@ theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
 
 @[simp]
 theorem leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
-    (leftDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (𝟙 X ⊗ biproduct.ι f j) := by
+    (leftDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (X ◁ biproduct.ι f j) := by
   ext
   dsimp [leftDistributor, Functor.mapBiproduct, Functor.mapBicone]
   simp only [Preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp, zero_comp,
@@ -167,11 +166,10 @@ theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, tensor_sum,
     id_tensor_comp, tensorIso_hom, leftDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map,
     biproduct.ι_π, Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero]
+  simp_rw [← tensorHom_id, ← id_tensorHom]
   simp only [← id_tensor_comp, biproduct.ι_π]
   simp only [id_tensor_comp, tensor_dite, comp_dite]
-  simp only [Category.comp_id, comp_zero, MonoidalPreadditive.tensor_zero, eqToHom_refl,
-    tensor_id, if_true, dif_ctx_congr, Finset.sum_congr, Finset.mem_univ, Finset.sum_dite_eq']
-  simp only [← tensor_id, associator_naturality, Iso.inv_hom_id_assoc]
+  simp
 #align category_theory.left_distributor_assoc CategoryTheory.leftDistributor_assoc
 
 /-- The isomorphism showing how tensor product on the right distributes over direct sums. -/
@@ -182,7 +180,7 @@ def rightDistributor {J : Type} [Fintype J] (X : C) (f : J → C) : (⨁ f) ⊗ 
 @[simp]
 theorem rightDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
     (rightDistributor X f).hom =
-      ∑ j : J, (biproduct.π f j ⊗ 𝟙 X) ≫ biproduct.ι (fun j => f j ⊗ X) j := by
+      ∑ j : J, (biproduct.π f j ▷ X) ≫ biproduct.ι (fun j => f j ⊗ X) j := by
   ext
   dsimp [rightDistributor, Functor.mapBiproduct, Functor.mapBicone]
   erw [biproduct.lift_π]
@@ -192,7 +190,7 @@ theorem rightDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
 
 @[simp]
 theorem rightDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
-    (rightDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (biproduct.ι f j ⊗ 𝟙 X) := by
+    (rightDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (biproduct.ι f j ▷ X) := by
   ext
   dsimp [rightDistributor, Functor.mapBiproduct, Functor.mapBicone]
   simp only [biproduct.ι_desc, Preadditive.comp_sum, ne_eq, biproduct.ι_π_assoc, dite_comp,
@@ -208,11 +206,9 @@ theorem rightDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
     comp_tensor_id, tensorIso_hom, rightDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map,
     biproduct.ι_π, Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero,
     Finset.mem_univ, if_true]
+  simp_rw [← tensorHom_id, ← id_tensorHom]
   simp only [← comp_tensor_id, biproduct.ι_π, dite_tensor, comp_dite]
-  simp only [Category.comp_id, comp_tensor_id, eqToHom_refl, tensor_id, comp_zero,
-    MonoidalPreadditive.zero_tensor, if_true, dif_ctx_congr, Finset.mem_univ, Finset.sum_congr,
-    Finset.sum_dite_eq']
-  simp only [← tensor_id, associator_inv_naturality, Iso.hom_inv_id_assoc]
+  simp
 #align category_theory.right_distributor_assoc CategoryTheory.rightDistributor_assoc
 
 theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J] (X Y : C) (f : J → C) :
@@ -226,13 +222,10 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J] (X Y : C
     tensor_sum, comp_tensor_id, tensorIso_hom, leftDistributor_hom, rightDistributor_hom,
     biproduct.mapIso_hom, biproduct.ι_map, biproduct.ι_π, Finset.sum_dite_irrel,
     Finset.sum_dite_eq', Finset.sum_const_zero, Finset.mem_univ, if_true]
+  simp_rw [← tensorHom_id, ← id_tensorHom]
   simp only [← comp_tensor_id, ← id_tensor_comp_assoc, Category.assoc, biproduct.ι_π, comp_dite,
     dite_comp, tensor_dite, dite_tensor]
-  simp only [Category.comp_id, Category.id_comp, Category.assoc, id_tensor_comp, comp_zero,
-    zero_comp, MonoidalPreadditive.tensor_zero, MonoidalPreadditive.zero_tensor, comp_tensor_id,
-    eqToHom_refl, tensor_id, if_true, dif_ctx_congr, Finset.sum_congr, Finset.mem_univ,
-    Finset.sum_dite_eq']
-  simp only [associator_inv_naturality, Iso.hom_inv_id_assoc]
+  simp
 #align category_theory.left_distributor_right_distributor_assoc CategoryTheory.leftDistributor_rightDistributor_assoc
 
 end CategoryTheory

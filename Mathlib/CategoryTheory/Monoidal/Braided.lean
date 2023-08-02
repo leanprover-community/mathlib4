@@ -93,10 +93,10 @@ def braidedCategoryOfFaithful {C D : Type _} [Category C] [Category D] [Monoidal
     refine (cancel_epi (F.μ _ _ ⊗ 𝟙 _)).1 ?_
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
       LaxMonoidalFunctor.μ_natural_assoc, Functor.map_id, ← comp_tensor_id_assoc, w,
-      comp_tensor_id, assoc, LaxMonoidalFunctor.associativity_assoc,
-      LaxMonoidalFunctor.associativity_assoc, ← LaxMonoidalFunctor.μ_natural, Functor.map_id, ←
+      comp_tensor_id, assoc, LaxMonoidalFunctor.associativity'_assoc,
+      LaxMonoidalFunctor.associativity'_assoc, ← LaxMonoidalFunctor.μ_natural, Functor.map_id, ←
       id_tensor_comp_assoc, w, id_tensor_comp_assoc, reassoc_of% w, braiding_naturality_assoc,
-      LaxMonoidalFunctor.associativity, hexagon_forward_assoc]
+      LaxMonoidalFunctor.associativity', hexagon_forward_assoc]
   hexagon_reverse := by
     intros
     apply F.toFunctor.map_injective
@@ -104,10 +104,10 @@ def braidedCategoryOfFaithful {C D : Type _} [Category C] [Category D] [Monoidal
     refine (cancel_epi (𝟙 _ ⊗ F.μ _ _)).1 ?_
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
       LaxMonoidalFunctor.μ_natural_assoc, Functor.map_id, ← id_tensor_comp_assoc, w,
-      id_tensor_comp_assoc, LaxMonoidalFunctor.associativity_inv_assoc,
-      LaxMonoidalFunctor.associativity_inv_assoc, ← LaxMonoidalFunctor.μ_natural,
+      id_tensor_comp_assoc, LaxMonoidalFunctor.associativity_inv'_assoc,
+      LaxMonoidalFunctor.associativity_inv'_assoc, ← LaxMonoidalFunctor.μ_natural,
       Functor.map_id, ← comp_tensor_id_assoc, w, comp_tensor_id_assoc, reassoc_of% w,
-      braiding_naturality_assoc, LaxMonoidalFunctor.associativity_inv, hexagon_reverse_assoc]
+      braiding_naturality_assoc, LaxMonoidalFunctor.associativity_inv', hexagon_reverse_assoc]
 #align category_theory.braided_category_of_faithful CategoryTheory.braidedCategoryOfFaithful
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
@@ -140,8 +140,8 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCatego
 theorem braiding_leftUnitor_aux₁ (X : C) :
     (α_ (𝟙_ C) (𝟙_ C) X).hom ≫
         (𝟙 (𝟙_ C) ⊗ (β_ X (𝟙_ C)).inv) ≫ (α_ _ X _).inv ≫ ((λ_ X).hom ⊗ 𝟙 _) =
-      ((λ_ _).hom ⊗ 𝟙 X) ≫ (β_ X (𝟙_ C)).inv :=
-  by rw [← leftUnitor_tensor, leftUnitor_naturality]; simp
+      ((λ_ _).hom ⊗ 𝟙 X) ≫ (β_ X (𝟙_ C)).inv := by
+  coherence
 #align category_theory.braiding_left_unitor_aux₁ CategoryTheory.braiding_leftUnitor_aux₁
 
 theorem braiding_leftUnitor_aux₂ (X : C) :
@@ -161,7 +161,7 @@ theorem braiding_leftUnitor_aux₂ (X : C) :
     _ = (α_ _ _ _).hom ≫ (𝟙 _ ⊗ (λ_ _).hom) ≫ (β_ _ _).hom ≫ (β_ X _).inv :=
       by (slice_lhs 2 3 => rw [← braiding_naturality]); simp only [assoc]
     _ = (α_ _ _ _).hom ≫ (𝟙 _ ⊗ (λ_ _).hom) := by rw [Iso.hom_inv_id, comp_id]
-    _ = (ρ_ X).hom ⊗ 𝟙 (𝟙_ C) := by rw [triangle]
+    _ = (ρ_ X).hom ⊗ 𝟙 (𝟙_ C) := by rw [triangle']
 
 #align category_theory.braiding_left_unitor_aux₂ CategoryTheory.braiding_leftUnitor_aux₂
 
@@ -173,8 +173,8 @@ theorem braiding_leftUnitor (X : C) : (β_ X (𝟙_ C)).hom ≫ (λ_ X).hom = (�
 theorem braiding_rightUnitor_aux₁ (X : C) :
     (α_ X (𝟙_ C) (𝟙_ C)).inv ≫
         ((β_ (𝟙_ C) X).inv ⊗ 𝟙 (𝟙_ C)) ≫ (α_ _ X _).hom ≫ (𝟙 _ ⊗ (ρ_ X).hom) =
-      (𝟙 X ⊗ (ρ_ _).hom) ≫ (β_ (𝟙_ C) X).inv :=
-  by rw [← rightUnitor_tensor, rightUnitor_naturality]; simp
+      (𝟙 X ⊗ (ρ_ _).hom) ≫ (β_ (𝟙_ C) X).inv := by
+  coherence
 #align category_theory.braiding_right_unitor_aux₁ CategoryTheory.braiding_rightUnitor_aux₁
 
 theorem braiding_rightUnitor_aux₂ (X : C) :
@@ -194,7 +194,7 @@ theorem braiding_rightUnitor_aux₂ (X : C) :
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ⊗ 𝟙 _) ≫ (β_ _ X).hom ≫ (β_ _ _).inv :=
       by (slice_lhs 2 3 => rw [← braiding_naturality]); simp only [assoc]
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ⊗ 𝟙 _) := by rw [Iso.hom_inv_id, comp_id]
-    _ = 𝟙 (𝟙_ C) ⊗ (λ_ X).hom := by rw [triangle_assoc_comp_right]
+    _ = 𝟙 (𝟙_ C) ⊗ (λ_ X).hom := by rw [triangle_assoc_comp_right']
 
 #align category_theory.braiding_right_unitor_aux₂ CategoryTheory.braiding_rightUnitor_aux₂
 
@@ -410,7 +410,8 @@ theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : 
     (g₂ : U₂ ⟶ V₂) :
     ((f₁ ⊗ f₂) ⊗ g₁ ⊗ g₂) ≫ tensor_μ C (Y₁, Y₂) (V₁, V₂) =
       tensor_μ C (X₁, X₂) (U₁, U₂) ≫ ((f₁ ⊗ g₁) ⊗ f₂ ⊗ g₂) := by
-  dsimp [tensor_μ]
+  dsimp only [tensor_μ]
+  simp_rw [← id_tensorHom, ← tensorHom_id]
   slice_lhs 1 2 => rw [associator_naturality]
   slice_lhs 2 3 =>
     rw [← tensor_comp, comp_id f₁, ← id_comp f₁, associator_inv_naturality, tensor_comp]
@@ -426,34 +427,32 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
     (λ_ (X₁ ⊗ X₂)).hom =
       ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
         tensor_μ C (𝟙_ C, 𝟙_ C) (X₁, X₂) ≫ ((λ_ X₁).hom ⊗ (λ_ X₂).hom) := by
-  dsimp [tensor_μ]
+  dsimp only [tensor_μ]
   have :
     ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
         (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫ (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv) =
       𝟙 (𝟙_ C) ⊗ (λ_ X₁).inv ⊗ 𝟙 X₂ :=
-    by pure_coherence
+    by coherence
   slice_rhs 1 3 => rw [this]
   clear this
   slice_rhs 1 2 => rw [← tensor_comp, ← tensor_comp, comp_id, comp_id, leftUnitor_inv_braiding]
-  simp only [assoc]
-  coherence
+  simp [tensorHom_id, id_tensorHom, tensorHom_def]
 #align category_theory.tensor_left_unitality CategoryTheory.tensor_left_unitality
 
 theorem tensor_right_unitality (X₁ X₂ : C) :
     (ρ_ (X₁ ⊗ X₂)).hom =
       (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) ≫
         tensor_μ C (X₁, X₂) (𝟙_ C, 𝟙_ C) ≫ ((ρ_ X₁).hom ⊗ (ρ_ X₂).hom) := by
-  dsimp [tensor_μ]
+  dsimp only [tensor_μ]
   have :
     (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) ≫
         (α_ X₁ X₂ (𝟙_ C ⊗ 𝟙_ C)).hom ≫ (𝟙 X₁ ⊗ (α_ X₂ (𝟙_ C) (𝟙_ C)).inv) =
       (α_ X₁ X₂ (𝟙_ C)).hom ≫ (𝟙 X₁ ⊗ (ρ_ X₂).inv ⊗ 𝟙 (𝟙_ C)) :=
-    by pure_coherence
+    by coherence
   slice_rhs 1 3 => rw [this]
   clear this
   slice_rhs 2 3 => rw [← tensor_comp, ← tensor_comp, comp_id, comp_id, rightUnitor_inv_braiding]
-  simp only [assoc]
-  coherence
+  simp [tensorHom_id, id_tensorHom, tensorHom_def]
 #align category_theory.tensor_right_unitality CategoryTheory.tensor_right_unitality
 
 /-
@@ -496,7 +495,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
                         (𝟙 X₁ ⊗ (α_ ((Y₁ ⊗ Z₁) ⊗ X₂) Y₂ Z₂).hom) ≫
                           (𝟙 X₁ ⊗ (α_ (Y₁ ⊗ Z₁) X₂ (Y₂ ⊗ Z₂)).hom) ≫
                             (α_ X₁ (Y₁ ⊗ Z₁) (X₂ ⊗ Y₂ ⊗ Z₂)).inv :=
-    by pure_coherence
+    by monoidal_simps; pure_coherence
   rw [this]; clear this
   slice_lhs 2 4 => rw [tensor_μ_def₁]
   slice_lhs 4 5 => rw [← tensor_id, associator_naturality]
@@ -514,7 +513,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
               ((𝟙 X₁ ⊗ (α_ (Y₁ ⊗ X₂) Y₂ Z₁).hom) ⊗ 𝟙 Z₂) ≫
                 ((𝟙 X₁ ⊗ (α_ Y₁ X₂ (Y₂ ⊗ Z₁)).hom) ⊗ 𝟙 Z₂) ≫
                   ((𝟙 X₁ ⊗ 𝟙 Y₁ ⊗ (α_ X₂ Y₂ Z₁).inv) ⊗ 𝟙 Z₂) :=
-    by pure_coherence
+    by monoidal_simps; pure_coherence
   slice_lhs 2 6 => rw [this]
   clear this
   slice_lhs 1 3 => rw [← tensor_comp, ← tensor_comp, tensor_μ_def₁, tensor_comp, tensor_comp]
@@ -530,10 +529,11 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
       tensor_comp, tensor_comp, tensor_comp]
   slice_lhs 11 12 =>
     rw [← tensor_comp, ← tensor_comp, Iso.hom_inv_id]
-    simp
+    rw [comp_id, id_comp, id_tensorHom, tensorHom_id, MonoidalCategory.whiskerLeft_id, id_whiskerRight]
   simp only [assoc, id_comp]
   slice_lhs 10 11 =>
     rw [← tensor_comp, ← tensor_comp, ← tensor_comp, Iso.hom_inv_id]
+    simp only [id_tensorHom, tensorHom_id, comp_id, id_comp]
     simp
   simp only [assoc, id_comp]
   slice_lhs 9 10 => rw [associator_naturality]
@@ -550,7 +550,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
           (𝟙 X₁ ⊗ (α_ X₂ Y₁ ((Z₁ ⊗ Y₂) ⊗ Z₂)).hom) ≫
             (α_ X₁ X₂ (Y₁ ⊗ (Z₁ ⊗ Y₂) ⊗ Z₂)).inv ≫
               (𝟙 (X₁ ⊗ X₂) ⊗ 𝟙 Y₁ ⊗ (α_ Z₁ Y₂ Z₂).hom) ≫ (𝟙 (X₁ ⊗ X₂) ⊗ (α_ Y₁ Z₁ (Y₂ ⊗ Z₂)).inv) :=
-    by pure_coherence
+    by monoidal_simps; pure_coherence
   slice_lhs 7 12 => rw [this]
   clear this
   slice_lhs 6 7 => rw [associator_naturality]
@@ -558,52 +558,57 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
   slice_lhs 8 9 => rw [← tensor_comp, associator_naturality, tensor_comp]
   slice_lhs 9 10 => rw [associator_inv_naturality]
   slice_lhs 10 12 => rw [← tensor_comp, ← tensor_comp, ← tensor_μ_def₂, tensor_comp, tensor_comp]
-  dsimp
+  dsimp only [tensor_obj, prodMonoidal_tensorObj]
+  simp_rw [← Category.assoc]
+  congr 2
   coherence
 #align category_theory.tensor_associativity CategoryTheory.tensor_associativity
+
+@[simp]
+def tensorLaxMonoidal : LaxMonoidalFunctor (C × C) C := LaxMonoidalFunctor.ofTensorHom
+  (F := tensor C)
+  (ε := (λ_ (𝟙_ C)).inv)
+  (μ := fun X Y => tensor_μ C X Y)
+  (μ_natural := fun f g => tensor_μ_natural C f.1 f.2 g.1 g.2)
+  (associativity := fun X Y Z => tensor_associativity C X.1 X.2 Y.1 Y.2 Z.1 Z.2)
+  (left_unitality := fun ⟨X₁, X₂⟩ => tensor_left_unitality C X₁ X₂)
+  (right_unitality := fun ⟨X₁, X₂⟩ => tensor_right_unitality C X₁ X₂)
 
 /-- The tensor product functor from `C × C` to `C` as a monoidal functor. -/
 @[simps!]
 def tensorMonoidal : MonoidalFunctor (C × C) C :=
-  { tensor C with
-    ε := (λ_ (𝟙_ C)).inv
-    μ := fun X Y => tensor_μ C X Y
-    μ_natural := fun f g => tensor_μ_natural C f.1 f.2 g.1 g.2
-    associativity := fun X Y Z => tensor_associativity C X.1 X.2 Y.1 Y.2 Z.1 Z.2
-    left_unitality := fun ⟨X₁, X₂⟩ => tensor_left_unitality C X₁ X₂
-    right_unitality := fun ⟨X₁, X₂⟩ => tensor_right_unitality C X₁ X₂
-    μ_isIso := by dsimp [tensor_μ]; infer_instance }
+  { tensorLaxMonoidal C with
+    μ_isIso := by dsimp [tensor_μ]; infer_instance
+    ε_isIso := by dsimp; infer_instance }
 #align category_theory.tensor_monoidal CategoryTheory.tensorMonoidal
 
 theorem leftUnitor_monoidal (X₁ X₂ : C) :
     (λ_ X₁).hom ⊗ (λ_ X₂).hom =
       tensor_μ C (𝟙_ C, X₁) (𝟙_ C, X₂) ≫ ((λ_ (𝟙_ C)).hom ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).hom := by
-  dsimp [tensor_μ]
+  dsimp only [tensor_μ]
   have :
     (λ_ X₁).hom ⊗ (λ_ X₂).hom =
       (α_ (𝟙_ C) X₁ (𝟙_ C ⊗ X₂)).hom ≫
         (𝟙 (𝟙_ C) ⊗ (α_ X₁ (𝟙_ C) X₂).inv) ≫ (λ_ ((X₁ ⊗ 𝟙_ C) ⊗ X₂)).hom ≫ ((ρ_ X₁).hom ⊗ 𝟙 X₂) :=
-    by pure_coherence
+    by coherence
   rw [this]; clear this
   rw [← braiding_leftUnitor]
-  slice_lhs 3 4 => rw [← id_comp (𝟙 X₂), tensor_comp]
-  slice_lhs 3 4 => rw [← leftUnitor_naturality]
+  dsimp only [tensor_obj, prodMonoidal_tensorObj]
   coherence
 #align category_theory.left_unitor_monoidal CategoryTheory.leftUnitor_monoidal
 
 theorem rightUnitor_monoidal (X₁ X₂ : C) :
     (ρ_ X₁).hom ⊗ (ρ_ X₂).hom =
       tensor_μ C (X₁, 𝟙_ C) (X₂, 𝟙_ C) ≫ (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).hom) ≫ (ρ_ (X₁ ⊗ X₂)).hom := by
-  dsimp [tensor_μ]
+  dsimp only [tensor_μ]
   have :
     (ρ_ X₁).hom ⊗ (ρ_ X₂).hom =
       (α_ X₁ (𝟙_ C) (X₂ ⊗ 𝟙_ C)).hom ≫
         (𝟙 X₁ ⊗ (α_ (𝟙_ C) X₂ (𝟙_ C)).inv) ≫ (𝟙 X₁ ⊗ (ρ_ (𝟙_ C ⊗ X₂)).hom) ≫ (𝟙 X₁ ⊗ (λ_ X₂).hom) :=
-    by pure_coherence
+    by coherence
   rw [this]; clear this
   rw [← braiding_rightUnitor]
-  slice_lhs 3 4 => rw [← id_comp (𝟙 X₁), tensor_comp, id_comp]
-  slice_lhs 3 4 => rw [← tensor_comp, ← rightUnitor_naturality, tensor_comp]
+  dsimp only [tensor_obj, prodMonoidal_tensorObj]
   coherence
 #align category_theory.right_unitor_monoidal CategoryTheory.rightUnitor_monoidal
 
@@ -614,7 +619,7 @@ theorem associator_monoidal_aux (W X Y Z : C) :
         (α_ (W ⊗ X) Y Z).inv ≫
           ((β_ (W ⊗ X) Y).hom ⊗ 𝟙 Z) ≫
             ((α_ Y W X).inv ⊗ 𝟙 Z) ≫ (α_ (Y ⊗ W) X Z).hom ≫ (𝟙 (Y ⊗ W) ⊗ (β_ X Z).hom) := by
-  slice_rhs 1 2 => rw [← pentagon_inv]
+  slice_rhs 1 2 => rw [← pentagon_inv']
   slice_rhs 3 5 => rw [← tensor_comp, ← tensor_comp, hexagon_reverse, tensor_comp, tensor_comp]
   slice_rhs 5 6 => rw [associator_naturality]
   slice_rhs 6 7 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
@@ -644,7 +649,7 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
                       (α_ X₁ Y₁ (X₂ ⊗ (Y₂ ⊗ X₃) ⊗ Y₃)).inv ≫
                         (𝟙 (X₁ ⊗ Y₁) ⊗ 𝟙 X₂ ⊗ (α_ Y₂ X₃ Y₃).hom) ≫
                           (𝟙 (X₁ ⊗ Y₁) ⊗ (α_ X₂ Y₂ (X₃ ⊗ Y₃)).inv) :=
-    by pure_coherence
+    by coherence
   rw [this]; clear this
   slice_lhs 2 4 => rw [← tensor_comp, ← tensor_comp, tensor_μ_def₁, tensor_comp, tensor_comp]
   slice_lhs 4 5 => rw [← tensor_id, associator_inv_naturality]
@@ -663,7 +668,7 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
               (α_ X₁ (X₂ ⊗ (Y₁ ⊗ Y₂) ⊗ X₃) Y₃).inv ≫
                 ((𝟙 X₁ ⊗ 𝟙 X₂ ⊗ (α_ Y₁ Y₂ X₃).hom) ⊗ 𝟙 Y₃) ≫
                   ((𝟙 X₁ ⊗ (α_ X₂ Y₁ (Y₂ ⊗ X₃)).inv) ⊗ 𝟙 Y₃) :=
-    by pure_coherence
+    by coherence
   slice_lhs 2 6 => rw [this]
   clear this
   slice_lhs 1 3 => rw [tensor_μ_def₁]
@@ -694,13 +699,15 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
       (α_ X₁ ((Y₁ ⊗ X₂ ⊗ X₃) ⊗ Y₂) Y₃).hom ≫
         (𝟙 X₁ ⊗ (α_ (Y₁ ⊗ X₂ ⊗ X₃) Y₂ Y₃).hom) ≫
           (𝟙 X₁ ⊗ (α_ Y₁ (X₂ ⊗ X₃) (Y₂ ⊗ Y₃)).hom) ≫ (α_ X₁ Y₁ ((X₂ ⊗ X₃) ⊗ Y₂ ⊗ Y₃)).inv :=
-    by pure_coherence
+    by coherence
   slice_lhs 9 16 => rw [this]
   clear this
   slice_lhs 8 9 => rw [associator_naturality]
   slice_lhs 9 10 => rw [← tensor_comp, associator_naturality, tensor_comp]
   slice_lhs 10 12 => rw [tensor_id, ← tensor_μ_def₂]
-  dsimp
+  dsimp only [tensor_obj, prodMonoidal_tensorObj]
+  simp_rw [← Category.assoc]
+  congr 2
   coherence
 #align category_theory.associator_monoidal CategoryTheory.associator_monoidal
 
