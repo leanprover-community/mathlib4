@@ -323,7 +323,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     obtain ⟨d, hd, h'd⟩ :=
       exists_lt_of_lt_csSup ((@Set.nonempty_image_iff R S f _).mpr bdd_above) hc
     apply lt_csSup_of_lt ?_ ?_ h'd
-    · exact f_decr.isCoboundedUnder_ge F bdd_below
+    · exact (Antitone.isBoundedUnder_le_comp f_decr bdd_below).isCoboundedUnder_flip
     · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
       filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
   · by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
