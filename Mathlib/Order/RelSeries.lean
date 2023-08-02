@@ -9,6 +9,7 @@ import Mathlib.Data.Rel
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Series of a relation
@@ -526,61 +527,100 @@ theorem mem_eraseLast_of_ne_of_mem {s : RelSeries r} {x : α} (hx : x ≠ s.last
     ext
     exact h
 
--- /--
--- Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combined together to form
--- `a₀ --r-> ... --r-> x --r-> b ...`
--- -/
--- def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
---   length := p.length + q.length
---   toFun := fun i => @Fin.addCases p.length (q.length + 1) (fun _ => α) (fun i => p i.castSucc) q <|
---     Fin.castIso (by ring : p.length + q.length + 1 = p.length + (q.length + 1)) i
---   step := fun i => by sorry
+/--
+Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combined together to form
+`a₀ --r-> ... --r-> x --r-> b ...`
+-/
+@[simps]
+def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
+  length := p.length + q.length
+  toFun := fun i => if H : i.1 < p.length then p ⟨i.1, H.trans (lt_add_one _)⟩ else q ⟨i.1 - p.length, by
+    apply Nat.sub_lt_left_of_lt_add
+    · rwa [not_lt] at H
+    · rw [← add_assoc]; exact i.2⟩
+  step := fun i => by
+    dsimp only []
+    by_cases h₂ : i.1 + 1 < p.length
+    · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
+      erw [dif_pos h₁, dif_pos h₂]
+      convert p.step ⟨i, h₁⟩ using 1
+    · -- rw [not_lt] at h₂
+      erw [dif_neg h₂]
+      by_cases h₁ : i.1 < p.length
+      · erw [dif_pos h₁]
+        rw [not_lt] at h₂
+        have h₃ : p.length = i.1 + 1
+        · linarith
+        convert p.step ⟨i, h₁⟩ using 1
+        convert connect.symm
+        · congr
+          simp only [Fin.val_succ, ge_iff_le, Nat.zero_mod, tsub_eq_zero_iff_le]
+          simp_rw [h₃]
+          rfl
+        · congr
+          ext
+          exact h₃.symm
+      · erw [dif_neg h₁]
+        convert q.step ⟨i.1 - p.length, _⟩ using 1
+        · congr
+          change (i.1 + 1) - _ = _
+          rw [Nat.sub_add_comm]
+          rw [not_lt] at h₁
+          exact h₁
+        · refine Nat.sub_lt_left_of_lt_add ?_ i.2
+          rw [not_lt] at h₁
+          exact h₁
+
+lemma combine_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
+    p.combine q connect (Fin.castSucc <| Fin.castAdd q.length i) = p (Fin.castSucc i) := by
+  unfold combine
+  dsimp
+  rw [dif_pos i.2]
+  rfl
 
 
--- -- if h : p.length = 0 then q else p.eraseLast.append q <|
--- --   connect ▸ rel_last_eraseLast_last_of_pos_length _ <| Nat.pos_of_ne_zero h
+@[simp]
+theorem combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
+    (i : Fin s₁.length) : combine s₁ s₂ h (Fin.castAdd s₂.length i).succ = s₁ i.succ := by
+  rw [combine_toFun]
+  split_ifs with H
+  · congr
+  · simp only [Fin.val_succ, Fin.coe_castAdd, not_lt] at H
+    convert h.symm
+    · congr
+      simp only [Fin.val_succ, Fin.coe_castAdd, ge_iff_le, Nat.zero_mod, tsub_eq_zero_iff_le]
+      linarith [i.2]
+    · congr
+      ext
+      change i.1 + 1 = s₁.length
+      linarith [i.2]
 
--- lemma combine_eq_of_length_zero (p q : RelSeries r) (connect : p.last = q.head) (H : p.length = 0) :
---     p.combine q connect = q := by
---   unfold combine
---   rw [dif_pos H]
+@[simp]
+theorem combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
+    combine s₁ s₂ h (Fin.castSucc <| Fin.natAdd s₁.length i) = s₂ (Fin.castSucc i) := by
+  rw [combine_toFun]
+  split_ifs with H
+  · simp only [combine_length, Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left,
+      not_lt_zero'] at H
+  · simp only [combine_length, Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero',
+      not_false_eq_true] at H
+    congr
+    change (_ + i.1) - _ = _
+    exact Nat.add_sub_self_left _ _
 
--- lemma combine_eq_of_length_ne_zero (p q : RelSeries r) (connect : p.last = q.head) (H : p.length ≠ 0) :
---     p.combine q connect = p.eraseLast.append q
---       (connect ▸ rel_last_eraseLast_last_of_pos_length _ <| Nat.pos_of_ne_zero H) := by
---   unfold combine
---   rw [dif_neg H]
-
--- @[simp] lemma combine_length (p q : RelSeries r) (connect : p.last = q.head) :
---     (p.combine q connect).length = p.length + q.length := by
---   unfold combine
---   split_ifs with h
---   · rw [h, zero_add]
---   · rw [append_length, eraseLast_length, add_assoc, add_comm _ 1, ← add_assoc,
---       ← Nat.pred_eq_sub_one, ← Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
---     exact Nat.pos_of_ne_zero h
-
--- lemma combine_toFun_eq_of_length_zero (p q : RelSeries r) (connect : p.last = q.head) (H : p.length = 0) :
---     (p.combine q connect).toFun = q.toFun ∘ Fin.castLE (by rw [combine_length, H, zero_add]) := by
---   rw [combine_eq_of_length_zero p q connect H]
---   convert (Function.comp.right_id _).symm
-
--- lemma combine_toFun (p q : RelSeries r) (connect : p.last = q.head) :
---     (p.combine q connect).toFun =
---     if h : p.length = 0
---     then q.toFun ∘ Fin.castLE (by rw [combine_length, h, zero_add])
---     else (p.eraseLast.append q <|
---       connect ▸ rel_last_eraseLast_last_of_pos_length _ <| Nat.pos_of_ne_zero h).toFun ∘
---       Fin.castLE (by rw [combine_length, append_length, eraseLast_length, add_assoc (p.length - 1),
---         add_comm q.length 1, ← add_assoc, Nat.sub_add_cancel]; exact Nat.pos_of_ne_zero h) := by
---   by_cases H : p.length = 0
---   · rw [combine_eq_of_length_zero p q connect H]
-
--- lemma combine_castAdd (p q : RelSeries r) (connect : p.last = q.head) (i : Fin p.length) :
---     p.combine q connect (Fin.castLE (by rw [combine_length]; linarith) i) = p i.castSucc := by
---   unfold combine
---   split_ifs with h
---   ·
+@[simp]
+theorem combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
+    combine s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ := by
+  rw [combine_toFun]
+  split_ifs with H
+  · simp only [Fin.val_succ, Fin.coe_natAdd] at H
+    rw [add_assoc] at H
+    have H' : s₁.length < s₁.length + (i.1 + 1)
+    · linarith
+    exact (lt_irrefl _ (H.trans H')).elim
+  · congr
+    simp only [Fin.val_succ, Fin.coe_natAdd, ge_iff_le]
+    rw [add_assoc, Nat.add_sub_cancel_left]
 
 end RelSeries
 

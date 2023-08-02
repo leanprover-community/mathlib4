@@ -359,97 +359,34 @@ theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseTop.top s.top := RelSeries.rel_last_eraseLast_last_of_pos_length s h
 #align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseTop_top
 
-section FinLemmas
-
--- -- TODO: move these to `VecNotation` and rename them to better describe their statement
-variable {α : Type _} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
-
-theorem append_castAdd_aux (i : Fin m) :
-    Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b
-      (Fin.castSucc <| Fin.castAdd n i) =
-      a (Fin.castSucc i) := by
-  cases i
-  simp [Matrix.vecAppend_eq_ite, *]
-#align composition_series.append_cast_add_aux CompositionSeries.append_castAdd_aux
-
-theorem append_succ_castAdd_aux (i : Fin m) (h : a (Fin.last _) = b 0) :
-    Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b (Fin.castAdd n i).succ =
-      a i.succ := by
-  cases' i with i hi
-  simp only [Matrix.vecAppend_eq_ite, hi, Fin.succ_mk, Function.comp_apply, Fin.castSucc_mk,
-    Fin.val_mk, Fin.castAdd_mk]
-  split_ifs with h_1
-  · rfl
-  · have : i + 1 = m := le_antisymm hi (le_of_not_gt h_1)
-    calc
-      b ⟨i + 1 - m, by simp [this]⟩ = b 0 := congr_arg b (by simp [Fin.ext_iff, this])
-      _ = a (Fin.last _) := h.symm
-      _ = _ := congr_arg a (by simp [Fin.ext_iff, this])
-#align composition_series.append_succ_cast_add_aux CompositionSeries.append_succ_castAdd_aux
-
-theorem append_natAdd_aux (i : Fin n) :
-    Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b
-      (Fin.castSucc <| Fin.natAdd m i) =
-      b (Fin.castSucc i) := by
-  cases i
-  simp only [Matrix.vecAppend_eq_ite, Nat.not_lt_zero, Fin.natAdd_mk, add_lt_iff_neg_left,
-    add_tsub_cancel_left, dif_neg, Fin.castSucc_mk, not_false_iff, Fin.val_mk]
-#align composition_series.append_nat_add_aux CompositionSeries.append_natAdd_aux
-
-theorem append_succ_natAdd_aux (i : Fin n) :
-    Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b (Fin.natAdd m i).succ =
-      b i.succ := by
-  cases' i with i hi
-  simp only [Matrix.vecAppend_eq_ite, add_assoc, Nat.not_lt_zero, Fin.natAdd_mk,
-    add_lt_iff_neg_left, add_tsub_cancel_left, Fin.succ_mk, dif_neg, not_false_iff, Fin.val_mk]
-#align composition_series.append_succ_nat_add_aux CompositionSeries.append_succ_natAdd_aux
-
-end FinLemmas
-
 -- TODO : implement this in `RelSeries` as `combine`
 /-- Append two composition series `s₁` and `s₂` such that
 the least element of `s₁` is the maximum element of `s₂`. -/
-@[simps length]
-def append (s₁ s₂ : CompositionSeries X) (h : s₁.top = s₂.bot) : CompositionSeries X where
-  length := s₁.length + s₂.length
-  toFun := Matrix.vecAppend (Nat.add_succ s₁.length s₂.length).symm (s₁ ∘ Fin.castSucc) s₂
-  step i := by
-    refine' Fin.addCases _ _ i
-    · intro i
-      rw [append_succ_castAdd_aux _ _ _ h, append_castAdd_aux]
-      exact s₁.step i
-    · intro i
-      rw [append_natAdd_aux, append_succ_natAdd_aux]
-      exact s₂.step i
+def append (s₁ s₂ : CompositionSeries X) (h : s₁.top = s₂.bot) : CompositionSeries X :=
+  RelSeries.combine s₁ s₂ h
 #align composition_series.append CompositionSeries.append
-
-theorem coe_append (s₁ s₂ : CompositionSeries X) (h) :
-    ⇑(s₁.append s₂ h) = Matrix.vecAppend (Nat.add_succ _ _).symm (s₁ ∘ Fin.castSucc) s₂ :=
-  rfl
-#align composition_series.coe_append CompositionSeries.coe_append
 
 @[simp]
 theorem append_castAdd {s₁ s₂ : CompositionSeries X} (h : s₁.top = s₂.bot) (i : Fin s₁.length) :
-    append s₁ s₂ h (Fin.castSucc <| Fin.castAdd s₂.length i) = s₁ (Fin.castSucc i) := by
-  rw [coe_append, append_castAdd_aux _ _ i]
-#align composition_series.append_cast_add CompositionSeries.append_castAdd
+    append s₁ s₂ h (Fin.castSucc <| Fin.castAdd s₂.length i) = s₁ (Fin.castSucc i) :=
+  RelSeries.combine_castAdd h i
 
 @[simp]
 theorem append_succ_castAdd {s₁ s₂ : CompositionSeries X} (h : s₁.top = s₂.bot)
-    (i : Fin s₁.length) : append s₁ s₂ h (Fin.castAdd s₂.length i).succ = s₁ i.succ := by
-  rw [coe_append, append_succ_castAdd_aux _ _ _ h]
+    (i : Fin s₁.length) : append s₁ s₂ h (Fin.castAdd s₂.length i).succ = s₁ i.succ :=
+  RelSeries.combine_succ_castAdd h i
 #align composition_series.append_succ_cast_add CompositionSeries.append_succ_castAdd
 
 @[simp]
 theorem append_natAdd {s₁ s₂ : CompositionSeries X} (h : s₁.top = s₂.bot) (i : Fin s₂.length) :
-    append s₁ s₂ h (Fin.castSucc <| Fin.natAdd s₁.length i) = s₂ (Fin.castSucc i) := by
-  rw [coe_append, append_natAdd_aux _ _ i]
+    append s₁ s₂ h (Fin.castSucc <| Fin.natAdd s₁.length i) = s₂ (Fin.castSucc i) :=
+  RelSeries.combine_natAdd h i
 #align composition_series.append_nat_add CompositionSeries.append_natAdd
 
 @[simp]
 theorem append_succ_natAdd {s₁ s₂ : CompositionSeries X} (h : s₁.top = s₂.bot) (i : Fin s₂.length) :
-    append s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ := by
-  rw [coe_append, append_succ_natAdd_aux _ _ i]
+    append s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ :=
+  RelSeries.combine_succ_natAdd h i
 #align composition_series.append_succ_nat_add CompositionSeries.append_succ_natAdd
 
 /-- Add an element to the top of a `CompositionSeries` -/
@@ -543,8 +480,16 @@ theorem append {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.top = s₂
     intro i
     refine' Fin.addCases _ _ i
     · intro i
+      rw [append_castAdd, append_succ_castAdd]
+      simp only [Equiv.instTransSortSortSortEquivEquivEquiv_trans, finSumFinEquiv,
+        Equiv.trans_apply, Equiv.coe_fn_symm_mk, Fin.addCases_left, Equiv.sumCongr_apply,
+        Sum.map_inl, Equiv.coe_fn_mk, Sum.elim_inl, append_castAdd, append_succ_castAdd]
       simpa [top, bot] using h₁.choose_spec i
     · intro i
+      rw [append_natAdd, append_succ_natAdd]
+      simp only [Equiv.instTransSortSortSortEquivEquivEquiv_trans, finSumFinEquiv,
+        Equiv.trans_apply, Equiv.coe_fn_symm_mk, Fin.addCases_right, Equiv.sumCongr_apply,
+        Sum.map_inr, Equiv.coe_fn_mk, Sum.elim_inr, append_natAdd, append_succ_natAdd]
       simpa [top, bot] using h₂.choose_spec i⟩
 #align composition_series.equivalent.append CompositionSeries.Equivalent.append
 
