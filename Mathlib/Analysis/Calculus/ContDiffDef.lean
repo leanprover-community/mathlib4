@@ -813,6 +813,14 @@ theorem iteratedFDerivWithin_succ_eq_comp_left {n : ℕ} :
   rfl
 #align iterated_fderiv_within_succ_eq_comp_left iteratedFDerivWithin_succ_eq_comp_left
 
+theorem fderivWithin_iteratedFDerivWithin {s : Set E} {n : ℕ} :
+    fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s =
+      (continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) => E) F).symm ∘
+        iteratedFDerivWithin 𝕜 (n + 1) f s := by
+  rw [iteratedFDerivWithin_succ_eq_comp_left]
+  ext1 x
+  simp only [Function.comp_apply, LinearIsometryEquiv.symm_apply_apply]
+
 theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
     ‖fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x‖ =
       ‖iteratedFDerivWithin 𝕜 (n + 1) f s x‖ := by

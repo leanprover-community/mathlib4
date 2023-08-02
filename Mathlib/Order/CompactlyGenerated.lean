@@ -546,12 +546,13 @@ Now we will prove that a compactly generated modular atomistic lattice is a comp
 Most explicitly, every element is the complement of a supremum of indepedendent atoms.
 -/
 
-/-- In an atomic lattice, every element `b` has a complement of the form `Sup s`, where each element
-of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
+element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
 theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
     ∃ s : Set α, CompleteLattice.SetIndependent s ∧
     IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
-  -- porting note: `obtain` chokes on the placeholder.
+  -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
+  -- `obtain` chokes on the placeholder.
   have := zorn_subset
     {s : Set α | CompleteLattice.SetIndependent s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a}
     fun c hc1 hc2 =>

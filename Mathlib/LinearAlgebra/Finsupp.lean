@@ -530,8 +530,8 @@ end LComapDomain
 
 section Total
 
-variable (α) {α' : Type _} (M) {M' : Type _} (R) [Semiring R] [AddCommMonoid M'] [AddCommMonoid M]
-  [Module R M'] [Module R M] (v : α → M) {v' : α' → M'}
+variable (α) (M) (R)
+variable {α' : Type _} {M' : Type _} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
 /-- Interprets (l : α →₀ R) as linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
