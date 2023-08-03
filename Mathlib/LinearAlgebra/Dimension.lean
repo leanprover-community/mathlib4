@@ -30,7 +30,7 @@ import Mathlib.SetTheory.Cardinal.Cofinality
   at most that of the target.
 * `LinearMap.rank_le_of_surjective`: the target of a surjective linear map has dimension
   at most that of that source.
-* `basisFintypeOfFiniteSpans`:
+* `basis_finite_of_finite_spans`:
   the existence of a finite spanning set implies that any basis is finite.
 * `infinite_basis_le_maximal_linearIndependent`:
   if `b` is an infinite basis for a module `M`,
@@ -319,11 +319,13 @@ theorem LinearIndependent.set_finite_of_isNoetherian [IsNoetherian R M] {s : Set
 /--
 Over any nontrivial ring, the existence of a finite spanning set implies that any basis is finite.
 -/
-def basisFintypeOfFiniteSpans (w : Set M) [Fintype w] (s : span R w = ⊤) {ι : Type w}
-    (b : Basis ι R M) : Fintype ι := by
+lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = ⊤) {ι : Type w}
+    (b : Basis ι R M) : Finite ι := by
   classical
+  haveI := hw.to_subtype
+  cases nonempty_fintype w
   -- We'll work by contradiction, assuming `ι` is infinite.
-  apply fintypeOfNotInfinite _
+  rw [← not_infinite_iff_finite]
   intro i
   -- Let `S` be the union of the supports of `x ∈ w` expressed as linear combinations of `b`.
   -- This is a finite set since `w` is finite.
@@ -348,7 +350,7 @@ def basisFintypeOfFiniteSpans (w : Set M) [Fintype w] (s : span R w = ⊤) {ι :
   -- giving the desire contradiction.
   refine' b.linearIndependent.not_mem_span_image _ k'
   exact nm
-#align basis_fintype_of_finite_spans basisFintypeOfFiniteSpans
+#align basis_fintype_of_finite_spans basis_finite_of_finite_spansₓ
 
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
@@ -540,9 +542,10 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
   classical
   haveI := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite ι
-  · -- `v` is a finite basis, so by `basisFintypeOfFiniteSpans` so is `v'`.
-    haveI : Fintype (range v) := Set.fintypeRange v
-    haveI := basisFintypeOfFiniteSpans _ v.span_eq v'
+  · -- `v` is a finite basis, so by `basis_finite_of_finite_spans` so is `v'`.
+    -- haveI : Finite (range v) := Set.finite_range v
+    haveI := basis_finite_of_finite_spans _ (Set.finite_range v) v.span_eq v'
+    cases nonempty_fintype ι'
     -- We clean up a little:
     rw [Cardinal.mk_fintype, Cardinal.mk_fintype]
     simp only [Cardinal.lift_natCast, Cardinal.natCast_inj]
@@ -606,7 +609,8 @@ but still assumes we have a finite spanning set.
 theorem basis_le_span' {ι : Type _} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
   haveI := nontrivial_of_invariantBasisNumber R
-  haveI := basisFintypeOfFiniteSpans w s b
+  haveI := basis_finite_of_finite_spans w (toFinite _) s b
+  cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
   simp only [Cardinal.natCast_le]
   exact Basis.le_span'' b s

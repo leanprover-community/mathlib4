@@ -202,7 +202,7 @@ theorem dualTensorHomEquivOfBasis_symm_cancel_right (x : M →ₗ[R] N) :
 
 variable (R M N P Q)
 
-variable [Module.Free R M] [Module.Finite R M] [Nontrivial R]
+variable [Module.Free R M] [Module.Finite R M]
 
 /-- If `M` is finite free, the natural map $M^* ⊗ N → Hom(M, N)$ is an
 equivalence. -/
