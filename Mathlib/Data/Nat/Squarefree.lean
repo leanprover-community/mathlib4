@@ -31,6 +31,13 @@ theorem squarefree_iff_nodup_factors {n : ℕ} (h0 : n ≠ 0) : Squarefree n ↔
   simp
 #align nat.squarefree_iff_nodup_factors Nat.squarefree_iff_nodup_factors
 
+end Nat
+
+theorem Squarefree.nodup_factors {n : ℕ} (hn : Squarefree n) : n.factors.Nodup :=
+    (Nat.squarefree_iff_nodup_factors hn.ne_zero).mp hn
+
+namespace Nat
+
 theorem squarefree_iff_prime_squarefree {n : ℕ} : Squarefree n ↔ ∀ x, Prime x → ¬x * x ∣ n :=
   squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible ⟨_, prime_two⟩
 #align nat.squarefree_iff_prime_squarefree Nat.squarefree_iff_prime_squarefree
@@ -384,10 +391,9 @@ theorem squarefree_mul_iff {m n : ℕ} :
   ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
     fun h => (squarefree_mul h.1).mpr h.2⟩
 
-theorem prod_toFinset_factors_of_squarefree {l : ℕ} (hl : Squarefree l) :
-    ∏ p in l.factors.toFinset, p = l := by
-  erw [List.prod_toFinset, List.map_id, Nat.prod_factors hl.ne_zero]
-  exact (Nat.squarefree_iff_nodup_factors hl.ne_zero).mp hl
+theorem prod_toFinset_factors_of_squarefree {n : ℕ} (hn : Squarefree n) :
+    ∏ p in n.factors.toFinset, p = n := by
+  erw [List.prod_toFinset _ hn.nodup_factors, List.map_id, Nat.prod_factors hn.ne_zero]
 
 theorem prod_factors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t : Finset ℕ}
     (ht : t ⊆ n.factors.toFinset) :
