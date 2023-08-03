@@ -1396,8 +1396,8 @@ theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFini
 
 end Finite
 
-/-! We make the instances below low priority so when alternative constructions are available they are
-preferred. -/
+/-! We make the instances below low priority
+so when alternative constructions are available they are preferred. -/
 
 instance (priority := low) [Preorder α] [DecidableRel ((· : α) ≤ ·)] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where
