@@ -64,8 +64,6 @@ open CategoryTheory MonoidalCategory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 noncomputable section
 
 namespace CategoryTheory

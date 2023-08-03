@@ -182,7 +182,7 @@ noncomputable def dualTensorIsoLinHomAux :
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (linHom ρV W.ρ) := by
   apply Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)
-  convert dualTensorHom_comm ρV W.ρ g
+  -- convert dualTensorHom_comm ρV W.ρ g
   sorry
 #align fdRep.dual_tensor_iso_lin_hom FdRep.dualTensorIsoLinHom
 

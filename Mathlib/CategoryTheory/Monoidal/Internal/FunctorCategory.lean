@@ -128,8 +128,6 @@ def unitIso : 𝟭 (Mon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal.Mon_functor_category_equivalence.unit_iso CategoryTheory.Monoidal.MonFunctorCategoryEquivalence.unitIso
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- The counit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
 @[simps!]
@@ -217,8 +215,6 @@ def unitIso : 𝟭 (CommMon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
       simp only [Category.id_comp, Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal.CommMon_functor_category_equivalence.unit_iso CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.unitIso
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- The counit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/

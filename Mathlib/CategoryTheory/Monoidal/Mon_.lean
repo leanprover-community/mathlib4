@@ -96,8 +96,6 @@ structure Hom (M N : Mon_ C) where
 
 attribute [reassoc (attr := simp)] Hom.one_hom Hom.mul_hom
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- The identity morphism on a monoid object. -/
 @[simps]
 def id (M : Mon_ C) : Hom M M where
@@ -283,8 +281,6 @@ attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
 
 attribute [local simp] eqToIso_map
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def unitIso :
@@ -371,8 +367,6 @@ which have also been proved in `Mathlib.CategoryTheory.Monoidal.Braided`.
 
 
 variable {C}
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 -- The proofs that associators and unitors preserve monoid units don't require braiding.
 theorem one_associator {M N P : Mon_ C} :

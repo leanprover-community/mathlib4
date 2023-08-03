@@ -982,8 +982,6 @@ variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCate
 
 open MonoidalCategory
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/
 @[simps!]

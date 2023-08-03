@@ -33,8 +33,6 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 namespace FunctorCategory
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 variable (F G F' G' : C ⥤ D)
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.)
@@ -79,7 +77,7 @@ end FunctorCategory
 
 open CategoryTheory.Monoidal.FunctorCategory
 
-attribute [local simp] id_tensorHom tensorHom_id tensorHom_def
+attribute [local simp] tensorHom_def
 
 /-- When `C` is any category, and `D` is a monoidal category,
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,

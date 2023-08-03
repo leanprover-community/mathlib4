@@ -127,8 +127,6 @@ instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :
   infer_instance
 #align category_theory.center.is_iso_of_f_is_iso CategoryTheory.Center.isIso_of_f_isIso
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=

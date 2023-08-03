@@ -300,8 +300,6 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
       apply congr_arg₂ _ rfl (congr_fun ih _)
   | _ => funext; rfl
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
     inclusionObj n ◁ f ≫ (normalizeIsoApp' C Y n).hom =
       (normalizeIsoApp' C X n).hom ≫

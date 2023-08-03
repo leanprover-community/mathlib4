@@ -149,8 +149,6 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ : _)
 #align category_theory.category_of_enriched_category_Type CategoryTheory.categoryOfEnrichedCategoryType
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] : EnrichedCategory (Type v) C

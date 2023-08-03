@@ -35,8 +35,6 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 -- porting note: it was @[simps {attrs := [`_refl_lemma]}]
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/

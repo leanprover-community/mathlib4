@@ -68,38 +68,43 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
   (associativity := fun X Y Z => by
     ext j; dsimp
     simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.associator_hom_app, limit.lift_map,
-      NatTrans.comp_app, Category.assoc]
-    slice_lhs 2 2 => rw [← tensor_id_comp_id_tensor]
+      NatTrans.comp_app, Category.assoc, tensorHom_id, id_tensorHom]
+    -- simp only [tensorHom_id, Cones.postcompose_obj_pt, Functor.const_obj_obj, Monoidal.tensorObj_obj, id_tensorHom]
+    slice_lhs 2 2 => rw [tensorHom_def']
     slice_lhs 1 2 =>
-      rw [← comp_tensor_id, limit.lift_π]
+      rw [← comp_whiskerRight, limit.lift_π]
       dsimp
-    slice_lhs 1 2 => rw [tensor_id_comp_id_tensor]
-    conv_lhs => rw [associator_naturality]
-    conv_rhs => rw [← id_tensor_comp_tensor_id (limit.π (Y ⊗ Z) j)]
-    slice_rhs 2 3 =>
-      rw [← id_tensor_comp, limit.lift_π]
+      rw [tensorHom_def]
+    slice_lhs 1 2 => rw [← whisker_exchange]
+    simp only [tensor_whiskerLeft, comp_whiskerRight, whisker_assoc, Category.assoc,
+      Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left]
+    slice_lhs 4 5 => rw [associator_naturality_left]
+    conv_rhs => rw [tensorHom_def _ (limit.π (Y ⊗ Z) j)]
+    slice_rhs 1 2 =>
+      rw [← MonoidalCategory.whiskerLeft_comp, limit.lift_π]
       dsimp
-    dsimp; simp)
+      rw [tensorHom_def]
+    simp)
   (left_unitality := fun X => by
     ext j; dsimp
     simp
-    conv_rhs => rw [← tensor_id_comp_id_tensor (limit.π X j)]
+    conv_rhs => rw [tensorHom_def' _ (limit.π X j)]
     slice_rhs 1 2 =>
-      rw [← comp_tensor_id]
+      rw [← comp_whiskerRight]
       erw [limit.lift_π]
       dsimp
-    slice_rhs 2 3 => rw [leftUnitor_naturality']
-    simp [id_tensorHom, tensorHom_id])
+    slice_rhs 2 3 => rw [leftUnitor_naturality]
+    simp)
   (right_unitality := fun X => by
     ext j; dsimp
     simp
-    conv_rhs => rw [← id_tensor_comp_tensor_id _ (limit.π X j)]
+    conv_rhs => rw [tensorHom_def (limit.π X j)]
     slice_rhs 1 2 =>
-      rw [← id_tensor_comp]
+      rw [← MonoidalCategory.whiskerLeft_comp]
       erw [limit.lift_π]
       dsimp
-    slice_rhs 2 3 => rw [rightUnitor_naturality']
-    simp [id_tensorHom, tensorHom_id])
+    slice_rhs 2 3 => rw [rightUnitor_naturality]
+    simp)
 #align category_theory.limits.limit_lax_monoidal CategoryTheory.Limits.limitLaxMonoidal
 
 /-- The limit functor `F ↦ limit F` bundled as a lax monoidal functor. -/

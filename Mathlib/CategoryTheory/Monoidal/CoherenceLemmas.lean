@@ -24,8 +24,6 @@ namespace CategoryTheory.MonoidalCategory
 
 variable {C : Type _} [Category C] [MonoidalCategory C]
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]
 theorem leftUnitor_tensor'' (X Y : C) :

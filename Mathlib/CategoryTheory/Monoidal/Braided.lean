@@ -603,15 +603,11 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
       ((α_ X₁ X₂ X₃).hom ⊗ (α_ Y₁ Y₂ Y₃).hom) ≫
         tensor_μ C (X₁, X₂ ⊗ X₃) (Y₁, Y₂ ⊗ Y₃) ≫ ((X₁ ⊗ Y₁) ◁ tensor_μ C (X₂, X₃) (Y₂, Y₃)) := by
   dsimp [tensor_μ]
-  simp only [tensor_whiskerLeft, braiding_tensor_right, comp_whiskerRight, whisker_assoc, assoc,
-    MonoidalCategory.whiskerLeft_comp, Iso.inv_hom_id_assoc, whiskerRight_tensor, braiding_tensor_left]
   calc
-    _ = 𝟙 _ ⊗≫
-      X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
-        X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫ (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := ?eq1
-    _ = _ := ?eq2
-  case eq1 => coherence
-  case eq2 => rw [whisker_exchange]; coherence
+    _ = 𝟙 _ ⊗≫ X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
+      X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫
+        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by simp; coherence
+    _ = _ := by rw [whisker_exchange]; simp; coherence
 #align category_theory.associator_monoidal CategoryTheory.associator_monoidal
 
 end Tensor

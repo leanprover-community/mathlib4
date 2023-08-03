@@ -22,8 +22,6 @@ open CategoryTheory.MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 section
 
 open CategoryTheory.Limits

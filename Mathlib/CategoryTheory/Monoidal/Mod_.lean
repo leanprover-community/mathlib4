@@ -35,8 +35,6 @@ namespace Mod_
 
 variable {A : Mon_ C} (M : Mod_ A)
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 theorem assoc_flip :
     (A.X ◁ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ▷ M.X) ≫ M.act := by simp
 set_option linter.uppercaseLean3 false in
