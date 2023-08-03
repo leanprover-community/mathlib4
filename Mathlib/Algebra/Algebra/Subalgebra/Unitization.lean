@@ -60,36 +60,37 @@ theorem NonUnitalSubalgebra.unitization_surjective :
     Algebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : s), by simp⟩
   fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
-variable {R S A : Type _} [Field R] [Ring A] [Algebra R A]
-    [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
-
-theorem NonUnitalSubalgebra.unitization_injective {R S A : Type _} [Field R] [Ring A] [Algebra R A]
-    [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
-    (h1 : (1 : A) ∉ s) : Function.Injective (NonUnitalSubalgebra.unitization s) := by
+/-- This is a generic version which allows us to prove both
+`NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
+theorem AlgHomClass.unitization_injective {F R S A : Type _} [Field R] [Ring A]
+    [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
+    (s : S) (h1 : (1 : A) ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
+    (hf : ∀ x : s, f x = x) : Function.Injective f := by
   refine' (injective_iff_map_eq_zero _).mpr fun x hx => _
   induction' x using Unitization.ind with r a
-  rw [map_add] at hx
-  have hx' := congr_arg (Subtype.val : _ → A) hx
-  simp only [NonUnitalSubalgebra.unitization_apply_coe, Unitization.fst_inl,
-    Subalgebra.coe_algebraMap, Unitization.snd_inl, ZeroMemClass.coe_zero, add_zero, map_neg,
-    AddSubgroupClass.coe_neg, Unitization.fst_inr, map_zero, Unitization.snd_inr,
-    Subalgebra.coe_add, zero_add] at hx'
+  simp_rw [map_add, hf, ←Unitization.algebraMap_eq_inl, AlgHomClass.commutes,
+    Algebra.algebraMap_eq_smul_one] at hx
+  rw [add_eq_zero_iff_eq_neg] at hx ⊢
   by_cases hr : r = 0
-  · simp only [hr, map_zero, Unitization.inl_zero, zero_add] at hx' ⊢
-    rw [← ZeroMemClass.coe_zero s] at hx'
-    exact congr_arg _ (Subtype.coe_injective hx')
-  · refine' False.elim (h1 _)
-    rw [← eq_sub_iff_add_eq, zero_sub] at hx'
-    replace hx' := congr_arg (fun y => r⁻¹ • y) hx'
-    simp only [Algebra.algebraMap_eq_smul_one, ← smul_assoc, smul_eq_mul, inv_mul_cancel hr,
-      one_smul] at hx'
-    exact hx'.symm ▸ SMulMemClass.smul_mem r⁻¹ (neg_mem a.prop)
+  · ext <;> simp [hr] at hx ⊢
+    exact hx
+  · refine (h1 ?_).elim
+    exact inv_smul_smul₀ hr (1 : A) ▸ hx.symm ▸ SMulMemClass.smul_mem r⁻¹ (neg_mem a.prop)
+
+variable {R S A : Type _} [Field R] [Ring A] [Algebra R A]
+  [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
+
+theorem NonUnitalSubalgebra.unitization_injective (h1 : (1 : A) ∉ s) :
+    Function.Injective (NonUnitalSubalgebra.unitization s) := by
+  have := AlgHomClass.unitization_injective s h1
+    ((Subalgebra.val _).comp <| NonUnitalSubalgebra.unitization s) fun _ ↦ by simp
+  simp only [AlgHom.coe_comp, Subalgebra.coe_val] at this
+  exact this.of_comp
 
 /-- If a `NonUnitalSubalgebra` over a field does not contain `1`, then its unitization is
 isomorphic to its `Algebra.adjoin`. -/
-noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv {R S A : Type _} [Field R] [Ring A]
-    [Algebra R A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S R A]
-    (s : S) (h1 : (1 : A) ∉ s) : Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) :=
+noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
+    Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) :=
   AlgEquiv.ofBijective (NonUnitalSubalgebra.unitization s)
     ⟨NonUnitalSubalgebra.unitization_injective s h1, NonUnitalSubalgebra.unitization_surjective s⟩
 
@@ -100,7 +101,6 @@ section Subsemiring
 variable {R : Type _} [NonAssocSemiring R]
 
 /-! ## Subsemirings -/
-
 
 /-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
 def Subsemiring.toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
@@ -281,10 +281,16 @@ theorem NonUnitalStarSubalgebra.unitization_apply_coe (S : NonUnitalStarSubalgeb
   rfl
 
 theorem NonUnitalStarSubalgebra.unitization_surjective (S : NonUnitalStarSubalgebra R A) :
-    Function.Surjective S.unitization :=
-  have : StarSubalgebra.adjoin R S ≤ 
+    Function.Surjective S.unitization := by
+  rw [←Set.range_iff_surjective]
+  apply Subtype.val_injective.image_injective
+  simp only [Set.image_univ, Subtype.range_coe_subtype]
+  ext x
+  simp?
+  -- NonUnitalSubalgebra.unitization_surjective S.toNonUnitalSubalgebra
+  /- have : StarSubalgebra.adjoin R S ≤
       ((StarSubalgebra.adjoin R (S : Set A)).subtype.comp S.unitization).range :=
     StarSubalgebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : S), by simp⟩
-  fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩
+  fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩ -/
 
 end StarSubalgebra
