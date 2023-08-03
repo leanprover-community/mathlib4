@@ -573,7 +573,6 @@ theorem dual_rank_eq [Module.Finite K V] :
 
 -- Porting note: broken dot notation lean4#1910 LinearMap.range
 theorem erange_coe [Module.Finite K V] : LinearMap.range (eval K V) = ⊤ :=
-  -- letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   (Module.Free.chooseBasis K V).eval_range
 #align module.erange_coe Module.erange_coe
 
