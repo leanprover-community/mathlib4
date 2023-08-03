@@ -479,7 +479,7 @@ section
 
 open Classical
 
-variable [Finite R M] [Free R M] [Nontrivial R]
+variable [Finite R M] [Free R M]
 
 instance dual_free : Free R (Dual R M) :=
   Free.of_basis (Free.chooseBasis R M).dualBasis
@@ -594,12 +594,9 @@ class IsReflexive : Prop where
 lemma bijective_dual_eval [IsReflexive R M] : Bijective $ Dual.eval R M :=
   IsReflexive.bijective_dual_eval'
 
-instance IsReflexive.of_finite_of_free [Finite R M] [Free R M] : IsReflexive R M := by
-  cases' h : subsingleton_or_nontrivial R
-  · have := Module.subsingleton R M
-    exact ⟨⟨fun x y _ ↦ by simp, fun x ↦ ⟨0, by simp⟩⟩⟩
-  · exact ⟨⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
-            LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩⟩
+instance IsReflexive.of_finite_of_free [Finite R M] [Free R M] : IsReflexive R M where
+  bijective_dual_eval' := ⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
+                           LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩
 
 variable [IsReflexive R M]
 
@@ -1675,8 +1672,6 @@ noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) 
 variable (R M N)
 
 variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
-
-variable [Nontrivial R]
 
 open Classical
 
