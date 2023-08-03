@@ -281,16 +281,10 @@ theorem NonUnitalStarSubalgebra.unitization_apply_coe (S : NonUnitalStarSubalgeb
   rfl
 
 theorem NonUnitalStarSubalgebra.unitization_surjective (S : NonUnitalStarSubalgebra R A) :
-    Function.Surjective S.unitization := by
-  intro x
-  apply StarSubalgebra.adjoin_induction' (p := fun y => ∃ a, S.unitization a = y) x
-  · exact fun x hx => ⟨Unitization.inr ⟨x, hx⟩, Subtype.ext <| by simp⟩
-  · exact fun r => ⟨algebraMap R (Unitization R S) r, AlgHom.commutes _ r⟩
-  · rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-    exact ⟨x + y, map_add _ _ _⟩
-  · rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-    exact ⟨x * y, map_mul _ _ _⟩
-  · rintro _ ⟨x, rfl⟩
-    exact ⟨star x, map_star _ _⟩
+    Function.Surjective S.unitization :=
+  have : StarSubalgebra.adjoin R S ≤ 
+      ((StarSubalgebra.adjoin R (S : Set A)).subtype.comp S.unitization).range :=
+    StarSubalgebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : S), by simp⟩
+  fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
 end StarSubalgebra

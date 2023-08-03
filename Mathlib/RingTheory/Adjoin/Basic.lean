@@ -434,34 +434,18 @@ section ClosureEquivAdjoin
 /-- The `ℕ`-algebra equivalence between `Subsemiring.closure s` and `Algebra.adjoin ℕ s` given
 by the identity map. -/
 def Subsemiring.closureEquivAdjoinNat {R : Type _} [Semiring R] (s : Set R) :
-    Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s where
-  toFun := Subtype.map id fun r hr => Subsemiring.closure_induction hr Algebra.subset_adjoin
-    (zero_mem _) (one_mem _) (fun _ _ => add_mem) fun _ _ => mul_mem
-  invFun := Subtype.map id fun r hr => Algebra.adjoin_induction hr Subsemiring.subset_closure
-    (natCast_mem _) (fun _ _ => add_mem) fun _ _ => mul_mem
-  -- Note: `Subtype.ext rfl` proves all of these, but, depressingly, it's too slow.
-  left_inv _ := Subtype.ext <| by simp only [Subtype.map_coe, id_eq]
-  right_inv _ := Subtype.ext <| by simp only [Subtype.map_coe, id_eq]
-  map_mul' _ _ := Subtype.ext <| by
-    simp only [Subtype.map_coe, Submonoid.coe_mul, coe_toSubmonoid, id_eq,
-      Subalgebra.coe_toSubsemiring]
-  map_add' _ _ := Subtype.ext <| by
-    simp only [Subtype.map_coe, coe_add, id_eq, Subalgebra.coe_toSubsemiring]
-  commutes' _ := Subtype.ext rfl
+    Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s :=
+  Subalgebra.equivOfEq (subalgebraOfSubsemiring <| Subsemiring.closure s) _ <|
+    le_antisymm (closure_le.mpr subset_adjoin) (adjoin_le subset_closure)
 
 /-- The `ℤ`-algebra equivalence between `Subring.closure s` and `Algebra.adjoin ℤ s` given by
 the identity map. -/
 def Subring.closureEquivAdjoinInt {R : Type _} [Ring R] (s : Set R) :
-    Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s where
-  toFun := Subtype.map id fun _r hr => Subring.closure_induction hr Algebra.subset_adjoin
-    (zero_mem _) (one_mem _) (fun _ _ => add_mem) (fun _ => neg_mem) fun _ _ => mul_mem
-  invFun :=
-    Subtype.map id fun _r hr => Algebra.adjoin_induction hr Subring.subset_closure
-      (coe_int_mem _) (fun _ _ => add_mem) fun _ _ => mul_mem
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := Subtype.ext rfl
-  map_mul' _ _ := Subtype.ext rfl
-  map_add' _ _ := Subtype.ext rfl
-  commutes' _ := Subtype.ext rfl
+    Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s :=
+  Subalgebra.equivOfEq (subalgebraOfSubring <| Subring.closure s) _ <| by
+    refine le_antisymm ?_ (adjoin_le subset_closure)
+    -- Lean is lest smart here, probably because of the `with` definition of `subalgebraOfSubring`
+    change closure s ≤ (adjoin ℤ s).toSubring
+    exact (closure_le.mpr subset_adjoin)
 
   end ClosureEquivAdjoin
