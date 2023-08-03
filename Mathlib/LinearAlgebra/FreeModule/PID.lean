@@ -385,7 +385,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     have : LinearMap.range φ ≤ N := by
       -- as announced, `A • M ⊆ N`
       suffices ∀ i, φ (s i) ∈ N by
-        rw [LinearMap.range_eq_map, ← hs, φ.map_span_le]
+        rw [LinearMap.range_eq_map, ← hs, map_span_le]
         rintro _ ⟨i, rfl⟩
         apply this
       intro i
