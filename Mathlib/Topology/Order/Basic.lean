@@ -86,6 +86,20 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
+class LowerClosedTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+  isClosed_le' (a : α) : IsClosed { b : α | b ≤ a }
+
+export LowerClosedTopology (isClosed_le')
+#align is_closed_le' LowerClosedTopology.isClosed_le'
+
+class UpperClosedTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+  isClosed_ge' (a : α) : IsClosed { b : α | a ≤ b }
+
+export LowerClosedTopology (isClosed_le')
+#align is_closed_ge' UpperClosedTopology.isClosed_ge'
+
+export UpperClosedTopology (isClosed_ge')
+
 /-- A topology on a set which is both a topological space and a preorder is _order-closed_ if the
 set of points `(x, y)` with `x ≤ y` is closed in the product space. We introduce this as a mixin.
 This property is satisfied for the order topology on a linear order, but it can be satisfied more
@@ -102,6 +116,62 @@ theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=
   hs
 #align dense.order_dual Dense.orderDual
+
+section LowerClosedTopology
+
+variable [TopologicalSpace α] [Preorder α] [t : LowerClosedTopology α]
+
+instance : UpperClosedTopology αᵒᵈ where
+  isClosed_ge' a := isClosed_le' (α := α) a
+
+theorem isClosed_Iic {a : α} : IsClosed (Iic a) :=
+  isClosed_le' a
+#align is_closed_Iic isClosed_Iic
+
+@[simp]
+theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
+  isClosed_Iic.closure_eq
+#align closure_Iic closure_Iic
+
+theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
+  (isClosed_le' b).mem_of_tendsto lim h
+#align le_of_tendsto le_of_tendsto
+
+theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ c, f c ≤ b) : a ≤ b :=
+  le_of_tendsto lim (eventually_of_forall h)
+#align le_of_tendsto' le_of_tendsto'
+
+end LowerClosedTopology
+
+section UpperClosedTopology
+
+variable [TopologicalSpace α] [Preorder α] [t : UpperClosedTopology α]
+
+instance : LowerClosedTopology αᵒᵈ where
+  isClosed_le' a := isClosed_ge' (α := α) a
+
+theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
+  isClosed_ge' a
+#align is_closed_Ici isClosed_Ici
+
+@[simp]
+theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
+  isClosed_Ici.closure_eq
+#align closure_Ici closure_Ici
+
+theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
+  (isClosed_ge' b).mem_of_tendsto lim h
+#align ge_of_tendsto ge_of_tendsto
+
+theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ c, b ≤ f c) : b ≤ a :=
+  ge_of_tendsto lim (eventually_of_forall h)
+#align ge_of_tendsto' ge_of_tendsto'
+
+end UpperClosedTopology
 
 section OrderClosedTopology
 
@@ -128,21 +198,11 @@ theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) 
   continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_le_prod
 #align is_closed_le isClosed_le
 
-theorem isClosed_le' (a : α) : IsClosed { b | b ≤ a } :=
-  isClosed_le continuous_id continuous_const
-#align is_closed_le' isClosed_le'
+instance : LowerClosedTopology α where
+  isClosed_le' _ := isClosed_le continuous_id continuous_const
 
-theorem isClosed_Iic {a : α} : IsClosed (Iic a) :=
-  isClosed_le' a
-#align is_closed_Iic isClosed_Iic
-
-theorem isClosed_ge' (a : α) : IsClosed { b | a ≤ b } :=
-  isClosed_le continuous_const continuous_id
-#align is_closed_ge' isClosed_ge'
-
-theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
-  isClosed_ge' a
-#align is_closed_Ici isClosed_Ici
+instance : UpperClosedTopology α where
+  isClosed_ge' _ := isClosed_le continuous_const continuous_id
 
 instance : OrderClosedTopology αᵒᵈ :=
   ⟨(@OrderClosedTopology.isClosed_le' α _ _ _).preimage continuous_swap⟩
@@ -155,16 +215,6 @@ theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 #align closure_Icc closure_Icc
-
-@[simp]
-theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
-  isClosed_Iic.closure_eq
-#align closure_Iic closure_Iic
-
-@[simp]
-theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
-  isClosed_Ici.closure_eq
-#align closure_Ici closure_Ici
 
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
@@ -179,26 +229,6 @@ theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ :
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto hf hg (eventually_of_forall h)
 #align le_of_tendsto_of_tendsto' le_of_tendsto_of_tendsto'
-
-theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
-  le_of_tendsto_of_tendsto lim tendsto_const_nhds h
-#align le_of_tendsto le_of_tendsto
-
-theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ c, f c ≤ b) : a ≤ b :=
-  le_of_tendsto lim (eventually_of_forall h)
-#align le_of_tendsto' le_of_tendsto'
-
-theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
-  le_of_tendsto_of_tendsto tendsto_const_nhds lim h
-#align ge_of_tendsto ge_of_tendsto
-
-theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ c, b ≤ f c) : b ≤ a :=
-  ge_of_tendsto lim (eventually_of_forall h)
-#align ge_of_tendsto' ge_of_tendsto'
 
 @[simp]
 theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
