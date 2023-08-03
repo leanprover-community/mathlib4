@@ -40,7 +40,7 @@ variable {x : M} (p p' : Submodule R M)
 
 variable [Semiring R₂] {σ₁₂ : R →+* R₂}
 
-variable [AddCommMonoid M₂] [Module R₂ M₂]
+variable [AddCommMonoid M₂] [Module R₂ M₂] {F : Type _} [SemilinearMapClass F σ₁₂ M M₂]
 
 section
 
@@ -92,7 +92,7 @@ theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScal
   span_eq (p.restrictScalars S)
 #align submodule.span_coe_eq_restrict_scalars Submodule.span_coe_eq_restrictScalars
 
-theorem map_span [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (s : Set M) :
+theorem map_span [RingHomSurjective σ₁₂] (f : F) (s : Set M) :
     (span R s).map f = span R₂ (f '' s) :=
   Eq.symm <|
     span_eq_of_le _ (Set.image_subset f subset_span) <|
@@ -102,9 +102,9 @@ theorem map_span [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (
 alias Submodule.map_span ← _root_.LinearMap.map_span
 #align linear_map.map_span LinearMap.map_span
 
-theorem map_span_le [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (s : Set M) (N : Submodule R₂ M₂) :
+theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submodule R₂ M₂) :
     map f (span R s) ≤ N ↔ ∀ m ∈ s, f m ∈ N := by
-  rw [f.map_span, span_le, Set.image_subset_iff]
+  rw [map_span, span_le, Set.image_subset_iff]
   exact Iff.rfl
 #align submodule.map_span_le Submodule.map_span_le
 
@@ -119,7 +119,7 @@ theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
 #align submodule.span_insert_zero Submodule.span_insert_zero
 
 -- See also `span_preimage_eq` below.
-theorem span_preimage_le (f : M →ₛₗ[σ₁₂] M₂) (s : Set M₂) :
+theorem span_preimage_le (f : F) (s : Set M₂) :
     span R (f ⁻¹' s) ≤ (span R₂ s).comap f := by
   rw [span_le, comap_coe]
   exact preimage_mono subset_span
@@ -583,18 +583,18 @@ theorem span_singleton_eq_span_singleton {R M : Type _} [Ring R] [AddCommGroup M
 #align submodule.span_singleton_eq_span_singleton Submodule.span_singleton_eq_span_singleton
 
 @[simp]
-theorem span_image [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) :
+theorem span_image [RingHomSurjective σ₁₂] (f : F) :
     span R₂ (f '' s) = map f (span R s) :=
   (map_span f s).symm
 #align submodule.span_image Submodule.span_image
 
-theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) {x : M}
+theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : x ∈ Submodule.span R s) : f x ∈ Submodule.span R₂ (f '' s) := by
   rw [Submodule.span_image]
   exact Submodule.mem_map_of_mem h
 #align submodule.apply_mem_span_image_of_mem_span Submodule.apply_mem_span_image_of_mem_span
 
-theorem apply_mem_span_image_iff_mem_span [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {x : M}
+theorem apply_mem_span_image_iff_mem_span [RingHomSurjective σ₁₂] {f : F} {x : M}
     {s : Set M} (hf : Function.Injective f) :
     f x ∈ Submodule.span R₂ (f '' s) ↔ x ∈ Submodule.span R s := by
   rw [← Submodule.mem_comap, ← Submodule.map_span, Submodule.comap_map_eq_of_injective hf]
@@ -605,7 +605,7 @@ theorem map_subtype_span_singleton {p : Submodule R M} (x : p) :
 #align submodule.map_subtype_span_singleton Submodule.map_subtype_span_singleton
 
 /-- `f` is an explicit argument so we can `apply` this theorem and obtain `h` as a new goal. -/
-theorem not_mem_span_of_apply_not_mem_span_image [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) {x : M}
+theorem not_mem_span_of_apply_not_mem_span_image [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : f x ∉ Submodule.span R₂ (f '' s)) : x ∉ Submodule.span R s :=
   h.imp (apply_mem_span_image_of_mem_span f)
 #align submodule.not_mem_span_of_apply_not_mem_span_image Submodule.not_mem_span_of_apply_not_mem_span_image
@@ -837,7 +837,7 @@ variable [Ring R] [AddCommGroup M] [Module R M]
 theorem span_neg (s : Set M) : span R (-s) = span R s :=
   calc
     span R (-s) = span R ((-LinearMap.id : M →ₗ[R] M) '' s) := by simp
-    _ = map (-LinearMap.id) (span R s) := ((-LinearMap.id).map_span _).symm
+    _ = map (-LinearMap.id) (span R s) := (map_span (-LinearMap.id) _).symm
     _ = span R s := by simp
 #align submodule.span_neg Submodule.span_neg
 
