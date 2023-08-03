@@ -114,7 +114,8 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
       HomEquiv ((f.whiskerLeft X).whiskerRight Z)
         ((Hom.α_hom X Y Z).comp <| ((f.whiskerRight Z).whiskerLeft X).comp <| Hom.α_inv X Y' Z)
   | whisker_exchange {W X Y Z} (f : W ⟶ᵐ X) (g : Y ⟶ᵐ Z) :
-      HomEquiv ((g.whiskerLeft W).comp <| f.whiskerRight Z) ((f.whiskerRight Y).comp <| g.whiskerLeft X)
+      HomEquiv ((g.whiskerLeft W).comp <| f.whiskerRight Z)
+        ((f.whiskerRight Y).comp <| g.whiskerLeft X)
   | α_hom_inv {X Y Z} : HomEquiv ((Hom.α_hom X Y Z).comp (Hom.α_inv X Y Z)) (Hom.id _)
   | α_inv_hom {X Y Z} : HomEquiv ((Hom.α_inv X Y Z).comp (Hom.α_hom X Y Z)) (Hom.id _)
   | ρ_hom_inv {X} : HomEquiv ((Hom.ρ_hom X).comp (Hom.ρ_inv X)) (Hom.id _)
@@ -170,7 +171,8 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C) where
 instance : MonoidalCategory (F C) where
   tensorObj X Y := FreeMonoidalCategory.tensor X Y
   whiskerLeft := fun X _ _ f => Quotient.map (Hom.whiskerLeft X) (HomEquiv.whisker_left X) f
-  whiskerRight := fun f Y => Quotient.map (fun _f => Hom.whiskerRight _f Y) (fun _ _ h => HomEquiv.whisker_right _ _ _ h) f
+  whiskerRight := fun f Y =>
+    Quotient.map (fun f' => Hom.whiskerRight f' Y) (fun _ _ h => HomEquiv.whisker_right _ _ _ h) f
   tensorUnit' := FreeMonoidalCategory.Unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩

@@ -239,11 +239,6 @@ variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
 
 namespace MonoidalCategory
 
--- @[simp]
--- theorem tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
---     f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ := by
---   rw [← whiskerLeft_eq_tensorHom_id, ← whiskerRight_eq_id_tensorHom, ← tensor_comp, id_comp, comp_id]
-
 @[reassoc (attr := simp)]
 theorem hom_inv_whiskerLeft (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.hom ≫ X ◁ f.inv = 𝟙 (X ⊗ Y) := by rw [← whiskerLeft_comp, hom_inv_id, whiskerLeft_id]

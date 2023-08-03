@@ -69,7 +69,6 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
     ext j; dsimp
     simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.associator_hom_app, limit.lift_map,
       NatTrans.comp_app, Category.assoc, tensorHom_id, id_tensorHom]
-    -- simp only [tensorHom_id, Cones.postcompose_obj_pt, Functor.const_obj_obj, Monoidal.tensorObj_obj, id_tensorHom]
     slice_lhs 2 2 => rw [tensorHom_def']
     slice_lhs 1 2 =>
       rw [← comp_whiskerRight, limit.lift_π]

@@ -251,8 +251,8 @@ theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [Has
   slice_rhs 2 3 =>
     rw [← tensor_comp, tensor_id, Category.comp_id, ← Category.id_comp (η_ Y (Yᘁ)), tensor_comp]
   rw [← id_tensor_comp_tensor_id _ (η_ Y (Yᘁ)), ← tensor_id]
-  simp only [tensorHom_id, id_tensorHom, id_whiskerLeft, id_whiskerRight, whiskerRight_tensor, Category.assoc,
-    Iso.inv_hom_id_assoc, pentagon_hom_hom_inv_hom_hom]
+  simp only [tensorHom_id, id_tensorHom, id_whiskerLeft, id_whiskerRight, whiskerRight_tensor,
+    Category.assoc, Iso.inv_hom_id_assoc, pentagon_hom_hom_inv_hom_hom]
   rw [← associator_naturality_middle_assoc]
   simp_rw [← comp_whiskerRight_assoc, evaluation_coevaluation]
   coherence

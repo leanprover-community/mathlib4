@@ -118,8 +118,9 @@ variable {C D}
 attribute [local simp] tensorHom_def
 
 @[reassoc (attr := simp)]
-theorem  LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    (F.map f ⊗ F.map g) ≫ F.μ Y Y' = F.μ X X' ≫ F.map (f ⊗ g) := by
+theorem  LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C}
+    (f : X ⟶ Y) (g : X' ⟶ Y') :
+      (F.map f ⊗ F.map g) ≫ F.μ Y Y' = F.μ X X' ≫ F.map (f ⊗ g) := by
   simp only [tensorHom_def, assoc, F.μ_natural_left, F.μ_natural_right_assoc, map_comp]
 
 @[reassoc]
@@ -155,10 +156,12 @@ def LaxMonoidalFunctor.ofTensorHom (F : C ⥤ D)
           (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ (𝟙 (F.obj X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
       aesop_cat)
     /- unitality -/
-    (left_unitality : ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom :=
-      by aesop_cat)
-    (right_unitality : ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom :=
-      by aesop_cat) :
+    (left_unitality :
+      ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom :=
+        by aesop_cat)
+    (right_unitality :
+      ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom :=
+        by aesop_cat) :
         LaxMonoidalFunctor C D where
   obj := F.obj
   map := F.map
@@ -560,7 +563,8 @@ noncomputable def monoidalAdjoint (F : MonoidalFunctor C D) {G : D ⥤ C} (h : F
     LaxMonoidalFunctor D C := LaxMonoidalFunctor.ofTensorHom
   (F := G)
   (ε := h.homEquiv _ _ (inv F.ε))
-  (μ := fun X Y ↦ h.homEquiv _ (X ⊗ Y) (inv (F.μ (G.obj X) (G.obj Y)) ≫ (h.counit.app X ⊗ h.counit.app Y)))
+  (μ := fun X Y ↦
+    h.homEquiv _ (X ⊗ Y) (inv (F.μ (G.obj X) (G.obj Y)) ≫ (h.counit.app X ⊗ h.counit.app Y)))
   (μ_natural := @fun X Y X' Y' f g => by
     rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_right, Equiv.apply_eq_iff_eq, assoc,
       IsIso.eq_inv_comp, ← F.toLaxMonoidalFunctor.μ_natural_assoc, IsIso.hom_inv_id_assoc, ←

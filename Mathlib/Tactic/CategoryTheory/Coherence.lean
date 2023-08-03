@@ -364,10 +364,12 @@ syntax (name := monoidal_simps) "monoidal_simps" : tactic
 elab_rules : tactic
 | `(tactic| monoidal_simps) => do
   evalTactic (← `(tactic|
-    simp only [Category.assoc, MonoidalCategory.tensor_whiskerLeft, MonoidalCategory.id_whiskerLeft,
+    simp only [
+      Category.assoc, MonoidalCategory.tensor_whiskerLeft, MonoidalCategory.id_whiskerLeft,
       MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,
-      MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight, MonoidalCategory.whisker_assoc,
+      MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
+      MonoidalCategory.whisker_assoc,
       MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id];
     try simp only [MonoidalCategory.tensorHom_def]
     ))
