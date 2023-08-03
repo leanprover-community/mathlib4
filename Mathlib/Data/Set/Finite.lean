@@ -1573,28 +1573,27 @@ theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePre
 
 theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
     (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a ≤ f a' → f a = f a' := by
-  revert hs
-  refine' h.induction_on _ _
-  · exact fun h => absurd h not_nonempty_empty
-  intro a s his _ ih _
-  cases' s.eq_empty_or_nonempty with h h
-  · use a
-    simp [h]
-  rcases ih h with ⟨b, hb, ih⟩
-  by_cases h : f b ≤ f a
-  · refine' ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac _⟩
-    rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-    · rfl
-    · rwa [← ih c hcs (le_trans h hac)]
-  · refine' ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => _⟩
-    rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-    · exact (h hbc).elim
-    · exact ih c hcs hbc
+  induction s, h using Set.Finite.dinduction_on with
+  | H0 => exact absurd hs not_nonempty_empty
+  | @H1 a s his _ ih =>
+    cases' s.eq_empty_or_nonempty with h h
+    · use a
+      simp [h]
+    rcases ih h with ⟨b, hb, ih⟩
+    by_cases h : f b ≤ f a
+    · refine' ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac _⟩
+      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
+      · rfl
+      · rwa [← ih c hcs (le_trans h hac)]
+    · refine' ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => _⟩
+      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
+      · exact (h hbc).elim
+      · exact ih c hcs hbc
 #align set.finite.exists_maximal_wrt Set.Finite.exists_maximal_wrt
 
 theorem Finite.exists_maximal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
     (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a ≤ f a' → f a = f a') := by
-  obtain  ⟨_ ,⟨a,ha,rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
+  obtain ⟨_, ⟨a, ha,rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
   exact ⟨a, ha, fun a' ha' hf ↦ hmax _ (mem_image_of_mem f ha') hf⟩
 
 theorem Finite.exists_minimal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
