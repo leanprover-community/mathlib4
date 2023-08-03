@@ -3,7 +3,6 @@ Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Hanneke Wiersema
 -/
-import Mathlib.Tactic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
