@@ -15,6 +15,7 @@ This file provides results for bases of a vector space.
 
 Some of these results should be merged with the results on free modules.
 We state these results in a separate file to the results on modules to avoid an
+import cycle.
 
 ## Main statements
 
