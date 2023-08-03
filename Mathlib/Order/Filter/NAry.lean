@@ -52,7 +52,7 @@ def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ
         (image2_subset (inter_subset_right _ _) <| inter_subset_right _ _).trans ht⟩
 #align filter.map₂ Filter.map₂
 
-@[simp]
+@[simp 900]
 theorem mem_map₂_iff : u ∈ map₂ m f g ↔ ∃ s t, s ∈ f ∧ t ∈ g ∧ image2 m s t ⊆ u :=
   Iff.rfl
 #align filter.mem_map₂_iff Filter.mem_map₂_iff

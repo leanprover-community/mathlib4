@@ -259,7 +259,7 @@ def map (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) : ConvexCone 𝕜 F where
     hy₁ ▸ hy₂ ▸ f.map_add x₁ x₂ ▸ mem_image_of_mem f (S.add_mem hx₁ hx₂)
 #align convex_cone.map ConvexCone.map
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 E} {y : F} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
   Set.mem_image f S y
 #align convex_cone.mem_map ConvexCone.mem_map

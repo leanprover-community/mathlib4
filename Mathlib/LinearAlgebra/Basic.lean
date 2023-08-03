@@ -696,7 +696,7 @@ theorem map_to_add_submonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R 
   SetLike.coe_injective rfl
 #align submodule.map_to_add_submonoid' Submodule.map_to_add_submonoid'
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : F} {p : Submodule R M} {x : M₂} : x ∈ map f p ↔ ∃ y, y ∈ p ∧ f y = x :=
   Iff.rfl
 #align submodule.mem_map Submodule.mem_map

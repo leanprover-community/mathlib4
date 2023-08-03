@@ -514,7 +514,7 @@ theorem coe_map : (s.map f : Set L) = f '' s :=
   rfl
 #align subfield.coe_map Subfield.coe_map
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
   simp only [mem_mk, Subring.mem_mk, Subring.mem_toSubsemiring, Subring.mem_map, mem_toSubring]

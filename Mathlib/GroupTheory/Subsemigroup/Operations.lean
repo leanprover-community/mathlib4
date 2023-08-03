@@ -230,7 +230,7 @@ theorem coe_map (f : M →ₙ* N) (S : Subsemigroup M) : (S.map f : Set N) = f '
 #align subsemigroup.coe_map Subsemigroup.coe_map
 #align add_subsemigroup.coe_map AddSubsemigroup.coe_map
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp 900)]
 theorem mem_map {f : M →ₙ* N} {S : Subsemigroup M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
   mem_image _ _ _
 #align subsemigroup.mem_map Subsemigroup.mem_map
@@ -254,7 +254,7 @@ theorem map_map (g : N →ₙ* P) (f : M →ₙ* N) : (S.map f).map g = S.map (g
 #align subsemigroup.map_map Subsemigroup.map_map
 #align add_subsemigroup.map_map AddSubsemigroup.map_map
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_map_iff_mem {f : M →ₙ* N} (hf : Function.Injective f) {S : Subsemigroup M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image

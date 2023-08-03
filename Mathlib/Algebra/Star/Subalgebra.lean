@@ -220,6 +220,7 @@ theorem map_map (S : StarSubalgebra R A) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ
   SetLike.coe_injective <| Set.image_image _ _ _
 #align star_subalgebra.map_map StarSubalgebra.map_map
 
+@[simp 900]
 theorem mem_map {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} {y : B} :
     y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   Subsemiring.mem_map
