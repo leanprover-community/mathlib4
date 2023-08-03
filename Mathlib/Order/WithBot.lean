@@ -225,6 +225,7 @@ theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
   Option.not_mem_none _ hb
 #align with_bot.not_coe_le_bot WithBot.not_coe_le_bot
 
+/-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
 theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
   | (a : α) => by simp [not_coe_le_bot _]
@@ -858,6 +859,7 @@ theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
   WithBot.not_coe_le_bot (toDual a)
 #align with_top.not_top_le_coe WithTop.not_top_le_coe
 
+/-- There is a general version `top_le_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
 theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
   | (a : α) => by simp [not_top_le_coe _]
