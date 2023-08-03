@@ -895,7 +895,6 @@ theorem comap_injective_of_surjective : Function.Injective (comap f) :=
   (giMapComap hf).u_injective
 #align submodule.comap_injective_of_surjective Submodule.comap_injective_of_surjective
 
-@[simp]
 theorem map_sup_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊔ q.comap f).map f = p ⊔ q :=
   (giMapComap hf).l_sup_u _ _
