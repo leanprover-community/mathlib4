@@ -1591,6 +1591,8 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
       · exact ih c hcs hbc
 #align set.finite.exists_maximal_wrt Set.Finite.exists_maximal_wrt
 
+/-- A version of `Finite.exists_maximal_wrt` with the (weaker) hypothesis that the image of `s`
+  is finite rather than `s` itself. -/
 theorem Finite.exists_maximal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
     (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a ≤ f a' → f a = f a') := by
   obtain ⟨_, ⟨a, ha,rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
@@ -1600,9 +1602,11 @@ theorem Finite.exists_minimal_wrt [PartialOrder β] (f : α → β) (s : Set α)
     (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a' ≤ f a → f a = f a' :=
   Finite.exists_maximal_wrt (β := βᵒᵈ) f s h hs
 
+/-- A version of `Finite.exists_minimal_wrt` with the (weaker) hypothesis that the image of `s`
+  is finite rather than `s` itself. -/
 lemma Finite.exists_minimal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
-    (h₀ : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a' ≤ f a → f a = f a') :=
-  Set.Finite.exists_maximal_wrt' (β := βᵒᵈ) f s h h₀
+    (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a' ≤ f a → f a = f a') :=
+  Set.Finite.exists_maximal_wrt' (β := βᵒᵈ) f s h hs
 
 section
 
