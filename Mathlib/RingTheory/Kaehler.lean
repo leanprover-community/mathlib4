@@ -393,12 +393,14 @@ local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
 
 @[nolint defLemma]
-local instance isScalarTower_S_right : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+local instance isScalarTower_S_right :
+    IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
 
 @[nolint defLemma]
-local instance isScalarTower_R_right : IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+local instance isScalarTower_R_right :
+    IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
 
 @[nolint defLemma]
 local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
