@@ -294,10 +294,10 @@ elab_rules : tactic
 | `(tactic| whisker_simps) => do
   evalTactic (← `(tactic|
     simp (config := {failIfUnchanged := false}) only [Category.assoc,
-      Bicategory.comp_whisker_left, Bicategory.id_whisker_left,
-      Bicategory.whisker_right_comp, Bicategory.whisker_right_id,
-      Bicategory.whisker_left_comp, Bicategory.whisker_left_id,
-      Bicategory.comp_whisker_right, Bicategory.id_whisker_right, Bicategory.whisker_assoc]
+      Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
+      Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id,
+      Bicategory.whiskerLeft_comp, Bicategory.whiskerLeft_id,
+      Bicategory.comp_whiskerRight, Bicategory.id_whiskerRight, Bicategory.whisker_assoc]
     ))
 
 -- We have unused typeclass arguments here.
