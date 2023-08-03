@@ -85,10 +85,6 @@ instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶
     [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
   lift := LiftHom.lift f ≫ LiftHom.lift g
 
--- instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
---     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
---   lift := LiftHom.lift f ⊗ LiftHom.lift g
-
 instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
     (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
   lift := LiftObj.lift X ◁ LiftHom.lift f
@@ -96,6 +92,10 @@ instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj 
 instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
     {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
   lift := LiftHom.lift f ▷ LiftObj.lift Z
+
+instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
+    (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
+  lift := LiftHom.lift f ⊗ LiftHom.lift g
 
 /--
 A typeclass carrying a choice of monoidal structural isomorphism between two objects.

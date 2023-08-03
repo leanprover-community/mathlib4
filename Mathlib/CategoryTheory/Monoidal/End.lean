@@ -34,7 +34,7 @@ def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
   whiskerLeft X _ _ F := whiskerLeft X F
   whiskerRight F X := whiskerRight F X
-  -- tensorHom α β := α ◫ β
+  tensorHom α β := α ◫ β
   tensorUnit' := 𝟭 C
   associator F G H := Functor.associator F G H
   leftUnitor F := Functor.leftUnitor F

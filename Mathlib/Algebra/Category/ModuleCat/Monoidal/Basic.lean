@@ -71,12 +71,6 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
   f.rTensor N
 
--- theorem whiskerLeft_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
---   -- Porting note: even with high priority ext fails to find this
---   apply TensorProduct.ext
---   rfl
-
-
 theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   -- Porting note: even with high priority ext fails to find this
   apply TensorProduct.ext

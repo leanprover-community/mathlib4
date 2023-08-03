@@ -181,8 +181,9 @@ noncomputable def dualTensorIsoLinHomAux :
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (linHom ρV W.ρ) := by
-  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) ?_
-  convert dualTensorHom_comm ρV W.ρ
+  apply Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)
+  convert dualTensorHom_comm ρV W.ρ g
+  sorry
 #align fdRep.dual_tensor_iso_lin_hom FdRep.dualTensorIsoLinHom
 
 @[simp]

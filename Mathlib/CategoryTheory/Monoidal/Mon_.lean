@@ -400,39 +400,6 @@ theorem one_rightUnitor {M : Mon_ C} :
 
 variable [BraidedCategory C]
 
--- open Mathlib.Tactic.Coherence in
--- example {C : Type u} [Category.{v} C] [MonoidalCategory C] (M N : C) [LiftObj M] [LiftObj N] :
---     LiftObj ((tensor C).obj (M, N)) = LiftObj (M ⊗ N) := by
---   rfl
-
--- #check _root_.id
-
--- open Mathlib.Tactic.Coherence in
--- example {C : Type u} [Category.{v} C] [MonoidalCategory C] (M N : C) [LiftObj M] [LiftObj N] :
---     FreeMonoidalCategory.projectObj _root_.id (LiftObj.lift ((tensor C).obj (M, N))) = ((tensor C).obj (M, N)) := by
---   rfl
-
--- open Mathlib.Tactic.Coherence in
--- instance {C : Type u} [Category.{v} C] [MonoidalCategory C] (M N : C) [LiftObj M] [LiftObj N] :
---     MonoidalCoherence ((M ⊗ N)) ((tensor C).obj (M, N)) := by
-
---   infer_instance -- fails
-
--- /-
--- To use `monoidalComp` in expressions containing `tensor_μ`, we need, for example, the following
--- instance. However, it is not automatically inferred.
-
--- open Mathlib.Tactic.Coherence in
--- instance {C : Type u} [Category.{v} C] [MonoidalCategory C] (M N : C) :
---     LiftObj ((tensor C).obj (M, N)) := by
---   infer_instance -- fails
-
--- open Mathlib.Tactic.Coherence in
--- instance {C : Type u} [Category.{v} C] [MonoidalCategory C] (M N : C) :
---     MonoidalCoherence ((M ⊗ N)) ((tensor C).obj (M, N)) := by
---   infer_instance -- fails
--- -/
-
 theorem Mon_tensor_one_mul (M N : Mon_ C) :
     (((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)) ▷ (M.X ⊗ N.X)) ≫
         tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) =

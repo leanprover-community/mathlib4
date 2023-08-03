@@ -51,10 +51,6 @@ class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] whe
     ∀ {X Y : C} (f : X ⟶ Y) (Z : C),
       f ▷ Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ Z ◁ f := by
     aesop_cat
-  -- braiding_naturality :
-  --   ∀ {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
-  --     (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by
-  --   aesop_cat
   -- hexagon identities:
   hexagon_forward :
     ∀ X Y Z : C,
@@ -452,14 +448,6 @@ def Discrete.braidedFunctor (F : M →* N) : BraidedFunctor (Discrete M) (Discre
 end CommMonoid
 
 section Tensor
-
--- /-- The strength of the tensor product functor from `C × C` to `C`. -/
--- def tensor_μ (X Y : C × C) : (tensor C).obj X ⊗ (tensor C).obj Y ⟶ (tensor C).obj (X ⊗ Y) :=
---   (α_ X.1 X.2 (Y.1 ⊗ Y.2)).hom ≫
---     (X.1 ◁ (α_ X.2 Y.1 Y.2).inv) ≫
---       (X.1 ◁ (β_ X.2 Y.1).hom ▷ Y.2) ≫
---         (X.1 ◁ (α_ Y.1 X.2 Y.2).hom) ≫ (α_ X.1 Y.1 (X.2 ⊗ Y.2)).inv
--- #align category_theory.tensor_μ CategoryTheory.tensor_μ
 
 /-- The strength of the tensor product functor from `C × C` to `C`. -/
 def tensor_μ (X Y : C × C) : (X.1 ⊗ X.2) ⊗ Y.1 ⊗ Y.2 ⟶ (X.1 ⊗ Y.1) ⊗ X.2 ⊗ Y.2 :=

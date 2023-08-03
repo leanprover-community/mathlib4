@@ -35,82 +35,6 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 variable {D : Type u₂} [Category.{v₂} D]
 
--- -- porting note: it was @[simps {attrs := [`_refl_lemma]}]
--- /-- Transport a monoidal structure along an equivalence of (plain) categories.
--- -/
--- @[simps]
--- def transport (e : C ≌ D) : MonoidalCategory.{v₂} D where
---   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
---   -- tensorHom f g := e.functor.map (e.inverse.map f ⊗ e.inverse.map g)
---   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
---   whiskerRight f Y := e.functor.map (e.inverse.map f ▷ e.inverse.obj Y)
---   -- tensorHom_def := _
---   tensorUnit' := e.functor.obj (𝟙_ C)
---   associator X Y Z :=
---     e.functor.mapIso
---       (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫
---         α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫ (Iso.refl _ ⊗ e.unitIso.app _))
---   leftUnitor X :=
---     e.functor.mapIso (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
---       e.counitIso.app _
---   rightUnitor X :=
---     e.functor.mapIso ((Iso.refl _ ⊗ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
---       e.counitIso.app _
---   whiskerLeft_id := _
---   whiskerLeft_comp := _
---   id_whiskerLeft := _
---   tensor_whiskerLeft := _
---   id_whiskerRight := _
---   comp_whiskerRight := _
---   whiskerRight_id := _
---   whiskerRight_tensor := _
---   whisker_assoc := _
---   whisker_exchange := _
---   pentagon W X Y Z := by
---     dsimp
---     simp_rw [← id_tensorHom, ← tensorHom_id]
---     simp only [Iso.hom_inv_id_app_assoc, comp_tensor_id, assoc, Equivalence.inv_fun_map,
---       Functor.map_comp, id_tensor_comp, e.inverse.map_id]
---     simp only [← e.functor.map_comp]
---     congr 2
---     slice_lhs 4 5 =>
---       rw [← comp_tensor_id, Iso.hom_inv_id_app]
---       dsimp
---       rw [tensor_id]
---     simp only [Category.id_comp, Category.assoc]
---     slice_lhs 5 6 =>
---       rw [← id_tensor_comp, Iso.hom_inv_id_app]
---       dsimp
---       rw [tensor_id]
---     simp only [Category.id_comp, Category.assoc]
---     slice_rhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
---     slice_rhs 1 2 => rw [← tensor_id, ← associator_naturality]
---     slice_rhs 3 4 => rw [← tensor_id, associator_naturality]
---     slice_rhs 2 3 => rw [← pentagon]
---     simp only [Category.assoc]
---     congr 2
---     simp_rw [← id_tensorHom, ← tensorHom_id]
---     slice_lhs 1 2 => rw [associator_naturality]
---     simp only [Category.assoc]
---     congr 1
---     slice_lhs 1 2 =>
---       rw [← id_tensor_comp, ← comp_tensor_id, Iso.hom_inv_id_app]
---       dsimp
---       rw [tensor_id, tensor_id]
---     simp only [Category.id_comp, Category.assoc]
---     simp [id_tensorHom, tensorHom_id]
---   triangle X Y := by
---     dsimp
---     simp_rw [← id_tensorHom, ← tensorHom_id]
---     simp only [Iso.hom_inv_id_app_assoc, comp_tensor_id, Equivalence.unit_inverse_comp, assoc,
---       Equivalence.inv_fun_map, comp_id, Functor.map_comp, id_tensor_comp, e.inverse.map_id]
---     simp only [← e.functor.map_comp]
---     congr 2
---     slice_lhs 2 3 =>
---       rw [← id_tensor_comp]
---       simp
---     simp [id_tensorHom, tensorHom_id]
-
 attribute [local simp] id_tensorHom tensorHom_id
 
 -- porting note: it was @[simps {attrs := [`_refl_lemma]}]
@@ -236,7 +160,6 @@ def Transported (_ : C ≌ D) := D
 
 instance (e : C ≌ D) : Category (Transported e) := (inferInstance : Category D)
 
--- @[simps!]
 instance (e : C ≌ D) : MonoidalCategory (Transported e) :=
   transport e
 

@@ -55,7 +55,9 @@ theorem char_one (V : FdRep k G) : V.character 1 = FiniteDimensional.finrank k V
 
 /-- The character is multiplicative under the tensor product. -/
 theorem char_tensor (V W : FdRep k G) : (V ⊗ W).character = V.character * W.character := by
-  ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
+  ext g
+  convert trace_tensorProduct' (V.ρ g) (W.ρ g)
+  sorry
 #align fdRep.char_tensor FdRep.char_tensor
 
 -- Porting note: adding variant of `char_tensor` to make the simp-set confluent

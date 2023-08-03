@@ -95,7 +95,6 @@ instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   rightUnitor F := NatIso.ofComponents fun X => ρ_ (F.obj X)
   associator F G H := NatIso.ofComponents fun X => α_ (F.obj X) (G.obj X) (H.obj X)
   whisker_exchange := by intros; ext; simp [whisker_exchange]
-  -- pentagon F G H K := by ext X; dsimp; rw [pentagon]
 #align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
 
 @[simp]
