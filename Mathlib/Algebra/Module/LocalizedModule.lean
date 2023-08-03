@@ -1003,7 +1003,7 @@ theorem mk'_mul_mk'_of_map_mul {M M' : Type _} [Semiring M] [Semiring M'] [Modul
     [IsLocalizedModule S f] (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f m₁ s₁ * mk' f m₂ s₂ = mk' f (m₁ * m₂) (s₁ * s₂) := by
   symm
-  apply (Module.End_algebraMap_isUnit_inv_apply_eq_iff _ _ _).mpr
+  apply (Module.End_algebraMap_isUnit_inv_apply_eq_iff _ _ _ _).mpr
   simp_rw [Submonoid.coe_mul, ← smul_eq_mul]
   rw [smul_smul_smul_comm, ← mk'_smul, ← mk'_smul]
   simp_rw [← Submonoid.smul_def, mk'_cancel, smul_eq_mul, hf]

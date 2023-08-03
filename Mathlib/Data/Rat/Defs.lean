@@ -327,13 +327,7 @@ instance commRing : CommRing ℚ where
       ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
-  { Rat.commRing with
-    zero := 0
-    one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    div := (· / ·)
-    exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
+  { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
     inv_zero := by
       change Rat.inv 0 = 0
       rw [Rat.inv_def]
