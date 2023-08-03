@@ -83,10 +83,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
 /-- The finrank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
 theorem finrank_eq_card_chooseBasisIndex :
-    finrank R M =
-      @card (ChooseBasisIndex R M)
-        (@ChooseBasisIndex.fintype R M _ _ _ _ (nontrivial_of_invariantBasisNumber R) _) := by
-  letI := nontrivial_of_invariantBasisNumber R
+    finrank R M = card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
 #align finite_dimensional.finrank_eq_card_choose_basis_index FiniteDimensional.finrank_eq_card_chooseBasisIndex
 
