@@ -54,8 +54,6 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 class RingHomId {R : Type _} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 
-attribute [simp] RingHomId.eq_id
-
 instance {R : Type _} [Semiring R] : RingHomId (RingHom.id R) where
   eq_id := rfl
 
