@@ -634,7 +634,8 @@ variable [Semiring A]
 
 variable [DecidableEq ι]
 
-variable [CanonicallyOrderedAddMonoid ι]
+variable [AddMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+  [CovariantClass ι ι (· + ·) (· ≤ ·)] [CovariantClass ι ι (Function.swap (· + ·)) (· ≤ ·)]
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 

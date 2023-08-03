@@ -35,10 +35,11 @@ instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β]
     ⟨(c, d), ext hc hd⟩⟩
 
 @[to_additive]
-instance [CanonicallyOrderedMonoid α] [CanonicallyOrderedMonoid β] :
-    CanonicallyOrderedMonoid (α × β) :=
-  { (inferInstance : OrderedCommMonoid _), (inferInstance : OrderBot _),
-    (inferInstance : ExistsMulOfLE _) with
-      le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩ }
+instance [Mul α] [LE α] [CanonicallyOrderedMul α]
+    [Mul β] [LE β] [CanonicallyOrderedMul β] :
+    CanonicallyOrderedMul (α × β) :=
+  { (inferInstance : ExistsMulOfLE _) with
+      le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩
+      le_mul_self := fun _ _ ↦ ⟨le_mul_self, le_mul_self⟩ }
 
 end Prod

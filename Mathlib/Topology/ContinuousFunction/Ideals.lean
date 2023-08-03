@@ -178,6 +178,7 @@ open IsROrC
 
 variable {X 𝕜 : Type _} [IsROrC 𝕜] [TopologicalSpace X]
 
+set_option synthInstance.maxHeartbeats 21000 in
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
 theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c) :

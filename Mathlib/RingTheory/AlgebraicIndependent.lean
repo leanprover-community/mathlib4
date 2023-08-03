@@ -424,6 +424,7 @@ def AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin (hx : Algebraic
     (Polynomial.mapEquiv hx.aevalEquiv.toRingEquiv)
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin
 
+set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
     (hx : AlgebraicIndependent R x) (y) :

@@ -216,9 +216,10 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 #align even.is_square_zpow Even.isSquare_zpow
 #align even.zsmul' Even.zsmul'
 
--- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+-- TODO: `Odd.tsub`
+theorem Even.tsub [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn
@@ -393,9 +394,10 @@ end Monoid
 
 section CanonicallyOrderedCommSemiring
 
-variable [CanonicallyOrderedCommSemiring α]
+variable [Semiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+  [CovariantClass α α (· + ·) (· ≤ ·)]
 
--- this holds more generally in a `CanonicallyOrderedAddMonoid` if we refactor `Odd` to use
+-- this holds more generally in a `CanonicallyOrderedAdd` monoid if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
 theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
   obtain ⟨k, rfl⟩ := hn

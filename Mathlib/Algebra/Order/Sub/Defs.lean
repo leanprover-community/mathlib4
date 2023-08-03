@@ -22,9 +22,9 @@ subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENN
 ## Implementation details
 
 `OrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
-where we don't have a `CanonicallyOrderedAddMonoid` instance
+where we don't have a `CanonicallyOrderedAdd` instance
 (even though that is our main focus). Conversely, this means we can use
-`CanonicallyOrderedAddMonoid` without necessarily having to define a subtraction.
+`CanonicallyOrderedAdd` without necessarily having to define a subtraction.
 
 The results in this file are ordered by the type-class assumption needed to prove it.
 This means that similar results might not be close to each other. Furthermore, we don't prove
@@ -59,12 +59,13 @@ class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] : Prop where
 
 section Add
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
-
 @[simp]
-theorem tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
+theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α} :
+    a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 #align tsub_le_iff_right tsub_le_iff_right
+
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b : α}
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=

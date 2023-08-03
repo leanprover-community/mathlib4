@@ -136,8 +136,8 @@ def integerLattice : Subring E :=
 #align number_field.canonical_embedding.integer_lattice NumberField.canonicalEmbedding.integerLattice
 
 -- Porting note: See https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 400000 in
-set_option synthInstance.maxHeartbeats 50000 in
+set_option maxHeartbeats 500000 in
+set_option synthInstance.maxHeartbeats 80000 in
 /-- The linear equiv between `𝓞 K` and the integer lattice. -/
 def equivIntegerLattice [NumberField K] : 𝓞 K ≃ₗ[ℤ] integerLattice K :=
   LinearEquiv.ofBijective

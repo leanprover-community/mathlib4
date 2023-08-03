@@ -535,12 +535,13 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L)
   add_zero _ := sup_bot_eq
   add_comm _ _ := sup_comm
 
-instance : CanonicallyOrderedAddMonoid (LieSubalgebra R L) :=
-  { LieSubalgebra.addCommMonoid,
-    LieSubalgebra.completeLattice with
-    add_le_add_left := fun _a _b ↦ sup_le_sup_left
-    exists_add_of_le := @fun _a b h ↦ ⟨b, (sup_eq_right.2 h).symm⟩
-    le_self_add := fun _a _b ↦ le_sup_left }
+instance : OrderedAddCommMonoid (LieSubalgebra R L) where
+  add_le_add_left _ _ := sup_le_sup_left
+
+instance : CanonicallyOrderedAdd (LieSubalgebra R L) where
+  exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_self_add _ _ := le_sup_left
+  le_add_self _ _ := le_sup_right
 
 @[simp]
 theorem add_eq_sup : K + K' = K ⊔ K' :=

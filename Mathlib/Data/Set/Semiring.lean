@@ -226,13 +226,12 @@ instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
 instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
 
-instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
-  { (inferInstance : Semiring (SetSemiring α)), (inferInstance : CommMonoid (SetSemiring α)),
-    (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)),
-    (inferInstance : NoZeroDivisors (SetSemiring α)) with
-    add_le_add_left := fun _ _ => add_le_add_left
-    exists_add_of_le := fun {_ b} ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
-    le_self_add := subset_union_left }
+instance [CommMonoid α] : CanonicallyOrderedAdd (SetSemiring α) where
+  exists_add_of_le {_ b} ab := ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
+  le_self_add := subset_union_left
+  le_add_self _ _ := subset_union_right _ _
+
+instance [CommMonoid α] : OrderedCommSemiring (SetSemiring α) := inferInstance
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/

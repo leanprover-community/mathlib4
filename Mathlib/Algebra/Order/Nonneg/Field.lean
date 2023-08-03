@@ -87,11 +87,6 @@ instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :
 
 end LinearOrderedSemifield
 
-instance canonicallyLinearOrderedSemifield [LinearOrderedField α] :
-    CanonicallyLinearOrderedSemifield { x : α // 0 ≤ x } :=
-  { Nonneg.linearOrderedSemifield, Nonneg.canonicallyOrderedCommSemiring with }
-#align nonneg.canonically_linear_ordered_semifield Nonneg.canonicallyLinearOrderedSemifield
-
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
   inferInstance

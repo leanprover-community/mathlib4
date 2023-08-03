@@ -192,8 +192,8 @@ end OrderedAddCommGroup
 
 section CanonicallyOrderedAddMonoid
 
-variable [CanonicallyOrderedAddMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f : ι → α}
-  {a : α}
+variable [OrderedAddCommMonoid α] [CanonicallyOrderedAdd α] [TopologicalSpace α]
+  [OrderClosedTopology α] {f : ι → α} {a : α}
 
 theorem le_hasSum' (hf : HasSum f a) (i : ι) : f i ≤ a :=
   le_hasSum hf i fun _ _ => zero_le _
@@ -238,7 +238,8 @@ theorem hasSum_of_isLUB_of_nonneg [LinearOrderedAddCommMonoid α] [TopologicalSp
   tendsto_atTop_isLUB (Finset.sum_mono_set_of_nonneg h) hf
 #align has_sum_of_is_lub_of_nonneg hasSum_of_isLUB_of_nonneg
 
-theorem hasSum_of_isLUB [CanonicallyLinearOrderedAddMonoid α] [TopologicalSpace α] [OrderTopology α]
+theorem hasSum_of_isLUB [LinearOrderedAddCommMonoid α] [CanonicallyOrderedAdd α]
+    [TopologicalSpace α] [OrderTopology α]
     {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s => ∑ i in s, f i) b) : HasSum f b :=
   tendsto_atTop_isLUB (Finset.sum_mono_set f) hf
 #align has_sum_of_is_lub hasSum_of_isLUB

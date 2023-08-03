@@ -258,6 +258,7 @@ def toMeasureAddMonoidHom : FiniteMeasure Ω →+ Measure Ω where
   map_add' := toMeasure_add
 #align measure_theory.finite_measure.coe_add_monoid_hom MeasureTheory.FiniteMeasure.toMeasureAddMonoidHom
 
+set_option synthInstance.maxHeartbeats 28000 in
 instance {Ω : Type _} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
@@ -368,6 +369,7 @@ theorem zero_testAgainstNN : (0 : FiniteMeasure Ω).testAgainstNN = 0 := by
   simp only [zero_testAgainstNN_apply, Pi.zero_apply]
 #align measure_theory.finite_measure.zero.test_against_nn MeasureTheory.FiniteMeasure.zero_testAgainstNN
 
+set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem smul_testAgainstNN_apply (c : ℝ≥0) (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
     (c • μ).testAgainstNN f = c • μ.testAgainstNN f := by
@@ -493,6 +495,7 @@ theorem tendsto_iff_weak_star_tendsto {γ : Type _} {F : Filter γ} {μs : γ �
   Inducing.tendsto_nhds_iff ⟨rfl⟩
 #align measure_theory.finite_measure.tendsto_iff_weak_star_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_weak_star_tendsto
 
+set_option synthInstance.maxHeartbeats 40000 in
 theorem tendsto_iff_forall_toWeakDualBCNN_tendsto {γ : Type _} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔

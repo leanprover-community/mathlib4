@@ -30,8 +30,8 @@ def ENat : Type :=
   WithTop ℕ
 deriving Zero,
   -- AddCommMonoidWithOne,
-  CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
+  Nontrivial,
+  LinearOrder, Bot, Top, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
@@ -45,6 +45,8 @@ notation "ℕ∞" => ENat
 namespace ENat
 
 --Porting note: instances that derive failed to find
+instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
+instance : CommSemiring ℕ∞ := WithTop.commSemiring
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
 instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))

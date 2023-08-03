@@ -313,6 +313,7 @@ namespace FiniteMeasure
 
 variable {Ω : Type _} [Nonempty Ω] {m0 : MeasurableSpace Ω} (μ : FiniteMeasure Ω)
 
+set_option synthInstance.maxHeartbeats 27000 in
 /-- Normalize a finite measure so that it becomes a probability measure, i.e., divide by the
 total mass. -/
 def normalize : ProbabilityMeasure Ω :=
@@ -343,6 +344,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
     mul_inv_cancel_left₀ mass_nonzero]
 #align measure_theory.finite_measure.self_eq_mass_mul_normalize MeasureTheory.FiniteMeasure.self_eq_mass_mul_normalize
 
+set_option synthInstance.maxHeartbeats 27000 in
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
   apply eq_of_forall_apply_eq
   intro s _s_mble
@@ -355,6 +357,7 @@ theorem normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize
     Ne.def, not_false_iff]
 #align measure_theory.finite_measure.normalize_eq_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_of_nonzero
 
+set_option synthInstance.maxHeartbeats 27000 in
 theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
@@ -363,6 +366,7 @@ theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
     not_false_iff, one_smul]
 #align measure_theory.finite_measure.normalize_eq_inv_mass_smul_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_inv_mass_smul_of_nonzero
 
+set_option synthInstance.maxHeartbeats 27000 in
 theorem toMeasure_normalize_eq_of_nonzero (nonzero : μ ≠ 0) :
     (μ.normalize : Measure Ω) = μ.mass⁻¹ • μ := by
   ext1 s _s_mble

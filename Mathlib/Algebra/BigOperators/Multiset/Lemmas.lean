@@ -20,7 +20,7 @@ theorem dvd_prod [CommMonoid α] {s : Multiset α} {a : α} : a ∈ s → a ∣ 
 #align multiset.dvd_prod Multiset.dvd_prod
 
 @[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
+theorem prod_eq_one_iff [OrderedCommMonoid α] [CanonicallyOrderedMul α] {m : Multiset α} :
     m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff l
 #align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff
@@ -29,11 +29,12 @@ theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
 end Multiset
 
 @[simp]
-lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R} [CanonicallyOrderedCommSemiring R]
-    [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ (∀ x ∈ m, (0 : R) < x) := by
+lemma CanonicallyOrderedAdd.multiset_prod_pos {R} [OrderedCommSemiring R] [CanonicallyOrderedAdd R]
+    [NoZeroDivisors R] [Nontrivial R] {m : Multiset R} :
+    0 < m.prod ↔ (∀ x ∈ m, (0 : R) < x) := by
   rcases m with ⟨l⟩
   rw [Multiset.quot_mk_to_coe'', Multiset.coe_prod]
-  exact CanonicallyOrderedCommSemiring.list_prod_pos
+  exact CanonicallyOrderedAdd.list_prod_pos
 
 open Multiset
 

@@ -814,6 +814,7 @@ lemma coe_norm_smul_basis (p q : R[X]) :
     ⟨C q ^ 2, by simp only [norm_smul_basis, WeierstrassCurve.polynomial]; C_simp; ring1⟩
 #align weierstrass_curve.coordinate_ring.coe_norm_smul_basis WeierstrassCurve.CoordinateRing.coe_norm_smul_basis
 
+set_option maxHeartbeats 210000 in
 lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     (Algebra.norm R[X] <| p • (1 : W.CoordinateRing) + q • mk W Y).degree =
       max (2 • p.degree) (2 • q.degree + 3) := by

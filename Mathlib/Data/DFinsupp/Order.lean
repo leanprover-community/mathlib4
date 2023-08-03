@@ -142,9 +142,10 @@ instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) 
 
 section CanonicallyOrderedAddMonoid
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
-variable [∀ i, CanonicallyOrderedAddMonoid (α i)]
+
+section LE
+variable [∀ i, AddZeroClass (α i)] [∀ i, LE (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
 
 instance : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -155,13 +156,6 @@ variable {α}
 protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
   rfl
 #align dfinsupp.bot_eq_zero DFinsupp.bot_eq_zero
-
-@[simp]
-theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
-#align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
-
-section LE
 
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
@@ -189,8 +183,14 @@ theorem single_le_iff {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i :=
 
 end LE
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
-variable (α)
+section
+variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+
+@[simp]
+theorem add_eq_zero_iff [∀ i, CovariantClass (α i) (α i) (· + ·) (· ≤ ·)]
+    (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
+  simp [FunLike.ext_iff, forall_and]
+#align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
 variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
@@ -216,15 +216,14 @@ variable (α)
 instance : OrderedSub (Π₀ i, α i) :=
   ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddMonoid (Π₀ i, α i) :=
-  { (inferInstance : OrderBot (DFinsupp α)),
-    (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
-    exists_add_of_le := by
+instance [∀ i, CovariantClass (α i) (α i) (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (Π₀ i, α i) :=
+  { exists_add_of_le := by
       intro f g h
       exists g - f
       ext i
       exact (add_tsub_cancel_of_le <| h i).symm
-    le_self_add := fun _ _ _ ↦ le_self_add }
+    le_self_add := fun _ _ _ ↦ le_self_add
+    le_add_self := fun _ _ _ ↦ le_add_self }
 
 variable {α} [DecidableEq ι]
 
@@ -247,11 +246,14 @@ theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
   simp (config := { contextual := true }) [subset_iff]
 #align dfinsupp.subset_support_tsub DFinsupp.subset_support_tsub
 
+end
+
 end CanonicallyOrderedAddMonoid
 
 section CanonicallyLinearOrderedAddMonoid
 
-variable [∀ i, CanonicallyLinearOrderedAddMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
+variable [∀ i, AddZeroClass (α i)] [∀ i, LinearOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+  [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by

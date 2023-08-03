@@ -30,7 +30,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 
   - `LinearOrderedSemiring ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
-  - `CanonicallyOrderedCommSemiring ℝ≥0`;
+  - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
   - `CanonicallyLinearOrderedAddMonoid ℝ≥0`;
   - `Archimedean ℝ≥0`;
@@ -59,7 +59,7 @@ open BigOperators Function
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
   SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  CanonicallyOrderedCommSemiring, Inhabited
+  OrderedCommSemiring, Inhabited
 #align nnreal NNReal
 
 namespace NNReal
@@ -67,6 +67,8 @@ namespace NNReal
 -- mathport name: nnreal
 scoped notation "ℝ≥0" => NNReal
 
+instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
+instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 instance : DenselyOrdered ℝ≥0 := Nonneg.densely_ordered
 instance : OrderBot ℝ≥0 := inferInstance
@@ -74,8 +76,8 @@ instance : Archimedean ℝ≥0 := Nonneg.archimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
-noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
-  Nonneg.canonicallyLinearOrderedSemifield
+noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
+  Nonneg.linearOrderedSemifield
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
@@ -420,8 +422,6 @@ example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
 
-noncomputable example : CanonicallyLinearOrderedAddMonoid ℝ≥0 := by infer_instance
-
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 example : DistribLattice ℝ≥0 := by infer_instance
@@ -440,7 +440,7 @@ noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_inst
 
 noncomputable example : LinearOrderedCommGroupWithZero ℝ≥0 := by infer_instance
 
-example : CanonicallyOrderedCommSemiring ℝ≥0 := by infer_instance
+example : OrderedCommSemiring ℝ≥0 := by infer_instance
 
 example : DenselyOrdered ℝ≥0 := by infer_instance
 
@@ -808,7 +808,7 @@ theorem div_le_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ b * 
 #align nnreal.div_le_iff NNReal.div_le_iff
 
 nonrec theorem div_le_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ r * b :=
-  @div_le_iff' ℝ _ a r b <| pos_iff_ne_zero.2 hr
+  @div_le_iff' ℝ _ a r b <| (pos_iff_ne_zero (α := ℝ≥0)).2 hr
 #align nnreal.div_le_iff' NNReal.div_le_iff'
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
@@ -820,11 +820,11 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
 #align nnreal.div_le_of_le_mul' NNReal.div_le_of_le_mul'
 
 nonrec theorem le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  @le_div_iff ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  @le_div_iff ℝ _ a b r <| (pos_iff_ne_zero (α := ℝ≥0)).2 hr
 #align nnreal.le_div_iff NNReal.le_div_iff
 
 nonrec theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b :=
-  @le_div_iff' ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  @le_div_iff' ℝ _ a b r <| (pos_iff_ne_zero (α := ℝ≥0)).2 hr
 #align nnreal.le_div_iff' NNReal.le_div_iff'
 
 theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r :=

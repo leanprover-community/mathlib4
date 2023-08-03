@@ -189,6 +189,7 @@ theorem HasIntegral.tendsto (h : HasIntegral I l f vol y) :
   h
 #align box_integral.has_integral.tendsto BoxIntegral.HasIntegral.tendsto
 
+set_option synthInstance.maxHeartbeats 28000 in
 /-- The `ε`-`δ` definition of `BoxIntegral.HasIntegral`. -/
 theorem hasIntegral_iff : HasIntegral I l f vol y ↔
     ∀ ε > (0 : ℝ), ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧

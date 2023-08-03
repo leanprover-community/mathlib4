@@ -42,7 +42,8 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main instances
 
-* Cardinals form a `CanonicallyOrderedCommSemiring` with the aforementioned sum and product.
+* Cardinals form a `CanonicallyOrderedAdd` `OrderedCommSemiring` with the aforementioned sum and
+  product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
@@ -668,29 +669,24 @@ instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + 
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 #align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
 
-instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.partialOrder with
-    bot := 0
-    bot_le := Cardinal.zero_le
-    add_le_add_left := fun a b => add_le_add_left
-    exists_add_of_le := fun {a b} =>
-      inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : Sum α ((range f)ᶜ : Set β) ≃ β :=
-          (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
-            Equiv.Set.sumCompl (range f)
-        ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-    le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
-      inductionOn₂ a b fun α β => by
-        simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
+  exists_add_of_le {a b} :=
+    inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
+      have : Sum α ((range f)ᶜ : Set β) ≃ β :=
+        (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
+          Equiv.Set.sumCompl (range f)
+      ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
+  le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
+  le_add_self a _ := (zero_add a).ge.trans <| add_le_add_right (Cardinal.zero_le _) _
 
-instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
+instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} := inferInstance
 
--- Computable instance to prevent a non-computable one being found via the one above
-instance : CanonicallyOrderedAddMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+instance orderBot : OrderBot Cardinal.{u} := inferInstance
+
+instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
+    inductionOn₂ a b fun α β => by
+      simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
@@ -700,12 +696,12 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.orderedCommSemiring with }
 
 -- porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.orderedCommSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0

@@ -659,9 +659,9 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 #align multiset.le_iff_exists_add Multiset.le_iff_exists_add
 
-instance : CanonicallyOrderedAddMonoid (Multiset α) where
-  __ := inferInstanceAs (OrderBot (Multiset α))
+instance : CanonicallyOrderedAdd (Multiset α) where
   le_self_add := le_add_right
+  le_add_self := le_add_left
   exists_add_of_le h := leInductionOn h fun s =>
       let ⟨l, p⟩ := s.exists_perm_append
       ⟨l, Quot.sound p⟩

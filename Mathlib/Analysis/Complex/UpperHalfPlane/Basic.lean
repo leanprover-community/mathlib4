@@ -364,12 +364,14 @@ section SLModularAction
 variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
 -- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
+set_option synthInstance.maxHeartbeats 21000 in
 @[simp]
 theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
   rfl
 #align upper_half_plane.sl_moeb UpperHalfPlane.sl_moeb
 
 -- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
+set_option synthInstance.maxHeartbeats 21000 in
 theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
   rfl
 #align upper_half_plane.subgroup_moeb UpperHalfPlane.subgroup_moeb

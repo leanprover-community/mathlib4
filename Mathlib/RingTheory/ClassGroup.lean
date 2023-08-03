@@ -106,6 +106,7 @@ noncomputable instance : Inhabited (ClassGroup R) := ⟨1⟩
 
 variable {R}
 
+set_option synthInstance.maxHeartbeats 21000 in
 /-- Send a nonzero fractional ideal to the corresponding class in the class group. -/
 noncomputable def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :=
   (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range).comp
@@ -223,6 +224,7 @@ theorem ClassGroup.equiv_mk (K' : Type _) [Field K'] [Algebra R K'] [IsFractionR
   exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
 #align class_group.equiv_mk ClassGroup.equiv_mk
 
+set_option synthInstance.maxHeartbeats 21000 in
 @[simp]
 theorem ClassGroup.mk_canonicalEquiv (K' : Type _) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :

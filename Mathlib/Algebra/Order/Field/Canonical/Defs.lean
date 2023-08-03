@@ -14,23 +14,11 @@ import Mathlib.Algebra.Order.WithZero
 -/
 
 
-variable {α : Type _}
-
-/-- A canonically linear ordered field is a linear ordered field in which `a ≤ b` iff there exists
-`c` with `b = a + c`. -/
-class CanonicallyLinearOrderedSemifield (α : Type _) extends CanonicallyOrderedCommSemiring α,
-  LinearOrderedSemifield α
-#align canonically_linear_ordered_semifield CanonicallyLinearOrderedSemifield
+variable {α : Type _} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
 
 -- See note [lower instance priority]
-instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero
-    [CanonicallyLinearOrderedSemifield α] : LinearOrderedCommGroupWithZero α :=
-  { ‹CanonicallyLinearOrderedSemifield α› with
+instance (priority := 100) CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
+    LinearOrderedCommGroupWithZero α :=
+  { ‹LinearOrderedSemifield α› with
     mul_le_mul_left := fun a b h c ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
-#align canonically_linear_ordered_semifield.to_linear_ordered_comm_group_with_zero CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero
-
--- See note [lower instance priority]
-instance (priority := 100) CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddMonoid
-    [CanonicallyLinearOrderedSemifield α] : CanonicallyLinearOrderedAddMonoid α :=
-  { ‹CanonicallyLinearOrderedSemifield α› with }
-#align canonically_linear_ordered_semifield.to_canonically_linear_ordered_add_monoid CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddMonoid
+#align canonically_linear_ordered_semifield.to_linear_ordered_comm_group_with_zero CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero

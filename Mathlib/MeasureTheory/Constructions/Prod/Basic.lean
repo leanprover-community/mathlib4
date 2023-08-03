@@ -352,7 +352,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type _} [TopologicalSpace X] [Topologi
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
   refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono huv))
-  simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
+  simp only [prod_prod, CanonicallyOrderedAdd.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
   · exact v_open.measure_pos ν ⟨y, yv⟩

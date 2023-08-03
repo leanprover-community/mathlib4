@@ -627,7 +627,7 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   obtain ⟨s, ⟨hs, hsU⟩⟩ := isOpen_pi_iff'.1 U_open a ha
   refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono hsU))
   simp only [pi_pi]
-  rw [CanonicallyOrderedCommSemiring.prod_pos]
+  rw [CanonicallyOrderedAdd.prod_pos]
   intro i _
   apply (hs i).1.measure_pos (μ i) ⟨a i, (hs i).2⟩
 #align measure_theory.measure.pi.is_open_pos_measure MeasureTheory.Measure.pi.isOpenPosMeasure

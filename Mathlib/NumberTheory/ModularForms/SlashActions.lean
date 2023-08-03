@@ -101,6 +101,7 @@ section
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "]" γ:100 => ModularForm.slash k γ f
 
+set_option maxHeartbeats 220000 in
 private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
     f ∣[k](A * B) = (f ∣[k]A) ∣[k]B := by
   ext1 x

@@ -163,6 +163,8 @@ open CategoryTheory.LaxBraidedFunctor
 
 namespace EquivLaxBraidedFunctorPunit
 
+attribute [-instance] PUnit.canonicallyOrderedAdd
+
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
 @[simps]
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_ C where

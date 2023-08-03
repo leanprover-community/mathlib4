@@ -376,6 +376,7 @@ theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 
 
 variable [CompactSpace X]
 
+set_option synthInstance.maxHeartbeats 40000 in
 /-- The Stone-Weierstrass approximation theorem, `IsROrC` version, that a star subalgebra `A` of
 `C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if itseparates
 points. -/

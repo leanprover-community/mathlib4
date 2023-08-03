@@ -1700,8 +1700,8 @@ theorem NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
 theorem NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
-    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, max_le_iff, abs_sub_le_iff,
-      tsub_le_iff_right, NNReal.coe_add]
+    simp_rw [max_le_iff, tsub_le_iff_right (α := ℝ≥0), ← NNReal.coe_le_coe, coe_nndist, dist_eq,
+      abs_sub_le_iff, NNReal.coe_add, tsub_le_iff_right (α := ℝ)]
 #align nnreal.nndist_eq NNReal.nndist_eq
 
 @[simp]

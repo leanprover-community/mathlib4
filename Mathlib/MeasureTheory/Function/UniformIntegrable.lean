@@ -852,6 +852,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
     rwa [Set.mem_setOf, hx] at hfx
 #align measure_theory.uniform_integrable_of MeasureTheory.uniformIntegrable_of
 
+set_option synthInstance.maxHeartbeats 25000 in
 /-- This lemma is superceded by `UniformIntegrable.spec` which does not require measurability. -/
 theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
     (hfu : UniformIntegrable f p μ) {ε : ℝ} (hε : 0 < ε) :

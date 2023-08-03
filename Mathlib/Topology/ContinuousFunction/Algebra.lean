@@ -836,8 +836,12 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine' ⟨f', f'.prop, _, _⟩
-  · simp
-  · simp [inv_mul_cancel_right₀ hxy]
+  · simp only [Subsemiring.coe_add, coe_toSubsemiring, SetLike.val_smul, AddSubgroupClass.coe_sub,
+      coe_algebraMap, ContinuousMap.add_apply, ContinuousMap.smul_apply, ContinuousMap.sub_apply,
+      algebraMap_apply, smul_eq_mul, mul_one, sub_self, mul_zero, zero_add]
+  · simp only [Subsemiring.coe_add, coe_toSubsemiring, SetLike.val_smul, AddSubgroupClass.coe_sub,
+      coe_algebraMap, ContinuousMap.add_apply, ContinuousMap.smul_apply, ContinuousMap.sub_apply,
+      algebraMap_apply, smul_eq_mul, mul_one, ne_eq, inv_mul_cancel_right₀ hxy, sub_add_cancel]
 #align subalgebra.separates_points.strongly Subalgebra.SeparatesPoints.strongly
 
 end ContinuousMap

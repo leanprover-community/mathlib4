@@ -12,15 +12,6 @@ import Mathlib.GroupTheory.GroupAction.Defs
 /-!
 # Canonically ordered rings and semirings.
 
-* `CanonicallyOrderedCommSemiring`
-  - `CanonicallyOrderedAddMonoid` & multiplication & `*` respects `≤` & no zero divisors
-  - `CommSemiring` & `a ≤ b ↔ ∃ c, b = a + c` & no zero divisors
-
-## TODO
-
-We're still missing some typeclasses, like
-* `CanonicallyOrderedSemiring`
-They have yet to come up in practice.
 -/
 
 
@@ -29,15 +20,6 @@ open Function
 universe u
 
 variable {α : Type u} {β : Type _}
-
-/-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
-iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
-not the integers or other ordered groups. -/
-class CanonicallyOrderedCommSemiring (α : Type _) extends CanonicallyOrderedAddMonoid α,
-    CommSemiring α where
-  /-- No zero divisors. -/
-  protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
-#align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
 
 section StrictOrderedSemiring
 
@@ -81,74 +63,77 @@ end ExistsAddOfLE
 
 end StrictOrderedSemiring
 
-namespace CanonicallyOrderedCommSemiring
-
-variable [CanonicallyOrderedCommSemiring α] {a b : α}
+namespace CanonicallyOrderedAdd
 
 -- see Note [lower instance priority]
-instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
-  ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero⟩
-#align canonically_ordered_comm_semiring.to_no_zero_divisors CanonicallyOrderedCommSemiring.toNoZeroDivisors
-
--- see Note [lower instance priority]
-instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
+instance (priority := 100) toCovariantClassMulLE
+    [Mul α] [Add α] [LeftDistribClass α] [LE α] [CanonicallyOrderedAdd α] :
+    CovariantClass α α (· * ·) (· ≤ ·) := by
   refine' ⟨fun a b c h => _⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
-#align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.toCovariantClassMulLE
+#align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedAdd.toCovariantClassMulLE
 
 -- see Note [lower instance priority]
-instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
-  mul_le_mul_left := fun _ _ => mul_le_mul_left'
-#align canonically_ordered_comm_semiring.to_ordered_comm_monoid CanonicallyOrderedCommSemiring.toOrderedCommMonoid
+instance (priority := 100) toOrderedCommMonoid
+    [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
+    OrderedCommMonoid α where
+  mul_le_mul_left _ _ := mul_le_mul_left'
+#align canonically_ordered_comm_semiring.to_ordered_comm_monoid CanonicallyOrderedAdd.toOrderedCommMonoid
 
 -- see Note [lower instance priority]
-instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
-  { ‹CanonicallyOrderedCommSemiring α› with
-    zero_le_one := zero_le _,
-    mul_le_mul_of_nonneg_left := fun a b c h _ => mul_le_mul_left' h _,
-    mul_le_mul_of_nonneg_right := fun a b c h _ => mul_le_mul_right' h _ }
-#align canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedCommSemiring.toOrderedCommSemiring
-
+instance (priority := 100) toOrderedCommSemiring
+    [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] :
+    OrderedCommSemiring α where
+  mul_comm := mul_comm
+  zero_le_one := zero_le _
+  add_le_add_left _ _ := add_le_add_left
+  mul_le_mul_of_nonneg_left := fun _ _ _ h _ => mul_le_mul_left' h _
+  mul_le_mul_of_nonneg_right := fun _ _ _ h _ => mul_le_mul_right' h _
+#align canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedAdd.toOrderedCommSemiring
+--[OrderedSemiring α] [CanonicallyOrderedAdd α]
 @[simp]
-theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
+theorem mul_pos [NonUnitalNonAssocSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] {a b : α} :
+    0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
-#align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
+#align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedAdd.mul_pos
 
-end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedAdd
 
 section Sub
 
-variable [CanonicallyOrderedCommSemiring α] {a b c : α}
-
-variable [Sub α] [OrderedSub α]
-
-variable [IsTotal α (· ≤ ·)]
-
 namespace AddLECancellable
 
-protected theorem mul_tsub (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
+protected theorem mul_tsub [OrderedSemiring α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α] [IsTotal α (· ≤ ·)] {a b c : α}
+    (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
   cases' total_of (· ≤ ·) b c with hbc hcb
   · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_left' hbc a)]
   · apply h.eq_tsub_of_add_eq
     rw [← mul_add, tsub_add_cancel_of_le hcb]
 #align add_le_cancellable.mul_tsub AddLECancellable.mul_tsub
 
-protected theorem tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
+protected theorem tsub_mul [OrderedCommSemiring α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α] [IsTotal α (· ≤ ·)] {a b c : α}
+    (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
   simp only [mul_comm _ c] at *
   exact h.mul_tsub
 #align add_le_cancellable.tsub_mul AddLECancellable.tsub_mul
 
 end AddLECancellable
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
-
-theorem mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
+theorem mul_tsub [OrderedSemiring α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α] [IsTotal α (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (a b c : α) : a * (b - c) = a * b - a * c :=
   Contravariant.AddLECancellable.mul_tsub
 #align mul_tsub mul_tsub
 
-theorem tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
+theorem tsub_mul [OrderedCommSemiring α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α] [IsTotal α (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (a b c : α) : (a - b) * c = a * c - b * c :=
   Contravariant.AddLECancellable.tsub_mul
 #align tsub_mul tsub_mul
 

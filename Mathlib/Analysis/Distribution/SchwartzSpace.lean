@@ -671,6 +671,7 @@ def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + 
   map_smul' a f := ext (hsmul a f)
 #align schwartz_map.mk_lm SchwartzMap.mkLM
 
+set_option synthInstance.maxHeartbeats 23000 in
 /-- Create a continuous semilinear map between Schwartz spaces.
 
 For an example of using this definition, see `fderivCLM`. -/

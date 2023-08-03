@@ -128,7 +128,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   set L := zipWith d (x::l) (l ++ [y])
   have hL_len : length L = length l + 1 := by simp
   cases' eq_or_ne (d x y) 0 with hd₀ hd₀
-  · simp only [hd₀, zero_le]
+  · simp only [hd₀, zero_le (α := ℝ≥0)]
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
   · exact (hd x z z' y).trans (mul_le_mul_left' (max_le hxz (max_le hzz' hz'y)) _)
   set s : Set ℕ := { m : ℕ | 2 * (take m L).sum ≤ L.sum }
@@ -161,7 +161,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       convert hMs.1.out
       rw [zipWith_distrib_take, take, take_succ, get?_append hMl, get?_eq_get hMl, ← Option.coe_def,
         Option.to_list_some, take_append_of_le_length hMl.le]
-  · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, get_zipWith⟩)
+  · exact single_le_sum (fun x _ => zero_le (α := ℝ≥0) x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, get_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
     rw [get_append _ hMl]

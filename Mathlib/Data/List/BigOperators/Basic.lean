@@ -474,7 +474,7 @@ theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = 
 #align list.eq_of_sum_take_eq List.eq_of_sum_take_eq
 
 @[to_additive]
-theorem monotone_prod_take [CanonicallyOrderedMonoid M] (L : List M) :
+theorem monotone_prod_take [Monoid M] [Preorder M] [CanonicallyOrderedMul M] (L : List M) :
     Monotone fun i => (L.take i).prod := by
   refine' monotone_nat_of_le_succ fun n => _
   cases' lt_or_le n L.length with h h
@@ -580,14 +580,14 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
     exact mul_pos (h _ <| mem_cons_self _ _) (ih fun a ha => h a <| mem_cons_of_mem _ ha)
 #align list.prod_pos List.prod_pos
 
-/-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.list_prod_pos
-    {α : Type _} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+/-- A variant of `List.prod_pos` for `CanonicallyOrderedAdd` `OrderedSemiring`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.list_prod_pos
+    {α : Type _} [OrderedSemiring α] [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] :
     ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
   | [] => by simp
-  | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
+  | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedAdd.mul_pos,
     list_prod_pos]
-#align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedCommSemiring.list_prod_pos
+#align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedAdd.list_prod_pos
 
 /-!
 Several lemmas about sum/head/tail for `List ℕ`.

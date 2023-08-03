@@ -462,7 +462,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
 
 section
 
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 310000 in
 /-- If two formal multilinear series have positive radius of convergence, then the terms appearing
 in the definition of their composition are also summable (when multiplied by a suitable positive
 geometric term). -/

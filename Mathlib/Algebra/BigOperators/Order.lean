@@ -390,9 +390,9 @@ theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf 
 
 end DoubleCounting
 
-section CanonicallyOrderedMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedMonoid M] {f : ι → M} {s t : Finset ι}
+variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
 @[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
@@ -427,7 +427,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
 #align finset.sum_le_sum_of_ne_zero Finset.sum_le_sum_of_ne_zero
 
-end CanonicallyOrderedMonoid
+end CanonicallyOrderedMul
 
 section OrderedCancelCommMonoid
 
@@ -653,18 +653,21 @@ end StrictOrderedCommSemiring
 
 section CanonicallyOrderedCommSemiring
 
-variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
+variable [OrderedCommSemiring R] [CanonicallyOrderedAdd R]
+  {f g h : ι → R} {s : Finset ι} {i : ι}
 
-/-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+/-- Note that the name is to match `CanonicallyOrderedAdd.mul_pos`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.prod_pos [NoZeroDivisors R] [Nontrivial R] :
     0 < ∏ i in s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
-  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
-#align canonically_ordered_comm_semiring.prod_pos CanonicallyOrderedCommSemiring.prod_pos
+  CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+#align canonically_ordered_comm_semiring.prod_pos CanonicallyOrderedAdd.prod_pos
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
+  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`
+  `OrderedCommSemiring`.
 -/
-theorem prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
+theorem prod_add_prod_le'
+    (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
   classical
     simp_rw [prod_eq_mul_prod_diff_singleton hi]

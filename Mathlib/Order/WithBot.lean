@@ -225,6 +225,11 @@ theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
   Option.not_mem_none _ hb
 #align with_bot.not_coe_le_bot WithBot.not_coe_le_bot
 
+@[simp]
+theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
+  | (a : α) => by simp [not_coe_le_bot _]
+  | ⊥ => by simp
+
 theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ o ↔ a ≤ b)
   | _, rfl => coe_le_coe
 #align with_bot.coe_le WithBot.coe_le
@@ -852,6 +857,11 @@ theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
   WithBot.not_coe_le_bot (toDual a)
 #align with_top.not_top_le_coe WithTop.not_top_le_coe
 
+@[simp]
+theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
+  | (a : α) => by simp [not_top_le_coe _]
+  | ⊤ => by simp
+
 theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
   | _, rfl => coe_le_coe
 #align with_top.le_coe WithTop.le_coe
@@ -1167,6 +1177,19 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α
   erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 #align with_top.map_le_iff WithTop.map_le_iff
+
+theorem coe_untop'_le [Preorder α] : ∀ (a : WithTop α) (b : α), a.untop' b ≤ a
+  | (a : α), _ => le_rfl
+  | ⊤, _ => le_top
+
+theorem le_untop'_top_iff [LE α] [OrderTop α] {a : WithTop α} {b : α} :
+    b ≤ a.untop' ⊤ ↔ b ≤ a := by
+  cases a <;> simp [none_eq_top, some_eq_coe]
+
+theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (ha : a ≠ ⊤) : c < a.untop' b ↔ c < a := by
+  cases a
+  · exact (ha rfl).elim
+  · rw [some_eq_coe, untop'_coe, coe_lt_coe]
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with

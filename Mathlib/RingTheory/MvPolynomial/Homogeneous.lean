@@ -76,7 +76,8 @@ variable (σ R)
 
 /-- While equal, the former has a convenient definitional reduction. -/
 theorem homogeneousSubmodule_eq_finsupp_supported [CommSemiring R] (n : ℕ) :
-    homogeneousSubmodule σ R n = Finsupp.supported _ R { d | ∑ i in d.support, d i = n } := by
+    homogeneousSubmodule σ R n =
+      (Finsupp.supported _ R {d | ∑ i in d.support, d i = n} : Submodule R (MvPolynomial σ R)) := by
   ext
   rw [Finsupp.mem_supported, Set.subset_def]
   simp only [Finsupp.mem_support_iff, Finset.mem_coe]

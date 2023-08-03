@@ -62,15 +62,17 @@ theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α
     (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
 #align is_invariant.is_fw_invariant IsInvariant.isFwInvariant
 
-/-- If `τ` is a `CanonicallyOrderedAddMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem IsFwInvariant.isInvariant [CanonicallyOrderedAddMonoid τ] {ϕ : τ → α → α} {s : Set α}
+theorem IsFwInvariant.isInvariant [AddZeroClass τ] [Preorder τ] [CanonicallyOrderedAdd τ]
+    {ϕ : τ → α → α} {s : Set α}
     (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 #align is_fw_invariant.is_invariant IsFwInvariant.isInvariant
 
-/-- If `τ` is a `CanonicallyOrderedAddMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddMonoid τ] {ϕ : τ → α → α} {s : Set α} :
+theorem isFwInvariant_iff_isInvariant [AddZeroClass τ] [Preorder τ] [CanonicallyOrderedAdd τ]
+    {ϕ : τ → α → α} {s : Set α} :
     IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
 #align is_fw_invariant_iff_is_invariant isFwInvariant_iff_isInvariant

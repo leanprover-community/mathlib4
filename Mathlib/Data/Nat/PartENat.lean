@@ -21,7 +21,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddMonoid PartENat`
+* `CanonicallyOrderedAdd PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -432,13 +432,15 @@ noncomputable instance orderedAddCommMonoid: OrderedAddCommMonoid PartENat :=
         ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
-noncomputable instance : CanonicallyOrderedAddMonoid PartENat :=
-  { PartENat.semilatticeSup, PartENat.orderBot,
-    PartENat.orderedAddCommMonoid with
-    le_self_add := fun a b =>
+instance : CanonicallyOrderedAdd PartENat :=
+  { le_self_add := fun a b =>
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun b =>
         PartENat.casesOn a (top_add _).ge fun a =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
+    le_add_self := fun a b =>
+      PartENat.casesOn b (le_top.trans_eq (top_add _).symm) fun b =>
+        PartENat.casesOn a (add_top _).ge fun a =>
+          (coe_le_coe.2 le_add_self).trans_eq (Nat.cast_add _ _)
     exists_add_of_le := fun {a b} =>
       PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
         PartENat.casesOn a (fun h => ((natCast_lt_top _).not_le h).elim) fun a h =>

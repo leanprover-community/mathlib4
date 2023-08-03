@@ -1133,10 +1133,13 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
           exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
-instance : CanonicallyOrderedMonoid (Associates α) where
-    exists_mul_of_le := fun h => h
-    le_self_mul := fun _ b => ⟨b, rfl⟩
-    bot_le := fun _ => one_le
+instance : CanonicallyOrderedMul (Associates α) where
+  exists_mul_of_le h := h
+  le_self_mul _ b := ⟨b, rfl⟩
+  le_mul_self _ b := ⟨b, mul_comm _ _⟩
+
+instance : OrderBot (Associates α) where
+  bot_le _ := bot_le
 
 theorem dvdNotUnit_iff_lt {a b : Associates α} : DvdNotUnit a b ↔ a < b :=
   dvd_and_not_dvd_iff.symm

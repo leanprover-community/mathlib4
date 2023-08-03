@@ -235,6 +235,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   · rfl
 #align modular_group.tendsto_lc_row0 ModularGroup.tendsto_lcRow0
 
+set_option maxHeartbeats 210000 in
 /-- This replaces `(g•z).re = a/c + *` in the standard theory with the following novel identity:
   `g • z = (a c + b d) / (c^2 + d^2) + (d z - c) / ((c^2 + d^2) (c z + d))`
   which does not need to be decomposed depending on whether `c = 0`. -/
@@ -422,7 +423,7 @@ theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 
   cases abs_cases z.re <;> nlinarith
 #align modular_group.three_lt_four_mul_im_sq_of_mem_fdo ModularGroup.three_lt_four_mul_im_sq_of_mem_fdo
 
-set_option maxHeartbeats 260000 in
+set_option maxHeartbeats 270000 in
 /-- If `z ∈ 𝒟ᵒ`, and `n : ℤ`, then `|z + n| > 1`. -/
 theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1

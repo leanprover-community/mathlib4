@@ -1186,7 +1186,7 @@ theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g
   rfl
 #align mv_polynomial.eval₂_id MvPolynomial.eval₂_id
 
-theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
+theorem eval_eval₂ [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p
