@@ -544,24 +544,28 @@ theorem tensorRightHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasRightDual X]
 #align category_theory.tensor_right_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorRightHomEquiv_tensor_id_comp_evaluation
 
 -- Next four lemmas passing `fᘁ` or `ᘁf` through (co)evaluations.
+@[reassoc]
 theorem coevaluation_comp_rightAdjointMate {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) :
     η_ Y (Yᘁ) ≫ (_ ◁ fᘁ) = η_ _ _ ≫ (f ▷ _) := by
   apply_fun (tensorLeftHomEquiv _ Y (Yᘁ) _).symm
   simp
 #align category_theory.coevaluation_comp_right_adjoint_mate CategoryTheory.coevaluation_comp_rightAdjointMate
 
+@[reassoc]
 theorem leftAdjointMate_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
     (X ◁ ᘁf) ≫ ε_ _ _ = (f ▷ _) ≫ ε_ _ _ := by
   apply_fun tensorLeftHomEquiv _ (ᘁX) X _
   simp
 #align category_theory.left_adjoint_mate_comp_evaluation CategoryTheory.leftAdjointMate_comp_evaluation
 
+@[reassoc]
 theorem coevaluation_comp_leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
     η_ (ᘁY) Y ≫ ((ᘁf) ▷ Y) = η_ (ᘁX) X ≫ ((ᘁX) ◁ f) := by
   apply_fun (tensorRightHomEquiv _ (ᘁY) Y _).symm
   simp
 #align category_theory.coevaluation_comp_left_adjoint_mate CategoryTheory.coevaluation_comp_leftAdjointMate
 
+@[reassoc]
 theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) :
     (fᘁ ▷ X) ≫ ε_ X (Xᘁ) = ((Yᘁ) ◁ f) ≫ ε_ Y (Yᘁ) := by
   apply_fun tensorRightHomEquiv _ X (Xᘁ) _

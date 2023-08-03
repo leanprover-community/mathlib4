@@ -32,9 +32,26 @@ def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 
   evaluation' := eval
   coevaluation' := coeval
   evaluation_coevaluation' :=
-    F.toFunctor.map_injective (by simp [map_eval, map_coeval, MonoidalFunctor.map_tensor])
+    F.toFunctor.map_injective (by
+      simp_rw [Functor.map_comp, F.map_whiskerRight, F.map_whiskerLeft, map_eval, map_coeval]
+      simp only [comp_whiskerRight, Category.assoc, MonoidalCategory.whiskerLeft_comp,
+        LaxMonoidalFunctor.associativity_assoc, IsIso.hom_inv_id_assoc, IsIso.inv_comp_eq]
+      simp_rw [← whiskerLeft_comp_assoc]
+      simp only [IsIso.hom_inv_id_assoc, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+        ExactPairing.evaluation_coevaluation_assoc, LaxMonoidalFunctor.left_unitality,
+        LaxMonoidalFunctor.right_unitality_inv]
+      simp_rw [← comp_whiskerRight_assoc]
+      simp )
   coevaluation_evaluation' :=
-    F.toFunctor.map_injective (by simp [map_eval, map_coeval, MonoidalFunctor.map_tensor])
+    F.toFunctor.map_injective (by
+      simp_rw [Functor.map_comp, F.map_whiskerRight, F.map_whiskerLeft, map_eval, map_coeval]
+      simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, comp_whiskerRight,
+        LaxMonoidalFunctor.associativity_inv_assoc, IsIso.hom_inv_id_assoc, IsIso.inv_comp_eq]
+      simp_rw [← comp_whiskerRight_assoc]
+      simp only [IsIso.hom_inv_id_assoc, comp_whiskerRight, Category.assoc, ExactPairing.coevaluation_evaluation_assoc,
+        LaxMonoidalFunctor.right_unitality, LaxMonoidalFunctor.left_unitality_inv]
+      simp_rw [← whiskerLeft_comp_assoc]
+      simp )
 #align category_theory.exact_pairing_of_faithful CategoryTheory.exactPairingOfFaithful
 
 /-- Given a pair of objects which are sent by a fully faithful functor to a pair of objects

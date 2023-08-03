@@ -161,7 +161,7 @@ def cartesianClosedOfReflective : CartesianClosed D :=
                     Adjunction.rightAdjointPreservesLimits.{0, 0} (Adjunction.ofRightAdjoint i)
                   apply asIso (prodComparison i B X)
                 · dsimp [asIso]
-                  rw [prodComparison_natural, Functor.map_id]
+                  erw [prodComparison_natural, Functor.map_id]
               · apply (exponentialIdealReflective i _).symm } } }
 #align category_theory.cartesian_closed_of_reflective CategoryTheory.cartesianClosedOfReflective
 

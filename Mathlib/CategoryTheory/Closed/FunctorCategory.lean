@@ -42,7 +42,9 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       simp only [ihom.coev_naturality, closedIhom_obj_map, Monoidal.tensorObj_map]
       dsimp
       rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp]
-      simp }
+      simp
+      sorry
+       }
 #align category_theory.functor.closed_unit CategoryTheory.Functor.closedUnit
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
@@ -56,7 +58,9 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       dsimp
       simp only [closedIhom_obj_map, pre_comm_ihom_map]
       rw [← tensor_id_comp_id_tensor, id_tensor_comp]
-      simp }
+      simp
+      sorry
+       }
 #align category_theory.functor.closed_counit CategoryTheory.Functor.closedCounit
 
 /-- If `C` is a monoidal closed category and `D` is a groupoid, then every functor `F : D ⥤ C` is

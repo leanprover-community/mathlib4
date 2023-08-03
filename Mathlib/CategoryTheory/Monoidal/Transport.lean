@@ -116,6 +116,7 @@ attribute [local simp] id_tensorHom tensorHom_id
 -- porting note: it was @[simps {attrs := [`_refl_lemma]}]
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
+@[simps!]
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D := .ofTensorHom
   (tensorObj := fun X Y ↦ e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y))
   (tensorHom := fun f g ↦ e.functor.map (e.inverse.map f ⊗ e.inverse.map g))
@@ -236,21 +237,21 @@ def Transported (_ : C ≌ D) := D
 instance (e : C ≌ D) : Category (Transported e) := (inferInstance : Category D)
 
 -- @[simps!]
-instance transportMonoidalCategory (e : C ≌ D) : MonoidalCategory (Transported e) :=
+instance (e : C ≌ D) : MonoidalCategory (Transported e) :=
   transport e
 
 instance (e : C ≌ D) : Inhabited (Transported e) :=
   ⟨𝟙_ _⟩
 
-theorem transport_tensorUnit' (e : C ≌ D) : 𝟙_ (Transported e) = e.functor.obj (𝟙_ C) := rfl
+-- theorem transport_tensorUnit' (e : C ≌ D) : 𝟙_ (Transported e) = e.functor.obj (𝟙_ C) := rfl
 
-theorem transport_tensorObj (e : C ≌ D) (X Y : Transported e) :
-    X ⊗ Y = e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y) :=
-  rfl
+-- theorem transport_tensorObj (e : C ≌ D) (X Y : Transported e) :
+--     X ⊗ Y = e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y) :=
+--   rfl
 
-theorem transport_tensorHom (e : C ≌ D) {X₁ Y₁ X₂ Y₂ : Transported e} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
-    f ⊗ g = e.functor.map (e.inverse.map f ⊗ e.inverse.map g) := by
-  rfl
+-- theorem transport_tensorHom (e : C ≌ D) {X₁ Y₁ X₂ Y₂ : Transported e} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+--     f ⊗ g = e.functor.map (e.inverse.map f ⊗ e.inverse.map g) := by
+--   rfl
 
 theorem transport_associator (e : C ≌ D) (X Y Z : Transported e) :
     α_ X Y Z =

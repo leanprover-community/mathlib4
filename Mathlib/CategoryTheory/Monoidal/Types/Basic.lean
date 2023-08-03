@@ -34,6 +34,16 @@ theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y
 #align category_theory.tensor_apply CategoryTheory.tensor_apply
 
 @[simp]
+theorem whiskerLeft_apply (X : Type u) {Y Z : Type u} (f : Y ⟶ Z) (p : X ⊗ Y) :
+    (X ◁ f) p = (p.1, f p.2) :=
+  rfl
+
+@[simp]
+theorem whiskerRight_apply {Y Z : Type u} (f : Y ⟶ Z) (X : Type u) (p : Y ⊗ X) :
+    (f ▷ X) p = (f p.1, p.2) :=
+  rfl
+
+@[simp]
 theorem leftUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
     ((λ_ X).hom : 𝟙_ (Type u) ⊗ X → X) (p, x) = x :=
   rfl

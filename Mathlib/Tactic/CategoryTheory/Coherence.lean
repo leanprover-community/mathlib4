@@ -114,9 +114,14 @@ namespace MonoidalCoherence
 instance refl (X : C) [LiftObj X] : MonoidalCoherence X X := ⟨𝟙 _⟩
 
 @[simps]
-instance tensor (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
+instance whiskerLeft (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
     MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
   ⟨X ◁ MonoidalCoherence.hom⟩
+
+@[simps]
+instance whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence X Y] :
+    MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
+  ⟨MonoidalCoherence.hom ▷ Z⟩
 
 @[simps]
 instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
@@ -179,7 +184,7 @@ def monoidalComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
   f ≫ MonoidalCoherence.hom ≫ g
 
 @[inherit_doc monoidalComp]
-infixr:80 " ⊗≫ " => monoidalComp -- type as \ot \gg
+infixr:79 " ⊗≫ " => monoidalComp -- type as \ot \gg
 
 /-- Compose two isomorphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
@@ -188,7 +193,7 @@ noncomputable def monoidalIsoComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
   f ≪≫ asIso MonoidalCoherence.hom ≪≫ g
 
 @[inherit_doc monoidalIsoComp]
-infixr:80 " ≪⊗≫ " => monoidalIsoComp -- type as \ot \gg
+infixr:79 " ≪⊗≫ " => monoidalIsoComp -- type as \ot \gg
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) : U ⟶ Y := f ⊗≫ g
 

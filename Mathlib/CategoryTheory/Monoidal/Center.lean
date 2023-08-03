@@ -185,14 +185,14 @@ def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
     calc
       _ = 𝟙 _ ⊗≫
         X.fst ◁ (f.f ▷ U ≫ (HalfBraiding.β Y₂.snd U).hom) ⊗≫
-          (HalfBraiding.β X.snd U).hom ▷ Y₂.fst ⊗≫ 𝟙 _ := ?_
+          (HalfBraiding.β X.snd U).hom ▷ Y₂.fst ⊗≫ 𝟙 _ := ?eq1
       _ = 𝟙 _ ⊗≫
         X.fst ◁ (HalfBraiding.β Y₁.snd U).hom ⊗≫
-          ((X.fst ⊗ U) ◁ f.f ≫ (HalfBraiding.β X.snd U).hom ▷ Y₂.fst) ⊗≫ 𝟙 _ := ?eq1
-      _ = _ := ?eq2
-    case eq1 => rw [f.comm]; coherence
-    case eq2 => rw [whisker_exchange]; coherence
-    any_goals coherence
+          ((X.fst ⊗ U) ◁ f.f ≫ (HalfBraiding.β X.snd U).hom ▷ Y₂.fst) ⊗≫ 𝟙 _ := ?eq2
+      _ = _ := ?eq3
+    case eq1 => coherence
+    case eq2 => rw [f.comm]; coherence
+    case eq3 => rw [whisker_exchange]; coherence
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
@@ -204,14 +204,14 @@ def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
     calc
       _ = 𝟙 _ ⊗≫
         (f.f ▷ (Y.fst ⊗ U) ≫ X₂.fst ◁ (HalfBraiding.β Y.snd U).hom) ⊗≫
-            (HalfBraiding.β X₂.snd U).hom ▷ Y.fst ⊗≫ 𝟙 _ := ?_
+            (HalfBraiding.β X₂.snd U).hom ▷ Y.fst ⊗≫ 𝟙 _ := ?eq1
       _ = 𝟙 _ ⊗≫
         X₁.fst ◁ (HalfBraiding.β Y.snd U).hom ⊗≫
-          (f.f ▷ U ≫ (HalfBraiding.β X₂.snd U).hom) ▷ Y.fst ⊗≫ 𝟙 _ := ?eq1
-      _ = _ := ?eq2
-    case eq1 => rw [← whisker_exchange]; coherence
-    case eq2 => rw [f.comm]; coherence
-    any_goals coherence
+          (f.f ▷ U ≫ (HalfBraiding.β X₂.snd U).hom) ▷ Y.fst ⊗≫ 𝟙 _ := ?eq2
+      _ = _ := ?eq3
+    case eq1 => coherence
+    case eq2 => rw [← whisker_exchange]; coherence
+    case eq3 => rw [f.comm]; coherence
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
@@ -353,11 +353,6 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
 
 instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
-  braiding_naturality f g := by
-    ext
-    dsimp only [comp_f, braiding_hom_f]
-    erw [tensorHom_def', Category.assoc, HalfBraiding.naturality, f.comm_assoc, ← tensorHom_def,
-      tensor_f]
 #align category_theory.center.braided_category_center CategoryTheory.Center.braidedCategoryCenter
 
 -- `aesop_cat` handles the hexagon axioms
@@ -370,12 +365,7 @@ open BraidedCategory
 /-- Auxiliary construction for `ofBraided`. -/
 @[simps]
 def ofBraidedObj (X : C) : Center C :=
-  ⟨X, {
-      β := fun Y => β_ X Y
-      monoidal := fun U U' => by
-        rw [Iso.eq_inv_comp, ← Category.assoc, ← Category.assoc, Iso.eq_comp_inv, Category.assoc,
-          Category.assoc]
-        exact hexagon_forward X U U' }⟩
+  ⟨X, { β := fun Y => β_ X Y}⟩
 #align category_theory.center.of_braided_obj CategoryTheory.Center.ofBraidedObj
 
 variable (C)
@@ -387,20 +377,9 @@ def ofBraided : MonoidalFunctor C (Center C) where
   obj := ofBraidedObj
   map f :=
     { f
-      comm := fun U => braiding_naturality _ _ }
-  ε :=
-    { f := 𝟙 _
-      comm := fun U => by
-        dsimp
-        rw [tensor_id, Category.id_comp, tensor_id, Category.comp_id, ← braiding_rightUnitor,
-          Category.assoc, Iso.hom_inv_id, Category.comp_id] }
-  μ X Y :=
-    { f := 𝟙 _
-      comm := fun U => by
-        dsimp
-        rw [tensor_id, tensor_id, Category.id_comp, Category.comp_id, ← Iso.inv_comp_eq,
-          ← Category.assoc, ← Category.assoc, ← Iso.comp_inv_eq, Category.assoc, hexagon_reverse,
-          Category.assoc] }
+      comm := fun U => braiding_naturality_left f U }
+  ε := { f := 𝟙 _ }
+  μ X Y := { f := 𝟙 _ }
 #align category_theory.center.of_braided CategoryTheory.Center.ofBraided
 
 end

@@ -604,7 +604,7 @@ section
 
 variable [Preadditive V] [MonoidalPreadditive V]
 
-attribute [local simp] MonoidalPreadditive.tensor_add MonoidalPreadditive.add_tensor
+attribute [local simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
 
 instance : MonoidalPreadditive (Action V G) where
 
@@ -980,32 +980,35 @@ variable {V}
 variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCategory W]
   (F : MonoidalFunctor V W) (G : MonCat.{u})
 
+open MonoidalCategory
+
+attribute [local simp] id_tensorHom tensorHom_id
+
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/
-@[simps]
+@[simps!]
+def mapActionAux : LaxMonoidalFunctor (Action V G) (Action W G) := .ofTensorHom
+  (F := F.toFunctor.mapAction G)
+  (ε :=
+    { hom := F.ε
+      comm := fun g => by
+        dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
+        rw [Category.id_comp, F.map_id, Category.comp_id] })
+  (μ := fun X Y =>
+    { hom := F.μ X.V Y.V
+      comm := fun g => F.toLaxMonoidalFunctor.μ_natural (X.ρ g) (Y.ρ g) })
+  (μ_natural := by intros; ext; simp)
+  (associativity := by intros; ext; simp)
+  (left_unitality := by intros; ext; simp)
+  (right_unitality := by intros; ext; simp)
+
+/-- A monoidal functor induces a monoidal functor between
+the categories of `G`-actions within those categories. -/
+@[simps!]
 def mapAction : MonoidalFunctor (Action V G) (Action W G) :=
-  { F.toFunctor.mapAction G with
-    ε :=
-      { hom := F.ε
-        comm := fun g => by
-          dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-          rw [Category.id_comp, F.map_id, Category.comp_id] }
-    μ := fun X Y =>
-      { hom := F.μ X.V Y.V
-        comm := fun g => F.toLaxMonoidalFunctor.μ_natural (X.ρ g) (Y.ρ g) }
-    ε_isIso := by infer_instance
-    μ_isIso := by infer_instance
-    μ_natural := by intros; ext; simp
-    associativity := by intros; ext; simp
-    left_unitality := by intros; ext; simp
-    right_unitality := by
-      intros
-      ext
-      dsimp
-      simp only [MonoidalCategory.rightUnitor_conjugation,
-        LaxMonoidalFunctor.right_unitality, Category.id_comp, Category.assoc,
-        LaxMonoidalFunctor.right_unitality_inv_assoc, Category.comp_id, Iso.hom_inv_id]
-      rw [← F.map_comp, Iso.inv_hom_id, F.map_id, Category.comp_id] }
+  { mapActionAux F G with
+    ε_isIso := by dsimp [mapActionAux]; infer_instance
+    μ_isIso := by dsimp [mapActionAux]; infer_instance }
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action CategoryTheory.MonoidalFunctor.mapAction
 
