@@ -225,8 +225,9 @@ end Subalgebra
 
 section StarSubalgebra
 
-variable {R A : Type _} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
+section Semiring
 
+variable {R A : Type _} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
 variable [Algebra R A] [StarModule R A]
 
 /-! ## star_subalgebras -/
@@ -281,16 +282,32 @@ theorem NonUnitalStarSubalgebra.unitization_apply_coe (S : NonUnitalStarSubalgeb
   rfl
 
 theorem NonUnitalStarSubalgebra.unitization_surjective (S : NonUnitalStarSubalgebra R A) :
-    Function.Surjective S.unitization := by
-  rw [←Set.range_iff_surjective]
-  apply Subtype.val_injective.image_injective
-  simp only [Set.image_univ, Subtype.range_coe_subtype]
-  ext x
-  simp?
-  -- NonUnitalSubalgebra.unitization_surjective S.toNonUnitalSubalgebra
-  /- have : StarSubalgebra.adjoin R S ≤
+    Function.Surjective S.unitization :=
+  have : StarSubalgebra.adjoin R S ≤
       ((StarSubalgebra.adjoin R (S : Set A)).subtype.comp S.unitization).range :=
     StarSubalgebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : S), by simp⟩
-  fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩ -/
+  fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩
+
+end Semiring
+
+section Field
+
+variable {R A : Type _} [Field R] [StarRing R] [Ring A] [StarRing A] [Algebra R A] [StarModule R A]
+variable (S : NonUnitalStarSubalgebra R A)
+
+theorem NonUnitalStarSubalgebra.unitization_injective (h1 : (1 : A) ∉ S) :
+    Function.Injective S.unitization := by
+  have := AlgHomClass.unitization_injective S h1
+    ((StarSubalgebra.subtype _).comp <| S.unitization) fun _ ↦ by simp
+  simp only [StarAlgHom.coe_comp, StarSubalgebra.coe_subtype] at this
+  exact this.of_comp
+
+/-- If a `NonUnitalStarSubalgebra` over a field does not contain `1`, then its unitization is
+isomorphic to its `StarSubalgebra.adjoin`. -/
+noncomputable def NonUnitalStarSubalgebra.unitizationStarAlgEquiv (h1 : (1 : A) ∉ S) :
+    Unitization R S ≃⋆ₐ[R] StarSubalgebra.adjoin R (S : Set A) :=
+  StarAlgEquiv.ofBijective (S.unitization) ⟨S.unitization_injective h1, S.unitization_surjective⟩
+
+end Field
 
 end StarSubalgebra
