@@ -114,10 +114,17 @@ abbrev _root_.Ideal.localization (x : Submonoid R) : Ideal (Localization x) :=
 abbrev _root_.Ideal.localizationAtPrime := J.localization I.asIdeal.primeCompl
 
 /-- The canonical map from the ideal J of R to its image JR_I in the localisation. -/
-@[simps apply] def _root_.Ideal.toLocalizationAtPrime : J →ₗ[R] J.localizationAtPrime I where
+@[simps apply] def _root_.Ideal.toLocalization (x : Submonoid R) :
+  J →ₗ[R] J.localization x where
   toFun := λ x ↦ ⟨Localization.mk x 1, Submodule.subset_span ⟨_, x.2, rfl⟩⟩
   map_add' := λ _ _ ↦ Subtype.ext (Localization.add_mk_self _ _ _).symm
   map_smul' := λ _ _ ↦ Subtype.ext (Localization.smul_mk _ _ _).symm
+
+/-- The canonical map from the ideal J of R to its image JR_I in the localisation. -/
+-- @[simps apply] def _root_.Ideal.toLocalizationAtPrime : J →ₗ[R] J.localizationAtPrime I where
+--   toFun := λ x ↦ ⟨Localization.mk x 1, Submodule.subset_span ⟨_, x.2, rfl⟩⟩
+--   map_add' := λ _ _ ↦ Subtype.ext (Localization.add_mk_self _ _ _).symm
+--   map_smul' := λ _ _ ↦ Subtype.ext (Localization.smul_mk _ _ _).symm
 
 @[simps!] def _root_.Localization.divBy {x : Submonoid R} (s : x) :
   Module.End (Localization x) (Localization x) where
@@ -125,32 +132,33 @@ abbrev _root_.Ideal.localizationAtPrime := J.localization I.asIdeal.primeCompl
     map_add' := mul_add _
     map_smul' := λ r x ↦ by dsimp; ring
 
-lemma _root_.LocalizationAtPrime.divBy_apply_mem (s) (x) (hx : x ∈ J.localizationAtPrime I) :
-  Localization.divBy s x ∈ J.localizationAtPrime I := by
+lemma _root_.Localization.divBy_apply_mem {y : Submonoid R} (s : y)
+  (x) (hx : x ∈ J.localization y) :
+  Localization.divBy s x ∈ J.localization y := by
   simpa only [Localization.divBy_apply] using
-    (J.localizationAtPrime I).mul_mem_left
-      (Submonoid.LocalizationMap.mk' (Localization.monoidOf I.asIdeal.primeCompl) 1 s) hx
+    (J.localization y).mul_mem_left
+      (Submonoid.LocalizationMap.mk' (Localization.monoidOf y) 1 s) hx
 
 variable {I}
 
-def _root_.LocalizationAtPrime.divBy' (s : I.asIdeal.primeCompl) :
-  Module.End R (J.localizationAtPrime I) :=
-(LinearMap.restrict _ $ LocalizationAtPrime.divBy_apply_mem J I s).restrictScalars R
+def _root_.Localization.divBy' {y : Submonoid R} (s : y) :
+  Module.End R (J.localization y) :=
+(LinearMap.restrict _ $ Localization.divBy_apply_mem J s).restrictScalars R
 
-lemma _root_.LocalizationAtPrime.divBy'_right_inv (s : I.asIdeal.primeCompl) :
-  algebraMap R _ s * LocalizationAtPrime.divBy' J s = 1 :=
-LinearMap.ext $ λ x ↦ show (s : R) • LocalizationAtPrime.divBy' J s x = x from Subtype.ext $
+lemma _root_.Localization.divBy'_right_inv {y : Submonoid R} (s : y) :
+  algebraMap R _ s * Localization.divBy' J s = 1 :=
+LinearMap.ext $ λ x ↦ show (s : R) • Localization.divBy' J s x = x from Subtype.ext $
   show (s : R) • (Localization.mk 1 s * x) = x by rw [←smul_mul_assoc, Localization.smul_mk,
     smul_eq_mul, mul_one, Localization.mk_self, one_mul]
 
-lemma _root_.LocalizationAtPrime.divBy'_left_inv (s : I.asIdeal.primeCompl) :
-  (LocalizationAtPrime.divBy' J s) * algebraMap R _ s = 1 :=
+lemma _root_.LocalizationAtPrime.divBy'_left_inv  {y : Submonoid R} (s : y) :
+  (Localization.divBy' J s) * algebraMap R _ s = 1 :=
 LinearMap.ext $ λ x ↦ Subtype.ext $ show Localization.mk 1 s * ((s : R) • x) = x
   by erw [mul_smul_comm, ←smul_mul_assoc, Localization.smul_mk, smul_eq_mul, mul_one,
     Localization.mk_self, one_mul]
 
-lemma toIdealImageSpan_exist_eq (y) :
-  ∃ (x : J × I.asIdeal.primeCompl), (x.2 : R) • y = J.toLocalizationAtPrime I x.1 := by
+lemma toIdealImageSpan_exist_eq  {z : Submonoid R} y :
+  ∃ (x : J × z), (x.2 : R) • y = J.toLocalization z x.1 := by
   rcases y with ⟨y, h⟩
   apply Submodule.span_induction' ?_ ?_ ?_ ?_ h
   · rintro _ ⟨_, h, rfl⟩
@@ -180,26 +188,26 @@ lemma toIdealImageSpan_exist_eq (y) :
       Localization.mk_eq_mk_iff, Localization.r_iff_exists]
     exact ⟨1, by dsimp; ring⟩
 
-lemma _root_.Ideal.toLocalizationAtPrime_apply_eq_iff (x₁ x₂) :
-    J.toLocalizationAtPrime I x₁ = J.toLocalizationAtPrime I x₂ ↔
-    ∃ (c : (I.asIdeal.primeCompl)), (c : R) • x₂ = (c : R) • x₁ :=
+lemma _root_.Ideal.toLocalization_apply_eq_iff (y : Submonoid R) (x₁ x₂) :
+    J.toLocalization y x₁ = J.toLocalization y x₂ ↔
+    ∃ (c : y), (c : R) • x₂ = (c : R) • x₁ :=
 Subtype.ext_iff.trans $ Localization.mk_eq_mk_iff.trans $ Localization.r_iff_exists.trans $
   exists_congr $ λ x ↦ eq_comm.trans $ Iff.symm $ Subtype.ext_iff.trans $ by simp [smul_eq_mul]
 
-instance : IsLocalizedModule I.asIdeal.primeCompl (J.toLocalizationAtPrime I) where
-  map_units := λ s ↦ ⟨⟨_, _, LocalizationAtPrime.divBy'_right_inv _ s,
+instance (y : Submonoid R) : IsLocalizedModule y (J.toLocalization y) where
+  map_units := λ s ↦ ⟨⟨_, _, Localization.divBy'_right_inv _ s,
     LocalizationAtPrime.divBy'_left_inv _ s⟩, rfl⟩
   surj' := toIdealImageSpan_exist_eq J
-  eq_iff_exists' := by exact J.toLocalizationAtPrime_apply_eq_iff _ _
+  eq_iff_exists' := J.toLocalization_apply_eq_iff _ _ _
 
 variable (I)
 
-noncomputable def _root_.Ideal.localizedModuleEquivLocalizationAtPrime :
-  LocalizedModule I.asIdeal.primeCompl J ≃ₗ[R] J.localizationAtPrime I :=
-IsLocalizedModule.iso _ $ J.toLocalizationAtPrime I
+noncomputable def _root_.Ideal.localizedModuleEquivLocalization (y : Submonoid R) :
+  LocalizedModule y J ≃ₗ[R] J.localization y :=
+IsLocalizedModule.iso _ $ J.toLocalization y
 
-lemma _root_.Ideal.localizedModuleEquivLocalizationAtPrime_apply (a b) :
-    J.localizedModuleEquivLocalizationAtPrime I (LocalizedModule.mk a b) =
+lemma _root_.Ideal.localizedModuleEquivLocalization_apply (y : Submonoid R) (a b) :
+    J.localizedModuleEquivLocalization y (LocalizedModule.mk a b) =
     ⟨Localization.mk a b, by simpa only [show Localization.mk (a : R) b =
       (Localization.mk 1 b) * (Localization.mk ↑a 1) by rw [Localization.mk_mul, one_mul, mul_one]]
         using Ideal.mul_mem_left _ _ (Ideal.apply_coe_mem_map _ J a)⟩ :=
@@ -210,8 +218,8 @@ lemma _root_.Ideal.localizedModuleEquivLocalizationAtPrime_apply (a b) :
 
 
 @[simps!]
-def _root_.Ideal.localizationAtPrime' : Ideal (Localization.AtPrime I.asIdeal) where
-  carrier := { x | ∃ (a : J) (b : I.asIdeal.primeCompl), x = Localization.mk ↑a b }
+def _root_.Ideal.localization' (y : Submonoid R) : Ideal (Localization y) where
+  carrier := { x | ∃ (a : J) (b : y), x = Localization.mk ↑a b }
   add_mem' := fun {x y} ⟨a1, ⟨b1, hx⟩⟩ ⟨a2, ⟨b2, hy⟩⟩ => hx.symm ▸ hy.symm ▸
     ⟨⟨_, J.add_mem (J.mul_mem_left b1 (SetLike.coe_mem a2))
       (J.mul_mem_left b2 (SetLike.coe_mem a1))⟩, ⟨b1 * b2, Localization.add_mk _ _ _ _⟩⟩
@@ -225,28 +233,31 @@ def _root_.Ideal.localizationAtPrime' : Ideal (Localization.AtPrime I.asIdeal) w
     rintro ⟨c1, c2⟩ ⟨j, ⟨a, rfl⟩⟩
     exact ⟨⟨_, J.mul_mem_left c1 (SetLike.coe_mem j)⟩, ⟨c2 * a, Localization.mk_mul _ _ _ _⟩⟩
 
-lemma _root_.Ideal.mem_localizationAtPrime'_iff (x : Localization.AtPrime I.asIdeal) :
-  x ∈ J.localizationAtPrime' I ↔ ∃ (a : J) (b : I.asIdeal.primeCompl), x = Localization.mk ↑a b :=
+lemma _root_.Ideal.mem_localization'_iff {y : Submonoid R} (x : Localization y) :
+  x ∈ J.localization' y ↔ ∃ (a : J) (b : y), x = Localization.mk ↑a b :=
 Iff.rfl
 
-lemma _root_.Ideal.mem_localizationAtPrime'_of_mem_localizationAtPrime :
-    ∀ x, x ∈ J.localizationAtPrime I → x ∈ J.localizationAtPrime' I :=
-  fun _ => Submodule.span_induction' (p := fun y _ => y ∈ J.localizationAtPrime' I)
-    (by rintro _ ⟨y, hy1, rfl⟩; refine ⟨⟨y, hy1⟩, ⟨_, rfl⟩⟩)
-    (Ideal.zero_mem _) (fun _ _ _ _ => Ideal.add_mem _) <| fun a _ _ => Submodule.smul_mem _ a
+lemma _root_.Ideal.mem_localization'_of_mem_localization (y : Submonoid R) :
+    ∀ x, x ∈ J.localization y → x ∈ J.localization' y := by
+  intro x hx
+  apply Submodule.span_induction' ?_ ?_ ?_ ?_ hx
+  · rintro _ ⟨y, hy1, rfl⟩; refine ⟨⟨y, hy1⟩, ⟨_, rfl⟩⟩
+  · exact Ideal.zero_mem _
+  · intro _ _ _ _; apply Ideal.add_mem
+  · intro a _ _; exact Submodule.smul_mem _ a
 
-lemma _root_.Ideal.localizationAtPrime'_eq_localizationAtPrime :
-    J.localizationAtPrime' I = J.localizationAtPrime I :=
+lemma _root_.Ideal.localization'_eq_localization (y : Submonoid R) :
+    J.localization' y = J.localization y :=
   le_antisymm (by
     rintro x ⟨⟨a, ha⟩, ⟨b, rfl⟩⟩
     rw [Subtype.coe_mk, ←one_mul a, ←mul_one b, ←Localization.mk_mul]
     exact Ideal.mul_mem_left _ _ (Ideal.mem_map_of_mem _ ha)) <|
-  J.mem_localizationAtPrime'_of_mem_localizationAtPrime _
+  J.mem_localization'_of_mem_localization _
 
-instance _root_.Ideal.localizationAtPrime'_isPrime (J : Set.Iic I) :
-  (J.1.asIdeal.localizationAtPrime' I).IsPrime where
+instance _root_.Ideal.localization'_isPrime (J : Set.Iic I) :
+  (J.1.asIdeal.localization' I.asIdeal.primeCompl).IsPrime where
 ne_top' := fun hit => by
-  rw [Ideal.eq_top_iff_one, Ideal.mem_localizationAtPrime'_iff] at hit
+  rw [Ideal.eq_top_iff_one, Ideal.mem_localization'_iff] at hit
   rcases hit with ⟨a, ⟨b, hb⟩⟩
   exact (IsLocalization.AtPrime.isUnit_mk'_iff (Localization.AtPrime I.asIdeal) _
     (a : R) b).mp (by simpa only [←Localization.mk_eq_mk', ←hb] using isUnit_one) (J.2 a.2)
@@ -269,7 +280,7 @@ There is a canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrim
 -/
 def _root_.PrimeSpectrum.IicToLocalizationAtPrime :
   Set.Iic I → PrimeSpectrum (Localization.AtPrime I.asIdeal) :=
-λ I' ↦ ⟨I'.1.asIdeal.localizationAtPrime' I, inferInstance⟩
+λ I' ↦ ⟨I'.1.asIdeal.localization' I.asIdeal.primeCompl, inferInstance⟩
 
 end aboutHeightAndLocalization
 
