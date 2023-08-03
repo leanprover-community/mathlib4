@@ -293,6 +293,15 @@ theorem mk_set_le (s : Set α) : #s ≤ #α :=
   mk_subtype_le s
 #align cardinal.mk_set_le Cardinal.mk_set_le
 
+@[simp]
+lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
+  rw [← mk_uLift, Cardinal.eq]
+  constructor
+  let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
+  have : Function.Bijective f :=
+    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
+  exact Equiv.ofBijective f this
+
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   trans
   · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
@@ -1389,6 +1398,16 @@ theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n)
   exact n.lt_succ_self
 #align cardinal.card_le_of Cardinal.card_le_of
 
+theorem card_le_of_forall_finset_subset_le {α : Type u} {n : ℕ} {t : Set α}
+    (H : ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n) : #t ≤ n := by
+  apply card_le_of (fun s ↦ ?_)
+  let u : Finset α := s.image Subtype.val
+  have : u.card = s.card :=
+    Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
+  rw [← this]
+  apply H
+  simp only [Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < (b^a) := by
   rw [← succ_le_iff, (by norm_cast : succ (1 : Cardinal) = 2)] at hb
   exact (cantor a).trans_le (power_le_power_right hb)
@@ -2106,6 +2125,11 @@ theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf
   lift_mk_eq'.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 #align cardinal.mk_range_eq_of_injective Cardinal.mk_range_eq_of_injective
 
+lemma lift_mk_le_lift_mk_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
+    Cardinal.lift.{v} (#α) ≤ Cardinal.lift.{u} (#β) := by
+  rw [← Cardinal.mk_range_eq_of_injective hf]
+  exact Cardinal.lift_le.2 (Cardinal.mk_set_le _)
+
 theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{max u w} #(range f) = lift.{max v w} #α :=
   lift_mk_eq.{v,u,w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
@@ -2406,6 +2430,15 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
+
+/-- The cardinality of a nontrivial module over a ring is at least the cardinality of the ring if
+there are no zero divisors (for instance if the ring is a field) -/
+theorem mk_le_of_module (R : Type u) (E : Type v)
+    [AddCommGroup E] [Ring R] [Module R E] [Nontrivial E] [NoZeroSMulDivisors R E] :
+    Cardinal.lift.{v} (#R) ≤ Cardinal.lift.{u} (#E) := by
+  obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
+  have : Injective (fun k ↦ k • x) := smul_left_injective R hx
+  exact lift_mk_le_lift_mk_of_injective this
 
 end Cardinal
 
