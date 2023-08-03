@@ -451,41 +451,41 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
-instance (priority := 75) toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
+def toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
   inferInstance
 #align subring.to_comm_ring Subring.toCommRing
 
 /-- A subring of a non-trivial ring is non-trivial. -/
-instance (priority := 75) {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
+lemma {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
   inferInstance
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
-instance (priority := 75) {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
+lemma {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
   inferInstance
 
 /-- A subring of a domain is a domain. -/
-instance (priority := 75) {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
+lemma {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   inferInstance
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance (priority := 75) toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
+def toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
   inferInstance
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance (priority := 75) toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) :
+def toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) :
     OrderedCommRing s :=
   inferInstance
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance (priority := 75) toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) :
+def toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) :
     LinearOrderedRing s :=
   inferInstance
 #align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
 
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance (priority := 75) toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
+def toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
     LinearOrderedCommRing s :=
   inferInstance
 #align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
