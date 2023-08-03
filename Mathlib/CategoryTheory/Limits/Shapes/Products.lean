@@ -292,6 +292,32 @@ def sigmaSigmaIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
   hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
   inv := Sigma.desc fun ⟨i, x⟩ => Sigma.ι (g i) x ≫ Sigma.ι (fun i => ∐ g i) i
 
+/-- Two products which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+-/
+@[simps]
+def Pi.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasProduct f] [HasProduct g] : ∏ f ≅ ∏ g where
+  hom := Pi.lift fun k => Pi.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp)
+  inv := Pi.lift fun j => Pi.π g (e j) ≫ (w j).hom
+
+/-- Two coproducts which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+-/
+@[simps]
+def Sigma.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
+  hom := Sigma.desc fun j => (w j).inv ≫ Sigma.ι g (e j)
+  inv := Sigma.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ Sigma.ι f _
+
+lemma Pi.comp_lift (f : β → C) [HasProduct f] (g : P ⟶ Q) (h : ∀ b, Q ⟶ f b) :
+    g ≫ Pi.lift h = Pi.lift fun b => g ≫ h b := by
+  ext; simp
+
+lemma Sigma.desc_comp (f : β → C) [HasCoproduct f] (g : ∀ b, f b ⟶ P) (h : P ⟶ Q) :
+    Sigma.desc g ≫ h = Sigma.desc fun b => g b ≫ h := by
+  ext; simp
+
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)

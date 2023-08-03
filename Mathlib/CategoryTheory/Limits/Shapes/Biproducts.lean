@@ -615,6 +615,76 @@ def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
   inv := biproduct.lift fun i => biproduct.lift fun x => biproduct.π _ (⟨i, x⟩ : Σ i, f i)
 
+/-- Two biproducts which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+
+Unfortunately there are two natural ways to define each direction of this isomorphism
+(because it is true for both products and coproducts separately).
+We give the alternative definitions as lemmas below.
+-/
+@[simps]
+def biproduct.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where
+  hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
+  inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
+
+lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
+    (biproduct.whisker_equiv e w).hom =
+      biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
+  simp only [whisker_equiv_hom]
+  ext k j
+  by_cases h : k = e j
+  · subst h
+    simp
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · rintro rfl
+      simp at h
+    · exact Ne.symm h
+
+lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
+    (biproduct.whisker_equiv e w).inv =
+      biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
+  -- One might hope `← eqToHom_iso_hom_naturality` suffices instead, but `simp` won't use it below.
+  have p : ∀ (j j' : J) (h : j = j'),
+        eqToHom (by simp [h]) ≫ (w j').hom = (w j).hom ≫ eqToHom (by simp [h]) := by
+      rintro _ _ rfl
+      simp
+  simp only [whisker_equiv_inv]
+  ext j k
+  by_cases h : k = e j
+  · subst h
+    simp [reassoc_of% p]
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · exact h
+    · rintro rfl
+      simp at h
+
+lemma biproduct.comp_lift (f : β → C) [HasBiproduct f] (g : P ⟶ Q) (h : ∀ b, Q ⟶ f b) :
+    g ≫ biproduct.lift h = biproduct.lift fun b => g ≫ h b := by
+  ext; simp
+
+lemma biproduct.desc_comp (f : β → C) [HasBiproduct f] (g : ∀ b, f b ⟶ P) (h : P ⟶ Q) :
+    biproduct.desc g ≫ h = biproduct.desc fun b => g b ≫ h := by
+  ext; simp
+
+@[reassoc (attr := simp)]
+lemma biproduct.ι_comp_lift
+    (f : β → C) [HasBiproduct f] (g : α → C) [HasBiproduct g] (h : ∀ b, ⨁ g ⟶ f b) :
+    biproduct.ι g a ≫ biproduct.lift h = biproduct.lift fun b => biproduct.ι g a ≫ h b := by
+  ext; simp
+
+@[reassoc (attr := simp)]
+lemma biproduct.desc_comp_π
+    (f : β → C) [HasBiproduct f] (h : α → C) [HasBiproduct h] (g : ∀ b, f b ⟶ ⨁ h) :
+    biproduct.desc g ≫ biproduct.π h a = biproduct.desc fun b => g b ≫ biproduct.π h a := by
+  ext; simp
+
 section πKernel
 
 section
