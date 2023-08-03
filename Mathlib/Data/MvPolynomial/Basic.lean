@@ -856,7 +856,7 @@ def constantCoeff : MvPolynomial σ R →+* R
     where
   toFun := coeff 0
   map_one' := by simp [AddMonoidAlgebra.one_def]
-  map_mul' := by simp [coeff_mul, Finsupp.support_single_ne_zero]
+  map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
   map_zero' := coeff_zero _
   map_add' := coeff_add _
 #align mv_polynomial.constant_coeff MvPolynomial.constantCoeff
