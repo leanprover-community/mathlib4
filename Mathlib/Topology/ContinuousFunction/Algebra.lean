@@ -2,13 +2,9 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module topology.continuous_function.algebra
-! leanprover-community/mathlib commit 16e59248c0ebafabd5d071b1cd41743eb8698ffb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
@@ -20,6 +16,8 @@ import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
+
+#align_import topology.continuous_function.algebra from "leanprover-community/mathlib"@"16e59248c0ebafabd5d071b1cd41743eb8698ffb"
 
 /-!
 # Algebraic structures over continuous functions
@@ -903,45 +901,27 @@ We now provide formulas for `f ⊓ g` and `f ⊔ g`, where `f g : C(α, β)`,
 in terms of `ContinuousMap.abs`.
 -/
 
-
-section
-
-variable {R : Type _} [LinearOrderedField R]
-
--- TODO:
--- This lemma (and the next) could go all the way back in `Algebra.Order.Field`,
--- except that it is tedious to prove without tactics.
--- Rather than stranding it at some intermediate location,
--- it's here, immediately prior to the point of use.
-theorem min_eq_half_add_sub_abs_sub {x y : R} : min x y = 2⁻¹ * (x + y - |x - y|) := by
-  cases' le_total x y with h h <;> field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two]
-  abel
-#align min_eq_half_add_sub_abs_sub min_eq_half_add_sub_abs_sub
-
-theorem max_eq_half_add_add_abs_sub {x y : R} : max x y = 2⁻¹ * (x + y + |x - y|) := by
-  cases' le_total x y with h h <;> field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two]
-  abel
-#align max_eq_half_add_add_abs_sub max_eq_half_add_add_abs_sub
-
-end
-
 namespace ContinuousMap
 
 section Lattice
 
 variable {α : Type _} [TopologicalSpace α]
 
-variable {β : Type _} [LinearOrderedField β] [TopologicalSpace β] [OrderTopology β]
-  [TopologicalRing β]
+variable {β : Type _} [TopologicalSpace β]
 
-theorem inf_eq (f g : C(α, β)) : f ⊓ g = (2⁻¹ : β) • (f + g - |f - g|) :=
-  ext fun x => by simpa using min_eq_half_add_sub_abs_sub
-#align continuous_map.inf_eq ContinuousMap.inf_eq
+/-! `C(α, β)`is a lattice ordered group -/
 
--- Not sure why this is grosser than `inf_eq`:
-theorem sup_eq (f g : C(α, β)) : f ⊔ g = (2⁻¹ : β) • (f + g + |f - g|) :=
-  ext fun x => by simpa [mul_add] using @max_eq_half_add_add_abs_sub _ _ (f x) (g x)
-#align continuous_map.sup_eq ContinuousMap.sup_eq
+@[to_additive]
+instance covariant_class_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
+  [CovariantClass β β (· * ·) (· ≤ ·)] :
+  CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
+
+@[to_additive]
+instance covariant_class_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
+  [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
+  CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
 end Lattice
 

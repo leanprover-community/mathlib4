@@ -2,13 +2,10 @@
 Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.monoidal.free.basic
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
+
+#align_import category_theory.monoidal.free.basic from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # The free monoidal category over a type
@@ -280,8 +277,8 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     induction h with
     | refl => rfl
     | symm _ _ _ hfg' => exact hfg'.symm
-    | trans _ _  hfg hgh => exact hfg.trans hgh
-    | comp _ _  hf hg => dsimp only [projectMapAux]; rw [hf, hg]
+    | trans _ _ hfg hgh => exact hfg.trans hgh
+    | comp _ _ hf hg => dsimp only [projectMapAux]; rw [hf, hg]
     | tensor _ _ hfg hfg' => dsimp only [projectMapAux]; rw [hfg, hfg']
     | comp_id => dsimp only [projectMapAux]; rw [Category.comp_id]
     | id_comp => dsimp only [projectMapAux]; rw [Category.id_comp]

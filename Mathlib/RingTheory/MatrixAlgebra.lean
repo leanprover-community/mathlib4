@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.matrix_algebra
-! leanprover-community/mathlib commit 6c351a8fb9b06e5a542fdf427bfb9f46724f9453
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.RingTheory.TensorProduct
+
+#align_import ring_theory.matrix_algebra from "leanprover-community/mathlib"@"6c351a8fb9b06e5a542fdf427bfb9f46724f9453"
 
 /-!
 We show `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
@@ -43,7 +40,7 @@ The function underlying `(A ⊗[R] Matrix n n R) →ₐ[R] Matrix n n A`,
 as an `R`-bilinear map.
 -/
 def toFunBilinear : A →ₗ[R] Matrix n n R →ₗ[R] Matrix n n A :=
-  (Algebra.lsmul R (Matrix n n A)).toLinearMap.compl₂ (Algebra.linearMap R A).mapMatrix
+  (Algebra.lsmul R R (Matrix n n A)).toLinearMap.compl₂ (Algebra.linearMap R A).mapMatrix
 #align matrix_equiv_tensor.to_fun_bilinear MatrixEquivTensor.toFunBilinear
 
 @[simp]

@@ -2,17 +2,14 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
-
-! This file was ported from Lean 3 source module linear_algebra.dual
-! leanprover-community/mathlib commit b1c017582e9f18d8494e5c18602a8cb4a6f843ac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+#align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
 /-!
 # Dual vector spaces
@@ -478,17 +475,6 @@ theorem eval_range {ι : Type _} [Finite ι] (b : Basis ι R M) :
     rw [← b.toDual_toDual, range_comp, b.toDual_range, Submodule.map_top, toDual_range _]
 #align basis.eval_range Basis.eval_range
 
-/-- A module with a basis is linearly equivalent to the dual of its dual space. -/
-def evalEquiv {ι : Type _} [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] Dual R (Dual R M) :=
-  LinearEquiv.ofBijective (eval R M) ⟨ker_eq_bot.mp b.eval_ker, range_eq_top.mp b.eval_range⟩
-#align basis.eval_equiv Basis.evalEquiv
-
-@[simp]
-theorem evalEquiv_toLinearMap {ι : Type _} [Finite ι] (b : Basis ι R M) :
-    b.evalEquiv.toLinearMap = Dual.eval R M :=
-  rfl
-#align basis.eval_equiv_to_linear_map Basis.evalEquiv_toLinearMap
-
 section
 
 open Classical
@@ -592,41 +578,100 @@ theorem erange_coe [FiniteDimensional K V] : LinearMap.range (eval K V) = ⊤ :=
   (Basis.ofVectorSpace K V).eval_range
 #align module.erange_coe Module.erange_coe
 
-variable (K V)
+section IsReflexive
 
-/-- A vector space is linearly equivalent to the dual of its dual space. -/
-def evalEquiv [FiniteDimensional K V] : V ≃ₗ[K] Dual K (Dual K V) :=
-  LinearEquiv.ofBijective
-    (eval K V)-- 60x faster elaboration than using `ker_eq_bot.mp eval_ker` directly:
-    ⟨by
-      rw [← ker_eq_bot]
-      apply eval_ker K V, range_eq_top.mp erange_coe⟩
+open Function
+
+variable (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M]
+
+/-- A reflexive module is one for which the natural map to its double dual is a bijection.
+
+Any finitely-generated free module (and thus any finite-dimensional vector space) is reflexive.
+See `Module.IsReflexive.of_finite_of_free`. -/
+class IsReflexive : Prop where
+  /-- A reflexive module is one for which the natural map to its double dual is a bijection. -/
+  bijective_dual_eval' : Bijective $ Dual.eval R M
+
+lemma bijective_dual_eval [IsReflexive R M] : Bijective $ Dual.eval R M :=
+  IsReflexive.bijective_dual_eval'
+
+instance IsReflexive.of_finite_of_free [Finite R M] [Free R M] : IsReflexive R M := by
+  cases' h : subsingleton_or_nontrivial R
+  · have := Module.subsingleton R M
+    exact ⟨⟨fun x y _ ↦ by simp, fun x ↦ ⟨0, by simp⟩⟩⟩
+  · exact ⟨⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
+            LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩⟩
+
+variable [IsReflexive R M]
+
+/-- The bijection between a reflexive module and its double dual, bundled as a `LinearEquiv`. -/
+def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
+  LinearEquiv.ofBijective _ $ bijective_dual_eval R M
 #align module.eval_equiv Module.evalEquiv
 
-/-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
-def mapEvalEquiv [FiniteDimensional K V] : Subspace K V ≃o Subspace K (Dual K (Dual K V)) :=
-  Submodule.orderIsoMapComap (evalEquiv K V)
-#align module.map_eval_equiv Module.mapEvalEquiv
-
-variable {K V}
-
-@[simp]
-theorem evalEquiv_toLinearMap [FiniteDimensional K V] :
-    (evalEquiv K V).toLinearMap = Dual.eval K V :=
-  rfl
+@[simp] lemma evalEquiv_toLinearMap : evalEquiv R M = Dual.eval R M := rfl
 #align module.eval_equiv_to_linear_map Module.evalEquiv_toLinearMap
 
+@[simp] lemma evalEquiv_apply (m : M) : evalEquiv R M m = Dual.eval R M m := rfl
+
+@[simp] lemma apply_evalEquiv_symm_apply (f : Dual R M) (g : Dual R $ Dual R M) :
+    f ((evalEquiv R M).symm g) = g f := by
+  set m := (evalEquiv R M).symm g
+  rw [← (evalEquiv R M).apply_symm_apply g, evalEquiv_apply, Dual.eval_apply]
+
+@[simp] lemma symm_dualMap_evalEquiv :
+    (evalEquiv R M).symm.dualMap = Dual.eval R (Dual R M) := by
+  ext; simp
+
+/-- The dual of a reflexive module is reflexive. -/
+instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
+⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
+
+/-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
+def mapEvalEquiv : Submodule R M ≃o Submodule R (Dual R (Dual R M)) :=
+  Submodule.orderIsoMapComap (evalEquiv R M)
+#align module.map_eval_equiv Module.mapEvalEquiv
+
 @[simp]
-theorem mapEvalEquiv_apply [FiniteDimensional K V] (W : Subspace K V) :
-    mapEvalEquiv K V W = W.map (eval K V) :=
+theorem mapEvalEquiv_apply (W : Submodule R M) :
+    mapEvalEquiv R M W = W.map (Dual.eval R M) :=
   rfl
 #align module.map_eval_equiv_apply Module.mapEvalEquiv_apply
 
 @[simp]
-theorem mapEvalEquiv_symm_apply [FiniteDimensional K V] (W'' : Subspace K (Dual K (Dual K V))) :
-    (mapEvalEquiv K V).symm W'' = W''.comap (eval K V) :=
+theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
+    (mapEvalEquiv R M).symm W'' = W''.comap (Dual.eval R M) :=
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
+
+instance _root_.Prod.instModuleIsReflexive
+    {N : Type _} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+    IsReflexive R (M × N) where
+  bijective_dual_eval' := by
+    let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
+      (dualProdDualEquivDual R M N).dualMap.trans
+        (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
+    have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
+      ext m f <;> simp
+    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+      coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+    exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+
+instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) where
+  bijective_dual_eval' := by
+    let e : Dual R (Dual R (MulOpposite M)) ≃ₗ[R] Dual R (Dual R M) :=
+      LinearEquiv.dualMap <| LinearEquiv.dualMap <| MulOpposite.opLinearEquiv _ |>.symm
+    have : Dual.eval R (MulOpposite M) = e.symm.comp ((Dual.eval R M).comp
+        <| MulOpposite.opLinearEquiv _ |>.symm.toLinearMap) := by
+      ext m f; rfl
+    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+      coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+    refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
+
+-- TODO: add `ULift.instModuleIsReflexive : IsReflexive R (ULift.{v} M)` once we have
+-- `LinearEquiv.ulift`
+
+end IsReflexive
 
 end Module
 

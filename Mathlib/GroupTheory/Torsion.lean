@@ -2,17 +2,14 @@
 Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
-
-! This file was ported from Lean 3 source module group_theory.torsion
-! leanprover-community/mathlib commit 1f4705ccdfe1e557fc54a0ce081a05e33d2e6240
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Submonoid.Operations
+
+#align_import group_theory.torsion from "leanprover-community/mathlib"@"1f4705ccdfe1e557fc54a0ce081a05e33d2e6240"
 
 /-!
 # Torsion groups
@@ -326,6 +323,9 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 #align comm_group.torsion_eq_torsion_submonoid CommGroup.torsion_eq_torsion_submonoid
 #align add_comm_group.add_torsion_eq_add_torsion_submonoid AddCommGroup.add_torsion_eq_add_torsion_submonoid
 
+@[to_additive]
+theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
+
 variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-primary component is the subgroup of elements with order prime-power of `p`. -/
@@ -441,4 +441,3 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
-

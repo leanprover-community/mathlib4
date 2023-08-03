@@ -2,16 +2,13 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
-
-! This file was ported from Lean 3 source module init.function
-! leanprover-community/lean commit 03a6a6015c0b12dce7b36b4a1f7205a92dfaa592
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Logic
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Attr.Register
+
+#align_import init.function from "leanprover-community/lean"@"03a6a6015c0b12dce7b36b4a1f7205a92dfaa592"
 
 /-!
 # General operations on functions
@@ -118,7 +115,6 @@ theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : 
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
-@[reducible]
 def Surjective (f : α → β) : Prop :=
   ∀ b, ∃ a, f a = b
 #align function.surjective Function.Surjective

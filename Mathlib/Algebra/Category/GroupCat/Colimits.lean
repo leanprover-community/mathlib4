@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.colimits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import algebra.category.Group.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of additive commutative groups has all colimits.
@@ -111,67 +108,19 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
-instance ColimitTypeInhabited : Inhabited (ColimitType.{v} F) :=
-  ⟨Quot.mk _ zero⟩
-
 instance : AddCommGroup (ColimitType F) where
-  zero := Quot.mk _ zero
-  neg := by
-    fapply @Quot.lift
-    · intro x
-      exact Quot.mk _ (neg x)
-    · intro x x' r
-      apply Quot.sound
-      exact Relation.neg_1 _ _ r
-  add := by
-    fapply @Quot.lift _ _ (ColimitType F → ColimitType F)
-    · intro x
-      fapply @Quot.lift
-      · intro y
-        exact Quot.mk _ (add x y)
-      · intro y y' r
-        apply Quot.sound
-        exact Relation.add_2 _ _ _ r
-    · intro x x' r
-      funext y
-      refine' y.induction_on _
-      intro a
-      dsimp
-      apply Quot.sound
-      · exact Relation.add_1 _ _ _ r
-  zero_add x := by
-    refine x.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.zero_add
-  add_zero x := by
-    refine x.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_zero
-  add_left_neg x := by
-    refine x.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_left_neg
-  add_comm x y := by
-    refine x.induction_on ?_
-    refine y.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_comm
-  add_assoc x y z := by
-    refine x.induction_on ?_
-    refine y.induction_on ?_
-    refine z.induction_on ?_
-    dsimp [(· + ·)]
-    intros
-    apply Quot.sound
-    apply Relation.add_assoc
+  zero := Quotient.mk _ zero
+  neg := Quotient.map neg Relation.neg_1
+  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+    Quotient.sound <| Relation.add_assoc _ _ _
+
+instance ColimitTypeInhabited : Inhabited (ColimitType.{v} F) := ⟨0⟩
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
@@ -271,7 +220,7 @@ def descMorphism (s : Cocone F) : colimit.{v} F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
   -- Porting note : in `mathlib3`, nothing needs to be done after `induction`
-  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp [(. + .)]; rw [←quot_add F]; rfl
+  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp [(· + ·)]; rw [←quot_add F]; rfl
 #align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/

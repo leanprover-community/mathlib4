@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.log.basic
-! leanprover-community/mathlib commit f23a09ce6d3f367220dc3cecad6b7eb69eb01690
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Basic
+
+#align_import analysis.special_functions.log.basic from "leanprover-community/mathlib"@"f23a09ce6d3f367220dc3cecad6b7eb69eb01690"
 
 /-!
 # Real logarithm
@@ -416,6 +413,12 @@ theorem isLittleO_pow_log_id_atTop {n : ℕ} : (fun x => log x ^ n) =o[atTop] id
 theorem isLittleO_log_id_atTop : log =o[atTop] id :=
   isLittleO_pow_log_id_atTop.congr_left fun _ => pow_one _
 #align real.is_o_log_id_at_top Real.isLittleO_log_id_atTop
+
+theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
+  refine Asymptotics.isLittleO_of_tendsto' ?_
+    <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
+  filter_upwards [eventually_gt_atTop 1] with x hx
+  aesop (add safe forward log_pos)
 
 end Real
 

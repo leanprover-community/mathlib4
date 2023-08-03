@@ -2,17 +2,14 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-Ported by: Anatole Dedecker
-
-! This file was ported from Lean 3 source module algebra.ring.equiv
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
+import Mathlib.Algebra.Hom.Equiv.Basic
+
+#align_import algebra.ring.equiv from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # (Semi)ring equivs
@@ -43,6 +40,22 @@ Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 
 
 variable {F α β R S S' : Type _}
+
+
+/-- makes a `NonUnitalRingHom` from the bijective inverse of a `NonUnitalRingHom` -/  
+@[simps] def NonUnitalRingHom.inverse
+    [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+    (f : R →ₙ+* S) (g : S → R)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →ₙ+* R :=
+  { (f : R →+ S).inverse g h₁ h₂, (f : R →ₙ* S).inverse g h₁ h₂ with toFun := g }
+
+/-- makes a `RingHom` from the bijective inverse of a `RingHom` -/  
+@[simps] def RingHom.inverse [NonAssocSemiring R] [NonAssocSemiring S]
+    (f : RingHom R S) (g : S → R)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →+* R :=
+  { (f : OneHom R S).inverse g h₁, 
+    (f : MulHom R S).inverse g h₁ h₂,
+    (f : R →+ S).inverse g h₁ h₂ with toFun := g }
 
 /-- An equivalence between two (non-unital non-associative semi)rings that preserves the
 algebraic structure. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.hom.lattice
-! leanprover-community/mathlib commit 7581030920af3dcb241d1df0e36f6ec8289dd6be
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.SymmDiff
+
+#align_import order.hom.lattice from "leanprover-community/mathlib"@"7581030920af3dcb241d1df0e36f6ec8289dd6be"
 
 /-!
 # Lattice homomorphisms
@@ -295,9 +292,9 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
 #align map_sdiff' map_sdiff'
 
 /-- Special case of `map_symmDiff` for boolean algebras. -/
-theorem map_symm_diff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
+theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
-#align map_symm_diff' map_symm_diff'
+#align map_symm_diff' map_symmDiff'
 
 end BooleanAlgebra
 

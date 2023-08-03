@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.restrict_scalars
-! leanprover-community/mathlib commit c310cfdc40da4d99a10a58c33a95360ef9e6e0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
+
+#align_import algebra.algebra.restrict_scalars from "leanprover-community/mathlib"@"c310cfdc40da4d99a10a58c33a95360ef9e6e0bf"
 
 /-!
 
@@ -143,7 +140,7 @@ def RestrictScalars.lsmul [Module S M] : S →ₐ[R] Module.End R (RestrictScala
   letI-- We use `RestrictScalars.moduleOrig` in the implementation,
   -- but not in the type.
    : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M
-  Algebra.lsmul R (RestrictScalars R S M)
+  Algebra.lsmul R R (RestrictScalars R S M)
 #align restrict_scalars.lsmul RestrictScalars.lsmul
 
 end

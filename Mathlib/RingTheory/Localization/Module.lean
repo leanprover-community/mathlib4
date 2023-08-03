@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.module
-! leanprover-community/mathlib commit 2e59a6de168f95d16b16d217b808a36290398c0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
+
+#align_import ring_theory.localization.module from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -143,6 +140,14 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type _} (b : Basis 
     _ = algebraMap R Rₛ (b.repr x i) := by simp [Algebra.smul_def]
 #align basis.localization_localization_repr_algebra_map Basis.localizationLocalization_repr_algebraMap
 
+theorem Basis.localizationLocalization_span {ι : Type _} (b : Basis ι R A) :
+    Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) :=
+  calc span R (Set.range ↑(localizationLocalization Rₛ S Aₛ b))
+    _ = span R (↑(IsScalarTower.toAlgHom R A Aₛ) '' Set.range ↑b) := by congr; ext; simp
+    _ = map (IsScalarTower.toAlgHom R A Aₛ) (span R (Set.range b)) := by rw [Submodule.map_span]
+    _ = LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := by rw [b.span_eq, Submodule.map_top]
+
 end LocalizationLocalization
 
 end Localization
@@ -160,3 +165,37 @@ theorem LinearIndependent.iff_fractionRing {ι : Type _} {b : ι → V} :
 #align linear_independent.iff_fraction_ring LinearIndependent.iff_fractionRing
 
 end FractionRing
+
+section
+
+variable {R : Type _} [CommRing R] (S : Submonoid R)
+variable (A : Type _) [CommRing A] [Algebra R A] [IsLocalization S A]
+variable {M N : Type _}
+  [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+  [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
+
+open IsLocalization
+
+/-- An `R`-linear map between two `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
+def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N where
+  toFun := f
+  map_add' := f.map_add
+  map_smul' := by
+    intro r m
+    simp only [RingHom.id_apply]
+    rcases mk'_surjective S r with ⟨r, s, rfl⟩
+    calc f (mk' A r s • m)
+        = ((s : R) • mk' A 1 s) • f (mk' A r s • m) := by simp
+      _ = (mk' A 1 s) • (s : R) • f (mk' A r s • m) := by rw [smul_comm, smul_assoc]
+      _ = (mk' A 1 s) • f ((s : R) • mk' A r s • m) := by simp
+      _ = (mk' A 1 s) • f (r • m) := by rw [← smul_assoc, smul_mk'_self, algebraMap_smul]
+      _ = (mk' A 1 s) • r • f m := by simp
+      _ = mk' A r s • f m := by rw [smul_comm, ← smul_assoc, smul_mk'_one]
+
+@[simp] lemma LinearMap.restrictScalars_extendScalarsOfIsLocalization (f : M →ₗ[R] N) :
+    (f.extendScalarsOfIsLocalization S A).restrictScalars R = f := rfl
+
+@[simp] lemma LinearMap.extendScalarsOfIsLocalization_apply (f : M →ₗ[A] N) :
+    f.extendScalarsOfIsLocalization S A = f := rfl
+
+end

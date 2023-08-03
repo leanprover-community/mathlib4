@@ -2,11 +2,6 @@
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne
-
-! This file was ported from Lean 3 source module topology.category.Profinite.basic
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Connected
@@ -15,6 +10,8 @@ import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.CategoryTheory.FintypeCat
+
+#align_import topology.category.Profinite.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # The category of Profinite Types
@@ -250,7 +247,7 @@ end DiscreteTopology
 end Profinite
 
 namespace Profinite
--- set_option pp.universes true
+
 -- TODO the following construction of limits could be generalised
 -- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of

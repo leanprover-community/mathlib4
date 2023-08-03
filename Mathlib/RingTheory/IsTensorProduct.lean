@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.is_tensor_product
-! leanprover-community/mathlib commit c4926d76bb9c5a4a62ed2f03d998081786132105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.Algebra.Module.ULift
+
+#align_import ring_theory.is_tensor_product from "leanprover-community/mathlib"@"c4926d76bb9c5a4a62ed2f03d998081786132105"
 
 /-!
 # The characteristic predicate of tensor product
@@ -152,7 +149,7 @@ variable (f : M →ₗ[R] N)
 tensor product. -/
 def IsBaseChange : Prop :=
   IsTensorProduct
-    (((Algebra.ofId S <| Module.End S (M →ₗ[R] N)).toLinearMap.flip f).restrictScalars R)
+    (((Algebra.linearMap S <| Module.End S (M →ₗ[R] N)).flip f).restrictScalars R)
 #align is_base_change IsBaseChange
 
 -- Porting note: split `variable`
@@ -171,9 +168,9 @@ variable [Module R Q] [IsScalarTower R S Q]
 `M` to an `S`-module factors through `f`. -/
 noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :=
   { h.lift
-      (((Algebra.ofId S <| Module.End S (M →ₗ[R] Q)).toLinearMap.flip g).restrictScalars R) with
+      (((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R) with
     map_smul' := fun r x => by
-      let F := ((Algebra.ofId S <| Module.End S (M →ₗ[R] Q)).toLinearMap.flip g).restrictScalars R
+      let F := ((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
       apply h.inductionOn x
@@ -243,7 +240,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
         -- Porting note: was simp [smul_tmul', Algebra.ofId_apply]
-        simp only [Algebra.ofId_apply, lift.tmul, smul_eq_mul, AlgHom.toLinearMap_apply,
+        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul,
           LinearMap.mul_apply, LinearMap.smul_apply, IsTensorProduct.equiv_apply,
           Module.algebraMap_end_apply, _root_.map_mul, smul_tmul', eq_self_iff_true,
           LinearMap.coe_restrictScalars, LinearMap.flip_apply]

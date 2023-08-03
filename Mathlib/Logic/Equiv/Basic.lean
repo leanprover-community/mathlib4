@@ -2,12 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
-
-! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit cd391184c85986113f8c00844cfe6dda1d34be3d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Prod.Basic
@@ -17,6 +11,8 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
+
+#align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-!
 # Equivalence between types
@@ -333,6 +329,17 @@ theorem sumCongr_refl : Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.r
   cases i <;> rfl
 #align equiv.sum_congr_refl Equiv.sumCongr_refl
 
+/-- A subtype of a sum is equivalent to a sum of subtypes. -/
+def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
+  toFun c := match h : c.1 with
+    | Sum.inl a => Sum.inl ⟨a, h ▸ c.2⟩
+    | Sum.inr b => Sum.inr ⟨b, h ▸ c.2⟩
+  invFun c := match c with
+    | Sum.inl a => ⟨Sum.inl a, a.2⟩
+    | Sum.inr b => ⟨Sum.inr b, b.2⟩
+  left_inv := by rintro ⟨a | b, h⟩ <;> rfl
+  right_inv := by rintro (a | b) <;> rfl
+
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
@@ -509,7 +516,7 @@ def piOptionEquivProd {β : Option α → Type _} :
 #align equiv.pi_option_equiv_prod_apply Equiv.piOptionEquivProd_apply
 
 /-- `α ⊕ β` is equivalent to a `Sigma`-type over `Bool`. Note that this definition assumes `α` and
-`β` to be types from the same universe, so it cannot by used directly to transfer theorems about
+`β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=

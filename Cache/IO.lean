@@ -43,7 +43,13 @@ def IRDIR : FilePath :=
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "XDG_CACHE_HOME" with
   | some path => return path / "mathlib"
-  | none => match ← IO.getEnv "HOME" with
+  | none =>
+    let home ← if System.Platform.isWindows then
+      let drive ← IO.getEnv "HOMEDRIVE"
+      let path ← IO.getEnv "HOMEPATH"
+      pure <| return (← drive) ++ (← path)
+    else IO.getEnv "HOME"
+    match home with
     | some path => return path / ".cache" / "mathlib"
     | none => pure ⟨".cache"⟩
 
@@ -61,11 +67,13 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.3"
+  "0.1.4"
+
+def EXE := if System.Platform.isWindows then ".exe" else ""
 
 def LEANTARBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
-  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{if System.Platform.isWindows then ".exe" else ""}"
+  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{EXE}"
 
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
@@ -193,7 +201,7 @@ def validateLeanTar : IO Unit := do
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
   let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
     "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  let _ ← runCmd "mv" #[(IO.CACHEDIR / s!"leantar").toString, LEANTARBIN.toString]
+  IO.FS.rename (IO.CACHEDIR / s!"leantar{EXE}").toString LEANTARBIN.toString
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
@@ -274,15 +282,15 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) : IO Unit := do
+def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
-    let child ← IO.Process.spawn
-      { cmd := ← getLeanTar, args := #["-x", "-j", "-"], stdin := .piped }
+    let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
+    let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"

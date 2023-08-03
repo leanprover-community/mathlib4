@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.relator
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Logic.Basic
+
+#align_import logic.relator from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relator for functions, pairs, sums, and lists.
@@ -32,7 +29,7 @@ variable {α : Sort u₁} {β : Sort u₂} {γ : Sort v₁} {δ : Sort v₂}
 variable (R : α → β → Prop) (S : γ → δ → Prop)
 
 /-- The binary relations `R : α → β → Prop` and `S : γ → δ → Prop` induce a binary
-    relation on functions `LiftFun : (f : α → γ) (g : β → δ) : Prop`. -/
+    relation on functions `LiftFun : (α → γ) → (β → δ) → Prop`. -/
 def LiftFun (f : α → γ) (g : β → δ) : Prop :=
   ∀⦃a b⦄, R a b → S (f a) (g b)
 #align relator.lift_fun Relator.LiftFun
@@ -139,5 +136,55 @@ lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
 lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
   λ _ _ h₁ _ _ h₂ => ⟨λ h => hr.right h₁ $ h.symm ▸ h₂, λ h => hr.left h₁ $ h.symm ▸ h₂⟩
 #align relator.rel_eq Relator.rel_eq
+
+open Function
+
+namespace LeftTotal
+
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
+    LeftTotal r₁₁ :=
+  fun a ↦ ⟨a, hr _⟩
+
+protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
+    LeftTotal r₁₂ → RightTotal r₂₁ :=
+  fun h a ↦ (h a).imp (fun _ ↦ hr _ _)
+
+protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
+    LeftTotal r₁₂ → LeftTotal r₂₃ → LeftTotal r₁₃ :=
+  fun h₁ h₂ a ↦ let ⟨b, hab⟩ := h₁ a; let ⟨c, hbc⟩ := h₂ b; ⟨c, hr _ _ _ hab hbc⟩
+
+end LeftTotal
+
+namespace RightTotal
+
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
+    RightTotal r₁₁ :=
+  LeftTotal.refl hr
+
+protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
+    RightTotal r₁₂ → LeftTotal r₂₁ :=
+  LeftTotal.symm (fun _ _ ↦ hr _ _)
+
+protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
+    RightTotal r₁₂ → RightTotal r₂₃ → RightTotal r₁₃ :=
+  swap <| LeftTotal.trans (fun _ _ _ ↦ swap <| hr _ _ _)
+
+end RightTotal
+
+namespace BiTotal
+
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
+    BiTotal r₁₁ :=
+  ⟨LeftTotal.refl hr, RightTotal.refl hr⟩
+
+protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
+    BiTotal r₁₂ → BiTotal r₂₁ :=
+  fun h ↦ ⟨h.2.symm hr, h.1.symm hr⟩
+
+protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
+    BiTotal r₁₂ → BiTotal r₂₃ → BiTotal r₁₃ :=
+  fun h₁ h₂ ↦ ⟨h₁.1.trans hr h₂.1, h₁.2.trans hr h₂.2⟩
+
+end BiTotal
 
 end Relator

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module topology.uniform_space.compact_convergence
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UniformSpace.UniformConvergence
+
+#align_import topology.uniform_space.compact_convergence from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -43,9 +40,9 @@ $$
 $$
 Using this notation we can describe the uniform space structure and the topology it induces.
 Specifically:
- *  A subset `X ⊆ C(α, β) × C(α, β)` is an entourage for the uniform space structure on `C(α, β)`
+  * A subset `X ⊆ C(α, β) × C(α, β)` is an entourage for the uniform space structure on `C(α, β)`
     iff there exists a compact `K` and entourage `V` such that `E(K, V) ⊆ X`.
- *  A subset `Y ⊆ C(α, β)` is a neighbourhood of `f` iff there exists a compact `K` and entourage
+  * A subset `Y ⊆ C(α, β)` is a neighbourhood of `f` iff there exists a compact `K` and entourage
     `V` such that `N(K, V, f) ⊆ Y`.
 
 The topology on `C(α, β)` thus has a natural subbasis (the compact-open subbasis) and a natural
