@@ -43,11 +43,9 @@ variable (X : Type u) [TopologicalSpace X]
 /-- An extremally disconnected topological space is a space
 in which the closure of every open set is open. -/
 class ExtremallyDisconnected : Prop where
+  /-- The closure of every open set is open. -/
   open_closure : ∀ U : Set X, IsOpen U → IsOpen (closure U)
 #align extremally_disconnected ExtremallyDisconnected
-
-/-- The closure of every open set is open. -/
-add_decl_doc ExtremallyDisconnected.open_closure
 
 section TotallySeparated
 
@@ -140,12 +138,15 @@ end
 
 section
 
-variable {A B C D : Type u} {E : Set D}
-  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
+variable {A B C D E : Type u} [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+  [TopologicalSpace D] [TopologicalSpace E]
 
-/-- Gleason's Lemma 2.4: a continuous surjection $\rho$ from a compact space $D$ to a Fréchet space
-$A$ restricts to a compact subset $E$ of $D$, such that $\rho$ maps $E$ onto $A$ and satisfies the
-"Zorn subset condition", where $\rho(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$. -/
+/-- Lemma 2.4 in [Gleason, *Projective topological spaces*][gleason1958]:
+a continuous surjection $\pi$ from a compact space $D$ to a Fréchet space $A$ restricts to
+a compact subset $E$ of $D$, such that $\pi$ maps $E$ onto $A$ and satisfies the
+"Zorn subset condition", where $\pi(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$.
+
+Proof. Apply Zorn's lemma on the closed subsets $E$ of $D$ such that $\pi(E) = A$. -/
 lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D → A}
     (π_cont : Continuous π) (π_surj : π.Surjective) : ∃ E : Set D, CompactSpace E ∧ π '' E = univ ∧
     ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → E.restrict π '' E₀ ≠ univ := by
@@ -173,9 +174,16 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage π_cont
   · rw [@iInter_of_empty _ _ <| not_nonempty_iff.mp hC, image_univ_of_surjective π_surj]
 
-/-- Gleason's Lemma 2.1: if $\rho$ is a continuous surjection from a topological space $E$ to a
-topological space $A$ satisfying the "Zorn subset condition", then $\rho(G)$ is contained in the
-closure of $A \setminus \rho(E \setminus G)}$ for any open set $G$ of $E$. -/
+/-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
+if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$
+satisfying the "Zorn subset condition", then $\rho(G)$ is contained in
+the closure of $A \setminus \rho(E \setminus G)}$ for any open set $G$ of $E$.
+
+Proof. Suffices to prove that if $G$ is nonempty, and if $N$ is a neighbourhood of $a \in \rho(G)$,
+then $N \cap (A \setminus \rho(E \setminus G))$ is nonempty. Since $G \cap \rho^{-1}(N)$ is nonempty
+and open, there is some $x \in A$ such that $\rho(E \setminus G \cap \rho^{-1}(N))$, so in
+particular $x \in A \setminus \rho(E \setminus G)$. Since $\rho$ is onto, $x = \rho(y)$ for some
+$y \in G \cap \rho^{-1}(N)$, so in particular $x = \rho(y) \in \rho(\rho^{-1}(N)) = N$. -/
 lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ)
     {G : Set E} (hG : IsOpen G) : ρ '' G ⊆ closure ((ρ '' Gᶜ)ᶜ) := by
@@ -187,18 +195,20 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
     rcases (G.mem_image ρ a).mp ha with ⟨e, he, rfl⟩
     have nonempty : (G ∩ ρ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
     have is_open : IsOpen <| G ∩ ρ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
-    have ne_univ : ρ '' (G ∩ ρ⁻¹' N)ᶜ ≠ univ := zorn_subset _ (compl_ne_univ.mpr nonempty)
-                                                  is_open.isClosed_compl
+    have ne_univ : ρ '' (G ∩ ρ⁻¹' N)ᶜ ≠ univ :=
+      zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
-    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := (compl_subset_compl.mpr <| image_subset ρ <|
-                                    compl_subset_compl.mpr <| G.inter_subset_left _) hx
+    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_subset ρ (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
-    have hy : y ∈ G ∩ ρ⁻¹' N := not_mem_compl_iff.mp <| (not_imp_not.mpr <| mem_image_of_mem ρ) <|
-                                  (mem_compl_iff _ _).mp hx
+    have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩
 
-/-- Gleason's Lemma 2.2: in an extremally disconnected space, if $U_1$ and $U_2$ are disjoint open
-sets, then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint. -/
+/-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
+in an extremally disconnected space, if $U_1$ and $U_2$ are disjoint open sets,
+then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint.
+
+Proof. $U_1$ and $\overline{U_2}$ are disjoint because $U_1$ is open.
+Then $\overline{U_1}$ and $\overline{U_2}$ are disjoint because $\overline{U_2}$ is open. -/
 lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_IsOpen [ExtremallyDisconnected A]
     {U₁ U₂ : Set A} (h : Disjoint U₁ U₂) (hU₁ : IsOpen U₁) (hU₂ : IsOpen U₂) :
     Disjoint (closure U₁) (closure U₂) :=
@@ -227,16 +237,29 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
     mem_image_of_mem ρ hx₂
   exact disj''.ne_of_mem hx₁' hx₂' hρx
 
-/-- Gleason's Lemma 2.3: a continuous surjection from a compact Hausdorff space to an extremally
-disconnected Hausdorff space satisfying the "Zorn subset condition" is a homeomorphism. -/
+/-- Lemma 2.3 in [Gleason, *Projective topological spaces*][gleason1958]:
+a continuous surjection from a compact Hausdorff space to an extremally disconnected Hausdorff space
+satisfying the "Zorn subset condition" is a homeomorphism.
+
+Proof. Suffices to prove injectivity, so suppose otherwise that $x_1$ and $x_2$ are distinct points
+with disjoint open neighbourhoods $G_1$ and $G_2$ respectively such that $\rho(x_1) = \rho(x_2)$.
+The sets $A \setminus \rho(E - G_1)$ and $A \setminus \rho(E - G_2)$ are disjoint, so their closures
+are disjoint by Lemma 2.2, but $\rho(x_1) = \rho(x_2)$ is common to these sets by Lemma 2.1. -/
 noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnected A] [T2Space A]
     [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ) (ρ_surj : ρ.Surjective)
     (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) : E ≃ₜ A :=
   ρ_cont.homeoOfEquivCompactToT2
     (f := Equiv.ofBijective ρ ⟨homeoCompactToT2_injective ρ_cont ρ_surj zorn_subset, ρ_surj⟩)
 
-/-- Gleason's Theorem 2.5: in the category of compact spaces and continuous maps, the
-projective spaces are precisely the extremally disconnected spaces. -/
+/-- Theorem 2.5 in [Gleason, *Projective topological spaces*][gleason1958]:
+in the category of compact spaces and continuous maps,
+the projective spaces are precisely the extremally disconnected spaces.
+
+Proof. Let $A$ be an extremally disconnected compact space, let $B$ and $C$ be compact spaces, and
+let $f : B \twoheadrightarrow C$ and $\phi : A \to C$ be continuous maps. Consider the compact space
+$D := \{(a, b) : \phi(a) = f(b)\}$ with projections $\pi_1 : D \to A$ and $\pi_2 : D \to B$, which
+has a closed subset $E$ satisfying the "Zorn subset condition" by Lemma 2.4, such that $\pi_1|_E$
+is a homeomorphism by Lemma 2.3. Then $\phi = f \circ \pi_2|_E \circ \pi_1|_E^{-1}$. -/
 protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconnected A]
     [CompactSpace A] [T2Space A] : CompactT2.Projective A := by
   intro B C _ _ _ _ _ _ φ f φ_cont f_cont f_surj
@@ -260,10 +283,14 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   ext x
   exact x.val.mem.symm
 
+protected theorem CompactT2.projective_iff_extremallyDisconnnected [CompactSpace A] [T2Space A] :
+    Projective A ↔ ExtremallyDisconnected A :=
+  ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
+
 end
 
 -- Note: It might be possible to use Gleason for this instead
-/-- The sigma-type of extremally disconneted spaces is extremally disconnected -/
+/-- The sigma-type of extremally disconnected spaces is extremally disconnected. -/
 instance instExtremallyDisconnected
     {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [h₀ : ∀ i, ExtremallyDisconnected (π i)] :
     ExtremallyDisconnected (Σi, π i) := by
