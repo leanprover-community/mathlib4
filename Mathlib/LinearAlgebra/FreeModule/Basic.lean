@@ -202,14 +202,4 @@ instance tensor : Module.Free R (M ⊗[R] N) :=
 
 end CommRing
 
-section DivisionRing
-
-variable [DivisionRing R] [AddCommGroup M] [Module R M]
-
-instance (priority := 100) of_divisionRing : Module.Free R M :=
-  of_basis (Basis.ofVectorSpace R M)
-#align module.free.of_division_ring Module.Free.of_divisionRing
-
-end DivisionRing
-
 end Module.Free

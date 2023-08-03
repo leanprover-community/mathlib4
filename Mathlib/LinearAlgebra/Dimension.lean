@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 -/
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.InvariantBasisNumber
@@ -198,10 +199,10 @@ theorem LinearEquiv.rank_eq (f : M ≃ₗ[R] M₁) : Module.rank R M = Module.ra
   Cardinal.lift_inj.1 f.lift_rank_eq
 #align linear_equiv.rank_eq LinearEquiv.rank_eq
 
-theorem rank_eq_of_injective (f : M →ₗ[R] M₁) (h : Injective f) :
-    Module.rank R M = Module.rank R (LinearMap.range f) :=
-  (LinearEquiv.ofInjective f h).rank_eq
-#align rank_eq_of_injective rank_eq_of_injective
+theorem rank_range_of_injective (f : M →ₗ[R] M₁) (h : Injective f) :
+    Module.rank R (LinearMap.range f) = Module.rank R M :=
+  (LinearEquiv.ofInjective f h).rank_eq.symm
+#align rank_eq_of_injective rank_range_of_injective
 
 /-- Pushforwards of submodules along a `LinearEquiv` have the same dimension. -/
 theorem LinearEquiv.rank_map_eq (f : M ≃ₗ[R] M₁) (p : Submodule R M) :
