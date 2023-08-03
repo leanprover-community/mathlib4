@@ -32,18 +32,24 @@ when we apply the three projections `ShortComplex C ⥤ C`, then it is limit. -/
 def isLimitOfIsLimitπ (c : Cone F)
     (h₁ : IsLimit (π₁.mapCone c)) (h₂ : IsLimit (π₂.mapCone c))
     (h₃ : IsLimit (π₃.mapCone c)) : IsLimit c where
-  lift s := by
-    have eq₁ := h₁.fac (π₁.mapCone s)
-    have eq₂ := h₂.fac (π₂.mapCone s)
-    have eq₃ := h₃.fac (π₃.mapCone s)
-    have eq₁₂ := fun j => (c.π.app j).comm₁₂
-    have eq₁₂' := fun j => (s.π.app j).comm₁₂
-    have eq₂₃ := fun j => (c.π.app j).comm₂₃
-    have eq₂₃' := fun j => (s.π.app j).comm₂₃
-    dsimp at eq₁ eq₂ eq₃ eq₁₂ eq₁₂' eq₂₃ eq₂₃'
-    exact Hom.mk (h₁.lift (π₁.mapCone s)) (h₂.lift (π₂.mapCone s)) (h₃.lift (π₃.mapCone s))
-      (h₂.hom_ext (fun j => by dsimp; rw [assoc, assoc, ← eq₁₂, reassoc_of% eq₁, eq₂, eq₁₂']))
-      (h₃.hom_ext (fun j => by dsimp; rw [assoc, assoc, ← eq₂₃, reassoc_of% eq₂, eq₃, eq₂₃']))
+  lift s :=
+    { τ₁ := h₁.lift (π₁.mapCone s)
+      τ₂ := h₂.lift (π₂.mapCone s)
+      τ₃ := h₃.lift (π₃.mapCone s)
+      comm₁₂ := h₂.hom_ext (fun j => by
+        have eq₁ := h₁.fac (π₁.mapCone s)
+        have eq₂ := h₂.fac (π₂.mapCone s)
+        have eq₁₂ := fun j => (c.π.app j).comm₁₂
+        have eq₁₂' := fun j => (s.π.app j).comm₁₂
+        dsimp at eq₁ eq₂ eq₁₂ eq₁₂' ⊢
+        rw [assoc, assoc, ← eq₁₂, reassoc_of% eq₁, eq₂, eq₁₂'])
+      comm₂₃ := h₃.hom_ext (fun j => by
+        have eq₂ := h₂.fac (π₂.mapCone s)
+        have eq₃ := h₃.fac (π₃.mapCone s)
+        have eq₂₃ := fun j => (c.π.app j).comm₂₃
+        have eq₂₃' := fun j => (s.π.app j).comm₂₃
+        dsimp at eq₂ eq₃ eq₂₃ eq₂₃' ⊢
+        rw [assoc, assoc, ← eq₂₃, reassoc_of% eq₂, eq₃, eq₂₃']) }
   fac s j := by ext <;> apply IsLimit.fac
   uniq s m hm := by
     ext
