@@ -504,10 +504,10 @@ theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul �
 #align double_centralizer.coe_snd DoubleCentralizer.coe_snd
 
 theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
-  ext <;>
-  simp only [coe_fst, mul_apply', mul_one, algebraMap_toProd, Prod.algebraMap_apply, coe_snd,
-    flip_apply, one_mul] <;>
-  simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply, smul_eq_mul, mul_one]
+  ext x : 3
+  · rfl -- `fst` is defeq
+  · refine ContinuousLinearMap.ext fun y => ?_
+    exact mul_comm y x  -- `snd` multiplies on the wrong side
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 
 /-- The coercion of an algebra into its multiplier algebra as a non-unital star algebra
@@ -516,17 +516,15 @@ homomorphism. -/
 noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [NormedStarGroup A] :
     A →⋆ₙₐ[𝕜] 𝓜(𝕜, A) where
   toFun a := a
-  map_smul' k a := by
-    ext <;> simp only [coe_fst, coe_snd, ContinuousLinearMap.map_smul, smul_fst, smul_snd]
-  map_zero' := by ext <;> simp only [coe_fst, coe_snd, map_zero, zero_fst, zero_snd]
-  map_add' a b := by ext <;> simp only [coe_fst, coe_snd, map_add, add_fst, add_snd]
-  map_mul' a b := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', flip_apply, mul_fst, mul_snd,
-        ContinuousLinearMap.coe_mul, Function.comp_apply, mul_assoc]
-  map_star' a := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', star_fst, star_snd, flip_apply, star_mul, star_star]
+  map_smul' _ _ := ext _ _ _ _ <| Prod.ext (map_smul _ _ _) (map_smul _ _ _)
+  map_zero' := ext _ _ _ _ <| Prod.ext (map_zero _) (map_zero _)
+  map_add' _ _ := ext _ _ _ _ <| Prod.ext (map_add _ _ _) (map_add _ _ _)
+  map_mul' _ _ :=  ext _ _ _ _ <| Prod.ext
+    (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _))
+    (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _).symm)
+  map_star' _ := ext _ _ _ _ <| Prod.ext
+    (ContinuousLinearMap.ext fun _ => (star_star_mul _ _).symm)
+    (ContinuousLinearMap.ext fun _ => (star_mul_star _ _).symm)
 #align double_centralizer.coe_hom DoubleCentralizer.coeHom
 
 /-!
