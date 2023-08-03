@@ -200,15 +200,22 @@ noncomputable def _root_.Ideal.localizedModuleEquivLocalizationAtPrime :
 IsLocalizedModule.iso _ $ J.toLocalizationAtPrime I
 
 lemma _root_.Ideal.localizedModuleEquivLocalizationAtPrime_apply (a b) :
-  J.localizedModuleEquivLocalizationAtPrime I (LocalizedModule.mk a b) =
-⟨Localization.mk a b, by simpa only [show Localization.mk (a : R) b =
-  (Localization.mk 1 b) * (Localization.mk ↑a 1) by rw [Localization.mk_mul, one_mul, mul_one]]
-    using Ideal.mul_mem_left _ _ (Ideal.apply_coe_mem_map _ J a)⟩ := sorry
+    J.localizedModuleEquivLocalizationAtPrime I (LocalizedModule.mk a b) =
+    ⟨Localization.mk a b, by simpa only [show Localization.mk (a : R) b =
+      (Localization.mk 1 b) * (Localization.mk ↑a 1) by rw [Localization.mk_mul, one_mul, mul_one]]
+        using Ideal.mul_mem_left _ _ (Ideal.apply_coe_mem_map _ J a)⟩ :=
+(Module.End_algebraMap_isUnit_inv_apply_eq_iff _ _ _ _).mpr <| by
+  refine Subtype.ext (?_ : Localization.mk _ _ = _ • Localization.mk (a : R) b)
+  rw [Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk_iff, Localization.r_iff_exists]
+  exact ⟨1, by simp⟩
+
 
 @[simps!]
 def _root_.Ideal.localizationAtPrime' : Ideal (Localization.AtPrime I.asIdeal) where
   carrier := { x | ∃ (a : J) (b : I.asIdeal.primeCompl), x = Localization.mk ↑a b }
-  add_mem' := sorry
+  add_mem' := fun {x y} ⟨a1, ⟨b1, hx⟩⟩ ⟨a2, ⟨b2, hy⟩⟩ => hx.symm ▸ hy.symm ▸
+    ⟨⟨_, J.add_mem (J.mul_mem_left b1 (SetLike.coe_mem a2))
+      (J.mul_mem_left b2 (SetLike.coe_mem a1))⟩, ⟨b1 * b2, Localization.add_mk _ _ _ _⟩⟩
   zero_mem' := ⟨0, ⟨1, by
     simp only [ZeroMemClass.coe_zero, Localization.mk_eq_monoidOf_mk']
     rw [Submonoid.LocalizationMap.mk']
@@ -224,19 +231,39 @@ lemma _root_.Ideal.mem_localizationAtPrime'_iff (x : Localization.AtPrime I.asId
 Iff.rfl
 
 lemma _root_.Ideal.mem_localizationAtPrime'_of_mem_localizationAtPrime :
-  ∀ x, x ∈ J.localizationAtPrime' I → x ∈ J.localizationAtPrime I := sorry
+    ∀ x, x ∈ J.localizationAtPrime I → x ∈ J.localizationAtPrime' I :=
+  fun _ => Submodule.span_induction' (p := fun y _ => y ∈ J.localizationAtPrime' I)
+    (by rintro _ ⟨y, hy1, rfl⟩; refine ⟨⟨y, hy1⟩, ⟨_, rfl⟩⟩)
+    (Ideal.zero_mem _) (fun _ _ _ _ => Ideal.add_mem _) <| fun a _ _ => Submodule.smul_mem _ a
 
 lemma _root_.Ideal.localizationAtPrime'_eq_localizationAtPrime :
-  J.localizationAtPrime' I = J.localizationAtPrime I := sorry
+    J.localizationAtPrime' I = J.localizationAtPrime I :=
+  le_antisymm (by
+    rintro x ⟨⟨a, ha⟩, ⟨b, rfl⟩⟩
+    rw [Subtype.coe_mk, ←one_mul a, ←mul_one b, ←Localization.mk_mul]
+    exact Ideal.mul_mem_left _ _ (Ideal.mem_map_of_mem _ ha)) <|
+  J.mem_localizationAtPrime'_of_mem_localizationAtPrime _
 
 instance _root_.Ideal.localizationAtPrime'_isPrime (J : Set.Iic I) :
   (J.1.asIdeal.localizationAtPrime' I).IsPrime where
-ne_top' := λ hit ↦ by
+ne_top' := fun hit => by
   rw [Ideal.eq_top_iff_one, Ideal.mem_localizationAtPrime'_iff] at hit
   rcases hit with ⟨a, ⟨b, hb⟩⟩
   exact (IsLocalization.AtPrime.isUnit_mk'_iff (Localization.AtPrime I.asIdeal) _
     (a : R) b).mp (by simpa only [←Localization.mk_eq_mk', ←hb] using isUnit_one) (J.2 a.2)
-mem_or_mem' := sorry
+mem_or_mem' := by
+    intro x y
+    refine Localization.induction_on₂ x y ?_
+    rintro ⟨a1, a2⟩ ⟨b1, b2⟩ ⟨⟨p, hp⟩, ⟨q, h⟩⟩
+    rw [Localization.mk_mul, Localization.mk_eq_mk_iff, Localization.r_iff_exists] at h
+    obtain ⟨c, hc⟩ := h
+    have h : ↑c * (↑q * (a1 * b1)) ∈ J.1.asIdeal := hc.symm ▸ J.1.asIdeal.mul_mem_left _
+      (J.1.asIdeal.mul_mem_left _ hp)
+    rw [←mul_assoc] at h
+    exact (J.1.IsPrime.mem_or_mem ((J.1.IsPrime.mem_or_mem h).resolve_left
+      (fun h => Submonoid.mul_mem _ c.2 q.2 (J.2 h)))).elim
+        (fun h => Or.intro_left _ ⟨⟨a1, h⟩, ⟨_, rfl⟩⟩)
+        (fun h => Or.intro_right _ ⟨⟨b1, h⟩, ⟨_, rfl⟩⟩)
 
 /--
 There is a canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`.
