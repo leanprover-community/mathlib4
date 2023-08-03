@@ -440,40 +440,34 @@ fun x ↦ if hx : x ∈ C then f ⟨x, hx⟩ else junk
 lemma restrict_extendBy_eq_self {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y) :
     C.restrict (f.ExtendBy junk) = f := by
   ext x
-  dsimp [ExtendBy]
-  simp only [Subtype.coe_prop, Subtype.coe_eta, dite_eq_ite, ite_true]
+  simp [ExtendBy]
 
 lemma extendBy_preimage_of_junk_ne_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
     (s : Set Y) (hj : ¬ junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) := by
   ext x
-  dsimp [ExtendBy]
-  simp only [Set.mem_preimage, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  constructor
-  <;> intro hx
+  simp [ExtendBy]
+  refine' ⟨fun hx ↦ _, fun hx ↦ _⟩
   · split_ifs at hx with h
     · use h
     · exfalso
       exact hj hx
-  · obtain ⟨hx,hfx⟩ := hx
+  · obtain ⟨_,_⟩ := hx
     split_ifs
-    exact hfx
+    assumption
 
 lemma extendBy_preimage_of_junk_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
     (s : Set Y) (hj : junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) ∪ Cᶜ := by
   ext x
-  dsimp [ExtendBy]
-  simp only [Set.mem_preimage, Set.mem_union, Set.mem_image, Subtype.exists, exists_and_right,
-    exists_eq_right, Set.mem_compl_iff]
-  constructor
-  <;> intro hx
+  simp [ExtendBy]
+  refine' ⟨fun hx ↦ _, fun hx ↦ _⟩
   · split_ifs at hx with h
     · left
       use h
     · right
       exact h
-  · obtain ⟨hx,hfx⟩ := hx
+  · obtain ⟨_,_⟩ := hx
     split_ifs
-    · exact hfx
+    · assumption
     · split_ifs
       assumption
 
@@ -650,6 +644,25 @@ def emb_lift {e : X → Y} (hoe : OpenEmbedding e) (hce : ClosedEmbedding e)
   let E : LocallyConstant X Z ≃ LocallyConstant (Set.range e) Z :=
     equiv (Homeomorph.ofEmbedding e hoe.toEmbedding)
   (E f).ExtendBy ⟨hoe.open_range, hce.closed_range⟩ junk
+
+noncomputable
+def comapMul [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
+    LocallyConstant Y Z →* LocallyConstant X Z where
+  toFun := comap f
+  map_one' := by
+    ext x
+    rw [coe_comap_apply _ _ hf]
+    rfl
+  map_mul' := by
+    intro r s
+    dsimp
+    ext x
+    simp only [coe_mul, Pi.mul_apply]
+    rw [coe_comap_apply _ _ hf]
+    rw [coe_comap_apply _ _ hf]
+    rw [coe_comap_apply _ _ hf]
+    simp only [coe_mul, Pi.mul_apply]
+
 
 variable {R : Type _} [Ring R] [AddCommMonoid Z] [Module R Z]
 
@@ -3285,28 +3298,6 @@ lemma GoodProducts.hhw (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C
 
 end Successor
 
-lemma GoodProducts.P0 : P' I 0 := by
-  dsimp [P']
-  intro _ C _ hsC
-  dsimp [Support] at hsC
-  have : C ⊆ {(fun _ ↦ false)}
-  · intro c hc
-    simp
-    ext x
-    simp at hsC
-    specialize hsC x c hc
-    rw [Bool.eq_false_iff]
-    intro ht
-    apply Ordinal.not_lt_zero (ord I x)
-    exact hsC ht
-  rw [Set.subset_singleton_iff_eq] at this
-  rcases this
-  · subst C
-    exact linearIndependentEmpty
-  · subst C
-    exact linearIndependentSingleton
-
-
 lemma Products.sorted (l : Products I) : l.val.Sorted (· > ·) := by
   have := l.prop
   rw [List.chain'_iff_pairwise] at this
@@ -4131,6 +4122,27 @@ lemma GoodProducts.span (hC : IsClosed C) :
   exact ⟨m.val, linearResFin_of_eval C K m.val m.prop⟩
 
 end Span
+
+lemma GoodProducts.P0 : P' I 0 := by
+  dsimp [P']
+  intro _ C _ hsC
+  dsimp [Support] at hsC
+  have : C ⊆ {(fun _ ↦ false)}
+  · intro c hc
+    simp
+    ext x
+    simp at hsC
+    specialize hsC x c hc
+    rw [Bool.eq_false_iff]
+    intro ht
+    apply Ordinal.not_lt_zero (ord I x)
+    exact hsC ht
+  rw [Set.subset_singleton_iff_eq] at this
+  rcases this
+  · subst C
+    exact linearIndependentEmpty
+  · subst C
+    exact linearIndependentSingleton
 
 lemma GoodProducts.Plimit :
     ∀ (o : Ordinal), Ordinal.IsLimit o → (∀ (o' : Ordinal), o' < o → P' I o') → P' I o := by
