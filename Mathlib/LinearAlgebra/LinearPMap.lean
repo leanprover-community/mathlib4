@@ -966,7 +966,6 @@ noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     exact (existsUnique_from_graph @hg hsmul).unique hav hav'
 
 open Classical in
-
 /-- Define a `LinearPMap` from its graph.
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map
@@ -985,6 +984,7 @@ theorem toLinearPMap_apply_aux {g : Submodule R (E × F)}
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0)
     (x : g.map (LinearMap.fst R E F)) :
     g.toLinearPMap x = valFromGraph hg x.2 := by
+  classical
   change (if hg : _ then g.toLinearPMapAux hg else 0) x = _
   rw [dif_pos]
   · rfl
