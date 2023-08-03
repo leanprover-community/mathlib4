@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
 
-#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"4367b192b58a665b6f18773f73eb492eb4df7990"
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals
@@ -1718,6 +1718,33 @@ theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     simp [*, min_eq_left_of_lt, min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt,
       le_of_lt h₂, le_of_lt h₁]
 #align set.Ioo_union_Ioo Set.Ioo_union_Ioo
+
+section Lattice
+variable [Lattice β] {f : α → β}
+
+theorem _root_.MonotoneOn.image_Icc_subset (hf : MonotoneOn f (Icc a b)) :
+    f '' Icc a b ⊆ Icc (f a) (f b) :=
+  image_subset_iff.2 fun c hc =>
+    ⟨hf (left_mem_Icc.2 <| hc.1.trans hc.2) hc hc.1,
+      hf hc (right_mem_Icc.2 <| hc.1.trans hc.2) hc.2⟩
+#align monotone_on.image_Icc_subset MonotoneOn.image_Icc_subset
+
+theorem _root_.AntitoneOn.image_Icc_subset (hf : AntitoneOn f (Icc a b)) :
+    f '' Icc a b ⊆ Icc (f b) (f a) :=
+  image_subset_iff.2 fun c hc =>
+    ⟨hf hc (right_mem_Icc.2 <| hc.1.trans hc.2) hc.2,
+      hf (left_mem_Icc.2 <| hc.1.trans hc.2) hc hc.1⟩
+#align antitone_on.image_Icc_subset AntitoneOn.image_Icc_subset
+
+theorem _root_.Monotone.image_Icc_subset (hf : Monotone f) : f '' Icc a b ⊆ Icc (f a) (f b) :=
+  (hf.monotoneOn _).image_Icc_subset
+#align monotone.image_Icc_subset Monotone.image_Icc_subset
+
+theorem _root_.Antitone.image_Icc_subset (hf : Antitone f) : f '' Icc a b ⊆ Icc (f b) (f a) :=
+  (hf.antitoneOn _).image_Icc_subset
+#align antitone.image_Icc_subset Antitone.image_Icc_subset
+
+end Lattice
 
 end LinearOrder
 
