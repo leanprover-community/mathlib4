@@ -285,9 +285,11 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
-    (try simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
+    (simp (config := {failIfUnchanged := false}) only
+      [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
-    simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
+    (simp (config := {failIfUnchanged := false}) only
+      [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
 
 lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
@@ -362,7 +364,7 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    (try simp only [bicategoricalComp, monoidalComp]);
+    (simp  (config := {failIfUnchanged := false}) only [bicategoricalComp, monoidalComp]);
     whisker_simps
     ))
   coherence_loop
