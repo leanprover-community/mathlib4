@@ -181,7 +181,7 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
       g (m • x) = g (m • f (g x)) := by rw [h₂]
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
-#align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
+#align mul_action_hom.inverse_to_fun MulActionHom.inverse_apply
 #align mul_action_hom.inverse MulActionHom.inverse
 
 end MulActionHom
