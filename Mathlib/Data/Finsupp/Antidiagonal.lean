@@ -17,9 +17,8 @@ all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + 
 -/
 
 
-noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 namespace Finsupp
 
@@ -27,7 +26,7 @@ open Finset
 
 universe u
 
-variable {α : Type u}
+variable {α : Type u} [DecidableEq α]
 
 /-- The `Finsupp` counterpart of `Multiset.antidiagonal`: the antidiagonal of
 `s : α →₀ ℕ` consists of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
@@ -46,7 +45,8 @@ def antidiagonal (f : α →₀ ℕ) : Finset ((α →₀ ℕ) × (α →₀ ℕ
 theorem mem_antidiagonal {f : α →₀ ℕ} {p : (α →₀ ℕ) × (α →₀ ℕ)} :
     p ∈ antidiagonal f ↔ p.1 + p.2 = f := by
   rcases p with ⟨p₁, p₂⟩
-  simp [antidiagonal, antidiagonal', ← and_assoc, ← Finsupp.toMultiset.apply_eq_iff_eq]
+  simp [antidiagonal, antidiagonal', ← and_assoc, Multiset.toFinsupp_eq_iff,
+    ← Multiset.toFinsupp_eq_iff (f := f)]
 #align finsupp.mem_antidiagonal Finsupp.mem_antidiagonal
 
 theorem swap_mem_antidiagonal {n : α →₀ ℕ} {f : (α →₀ ℕ) × (α →₀ ℕ)} :
@@ -85,8 +85,7 @@ theorem antidiagonal_filter_snd_eq (f g : α →₀ ℕ)
 #align finsupp.antidiagonal_filter_snd_eq Finsupp.antidiagonal_filter_snd_eq
 
 @[simp]
-theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := by
-  rw [antidiagonal, antidiagonal', Multiset.toFinsupp_support]; rfl
+theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
 @[to_additive]
