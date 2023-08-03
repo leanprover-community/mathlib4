@@ -143,7 +143,8 @@ open Hom
 @[simp]
 def normalizeMapAux :
     ∀ {X Y : F C}, (X ⟶ᵐ Y) →
-      ((Discrete.functor (fun n ↦ ⟨normalizeObj X n⟩) : N C ⥤ N C) ⟶ Discrete.functor fun n ↦ ⟨normalizeObj Y n⟩)
+      ((Discrete.functor (fun n ↦ ⟨normalizeObj X n⟩) : N C ⥤ N C) ⟶
+        Discrete.functor fun n ↦ ⟨normalizeObj Y n⟩)
   | _, _, Hom.id _ => by dsimp; exact 𝟙 _
   | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
@@ -219,8 +220,8 @@ def normalizeIsoApp :
     ∀ (X : F C) (n : N C), ((tensorFunc C).obj X).obj n ≅ ((normalize' C).obj X).obj n
   | of _, _ => Iso.refl _
   | Unit, _ => ρ_ _
-  | tensor X _, n =>
-    (α_ _ _ _).symm ≪≫ tensorIso (normalizeIsoApp X n) (Iso.refl _) ≪≫ normalizeIsoApp _ _
+  | tensor X a, n =>
+    (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp X n) a ≪≫ normalizeIsoApp _ _
 #align category_theory.free_monoidal_category.normalize_iso_app CategoryTheory.FreeMonoidalCategory.normalizeIsoApp
 
 /-- Almost non-definitionally equall to `normalizeIsoApp`, but has a better definitional property
@@ -230,10 +231,11 @@ def normalizeIsoApp' :
     ∀ (X : F C) (n : NormalMonoidalObject C), inclusionObj n ⊗ X ≅ inclusionObj (normalizeObj X n)
   | of _, _ => Iso.refl _
   | Unit, _ => ρ_ _
-  | tensor X _, n =>
-    (α_ _ _ _).symm ≪≫ tensorIso (normalizeIsoApp' X n) (Iso.refl _) ≪≫ normalizeIsoApp' _ _
+  | tensor X Y, n =>
+    (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' X n) Y ≪≫ normalizeIsoApp' _ _
 
-theorem normalizeIsoApp_eq : ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
+theorem normalizeIsoApp_eq :
+    ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
   | of X, _ => rfl
   | Unit, _ => rfl
   | tensor X Y, n => by
@@ -245,7 +247,7 @@ theorem normalizeIsoApp_eq : ∀ (X : F C) (n : N C), normalizeIsoApp C X n = no
 @[simp]
 theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
     normalizeIsoApp C (X ⊗ Y) n =
-      (α_ _ _ _).symm ≪≫ tensorIso (normalizeIsoApp C X n) (Iso.refl _) ≪≫ normalizeIsoApp _ _ _ :=
+      (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp C X n) Y ≪≫ normalizeIsoApp _ _ _ :=
   rfl
 #align category_theory.free_monoidal_category.normalize_iso_app_tensor CategoryTheory.FreeMonoidalCategory.normalizeIsoApp_tensor
 
@@ -294,10 +296,8 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
   clear n f
   induction f' with
   | comp _ _ _ _ => apply Eq.trans <;> assumption
-  | whiskerLeft _ _ ih => funext; apply congr_fun ih
-  | whiskerRight _ _ ih =>
-      funext
-      apply congr_arg₂ _ rfl (congr_fun ih _)
+  | whiskerLeft  _ _ ih => funext; apply congr_fun ih
+  | whiskerRight _ _ ih => funext; apply congr_arg₂ _ rfl (congr_fun ih _)
   | _ => funext; rfl
 
 theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
@@ -325,19 +325,18 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
   | whiskerLeft X f ih =>
       intro n
       erw [mk_whiskerLeft]
-      dsimp only [tensor_eq_tensor, normalizeObj_tensor, normalizeIsoApp', Iso.trans_hom, Iso.symm_hom, tensorIso_hom,
-        Iso.refl_hom, Function.comp_apply, inclusion_obj]
-      simp only [MonoidalCategory.whiskerLeft_id, Category.assoc, Category.id_comp, tensorHom_id]
+      simp only [tensor_eq_tensor, normalizeObj_tensor, normalizeIsoApp', Iso.trans_hom,
+        Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj, inclusion_map,
+        Category.assoc]
       rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
+      simp
   | @whiskerRight X Y h η' ih =>
       intro n
       erw [mk_whiskerRight]
-      dsimp
-      simp only [MonoidalCategory.whiskerLeft_id, Category.assoc, Category.id_comp, tensorHom_id]
-      rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]
-      erw [ih]
-      dsimp
-      simp
+      simp only [tensor_eq_tensor, normalizeObj_tensor, normalizeIsoApp', Iso.trans_hom,
+        Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj, inclusion_map,
+        Category.assoc]
+      rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
       have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom)
         (normalizeObj_congr n (Quotient.mk (setoidHom X Y) h))
       dsimp at this; simp [this]
@@ -352,7 +351,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     intro X Y f
     ext ⟨n⟩
     convert normalize_naturality n f using 1
-    any_goals dsimp [NatIso.ofComponents]; simp; congr; apply normalizeIsoApp_eq
+    any_goals dsimp [NatIso.ofComponents]; congr; apply normalizeIsoApp_eq
 #align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/

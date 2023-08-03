@@ -118,12 +118,14 @@ def hcomp {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor D E} (α : Mo
       dsimp; simp
       conv_lhs => rw [← K.toFunctor.map_comp, α.unit]
     tensor := fun X Y => by
-      simp only [LaxMonoidalFunctor.comp_toFunctor, comp_obj, LaxMonoidalFunctor.comp_μ, NatTrans.hcomp_app, assoc,
-        NatTrans.naturality_assoc, tensor_assoc, tensorHom_def, whisker_exchange_assoc, MonoidalCategory.whiskerLeft_comp,
-        comp_whiskerRight, LaxMonoidalFunctor.μ_natural_left_assoc, LaxMonoidalFunctor.μ_natural_right_assoc]
+      simp only [LaxMonoidalFunctor.comp_toFunctor, comp_obj,
+        LaxMonoidalFunctor.comp_μ, NatTrans.hcomp_app, assoc,
+        NatTrans.naturality_assoc, tensor_assoc, tensorHom_def,
+        whisker_exchange_assoc, MonoidalCategory.whiskerLeft_comp,
+        comp_whiskerRight, LaxMonoidalFunctor.μ_natural_left_assoc,
+        LaxMonoidalFunctor.μ_natural_right_assoc]
       simp_rw [← K.toFunctor.map_comp]
-      congr 4
-      simp
+      simp only [tensor, tensorHom_def, assoc, map_comp]
        }
 #align category_theory.monoidal_nat_trans.hcomp CategoryTheory.MonoidalNatTrans.hcomp
 
@@ -200,8 +202,9 @@ def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
         id_comp, assoc]
       simp only [← Functor.map_comp, assoc]
       erw [e.counit_app_functor, e.counit_app_functor]
-      simp only [comp_obj, asEquivalence_functor, asEquivalence_inverse, id_obj, LaxMonoidalFunctor.μ_natural_left,
-        LaxMonoidalFunctor.μ_natural_right_assoc, IsIso.inv_hom_id_assoc, map_comp, IsEquivalence.inv_fun_map, assoc,
+      simp only [comp_obj, asEquivalence_functor, asEquivalence_inverse, id_obj,
+        LaxMonoidalFunctor.μ_natural_left, LaxMonoidalFunctor.μ_natural_right_assoc,
+        IsIso.inv_hom_id_assoc, map_comp, IsEquivalence.inv_fun_map, assoc,
         Iso.hom_inv_id_app_assoc, tensorHom_def]
       slice_rhs 3 4 => erw [Iso.hom_inv_id_app]
       simp only [id_obj, id_comp, assoc, whisker_exchange_assoc]

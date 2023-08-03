@@ -149,16 +149,8 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
     aesop_cat
 #align category_theory.monoidal_category CategoryTheory.MonoidalCategory
 
--- attribute [simp] MonoidalCategory.tensor_id
--- attribute [reassoc] MonoidalCategory.tensor_comp
--- attribute [simp] MonoidalCategory.tensor_comp
--- attribute [reassoc] MonoidalCategory.associator_naturality
--- attribute [reassoc] MonoidalCategory.leftUnitor_naturality
--- attribute [reassoc] MonoidalCategory.rightUnitor_naturality
 attribute [reassoc (attr := simp)] MonoidalCategory.pentagon
 attribute [reassoc (attr := simp)] MonoidalCategory.triangle
-
--- attribute [simp] MonoidalCategory.whiskerLeft_eq_tensorHom_id MonoidalCategory.whiskerRight_eq_id_tensorHom
 
 namespace MonoidalCategory
 
@@ -167,8 +159,10 @@ attribute [reassoc]
   whiskerRight_tensor whisker_assoc whisker_exchange
 
 attribute [simp]
-  whiskerLeft_id whiskerLeft_comp id_whiskerLeft tensor_whiskerLeft id_whiskerRight comp_whiskerRight
-  whiskerRight_id whiskerRight_tensor whisker_assoc
+  whiskerLeft_id whiskerRight_id
+  whiskerLeft_comp id_whiskerLeft tensor_whiskerLeft comp_whiskerRight id_whiskerRight
+  whiskerRight_tensor whisker_assoc
+
 end MonoidalCategory
 
 -- Porting Note: This is here to make `tensorUnit` explicitly depend on `C`, which was done in
@@ -221,8 +215,9 @@ Composition of tensor products is tensor product of compositions:
 `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
 -/
 @[reassoc, simp]
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    (f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂) := by
+theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+      (f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂) := by
   simp [whisker_exchange_assoc]
 
 @[simp]
@@ -585,9 +580,10 @@ theorem rightUnitor_tensor_inv (X Y : C) :
     (ρ_ (X ⊗ Y)).inv = X ◁ (ρ_ Y).inv ≫ (α_ X Y (𝟙_ C)).inv := by simp
 
 @[reassoc]
-theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
-    tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
-      (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
+theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
+      tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
+        (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
   simp
 
 @[reassoc]
@@ -598,7 +594,8 @@ theorem triangle' (X Y : C) :
 
 @[reassoc]
 theorem pentagon' (W X Y Z : C) :
-    ((α_ W X Y).hom ⊗ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ (α_ X Y Z).hom) = (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
+    ((α_ W X Y).hom ⊗ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ (α_ X Y Z).hom) =
+      (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
   simp
 #align category_theory.monoidal_category.pentagon CategoryTheory.MonoidalCategory.pentagon'
 
@@ -631,7 +628,9 @@ theorem rightUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
   simp
 #align category_theory.monoidal_category.right_unitor_conjugation CategoryTheory.MonoidalCategory.rightUnitor_conjugation
 
-theorem leftUnitor_conjugation {X Y : C} (f : X ⟶ Y) : 𝟙 (𝟙_ C) ⊗ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by simp
+theorem leftUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
+    𝟙 (𝟙_ C) ⊗ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
+  simp
 #align category_theory.monoidal_category.left_unitor_conjugation CategoryTheory.MonoidalCategory.leftUnitor_conjugation
 
 @[reassoc]
@@ -645,11 +644,15 @@ theorem rightUnitor_naturality' {X Y : C} (f : X ⟶ Y) :
   simp
 
 @[reassoc]
-theorem leftUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') : f ≫ (λ_ X').inv = (λ_ X).inv ≫ (𝟙 _ ⊗ f) := by simp
+theorem leftUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') :
+    f ≫ (λ_ X').inv = (λ_ X).inv ≫ (𝟙 _ ⊗ f) := by
+  simp
 #align category_theory.monoidal_category.left_unitor_inv_naturality CategoryTheory.MonoidalCategory.leftUnitor_inv_naturality'
 
 @[reassoc]
-theorem rightUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') : f ≫ (ρ_ X').inv = (ρ_ X).inv ≫ (f ⊗ 𝟙 _) := by simp
+theorem rightUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') :
+    f ≫ (ρ_ X').inv = (ρ_ X).inv ≫ (f ⊗ 𝟙 _) := by
+  simp
 #align category_theory.monoidal_category.right_unitor_inv_naturality CategoryTheory.MonoidalCategory.rightUnitor_inv_naturality'
 
 end

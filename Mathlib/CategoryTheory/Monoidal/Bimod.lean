@@ -331,9 +331,11 @@ theorem right_assoc' :
   slice_lhs 1 2 => rw [← whisker_exchange]
   slice_lhs 2 3 => rw [π_tensor_id_actRight]
   slice_lhs 1 2 => rw [associator_naturality_right]
-  slice_lhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, right_assoc, MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
+  slice_lhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, right_assoc,
+    MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
   slice_rhs 1 2 => rw [associator_inv_naturality_left]
-  slice_rhs 2 3 => rw [← comp_whiskerRight, π_tensor_id_actRight, comp_whiskerRight, comp_whiskerRight]
+  slice_rhs 2 3 => rw [← comp_whiskerRight, π_tensor_id_actRight, comp_whiskerRight,
+    comp_whiskerRight]
   slice_rhs 4 5 => rw [π_tensor_id_actRight]
   simp
 set_option linter.uppercaseLean3 false in
@@ -352,12 +354,14 @@ theorem middle_assoc' :
       (α_ R.X _ T.X).hom ≫ (R.X ◁ actRight P Q) ≫ actLeft P Q := by
   refine' (cancel_epi ((tensorLeft _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 _
   dsimp [X]
-  slice_lhs 1 2 => rw [← comp_whiskerRight, whiskerLeft_π_actLeft, comp_whiskerRight, comp_whiskerRight]
+  slice_lhs 1 2 => rw [← comp_whiskerRight, whiskerLeft_π_actLeft, comp_whiskerRight,
+    comp_whiskerRight]
   slice_lhs 3 4 => rw [π_tensor_id_actRight]
   slice_lhs 2 3 => rw [associator_naturality_left]
   -- porting note: had to replace `rw` by `erw`
   slice_rhs 1 2 => rw [associator_naturality_middle]
-  slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, π_tensor_id_actRight, MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
+  slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, π_tensor_id_actRight,
+    MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
   slice_rhs 4 5 => rw [whiskerLeft_π_actLeft]
   slice_rhs 3 4 => rw [associator_inv_naturality_right]
   slice_rhs 4 5 => rw [whisker_exchange]
@@ -389,7 +393,7 @@ noncomputable def tensorBimod {X Y Z : Mon_ C} (M : Bimod X Y) (N : Bimod Y Z) :
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod Bimod.tensorBimod
 
-/-- Tensor product of two morphisms of bimodule objects. -/
+/-- Left whiskering for morphisms of bimodule objects. -/
 @[simps]
 noncomputable def whiskerLeft {X Y Z : Mon_ C} (M : Bimod X Y) {N₁ N₂ : Bimod Y Z} (f : N₁ ⟶ N₂) :
     M.tensorBimod N₁ ⟶ M.tensorBimod N₂ where
@@ -407,7 +411,8 @@ noncomputable def whiskerLeft {X Y Z : Mon_ C} (M : Bimod X Y) {N₁ N₂ : Bimo
     dsimp
     slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
-    slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one, MonoidalCategory.whiskerLeft_comp]
+    slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one,
+      MonoidalCategory.whiskerLeft_comp]
     slice_rhs 2 3 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_rhs 1 2 => rw [associator_inv_naturality_right]
     slice_rhs 2 3 => rw [whisker_exchange]
@@ -422,7 +427,7 @@ noncomputable def whiskerLeft {X Y Z : Mon_ C} (M : Bimod X Y) {N₁ N₂ : Bimo
     slice_rhs 2 3 => rw [TensorBimod.π_tensor_id_actRight]
     simp
 
-/-- Tensor product of two morphisms of bimodule objects. -/
+/-- Right whiskering for morphisms of bimodule objects. -/
 @[simps]
 noncomputable def whiskerRight {X Y Z : Mon_ C} {M₁ M₂ : Bimod X Y} (f : M₁ ⟶ M₂) (N : Bimod Y Z) :
     M₁.tensorBimod N ⟶ M₂.tensorBimod N where
@@ -439,7 +444,8 @@ noncomputable def whiskerRight {X Y Z : Mon_ C} {M₁ M₂ : Bimod X Y} (f : M�
     slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
     slice_lhs 2 3 => rw [← comp_whiskerRight, Hom.left_act_hom]
-    slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one, MonoidalCategory.whiskerLeft_comp]
+    slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one,
+      MonoidalCategory.whiskerLeft_comp]
     slice_rhs 2 3 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_rhs 1 2 => rw [associator_inv_naturality_middle]
     simp
@@ -449,7 +455,8 @@ noncomputable def whiskerRight {X Y Z : Mon_ C} {M₁ M₂ : Bimod X Y} (f : M�
     slice_lhs 1 2 => rw [TensorBimod.π_tensor_id_actRight]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
     slice_lhs 2 3 => rw [whisker_exchange]
-    slice_rhs 1 2 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one, comp_whiskerRight]
+    slice_rhs 1 2 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one,
+      comp_whiskerRight]
     slice_rhs 2 3 => rw [TensorBimod.π_tensor_id_actRight]
     simp
 
@@ -474,7 +481,9 @@ noncomputable def homAux : (P.tensorBimod Q).X ⊗ L.X ⟶ (P.tensorBimod (Q.ten
         slice_lhs 2 3 => rw [← whisker_exchange]
         slice_lhs 3 4 => rw [coequalizer.condition]
         slice_lhs 2 3 => rw [associator_naturality_right]
-        slice_lhs 3 4 => rw [← MonoidalCategory.whiskerLeft_comp, TensorBimod.whiskerLeft_π_actLeft, MonoidalCategory.whiskerLeft_comp]
+        slice_lhs 3 4 =>
+          rw [← MonoidalCategory.whiskerLeft_comp,
+            TensorBimod.whiskerLeft_π_actLeft, MonoidalCategory.whiskerLeft_comp]
         simp)
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.hom_aux Bimod.AssociatorBimod.homAux
@@ -487,11 +496,13 @@ noncomputable def hom :
       dsimp [homAux]
       refine' (cancel_epi ((tensorRight _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 _
       dsimp [TensorBimod.X]
-      slice_lhs 1 2 =>
-        rw [← comp_whiskerRight, TensorBimod.π_tensor_id_actRight, comp_whiskerRight, comp_whiskerRight]
+      slice_lhs 1 2 => rw [← comp_whiskerRight, TensorBimod.π_tensor_id_actRight,
+        comp_whiskerRight, comp_whiskerRight]
       slice_lhs 3 5 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
       slice_lhs 2 3 => rw [associator_naturality_middle]
-      slice_lhs 3 4 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.condition, MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
+      slice_lhs 3 4 =>
+        rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.condition,
+          MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
       slice_rhs 1 2 => rw [associator_naturality_left]
       slice_rhs 2 3 => rw [← whisker_exchange]
       slice_rhs 3 5 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
@@ -507,17 +518,20 @@ theorem hom_left_act_hom' :
   rw [tensorLeft_map]
   slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
-  slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.π_desc, MonoidalCategory.whiskerLeft_comp]
+  slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.π_desc,
+    MonoidalCategory.whiskerLeft_comp]
   refine' (cancel_epi ((tensorRight _ ⋙ tensorLeft _).map (coequalizer.π _ _))).1 _
   dsimp; dsimp [TensorBimod.X]
   slice_lhs 1 2 => rw [associator_inv_naturality_middle]
   slice_lhs 2 3 =>
-    rw [← comp_whiskerRight, TensorBimod.whiskerLeft_π_actLeft, comp_whiskerRight, comp_whiskerRight]
+    rw [← comp_whiskerRight, TensorBimod.whiskerLeft_π_actLeft,
+      comp_whiskerRight, comp_whiskerRight]
   slice_lhs 4 6 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [associator_naturality_left]
   slice_rhs 1 3 =>
-    rw [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.whiskerLeft_comp, π_tensor_id_preserves_coequalizer_inv_desc,
-      MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
+    rw [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.whiskerLeft_comp,
+      π_tensor_id_preserves_coequalizer_inv_desc, MonoidalCategory.whiskerLeft_comp,
+      MonoidalCategory.whiskerLeft_comp]
   slice_rhs 3 4 => erw [TensorBimod.whiskerLeft_π_actLeft P (Q.tensorBimod L)]
   slice_rhs 2 3 => erw [associator_inv_naturality_right]
   slice_rhs 3 4 => erw [whisker_exchange]
@@ -547,7 +561,8 @@ theorem hom_right_act_hom' :
   slice_rhs 2 3 => erw [associator_naturality_middle]
   dsimp
   slice_rhs 3 4 =>
-    rw [← MonoidalCategory.whiskerLeft_comp, TensorBimod.π_tensor_id_actRight, MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
+    rw [← MonoidalCategory.whiskerLeft_comp, TensorBimod.π_tensor_id_actRight,
+      MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
   coherence
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.hom_right_act_hom' Bimod.AssociatorBimod.hom_right_act_hom'
@@ -584,10 +599,12 @@ noncomputable def inv :
       slice_lhs 1 2 => rw [whisker_exchange]
       slice_lhs 2 4 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
       slice_lhs 1 2 => rw [associator_inv_naturality_left]
-      slice_lhs 2 3 => rw [← comp_whiskerRight, coequalizer.condition, comp_whiskerRight, comp_whiskerRight]
+      slice_lhs 2 3 =>
+        rw [← comp_whiskerRight, coequalizer.condition, comp_whiskerRight, comp_whiskerRight]
       slice_rhs 1 2 => rw [associator_naturality_right]
       slice_rhs 2 3 =>
-        rw [← MonoidalCategory.whiskerLeft_comp, TensorBimod.whiskerLeft_π_actLeft, MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
+        rw [← MonoidalCategory.whiskerLeft_comp, TensorBimod.whiskerLeft_π_actLeft,
+          MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
       slice_rhs 4 6 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
       slice_rhs 3 4 => rw [associator_inv_naturality_middle]
       coherence)
@@ -1013,8 +1030,8 @@ theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P :
   slice_lhs 5 6 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_lhs 4 5 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.π_desc]
   slice_lhs 3 4 =>
-    rw [← MonoidalCategory.whiskerLeft_comp, π_tensor_id_preserves_coequalizer_inv_desc, MonoidalCategory.whiskerLeft_comp,
-      MonoidalCategory.whiskerLeft_comp]
+    rw [← MonoidalCategory.whiskerLeft_comp, π_tensor_id_preserves_coequalizer_inv_desc,
+      MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
   slice_rhs 1 2 => rw [associator_naturality_left]
   slice_rhs 2 3 =>
     rw [← whisker_exchange]

@@ -48,7 +48,8 @@ def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 
       simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, comp_whiskerRight,
         LaxMonoidalFunctor.associativity_inv_assoc, IsIso.hom_inv_id_assoc, IsIso.inv_comp_eq]
       simp_rw [← comp_whiskerRight_assoc]
-      simp only [IsIso.hom_inv_id_assoc, comp_whiskerRight, Category.assoc, ExactPairing.coevaluation_evaluation_assoc,
+      simp only [IsIso.hom_inv_id_assoc, comp_whiskerRight, Category.assoc,
+        ExactPairing.coevaluation_evaluation_assoc,
         LaxMonoidalFunctor.right_unitality, LaxMonoidalFunctor.left_unitality_inv]
       simp_rw [← whiskerLeft_comp_assoc]
       simp )
