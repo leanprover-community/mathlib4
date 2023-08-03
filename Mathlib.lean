@@ -225,6 +225,7 @@ import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
+import Mathlib.Algebra.Homology.ShortComplex.Limits
 import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
@@ -1659,6 +1660,7 @@ import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.Data.Polynomial.Degree.TrailingDegree
 import Mathlib.Data.Polynomial.DenomsClearable
+import Mathlib.Data.Polynomial.Derivation
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Polynomial.Div
 import Mathlib.Data.Polynomial.EraseLead
@@ -1756,6 +1758,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Data.Set.Intervals.Group
+import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Data.Set.Intervals.Infinite
 import Mathlib.Data.Set.Intervals.Instances
 import Mathlib.Data.Set.Intervals.IsoIoo
@@ -2122,6 +2125,7 @@ import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.BilinearMap
@@ -2226,7 +2230,7 @@ import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
 import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Complex
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 import Mathlib.LinearAlgebra.QuadraticForm.Real
 import Mathlib.LinearAlgebra.Quotient
