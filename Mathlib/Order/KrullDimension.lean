@@ -60,7 +60,7 @@ variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
 
-lemma krullDim_le_of_StrictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
+lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   iSup_le $ λ p ↦ le_sSup ⟨p.map f hf, rfl⟩
 
 end Preorder
@@ -76,9 +76,9 @@ namespace ringKrullDim
 /--
 If `R ⟶ S` is a surjective ring homomorphism, then `ringKrullDim S ≤ ringKrullDim R`.
 -/
-theorem le_of_Surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
+theorem le_of_surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
   (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R := by
-{ refine' krullDim_le_of_StrictMono (PrimeSpectrum.comap f)
+{ refine' krullDim_le_of_strictMono (PrimeSpectrum.comap f)
     (Monotone.strictMono_of_injective ?_ (PrimeSpectrum.comap_injective_of_surjective f hf))
   · intro a b hab
     change ((PrimeSpectrum.comap f) a).asIdeal ≤ ((PrimeSpectrum.comap f) b).asIdeal
@@ -90,15 +90,15 @@ If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`.
 -/
 theorem le_of_Quot (R : Type _) [CommRing R] (I : PrimeSpectrum R) :
   ringKrullDim (R ⧸ I.asIdeal) ≤ ringKrullDim R :=
-le_of_Surj _ _ (Ideal.Quotient.mk I.asIdeal) Ideal.Quotient.mk_surjective
+le_of_surj _ _ (Ideal.Quotient.mk I.asIdeal) Ideal.Quotient.mk_surjective
 
 /--
 If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`.
 -/
 theorem eq_of_RingEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S) :
   ringKrullDim R = ringKrullDim S :=
-le_antisymm (le_of_Surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
-  (le_of_Surj R S e (EquivLike.surjective e))
+le_antisymm (le_of_surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
+  (le_of_surj R S e (EquivLike.surjective e))
 
 /-
 Here we aim to show that for any prime ideal `I` of a commutative ring `R`, the
@@ -155,7 +155,6 @@ lemma toIdealImageSpan_exist_eq (y) :
   apply Submodule.span_induction' ?_ ?_ ?_ ?_ h
   · rintro _ ⟨_, h, rfl⟩
     refine ⟨⟨⟨_, h⟩, 1⟩, one_smul _ _⟩
-
   · refine ⟨⟨0, 1⟩, ?_⟩
     simp only [OneMemClass.coe_one, one_smul, map_zero, Submodule.mk_eq_zero]
   · rintro x hx y hy ⟨⟨mx, nx⟩, hmnx⟩ ⟨⟨my, ny⟩, hmny⟩
