@@ -39,8 +39,7 @@ noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
   · have := Module.subsingleton R M
     rw [ChooseBasisIndex]
     infer_instance
-  · obtain ⟨h⟩ := id ‹Module.Finite R M›
-    choose s hs using h
+  · obtain ⟨s, hs⟩ := id ‹Module.Finite R M›
     exact basis_finite_of_finite_spans (↑s) hs (chooseBasis _ _)
 #align module.free.choose_basis_index.fintype Module.Free.ChooseBasisIndex.fintype
 
