@@ -51,7 +51,7 @@ namespace ULiftable
 instance symm (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) [ULiftable f g] : ULiftable g f where
   congr e := (ULiftable.congr e.symm).symm
 
-/-- The most common practical use `ULiftable` (together with `up`), this function takes
+/-- The most common practical use `ULiftable` (together with `down`), this function takes
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
 @[reducible]
 def up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α} :
@@ -60,7 +60,7 @@ def up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULi
 #align uliftable.up ULiftable.up
 
 /-- The most common practical use of `ULiftable` (together with `up`), this function takes
-`x : M.{max u v} (ulift.{v} α)` and lowers it to `M.{u} α` -/
+`x : M.{max u v} (ULift.{v} α)` and lowers it to `M.{u} α` -/
 @[reducible]
 def down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α} :
     g (ULift.{v₀} α) → f α :=
