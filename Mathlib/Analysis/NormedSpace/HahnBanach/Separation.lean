@@ -39,7 +39,7 @@ open Set
 
 open Pointwise
 
-variable {𝕜 E : Type _}
+variable {E : Type _}
 
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
@@ -192,7 +192,7 @@ theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClo
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
 #align geometric_hahn_banach_closed_point geometric_hahn_banach_closed_point
 
-/-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
+/-- See also `NormedSpace.eq_iff_forall_dual_eq` and the class `SeparatingDual`. -/
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     ∃ f : E →L[ℝ] ℝ, f x < f y := by
   obtain ⟨f, s, t, hs, st, ht⟩ :=
