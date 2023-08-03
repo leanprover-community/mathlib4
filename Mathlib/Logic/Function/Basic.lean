@@ -92,6 +92,7 @@ protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injec
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
 #align function.bijective.surjective Function.Bijective.surjective
 
+@[simp]
 theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
 #align function.injective.eq_iff Function.Injective.eq_iff
@@ -108,6 +109,7 @@ theorem Injective.ne (hf : Injective f) {a₁ a₂ : α} : a₁ ≠ a₂ → f a
   mt fun h ↦ hf h
 #align function.injective.ne Function.Injective.ne
 
+@[simp]
 theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y :=
   ⟨mt <| congr_arg f, hf.ne⟩
 #align function.injective.ne_iff Function.Injective.ne_iff
