@@ -18,7 +18,7 @@ introduce the analogous "additive" companion, `UniqueSums` and link the two so t
 converts `UniqueProds` into `UniqueSums`.
 
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`infer_instance` uses `covariants.to_uniqueProds` and `covariants.to_uniqueSums`).
+(`infer_instance` uses `Covariants.to_uniqueProds` and `Covariants.to_uniqueSums`).
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic

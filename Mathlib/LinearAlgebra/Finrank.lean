@@ -34,7 +34,7 @@ You should not assume that there has been any effort to state lemmas as generall
 
 universe u v v' w
 
-open Classical Cardinal
+open Cardinal
 
 open Cardinal Submodule Module Function
 
@@ -326,10 +326,11 @@ theorem finrank_span_finset_le_card (s : Finset V) : (s : Set V).finrank K ≤ s
 #align finrank_span_finset_le_card finrank_span_finset_le_card
 
 theorem finrank_range_le_card {ι : Type _} [Fintype ι] {b : ι → V} :
-    (Set.range b).finrank K ≤ Fintype.card ι :=
-  (finrank_span_le_card _).trans <| by
-    rw [Set.toFinset_range]
-    exact Finset.card_image_le
+    (Set.range b).finrank K ≤ Fintype.card ι := by
+  classical
+  refine (finrank_span_le_card _).trans ?_
+  rw [Set.toFinset_range]
+  exact Finset.card_image_le
 #align finrank_range_le_card finrank_range_le_card
 
 theorem finrank_span_eq_card {ι : Type _} [Fintype ι] {b : ι → V} (hb : LinearIndependent K b) :
@@ -395,6 +396,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type _} [Finty
     (spans : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     LinearIndependent K b :=
   linearIndependent_iff'.mpr fun s g dependent i i_mem_s => by
+    classical
     by_contra gx_ne_zero
     -- We'll derive a contradiction by showing `b '' (univ \ {i})` of cardinality `n - 1`
     -- spans a vector space of dimension `n`.
