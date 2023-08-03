@@ -442,10 +442,9 @@ def Subsemiring.closureEquivAdjoinNat {R : Type _} [Semiring R] (s : Set R) :
 the identity map. -/
 def Subring.closureEquivAdjoinInt {R : Type _} [Ring R] (s : Set R) :
     Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s :=
-  Subalgebra.equivOfEq (subalgebraOfSubring <| Subring.closure s) _ <| by
-    refine le_antisymm ?_ (adjoin_le subset_closure)
-    -- Lean is lest smart here, probably because of the `with` definition of `subalgebraOfSubring`
-    change closure s ≤ (adjoin ℤ s).toSubring
-    exact (closure_le.mpr subset_adjoin)
+  Subalgebra.equivOfEq (subalgebraOfSubring <| Subring.closure s) _ <|
+    -- Lean is less smart here, probably because of the `with` definition of `subalgebraOfSubring`
+    le_antisymm (closure_le.mpr subset_adjoin : _ ≤ (adjoin ℤ s).toSubring)
+      (adjoin_le subset_closure)
 
   end ClosureEquivAdjoin
