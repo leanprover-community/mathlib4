@@ -56,7 +56,7 @@ def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type _} [CommRing R] [Al
 
 open Finset
 
-set_option maxHeartbeats 500000 in
+set_option maxHeartbeats 600000 in
 set_option synthInstance.maxHeartbeats 120000 in
 /-- If `K` and `L` are field extensions of `F` and we have `s : Finset K` such that
 the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s` embeds in `L`. -/
