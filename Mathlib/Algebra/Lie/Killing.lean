@@ -54,7 +54,7 @@ lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
   LinearMap.trace_mul_comm R (φ x) (φ y)
 
 @[simp] lemma traceForm_flip : (traceForm R L M).flip = traceForm R L M :=
-  Eq.symm <| LinearMap.ext₂ <| traceForm_symm_apply_apply R L M
+  Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
 lemma traceForm_apply_lie_apply (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
