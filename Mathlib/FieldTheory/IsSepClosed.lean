@@ -33,7 +33,8 @@ separable closure, separably closed
 
 - If `K` is a separably closed field (or algebraically closed field) containing `k`, then all
   elements of `K` which are separable over `k` form a separable closure of `k`.
-  In particular, separable closure exists.
+
+- Using above result, construct separable closure as a subfield of algebraic closure.
 
 - If `k` is a perefect field, then its separable closure coincide with its algebraic closure.
 
@@ -85,7 +86,8 @@ theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.S
     ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
 
-theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] : ∃ z, z ^ n = x := by
+theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
+    ∃ z, z ^ n = x := by
   have hn' : 0 < n := Nat.pos_of_ne_zero <| fun h => by
     rw [h, Nat.cast_zero] at hn
     exact hn.out rfl
