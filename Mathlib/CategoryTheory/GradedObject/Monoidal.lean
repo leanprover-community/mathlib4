@@ -272,7 +272,12 @@ def ιTensorObj₄_eq' (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p�
   ιTensorObj₄ X₁ X₂ X₃ X₄ p₁ p₂ p₃ p₄ n h =
     ((ιTensorObj X₁ X₂ p₁ p₂ p₁₂ h₁₂ ⊗ 𝟙 (X₃ p₃)) ⊗ 𝟙 (X₄ p₄)) ≫
       ιTensorObj₃ (tensorObj X₁ X₂) X₃ X₄ p₁₂ p₃ p₄ n (by rw [← h₁₂, h]) := by
-  sorry
+  rw [ιTensorObj₄_eq X₁ X₂ X₃ X₄ p₁ p₂ p₃ p₄ n h (p₁ + p₂ + p₃) rfl,
+    ιTensorObj₃_eq X₁ X₂ X₃ p₁ p₂ p₃ (p₁ + p₂ + p₃) rfl p₁₂ h₁₂,
+    ιTensorObj₃_eq (tensorObj X₁ X₂) X₃ X₄ p₁₂ p₃ p₄ n (by rw [← h₁₂, h])
+      (p₁ + p₂ + p₃) (by rw [← h₁₂])]
+  simp only [MonoidalCategory.comp_tensor_id, MonoidalCategory.associator_conjugation,
+    MonoidalCategory.tensor_id, assoc]
 
 lemma tensorObj₄_ext (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (n : ℕ) {Z : V}
     (f₁ f₂ : tensorObj (tensorObj (tensorObj X₁ X₂) X₃) X₄ n ⟶ Z)
@@ -290,10 +295,14 @@ lemma tensorObj₄_ext (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (n : ℕ) {Z :
 lemma pentagon_aux₁ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃ p₄ n : ℕ)
     (h : p₁ + p₂ + p₃ + p₄ = n) (p₁₂ : ℕ) (h₁₂ : p₁ + p₂ = p₁₂) (p₃₄ : ℕ) (h₃₄ : p₃ + p₄ = p₃₄) :
     ((ιTensorObj X₁ X₂ p₁ p₂ p₁₂ h₁₂ ⊗ 𝟙 (X₃ p₃)) ⊗ 𝟙 (X₄ p₄)) ≫
-      ιTensorObj₃' (MonoidalCategory.tensorObj X₁ X₂) X₃ X₄ p₁₂ p₃ p₄ n (by rw [←h₁₂, h]) =
+      ιTensorObj₃' (tensorObj X₁ X₂) X₃ X₄ p₁₂ p₃ p₄ n (by rw [← h₁₂, h]) =
       (α_ _ _ _).hom ≫ (𝟙 _ ⊗ ιTensorObj X₃ X₄ p₃ p₄ p₃₄ h₃₄) ≫
         ιTensorObj₃ X₁ X₂ (tensorObj X₃ X₄) p₁ p₂ p₃₄ n (by rw [← h₃₄, ← add_assoc, h]) := by
-  sorry
+  rw [ιTensorObj₃'_eq (tensorObj X₁ X₂) X₃ X₄ p₁₂ p₃ p₄ n (by rw [← h₁₂, h]) p₃₄ h₃₄,
+    ιTensorObj₃_eq X₁ X₂ (tensorObj X₃ X₄) p₁ p₂ p₃₄ n (by rw [← h₃₄, ← add_assoc, h]) p₁₂ h₁₂]
+  simp only [MonoidalCategory.associator_conjugation, MonoidalCategory.tensor_id, assoc,
+    Iso.inv_hom_id_assoc, MonoidalCategory.tensor_id_comp_id_tensor_assoc,
+    MonoidalCategory.id_tensor_comp_tensor_id_assoc]
 
 lemma pentagon_aux₂ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃ p₄ n : ℕ)
     (h : p₁ + p₂ + p₃ + p₄ = n) (p₁₂₃ : ℕ) (h₁₂₃ : p₁ + p₂ + p₃ = p₁₂₃) (p₂₃ : ℕ)
@@ -302,7 +311,10 @@ lemma pentagon_aux₂ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃
       ιTensorObj (tensorObj X₁ (tensorObj X₂ X₃)) X₄ p₁₂₃ p₄ n (by rw [← h₁₂₃, h]) =
     (((α_ _ _ _).hom ≫ (𝟙 (X₁ p₁) ⊗ ιTensorObj X₂ X₃ p₂ p₃ p₂₃ h₂₃)) ⊗ (𝟙 (X₄ p₄))) ≫
       ιTensorObj₃ X₁ (tensorObj X₂ X₃) X₄ p₁ p₂₃ p₄ n (by rw [← h₂₃, ← add_assoc, h]) := by
-  sorry
+  rw [ιTensorObj₃'_eq X₁ X₂ X₃ p₁ p₂ p₃ p₁₂₃ h₁₂₃ p₂₃ h₂₃,
+    ιTensorObj₃_eq X₁ (tensorObj X₂ X₃) X₄ p₁ p₂₃ p₄ n
+      (by rw [← h₂₃, ← add_assoc, h]) p₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])]
+  simp only [MonoidalCategory.comp_tensor_id, MonoidalCategory.associator_conjugation, assoc]
 
 @[reassoc]
 lemma pentagon_aux₃ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃ p₄ n : ℕ)
@@ -318,14 +330,7 @@ lemma pentagon_aux₃ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃
     ιTensorObj₃_comp_associator_hom X₁ X₂ X₃ p₁ p₂ p₃ (p₁ + p₂ + p₃) rfl,
     pentagon_aux₂ X₁ X₂ X₃ X₄ p₁ p₂ p₃ p₄ n h (p₁ + p₂ + p₃) rfl p₂₃ h₂₃]
 
-@[reassoc]
 lemma pentagon_aux₄ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃ p₄ n : ℕ)
-    (h : p₁ + p₂ + p₃ + p₄ = n) (p₃₄ : ℕ) (h₃₄ : p₃ + p₄ = p₃₄) :
-    (𝟙 (X₁ p₁ ⊗ X₂ p₂) ⊗ ιTensorObj X₃ X₄ p₃ p₄ p₃₄ h₃₄) ≫ (α_ _ _ _).hom =
-      (α_ _ _ _).hom ≫ (𝟙 (X₁ p₁) ⊗ 𝟙 (X₂ p₂) ⊗ ιTensorObj X₃ X₄ p₃ p₄ p₃₄ h₃₄) := by
-  sorry
-
-lemma pentagon_aux₅ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃ p₄ n : ℕ)
     (h : p₁ + p₂ + p₃ + p₄ = n) (p₃₄ : ℕ) (h₃₄ : p₃ + p₄ = p₃₄)
     (p₂₃₄ : ℕ) (h₂₃₄ : p₂ + p₃ + p₄ = p₂₃₄) :
     (𝟙 (X₁ p₁ ⊗ X₂ p₂) ⊗ ιTensorObj X₃ X₄ p₃ p₄ p₃₄ h₃₄) ≫
@@ -343,7 +348,8 @@ lemma pentagon_aux₅ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃
     ιTensorObj₃'_eq X₁ X₂ (tensorObj X₃ X₄) p₁ p₂ p₃₄ n
     (by rw [← h₃₄, ← add_assoc, h]) p₂₃₄ (by rw [← h₂₃₄, ← h₃₄, add_assoc]),
     Iso.inv_hom_id_assoc, MonoidalCategory.id_tensor_comp, assoc,
-    pentagon_aux₄_assoc X₁ X₂ X₃ X₄ p₁ p₂ p₃ p₄ n h p₃₄ h₃₄]
+    ← MonoidalCategory.tensor_id, MonoidalCategory.associator_conjugation,
+    assoc, assoc, Iso.inv_hom_id_assoc]
 
 end MonoidalCategory
 
@@ -386,7 +392,7 @@ instance : MonoidalCategory (GradedObject ℕ V) where
       ιTensorObj₃_comp_associator_hom_assoc, comp_tensor_id,
       associator_conjugation, assoc, assoc, assoc, reassoc_of% pentagonV]
     clear pentagonV
-    rw [pentagon_aux₅ X₁ X₂ X₃ X₄ p₁ p₂ p₃ p₄ n h (p₃ + p₄) rfl (p₂ + p₃ + p₄) rfl,
+    rw [pentagon_aux₄ X₁ X₂ X₃ X₄ p₁ p₂ p₃ p₄ n h (p₃ + p₄) rfl (p₂ + p₃ + p₄) rfl,
       ιTensorObj₃'_eq X₁ (tensorObj X₂ X₃) X₄ p₁ (p₂ + p₃) p₄ n
         (by rw [← add_assoc, h]) (p₂ + p₃ + p₄) rfl,
       ιTensorObj₃_eq X₂ X₃ X₄ p₂ p₃ p₄ (p₂ + p₃ + p₄) rfl (p₂ + p₃) rfl]
