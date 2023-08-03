@@ -392,6 +392,8 @@ def support : R[X] → Finset ℕ
 theorem support_ofFinsupp (p) : support (⟨p⟩ : R[X]) = p.support := by rw [support]
 #align polynomial.support_of_finsupp Polynomial.support_ofFinsupp
 
+theorem support_toFinsupp (p : R[X]) : p.toFinsupp.support = p.support := by rw [support]
+
 @[simp]
 theorem support_zero : (0 : R[X]).support = ∅ :=
   rfl

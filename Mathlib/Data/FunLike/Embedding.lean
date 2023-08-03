@@ -133,7 +133,7 @@ injective coercion to injective functions `α ↪ β`.
 -/
 class EmbeddingLike (F : Sort _) (α β : outParam (Sort _)) extends FunLike F α fun _ ↦ β where
   /-- The coercion to functions must produce injective functions. -/
-  injective' : ∀ f : F, @Function.Injective α β (coe f)
+  injective' : ∀ f : F, Function.Injective (coe f)
 #align embedding_like EmbeddingLike
 
 namespace EmbeddingLike
