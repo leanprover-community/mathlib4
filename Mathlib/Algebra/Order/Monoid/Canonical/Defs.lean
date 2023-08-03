@@ -7,6 +7,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.MinMax
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Group.Units
 
 #align_import algebra.order.monoid.canonical.defs from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -19,7 +20,7 @@ universe u
 
 variable {α : Type u}
 
-/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
+/-- A mixin class stating that one-sided 'division' is possible in the sense that
 if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedMonoid`. -/
 class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
@@ -27,7 +28,7 @@ class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
   exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
 #align has_exists_mul_of_le ExistsMulOfLE
 
-/-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
+/-- A mixin class stating that one-sided 'subtraction' is possible in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedAddMonoid`. -/
 class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
@@ -90,68 +91,51 @@ theorem le_iff_forall_one_lt_lt_mul' : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε
 end ExistsMulOfLE
 
 
-/-- A canonically ordered additive monoid is an ordered commutative additive monoid
-  in which the ordering coincides with the subtractibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
-  This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s. -/
-class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α, Bot α where
-  /-- `⊥` is the least element -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
-  /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
-  protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
-  /-- For any `a` and `b`, `a ≤ a + b` -/
-  protected le_self_add : ∀ a b : α, a ≤ a + b
-#align canonically_ordered_add_monoid CanonicallyOrderedAddMonoid
+section LEIffExistsMul
 
+/-- A mixin class stating that an ordering interacts canonically with multiplication
+  in the sense that `a ≤ b` iff `b = a * c` for some `c`. This is essentially the
+  definition of a `CanonicallyOrderedMonoid`, but is decoupled so that it can be
+  added as an assumption for arbitrary `Mul`/`LE` typeclasses such as `CompleteLattice`,
+  while avoiding diamonds. -/
+class LEIffExistsMul (α : Type _) [Mul α] [LE α] : Prop where
+  /-- `a ≤ b` if `b = a * c` for some `c` -/
+  protected le_iff_exists_mul : ∀ {a b : α}, a ≤ b ↔ ∃ c, b = a * c
 
--- see Note [lower instance priority]
-instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
-    [h : CanonicallyOrderedAddMonoid α] : OrderBot α :=
-  { h with }
-#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddMonoid.toOrderBot
+/-- A mixin class stating that an ordering interacts canonically with addition
+  in the sense that `a ≤ b` iff `b = a + c` for some `c`. This is essentially the
+  definition of a `CanonicallyOrderedAddMonoid`, but is decoupled so that it can be
+  added as an assumption for arbitrary `Add`/`LE` typeclasses such as `CompleteLattice`,
+  while avoiding diamonds. -/
+class LEIffExistsAdd (α : Type _) [Add α] [LE α] : Prop where
+  /-- `a ≤ b` if `b = a + c` for some `c` -/
+  protected le_iff_exists_add : ∀ {a b : α}, a ≤ b ↔ ∃ c, b = a + c
 
-/-- A canonically ordered monoid is an ordered commutative monoid
-  in which the ordering coincides with the divisibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
-  Examples seem rare; it seems more likely that the `OrderDual`
-  of a naturally-occurring lattice satisfies this than the lattice
-  itself (for example, dual of the lattice of ideals of a PID or
-  Dedekind domain satisfy this; collections of all things ≤ 1 seem to
-  be more natural that collections of all things ≥ 1).
--/
-@[to_additive]
-class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot α where
-  /-- `⊥` is the least element -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
-  /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
-  protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
-  /-- For any `a` and `b`, `a ≤ a * b` -/
-  protected le_self_mul : ∀ a b : α, a ≤ a * b
-#align canonically_ordered_monoid CanonicallyOrderedMonoid
-
--- see Note [lower instance priority]
-@[to_additive existing]
-instance (priority := 100) CanonicallyOrderedMonoid.toOrderBot (α : Type u)
-    [h : CanonicallyOrderedMonoid α] : OrderBot α :=
-  { h with }
-#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedMonoid.toOrderBot
-
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) CanonicallyOrderedMonoid.existsMulOfLE (α : Type u)
-    [h : CanonicallyOrderedMonoid α] : ExistsMulOfLE α :=
-  { h with }
-#align canonically_ordered_monoid.has_exists_mul_of_le CanonicallyOrderedMonoid.existsMulOfLE
-#align canonically_ordered_add_monoid.has_exists_add_of_le CanonicallyOrderedAddMonoid.existsAddOfLE
-
-section CanonicallyOrderedMonoid
-
-variable [CanonicallyOrderedMonoid α] {a b c d : α}
+attribute [to_additive] LEIffExistsMul
 
 @[to_additive]
-theorem le_self_mul : a ≤ a * c :=
-  CanonicallyOrderedMonoid.le_self_mul _ _
+theorem le_iff_exists_mul [Mul α] [LE α] [LEIffExistsMul α] {a b : α} :
+    a ≤ b ↔ ∃ c, b = a * c :=
+  LEIffExistsMul.le_iff_exists_mul
+
+@[to_additive]
+instance [Mul α] [LE α] [LEIffExistsMul α] : ExistsMulOfLE α :=
+  ⟨le_iff_exists_mul.1⟩
+
+variable [CommMonoid α]
+
+section Preorder
+
+variable [Preorder α] [LEIffExistsMul α] {a b c d : α}
+
+@[to_additive]
+theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
+  simp only [mul_comm _ a, le_iff_exists_mul]
+
+@[to_additive]
+theorem le_self_mul : a ≤ a * c := by
+  rw [le_iff_exists_mul]
+  exact ⟨_, rfl⟩
 #align le_self_mul le_self_mul
 #align le_self_add le_self_add
 
@@ -198,39 +182,42 @@ theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
 #align le_mul_of_le_right le_mul_of_le_right
 #align le_add_of_le_right le_add_of_le_right
 
-@[to_additive]
-theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
-  ⟨exists_mul_of_le, by
-    rintro ⟨c, rfl⟩
-    exact le_self_mul⟩
-#align le_iff_exists_mul le_iff_exists_mul
-#align le_iff_exists_add le_iff_exists_add
-
-@[to_additive]
-theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
-  simp only [mul_comm _ a, le_iff_exists_mul]
-#align le_iff_exists_mul' le_iff_exists_mul'
-#align le_iff_exists_add' le_iff_exists_add'
-
 @[to_additive (attr := simp) zero_le]
 theorem one_le (a : α) : 1 ≤ a :=
   le_iff_exists_mul.mpr ⟨a, (one_mul _).symm⟩
 #align one_le one_le
 #align zero_le zero_le
 
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] [LEIffExistsMul α] {a b c d : α}
+
 @[to_additive]
-theorem bot_eq_one : (⊥ : α) = 1 :=
+instance : CovariantClass α α (· * ·) (· ≤ ·) where
+  elim := by
+    intro a b c hbc
+    obtain ⟨d, rfl⟩ := exists_mul_of_le hbc
+    exact le_iff_exists_mul.2 ⟨d, (mul_assoc _ _ _).symm⟩
+
+@[to_additive]
+theorem eq_one_of_unit (a : αˣ) : a = 1 := by
+  obtain ⟨x,y,h,h'⟩ := a
+  obtain rfl := (le_of_mul_le_left h.le).antisymm (one_le x)
+  obtain rfl := (le_of_mul_le_right h.le).antisymm (one_le y)
+  rfl
+
+@[to_additive]
+instance : Unique αˣ where
+  default := default
+  uniq := fun a ↦ by rw [eq_one_of_unit a, eq_one_of_unit default]
+
+@[to_additive]
+theorem bot_eq_one [OrderBot α] [LEIffExistsMul α] : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 #align bot_eq_one bot_eq_one
 #align bot_eq_zero bot_eq_zero
-
---TODO: This is a special case of `mul_eq_one`. We need the instance
--- `CanonicallyOrderedMonoid α → Unique αˣ`
-@[to_additive (attr := simp)]
-theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  mul_eq_one_iff' (one_le _) (one_le _)
-#align mul_eq_one_iff mul_eq_one_iff
-#align add_eq_zero_iff add_eq_zero_iff
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
@@ -249,6 +236,12 @@ theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
   (one_le a).eq_or_lt.imp_left Eq.symm
 #align eq_one_or_one_lt eq_one_or_one_lt
 #align eq_zero_or_pos eq_zero_or_pos
+
+@[to_additive]
+theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  mul_eq_one
+#align mul_eq_one_iff mul_eq_one_iff
+#align add_eq_zero_iff add_eq_zero_iff
 
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
@@ -282,7 +275,8 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 #align le_add_right le_add_right
 
 @[to_additive]
-theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
+theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] {a b : α} :
+    a < b ↔ ∃ c > 1, b = a * c := by
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
   apply exists_congr
   intro c
@@ -298,26 +292,84 @@ theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔
 #align lt_iff_exists_mul lt_iff_exists_mul
 #align lt_iff_exists_add lt_iff_exists_add
 
-end CanonicallyOrderedMonoid
+end PartialOrder
 
-theorem pos_of_gt {M : Type _} [CanonicallyOrderedAddMonoid M] {n m : M} (h : n < m) : 0 < m :=
-  lt_of_le_of_lt (zero_le _) h
+end LEIffExistsMul
+
+theorem pos_of_gt {M : Type _} [AddCommMonoid M] [PartialOrder M] [LEIffExistsAdd M]
+    {n m : M} (h : n < m) : 0 < m := lt_of_le_of_lt (zero_le _) h
 #align pos_of_gt pos_of_gt
+
+/-- A canonically ordered additive monoid is an ordered commutative additive monoid
+  in which the ordering coincides with the subtractibility relation,
+  which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
+  This is satisfied by the natural numbers or nonnegative reals, for example,
+  but not the integers or other nontrivial `OrderedAddCommGroup`s. -/
+class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α, Bot α where
+  /-- `⊥` is the least element -/
+  protected bot_le : ∀ x : α, ⊥ ≤ x
+  /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
+  protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
+  /-- For any `a` and `b`, `a ≤ a + b` -/
+  protected le_self_add : ∀ a b : α, a ≤ a + b
+#align canonically_ordered_add_monoid CanonicallyOrderedAddMonoid
+
+-- see Note [lower instance priority]
+instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
+    [h : CanonicallyOrderedAddMonoid α] : OrderBot α :=
+  { h with }
+#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddMonoid.toOrderBot
+
+/-- A canonically ordered monoid is an ordered commutative monoid
+  in which the ordering coincides with the divisibility relation,
+  which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
+  Examples seem rare; it seems more likely that the `OrderDual`
+  of a naturally-occurring lattice satisfies this than the lattice
+  itself (for example, dual of the lattice of ideals of a PID or
+  Dedekind domain satisfy this; collections of all things ≤ 1 seem to
+  be more natural that collections of all things ≥ 1).
+-/
+@[to_additive]
+class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot α where
+  /-- `⊥` is the least element -/
+  protected bot_le : ∀ x : α, ⊥ ≤ x
+  /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
+  protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
+  /-- For any `a` and `b`, `a ≤ a * b` -/
+  protected le_self_mul : ∀ a b : α, a ≤ a * b
+#align canonically_ordered_monoid CanonicallyOrderedMonoid
+
+-- see Note [lower instance priority]
+@[to_additive existing]
+instance (priority := 100) CanonicallyOrderedMonoid.toOrderBot (α : Type u)
+    [h : CanonicallyOrderedMonoid α] : OrderBot α :=
+  { h with }
+#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedMonoid.toOrderBot
+
+-- see Note [lower instance priority]
+@[to_additive]
+instance (priority := 100) CanonicallyOrderedMonoid.LEIffExistsMul (α : Type u)
+    [CanonicallyOrderedMonoid α] : LEIffExistsMul α where
+  le_iff_exists_mul := ⟨CanonicallyOrderedMonoid.exists_mul_of_le,
+      fun ⟨_,hc⟩ ↦ hc ▸ CanonicallyOrderedMonoid.le_self_mul _ _⟩
+
 
 namespace NeZero
 
-theorem pos {M} (a : M) [CanonicallyOrderedAddMonoid M] [NeZero a] : 0 < a :=
+variable {M : Type _} [AddCommMonoid M] [PartialOrder M] [LEIffExistsAdd M]
+
+theorem pos (a : M) [NeZero a] : 0 < a :=
   (zero_le a).lt_of_ne <| NeZero.out.symm
 #align ne_zero.pos NeZero.pos
 
-theorem of_gt {M} [CanonicallyOrderedAddMonoid M] {x y : M} (h : x < y) : NeZero y :=
+theorem of_gt {x y : M} (h : x < y) : NeZero y :=
   of_pos <| pos_of_gt h
 #align ne_zero.of_gt NeZero.of_gt
 
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
-instance (priority := 10) of_gt' [CanonicallyOrderedAddMonoid M] [One M] {y : M} [Fact (1 < y)] :
+instance (priority := 10) of_gt' [One M] {y : M} [Fact (1 < y)] :
   -- Porting note: Fact.out has different type signature from mathlib3
   NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
