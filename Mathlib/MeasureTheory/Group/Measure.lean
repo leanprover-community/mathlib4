@@ -786,18 +786,14 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type _} [Grou
 
 /-- The image of a Haar measure under right multiplication is again
 a Haar measure. -/
-theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G)
-  : IsHaarMeasure (Measure.map (· * g) μ) :=
-{
+theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
+    IsHaarMeasure (Measure.map (· * g) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_rmul g
-  lt_top_of_isCompact := by
-    intro K hK
+  lt_top_of_isCompact K hK := by
     rw [map_apply (measurable_mul_const _) hK.measurableSet]
     apply IsCompact.measure_lt_top _
     rwa [← Homeomorph.coe_mulRight g, Homeomorph.isCompact_preimage _]
   toIsOpenPosMeasure := (continuous_mul_right g).isOpenPosMeasure_map (mul_right_surjective g)
-}
-
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
 nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type _}
