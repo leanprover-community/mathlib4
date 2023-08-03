@@ -153,6 +153,7 @@ instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R
   Ideal.Cotangent.moduleOfTower _
 #align kaehler_differential.module KaehlerDifferential.module
 
+@[inherit_doc KaehlerDifferential]
 notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
 instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
@@ -388,24 +389,21 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
 /- Note: Lean is slow to synthesize theses instances (times out).
   Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
   In Mathlib 3, it was slow but not this slow. -/
-local instance : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
 
-theorem isScalarTower_S_right : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+@[nolint defLemma]
+local instance isScalarTower_S_right : IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
 
-attribute [local instance] isScalarTower_S_right
-
-theorem isScalarTower_R_right : IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+@[nolint defLemma]
+local instance isScalarTower_R_right : IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
 
-attribute [local instance] isScalarTower_R_right
-
-theorem isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
+@[nolint defLemma]
+local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
   IsScalarTower.right
-
-attribute [local instance] isScalarTower_SS_right
 
 local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
   Submodule.module' _
@@ -693,3 +691,4 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
 end ExactSequence
 
 end KaehlerDifferential
+
