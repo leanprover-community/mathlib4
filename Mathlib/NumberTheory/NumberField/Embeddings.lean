@@ -171,6 +171,10 @@ def conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 #align number_field.complex_embedding.conjugate_coe_eq NumberField.ComplexEmbedding.conjugate_coe_eq
 
+theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
+  ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
+#align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
+
 /-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 @[reducible]
 def IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
@@ -361,6 +365,7 @@ theorem isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := 
 /-- The real embedding associated to a real infinite place. -/
 noncomputable def embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) : K →+* ℝ :=
   ComplexEmbedding.IsReal.embedding (isReal_iff.mp hw)
+#align number_field.infinite_place.is_real.embedding NumberField.InfinitePlace.embedding_of_isReal
 
 @[simp]
 theorem embedding_of_isReal_apply {w : InfinitePlace K} (hw : IsReal w) (x : K) :
