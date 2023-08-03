@@ -2,6 +2,7 @@ import Mathlib.Tactic.Functoriality.Attr
 import Mathlib.Tactic.SolveByElim
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.Topology.SubsetProperties
+import Mathlib.RingTheory.Ideal.Basic
 
 attribute [functor] Submonoid.map Submonoid.comap
 
@@ -425,6 +426,82 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : MySeqCo
   transport hX along f
 
 attribute [functor] Filter.comap -- Adding `Filter.map` as well causes trouble! :-)
+
+/-
+Let's say a commutative ring is local if it has exactly one maximal ideal.
+I claim that a ring isomorphic to a local ring is local, and here's a funny proof.
+Say a ring is nontrivial if it has more than one element.
+If R -> S is an injection and R is nontrivial then S is nontrivial, by transport.
+Say a ring is prelocal if it has at most one maximal ideal.
+If R -> S is a surjection and R is prelocal then S is prelocal, by transport.
+Furthermore a nontrivial prelocal ring is local.
+Hence if R -> S is an isomorphism and R is local then S is local.
+-/
+
+attribute [simp] Function.Injective.eq_iff
+
+-- example {R S : Type} [Ring R] [Ring S] (w : Nontrivial R) (f : R →+* S) (hf : Function.Injective f) :
+--   Nontrivial S :=
+-- by transport w along f.toFun
+
+-- example {R S : Type} [Ring R] [Ring S] (f : R →+* S) (hf : Function.Injective f)
+-- (w1 w2 : R) (h : w1 ≠ w2) :
+-- OneHom.toFun (↑(↑f : R →* S)) w1 ≠
+-- OneHom.toFun (↑(↑f : R →* S) : OneHom R S) w2 :=
+--   by aesop
+
+-- example {R S : Type} [Ring R] [Ring S] (f : R →+* S) (hf : Function.Injective f)
+-- (w1 w2 : R) (h : w1 ≠ w2) :
+-- f w1 ≠ f w2 :=
+--   by aesop
+
+-- example {R S : Type} (f : R → S) (hf : Function.Injective f)
+-- (w1 w2 : R) (h : w1 ≠ w2) :
+-- f w1 ≠ f w2 :=
+--   by aesop
+
+-- example {R S : Type} [Ring R] [Ring S] (f : R →+* S) (hf : Function.Surjective f)
+--   (s : nonunits S) : nonunits R :=
+-- by transport s along f
+
+attribute [functor] Units.map
+
+
+
+set_option trace.Meta.Tactic.solveByElim true
+
+example {R S : Type} [Ring R] [Ring S] (f : R →* S)
+  (r : Units R) : Units S :=
+-- by transport r along f
+-- by exact?
+-- Units.map f r
+by functoriality
+
+example {R S : Type} [Ring R] [Ring S] (f : R →+* S)
+  (h : Σ' (r : R), ∃ r', r * r' = 1) : Σ' (s : S), ∃ s', s * s' = 1 :=
+by transport h along f.toFun
+
+example {R S : Type} [Monoid R] [Monoid S] (f : R →* S) (a b c d : R)
+  (h : a * b = c * d) : f a * f b = f c * f d :=
+-- by transport h along f
+by aesop?
+
+example {R S : Type} [Monoid R] [Monoid S] (f : R →* S) (a b c d: R)
+  (h : a * b = c * d) : f a * f b = f c * f d := by
+  have : f (a * b) = f (c * d) := congrArg f h
+  simp at this
+  aesop
+
+#check congrArg
+#check Eq
+#check Eq.mk
+
+-- example {R S : Type} [Ring R] [Ring S]
+--   (w : ∀ a b : R, a ∈ nonunits R → b ∈ nonunits R → a + b ∈ nonunits R)
+--   (f : R →+* S) (hf : Function.Surjective f) :
+--   ∀ a b : S, a ∈ nonunits S → b ∈ nonunits S → a + b ∈ nonunits S :=
+-- by transport w along f.toFun
+
 
 -- set_option maxHeartbeats 0 in
 -- example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : CompactSpace X) :
