@@ -180,8 +180,43 @@ theorem nil_lt_cons [LT α] (a : α) (l : List α) : [] < a :: l :=
   Lex.nil
 #align list.nil_lt_cons List.nil_lt_cons
 
+@[simp]
+theorem not_lt_nil [LT α] (l : List α) : ¬ l < [] :=
+  Lex.not_nil_right _ _
+-- Why doesn't `simp` work?
+
+@[simp]
+theorem cons_lt [Preorder α] (a : α) (x y : List α) : a :: x < a :: y ↔ x < y := by
+  constructor
+  · intro h
+    cases h
+    case cons h =>
+      exact h
+    case rel h =>
+      simp at h
+  · intro h
+    apply Lex.cons h
+
+@[simp]
+theorem append_lt [Preorder α] (x y z : List α) : x ++ y < x ++ z ↔ y < z := by
+  induction x
+  · case nil => rfl
+  · case cons h t ih =>
+      simpa
+
 instance [LinearOrder α] : LinearOrder (List α) :=
   linearOrderOfSTO (Lex (· < ·))
+
+lemma head?_get_mono [LinearOrder α]
+    (l₁ l₂ : List α) (h₁ : l₁.head?.isSome) (h₂ : l₂.head?.isSome) :
+    l₁ < l₂ → l₁.head?.get h₁ ≤ l₂.head?.get h₂ := by
+  match l₁, h₁, l₂, h₂ with
+  | x₁ :: t₁, _, x₂ :: t₂, _ =>
+    intro h
+    cases h
+    case cons => rfl
+    case rel h =>
+      exact h.le
 
 --Note: this overrides an instance in core lean
 instance LE' [LinearOrder α] : LE (List α) :=

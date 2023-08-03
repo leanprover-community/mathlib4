@@ -234,6 +234,26 @@ theorem WellFounded.monotone_chain_condition [PartialOrder α] :
   simp (config := {contextual := true}) [lt_iff_le_and_ne, fun h => a.mono h]
 #align well_founded.monotone_chain_condition WellFounded.monotone_chain_condition
 
+theorem WellFounded.antitone_chain_condition' [Preorder α] :
+    WellFounded ((· < ·) : α → α → Prop) ↔ ∀ (a : ℕ → α) (ha : Antitone a),
+    ∃ n, ∀ m, n ≤ m → ¬a m < a n := by
+  refine' ⟨fun h a _ => _, fun h => _⟩
+  · have hne : (Set.range a).Nonempty := ⟨a 0, by simp⟩
+    obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ hne
+    exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
+  · refine' RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun a => _⟩
+    obtain ⟨n, hn⟩ := h a.toFun (StrictAnti.antitone (fun _ _ hh ↦ a.map_rel_iff'.mpr hh))
+    exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
+
+/-- The "antitone chain condition" below is sometimes a convenient form of well foundedness. -/
+theorem WellFounded.antitone_chain_condition [PartialOrder α] :
+    WellFounded ((· < ·) : α → α → Prop) ↔ ∀ (a : ℕ → α) (ha : Antitone a),
+    ∃ n, ∀ m, n ≤ m → a m = a n :=
+  WellFounded.antitone_chain_condition'.trans <| by
+  congr! 5
+  rename_i a ha n m
+  simp (config := {contextual := true}) [lt_iff_le_and_ne, fun h => ha h]
+
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
 type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the
 constant value. For sequences that are not eventually constant, `monotonicSequenceLimitIndex a`
