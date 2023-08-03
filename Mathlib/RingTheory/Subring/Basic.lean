@@ -456,15 +456,15 @@ def toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
 #align subring.to_comm_ring Subring.toCommRing
 
 /-- A subring of a non-trivial ring is non-trivial. -/
-lemma {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
+lemma nontrivial {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
   inferInstance
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
-lemma {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
+lemma noZeroDivisors {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
   inferInstance
 
 /-- A subring of a domain is a domain. -/
-lemma {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
+lemma isDomain {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   inferInstance
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
