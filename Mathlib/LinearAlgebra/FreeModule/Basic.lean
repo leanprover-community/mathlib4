@@ -80,7 +80,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
 variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis
-  `ι → M`. -/
+  `ι → M`. Note that this is defined such that this type is finite if `R` is trivial. -/
 def ChooseBasisIndex : Type _ :=
   ((Module.free_iff_set R M).mp ‹_›).choose
 #align module.free.choose_basis_index Module.Free.ChooseBasisIndex

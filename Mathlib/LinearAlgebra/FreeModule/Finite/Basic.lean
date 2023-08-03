@@ -40,7 +40,7 @@ noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
     rw [ChooseBasisIndex]
     infer_instance
   · obtain ⟨s, hs⟩ := id ‹Module.Finite R M›
-    exact basis_finite_of_finite_spans (↑s) hs (chooseBasis _ _)
+    exact basis_finite_of_finite_spans (↑s) s.finite_toSet hs (chooseBasis _ _)
 #align module.free.choose_basis_index.fintype Module.Free.ChooseBasisIndex.fintype
 
 end Ring
