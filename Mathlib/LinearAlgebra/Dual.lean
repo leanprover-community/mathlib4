@@ -518,7 +518,7 @@ namespace Module
 
 variable {K : Type u₁} {V : Type u₂}
 
-variable [Field K] [AddCommGroup V] [Module K V]
+variable [CommRing K] [AddCommGroup V] [Module K V] [Module.Free K V]
 
 open Module Module.Dual Submodule LinearMap Cardinal Basis FiniteDimensional
 
@@ -528,7 +528,7 @@ variable (K) (V)
 
 -- Porting note: broken dot notation lean4#1910 LinearMap.ker
 theorem eval_ker : LinearMap.ker (eval K V) = ⊥ := by
-  classical exact (Basis.ofVectorSpace K V).eval_ker
+  classical exact (Module.Free.chooseBasis K V).eval_ker
 #align module.eval_ker Module.eval_ker
 
 theorem map_eval_injective : (Submodule.map (eval K V)).Injective := by
@@ -567,15 +567,15 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
 end
 
 -- TODO(jmc): generalize to rings, once `Module.rank` is generalized
-theorem dual_rank_eq [FiniteDimensional K V] :
+theorem dual_rank_eq [Module.Finite K V] :
     Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) :=
-  (Basis.ofVectorSpace K V).dual_rank_eq
+  (Module.Free.chooseBasis K V).dual_rank_eq
 #align module.dual_rank_eq Module.dual_rank_eq
 
 -- Porting note: broken dot notation lean4#1910 LinearMap.range
-theorem erange_coe [FiniteDimensional K V] : LinearMap.range (eval K V) = ⊤ :=
-  letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
-  (Basis.ofVectorSpace K V).eval_range
+theorem erange_coe [Module.Finite K V] : LinearMap.range (eval K V) = ⊤ :=
+  -- letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
+  (Module.Free.chooseBasis K V).eval_range
 #align module.erange_coe Module.erange_coe
 
 section IsReflexive

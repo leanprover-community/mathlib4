@@ -81,14 +81,14 @@ variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis
   `ι → M`. -/
-def ChooseBasisIndex :=
-  (exists_basis (R := R) (M := M)).some.1
+def ChooseBasisIndex : Type _ :=
+  ((Module.free_iff_set R M).mp ‹_›).choose
 #align module.free.choose_basis_index Module.Free.ChooseBasisIndex
 
 /-- If `Module.Free R M` then `chooseBasis : ι → M` is the basis.
 Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
-  (exists_basis (R := R) (M := M)).some.2
+  ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 #align module.free.choose_basis Module.Free.chooseBasis
 
 /-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
