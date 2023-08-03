@@ -172,8 +172,6 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
   rw [← comp_apply, trace_eq_contract]
 #align linear_map.trace_eq_contract_apply LinearMap.trace_eq_contract_apply
 
-open Classical
-
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
 theorem trace_eq_contract' :

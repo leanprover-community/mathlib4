@@ -406,7 +406,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
     convert ← Submodule.rank_sup_add_rank_inf_eq W img
-    rw [← rank_eq_of_injective (g m) g_injective]
+    rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
     have li : LinearIndependent ℝ (H.restrict e) := by
