@@ -74,6 +74,10 @@ def topologicalClosure (s : StarSubalgebra R A) : StarSubalgebra R A :=
       map_mem_closure continuous_star ha fun x => (star_mem : x ∈ s → star x ∈ s) }
 #align star_subalgebra.topological_closure StarSubalgebra.topologicalClosure
 
+theorem topologicalClosure_toSubalgebra_comm (s : StarSubalgebra R A) :
+    s.topologicalClosure.toSubalgebra = s.toSubalgebra.topologicalClosure :=
+  SetLike.coe_injective rfl
+
 @[simp]
 theorem topologicalClosure_coe (s : StarSubalgebra R A) :
     (s.topologicalClosure : Set A) = closure (s : Set A) :=
@@ -118,6 +122,13 @@ theorem topologicalClosure_map [StarModule R B] [TopologicalSemiring B] [Continu
     (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : ClosedEmbedding φ) :
     (map φ s).topologicalClosure = map φ s.topologicalClosure :=
   SetLike.coe_injective <| hφ.closure_image_eq _
+
+theorem _root_.Subalgebra.topologicalClosure_star_comm (s : Subalgebra R A) :
+    (star s).topologicalClosure = star s.topologicalClosure := by
+  suffices ∀ t : Subalgebra R A, (star t).topologicalClosure ≤ star t.topologicalClosure from
+    le_antisymm (this s) (by simpa only [star_star] using Subalgebra.star_mono (this (star s)))
+  exact fun t => (star t).topologicalClosure_minimal (Subalgebra.star_mono subset_closure)
+    (isClosed_closure.preimage continuous_star)
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/

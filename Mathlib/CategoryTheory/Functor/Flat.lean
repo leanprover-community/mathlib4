@@ -116,7 +116,6 @@ instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
     use StructuredArrow.mk (𝟙 _)
     use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
     use StructuredArrow.homMk Z.hom (by erw [Functor.id_map, Category.id_comp])
-    trivial
   · intro Y Z f g
     use StructuredArrow.mk (𝟙 _)
     use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
@@ -149,7 +148,6 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     use StructuredArrow.mk (W.hom ≫ G.map W'.hom)
     use StructuredArrow.homMk Y''.right (by simp [← G.map_comp])
     use StructuredArrow.homMk Z''.right (by simp [← G.map_comp])
-    trivial
   · intro Y Z f g
     let W :=
       @IsCofiltered.eq (StructuredArrow X G) _ _ (StructuredArrow.mk Y.hom)

@@ -9,7 +9,7 @@ import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Ideal.LocalRing
 
-#align_import ring_theory.ideal.cotangent from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+#align_import ring_theory.ideal.cotangent from "leanprover-community/mathlib"@"4b92a463033b5587bb011657e25e4710bfca7364"
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -47,16 +47,12 @@ instance Cotangent.moduleOfTower : Module S I.Cotangent :=
   Submodule.Quotient.module' _
 #align ideal.cotangent.module_of_tower Ideal.Cotangent.moduleOfTower
 
-instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent := by
-  delta Cotangent
-  constructor
-  intro s s' x
-  rw [← @IsScalarTower.algebraMap_smul S' R, ← @IsScalarTower.algebraMap_smul S' R, ← smul_assoc, ←
-    IsScalarTower.toAlgHom_apply S S' R, map_smul]
-  rfl
+instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
+  Submodule.Quotient.isScalarTower _ _
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
-instance [IsNoetherian R I] : IsNoetherian R I.Cotangent := by delta Cotangent; infer_instance
+instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
+  Submodule.Quotient.isNoetherian _
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps!] --  (config := lemmasOnly) apply -- Porting note: this option does not exist anymore
@@ -118,10 +114,8 @@ theorem toCotangent_to_quotient_square (x : I) :
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
-def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) := by
-  haveI : @RingHomSurjective R (R ⧸ I ^ 2) _ _ _ := ⟨Ideal.Quotient.mk_surjective⟩
-  let rq := Quotient.mk (I ^ 2)
-  exact Submodule.map rq.toSemilinearMap I
+def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
+  Submodule.map (Quotient.mk (I ^ 2)|>.toSemilinearMap) I
 #align ideal.cotangent_ideal Ideal.cotangentIdeal
 
 theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by

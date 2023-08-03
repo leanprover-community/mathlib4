@@ -77,7 +77,7 @@ noncomputable section
 
 open Function Set Submodule
 
-open Classical BigOperators Cardinal
+open BigOperators Cardinal
 
 universe u' u
 
@@ -132,8 +132,9 @@ theorem linearIndependent_iff' :
 theorem linearIndependent_iff'' :
     LinearIndependent R v ↔
       ∀ (s : Finset ι) (g : ι → R) (_hg : ∀ (i) (_ : i ∉ s), g i = 0),
-        ∑ i in s, g i • v i = 0 → ∀ i, g i = 0 :=
-  linearIndependent_iff'.trans
+        ∑ i in s, g i • v i = 0 → ∀ i, g i = 0 := by
+  classical
+  exact linearIndependent_iff'.trans
     ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
       convert
         H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
@@ -160,7 +161,7 @@ theorem Fintype.linearIndependent_iff [Fintype ι] :
 
 /-- A finite family of vectors `v i` is linear independent iff the linear map that sends
 `c : ι → R` to `∑ i, c i • v i` has the trivial kernel. -/
-theorem Fintype.linearIndependent_iff' [Fintype ι] :
+theorem Fintype.linearIndependent_iff' [Fintype ι] [DecidableEq ι] :
     LinearIndependent R v ↔
       LinearMap.ker (LinearMap.lsum R (fun _ ↦ R) ℕ fun i ↦ LinearMap.id.smulRight (v i)) = ⊥ :=
   by simp [Fintype.linearIndependent_iff, LinearMap.ker_eq_bot', funext_iff]
@@ -642,6 +643,7 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
         LinearIndependent R (v ∘ Sum.inr) ∧
           Disjoint (Submodule.span R (range (v ∘ Sum.inl)))
             (Submodule.span R (range (v ∘ Sum.inr))) := by
+  classical
   rw [range_comp v, range_comp v]
   refine' ⟨_, _⟩
   · intro h
@@ -693,6 +695,7 @@ theorem linearIndependent_iUnion_finite_subtype {ι : Type _} {f : ι → Set M}
     (hl : ∀ i, LinearIndependent R (fun x => x : f i → M))
     (hd : ∀ i, ∀ t : Set ι, t.Finite → i ∉ t → Disjoint (span R (f i)) (⨆ i ∈ t, span R (f i))) :
     LinearIndependent R (fun x => x : (⋃ i, f i) → M) := by
+  classical
   rw [iUnion_eq_iUnion_finset f]
   apply linearIndependent_iUnion_of_directed
   · apply directed_of_sup
@@ -1169,7 +1172,7 @@ theorem linearIndependent_iff_not_mem_span :
     exact False.elim (h _ ((smul_mem_iff _ ha').1 ha))
 #align linear_independent_iff_not_mem_span linearIndependent_iff_not_mem_span
 
-theorem LinearIndependent.insert (hs : LinearIndependent K (fun b => b : s → V))
+protected theorem LinearIndependent.insert (hs : LinearIndependent K (fun b => b : s → V))
     (hx : x ∉ span K s) : LinearIndependent K (fun b => b : ↥(insert x s) → V) := by
   rw [← union_singleton]
   have x0 : x ≠ 0 := mt (by rintro rfl; apply zero_mem (span K s)) hx
@@ -1204,6 +1207,7 @@ theorem linearIndependent_option {v : Option ι → V} :
 theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has : a ∉ s) :
     (LinearIndependent K fun x : ↥(insert a s) => f x) ↔
       (LinearIndependent K fun x : s => f x) ∧ f a ∉ Submodule.span K (f '' s) := by
+  classical
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
   -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
@@ -1334,6 +1338,7 @@ theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fu
 theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
     (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ (span K ↑t : Submodule K V)) :
     ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = t.card := by
+  classical
   have :
     ∀ t : Finset V,
       ∀ s' : Finset V,

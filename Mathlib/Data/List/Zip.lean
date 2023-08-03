@@ -70,6 +70,8 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
     simp only [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]
 #align list.zip_swap List.zip_swap
 
+#align list.length_zip_with List.length_zipWith
+
 @[simp]
 theorem length_zip :
     ∀ (l₁ : List α) (l₂ : List β), length (zip l₁ l₂) = min (length l₁) (length l₂) :=
