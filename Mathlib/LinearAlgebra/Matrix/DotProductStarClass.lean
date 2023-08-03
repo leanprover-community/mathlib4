@@ -33,6 +33,12 @@ lemma dotProduct_self_star_eq_zero  (v : n → K) [Ring K] [StarRing K]
   simp only [star_star] at h
   rw [h, star_star, star_eq_zero, StarDotProductSpace.dotProduct_star_self_eq_zero]
 
+lemma dotProduct_self_star_eq_zero'  (v : n → K) [Ring K] [StarRing K]
+    [StarDotProductSpace n K] : Matrix.dotProduct v (star v) = 0 ↔ v = 0 := by
+  simpa only [star_star, star_eq_zero] using
+    StarDotProductSpace.dotProduct_star_self_eq_zero (star v)
+
+
 section IsROrCFields
 
 variable {K: Type _} [IsROrC K]
