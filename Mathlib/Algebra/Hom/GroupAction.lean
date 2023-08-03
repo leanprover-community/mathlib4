@@ -95,32 +95,35 @@ instance : SMulHomClass (X →[M'] Y) M' X Y
   coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
 
-namespace MulActionHom
+namespace SMulHomClass
 
 variable {M M' X Y}
+
+theorem comp_smul {f : X →[M'] Y} {m : M'} : f ∘ (m • ·) = (m • ·) ∘ f := funext <| map_smul _ _
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) :
-    X →[M] Y where
-   toFun := FunLike.coe f
-   map_smul' := map_smul f
+def toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) : X →[M] Y where
+  toFun := FunLike.coe f
+  map_smul' := map_smul f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
 instance [SMul M X] [SMul M Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
   ⟨SMulHomClass.toMulActionHom⟩
 
+end SMulHomClass
+
+namespace MulActionHom
+
+variable {M M' X Y}
+
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
   map_smul f m x
 #align mul_action_hom.map_smul MulActionHom.map_smul
-
-theorem comp_smul {f : X →[M'] Y} {m : M'} : f ∘ (m • ·) = (m • ·) ∘ f := by
-  ext
-  simp only [Function.comp_apply, map_smul]
 
 @[ext]
 theorem ext {f g : X →[M'] Y} : (∀ x, f x = g x) → f = g :=
