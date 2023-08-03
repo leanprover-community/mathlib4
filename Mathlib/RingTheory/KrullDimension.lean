@@ -183,7 +183,7 @@ lemma _root_.Ideal.localization'_eq_localization (y : Submonoid R) :
     exact Ideal.mul_mem_left _ _ (Ideal.mem_map_of_mem _ ha)) <|
   J.mem_localization'_of_mem_localization _
 
-instance _root_.Ideal.localization'_isPrime (J : Set.Iic I) :
+instance _root_.Ideal.localization'_IsPrime (J : Set.Iic I) :
   (J.1.asIdeal.localization' I.asIdeal.primeCompl).IsPrime where
 ne_top' := fun hit => by
   rw [Ideal.eq_top_iff_one, Ideal.mem_localization'_iff] at hit
@@ -210,6 +210,21 @@ There is a canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrim
 def _root_.PrimeSpectrum.IicToLocalizationAtPrime :
   Set.Iic I → PrimeSpectrum (Localization.AtPrime I.asIdeal) :=
 λ I' ↦ ⟨I'.1.asIdeal.localization' I.asIdeal.primeCompl, inferInstance⟩
+
+/--
+There is a canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I`.
+-/
+@[simp]
+def _root_.PrimeSpectrum.LocalizationAtPrimeToIic :
+  PrimeSpectrum (Localization.AtPrime I.asIdeal) → Set.Iic I :=
+  λ J ↦ ⟨⟨_, Ideal.IsPrime.comap (algebraMap R (Localization.AtPrime I.asIdeal))⟩, λ z hz ↦
+    @@Decidable.byContradiction (Classical.dec _) $ λ hnz ↦ J.IsPrime.ne_top $ eq_top_iff.mpr $
+    False.elim $ J.IsPrime.1 $ (Ideal.eq_top_iff_one _).mpr (by
+      rw [show (1 : Localization.AtPrime I.asIdeal) = Localization.mk z 1 * Localization.mk 1
+        ⟨z, hnz⟩ by simpa only [Localization.mk_one_eq_algebraMap, ←Algebra.smul_def,
+          Localization.smul_mk, smul_eq_mul, mul_one, eq_comm] using Localization.mk_self
+            (⟨z, hnz⟩ : I.asIdeal.primeCompl)]
+      exact Ideal.mul_mem_right _ _ hz)⟩
 
 end aboutHeightAndLocalization
 
