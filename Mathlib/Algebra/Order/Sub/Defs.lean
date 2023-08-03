@@ -59,7 +59,7 @@ class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] : Prop where
 
 section Add
 
-@[simp]
+@[simp default-10]
 theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α} :
     a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c

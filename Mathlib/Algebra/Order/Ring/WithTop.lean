@@ -213,7 +213,7 @@ instance nonUnitalNonAssocSemiring
         repeat' first | rfl |exact congr_arg some (mul_add _ _ _) }
 
 instance nonAssocSemiring [NonAssocSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] [NoZeroDivisors α] [Nontrivial α] :
+    [CovariantClass α α (· + ·) (· ≤ ·)] [Nontrivial α] :
     NonAssocSemiring (WithTop α) :=
   { WithTop.addCommMonoidWithOne, WithTop.instMulZeroOneClassWithTop with
     toNonUnitalNonAssocSemiring := nonUnitalNonAssocSemiring }
@@ -234,10 +234,10 @@ instance commSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd
 @[simps (config := { fullyApplied := false })]
 protected def _root_.RingHom.withTopMap {R S : Type _}
     [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-    [CovariantClass R R (· + ·) (· ≤ ·)] [NoZeroDivisors R]
+    [CovariantClass R R (· + ·) (· ≤ ·)]
     [DecidableEq R] [Nontrivial R]
     [NonAssocSemiring S] [PartialOrder S] [CanonicallyOrderedAdd S]
-    [CovariantClass S S (· + ·) (· ≤ ·)] [NoZeroDivisors S]
+    [CovariantClass S S (· + ·) (· ≤ ·)]
     [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
