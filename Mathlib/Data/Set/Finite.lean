@@ -1263,12 +1263,8 @@ theorem card_range_of_injective [Fintype α] {f : α → β} (hf : Injective f) 
 #align set.card_range_of_injective Set.card_range_of_injective
 
 theorem Finite.card_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
-    h.toFinset.card = Fintype.card s := by
-  rw [← Finset.card_attach, Finset.attach_eq_univ, ← Fintype.card]
-  refine' Fintype.card_congr (Equiv.setCongr _)
-  ext x
-  show x ∈ h.toFinset ↔ x ∈ s
-  simp
+    h.toFinset.card = Fintype.card s :=
+  Eq.symm <| Fintype.card_of_finset' _ fun _ ↦ h.mem_toFinset
 #align set.finite.card_to_finset Set.Finite.card_toFinset
 
 theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
