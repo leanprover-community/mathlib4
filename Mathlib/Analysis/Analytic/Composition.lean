@@ -884,6 +884,10 @@ theorem AnalyticOn.comp {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticOn
     (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (g ∘ f) s :=
   fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
 
+theorem AnalyticOn.comp' {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g t)
+    (hf : AnalyticOn 𝕜 f s) (st : s ⊆ f ⁻¹' t) : AnalyticOn 𝕜 (g ∘ f) s :=
+  comp (mono hg (Set.mapsTo'.mp st)) hf
+
 /-!
 ### Associativity of the composition of formal multilinear series
 
