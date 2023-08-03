@@ -85,6 +85,10 @@ def ChooseBasisIndex :=
   (exists_basis (R := R) (M := M)).some.1
 #align module.free.choose_basis_index Module.Free.ChooseBasisIndex
 
+/-- There is no hope of computing this, but we add the instance anyway to avoid fumbling with
+`open scoped Classical`. -/
+noncomputable instance : DecidableEq (ChooseBasisIndex R M) := Classical.decEq _
+
 /-- If `Module.Free R M` then `chooseBasis : ι → M` is the basis.
 Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
