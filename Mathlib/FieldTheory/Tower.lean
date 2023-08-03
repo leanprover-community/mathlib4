@@ -75,7 +75,7 @@ theorem rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddComm
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem FiniteDimensional.finrank_mul_finrank' [Nontrivial K] [Module.Finite F K]
+theorem FiniteDimensional.finrank_mul_finrank' [Module.Finite F K]
     [Module.Finite K A] : finrank F K * finrank K A = finrank F A := by
   letI := nontrivial_of_invariantBasisNumber F
   let b := Module.Free.chooseBasis F K
