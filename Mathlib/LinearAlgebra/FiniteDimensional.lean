@@ -2,17 +2,14 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module linear_algebra.finite_dimensional
-! leanprover-community/mathlib commit e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyCongr
+
+#align_import linear_algebra.finite_dimensional from "leanprover-community/mathlib"@"e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51"
 
 /-!
 # Finite dimensional vector spaces
@@ -1305,7 +1302,7 @@ theorem finrank_le_one_iff [FiniteDimensional K V] :
     · replace h' := zero_lt_iff.mpr h'
       have : finrank K V = 1 := by linarith
       obtain ⟨v, -, p⟩ := finrank_eq_one_iff'.mp this
-      exact ⟨v, p⟩ -- porting note: was `use`
+      use v, p
   · rintro ⟨v, p⟩
     exact finrank_le_one v p
 #align finrank_le_one_iff finrank_le_one_iff

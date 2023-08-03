@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.determinant
-! leanprover-community/mathlib commit 31c458dc7baf3de906b95d9c5c968b6a4d75fee1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+#align_import linear_algebra.free_module.determinant from "leanprover-community/mathlib"@"31c458dc7baf3de906b95d9c5c968b6a4d75fee1"
 
 /-!
 # Determinants in free (finite) modules

@@ -2,14 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.bounded_order
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
+import Mathlib.Order.ULift
+
+#align_import order.bounded_order from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -812,6 +810,11 @@ instance top [Top α] [Top β] : Top (α × β) :=
 instance bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
+theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
+theorem snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
+theorem fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
+theorem snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
+
 instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
@@ -825,6 +828,28 @@ instance boundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : Boun
   __ := inferInstanceAs (OrderBot (α × β))
 
 end Prod
+
+namespace ULift
+
+instance [Top α] : Top (ULift.{v} α) where top := up ⊤
+
+@[simp] theorem up_top [Top α] : up (⊤ : α) = ⊤ := rfl
+@[simp] theorem down_top [Top α] : down (⊤ : ULift α) = ⊤ := rfl
+
+instance [Bot α] : Bot (ULift.{v} α) where bot := up ⊥
+
+@[simp] theorem up_bot [Bot α] : up (⊥ : α) = ⊥ := rfl
+@[simp] theorem down_bot [Bot α] : down (⊥ : ULift α) = ⊥ := rfl
+
+instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
+  OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
+
+instance [LE α] [OrderTop α] : OrderTop (ULift.{v} α) :=
+  OrderTop.lift ULift.down (fun _ _ => down_le.mp) down_top
+
+instance [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where
+
+end ULift
 
 section LinearOrder
 

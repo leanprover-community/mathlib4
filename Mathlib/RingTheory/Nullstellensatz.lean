@@ -2,28 +2,25 @@
 Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module ring_theory.nullstellensatz
-! leanprover-community/mathlib commit 9556784a5b84697562e9c6acb40500d4a82e675a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Jacobson
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
+#align_import ring_theory.nullstellensatz from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
+
 /-!
 # Nullstellensatz
-This file establishes a version of Hilbert's classical Nullstellensatz for `mv_polynomial`s.
-The main statement of the theorem is `vanishing_ideal_zero_locus_eq_radical`.
+This file establishes a version of Hilbert's classical Nullstellensatz for `MvPolynomial`s.
+The main statement of the theorem is `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`.
 
-The statement is in terms of new definitions `vanishing_ideal` and `zero_locus`.
+The statement is in terms of new definitions `vanishingIdeal` and `zeroLocus`.
 Mathlib already has versions of these in terms of the prime spectrum of a ring,
   but those are not well-suited for expressing this result.
 Suggestions for better ways to state this theorem or organize things are welcome.
 
-The machinery around `vanishing_ideal` and `zero_locus` is also minimal, I only added lemmas
+The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only added lemmas
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
 
