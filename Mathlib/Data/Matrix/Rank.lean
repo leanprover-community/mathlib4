@@ -102,6 +102,26 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
   exact rank_unit A
 #align matrix.rank_of_is_unit Matrix.rank_of_isUnit
 
+/-- Right multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
+    (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
+    (B ⬝ A).rank = B.rank := by
+  suffices : Function.Surjective A.mulVecLin
+  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+    (LinearMap.range_eq_top.mpr this), ← rank]
+  intro v
+  exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
+
+/-- Left multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_right_of_isUnit_det [DecidableEq m]
+    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
+    (A ⬝ B).rank = B.rank := by
+  let b : Basis m R (m → R) := Pi.basisFun R m
+  replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
+    convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
+  have hAB : mulVecLin (A ⬝ B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
+  rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
+
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)
     (A : Matrix m m R) : rank (A.submatrix f e) ≤ rank A := by
@@ -274,27 +294,5 @@ theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m
   cases nonempty_fintype m
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
 #align matrix.rank_eq_finrank_span_row Matrix.rank_eq_finrank_span_row
-
-/-! ### Lemmas about left or right multiplying by an invertible matrix. -/
-
-/-- Right multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n] [CommRing R]
-    (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
-    (B ⬝ A).rank = B.rank := by
-  suffices : Function.Surjective A.mulVecLin
-  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
-    (LinearMap.range_eq_top.mpr this), ← rank]
-  intro v
-  exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
-
-/-- Left multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_eq_right_of_isUnit_det [DecidableEq m] [CommRing R]
-    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
-    (A ⬝ B).rank = B.rank := by
-  let b : Basis m R (m → R) := Pi.basisFun R m
-  replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
-    convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
-  have hAB : mulVecLin (A ⬝ B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
-  rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
 end Matrix
