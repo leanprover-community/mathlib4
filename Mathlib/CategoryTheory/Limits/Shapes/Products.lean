@@ -310,6 +310,14 @@ def Sigma.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g 
   hom := Sigma.desc fun j => (w j).inv ≫ Sigma.ι g (e j)
   inv := Sigma.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ Sigma.ι f _
 
+lemma Pi.comp_lift (f : β → C) [HasProduct f] (g : P ⟶ Q) (h : ∀ b, Q ⟶ f b) :
+    g ≫ Pi.lift h = Pi.lift fun b => g ≫ h b := by
+  ext; simp
+
+lemma Sigma.desc_comp (f : β → C) [HasCoproduct f] (g : ∀ b, f b ⟶ P) (h : P ⟶ Q) :
+    Sigma.desc g ≫ h = Sigma.desc fun b => g b ≫ h := by
+  ext; simp
+
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)

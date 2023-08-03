@@ -233,12 +233,19 @@ lemma tensorObj₃_rightTensor_ext (X₁ X₂ X₃ : GradedObject ℕ V) (n : �
   simpa only [ιTensorObj₃_eq X₁ X₂ X₃ p₁ p₂ p₃ n (by rw [h₁₂, h₁₂₃]) p₁₂ h₁₂, MonoidalCategory.associator_conjugation, MonoidalCategory.tensor_id, assoc,
     Iso.cancel_iso_hom_left, MonoidalCategory.comp_tensor_id] using h p₁ p₂ p₃ (by rw [h₁₂, h₁₂₃])
 
+#eval 0
+
+
 @[reassoc]
 lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
     (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
     ιTensorObj₃ X₁ X₂ X₃ p₁ p₂ p₃ n h ≫ (associator X₁ X₂ X₃).hom n =
       ιTensorObj₃' X₁ X₂ X₃ p₁ p₂ p₃ n h := by
-  sorry
+  dsimp [associator]
+  dsimp [ιTensorObj₃, ιTensorObj₃', ιTensorObj, associator]
+  dsimp [associator_distributor, associator_iterated]
+  simp
+
 
 -- not sure which one of `ιTensorObj₃_comp_associator_hom` or
 -- `ιTensorObj₃'_comp_associator_inv` has the easiest proof, but at least, one may

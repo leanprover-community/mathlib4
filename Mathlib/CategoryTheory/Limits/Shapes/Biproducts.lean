@@ -665,6 +665,26 @@ lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃
     · rintro rfl
       simp at h
 
+lemma biproduct.comp_lift (f : β → C) [HasBiproduct f] (g : P ⟶ Q) (h : ∀ b, Q ⟶ f b) :
+    g ≫ biproduct.lift h = biproduct.lift fun b => g ≫ h b := by
+  ext; simp
+
+lemma biproduct.desc_comp (f : β → C) [HasBiproduct f] (g : ∀ b, f b ⟶ P) (h : P ⟶ Q) :
+    biproduct.desc g ≫ h = biproduct.desc fun b => g b ≫ h := by
+  ext; simp
+
+@[reassoc (attr := simp)]
+lemma biproduct.ι_comp_lift
+    (f : β → C) [HasBiproduct f] (g : α → C) [HasBiproduct g] (h : ∀ b, ⨁ g ⟶ f b) :
+    biproduct.ι g a ≫ biproduct.lift h = biproduct.lift fun b => biproduct.ι g a ≫ h b := by
+  ext; simp
+
+@[reassoc (attr := simp)]
+lemma biproduct.desc_comp_π
+    (f : β → C) [HasBiproduct f] (h : α → C) [HasBiproduct h] (g : ∀ b, f b ⟶ ⨁ h) :
+    biproduct.desc g ≫ biproduct.π h a = biproduct.desc fun b => g b ≫ biproduct.π h a := by
+  ext; simp
+
 section πKernel
 
 section

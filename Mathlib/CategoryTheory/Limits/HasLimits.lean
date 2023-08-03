@@ -869,7 +869,7 @@ def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
   (colimit.isColimit F).homIso' W
 #align category_theory.limits.colimit.hom_iso' CategoryTheory.Limits.colimit.homIso'
 
-theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
+theorem colimit.desc_extend {F : J ⥤ C} [HasColimit F] (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
     colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by ext1; rw [← Category.assoc]; simp
 #align category_theory.limits.colimit.desc_extend CategoryTheory.Limits.colimit.desc_extend
 
