@@ -98,9 +98,7 @@ theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemi
   refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star, dotProduct, map_sum]
   simp_rw [Pi.star_apply, IsROrC.star_def]
-  refine Finset.sum_nonneg fun i _ => ?_
-  -- TODO: use a `StarOrderedRing` lemma
-  simpa using add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
+  simpa using Finset.sum_nonneg fun i _ => add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
 theorem posSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
