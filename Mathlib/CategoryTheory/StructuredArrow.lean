@@ -254,9 +254,9 @@ instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) :
   show EssSurj (Comma.preRight _ _ _) from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
-noncomputable def isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [IsEquivalence F] :
+noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [IsEquivalence F] :
     IsEquivalence (pre S F G) :=
-  Comma.isEquivalence_preRight _ _ _
+  Comma.isEquivalencePreRight _ _ _
 
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
@@ -492,9 +492,9 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) :
   show EssSurj (Comma.preLeft _ _ _) from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
-noncomputable def isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [IsEquivalence F] :
+noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [IsEquivalence F] :
     IsEquivalence (pre F G S) :=
-  Comma.isEquivalence_preLeft _ _ _
+  Comma.isEquivalencePreLeft _ _ _
 
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
 @[simps]

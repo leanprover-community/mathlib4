@@ -313,7 +313,7 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [EssSurj F] : EssSurj (preLef
      ⟨isoMk (F.objObjPreimageIso _) (Iso.refl _) (by simp)⟩⟩
 
 /-- If `F` is an equivalence, then so is `preLeft F L R`. -/
-noncomputable def isEquivalence_preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [IsEquivalence F] :
+noncomputable def isEquivalencePreLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [IsEquivalence F] :
     IsEquivalence (preLeft F L R) :=
   have := Equivalence.essSurj_of_equivalence F
   Equivalence.ofFullyFaithfullyEssSurj _
@@ -343,7 +343,7 @@ instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [EssSurj F] : EssSurj (preRig
      ⟨isoMk (Iso.refl _) (F.objObjPreimageIso _) (by simp [← R.map_comp])⟩⟩
 
 /-- If `F` is an equivalence, then so is `preRight L F R`. -/
-noncomputable def isEquivalence_preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [IsEquivalence F] :
+noncomputable def isEquivalencePreRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [IsEquivalence F] :
     IsEquivalence (preRight L F R) :=
   have := Equivalence.essSurj_of_equivalence F
   Equivalence.ofFullyFaithfullyEssSurj _
