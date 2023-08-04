@@ -97,9 +97,10 @@ theorem posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.Pos
 theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemidef (Aᴴ ⬝ A) := by
   refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star, dotProduct, map_sum]
-  simpa [Pi.star_apply, IsROrC.star_def, IsROrC.mul_re, IsROrC.conj_re, IsROrC.conj_im, neg_mul,
-    sub_neg_eq_add] using
-  Finset.sum_nonneg (fun i => (fun _ => add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)))
+  simp_rw [Pi.star_apply, IsROrC.star_def]
+  refine Finset.sum_nonneg fun i _ => ?_
+  -- TODO: use a `StarOrderedRing` lemma
+  simpa using add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
 theorem posSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
