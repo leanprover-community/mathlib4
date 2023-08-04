@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Dimension
 
 /-!
 # Exact sequences with free modules
@@ -178,5 +179,21 @@ theorem free_shortExact {M : ModuleCat R} {f : N ⟶ M}
     (span_rightExact
       (le_of_eq ((Module.Free.chooseBasis R N)).span_eq.symm)
       (le_of_eq (Module.Free.chooseBasis R P).span_eq.symm) h.epi h.exact))
+
+theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
+    {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Free R P] [StrongRankCondition R] :
+    Module.rank R M = Module.rank R N + Module.rank R P := by
+  haveI := free_shortExact h
+  rw [Module.Free.rank_eq_card_chooseBasisIndex, Module.Free.rank_eq_card_chooseBasisIndex R N,
+    Module.Free.rank_eq_card_chooseBasisIndex R P, Cardinal.add_def, Cardinal.eq]
+  exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R M) (Basis.mk
+    (linearIndependent_shortExact
+      (Module.Free.chooseBasis R N).linearIndependent
+      (Module.Free.chooseBasis R P).linearIndependent h)
+    (span_rightExact
+      (le_of_eq ((Module.Free.chooseBasis R N)).span_eq.symm)
+      (le_of_eq (Module.Free.chooseBasis R P).span_eq.symm) h.epi h.exact))⟩
+
+
 
 end ModuleCat
