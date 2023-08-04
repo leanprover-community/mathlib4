@@ -48,7 +48,6 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
-import Mathlib.Tactic.Find2
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
