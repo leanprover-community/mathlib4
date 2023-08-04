@@ -1642,7 +1642,6 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Factors
 import Mathlib.Data.PNat.Find
-import Mathlib.Data.PNat.Find2
 import Mathlib.Data.PNat.Interval
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
@@ -2976,6 +2975,7 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.Find2
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
