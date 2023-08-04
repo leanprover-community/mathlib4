@@ -1,82 +1,107 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.LinearAlgebra.FreeModule.Basic
 
+/-!
+# Exact sequences with free modules
+
+This file proves results about linear independence and span in exact sequences of modules.
+
+## Main theorems
+
+* `linearIndependent_shortExact`: Given a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` of
+  `R`-modules and linearly independent families `v : ι → N` and `w : ι' → M`, we get a linearly
+  independent family `ι ⊕ ι' → M`
+* `span_rightExact`: Given an exact sequence `N ⟶ M ⟶ P ⟶ 0` of `R`-modules and spanning
+  families `v : ι → N` and `w : ι' → M`, we get a spanning family `ι ⊕ ι' → M`
+* Using `linearIndependent_shortExact` and `span_rightExact`, we prove `free_shortExact`: In a
+  short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` where `N` and `P` are free, `M` is free as well.
+
+## Tags
+linear algebra, module, free
+
+-/
+
 namespace ModuleCat
 
-variable {I : Type _} {J : Type _} {R : Type _} [Ring R] {N P : ModuleCat R} {v : I → N}-- {w : J → P}
+variable {ι ι' R : Type _}[Ring R] {N P : ModuleCat R} {v : ι → N}
 
 open CategoryTheory
 
 section LinearIndependent
 
 variable (hv : LinearIndependent R v)  {M : ModuleCat R}
-  {u : I ⊕ J → M}  {f : N ⟶ M} {g : M ⟶ P}
+  {u : ι ⊕ ι' → M}  {f : N ⟶ M} {g : M ⟶ P}
   (hw : LinearIndependent R (g ∘ u ∘ Sum.inr)) (hu : Function.Injective u)
   (hm : Mono f) (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
 
-lemma disjoint_span_aux : Disjoint (Submodule.span R (Set.range f))
-    (Submodule.span R (Set.range (u ∘ Sum.inr))) := by
-  rw [← LinearMap.range_coe, (Submodule.span_eq (LinearMap.range f)), (exact_iff _ _).mp he]
-  exact Submodule.ker_range_disjoint (Function.Injective.comp hu Sum.inr_injective) hw
-
-lemma disjoint_span : Disjoint (Submodule.span R (Set.range (u ∘ Sum.inl)))
+theorem disjoint_span_sum : Disjoint (Submodule.span R (Set.range (u ∘ Sum.inl)))
     (Submodule.span R (Set.range (u ∘ Sum.inr))) := by
   rw [huv]
-  exact Disjoint.mono_left (Submodule.span_mono (Set.range_comp_subset_range _ _))
-    (disjoint_span_aux hw hu he)
+  refine' Disjoint.mono_left (Submodule.span_mono (Set.range_comp_subset_range _ _)) _
+  rw [← LinearMap.range_coe, (Submodule.span_eq (LinearMap.range f)), (exact_iff _ _).mp he]
+  exact Submodule.ker_range_disjoint (Function.Injective.comp hu Sum.inr_injective) hw
 
 theorem linearIndependent_leftExact : LinearIndependent R u :=
   linearIndependent_sum.mpr
   ⟨(congr_arg (fun f ↦ LinearIndependent R f) huv).mpr
     ((LinearMap.linearIndependent_iff (f : N →ₗ[R] M)
     (LinearMap.ker_eq_bot.mpr ((mono_iff_injective _).mp hm))).mpr hv),
-    LinearIndependent.of_comp g hw, disjoint_span hw hu he huv⟩
+    LinearIndependent.of_comp g hw, disjoint_span_sum hw hu he huv⟩
 
-def family_shortExact [Nontrivial R] {w : J → P} (hE : Epi g) (hw : LinearIndependent R w) :
-    Function.Injective (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) := by
-  apply Function.Injective.sum_elim
-  · rw [mono_iff_injective] at hm
-    exact Function.Injective.comp hm hv.injective
-  · rw [epi_iff_surjective] at hE
-    exact Function.Injective.comp (Function.rightInverse_invFun hE).injective hw.injective
-  · intro a b h
+theorem family_injective_shortExact [Nontrivial R] {w : ι' → P} (hE : Epi g)
+    (hw : LinearIndependent R w) :
+    Function.Injective (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) :=
+  Function.Injective.sum_elim
+    (Function.Injective.comp ((mono_iff_injective _).mp hm) hv.injective)
+    (Function.Injective.comp (Function.rightInverse_invFun
+      ((epi_iff_surjective _).mp hE)).injective hw.injective) (fun a b h ↦ by
     apply_fun g at h
     rw [epi_iff_surjective] at hE
     dsimp at h
     rw [Function.rightInverse_invFun hE] at h
-    have : g (f (v a)) = (f ≫ g) (v a) := rfl
-    rw [this, he.w] at h
-    sorry
+    change (f ≫ g) (v a) = _ at h
+    rw [he.w] at h
+    change 0 = _ at h
+    exact LinearIndependent.ne_zero _ hw h.symm )
 
-theorem linearIndependent_shortExact [Nontrivial R] {w : J → P} (hse : ShortExact f g)
-    (hw : LinearIndependent R w) :
+
+/-- Given a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` of `R`-modules and linearly independent
+    families `v : ι → N` and `w : ι' → M`, we get a linearly independent family `ι ⊕ ι' → M` -/
+theorem linearIndependent_shortExact {w : ι' → P}
+    (hw : LinearIndependent R w) (hse : ShortExact f g) :
     LinearIndependent R (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) := by
-  refine' linearIndependent_leftExact hv _ (family_shortExact hv hse.mono hse.epi hw)
-      hse.mono hse.exact _
-  · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
-    have hg := hse.epi
-    rw [ModuleCat.epi_iff_surjective] at hg
-    rwa [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hg),
-      Function.comp.left_id]
-  · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
+  cases subsingleton_or_nontrivial R
+  · exact linearIndependent_of_subsingleton
+  · refine' linearIndependent_leftExact hv _ (family_injective_shortExact hv hse.mono hse.exact
+        hse.epi hw) hse.mono hse.exact _
+    · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
+      rwa [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun
+        ((epi_iff_surjective _).mp hse.epi)),
+        Function.comp.left_id]
+    · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
 
 end LinearIndependent
 
 section Span
 
-variable {M : ModuleCat R} {u : I ⊕ J → M} {f : N ⟶ M} {g : M ⟶ P}
+variable {M : ModuleCat R} {u : ι⊕ ι' → M} {f : N ⟶ M} {g : M ⟶ P}
 
 theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
-    (huw : g ∘ u ∘ Sum.inr = w) (hv : ⊤ ≤ Submodule.span R (Set.range v))
-    (hw : ⊤ ≤ Submodule.span R (Set.range w)) : ⊤ ≤ Submodule.span R (Set.range u) := by
+    (hv : ⊤ ≤ Submodule.span R (Set.range v))
+    (hw : ⊤ ≤ Submodule.span R (Set.range (g ∘ u ∘ Sum.inr))) :
+    ⊤ ≤ Submodule.span R (Set.range u) := by
   intro m _
-  have hgm : g m ∈ Submodule.span R (Set.range w) := hw Submodule.mem_top
+  have hgm : g m ∈ Submodule.span R (Set.range (g ∘ u ∘ Sum.inr)) := hw Submodule.mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hgm
   obtain ⟨cm, hm⟩ := hgm
-  rw [← huw] at hm
-  set m' : M := Finsupp.sum cm fun j a ↦ a • (u (Sum.inr j)) with hm'
+  let m' : M := Finsupp.sum cm fun j a ↦ a • (u (Sum.inr j))
   have hsub : m - m' ∈ LinearMap.range f
   · rw [(exact_iff _ _).mp he]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
@@ -87,15 +112,11 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsupp_sum] at hnm
-  have hmmm : m = m - m' + m'
-  · simp only [sub_add_cancel]
-  rw [hmmm, ← hnm, hm']
+  rw [← sub_add_cancel m m', ← hnm,]
   simp only [map_smul]
-  have hn' : (Finsupp.sum cn fun a b ↦ b • f (v a)) = (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a))
-  · congr
-    ext a _
-    rw [(by rfl : f (v a) = (f ∘ v) a), ← huv]
-    rfl
+  have hn' : (Finsupp.sum cn fun a b ↦ b • f (v a)) =
+      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
+    by congr; ext a b; change b • (f ∘ v) a = _; rw [← huv]; rfl
   rw [hn']
   apply Submodule.add_mem
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
@@ -105,27 +126,31 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
     use cm.mapDomain (Sum.inr)
     rw [Finsupp.sum_mapDomain_index_inj Sum.inr_injective]
 
+/-- Given an exact sequence `N ⟶ M ⟶ P ⟶ 0` of `R`-modules and spanning
+    families `v : ι → N` and `w : ι' → M`, we get a spanning family `ι ⊕ ι' → M` -/
+theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ Submodule.span R (Set.range v))
+    (hw : ⊤ ≤ Submodule.span R (Set.range w)) (hE : Epi g) (he : Exact f g) :
+    ⊤ ≤ Submodule.span R (Set.range (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w))) := by
+  refine' span_exact he _ hv _
+  · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
+  · convert hw
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
+    rw [ModuleCat.epi_iff_surjective] at hE
+    rw [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hE),
+      Function.comp.left_id]
+
 end Span
 
--- def map_of_shortExact {M : ModuleCat R} {f : N ⟶ M}
---     {g : M ⟶ P} (h : ShortExact f g) (hN : Module.Free R N) (hP : Module.Free R P) :
-
--- #exit
-
-theorem free_shortExact' {M : ModuleCat R} {f : N ⟶ M}
-    {g : M ⟶ P} (h : ShortExact f g) (hN : Module.Free R N) (hP : Module.Free R P) :
-    Module.Free R M := by
-  let ginv : P → M := g.toFun.invFun
-  obtain ⟨I, hI⟩ := hN
-  have hlI := hI.linearIndependent
-  have hsI := le_of_eq hI.span_eq.symm
-  obtain ⟨J, hJ⟩ := hP
-  have hlJ := hJ.linearIndependent
-  have hsJ := le_of_eq hJ.span_eq.symm
-  refine' @Module.Free.of_basis _ _ _ _ _ (I ⊕ J) _
-  refine' Basis.mk _ _
-  · exact Sum.elim (f ∘ hI) (ginv ∘ hJ)
-  · sorry
-  · sorry
+/-- In a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0`, if `N` and `P` are free, then `M` is free.-/
+theorem free_shortExact {M : ModuleCat R} {f : N ⟶ M}
+    {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Free R P] :
+    Module.Free R M :=
+  Module.Free.of_basis (Basis.mk
+    (linearIndependent_shortExact
+      (Module.Free.chooseBasis R N).linearIndependent
+      (Module.Free.chooseBasis R P).linearIndependent h)
+    (span_rightExact
+      (le_of_eq ((Module.Free.chooseBasis R N)).span_eq.symm)
+      (le_of_eq (Module.Free.chooseBasis R P).span_eq.symm) h.epi h.exact))
 
 end ModuleCat
