@@ -288,7 +288,7 @@ The `#find` command finds definitions and lemmas by various ways, which can be c
    ```lean
    #find Real.sin tsum
    ```
-   finds all lemmas that somehow mention the square root and the infinite series sum.
+   finds all lemmas that somehow mention the sine function and an infinite series sum.
 
 2. By lemma name substring:
    ```lean
