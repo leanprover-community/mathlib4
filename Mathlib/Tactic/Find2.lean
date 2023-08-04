@@ -15,8 +15,6 @@ set_option autoImplicit false
 open Lean
 open Lean.Meta
 open Lean.Elab
-open Mathlib.Tactic
-
 
 /-!
 ## Utilities, to be moved somewhere else before merging
@@ -237,11 +235,11 @@ def find (args : Arguments) (maxShown := 200) :
       add_line $ m!"Of these, the first {maxShown} are shown."
     return .inr (← summary.get, hits4.toList.take maxShown)
 
-open Lean.Parser
-
 /-!
 ## The #find command, syntax and parsing
 -/
+
+open Lean.Parser
 
 /-- `#find` name pattern: `"substring"` -/
 syntax name_pattern := strLit
@@ -256,9 +254,6 @@ syntax term_pattern := term:max
 /-- `#find` patterns -/
 syntax find_pattern := name_pattern <|> ident_pattern <|> conclusion_pattern <|> term_pattern
 
-open Lean.Meta
-open Lean.Elab
-open Lean.Elab.Command
 
 /-- Parses a list of `find_pattern` syntax into `Arguments` -/
 def parseFindPatterns (args : TSyntaxArray ``find_pattern) : TermElabM Arguments := do
@@ -283,6 +278,8 @@ def parseFindPatterns (args : TSyntaxArray ``find_pattern) : TermElabM Arguments
       terms := terms.push (false, t)
     | _ => throwErrorAt arg "unexpected argument to #find"
   pure {idents, name_pats, terms}
+
+open Lean.Elab.Command
 
 /--
 The `#find` command finds definitions and lemmas by various ways, which can be combined:
