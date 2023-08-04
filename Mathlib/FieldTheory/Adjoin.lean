@@ -1090,7 +1090,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
       exact congr_arg z.2 (Subtype.ext hst)⟩
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-set_option maxHeartbeats 350000 in
+set_option maxHeartbeats 400000 in
 -- Porting note: instance `alg` added by hand. The proof is very slow.
 /-- Extend a lift `x : Lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
 noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
