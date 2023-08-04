@@ -69,6 +69,7 @@ lemma rank_eq_one_iff_finrank_eq_one :
     Module.rank K V = 1 ↔ FiniteDimensional.finrank K V = 1 := by
   simp [FiniteDimensional.finrank]
 
+/-- This is like `rank_eq_one_iff_finrank_eq_one` but works for `2`, `3`, `4`, ... -/
 lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
     Module.rank K V = OfNat.ofNat n ↔ FiniteDimensional.finrank K V = OfNat.ofNat n :=
   Cardinal.toNat_eq_ofNat.symm
