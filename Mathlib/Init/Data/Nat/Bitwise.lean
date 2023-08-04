@@ -1,7 +1,12 @@
 /-
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Harun Khan
+Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module init.data.nat.bitwise
+! leanprover-community/lean commit 53e8520d8964c7632989880372d91ba0cecbaf00
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Init.WFTactics
@@ -10,8 +15,6 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals
-
-#align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 
 /-!
 # Lemmas about bitwise operations on natural numbers.
@@ -178,15 +181,19 @@ theorem bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
-@[simp] lemma bit_0 (b : Bool) : Nat.bit b 0 = b.toNat := by
+@[simp]
+lemma bit_0 (b : Bool) : Nat.bit b 0 = b.toNat := by
   cases' b <;> simp
 
-@[simp] lemma bit_1 (b : Bool) : Nat.bit b 1 = 2 + b.toNat:= by
+@[simp]
+lemma bit_1 (b : Bool) : Nat.bit b 1 = 2 + b.toNat:= by
   cases' b <;> simp
 
-@[simp] lemma shiftLeft_eq' {m n : Nat} : shiftLeft n m = n <<< m := rfl
+@[simp]
+lemma shiftLeft_eq' {m n : Nat} : shiftLeft n m = n <<< m := rfl
 
-@[simp] lemma shiftRight_eq {m n : Nat} : shiftRight n m = n >>> m := rfl
+@[simp]
+lemma shiftRight_eq {m n : Nat} : shiftRight n m = n >>> m := rfl
 
 @[simp]
 theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
@@ -308,7 +315,6 @@ theorem shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k
   | 0 => rfl
   | k + 1 => by
     simp only [shiftLeft_eq, Nat.mul_assoc, Nat.pow_add]
-#align nat.shiftl'_add Nat.shiftLeft_add
 
 theorem shiftRight_add (m n : Nat) : ∀ k, m >>> (n + k) = (m >>> n) >>> k
   | 0 => rfl
@@ -320,8 +326,6 @@ theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< 
     rw [succ_sub_succ_eq_sub, shiftLeft_succ, Nat.add_comm, shiftRight_add]
     simp only [shiftLeft_sub, Nat.le_of_succ_le_succ h]
     simp
-
-#align nat.shiftl'_sub Nat.shiftLeft_sub
 
 @[simp]
 theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
