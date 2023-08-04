@@ -73,7 +73,7 @@ theorem family_injective_shortExact [Nontrivial R] {w : ι' → P} (hE : Epi g)
 
 
 /-- Given a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` of `R`-modules and linearly independent
-    families `v : ι → N` and `w : ι' → M`, we get a linearly independent family `ι ⊕ ι' → M` -/
+    families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
 theorem linearIndependent_shortExact {w : ι' → P}
     (hw : LinearIndependent R w) (hse : ShortExact f g) :
     LinearIndependent R (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) := by
