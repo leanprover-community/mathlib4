@@ -15,6 +15,24 @@ import Mathlib.Order.OrderIsoNat
 If `α` is linearly ordered with `[WellFoundedLT α]`, then the lexicographic ordering on
 "decreasing lists" (i.e. `{l : List α // l.Sorted (· > ·)}`) is well founded.
 
+## Main results
+
+* `wellFoundedLT_iff_not_strictAnti`: A preorder `α` is well founded if and only if there is no
+  strictly antitone sequence in `α`.
+* `wellFoundedLT_sorted`: If a linear order `α` is well founded, then the the lexicographic
+  ordering on `{l : List α // l.Sorted (· > ·)}` is well founded.
+
+## Proof sketch of `wellFoundedLT_sorted`
+
+By `wellFoundedLT_iff_not_strictAnti`, it suffieces to construct a strictly antitone sequence in `α`
+given a stricly antitone sequence `f : ℕ → {l : List α // l.Sorted (· > ·)}`. The idea is as
+follows:
+
+We prove that for all `n : ℕ`, the sequence of `l n` of lists given by taking the first `n` elements
+of the terms of `f` is eventually constant. Define `a : ℕ → α` such that `a n` is the `n`-th term
+of the limit of the sequence `l n`. By the `List.Sorted` condition on the terms of `f`, this
+sequence is strictly decreasing.
+
 ## See also
 
 Related files are:
@@ -25,6 +43,8 @@ Related files are:
 
 variable (α : Type _)
 
+/-- A preorder `α` is well founded if and only if there exists no strictly antitone sequence in
+    `α`. -/
 theorem wellFoundedLT_iff_not_strictAnti [Preorder α] :
     WellFoundedLT α ↔ ∀ f : ℕ → α, ¬ StrictAnti f := by
   rw [WellFoundedLT, IsWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
@@ -38,9 +58,6 @@ variable {α} [LinearOrder α]
 Constructs the smallest monotone function larger than a given function,
 defined by `leastOrderHom f n = [f 0, f 1, ..., f n].maximum_of_length_pos (by simp)`.
 -/
--- One could prove `leastOrderHom_le (f : ℕ → α) (g : ℕ →o α) (w : f ≤ g) : leastOrderHom f ≤ g`,
--- and that this is a Galois connection.
--- One could generalize from `ℕ` to any `LocallyFiniteOrderBot`.
 def leastOrderHom (f : ℕ → α) : ℕ →o α where
   toFun n := (List.range (n + 1)).map f |>.maximum_of_length_pos (by simp)
   monotone' n m h := by
@@ -66,30 +83,32 @@ namespace wellFoundedLT_sorted
 variable (α)
 variable [WellFoundedLT α]
 
+/-- The type of decreasing lists in `α` -/
 def DecreasingList := { l : List α // l.Sorted (· > · ) }
-
-def DecreasingList' (b : WithTop α) := { l : List {a : (WithTop α) // a < b} // l.Sorted (· > · ) }
 
 instance : LinearOrder (DecreasingList α) := inferInstanceAs <| LinearOrder { _l : List α // _ }
 
 @[simp] lemma DecreasingList.lt_iff (x y : DecreasingList α) : x < y ↔ x.1 < y.1 := Iff.rfl
 
+/-- The type of **S**trictly **D**ecreasing **S**equences in `DecreasingList α` -/
 def SDS := { f : ℕ → DecreasingList α // StrictAnti f }
 
 variable {α}
 
+/-- For `n : ℕ` and `L : SDS α`, `Q n L` is a pair `(N : ℕ, S : List α)` such that the sequence
+    of lists obtained by taking the first `n` elements of the terms of `L` is constant from index
+    `N` with value `S`. -/
 def Q (n : ℕ) (L : SDS α) :=
   Σ' N, Σ' S : List α, S.length = n ∧ ∀ (m), N ≤ m → (L.1 m).1.take n = S
-
-def P (L : SDS α) := ∀ n, Q n L
 
 def DecreasingList.drop (l : DecreasingList α) (m : ℕ) : DecreasingList α :=
   ⟨l.1.drop m, l.2.drop⟩
 
-def SDS.drop₁ (L : SDS α) (m : ℕ) : SDS α :=
+/-- Translate a stricly decreasing sequence by `m` -/
+def SDS.translate (L : SDS α) (m : ℕ) : SDS α :=
   ⟨fun n => L.1 (n + m), fun _ _ h => L.2 (Nat.add_lt_add_right h m)⟩
 
-def SDS.drop₂ (L : SDS α) (S : List α) (m : ℕ) (w : ∀ n, (L.1 n).1.take m = S) : SDS α :=
+def SDS.dropQ_aux (L : SDS α) (S : List α) (m : ℕ) (w : ∀ n, (L.1 n).1.take m = S) : SDS α :=
   ⟨fun n => (L.1 n).drop m, by
     intro a b h
     have := L.2 h
@@ -97,9 +116,12 @@ def SDS.drop₂ (L : SDS α) (S : List α) (m : ℕ) (w : ∀ n, (L.1 n).1.take 
     rw [← List.take_append_drop m (L.1 a).1, ← List.take_append_drop m (L.1 b).1, w, w] at this
     simpa using this⟩
 
+/-- Take an `L : SDS` such that the sequence of lists given by taking the first `n` elements of
+    its terms is constant from index `N`. Translate it by `N` and then drop the first `n` elements
+    of each term. This gives a new `SDS`. -/
 def SDS.dropQ (L : SDS α) (w : Q n L) : SDS α := by
   obtain ⟨N, S, w⟩ := w
-  refine (L.drop₁ N).drop₂ S n ?_
+  refine (L.translate N).dropQ_aux S n ?_
   intro m
   exact (w.2 (m + N) (Nat.le_add_left N m))
 
@@ -154,19 +176,15 @@ theorem Q_one {L : SDS α} : Nonempty (Q 1 L) := by
   simp [SDS.head, SDS.head?, Option.get?_eq_some] at w
   simpa [List.take_one_eq_singleton_iff]
 
+/-- For every `n : ℕ`, the sequence given by taking the first `n` elements of each term of an
+    `SDS` is eventually constant. -/
 noncomputable
-def PSDS (L : SDS α) : P L := by
-  intro n
-  apply Nonempty.some
+def SDS.EventuallyConstant (L : SDS α) : ∀ n, Q n L := fun n ↦ Nonempty.some (by
   induction n using Nat.strong_induction_on generalizing L
   case h n a =>
     cases n
     case zero =>
-      use 0
-      use []
-      use rfl
-      intro m _
-      simp
+      exact ⟨0, [], rfl, fun m _ ↦ by simp⟩
     case succ n =>
       cases n
       case zero =>
@@ -179,28 +197,29 @@ def PSDS (L : SDS α) : P L := by
           exact Nat.one_lt_succ_succ n
         · apply Nonempty.some
           apply a
-          exact Nat.lt_succ_self _
+          exact Nat.lt_succ_self _ )
 
-def P' (L : SDS α) :=
-  ∃ g : ℕ →o ℕ, ∀ n, ∃ S : List α, S.length = n ∧ ∀ (m), g n ≤ m → (L.1 m).1.take n = S
-
-theorem P'SDS (L : SDS α) : P' L := by
-  let this := PSDS L
-  use leastOrderHom fun n => (this n).1
+/-- For every `n : ℕ`, the sequence given by taking the first `n` elements of each term of an
+    `SDS` is eventually constant, where the index from which it is eventually constant is
+    controlled by a `g : ℕ →o ℕ` -/
+theorem SDS.exists_orderHom_eventuallyConstant (L : SDS α) :
+    ∃ g : ℕ →o ℕ, ∀ n, ∃ S : List α, S.length = n ∧ ∀ m, g n ≤ m → (L.1 m).1.take n = S := by
+  use leastOrderHom fun n => (L.EventuallyConstant n).1
   intro n
-  use (this n).2.1
-  use (this n).2.2.1
+  use (L.EventuallyConstant n).2.1
+  use (L.EventuallyConstant n).2.2.1
   intro m h
-  apply (this n).2.2.2
+  apply (L.EventuallyConstant n).2.2.2
   exact (le_leastOrderHom _ _).trans h
 
-def P'' (L : SDS α) :=
-  ∃ g : ℕ →o ℕ, ∀ (n : ℕ), ∀ (m₁ : ℕ), g n ≤ m₁ → n ≤ (L.1 m₁).1.length ∧
+/-- Let `L : SDS α`. Then there exists a `g : ℕ →o ℕ` such that for all `n`, from index `g n` on
+    two things hold:
+    1) The terms of `L` have length at least `n`
+    2) The `x`-th elements of the terms of `L` are all equal for `x < n`. -/
+theorem main (L : SDS α) : ∃ g : ℕ →o ℕ, ∀ (n : ℕ), ∀ (m₁ : ℕ), g n ≤ m₁ → n ≤ (L.1 m₁).1.length ∧
     ∀ m₂, g n ≤ m₂ → ∀ x, x < n → (h₁ : _) → (h₂ : _) →
-      (L.1 m₁).1.get ⟨x, h₁⟩ = (L.1 m₂).1.get ⟨x, h₂⟩
-
-theorem main (L : SDS α) : P'' L := by
-  obtain ⟨g, w⟩ := P'SDS L
+    (L.1 m₁).1.get ⟨x, h₁⟩ = (L.1 m₂).1.get ⟨x, h₂⟩ := by
+  obtain ⟨g, w⟩ := L.exists_orderHom_eventuallyConstant
   use g
   intro n m₁ mh₁
   constructor
