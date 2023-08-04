@@ -267,7 +267,7 @@ theorem bases_nonempty :
     exists_basis_containing_feasible_set G.containsEmpty (empty_subset s)
   exists b; tauto
 
-theorem bases_card_eq
+theorem basis_card_eq
   {b₁ : Finset α} (hb₁ : b₁ ∈ G.bases s)
   {b₂ : Finset α} (hb₂ : b₂ ∈ G.bases s) :
     b₁.card = b₂.card := by
@@ -283,7 +283,7 @@ theorem bases_card_eq
 theorem bases_empty (h : ∅ ∈ G.bases s) :
     G.bases s = {∅} := by
   ext t; constructor <;> intro h₁ <;> simp_all
-  exact card_eq_zero.mp (bases_card_eq h h₁).symm
+  exact card_eq_zero.mp (basis_card_eq h h₁).symm
 
 @[simp]
 theorem bases_of_empty : G.bases ∅ = {∅} := by
@@ -306,6 +306,14 @@ theorem bases_empty_iff :
 theorem bases_empty_card (h : ∅ ∈ G.bases s) :
     (G.bases s).card = 1 :=
   bases_empty_iff.mp h ▸ card_singleton _
+
+theorem bases_empty_feasible_mem
+  (hs₁ : G.bases s = {∅}) {t : Finset α} (ht₁ : t ∈ G) (ht₂ : t ⊆ s) :
+    t = ∅ := by
+  have ⟨_, hb₁, hb₂⟩ := exists_basis_containing_feasible_set ht₁ ht₂
+  simp only [hs₁, Finset.mem_singleton] at hb₁
+  simp only [hb₁, subset_empty] at hb₂
+  exact hb₂
 
 theorem bases_of_singleton {a : α} (hb : b ∈ G.bases {a}) :
     b = ∅ ∨ b = {a} :=
@@ -333,7 +341,7 @@ theorem basis_of_full_unique [Full G] : ∃! b, b ∈ G.base := by
     exact Full.full
   . intro s hs
     apply eq_univ_of_card
-    apply @bases_card_eq _ _ _ G univ <;> rw [← base_bases_eq]
+    apply @basis_card_eq _ _ _ G univ <;> rw [← base_bases_eq]
     . exact hs
     . simp only [base, system_feasible_set_mem_mem, Finset.mem_filter, mem_univ,
         insert_eq_of_mem, implies_true, and_true]
@@ -346,7 +354,7 @@ theorem bases_of_full_card_eq_one [Full G] : G.base.card = 1 := by
 theorem basis_max_card_of_feasible {s' : Finset α} (hs'₁ : s' ∈ G) (hs'₂ : s' ⊆ s) :
     s'.card ≤ b.card :=
   have ⟨_, h₁, h₂⟩ := exists_basis_containing_feasible_set hs'₁ hs'₂
-  bases_card_eq hb h₁ ▸ card_le_of_subset h₂
+  basis_card_eq hb h₁ ▸ card_le_of_subset h₂
 
 theorem mem_bases_self_iff : s ∈ G ↔ s ∈ G.bases s := by
   apply Iff.intro _ (fun h => basis_mem_feasible h)
@@ -364,7 +372,7 @@ theorem bases_of_feasible_eq_singleton (hs : s ∈ G) : G.bases s = {s} := by
   ext t; constructor <;> intro h
   . rw [Finset.mem_singleton]
     rw [mem_bases_self_iff] at hs
-    exact eq_of_subset_of_card_le (basis_subset h) (by simp only [bases_card_eq h hs, le_refl])
+    exact eq_of_subset_of_card_le (basis_subset h) (by simp only [basis_card_eq h hs, le_refl])
   . rw [Finset.mem_singleton] at h
     rw [mem_bases_self_iff] at hs
     exact h ▸ hs
@@ -1088,11 +1096,11 @@ theorem kernel_eq_empty_iff : G.kernel s = ∅ ↔ G.bases s = {∅} := by
   constructor <;> intro h
   . have : G.bases (G.kernel s) = {∅} := by simp only [h, bases_of_empty]
     apply subset_antisymm (this.symm ▸ bases_subset_bases_kernel)
-    simp [← this, bases_subset_of_rank_eq_of_subset kernel_subset rank_kernel]
+    simp only [← this, bases_subset_of_rank_eq_of_subset kernel_subset rank_kernel]
   . apply subset_antisymm _ (empty_subset _)
-    intro x hx
-    let ⟨b, hb₁, hb₂, hb₃⟩ := mem_kernel.mp hx
-    sorry
+    intro _ hx
+    let ⟨_, h₁, h₂, h₃⟩ := mem_kernel.mp hx
+    exact bases_empty_feasible_mem h h₁ h₂ ▸ h₃
 
 @[simp]
 theorem closure_kernel_eq_closure :
