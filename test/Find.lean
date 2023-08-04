@@ -1,13 +1,13 @@
 import Mathlib.Tactic.Find
 import Std.Tactic.GuardExpr
 
-import Mathlib.Data.Real.Sqrt
+-- import Mathlib.Data.Real.Sqrt
 
-/-- warning: Cannot search: No constants in search pattern. -/
+/-- warning: Cannot search: No constants in search pattern and no name pattern given. -/
 #guard_msgs in
 #find
 
-/-- warning: Cannot search: No constants in search pattern. -/
+/-- info: Found 0 lemmas with a name containing "foobar". -/
 #guard_msgs in
 #find "foobar"
 

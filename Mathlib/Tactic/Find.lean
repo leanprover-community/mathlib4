@@ -5,6 +5,7 @@ Authors: Sebastian Ullrich, Joachim Breitner
 -/
 import Lean
 import Mathlib.Tactic.Cache
+import Mathlib.Lean.Name
 
 /-!
 # The `#find` command and tactic.
@@ -190,26 +191,31 @@ programmatic use.  -/
 def find (args : Arguments) (maxShown := 200) :
   MetaM (MessageData ⊕ (MessageData × List Name)) := do
   profileitM Exception "#find" (← getOptions) do
-    -- Collect set of names to query the index by
-    let needles : NameSet :=
-          {} |> args.idents.foldl NameSet.insert
-             |> args.terms.foldl (fun s (_,t) => t.foldConsts s (flip NameSet.insert))
-    if needles.isEmpty then do
-      return .inl m!"Cannot search: No constants in search pattern."
-
     -- Prepare term patterns
     let pats <- liftM $ args.terms.mapM fun (is_conclusion_pattern, t) =>
       if is_conclusion_pattern
       then matchConclusion t
       else matchAnywhere t
 
-    -- Query the declaration cache
-    let (m₁, m₂) <- findDeclsByConsts.get
-    let hits := NameSet.intersects $ needles.toArray.map $ fun needle =>
-      NameSet.union (m₁.findD needle {}) (m₂.findD needle {})
+    let needles : NameSet :=
+          {} |> args.idents.foldl NameSet.insert
+             |> args.terms.foldl (fun s (_,t) => t.foldConsts s (flip NameSet.insert))
+
+    if needles.isEmpty && args.name_pats.isEmpty then
+        return .inl m!"Cannot search: No constants in search pattern and no name pattern given."
+
+    -- Query the cache
+    let hits ←
+      if needles.isEmpty then
+        allNames fun n => args.name_pats.all fun p => p.isInfixOf n.toString
+      else do
+        -- Query the declaration cache
+        let (m₁, m₂) <- findDeclsByConsts.get
+        pure $ Lean.RBTree.toArray $ NameSet.intersects $ needles.toArray.map $ fun needle =>
+          NameSet.union (m₁.findD needle {}) (m₂.findD needle {})
 
     -- Filter by name patterns
-    let hits2 := hits.toArray.filter fun n => args.name_pats.all fun p =>
+    let hits2 := hits.filter fun n => args.name_pats.all fun p =>
       p.isInfixOf n.toString
 
     -- Filter by term patterns
@@ -224,11 +230,15 @@ def find (args : Arguments) (maxShown := 200) :
     let summary ← IO.mkRef MessageData.nil
     let add_line line := do summary.set $ (← summary.get) ++ line ++ Format.line
 
+    let name_list := MessageData.andList <| args.name_pats.map fun s => m!"\"{s}\""
     let needles_list := MessageData.andList (needles.toArray.map .ofName)
-    add_line $ m!"Found {hits.size} definitions mentioning {needles_list}."
-    unless (args.name_pats.isEmpty) do
-      let name_list := MessageData.andList <| args.name_pats.map fun s => m!"\"{s}\""
-      add_line $ m!"Of these, {hits2.size} have a name containing {name_list}."
+
+    if needles.isEmpty
+    then add_line $ m!"Found {hits2.size} lemmas with a name containing {name_list}."
+    else do
+      add_line $ m!"Found {hits.size} definitions mentioning {needles_list}."
+      unless (args.name_pats.isEmpty) do
+        add_line $ m!"Of these, {hits2.size} have a name containing {name_list}."
     unless (pats.isEmpty) do
       add_line $ m!"Of these, {hits3.size} match your patterns."
     unless (hits4.size ≤ maxShown) do
