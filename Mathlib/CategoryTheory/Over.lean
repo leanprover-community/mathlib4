@@ -302,6 +302,17 @@ end
 
 end Over
 
+namespace CostructuredArrow
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
+    `CostructuredArrow F X ⥤ Over X`. -/
+@[simps!]
+def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
+  CostructuredArrow.pre F (𝟭 T) X
+
+end CostructuredArrow
+
 /-- The under category has as objects arrows with domain `X` and as morphisms commutative
     triangles. -/
 def Under (X : T) :=
