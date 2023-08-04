@@ -48,6 +48,16 @@ theorem disjoint_span_sum : Disjoint (Submodule.span R (Set.range (u ∘ Sum.inl
   rw [← LinearMap.range_coe, (Submodule.span_eq (LinearMap.range f)), (exact_iff _ _).mp he]
   exact Submodule.ker_range_disjoint (Function.Injective.comp hu Sum.inr_injective) hw
 
+/-- In the commutative diagram
+             f     g
+    0 --→ N --→ M --→  P
+          ↑     ↑      ↑
+         v|    u|     w|
+          ι → ι ⊕ ι' ← ι'
+
+where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
+`Sum.inr`. If `u` is injective and `v` and `w` are linearly independent, then `u` is linearly
+independent. -/
 theorem linearIndependent_leftExact : LinearIndependent R u :=
   linearIndependent_sum.mpr
   ⟨(congr_arg (fun f ↦ LinearIndependent R f) huv).mpr
@@ -55,22 +65,29 @@ theorem linearIndependent_leftExact : LinearIndependent R u :=
     (LinearMap.ker_eq_bot.mpr ((mono_iff_injective _).mp hm))).mpr hv),
     LinearIndependent.of_comp g hw, disjoint_span_sum hw hu he huv⟩
 
-theorem family_injective_shortExact [Nontrivial R] {w : ι' → P} (hE : Epi g)
-    (hw : LinearIndependent R w) :
+/-- Given a short exact sequence of modules and injective families `v : ι → N` and `w : ι' → P`
+             f     g
+    0 --→ N --→ M --→ P --→ 0
+          ↑     ↑     ↑
+         v|     |    w|
+          ι   ι ⊕ ι'  ι'
+
+such that `w` does not hit `0`, the family `Sum.elim (f ∘ v) (g.toFun.invFun ∘ w) : ι ⊕ ι' → M`
+is injective. -/
+theorem family_injective_shortExact {w : ι' → P} (hse : ShortExact f g)
+    (hv : v.Injective) (hw : w.Injective) (hw' : ∀ x, w x ≠ 0) :
     Function.Injective (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) :=
   Function.Injective.sum_elim
-    (Function.Injective.comp ((mono_iff_injective _).mp hm) hv.injective)
+    (Function.Injective.comp ((mono_iff_injective _).mp hse.mono) hv)
     (Function.Injective.comp (Function.rightInverse_invFun
-      ((epi_iff_surjective _).mp hE)).injective hw.injective) (fun a b h ↦ by
+      ((epi_iff_surjective _).mp hse.epi)).injective hw) (fun a b h ↦ by
     apply_fun g at h
-    rw [epi_iff_surjective] at hE
     dsimp at h
-    rw [Function.rightInverse_invFun hE] at h
+    rw [Function.rightInverse_invFun ((epi_iff_surjective _).mp hse.epi)] at h
     change (f ≫ g) (v a) = _ at h
-    rw [he.w] at h
+    rw [hse.exact.w] at h
     change 0 = _ at h
-    exact LinearIndependent.ne_zero _ hw h.symm )
-
+    exact hw' _ h.symm )
 
 /-- Given a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` of `R`-modules and linearly independent
     families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
@@ -79,8 +96,8 @@ theorem linearIndependent_shortExact {w : ι' → P}
     LinearIndependent R (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) := by
   cases subsingleton_or_nontrivial R
   · exact linearIndependent_of_subsingleton
-  · refine' linearIndependent_leftExact hv _ (family_injective_shortExact hv hse.mono hse.exact
-        hse.epi hw) hse.mono hse.exact _
+  · refine' linearIndependent_leftExact hv _ (family_injective_shortExact hse hv.injective
+        hw.injective (fun x ↦ hw.ne_zero x)) hse.mono hse.exact _
     · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
       rwa [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun
         ((epi_iff_surjective _).mp hse.epi)),
@@ -93,6 +110,15 @@ section Span
 
 variable {M : ModuleCat R} {u : ι⊕ ι' → M} {f : N ⟶ M} {g : M ⟶ P}
 
+/-- In the commutative diagram
+    f     g
+ N --→ M --→  P
+ ↑     ↑      ↑
+v|    u|     w|
+ ι → ι ⊕ ι' ← ι'
+
+where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
+`Sum.inr`. If `v` spans `N` and `w` spans `P`, then `u` spans `M`. -/
 theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
     (hv : ⊤ ≤ Submodule.span R (Set.range v))
     (hw : ⊤ ≤ Submodule.span R (Set.range (g ∘ u ∘ Sum.inr))) :
