@@ -3,11 +3,10 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Data.Matrix.Rank
 import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
-
+import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 #align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
