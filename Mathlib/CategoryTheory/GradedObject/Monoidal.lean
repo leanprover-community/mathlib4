@@ -57,7 +57,37 @@ def tensorHom {W X Y Z : GradedObject ℕ V} (f : W ⟶ X) (g : Y ⟶ Z) :
 
 def tensorUnit : GradedObject ℕ V
 | 0 => 𝟙_ V
-| _ => 0
+| _ + 1 => 0
+
+@[simps!]
+def leftUnitor (X : GradedObject ℕ V) : tensorObj tensorUnit X ≅ X :=
+  GradedObject.mkIso fun i =>
+    { hom := biproduct.π (fun p : Finset.Nat.antidiagonal i => (tensorUnit p.1.1) ⊗ (X p.1.2))
+        ⟨⟨0, i⟩, by simp⟩ ≫ (λ_ (X i)).hom
+      inv := (λ_ (X i)).inv ≫ biproduct.ι (fun p : Finset.Nat.antidiagonal i => (tensorUnit p.1.1) ⊗ (X p.1.2))
+        ⟨⟨0, i⟩, by simp⟩
+      hom_inv_id := by
+        dsimp [tensorObj]
+        ext j j'
+        simp [biproduct.ι_π, biproduct.ι_π_assoc]
+        split_ifs with h₁ h₂ h₃ <;> (try subst h₁) <;> (try subst h₂) <;> (try subst h₃) <;> simp_all
+        sorry
+      inv_hom_id := by simp }
+
+@[simps!]
+def rightUnitor (X : GradedObject ℕ V) : tensorObj X tensorUnit ≅ X :=
+  GradedObject.mkIso fun i =>
+    { hom := biproduct.π (fun p : Finset.Nat.antidiagonal i => (X p.1.1) ⊗ (tensorUnit p.1.2))
+        ⟨⟨i, 0⟩, by simp⟩ ≫ (ρ_ (X i)).hom
+      inv := (ρ_ (X i)).inv ≫ biproduct.ι (fun p : Finset.Nat.antidiagonal i => (X p.1.1) ⊗ (tensorUnit p.1.2))
+        ⟨⟨i, 0⟩, by simp⟩
+      hom_inv_id := by
+        dsimp [tensorObj]
+        ext j j'
+        simp [biproduct.ι_π, biproduct.ι_π_assoc]
+        split_ifs with h₁ h₂ h₃ <;> (try subst h₁) <;> (try subst h₂) <;> (try subst h₃) <;> simp_all
+        sorry
+      inv_hom_id := by simp }
 
 /-- The 1st step of constructing the associator for graded objects. -/
 def associator_distributor (X Y Z : GradedObject ℕ V) (i : ℕ) :
@@ -134,7 +164,7 @@ def ιTensorObj (X Y : GradedObject ℕ V) (p q n : ℕ) (h : p + q = n) :
   biproduct.ι (fun p : Finset.Nat.antidiagonal n => (X p.1.1) ⊗ (Y p.1.2))
     ⟨⟨p, q⟩, by simpa using h⟩
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma ιTensorObj_comp_tensorHom {X Y X' Y' : GradedObject ℕ V}
     (f : X ⟶ X') (g : Y ⟶ Y') (p q n : ℕ) (h : p + q = n) :
     ιTensorObj X Y p q n h ≫ tensorHom f g n =
@@ -196,6 +226,20 @@ lemma ιTensorObj₃_eq (X₁ X₂ X₃ : GradedObject ℕ V) (p₁ p₂ p₃ n 
   subst h₁₂
   rfl
 
+@[reassoc (attr := simp)]
+lemma ιTensorObj₃_comp_tensorHom_tensorHom {X₁ Y₁ X₂ Y₂ X₃ Y₃ : GradedObject ℕ V}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n):
+    ιTensorObj₃ X₁ X₂ X₃ p₁ p₂ p₃ n h ≫ tensorHom (tensorHom f₁ f₂) f₃ n =
+      ((f₁ p₁ ⊗ f₂ p₂) ⊗ f₃ p₃) ≫ ιTensorObj₃ Y₁ Y₂ Y₃ p₁ p₂ p₃ n h := by
+  dsimp [ιTensorObj₃]
+  simp only [assoc, ιTensorObj_comp_tensorHom]
+  simp only [← assoc]
+  conv_lhs => simp only [← MonoidalCategory.tensor_comp]
+  simp only [id_comp]
+  simp only [ιTensorObj_comp_tensorHom]
+  conv_rhs => simp only [← MonoidalCategory.tensor_comp]
+  simp
+
 def ιTensorObj₃' (X₁ X₂ X₃ : GradedObject ℕ V) (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
     (X₁ p₁ ⊗ X₂ p₂) ⊗ X₃ p₃ ⟶ tensorObj X₁ (tensorObj X₂ X₃) n :=
   (α_ _ _ _).hom ≫ (𝟙 (X₁ p₁) ⊗ ιTensorObj X₂ X₃ p₂ p₃ (p₂ + p₃) rfl) ≫
@@ -208,6 +252,22 @@ def ιTensorObj₃'_eq (X₁ X₂ X₃ : GradedObject ℕ V) (p₁ p₂ p₃ n :
       ιTensorObj X₁ (tensorObj X₂ X₃) p₁ p₂₃ n (by rw [← h₂₃, ← add_assoc, h]) := by
   subst h₂₃
   rfl
+
+@[reassoc (attr := simp)]
+lemma ιTensorObj₃'_comp_tensorHom_tensorHom {X₁ Y₁ X₂ Y₂ X₃ Y₃ : GradedObject ℕ V}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n):
+    ιTensorObj₃' X₁ X₂ X₃ p₁ p₂ p₃ n h ≫ tensorHom f₁ (tensorHom f₂ f₃) n =
+      ((f₁ p₁ ⊗ f₂ p₂) ⊗ f₃ p₃) ≫ ιTensorObj₃' Y₁ Y₂ Y₃ p₁ p₂ p₃ n h := by
+  dsimp [ιTensorObj₃']
+  simp only [MonoidalCategory.associator_naturality_assoc]
+  simp only [assoc, Iso.cancel_iso_hom_left]
+  simp only [ιTensorObj_comp_tensorHom]
+  simp only [← assoc]
+  conv_lhs => simp only [← MonoidalCategory.tensor_comp]
+  simp only [id_comp]
+  simp only [ιTensorObj_comp_tensorHom]
+  conv_rhs => simp only [← MonoidalCategory.tensor_comp]
+  simp
 
 lemma tensorObj₃_ext (X₁ X₂ X₃ : GradedObject ℕ V) (n : ℕ) {Z : V}
     (f₁ f₂ : tensorObj (tensorObj X₁ X₂) X₃ n ⟶ Z)
@@ -233,8 +293,6 @@ lemma tensorObj₃_rightTensor_ext (X₁ X₂ X₃ : GradedObject ℕ V) (n : �
   intro p₁ p₂ h₁₂
   simpa only [ιTensorObj₃_eq X₁ X₂ X₃ p₁ p₂ p₃ n (by rw [h₁₂, h₁₂₃]) p₁₂ h₁₂, MonoidalCategory.associator_conjugation, MonoidalCategory.tensor_id, assoc,
     Iso.cancel_iso_hom_left, MonoidalCategory.comp_tensor_id] using h p₁ p₂ p₃ (by rw [h₁₂, h₁₂₃])
-
-#eval 0
 
 theorem dite_dite (P : Prop) [Decidable P] (Q : P → Prop) [∀ hp, Decidable (Q hp)] (a : (hp : P) → Q hp → β) (b : β) :
     (if hp : P then (if hq : Q hp then a hp hq else b) else b) =
@@ -273,8 +331,7 @@ theorem qux {β : α → Type _} (p q : Σ a, β a) :
     p = q ↔ ∃ h : p.1 = q.1, cast (congrArg β h) p.2 = q.2 := by
   aesop
 
--- set_option says.verify true in
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
     (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
     ιTensorObj₃ X₁ X₂ X₃ p₁ p₂ p₃ n h ≫ (associator X₁ X₂ X₃).hom n =
@@ -310,14 +367,18 @@ lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
   simp? [biproduct.ι_π] says simp only [ne_eq, Sigma.mk.inj_iff, not_and, biproduct.ι_π]
   simp only [qux]
   simp only [dite_exists]
-  simp? says simp only [Finset.mem_val, Finset.Nat.mem_antidiagonal, biproduct.lift_dite_irrel]
+  simp? says simp only [Finset.mem_val, Finset.Nat.mem_antidiagonal, biproduct.lift_dite_irrel, biproduct.lift_zero]
   conv in biproduct.lift _ =>
     tactic => convert biproduct.lift_dite _
-  -- dsimp only [associator_distributor']
+  conv in biproduct.lift _ =>
+    tactic => convert biproduct.lift_dite _
+  simp? says simp only [cast_eq, eqToHom_refl, id_comp, assoc]
+  dsimp only [associator_distributor']
+  simp? says simp only [biproduct.mapIso_hom, Iso.symm_hom, biproduct.ι_map, biproduct_ι_comp_leftDistributor_inv_assoc]
   -- simp
   -- simp? says simp only [ne_eq, Sigma.mk.inj_iff, not_and, biproduct.mapIso_hom, Iso.symm_hom, biproduct.lift_map]
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma ιTensorObj₃'_comp_associator_inv (X₁ X₂ X₃ : GradedObject ℕ V)
     (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
     ιTensorObj₃' X₁ X₂ X₃ p₁ p₂ p₃ n h ≫ (associator X₁ X₂ X₃).inv n =
@@ -425,25 +486,65 @@ lemma pentagon_aux₄ (X₁ X₂ X₃ X₄ : GradedObject ℕ V) (p₁ p₂ p₃
     ← MonoidalCategory.tensor_id, MonoidalCategory.associator_conjugation,
     assoc, assoc, Iso.inv_hom_id_assoc]
 
+lemma triangle (X₁ X₂ : GradedObject ℕ V) (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
+    ιTensorObj₃' X₁ tensorUnit X₂ p₁ p₂ p₃ n h ≫ tensorHom (𝟙 X₁) (leftUnitor X₂).hom n =
+      ιTensorObj₃ X₁ tensorUnit X₂ p₁ p₂ p₃ n h ≫ tensorHom (rightUnitor X₁).hom (𝟙 X₂) n := by
+  dsimp [ιTensorObj₃, ιTensorObj₃', ιTensorObj, tensorHom, leftUnitor, rightUnitor]
+  simp? says
+  simp only [← MonoidalCategory.id_tensor_comp_assoc, ← MonoidalCategory.comp_tensor_id_assoc]
+  simp only [biproduct.ι_π_assoc]
+
+  simp [MonoidalCategory.tensor_dite, MonoidalCategory.dite_tensor, dite_comp, comp_dite]
+  split_ifs with w
+  · subst w
+    simp [tensorUnit]
+    dsimp
+    sorry
+  · rfl
+
 end MonoidalCategory
 
 open MonoidalCategory
 
--- set_option says.verify true in
+
 set_option maxHeartbeats 0 in
 instance : MonoidalCategory (GradedObject ℕ V) where
   tensorObj := tensorObj
   tensorHom := tensorHom
   tensorUnit' := tensorUnit
-  tensor_id := sorry
-  tensor_comp := sorry
+  tensor_id X₁ X₂ := by
+    ext n
+    apply tensorObj_ext
+    intros p q h
+    simp
+  tensor_comp f₁ f₂ g₁ g₂ := by
+    ext n
+    apply tensorObj_ext
+    intros p q h
+    simp
   associator := associator
-  leftUnitor := sorry
-  rightUnitor := sorry
-  associator_naturality := sorry
-  leftUnitor_naturality := sorry
-  rightUnitor_naturality := sorry
-  triangle := sorry
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
+  associator_naturality f₁ f₂ f₃ := by
+    ext n
+    apply tensorObj₃_ext
+    intros p₁ p₂ p₃ h
+    simp
+  leftUnitor_naturality f₁ := by
+    ext n
+    apply tensorObj_ext
+    intros p q h
+    sorry
+  rightUnitor_naturality f₁ := by
+    ext n
+    apply tensorObj_ext
+    intros p q h
+    sorry
+  triangle X₁ X₂ := by
+    ext n
+    apply tensorObj₃_ext
+    intro p₁ p₂ p₃ h
+    simp
   pentagon X₁ X₂ X₃ X₄ := by
     ext n
     apply tensorObj₄_ext
