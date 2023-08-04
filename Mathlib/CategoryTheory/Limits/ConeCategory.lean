@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Adjunction.Comma
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.CategoryTheory.Over
 
@@ -55,7 +54,7 @@ lemma Cone.toStructuredArrow_comp_proj {F : J ⥤ C} (c : Cone F) :
     c.toStructuredArrow ⋙ StructuredArrow.proj _ _ = 𝟭 J :=
   rfl
 
-/-- Interpreting the legs of a acone as a structured arrow, interpreting this arrow as an arrow over
+/-- Interpreting the legs of a cone as a structured arrow, interpreting this arrow as an arrow over
     the cone point, and finally forgetting the arrow is the same as just applying the functor the
     cone was over. -/
 @[simps!]
