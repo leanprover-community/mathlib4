@@ -3,7 +3,6 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
-import Mathlib.Data.IsROrC.Basic
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
@@ -94,11 +93,9 @@ theorem posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.Pos
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.posDef_toQuadraticForm'
 
-section ConjTransposeMul
-
 /-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemidef (Aᴴ ⬝ A) := by
-  refine ⟨ isHermitian_transpose_mul_self _, fun x => ?_ ⟩
+  refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star, dotProduct, map_sum]
   simpa [Pi.star_apply, IsROrC.star_def, IsROrC.mul_re, IsROrC.conj_re, IsROrC.conj_im, neg_mul,
     sub_neg_eq_add] using
@@ -107,8 +104,6 @@ theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemi
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
 theorem posSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
   by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
-
-end ConjTransposeMul
 
 namespace PosDef
 
