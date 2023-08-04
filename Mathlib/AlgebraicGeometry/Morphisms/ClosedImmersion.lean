@@ -13,8 +13,7 @@ import Mathlib.RingTheory.LocalProperties
 # Closed immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is a closed immersion if the underlying map of topological spaces
-is a closed immersion and the induced morphisms of stalks are all surjective, i.e. the morphism `O_X
-→ f_*O_Y` is locally surjective.
+is a closed immersion and the induced morphisms of stalks are all surjective.
 
 ## Main definitions
 
@@ -84,7 +83,7 @@ instance ofIsIso {X Y : Scheme} (f : X ⟶ Y) [hf : IsIso f] :
   . let f_top_iso := TopCat.homeoOfIso (asIso f.1.base)
     exact Homeomorph.closedEmbedding f_top_iso
   . intro x
-    apply (ConcreteCategory.bijective_of_isIso _).2
+    exact (ConcreteCategory.bijective_of_isIso _).2
 
 variable (R : CommRingCat) (M : Submonoid R)
 
