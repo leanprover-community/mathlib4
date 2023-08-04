@@ -234,7 +234,7 @@ theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x 
 #align is_unit.of_left_inverse IsUnit.of_leftInverse
 #align is_add_unit.of_left_inverse IsAddUnit.of_leftInverse
 
--- Prefer `IsLocalRingHom.of_leftInverse`, but we cannot get rid of this because of `ToAdditive`.
+/-- Prefer `IsLocalRingHom.of_leftInverse`, but we cannot get rid of this because of `ToAdditive`. -/
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
   {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
