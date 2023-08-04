@@ -615,6 +615,26 @@ def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
   inv := biproduct.lift fun i => biproduct.lift fun x => biproduct.π _ (⟨i, x⟩ : Σ i, f i)
 
+lemma biproduct.comp_lift (f : β → C) [HasBiproduct f] (g : P ⟶ Q) (h : ∀ b, Q ⟶ f b) :
+    g ≫ biproduct.lift h = biproduct.lift fun b => g ≫ h b := by
+  ext; simp
+
+lemma biproduct.desc_comp (f : β → C) [HasBiproduct f] (g : ∀ b, f b ⟶ P) (h : P ⟶ Q) :
+    biproduct.desc g ≫ h = biproduct.desc fun b => g b ≫ h := by
+  ext; simp
+
+@[reassoc (attr := simp)]
+lemma biproduct.ι_comp_lift
+    (f : β → C) [HasBiproduct f] (g : α → C) [HasBiproduct g] (h : ∀ b, ⨁ g ⟶ f b) :
+    biproduct.ι g a ≫ biproduct.lift h = biproduct.lift fun b => biproduct.ι g a ≫ h b := by
+  ext; simp
+
+@[reassoc (attr := simp)]
+lemma biproduct.desc_comp_π
+    (f : β → C) [HasBiproduct f] (h : α → C) [HasBiproduct h] (g : ∀ b, f b ⟶ ⨁ h) :
+    biproduct.desc g ≫ biproduct.π h a = biproduct.desc fun b => g b ≫ biproduct.π h a := by
+  ext; simp
+
 /-- Two biproducts which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.
 
@@ -664,26 +684,6 @@ lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃
     · exact h
     · rintro rfl
       simp at h
-
-lemma biproduct.comp_lift (f : β → C) [HasBiproduct f] (g : P ⟶ Q) (h : ∀ b, Q ⟶ f b) :
-    g ≫ biproduct.lift h = biproduct.lift fun b => g ≫ h b := by
-  ext; simp
-
-lemma biproduct.desc_comp (f : β → C) [HasBiproduct f] (g : ∀ b, f b ⟶ P) (h : P ⟶ Q) :
-    biproduct.desc g ≫ h = biproduct.desc fun b => g b ≫ h := by
-  ext; simp
-
-@[reassoc (attr := simp)]
-lemma biproduct.ι_comp_lift
-    (f : β → C) [HasBiproduct f] (g : α → C) [HasBiproduct g] (h : ∀ b, ⨁ g ⟶ f b) :
-    biproduct.ι g a ≫ biproduct.lift h = biproduct.lift fun b => biproduct.ι g a ≫ h b := by
-  ext; simp
-
-@[reassoc (attr := simp)]
-lemma biproduct.desc_comp_π
-    (f : β → C) [HasBiproduct f] (h : α → C) [HasBiproduct h] (g : ∀ b, f b ⟶ ⨁ h) :
-    biproduct.desc g ≫ biproduct.π h a = biproduct.desc fun b => g b ≫ biproduct.π h a := by
-  ext; simp
 
 section πKernel
 
