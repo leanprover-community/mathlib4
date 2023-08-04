@@ -28,11 +28,11 @@ prove the basic properties about these.
 
 universe u
 
-open Ordinal SetTheory
-
-open scoped NaturalOps PGame
+open Ordinal
 
 namespace SetTheory
+
+open scoped NaturalOps PGame
 
 namespace PGame
 
