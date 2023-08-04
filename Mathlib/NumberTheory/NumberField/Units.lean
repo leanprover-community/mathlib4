@@ -16,7 +16,8 @@ We prove results about the group `(𝓞 K)ˣ` of units of the ring of integers `
 field `K`.
 
 ## Main results
-* `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`
+* `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
+* `mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
 
 ## Tags
 number field, units
@@ -45,8 +46,6 @@ variable (K : Type _) [Field K]
 
 section IsUnit
 
-attribute [local instance] NumberField.ringOfIntegersAlgebra
-
 variable {K}
 
 theorem isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
@@ -56,44 +55,29 @@ theorem isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
 #align is_unit_iff_norm isUnit_iff_norm
 
 end IsUnit
-
 namespace NumberField.Units
 
 section coe
 
-/-- The `MonoidHom` from the group of units `(𝓞 K)ˣ` to the field `K`. -/
-def coe_to_field : (𝓞 K)ˣ →* K := (Units.coeHom K).comp (map (algebraMap (𝓞 K) K))
+theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
+  fun _ _ h => by rwa [SetLike.coe_eq_coe, Units.eq_iff] at h
 
 variable {K}
 
-/-- The coercion of `x : (𝓞 K)ˣ` into `K`. -/
-@[coe] def to_field (x : (𝓞 K)ˣ) : K := coe_to_field K x
+theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
-variable (K)
+theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
+  rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
 
-theorem coe_to_field_injective : Function.Injective (coe_to_field K) :=
-  fun _ _ h => Units.eq_iff.mp (SetCoe.ext h)
+theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
+  change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
+  exact map_zpow _ x n
 
-/-- There is a natural coercion from `(𝓞 K)ˣ` to `(𝓞 K)` and then from `(𝓞 K)` to `K` but it is
-useful to also have a direct one from `(𝓞 K)ˣ` to `K`. -/
-instance : Coe (𝓞 K)ˣ K := ⟨to_field⟩
+theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
 
-@[ext]
-theorem ext {x y : (𝓞 K)ˣ} (h : (x : K) = y) : x = y := (coe_to_field_injective K).eq_iff.mp h
+theorem coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
 
-@[simp]
-theorem map_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) :=
-  _root_.map_mul (coe_to_field K) x y
-
-@[simp]
-theorem map_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n :=
-  _root_.map_pow (coe_to_field K) x n
-
-@[simp]
-theorem map_one : ((1 : (𝓞 K)ˣ) : K) = 1 := rfl
-
-@[simp]
-theorem ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
+theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
   Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
 
 end coe
@@ -110,16 +94,17 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, h_pos, h_eq⟩ φ => ?_, fun h => ?_⟩
   · refine norm_map_one_of_pow_eq_one φ.toMonoidHom (k := ⟨n, h_pos⟩) ?_
-    rw [PNat.mk_coe, ← map_pow, h_eq, map_one]
+    rw [PNat.mk_coe, ← coe_pow, h_eq, coe_one]
   · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
-    exact ⟨n, hn, by ext; rwa [map_pow, map_one]⟩
+    exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
 
-instance : Nonempty (torsion K) := ⟨1⟩
+/-- Shortcut instance because Lean tends to time out before finding the general instance. -/
+instance : Nonempty (torsion K) := One.nonempty
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
   refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
-  refine Set.Finite.of_finite_image ?_ ((coe_to_field_injective K).injOn _)
+  refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
     (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
   · rw [← h_ua]
@@ -127,6 +112,7 @@ instance [NumberField K] : Fintype (torsion K) := by
   · rw [← h_ua]
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
+set_option synthInstance.maxHeartbeats 30000 in
 /-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
@@ -161,6 +147,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
 end torsion
 
 namespace dirichlet
+
 -- This section is devoted to the proof of Dirichlet's unit theorem
 -- We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀`
 -- is a distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup
@@ -187,8 +174,9 @@ def log_embedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w�
   map_zero' := by simp; rfl
   map_add' := by
     intro _ _
-    simp only [ne_eq, toMul_add, map_mul, _root_.map_mul, map_eq_zero, ne_zero, not_false_eq_true,
-      Real.log_mul, mul_add]
+    simp only [ne_eq, toMul_add, val_mul, Submonoid.coe_mul, Subsemiring.coe_toSubmonoid,
+      Subalgebra.coe_toSubsemiring, map_mul, map_eq_zero, ZeroMemClass.coe_eq_zero, ne_zero,
+      not_false_eq_true, Real.log_mul, mul_add]
     rfl }
 
 @[simp]
@@ -207,14 +195,14 @@ theorem log_embedding_sum_component (x : (𝓞 K)ˣ) :
     · refine (Finset.sum_subtype _ (fun w => ?_) (fun w => (mult w) * (Real.log (w (x : K))))).symm
       exact ⟨Finset.ne_of_mem_erase, fun h => Finset.mem_erase_of_ne_of_mem h (Finset.mem_univ w)⟩
     · norm_num
-  · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (ne_zero K x))
+  · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (coe_ne_zero x))
 
 theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
   · have : 0 ≤ w x := map_nonneg _ _
     linarith
-  · simp only [ne_eq, map_eq_zero, ne_zero K x]
+  · simp only [ne_eq, map_eq_zero, coe_ne_zero x]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
 
@@ -281,16 +269,17 @@ theorem unit_lattice_inter_ball_finite (r : ℝ) :
       refine (Set.Finite.image log_embedding this).subset ?_
       rintro _ ⟨⟨x, ⟨_, rfl⟩⟩, hx⟩
       refine ⟨x, ⟨x.val.prop, (le_iff_le _ _).mp (fun w => (Real.log_le_iff_le_exp ?_).mp ?_)⟩, rfl⟩
-      · exact pos_iff.mpr (ne_zero K x)
+      · exact pos_iff.mpr (coe_ne_zero x)
       · rw [mem_closedBall_zero_iff] at hx
         exact (le_abs_self _).trans (log_le_of_log_embedding_le hr hx w)
-    refine Set.Finite.of_finite_image ?_ ((coe_to_field_injective K).injOn _)
+    refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
     refine (Embeddings.finite_of_norm_le K ℂ
         (Real.exp ((Fintype.card (InfinitePlace K)) * r))).subset ?_
     rintro _ ⟨x, ⟨⟨h_int, h_le⟩, rfl⟩⟩
     exact ⟨h_int, h_le⟩
 
 section span_top
+
 -- To prove that the span over `ℝ` of the `unit_lattice` is equal to the full space, we construct
 -- for each infinite place `w₁ ≠ w₀` an unit `u_w₁` of `K` such that, for all infinite place
 -- `w` such that `w ≠ w₁`, we have `Real.log w (u_w₁) < 0` (and thus `Real.log w₁ (u_w₁) > 0`).
@@ -323,7 +312,7 @@ theorem seq.next {x : 𝓞 K} (hx : x ≠ 0) :
       · refine Finset.prod_le_prod ?_ ?_
         exact fun _ _ => pow_nonneg (by positivity) _
         exact fun w _ => pow_le_pow_of_le_left (by positivity) (le_of_lt (h_yle w)) (mult w)
-      · simp_rw [← coe_pow, ← NNReal.coe_prod]
+      · simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
         exact le_of_eq (congrArg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
       simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx]
@@ -401,7 +390,6 @@ theorem exists_unit (w₁ : InfinitePlace K ) :
         _ < 1                                               := ?_
       · rw [← congrArg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul, ← mul_assoc,
           inv_mul_cancel (seq.ne_zero K w₁ hB n), one_mul]
-        rfl
       · rw [map_inv₀, mul_inv_lt_iff (pos_iff.mpr (seq.ne_zero K w₁ hB n)), mul_one]
         exact seq.antitone K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem
@@ -446,17 +434,30 @@ def _root_.NumberField.Units.rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
 open FiniteDimensional
 
+theorem unit_lattice_discrete : DiscreteTopology (unit_lattice K) := by
+  refine discreteTopology_of_open_singleton_zero ?_
+  refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
+  exact Metric.closedBall_mem_nhds _ (by norm_num)
+  refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective _)
+  convert unit_lattice_inter_ball_finite K 1
+  ext x
+  refine ⟨?_, fun ⟨hx1, hx2⟩ => ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
+  rintro ⟨x, hx, rfl⟩
+  exact ⟨Subtype.mem x, hx⟩
+
 theorem rank_space :
-    finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = rank K := by
+    finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-theorem unit_lattice_moduleFree : Module.Free ℤ (unit_lattice K) :=
-Zlattice.module_free ℝ ((unit_lattice_inter_ball_finite K)) (unit_lattice_span_eq_top K)
+theorem unit_lattice_moduleFree : Module.Free ℤ (unit_lattice K) := by
+  have := unit_lattice_discrete K
+  exact Zlattice.module_free ℝ (unit_lattice_span_eq_top K)
 
-theorem unit_lattice.rank : finrank ℤ (unit_lattice K) = rank K := by
+theorem unit_lattice.rank : finrank ℤ (unit_lattice K) = Units.rank K := by
+  have := unit_lattice_discrete K
   rw [← rank_space]
-  exact Zlattice.rank ℝ ((unit_lattice_inter_ball_finite K)) (unit_lattice_span_eq_top K)
+  exact Zlattice.rank ℝ (unit_lattice_span_eq_top K)
 
 end dirichlet
 

@@ -30,7 +30,7 @@ radius is finite.
 complex conjugation).
 
 * `exists_ne_zero_mem_ringOfIntegers_lt`: let `f : InfinitePlace K → ℝ≥0`, if the product
-`∏_w f w` is large enough, proves that there exists a nonzero algebraic integer `a` such
+`∏ w, f w` is large enough, proves that there exists a nonzero algebraic integer `a` such
 that `w a < f w` for all infinite places `w`.
 
 ## Tags
@@ -330,6 +330,8 @@ theorem constant_factor_lt_top : (constant_factor K) < ⊤ := by
   · exact ne_of_lt (pow_lt_top measure_ball_lt_top _)
 
 set_option maxHeartbeats 400000 in
+/-- The volume of `(convex_body K f)` where `convex_body K f` is the set of points `x` such that
+`‖x w‖ < f w` for all infinite places `w`. -/
 theorem convex_body_volume :
     volume (convex_body K f) = (constant_factor K) * ∏ w, (f w) ^ (mult w) := by
   rw [volume_eq_prod, convex_body, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi]
@@ -393,6 +395,11 @@ theorem minkowski_bound_lt_top : minkowski_bound K < ⊤ := by
   · exact ne_of_lt (Zspan.fundamentalDomain_bounded (latticeBasis K)).measure_lt_top
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
 
+/-- Assume that `f : InfinitePlace K → ℝ≥0` is such that
+`minkowski_bound K < volume (convex_body K f)` where `convex_body K f` is the set of points `x`
+such that `‖x w‖ < f w` for all infinite places `w` (see `convex_body_volume` for the computation
+of this volume), then there exists a nonzero algebraic integer `a` in `𝓞 K` such that
+`w a < f w` for all infinite places `w`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowski_bound K < volume (convex_body K f)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   have : @IsAddHaarMeasure (E K) _ _ _ volume := prod.instIsAddHaarMeasure volume volume

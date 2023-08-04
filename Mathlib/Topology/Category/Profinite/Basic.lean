@@ -247,7 +247,7 @@ end DiscreteTopology
 end Profinite
 
 namespace Profinite
--- set_option pp.universes true
+
 -- TODO the following construction of limits could be generalised
 -- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of

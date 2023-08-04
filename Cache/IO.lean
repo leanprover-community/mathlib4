@@ -43,7 +43,13 @@ def IRDIR : FilePath :=
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "XDG_CACHE_HOME" with
   | some path => return path / "mathlib"
-  | none => match ← IO.getEnv "HOME" with
+  | none =>
+    let home ← if System.Platform.isWindows then
+      let drive ← IO.getEnv "HOMEDRIVE"
+      let path ← IO.getEnv "HOMEPATH"
+      pure <| return (← drive) ++ (← path)
+    else IO.getEnv "HOME"
+    match home with
     | some path => return path / ".cache" / "mathlib"
     | none => pure ⟨".cache"⟩
 
@@ -195,7 +201,7 @@ def validateLeanTar : IO Unit := do
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
   let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
     "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  let _ ← runCmd "mv" #[(IO.CACHEDIR / s!"leantar{EXE}").toString, LEANTARBIN.toString]
+  IO.FS.rename (IO.CACHEDIR / s!"leantar{EXE}").toString LEANTARBIN.toString
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension

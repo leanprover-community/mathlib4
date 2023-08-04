@@ -142,7 +142,7 @@ Once we've set up `MonCat` as the category of bundled monoids,
 this allows us to set up `CommMonCat` by defining an instance
 ```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
 -/
-class ParentProjection (F : ∀ {α}, d α → c α)
+class ParentProjection (F : ∀ {α}, d α → c α) : Prop
 #align category_theory.bundled_hom.parent_projection CategoryTheory.BundledHom.ParentProjection
 
 end
