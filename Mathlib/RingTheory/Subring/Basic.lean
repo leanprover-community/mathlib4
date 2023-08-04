@@ -473,14 +473,12 @@ def toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-def toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) :
-    OrderedCommRing s :=
+def toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
   inferInstance
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-def toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) :
-    LinearOrderedRing s :=
+def toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
   inferInstance
 #align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
 

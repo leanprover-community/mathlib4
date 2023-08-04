@@ -1215,7 +1215,8 @@ variable [Nonempty ι] {K : ι → Subalgebra R A} {dir : Directed (· ≤ ·) K
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   dsimp [iSupLift, inclusion]
-  rw [Set.iUnionLift_inclusion]
+  rw [OneHom.coe_mk, OneHom.coe_mk] -- why can't dsimp do this?
+  exact Set.iUnionLift_inclusion _ _
 #align subalgebra.supr_lift_inclusion Subalgebra.iSupLift_inclusion
 
 @[simp]
@@ -1227,12 +1228,14 @@ theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
   dsimp [iSupLift, inclusion]
+  rw [OneHom.coe_mk] -- why can't dsimp do this?
   rw [Set.iUnionLift_mk]
 #align subalgebra.supr_lift_mk Subalgebra.iSupLift_mk
 
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   dsimp [iSupLift, inclusion]
+  rw [OneHom.coe_mk] -- why can't dsimp do this?
   rw [Set.iUnionLift_of_mem]
 #align subalgebra.supr_lift_of_mem Subalgebra.iSupLift_of_mem
 
