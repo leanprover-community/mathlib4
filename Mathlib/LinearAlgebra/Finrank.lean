@@ -65,13 +65,12 @@ theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank K V = ↑n) : finrank K
   exact_mod_cast h
 #align finite_dimensional.finrank_eq_of_rank_eq FiniteDimensional.finrank_eq_of_rank_eq
 
-lemma rank_eq_one_iff_finrank_eq_one :
-    Module.rank K V = 1 ↔ FiniteDimensional.finrank K V = 1 :=
+lemma rank_eq_one_iff_finrank_eq_one : Module.rank K V = 1 ↔ finrank K V = 1 :=
   Cardinal.toNat_eq_one.symm
 
 /-- This is like `rank_eq_one_iff_finrank_eq_one` but works for `2`, `3`, `4`, ... -/
 lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
-    Module.rank K V = OfNat.ofNat n ↔ FiniteDimensional.finrank K V = OfNat.ofNat n :=
+    Module.rank K V = OfNat.ofNat n ↔ finrank K V = OfNat.ofNat n :=
   Cardinal.toNat_eq_ofNat.symm
 
 theorem finrank_le_of_rank_le {n : ℕ} (h : Module.rank K V ≤ ↑n) : finrank K V ≤ n := by
