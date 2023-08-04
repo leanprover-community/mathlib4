@@ -482,7 +482,7 @@ variable {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance MulOpposite.normedAlgebra {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.normedSpace, MulOpposite.instAlgebraMulOppositeSemiring with }
+  { MulOpposite.normedSpace, MulOpposite.instAlgebra with }
 #align mul_opposite.normed_algebra MulOpposite.normedAlgebra
 
 end NormedAlgebra
