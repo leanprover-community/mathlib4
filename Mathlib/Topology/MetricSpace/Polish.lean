@@ -175,7 +175,7 @@ theorem _root_.IsClosed.polishSpace {α : Type*} [TopologicalSpace α] [PolishSp
 /-- A sequence of type synonyms of a given type `α`, useful in the proof of
 `exists_polishSpace_forall_le` to endow each copy with a different topology. -/
 @[nolint unusedArguments]
-def AuxCopy (α : Type*) {ι : Type*} (_i : ι) : Type* := α
+def AuxCopy (α : Type*) {ι : Type*} (_i : ι) : Type _ := α
 #align polish_space.aux_copy PolishSpace.AuxCopy
 
 /-- Given a Polish space, and countably many finer Polish topologies, there exists another Polish
@@ -253,7 +253,7 @@ variable [MetricSpace α] {s : Opens α}
 /-- A type synonym for a subset `s` of a metric space, on which we will construct another metric
 for which it will be complete. -/
 -- porting note: was @[nolint has_nonempty_instance]
-def CompleteCopy {α : Type*} [MetricSpace α] (s : Opens α) : Type* := s
+def CompleteCopy {α : Type*} [MetricSpace α] (s : Opens α) : Type _ := s
 #align polish_space.complete_copy TopologicalSpace.Opens.CompleteCopyₓ
 
 namespace CompleteCopy

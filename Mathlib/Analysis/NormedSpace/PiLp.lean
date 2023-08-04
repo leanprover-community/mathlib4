@@ -74,7 +74,7 @@ already endowed with the `L^∞` distance, we need the type synonym to avoid con
 resolution. Also, we let it depend on `p`, to get a whole family of type on which we can put
 different distances. -/
 @[nolint unusedArguments]
-def PiLp (_p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type* :=
+def PiLp (_p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
   ∀ i : ι, α i
 #align pi_Lp PiLp
 

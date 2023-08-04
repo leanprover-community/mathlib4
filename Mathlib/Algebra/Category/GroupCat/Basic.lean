@@ -144,7 +144,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddGroupCat.ofHom
 
 @[to_additive (attr := simp)]
-theorem ofHom_apply {X Y : Type*} [Group X] [Group Y] (f : X →* Y) (x : X) :
+theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -318,7 +318,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
-theorem ofHom_apply {X Y : Type*} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
+theorem ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in

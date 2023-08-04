@@ -37,7 +37,7 @@ is that some theorems about the group actions will not apply when since this
 variable (α M G G₀ R K : Type*)
 
 /-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
-def ConjAct : Type* :=
+def ConjAct : Type _ :=
   G
 #align conj_act ConjAct
 

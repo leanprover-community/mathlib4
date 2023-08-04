@@ -27,7 +27,7 @@ variable {n m : ℕ} (F : TypeVec.{u} n → Type*) [fF : MvFunctor F] [q : MvQPF
 
 /-- Composition of an `n`-ary functor with `n` `m`-ary
 functors gives us one `m`-ary functor -/
-def Comp (v : TypeVec.{u} m) : Type* :=
+def Comp (v : TypeVec.{u} m) : Type _ :=
   F fun i : Fin2 n ↦ G i v
 #align mvqpf.comp MvQPF.Comp
 

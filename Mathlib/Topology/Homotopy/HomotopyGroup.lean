@@ -392,7 +392,7 @@ end GenLoop
 
 /-- The `n`th homotopy group at `x` defined as the quotient of `Ω^n x` by the
   `GenLoop.Homotopic` relation. -/
-def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type* :=
+def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 #align homotopy_group HomotopyGroup
 

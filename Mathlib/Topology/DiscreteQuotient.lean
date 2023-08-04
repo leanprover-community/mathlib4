@@ -100,7 +100,7 @@ theorem trans (x y z : X) : S.Rel x y → S.Rel y z → S.Rel x z := S.trans'
 /-- The setoid whose quotient yields the discrete quotient. -/
 add_decl_doc toSetoid
 
-instance : CoeSort (DiscreteQuotient X) (Type*) :=
+instance : CoeSort (DiscreteQuotient X) (Type _) :=
   ⟨fun S => Quotient S.toSetoid⟩
 
 instance : TopologicalSpace S :=

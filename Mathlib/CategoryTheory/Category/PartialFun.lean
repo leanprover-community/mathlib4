@@ -36,7 +36,7 @@ universe u
 variable {α β : Type*}
 
 /-- The category of types equipped with partial functions. -/
-def PartialFun : Type* :=
+def PartialFun : Type _ :=
   Type*
 set_option linter.uppercaseLean3 false
 #align PartialFun PartialFun

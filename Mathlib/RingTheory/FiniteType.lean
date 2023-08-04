@@ -199,7 +199,7 @@ def FiniteType (f : A →+* B) : Prop :=
 namespace Finite
 
 theorem finiteType {f : A →+* B} (hf : f.Finite) : FiniteType f :=
-  @Module.Finite.finiteType* _ _ _ f.toAlgebra hf
+  @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
 #align ring_hom.finite.finite_type RingHom.Finite.finiteType
 
 end Finite
@@ -244,7 +244,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteT
 #align ring_hom.finite_type.comp RingHom.FiniteType.comp
 
 theorem of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
-  @Module.Finite.finiteType* _ _ _ f.toAlgebra hf
+  @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
 #align ring_hom.finite_type.of_finite RingHom.FiniteType.of_finite
 
 alias of_finite ← _root_.RingHom.Finite.to_finiteType

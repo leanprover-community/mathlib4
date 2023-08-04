@@ -727,7 +727,7 @@ end UniqueUnits₀
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
   monoid structure on `Associates α`. -/
-abbrev Associates (α : Type*) [Monoid α] : Type* :=
+abbrev Associates (α : Type*) [Monoid α] : Type _ :=
   Quotient (Associated.setoid α)
 #align associates Associates
 

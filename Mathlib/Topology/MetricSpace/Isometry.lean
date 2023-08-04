@@ -289,7 +289,7 @@ theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
 -- porting note: was @[nolint has_nonempty_instance]
-structure IsometryEquiv (α β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β] extends
+structure IsometryEquiv (α β : Type _) [PseudoEMetricSpace α] [PseudoEMetricSpace β] extends
   α ≃ β where
   isometry_toFun : Isometry toFun
 #align isometry_equiv IsometryEquiv
@@ -383,7 +383,7 @@ def mk' {α : Type u} [EMetricSpace α] (f : α → β) (g : β → α) (hfg : �
 #align isometry_equiv.mk' IsometryEquiv.mk'
 
 /-- The identity isometry of a space. -/
-protected def refl (α : Type*) [PseudoEMetricSpace α] : α ≃ᵢ α :=
+protected def refl (α : Type _) [PseudoEMetricSpace α] : α ≃ᵢ α :=
   { Equiv.refl α with isometry_toFun := isometry_id }
 #align isometry_equiv.refl IsometryEquiv.refl
 

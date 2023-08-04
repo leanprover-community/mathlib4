@@ -63,11 +63,11 @@ variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
   [CompactSpace Y] [Nonempty Y]
 
 @[reducible]
-private def ProdSpaceFun : Type* :=
+private def ProdSpaceFun : Type _ :=
   (X ⊕ Y) × (X ⊕ Y) → ℝ
 
 @[reducible]
-private def Cb : Type* :=
+private def Cb : Type _ :=
   BoundedContinuousFunction ((X ⊕ Y) × (X ⊕ Y)) ℝ
 
 private def maxVar : ℝ≥0 :=
@@ -454,7 +454,7 @@ attribute [local instance] premetricOptimalGHDist
 
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
-def OptimalGHCoupling : Type* :=
+def OptimalGHCoupling : Type _ :=
   @UniformSpace.SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace
 #align Gromov_Hausdorff.optimal_GH_coupling GromovHausdorff.OptimalGHCoupling
 

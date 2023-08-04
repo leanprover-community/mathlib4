@@ -48,10 +48,10 @@ variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [
 
 variable {B : Type*}
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
+variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type _)
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜₁ (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
+variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type _)
   [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
 /-- A reducible type synonym for the bundle of continuous (semi)linear maps. For some reason, it
@@ -61,7 +61,7 @@ Porting note: after the port is done, we may want to remove this definition.
 -/
 @[reducible]
 protected def Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
-    [∀ x, TopologicalSpace (E₂ x)] : ∀ _ : B, Type* := fun x => E₁ x →SL[σ] E₂ x
+    [∀ x, TopologicalSpace (E₂ x)] : ∀ _ : B, Type _ := fun x => E₁ x →SL[σ] E₂ x
 #align bundle.continuous_linear_map Bundle.ContinuousLinearMap
 
 -- Porting note: possibly remove after the port

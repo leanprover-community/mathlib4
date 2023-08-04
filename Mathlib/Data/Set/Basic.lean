@@ -79,9 +79,9 @@ universe u v w x
 
 namespace Set
 
-variable {α : Type*} {s t : Set α}
+variable {α : Type u} {s t : Set α}
 
-instance {α : Type*} : BooleanAlgebra (Set α) :=
+instance {α : Type u} : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),

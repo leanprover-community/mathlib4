@@ -77,7 +77,7 @@ def setoid (H K : Set G) : Setoid G :=
 #align doset.setoid Doset.setoid
 
 /-- Quotient of `G` by the double coset relation, i.e. `H \ G / K` -/
-def Quotient (H K : Set G) : Type* :=
+def Quotient (H K : Set G) : Type _ :=
   _root_.Quotient (setoid H K)
 #align doset.quotient Doset.Quotient
 

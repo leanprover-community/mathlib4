@@ -35,7 +35,7 @@ def zigzagSetoid : Setoid V :=
 /-- The type of weakly connected components of a directed graph. Two vertices are
     in the same weakly connected component if there is a zigzag of arrows from one
     to the other. -/
-def WeaklyConnectedComponent : Type* :=
+def WeaklyConnectedComponent : Type _ :=
   Quotient (zigzagSetoid V)
 #align quiver.weakly_connected_component Quiver.WeaklyConnectedComponent
 

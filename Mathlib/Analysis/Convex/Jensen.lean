@@ -32,7 +32,7 @@ open Finset LinearMap Set
 
 open BigOperators Classical Convex Pointwise
 
-variable {𝕜 E F β ι : Type*}
+variable {𝕜 E F β ι : Type _}
 
 /-! ### Jensen's inequality -/
 

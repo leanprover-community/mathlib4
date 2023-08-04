@@ -304,7 +304,7 @@ variable {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
 /-- (Implementation). The sheaf map given in `types.sheaf_hom` is natural in terms of `X`. -/
 @[simps]
 noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
-    coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type*)).obj ℱ ⟶
+    coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ ⟶
       coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type*)).obj ℱ'.val where
   app X := presheafHom H (homOver α (unop X))
   naturality X Y f := by

@@ -55,7 +55,7 @@ Defined by convention to be `0` if the space has infinite rank.
 For a vector space `V` over a field `K`, this is the same as the finite dimension
 of `V` over `K`.
 -/
-noncomputable def finrank (R V : Type*) [Semiring R] [AddCommGroup V] [Module R V] : ℕ :=
+noncomputable def finrank (R V : Type _) [Semiring R] [AddCommGroup V] [Module R V] : ℕ :=
   Cardinal.toNat (Module.rank R V)
 #align finite_dimensional.finrank FiniteDimensional.finrank
 
@@ -128,7 +128,7 @@ theorem finrank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι K V) :
 
 /-- If a vector space (or module) has a finite basis, then its dimension (or rank) is equal to the
 cardinality of the basis. This lemma uses a `Finset` instead of indexed types. -/
-theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis.{w} b K V) :
+theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis b K V) :
     finrank K V = Finset.card b := by rw [finrank_eq_card_basis h, Fintype.card_coe]
 #align finite_dimensional.finrank_eq_card_finset_basis FiniteDimensional.finrank_eq_card_finset_basis
 
@@ -214,7 +214,7 @@ open FiniteDimensional
 
 variable [Ring K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂] [Module K V₂]
 
-variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
+variable {R M M₂ : Type _} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
 
 variable [Module R M] [Module R M₂]
 
@@ -522,7 +522,7 @@ section SubalgebraRank
 
 open Module
 
-variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
+variable {F E : Type _} [CommRing F] [Ring E] [Algebra F E]
 
 @[simp]
 theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :

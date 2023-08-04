@@ -197,7 +197,7 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     "derangements on `α` ⊕ derangements on `{a}ᶜ`". -/
 def derangementsRecursionEquiv :
     derangements (Option α) ≃
-      Σa : α, Sum (derangements (({a}ᶜ : Set α) : Type*)) (derangements α) :=
+      Σa : α, Sum (derangements (({a}ᶜ : Set α) : Type _)) (derangements α) :=
   derangementsOptionEquivSigmaAtMostOneFixedPoint.trans
     (sigmaCongrRight atMostOneFixedPointEquivSum_derangements)
 #align derangements.derangements_recursion_equiv derangements.derangementsRecursionEquiv

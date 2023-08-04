@@ -149,7 +149,7 @@ theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp (config := { contextual := true }) [bind]
 #align multiset.bind_congr Multiset.bind_congr
 
-theorem bind_hcongr {β' : Type*} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
+theorem bind_hcongr {β' : Type _} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
     (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
   subst h
   simp only [heq_eq_eq] at hf

@@ -149,14 +149,14 @@ end HomologicalComplex
 /-- An `α`-indexed chain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `j + 1 = i`.
 -/
-abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type* :=
+abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.down α)
 #align chain_complex ChainComplex
 
 /-- An `α`-indexed cochain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `i + 1 = j`.
 -/
-abbrev CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type* :=
+abbrev CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.up α)
 #align cochain_complex CochainComplex
 

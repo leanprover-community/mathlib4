@@ -104,7 +104,7 @@ notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
 /-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 @[reducible, nolint unusedArguments]
-def Trivial (B : Type*) (F : Type*) : B → Type* := fun _ => F
+def Trivial (B : Type*) (F : Type _) : B → Type* := fun _ => F
 #align bundle.trivial Bundle.Trivial
 
 /-- The trivial bundle, unlike other bundles, has a canonical projection on the fiber. -/
@@ -127,7 +127,7 @@ variable {B' : Type*}
 
 /-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by
 `Bundle.Pullback f E` or `f *ᵖ E`, is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
-def Pullback (f : B' → B) (E : B → Type*) : B' → Type* := fun x => E (f x)
+def Pullback (f : B' → B) (E : B → Type _) : B' → Type* := fun x => E (f x)
 #align bundle.pullback Bundle.Pullback
 
 @[inherit_doc]

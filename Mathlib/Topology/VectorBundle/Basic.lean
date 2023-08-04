@@ -617,7 +617,7 @@ def Base := B
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
 @[nolint unusedArguments] -- porting note: was `nolint has_nonempty_instance`
-def Fiber : B → Type* :=
+def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 #align vector_bundle_core.fiber VectorBundleCore.Fiber
 

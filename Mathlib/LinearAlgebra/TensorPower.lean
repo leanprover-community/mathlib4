@@ -36,7 +36,7 @@ open scoped TensorProduct
 `⨂[R] (i : Fin n), M`. -/
 @[reducible]
 def TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
-    [Module R M] : Type* :=
+    [Module R M] : Type _ :=
   ⨂[R] _ : Fin n, M
 #align tensor_power TensorPower
 

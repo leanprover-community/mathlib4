@@ -490,7 +490,7 @@ theorem coe_nonempty {s : Finset α} : (s : Set α).Nonempty ↔ s.Nonempty :=
 #align finset.coe_nonempty Finset.coe_nonempty
 
 -- Porting note: Left-hand side simplifies @[simp]
-theorem nonempty_coe_sort {s : Finset α} : Nonempty (s : Type*) ↔ s.Nonempty :=
+theorem nonempty_coe_sort {s : Finset α} : Nonempty (s : Type _) ↔ s.Nonempty :=
   nonempty_subtype
 #align finset.nonempty_coe_sort Finset.nonempty_coe_sort
 
@@ -624,7 +624,7 @@ theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by rw [
 #align finset.coe_eq_empty Finset.coe_eq_empty
 
 -- Porting note: Left-hand side simplifies @[simp]
-theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type*) ↔ s = ∅ := by
+theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := by
   simpa using @Set.isEmpty_coe_sort α s
 #align finset.is_empty_coe_sort Finset.isEmpty_coe_sort
 

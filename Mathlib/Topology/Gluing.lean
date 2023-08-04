@@ -124,7 +124,7 @@ set_option linter.uppercaseLean3 false in
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
 See `TopCat.GlueData.ι_eq_iff_rel`.
 -/
-def Rel (a b : Σ i, ((D.U i : TopCat) : Type*)) : Prop :=
+def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
   a = b ∨ ∃ x : D.V (a.1, b.1), D.f _ _ x = a.2 ∧ D.f _ _ (D.t _ _ x) = b.2
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.rel TopCat.GlueData.Rel

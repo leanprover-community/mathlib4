@@ -89,7 +89,7 @@ def AntisymmRel.setoid : Setoid α :=
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
-def Antisymmetrization : Type* :=
+def Antisymmetrization : Type _ :=
   Quotient <| AntisymmRel.setoid α r
 #align antisymmetrization Antisymmetrization
 
