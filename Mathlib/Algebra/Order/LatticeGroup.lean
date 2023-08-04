@@ -189,7 +189,7 @@ theorem inv_le_abs (a : α) : a⁻¹ ≤ |a| :=
 #align lattice_ordered_comm_group.inv_le_abs LatticeOrderedCommGroup.inv_le_abs
 #align lattice_ordered_comm_group.neg_le_abs LatticeOrderedCommGroup.neg_le_abs
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem abs_inv (a : α) : |a⁻¹| = |a| := calc
   |a⁻¹| = a⁻¹ ⊔ (a⁻¹)⁻¹ := rfl
   _ = a ⊔ a⁻¹ := by rw [inv_inv, sup_comm]
