@@ -555,29 +555,31 @@ instance instNormedSpace :
         congr
       · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
         -- Porting note: added to replace Pi.smul_apply
-        --have smul_apply : ∀ i : ι, (c • f) i = c • (f i) := fun i => rfl
-        simp only [norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg]
-        rw [mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
-          Real.rpow_one]
-        exact Finset.sum_nonneg fun i _ => rpow_nonneg_of_nonneg (norm_nonneg _) _ }
+        have smul_fst : (c • f).fst = c • f.fst := rfl
+        have smul_snd : (c • f).snd = c • f.snd := rfl
+        simp only [norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg,
+          smul_fst, smul_snd]
+        rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
+          ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
+        positivity }
 
 section towers
 
 variable [NormedSpace 𝕜' α] [NormedSpace 𝕜' β]
 
-instance isScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' α] [IsScalarTower 𝕜 𝕜' β] :
+instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' α] [IsScalarTower 𝕜 𝕜' β] :
     IsScalarTower 𝕜 𝕜' (ProdLp p α β) :=
   Prod.isScalarTower
 
-instance smulCommClass [SMulCommClass 𝕜 𝕜' α] [SMulCommClass 𝕜 𝕜' β] :
+instance instSMulCommClass [SMulCommClass 𝕜 𝕜' α] [SMulCommClass 𝕜 𝕜' β] :
     SMulCommClass 𝕜 𝕜' (ProdLp p α β) :=
   Prod.smulCommClass
 
 end towers
 
-instance finiteDimensional [FiniteDimensional 𝕜 α] [FiniteDimensional 𝕜 α] :
+instance instFiniteDimensional [FiniteDimensional 𝕜 α] [FiniteDimensional 𝕜 β] :
     FiniteDimensional 𝕜 (ProdLp p α β) :=
-  FiniteDimensional.finiteDimensional_prod' _ _
+  Module.Finite.prod
 
 
 end normed_space_inst
