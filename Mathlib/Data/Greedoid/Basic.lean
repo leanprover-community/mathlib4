@@ -785,6 +785,25 @@ decreasing_by
   rw [← Nat.sub_sub]
   exact Nat.sub_lt (tsub_pos_iff_lt.mpr (card_lt_univ_of_not_mem hx.2)) (by decide)
 
+theorem subset_closure_of_rank_subset_eq_rank (h₁ : s ⊆ t) (h₂ : G.rank s = G.rank t) :
+    t ⊆ G.closure s := by
+  intro x hx
+  rw [mem_closure]
+  exact Nat.le_antisymm
+    (h₂.symm ▸ (rank_le_of_subset (insert_subset hx h₁)))
+    (rank_le_of_subset (subset_insert _ _))
+
+theorem subset_closure_iff_rank_eq_rank_union :
+    t ⊆ G.closure s ↔ G.rank s = G.rank (s ∪ t) := by
+  constructor <;> intro h
+  . have h₁ : G.rank (s ∪ t) ≤ G.rank (G.closure s) := by
+      apply rank_le_of_subset
+      exact union_subset self_subset_closure h
+    rw [rank_closure_eq_rank_self] at h₁
+    exact Nat.le_antisymm (rank_le_of_subset (subset_union_left _ _)) h₁
+  . exact subset_trans (subset_union_right s t)
+      (subset_closure_of_rank_subset_eq_rank (subset_union_left s t) h)
+
 theorem feasible_iff_elem_notin_closure_minus_elem :
     s ∈ G ↔ ∀ x ∈ s, x ∉ G.closure (s \ {x}) := by
   constructor <;> intro h
@@ -1122,6 +1141,45 @@ theorem kernelClosureOperator_closure_eq_kernelClosureOperator :
     G.kernelClosureOperator (G.closure s) = G.kernelClosureOperator s := by
   rw [kernelClosureOperator_eq_kernel_closure, closure_idempotent,
     ← kernelClosureOperator_eq_kernel_closure]
+
+theorem kernelClosureOperator_eq_iff_closure_eq {s t : Finset α} :
+    G.kernelClosureOperator s = G.kernelClosureOperator t ↔
+      G.closure s = G.closure t := by
+  constructor <;> intro h
+  . rw [← closure_kernelClosureOperator_eq_closure, h, closure_kernelClosureOperator_eq_closure]
+  . rw [← kernelClosureOperator_closure_eq_kernelClosureOperator, h,
+      kernelClosureOperator_closure_eq_kernelClosureOperator]
+
+@[simp]
+theorem rank_kernelClosureOperator_feasible (hs : s ∈ G) :
+    G.rank (G.kernelClosureOperator s) = G.rank s := by
+  sorry
+
+theorem subset_kernelClosureOperator_of_mem_partialAlphabets
+  (h : s ∈ G.partialAlphabets) :
+    s ⊆ G.kernelClosureOperator s := by
+  intro x hx
+  simp only [kernelClosureOperator, system_feasible_set_mem_mem, mem_biUnion, Finset.mem_filter,
+    id_eq]
+  simp only [partialAlphabets, mem_univ, Finset.mem_filter, true_and] at h
+  let ⟨S, hS₁, hS₂⟩ := h
+  simp only [hS₁, mem_biUnion, id_eq] at hx
+  let ⟨t, ht₁, ht₂⟩ := hx
+  exists t
+  simp only [hS₂ _ ht₁, true_and, ht₂, and_true]
+  congr
+  rw [union_eq_left_iff_subset]
+  intro y hy
+  simp only [hS₁, mem_biUnion, id_eq]
+  exists t
+
+@[simp]
+theorem rank_kernelClosureOperator_eq_rank :
+    G.rank (G.kernelClosureOperator s) = G.rank s := by
+  let ⟨b, hb⟩ : Nonempty (G.bases s) := bases_nonempty
+  have : G.rank (G.kernelClosureOperator b) = G.rank b :=
+    rank_kernelClosureOperator_feasible (basis_mem_feasible hb)
+  sorry
 
 end Kernel
 
