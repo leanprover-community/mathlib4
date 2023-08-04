@@ -311,7 +311,7 @@ The `#find` command finds definitions and lemmas by various ways, which can be c
    #find_theorems ⊢ (tsum _ = _ * tsum _)
    ```
    finds all lemmas where the conclusion (the subexpression to the right of all `→` and `∀`) has the
-   given shape. If the pattern has hypotheses, then they are matched agains the hypotheses of
+   given shape. If the pattern has hypotheses, then they are matched against the hypotheses of
    the lemma in any order:
    ```lean
    #find_theorems ⊢ (_ < _ → tsum _ < tsum _)
