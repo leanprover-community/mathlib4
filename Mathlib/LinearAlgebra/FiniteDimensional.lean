@@ -79,7 +79,7 @@ equivalence is proved in `Submodule.fg_iff_finiteDimensional`.
 
 universe u v v' w
 
-open Classical Cardinal Submodule Module Function
+open Cardinal Submodule Module Function
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
 Use `FiniteDimensional.of_fintype_basis` to prove finite dimension from another definition. -/
@@ -139,6 +139,7 @@ variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
 theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDimensional K V := by
+  classical
   cases nonempty_fintype ι
   exact ⟨⟨Finset.univ.image h, by
     convert h.span_eq
@@ -346,7 +347,7 @@ theorem finrank_zero_iff [FiniteDimensional K V] : finrank K V = 0 ↔ Subsingle
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
-theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
+theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
     (h : finrank K S = finrank K V) : S = ⊤ := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
@@ -371,7 +372,8 @@ theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
   have := bS.span_eq
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
   rw [this, map_top (Submodule.subtype S), range_subtype]
-#align finite_dimensional.eq_top_of_finrank_eq FiniteDimensional.eq_top_of_finrank_eq
+#align finite_dimensional.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
+#align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 
 variable (K)
 
@@ -446,6 +448,7 @@ then there is a nontrivial linear relation amongst its elements.
 -/
 theorem exists_nontrivial_relation_of_rank_lt_card [FiniteDimensional K V] {t : Finset V}
     (h : finrank K V < t.card) : ∃ f : V → K, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
+  classical
   have := mt finset_card_le_finrank_of_linearIndependent (by simpa using h)
   rw [not_linearIndependent_iff] at this
   obtain ⟨s, g, sum, z, zm, nonzero⟩ := this
@@ -486,6 +489,7 @@ such that the coefficients of the relation sum to zero.
 theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensional K V]
     {t : Finset V} (h : finrank K V + 1 < t.card) :
     ∃ f : V → K, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
+  classical
   -- Pick an element x₀ ∈ t,
   have card_pos : 0 < t.card := lt_trans (Nat.succ_pos _) h
   obtain ⟨x₀, m⟩ := (Finset.card_pos.1 card_pos).bex
@@ -891,9 +895,9 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 /-- On a finite-dimensional space, an injective linear map is surjective. -/
 theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hinj : Injective f) :
     Surjective f := by
-  have h := rank_eq_of_injective _ hinj
+  have h := rank_range_of_injective _ hinj
   rw [← finrank_eq_rank, ← finrank_eq_rank, natCast_inj] at h
-  exact range_eq_top.1 (eq_top_of_finrank_eq h.symm)
+  exact range_eq_top.1 (eq_top_of_finrank_eq h)
 #align linear_map.surjective_of_injective LinearMap.surjective_of_injective
 
 /-- The image under an onto linear map of a finite-dimensional space is also finite-dimensional. -/
@@ -1087,10 +1091,11 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [h : 
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
   { ‹IsDomain K› with
     toRing := h
-    inv := fun x => if H : x = 0 then 0 else Classical.choose <|
-      FiniteDimensional.exists_mul_eq_one F H
+    inv := fun x =>
+      letI := Classical.decEq K
+      if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
     mul_inv_cancel := fun x hx =>
-      show x * dite _ _ _ = _ by
+      show x * dite _ (h := _) _ = _ by
         rw [dif_neg hx]
         exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
     inv_zero := dif_pos rfl }
@@ -1110,11 +1115,6 @@ section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
-
-theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
-    (h : finrank K S = finrank K V) : S = ⊤ :=
-  FiniteDimensional.eq_of_le_of_finrank_eq le_top (by simp [h, finrank_top])
-#align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 
 theorem finrank_mono [FiniteDimensional K V] : Monotone fun s : Submodule K V => finrank K s :=
   fun _ _ => finrank_le_finrank_of_le
@@ -1338,7 +1338,7 @@ theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K
   refine' ⟨fun S => or_iff_not_imp_left.2 fun hn => _⟩
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := finiteDimensional_of_finrank_eq_succ h
-  refine' Submodule.eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
+  refine' eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
   simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
 #align is_simple_module_of_finrank_eq_one is_simple_module_of_finrank_eq_one
 
@@ -1456,7 +1456,7 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
       · right
         rw [← hr] at h
         rw [← Algebra.toSubmodule_eq_top]
-        exact Submodule.eq_top_of_finrank_eq h }
+        exact eq_top_of_finrank_eq h }
 #align subalgebra.is_simple_order_of_finrank Subalgebra.isSimpleOrder_of_finrank
 
 end SubalgebraRank
