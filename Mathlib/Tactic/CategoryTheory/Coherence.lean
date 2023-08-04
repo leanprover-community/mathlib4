@@ -371,6 +371,7 @@ elab_rules : tactic
       MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
       MonoidalCategory.whisker_assoc,
       MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id];
+    -- I'm not sure if `tensorHom` should be expanded.
     try simp only [MonoidalCategory.tensorHom_def]
     ))
 

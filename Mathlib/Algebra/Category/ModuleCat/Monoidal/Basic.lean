@@ -140,8 +140,7 @@ theorem pentagon (W X Y Z : ModuleCat R) :
     whiskerRight (associator W X Y).hom Z ≫
         (associator W (tensorObj X Y) Z).hom ≫ whiskerLeft W (associator X Y Z).hom =
       (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
-  sorry
-  -- convert pentagon_aux R W X Y Z using 1
+  convert pentagon_aux R W X Y Z using 1
 #align Module.monoidal_category.pentagon ModuleCat.MonoidalCategory.pentagon
 
 /-- (implementation) the left unitor for R-modules -/
@@ -193,27 +192,6 @@ theorem triangle (M N : ModuleCat.{u} R) :
   erw [TensorProduct.lid_tmul, TensorProduct.rid_tmul]
   exact (TensorProduct.smul_tmul _ _ _).symm
 #align Module.monoidal_category.triangle ModuleCat.MonoidalCategory.triangle
-
--- theorem id_whiskerLeft_aux {M N : ModuleCat R} (f : M ⟶ N) :
---     whiskerLeft (of R R) f = TensorProduct.lift (LinearMap.compl₂ (TensorProduct.mk _ _ _) f) := by
---   sorry
-
-
---  theorem id_whiskerLeft {M N : ModuleCat R} (f : M ⟶ N) :
---       whiskerLeft (of R R) f = (leftUnitor M).hom ≫ f ≫ (leftUnitor N).inv := by
---   -- rw [id_whiskerLeft_aux]
---   apply TensorProduct.ext
---   apply LinearMap.ext_ring
---   apply LinearMap.ext; intro x
---   dsimp
---   -- dsimp [LinearMap.compr₂, whiskerLeft]
---   change ((leftUnitor N).hom) ((tensorHom (𝟙 (of R R)) f) ((1 : R) ⊗ₜ[R] x)) =
---     f (((leftUnitor M).hom) (1 ⊗ₜ[R] x))
---   change _ = _ ≫ f _ ≫ _
---   change ((leftUnitor N).hom) _ = f _
---   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
---   rw [LinearMap.map_smul]
---   rfl
 
 end MonoidalCategory
 

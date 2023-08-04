@@ -133,7 +133,7 @@ instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment 
       F.toFunctor.map_comp, id_tensorHom, tensorHom_id, e_assoc, id_tensor_comp,
       Category.assoc, ← F.toFunctor.map_id,
       F.μ_natural_assoc, F.toFunctor.map_comp]
-    simp [id_tensorHom, tensorHom_id]
+    simp
 
 end
 

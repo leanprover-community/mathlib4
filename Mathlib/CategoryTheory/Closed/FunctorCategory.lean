@@ -41,9 +41,9 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       dsimp
       simp only [ihom.coev_naturality, closedIhom_obj_map, Monoidal.tensorObj_map]
       dsimp
-      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp]
+      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp,
+        tensorHom_def, ← comp_whiskerRight_assoc, IsIso.inv_hom_id]
       simp
-      sorry
        }
 #align category_theory.functor.closed_unit CategoryTheory.Functor.closedUnit
 
@@ -57,9 +57,10 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       intro X Y f
       dsimp
       simp only [closedIhom_obj_map, pre_comm_ihom_map]
-      rw [← tensor_id_comp_id_tensor, id_tensor_comp]
-      simp
-      sorry
+      rw [tensorHom_def]
+      simp only [NatTrans.naturality, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+        ihom.ev_naturality, comp_obj, tensorLeft_obj, id_obj, id_tensor_pre_app_comp_ev_assoc]
+      simp [← comp_whiskerRight_assoc]
        }
 #align category_theory.functor.closed_counit CategoryTheory.Functor.closedCounit
 

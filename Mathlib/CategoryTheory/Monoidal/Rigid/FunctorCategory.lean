@@ -62,16 +62,12 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
         { app := fun X => ε_ _ _
           naturality := fun X Y f => by
             dsimp
-            simp [tensorHom_def', leftAdjointMate_comp_evaluation]
-            simp_rw [← comp_whiskerRight_assoc]
-            simp only [IsIso.hom_inv_id, id_whiskerRight, Category.id_comp] }
+            simp [tensorHom_def, leftAdjointMate_comp_evaluation] }
       coevaluation' :=
         { app := fun X => η_ _ _
           naturality := fun X Y f => by
             dsimp
-            simp [tensorHom_def', coevaluation_comp_leftAdjointMate_assoc]
-            simp_rw [← MonoidalCategory.whiskerLeft_comp]
-            simp only [IsIso.inv_hom_id, MonoidalCategory.whiskerLeft_id, Category.comp_id] } }
+            simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }
 #align category_theory.monoidal.functor_has_left_dual CategoryTheory.Monoidal.functorHasLeftDual
 
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where

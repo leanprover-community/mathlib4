@@ -112,7 +112,7 @@ theorem braiding_inv_tensor_right (X Y Z : C) :
 @[reassoc (attr := simp)]
 theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by
-  rw [tensorHom_def f g, tensorHom_def' g f]
+  rw [tensorHom_def' f g, tensorHom_def g f]
   simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
 
 end BraidedCategory
@@ -495,13 +495,13 @@ theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : 
 theorem tensor_μ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁: X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
     (f₁ ⊗ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensor_μ C (Y₁, Y₂) (Z₁, Z₂) =
       tensor_μ C (X₁, X₂) (Z₁, Z₂) ≫ (f₁ ▷ Z₁ ⊗ f₂ ▷ Z₂) := by
-  convert tensor_μ_natural C f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp [id_tensorHom, tensorHom_id]
+  convert tensor_μ_natural C f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp
 
 @[reassoc]
 theorem tensor_μ_natural_right (Z₁ Z₂ : C) {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) :
     (Z₁ ⊗ Z₂) ◁ (f₁ ⊗ f₂) ≫ tensor_μ C (Z₁, Z₂) (Y₁, Y₂) =
       tensor_μ C (Z₁, Z₂) (X₁, X₂) ≫ (Z₁ ◁ f₁ ⊗ Z₂ ◁ f₂) := by
-  convert tensor_μ_natural C (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp [id_tensorHom, tensorHom_id]
+  convert tensor_μ_natural C (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
 
 theorem tensor_left_unitality (X₁ X₂ : C) :
     (λ_ (X₁ ⊗ X₂)).hom =

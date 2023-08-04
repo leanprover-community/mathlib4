@@ -115,13 +115,11 @@ section
 
 variable {C D}
 
-attribute [local simp] tensorHom_def
-
 @[reassoc (attr := simp)]
 theorem  LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C}
     (f : X ⟶ Y) (g : X' ⟶ Y') :
       (F.map f ⊗ F.map g) ≫ F.μ Y Y' = F.μ X X' ≫ F.map (f ⊗ g) := by
-  simp only [tensorHom_def, assoc, F.μ_natural_left, F.μ_natural_right_assoc, map_comp]
+  simp [tensorHom_def]
 
 @[reassoc]
 theorem  LaxMonoidalFunctor.associativity' (F : LaxMonoidalFunctor C D) (X Y Z : C) :

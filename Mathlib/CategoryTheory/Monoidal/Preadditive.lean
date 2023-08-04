@@ -85,8 +85,6 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
 
 open BigOperators
 
-attribute [local simp] tensorHom_def
-
 theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type _} (s : Finset J) (g : J → (Q ⟶ R)) :
     P ◁ ∑ j in s, g j = ∑ j in s, P ◁ g j :=
   map_sum ((tensoringLeft C).obj P).mapAddHom g s
@@ -97,12 +95,12 @@ theorem sum_whiskerRight {Q R : C} {J : Type _} (s : Finset J) (g : J → (Q ⟶
 
 theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by
-  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.sum_comp]
+  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.comp_sum, tensorHom_def]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
 
 theorem sum_tensor {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f := by
-  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.comp_sum]
+  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.sum_comp, tensorHom_def]
 #align category_theory.sum_tensor CategoryTheory.sum_tensor
 
 -- In a closed monoidal category, this would hold because

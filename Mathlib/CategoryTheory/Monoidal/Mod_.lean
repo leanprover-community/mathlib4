@@ -134,7 +134,7 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 3 4 => rw [associator_inv_naturality_middle]
         slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
         slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def, ← f.mul_hom]
+        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← f.mul_hom]
         rw [comp_whiskerRight, Category.assoc] }
   map g :=
     { hom := g.hom

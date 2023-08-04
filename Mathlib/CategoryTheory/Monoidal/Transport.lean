@@ -68,7 +68,7 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D := .ofTensorHom
     slice_lhs 2 3 =>
       rw [← id_tensor_comp]
       simp
-    simp [id_tensorHom, tensorHom_id])
+    simp)
   (pentagon := fun W X Y Z ↦ by
     dsimp
     simp only [Iso.hom_inv_id_app_assoc, comp_tensor_id, assoc, Equivalence.inv_fun_map,

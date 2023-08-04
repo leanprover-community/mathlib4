@@ -31,8 +31,6 @@ namespace CategoryTheory
 
 open MonoidalCategory
 
-attribute [local simp] tensorHom_def
-
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [MonoidalCategory.{v₂} D]
 
@@ -120,12 +118,12 @@ def hcomp {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor D E} (α : Mo
     tensor := fun X Y => by
       simp only [LaxMonoidalFunctor.comp_toFunctor, comp_obj,
         LaxMonoidalFunctor.comp_μ, NatTrans.hcomp_app, assoc,
-        NatTrans.naturality_assoc, tensor_assoc, tensorHom_def,
+        NatTrans.naturality_assoc, tensor_assoc, tensorHom_def',
         whisker_exchange_assoc, MonoidalCategory.whiskerLeft_comp,
         comp_whiskerRight, LaxMonoidalFunctor.μ_natural_left_assoc,
         LaxMonoidalFunctor.μ_natural_right_assoc]
       simp_rw [← K.toFunctor.map_comp]
-      simp only [tensor, tensorHom_def, assoc, map_comp]
+      simp only [tensor, tensorHom_def', assoc, map_comp]
        }
 #align category_theory.monoidal_nat_trans.hcomp CategoryTheory.MonoidalNatTrans.hcomp
 
@@ -205,7 +203,7 @@ def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
       simp only [comp_obj, asEquivalence_functor, asEquivalence_inverse, id_obj,
         LaxMonoidalFunctor.μ_natural_left, LaxMonoidalFunctor.μ_natural_right_assoc,
         IsIso.inv_hom_id_assoc, map_comp, IsEquivalence.inv_fun_map, assoc,
-        Iso.hom_inv_id_app_assoc, tensorHom_def]
+        Iso.hom_inv_id_app_assoc, tensorHom_def']
       slice_rhs 3 4 => erw [Iso.hom_inv_id_app]
       simp only [id_obj, id_comp, assoc, whisker_exchange_assoc]
       simp only [← whiskerLeft_comp_assoc, ← comp_whiskerRight_assoc]

@@ -74,12 +74,12 @@ variable {M : Mon_ C}
 
 @[simp]
 theorem one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f := by
-  rw [tensorHom_def_assoc, M.one_mul, leftUnitor_naturality]
+  rw [tensorHom_def'_assoc, M.one_mul, leftUnitor_naturality]
 #align Mon_.one_mul_hom Mon_.one_mul_hom
 
 @[simp]
 theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f := by
-  rw [tensorHom_def'_assoc, M.mul_one, rightUnitor_naturality]
+  rw [tensorHom_def_assoc, M.mul_one, rightUnitor_naturality]
 #align Mon_.mul_one_hom Mon_.mul_one_hom
 
 theorem assoc_flip :
