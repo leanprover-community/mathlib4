@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
 import Mathlib.Algebra.Homology.ShortExact.Abelian
-import Mathlib.Data.List.WellFoundedSorted
+import Mathlib.Data.List.MinMax
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Connected
