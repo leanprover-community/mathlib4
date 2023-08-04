@@ -24,13 +24,12 @@ section Monoid
 
 variable [Monoid M] [GroupWithZero G₀]
 
--- note to reviewers: I'm not sure of the best way to write `hf`.
-lemma name_suggestions_welcomed [MonoidHomClass F G₀ M] {f : F}
-  (hf : (f : G₀ →* M) ≠ 1) : IsLocalRingHom f where
+lemma isLocalRingHom_of_exists_map_ne_one [MonoidHomClass F G₀ M] {f : F}
+  (hf : ∃ x : G₀, f x ≠ 1) : IsLocalRingHom f where
   map_nonunit a h := by
     rcases eq_or_ne a 0 with (rfl | h)
-    · refine (hf ?_).elim
-      ext t
+    · obtain ⟨t, ht⟩ := hf
+      refine (ht ?_).elim
       have := map_mul f t 0
       rw [←one_mul (f (t * 0)), mul_zero] at this
       exact (h.mul_right_cancel this).symm
@@ -38,7 +37,7 @@ lemma name_suggestions_welcomed [MonoidHomClass F G₀ M] {f : F}
 
 instance [GroupWithZero G₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀] (f : F) :
   IsLocalRingHom f :=
-  name_suggestions_welcomed (fun h ↦ have := congrFun (congrArg (↑) h) 0; by simp at this)
+  isLocalRingHom_of_exists_map_ne_one ⟨0, by simp⟩
 
 end Monoid
 
