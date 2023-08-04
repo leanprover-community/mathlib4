@@ -359,7 +359,7 @@ protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : 
 #align subsemiring.sum_mem Subsemiring.sum_mem
 
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
-def toNonAssocSemiring : NonAssocSemiring s :=
+abbrev toNonAssocSemiring : NonAssocSemiring s :=
   inferInstance
 #align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
 
@@ -398,7 +398,7 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
 #align subsemiring.no_zero_divisors Subsemiring.noZeroDivisors
 
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
-def toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
+abbrev toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
   inferInstance
 #align subsemiring.to_semiring Subsemiring.toSemiring
 
@@ -411,7 +411,7 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
 #align subsemiring.coe_pow Subsemiring.coe_pow
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-def toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
+abbrev toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
   inferInstance
 #align subsemiring.to_comm_semiring Subsemiring.toCommSemiring
 
@@ -426,36 +426,36 @@ theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
 #align subsemiring.coe_subtype Subsemiring.coe_subtype
 
 /-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
-def toOrderedSemiring {R} [OrderedSemiring R] (s : Subsemiring R) : OrderedSemiring s :=
+abbrev toOrderedSemiring {R} [OrderedSemiring R] (s : Subsemiring R) : OrderedSemiring s :=
   inferInstance
 #align subsemiring.to_ordered_semiring Subsemiring.toOrderedSemiring
 
 /-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
-def toStrictOrderedSemiring {R} [StrictOrderedSemiring R] (s : Subsemiring R) :
+abbrev toStrictOrderedSemiring {R} [StrictOrderedSemiring R] (s : Subsemiring R) :
     StrictOrderedSemiring s :=
   inferInstance
 #align subsemiring.to_strict_ordered_semiring Subsemiring.toStrictOrderedSemiring
 
 /-- A subsemiring of an `OrderedCommSemiring` is an `OrderedCommSemiring`. -/
-def toOrderedCommSemiring {R} [OrderedCommSemiring R] (s : Subsemiring R) :
+abbrev toOrderedCommSemiring {R} [OrderedCommSemiring R] (s : Subsemiring R) :
     OrderedCommSemiring s :=
   inferInstance
 #align subsemiring.to_ordered_comm_semiring Subsemiring.toOrderedCommSemiring
 
 /-- A subsemiring of a `StrictOrderedCommSemiring` is a `StrictOrderedCommSemiring`. -/
-def toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] (s : Subsemiring R) :
+abbrev toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] (s : Subsemiring R) :
     StrictOrderedCommSemiring s :=
   inferInstance
 #align subsemiring.to_strict_ordered_comm_semiring Subsemiring.toStrictOrderedCommSemiring
 
 /-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
-def toLinearOrderedSemiring {R} [LinearOrderedSemiring R] (s : Subsemiring R) :
+abbrev toLinearOrderedSemiring {R} [LinearOrderedSemiring R] (s : Subsemiring R) :
     LinearOrderedSemiring s :=
   inferInstance
 #align subsemiring.to_linear_ordered_semiring Subsemiring.toLinearOrderedSemiring
 
 /-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
-def toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] (s : Subsemiring R) :
+abbrev toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] (s : Subsemiring R) :
     LinearOrderedCommSemiring s :=
   inferInstance
 #align subsemiring.to_linear_ordered_comm_semiring Subsemiring.toLinearOrderedCommSemiring

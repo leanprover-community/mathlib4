@@ -451,7 +451,7 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
-def toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
+abbrev toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
   inferInstance
 #align subring.to_comm_ring Subring.toCommRing
 
@@ -468,28 +468,28 @@ lemma isDomain {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   inferInstance
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-def toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
+abbrev toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
   inferInstance
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-def toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
+abbrev toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
   inferInstance
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-def toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
+abbrev toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
   inferInstance
 #align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
 
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-def toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
+abbrev toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
     LinearOrderedCommRing s :=
   inferInstance
 #align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
-def subtype (s : Subring R) : s →+* R :=
+abbrev subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 #align subring.subtype Subring.subtype
 

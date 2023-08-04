@@ -104,7 +104,7 @@ theorem isIntegral_of_submodule_noetherian (S : Subalgebra R A)
     rcases this with ⟨p, hpm, hpx⟩
     replace hpx := congr_arg S.val hpx
     refine' ⟨p, hpm, Eq.trans _ hpx⟩
-    simp only [aeval_def, (eval₂_def), sum_def]
+    simp only [aeval_def, eval₂, sum_def]
     rw [S.val.map_sum]
     refine' Finset.sum_congr rfl fun n _hn => _
     rw [S.val.map_mul, S.val.map_pow, S.val.commutes, S.val_apply, Subtype.coe_mk]
