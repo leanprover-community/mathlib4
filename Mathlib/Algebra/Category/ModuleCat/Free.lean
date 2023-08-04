@@ -194,6 +194,4 @@ theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
       (le_of_eq ((Module.Free.chooseBasis R N)).span_eq.symm)
       (le_of_eq (Module.Free.chooseBasis R P).span_eq.symm) h.epi h.exact))⟩
 
-
-
 end ModuleCat
