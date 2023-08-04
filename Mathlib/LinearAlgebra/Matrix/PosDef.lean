@@ -94,6 +94,22 @@ theorem posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.Pos
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.posDef_toQuadraticForm'
 
+section ConjTransposeMul
+
+/-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
+theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemidef (Aᴴ ⬝ A) := by
+  refine ⟨ isHermitian_transpose_mul_self _, fun x => ?_ ⟩
+  rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star, dotProduct, map_sum]
+  simpa [Pi.star_apply, IsROrC.star_def, IsROrC.mul_re, IsROrC.conj_re, IsROrC.conj_im, neg_mul,
+    sub_neg_eq_add] using
+  Finset.sum_nonneg (fun i => (fun _ => add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)))
+
+/-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
+theorem posSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
+  by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+
+end ConjTransposeMul
+
 namespace PosDef
 
 variable {M : Matrix n n ℝ} (hM : M.PosDef)
@@ -165,23 +181,5 @@ def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM) :=
   InnerProductSpace.ofCore _
 #align matrix.inner_product_space.of_matrix Matrix.InnerProductSpace.ofMatrix
-
-section ConjTransposeMul
-
-variable {m : Type _} [Fintype m]
-
-/-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
-theorem isPosSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemidef (Aᴴ ⬝ A) := by
-  refine ⟨ isHermitian_transpose_mul_self _, fun x => ?_ ⟩
-  rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star, dotProduct, map_sum]
-  simpa [Pi.star_apply, IsROrC.star_def, IsROrC.mul_re, IsROrC.conj_re, IsROrC.conj_im, neg_mul,
-    sub_neg_eq_add] using
-  Finset.sum_nonneg (fun i => (fun _ => add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)))
-
-/-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem isPosSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
-  by simpa only [conjTranspose_conjTranspose] using isPosSemidef_conjTranspose_mul_self Aᴴ
-
-end ConjTransposeMul
 
 end Matrix
