@@ -1107,9 +1107,9 @@ theorem rank_eq_of_surjective (f : V →ₗ[K] V₁) (h : Surjective f) :
 
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
 the family by another vector while retaining linear independence. -/
-theorem exists_linear_independent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
+theorem exists_linear_independent_cons_of_lt_rank {n : ℕ} {v : Fin n → V}
     (hv : LinearIndependent K v) (h : n < Module.rank K V) :
-    ∃ (x : V), LinearIndependent K (Fin.snoc v x) := by
+    ∃ (x : V), LinearIndependent K (Fin.cons x v) := by
   have A : Submodule.span K (range v) ≠ ⊤ := by
     intro H
     rw [← rank_top, ← H] at h
@@ -1121,15 +1121,15 @@ theorem exists_linear_independent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
   obtain ⟨x, hx⟩ : ∃ x, x ∉ Submodule.span K (range v) := by
     contrapose! A
     exact Iff.mpr Submodule.eq_top_iff' A
-  exact ⟨x, linearIndependent_fin_snoc.2 ⟨hv, hx⟩⟩
+  exact ⟨x, linearIndependent_fin_cons.2 ⟨hv, hx⟩⟩
 
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
 the family by another vector while retaining linear independence. -/
-theorem exists_linear_independent_cons_of_lt_rank {n : ℕ} {v : Fin n → V}
+theorem exists_linear_independent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
     (hv : LinearIndependent K v) (h : n < Module.rank K V) :
-    ∃ (x : V), LinearIndependent K (Fin.cons x v) := by
-  simpa [linearIndependent_fin_snoc, ← linearIndependent_fin_cons]
-    using exists_linear_independent_snoc_of_lt_rank hv h
+    ∃ (x : V), LinearIndependent K (Fin.snoc v x) := by
+  simpa [linearIndependent_fin_cons, ← linearIndependent_fin_snoc]
+    using exists_linear_independent_cons_of_lt_rank hv h
 
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
 independent of the first one. -/
