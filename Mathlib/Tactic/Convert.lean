@@ -149,6 +149,6 @@ example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
 syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 macro_rules
-| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]?; try ac_rfl)
+| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
 
 end Mathlib.Tactic
