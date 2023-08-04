@@ -1112,7 +1112,7 @@ theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
-  simp only [sign, OrderHom.coe_fun_mk, EReal.coe_pos, EReal.coe_neg']
+  simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
 #align ereal.sign_coe EReal.sign_coe
 
 @[simp, norm_cast]
