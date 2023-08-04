@@ -1107,8 +1107,10 @@ theorem closure_kernel_eq_closure :
     G.closure (G.kernel s) = G.closure s := by
   apply closure_eq_of_subset_adj_closure (subset_trans kernel_subset G.self_subset_closure)
   intro x hx
-  rw [mem_closure]
-  sorry
+  simp only [mem_closure, rank_kernel]
+  have h := G.rank_le_of_subset (subset_insert x (G.kernel s))
+  rw [rank_kernel] at h
+  exact Nat.le_antisymm (G.rank_le_of_subset (insert_subset hx G.kernel_subset)) h
 
 end Kernel
 
