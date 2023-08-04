@@ -944,6 +944,9 @@ theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b =
   simpa using h_nnreal
 #align ennreal.le_of_top_imp_top_of_to_nnreal_le ENNReal.le_of_top_imp_top_of_toNNReal_le
 
+@[simp]
+theorem abs_toReal {x : ℝ≥0∞} : |x.toReal| = x.toReal := by cases x <;> simp
+
 end Order
 
 section CompleteLattice
@@ -2271,6 +2274,8 @@ def toRealHom : ℝ≥0∞ →* ℝ :=
 theorem toReal_mul : (a * b).toReal = a.toReal * b.toReal :=
   toRealHom.map_mul a b
 #align ennreal.to_real_mul ENNReal.toReal_mul
+
+theorem toReal_nsmul (a : ℝ≥0∞) (n : ℕ) : (n • a).toReal = n • a.toReal := by simp
 
 @[simp]
 theorem toReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toReal = a.toReal ^ n :=

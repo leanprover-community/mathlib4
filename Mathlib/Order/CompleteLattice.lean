@@ -20,9 +20,9 @@ import Mathlib.Mathport.Notation
 * `sSup` and `sInf` are the supremum and the infimum of a set;
 * `iSup (f : ι → α)` and `iInf (f : ι → α)` are indexed supremum and infimum of a function,
   defined as `sSup` and `sInf` of the range of this function;
-* `class CompleteLattice`: a bounded lattice such that `sSup s` is always the least upper boundary
+* class `CompleteLattice`: a bounded lattice such that `sSup s` is always the least upper boundary
   of `s` and `sInf s` is always the greatest lower boundary of `s`;
-* `class CompleteLinearOrder`: a linear ordered complete lattice.
+* class `CompleteLinearOrder`: a linear ordered complete lattice.
 
 ## Naming conventions
 
@@ -1975,3 +1975,34 @@ protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [
     bot := ⊥
     bot_le := fun _ => map_bot.le.trans bot_le }
 #align function.injective.complete_lattice Function.Injective.completeLattice
+
+namespace ULift
+
+instance supSet [SupSet α] : SupSet (ULift.{v} α) where sSup s := ULift.up (sSup <| ULift.up ⁻¹' s)
+
+theorem down_sSup [SupSet α] (s : Set (ULift.{v} α)) : (sSup s).down = sSup (ULift.up ⁻¹' s) := rfl
+theorem up_sSup [SupSet α] (s : Set α) : up (sSup s) = sSup (ULift.down ⁻¹' s) := rfl
+
+instance infSet [InfSet α] : InfSet (ULift.{v} α) where sInf s := ULift.up (sInf <| ULift.up ⁻¹' s)
+
+theorem down_sInf [InfSet α] (s : Set (ULift.{v} α)) : (sInf s).down = sInf (ULift.up ⁻¹' s) := rfl
+theorem up_sInf [InfSet α] (s : Set α) : up (sInf s) = sInf (ULift.down ⁻¹' s) := rfl
+
+theorem down_iSup [SupSet α] (f : ι → ULift.{v} α) : (⨆ i, f i).down = ⨆ i, (f i).down :=
+  congr_arg sSup <| (preimage_eq_iff_eq_image ULift.up_bijective).mpr <|
+    Eq.symm (range_comp _ _).symm
+theorem up_iSup [SupSet α] (f : ι → α) : up (⨆ i, f i) = ⨆ i, up (f i) :=
+  congr_arg ULift.up <| (down_iSup _).symm
+
+theorem down_iInf [InfSet α] (f : ι → ULift.{v} α) : (⨅ i, f i).down = ⨅ i, (f i).down :=
+  congr_arg sInf <| (preimage_eq_iff_eq_image ULift.up_bijective).mpr <|
+    Eq.symm (range_comp _ _).symm
+theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) :=
+  congr_arg ULift.up <| (down_iInf _).symm
+
+instance completeLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
+  ULift.down_injective.completeLattice _ down_sup down_inf
+    (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
+    (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
+
+end ULift

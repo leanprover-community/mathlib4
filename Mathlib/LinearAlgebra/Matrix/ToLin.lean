@@ -850,7 +850,7 @@ theorem toMatrix_lmul' (x : S) (i j) :
 
 @[simp]
 theorem toMatrix_lsmul (x : R) :
-    LinearMap.toMatrix b b (Algebra.lsmul R S x) = Matrix.diagonal fun _ => x :=
+    LinearMap.toMatrix b b (Algebra.lsmul R R S x) = Matrix.diagonal fun _ => x :=
   toMatrix_distrib_mul_action_toLinearMap b x
 #align algebra.to_matrix_lsmul Algebra.toMatrix_lsmul
 

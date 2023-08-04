@@ -339,6 +339,13 @@ protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [
   forall_congr' fun i => gc i (a i) (b i)
 #align galois_connection.dfun GaloisConnection.dfun
 
+protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} {u : β → α}
+    (gc : GaloisConnection l u) :
+    GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := by
+  intro a b
+  dsimp
+  rw [le_compl_iff_le_compl, gc, compl_le_iff_compl_le]
+
 end Constructions
 
 theorem l_comm_of_u_comm {X : Type _} [Preorder X] {Y : Type _} [Preorder Y] {Z : Type _}

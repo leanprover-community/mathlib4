@@ -241,6 +241,18 @@ theorem not_gt (h : x = y) : ¬y < x :=
 
 end Eq
 
+
+section
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+
+-- Making this a @[simp] lemma causes confluences problems downstream.
+lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
+
+end
+
 namespace LE.le
 
 -- see Note [nolint_ge]
@@ -724,8 +736,7 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.linearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
-
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
 theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
