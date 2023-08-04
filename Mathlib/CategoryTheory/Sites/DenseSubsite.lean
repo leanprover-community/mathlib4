@@ -305,7 +305,7 @@ variable {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
 @[simps]
 noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ ⟶
-      coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type*)).obj ℱ'.val where
+      coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ'.val where
   app X := presheafHom H (homOver α (unop X))
   naturality X Y f := by
     ext U x

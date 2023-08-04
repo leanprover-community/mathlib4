@@ -126,7 +126,7 @@ theorem pullback_singleton [HasPullbacks C] (g : Z ⟶ X) :
 #align category_theory.presieve.pullback_singleton CategoryTheory.Presieve.pullback_singleton
 
 /-- Construct the presieve given by the family of arrows indexed by `ι`. -/
-inductive ofArrows {ι : Type _} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve X
+inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve X
   | mk (i : ι) : ofArrows _ _ (f i)
 #align category_theory.presieve.of_arrows CategoryTheory.Presieve.ofArrows
 
