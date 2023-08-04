@@ -303,8 +303,8 @@ section Zlattice
 open Submodule
 
 variable (K : Type _) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E] [ProperSpace E]
-variable {L : AddSubgroup E} [DiscreteTopology L]
+variable {E : Type _} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
+variable [ProperSpace E] {L : AddSubgroup E} [DiscreteTopology L]
 variable (hs : span K (L : Set E) = ⊤)
 
 theorem Zlattice.FG : AddSubgroup.FG L := by
