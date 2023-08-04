@@ -191,7 +191,7 @@ variable  [Field R]
 
 /-- The rank of a diagnonal matrix  is the count of non-zero elements on its main diagonal -/
 theorem rank_diagonal [DecidableEq m] [DecidableEq R] (w : m → R) :
-    ((Matrix.diagonal w).rank) = (Fintype.card {i // (w i) ≠ 0}) := by
+    (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_cast]
 
