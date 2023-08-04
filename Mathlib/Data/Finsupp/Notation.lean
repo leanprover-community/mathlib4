@@ -19,9 +19,13 @@ open Lean
 open Lean.Parser
 open Lean.Parser.Term
 
+/-- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping. -/
+def fun₀.matchAlts : Parser :=
+  leading_parser withPosition $ ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
+
 @[term_parser, inherit_doc Finsupp]
-def «fun₀» := leading_parser:maxPrec
-  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> matchAlts
+def fun₀ := leading_parser:maxPrec
+  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
 macro_rules
   | `(term| fun₀ $x:matchAlt*) => do
