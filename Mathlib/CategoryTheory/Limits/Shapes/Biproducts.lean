@@ -497,6 +497,84 @@ theorem biproduct.hom_ext' {f : J → C} [HasBiproduct f] {Z : C} (g h : ⨁ f �
   (biproduct.isColimit f).hom_ext fun j => w j.as
 #align category_theory.limits.biproduct.hom_ext' CategoryTheory.Limits.biproduct.hom_ext'
 
+@[simp]
+theorem biproduct.lift_zero {f : J → C} [HasBiproduct f] :
+    biproduct.lift (fun j => (0 : P ⟶ f j)) = 0 := by
+  ext; simp
+
+@[simp]
+theorem biproduct.desc_zero {f : J → C} [HasBiproduct f] :
+    biproduct.desc (fun j => (0 : f j ⟶ P)) = 0 := by
+  ext; simp
+
+@[simp]
+theorem biproduct.lift_apply_π {f : J → C} [HasBiproduct f] : biproduct.lift (biproduct.π f) = 𝟙 _ := by
+  ext; simp
+
+@[simp]
+theorem biproduct.desc_apply_ι {f : J → C} [HasBiproduct f] : biproduct.desc (biproduct.ι f) = 𝟙 _ := by
+  ext; simp
+
+@[simp]
+theorem biproduct.lift_dite_irrel {f : J → C} [HasBiproduct f] [Decidable Q]
+    (h : Q → (j : J) → (P ⟶ f j)) (g : ¬ Q → (j : J) → (P ⟶ f j)) :
+    biproduct.lift (fun j => if w : Q then h w j else g w j) =
+      if w : Q then biproduct.lift (h w) else biproduct.lift (g w) := by
+  ext
+  split_ifs <;> simp
+
+@[simp]
+theorem biproduct.desc_dite_irrel {f : J → C} [HasBiproduct f] [Decidable Q]
+    (h : Q → (j : J) → (f j ⟶ P)) (g : ¬ Q → (j : J) → (f j ⟶ P)) :
+    biproduct.desc (fun j => if w : Q then h w j else g w j) =
+      if w : Q then biproduct.desc (h w) else biproduct.desc (g w) := by
+  ext
+  split_ifs <;> simp
+
+@[simp]
+theorem biproduct.lift_dite {f : J → C} [HasBiproduct f] (g : {j : J} → j₀ = j → (P ⟶ f j)) :
+    biproduct.lift (fun j => if h : j₀ = j then g h else 0) = g rfl ≫ biproduct.ι _ _ := by
+  ext
+  simp [ι_π]
+  split_ifs with h
+  · subst h
+    simp
+  · simp
+
+@[simp]
+theorem biproduct.lift_dite' {f : J → C} [HasBiproduct f] (g : {j : J} → j = j₀ → (P ⟶ f j)) :
+    biproduct.lift (fun j => if h : j = j₀ then g h else 0) = g rfl ≫ biproduct.ι _ _ := by
+  ext
+  simp [ι_π]
+  split_ifs with h
+  · subst h
+    simp
+  · aesop
+  · aesop
+  · simp
+
+@[simp]
+theorem biproduct.desc_dite {f : J → C} [HasBiproduct f] (g : {j : J} → j = j₀ → (f j ⟶ P)) :
+    biproduct.desc (fun j => if h : j = j₀ then g h else 0) = biproduct.π _ _ ≫ g rfl := by
+  ext
+  simp [ι_π_assoc]
+  split_ifs with h
+  · subst h
+    simp
+  · simp
+
+@[simp]
+theorem biproduct.desc_dite' {f : J → C} [HasBiproduct f] (g : {j : J} → j₀ = j → (f j ⟶ P)) :
+    biproduct.desc (fun j => if h : j₀ = j then g h else 0) = biproduct.π _ _ ≫ g rfl := by
+  ext
+  simp [ι_π_assoc]
+  split_ifs with h
+  · subst h
+    simp
+  · aesop
+  · aesop
+  · simp
+
 /-- The canonical isomorphism between the chosen biproduct and the chosen product. -/
 def biproduct.isoProduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∏ f :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (limit.isLimit _)
@@ -615,56 +693,6 @@ def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
   inv := biproduct.lift fun i => biproduct.lift fun x => biproduct.π _ (⟨i, x⟩ : Σ i, f i)
 
-/-- Two biproducts which differ by an equivalence in the indexing type,
-and up to isomorphism in the factors, are isomorphic.
-
-Unfortunately there are two natural ways to define each direction of this isomorphism
-(because it is true for both products and coproducts separately).
-We give the alternative definitions as lemmas below.
--/
-@[simps]
-def biproduct.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
-    [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where
-  hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
-  inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
-
-lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
-    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
-    (biproduct.whisker_equiv e w).hom =
-      biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
-  simp only [whisker_equiv_hom]
-  ext k j
-  by_cases h : k = e j
-  · subst h
-    simp
-  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
-    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
-    · simp
-    · rintro rfl
-      simp at h
-    · exact Ne.symm h
-
-lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
-    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
-    (biproduct.whisker_equiv e w).inv =
-      biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
-  -- One might hope `← eqToHom_iso_hom_naturality` suffices instead, but `simp` won't use it below.
-  have p : ∀ (j j' : J) (h : j = j'),
-        eqToHom (by simp [h]) ≫ (w j').hom = (w j).hom ≫ eqToHom (by simp [h]) := by
-      rintro _ _ rfl
-      simp
-  simp only [whisker_equiv_inv]
-  ext j k
-  by_cases h : k = e j
-  · subst h
-    simp [reassoc_of% p]
-  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
-    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
-    · simp
-    · exact h
-    · rintro rfl
-      simp at h
-
 lemma biproduct.comp_lift (f : β → C) [HasBiproduct f] (g : P ⟶ Q) (h : ∀ b, Q ⟶ f b) :
     g ≫ biproduct.lift h = biproduct.lift fun b => g ≫ h b := by
   ext; simp
@@ -684,6 +712,117 @@ lemma biproduct.desc_comp_π
     (f : β → C) [HasBiproduct f] (h : α → C) [HasBiproduct h] (g : ∀ b, f b ⟶ ⨁ h) :
     biproduct.desc g ≫ biproduct.π h a = biproduct.desc fun b => g b ≫ biproduct.π h a := by
   ext; simp
+
+section whisker_equiv
+variable {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasBiproduct f] [HasBiproduct g]
+
+/-- Two biproducts which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+
+Unfortunately there are two natural ways to define each direction of this isomorphism
+(because it is true for both products and coproducts separately).
+We give the alternative definitions as lemmas below.
+-/
+def biproduct.whisker_equiv : ⨁ f ≅ ⨁ g where
+  hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
+  inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
+
+lemma biproduct.whisker_equiv_hom_eq_desc :
+    (biproduct.whisker_equiv e w).hom = biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j) :=
+  rfl
+
+lemma biproduct.whisker_equiv_inv_eq_desc :
+    (biproduct.whisker_equiv e w).inv =
+      biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _ :=
+  rfl
+
+lemma biproduct.whisker_equiv_hom_eq_lift :
+    (biproduct.whisker_equiv e w).hom =
+      biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
+  simp only [whisker_equiv_hom_eq_desc]
+  ext k j
+  by_cases h : k = e j
+  · subst h
+    simp
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · rintro rfl
+      simp at h
+    · exact Ne.symm h
+
+lemma biproduct.whisker_equiv_inv_eq_lift :
+    (biproduct.whisker_equiv e w).inv =
+      biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
+  -- One might hope `← eqToHom_iso_hom_naturality` suffices instead, but `simp` won't use it below.
+  have p : ∀ (j j' : J) (h : j = j'),
+        eqToHom (by simp [h]) ≫ (w j').hom = (w j).hom ≫ eqToHom (by simp [h]) := by
+      rintro _ _ rfl
+      simp
+  simp only [whisker_equiv_inv_eq_desc]
+  ext j k
+  by_cases h : k = e j
+  · subst h
+    simp [reassoc_of% p]
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · exact h
+    · rintro rfl
+      simp at h
+
+@[reassoc (attr := simp)]
+lemma biproduct.ι_comp_whisker_equiv_hom :
+    biproduct.ι _ j ≫ (biproduct.whisker_equiv e w).hom = (w j).inv ≫ biproduct.ι _ _ := by
+  simp [biproduct.whisker_equiv_hom_eq_lift, ι_π_assoc, dite_comp, Equiv.eq_symm_apply]
+
+@[reassoc (attr := simp)]
+lemma biproduct.whisker_equiv_hom_comp_π :
+    (biproduct.whisker_equiv e w).hom ≫ biproduct.π _ k =
+      biproduct.π _ (e.symm k) ≫ (w (e.symm k)).inv ≫ eqToHom (by simp) := by
+  simp [biproduct.whisker_equiv_hom_eq_lift]
+
+@[reassoc (attr := simp)]
+lemma biproduct.ι_comp_whisker_equiv_inv :
+    biproduct.ι _ k ≫ (biproduct.whisker_equiv e w).inv =
+      eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι _ _ := by
+  simp [biproduct.whisker_equiv_inv_eq_lift, ι_π_assoc, dite_comp, ← Equiv.symm_apply_eq]
+
+@[reassoc (attr := simp)]
+lemma biproduct.whisker_equiv_inv_comp_π :
+    (biproduct.whisker_equiv e w).inv ≫ biproduct.π _ j = biproduct.π _ (e j) ≫ (w j).hom := by
+  simp [biproduct.whisker_equiv_inv_eq_lift]
+
+end whisker_equiv
+
+-- We intentionally don't provide `@[simp]` lemmas here.
+-- We expect users will want to use the `Equiv` API,
+-- and then unfold manually at the appropriate moment.
+def Equiv.congr (α : J → Type _) {j j' : J} (h : j = j') : α j ≃ α j' :=
+  Equiv.cast (congrArg α h)
+
+-- We lazily mark this as `simp`, rather than restate the extensionality lemmas for `whisker_equiv`.
+@[simp]
+def biproduct.iterated_reindex
+    [DecidableEq J] {α : J → Type w} (f : (j : J) → α j → C) [∀ j, HasBiproduct (f j)]
+    {j j' : J} (h : j = j') :
+    ⨁ f j ≅ ⨁ f j' :=
+  (biproduct.whisker_equiv (Equiv.congr α h) (fun k => eqToIso (by subst h; simp [Equiv.congr])))
+
+/-- A variant of `biproduct.ι_π` specialized for iterated biproducts. -/
+@[reassoc]
+theorem biproduct.ι_π_biproduct
+    [DecidableEq J] {α : J → Type w} (f : (j : J) → α j → C) [∀ j, HasBiproduct (f j)]
+    [HasBiproduct fun j => ⨁ f j] (j j' : J) :
+    biproduct.ι (fun j => ⨁ f j) j ≫ biproduct.π (fun j => ⨁ f j) j' =
+      if h : j = j' then (biproduct.iterated_reindex f h).hom else 0 := by
+  simp only [biproduct.ι_π, iterated_reindex]
+  split_ifs with h
+  · subst h
+    ext
+    simp [Equiv.congr]
+  · rfl
 
 section πKernel
 

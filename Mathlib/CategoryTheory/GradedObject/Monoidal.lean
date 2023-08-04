@@ -83,6 +83,7 @@ def associator_underlying (X Y Z : GradedObject ℕ V) (i : ℕ) :
   biproduct.mapIso fun _ => α_ _ _ _
 
 -- Move this to `Finset.Nat.antidiagonal`?
+@[simps apply symm_apply]
 def associator_equiv : (Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.1) ≃ (Σ p₁ : Finset.Nat.antidiagonal i, Finset.Nat.antidiagonal p₁.1.2) :=
   { toFun := fun ⟨⟨⟨ab, c⟩, w₁⟩, ⟨⟨a, b⟩, w₂⟩⟩ =>
       ⟨⟨⟨a, b + c⟩, by simp at w₁ w₂; subst w₁ w₂; simp [add_assoc]⟩, ⟨⟨b, c⟩, by simp⟩⟩
@@ -235,7 +236,44 @@ lemma tensorObj₃_rightTensor_ext (X₁ X₂ X₃ : GradedObject ℕ V) (n : �
 
 #eval 0
 
+theorem dite_dite (P : Prop) [Decidable P] (Q : P → Prop) [∀ hp, Decidable (Q hp)] (a : (hp : P) → Q hp → β) (b : β) :
+    (if hp : P then (if hq : Q hp then a hp hq else b) else b) =
+      (if h : ∃ hp : P, Q hp then a h.1 h.2 else b) := by
+  by_cases hp : P
+  · by_cases hq : Q hp
+    · simp [hp, hq]
+    · simp [hp, hq]
+  · simp [hp]
 
+theorem dite_exists (P : Prop) [Decidable P] (Q : P → Prop) [∀ hp, Decidable (Q hp)] (a : (∃ hp : P, Q hp) → β) (b : β) :
+    (if h : ∃ hp : P, Q hp then a h else b)
+     = (if hp : P then (if hq : Q hp then a ⟨hp, hq⟩ else b) else b) := by
+  by_cases hp : P
+  · by_cases hq : Q hp
+    · simp [hp, hq]
+    · simp [hp, hq]
+  · simp [hp]
+
+@[simp] theorem foo {β : α → Type _} (p : Σ a : α, β a) (a : α) (b : a = p.1 → β p.1) :
+    (∃ hp : a = p.1, b hp = p.2) ↔ ∃ hp : a = p.1, ⟨a, cast (congrArg β hp.symm) (b hp)⟩ = p := by
+  constructor
+  · rintro ⟨rfl, w⟩
+    use rfl
+    simp [w]
+  · rintro ⟨rfl, w⟩
+    use rfl
+    cases p
+    simp_all
+
+@[simp] theorem bar {β : α → Type _} (p : Σ a, β a) (a : α) (b : β a) :
+    a = p.1 ∧ ⟨a, b⟩ = p ↔ ⟨a, b⟩ = p := by
+  aesop
+
+theorem qux {β : α → Type _} (p q : Σ a, β a) :
+    p = q ↔ ∃ h : p.1 = q.1, cast (congrArg β h) p.2 = q.2 := by
+  aesop
+
+-- set_option says.verify true in
 @[reassoc]
 lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
     (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
@@ -244,12 +282,41 @@ lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
   dsimp [associator]
   dsimp [ιTensorObj₃, ιTensorObj₃', ιTensorObj, associator]
   dsimp [associator_distributor, associator_iterated]
-  simp
+  simp? says simp only [assoc, biproduct.ι_map_assoc, biproduct.ι_comp_lift_assoc, ne_eq,
+      biproduct_ι_comp_rightDistributor_hom_assoc]
+  simp? [biproduct.ι_π_biproduct_assoc, dite_comp, comp_dite] says
+    simp only [ne_eq, biproduct.ι_π_biproduct_assoc, biproduct.iterated_reindex, dite_comp,
+      biproduct.whisker_equiv_hom_comp_π, eqToIso.inv, eqToHom_trans, zero_comp, comp_dite,
+      comp_zero]
+  simp? [biproduct.ι_π_assoc, dite_comp, dite_and', Equiv.eq_symm_apply] says
+    simp only [ne_eq, Equiv.eq_symm_apply, biproduct.ι_π_assoc, dite_comp, eqToHom_trans,
+      zero_comp, dite_dite]
+  simp? [Equiv.congr] says
+    simp only [Equiv.congr, Equiv.cast_apply, Finset.mem_val, Finset.Nat.mem_antidiagonal, foo,
+      cast_cast, cast_eq, exists_prop, bar]
+  -- Unfortunately `simp` does not successfully apply `biproduct.lift_dite` here,
+  -- presumably because of unification difficulties.
+  -- We use `convert` to provide some encouragement.
+  conv in biproduct.lift _ =>
+    tactic => convert biproduct.lift_dite _
+  simp? says simp only [eqToHom_refl, id_comp]
+  dsimp only [associator_underlying]
+  simp? says simp only [biproduct.mapIso_hom, biproduct.ι_map_assoc, Iso.cancel_iso_hom_left]
+  dsimp only [associator_whisker_equiv]
+  simp? says simp only [associator_equiv_apply, biproduct.ι_comp_whisker_equiv_hom_assoc, Iso.refl_inv, id_comp]
+  dsimp only [associator_iterated']
+  simp? says simp only [Iso.symm_hom, biproductBiproductIso_inv, biproduct.ι_comp_lift_assoc, biproduct.ι_comp_lift,
+      ne_eq, Sigma.mk.inj_iff, not_and]
+  simp? [biproduct.ι_π] says simp only [ne_eq, Sigma.mk.inj_iff, not_and, biproduct.ι_π]
+  simp only [qux]
+  simp only [dite_exists]
+  simp? says simp only [Finset.mem_val, Finset.Nat.mem_antidiagonal, biproduct.lift_dite_irrel]
+  conv in biproduct.lift _ =>
+    tactic => convert biproduct.lift_dite _
+  -- dsimp only [associator_distributor']
+  -- simp
+  -- simp? says simp only [ne_eq, Sigma.mk.inj_iff, not_and, biproduct.mapIso_hom, Iso.symm_hom, biproduct.lift_map]
 
-
--- not sure which one of `ιTensorObj₃_comp_associator_hom` or
--- `ιTensorObj₃'_comp_associator_inv` has the easiest proof, but at least, one may
--- deduce one from the other
 @[reassoc]
 lemma ιTensorObj₃'_comp_associator_inv (X₁ X₂ X₃ : GradedObject ℕ V)
     (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
