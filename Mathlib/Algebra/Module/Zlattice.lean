@@ -19,7 +19,7 @@ subgroup of `E` such that `L` spans `E` over `K`.
 A `ℤ`-lattice `L` can be defined in two ways:
 * For `b` a basis of `E`, then `L = Submodule.span ℤ (Set.range b)` is a ℤ-lattice of `E`
 * As an `AddSubgroup E` with the additional properties:
-  * `∀ r : ℝ, (L ∩ Metric.closedBall 0 r).finite`, that is `L` is discrete
+  * `DiscreteTopology L`, that is `L` is discrete
   * `Submodule.span ℝ (L : Set E) = ⊤`, that is `L` spans `E` over `K`.
 
 Results about the first point of view are in the `Zspan` namespace and results about the second
@@ -303,9 +303,8 @@ section Zlattice
 open Submodule
 
 variable (K : Type _) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
-variable {L : AddSubgroup E}
-variable (hd : ∀ r : ℝ, ((L : Set E) ∩ (Metric.closedBall 0 r)).Finite)
+variable {E : Type _} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E] [ProperSpace E]
+variable {L : AddSubgroup E} [DiscreteTopology L]
 variable (hs : span K (L : Set E) = ⊤)
 
 theorem Zlattice.FG : AddSubgroup.FG L := by
@@ -326,26 +325,28 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     have : Fintype s := Set.Finite.fintype h_lind.finite
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.QuotientEquiv b) ?_
       (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.QuotientEquiv b).injective) _)
-    obtain ⟨C, hC⟩ := Metric.Bounded.subset_ball (Zspan.fundamentalDomain_bounded b) 0
-    refine Set.Finite.subset (hd C) ?_
+    have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
+      Metric.Finite_bounded_inter_isClosed (Zspan.fundamentalDomain_bounded b) inferInstance
+    refine Set.Finite.subset this ?_
     rintro _ ⟨_, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
     rw [Function.comp_apply, mkQ_apply, Zspan.quotientEquiv_apply_mk, Zspan.fract_restrict_apply]
-    refine ⟨?_, hC (Zspan.fract_mem_fundamentalDomain b x)⟩
-    rw [Zspan.fract, SetLike.mem_coe, sub_eq_add_neg]
-    refine AddSubgroup.add_mem _ h_mem
-      (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (Zspan.floor b x))))
-    rw [show (L : Set E) = AddSubgroup.toIntSubmodule L by rfl]
-    rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
-    exact span_le.mpr h_incl
+    refine ⟨?_, ?_⟩
+    · exact Zspan.fract_mem_fundamentalDomain b x
+    · rw [Zspan.fract, SetLike.mem_coe, sub_eq_add_neg]
+      refine AddSubgroup.add_mem _ h_mem
+        (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (Zspan.floor b x))))
+      rw [show (L : Set E) = AddSubgroup.toIntSubmodule L by rfl]
+      rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+      exact span_le.mpr h_incl
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.finite h_lind)
 
 theorem Zlattice.module_finite : Module.Finite ℤ L :=
-  Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K hd hs))
+  Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K hs))
 
 theorem Zlattice.module_free : Module.Free ℤ L := by
-  have : Module.Finite ℤ L := module_finite K hd hs
+  have : Module.Finite ℤ L := module_finite K hs
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   have : NoZeroSMulDivisors ℤ E := RatModule.noZeroSMulDivisors
   have : NoZeroSMulDivisors ℤ L := by
@@ -357,8 +358,8 @@ open FiniteDimensional
 
 theorem Zlattice.rank : finrank ℤ L = finrank K E := by
   classical
-  have : Module.Finite ℤ L := module_finite K hd hs
-  have : Module.Free ℤ L := module_free K hd hs
+  have : Module.Finite ℤ L := module_finite K hs
+  have : Module.Free ℤ L := module_free K hs
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
@@ -409,19 +410,21 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       (linearIndependent_insert (Set.not_mem_of_mem_diff hv)),  not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
-    -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ Zspan.fract e (n • v)` 
+    -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ Zspan.fract e (n • v)`
     -- takes value into the finite set `fundamentalDomain e ∩ L`
-    have : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
-        (L ∩ Metric.closedBall 0 (∑ i, ‖e i‖)) := by
+    have h_mapsto : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
+        (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       rw [Set.mapsTo_inter, Set.maps_univ_to, Set.maps_univ_to]
-      refine ⟨fun _ => ?_, fun _ =>  mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _)⟩
+      refine ⟨fun _ =>  mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
         refine sub_mem ?_ ?_
         · exact zsmul_mem (subset_span (Set.diff_subset _ _ hv)) _
         · exact span_mono (by simp [ht_inc]) (coe_mem _)
+    have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=
+      Metric.Finite_bounded_inter_isClosed Metric.bounded_closedBall inferInstance
     obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
-      Set.infinite_univ this (hd (∑ i, ‖e i‖))
+      Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
       rwa [Ne.def, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne.def]
     apply (smul_mem_iff _ h_nz).mp
