@@ -28,8 +28,8 @@ The main definitions for this file are
 
 - `Nat.ProbablePrime`: A number `n` is a probable prime to base `b` if it passes the Fermat
   primality test; that is, if `n` divides `b ^ (n - 1) - 1`
-- `Nat.FermatPsp`: A number `n` is a pseudoprime to base `b` if it is a probable prime to base `b`, is
-  composite, and is coprime with `b` (this last condition is automatically true if `n` divides
+- `Nat.FermatPsp`: A number `n` is a pseudoprime to base `b` if it is a probable prime to base `b`,
+  is composite, and is coprime with `b` (this last condition is automatically true if `n` divides
   `b ^ (n - 1) - 1`, but some sources include it in the definition).
 
 Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definition of
