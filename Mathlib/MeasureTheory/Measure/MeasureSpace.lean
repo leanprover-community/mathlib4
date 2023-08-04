@@ -149,6 +149,14 @@ theorem measure_union_add_inter' (hs : MeasurableSet s) (t : Set α) :
   rw [union_comm, inter_comm, measure_union_add_inter t hs, add_comm]
 #align measure_theory.measure_union_add_inter' MeasureTheory.measure_union_add_inter'
 
+lemma measure_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    μ (s ∆ t) = μ (s \ t) + μ (t \ s) := by
+  simpa only [symmDiff_def, sup_eq_union] using measure_union disjoint_sdiff_sdiff (ht.diff hs)
+
+lemma measure_symmDiff_le (s t u : Set α) :
+    μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
+  le_trans (μ.mono $ symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))
+
 theorem measure_add_measure_compl (h : MeasurableSet s) : μ s + μ sᶜ = μ univ :=
   measure_add_measure_compl₀ h.nullMeasurableSet
 #align measure_theory.measure_add_measure_compl MeasureTheory.measure_add_measure_compl
@@ -2905,6 +2913,25 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
     (∀ᵐ a ∂μ, a ∈ s) ↔ μ s = μ univ :=
   ae_iff_measure_eq hs
 #align measure_theory.ae_mem_iff_measure_eq MeasureTheory.ae_mem_iff_measure_eq
+
+theorem abs_toReal_measure_sub_le_measure_symmDiff'
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
+    |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
+  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset (diff_subset s t) hs').ne
+  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset (diff_subset t s) ht').ne
+  suffices : (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal
+  · rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
+    convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
+  rw [measure_diff' s ht ht', measure_diff' t hs hs',
+    ENNReal.toReal_sub_of_le measure_le_measure_union_right (measure_union_ne_top hs' ht'),
+    ENNReal.toReal_sub_of_le measure_le_measure_union_right (measure_union_ne_top ht' hs'),
+    union_comm t s]
+  abel
+
+theorem abs_toReal_measure_sub_le_measure_symmDiff [IsFiniteMeasure μ]
+    (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal :=
+  abs_toReal_measure_sub_le_measure_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
 
 end IsFiniteMeasure
 

@@ -1571,25 +1571,42 @@ theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePre
   (finite_le_nat b).subset <| range_subset_iff.2 fun _ => Nat.findGreatest_le _
 #align set.finite_range_find_greatest Set.finite_range_findGreatest
 
-theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : Set.Finite s) :
-    s.Nonempty → ∃ a ∈ s, ∀ a' ∈ s, f a ≤ f a' → f a = f a' := by
-  refine' h.induction_on _ _
-  · exact fun h => absurd h not_nonempty_empty
-  intro a s his _ ih _
-  cases' s.eq_empty_or_nonempty with h h
-  · use a
-    simp [h]
-  rcases ih h with ⟨b, hb, ih⟩
-  by_cases h : f b ≤ f a
-  · refine' ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac _⟩
-    rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-    · rfl
-    · rwa [← ih c hcs (le_trans h hac)]
-  · refine' ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => _⟩
-    rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-    · exact (h hbc).elim
-    · exact ih c hcs hbc
+theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
+    (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a ≤ f a' → f a = f a' := by
+  induction s, h using Set.Finite.dinduction_on with
+  | H0 => exact absurd hs not_nonempty_empty
+  | @H1 a s his _ ih =>
+    cases' s.eq_empty_or_nonempty with h h
+    · use a
+      simp [h]
+    rcases ih h with ⟨b, hb, ih⟩
+    by_cases h : f b ≤ f a
+    · refine' ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac _⟩
+      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
+      · rfl
+      · rwa [← ih c hcs (le_trans h hac)]
+    · refine' ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => _⟩
+      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
+      · exact (h hbc).elim
+      · exact ih c hcs hbc
 #align set.finite.exists_maximal_wrt Set.Finite.exists_maximal_wrt
+
+/-- A version of `Finite.exists_maximal_wrt` with the (weaker) hypothesis that the image of `s`
+  is finite rather than `s` itself. -/
+theorem Finite.exists_maximal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
+    (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a ≤ f a' → f a = f a') := by
+  obtain ⟨_, ⟨a, ha,rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
+  exact ⟨a, ha, fun a' ha' hf ↦ hmax _ (mem_image_of_mem f ha') hf⟩
+
+theorem Finite.exists_minimal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
+    (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a' ≤ f a → f a = f a' :=
+  Finite.exists_maximal_wrt (β := βᵒᵈ) f s h hs
+
+/-- A version of `Finite.exists_minimal_wrt` with the (weaker) hypothesis that the image of `s`
+  is finite rather than `s` itself. -/
+lemma Finite.exists_minimal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
+    (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a' ≤ f a → f a = f a') :=
+  Set.Finite.exists_maximal_wrt' (β := βᵒᵈ) f s h hs
 
 section
 
