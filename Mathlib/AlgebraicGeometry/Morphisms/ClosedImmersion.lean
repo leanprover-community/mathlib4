@@ -31,7 +31,7 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
 -/
 universe v u
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry
 
@@ -59,9 +59,8 @@ instance id {X : Scheme} : IsClosedImmersion (𝟙 X) := by
 but `Morphisms.FiniteType` does. I've emulated the latter for now.
 Also at the moment the naming/namespacing is a mix of those two files... - Amelia -/
 
-/-- Suppose we have maps of schemes `f : X ⟶ Y` and `g : Y ⟶ Z` which are both
-closed immersions. Then their composition `f ≫ g : X ⟶ Z` should also be a
-closed immersion. -/
+/-- Suppose we have maps of schemes `f : X ⟶ Y` and `g : Y ⟶ Z` which are both closed immersions.
+  Then their composition `f ≫ g : X ⟶ Z` is also a closed immersion. -/
 theorem stableUnderComposition :
     MorphismProperty.StableUnderComposition (@Scheme.IsClosedImmersion) := by
   rintro X Y Z f g ⟨hf_closed, hf_surj⟩ ⟨hg_closed, hg_surj⟩
@@ -89,7 +88,7 @@ variable (R : CommRingCat) (M : Submonoid R)
 
 /-- Composition with an iso preserves closed embeddings. This is a direct
 corollary from `ofIsIso` and `stableUnderComposition`. -/
-lemma respectsIso :
+theorem respectsIso :
     MorphismProperty.RespectsIso @Scheme.IsClosedImmersion := by
   constructor <;> intro X Y Z e f hf <;> apply stableUnderComposition
   <;> infer_instance -- not sure of formatting convention here
@@ -98,7 +97,7 @@ lemma respectsIso :
 /- A surjective hom `R →+* S` induces a surjective hom `R_{f⁻¹(P)} →+* S_P`.
 This is just an application of `localizationPreserves_surjective`, modulo the fact that
 `IsLocalization f((f⁻¹(P))ᶜ) R_P`, since `f((f⁻¹(P))ᶜ)` is just `Pᶜ`... -/
-lemma surjective_localRingHom_of_surjective {R S : Type u}
+theorem surjective_localRingHom_of_surjective {R S : Type u}
     [CommRing R] [CommRing S] (f : R →+* S)
     (h : Function.Surjective f) (P : Ideal S) [P.IsPrime] :
     Function.Surjective (Localization.localRingHom (P.comap f) P f rfl) :=
@@ -109,7 +108,7 @@ lemma surjective_localRingHom_of_surjective {R S : Type u}
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
 closed immersion. -/
-lemma spec_of_surjective {R S : CommRingCat} (f : R ⟶ S)
+theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S)
     (h : Function.Surjective f) :
     IsClosedImmersion (Scheme.specMap (CommRingCat.ofHom f)) := by
   constructor
