@@ -73,7 +73,6 @@ satisfying a relaxed triangle inequality. The terminology for this varies throug
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance instEDist : EDist (ProdLp p α β) where
   edist f g :=
-    -- Porting note: can we drop the `_hp` entirely?
     if _hp : p = 0 then 0
     else
       if p = ∞ then edist f.fst g.fst ⊔ edist f.snd g.snd
@@ -691,176 +690,94 @@ theorem equiv_symm_smul : (ProdLp.equiv p α β).symm (c • x') = c • (ProdLp
 
 end Equiv
 
-#exit
-
 section Single
 
-variable (p)
+variable (p α β)
 
-variable [DecidableEq ι]
-
--- Porting note: added `hp`
 @[simp]
-theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
-    ‖(ProdLp.equiv p β).symm (Pi.single i b)‖₊ = ‖b‖₊ := by
-  clear x y -- Porting note: added
-  haveI : Nonempty ι := ⟨i⟩
+theorem nnnorm_equiv_symm_fst [hp : Fact (1 ≤ p)] (x : α) :
+    ‖(ProdLp.equiv p α β).symm (x, 0)‖₊ = ‖x‖₊ := by
   induction p using ENNReal.recTopCoe generalizing hp with
   | top =>
-    simp_rw [nnnorm_eq_ciSup, equiv_symm_apply]
-    refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => _) fun n hn => ⟨i, hn.trans_eq _⟩
-    · obtain rfl | hij := Decidable.eq_or_ne i j
-      · rw [Pi.single_eq_same]
-      · rw [Pi.single_eq_of_ne' hij, nnnorm_zero]
-        exact zero_le _
-    · rw [Pi.single_eq_same]
+    simp [nnnorm_eq_sup]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := by
       exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
-    rw [nnnorm_eq_sum ENNReal.coe_ne_top, ENNReal.coe_toReal, Fintype.sum_eq_single i,
-      equiv_symm_apply, Pi.single_eq_same, ← NNReal.rpow_mul, one_div, mul_inv_cancel hp0,
-      NNReal.rpow_one]
-    intro j hij
-    rw [equiv_symm_apply, Pi.single_eq_of_ne hij, nnnorm_zero, NNReal.zero_rpow hp0]
+    simp [nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
-theorem norm_equiv_symm_single (i : ι) (b : β i) : ‖(ProdLp.equiv p β).symm (Pi.single i b)‖ = ‖b‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_single p β i b
+theorem nnnorm_equiv_symm_snd [hp : Fact (1 ≤ p)] (y : β) :
+    ‖(ProdLp.equiv p α β).symm (0, y)‖₊ = ‖y‖₊ := by
+  induction p using ENNReal.recTopCoe generalizing hp with
+  | top =>
+    simp [nnnorm_eq_sup]
+  | coe p =>
+    have hp0 : (p : ℝ) ≠ 0 := by
+      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
+    simp [nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
-theorem nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
-    nndist ((ProdLp.equiv p β).symm (Pi.single i b₁)) ((ProdLp.equiv p β).symm (Pi.single i b₂)) =
-      nndist b₁ b₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← equiv_symm_sub, ← Pi.single_sub,
-    nnnorm_equiv_symm_single]
+theorem norm_equiv_symm_fst (x : α) : ‖(ProdLp.equiv p α β).symm (x, 0)‖ = ‖x‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_fst p α β x
 
 @[simp]
-theorem dist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
-    dist ((ProdLp.equiv p β).symm (Pi.single i b₁)) ((ProdLp.equiv p β).symm (Pi.single i b₂)) =
-      dist b₁ b₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_same p β i b₁ b₂
+theorem norm_equiv_symm_snd (y : β) : ‖(ProdLp.equiv p α β).symm (0, y)‖ = ‖y‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_snd p α β y
 
 @[simp]
-theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
-    edist ((ProdLp.equiv p β).symm (Pi.single i b₁)) ((ProdLp.equiv p β).symm (Pi.single i b₂)) =
-      edist b₁ b₂ := by
-  -- Porting note: was `simpa using`
-  simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
+theorem nndist_equiv_symm_single_fst (x₁ x₂ : α) :
+    nndist ((ProdLp.equiv p α β).symm (x₁, 0)) ((ProdLp.equiv p α β).symm (x₂, 0)) =
+      nndist x₁ x₂ := by
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← equiv_symm_sub, Prod.mk_sub_mk, sub_zero,
+    nnnorm_equiv_symm_fst]
+
+@[simp]
+theorem nndist_equiv_symm_single_snd (y₁ y₂ : β) :
+    nndist ((ProdLp.equiv p α β).symm (0, y₁)) ((ProdLp.equiv p α β).symm (0, y₂)) =
+      nndist y₁ y₂ := by
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← equiv_symm_sub, Prod.mk_sub_mk, sub_zero,
+    nnnorm_equiv_symm_snd]
+
+@[simp]
+theorem dist_equiv_symm_single_fst (x₁ x₂ : α) :
+    dist ((ProdLp.equiv p α β).symm (x₁, 0)) ((ProdLp.equiv p α β).symm (x₂, 0)) =
+      dist x₁ x₂ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_fst p α β x₁ x₂
+
+@[simp]
+theorem dist_equiv_symm_single_snd (y₁ y₂ : β) :
+    dist ((ProdLp.equiv p α β).symm (0, y₁)) ((ProdLp.equiv p α β).symm (0, y₂)) =
+      dist y₁ y₂ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_snd p α β y₁ y₂
+
+@[simp]
+theorem edist_equiv_symm_single_fst (x₁ x₂ : α) :
+    edist ((ProdLp.equiv p α β).symm (x₁, 0)) ((ProdLp.equiv p α β).symm (x₂, 0)) =
+      edist x₁ x₂ := by
+  simp only [edist_nndist, nndist_equiv_symm_single_fst p α β x₁ x₂]
+
+@[simp]
+theorem edist_equiv_symm_single_snd (y₁ y₂ : β) :
+    edist ((ProdLp.equiv p α β).symm (0, y₁)) ((ProdLp.equiv p α β).symm (0, y₂)) =
+      edist y₁ y₂ := by
+  simp only [edist_nndist, nndist_equiv_symm_single_snd p α β y₁ y₂]
 
 end Single
 
-/-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
-the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`ProdLp.nnnorm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
-`Nonempty ι`. -/
-theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
-    ‖(ProdLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖₊ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
-  rcases p.dichotomy with (h | h)
-  · exact False.elim (hp h)
-  · have ne_zero : p.toReal ≠ 0 := (zero_lt_one.trans_le h).ne'
-    simp_rw [nnnorm_eq_sum hp, equiv_symm_apply, Function.const_apply, Finset.sum_const,
-      Finset.card_univ, nsmul_eq_mul, NNReal.mul_rpow, ← NNReal.rpow_mul,
-      mul_one_div_cancel ne_zero, NNReal.rpow_one, ENNReal.toReal_div, ENNReal.one_toReal]
-
-/-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
-the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`ProdLp.nnnorm_equiv_symm_const` for a version which exchanges the hypothesis `Nonempty ι`.
-for `p ≠ ∞`. -/
-theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
-    ‖(ProdLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖₊ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
-  clear x y -- Porting note: added to avoid spurious arguments
-  rcases em <| p = ∞ with (rfl | hp)
-  · simp only [equiv_symm_apply, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero, one_mul,
-      nnnorm_eq_ciSup, Function.const_apply, ciSup_const]
-  · exact nnnorm_equiv_symm_const hp b
-
-/-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
-the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`ProdLp.norm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
-`Nonempty ι`. -/
-theorem norm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
-    ‖(ProdLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const hp b).trans <| by simp
-
-/-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
-the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`ProdLp.norm_equiv_symm_const` for a version which exchanges the hypothesis `Nonempty ι`.
-for `p ≠ ∞`. -/
-theorem norm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
-    ‖(ProdLp.equiv p fun _ : ι => β).symm (Function.const _ b)‖ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const' b).trans <| by simp
-
-theorem nnnorm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
-    ‖(ProdLp.equiv p fun _ : ι => β).symm 1‖₊ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
-  (nnnorm_equiv_symm_const hp (1 : β)).trans rfl
-
-theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
-    ‖(ProdLp.equiv p fun _ : ι => β).symm 1‖ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖ :=
-  (norm_equiv_symm_const hp (1 : β)).trans rfl
-
-variable (𝕜 p)
+variable (𝕜 p α β)
 
 /-- `ProdLp.equiv` as a linear equivalence. -/
 @[simps (config := { fullyApplied := false })]
-protected def linearEquiv : ProdLp p β ≃ₗ[𝕜] ∀ i, β i :=
+protected def linearEquiv : ProdLp p α β ≃ₗ[𝕜] α × β :=
   { LinearEquiv.refl _ _ with
-    toFun := ProdLp.equiv _ _
-    invFun := (ProdLp.equiv _ _).symm }
+    toFun := ProdLp.equiv _ _ _
+    invFun := (ProdLp.equiv _ _ _).symm }
 
 /-- `ProdLp.equiv` as a continuous linear equivalence. -/
 @[simps! (config := { fullyApplied := false }) apply symm_apply]
-protected def continuousLinearEquiv : ProdLp p β ≃L[𝕜] ∀ i, β i where
-  toLinearEquiv := ProdLp.linearEquiv _ _ _
-  continuous_toFun := continuous_equiv _ _
-  continuous_invFun := continuous_equiv_symm _ _
-
-section Basis
-
-variable (ι)
-
-/-- A version of `Pi.basisFun` for `ProdLp`. -/
-def basisFun : Basis ι 𝕜 (ProdLp p fun _ : ι => 𝕜) :=
-  Basis.ofEquivFun (ProdLp.linearEquiv p 𝕜 fun _ : ι => 𝕜)
-
-@[simp]
-theorem basisFun_apply [DecidableEq ι] (i) :
-    basisFun p 𝕜 ι i = (ProdLp.equiv p _).symm (Pi.single i 1) := by
-  simp_rw [basisFun, Basis.coe_ofEquivFun, ProdLp.linearEquiv_symm_apply, Pi.single]
-
-@[simp]
-theorem basisFun_repr (x : ProdLp p fun _ : ι => 𝕜) (i : ι) : (basisFun p 𝕜 ι).repr x i = x i :=
-  rfl
-
-@[simp]
-theorem basisFun_equivFun : (basisFun p 𝕜 ι).equivFun = ProdLp.linearEquiv p 𝕜 fun _ : ι => 𝕜 :=
-  Basis.equivFun_ofEquivFun _
-
-theorem basisFun_eq_pi_basisFun :
-    basisFun p 𝕜 ι = (Pi.basisFun 𝕜 ι).map (ProdLp.linearEquiv p 𝕜 fun _ : ι => 𝕜).symm :=
-  rfl
-
-@[simp]
-theorem basisFun_map :
-    (basisFun p 𝕜 ι).map (ProdLp.linearEquiv p 𝕜 fun _ : ι => 𝕜) = Pi.basisFun 𝕜 ι :=
-  rfl
-
-open Matrix
-
-nonrec theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (ProdLp p fun _ : ι => 𝕜))
-    (A : Matrix ι ι 𝕜) :
-    b.toMatrix (ProdLp.basisFun _ _ _) ⬝ A =
-      Matrix.of fun i j => b.repr ((ProdLp.equiv _ _).symm (Aᵀ j)) i := by
-  have := basis_toMatrix_basisFun_mul (b.map (ProdLp.linearEquiv _ 𝕜 _)) A
-  simp_rw [← ProdLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
-    ProdLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp, Basis.map_apply,
-    LinearEquiv.symm_apply_apply] at this
-  exact this
-
-end Basis
+protected def continuousLinearEquiv : ProdLp p α β ≃L[𝕜] α × β where
+  toLinearEquiv := ProdLp.linearEquiv _ _ _ _
+  continuous_toFun := continuous_equiv _ _ _
+  continuous_invFun := continuous_equiv_symm _ _ _
 
 end ProdLp
