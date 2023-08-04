@@ -83,7 +83,7 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 
 open Set
 
-variable {ι : Type _} (M : ι → Type _) [∀ i, Monoid (M i)]
+variable {ι : Type*} (M : ι → Type*) [∀ i, Monoid (M i)]
 
 /-- A relation on the free monoid on alphabet `Σ i, M i`,
 relating `⟨i, 1⟩` with `1` and `⟨i, x⟩ * ⟨i, y⟩` with `⟨i, x * y⟩`. -/
@@ -94,7 +94,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) �
 #align free_product.rel Monoid.CoprodI.Rel
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
-def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
+def Monoid.CoprodI : Type* := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
 --Porting note: could not de derived
@@ -132,7 +132,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
   rfl
 #align free_product.of_apply Monoid.CoprodI.of_apply
 
-variable {N : Type _} [Monoid N]
+variable {N : Type*} [Monoid N]
 
 /-- See note [partially-applied ext lemmas]. -/
 --Porting note: higher `ext` priority
@@ -220,7 +220,7 @@ theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
 
 section Group
 
-variable (G : ι → Type _) [∀ i, Group (G i)]
+variable (G : ι → Type*) [∀ i, Group (G i)]
 
 instance : Inv (CoprodI G)
     where inv :=
@@ -493,7 +493,7 @@ variable (M)
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
 --@[nolint has_nonempty_instance] Porting note: commented out
-inductive NeWord : ι → ι → Type _
+inductive NeWord : ι → ι → Type*
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
 #align free_product.neword Monoid.CoprodI.NeWord
@@ -674,7 +674,7 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
 
 section Group
 
-variable {G : ι → Type _} [∀ i, Group (G i)]
+variable {G : ι → Type*} [∀ i, Group (G i)]
 
 /-- The inverse of a non-empty reduced word -/
 def inv : ∀ {i j} (_w : NeWord G i j), NeWord G j i
@@ -709,9 +709,9 @@ open Cardinal
 
 variable [hnontriv : Nontrivial ι]
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {H : ι → Type _} [∀ i, Group (H i)]
+variable {H : ι → Type*} [∀ i, Group (H i)]
 
 variable (f : ∀ i, H i →* G)
 
@@ -719,7 +719,7 @@ variable (f : ∀ i, H i →* G)
 variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 
 -- A group action on α, and the ping-pong sets
-variable {α : Type _} [MulAction G α]
+variable {α : Type*} [MulAction G α]
 
 variable (X : ι → Set α)
 
@@ -843,7 +843,7 @@ end PingPongLemma
 
 /-- The free product of free groups is itself a free group -/
 @[simps!]  --Porting note: added `!`
-instance {ι : Type _} (G : ι → Type _) [∀ i, Group (G i)] [hG : ∀ i, IsFreeGroup (G i)] :
+instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [hG : ∀ i, IsFreeGroup (G i)] :
     IsFreeGroup (CoprodI G) where
   Generators := Σi, IsFreeGroup.Generators (G i)
   MulEquiv' :=
@@ -879,7 +879,7 @@ variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
 
 -- A group action on α, and the ping-pong sets
-variable {α : Type _} [MulAction G α]
+variable {α : Type*} [MulAction G α]
 
 variable (X Y : ι → Set α)
 
@@ -920,7 +920,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   -- Step two: Invoke the ping-pong lemma for free products
   show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
-  let H : ι → Type _ := fun _i => FreeGroup Unit
+  let H : ι → Type* := fun _i => FreeGroup Unit
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
   let X' : ι → Set α := fun i => X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'

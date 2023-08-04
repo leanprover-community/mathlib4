@@ -256,7 +256,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
 
 /-- This cannot be a `simp` lemmas as it incorrectly matches against `e : α ≃ synonym α`, when
 `synonym α` is semireducible. This makes a mess of `Multiplicative.ofAdd` etc. -/
-theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
+theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
   rw [Perm.subsingleton_eq_refl e, coe_refl]
 #align equiv.perm.coe_subsingleton Equiv.Perm.coe_subsingleton
 
@@ -416,7 +416,7 @@ def equivCongr (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) w
 
 section permCongr
 
-variable {α' β' : Type _} (e : α' ≃ β')
+variable {α' β' : Type*} (e : α' ≃ β')
 
 /-- If `α` is equivalent to `β`, then `Perm α` is equivalent to `Perm β`. -/
 def permCongr : Perm α' ≃ Perm β' := equivCongr e e
@@ -538,12 +538,12 @@ because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
 -/
 -- porting note: removing `congr` attribute
 @[simps! apply]
-def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) :=
+def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) :=
   Equiv.arrowCongr hα hβ
 #align equiv.arrow_congr' Equiv.arrowCongr'
 #align equiv.arrow_congr'_apply Equiv.arrowCongr'_apply
 
-@[simp] theorem arrowCongr'_refl {α β : Type _} :
+@[simp] theorem arrowCongr'_refl {α β : Type*} :
     arrowCongr' (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) := rfl
 #align equiv.arrow_congr'_refl Equiv.arrowCongr'_refl
 
@@ -666,7 +666,7 @@ section
 
 /-- A `PSigma`-type is equivalent to the corresponding `Sigma`-type. -/
 @[simps apply symm_apply]
-def psigmaEquivSigma {α} (β : α → Type _) : (Σ' i, β i) ≃ Σ i, β i where
+def psigmaEquivSigma {α} (β : α → Type*) : (Σ' i, β i) ≃ Σ i, β i where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
   left_inv _ := rfl
@@ -717,7 +717,7 @@ theorem psigmaCongrRight_refl {α} {β : α → Sort _} :
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ a, β₁ a` and
 `Σ a, β₂ a`. -/
 @[simps apply]
-def sigmaCongrRight {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) : (Σ a, β₁ a) ≃ Σ a, β₂ a where
+def sigmaCongrRight {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) : (Σ a, β₁ a) ≃ Σ a, β₂ a where
   toFun a := ⟨a.1, F a.1 a.2⟩
   invFun a := ⟨a.1, (F a.1).symm a.2⟩
   left_inv | ⟨a, b⟩ => congr_arg (Sigma.mk a) <| symm_apply_apply (F a) b
@@ -726,19 +726,19 @@ def sigmaCongrRight {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ �
 #align equiv.sigma_congr_right_apply Equiv.sigmaCongrRight_apply
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type _}
+theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) =
       sigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.sigma_congr_right_trans Equiv.sigmaCongrRight_trans
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) :
+theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.sigma_congr_right_symm Equiv.sigmaCongrRight_symm
 
 -- Porting note: simp can now prove this, so I have removed `@[simp]`
-theorem sigmaCongrRight_refl {α} {β : α → Type _} :
+theorem sigmaCongrRight_refl {α} {β : α → Type*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 #align equiv.sigma_congr_right_refl Equiv.sigmaCongrRight_refl
 
@@ -820,7 +820,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
 @[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
-def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
+def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 #align equiv.sigma_equiv_prod_apply Equiv.sigmaEquivProd_apply
 #align equiv.sigma_equiv_prod_symm_apply Equiv.sigmaEquivProd_symm_apply
@@ -833,7 +833,7 @@ def sigmaEquivProdOfEquiv {α β} {β₁ : α → Sort _} (F : ∀ a, β₁ a �
 #align equiv.sigma_equiv_prod_of_equiv Equiv.sigmaEquivProdOfEquiv
 
 /-- Dependent product of types is associative up to an equivalence. -/
-def sigmaAssoc {α : Type _} {β : α → Type _} (γ : ∀ a : α, β a → Type _) :
+def sigmaAssoc {α : Type*} {β : α → Type*} (γ : ∀ a : α, β a → Type*) :
     (Σ ab : Σ a : α, β a, γ ab.1 ab.2) ≃ Σ a : α, Σ b : β a, γ a b where
   toFun x := ⟨x.1.1, ⟨x.1.2, x.2⟩⟩
   invFun x := ⟨⟨x.1, x.2.1⟩, x.2.2⟩

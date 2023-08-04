@@ -177,7 +177,7 @@ Additive operators and scalar multiplication operate elementwise. -/
 
 section Additive
 
-variable {T : Type _} {S : Type _} {R : Type u} {M : Type v}
+variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
 
 instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   instInhabitedProd
@@ -724,7 +724,7 @@ end Mul
 
 section Algebra
 
-variable (S : Type _) (R R' : Type u) (M : Type v)
+variable (S : Type*) (R R' : Type u) (M : Type v)
 
 variable [CommSemiring S] [Semiring R] [CommSemiring R'] [AddCommMonoid M]
 
@@ -793,7 +793,7 @@ theorem algHom_ext' {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'
   algHom_ext <| LinearMap.congr_fun h
 #align triv_sq_zero_ext.alg_hom_ext' TrivSqZeroExt.algHom_ext'
 
-variable {A : Type _} [Semiring A] [Algebra R' A]
+variable {A : Type*} [Semiring A] [Algebra R' A]
 
 /-- There is an alg_hom from the trivial square zero extension to any `R`-algebra with a submodule
 whose products are all zero.

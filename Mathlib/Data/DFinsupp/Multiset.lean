@@ -18,7 +18,7 @@ Note that this provides a computable alternative to `Finsupp.toMultiset`.
 
 open Function
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 namespace DFinsupp
 

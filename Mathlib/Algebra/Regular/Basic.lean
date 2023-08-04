@@ -28,7 +28,7 @@ The final goal is to develop part of the API to prove, eventually, results about
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Mul
 
@@ -54,7 +54,7 @@ def IsRightRegular (c : R) :=
 
 /-- An add-regular element is an element `c` such that addition by `c` both on the left and
 on the right is injective. -/
-structure IsAddRegular {R : Type _} [Add R] (c : R) : Prop where
+structure IsAddRegular {R : Type*} [Add R] (c : R) : Prop where
   /-- An add-regular element `c` is left-regular -/
   left : IsAddLeftRegular c -- Porting note: It seems like to_additive is misbehaving
   /-- An add-regular element `c` is right-regular -/

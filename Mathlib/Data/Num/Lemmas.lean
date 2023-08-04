@@ -30,7 +30,7 @@ attribute [local simp] add_assoc
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_one [One α] [Add α] : ((1 : PosNum) : α) = 1 :=
@@ -200,7 +200,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -514,7 +514,7 @@ end Num
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Num
 
@@ -708,7 +708,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -831,7 +831,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -1026,7 +1026,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -1175,7 +1175,7 @@ end ZNum
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
@@ -1223,7 +1223,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp]
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : Num, (sub' m n : α) = m - n
@@ -1315,7 +1315,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n

@@ -50,7 +50,7 @@ subsemigroup, subsemigroups
 
 
 -- Only needed for notation
-variable {M : Type _} {N : Type _} {A : Type _}
+variable {M : Type*} {N : Type*} {A : Type*}
 
 section NonAssoc
 
@@ -59,7 +59,7 @@ variable [Mul M] {s : Set M}
 variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
-class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] : Prop where
+class MulMemClass (S : Type*) (M : Type*) [Mul M] [SetLike S M] : Prop where
   /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 #align mul_mem_class MulMemClass
@@ -67,7 +67,7 @@ class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] : Prop where
 export MulMemClass (mul_mem)
 
 /-- `AddMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
-class AddMemClass (S : Type _) (M : Type _) [Add M] [SetLike S M] : Prop where
+class AddMemClass (S : Type*) (M : Type*) [Add M] [SetLike S M] : Prop where
   /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 #align add_mem_class AddMemClass
@@ -77,7 +77,7 @@ export AddMemClass (add_mem)
 attribute [to_additive] MulMemClass
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
-structure Subsemigroup (M : Type _) [Mul M] where
+structure Subsemigroup (M : Type*) [Mul M] where
   /-- The carrier of a subsemigroup. -/
   carrier : Set M
   /-- The product of two elements of a subsemigroup belongs to the subsemigroup. -/
@@ -85,7 +85,7 @@ structure Subsemigroup (M : Type _) [Mul M] where
 #align subsemigroup Subsemigroup
 
 /-- An additive subsemigroup of an additive magma `M` is a subset closed under addition. -/
-structure AddSubsemigroup (M : Type _) [Add M] where
+structure AddSubsemigroup (M : Type*) [Add M] where
   /-- The carrier of an additive subsemigroup. -/
   carrier : Set M
   /-- The sum of two elements of an additive subsemigroup belongs to the subsemigroup. -/

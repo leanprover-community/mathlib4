@@ -30,7 +30,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Heyting
 
@@ -101,7 +101,7 @@ def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : B
 variable (α)
 
 /-- The boolean algebra of Heyting regular elements. -/
-def Regular : Type _ :=
+def Regular : Type* :=
   { a : α // IsRegular a }
 #align heyting.regular Heyting.Regular
 

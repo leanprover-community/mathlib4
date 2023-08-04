@@ -223,7 +223,7 @@ theorem ext' (x y : M F) (H : ∀ i : ℕ, x.approx i = y.approx i) : x = y := b
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ext' PFunctor.M.ext'
 
-variable {X : Type _}
+variable {X : Type*}
 
 variable (f : X → F.Obj X)
 
@@ -710,7 +710,7 @@ end Bisim
 universe u' v'
 
 /-- corecursor for `M F` with swapped arguments -/
-def corecOn {X : Type _} (x₀ : X) (f : X → F.Obj X) : M F :=
+def corecOn {X : Type*} (x₀ : X) (f : X → F.Obj X) : M F :=
   M.corec f x₀
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_on PFunctor.M.corecOn
@@ -740,7 +740,7 @@ theorem bisim (R : M P → M P → Prop)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim PFunctor.M.bisim
 
-theorem bisim' {α : Type _} (Q : α → Prop) (u v : α → M P)
+theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
     (h : ∀ x, Q x → ∃ a f f',
           M.dest (u x) = ⟨a, f⟩
           ∧ M.dest (v x) = ⟨a, f'⟩

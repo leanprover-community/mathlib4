@@ -45,7 +45,7 @@ on `Set`s.
 
 open Set Pointwise
 
-variable {α : Type _} {G : Type _} {M : Type _} {R : Type _} {A : Type _}
+variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
 
 variable [Monoid M] [AddMonoid A]
 
@@ -96,7 +96,7 @@ theorem sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K
 #align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure
 
 @[to_additive]
-theorem pow_smul_mem_closure_smul {N : Type _} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
+theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   refine' @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx _ _ _
   · intro x hx
@@ -338,7 +338,7 @@ theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} : S
 end GroupWithZero
 
 @[to_additive]
-theorem mem_closure_inv {G : Type _} [Group G] (S : Set G) (x : G) :
+theorem mem_closure_inv {G : Type*} [Group G] (S : Set G) (x : G) :
     x ∈ Submonoid.closure S⁻¹ ↔ x⁻¹ ∈ Submonoid.closure S := by rw [closure_inv, mem_inv]
 #align submonoid.mem_closure_inv Submonoid.mem_closure_inv
 #align add_submonoid.mem_closure_neg AddSubmonoid.mem_closure_neg

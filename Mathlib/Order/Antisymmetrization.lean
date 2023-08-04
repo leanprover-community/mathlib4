@@ -29,7 +29,7 @@ such that `a ≤ b` and `b ≤ a`.
 
 open Function OrderDual
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section Relation
 
@@ -89,7 +89,7 @@ def AntisymmRel.setoid : Setoid α :=
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
-def Antisymmetrization : Type _ :=
+def Antisymmetrization : Type* :=
   Quotient <| AntisymmRel.setoid α r
 #align antisymmetrization Antisymmetrization
 

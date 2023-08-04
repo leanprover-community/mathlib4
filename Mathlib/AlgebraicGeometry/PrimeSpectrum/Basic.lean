@@ -496,7 +496,7 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
 #align prime_spectrum.vanishing_ideal_strict_anti_mono_iff PrimeSpectrum.vanishingIdeal_strict_anti_mono_iff
 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
-def closedsEmbedding (R : Type _) [CommRing R] :
+def closedsEmbedding (R : Type*) [CommRing R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
   OrderEmbedding.ofMapLEIff (fun s => vanishingIdeal <| OrderDual.ofDual s) fun s _ =>
     (vanishingIdeal_anti_mono_iff s.2).symm
@@ -569,7 +569,7 @@ instance quasiSober : QuasiSober (PrimeSpectrum R) :=
 
 section Comap
 
-variable {S' : Type _} [CommRing S']
+variable {S' : Type*} [CommRing S']
 
 theorem preimage_comap_zeroLocus_aux (f : R →+* S) (s : Set R) :
     (fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩ : PrimeSpectrum S → PrimeSpectrum R) ⁻¹'
@@ -946,7 +946,7 @@ instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
 
-instance {R : Type _} [Field R] : Unique (PrimeSpectrum R) where
+instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
   uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 

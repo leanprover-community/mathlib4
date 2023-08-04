@@ -26,7 +26,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.MonoidalCategory
 
-variable (C : Type _) [Category C] [Preadditive C] [MonoidalCategory C]
+variable (C : Type*) [Category C] [Preadditive C] [MonoidalCategory C]
 
 /-- A category is `MonoidalPreadditive` if tensoring is additive in both factors.
 
@@ -92,7 +92,7 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
 
 open BigOperators
 
-theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
+theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by
   rw [← tensor_id_comp_id_tensor]
   let tQ := (((tensoringLeft C).obj Q).mapAddHom : (R ⟶ S) →+ _)
@@ -102,7 +102,7 @@ theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : 
   simp only [tensor_id_comp_id_tensor]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
 
-theorem sum_tensor {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
+theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f := by
   rw [← tensor_id_comp_id_tensor]
   let tQ := (((tensoringRight C).obj P).mapAddHom : (R ⟶ S) →+ _)
@@ -256,7 +256,7 @@ theorem rightDistributor_assoc {J : Type} [Fintype J] (f : J → C) (X Y : C) :
   simp only [← tensor_id, associator_inv_naturality, Iso.hom_inv_id_assoc]
 #align category_theory.right_distributor_assoc CategoryTheory.rightDistributor_assoc
 
-theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J]
+theorem leftDistributor_rightDistributor_assoc {J : Type*} [Fintype J]
     (X : C) (f : J → C) (Y : C) :
     (leftDistributor X f ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
       α_ X (⨁ f) Y ≪≫

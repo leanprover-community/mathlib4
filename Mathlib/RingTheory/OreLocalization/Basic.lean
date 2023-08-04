@@ -44,7 +44,7 @@ open OreLocalization
 
 namespace OreLocalization
 
-variable (R : Type _) [Monoid R] (S : Submonoid R) [OreSet S]
+variable (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
 def oreEqv : Setoid (R × S) where
@@ -71,7 +71,7 @@ def oreEqv : Setoid (R × S) where
 end OreLocalization
 
 /-- The ore localization of a monoid and a submonoid fulfilling the ore condition. -/
-def OreLocalization (R : Type _) [Monoid R] (S : Submonoid R) [OreSet S] :=
+def OreLocalization (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S] :=
   Quotient (OreLocalization.oreEqv R S)
 #align ore_localization OreLocalization
 
@@ -79,7 +79,7 @@ namespace OreLocalization
 
 section Monoid
 
-variable {R : Type _} [Monoid R] {S : Submonoid R}
+variable {R : Type*} [Monoid R] {S : Submonoid R}
 
 variable (R S) [OreSet S]
 
@@ -375,7 +375,7 @@ theorem numerator_isUnit (s : S) : IsUnit (numeratorHom (s : R) : R[S⁻¹]) :=
 
 section UMP
 
-variable {T : Type _} [Monoid T]
+variable {T : Type*} [Monoid T]
 
 variable (f : R →* T) (fS : S →* Units T)
 
@@ -436,7 +436,7 @@ end Monoid
 
 section CommMonoid
 
-variable {R : Type _} [CommMonoid R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [CommMonoid R] {S : Submonoid R} [OreSet S]
 
 theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
     r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r₁ * r₂ /ₒ (s₁ * s₂) := by
@@ -489,7 +489,7 @@ end CommMonoid
 
 section Semiring
 
-variable {R : Type _} [Semiring R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 
 private def add'' (r₁ : R) (s₁ : S) (r₂ : R) (s₂ : S) : R[S⁻¹] :=
   (r₁ * oreDenom (s₁ : R) s₂ + r₂ * oreNum (s₁ : R) s₂) /ₒ (s₁ * oreDenom (s₁ : R) s₂)
@@ -749,7 +749,7 @@ instance : Semiring R[S⁻¹] :=
 
 section UMP
 
-variable {T : Type _} [Semiring T]
+variable {T : Type*} [Semiring T]
 
 variable (f : R →+* T) (fS : S →* Units T)
 
@@ -827,7 +827,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
 
 /-- Negation on the Ore localization is defined via negation on the numerator. -/
 protected def neg : R[S⁻¹] → R[S⁻¹] :=
@@ -878,7 +878,7 @@ open nonZeroDivisors
 
 open Classical
 
-variable {R : Type _} [Ring R] [Nontrivial R] [OreSet R⁰]
+variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
 
 instance nontrivial : Nontrivial R[R⁰⁻¹] :=
   nontrivial_of_nonZeroDivisors (refl R⁰)

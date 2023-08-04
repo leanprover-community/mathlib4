@@ -20,7 +20,7 @@ and an induction principle `WellFounded.induction_bot`.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace WellFounded
 

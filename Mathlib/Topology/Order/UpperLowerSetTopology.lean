@@ -57,7 +57,7 @@ upper set topology, lower set topology, preorder, Alexandrov
 -/
 
 
-variable (α β : Type _)
+variable (α β : Type*)
 
 section preorder
 
@@ -224,7 +224,7 @@ def UpperLowerSet_toOrderDualHomeomorph [Preorder α] :
 The upper set topology is the topology where the open sets are the upper sets. In general the upper
 set topology does not coincide with the upper topology.
 -/
-class UpperSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+class UpperSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperSetTopology : t = upperSetTopology' α
 
 instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) := ⟨rfl⟩
@@ -239,7 +239,7 @@ instance [Preorder α] : @UpperSetTopology α (upperSetTopology' α) _ := by
 The lower set topology is the topology where the open sets are the lower sets. In general the lower
 set topology does not coincide with the lower topology.
 -/
-class LowerSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+class LowerSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_lowerSetTopology : t = lowerSetTopology' α
 
 instance [Preorder α] : LowerSetTopology (WithLowerSetTopology α) := ⟨rfl⟩

@@ -16,7 +16,7 @@ This file defines the lexicographic order on `DFinsupp`.
 -/
 
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 

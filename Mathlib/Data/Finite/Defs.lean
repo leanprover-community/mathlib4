@@ -34,7 +34,7 @@ instead.
 ## Implementation notes
 
 The definition of `Finite α` is not just `Nonempty (Fintype α)` since `Fintype` requires
-that `α : Type _`, and the definition in this module allows for `α : Sort*`. This means
+that `α : Type*`, and the definition in this module allows for `α : Sort*`. This means
 we can write the instance `Finite.prop`.
 
 ## Tags

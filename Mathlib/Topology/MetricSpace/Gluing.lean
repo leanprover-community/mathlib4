@@ -307,7 +307,7 @@ namespace Sigma
 
 /- Copy of the previous paragraph, but for arbitrary disjoint unions instead of the disjoint union
 of two spaces. I.e., work with sigma types instead of sum types. -/
-variable {ι : Type _} {E : ι → Type _} [∀ i, MetricSpace (E i)]
+variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
 open Classical
 
@@ -490,7 +490,7 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
 space `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
-def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
+def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type* :=
   @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 #align metric.glue_space Metric.GlueSpace
 
@@ -622,7 +622,7 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n
 attribute [local instance] inductivePremetric
 
 /-- The type giving the inductive limit in a metric space context. -/
-def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
+def InductiveLimit (I : ∀ n, Isometry (f n)) : Type* :=
   @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 #align metric.inductive_limit Metric.InductiveLimit
 

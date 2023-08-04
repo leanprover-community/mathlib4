@@ -19,7 +19,7 @@ well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a
 -/
 
 
-variable {α R : Type _}
+variable {α R : Type*}
 
 open Filter Set Function
 

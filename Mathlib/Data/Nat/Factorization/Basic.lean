@@ -230,7 +230,7 @@ theorem factorization_mul_support {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 /-- If a product over `n.factorization` doesn't use the multiplicities of the prime factors
 then it's equal to the corresponding product over `n.factors.toFinset` -/
-theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid β] (f : ℕ → β) :
+theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type*} [CommMonoid β] (f : ℕ → β) :
     (n.factorization.prod fun p _ => f p) = ∏ p in n.factors.toFinset, f p := by
   apply prod_congr support_factorization
   simp
@@ -239,7 +239,7 @@ theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid �
 /-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : Finset α`,
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
 Generalises `factorization_mul`, which is the special case where `S.card = 2` and `g = id`. -/
-theorem factorization_prod {α : Type _} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
+theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
     ext p
@@ -692,7 +692,7 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.factorization_lcm Nat.factorization_lcm
 
 @[to_additive sum_factors_gcd_add_sum_factors_mul]
-theorem prod_factors_gcd_mul_prod_factors_mul {β : Type _} [CommMonoid β] (m n : ℕ) (f : ℕ → β) :
+theorem prod_factors_gcd_mul_prod_factors_mul {β : Type*} [CommMonoid β] (m n : ℕ) (f : ℕ → β) :
     (m.gcd n).factors.toFinset.prod f * (m * n).factors.toFinset.prod f =
       m.factors.toFinset.prod f * n.factors.toFinset.prod f := by
   rcases eq_or_ne n 0 with (rfl | hm0)
@@ -863,7 +863,7 @@ noncomputable def recOnMul {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1) (hp : ∀ 
 
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-theorem multiplicative_factorization {β : Type _} [CommMonoid β] (f : ℕ → β)
+theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
     ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
@@ -883,7 +883,7 @@ theorem multiplicative_factorization {β : Type _} [CommMonoid β] (f : ℕ → 
 
 /-- For any multiplicative function `f` with `f 1 = 1` and `f 0 = 1`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-theorem multiplicative_factorization' {β : Type _} [CommMonoid β] (f : ℕ → β)
+theorem multiplicative_factorization' {β : Type*} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
     ∀ {n : ℕ}, f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime

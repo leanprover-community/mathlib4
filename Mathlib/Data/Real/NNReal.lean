@@ -241,35 +241,35 @@ def toRealHom : ℝ≥0 →+* ℝ where
 section Actions
 
 /-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
-instance {M : Type _} [MulAction ℝ M] : MulAction ℝ≥0 M :=
+instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
   MulAction.compHom M toRealHom.toMonoidHom
 
-theorem smul_def {M : Type _} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
+theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
   rfl
 #align nnreal.smul_def NNReal.smul_def
 
-instance {M N : Type _} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
+instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ) : _)
 
-instance smulCommClass_left {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
+instance smulCommClass_left {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ) : _)
 #align nnreal.smul_comm_class_left NNReal.smulCommClass_left
 
-instance smulCommClass_right {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
+instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ) : _)
 #align nnreal.smul_comm_class_right NNReal.smulCommClass_right
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
-instance {M : Type _} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
+instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
   DistribMulAction.compHom M toRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
-instance {M : Type _} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
+instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
 -- porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
-instance {A : Type _} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
+instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]

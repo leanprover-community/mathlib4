@@ -41,7 +41,7 @@ attribute [-instance] SpecialLinearGroup.instCoeFun
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
 Defined as a subtype of matrices-/
 abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [CommRing R] :
-    Type _ :=
+    Type* :=
   (Matrix n n R)ˣ
 #align matrix.general_linear_group Matrix.GeneralLinearGroup
 
@@ -90,7 +90,7 @@ noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :
 #align matrix.general_linear_group.mk'' Matrix.GeneralLinearGroup.mk''
 
 /-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`-/
-def mkOfDetNeZero {K : Type _} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
+def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 #align matrix.general_linear_group.mk_of_det_ne_zero Matrix.GeneralLinearGroup.mkOfDetNeZero
 

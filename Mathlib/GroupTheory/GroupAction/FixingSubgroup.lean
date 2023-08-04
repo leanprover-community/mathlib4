@@ -43,7 +43,7 @@ section Monoid
 
 open MulAction
 
-variable (M : Type _) {α : Type _} [Monoid M] [MulAction M α]
+variable (M : Type*) {α : Type*} [Monoid M] [MulAction M α]
 
 /-- The submonoid fixing a set under a `MulAction`. -/
 @[to_additive " The additive submonoid fixing a set under an `AddAction`. "]
@@ -107,7 +107,7 @@ section Group
 
 open MulAction
 
-variable (M : Type _) {α : Type _} [Group M] [MulAction M α]
+variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
 
 /-- The subgroup fixing a set under a `MulAction`. -/
 @[to_additive " The additive subgroup fixing a set under an `AddAction`. "]

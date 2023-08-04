@@ -66,7 +66,7 @@ nat and int actions.
 
 open Function
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -996,7 +996,7 @@ theorem univ_mul_univ : (univ : Set α) * univ = univ :=
 
 --TODO: `to_additive` trips up on the `1 : ℕ` used in the pattern-matching.
 @[simp]
-theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
+theorem nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => one_nsmul _
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]

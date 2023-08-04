@@ -144,7 +144,7 @@ variable {K} (C)
 
 -- We are not using @[simps] to avoid a timeout.
 /-- The equivalence between `L →ₐ[K] C` and `primitiveRoots n C` given by a primitive root `ζ`. -/
-noncomputable def embeddingsEquivPrimitiveRoots (C : Type _) [CommRing C] [IsDomain C] [Algebra K C]
+noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) : (L →ₐ[K] C) ≃ primitiveRoots n C :=
   (hζ.powerBasis K).liftEquiv.trans
     { toFun := fun x => by
@@ -169,7 +169,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type _) [CommRing C] [IsDom
 
 -- Porting note: renamed argument `φ`: "expected '_' or identifier"
 @[simp]
-theorem embeddingsEquivPrimitiveRoots_apply_coe (C : Type _) [CommRing C] [IsDomain C] [Algebra K C]
+theorem embeddingsEquivPrimitiveRoots_apply_coe (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) (φ' : L →ₐ[K] C) :
     (hζ.embeddingsEquivPrimitiveRoots C hirr φ' : C) = φ' ζ :=
   rfl
@@ -229,7 +229,7 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
 #align is_primitive_root.norm_eq_one IsPrimitiveRoot.norm_eq_one
 
 /-- If `K` is linearly ordered, the norm of a primitive root is `1` if `n` is odd. -/
-theorem norm_eq_one_of_linearly_ordered {K : Type _} [LinearOrderedField K] [Algebra K L]
+theorem norm_eq_one_of_linearly_ordered {K : Type*} [LinearOrderedField K] [Algebra K L]
     (hodd : Odd (n : ℕ)) : norm K ζ = 1 := by
   have hz := congr_arg (norm K) ((IsPrimitiveRoot.iff_def _ n).1 hζ).1
   rw [← (algebraMap K L).map_one, Algebra.norm_algebraMap, one_pow, map_pow, ← one_pow ↑n] at hz

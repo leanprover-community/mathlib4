@@ -27,14 +27,14 @@ open Set LinearMap
 
 open Classical Pointwise
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 /-! ### The dual cone -/
 
 
 section Dual
 
-variable {H : Type _} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
 
 open RealInnerProductSpace
 

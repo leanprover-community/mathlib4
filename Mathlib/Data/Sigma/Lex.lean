@@ -32,7 +32,7 @@ Related files are:
 
 namespace Sigma
 
-variable {ι : Type _} {α : ι → Type _} {r r₁ r₂ : ι → ι → Prop} {s s₁ s₂ : ∀ i, α i → α i → Prop}
+variable {ι : Type*} {α : ι → Type*} {r r₁ r₂ : ι → ι → Prop} {s s₁ s₂ : ∀ i, α i → α i → Prop}
   {a b : Σ i, α i}
 
 /-- The lexicographical order on a sigma type. It takes in a relation on the index type and a

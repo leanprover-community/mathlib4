@@ -32,8 +32,8 @@ Porting note: after the port, move these to their own file.
 -/
 namespace CategoryTheory.DifferentialObject
 
-variable {β : Type _} [AddCommGroup β] {b : β}
-variable {V : Type _} [Category V] [HasZeroMorphisms V]
+variable {β : Type*} [AddCommGroup β] {b : β}
+variable {V : Type*} [Category V] [HasZeroMorphisms V]
 variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
 /-- Since `eqToHom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
@@ -69,8 +69,8 @@ open CategoryTheory.DifferentialObject
 
 namespace HomologicalComplex
 
-variable {β : Type _} [AddCommGroup β] (b : β)
-variable (V : Type _) [Category V] [HasZeroMorphisms V]
+variable {β : Type*} [AddCommGroup β] (b : β)
+variable (V : Type*) [Category V] [HasZeroMorphisms V]
 
 -- Porting note: this should be moved to an earlier file.
 -- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version

@@ -26,7 +26,7 @@ Generalize all this file to affine spaces.
 -/
 
 
-variable {𝕜 E F β : Type _}
+variable {𝕜 E F β : Type*}
 
 open LinearMap Set
 
@@ -113,7 +113,7 @@ theorem Convex.prod {s : Set E} {t : Set F} (hs : Convex 𝕜 s) (ht : Convex �
     Convex 𝕜 (s ×ˢ t) := fun _ hx => (hs hx.1).prod (ht hx.2)
 #align convex.prod Convex.prod
 
-theorem convex_pi {ι : Type _} {E : ι → Type _} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
+theorem convex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
     {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → Convex 𝕜 (t i)) : Convex 𝕜 (s.pi t) :=
   fun _ hx => starConvex_pi fun _ hi => ht hi <| hx _ hi
 #align convex_pi convex_pi
@@ -646,7 +646,7 @@ end Submodule
 
 section Simplex
 
-variable (𝕜) (ι : Type _) [OrderedSemiring 𝕜] [Fintype ι]
+variable (𝕜) (ι : Type*) [OrderedSemiring 𝕜] [Fintype ι]
 
 /-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
 coordinates with total sum `1`. This is the free object in the category of convex spaces. -/

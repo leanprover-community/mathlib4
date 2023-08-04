@@ -142,7 +142,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
 -- Note: It might be possible to use Gleason for this instead
 /-- The sigma-type of extremally disconneted spaces is extremally disconnected -/
 instance instExtremallyDisconnected
-    {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [h₀ : ∀ i, ExtremallyDisconnected (π i)] :
+    {π : ι → Type*} [∀ i, TopologicalSpace (π i)] [h₀ : ∀ i, ExtremallyDisconnected (π i)] :
     ExtremallyDisconnected (Σi, π i) := by
   constructor
   intro s hs

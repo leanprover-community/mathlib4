@@ -43,7 +43,7 @@ namespace FirstOrder
 
 namespace Language
 
-variable {L : Language.{u, v}} {M : Type w} {N P : Type _}
+variable {L : Language.{u, v}} {M : Type w} {N P : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P]
 
@@ -138,7 +138,7 @@ end Substructure
 
 variable {S : L.Substructure M}
 
-theorem Term.realize_mem {α : Type _} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
+theorem Term.realize_mem {α : Type*} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
     t.realize xs ∈ S := by
   induction' t with a n f ts ih
   · exact h a
@@ -554,7 +554,7 @@ theorem closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s
 
 section GaloisCoinsertion
 
-variable {ι : Type _} {f : M →[L] N} (hf : Function.Injective f)
+variable {ι : Type*} {f : M →[L] N} (hf : Function.Injective f)
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
@@ -603,7 +603,7 @@ end GaloisCoinsertion
 
 section GaloisInsertion
 
-variable {ι : Type _} {f : M →[L] N} (hf : Function.Surjective f)
+variable {ι : Type*} {f : M →[L] N} (hf : Function.Surjective f)
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=

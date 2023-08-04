@@ -25,7 +25,7 @@ This file defines notions of a point in an affine space being between two given 
 -/
 
 
-variable (R : Type _) {V V' P P' : Type _}
+variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap
 
@@ -522,7 +522,7 @@ theorem Sbtw.trans_wbtw_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : 
 #align sbtw.trans_wbtw_right_ne Sbtw.trans_wbtw_right_ne
 
 theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZeroSMulDivisors R V]
-    {ι : Type _} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
+    {ι : Type*} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
     (hw : ∑ i in s, w i = 1) (hw₁ : ∑ i in s, w₁ i = 1) (hw₂ : ∑ i in s, w₂ i = 1)
     (h : s.affineCombination R p w ∈
       line[R, s.affineCombination R p w₁, s.affineCombination R p w₂])

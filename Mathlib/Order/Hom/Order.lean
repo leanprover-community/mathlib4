@@ -27,7 +27,7 @@ monotone map, bundled morphism
 
 namespace OrderHom
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section Preorder
 
@@ -130,7 +130,7 @@ instance [CompleteLattice β] : CompleteLattice (α →o β) :=
     sInf_le := fun s f hf x => iInf_le_of_le f (iInf_le _ hf)
     }
 
-theorem iterate_sup_le_sup_iff {α : Type _} [SemilatticeSup α] (f : α →o α) :
+theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α) :
     (∀ n₁ n₂ a₁ a₂, f^[n₁ + n₂] (a₁ ⊔ a₂) ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂) ↔
       ∀ a₁ a₂, f (a₁ ⊔ a₂) ≤ f a₁ ⊔ a₂ := by
   constructor <;> intro h

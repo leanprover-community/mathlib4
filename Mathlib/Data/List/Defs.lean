@@ -33,7 +33,7 @@ open Function Nat
 
 universe u v w x
 
-variable {α β γ δ ε ζ : Type _}
+variable {α β γ δ ε ζ : Type*}
 
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
@@ -90,14 +90,14 @@ def sum [Add α] [Zero α] : List α → α :=
 #align list.sum List.sum
 
 /-- The alternating sum of a list. -/
-def alternatingSum {G : Type _} [Zero G] [Add G] [Neg G] : List G → G
+def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
   | [] => 0
   | g :: [] => g
   | g :: h :: t => g + -h + alternatingSum t
 #align list.alternating_sum List.alternatingSum
 
 /-- The alternating product of a list. -/
-def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
+def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
   | [] => 1
   | g :: [] => g
   | g :: h :: t => g * h⁻¹ * alternatingProd t
@@ -447,7 +447,7 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β)
+protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type*} (f : α → F β)
     : List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs

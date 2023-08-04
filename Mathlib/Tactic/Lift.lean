@@ -94,7 +94,7 @@ open Lean Parser Tactic Elab Tactic Meta
 * More generally, this can lift an expression from `α` to `β` assuming that there is an instance
   of `CanLift α β`. In this case the proof obligation is specified by `CanLift.prf`.
 * Given an instance `CanLift β γ`, it can also lift `α → β` to `α → γ`; more generally, given
-  `β : Π a : α, Type _`, `γ : Π a : α, Type _`, and `[Π a : α, CanLift (β a) (γ a)]`, it
+  `β : Π a : α, Type*`, `γ : Π a : α, Type*`, and `[Π a : α, CanLift (β a) (γ a)]`, it
   automatically generates an instance `CanLift (Π a, β a) (Π a, γ a)`.
 
 `lift` is in some sense dual to the `zify` tactic. `lift (z : ℤ) to ℕ` will change the type of an

@@ -41,7 +41,7 @@ namespace SemiRingCat
 
 /-- `RingHom` doesn't actually assume associativity. This alias is needed to make the category
 theory machinery work. We use the same trick in `MonCat.AssocMonoidHom`. -/
-abbrev AssocRingHom (M N : Type _) [Semiring M] [Semiring N] :=
+abbrev AssocRingHom (M N : Type*) [Semiring M] [Semiring N] :=
   RingHom M N
 set_option linter.uppercaseLean3 false in
 #align SemiRing.assoc_ring_hom SemiRingCat.AssocRingHom
@@ -63,7 +63,7 @@ instance : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
   infer_instance
 
-instance : CoeSort SemiRingCat (Type _) where
+instance : CoeSort SemiRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
@@ -103,7 +103,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type*} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     (@FunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
@@ -181,7 +181,7 @@ instance : ConcreteCategory RingCat := by
   dsimp [RingCat]
   infer_instance
 
-instance : CoeSort RingCat (Type _) where
+instance : CoeSort RingCat (Type*) where
   coe X := X.α
 
 instance (X : RingCat) : Ring X := X.str
@@ -242,7 +242,7 @@ set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type*} [Ring X] [Ring Y] (e : X ≃+* Y) :
     (@FunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
@@ -282,7 +282,7 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type _) where
+instance : CoeSort CommSemiRingCat (Type*) where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
@@ -325,7 +325,7 @@ set_option linter.uppercaseLean3 false in
 #align CommSemiRing.of_hom CommSemiRingCat.ofHom
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type*} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
     (@FunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
       (fun _ => (forget CommSemiRingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
@@ -401,7 +401,7 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type _) where
+instance : CoeSort CommRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
@@ -441,7 +441,7 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.of_hom CommRingCat.ofHom
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type*} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
     (@FunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
@@ -600,7 +600,7 @@ theorem CommRingCat.comp_eq_ring_hom_comp {R S T : CommRingCat} (f : R ⟶ S) (g
 set_option linter.uppercaseLean3 false in
 #align CommRing.comp_eq_ring_hom_comp CommRingCat.comp_eq_ring_hom_comp
 
-theorem CommRingCat.ringHom_comp_eq_comp {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
+theorem CommRingCat.ringHom_comp_eq_comp {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     (f : R →+* S) (g : S →+* T) : g.comp f = CommRingCat.ofHom f ≫ CommRingCat.ofHom g :=
   rfl
 set_option linter.uppercaseLean3 false in

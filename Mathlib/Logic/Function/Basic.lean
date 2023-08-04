@@ -180,7 +180,7 @@ theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
     hf.surjective.comp⟩
 #align function.surjective.of_comp_iff' Function.Surjective.of_comp_iff'
 
-instance decidableEqPfun (p : Prop) [Decidable p] (α : p → Type _) [∀ hp, DecidableEq (α hp)] :
+instance decidableEqPfun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
     DecidableEq (∀ hp, α hp)
   | f, g => decidable_of_iff (∀ hp, f hp = g hp) funext_iff.symm
 
@@ -277,7 +277,7 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
-theorem cantor_injective {α : Type _} (f : Set α → α) : ¬Injective f
+theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
   | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
          RightInverse.surjective (λ U => Set.ext <| fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
@@ -817,7 +817,7 @@ theorem curry_apply {α β γ} (f : α × β → γ) (x : α) (y : β) : curry f
 
 section Bicomp
 
-variable {α β γ δ ε : Type _}
+variable {α β γ δ ε : Type*}
 
 /-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
 If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
@@ -846,12 +846,12 @@ end Bicomp
 
 section Uncurry
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 /-- Records a way to turn an element of `α` into a function from `β` to `γ`. The most generic use
 is to recursively uncurry. For instance `f : α → β → γ → δ` will be turned into
 `↿f : α × β × γ → δ`. One can also add instances for bundled maps. -/
-class HasUncurry (α : Type _) (β : outParam (Type _)) (γ : outParam (Type _)) where
+class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) where
   /-- Uncurrying operator. The most generic use is to recursively uncurry. For instance
   `f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
   for bundled maps.-/
@@ -937,7 +937,7 @@ protected theorem right (hf : Injective2 f) (a : α) : Function.Injective (f a) 
   fun _ _ h ↦ (hf h).right
 #align function.injective2.right Function.Injective2.right
 
-protected theorem uncurry {α β γ : Type _} {f : α → β → γ} (hf : Injective2 f) :
+protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Injective2 f) :
     Function.Injective (uncurry f) :=
   fun ⟨_, _⟩ ⟨_, _⟩ h ↦ (hf h).elim (congr_arg₂ _)
 #align function.injective2.uncurry Function.Injective2.uncurry
@@ -1016,18 +1016,18 @@ theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align cast_bijective cast_bijective
 
-/-! Note these lemmas apply to `Type _` not `Sort*`, as the latter interferes with `simp`, and
+/-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
 is trivial anyway.-/
 
 
 @[simp]
-theorem eq_rec_inj {α : Sort _} {a a' : α} (h : a = a') {C : α → Type _} (x y : C a) :
+theorem eq_rec_inj {α : Sort _} {a a' : α} (h : a = a') {C : α → Type*} (x y : C a) :
     (Eq.ndrec x h : C a') = Eq.ndrec y h ↔ x = y :=
   (eq_rec_on_bijective h).injective.eq_iff
 #align eq_rec_inj eq_rec_inj
 
 @[simp]
-theorem cast_inj {α β : Type _} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
+theorem cast_inj {α β : Type*} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
   (cast_bijective h).injective.eq_iff
 #align cast_inj cast_inj
 
@@ -1053,7 +1053,7 @@ theorem Function.LeftInverse.cast_eq {α β : Sort _} {γ : β → Sort v} {f : 
 
 /-- A set of functions "separates points"
 if for each pair of distinct points there is a function taking different values on them. -/
-def Set.SeparatesPoints {α β : Type _} (A : Set (α → β)) : Prop :=
+def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
   ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
 #align set.separates_points Set.SeparatesPoints
 
@@ -1066,10 +1066,10 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
   ⟨fun _ ↦ h.1 _, fun w ↦ h.symm w, fun h₁ h₂ ↦ InvImage.trans r f (fun _ _ _ ↦ h.trans) h₁ h₂⟩
 #align inv_image.equivalence InvImage.equivalence
 
-instance {α β : Type _} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
+instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
   Decidable (uncurry r x) :=
 ‹Decidable _›
 
-instance {α β : Type _} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
+instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
   Decidable (curry r a b) :=
 ‹Decidable _›

@@ -32,7 +32,7 @@ open BigOperators Classical Pointwise
 
 universe u u'
 
-variable {R E F ι ι' α : Type _} [LinearOrderedField R] [AddCommGroup E] [AddCommGroup F]
+variable {R E F ι ι' α : Type*} [LinearOrderedField R] [AddCommGroup E] [AddCommGroup F]
   [LinearOrderedAddCommGroup α] [Module R E] [Module R F] [Module R α] [OrderedSMul R α] {s : Set E}
 
 /-- Center of mass of a finite collection of points with prescribed weights.
@@ -230,7 +230,7 @@ theorem Finset.centerMass_id_mem_convexHull (t : Finset E) {w : E → R} (hw₀ 
   t.centerMass_mem_convexHull hw₀ hws fun _ => mem_coe.2
 #align finset.center_mass_id_mem_convex_hull Finset.centerMass_id_mem_convexHull
 
-theorem affineCombination_eq_centerMass {ι : Type _} {t : Finset ι} {p : ι → E} {w : ι → R}
+theorem affineCombination_eq_centerMass {ι : Type*} {t : Finset ι} {p : ι → E} {w : ι → R}
     (hw₂ : ∑ i in t, w i = 1) : t.affineCombination R p w = centerMass t w p := by
   rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ w _ hw₂ (0 : E),
     Finset.weightedVSubOfPoint_apply, vadd_eq_add, add_zero, t.centerMass_eq_of_sum_1 _ hw₂]
@@ -505,7 +505,7 @@ theorem mem_Icc_of_mem_stdSimplex (hf : f ∈ stdSimplex R ι) (x) : f x ∈ Icc
 
 /-- The convex hull of an affine basis is the intersection of the half-spaces defined by the
 corresponding barycentric coordinates. -/
-theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type _} (b : AffineBasis ι R E) :
+theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι R E) :
     convexHull R (range b) = { x | ∀ i, 0 ≤ b.coord i x } := by
   rw [convexHull_range_eq_exists_affineCombination]
   ext x

@@ -126,7 +126,7 @@ universe ua ub uc ud
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort _}
 
 /-- The identity relation, or the graph of the identity function -/
-def idRel {α : Type _} :=
+def idRel {α : Type*} :=
   { p : α × α | p.1 = p.2 }
 #align id_rel idRel
 
@@ -374,12 +374,12 @@ theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace
 /-- Replace topology in a `UniformSpace` instance with a propositionally (but possibly not
 definitionally) equal one. -/
 @[reducible]
-def UniformSpace.replaceTopology {α : Type _} [i : TopologicalSpace α] (u : UniformSpace α)
+def UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : UniformSpace α :=
   UniformSpace.ofCoreEq u.toCore i <| h.trans u.toCore_toTopologicalSpace.symm
 #align uniform_space.replace_topology UniformSpace.replaceTopology
 
-theorem UniformSpace.replaceTopology_eq {α : Type _} [i : TopologicalSpace α] (u : UniformSpace α)
+theorem UniformSpace.replaceTopology_eq {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : u.replaceTopology h = u :=
   u.ofCoreEq_toCore _ _
 #align uniform_space.replace_topology_eq UniformSpace.replaceTopology_eq
@@ -1266,7 +1266,7 @@ theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
 #align uniformity_comap uniformity_comap
 
 @[simp]
-theorem uniformSpace_comap_id {α : Type _} : UniformSpace.comap (id : α → α) = id := by
+theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2
   rw [uniformity_comap, Prod.map_id, comap_id]
 #align uniform_space_comap_id uniformSpace_comap_id
@@ -1691,7 +1691,7 @@ section
 
 open UniformSpace Function
 
-variable {δ' : Type _} [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
+variable {δ' : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
   [UniformSpace δ']
 local notation f " ∘₂ " g => Function.bicompr f g
 

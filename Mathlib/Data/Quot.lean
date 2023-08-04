@@ -81,11 +81,11 @@ protected def mapRight {ra' : α → α → Prop} (h : ∀ a₁ a₂, ra a₁ a�
 #align quot.map_right Quot.mapRight
 
 /-- Weaken the relation of a quotient. This is the same as `Quot.map id`. -/
-def factor {α : Type _} (r s : α → α → Prop) (h : ∀ x y, r x y → s x y) : Quot r → Quot s :=
+def factor {α : Type*} (r s : α → α → Prop) (h : ∀ x y, r x y → s x y) : Quot r → Quot s :=
   Quot.lift (Quot.mk s) fun x y rxy ↦ Quot.sound (h x y rxy)
 #align quot.factor Quot.factor
 
-theorem factor_mk_eq {α : Type _} (r s : α → α → Prop) (h : ∀ x y, r x y → s x y) :
+theorem factor_mk_eq {α : Type*} (r s : α → α → Prop) (h : ∀ x y, r x y → s x y) :
     factor r s h ∘ Quot.mk _ = Quot.mk _ :=
   rfl
 #align quot.factor_mk_eq Quot.factor_mk_eq
@@ -227,7 +227,7 @@ instance (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
 instance (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
   Quot.Subsingleton
 
-instance {α : Type _} [Setoid α] : IsEquiv α (· ≈ ·) where
+instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
   refl := Setoid.refl
   symm _ _ := Setoid.symm
   trans _ _ _ := Setoid.trans
@@ -288,7 +288,7 @@ instance (q₁ : Quotient sa) (q₂ : Quotient sb) (f : α → β → Prop)
 
 end Quotient
 
-theorem Quot.eq {α : Type _} {r : α → α → Prop} {x y : α} :
+theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ EqvGen r x y :=
   ⟨Quot.exact r, Quot.EqvGen_sound⟩
 #align quot.eq Quot.eq
@@ -297,7 +297,7 @@ theorem Quot.eq {α : Type _} {r : α → α → Prop} {x y : α} :
 theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
-theorem forall_quotient_iff {α : Type _} [r : Setoid α] {p : Quotient r → Prop} :
+theorem forall_quotient_iff {α : Type*} [r : Setoid α] {p : Quotient r → Prop} :
     (∀ a : Quotient r, p a) ↔ ∀ a : α, p ⟦a⟧ :=
   ⟨fun h _ ↦ h _, fun h a ↦ a.induction_on h⟩
 #align forall_quotient_iff forall_quotient_iff
@@ -413,20 +413,20 @@ instance piSetoid {ι : Sort _} {α : ι → Sort _} [∀ i, Setoid (α i)] : Se
 
 /-- Given a function `f : Π i, Quotient (S i)`, returns the class of functions `Π i, α i` sending
 each `i` to an element of the class `f i`. -/
-noncomputable def Quotient.choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
+noncomputable def Quotient.choice {ι : Type*} {α : ι → Type*} [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
     @Quotient (∀ i, α i) (by infer_instance) :=
   ⟦fun i ↦ (f i).out⟧
 #align quotient.choice Quotient.choice
 
 @[simp]
-theorem Quotient.choice_eq {ι : Type _} {α : ι → Type _} [∀ i, Setoid (α i)] (f : ∀ i, α i) :
+theorem Quotient.choice_eq {ι : Type*} {α : ι → Type*} [∀ i, Setoid (α i)] (f : ∀ i, α i) :
     (Quotient.choice fun i ↦ ⟦f i⟧) = ⟦f⟧ :=
   Quotient.sound fun _ ↦ Quotient.mk_out _
 #align quotient.choice_eq Quotient.choice_eq
 
 @[elab_as_elim]
-theorem Quotient.induction_on_pi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+theorem Quotient.induction_on_pi {ι : Type*} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
     {p : (∀ i, Quotient (s i)) → Prop} (f : ∀ i, Quotient (s i))
     (h : ∀ a : ∀ i, α i, p fun i ↦ ⟦a i⟧) : p f := by
   rw [← (funext fun i ↦ Quotient.out_eq (f i) : (fun i ↦ ⟦(f i).out⟧) = f)]

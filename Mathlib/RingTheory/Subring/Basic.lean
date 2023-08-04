@@ -74,12 +74,12 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type _) (R : Type u) [Ring R] [SetLike S R] extends
+class SubringClass (S : Type*) (R : Type u) [Ring R] [SetLike S R] extends
   SubsemiringClass S R, NegMemClass S R : Prop
 #align subring_class SubringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SubringClass.addSubgroupClass (S : Type _) (R : Type u)
+instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
     [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }
 #align subring_class.add_subgroup_class SubringClass.addSubgroupClass
@@ -390,14 +390,14 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
 
 /-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
     subring. -/
-protected theorem prod_mem {R : Type _} [CommRing R] (s : Subring R) {ι : Type _} {t : Finset ι}
+protected theorem prod_mem {R : Type*} [CommRing R] (s : Subring R) {ι : Type*} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subring.prod_mem Subring.prod_mem
 
 /-- Sum of elements in a `Subring` of a `Ring` indexed by a `Finset`
 is in the `Subring`. -/
-protected theorem sum_mem {R : Type _} [Ring R] (s : Subring R) {ι : Type _} {t : Finset ι}
+protected theorem sum_mem {R : Type*} [Ring R] (s : Subring R) {ι : Type*} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
   sum_mem h
 #align subring.sum_mem Subring.sum_mem
@@ -1437,7 +1437,7 @@ section Actions
 
 namespace Subring
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 
 -- Porting note: Lean can find this instance already
@@ -1523,14 +1523,14 @@ end Actions
 -- while this definition is not about subrings, this is the earliest we have
 -- both ordered ring structures and submonoids available
 /-- The subgroup of positive units of a linear ordered semiring. -/
-def Units.posSubgroup (R : Type _) [LinearOrderedSemiring R] : Subgroup Rˣ :=
+def Units.posSubgroup (R : Type*) [LinearOrderedSemiring R] : Subgroup Rˣ :=
   { (posSubmonoid R).comap (Units.coeHom R) with
     carrier := { x | (0 : R) < x }
     inv_mem' := Units.inv_pos.mpr }
 #align units.pos_subgroup Units.posSubgroup
 
 @[simp]
-theorem Units.mem_posSubgroup {R : Type _} [LinearOrderedSemiring R] (u : Rˣ) :
+theorem Units.mem_posSubgroup {R : Type*} [LinearOrderedSemiring R] (u : Rˣ) :
     u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
   Iff.rfl
 #align units.mem_pos_subgroup Units.mem_posSubgroup

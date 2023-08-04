@@ -43,7 +43,7 @@ deriving instance LargeCategory for UniformSpaceCat
 instance : ConcreteCategory UniformSpaceCat :=
   inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
 
-instance : CoeSort UniformSpaceCat (Type _) :=
+instance : CoeSort UniformSpaceCat (Type*) :=
   Bundled.coeSort
 
 instance (x : UniformSpaceCat) : UniformSpace x :=

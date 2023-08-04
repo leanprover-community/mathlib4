@@ -25,7 +25,7 @@ namespace List
 
 universe u v w x
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} {l₁ l₂ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} {l₁ l₂ : List α}
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -1098,7 +1098,7 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
 -/
 
 -- Porting note: these lemmas recover the Lean 3 definition of `findIdx`
-@[simp] theorem findIdx_nil {α : Type _} (p : α → Bool) :
+@[simp] theorem findIdx_nil {α : Type*} (p : α → Bool) :
   [].findIdx p = 0 := rfl
 
 theorem findIdx_cons (p : α → Bool) (b : α) (l : List α) :
@@ -1916,7 +1916,7 @@ theorem take_replicate (a : α) : ∀ n m : ℕ, take n (replicate m a) = replic
   | succ n, succ m => by simp [min_succ_succ, take_replicate]
 #align list.take_replicate List.take_replicate
 
-theorem map_take {α β : Type _} (f : α → β) :
+theorem map_take {α β : Type*} (f : α → β) :
     ∀ (L : List α) (i : ℕ), (L.take i).map f = (L.map f).take i
   | [], i => by simp
   | _, 0 => by simp
@@ -2035,12 +2035,12 @@ theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
   simp [dropLast_eq_take, min_eq_left_of_lt h, take_take, pred_le]
 #align list.init_take List.dropLast_take
 
-theorem dropLast_cons_of_ne_nil {α : Type _} {x : α}
+theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
     {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h]
 #align list.init_cons_of_ne_nil List.dropLast_cons_of_ne_nil
 
 @[simp]
-theorem dropLast_append_of_ne_nil {α : Type _} {l : List α} :
+theorem dropLast_append_of_ne_nil {α : Type*} {l : List α} :
     ∀ (l' : List α) (_ : l ≠ []), (l' ++ l).dropLast = l' ++ l.dropLast
   | [], _ => by simp only [nil_append]
   | a :: l', h => by
@@ -2217,7 +2217,7 @@ theorem drop_take : ∀ (m : ℕ) (n : ℕ) (l : List α), drop m (take (m + n) 
     simpa [take_cons, h] using drop_take m n l
 #align list.drop_take List.drop_take
 
-theorem map_drop {α β : Type _} (f : α → β) :
+theorem map_drop {α β : Type*} (f : α → β) :
     ∀ (L : List α) (i : ℕ), (L.drop i).map f = (L.map f).drop i
   | [], i => by simp
   | L, 0 => by simp
@@ -2469,7 +2469,7 @@ theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α →
   induction l <;> intros <;> [rfl; simp only [*, foldr]]
 #align list.foldr_hom₂ List.foldr_hom₂
 
-theorem injective_foldl_comp {α : Type _} {l : List (α → α)} {f : α → α}
+theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     (hl : ∀ f ∈ l, Function.Injective f) (hf : Function.Injective f) :
     Function.Injective (@List.foldl (α → α) (α → α) Function.comp f l) := by
   induction' l with lh lt l_ih generalizing f
@@ -3128,7 +3128,7 @@ theorem attach_eq_nil (l : List α) : l.attach = [] ↔ l = [] :=
   pmap_eq_nil
 #align list.attach_eq_nil List.attach_eq_nil
 
-theorem getLast_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
+theorem getLast_pmap {α β : Type*} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
     (hl₁ : ∀ a ∈ l, p a) (hl₂ : l ≠ []) :
     (l.pmap f hl₁).getLast (mt List.pmap_eq_nil.1 hl₂) =
       f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) := by
@@ -3184,7 +3184,7 @@ theorem pmap_append {p : ι → Prop} (f : ∀ a : ι, p a → α) (l₁ l₂ : 
     rw [ih]
 #align list.pmap_append List.pmap_append
 
-theorem pmap_append' {α β : Type _} {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
+theorem pmap_append' {α β : Type*} {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
     (h₁ : ∀ a ∈ l₁, p a) (h₂ : ∀ a ∈ l₂, p a) :
     ((l₁ ++ l₂).pmap f fun a ha => (List.mem_append.1 ha).elim (h₁ a) (h₂ a)) =
       l₁.pmap f h₁ ++ l₂.pmap f h₂ :=

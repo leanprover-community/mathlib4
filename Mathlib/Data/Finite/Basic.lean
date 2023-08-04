@@ -47,7 +47,7 @@ noncomputable section
 
 open Classical
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Finite
 
@@ -91,7 +91,7 @@ theorem sum_right (α) [Finite (Sum α β)] : Finite β :=
   of_injective (Sum.inr : β → Sum α β) Sum.inr_injective
 #align finite.sum_right Finite.sum_right
 
-instance {β : α → Type _} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
+instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
   letI := Fintype.ofFinite α
   letI := fun a => Fintype.ofFinite (β a)
   infer_instance
@@ -119,7 +119,7 @@ instance Pi.finite {α : Sort _} {β : α → Sort _} [Finite α] [∀ a, Finite
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 #align pi.finite Pi.finite
 
-instance Vector.finite {α : Type _} [Finite α] {n : ℕ} : Finite (Vector α n) := by
+instance Vector.finite {α : Type*} [Finite α] {n : ℕ} : Finite (Vector α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
 #align vector.finite Vector.finite

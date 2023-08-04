@@ -15,7 +15,7 @@ inductive `Prop`s. For example, when applied to `List.Chain`, it creates a decla
 the following type:
 
 ```lean
-∀ {α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+∀ {α : Type*} (R : α → α → Prop) (a : α) (l : List α),
   Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
@@ -379,7 +379,7 @@ be just `c = i` for some index `i`.
 For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 ```lean
-∀ { α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+∀ { α : Type*} (R : α → α → Prop) (a : α) (l : List α),
   Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 

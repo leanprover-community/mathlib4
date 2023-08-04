@@ -47,7 +47,7 @@ scoped[NNRat] notation "ℚ≥0" => NNRat
 
 namespace NNRat
 
-variable {α : Type _} {p q : ℚ≥0}
+variable {α : Type*} {p q : ℚ≥0}
 
 instance : Coe ℚ≥0 ℚ :=
   ⟨Subtype.val⟩

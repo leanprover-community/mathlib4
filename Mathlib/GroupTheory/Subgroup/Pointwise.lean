@@ -31,7 +31,7 @@ open Set
 
 open Pointwise
 
-variable {α G A S : Type _}
+variable {α G A S : Type*}
 
 @[to_additive (attr := simp)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
@@ -380,7 +380,7 @@ theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (
   rfl
 #align subgroup.singleton_mul_subgroup Subgroup.singleton_mul_subgroup
 
-theorem Normal.conjAct {G : Type _} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
+theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
     g • H = H :=
   have : ∀ g : ConjAct G, g • H ≤ H :=
     fun _ => map_le_iff_le_comap.2 fun _ h => hH.conj_mem _ h _

@@ -26,7 +26,7 @@ Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
 
 
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -175,7 +175,7 @@ theorem inf_orthogonal (K₁ K₂ : Submodule 𝕜 E) : K₁ᗮ ⊓ K₂ᗮ = (K
 
 /-- The inf of an indexed family of orthogonal subspaces equals the
 subspace orthogonal to the sup. -/
-theorem iInf_orthogonal {ι : Type _} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
+theorem iInf_orthogonal {ι : Type*} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
   (orthogonal_gc 𝕜 E).l_iSup.symm
 #align submodule.infi_orthogonal Submodule.iInf_orthogonal
 

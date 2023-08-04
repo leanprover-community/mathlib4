@@ -33,7 +33,7 @@ import Mathlib.Logic.Function.Conjugate
   and the codomain to `t`.
 -/
 
-variable {α β γ : Type _} {ι : Sort _} {π : α → Type _}
+variable {α β γ : Type*} {ι : Sort _} {π : α → Type*}
 
 open Equiv Equiv.Perm Function
 
@@ -1437,18 +1437,18 @@ theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ :
   piecewise_eq_of_not_mem _ _ _
 #align set.piecewise_eq_on_compl Set.piecewise_eqOn_compl
 
-theorem piecewise_le {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
+theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g i) :
     s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
 #align set.piecewise_le Set.piecewise_le
 
-theorem le_piecewise {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
+theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ (i) (_ : i ∉ s), g i ≤ f₂ i) :
     g ≤ s.piecewise f₁ f₂ :=
   @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 #align set.le_piecewise Set.le_piecewise
 
-theorem piecewise_le_piecewise {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α}
+theorem piecewise_le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
     [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
     (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
@@ -1545,24 +1545,24 @@ theorem injective_piecewise_iff {f g : α → β} :
   rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_not_mem s f g hy]
 #align set.injective_piecewise_iff Set.injective_piecewise_iff
 
-theorem piecewise_mem_pi {δ : α → Type _} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
+theorem piecewise_mem_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
     (hg : g ∈ pi t t') : s.piecewise f g ∈ pi t t' := by
   intro i ht
   by_cases hs : i ∈ s <;> simp [hf i ht, hg i ht, hs]
 #align set.piecewise_mem_pi Set.piecewise_mem_pi
 
 @[simp]
-theorem pi_piecewise {ι : Type _} {α : ι → Type _} (s s' : Set ι) (t t' : ∀ i, Set (α i))
+theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s')] : pi s (s'.piecewise t t') = pi (s ∩ s') t ∩ pi (s \ s') t' :=
   pi_if _ _ _
 #align set.pi_piecewise Set.pi_piecewise
 
 -- porting note: new lemma
-theorem univ_pi_piecewise {ι : Type _} {α : ι → Type _} (s : Set ι) (t t' : ∀ i, Set (α i))
+theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]
 
-theorem univ_pi_piecewise_univ {ι : Type _} {α : ι → Type _} (s : Set ι) (t : ∀ i, Set (α i))
+theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp
 #align set.univ_pi_piecewise Set.univ_pi_piecewise_univ
 

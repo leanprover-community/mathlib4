@@ -65,7 +65,7 @@ open Set LinearMap
 
 open Classical Pointwise
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 /-! ### Definition of `ConvexCone` and basic properties -/
 

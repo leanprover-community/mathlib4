@@ -22,7 +22,7 @@ predicate `Order.IsSuccLimit`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Order
 

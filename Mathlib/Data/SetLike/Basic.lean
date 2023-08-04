@@ -29,13 +29,13 @@ boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
 
 A typical subobject should be declared as:
 ```
-structure MySubobject (X : Type _) [ObjectTypeclass X] :=
+structure MySubobject (X : Type*) [ObjectTypeclass X] :=
   (carrier : Set X)
   (op_mem' : ∀ {x : X}, x ∈ carrier → sorry ∈ carrier)
 
 namespace MySubobject
 
-variables {X : Type _} [ObjectTypeclass X] {x : X}
+variables {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, λ p q h, by cases p; cases q; congr'⟩
@@ -75,7 +75,7 @@ subobjects
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
 
 This has the effect of giving terms of `A` elements of type `B` (through a `Membership`
-instance) and a compatible coercion to `Type _` as a subtype.
+instance) and a compatible coercion to `Type*` as a subtype.
 
 Note: if `SetLike.coe` is a projection, implementers should create a simp lemma such as
 ```
@@ -85,7 +85,7 @@ to normalize terms.
 
 If you declare an unbundled subclass of `SetLike`, for example:
 ```
-class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] where
+class MulMemClass (S : Type*) (M : Type*) [Mul M] [SetLike S M] where
   ...
 ```
 Then you should *not* repeat the `outParam` declaration so `SetLike` will supply the value instead.
@@ -93,7 +93,7 @@ This ensures your subclass will not have issues with synthesis of the `[Mul M]` 
 before the value of `M` is known.
 -/
 @[notation_class * carrier Simps.findCoercionArgs]
-class SetLike (A : Type _) (B : outParam <| Type _) where
+class SetLike (A : Type*) (B : outParam <| Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
@@ -103,20 +103,20 @@ class SetLike (A : Type _) (B : outParam <| Type _) where
 attribute [coe] SetLike.coe
 namespace SetLike
 
-variable {A : Type _} {B : Type _} [i : SetLike A B]
+variable {A : Type*} {B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩
 
-instance (priority := 100) : CoeSort A (Type _) :=
+instance (priority := 100) : CoeSort A (Type*) :=
   ⟨fun p => { x : B // x ∈ p }⟩
 
 variable (p q : A)
 
 @[simp, norm_cast]
-theorem coe_sort_coe : ((p : Set B) : Type _) = p :=
+theorem coe_sort_coe : ((p : Set B) : Type*) = p :=
   rfl
 #align set_like.coe_sort_coe SetLike.coe_sort_coe
 

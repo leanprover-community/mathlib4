@@ -38,7 +38,7 @@ Appropriate definitions and results are also transported to the additive theory 
 
 open Function MulOpposite
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -446,7 +446,7 @@ end Mul
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
 @[to_additive]
-theorem range_smul_range {ι κ : Type _} [SMul α β] (b : ι → α) (c : κ → β) :
+theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
     range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
   ext fun _x ↦
     ⟨fun hx ↦

@@ -20,7 +20,7 @@ In this file we give the definition and prove basic properties of locally finite
 -- locally finite family [General Topology (Bourbaki, 1995)]
 open Set Function Filter Topology
 
-variable {ι ι' α X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f g : ι → Set X}
+variable {ι ι' α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : ι → Set X}
 
 /-- A family of sets in `Set X` is locally finite if at every point `x : X`,
 there is a neighborhood of `x` which meets only finitely many sets in the family. -/

@@ -15,7 +15,7 @@ The main results of this section are `WithTop.canonicallyOrderedCommSemiring` an
 `WithBot.orderedCommSemiring`.
 -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace WithTop
 
@@ -131,7 +131,7 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
+protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
   { f.toZeroHom.withTopMap, f.toMonoidHom.toOneHom.withTopMap with
@@ -207,7 +207,7 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R]
+protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
     [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}

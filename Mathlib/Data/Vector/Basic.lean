@@ -24,7 +24,7 @@ variable {n : ℕ}
 
 namespace Vector
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -94,18 +94,18 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 #noalign vector.length_coe
 
 @[simp]
-theorem toList_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
+theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
   by cases v; rfl
 #align vector.to_list_map Vector.toList_map
 
 @[simp]
-theorem head_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head := by
+theorem head_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, head_cons, head_cons]
 #align vector.head_map Vector.head_map
 
 @[simp]
-theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
+theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
     (v.map f).tail = v.tail.map f := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, tail_cons, tail_cons]
@@ -128,7 +128,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 #align vector.nth_repeat Vector.get_replicate
 
 @[simp]
-theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
+theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
   cases v; simp [Vector.map, get_eq_get]; rfl
 #align vector.nth_map Vector.get_map
@@ -158,7 +158,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 #align vector.of_fn_nth Vector.ofFn_get
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
-def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
+def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
@@ -306,7 +306,7 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
 
 section Scan
 
-variable {β : Type _}
+variable {β : Type*}
 
 variable (f : β → α → β) (b : β)
 
@@ -465,7 +465,7 @@ def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vecto
 -- check that the above works with `induction ... using`
 example (v : Vector α n) : True := by induction v using Vector.inductionOn <;> trivial
 
-variable {β γ : Type _}
+variable {β γ : Type*}
 
 /-- Define `C v w` by induction on a pair of vectors `v : Vector α n` and `w : Vector β n`. -/
 @[elab_as_elim]
@@ -722,7 +722,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) :
 
 variable (η : ApplicativeTransformation F G)
 
-protected theorem naturality {α β : Type _} (f : α → F β) (x : Vector α n) :
+protected theorem naturality {α β : Type*} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
   induction' x using Vector.inductionOn with n x xs ih
   · simp! [functor_norm, cast, η.preserves_pure]

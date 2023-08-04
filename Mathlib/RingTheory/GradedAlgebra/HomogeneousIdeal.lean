@@ -46,7 +46,7 @@ open SetLike DirectSum Set
 
 open BigOperators Pointwise DirectSum
 
-variable {ι σ R A : Type _}
+variable {ι σ R A : Type*}
 
 section HomogeneousDef
 

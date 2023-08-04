@@ -34,10 +34,10 @@ is that some theorems about the group actions will not apply when since this
 -/
 
 
-variable (α M G G₀ R K : Type _)
+variable (α M G G₀ R K : Type*)
 
 /-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
-def ConjAct : Type _ :=
+def ConjAct : Type* :=
   G
 #align conj_act ConjAct
 

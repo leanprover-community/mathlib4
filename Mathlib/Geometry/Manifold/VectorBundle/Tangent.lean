@@ -39,12 +39,12 @@ noncomputable section
 
 section General
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type _}
-  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M] {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [SmoothManifoldWithCorners I M] {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  [SmoothManifoldWithCorners I' M'] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (I)
 
@@ -130,7 +130,7 @@ kernel.
 @[nolint unusedArguments]
 def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M} [TopologicalSpace M]
-    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type _ := E
+    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type* := E
 -- porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
 #align tangent_space TangentSpace
 
@@ -145,7 +145,7 @@ variable (M)
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
 @[reducible] -- porting note: was nolint has_nonempty_instance
 def TangentBundle :=
-  Bundle.TotalSpace E (TangentSpace I : M → Type _)
+  Bundle.TotalSpace E (TangentSpace I : M → Type*)
 #align tangent_bundle TangentBundle
 
 local notation "TM" => TangentBundle I M
@@ -170,10 +170,10 @@ end
 instance : TopologicalSpace TM :=
   (tangentBundleCore I M).toTopologicalSpace
 
-instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
+instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type*) :=
   (tangentBundleCore I M).fiberBundle
 
-instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
+instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type*) :=
   (tangentBundleCore I M).vectorBundle
 
 namespace TangentBundle
@@ -313,7 +313,7 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   · apply inter_subset_left
 #align tangent_bundle_core.is_smooth tangentBundleCore.isSmooth
 
-instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type _) I :=
+instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type*) I :=
   (tangentBundleCore I M).smoothVectorBundle _
 #align tangent_bundle.smooth_vector_bundle TangentBundle.smoothVectorBundle
 
@@ -395,7 +395,7 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
 
 section inTangentCoordinates
 
-variable (I') {M H} {N : Type _}
+variable (I') {M H} {N : Type*}
 
 /-- The map `in_coordinates` for the tangent bundle is trivial on the model spaces -/
 theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :
@@ -439,8 +439,8 @@ end General
 
 section Real
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type _} [TopologicalSpace H]
-  {I : ModelWithCorners ℝ E H} {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 instance {x : M} : PathConnectedSpace (TangentSpace I x) := by unfold TangentSpace; infer_instance

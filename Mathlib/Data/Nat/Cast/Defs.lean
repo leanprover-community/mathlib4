@@ -76,7 +76,7 @@ class AddMonoidWithOne (R : Type u) extends NatCast R, AddMonoid R, One R where
 #align add_monoid_with_one.nat_cast_succ AddMonoidWithOne.natCast_succ
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
-class AddCommMonoidWithOne (R : Type _) extends AddMonoidWithOne R, AddCommMonoid R
+class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 #align add_comm_monoid_with_one AddCommMonoidWithOne
 #align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
 #align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
@@ -189,13 +189,13 @@ end Nat
 
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
 @[reducible]
-protected def AddMonoidWithOne.unary {R : Type _} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected def AddMonoidWithOne.unary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
 #align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
 @[reducible]
-protected def AddMonoidWithOne.binary {R : Type _} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],

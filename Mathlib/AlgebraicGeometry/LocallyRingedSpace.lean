@@ -59,8 +59,8 @@ def toTopCat : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Top AlgebraicGeometry.LocallyRingedSpace.toTopCat
 
-instance : CoeSort LocallyRingedSpace (Type _) :=
-  ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
+instance : CoeSort LocallyRingedSpace (Type*) :=
+  ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type*)⟩
 
 instance (x : X) : LocalRing (X.stalk x) :=
   X.localRing x
@@ -76,7 +76,7 @@ set_option linter.uppercaseLean3 false in
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
  such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
-structure Hom (X Y : LocallyRingedSpace) : Type _ where
+structure Hom (X Y : LocallyRingedSpace) : Type* where
   /-- the underlying morphism between ringed spaces -/
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
   /-- the underlying morphism induces a local ring homomorphism on stalks -/

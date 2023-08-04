@@ -30,7 +30,7 @@ decreases at a time.
 -/
 
 
-variable {α β : Type _} {rα : α → α → Prop} {rβ : β → β → Prop}
+variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop}
 
 /-! ### `Prod.GameAdd` -/
 

@@ -30,7 +30,7 @@ namespace Matrix
 
 section CommSemiring -- porting note: generalized from `CommRing`
 
-variable {n : Type _} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
+variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 
 theorem proj_diagonal (i : n) (w : n → R) : (proj i).comp (toLin' (diagonal w)) = w i • proj i :=
   LinearMap.ext fun _ => mulVec_diagonal _ _ _
@@ -51,7 +51,7 @@ end CommSemiring
 
 section Semifield
 
-variable {m n : Type _} [Fintype m] [Fintype n] {K : Type u} [Semifield K]
+variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Semifield K]
 
 -- maybe try to relax the universe constraint
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
@@ -78,7 +78,7 @@ end Semifield
 
 section Field
 
-variable {m n : Type _} [Fintype m] [Fintype n] {K : Type u} [Field K]
+variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by

@@ -340,7 +340,7 @@ def positivity (goal : MVarId) : MetaM Unit := do
   match t with
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
-  | ~q($a ≠ ($b : ($α : Type _))) =>
+  | ~q($a ≠ ($b : ($α : Type*))) =>
     let _zα ← synthInstanceQ (q(Zero $α) : Q(Type u_1))
     if ← isDefEq b q((0 : $α)) then
       rest α b a .ne

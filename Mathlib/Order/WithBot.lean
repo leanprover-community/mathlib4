@@ -19,10 +19,10 @@ Adding a `bot` or a `top` to an order.
 
  -/
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 /-- Attach `⊥` to a type. -/
-def WithBot (α : Type _) :=
+def WithBot (α : Type*) :=
   Option α
 #align with_bot WithBot
 
@@ -554,7 +554,7 @@ end WithBot
 
 --TODO(Mario): Construct using order dual on `WithBot`
 /-- Attach `⊤` to a type. -/
-def WithTop (α : Type _) :=
+def WithTop (α : Type*) :=
   Option α
 #align with_top WithTop
 

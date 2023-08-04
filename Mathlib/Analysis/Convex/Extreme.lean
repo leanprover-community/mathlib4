@@ -47,7 +47,7 @@ open Function Set
 
 open Affine Classical
 
-variable {𝕜 E F ι : Type _} {π : ι → Type _}
+variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
 section SMul
 

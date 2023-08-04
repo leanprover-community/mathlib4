@@ -65,7 +65,7 @@ submonoid, range, product, map, comap
 -/
 
 
-variable {M N P : Type _} [MulOneClass M] [MulOneClass N] [MulOneClass P] (S : Submonoid M)
+variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P] (S : Submonoid M)
 
 /-!
 ### Conversion to/from `Additive`/`Multiplicative`
@@ -119,7 +119,7 @@ end
 
 section
 
-variable {A : Type _} [AddZeroClass A]
+variable {A : Type*} [AddZeroClass A]
 
 /-- Additive submonoids of an additive monoid `A` are isomorphic to
 multiplicative submonoids of `Multiplicative A`. -/
@@ -167,7 +167,7 @@ end
 
 namespace Submonoid
 
-variable {F : Type _} [mc : MonoidHomClass F M N]
+variable {F : Type*} [mc : MonoidHomClass F M N]
 
 open Set
 
@@ -367,7 +367,7 @@ theorem map_id (S : Submonoid M) : S.map (MonoidHom.id M) = S :=
 
 section GaloisCoinsertion
 
-variable {ι : Type _} {f : F} (hf : Function.Injective f)
+variable {ι : Type*} {f : F} (hf : Function.Injective f)
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
@@ -434,7 +434,7 @@ end GaloisCoinsertion
 
 section GaloisInsertion
 
-variable {ι : Type _} {f : F} (hf : Function.Surjective f)
+variable {ι : Type*} {f : F} (hf : Function.Surjective f)
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
@@ -505,7 +505,7 @@ end Submonoid
 
 namespace OneMemClass
 
-variable {A M₁ : Type _} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] (S' : A)
+variable {A M₁ : Type*} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] (S' : A)
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits a zero."]
@@ -538,10 +538,10 @@ theorem one_def : (1 : S') = ⟨1, OneMemClass.one_mem S'⟩ :=
 
 end OneMemClass
 
-variable {A : Type _} [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
+variable {A : Type*} [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
 
 /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/
-instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type _} [SetLike A M]
+instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type*} [SetLike A M]
     [AddSubmonoidClass A M] (S : A) : SMul ℕ S :=
   ⟨fun n a => ⟨n • a.1, nsmul_mem a.2 n⟩⟩
 #align add_submonoid_class.has_nsmul AddSubmonoidClass.nSMul
@@ -549,21 +549,21 @@ instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type _} [SetLike A M]
 namespace SubmonoidClass
 
 /-- A submonoid of a monoid inherits a power operator. -/
-instance nPow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
+instance nPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 #align submonoid_class.has_pow SubmonoidClass.nPow
 
 attribute [to_additive existing nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
+theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
     (n : ℕ) : (x ^ n : M) = (x : M) ^ n :=
   rfl
 #align submonoid_class.coe_pow SubmonoidClass.coe_pow
 #align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_nsmul
 
 @[to_additive (attr := simp)]
-theorem mk_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : M)
+theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : M)
     (hx : x ∈ S) (n : ℕ) : (⟨x, hx⟩ : S) ^ n = ⟨x ^ n, pow_mem hx n⟩ :=
   rfl
 #align submonoid_class.mk_pow SubmonoidClass.mk_pow
@@ -573,7 +573,7 @@ theorem mk_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
-instance (priority := 75) toMulOneClass {M : Type _} [MulOneClass M] {A : Type _} [SetLike A M]
+instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S :=
     Subtype.coe_injective.mulOneClass (↑) rfl (fun _ _ => rfl)
 #align submonoid_class.to_mul_one_class SubmonoidClass.toMulOneClass
@@ -582,7 +582,7 @@ instance (priority := 75) toMulOneClass {M : Type _} [MulOneClass M] {A : Type _
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
-instance (priority := 75) toMonoid {M : Type _} [Monoid M] {A : Type _} [SetLike A M]
+instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S :=
   Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
 #align submonoid_class.to_monoid SubmonoidClass.toMonoid
@@ -591,7 +591,7 @@ instance (priority := 75) toMonoid {M : Type _} [Monoid M] {A : Type _} [SetLike
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
-instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type _} [SetLike A M]
+instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S :=
   Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_comm_monoid SubmonoidClass.toCommMonoid
@@ -600,7 +600,7 @@ instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type _} [SetLike 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`."]
-instance (priority := 75) toOrderedCommMonoid {M} [OrderedCommMonoid M] {A : Type _} [SetLike A M]
+instance (priority := 75) toOrderedCommMonoid {M} [OrderedCommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : OrderedCommMonoid S :=
   Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_ordered_comm_monoid SubmonoidClass.toOrderedCommMonoid
@@ -610,7 +610,7 @@ instance (priority := 75) toOrderedCommMonoid {M} [OrderedCommMonoid M] {A : Typ
 /-- A submonoid of a `LinearOrderedCommMonoid` is a `LinearOrderedCommMonoid`. -/
 @[to_additive
       "An `AddSubmonoid` of a `LinearOrderedAddCommMonoid` is a `LinearOrderedAddCommMonoid`."]
-instance (priority := 75) toLinearOrderedCommMonoid {M} [LinearOrderedCommMonoid M] {A : Type _}
+instance (priority := 75) toLinearOrderedCommMonoid {M} [LinearOrderedCommMonoid M] {A : Type*}
     [SetLike A M] [SubmonoidClass A M] (S : A) : LinearOrderedCommMonoid S :=
   Subtype.coe_injective.linearOrderedCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
@@ -621,7 +621,7 @@ instance (priority := 75) toLinearOrderedCommMonoid {M} [LinearOrderedCommMonoid
 /-- A submonoid of an `OrderedCancelCommMonoid` is an `OrderedCancelCommMonoid`. -/
 @[to_additive AddSubmonoidClass.toOrderedCancelAddCommMonoid
       "An `AddSubmonoid` of an `OrderedCancelAddCommMonoid` is an `OrderedCancelAddCommMonoid`."]
-instance (priority := 75) toOrderedCancelCommMonoid {M} [OrderedCancelCommMonoid M] {A : Type _}
+instance (priority := 75) toOrderedCancelCommMonoid {M} [OrderedCancelCommMonoid M] {A : Type*}
     [SetLike A M] [SubmonoidClass A M] (S : A) : OrderedCancelCommMonoid S :=
   Subtype.coe_injective.orderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_ordered_cancel_comm_monoid SubmonoidClass.toOrderedCancelCommMonoid
@@ -634,7 +634,7 @@ instance (priority := 75) toOrderedCancelCommMonoid {M} [OrderedCancelCommMonoid
       "An `AddSubmonoid` of a `LinearOrderedCancelAddCommMonoid` is
       a `LinearOrderedCancelAddCommMonoid`."]
 instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M]
-    {A : Type _} [SetLike A M] [SubmonoidClass A M] (S : A) : LinearOrderedCancelCommMonoid S :=
+    {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : LinearOrderedCancelCommMonoid S :=
   Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_linear_ordered_cancel_comm_monoid SubmonoidClass.toLinearOrderedCancelCommMonoid
@@ -705,13 +705,13 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
-instance toMulOneClass {M : Type _} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
+instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
   Subtype.coe_injective.mulOneClass (↑) rfl fun _ _ => rfl
 #align submonoid.to_mul_one_class Submonoid.toMulOneClass
 #align add_submonoid.to_add_zero_class AddSubmonoid.toAddZeroClass
 
 @[to_additive]
-protected theorem pow_mem {M : Type _} [Monoid M] (S : Submonoid M) {x : M} (hx : x ∈ S) (n : ℕ) :
+protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx : x ∈ S) (n : ℕ) :
     x ^ n ∈ S :=
   pow_mem hx n
 #align submonoid.pow_mem Submonoid.pow_mem
@@ -723,7 +723,7 @@ protected theorem pow_mem {M : Type _} [Monoid M] (S : Submonoid M) {x : M} (hx 
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
-instance toMonoid {M : Type _} [Monoid M] (S : Submonoid M) : Monoid S :=
+instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
   Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_monoid Submonoid.toMonoid
 #align add_submonoid.to_add_monoid AddSubmonoid.toAddMonoid
@@ -996,7 +996,7 @@ end Submonoid
 
 namespace MonoidHom
 
-variable {F : Type _} [mc : MonoidHomClass F M N]
+variable {F : Type*} [mc : MonoidHomClass F M N]
 
 open Submonoid
 
@@ -1098,14 +1098,14 @@ theorem map_mclosure (f : F) (s : Set M) : (closure s).map f = closure (f '' s) 
 
 /-- Restriction of a monoid hom to a submonoid of the domain. -/
 @[to_additive "Restriction of an `AddMonoid` hom to an `AddSubmonoid` of the domain."]
-def restrict {N S : Type _} [MulOneClass N] [SetLike S M] [SubmonoidClass S M] (f : M →* N)
+def restrict {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidClass S M] (f : M →* N)
     (s : S) : s →* N :=
   f.comp (SubmonoidClass.Subtype _)
 #align monoid_hom.restrict MonoidHom.restrict
 #align add_monoid_hom.restrict AddMonoidHom.restrict
 
 @[to_additive (attr := simp)]
-theorem restrict_apply {N S : Type _} [MulOneClass N] [SetLike S M] [SubmonoidClass S M]
+theorem restrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidClass S M]
     (f : M →* N) (s : S) (x : s) : f.restrict s x = f x :=
   rfl
 #align monoid_hom.restrict_apply MonoidHom.restrict_apply
@@ -1211,7 +1211,7 @@ theorem mker_one : mker (1 : M →* N) = ⊤ := by
 #align add_monoid_hom.mker_zero AddMonoidHom.mker_zero
 
 @[to_additive prod_map_comap_prod']
-theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N']
+theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N']
     (f : M →* N) (g : M' →* N') (S : Submonoid N) (S' : Submonoid N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
@@ -1220,7 +1220,7 @@ theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOn
 #align add_monoid_hom.sum_map_comap_sum' AddMonoidHom.prod_map_comap_prod'
 
 @[to_additive mker_prod_map]
-theorem mker_prod_map {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
+theorem mker_prod_map {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
     (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
 #align monoid_hom.mker_prod_map MonoidHom.mker_prod_map
@@ -1479,7 +1479,7 @@ These instances work particularly well in conjunction with `Monoid.toMulAction`,
 
 namespace Submonoid
 
-variable {M' : Type _} {α β : Type _}
+variable {M' : Type*} {α β : Type*}
 
 section MulOneClass
 

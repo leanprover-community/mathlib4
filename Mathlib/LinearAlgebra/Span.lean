@@ -24,7 +24,7 @@ import Mathlib.Tactic.Ring
 -/
 
 
-variable {R R₂ K M M₂ V S : Type _}
+variable {R R₂ K M M₂ V S : Type*}
 
 namespace Submodule
 
@@ -40,7 +40,7 @@ variable {x : M} (p p' : Submodule R M)
 
 variable [Semiring R₂] {σ₁₂ : R →+* R₂}
 
-variable [AddCommMonoid M₂] [Module R₂ M₂] {F : Type _} [SemilinearMapClass F σ₁₂ M M₂]
+variable [AddCommMonoid M₂] [Module R₂ M₂] {F : Type*} [SemilinearMapClass F σ₁₂ M M₂]
 
 section
 
@@ -205,7 +205,7 @@ theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid
   rw [span_nat_eq_addSubmonoid_closure, s.closure_eq]
 #align submodule.span_nat_eq Submodule.span_nat_eq
 
-theorem span_int_eq_addSubgroup_closure {M : Type _} [AddCommGroup M] (s : Set M) :
+theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M) :
     (span ℤ s).toAddSubgroup = AddSubgroup.closure s :=
   Eq.symm <|
     AddSubgroup.closure_eq_of_le _ subset_span fun x hx =>
@@ -214,7 +214,7 @@ theorem span_int_eq_addSubgroup_closure {M : Type _} [AddCommGroup M] (s : Set M
 #align submodule.span_int_eq_add_subgroup_closure Submodule.span_int_eq_addSubgroup_closure
 
 @[simp]
-theorem span_int_eq {M : Type _} [AddCommGroup M] (s : AddSubgroup M) :
+theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
     (span ℤ (s : Set M)).toAddSubgroup = s := by rw [span_int_eq_addSubgroup_closure, s.closure_eq]
 #align submodule.span_int_eq Submodule.span_int_eq
 
@@ -258,7 +258,7 @@ theorem span_iUnion₂ {ι} {κ : ι → Sort _} (s : ∀ i, κ i → Set M) :
   (Submodule.gi R M).gc.l_iSup₂
 #align submodule.span_Union₂ Submodule.span_iUnion₂
 
-theorem span_attach_biUnion [DecidableEq M] {α : Type _} (s : Finset α) (f : s → Finset M) :
+theorem span_attach_biUnion [DecidableEq M] {α : Type*} (s : Finset α) (f : s → Finset M) :
     span R (s.attach.biUnion f : Set M) = ⨆ x, span R (f x) := by simp [span_iUnion]
 #align submodule.span_attach_bUnion Submodule.span_attach_biUnion
 
@@ -278,7 +278,7 @@ theorem span_eq_iSup_of_singleton_spans (s : Set M) : span R s = ⨆ x ∈ s, R 
   simp only [← span_iUnion, Set.biUnion_of_singleton s]
 #align submodule.span_eq_supr_of_singleton_spans Submodule.span_eq_iSup_of_singleton_spans
 
-theorem span_range_eq_iSup {ι : Type _} {v : ι → M} : span R (range v) = ⨆ i, R ∙ v i := by
+theorem span_range_eq_iSup {ι : Type*} {v : ι → M} : span R (range v) = ⨆ i, R ∙ v i := by
   rw [span_eq_iSup_of_singleton_spans, iSup_range]
 #align submodule.span_range_eq_supr Submodule.span_range_eq_iSup
 
@@ -388,7 +388,7 @@ theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'
   rfl
 #align submodule.sup_to_add_submonoid Submodule.sup_toAddSubmonoid
 
-theorem sup_toAddSubgroup {R M : Type _} [Ring R] [AddCommGroup M] [Module R M]
+theorem sup_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     (p p' : Submodule R M) : (p ⊔ p').toAddSubgroup = p.toAddSubgroup ⊔ p'.toAddSubgroup := by
   ext x
   rw [mem_toAddSubgroup, mem_sup, AddSubgroup.mem_sup]
@@ -464,7 +464,7 @@ theorem span_singleton_smul_eq {r : R} (hr : IsUnit r) (x : M) : (R ∙ r • x)
   exact span_singleton_group_smul_eq R r x
 #align submodule.span_singleton_smul_eq Submodule.span_singleton_smul_eq
 
-theorem disjoint_span_singleton {K E : Type _} [DivisionRing K] [AddCommGroup E] [Module K E]
+theorem disjoint_span_singleton {K E : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     {s : Submodule K E} {x : E} : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
   refine' disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, _⟩
   intro H y hy hyx
@@ -475,7 +475,7 @@ theorem disjoint_span_singleton {K E : Type _} [DivisionRing K] [AddCommGroup E]
     rw [H hy, smul_zero]
 #align submodule.disjoint_span_singleton Submodule.disjoint_span_singleton
 
-theorem disjoint_span_singleton' {K E : Type _} [DivisionRing K] [AddCommGroup E] [Module K E]
+theorem disjoint_span_singleton' {K E : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     {p : Submodule K E} {x : E} (x0 : x ≠ 0) : Disjoint p (K ∙ x) ↔ x ∉ p :=
   disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
 #align submodule.disjoint_span_singleton' Submodule.disjoint_span_singleton'
@@ -549,7 +549,7 @@ theorem span_singleton_eq_bot : (R ∙ x) = ⊥ ↔ x = 0 :=
 theorem span_zero : span R (0 : Set M) = ⊥ := by rw [← singleton_zero, span_singleton_eq_bot]
 #align submodule.span_zero Submodule.span_zero
 
-theorem span_singleton_eq_span_singleton {R M : Type _} [Ring R] [AddCommGroup M] [Module R M]
+theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] {x y : M} : ((R ∙ x) = R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
   by_cases hx : x = 0
   · rw [hx, span_zero_singleton, eq_comm, span_singleton_eq_bot]
@@ -773,7 +773,7 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
 
 end
 
-variable {M' : Type _} [AddCommMonoid M'] [Module R M'] (q₁ q₁' : Submodule R M')
+variable {M' : Type*} [AddCommMonoid M'] [Module R M'] (q₁ q₁' : Submodule R M')
 
 /-- The product of two submodules is a submodule. -/
 def prod : Submodule R (M × M') :=
@@ -868,7 +868,7 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
-variable {F : Type _} [sc : SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [sc : SemilinearMapClass F τ₁₂ M M₂]
 
 theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ LinearMap.ker f := by
   refine' le_antisymm _ (sup_le (le_comap_map _ _) (comap_mono bot_le))
@@ -898,7 +898,7 @@ variable [Module R M] [Module R₂ M₂]
 
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
-variable {F : Type _} [sc : SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [sc : SemilinearMapClass F τ₁₂ M M₂]
 
 protected theorem map_le_map_iff (f : F) {p p'} : map f p ≤ map f p' ↔ p ≤ p' ⊔ ker f := by
   rw [map_le_iff_le_comap, Submodule.comap_map_eq]
@@ -956,7 +956,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
-variable {F : Type _} {σ₁₂ : R →+* R₂} [SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} {σ₁₂ : R →+* R₂} [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- Two linear maps are equal on `Submodule.span s` iff they are equal on `s`. -/
 theorem eqOn_span_iff {s : Set M} {f g : F} : Set.EqOn f g (span R s) ↔ Set.EqOn f g s := by
@@ -987,7 +987,7 @@ theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) 
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at
 each `v i`, then they are equal. -/
-theorem ext_on_range {ι : Type _} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
+theorem ext_on_range {ι : Type*} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
     (h : ∀ i, f (v i) = g (v i)) : f = g :=
   ext_on hv (Set.forall_range_iff.2 h)
 #align linear_map.ext_on_range LinearMap.ext_on_range

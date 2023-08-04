@@ -37,7 +37,7 @@ noncomputable section
 
 open Topology TopologicalSpace Filter Encodable Set
 
-variable {α β γ ι : Type _}
+variable {α β γ ι : Type*}
 
 set_option linter.uppercaseLean3 false
 
@@ -194,7 +194,7 @@ section residual
 variable [TopologicalSpace α]
 
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
-def residual (α : Type _) [TopologicalSpace α] : Filter α :=
+def residual (α : Type*) [TopologicalSpace α] : Filter α :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
 #align residual residual
 

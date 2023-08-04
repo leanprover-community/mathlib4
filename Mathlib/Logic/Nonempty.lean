@@ -21,7 +21,7 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 -/
 
 
-variable {γ : α → Type _}
+variable {γ : α → Type*}
 
 instance (priority := 20) Zero.nonempty [Zero α] : Nonempty α :=
   ⟨0⟩

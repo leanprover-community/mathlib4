@@ -81,7 +81,7 @@ theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
 #align list.nth_le_of_fn' List.nthLe_ofFn'
 
 @[simp]
-theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
+theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
 #align list.map_of_fn List.map_ofFn

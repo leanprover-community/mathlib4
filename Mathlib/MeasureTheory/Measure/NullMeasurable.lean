@@ -58,14 +58,14 @@ measurable, measure, null measurable, completion
 
 open Filter Set Encodable
 
-variable {ι α β γ : Type _}
+variable {ι α β γ : Type*}
 
 namespace MeasureTheory
 
 /-- A type tag for `α` with `MeasurableSet` given by `NullMeasurableSet`. -/
 @[nolint unusedArguments]
-def NullMeasurableSpace (α : Type _) [MeasurableSpace α]
-    (_μ : Measure α := by volume_tac) : Type _ :=
+def NullMeasurableSpace (α : Type*) [MeasurableSpace α]
+    (_μ : Measure α := by volume_tac) : Type* :=
   α
 #align measure_theory.null_measurable_space MeasureTheory.NullMeasurableSpace
 

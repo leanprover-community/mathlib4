@@ -52,7 +52,7 @@ open NormedField Set Seminorm TopologicalSpace Filter
 
 open BigOperators NNReal Pointwise Topology
 
-variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type _}
+variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 
 section FilterBasis
 
@@ -225,13 +225,13 @@ def IsBounded (p : ι → Seminorm 𝕜 E) (q : ι' → Seminorm 𝕜₂ F) (f :
   ∀ i, ∃ s : Finset ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • s.sup p
 #align seminorm.is_bounded Seminorm.IsBounded
 
-theorem isBounded_const (ι' : Type _) [Nonempty ι'] {p : ι → Seminorm 𝕜 E} {q : Seminorm 𝕜₂ F}
+theorem isBounded_const (ι' : Type*) [Nonempty ι'] {p : ι → Seminorm 𝕜 E} {q : Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) :
     IsBounded p (fun _ : ι' => q) f ↔ ∃ (s : Finset ι) (C : ℝ≥0), q.comp f ≤ C • s.sup p := by
   simp only [IsBounded, forall_const]
 #align seminorm.is_bounded_const Seminorm.isBounded_const
 
-theorem const_isBounded (ι : Type _) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F}
+theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) : IsBounded (fun _ : ι => p) q f ↔ ∀ i, ∃ C : ℝ≥0, (q i).comp f ≤ C • p := by
   constructor <;> intro h i
   · rcases h i with ⟨s, C, h⟩
@@ -874,11 +874,11 @@ theorem Inducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F
 #align inducing.with_seminorms Inducing.withSeminorms
 
 /-- (Disjoint) union of seminorm families. -/
-protected def SeminormFamily.sigma {κ : ι → Type _} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :
+protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :
     SeminormFamily 𝕜 E ((i : ι) × κ i) :=
   fun ⟨i, k⟩ => p i k
 
-theorem withSeminorms_iInf {κ : ι → Type _} [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)]
+theorem withSeminorms_iInf {κ : ι → Type*} [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)]
     {p : (i : ι) → SeminormFamily 𝕜 E (κ i)} {t : ι → TopologicalSpace E}
     [∀ i, @TopologicalAddGroup E (t i) _] (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
     WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by

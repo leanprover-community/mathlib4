@@ -22,7 +22,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 -/
 
 
-variable {ι R K M M₁ M₂ M₃ V : Type _}
+variable {ι R K M M₁ M₂ M₃ V : Type*}
 
 namespace QuadraticForm
 

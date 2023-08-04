@@ -18,7 +18,7 @@ open Filter ENNReal
 
 namespace ENNReal
 
-variable {α : Type _} {f : Filter α}
+variable {α : Type*} {f : Filter α}
 
 theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
     ∀ᶠ y in f, u y ≤ f.limsup u :=

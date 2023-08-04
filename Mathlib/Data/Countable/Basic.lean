@@ -46,7 +46,7 @@ protected theorem Function.Embedding.countable [Countable β] (f : α ↪ β) : 
 end Embedding
 
 /-!
-### Operations on `Type _`s
+### Operations on `Type*`s
 -/
 
 section type

@@ -75,7 +75,7 @@ theorem Subtype.isEmpty_of_false {p : α → Prop} (hp : ∀ a, ¬p a) : IsEmpty
 instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
   Subtype.isEmpty_of_false fun _ ↦ id
 
-instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type _} : IsEmpty (Sigma E) :=
+instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type*} : IsEmpty (Sigma E) :=
   Function.isEmpty Sigma.fst
 
 example [h : Nonempty α] [IsEmpty β] : IsEmpty (α → β) := by infer_instance
@@ -149,7 +149,7 @@ theorem isEmpty_pi {π : α → Sort _} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmp
 #align is_empty_pi isEmpty_pi
 
 @[simp]
-theorem isEmpty_sigma {α} {E : α → Type _} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by
+theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by
   simp only [← not_nonempty_iff, nonempty_sigma, not_exists]
 #align is_empty_sigma isEmpty_sigma
 
@@ -164,7 +164,7 @@ theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x
 #align is_empty_subtype isEmpty_subtype
 
 @[simp]
-theorem isEmpty_prod {α β : Type _} : IsEmpty (α × β) ↔ IsEmpty α ∨ IsEmpty β := by
+theorem isEmpty_prod {α β : Type*} : IsEmpty (α × β) ↔ IsEmpty α ∨ IsEmpty β := by
   simp only [← not_nonempty_iff, nonempty_prod, not_and_or]
 #align is_empty_prod isEmpty_prod
 

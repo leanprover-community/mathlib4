@@ -115,7 +115,7 @@ theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
 #align function.embedding.coe_fn_mk Function.Embedding.coeFn_mk
 
 @[simp]
-theorem mk_coe {α β : Type _} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
+theorem mk_coe {α β : Type*} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
   rfl
 #align function.embedding.mk_coe Function.Embedding.mk_coe
 
@@ -265,12 +265,12 @@ def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
 #align function.embedding.sectr_apply Function.Embedding.sectr_apply
 
 /-- If `e₁` and `e₂` are embeddings, then so is `prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
-def prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
+def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.Prod_map e₂.injective⟩
 #align function.embedding.prod_map Function.Embedding.prodMap
 
 @[simp]
-theorem coe_prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
+theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
     e₁.prodMap e₂ = Prod.map e₁ e₂ :=
   rfl
 #align function.embedding.coe_prod_map Function.Embedding.coe_prodMap
@@ -285,7 +285,7 @@ section Sum
 open Sum
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
-def sumMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α γ ↪ Sum β δ :=
+def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α γ ↪ Sum β δ :=
   ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
 #align function.embedding.sum_map Function.Embedding.sumMap
 
@@ -296,14 +296,14 @@ theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap 
 
 /-- The embedding of `α` into the sum `α ⊕ β`. -/
 @[simps]
-def inl {α β : Type _} : α ↪ Sum α β :=
+def inl {α β : Type*} : α ↪ Sum α β :=
   ⟨Sum.inl, fun _ _ => Sum.inl.inj⟩
 #align function.embedding.inl Function.Embedding.inl
 #align function.embedding.inl_apply Function.Embedding.inl_apply
 
 /-- The embedding of `β` into the sum `α ⊕ β`. -/
 @[simps]
-def inr {α β : Type _} : β ↪ Sum α β :=
+def inr {α β : Type*} : β ↪ Sum α β :=
   ⟨Sum.inr, fun _ _ => Sum.inr.inj⟩
 #align function.embedding.inr Function.Embedding.inr
 #align function.embedding.inr_apply Function.Embedding.inr_apply
@@ -312,7 +312,7 @@ end Sum
 
 section Sigma
 
-variable {α α' : Type _} {β : α → Type _} {β' : α' → Type _}
+variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 
 /-- `Sigma.mk` as a `Function.Embedding`. -/
 @[simps apply]
@@ -369,12 +369,12 @@ protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪
 
 open Set
 
-theorem swap_apply {α β : Type _} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y z : α) :
+theorem swap_apply {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y z : α) :
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) :=
   f.injective.swap_apply x y z
 #align function.embedding.swap_apply Function.Embedding.swap_apply
 
-theorem swap_comp {α β : Type _} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y : α) :
+theorem swap_comp {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y : α) :
     Equiv.swap (f x) (f y) ∘ f = f ∘ Equiv.swap x y :=
   f.injective.swap_comp x y
 #align function.embedding.swap_comp Function.Embedding.swap_comp
@@ -450,12 +450,12 @@ theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _
 #align equiv.embedding_congr_apply_trans Equiv.embeddingCongr_apply_trans
 
 @[simp]
-theorem refl_toEmbedding {α : Type _} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
+theorem refl_toEmbedding {α : Type*} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
   rfl
 #align equiv.refl_to_embedding Equiv.refl_toEmbedding
 
 @[simp]
-theorem trans_toEmbedding {α β γ : Type _} (e : α ≃ β) (f : β ≃ γ) :
+theorem trans_toEmbedding {α β γ : Type*} (e : α ≃ β) (f : β ≃ γ) :
     (e.trans f).toEmbedding = e.toEmbedding.trans f.toEmbedding :=
   rfl
 #align equiv.trans_to_embedding Equiv.trans_toEmbedding
@@ -464,7 +464,7 @@ end Equiv
 
 section Subtype
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` can be injectively split
 into a sum of subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right. -/

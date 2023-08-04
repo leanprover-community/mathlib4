@@ -18,7 +18,7 @@ We define the global infix notation `::ₘ` for `Multiset.cons`.
 
 open List Subtype Nat Function
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed.  -/
@@ -1148,7 +1148,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
   exact congr_arg _ (List.map_congr h)
 #align multiset.map_congr Multiset.map_congr
 
-theorem map_hcongr {β' : Type _} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
+theorem map_hcongr {β' : Type*} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
     (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (map f m) (map f' m) := by
   subst h; simp at hf
   simp [map_congr rfl hf]
@@ -1593,7 +1593,7 @@ instance decidableDforallMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
 #align multiset.decidable_dforall_multiset Multiset.decidableDforallMultiset
 
 /-- decidable equality for functions whose domain is bounded by multisets -/
-instance decidableEqPiMultiset {β : α → Type _} [h : ∀ a, DecidableEq (β a)] :
+instance decidableEqPiMultiset {β : α → Type*} [h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ m, β a) := fun f g =>
   decidable_of_iff (∀ (a) (h : a ∈ m), f a h = g a h) (by simp [Function.funext_iff])
 #align multiset.decidable_eq_pi_multiset Multiset.decidableEqPiMultiset
@@ -2527,7 +2527,7 @@ instance : DistribLattice (Multiset α) :=
             simp only [max_min_distrib_left, Multiset.count_inter, Multiset.sup_eq_union,
               Multiset.count_union, Multiset.inf_eq_inter] }
 
-theorem count_map {α β : Type _} (f : α → β) (s : Multiset α) [DecidableEq β] (b : β) :
+theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq β] (b : β) :
     count b (map f s) = card (s.filter fun a => b = f a) := by
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countp_map]
 #align multiset.count_map Multiset.count_map
@@ -2656,7 +2656,7 @@ inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
 #align multiset.rel Multiset.Rel
 #align multiset.rel_iff Multiset.Rel_iff
 
-variable {δ : Type _} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
 private theorem rel_flip_aux {s t} (h : Rel r s t) : Rel (flip r) t s :=
   Rel.recOn h Rel.zero fun h₀ _h₁ ih => Rel.cons h₀ ih

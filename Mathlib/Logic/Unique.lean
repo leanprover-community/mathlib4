@@ -242,7 +242,7 @@ protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective 
 #align function.injective.unique Function.Injective.unique
 
 /-- If a constant function is surjective, then the codomain is a singleton. -/
-def Surjective.uniqueOfSurjectiveConst (α : Type _) {β : Type _} (b : β)
+def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
     (h : Function.Surjective (Function.const α b)) : Unique β :=
   @uniqueOfSubsingleton _ (subsingleton_of_forall_eq b <| h.forall.mpr fun _ ↦ rfl) b
 #align function.surjective.unique_of_surjective_const Function.Surjective.uniqueOfSurjectiveConst

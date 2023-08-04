@@ -103,7 +103,7 @@ theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Induc
   exact inducing_induced f
 #align uniform_inducing.inducing UniformInducing.inducing
 
-theorem UniformInducing.prod {α' : Type _} {β' : Type _} [UniformSpace α'] [UniformSpace β']
+theorem UniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformInducing e₁) (h₂ : UniformInducing e₂) :
     UniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
   ⟨by simp [(· ∘ ·), uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
@@ -170,7 +170,7 @@ theorem UniformEmbedding.comp {g : β → γ} (hg : UniformEmbedding g) {f : α 
   { hg.toUniformInducing.comp hf.toUniformInducing with inj := hg.inj.comp hf.inj }
 #align uniform_embedding.comp UniformEmbedding.comp
 
-theorem Equiv.uniformEmbedding {α β : Type _} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
+theorem Equiv.uniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (h₁ : UniformContinuous f) (h₂ : UniformContinuous f.symm) : UniformEmbedding f :=
   uniformEmbedding_iff'.2 ⟨f.injective, h₁, by rwa [← Equiv.prodCongr_apply, ← map_equiv_symm]⟩
 #align equiv.uniform_embedding Equiv.uniformEmbedding
@@ -263,7 +263,7 @@ theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : Unif
     inj := (de.subtype p).inj }
 #align uniform_embedding_subtype_emb uniformEmbedding_subtypeEmb
 
-theorem UniformEmbedding.prod {α' : Type _} {β' : Type _} [UniformSpace α'] [UniformSpace β']
+theorem UniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformEmbedding e₁) (h₂ : UniformEmbedding e₂) :
     UniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) :=
   { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.Prod_map h₂.inj }
@@ -401,7 +401,7 @@ instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace
 
 end
 
-theorem uniformEmbedding_comap {α : Type _} {β : Type _} {f : α → β} [u : UniformSpace β]
+theorem uniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : UniformSpace β]
     (hf : Function.Injective f) : @UniformEmbedding α β (UniformSpace.comap f u) u f :=
   @UniformEmbedding.mk _ _ (UniformSpace.comap f u) _ _
     (@UniformInducing.mk _ _ (UniformSpace.comap f u) _ _ rfl) hf
@@ -423,7 +423,7 @@ theorem Embedding.to_uniformEmbedding {α β} [TopologicalSpace α] [u : Uniform
 
 section UniformExtension
 
-variable {α : Type _} {β : Type _} {γ : Type _} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
+variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
   {e : β → α} (h_e : UniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)
 

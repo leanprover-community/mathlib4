@@ -36,7 +36,7 @@ open Topology Filter TopologicalSpace Filter Set Function
 
 namespace WithZeroTopology
 
-variable {α Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ₂ : Γ₀} {l : Filter α}
+variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ₂ : Γ₀} {l : Filter α}
   {f : α → Γ₀}
 
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.

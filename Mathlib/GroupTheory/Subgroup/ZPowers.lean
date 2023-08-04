@@ -16,11 +16,11 @@ subgroup, subgroups
 -/
 
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {A : Type _} [AddGroup A]
+variable {A : Type*} [AddGroup A]
 
-variable {N : Type _} [Group N]
+variable {N : Type*} [Group N]
 
 namespace Subgroup
 
@@ -132,7 +132,7 @@ instance (a : A) : Countable (zmultiples a) :=
 
 section Ring
 
-variable {R : Type _} [Ring R] (r : R) (k : ℤ)
+variable {R : Type*} [Ring R] (r : R) (k : ℤ)
 
 @[simp]
 theorem int_cast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by

@@ -29,30 +29,30 @@ open scoped Topology Manifold Bundle
 /-! ### Definition of smooth functions between manifolds -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M` over the pair `(E, H)`.
-  {E : Type _}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H]
-  {I : ModelWithCorners 𝕜 E H} {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
+  {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [Is : SmoothManifoldWithCorners I M]
   -- declare a smooth manifold `M'` over the pair `(E', H')`.
-  {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
+  {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [I's : SmoothManifoldWithCorners I' M']
   -- declare a smooth manifold `N` over the pair `(F, G)`.
-  {F : Type _}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type _} [TopologicalSpace G]
-  {J : ModelWithCorners 𝕜 F G} {N : Type _} [TopologicalSpace N] [ChartedSpace G N]
+  {F : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [Js : SmoothManifoldWithCorners J N]
   -- declare a smooth manifold `N'` over the pair `(F', G')`.
-  {F' : Type _}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type _} [TopologicalSpace G']
-  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type _} [TopologicalSpace N'] [ChartedSpace G' N']
+  {F' : Type*}
+  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   [J's : SmoothManifoldWithCorners J' N']
   -- declare some additional normed spaces, used for fibers of vector bundles
-  {F₁ : Type _}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type _} [NormedAddCommGroup F₂]
+  {F₁ : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
   [NormedSpace 𝕜 F₂]
   -- declare functions, sets, points and smoothness indices
   {f f₁ : M → M'}
@@ -569,8 +569,8 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     apply (LocalHomeomorph.open_target _).preimage I.continuous_invFun
     simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
-    haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=
-      Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type _)
+    haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type*)) :=
+      Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type*)
     this.mdifferentiableAt
   have B :
     fderivWithin 𝕜 (fun x' : E => (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v = (v, 0)

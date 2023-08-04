@@ -175,7 +175,7 @@ theorem CauchySeq.nonempty [SemilatticeSup β] {u : β → α} (hu : CauchySeq u
   @nonempty_of_neBot _ _ <| (map_neBot_iff _).1 hu.1
 #align cauchy_seq.nonempty CauchySeq.nonempty
 
-theorem CauchySeq.mem_entourage {β : Type _} [SemilatticeSup β] {u : β → α} (h : CauchySeq u)
+theorem CauchySeq.mem_entourage {β : Type*} [SemilatticeSup β] {u : β → α} (h : CauchySeq u)
     {V : Set (α × α)} (hV : V ∈ 𝓤 α) : ∃ k₀, ∀ i j, k₀ ≤ i → k₀ ≤ j → (u i, u j) ∈ V := by
   haveI := h.nonempty
   have := h.tendsto_uniformity; rw [← prod_atTop_atTop_eq] at this
@@ -274,7 +274,7 @@ theorem Filter.Tendsto.subseq_mem_entourage {V : ℕ → Set (α × α)} (hV : �
 
 /-- If a Cauchy sequence has a convergent subsequence, then it converges. -/
 theorem tendsto_nhds_of_cauchySeq_of_subseq [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)
-    {ι : Type _} {f : ι → β} {p : Filter ι} [NeBot p] (hf : Tendsto f p atTop) {a : α}
+    {ι : Type*} {f : ι → β} {p : Filter ι} [NeBot p] (hf : Tendsto f p atTop) {a : α}
     (ha : Tendsto (u ∘ f) p (𝓝 a)) : Tendsto u atTop (𝓝 a) :=
   le_nhds_of_cauchy_adhp hu (mapClusterPt_of_comp hf ha)
 #align tendsto_nhds_of_cauchy_seq_of_subseq tendsto_nhds_of_cauchySeq_of_subseq

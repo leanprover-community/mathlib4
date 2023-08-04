@@ -345,29 +345,29 @@ instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (R
 
 /-- A class for a well founded relation `<`. -/
 @[reducible]
-def WellFoundedLT (α : Type _) [LT α] : Prop :=
+def WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 #align well_founded_lt WellFoundedLT
 
 /-- A class for a well founded relation `>`. -/
 @[reducible]
-def WellFoundedGT (α : Type _) [LT α] : Prop :=
+def WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
   h
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
   h
 
-theorem wellFoundedGT_dual_iff (α : Type _) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
+theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 #align well_founded_gt_dual_iff wellFoundedGT_dual_iff
 
-theorem wellFoundedLT_dual_iff (α : Type _) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
+theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 #align well_founded_lt_dual_iff wellFoundedLT_dual_iff
 
@@ -588,7 +588,7 @@ end Prod
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
 strict relation `s`. Compare `Preorder.lt_iff_le_not_le`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
-class IsNonstrictStrictOrder (α : Type _) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) :
+class IsNonstrictStrictOrder (α : Type*) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) :
     Prop where
   /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a

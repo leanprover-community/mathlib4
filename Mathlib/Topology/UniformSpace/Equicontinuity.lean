@@ -85,7 +85,7 @@ section
 
 open UniformSpace Filter Set Uniformity Topology UniformConvergence
 
-variable {ι κ X Y Z α β γ 𝓕 : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {ι κ X Y Z α β γ 𝓕 : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
@@ -269,7 +269,7 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type _} {p : κ → Prop} {s : κ → Set X}
+theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type*} {p : κ → Prop} {s : κ → Set X}
     {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p s) :
     EquicontinuousAt F x₀ ↔ ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x ∈ s k, ∀ i, (F i x₀, F i x) ∈ U := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
@@ -278,7 +278,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type _} {p : κ → Prop
   rfl
 #align filter.has_basis.equicontinuous_at_iff_left Filter.HasBasis.equicontinuousAt_iff_left
 
-theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type _} {p : κ → Prop} {s : κ → Set (α × α)}
+theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type*} {p : κ → Prop} {s : κ → Set (α × α)}
     {F : ι → X → α} {x₀ : X} (hα : (𝓤 α).HasBasis p s) :
     EquicontinuousAt F x₀ ↔ ∀ k, p k → ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ s k := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
@@ -288,7 +288,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type _} {p : κ → Pro
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type _} {p₁ : κ₁ → Prop} {s₁ : κ₁ → Set X}
+theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop} {s₁ : κ₁ → Set X}
     {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p₁ s₁)
     (hα : (𝓤 α).HasBasis p₂ s₂) :
     EquicontinuousAt F x₀ ↔
@@ -301,7 +301,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type _} {p₁ : κ�
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type _} {p : κ → Prop}
+theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type*} {p : κ → Prop}
     {s : κ → Set (β × β)} {F : ι → β → α} (hβ : (𝓤 β).HasBasis p s) :
     UniformEquicontinuous F ↔
       ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x y, (x, y) ∈ s k → ∀ i, (F i x, F i y) ∈ U := by
@@ -311,7 +311,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type _} {p : κ →
   rfl
 #align filter.has_basis.uniform_equicontinuous_iff_left Filter.HasBasis.uniformEquicontinuous_iff_left
 
-theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type _} {p : κ → Prop}
+theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type*} {p : κ → Prop}
     {s : κ → Set (α × α)} {F : ι → β → α} (hα : (𝓤 α).HasBasis p s) :
     UniformEquicontinuous F ↔ ∀ k, p k → ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ s k := by
   rw [uniformEquicontinuous_iff_uniformContinuous, UniformContinuous,
@@ -321,7 +321,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type _} {p : κ �
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type _} {p₁ : κ₁ → Prop}
+theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
     {s₁ : κ₁ → Set (β × β)} {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → β → α}
     (hβ : (𝓤 β).HasBasis p₁ s₁) (hα : (𝓤 α).HasBasis p₂ s₂) :
     UniformEquicontinuous F ↔

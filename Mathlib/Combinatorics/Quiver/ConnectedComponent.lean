@@ -23,7 +23,7 @@ universe v u
 
 namespace Quiver
 
-variable (V : Type _) [Quiver.{u+1} V]
+variable (V : Type*) [Quiver.{u+1} V]
 
 /-- Two vertices are related in the zigzag setoid if there is a
     zigzag of arrows from one to the other. -/
@@ -35,7 +35,7 @@ def zigzagSetoid : Setoid V :=
 /-- The type of weakly connected components of a directed graph. Two vertices are
     in the same weakly connected component if there is a zigzag of arrows from one
     to the other. -/
-def WeaklyConnectedComponent : Type _ :=
+def WeaklyConnectedComponent : Type* :=
   Quotient (zigzagSetoid V)
 #align quiver.weakly_connected_component Quiver.WeaklyConnectedComponent
 

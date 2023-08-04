@@ -57,9 +57,9 @@ submonoid, submonoids
 
 -- Only needed for notation
 -- Only needed for notation
-variable {M : Type _} {N : Type _}
+variable {M : Type*} {N : Type*}
 
-variable {A : Type _}
+variable {A : Type*}
 
 section NonAssoc
 
@@ -68,7 +68,7 @@ variable [MulOneClass M] {s : Set M}
 variable [AddZeroClass A] {t : Set A}
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type _) (M : Type _) [One M] [SetLike S M] : Prop where
+class OneMemClass (S : Type*) (M : Type*) [One M] [SetLike S M] : Prop where
   /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
   one_mem : ∀ s : S, (1 : M) ∈ s
 #align one_mem_class OneMemClass
@@ -76,7 +76,7 @@ class OneMemClass (S : Type _) (M : Type _) [One M] [SetLike S M] : Prop where
 export OneMemClass (one_mem)
 
 /-- `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
-class ZeroMemClass (S : Type _) (M : Type _) [Zero M] [SetLike S M] : Prop where
+class ZeroMemClass (S : Type*) (M : Type*) [Zero M] [SetLike S M] : Prop where
   /-- By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. -/
   zero_mem : ∀ s : S, (0 : M) ∈ s
 #align zero_mem_class ZeroMemClass
@@ -88,7 +88,7 @@ attribute [to_additive] OneMemClass
 section
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
-structure Submonoid (M : Type _) [MulOneClass M] extends Subsemigroup M where
+structure Submonoid (M : Type*) [MulOneClass M] extends Subsemigroup M where
   /-- A submonoid contains `1`. -/
   one_mem' : (1 : M) ∈ carrier
 #align submonoid Submonoid
@@ -101,7 +101,7 @@ add_decl_doc Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type _) (M : Type _) [MulOneClass M] [SetLike S M] extends
+class SubmonoidClass (S : Type*) (M : Type*) [MulOneClass M] [SetLike S M] extends
   MulMemClass S M, OneMemClass S M : Prop
 #align submonoid_class SubmonoidClass
 
@@ -109,7 +109,7 @@ section
 
 /-- An additive submonoid of an additive monoid `M` is a subset containing 0 and
   closed under addition. -/
-structure AddSubmonoid (M : Type _) [AddZeroClass M] extends AddSubsemigroup M where
+structure AddSubmonoid (M : Type*) [AddZeroClass M] extends AddSubsemigroup M where
   /-- An additive submonoid contains `0`. -/
   zero_mem' : (0 : M) ∈ carrier
 #align add_submonoid AddSubmonoid
@@ -123,7 +123,7 @@ add_decl_doc AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type _) (M : Type _) [AddZeroClass M] [SetLike S M] extends
+class AddSubmonoidClass (S : Type*) (M : Type*) [AddZeroClass M] [SetLike S M] extends
   AddMemClass S M, ZeroMemClass S M : Prop
 #align add_submonoid_class AddSubmonoidClass
 
@@ -624,7 +624,7 @@ section IsUnit
 
 /-- The submonoid consisting of the units of a monoid -/
 @[to_additive "The additive submonoid consisting of the additive units of an additive monoid"]
-def IsUnit.submonoid (M : Type _) [Monoid M] : Submonoid M where
+def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
   carrier := setOf IsUnit
   one_mem' := by simp only [isUnit_one, Set.mem_setOf_eq]
   mul_mem' := by
@@ -635,7 +635,7 @@ def IsUnit.submonoid (M : Type _) [Monoid M] : Submonoid M where
 #align is_add_unit.add_submonoid IsAddUnit.addSubmonoid
 
 @[to_additive]
-theorem IsUnit.mem_submonoid_iff {M : Type _} [Monoid M] (a : M) :
+theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
     a ∈ IsUnit.submonoid M ↔ IsUnit a := by
   change a ∈ setOf IsUnit ↔ IsUnit a
   rw [Set.mem_setOf_eq]

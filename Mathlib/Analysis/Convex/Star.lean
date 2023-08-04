@@ -49,7 +49,7 @@ open Set
 
 open Convex Pointwise
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 section OrderedSemiring
 
@@ -143,7 +143,7 @@ theorem StarConvex.prod {y : F} {s : Set E} {t : Set F} (hs : StarConvex 𝕜 x 
   ⟨hs hy.1 ha hb hab, ht hy.2 ha hb hab⟩
 #align star_convex.prod StarConvex.prod
 
-theorem starConvex_pi {ι : Type _} {E : ι → Type _} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
+theorem starConvex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
     {x : ∀ i, E i} {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → StarConvex 𝕜 (x i) (t i)) :
     StarConvex 𝕜 x (s.pi t) := fun _ hy _ _ ha hb hab i hi => ht hi (hy i hi) ha hb hab
 #align star_convex_pi starConvex_pi

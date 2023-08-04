@@ -18,7 +18,7 @@ on the type of locally constant functions.
 
 namespace LocallyConstant
 
-variable {X Y : Type _} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X]
 
 @[to_additive]
 instance [One Y] : One (LocallyConstant X Y) where one := const X 1
@@ -257,7 +257,7 @@ instance [CommRing Y] : CommRing (LocallyConstant X Y) :=
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
-variable {R : Type _}
+variable {R : Type*}
 
 instance [Monoid R] [MulAction R Y] : MulAction R (LocallyConstant X Y) :=
   Function.Injective.mulAction _ coe_injective fun _ _ => rfl

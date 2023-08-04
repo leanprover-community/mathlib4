@@ -30,7 +30,7 @@ open Set Filter Metric MeasureTheory TopologicalSpace
 
 open scoped NNReal ENNReal Topology
 
-variable {α : Type _} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
+variable {α : Type*} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
 
 variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
 
@@ -76,7 +76,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   intros i
   set W := atTop.blimsup Y₁ p \ Z i
   by_contra contra
-  obtain ⟨d, hd, hd'⟩ : ∃ d, d ∈ W ∧ ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ),
+  obtain ⟨d, hd, hd'⟩ : ∃ d, d ∈ W ∧ ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ),
       Tendsto δ l (𝓝[>] 0) → (∀ᶠ j in l, d ∈ closedBall (w j) (2 * δ j)) →
         Tendsto (fun j => μ (W ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) :=
     Measure.exists_mem_of_measure_ne_zero_of_ae contra

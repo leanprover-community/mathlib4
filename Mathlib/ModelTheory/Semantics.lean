@@ -57,7 +57,7 @@ namespace Language
 
 variable {L : Language.{u, v}} {L' : Language}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
 variable {α : Type u'} {β : Type v'}
 
@@ -145,7 +145,7 @@ theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {s : Set α} (h : �
 #align first_order.language.term.realize_restrict_var FirstOrder.Language.Term.realize_restrictVar
 
 @[simp]
-theorem realize_restrictVarLeft [DecidableEq α] {γ : Type _} {t : L.Term (Sum α γ)} {s : Set α}
+theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (Sum α γ)} {s : Set α}
     (h : ↑t.varFinsetLeft ⊆ s) {v : α → M} {xs : γ → M} :
     (t.restrictVarLeft (Set.inclusion h)).realize (Sum.elim (v ∘ (↑)) xs) =
       t.realize (Sum.elim v xs) := by

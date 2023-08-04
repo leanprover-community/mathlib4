@@ -36,7 +36,7 @@ This file is similar to `Algebra.Group.TypeTags`.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-! ### Order dual -/
 
@@ -154,7 +154,7 @@ end OrderDual
 
 
 /-- A type synonym to equip a type with its lexicographic order. -/
-def Lex (α : Type _) :=
+def Lex (α : Type*) :=
   α
 #align lex Lex
 

@@ -29,7 +29,7 @@ This file proves basic results about the sum type `α ⊕ β`.
 
 ## Notes
 
-The definition of `Sum` takes values in `Type _`. This effectively forbids `Prop`- valued sum types.
+The definition of `Sum` takes values in `Type*`. This effectively forbids `Prop`- valued sum types.
 To this effect, we have `PSum`, which takes value in `Sort*` and carries a more complicated
 universe signature in consequence. The `Prop` version is `or`.
 -/
@@ -37,7 +37,7 @@ universe signature in consequence. The `Prop` version is `or`.
 
 universe u v w x
 
-variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type _}
+variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
 namespace Sum
 

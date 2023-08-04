@@ -62,7 +62,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-!
 

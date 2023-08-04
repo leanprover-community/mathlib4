@@ -23,7 +23,7 @@ open BigOperators Classical
 
 noncomputable section
 
-variable {α β ι : Type _}
+variable {α β ι : Type*}
 
 namespace Finsupp
 /-- Given `f : α →₀ ℕ`, `f.toMultiset` is the multiset with multiplicities given by the values of

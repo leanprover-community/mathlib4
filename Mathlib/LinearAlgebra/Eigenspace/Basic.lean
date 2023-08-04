@@ -80,7 +80,7 @@ def HasEigenvalue (f : End R M) (a : R) : Prop :=
 #align module.End.has_eigenvalue Module.End.HasEigenvalue
 
 /-- The eigenvalues of the endomorphism `f`, as a subtype of `R`. -/
-def Eigenvalues (f : End R M) : Type _ :=
+def Eigenvalues (f : End R M) : Type* :=
   { μ : R // f.HasEigenvalue μ }
 #align module.End.eigenvalues Module.End.Eigenvalues
 

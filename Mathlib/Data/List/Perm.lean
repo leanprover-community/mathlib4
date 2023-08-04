@@ -323,7 +323,7 @@ section Rel
 
 open Relator
 
-variable {γ : Type _} {δ : Type _} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {γ : Type*} {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
 -- mathport name: «expr ∘r »
 local infixr:80 " ∘r " => Relation.Comp
@@ -887,7 +887,7 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
     not_mem_nil, or_false, or_comm]
 #align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
-theorem Subperm.cons_right {α : Type _} {l l' : List α} (x : α) (h : l <+~ l') : l <+~ x :: l' :=
+theorem Subperm.cons_right {α : Type*} {l l' : List α} (x : α) (h : l <+~ l') : l <+~ x :: l' :=
   h.trans (sublist_cons x l').subperm
 #align list.subperm.cons_right List.Subperm.cons_right
 
@@ -1152,7 +1152,7 @@ theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
     exact fun a b h h₁ h₂ => h h₂ h₁
 #align list.perm.erasep List.Perm.erasep
 
-theorem Perm.take_inter {α : Type _} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
+theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
   exact Perm.trans (show xs.take n ~ xs.filter (· ∈ xs.take n) by
@@ -1263,7 +1263,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
 #align list.mem_permutations List.mem_permutations
 
 --Porting note: temporary theorem to solve diamond issue
-private theorem DecEq_eq {α : Type _} [DecidableEq α] :
+private theorem DecEq_eq {α : Type*} [DecidableEq α] :
      instBEqList = @instBEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂

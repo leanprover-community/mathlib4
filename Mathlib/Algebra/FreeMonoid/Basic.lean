@@ -20,7 +20,7 @@ import Mathlib.Data.List.BigOperators.Basic
 -/
 
 
-variable {α : Type _} {β : Type _} {γ : Type _} {M : Type _} [Monoid M] {N : Type _} [Monoid N]
+variable {α : Type*} {β : Type*} {γ : Type*} {M : Type*} [Monoid M] {N : Type*} [Monoid N]
 
 /-- Free monoid over a given alphabet. -/
 @[to_additive "Free nonabelian additive monoid over a given alphabet"]

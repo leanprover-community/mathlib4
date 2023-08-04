@@ -41,7 +41,7 @@ noncomputable section
 
 open DirectSum BigOperators Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 variable [CommSemiring R] [CommRing A] [Algebra R A]
 

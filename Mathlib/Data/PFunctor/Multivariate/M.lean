@@ -102,7 +102,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Mp MvPFunctor.mp
 
 /-- `n`-ary M-type for `P` -/
-def M (α : TypeVec n) : Type _ :=
+def M (α : TypeVec n) : Type* :=
   P.mp.Obj α
 
 set_option linter.uppercaseLean3 false in

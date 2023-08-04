@@ -454,7 +454,7 @@ theorem bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) :=
 
 section
 
-variable {α : Type _} [Preorder α]
+variable {α : Type*} [Preorder α]
 
 open Set
 
@@ -1219,7 +1219,7 @@ section Rec
 
 end Rec
 
-theorem liftFun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
+theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
     ((· < ·) ⇒ r) f f ↔ ∀ i : Fin n, r (f (castSucc i)) (f i.succ) := by
   constructor
   · intro H i
@@ -1234,26 +1234,26 @@ theorem liftFun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
 for all `i`. -/
-theorem strictMono_iff_lt_succ {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
+theorem strictMono_iff_lt_succ {α : Type*} [Preorder α] {f : Fin (n + 1) → α} :
     StrictMono f ↔ ∀ i : Fin n, f (castSucc i) < f i.succ :=
   liftFun_iff_succ (· < ·)
 #align fin.strict_mono_iff_lt_succ Fin.strictMono_iff_lt_succ
 
 /-- A function `f` on `Fin (n + 1)` is monotone if and only if `f i ≤ f (i + 1)` for all `i`. -/
-theorem monotone_iff_le_succ {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
+theorem monotone_iff_le_succ {α : Type*} [Preorder α] {f : Fin (n + 1) → α} :
     Monotone f ↔ ∀ i : Fin n, f (castSucc i) ≤ f i.succ :=
   monotone_iff_forall_lt.trans <| liftFun_iff_succ (· ≤ ·)
 #align fin.monotone_iff_le_succ Fin.monotone_iff_le_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly antitone if and only if `f (i + 1) < f i`
 for all `i`. -/
-theorem strictAnti_iff_succ_lt {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
+theorem strictAnti_iff_succ_lt {α : Type*} [Preorder α] {f : Fin (n + 1) → α} :
     StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (castSucc i) :=
   liftFun_iff_succ (· > ·)
 #align fin.strict_anti_iff_succ_lt Fin.strictAnti_iff_succ_lt
 
 /-- A function `f` on `Fin (n + 1)` is antitone if and only if `f (i + 1) ≤ f i` for all `i`. -/
-theorem antitone_iff_succ_le {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
+theorem antitone_iff_succ_le {α : Type*} [Preorder α] {f : Fin (n + 1) → α} :
     Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
   antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
 #align fin.antitone_iff_succ_le Fin.antitone_iff_succ_le

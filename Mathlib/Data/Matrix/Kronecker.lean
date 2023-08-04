@@ -48,9 +48,9 @@ namespace Matrix
 
 open Matrix
 
-variable {R α α' β β' γ γ' : Type _}
+variable {R α α' β β' γ γ' : Type*}
 
-variable {l m n p : Type _} {q r : Type _} {l' m' n' p' : Type _}
+variable {l m n p : Type*} {q r : Type*} {l' m' n' p' : Type*}
 
 section KroneckerMap
 
@@ -174,7 +174,7 @@ theorem kroneckerMap_reindex_right (f : α → β → γ) (em : m ≃ m') (en : 
   kroneckerMap_reindex _ (Equiv.refl _) (Equiv.refl _) _ _ _ _
 #align matrix.kronecker_map_reindex_right Matrix.kroneckerMap_reindex_right
 
-theorem kroneckerMap_assoc {δ ξ ω ω' : Type _} (f : α → β → γ) (g : γ → δ → ω) (f' : α → ξ → ω')
+theorem kroneckerMap_assoc {δ ξ ω ω' : Type*} (f : α → β → γ) (g : γ → δ → ω) (f' : α → ξ → ω')
     (g' : β → δ → ξ) (A : Matrix l m α) (B : Matrix n p β) (D : Matrix q r δ) (φ : ω ≃ ω')
     (hφ : ∀ a b d, φ (g (f a b) d) = f' a (g' b d)) :
     (reindex (Equiv.prodAssoc l n q) (Equiv.prodAssoc m p r)).trans (Equiv.mapMatrix φ)
@@ -183,7 +183,7 @@ theorem kroneckerMap_assoc {δ ξ ω ω' : Type _} (f : α → β → γ) (g : �
   ext fun _ _ => hφ _ _ _
 #align matrix.kronecker_map_assoc Matrix.kroneckerMap_assoc
 
-theorem kroneckerMap_assoc₁ {δ ξ ω : Type _} (f : α → β → γ) (g : γ → δ → ω) (f' : α → ξ → ω)
+theorem kroneckerMap_assoc₁ {δ ξ ω : Type*} (f : α → β → γ) (g : γ → δ → ω) (f' : α → ξ → ω)
     (g' : β → δ → ξ) (A : Matrix l m α) (B : Matrix n p β) (D : Matrix q r δ)
     (h : ∀ a b d, g (f a b) d = f' a (g' b d)) :
     reindex (Equiv.prodAssoc l n q) (Equiv.prodAssoc m p r)

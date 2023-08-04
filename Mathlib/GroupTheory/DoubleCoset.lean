@@ -27,7 +27,7 @@ this is the usual left or right quotient of a group by a subgroup.
 -- porting note: removed import
 -- import Mathlib.Tactic.Group
 
-variable {G : Type _} [Group G] {α : Type _} [Mul α] (J : Subgroup G) (g : G)
+variable {G : Type*} [Group G] {α : Type*} [Mul α] (J : Subgroup G) (g : G)
 
 namespace Doset
 
@@ -77,7 +77,7 @@ def setoid (H K : Set G) : Setoid G :=
 #align doset.setoid Doset.setoid
 
 /-- Quotient of `G` by the double coset relation, i.e. `H \ G / K` -/
-def Quotient (H K : Set G) : Type _ :=
+def Quotient (H K : Set G) : Type* :=
   _root_.Quotient (setoid H K)
 #align doset.quotient Doset.Quotient
 

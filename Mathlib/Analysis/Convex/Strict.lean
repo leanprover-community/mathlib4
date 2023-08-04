@@ -21,7 +21,7 @@ open Set
 
 open Convex Pointwise
 
-variable {𝕜 𝕝 E F β : Type _}
+variable {𝕜 𝕝 E F β : Type*}
 
 open Function Set
 

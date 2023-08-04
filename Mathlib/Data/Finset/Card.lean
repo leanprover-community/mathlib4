@@ -32,7 +32,7 @@ Should we add a noncomputable version?
 
 open Function Multiset Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Finset
 

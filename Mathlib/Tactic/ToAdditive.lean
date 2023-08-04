@@ -324,7 +324,7 @@ def additiveTest (findTranslation? : Name → Option Name)
   unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
-def _root_.List.swapFirstTwo {α : Type _} : List α → List α
+def _root_.List.swapFirstTwo {α : Type*} : List α → List α
   | []      => []
   | [x]     => [x]
   | x::y::l => y::x::l
@@ -1083,7 +1083,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type _} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive

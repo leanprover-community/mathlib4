@@ -26,7 +26,7 @@ Use the statement `open nonZeroDivisors` to access this notation in your own cod
 section nonZeroDivisors
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
-def nonZeroDivisors (R : Type _) [MonoidWithZero R] : Submonoid R where
+def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
   carrier := { x | ∀ z, z * x = 0 → z = 0 }
   one_mem' _ hz := by rwa [mul_one] at hz
   mul_mem' hx₁ hx₂ _ hz := by
@@ -39,7 +39,7 @@ scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
 
 open nonZeroDivisors
 
-variable {M M' M₁ R R' F : Type _} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
+variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
   [Ring R] [CommRing R']
 
 theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
@@ -100,7 +100,7 @@ theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁�
     rw [mul_assoc, hx]
 #align mul_mem_non_zero_divisors mul_mem_nonZeroDivisors
 
-theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type _} [GroupWithZero G₀] {x : G₀}
+theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
     (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
   ⟨⟨x, x⁻¹, mul_inv_cancel (nonZeroDivisors.ne_zero hx),
     inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩

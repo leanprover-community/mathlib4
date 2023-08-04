@@ -664,7 +664,7 @@ theorem forall₂_swap {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p 
 
 /-- We intentionally restrict the type of `α` in this lemma so that this is a safer to use in simp
 than `forall_swap`. -/
-theorem imp_forall_iff {α : Type _} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
+theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
   forall_swap
 #align imp_forall_iff imp_forall_iff
 
@@ -1003,7 +1003,7 @@ theorem some_spec₂ {α : Sort _} {p : α → Prop} {h : ∃ a, p a} (q : α �
 #align classical.some_spec2 Classical.some_spec₂
 
 /-- A version of `Classical.indefiniteDescription` which is definitionally equal to a pair -/
-noncomputable def subtype_of_exists {α : Type _} {P : α → Prop} (h : ∃ x, P x) : { x // P x } :=
+noncomputable def subtype_of_exists {α : Type*} {P : α → Prop} (h : ∃ x, P x) : { x // P x } :=
   ⟨Classical.choose h, Classical.choose_spec h⟩
 #align classical.subtype_of_exists Classical.subtype_of_exists
 

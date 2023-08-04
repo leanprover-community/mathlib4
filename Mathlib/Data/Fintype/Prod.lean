@@ -20,7 +20,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Finset Function
 
@@ -41,17 +41,17 @@ theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.o
 
 end Set
 
-instance (α β : Type _) [Fintype α] [Fintype β] : Fintype (α × β) :=
+instance (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) :=
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
 @[simp]
-theorem Finset.univ_product_univ {α β : Type _} [Fintype α] [Fintype β] :
+theorem Finset.univ_product_univ {α β : Type*} [Fintype α] [Fintype β] :
     (univ : Finset α) ×ˢ (univ : Finset β) = univ :=
   rfl
 #align finset.univ_product_univ Finset.univ_product_univ
 
 @[simp]
-theorem Fintype.card_prod (α β : Type _) [Fintype α] [Fintype β] :
+theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
     Fintype.card (α × β) = Fintype.card α * Fintype.card β :=
   card_product _ _
 #align fintype.card_prod Fintype.card_prod
@@ -80,7 +80,7 @@ instance Pi.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivi
 #align pi.infinite_of_left Pi.infinite_of_left
 
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
-theorem Pi.infinite_of_exists_right {ι : Type _} {π : ι → Type _} (i : ι) [Infinite <| π i]
+theorem Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
     [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
   let ⟨m⟩ := @Pi.Nonempty ι π _
   Infinite.of_injective _ (update_injective m i)

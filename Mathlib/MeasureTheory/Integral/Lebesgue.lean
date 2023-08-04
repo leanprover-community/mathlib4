@@ -45,7 +45,7 @@ namespace MeasureTheory
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 section Lintegral
 
@@ -1350,7 +1350,7 @@ theorem MeasurePreserving.set_lintegral_comp_emb {mb : MeasurableSpace β} {ν :
 
 section DiracAndCount
 
-instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type _} :
+instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type*} :
     @MeasurableSingletonClass α (⊤ : MeasurableSpace α) :=
   @MeasurableSingletonClass.mk α (⊤ : MeasurableSpace α) <|
     fun _ => MeasurableSpace.measurableSet_top
@@ -1520,7 +1520,7 @@ theorem set_lintegral_lt_top_of_isCompact [TopologicalSpace α] [OpensMeasurable
   set_lintegral_lt_top_of_bddAbove hs hf.measurable (hsc.image hf).bddAbove
 #align measure_theory.set_lintegral_lt_top_of_is_compact MeasureTheory.set_lintegral_lt_top_of_isCompact
 
-theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type _}
+theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type*}
     [MeasurableSpace α] (μ : Measure α) [μ_fin : IsFiniteMeasure μ] {f : α → ℝ≥0∞}
     (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : ∫⁻ x, f x ∂μ < ∞ := by
   cases' f_bdd with c hc
@@ -1568,7 +1568,7 @@ theorem withDensity_add_measure {m : MeasurableSpace α} (μ ν : Measure α) (f
   simp only [withDensity_apply f hs, restrict_add, lintegral_add_measure, Measure.add_apply]
 #align measure_theory.with_density_add_measure MeasureTheory.withDensity_add_measure
 
-theorem withDensity_sum {ι : Type _} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
+theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
     (sum μ).withDensity f = sum fun n => (μ n).withDensity f := by
   ext1 s hs
   simp_rw [sum_apply _ hs, withDensity_apply f hs, restrict_sum μ hs, lintegral_sum_measure]
@@ -1938,7 +1938,7 @@ theorem lintegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0�
 
 section SigmaFinite
 
-variable {E : Type _} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
 
 theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) {f : Set α → ℝ≥0∞} (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → f s ≤ C)

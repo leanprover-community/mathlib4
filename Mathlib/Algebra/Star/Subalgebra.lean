@@ -36,7 +36,7 @@ namespace StarSubalgebra
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
-variable {F R A B C : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
 
@@ -325,7 +325,7 @@ namespace Subalgebra
 
 open Pointwise
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -412,7 +412,7 @@ end Subalgebra
 
 namespace StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -721,7 +721,7 @@ namespace StarAlgHom
 
 open StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -808,7 +808,7 @@ end StarAlgHom
 
 section RestrictScalars
 
-variable (R : Type _) {S A B : Type _} [CommSemiring R]
+variable (R : Type*) {S A B : Type*} [CommSemiring R]
   [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
   [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
 

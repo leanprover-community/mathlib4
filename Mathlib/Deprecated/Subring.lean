@@ -85,7 +85,7 @@ theorem IsSubring.iInter {ι : Sort _} {S : ι → Set R} (h : ∀ y : ι, IsSub
     IsSubmonoid.iInter fun i ↦ (h i).toIsSubmonoid with }
 #align is_subring.Inter IsSubring.iInter
 
-theorem isSubring_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set R}
+theorem isSubring_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set R}
     (h : ∀ i, IsSubring (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubring (⋃ i, s i) :=
   { toIsAddSubgroup := isAddSubgroup_iUnion_of_directed (fun i ↦ (h i).toIsAddSubgroup) directed
@@ -202,7 +202,7 @@ theorem closure_mono {s t : Set R} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubring <| Set.Subset.trans H subset_closure
 #align ring.closure_mono Ring.closure_mono
 
-theorem image_closure {S : Type _} [Ring S] (f : R →+* S) (s : Set R) :
+theorem image_closure {S : Type*} [Ring S] (f : R →+* S) (s : Set R) :
     f '' closure s = closure (f '' s) := by
   refine' le_antisymm _ (closure_subset (RingHom.isSubring_image _ closure.isSubring) <|
     Set.image_subset _ subset_closure)

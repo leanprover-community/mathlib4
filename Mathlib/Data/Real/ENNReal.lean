@@ -76,7 +76,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 open Set BigOperators NNReal
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
@@ -461,12 +461,12 @@ theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
   @iInf_ne_top αᵒᵈ _ _
 #align ennreal.supr_ne_top ENNReal.iSup_ne_top
 
-theorem iInf_ennreal {α : Type _} [CompleteLattice α] {f : ℝ≥0∞ → α} :
+theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
   (iInf_option f).trans inf_comm
 #align ennreal.infi_ennreal ENNReal.iInf_ennreal
 
-theorem iSup_ennreal {α : Type _} [CompleteLattice α] {f : ℝ≥0∞ → α} :
+theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
   @iInf_ennreal αᵒᵈ _ _
 #align ennreal.supr_ennreal ENNReal.iSup_ennreal
@@ -487,35 +487,35 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 section Actions
 
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type _} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
+noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
   MulAction.compHom M ofNNRealHom.toMonoidHom
 
-theorem smul_def {M : Type _} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
+theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
 #align ennreal.smul_def ENNReal.smul_def
 
-instance {M N : Type _} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
+instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ≥0∞) : _)
 
-instance smulCommClass_left {M N : Type _} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
+instance smulCommClass_left {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ≥0∞) : _)
 #align ennreal.smul_comm_class_left ENNReal.smulCommClass_left
 
-instance smulCommClass_right {M N : Type _} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
+instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ≥0∞) : _)
 #align ennreal.smul_comm_class_right ENNReal.smulCommClass_right
 
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type _} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
+noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
     DistribMulAction ℝ≥0 M :=
   DistribMulAction.compHom M ofNNRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
-noncomputable instance {M : Type _} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
+noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
   Module.compHom M ofNNRealHom
 
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
-noncomputable instance {A : Type _} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
+noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ≥0∞) x, smul_def]
@@ -2259,7 +2259,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 #align ennreal.to_nnreal_pow ENNReal.toNNReal_pow
 
 @[simp]
-theorem toNNReal_prod {ι : Type _} {s : Finset ι} {f : ι → ℝ≥0∞} :
+theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toNNReal = ∏ i in s, (f i).toNNReal :=
   toNNRealHom.map_prod _ _
 #align ennreal.to_nnreal_prod ENNReal.toNNReal_prod
@@ -2283,7 +2283,7 @@ theorem toReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toReal = a.toReal ^ n :=
 #align ennreal.to_real_pow ENNReal.toReal_pow
 
 @[simp]
-theorem toReal_prod {ι : Type _} {s : Finset ι} {f : ι → ℝ≥0∞} :
+theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toReal = ∏ i in s, (f i).toReal :=
   toRealHom.map_prod _ _
 #align ennreal.to_real_prod ENNReal.toReal_prod

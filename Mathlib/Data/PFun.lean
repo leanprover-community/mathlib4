@@ -56,7 +56,7 @@ open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
   `α` to `β`. It is defined as `α → Part β`. -/
-def PFun (α β : Type _) :=
+def PFun (α β : Type*) :=
   α → Part β
 #align pfun PFun
 
@@ -65,7 +65,7 @@ infixr:25 " →. " => PFun
 
 namespace PFun
 
-variable {α β γ δ ε ι : Type _}
+variable {α β γ δ ε ι : Type*}
 
 instance inhabited : Inhabited (α →. β) :=
   ⟨fun _ => Part.none⟩
@@ -557,12 +557,12 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
 #align pfun.mem_to_subtype_iff PFun.mem_toSubtype_iff
 
 /-- The identity as a partial function -/
-protected def id (α : Type _) : α →. α :=
+protected def id (α : Type*) : α →. α :=
   Part.some
 #align pfun.id PFun.id
 
 @[simp]
-theorem coe_id (α : Type _) : ((id : α → α) : α →. α) = PFun.id α :=
+theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
   rfl
 #align pfun.coe_id PFun.coe_id
 

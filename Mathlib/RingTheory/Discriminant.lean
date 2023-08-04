@@ -78,7 +78,7 @@ theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).de
 
 #align algebra.discr_def Algebra.discr_def
 
-variable {ι' : Type _} [Fintype ι'] [Fintype ι] [DecidableEq ι']
+variable {ι' : Type*} [Fintype ι'] [Fintype ι] [DecidableEq ι']
 
 section Basic
 

@@ -155,7 +155,7 @@ theorem iff :
 variables are indexed by a fintype by a finitely generated ideal. -/
 theorem iff_quotient_mvPolynomial' :
     FinitePresentation R A ↔
-      ∃ (ι : Type _) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
+      ∃ (ι : Type*) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
         Surjective f ∧ f.toRingHom.ker.FG := by
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
@@ -397,7 +397,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
@@ -473,7 +473,7 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type _} [CommRing R]
+variable {R A B C : Type*} [CommRing R]
 
 variable [CommRing A] [CommRing B] [CommRing C]
 
@@ -525,7 +525,7 @@ theorem of_finiteType [IsNoetherianRing A] {f : A →ₐ[R] B} : f.FiniteType �
 
 nonrec theorem of_comp_finiteType (f : A →ₐ[R] B) {g : B →ₐ[R] C}
     (h : (g.comp f).FinitePresentation) (h' : f.FiniteType) : g.FinitePresentation :=
-  h.of_comp_finiteType _ h'
+  h.of_comp_finiteType* h'
 #align alg_hom.finite_presentation.of_comp_finite_type AlgHom.FinitePresentation.of_comp_finiteType
 
 end FinitePresentation

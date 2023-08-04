@@ -36,7 +36,7 @@ open Function Set
 
 namespace Set
 
-variable {α β γ : Type _} {ι ι' : Sort _}
+variable {α β γ : Type*} {ι ι' : Sort _}
 
 /-! ### Inverse image -/
 
@@ -179,7 +179,7 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
   ⟨f x, hx⟩
 #align set.nonempty_of_nonempty_preimage Set.nonempty_of_nonempty_preimage
 
-theorem preimage_subtype_coe_eq_compl {α : Type _} {s u v : Set α} (hsuv : s ⊆ u ∪ v)
+theorem preimage_subtype_coe_eq_compl {α : Type*} {s u v : Set α} (hsuv : s ⊆ u ∪ v)
     (H : s ∩ (u ∩ v) = ∅) : ((↑) : s → α) ⁻¹' u = ((↑) ⁻¹' v)ᶜ := by
   ext ⟨x, x_in_s⟩
   constructor
@@ -337,7 +337,7 @@ theorem image_inter {f : α → β} {s t : Set α} (H : Injective f) : f '' (s �
   image_inter_on fun _ _ _ _ h => H h
 #align set.image_inter Set.image_inter
 
-theorem image_univ_of_surjective {ι : Type _} {f : ι → β} (H : Surjective f) : f '' univ = univ :=
+theorem image_univ_of_surjective {ι : Type*} {f : ι → β} (H : Surjective f) : f '' univ = univ :=
   eq_univ_of_forall <| by simpa [image]
 #align set.image_univ_of_surjective Set.image_univ_of_surjective
 
@@ -882,7 +882,7 @@ theorem _root_.Prod.range_snd [Nonempty α] : range (Prod.snd : α × β → β)
 #align prod.range_snd Prod.range_snd
 
 @[simp]
-theorem range_eval {ι : Type _} {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
+theorem range_eval {ι : Type*} {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
     range (eval i : (∀ i, α i) → α i) = univ :=
   Function.Surjective.range_eq (surjective_eval i)
   -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
@@ -1192,29 +1192,29 @@ theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
       (leftInverse_rangeSplitting f)).symm
 #align set.preimage_range_splitting Set.preimage_rangeSplitting
 
-theorem isCompl_range_some_none (α : Type _) : IsCompl (range (some : α → Option α)) {none} :=
+theorem isCompl_range_some_none (α : Type*) : IsCompl (range (some : α → Option α)) {none} :=
   IsCompl.of_le (fun _ ⟨⟨_, ha⟩, (hn : _ = none)⟩ => Option.some_ne_none _ (ha.trans hn))
     fun x _ => Option.casesOn x (Or.inr rfl) fun _ => Or.inl <| mem_range_self _
 #align set.is_compl_range_some_none Set.isCompl_range_some_none
 
 @[simp]
-theorem compl_range_some (α : Type _) : (range (some : α → Option α))ᶜ = {none} :=
+theorem compl_range_some (α : Type*) : (range (some : α → Option α))ᶜ = {none} :=
   (isCompl_range_some_none α).compl_eq
 #align set.compl_range_some Set.compl_range_some
 
 @[simp]
-theorem range_some_inter_none (α : Type _) : range (some : α → Option α) ∩ {none} = ∅ :=
+theorem range_some_inter_none (α : Type*) : range (some : α → Option α) ∩ {none} = ∅ :=
   (isCompl_range_some_none α).inf_eq_bot
 #align set.range_some_inter_none Set.range_some_inter_none
 
 -- Porting note:
 -- @[simp] `simp` can prove this
-theorem range_some_union_none (α : Type _) : range (some : α → Option α) ∪ {none} = univ :=
+theorem range_some_union_none (α : Type*) : range (some : α → Option α) ∪ {none} = univ :=
   (isCompl_range_some_none α).sup_eq_top
 #align set.range_some_union_none Set.range_some_union_none
 
 @[simp]
-theorem insert_none_range_some (α : Type _) : insert none (range (some : α → Option α)) = univ :=
+theorem insert_none_range_some (α : Type*) : insert none (range (some : α → Option α)) = univ :=
   (isCompl_range_some_none α).symm.sup_eq_top
 #align set.insert_none_range_some Set.insert_none_range_some
 
@@ -1235,14 +1235,14 @@ theorem Subsingleton.preimage {s : Set β} (hs : s.Subsingleton) {f : α → β}
 #align set.subsingleton.preimage Set.Subsingleton.preimage
 
 /-- If the image of a set under an injective map is a subsingleton, the set is a subsingleton. -/
-theorem subsingleton_of_image {α β : Type _} {f : α → β} (hf : Function.Injective f) (s : Set α)
+theorem subsingleton_of_image {α β : Type*} {f : α → β} (hf : Function.Injective f) (s : Set α)
     (hs : (f '' s).Subsingleton) : s.Subsingleton :=
   (hs.preimage hf).anti <| subset_preimage_image _ _
 #align set.subsingleton_of_image Set.subsingleton_of_image
 
 /-- If the preimage of a set under a surjective map is a subsingleton,
 the set is a subsingleton. -/
-theorem subsingleton_of_preimage {α β : Type _} {f : α → β} (hf : Function.Surjective f) (s : Set β)
+theorem subsingleton_of_preimage {α β : Type*} {f : α → β} (hf : Function.Surjective f) (s : Set β)
     (hs : (f ⁻¹' s).Subsingleton) : s.Subsingleton := fun fx hx fy hy => by
   rcases hf fx, hf fy with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
   exact congr_arg f (hs hx hy)
@@ -1285,7 +1285,7 @@ end Set
 
 namespace Function
 
-variable {ι : Sort _} {α : Type _} {β : Type _} {f : α → β}
+variable {ι : Sort _} {α : Type*} {β : Type*} {f : α → β}
 
 open Set
 
@@ -1369,7 +1369,7 @@ theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s :
 end Function
 
 namespace EquivLike
-variable {E : Type _} [EquivLike E ι ι']
+variable {E : Type*} [EquivLike E ι ι']
 
 @[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
   (EquivLike.surjective _).range_comp _
@@ -1382,7 +1382,7 @@ end EquivLike
 
 namespace Subtype
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem coe_image {p : α → Prop} {s : Set (Subtype p)} :
     (↑) '' s = { x | ∃ h : p x, (⟨x, h⟩ : Subtype p) ∈ s } :=
@@ -1584,7 +1584,7 @@ end Set
 /-! ### Disjoint lemmas for image and preimage -/
 
 section Disjoint
-variable {α β γ : Type _} {f : α → β} {s t : Set α}
+variable {α β γ : Type*} {f : α → β} {s t : Set α}
 
 theorem Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) :=
@@ -1644,7 +1644,7 @@ end Disjoint
 
 section Sigma
 
-variable {α : Type _} {β : α → Type _} {i j : α} {s : Set (β i)}
+variable {α : Type*} {β : α → Type*} {i j : α} {s : Set (β i)}
 
 lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' s) = ∅ := by
   change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ s} = ∅

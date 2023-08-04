@@ -38,7 +38,7 @@ namespace TensorProduct
 
 namespace AlgebraTensorModule
 
-variable {R A M N P : Type _}
+variable {R A M N P : Type*}
 
 open LinearMap
 open Algebra (lsmul)
