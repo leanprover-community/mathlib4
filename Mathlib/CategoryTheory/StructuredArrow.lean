@@ -262,7 +262,7 @@ instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] : EssSurj (post S F G) whe
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
-noncomputable def isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
     IsEquivalence (post S F G) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
@@ -500,7 +500,7 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Full G] : EssSurj (post F G S) whe
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
-noncomputable def isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
     IsEquivalence (post F G S) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
