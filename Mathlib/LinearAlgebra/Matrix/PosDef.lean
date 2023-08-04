@@ -169,7 +169,6 @@ def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
 section ConjTransposeMul
 
 variable {m : Type _} [Fintype m]
-open BigOperators
 
 /-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
 theorem isPosSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemidef (Aᴴ ⬝ A) := by
@@ -181,9 +180,8 @@ theorem isPosSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSe
   Finset.sum_nonneg (fun i => (fun _ => add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)))
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem isPosSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) := by
-  nth_rewrite 1 [← conjTranspose_conjTranspose A]
-  apply isPosSemidef_conjTranspose_mul_self
+theorem isPosSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
+  by simpa [conjTranspose_conjTranspose] using isPosSemidef_conjTranspose_mul_self Aᴴ
 
 end ConjTransposeMul
 
