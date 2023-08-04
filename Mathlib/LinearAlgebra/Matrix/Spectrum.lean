@@ -141,12 +141,11 @@ allows direct rewriting of A since: $ A = V D V⁻¹$ -/
 lemma spectral_theorem' :
     A = hA.eigenvectorMatrix ⬝ diagonal ((↑) ∘ hA.eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
-    congr_arg (fun x => hA.eigenvectorMatrix ⬝ x) hA.spectral_theorem
+    congr_arg (hA.eigenvectorMatrix ⬝ ·) hA.spectral_theorem
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  /- Use nth_rewrite to avoid motive is not type correct error and conv tactic !!! -/
-  nth_rewrite 1 [hA.spectral_theorem']
+  conv_lhs => rw [hA.spectral_theorem']
   have hE := isUnit_det_of_invertible (hA.eigenvectorMatrix)
   have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
   simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
@@ -154,7 +153,7 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
     rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
-lemma rank_eq_count_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
+lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
 end IsHermitian
