@@ -36,10 +36,9 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 -/
 def pullback : CompHaus.{u} :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
-  haveI : CompactSpace set := by
-    rw [← isCompact_iff_compactSpace]
-    apply IsClosed.isCompact
-    exact isClosed_eq (f.continuous.comp continuous_fst) (g.continuous.comp continuous_snd)
+  haveI : CompactSpace set :=
+  isCompact_iff_compactSpace.mp (isClosed_eq (f.continuous.comp continuous_fst)
+    (g.continuous.comp continuous_snd)).isCompact
   CompHaus.of set
 
 /--
@@ -109,6 +108,30 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
     (fun _ => pullback.lift_snd _ _ _ _ _)
     (fun _ _ hm => pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
 
+section Isos
+
+/-- The isomorphism from the explicit pullback to the abstract pullback. -/
+noncomputable
+def pullbackIsoPullback : CompHaus.pullback f g ≅ Limits.pullback f g :=
+Limits.IsLimit.conePointUniqueUpToIso (pullback.isLimit f g) (Limits.limit.isLimit _)
+
+/-- The homeomorphism from the explicit pullback to the abstract pullback. -/
+noncomputable
+def pullbackHomeoPullback : (CompHaus.pullback f g).toTop ≃ₜ (Limits.pullback f g).toTop :=
+CompHaus.homeoOfIso (pullbackIsoPullback f g)
+
+theorem pullback_fst_eq :
+    CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
+  dsimp [pullbackIsoPullback]
+  simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
+
+theorem pullback_snd_eq :
+    CompHaus.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
+  dsimp [pullbackIsoPullback]
+  simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
+
+end Isos
+
 end Pullbacks
 
 section FiniteCoproducts
@@ -171,6 +194,40 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) wher
     ext t
     apply_fun (fun q => q t) at hm
     exact hm
+
+section Iso
+
+/-- The isomorphism from the explicit finite coproducts to the abstract coproduct. -/
+noncomputable
+def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
+Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X) (Limits.colimit.isColimit _)
+
+theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
+    (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv = finiteCoproduct.ι X a := by
+  dsimp [coproductIsoCoproduct]
+  simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,
+    finiteCoproduct.cocone_ι, Discrete.natTrans_app]
+
+/-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
+noncomputable
+def coproductHomeoCoproduct : finiteCoproduct X ≃ₜ (∐ X : _) :=
+CompHaus.homeoOfIso (coproductIsoCoproduct X)
+
+end Iso
+
+lemma finiteCoproduct.ι_injective (a : α) : Function.Injective (finiteCoproduct.ι X a) := by
+  intro x y hxy
+  exact eq_of_heq (Sigma.ext_iff.mp hxy).2
+
+lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
+    ∃ (a : α) (r : X a), R = finiteCoproduct.ι X a r := ⟨R.fst, R.snd, rfl⟩
+
+lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B} (a : α) :
+    ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
+  intro x
+  change (ι X a ≫ desc X π) _ = _
+  simp only [ι_desc]
+-- `elementwise` should work here, but doesn't
 
 end FiniteCoproducts
 

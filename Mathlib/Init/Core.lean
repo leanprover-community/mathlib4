@@ -26,7 +26,7 @@ import Mathlib.Tactic.Relation.Trans
 #align unit Unit
 #align unit.star Unit.unit
 
-#align thunk Thunkₓ
+#align thunk Thunk
 
 #align true True
 #align false False

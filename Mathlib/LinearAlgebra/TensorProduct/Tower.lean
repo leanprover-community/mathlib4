@@ -53,7 +53,7 @@ variable [AddCommMonoid N] [Module R N]
 
 variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
 
-theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a).rTensor N x :=
+theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
   rfl
 #align tensor_product.algebra_tensor_module.smul_eq_lsmul_rtensor TensorProduct.AlgebraTensorModule.smul_eq_lsmul_rTensor
 
@@ -111,8 +111,8 @@ nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
     map_smul' := fun c =>
       show
         ∀ x : M ⊗[R] N,
-          (lift (f.restrictScalars R)).comp (lsmul R _ c) x =
-            (lsmul R _ c).comp (lift (f.restrictScalars R)) x
+          (lift (f.restrictScalars R)).comp (lsmul R R _ c) x =
+            (lsmul R R _ c).comp (lift (f.restrictScalars R)) x
         from
         ext_iff.1 <|
           TensorProduct.ext' fun x y => by
