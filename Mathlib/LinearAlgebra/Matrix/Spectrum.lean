@@ -143,7 +143,7 @@ lemma spectral_theorem' :
     (congr_arg (λ x => hA.eigenvectorMatrix ⬝  x) (hA.spectral_theorem))
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
-lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal (hA.eigenvalues)).rank := by
+lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
   /- Use nth_rewrite to avoid motive is not type correct error and conv tactic !!! -/
   nth_rewrite 1 [hA.spectral_theorem']
   have hE := isUnit_det_of_invertible (hA.eigenvectorMatrix)
