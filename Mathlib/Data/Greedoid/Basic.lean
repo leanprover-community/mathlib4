@@ -1112,6 +1112,17 @@ theorem closure_kernel_eq_closure :
   rw [rank_kernel] at h
   exact Nat.le_antisymm (G.rank_le_of_subset (insert_subset hx G.kernel_subset)) h
 
+@[simp]
+theorem closure_kernelClosureOperator_eq_closure :
+    G.closure (G.kernelClosureOperator s) = G.closure s := by
+  rw [kernelClosureOperator_eq_kernel_closure, closure_kernel_eq_closure, closure_idempotent]
+
+@[simp]
+theorem kernelClosureOperator_closure_eq_kernelClosureOperator :
+    G.kernelClosureOperator (G.closure s) = G.kernelClosureOperator s := by
+  rw [kernelClosureOperator_eq_kernel_closure, closure_idempotent,
+    ← kernelClosureOperator_eq_kernel_closure]
+
 end Kernel
 
 end Greedoid
