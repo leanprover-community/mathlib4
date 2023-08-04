@@ -127,7 +127,7 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
     rw [Finsupp.sum_mapDomain_index_inj Sum.inr_injective]
 
 /-- Given an exact sequence `N ⟶ M ⟶ P ⟶ 0` of `R`-modules and spanning
-    families `v : ι → N` and `w : ι' → M`, we get a spanning family `ι ⊕ ι' → M` -/
+    families `v : ι → N` and `w : ι' → P`, we get a spanning family `ι ⊕ ι' → M` -/
 theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ Submodule.span R (Set.range v))
     (hw : ⊤ ≤ Submodule.span R (Set.range w)) (hE : Epi g) (he : Exact f g) :
     ⊤ ≤ Submodule.span R (Set.range (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w))) := by
