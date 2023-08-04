@@ -182,7 +182,6 @@ theorem isPosSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSe
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
 theorem isPosSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) := by
-  -- refine ⟨ isHermitian_mul_conjTranspose_self _, fun x => ?_ ⟩
   nth_rewrite 1 [← conjTranspose_conjTranspose A]
   apply isPosSemidef_conjTranspose_mul_self
 
