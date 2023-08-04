@@ -269,6 +269,10 @@ def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, �
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe'⟩
 
+@[simp]
+theorem coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
+  rfl
+
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
