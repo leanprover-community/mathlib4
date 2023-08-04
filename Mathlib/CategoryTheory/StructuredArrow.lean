@@ -168,11 +168,10 @@ instance epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.structured_arrow.epi_hom_mk CategoryTheory.StructuredArrow.epi_homMk
 
-/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta`, since equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta` for rewriting, since equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.structured_arrow.eq_mk CategoryTheory.StructuredArrow.eq_mk
 
 /-- Eta rule for structured arrows. -/
@@ -420,11 +419,10 @@ instance epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.costructured_arrow.epi_hom_mk CategoryTheory.CostructuredArrow.epi_homMk
 
-/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta`, as equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta` for rewriting, as equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.costructured_arrow.eq_mk CategoryTheory.CostructuredArrow.eq_mk
 
 /-- Eta rule for costructured arrows. -/
