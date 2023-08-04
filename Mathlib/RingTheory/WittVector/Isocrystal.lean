@@ -169,7 +169,7 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
 -- removed @[nolint has_nonempty_instance]
-def StandardOneDimIsocrystal (_m : ℤ) : Type* :=
+def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 #align witt_vector.standard_one_dim_isocrystal WittVector.StandardOneDimIsocrystal
 

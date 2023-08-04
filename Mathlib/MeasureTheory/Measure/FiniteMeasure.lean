@@ -107,7 +107,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 
 /-- Finite measures are defined as the subtype of measures that have the property of being finite
 measures (i.e., their total mass is finite). -/
-def _root_.MeasureTheory.FiniteMeasure (Ω : Type*) [MeasurableSpace Ω] : Type* :=
+def _root_.MeasureTheory.FiniteMeasure (Ω : Type*) [MeasurableSpace Ω] : Type _ :=
   { μ : Measure Ω // IsFiniteMeasure μ }
 #align measure_theory.finite_measure MeasureTheory.FiniteMeasure
 

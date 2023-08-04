@@ -127,7 +127,7 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
 instance : HasCoproducts.{u} LocallyRingedSpace.{u} := fun _ =>
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
-noncomputable instance (J : Type*) :
+noncomputable instance (J : Type _) :
     PreservesColimitsOfShape (Discrete.{u} J) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimitOfPreservesColimitCocone (coproductCofanIsColimit G)

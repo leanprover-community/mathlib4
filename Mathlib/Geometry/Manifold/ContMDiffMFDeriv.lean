@@ -569,8 +569,8 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     apply (LocalHomeomorph.open_target _).preimage I.continuous_invFun
     simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
-    haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type*)) :=
-      Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type*)
+    haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=
+      Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type _)
     this.mdifferentiableAt
   have B :
     fderivWithin 𝕜 (fun x' : E => (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v = (v, 0)

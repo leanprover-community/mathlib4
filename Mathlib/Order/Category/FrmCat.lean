@@ -34,7 +34,7 @@ def FrmCat :=
 
 namespace FrmCat
 
-instance : CoeSort FrmCat (Type*) :=
+instance : CoeSort FrmCat (Type _) :=
   Bundled.coeSort
 
 instance (X : FrmCat) : Frame X :=
@@ -54,7 +54,7 @@ instance : Inhabited FrmCat :=
 
 /-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `CompleteLattice`.
 Necessary for the category theory machinery. -/
-abbrev Hom (α β : Type*) [Frame α] [Frame β] : Type* :=
+abbrev Hom (α β : Type*) [Frame α] [Frame β] : Type _ :=
   FrameHom α β
 #align Frm.hom FrmCat.Hom
 

@@ -145,7 +145,7 @@ variable (M)
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
 @[reducible] -- porting note: was nolint has_nonempty_instance
 def TangentBundle :=
-  Bundle.TotalSpace E (TangentSpace I : M → Type*)
+  Bundle.TotalSpace E (TangentSpace I : M → Type _)
 #align tangent_bundle TangentBundle
 
 local notation "TM" => TangentBundle I M
@@ -170,10 +170,10 @@ end
 instance : TopologicalSpace TM :=
   (tangentBundleCore I M).toTopologicalSpace
 
-instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type*) :=
+instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
   (tangentBundleCore I M).fiberBundle
 
-instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type*) :=
+instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
   (tangentBundleCore I M).vectorBundle
 
 namespace TangentBundle
@@ -307,13 +307,13 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
   refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
-  · rw [LocalEquiv.trans_source'] at hx 
+  · rw [LocalEquiv.trans_source'] at hx
     simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
   · exact (i.1.extend_image_source_inter j.1 I).subset
   · apply inter_subset_left
 #align tangent_bundle_core.is_smooth tangentBundleCore.isSmooth
 
-instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type*) I :=
+instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type _) I :=
   (tangentBundleCore I M).smoothVectorBundle _
 #align tangent_bundle.smooth_vector_bundle TangentBundle.smoothVectorBundle
 

@@ -97,7 +97,7 @@ finite measure, this is implemented as the induced topology from the mapping
 
 /-- Probability measures are defined as the subtype of measures that have the property of being
 probability measures (i.e., their total mass is one). -/
-def ProbabilityMeasure (Ω : Type*) [MeasurableSpace Ω] : Type* :=
+def ProbabilityMeasure (Ω : Type*) [MeasurableSpace Ω] : Type _ :=
   { μ : Measure Ω // IsProbabilityMeasure μ }
 #align measure_theory.probability_measure MeasureTheory.ProbabilityMeasure
 
