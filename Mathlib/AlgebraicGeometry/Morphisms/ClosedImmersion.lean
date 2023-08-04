@@ -53,7 +53,7 @@ instance id {X : Scheme} : IsClosedImmersion (𝟙 X) := by
   . intro x r
     use r
     erw [PresheafedSpace.stalkMap.id]
-    exact Function.funext_iff.1 coe_id _
+    rfl
 
 /- The file `OpenImmersion.Basic` doesn't use this `MorphismProperty` stuff,
 but `Morphisms.FiniteType` does. I've emulated the latter for now.
