@@ -273,6 +273,10 @@ instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
 theorem coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
+@[simp]
+theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
+  simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
+
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
