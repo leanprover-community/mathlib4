@@ -1215,7 +1215,7 @@ variable [Nonempty ι] {K : ι → Subalgebra R A} {dir : Directed (· ≤ ·) K
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   dsimp [iSupLift, inclusion]
-  exact Set.iUnionLift_inclusion _ _
+  rw [Set.iUnionLift_inclusion]
 #align subalgebra.supr_lift_inclusion Subalgebra.iSupLift_inclusion
 
 @[simp]
