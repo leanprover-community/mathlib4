@@ -187,9 +187,9 @@ end CommRing
 
 section Field
 
-variable  [Field R]
+variable [Field R]
 
-/-- The rank of a diagnonal matrix  is the count of non-zero elements on its main diagonal -/
+/-- The rank of a diagnonal matrix is the count of non-zero elements on its main diagonal -/
 theorem rank_diagonal [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
