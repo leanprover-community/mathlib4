@@ -7,7 +7,9 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Finrank
 
 /-!
 # Exact sequences with free modules
@@ -193,5 +195,16 @@ theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
     (span_rightExact
       (le_of_eq ((Module.Free.chooseBasis R N)).span_eq.symm)
       (le_of_eq (Module.Free.chooseBasis R P).span_eq.symm) h.epi h.exact))⟩
+
+theorem free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
+    {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Finite R N]
+    [Module.Free R P] [Module.Finite R P]
+    (hN : FiniteDimensional.finrank R N = n)
+    (hP : FiniteDimensional.finrank R P = p)
+    [StrongRankCondition R]:
+    FiniteDimensional.finrank R M = n + p := by
+  apply FiniteDimensional.finrank_eq_of_rank_eq
+  rw [free_shortExact_rank_add h, ← hN, ← hP]
+  simp only [Nat.cast_add, FiniteDimensional.finrank_eq_rank]
 
 end ModuleCat
