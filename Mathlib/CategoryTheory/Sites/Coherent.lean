@@ -149,8 +149,8 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α
     EffectiveEpiFamily
       (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst) := by
   rw [← Sieve.effectiveEpimorphic_family]
-  suffices h₂ : (Sieve.generate (C := C) (Presieve.ofArrows (C := C) (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
-        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ GrothendieckTopology.sieves (C := C) (coherentTopology C) X by
+  suffices h₂ : (Sieve.generate (Presieve.ofArrows (C := C) (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
+        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ GrothendieckTopology.sieves (coherentTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
     exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
