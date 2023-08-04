@@ -35,6 +35,13 @@ variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 
 variable {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 
+/-- Given a cone `c` over `F`, we can interpret the legs of `c` as structured arrows
+    `c.pt ⟶ F.obj -`. -/
+@[simps]
+def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.pt F where
+  obj j := StructuredArrow.mk (c.π.app j)
+  map f := StructuredArrow.homMk f
+
 /-- Construct an object of the category `(Δ ↓ F)` from a cone on `F`. This is part of an
     equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
@@ -123,6 +130,21 @@ def IsLimit.ofReflectsConeTerminal {F : J ⥤ C} {F' : K ⥤ D} (G : Cone F ⥤ 
     [ReflectsLimit (Functor.empty.{0} _) G] {c : Cone F} (hc : IsLimit (G.obj c)) : IsLimit c :=
   (Cone.isLimitEquivIsTerminal _).symm <| (Cone.isLimitEquivIsTerminal _ hc).isTerminalOfObj _ _
 #align category_theory.limits.is_limit.of_reflects_cone_terminal CategoryTheory.Limits.IsLimit.ofReflectsConeTerminal
+
+/-- Given a cocone `c` over `F`, we can interpret the legs of `c` as costructured arrows
+    `F.obj - ⟶ c.pt`. -/
+@[simps]
+def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ CostructuredArrow F c.pt where
+  obj j := CostructuredArrow.mk (c.ι.app j)
+  map f := CostructuredArrow.homMk f
+
+@[simp]
+lemma Cocone.toCostructuredArrow_comp_forget {F : J ⥤ C} (c : Cocone F) :
+    c.toCostructuredArrow ⋙ CostructuredArrow.proj _ _ = 𝟭 J :=
+  rfl
+
+-- lemma blub (F : J ⥤ K) (G : K ⥤ C) (c : Cocone (F ⋙ G)) :
+--   c.toCostructuredArrow ⋙ CostructuredArrow.pre
 
 /-- Construct an object of the category `(F ↓ Δ)` from a cocone on `F`. This is part of an
     equivalence, see `Cocone.equivStructuredArrow`. -/
