@@ -1034,6 +1034,18 @@ theorem ContDiffWithinAt.fderivWithin_right (hf : ContDiffWithinAt 𝕜 n f s x�
     contDiffWithinAt_id hs hmn hx₀s (by rw [preimage_id'])
 #align cont_diff_within_at.fderiv_within_right ContDiffWithinAt.fderivWithin_right
 
+-- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
+theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
+    (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
+    ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
+  induction' i with i hi generalizing m
+  · rw [Nat.zero_eq, ENat.coe_zero, add_zero] at hmn
+    exact (hf.of_le hmn).continuousLinearMap_comp
+      ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
+  · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
+    exact ((hi hmn).fderivWithin_right hs le_rfl hx₀s).continuousLinearMap_comp
+      (continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i+1) ↦ E) F : _ →L[𝕜] E [×(i+1)]→L[𝕜] F)
+
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth at `x₀`. -/
 protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F} {n : ℕ∞}
     (hf : ContDiffAt 𝕜 n (Function.uncurry f) (x₀, g x₀)) (hg : ContDiffAt 𝕜 m g x₀)
@@ -1050,6 +1062,11 @@ theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : (m + 1 : 
   ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id hmn
 #align cont_diff_at.fderiv_right ContDiffAt.fderiv_right
 
+theorem ContDiffAt.iteratedFDeriv_right {i : ℕ} (hf : ContDiffAt 𝕜 n f x₀)
+    (hmn : (m + i : ℕ∞) ≤ n) : ContDiffAt 𝕜 m (iteratedFDeriv 𝕜 i f) x₀ := by
+  rw [← iteratedFDerivWithin_univ, ← contDiffWithinAt_univ] at *
+  exact hf.iteratedFderivWithin_right uniqueDiffOn_univ hmn trivial
+
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth. -/
 protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F} {n m : ℕ∞}
     (hf : ContDiff 𝕜 m <| Function.uncurry f) (hg : ContDiff 𝕜 n g) (hnm : n + 1 ≤ m) :
@@ -1062,6 +1079,10 @@ theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : (m + 1 : ℕ∞) �
     ContDiff 𝕜 m (fderiv 𝕜 f) :=
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.fderiv_right hmn
 #align cont_diff.fderiv_right ContDiff.fderiv_right
+
+theorem ContDiff.iteratedFDeriv_right {i : ℕ} (hf : ContDiff 𝕜 n f)
+    (hmn : (m + i : ℕ∞) ≤ n) : ContDiff 𝕜 m (iteratedFDeriv 𝕜 i f) :=
+  contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right hmn
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is continuous. -/
 theorem Continuous.fderiv {f : E → F → G} {g : E → F} {n : ℕ∞}

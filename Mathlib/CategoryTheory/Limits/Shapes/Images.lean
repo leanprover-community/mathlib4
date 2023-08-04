@@ -849,7 +849,7 @@ section
 variable (C) [Category.{v} C] [HasImages C]
 
 /-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
-class HasImageMaps where
+class HasImageMaps : Prop where
   has_image_map : ∀ {f g : Arrow C} (st : f ⟶ g), HasImageMap st
 #align category_theory.limits.has_image_maps CategoryTheory.Limits.HasImageMaps
 

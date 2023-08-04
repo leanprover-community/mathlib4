@@ -61,8 +61,8 @@ theorem intersecting_empty : (∅ : Set α).Intersecting := fun _ => False.elim
 theorem intersecting_singleton : ({a} : Set α).Intersecting ↔ a ≠ ⊥ := by simp [Intersecting]
 #align set.intersecting_singleton Set.intersecting_singleton
 
-theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥) (h : ∀ b ∈ s, ¬Disjoint a b) :
-    (insert a s).Intersecting := by
+protected theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥)
+    (h : ∀ b ∈ s, ¬Disjoint a b) : (insert a s).Intersecting := by
   rintro b (rfl | hb) c (rfl | hc)
   · rwa [disjoint_self]
   · exact h _ hc

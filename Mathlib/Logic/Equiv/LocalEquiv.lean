@@ -244,17 +244,27 @@ protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
 #align local_equiv.surj_on LocalEquiv.surjOn
 
-/-- Associate a `LocalEquiv` to an `Equiv`. -/
-@[simps (config := mfld_cfg)]
-def _root_.Equiv.toLocalEquiv (e : α ≃ β) : LocalEquiv α β where
+/-- Interpret an `Equiv` as a `LocalEquiv` by restricting it to `s` in the domain
+and to `t` in the codomain. -/
+@[simps (config := .asFn)]
+def _root_.Equiv.toLocalEquivOfImageEq (e : α ≃ β) (s : Set α) (t : Set β) (h : e '' s = t) :
+    LocalEquiv α β where
   toFun := e
   invFun := e.symm
-  source := univ
-  target := univ
-  map_source' _ _ := mem_univ _
-  map_target' _ _ := mem_univ _
-  left_inv' x _ := e.left_inv x
-  right_inv' x _ := e.right_inv x
+  source := s
+  target := t
+  map_source' x hx := h ▸ mem_image_of_mem _ hx
+  map_target' x hx := by
+    subst t
+    rcases hx with ⟨x, hx, rfl⟩
+    rwa [e.symm_apply_apply]
+  left_inv' x _ := e.symm_apply_apply x
+  right_inv' x _ := e.apply_symm_apply x
+
+/-- Associate a `LocalEquiv` to an `Equiv`. -/
+@[simps! (config := mfld_cfg)]
+def _root_.Equiv.toLocalEquiv (e : α ≃ β) : LocalEquiv α β :=
+  e.toLocalEquivOfImageEq univ univ <| by rw [image_univ, e.surjective.range_eq]
 #align equiv.to_local_equiv Equiv.toLocalEquiv
 #align equiv.to_local_equiv_symm_apply Equiv.toLocalEquiv_symm_apply
 #align equiv.to_local_equiv_target Equiv.toLocalEquiv_target
