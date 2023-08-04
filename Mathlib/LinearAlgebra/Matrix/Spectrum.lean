@@ -137,8 +137,8 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 /-- *spectral theorem (alternate)* (Alternate from for convenience) A hermitian matrix can be can be
 replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
 allows direct rewriting of A since: $ A = V D V⁻¹$ -/
-lemma spectral_theorem' : A = (hA.eigenvectorMatrix) ⬝
-    ((Matrix.diagonal (IsROrC.ofReal ∘ hA.eigenvalues)) ⬝ hA.eigenvectorMatrixInv) := by
+lemma spectral_theorem' :
+    A = hA.eigenvectorMatrix ⬝ diagonal ((↑) ∘ hA.eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
     (congr_arg (λ x => hA.eigenvectorMatrix ⬝  x) (hA.spectral_theorem))
 
@@ -153,7 +153,7 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal (hA.eigenvalues)).rank :
     rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
-lemma rank_eq_count_non_zero_eigs : A.rank =  (Fintype.card {i // hA.eigenvalues i ≠ 0}) := by
+lemma rank_eq_count_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
 end IsHermitian
