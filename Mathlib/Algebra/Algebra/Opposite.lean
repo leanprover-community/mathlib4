@@ -64,12 +64,12 @@ def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐ�
 
 @[simp]
 theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.fromOpposite hf).toLinearMap = f.toLinearMap ∘ₗ (opLinearEquiv R).symm.toLinearMap :=
+    (f.fromOpposite hf : Aᵐᵒᵖ →ₗ[R] B) = f ∘ₗ (opLinearEquiv R).symm.toLinearMap :=
   rfl
 
 @[simp]
 theorem toRingHom_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.fromOpposite hf).toRingHom = f.toRingHom.fromOpposite hf :=
+    (f.fromOpposite hf : Aᵐᵒᵖ →+* B) = (f : A →+* B).fromOpposite hf :=
   rfl
 
 /--
@@ -83,12 +83,12 @@ def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →�
 
 @[simp]
 theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.toOpposite hf).toLinearMap = (opLinearEquiv R).toLinearMap ∘ₗ f.toLinearMap :=
+    (f.toOpposite hf : A →ₗ[R] Bᵐᵒᵖ) = (opLinearEquiv R : B ≃ₗ[R] Bᵐᵒᵖ) ∘ₗ f.toLinearMap :=
   rfl
 
 @[simp]
 theorem toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.toOpposite hf).toRingHom = f.toRingHom.toOpposite hf :=
+    (f.toOpposite hf : A →+* Bᵐᵒᵖ) = (f : A →+* B).toOpposite hf :=
   rfl
 
 /-- An algebra hom `A →ₐ[R] B` can equivalently be viewed as an algebra hom `αᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`.
@@ -104,7 +104,7 @@ theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingH
   rfl
 
 /-- The 'unopposite' of an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`. Inverse to `ring_hom.op`. -/
-abbrev unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) :=  AlgHom.op.symm
+abbrev unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) := AlgHom.op.symm
 
 theorem toRingHom_unop (f : Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) : f.unop.toRingHom = RingHom.unop f.toRingHom :=
   rfl
@@ -159,7 +159,7 @@ def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ where
   __ := RingEquiv.toOpposite A
   commutes' _r := rfl
 
-@[simp] lemma toRingEquiv_toOpposite : toRingEquiv (toOpposite R A) = RingEquiv.toOpposite A := rfl
+@[simp] lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
 @[simp] lemma toLinearEquiv_toOpposite : toLinearEquiv (toOpposite R A) = opLinearEquiv R := rfl
 
 end AlgEquiv
