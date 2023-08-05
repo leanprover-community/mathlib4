@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Localization.Module
 # ℤ-lattices
 
 Let `E` be a finite dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
-norm that is also a `FloorRing`, e.g. `ℚ` or `ℝ`. A (full) `ℤ`-lattice `L` of `E` is a discrete
+norm that is also a `FloorRing`, e.g. `ℝ`. A (full) `ℤ`-lattice `L` of `E` is a discrete
 subgroup of `E` such that `L` spans `E` over `K`.
 
 A `ℤ`-lattice `L` can be defined in two ways:
@@ -29,9 +29,9 @@ point of view are in the `Zlattice` namespace.
 
 * `Zspan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
 the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
-* `Zlattice.module_free`: an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
+* `Zlattice.module_free`: an AddSubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
-* `Zlattice.rank`:  an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
+* `Zlattice.rank`:  an AddSubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module of `ℤ`-rank equal to the `K`-rank of `E`
 -/
 
