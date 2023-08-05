@@ -178,14 +178,10 @@ instance : Membership (LocalHomeomorph H H) (StructureGroupoid H) :=
 instance : Inter (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
-    (trans' := by
-      intro e e' he he'
-      exact (mem_inter_iff (e ≫ₕ e') G.members G'.members).mpr
-        ⟨G.trans' e e' he.left he'.left, G'.trans' e e' he.right he'.right⟩)
-    (symm' := by
-      intro e he
-      exact (mem_inter_iff e.symm G.members G'.members).mpr
-        ⟨G.symm' e he.left, G'.symm' e he.right⟩)
+    (trans' := fun e e' he he' => (mem_inter_iff (e ≫ₕ e') G.members G'.members).mpr
+      ⟨G.trans' e e' he.left he'.left, G'.trans' e e' he.right he'.right⟩)
+    (symm' := fun e he => (mem_inter_iff e.symm G.members G'.members).mpr
+      ⟨G.symm' e he.left, G'.symm' e he.right⟩)
     (id_mem' := ⟨G.id_mem', G'.id_mem'⟩)
     (locality' := by
       intro e hx
@@ -204,9 +200,8 @@ instance : Inter (StructureGroupoid H) :=
           use s
           exact ⟨hs.left, ⟨hs.right.left, hs.right.right.right⟩⟩
       exact ⟨G.locality' e h, G'.locality' e h'⟩)
-    (eq_on_source' := by
-      intro e e' he hee'
-      exact ⟨G.eq_on_source' e e' he.left hee', G'.eq_on_source' e e' he.right hee'⟩)⟩
+    (eq_on_source' := fun e e' he hee' =>
+      ⟨G.eq_on_source' e e' he.left hee', G'.eq_on_source' e e' he.right hee'⟩)⟩
 
 theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : LocalHomeomorph H H} (he : e ∈ G)
     (he' : e' ∈ G) : e ≫ₕ e' ∈ G :=
