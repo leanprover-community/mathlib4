@@ -2592,12 +2592,10 @@ macro "setIsBddDefault" : tactic =>
 the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
     (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by setIsBddDefault) :
-    f (sSup A) = sSup (f '' A) := by
+    f (sSup A) = sSup (f '' A) :=
   --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
-  refine ((@IsLUB.isLUB_of_tendsto α β _ _ _ _ _ _ f A (sSup A) (f (sSup A))
-          (Mf.monotoneOn _) ?_ A_nonemp ?_).csSup_eq (Set.nonempty_image_iff.mpr A_nonemp)).symm
-  · exact isLUB_csSup A_nonemp A_bdd
-  · exact tendsto_nhdsWithin_of_tendsto_nhds Cf
+  .symm <| ((isLUB_csSup A_nonemp A_bdd).isLUB_of_tendsto (Mf.monotoneOn _) A_nonemp <| 
+    Cf.mono_left inf_le_left).csSup_eq (A_nonemp.image f)
 #align monotone.map_Sup_of_continuous_at' Monotone.map_sSup_of_continuousAt'
 
 /-- A monotone function continuous at the indexed supremum over a nonempty `Sort` sends this indexed
@@ -2614,7 +2612,7 @@ the infimum of the image of this set. -/
 theorem Monotone.map_sInf_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
     (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by setIsBddDefault) :
     f (sInf A) = sInf (f '' A) :=
-  @Monotone.map_sSup_of_continuousAt' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f A Cf Mf.dual A_nonemp A_bdd
+  Monotone.map_sSup_of_continuousAt' (α := αᵒᵈ) (β := βᵒᵈ) Cf Mf.dual A_nonemp A_bdd
 #align monotone.map_Inf_of_continuous_at' Monotone.map_sInf_of_continuousAt'
 
 /-- A monotone function continuous at the indexed infimum over a nonempty `Sort` sends this indexed

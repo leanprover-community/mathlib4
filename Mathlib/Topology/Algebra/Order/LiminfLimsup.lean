@@ -334,12 +334,9 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         by_contra'
         have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
         simp only [hc, Set.not_nonempty_empty] at this
-      apply @liminf_le_of_frequently_le R S _ F f (f (limsSup F)) (B.mono fun x hx ↦ f_decr hx) ?_
-      obtain ⟨b, hb⟩ := bdd_above
-      use f b
-      simp only [ge_iff_le, eventually_map]
-      filter_upwards [hb] with t ht using f_decr ht
-    simp only [gt_iff_lt, not_lt, ge_iff_le, not_exists, not_and] at h'
+      apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
+      exact (B.mono fun x hx ↦ f_decr hx)
+    push_neg at h'
     by_contra' H
     obtain ⟨l, l_lt, h'l⟩ : ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f }
     · apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
@@ -352,7 +349,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       contrapose! h'
       refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
     have B : F.liminf f ≤ f m := by
-      apply @liminf_le_of_frequently_le R S _ F f (f m)
+      apply liminf_le_of_frequently_le _ _
       · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
         exact fun x hx ↦ f_decr hx.le
       · exact IsBounded.isBoundedUnder f_decr bdd_above
