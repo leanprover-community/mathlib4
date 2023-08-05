@@ -1769,6 +1769,11 @@ theorem toNat_eq_iff {c : Cardinal} {n : ℕ} (hn : n ≠ 0) : toNat c = n ↔ c
     fun h => (congr_arg toNat h).trans (toNat_cast n)⟩
 #align cardinal.to_nat_eq_iff Cardinal.toNat_eq_iff
 
+/-- A version of `toNat_eq_iff` for literals -/
+theorem toNat_eq_ofNat {c : Cardinal} {n : ℕ} [Nat.AtLeastTwo n] :
+    toNat c = OfNat.ofNat n ↔ c = OfNat.ofNat n :=
+  toNat_eq_iff <| Nat.cast_ne_zero.mpr <| OfNat.ofNat_ne_zero n
+
 @[simp]
 theorem toNat_eq_one {c : Cardinal} : toNat c = 1 ↔ c = 1 := by
   rw [toNat_eq_iff one_ne_zero, Nat.cast_one]
