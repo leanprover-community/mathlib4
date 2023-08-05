@@ -449,13 +449,10 @@ theorem mk_psum (α : Type u) (β : Type v) : #(PSum α β) = lift.{v} #α + lif
 #align cardinal.mk_psum Cardinal.mk_psum
 
 @[simp]
-theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α := by
-  have A : Fintype.card α = Fintype.card (ULift (Fin (Fintype.card α))) := by
-    convert (Fintype.card_ulift (Fin (Fintype.card α))).symm
-    simp
-  exact mk_congr (Fintype.equivOfCardEq A)
+theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
+  mk_congr (Fintype.equivOfCardEq (by simp))
 
-theorem mk_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
+protected theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
   change #(ULift.{u} (Fin (n+1))) = # (ULift.{u} (Fin n)) + 1
   rw [← mk_option, mk_fintype, mk_fintype]
   simp only [Fintype.card_ulift, Fintype.card_fin, Fintype.card_option]
@@ -536,10 +533,10 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow n c := c^n
   npow_zero := @power_zero
   npow_succ n c := show (c ^ (n + 1 : ℕ)) = c * (c ^ n)
-    by rw [mk_succ, power_add, power_one, mul_comm']
+    by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
   natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
   natCast_zero := rfl
-  natCast_succ := mk_succ
+  natCast_succ := Cardinal.cast_succ
 
 /-! Porting note: Deprecated section. Remove. -/
 section deprecated
@@ -1375,9 +1372,9 @@ theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
 
 @[simp, norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
-  rw [mk_succ]
+  rw [Nat.cast_succ]
   refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)
-  rw [← mk_succ]
+  rw [← Nat.cast_succ]
   exact natCast_lt.2 (Nat.lt_succ_self _)
 
 @[simp]
