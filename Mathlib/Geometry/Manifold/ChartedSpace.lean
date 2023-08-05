@@ -188,17 +188,15 @@ instance : Inter (StructureGroupoid H) :=
       have h : ∀ (x : H), x ∈ e.source → ∃ s, IsOpen s ∧ x ∈ s ∧
           LocalHomeomorph.restr e s ∈ G.members := by
         intro x hex
-        cases hx x hex with
-        | intro s hs =>
-          use s
-          exact ⟨hs.left, ⟨hs.right.left, hs.right.right.left⟩⟩
+        rcases hx x hex with ⟨s, hs⟩
+        use s
+        exact ⟨hs.left, ⟨hs.right.left, hs.right.right.left⟩⟩
       have h' : ∀ (x : H), x ∈ e.source → ∃ s, IsOpen s ∧ x ∈ s ∧
           LocalHomeomorph.restr e s ∈ G'.members := by
         intro x hex
-        cases hx x hex with
-        | intro s hs =>
-          use s
-          exact ⟨hs.left, ⟨hs.right.left, hs.right.right.right⟩⟩
+        rcases hx x hex with ⟨s, hs⟩
+        use s
+        exact ⟨hs.left, ⟨hs.right.left, hs.right.right.right⟩⟩
       exact ⟨G.locality' e h, G'.locality' e h'⟩)
     (eq_on_source' := fun e e' he hee' =>
       ⟨G.eq_on_source' e e' he.left hee', G'.eq_on_source' e e' he.right hee'⟩)⟩

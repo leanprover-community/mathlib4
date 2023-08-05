@@ -685,31 +685,28 @@ def analyticGroupoid : StructureGroupoid H :=
           rw [image_comp]
           intro x hx
           rw [mem_image] at hx
-          cases hx with
-          | intro x' hx' =>
-            refine hg.right ?_
-            use x'
-            refine And.intro ?_ hx'.right
-            apply And.intro
-            · have hx'1 : x' ∈ ((v.preimage f).preimage (I.symm)).image (I ∘ f ∘ I.symm) := by
-                refine image_subset (I ∘ f ∘ I.symm) ?_ hx'.left
-                rw [preimage_inter]
-                refine Subset.trans ?_ (inter_subset_right (u.preimage I.symm)
-                  ((v.preimage f).preimage I.symm))
-                apply inter_subset_left
-              cases hx'1 with
-              | intro x'' hx'' =>
-                rw [hx''.right.symm]
-                simp only [comp_apply, mem_preimage, I.left_inv]
-                exact hx''.left
-            · rw [mem_image] at hx'
-              cases hx'.left with
-              | intro x'' hx'' =>
-                refine hf.right ?_
-                use x''
-                refine And.intro ?_ hx''.right
-                rw [preimage_inter] at hx''
-                exact ⟨hx''.left.left.left, hx''.left.right⟩
+          rcases hx with ⟨x', hx'⟩
+          refine hg.right ?_
+          use x'
+          refine And.intro ?_ hx'.right
+          apply And.intro
+          · have hx'1 : x' ∈ ((v.preimage f).preimage (I.symm)).image (I ∘ f ∘ I.symm) := by
+              refine image_subset (I ∘ f ∘ I.symm) ?_ hx'.left
+              rw [preimage_inter]
+              refine Subset.trans ?_ (inter_subset_right (u.preimage I.symm)
+                ((v.preimage f).preimage I.symm))
+              apply inter_subset_left
+            rcases hx'1 with ⟨x'', hx''⟩
+            rw [hx''.right.symm]
+            simp only [comp_apply, mem_preimage, I.left_inv]
+            exact hx''.left
+          · rw [mem_image] at hx'
+            rcases hx'.left with ⟨x'', hx''⟩
+            refine hf.right ?_
+            use x''
+            refine And.intro ?_ hx''.right
+            rw [preimage_inter] at hx''
+            exact ⟨hx''.left.left.left, hx''.left.right⟩
       id_mem := by
         apply And.intro
         · simp only [preimage_univ, univ_inter]
@@ -725,31 +722,28 @@ def analyticGroupoid : StructureGroupoid H :=
             exact (I.right_inv (interior_subset hx)).symm
         · intro x hx
           simp only [left_id, comp_apply, preimage_univ, univ_inter, mem_image] at hx
-          cases hx with
-          | intro y hy =>
-            rw [← hy.right, I.right_inv (interior_subset hy.left)]
-            exact hy.left
+          rcases hx with ⟨y, hy⟩
+          rw [← hy.right, I.right_inv (interior_subset hy.left)]
+          exact hy.left
       locality := fun {f u} _ h => by
         simp only [] at h
         simp only [AnalyticOn]
         apply And.intro
         · intro x hx
-          cases h (I.symm x) (mem_preimage.mp hx.left) with
-          | intro v hv =>
-            have setmem := And.intro (Set.mem_preimage.mpr hv.right.left) hx
-            rw [← mem_inter_iff, ← inter_assoc, ← preimage_inter, inter_comm v u] at setmem
-            exact hv.right.right.left x setmem
+          rcases h (I.symm x) (mem_preimage.mp hx.left) with ⟨v, hv⟩
+          have setmem := And.intro (Set.mem_preimage.mpr hv.right.left) hx
+          rw [← mem_inter_iff, ← inter_assoc, ← preimage_inter, inter_comm v u] at setmem
+          exact hv.right.right.left x setmem
         · apply mapsTo'.mp
           simp only [MapsTo]
           intro x hx
-          cases h (I.symm x) hx.left with
-          | intro v hv =>
-            apply hv.right.right.right
-            rw [mem_image]
-            use x
-            have hx' := And.intro hx (mem_preimage.mpr hv.right.left)
-            rw [← mem_inter_iff, inter_comm, ← inter_assoc, ← preimage_inter, inter_comm v u] at hx'
-            exact ⟨hx', rfl⟩
+          rcases h (I.symm x) hx.left with ⟨v, hv⟩
+          apply hv.right.right.right
+          rw [mem_image]
+          use x
+          have hx' := And.intro hx (mem_preimage.mpr hv.right.left)
+          rw [← mem_inter_iff, inter_comm, ← inter_assoc, ← preimage_inter, inter_comm v u] at hx'
+          exact ⟨hx', rfl⟩
       congr := fun {f g u} hu fg hf => by
         simp only [] at hf ⊢
         apply And.intro
@@ -767,12 +761,11 @@ def analyticGroupoid : StructureGroupoid H :=
         · intro x hx
           apply hf.right
           rw [mem_image] at hx ⊢
-          cases hx with
-          | intro y hy =>
-            use y
-            refine And.intro hy.left ?_
-            rw [comp_apply, comp_apply, fg (I.symm y) hy.left.left] at hy
-            exact hy.right }
+          rcases hx with ⟨y, hy⟩
+          use y
+          refine And.intro hy.left ?_
+          rw [comp_apply, comp_apply, fg (I.symm y) hy.left.left] at hy
+          exact hy.right }
 
 end analyticGroupoid
 
