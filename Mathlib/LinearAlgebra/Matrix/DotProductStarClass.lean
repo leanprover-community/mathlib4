@@ -8,6 +8,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.Star
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
@@ -58,20 +59,6 @@ instance instStarDotProduct_C : StarDotProductSpace n ℂ where
     simp only [Finset.mem_univ, map_eq_zero, forall_true_left]
     refine ⟨Function.funext_iff.2, Function.funext_iff.1⟩
     simp only [Finset.mem_univ, forall_true_left, Complex.normSq_nonneg, implies_true]
-
-instance instQStar : Star ℚ where
-  star := fun x => x
-
-instance instTrivialQStar : TrivialStar ℚ where
-  star_trivial := by
-    intro x;
-    unfold star instQStar
-    simp only [Rat.cast_eq_id, id_eq]
-
-instance instQStarRing : StarRing ℚ where
-  star_mul := fun r s ↦ mul_comm r s
-  star_add := by simp;
-  star_involutive := star_trivial
 
 instance instStarDotProduct_Q : StarDotProductSpace n ℚ where
   dotProduct_star_self_eq_zero := by
