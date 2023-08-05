@@ -403,7 +403,7 @@ protected theorem sum_mem {R : Type*} [Ring R] (s : Subring R) {ι : Type*} {t :
 #align subring.sum_mem Subring.sum_mem
 
 /-- A subring of a ring inherits a ring structure -/
-abbrev toRing : Ring s := inferInstance
+instance toRing : Ring s := SubringClass.toRing s
 #align subring.to_ring Subring.toRing
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
