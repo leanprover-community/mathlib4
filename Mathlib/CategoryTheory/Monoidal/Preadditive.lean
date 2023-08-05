@@ -192,7 +192,6 @@ def rightDistributor {J : Type} [Fintype J] (f : J → C) (X : C) : (⨁ f) ⊗ 
   (tensorRight X).mapBiproduct f
 #align category_theory.right_distributor CategoryTheory.rightDistributor
 
-@[simp]
 theorem rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) :
     (rightDistributor f X).hom =
       ∑ j : J, (biproduct.π f j ▷ X) ≫ biproduct.ι (fun j => f j ⊗ X) j := by
@@ -203,7 +202,6 @@ theorem rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) :
     Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id, ite_true]
 #align category_theory.right_distributor_hom CategoryTheory.rightDistributor_hom
 
-@[simp]
 theorem rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) :
     (rightDistributor f X).inv = ∑ j : J, biproduct.π _ j ≫ (biproduct.ι f j ▷ X) := by
   ext
