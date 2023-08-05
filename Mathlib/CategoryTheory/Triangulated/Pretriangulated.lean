@@ -225,7 +225,7 @@ lemma contractible_distinguished₂ (X : C) :
     Triangle.mk (0 : X ⟶ 0) 0 (𝟙 (X⟦1⟧)) ∈ distTriang C := by
   refine' isomorphic_distinguished _
     (inv_rot_of_dist_triangle _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ _
-  refine' Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
+  exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
