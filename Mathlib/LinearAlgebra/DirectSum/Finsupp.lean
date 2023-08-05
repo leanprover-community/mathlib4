@@ -65,7 +65,6 @@ theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommG
       simp [tmul_add, hg₁, hg₂]
     · intro k' n
       simp only [finsuppTensorFinsupp_single]
-      simp only [Finsupp.single_apply]
       -- split_ifs; finish can close the goal from here
       by_cases h1 : (i', k') = (i, k)
       · simp only [Prod.mk.inj_iff] at h1
