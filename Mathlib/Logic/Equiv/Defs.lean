@@ -929,7 +929,8 @@ def transport (α : J → Type _) {j j' : J} (h : j = j') : α j ≃ α j' :=
     transport α (Eq.refl j) = Equiv.refl _ := by
   simp [transport]
 
-@[simp] lemma transport_symm (α : J → Type _) {j j' : J} (h : j = j') :
+-- Less useful as a `@[simp]` lemma?
+lemma transport_symm (α : J → Type _) {j j' : J} (h : j = j') :
     (transport α h).symm = transport α h.symm := by
   simp [transport]
 
