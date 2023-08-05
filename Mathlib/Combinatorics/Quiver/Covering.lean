@@ -158,7 +158,11 @@ theorem Prefunctor.symmetrifyStar (u : U) :
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
   rw [Equiv.eq_symm_comp]
-  ext ⟨v, f | g⟩ <;> simp [Quiver.symmetrifyStar]
+  ext ⟨v, f | g⟩ <;>
+    -- Porting note: was `simp [Quiver.symmetrifyStar]`
+    simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
+    erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
+    simp
 #align prefunctor.symmetrify_star Prefunctor.symmetrifyStar
 
 protected theorem Prefunctor.symmetrifyCostar (u : U) :
@@ -166,13 +170,21 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
   rw [Equiv.eq_symm_comp]
-  ext ⟨v, f | g⟩ <;> simp [Quiver.symmetrifyCostar]
+  ext ⟨v, f | g⟩ <;>
+    -- Porting note: was `simp [Quiver.symmetrifyCostar]`
+    simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
+    erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
+    simp
 #align prefunctor.symmetrify_costar Prefunctor.symmetrifyCostar
 
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
   refine' ⟨fun u => _, fun u => _⟩ <;>
-    simp [φ.symmetrify_star, φ.symmetrify_costar, hφ.star_bijective u, hφ.costar_bijective u]
+    -- Porting note: was
+    -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
+    simp only [φ.symmetrifyStar, φ.symmetrifyCostar, EquivLike.comp_bijective] <;>
+    erw [EquivLike.bijective_comp] <;>
+    simp [hφ.star_bijective u, hφ.costar_bijective u]
 #align prefunctor.is_covering.symmetrify Prefunctor.IsCovering.symmetrify
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
