@@ -31,7 +31,7 @@ lemma dotProduct_self_star_eq_zero  (v : n → K) [Ring K] [StarRing K]
     StarDotProductSpace.dotProduct_star_self_eq_zero (star v)
 
 
-instance instStarDotProduct_IsROrC [IsROrC K] : StarDotProductSpace n K where
+instance IsROrC.toStarDotProduct [IsROrC K] : StarDotProductSpace n K where
   dotProduct_star_self_eq_zero := by
     intro v
     rw [dotProduct, IsROrC.ext_iff, IsROrC.ext_iff, Function.funext_iff]
