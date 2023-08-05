@@ -616,17 +616,13 @@ lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃
     (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
     (biproduct.whisker_equiv e w).inv =
       biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
-  -- One might hope `← eqToHom_iso_hom_naturality` suffices instead, but `simp` won't use it below.
-  have p : ∀ (j j' : J) (h : j = j'),
-        eqToHom (by simp [h]) ≫ (w j').hom = (w j).hom ≫ eqToHom (by simp [h]) := by
-      rintro _ _ rfl
-      simp
   simp only [whisker_equiv_inv]
   ext j k
   by_cases h : k = e j
   · subst h
-    simp
-    simp [reassoc_of% p]
+    simp only [ι_desc_assoc, ← eqToHom_iso_hom_naturality_assoc w (e.symm_apply_apply j).symm,
+      Equiv.symm_apply_apply, eqToHom_comp_ι, Category.assoc, bicone_ι_π_self, Category.comp_id,
+      lift_π, bicone_ι_π_self_assoc]
   · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
     rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
     · simp
