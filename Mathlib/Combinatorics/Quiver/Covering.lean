@@ -23,18 +23,18 @@ so-called stars and costars at each vertex of the domain.
 * `Prefunctor.star φ u` is the obvious function `star u → star (φ.obj u)`;
 * `Prefunctor.costar φ u` is the obvious function `costar u → costar (φ.obj u)`;
 * `Prefunctor.IsCovering φ` means that `φ.star u` and `φ.costar u` are bijections for all `u`;
-* `quiver.star_path u` is the type of all paths with source `u`;
-* `prefunctor.star_path u` is the obvious function `star_path u → star_path (φ.obj u)`.
+* `Quiver.PathStar u` is the type of all paths with source `u`;
+* `Prefunctor.pathStar u` is the obvious function `PathStar u → PathStar (φ.obj u)`.
 
 ## Main statements
 
 * `Prefunctor.IsCovering.pathStar_bijective` states that if `φ` is a covering,
-  then `φ.star_path u` is a bijection for all `u`.
+  then `φ.pathStar u` is a bijection for all `u`.
   In other words, every path in the codomain of `φ` lifts uniquely to its domain.
 
 ## TODO
 
-Clean up the namespaces by renaming `Prefunctor` to `quiver.prefunctor`.
+Clean up the namespaces by renaming `Prefunctor` to `Quiver.Prefunctor`.
 
 ## Tags
 
@@ -56,7 +56,7 @@ def Quiver.Star (u : U) :=
   Σ v : U, u ⟶ v
 #align quiver.star Quiver.Star
 
-/-- Constructor for `Quiver.Star`. Defined to be `sigma.mk`. -/
+/-- Constructor for `Quiver.Star`. Defined to be `Sigma.mk`. -/
 @[reducible]
 protected def Quiver.Star.mk {u v : U} (f : u ⟶ v) : Quiver.Star u :=
   ⟨_, f⟩
@@ -69,7 +69,7 @@ def Quiver.Costar (v : U) :=
   Σ u : U, u ⟶ v
 #align quiver.costar Quiver.Costar
 
-/-- Constructor for `Quiver.Costar`. Defined to be `sigma.mk`. -/
+/-- Constructor for `Quiver.Costar`. Defined to be `Sigma.mk`. -/
 @[reducible]
 protected def Quiver.Costar.mk {u v : U} (f : u ⟶ v) : Quiver.Costar v :=
   ⟨_, f⟩
@@ -194,7 +194,7 @@ def Quiver.PathStar (u : U) :=
   Σ v : U, Path u v
 #align quiver.path_star Quiver.PathStar
 
-/-- Constructor for `Quiver.PathStar`. Defined to be `sigma.mk`. -/
+/-- Constructor for `Quiver.PathStar`. Defined to be `Sigma.mk`. -/
 @[reducible]
 protected def Quiver.PathStar.mk {u v : U} (p : Path u v) : Quiver.PathStar u :=
   ⟨_, p⟩
