@@ -179,7 +179,7 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
   ext := by
     rintro X' X Y f₁ f₂ s ⟨Z, g, h, H, mem⟩ hf₁
     have hf₂ : s ≫ (f₁ - f₂) = 0 := by rw [comp_sub, hf₁, sub_self]
-    obtain ⟨q, hq⟩ := contravariant_yoneda_exact₂ _ H _ hf₂
+    obtain ⟨q, hq⟩ := yoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
     refine' ⟨Y', r, _, _⟩
     . exact ⟨_, _, _, rot_of_dist_triangle _ mem', S.shift _ _ mem⟩
@@ -198,7 +198,7 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
     rw [W_eq_W'] at hs
     obtain ⟨Z, g, h, H, mem⟩ := hs
-    obtain ⟨q, hq⟩ := covariant_yoneda_exact₂ _ H _ hf₂
+    obtain ⟨q, hq⟩ := coyoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
     refine' ⟨Y', r, _, _⟩
     . exact ⟨_, _, _, mem', mem⟩
