@@ -6,7 +6,6 @@ Authors: Luke Kershaw
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
