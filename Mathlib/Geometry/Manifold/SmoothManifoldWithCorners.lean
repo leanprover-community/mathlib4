@@ -656,7 +656,9 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddC
   [TopologicalSpace M]
 
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of `H`
-as the maps that are analytic and map interior to interior when read in `E` through `I`. -/
+as the maps that are analytic and map interior to interior when read in `E` through `I`. We also
+explicitly define that they are `C^∞` on the whole domain, since we are only requiring
+analyticity on the interior of the domain. -/
 def analyticGroupoid : StructureGroupoid H :=
   (contDiffGroupoid ∞ I) ∩ Pregroupoid.groupoid
     { property := fun f s => AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
