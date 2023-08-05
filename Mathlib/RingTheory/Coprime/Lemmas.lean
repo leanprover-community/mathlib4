@@ -47,6 +47,11 @@ alias Nat.isCoprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.isCoprime
 #align is_coprime.nat_coprime IsCoprime.nat_coprime
 #align nat.coprime.is_coprime Nat.coprime.isCoprime
 
+theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
+    (h : Nat.coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
+  IsCoprime.ne_zero_or_ne_zero (R := A) <| by
+    simpa only [map_natCast] using IsCoprime.map (Nat.coprime.isCoprime h) (Int.castRingHom A)
+
 theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i in t, s i) x :=
   Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦ by
     rw [Finset.prod_insert hbt]

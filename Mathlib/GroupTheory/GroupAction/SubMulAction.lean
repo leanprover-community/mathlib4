@@ -63,6 +63,16 @@ class VAddMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [VAdd R M]
 
 attribute [to_additive] SMulMemClass
 
+/-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
+lemma AddSubmonoidClass.nsmulMemClass {S M : Type _} [AddMonoid M] [SetLike S M]
+    [AddSubmonoidClass S M] : SMulMemClass S ℕ M where
+  smul_mem n _x hx := nsmul_mem hx n
+
+/-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
+lemma AddSubgroupClass.zsmulMemClass {S M : Type _} [SubNegMonoid M] [SetLike S M]
+    [AddSubgroupClass S M] : SMulMemClass S ℤ M where
+  smul_mem n _x hx := zsmul_mem hx n
+
 namespace SetLike
 
 variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
@@ -83,6 +93,14 @@ theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [
   [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
   SMulMemClass S M α :=
 { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
+
+instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
+    (s : S) : IsScalarTower R s s where
+  smul_assoc r x y := Subtype.ext <| smul_assoc r (x : M) (y : M)
+
+instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
+    (s : S) : SMulCommClass R s s where
+  smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
 -- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf

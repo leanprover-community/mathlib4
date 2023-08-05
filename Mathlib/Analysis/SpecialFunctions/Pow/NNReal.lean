@@ -788,6 +788,7 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 
 end ENNReal
 
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
 -- section Tactics
 
 -- /-!
