@@ -82,6 +82,30 @@ variable (K)
 /-- The image of `𝓞 K` as a subring of `ℂ^n`. -/
 def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
   (RingHom.range (algebraMap (𝓞 K) K)).map (canonicalEmbedding K)
+#align number_field.canonical_embedding.integer_lattice NumberField.canonicalEmbedding.integerLattice
+
+-- Porting note: See https://github.com/leanprover-community/mathlib4/issues/5028
+set_option maxHeartbeats 300000 in
+set_option synthInstance.maxHeartbeats 25000 in
+/-- The linear equiv between `𝓞 K` and the integer lattice. -/
+def equivIntegerLattice [NumberField K] : 𝓞 K ≃ₗ[ℤ] integerLattice K :=
+  LinearEquiv.ofBijective
+    { toFun := fun x => (by
+          refine ⟨canonicalEmbedding K (algebraMap (𝓞 K) K x), ⟨algebraMap (𝓞 K) K x, ⟨?_, rfl⟩⟩⟩
+          simp only [Subsemiring.coe_carrier_toSubmonoid, Subring.coe_toSubsemiring,
+            RingHom.coe_range, Set.mem_range, exists_apply_eq_apply] )
+      map_add' := fun x y => (by
+          apply Subtype.eq
+          simp [map_add] )
+      map_smul' := fun c x => (by
+          simp only [RingHom.id_apply, zsmul_eq_mul, RingHom.map_mul, map_intCast]
+          rfl ) }
+   (by
+    refine ⟨fun _ _ h => ?_, fun ⟨_, ⟨_, ⟨⟨a, rfl⟩, rfl⟩⟩⟩ => ⟨a, rfl⟩⟩
+    dsimp only at h
+    rw [LinearMap.coe_mk, Subtype.mk_eq_mk] at h
+    exact IsFractionRing.injective (𝓞 K) K (canonicalEmbedding_injective K h))
+#align number_field.canonical_embedding.equiv_integer_lattice NumberField.canonicalEmbedding.equivIntegerLattice
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
