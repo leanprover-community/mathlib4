@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.Matrix.DotProductStarClass
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
 
@@ -184,6 +185,52 @@ theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
 
 end CommRing
 
+
+section RankLemmas
+
+variable {m : Type _} [Fintype m]
+variable {R : Type _} [Field R] [StarRing R] [StarDotProductSpace m R] [StarDotProductSpace n R]
+
+open FiniteDimensional
+
+theorem ker_mulVecLin_conjTranspose_mul_self' (A : Matrix m n R) :
+    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) := by
+  ext x
+  simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
+  constructor
+  · intro h
+    replace h := congr_arg (dotProduct (star x)) h
+    haveI : NoZeroDivisors R := inferInstance
+    rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
+      StarDotProductSpace.dotProduct_star_self_eq_zero] at h
+  · intro h
+    rw [h, mulVec_zero]
+
+@[simp]
+theorem rank_conjTranspose_mul_self' (A : Matrix m n R) :
+    (Aᴴ ⬝ A).rank = A.rank := by
+  dsimp only [Matrix.rank]
+  refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
+  dsimp only
+  trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ ⬝ A)) } +
+    finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ ⬝ A)) }
+  · rw [ker_mulVecLin_conjTranspose_mul_self']
+  · simp only [LinearMap.finrank_range_add_finrank_ker]
+
+@[simp]
+theorem rank_conjTranspose' (A : Matrix m n R) : Aᴴ.rank = A.rank :=
+  le_antisymm
+    (((rank_conjTranspose_mul_self' _).symm.trans_le <| rank_mul_le_left _ _).trans_eq <|
+      congr_arg _ <| conjTranspose_conjTranspose _)
+    ((rank_conjTranspose_mul_self' _).symm.trans_le <| rank_mul_le_left _ _)
+
+@[simp]
+theorem rank_self_mul_conjTranspose' (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank := by
+  simpa only [rank_conjTranspose', conjTranspose_conjTranspose] using
+    rank_conjTranspose_mul_self' Aᴴ
+
+end RankLemmas
+
 /-! ### Lemmas about transpose and conjugate transpose
 
 This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
@@ -204,44 +251,23 @@ section StarOrderedField
 variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
 
 theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
-    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) := by
-  ext x
-  simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
-  constructor
-  · intro h
-    replace h := congr_arg (dotProduct (star x)) h
-    haveI : NoZeroDivisors R := inferInstance
-    rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
-      -- Porting note: couldn't find `NoZeroDivisors R` instance.
-      @dotProduct_star_self_eq_zero R _ _ _ _ _ ‹_›] at h
-  · intro h
-    rw [h, mulVec_zero]
+    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) :=
+  ker_mulVecLin_conjTranspose_mul_self' _
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
 
-theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank := by
-  dsimp only [rank]
-  refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
-  dsimp only
-  trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ ⬝ A)) } +
-    finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ ⬝ A)) }
-  · rw [ker_mulVecLin_conjTranspose_mul_self]
-  · simp only [LinearMap.finrank_range_add_finrank_ker]
+theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank :=
+  rank_conjTranspose_mul_self' _
 #align matrix.rank_conj_transpose_mul_self Matrix.rank_conjTranspose_mul_self
 
 -- this follows the proof here https://math.stackexchange.com/a/81903/1896
 /-- TODO: prove this in greater generality. -/
 @[simp]
-theorem rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank :=
-  le_antisymm
-    (((rank_conjTranspose_mul_self _).symm.trans_le <| rank_mul_le_left _ _).trans_eq <|
-      congr_arg _ <| conjTranspose_conjTranspose _)
-    ((rank_conjTranspose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
+theorem rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank := rank_conjTranspose' _
 #align matrix.rank_conj_transpose Matrix.rank_conjTranspose
 
 @[simp]
-theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank := by
-  simpa only [rank_conjTranspose, conjTranspose_conjTranspose] using
-    rank_conjTranspose_mul_self Aᴴ
+theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank :=
+  rank_self_mul_conjTranspose' _
 #align matrix.rank_self_mul_conj_transpose Matrix.rank_self_mul_conjTranspose
 
 end StarOrderedField
