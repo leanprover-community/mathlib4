@@ -30,7 +30,7 @@ noncomputable def HasShift.quotient' :
 noncomputable def Functor.CommShift.quotient' :
     letI : HasShift (Quotient r) A := HasShift.quotient' r A s i
     (Quotient.functor r).CommShift A :=
-  Functor.CommShift.of_induced _ _ _ _ _
+  Functor.CommShift.ofInduced _ _ _ _ _
 
 variable {A}
 

@@ -43,7 +43,7 @@ noncomputable def HasShift.localized' :
 noncomputable def Functor.CommShift.localized' :
     letI : HasShift D A := HasShift.localized' L W A s i
     L.CommShift A :=
-  Functor.CommShift.of_induced _ _ _ _ _
+  Functor.CommShift.ofInduced _ _ _ _ _
 
 noncomputable def HasShift.localized [W.IsCompatibleWithShift A] :
     HasShift D A :=
