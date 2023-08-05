@@ -664,15 +664,11 @@ instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L
   right K F L
 #align intermediate_field.finite_dimensional_right IntermediateField.finiteDimensional_right
 
---Porting note: increased heartbeats
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
   rfl
 #align intermediate_field.rank_eq_rank_subalgebra IntermediateField.rank_eq_rank_subalgebra
 
---Porting note: increased heartbeats
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :=
   rfl

@@ -174,19 +174,19 @@ section
 coercions. -/
 
 
-instance toNonUnitalSemiring {R A} [CommSemiring R] [NonUnitalSemiring A] [Module R A]
+abbrev toNonUnitalSemiring {R A} [CommSemiring R] [NonUnitalSemiring A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalSemiring S :=
   inferInstance
 
-instance toNonUnitalCommSemiring {R A} [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
+abbrev toNonUnitalCommSemiring {R A} [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalCommSemiring S :=
   inferInstance
 
-instance toNonUnitalRing {R A} [CommRing R] [NonUnitalRing A] [Module R A]
+abbrev toNonUnitalRing {R A} [CommRing R] [NonUnitalRing A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalRing S :=
   inferInstance
 
-instance toNonUnitalCommRing {R A} [CommRing R] [NonUnitalCommRing A] [Module R A]
+abbrev toNonUnitalCommRing {R A} [CommRing R] [NonUnitalCommRing A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalCommRing S :=
   inferInstance
 
@@ -353,9 +353,9 @@ theorem mem_comap (S : NonUnitalSubalgebra R B) (f : F) (x : A) : x ∈ comap f 
 theorem coe_comap (S : NonUnitalSubalgebra R B) (f : F) : (comap f S : Set A) = f ⁻¹' (S : Set B) :=
   rfl
 
-instance noZeroDivisors {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
+lemma noZeroDivisors {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
     [Module R A] (S : NonUnitalSubalgebra R A) : NoZeroDivisors S :=
-  NonUnitalSubsemiringClass.noZeroDivisors S
+  inferInstance
 
 end NonUnitalSubalgebra
 
