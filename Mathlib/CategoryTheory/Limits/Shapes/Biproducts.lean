@@ -812,7 +812,7 @@ def biproduct.iterated_reindex
 /-- A variant of `biproduct.ι_π` specialized for iterated biproducts. -/
 @[reassoc]
 theorem biproduct.ι_π_biproduct
-    [DecidableEq J] {α : J → Type w} (f : (j : J) → α j → C) [∀ j, HasBiproduct (f j)]
+    {α : J → Type w} (f : (j : J) → α j → C) [∀ j, HasBiproduct (f j)]
     [HasBiproduct fun j => ⨁ f j] (j j' : J) :
     biproduct.ι (fun j => ⨁ f j) j ≫ biproduct.π (fun j => ⨁ f j) j' =
       if h : j = j' then (biproduct.iterated_reindex f h).hom else 0 := by
