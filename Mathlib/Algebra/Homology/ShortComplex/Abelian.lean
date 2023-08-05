@@ -162,7 +162,7 @@ noncomputable def isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono
 
 noncomputable instance : NormalMonoCategory (ShortComplex C) := ⟨fun i _ => by
   refine' NormalMono.mk _ (cokernel.π i) (cokernel.condition _)
-    (isLimit_of_isLimitπ _ _ _ _ )
+    (isLimitOfIsLimitπ _ _ _ _ )
   all_goals apply isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono⟩
 
 noncomputable def isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi
@@ -180,7 +180,7 @@ noncomputable def isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of
 
 noncomputable instance : NormalEpiCategory (ShortComplex C) := ⟨fun p _ => by
   refine' NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
-    (isColimit_of_isColimitπ _ _ _ _ )
+    (isColimitOfIsColimitπ _ _ _ _ )
   all_goals apply isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi⟩
 
 noncomputable instance : Abelian (ShortComplex C) where
