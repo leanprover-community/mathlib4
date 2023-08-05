@@ -508,11 +508,13 @@ theorem biproduct.desc_zero {f : J → C} [HasBiproduct f] :
   ext; simp
 
 @[simp]
-theorem biproduct.lift_apply_π {f : J → C} [HasBiproduct f] : biproduct.lift (biproduct.π f) = 𝟙 _ := by
+theorem biproduct.lift_apply_π {f : J → C} [HasBiproduct f] :
+    biproduct.lift (biproduct.π f) = 𝟙 _ := by
   ext; simp
 
 @[simp]
-theorem biproduct.desc_apply_ι {f : J → C} [HasBiproduct f] : biproduct.desc (biproduct.ι f) = 𝟙 _ := by
+theorem biproduct.desc_apply_ι {f : J → C} [HasBiproduct f] :
+    biproduct.desc (biproduct.ι f) = 𝟙 _ := by
   ext; simp
 
 @[simp]
