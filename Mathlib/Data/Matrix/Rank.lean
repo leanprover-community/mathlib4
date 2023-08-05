@@ -245,10 +245,10 @@ lemma conjTranspose_eq_transpose_of_trivial (A : Matrix m n R) : transpose A = c
 theorem rank_transpose_mul_self' (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank := by
   rw [conjTranspose_eq_transpose_of_trivial, rank_conjTranspose_mul_self']
 
-theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank := by
+theorem rank_transpose' (A : Matrix m n R) : Aᵀ.rank = A.rank := by
   rw [conjTranspose_eq_transpose_of_trivial, rank_conjTranspose']
 
-theorem rank_self_mul_transpose (A : Matrix m n R) : (A ⬝ Aᵀ).rank = A.rank := by
+theorem rank_self_mul_transpose' (A : Matrix m n R) : (A ⬝ Aᵀ).rank = A.rank := by
   rw [conjTranspose_eq_transpose_of_trivial, rank_self_mul_conjTranspose']
 
 end TransposeLemmas
