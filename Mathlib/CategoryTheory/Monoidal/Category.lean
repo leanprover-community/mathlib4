@@ -405,6 +405,16 @@ end pentagon
 
 variable {U V W X Y Z : C}
 
+theorem whiskerLeft_dite {P : Prop} [Decidable P]
+    (X : C) {Y Z : C} (f : P → (Y ⟶ Z)) (f' : ¬P → (Y ⟶ Z)) :
+      X ◁ (if h : P then f h else f' h) = if h : P then X ◁ f h else X ◁ f' h := by
+  split_ifs <;> rfl
+
+theorem dite_whiskerRight {P : Prop} [Decidable P]
+    {X Y : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (Z : C):
+      (if h : P then f h else f' h) ▷ Z = if h : P then f h ▷ Z else f' h ▷ Z := by
+  split_ifs <;> rfl
+
 theorem tensor_dite {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
     (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) = if h : P then f ⊗ g h else f ⊗ g' h :=
   by split_ifs <;> rfl

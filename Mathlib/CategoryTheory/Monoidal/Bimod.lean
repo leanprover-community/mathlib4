@@ -269,7 +269,9 @@ theorem left_assoc' :
   slice_lhs 1 2 => rw [associator_inv_naturality_left]
   slice_lhs 2 3 => rw [← comp_whiskerRight, left_assoc, comp_whiskerRight, comp_whiskerRight]
   slice_rhs 1 2 => rw [associator_naturality_right]
-  slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, whiskerLeft_π_actLeft, MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
+  slice_rhs 2 3 =>
+    rw [← MonoidalCategory.whiskerLeft_comp, whiskerLeft_π_actLeft,
+      MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
   slice_rhs 4 5 => rw [whiskerLeft_π_actLeft]
   slice_rhs 3 4 => rw [associator_inv_naturality_middle]
   coherence
@@ -297,7 +299,8 @@ noncomputable def actRight : X P Q ⊗ T.X ⟶ X P Q :=
         (by
           dsimp
           simp only [comp_whiskerRight, whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc]
-          slice_lhs 3 4 => rw [← MonoidalCategory.whiskerLeft_comp, middle_assoc, MonoidalCategory.whiskerLeft_comp]
+          slice_lhs 3 4 =>
+            rw [← MonoidalCategory.whiskerLeft_comp, middle_assoc, MonoidalCategory.whiskerLeft_comp]
           simp))
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.act_right Bimod.TensorBimod.actRight
@@ -423,7 +426,8 @@ noncomputable def whiskerLeft {X Y Z : Mon_ C} (M : Bimod X Y) {N₁ N₂ : Bimo
     slice_lhs 1 2 => rw [TensorBimod.π_tensor_id_actRight]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
     slice_lhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, Hom.right_act_hom]
-    slice_rhs 1 2 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one, comp_whiskerRight]
+    slice_rhs 1 2 =>
+      rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one, comp_whiskerRight]
     slice_rhs 2 3 => rw [TensorBimod.π_tensor_id_actRight]
     simp
 

@@ -159,16 +159,14 @@ theorem leftDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
     (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j => X ⊗ f j) j := by
-  simp [leftDistributor_hom, Preadditive.comp_sum, ← id_tensor_comp_assoc, biproduct.ι_π,
-    tensor_dite, dite_comp]
-  sorry
+  simp [leftDistributor_hom, Preadditive.comp_sum, ← whiskerLeft_comp_assoc, biproduct.ι_π,
+    whiskerLeft_dite, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem leftDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
     (leftDistributor X f).inv ≫ (X ◁ biproduct.π _ j) = biproduct.π _ j := by
-  simp [leftDistributor_inv, Preadditive.sum_comp, ← id_tensor_comp, biproduct.ι_π, tensor_dite,
-    comp_dite]
-  sorry
+  simp [leftDistributor_inv, Preadditive.sum_comp, ← MonoidalCategory.whiskerLeft_comp,
+    biproduct.ι_π, whiskerLeft_dite, comp_dite]
 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
@@ -222,16 +220,14 @@ theorem rightDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (f : J →
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
     (biproduct.ι _ j ▷ X) ≫ (rightDistributor f X).hom = biproduct.ι (fun j => f j ⊗ X) j := by
-  simp [rightDistributor_hom, Preadditive.comp_sum, ← comp_tensor_id_assoc, biproduct.ι_π,
-    dite_tensor, dite_comp]
-  sorry
+  simp [rightDistributor_hom, Preadditive.comp_sum, ← comp_whiskerRight_assoc, biproduct.ι_π,
+    dite_whiskerRight, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
     (rightDistributor f X).inv ≫ (biproduct.π _ j ▷ X) = biproduct.π _ j := by
-  simp [rightDistributor_inv, Preadditive.sum_comp, ← comp_tensor_id, biproduct.ι_π, dite_tensor,
-    comp_dite]
-  sorry
+  simp [rightDistributor_inv, Preadditive.sum_comp, ← MonoidalCategory.comp_whiskerRight,
+    biproduct.ι_π, dite_whiskerRight, comp_dite]
 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
@@ -303,8 +299,7 @@ theorem leftDistributor_ext₂_left {J : Type} [Fintype J]
     g = h := by
   apply (cancel_epi (α_ _ _ _).hom).mp
   ext
-  simp_rw [← tensor_id, associator_naturality_assoc, w]
-  sorry
+  simp [w]
 
 @[ext]
 theorem leftDistributor_ext₂_right {J : Type} [Fintype J]
@@ -313,8 +308,7 @@ theorem leftDistributor_ext₂_right {J : Type} [Fintype J]
     g = h := by
   apply (cancel_mono (α_ _ _ _).inv).mp
   ext
-  simp_rw [← tensor_id, Category.assoc, ← associator_inv_naturality, ← Category.assoc, w]
-  sorry
+  simp [w]
 
 @[ext]
 theorem rightDistributor_ext_left {J : Type} [Fintype J]
@@ -348,8 +342,7 @@ theorem rightDistributor_ext₂_left {J : Type} [Fintype J]
     g = h := by
   apply (cancel_epi (α_ _ _ _).inv).mp
   ext
-  simp_rw [← tensor_id, associator_inv_naturality_assoc, w]
-  sorry
+  simp [w]
 
 @[ext]
 theorem rightDistributor_ext₂_right {J : Type} [Fintype J]
@@ -358,7 +351,6 @@ theorem rightDistributor_ext₂_right {J : Type} [Fintype J]
     g = h := by
   apply (cancel_mono (α_ _ _ _).hom).mp
   ext
-  simp_rw [← tensor_id, Category.assoc, ← associator_naturality, ← Category.assoc, w]
-  sorry
+  simp [w]
 
 end CategoryTheory
