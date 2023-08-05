@@ -18,23 +18,23 @@ so-called stars and costars at each vertex of the domain.
 
 ## Main definitions
 
-* `quiver.star u` is the type of all arrows with source `u`;
-* `quiver.costar u` is the type of all arrows with target `u`;
-* `prefunctor.star φ u` is the obvious function `star u → star (φ.obj u)`;
-* `prefunctor.costar φ u` is the obvious function `costar u → costar (φ.obj u)`;
-* `prefunctor.is_covering φ` means that `φ.star u` and `φ.costar u` are bijections for all `u`;
+* `Quiver.Star u` is the type of all arrows with source `u`;
+* `Quiver.Costar u` is the type of all arrows with target `u`;
+* `Prefunctor.star φ u` is the obvious function `star u → star (φ.obj u)`;
+* `Prefunctor.costar φ u` is the obvious function `costar u → costar (φ.obj u)`;
+* `Prefunctor.IsCovering φ` means that `φ.star u` and `φ.costar u` are bijections for all `u`;
 * `quiver.star_path u` is the type of all paths with source `u`;
 * `prefunctor.star_path u` is the obvious function `star_path u → star_path (φ.obj u)`.
 
 ## Main statements
 
-* `prefunctor.is_covering.path_star_bijective` states that if `φ` is a covering,
+* `Prefunctor.IsCovering.pathStar_bijective` states that if `φ` is a covering,
   then `φ.star_path u` is a bijection for all `u`.
   In other words, every path in the codomain of `φ` lifts uniquely to its domain.
 
 ## TODO
 
-Clean up the namespaces by renaming `prefunctor` to `quiver.prefunctor`.
+Clean up the namespaces by renaming `Prefunctor` to `quiver.prefunctor`.
 
 ## Tags
 
@@ -49,39 +49,39 @@ universe u v w
 variable {U : Type _} [Quiver.{u + 1} U] {V : Type _} [Quiver.{v + 1} V] (φ : U ⥤q V) {W : Type _}
   [Quiver.{w + 1} W] (ψ : V ⥤q W)
 
-/-- The `quiver.star` at a vertex is the collection of arrows whose source is the vertex.
-The type `quiver.star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/
+/-- The `Quiver.Star` at a vertex is the collection of arrows whose source is the vertex.
+The type `Quiver.Star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/
 @[reducible]
 def Quiver.Star (u : U) :=
   Σ v : U, u ⟶ v
 #align quiver.star Quiver.Star
 
-/-- Constructor for `quiver.star`. Defined to be `sigma.mk`. -/
+/-- Constructor for `Quiver.Star`. Defined to be `sigma.mk`. -/
 @[reducible]
 protected def Quiver.Star.mk {u v : U} (f : u ⟶ v) : Quiver.Star u :=
   ⟨_, f⟩
 #align quiver.star.mk Quiver.Star.mk
 
-/-- The `quiver.costar` at a vertex is the collection of arrows whose target is the vertex.
-The type `quiver.costar v` is defined to be `Σ (u : U), (u ⟶ v)`. -/
+/-- The `Quiver.Costar` at a vertex is the collection of arrows whose target is the vertex.
+The type `Quiver.Costar v` is defined to be `Σ (u : U), (u ⟶ v)`. -/
 @[reducible]
 def Quiver.Costar (v : U) :=
   Σ u : U, u ⟶ v
 #align quiver.costar Quiver.Costar
 
-/-- Constructor for `quiver.costar`. Defined to be `sigma.mk`. -/
+/-- Constructor for `Quiver.Costar`. Defined to be `sigma.mk`. -/
 @[reducible]
 protected def Quiver.Costar.mk {u v : U} (f : u ⟶ v) : Quiver.Costar v :=
   ⟨_, f⟩
 #align quiver.costar.mk Quiver.Costar.mk
 
-/-- A prefunctor induces a map of `quiver.star` at every vertex. -/
+/-- A prefunctor induces a map of `Quiver.Star` at every vertex. -/
 @[simps]
 def Prefunctor.star (u : U) : Quiver.Star u → Quiver.Star (φ.obj u) := fun F =>
   Quiver.Star.mk (φ.map F.2)
 #align prefunctor.star Prefunctor.star
 
-/-- A prefunctor induces a map of `quiver.costar` at every vertex. -/
+/-- A prefunctor induces a map of `Quiver.Costar` at every vertex. -/
 @[simps]
 def Prefunctor.costar (u : U) : Quiver.Costar u → Quiver.Costar (φ.obj u) := fun F =>
   Quiver.Costar.mk (φ.map F.2)
@@ -188,13 +188,13 @@ protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
 #align prefunctor.is_covering.symmetrify Prefunctor.IsCovering.symmetrify
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
-The type `quiver.path_star u` is defined to be `Σ v : U, path u v`. -/
+The type `Quiver.PathStar u` is defined to be `Σ v : U, Path u v`. -/
 @[reducible]
 def Quiver.PathStar (u : U) :=
   Σ v : U, Path u v
 #align quiver.path_star Quiver.PathStar
 
-/-- Constructor for `quiver.path_star`. Defined to be `sigma.mk`. -/
+/-- Constructor for `Quiver.PathStar`. Defined to be `sigma.mk`. -/
 @[reducible]
 protected def Quiver.PathStar.mk {u v : U} (p : Path u v) : Quiver.PathStar u :=
   ⟨_, p⟩
@@ -286,7 +286,7 @@ section HasInvolutiveReverse
 variable [HasInvolutiveReverse U] [HasInvolutiveReverse V] [Prefunctor.MapReverse φ]
 
 /-- In a quiver with involutive inverses, the star and costar at every vertex are equivalent.
-This map is induced by `quiver.reverse`. -/
+This map is induced by `Quiver.reverse`. -/
 @[simps]
 def Quiver.starEquivCostar (u : U) : Quiver.Star u ≃ Quiver.Costar u where
   toFun e := ⟨e.1, reverse e.2⟩
