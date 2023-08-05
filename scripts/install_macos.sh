@@ -16,7 +16,7 @@ elan toolchain install stable
 elan default stable
 
 # Install and configure VS Code
-if ! "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" --install-extension leanprover.lean4 > /dev/null; then
+if ! "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" --install-extension leanprover.lean4; then
     brew install --cask visual-studio-code
     # Install the Lean4 VS Code extension
     code --install-extension leanprover.lean4
