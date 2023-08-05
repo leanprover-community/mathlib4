@@ -796,11 +796,28 @@ lemma biproduct.whisker_equiv_inv_comp_π :
 
 end whisker_equiv
 
--- We intentionally don't provide `@[simp]` lemmas here.
--- We expect users will want to use the `Equiv` API,
--- and then unfold manually at the appropriate moment.
-def Equiv.congr (α : J → Type _) {j j' : J} (h : j = j') : α j ≃ α j' :=
+/--
+Equalities in a base type give rise to "transport" equivalences between fibres of a type family
+over the base type.
+-/
+-- We intentionally don't provide `@[simp]` lemmas here for the projections.
+-- It is convenient to keep this unfolded, so that the basic simp lemmas about `Equiv`
+-- can apply, and then manually unfold when needed.
+def Equiv.transport (α : J → Type _) {j j' : J} (h : j = j') : α j ≃ α j' :=
   Equiv.cast (congrArg α h)
+
+@[simp] lemma Equiv.transport_refl (a : J → Type _) (j : J) :
+    Equiv.transport (rfl : j = j) = Equiv.refl _ := by
+  simp [Equiv.transport]
+
+@[simp] lemma Equiv.transport_symm (α : J → Type _) {j j' : J} (h : j = j') :
+    (Equiv.transport h).symm = Equiv.transport h.symm := by
+  simp [Equiv.transport]
+
+@[simp] lemma Equiv.transport_trans (α : J → Type _) {j j' j'' : J} (h : j = j') (h' : j' = j'') :
+    (Equiv.transport h).trans (Equiv.transport h') = Equiv.transport (h.trans h') := by
+  simp [Equiv.transport]
+
 
 -- We lazily mark this as `simp`, rather than restate the extensionality lemmas for `whisker_equiv`.
 @[simp]
@@ -808,7 +825,8 @@ def biproduct.iterated_reindex
     [DecidableEq J] {α : J → Type w} (f : (j : J) → α j → C) [∀ j, HasBiproduct (f j)]
     {j j' : J} (h : j = j') :
     ⨁ f j ≅ ⨁ f j' :=
-  (biproduct.whisker_equiv (Equiv.congr α h) (fun k => eqToIso (by subst h; simp [Equiv.congr])))
+  (biproduct.whisker_equiv (Equiv.transport α h)
+    (fun k => eqToIso (by subst h; simp [Equiv.transport])))
 
 /-- A variant of `biproduct.ι_π` specialized for iterated biproducts. -/
 @[reassoc]
@@ -821,7 +839,7 @@ theorem biproduct.ι_π_biproduct
   split_ifs with h
   · subst h
     ext
-    simp [Equiv.congr]
+    simp [Equiv.transport]
   · rfl
 
 section πKernel
