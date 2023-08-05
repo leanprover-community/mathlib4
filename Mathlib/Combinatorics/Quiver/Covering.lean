@@ -314,8 +314,7 @@ theorem Prefunctor.costar_conj_star (u : U) :
 
 theorem Prefunctor.bijective_costar_iff_bijective_star (u : U) :
     Bijective (φ.costar u) ↔ Bijective (φ.star u) := by
-  rw [Prefunctor.costar_conj_star, Bijective.of_comp_iff', Bijective.of_comp_iff] <;>
-    exact Equiv.bijective _
+  rw [Prefunctor.costar_conj_star, EquivLike.comp_bijective, EquivLike.bijective_comp]
 #align prefunctor.bijective_costar_iff_bijective_star Prefunctor.bijective_costar_iff_bijective_star
 
 theorem Prefunctor.isCovering_of_bijective_star (h : ∀ u, Bijective (φ.star u)) : φ.IsCovering :=
