@@ -102,11 +102,11 @@ def LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F] [LaxMonoid
       LaxMonoidal.{v₁, v₂} F where
   ε := ε
   μ := μ
-  μ_natural_left := sorry
-  μ_natural_right := sorry
-  associativity := sorry
-  left_unitality := sorry
-  right_unitality := sorry
+  μ_natural_left f X := by intros; simpa using μ_natural f (𝟙 X)
+  μ_natural_right X f := by intros; simpa using μ_natural (𝟙 X) f
+  associativity X Y Z := by intros; simpa using associativity X Y Z
+  left_unitality X := by intros; simpa using left_unitality X
+  right_unitality X := by intros; simpa using right_unitality X
 
 attribute [simp] LaxMonoidal.μ_natural_left LaxMonoidal.μ_natural_right
 

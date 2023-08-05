@@ -722,7 +722,15 @@ theorem tensor_inv_hom_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y)
 def ofTensorHom
     (tensorObj : C → C → C)
     (tensorHom : ∀ {X₁ Y₁ X₂ Y₂ : C}, (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂))
+    (whiskerLeft : ∀ (X : C) {Y₁ Y₂ : C}  (_f : Y₁ ⟶ Y₂), tensorObj X Y₁ ⟶ tensorObj X Y₂ :=
+      fun X _ _ f ↦ tensorHom (𝟙 X) f)
+    (whiskerRight : ∀ {X₁ X₂ : C} (_f : X₁ ⟶ X₂) (Y : C), tensorObj X₁ Y ⟶ tensorObj X₂ Y :=
+      fun f Y ↦ tensorHom f (𝟙 Y))
     (tensor_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
+      aesop_cat)
+    (id_tensorHom : ∀ (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂), tensorHom (𝟙 X) f = whiskerLeft X f := by
+      aesop_cat)
+    (tensorHom_id : ∀ {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C), tensorHom f (𝟙 Y) = whiskerRight f Y := by
       aesop_cat)
     (tensor_comp :
       ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
@@ -759,25 +767,37 @@ def ofTensorHom
       MonoidalCategory C where
   tensorObj := tensorObj
   tensorHom := tensorHom
-  whiskerLeft X _ _ f := tensorHom (𝟙 X) f
-  whiskerRight f X := tensorHom f (𝟙 X)
-  tensorHom_def f g := by rw [← tensor_comp, id_comp, comp_id]
+  whiskerLeft X _ _ f := whiskerLeft X f
+  whiskerRight f X := whiskerRight f X
+  tensorHom_def := by intros; simp [← id_tensorHom, ←tensorHom_id, ← tensor_comp]
   tensorUnit' := tensorUnit'
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
   associator := associator
-  whiskerLeft_id := by intros; simp [tensor_id]
-  whiskerLeft_comp := by intros; simp [← tensor_comp]
-  id_whiskerLeft := by intros; rw [← assoc, ← leftUnitor_naturality]; simp
-  tensor_whiskerLeft := by intros; rw [← assoc, ← associator_naturality]; simp [tensor_id]
-  id_whiskerRight := by intros; simp [tensor_id]
-  comp_whiskerRight := by intros; simp [← tensor_comp]
-  whiskerRight_id := by intros; rw [← assoc, ← rightUnitor_naturality]; simp
-  whiskerRight_tensor := by intros; rw [associator_naturality]; simp [tensor_id]
-  whisker_assoc := by intros; rw [← assoc, ← associator_naturality]; simp
-  whisker_exchange := by intros; dsimp; rw [← tensor_comp, ← tensor_comp]; simp
-  pentagon := pentagon
-  triangle := triangle
+  whiskerLeft_id := by intros; simp [← id_tensorHom, ← tensor_id]
+  whiskerLeft_comp := by intros; simp [← id_tensorHom, ← tensor_comp]
+  id_whiskerLeft := by intros; rw [← assoc, ← leftUnitor_naturality]; simp [← id_tensorHom]
+  tensor_whiskerLeft := by
+    intros
+    simp only [← id_tensorHom, ← tensorHom_id]
+    rw [← assoc, ← associator_naturality]
+    simp [tensor_id]
+  id_whiskerRight := by intros; simp [← tensorHom_id, tensor_id]
+  comp_whiskerRight := by intros; simp [← tensorHom_id, ← tensor_comp]
+  whiskerRight_id := by intros; rw [← assoc, ← rightUnitor_naturality]; simp [← tensorHom_id]
+  whiskerRight_tensor := by
+    intros
+    simp only [← id_tensorHom, ← tensorHom_id]
+    rw [associator_naturality]
+    simp [tensor_id]
+  whisker_assoc := by
+    intros
+    simp only [← id_tensorHom, ← tensorHom_id]
+    rw [← assoc, ← associator_naturality]
+    simp
+  whisker_exchange := by simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
+  pentagon := by intros; simp [← id_tensorHom, ← tensorHom_id, pentagon]
+  triangle := by intros; simp [← id_tensorHom, ← tensorHom_id, triangle]
 
 end
 

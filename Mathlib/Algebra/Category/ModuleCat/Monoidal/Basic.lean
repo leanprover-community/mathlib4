@@ -201,6 +201,8 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
   -- data
   (tensorObj := MonoidalCategory.tensorObj)
   (tensorHom := @tensorHom _ _)
+  (whiskerLeft := @whiskerLeft _ _)
+  (whiskerRight := @whiskerRight _ _)
   (tensorUnit' := ModuleCat.of R R)
   (associator := associator)
   (leftUnitor := leftUnitor)
@@ -226,6 +228,18 @@ theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K
     (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
 #align Module.monoidal_category.hom_apply ModuleCat.MonoidalCategory.hom_apply
+
+@[simp]
+theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
+    (l : L) (m : M) :
+      (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
+  rfl
+
+@[simp]
+theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
+    (l : L) (n : N) :
+      (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom_apply {M : ModuleCat.{u} R} (r : R) (m : M) :

@@ -166,8 +166,8 @@ def tensorObj (X Y : Center C) : Center C :=
 
 @[reassoc]
 theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
-    (X.1 ◁ f.f) ▷ U ≫ (HalfBraiding.β (tensorObj X Y₂).2 U).hom =
-      (HalfBraiding.β (tensorObj X Y₁).2 U).hom ≫ U ◁ X.1 ◁ f.f := by
+    (X.1 ◁ f.f) ▷ U ≫ ((tensorObj X Y₂).2.β U).hom =
+      ((tensorObj X Y₁).2.β U).hom ≫ U ◁ X.1 ◁ f.f := by
   dsimp only [tensorObj_fst, tensorObj_snd_β, Iso.trans_hom, whiskerLeftIso_hom,
     Iso.symm_hom, whiskerRightIso_hom]
   calc
@@ -190,8 +190,8 @@ def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
 
 @[reassoc]
 theorem whiskerRight_comm {X₁ X₂: Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
-    f.f ▷ Y.1 ▷ U ≫ (HalfBraiding.β (tensorObj X₂ Y).2 U).hom =
-      (HalfBraiding.β (tensorObj X₁ Y).snd U).hom ≫ U ◁ f.f ▷ Y.1 := by
+    f.f ▷ Y.1 ▷ U ≫ ((tensorObj X₂ Y).2.β U).hom =
+      ((tensorObj X₁ Y).2.β U).hom ≫ U ◁ f.f ▷ Y.1 := by
   dsimp only [tensorObj_fst, tensorObj_snd_β, Iso.trans_hom, whiskerLeftIso_hom,
     Iso.symm_hom, whiskerRightIso_hom]
   calc
