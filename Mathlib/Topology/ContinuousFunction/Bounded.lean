@@ -92,6 +92,7 @@ instance : CoeFun (α →ᵇ β) fun _ => α → β :=
 instance [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
   ⟨BoundedContinuousMapClass.toBoundedContinuousFunction⟩
 
+@[simp]
 lemma _root_.BoundedContinuousMapClass.coe_toBoundedContinuousFunction
     [BoundedContinuousMapClass F α β] (f : F) :
     (f : α →ᵇ β) = (f : α → β) :=
