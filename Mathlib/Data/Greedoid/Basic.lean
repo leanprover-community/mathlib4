@@ -1177,8 +1177,13 @@ theorem subset_kernelClosureOperator_of_mem_partialAlphabets
 theorem rank_kernelClosureOperator_eq_rank :
     G.rank (G.kernelClosureOperator s) = G.rank s := by
   let ⟨b, hb⟩ : Nonempty (G.bases s) := bases_nonempty
-  have : G.rank (G.kernelClosureOperator b) = G.rank b :=
+  have h₁ : G.rank (G.kernelClosureOperator b) = G.rank b :=
     rank_kernelClosureOperator_feasible (basis_mem_feasible hb)
+  have h₂ : b ⊆ G.kernelClosureOperator s := by
+    apply subset_of_subset_of_eq
+    . apply G.subset_kernelClosureOperator_of_mem_partialAlphabets
+      sorry
+    . sorry
   sorry
 
 end Kernel
