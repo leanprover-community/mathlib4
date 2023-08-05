@@ -500,8 +500,8 @@ theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = ((lift.{v} a) ^ (li
 #align cardinal.lift_power Cardinal.lift_power
 
 @[simp]
-theorem power_zero {a : Cardinal} : (a ^ 0) = 1 := by
-  refine inductionOn a fun α => mk_eq_one _
+theorem power_zero {a : Cardinal} : (a ^ 0) = 1 :=
+  inductionOn a fun α => mk_eq_one _
 #align cardinal.power_zero Cardinal.power_zero
 
 @[simp]
