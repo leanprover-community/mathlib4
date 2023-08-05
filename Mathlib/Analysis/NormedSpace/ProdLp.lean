@@ -3,9 +3,37 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
+
 import Mathlib.Analysis.MeanInequalities
-import Mathlib.Data.Fintype.Order
-import Mathlib.LinearAlgebra.Matrix.Basis
+
+/-!
+# `L^p` distance on products of two metric spaces
+Given two metric spaces, one can put the max distance on their product, but there is also
+a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
+the product topology. We define them in this file. For `0 < p < ∞`, the distance on `α × β`
+is given by
+$$
+d(x, y) = \left(d(x_1, y_1)^p + d(x_2, y_2)^p\right)^{1/p}.
+$$
+For `p = ∞` the distance is the supremum of the distances.
+
+We give instances of this construction for emetric spaces, metric spaces, normed groups and normed
+spaces.
+
+To avoid conflicting instances, all these are defined on a copy of the original Prod-type, named
+`ProdLp p α β`. The assumption `[Fact (1 ≤ p)]` is required for the metric and normed space
+instances.
+
+We ensure that the topology, bornology and uniform structure on `ProdLp p α β` are (defeq to) the
+product topology, product bornology and product uniformity, to be able to use freely continuity
+statements for the coordinate functions, for instance.
+
+# Implementation notes
+
+This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`. We deviate from
+`PiLp` in that we use for `p = 0` the junk value `d(x, y) = 0`.
+
+-/
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
@@ -33,8 +61,8 @@ namespace ProdLp
 
 variable (p : ℝ≥0∞) (𝕜 𝕜' : Type _) (α β : Type _)
 
-/-- Canonical bijection between `ProdLp p α β` and the original Pi type. We introduce it to be able
-to compare the `L^p` and `L^∞` distances through it. -/
+/-- Canonical bijection between `ProdLp p α β` and the original Prod type. We introduce it to be
+able to compare the `L^p` and `L^∞` distances through it. -/
 protected def equiv : ProdLp p α β ≃ α × β :=
   Equiv.refl _
 
@@ -54,9 +82,9 @@ section DistNorm
 /-!
 ### Definition of `edist`, `dist` and `norm` on `ProdLp`
 
-In this section we define the `edist`, `dist` and `norm` functions on `ProdLp p α β` without assuming
-`[Fact (1 ≤ p)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
-lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
+In this section we define the `edist`, `dist` and `norm` functions on `ProdLp p α β` without
+assuming `[Fact (1 ≤ p)]` or metric properties of the spaces `α` and `β`. This allows us to provide
+the rewrite lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
 
@@ -82,7 +110,8 @@ variable {α β}
 
 variable (x y : ProdLp p α β) (x' : α × β)
 
-theorem edist_eq_card (f g : ProdLp 0 α β) : edist f g = 0 :=
+@[simp]
+protected theorem edist_eq_zero (f g : ProdLp 0 α β) : edist f g = 0 :=
   if_pos rfl
 
 theorem edist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : ProdLp p α β) :
@@ -103,18 +132,18 @@ variable {α β}
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
-from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
+from `ProdLp.instPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 protected theorem edist_self (f : ProdLp p α β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp [edist_eq_card]
+  · simp
   · simp [edist_eq_sup]
   · simp [edist_eq_add h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
-from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
+from `ProdLp.instPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : ProdLp p α β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [edist_eq_card, eq_comm, Ne.def]
+  · simp only [ProdLp.edist_eq_zero, eq_comm, Ne.def]
   · simp only [edist_eq_sup, edist_comm]
   · simp only [edist_eq_add h, edist_comm]
 
@@ -167,13 +196,14 @@ Registering this separately allows for a future norm-like structure on `ProdLp p
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
 instance instNorm : Norm (ProdLp p α β) where
   norm f :=
-    if _hp : p = 0 then 0 -- { i | f i ≠ 0 }.toFinite.toFinset.card
+    if _hp : p = 0 then 0
     else if p = ∞ then ‖f.fst‖ ⊔ ‖f.snd‖
     else (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
 
-theorem norm_eq_card (f : ProdLp 0 α β) : ‖f‖ = 0 :=
+@[simp]
+protected theorem norm_eq_zero (f : ProdLp 0 α β) : ‖f‖ = 0 :=
   if_pos rfl
 
 theorem norm_eq_sup (f : ProdLp ∞ α β) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := by
@@ -364,7 +394,7 @@ theorem aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
 
 end Aux
 
-/-! ### Instances on finite `L^p` products -/
+/-! ### Instances on `L^p` products -/
 
 
 instance instUniformSpace [UniformSpace α] [UniformSpace β] : UniformSpace (ProdLp p α β) :=
@@ -393,25 +423,27 @@ instance instBornology [Bornology α] [Bornology β] : Bornology (ProdLp p α β
 -- throughout the rest of the file, we assume `1 ≤ p`
 variable [Fact (1 ≤ p)]
 
-/-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
+/-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
-instance [PseudoEMetricSpace α] [PseudoEMetricSpace β] : PseudoEMetricSpace (ProdLp p α β) :=
+instance instPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    PseudoEMetricSpace (ProdLp p α β) :=
   (pseudoEmetricAux p α β).replaceUniformity (aux_uniformity_eq p α β).symm
 
-/-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
+/-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
-instance [EMetricSpace α] [EMetricSpace β] : EMetricSpace (ProdLp p α β) :=
+instance instEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (ProdLp p α β) :=
   @EMetricSpace.ofT0PseudoEMetricSpace (ProdLp p α β) _ instT0SpaceProdInstTopologicalSpaceProd
 
-/-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
+/-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance [PseudoMetricSpace α] [PseudoMetricSpace β] : PseudoMetricSpace (ProdLp p α β) :=
+instance instPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
+    PseudoMetricSpace (ProdLp p α β) :=
   ((pseudoMetricAux p α β).replaceUniformity (aux_uniformity_eq p α β).symm).replaceBornology
     fun s => Filter.ext_iff.1 (aux_cobounded_eq p α β).symm sᶜ
 
-/-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
+/-- `MetricSpace` instance on the product of two metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance [MetricSpace α] [MetricSpace β] : MetricSpace (ProdLp p α β) :=
+instance instMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (ProdLp p α β) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
 variable {p α β}
@@ -449,7 +481,7 @@ theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
       simpa only [ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero, ENNReal.coe_one,
         one_mul] using antilipschitzWith_equiv ∞ α β x y)
 
-/-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
+/-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
 instance instSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (ProdLp p α β) :=
@@ -466,7 +498,7 @@ instance instSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCo
           dist_eq_norm]
         rfl }
 
-/-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
+/-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
 instance normedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (ProdLp p α β) :=
   { ProdLp.instSeminormedAddCommGroup p α β with
@@ -515,7 +547,7 @@ variable {α β}
 theorem dist_eq_of_L2 (x y : ProdLp 2 α β) :
     dist x y = (dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2).sqrt := by
   simp_rw [dist_eq_norm, norm_eq_of_L2, Pi.sub_apply]
-  rfl -- Porting note: `Pi.sub_apply` doesn't work
+  rfl
 
 theorem nndist_eq_of_L2 (x y : ProdLp 2 α β) :
     nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
@@ -541,7 +573,7 @@ variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
 instance instModule : Module 𝕜 (ProdLp p α β) :=
   { Prod.module with }
 
-/-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
+/-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
 instance instNormedSpace :
     NormedSpace 𝕜 (ProdLp p α β) :=
   { instModule p 𝕜 α β with
@@ -550,10 +582,8 @@ instance instNormedSpace :
       · letI : Module 𝕜 (ProdLp ∞ α β) := Prod.module
         suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
         simp only [nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
-        -- Porting note: added
-        congr
+        rfl
       · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
-        -- Porting note: added to replace Pi.smul_apply
         have smul_fst : (c • f).fst = c • f.fst := rfl
         have smul_snd : (c • f).snd = c • f.snd := rfl
         simp only [norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg,
@@ -583,7 +613,7 @@ instance instFiniteDimensional [FiniteDimensional 𝕜 α] [FiniteDimensional �
 end normed_space_inst
 
 /- Register simplification lemmas for the applications of `ProdLp` elements, as the usual lemmas
-for Pi types will not trigger. -/
+for Prod types will not trigger. -/
 variable {𝕜 𝕜' p α β}
 variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
   [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
