@@ -501,7 +501,7 @@ theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = ((lift.{v} a) ^ (li
 
 @[simp]
 theorem power_zero {a : Cardinal} : (a ^ 0) = 1 :=
-  inductionOn a fun α => mk_eq_one _
+  inductionOn a fun _ => mk_eq_one _
 #align cardinal.power_zero Cardinal.power_zero
 
 @[simp]
