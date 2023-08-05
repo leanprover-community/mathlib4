@@ -189,6 +189,7 @@ def shiftl' (b : Bool) (m : ℕ) : ℕ → ℕ
   | n + 1 => bit b (shiftl' b m n)
 #align nat.shiftl' Nat.shiftl'
 
+@[simp]
 theorem shiftLeft_eq_shiftl'_false : ∀ n, shiftl' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
@@ -205,10 +206,10 @@ lemma bit_1 (b : Bool) : Nat.bit b 1 = 2 + b.toNat:= by
   cases' b <;> simp
 
 @[simp]
-lemma shiftLeft_eq' {m n : Nat} : shiftLeft n m = n <<< m := rfl
+lemma shiftLeft_eq' {m n : Nat} : shiftLeft m n = m <<< n := rfl
 
 @[simp]
-lemma shiftRight_eq {m n : Nat} : shiftRight n m = n >>> m := rfl
+lemma shiftRight_eq {m n : Nat} : shiftRight m n = m >>> n := rfl
 
 @[simp]
 theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
@@ -223,6 +224,7 @@ theorem shiftRight_zero : n >>> 0 = n := rfl
 @[simp]
 theorem shiftRight_succ (m n) : m >>> (n + 1) = (m >>> n) / 2 := rfl
 
+@[simp]
 theorem zero_shiftRight : ∀ n, 0 >>> n = 0 := by
   intro n
   induction' n with n IH

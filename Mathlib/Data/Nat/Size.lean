@@ -20,15 +20,11 @@ namespace Nat
 section
 set_option linter.deprecated false
 
-theorem shiftl_eq_mul_pow (m) : ∀ n, shiftl m n = m * 2 ^ n
-  | 0 => (Nat.mul_one _).symm
-  | k + 1 => by
-    show bit0 (shiftl m k) = m * (2 ^ k * 2)
-    rw [bit0_val, shiftl_eq_mul_pow m k, mul_comm 2, mul_assoc]
-#align nat.shiftl_eq_mul_pow Nat.shiftl_eq_mul_pow
+theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
+#align nat.shiftl_eq_mul_pow Nat.shiftLeft_eq_mul_pow
 
 theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ n
-  | 0 => by simp [shiftl, shiftl', pow_zero, Nat.one_mul]
+  | 0 => by simp [shiftl', pow_zero, Nat.one_mul]
   | k + 1 => by
     change bit1 (shiftl' true m k) + 1 = (m + 1) * (2 ^ k * 2)
     rw [bit1_val]
@@ -38,26 +34,17 @@ theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ 
 
 end
 
-theorem one_shiftl (n) : shiftl 1 n = 2 ^ n :=
-  (shiftl_eq_mul_pow _ _).trans (Nat.one_mul _)
-#align nat.one_shiftl Nat.one_shiftl
-
 @[simp]
-theorem zero_shiftl (n) : shiftl 0 n = 0 :=
-  (shiftl_eq_mul_pow _ _).trans (Nat.zero_mul _)
+theorem zero_shiftl (n) : 0 <<< n = 0 :=
+  (shiftLeft_eq _ _).trans (Nat.zero_mul _)
 #align nat.zero_shiftl Nat.zero_shiftl
 
-theorem shiftr_eq_div_pow (m) : ∀ n, shiftr m n = m / 2 ^ n
+theorem shiftRight_eq_div_pow (m) : ∀ n, m >>> n = m / 2 ^ n
   | 0 => (Nat.div_one _).symm
-  | k + 1 =>
-    (congr_arg div2 (shiftr_eq_div_pow m k)).trans <| by
-      rw [div2_val, Nat.div_div_eq_div_mul, Nat.pow_succ]
-#align nat.shiftr_eq_div_pow Nat.shiftr_eq_div_pow
-
-@[simp]
-theorem zero_shiftr (n) : shiftr 0 n = 0 :=
-  (shiftr_eq_div_pow _ _).trans (Nat.zero_div _)
-#align nat.zero_shiftr Nat.zero_shiftr
+  | k + 1 => by
+    rw [shiftRight_add, shiftRight_eq_div_pow m k]
+    simp [Nat.div_div_eq_div_mul, ← Nat.pow_succ]
+#align nat.shiftr_eq_div_pow Nat.shiftRight_eq_div_pow
 
 theorem shiftl'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftl' b m n ≠ 0 := by
   induction n <;> simp [bit_ne_zero, shiftl', *]
@@ -123,25 +110,25 @@ theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = 
 #align nat.size_shiftl' Nat.size_shiftl'
 
 @[simp]
-theorem size_shiftl {m} (h : m ≠ 0) (n) : size (shiftl m n) = size m + n :=
-  size_shiftl' (shiftl'_ne_zero_left _ h _)
+theorem size_shiftl {m} (h : m ≠ 0) (n) : size (m  <<< n) = size m + n :=
+  by simp only [size_shiftl' (shiftl'_ne_zero_left _ h _), ← shiftLeft_eq_shiftl'_false]
 #align nat.size_shiftl Nat.size_shiftl
 
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
-  rw [← one_shiftl]
-  have : ∀ {n}, n = 0 → n < shiftl 1 (size n) := by simp
+  rw [← one_shiftLeft]
+  have : ∀ {n}, n = 0 → n < 1 <<< (size n) := by simp
   apply binaryRec _ _ n
   · apply this rfl
   intro b n IH
   by_cases h : bit b n = 0
   · apply this h
-  rw [size_bit h, shiftl_succ]
-  exact bit_lt_bit0 _ IH
+  rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul, ← bit0_val]
+  exact bit_lt_bit0 _ (by simpa [shiftRight_eq_div_pow] using IH)
 #align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
   ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
-    rw [← one_shiftl]; revert n
+    rw [← one_shiftLeft]; revert n
     apply binaryRec _ _ m
     · intro n
       simp
@@ -152,7 +139,9 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
       cases' n with n
       · exact e.elim (Nat.eq_zero_of_le_zero (le_of_lt_succ h))
       · apply succ_le_succ (IH _)
-        apply lt_imp_lt_of_le_imp_le (fun h' => bit0_le_bit _ h') h⟩
+        apply lt_of_mul_lt_mul_left _ (zero_le 2)
+        simp only [← bit0_val, shiftLeft_succ] at *
+        exact lt_of_le_of_lt (bit0_le_bit b rfl.le) h⟩
 #align nat.size_le Nat.size_le
 
 theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by
