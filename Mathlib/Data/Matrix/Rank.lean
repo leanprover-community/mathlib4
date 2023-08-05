@@ -189,7 +189,8 @@ end CommRing
 section ConjTransposeRankLemmas
 
 variable {m : Type _} [Fintype m]
-variable {R : Type _} [Field R] [StarRing R] [StarDotProductSpace m R] [StarDotProductSpace n R]
+variable {R : Type _} [Field R] [StarRing R]
+variable [DotProductInnerProductSpace m R] [DotProductInnerProductSpace n R]
 
 open FiniteDimensional
 
@@ -202,7 +203,7 @@ theorem ker_mulVecLin_conjTranspose_mul_self' (A : Matrix m n R) :
     replace h := congr_arg (dotProduct (star x)) h
     haveI : NoZeroDivisors R := inferInstance
     rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
-      StarDotProductSpace.dotProduct_star_self_eq_zero] at h
+      DotProductInnerProductSpace.dotProduct_star_self_eq_zero_iff] at h
   · intro h
     rw [h, mulVec_zero]
 

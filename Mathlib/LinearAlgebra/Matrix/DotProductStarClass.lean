@@ -22,18 +22,18 @@ matrices of the same underlying type kernel preserving for linear maps.
 open BigOperators Matrix
 
 class DotProductInnerProductSpace (n K) [Fintype n][Ring K][StarRing K] : Prop where
-  eq_zero_of_dotProduct_star_self_eq_zero (v : n → K) : Matrix.dotProduct (star v) v = 0 → v = 0
+  dotProduct_star_self_eq_zero_iff (v : n → K) : Matrix.dotProduct (star v) v = 0 ↔ v = 0
 
 variable {n : Type _}[Fintype n]
 
 lemma dotProduct_self_star_eq_zero  (v : n → K) [Ring K] [StarRing K]
-    [DotProductInnerProductSpace n K] : Matrix.dotProduct v (star v) = 0 → v = 0 := by
+    [DotProductInnerProductSpace n K] : Matrix.dotProduct v (star v) = 0 ↔ v = 0 := by
   simpa only [star_star, star_eq_zero] using
-    DotProductInnerProductSpace.eq_zero_of_dotProduct_star_self_eq_zero (star v)
+    DotProductInnerProductSpace.dotProduct_star_self_eq_zero_iff (star v)
 
 
 instance IsROrC.toStarDotProduct [IsROrC K] : DotProductInnerProductSpace n K where
-  eq_zero_of_dotProduct_star_self_eq_zero := by
+  dotProduct_star_self_eq_zero_iff := by
     intro v
     rw [dotProduct, IsROrC.ext_iff]
     simp_rw [Function.funext_iff, IsROrC.zero_re', map_zero, Pi.star_apply, IsROrC.star_def,
@@ -44,14 +44,14 @@ instance IsROrC.toStarDotProduct [IsROrC K] : DotProductInnerProductSpace n K wh
       IsROrC.normSq_nonneg]
 
 instance instStarDotProduct_R : DotProductInnerProductSpace n ℝ where
-  eq_zero_of_dotProduct_star_self_eq_zero := by
+  dotProduct_star_self_eq_zero_iff := by
     intro v
     rw [star_trivial, dotProduct, Finset.sum_eq_zero_iff_of_nonneg, Function.funext_iff] <;>
     simp only [Finset.mem_univ, mul_eq_zero, or_self, forall_true_left, Pi.zero_apply, imp_self,
       mul_self_nonneg, implies_true]
 
 instance instStarDotProduct_C : DotProductInnerProductSpace n ℂ where
-  eq_zero_of_dotProduct_star_self_eq_zero := by
+  dotProduct_star_self_eq_zero_iff := by
     intro v
     simp_rw [dotProduct, Pi.star_apply, Complex.star_def, ← Complex.normSq_eq_conj_mul_self,
       Complex.ext_iff, Complex.im_sum, Complex.zero_im, Complex.ofReal_im, Finset.sum_const_zero,
@@ -63,7 +63,7 @@ instance instStarDotProduct_C : DotProductInnerProductSpace n ℂ where
 
 
 instance instStarDotProduct_Q : DotProductInnerProductSpace n ℚ where
-  eq_zero_of_dotProduct_star_self_eq_zero := by
+  dotProduct_star_self_eq_zero_iff := by
     intro v
     rw [star_trivial, dotProduct, Finset.sum_eq_zero_iff_of_nonneg, Function.funext_iff] <;>
     simp only [Finset.mem_univ, mul_eq_zero, or_self, forall_true_left, Pi.zero_apply,
@@ -71,7 +71,7 @@ instance instStarDotProduct_Q : DotProductInnerProductSpace n ℚ where
 
 instance instStarDotProduct_starOrderedRing [Field K] [PartialOrder K] [StarOrderedRing K] :
     DotProductInnerProductSpace n K where
-  eq_zero_of_dotProduct_star_self_eq_zero := by
+  dotProduct_star_self_eq_zero_iff := by
     intro v
     rw [dotProduct, Finset.sum_eq_zero_iff_of_nonneg, Function.funext_iff] <;>
     simp only [Finset.mem_univ, Pi.star_apply, forall_true_left, star_mul_self_nonneg, implies_true,
