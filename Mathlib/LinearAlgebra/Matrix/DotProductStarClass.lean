@@ -43,14 +43,14 @@ instance IsROrC.toStarDotProduct [IsROrC K] : DotProductInnerProductSpace n K wh
     simp only [Finset.mem_univ, forall_true_left, map_eq_zero, implies_true, imp_self,
       IsROrC.normSq_nonneg]
 
-instance instStarDotProduct_R : DotProductInnerProductSpace n ℝ where
+instance Real.toStarDotProduct : DotProductInnerProductSpace n ℝ where
   dotProduct_star_self_eq_zero_iff := by
     intro v
     rw [star_trivial, dotProduct, Finset.sum_eq_zero_iff_of_nonneg, Function.funext_iff] <;>
     simp only [Finset.mem_univ, mul_eq_zero, or_self, forall_true_left, Pi.zero_apply, imp_self,
       mul_self_nonneg, implies_true]
 
-instance instStarDotProduct_C : DotProductInnerProductSpace n ℂ where
+instance Complex.toStarDotProduct : DotProductInnerProductSpace n ℂ where
   dotProduct_star_self_eq_zero_iff := by
     intro v
     simp_rw [dotProduct, Pi.star_apply, Complex.star_def, ← Complex.normSq_eq_conj_mul_self,
@@ -62,14 +62,14 @@ instance instStarDotProduct_C : DotProductInnerProductSpace n ℂ where
     exact (fun _ => Complex.normSq_nonneg _)
 
 
-instance instStarDotProduct_Q : DotProductInnerProductSpace n ℚ where
+instance Rat.toStarDotProduct : DotProductInnerProductSpace n ℚ where
   dotProduct_star_self_eq_zero_iff := by
     intro v
     rw [star_trivial, dotProduct, Finset.sum_eq_zero_iff_of_nonneg, Function.funext_iff] <;>
     simp only [Finset.mem_univ, mul_eq_zero, or_self, forall_true_left, Pi.zero_apply,
       mul_self_nonneg, implies_true, imp_self]
 
-instance instStarDotProduct_starOrderedRing [Field K] [PartialOrder K] [StarOrderedRing K] :
+instance StarOrderedRing.toStarDotProduct [Field K] [PartialOrder K] [StarOrderedRing K] :
     DotProductInnerProductSpace n K where
   dotProduct_star_self_eq_zero_iff := by
     intro v
