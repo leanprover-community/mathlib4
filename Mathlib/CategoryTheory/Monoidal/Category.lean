@@ -196,6 +196,12 @@ section
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
+variable {X Y Z₁ Z₂ : C}
+theorem eq_tensor {f g : X ⟶ Y} (w : f = g) (h : Z₁ ⟶ Z₂) : f ⊗ h = g ⊗ h := by rw [w]
+theorem tensor_eq {f g : X ⟶ Y} (h : Z₁ ⟶ Z₂) (w : f = g) : h ⊗ f = h ⊗ g := by rw [w]
+scoped infixr:80 " =⊗ " => eq_tensor
+scoped infixr:80 " ⊗= " => tensor_eq
+
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
   IsIso.of_iso (asIso f ⊗ asIso g)
 #align category_theory.monoidal_category.tensor_is_iso CategoryTheory.MonoidalCategory.tensor_isIso

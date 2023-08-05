@@ -131,6 +131,20 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
             simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
                IsBilimit.total i]) } }
 
+section IsZero
+
+theorem IsZero.tensor_left (X : C) {Y : C} (o : IsZero Y) : IsZero (X ⊗ Y) := by
+  apply (IsZero.iff_id_eq_zero _).mpr
+  simp only [← MonoidalCategory.tensor_id]
+  simp [o.eq_zero_of_src]
+
+theorem IsZero.tensor_right {X : C} (o : IsZero X) (Y : C) : IsZero (X ⊗ Y) := by
+  apply (IsZero.iff_id_eq_zero _).mpr
+  simp only [← MonoidalCategory.tensor_id]
+  simp [o.eq_zero_of_src]
+
+end IsZero
+
 variable [HasFiniteBiproducts C]
 
 /-- The isomorphism showing how tensor product on the left distributes over direct sums. -/

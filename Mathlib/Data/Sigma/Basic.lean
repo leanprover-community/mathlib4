@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Init.Function
 import Std.Tactic.Ext
 import Mathlib.Logic.Function.Basic
+import Aesop
 
 #align_import data.sigma.basic from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -72,6 +73,12 @@ theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq
   cases x₀; cases x₁; exact Sigma.mk.inj_iff
 #align sigma.ext_iff Sigma.ext_iff
 
+-- An alternative extensionality statement for `Sigma` types,
+-- in terms of casts rather than heterogeneous equality.
+theorem ext_iff' {β : α → Type _} (p q : Σ a, β a) :
+    p = q ↔ ∃ h : p.1 = q.1, cast (congrArg β h) p.2 = q.2 := by
+  aesop
+
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
 theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type _} [Nonempty γ]
     {a b : α} {f : γ → β a} {g : γ → β b} (h : Sigma.mk a ∘ f = Sigma.mk b ∘ g) :
@@ -79,6 +86,10 @@ theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type _} [Nonempty γ]
   rcases ‹Nonempty γ› with ⟨i⟩
   obtain rfl : a = b := congr_arg Sigma.fst (congr_fun h i)
   simpa [Function.funext_iff] using h
+
+@[simp] theorem eq_fst_and_eq_iff {β : α → Type _} (p : Σ a, β a) (a : α) (b : β a) :
+    a = p.1 ∧ ⟨a, b⟩ = p ↔ ⟨a, b⟩ = p := by
+  aesop
 
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]

@@ -214,3 +214,23 @@ theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) 
     Function.extend f g h = h :=
   funext fun _ ↦ (Function.extend_apply' _ _ _) fun ⟨a, _⟩ ↦ isEmptyElim a
 #align function.extend_of_empty Function.extend_of_isEmpty
+
+theorem dite_dite (P : Prop) [Decidable P] (Q : P → Prop) [∀ hp, Decidable (Q hp)]
+    (a : (hp : P) → Q hp → β) (b : β) :
+    (if hp : P then (if hq : Q hp then a hp hq else b) else b) =
+      (if h : ∃ hp : P, Q hp then a h.1 h.2 else b) := by
+  by_cases hp : P
+  · by_cases hq : Q hp
+    · simp [hp, hq]
+    · simp [hp, hq]
+  · simp [hp]
+
+theorem dite_exists (P : Prop) [Decidable P] (Q : P → Prop) [∀ hp, Decidable (Q hp)]
+    (a : (∃ hp : P, Q hp) → β) (b : β) :
+    (if h : ∃ hp : P, Q hp then a h else b)
+     = (if hp : P then (if hq : Q hp then a ⟨hp, hq⟩ else b) else b) := by
+  by_cases hp : P
+  · by_cases hq : Q hp
+    · simp [hp, hq]
+    · simp [hp, hq]
+  · simp [hp]
