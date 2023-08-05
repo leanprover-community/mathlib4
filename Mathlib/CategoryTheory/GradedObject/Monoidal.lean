@@ -14,9 +14,13 @@ import Mathlib.Data.Fintype.Sigma
 # The monoidal structure on graded objects in a monoidal category.
 
 This is a warm-up to the monoidal structure on chain complexes.
+
 As there is a faithful functor from chain complexes to graded objects (forgetting the differentials)
 the result here can be used as an ingredient for the chain complex case,
 to avoid having to check the pentagon, triangle, and naturality equations.
+
+One still needs to construct the differential on the tensor product of chain complexes,
+and check that the unitors and associator defined here commute with it.
 
 For now we just do the special case of objects graded by `ℕ`.
 We may need to generalize API around `antidiagonal` in order to generalize.
@@ -394,8 +398,8 @@ lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
   simp? [biproduct.ι_π_assoc, dite_comp, dite_dite, Equiv.eq_symm_apply] says
     simp only [ne_eq, Equiv.eq_symm_apply, biproduct.ι_π_assoc, dite_comp, eqToHom_trans,
       zero_comp, dite_dite]
-  simp? [Equiv.congr, helper] says
-    simp only [Equiv.congr, Equiv.cast_apply, Finset.mem_val, mem_antidiagonal, helper,
+  simp? [Equiv.transport, helper] says
+    simp only [Equiv.transport, Equiv.cast_apply, Finset.mem_val, mem_antidiagonal, helper,
       cast_cast, cast_eq, exists_prop, Sigma.eq_fst_and_eq_iff]
   conv in biproduct.lift _ =>
     -- Unfortunately `simp` does not successfully apply `biproduct.lift_dite` here,

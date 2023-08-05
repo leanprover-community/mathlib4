@@ -796,29 +796,8 @@ lemma biproduct.whisker_equiv_inv_comp_π :
 
 end whisker_equiv
 
-/--
-Equalities in a base type give rise to "transport" equivalences between fibres of a type family
-over the base type.
--/
--- We intentionally don't provide `@[simp]` lemmas here for the projections.
--- It is convenient to keep this unfolded, so that the basic simp lemmas about `Equiv`
--- can apply, and then manually unfold when needed.
-def Equiv.transport (α : J → Type _) {j j' : J} (h : j = j') : α j ≃ α j' :=
-  Equiv.cast (congrArg α h)
-
-@[simp] lemma Equiv.transport_refl (a : J → Type _) (j : J) :
-    Equiv.transport (rfl : j = j) = Equiv.refl _ := by
-  simp [Equiv.transport]
-
-@[simp] lemma Equiv.transport_symm (α : J → Type _) {j j' : J} (h : j = j') :
-    (Equiv.transport h).symm = Equiv.transport h.symm := by
-  simp [Equiv.transport]
-
-@[simp] lemma Equiv.transport_trans (α : J → Type _) {j j' j'' : J} (h : j = j') (h' : j' = j'') :
-    (Equiv.transport h).trans (Equiv.transport h') = Equiv.transport (h.trans h') := by
-  simp [Equiv.transport]
-
-
+/-- Given a family of families of objects in `C`, the biproduct over one such family
+is isomorphic to the biproduct over the family at an equal base point. -/
 -- We lazily mark this as `simp`, rather than restate the extensionality lemmas for `whisker_equiv`.
 @[simp]
 def biproduct.iterated_reindex

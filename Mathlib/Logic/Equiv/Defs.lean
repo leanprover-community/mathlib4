@@ -915,6 +915,28 @@ protected theorem exists_congr_left {α β} (f : α ≃ β) {p : α → Prop} :
   ⟨fun ⟨a, h⟩ => ⟨f a, by simpa using h⟩, fun ⟨b, h⟩ => ⟨_, h⟩⟩
 #align equiv.exists_congr_left Equiv.exists_congr_left
 
+/--
+Equalities in a base type give rise to "transport" equivalences between fibers of a type family
+over the base type.
+-/
+-- We intentionally don't provide `@[simp]` lemmas here for the projections.
+-- It is convenient to keep this unfolded, so that the basic simp lemmas about `Equiv`
+-- can apply, and then manually unfold if needed.
+def transport (α : J → Type _) {j j' : J} (h : j = j') : α j ≃ α j' :=
+  Equiv.cast (congrArg α h)
+
+@[simp] lemma transport_refl (α : J → Type _) (j : J) :
+    transport α (Eq.refl j) = Equiv.refl _ := by
+  simp [transport]
+
+@[simp] lemma transport_symm (α : J → Type _) {j j' : J} (h : j = j') :
+    (transport α h).symm = transport α h.symm := by
+  simp [transport]
+
+@[simp] lemma transport_trans (α : J → Type _) {j j' j'' : J} (h : j = j') (h' : j' = j'') :
+    (transport α h).trans (transport α h') = transport α (h.trans h') := by
+  simp [transport]
+
 end Equiv
 
 namespace Quot
