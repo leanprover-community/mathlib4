@@ -194,6 +194,13 @@ def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
   inv a := .up a
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
+/-- The isomorphism between a `Type` which has been `ULift`ed to a lower universe,
+and the original type.
+-/
+def uliftMax (V : Type max u v) : ULift.{u} V ≅ V where
+  hom a := a.1
+  inv a := .up a
+
 /-- The functor embedding `Type u` into `Type (max u v)`.
 Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
@@ -224,6 +231,11 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
   NatIso.ofComponents uliftTrivial
 #align category_theory.ulift_functor_trivial CategoryTheory.uliftFunctorTrivial
+
+/-- The functor embedding `Type (max u v)` into `Type (max u v)` via `ULift` is isomorphic to the
+    identity functor.  -/
+def uliftFunctorMax : uliftFunctor.{u, max u v} ≅ 𝟭 (Type max u v) :=
+  NatIso.ofComponents uliftMax.{v, u}
 
 -- TODO We should connect this to a general story about concrete categories
 -- whose forgetful functor is representable.

@@ -798,6 +798,41 @@ theorem final_iff_final_comp [Final F] : Final G ↔ Final (F ⋙ G) :=
 theorem initial_iff_initial_comp [Initial F] : Initial G ↔ Initial (F ⋙ G) :=
   ⟨fun _ => initial_comp _ _, fun _ => initial_of_initial_comp F G⟩
 
+def adjunction_stuff (F : C ⥤ D) (G : D ⥤ C) (adj : G ⊣ F) (d : D) :
+    F ⋙ coyoneda.obj (op d) ⋙ uliftFunctor.{v₁} ≅ coyoneda.obj (op (G.obj d)) ⋙ uliftFunctor.{v₂} := by
+  refine' NatIso.ofComponents _ _
+  · intro X
+    exact Equiv.toIso (Equiv.ulift.trans (Equiv.trans (adj.homEquiv _ _).symm Equiv.ulift.symm))
+  · intros X Y f
+    ext x
+    simp [Equiv.toIso_hom, Equiv.ulift]
+
+lemma preservesStatement (F : C ⥤ Type v₂): PreservesColimit F uliftFunctor.{v₃, v₂} :=
+  sorry
+
+theorem better_cofinal_of_colimit_comp_coyoneda_iso_pUnit
+    [∀ d, HasColimit (F ⋙ coyoneda.obj (op d))]
+    (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F := by
+  let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂} C := AsSmall.equiv
+  let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂} D := AsSmall.equiv
+  rw [final_iff_comp_final_full_faithful F s₂.functor,
+    final_iff_final_comp s₁.inverse (F ⋙ s₂.functor)]
+  refine' cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => _)
+  refine' Final.colimitIso' s₁.inverse (G := F ⋙ s₂.functor ⋙ coyoneda.obj (op d)) ≪≫ _
+  let i := isoWhiskerLeft F (adjunction_stuff s₂.functor s₂.inverse s₂.symm.toAdjunction d)
+  let j := isoWhiskerLeft (F ⋙ s₂.functor ⋙ coyoneda.obj (op d)) uliftFunctorMax.{max u₁ v₁ u₂ v₂, v₂}
+  let k : F ⋙ s₂.functor ⋙ coyoneda.obj (op d) ≅ _ := j.symm ≪≫ i
+  have : HasColimit (F ⋙ s₂.functor ⋙ coyoneda.obj (op d)) := Final.hasColimit_of_comp s₁.inverse
+  have q := hasColimitOfIso k.symm
+  refine' HasColimit.isoOfNatIso k ≪≫ _
+  have x : PreservesColimit (F ⋙ coyoneda.obj (op (s₂.inverse.obj d))) uliftFunctor.{max u₁ u₂ v₁ v₂, v₂} := preservesStatement _
+  have : HasColimit ((F ⋙ coyoneda.obj (op (s₂.inverse.obj d))) ⋙ uliftFunctor.{max u₁ u₂ v₁ v₂, v₂}) := q
+  refine' (preservesColimitIso uliftFunctor.{max u₁ u₂ v₁ v₂, v₂} (F ⋙ coyoneda.obj (op (s₂.inverse.obj d)))).symm ≪≫ _
+  apply Equiv.toIso
+  refine' Equiv.ulift.trans _
+  refine' (I _).toEquiv.trans _
+  exact Equiv.punitEquivPUnit
+
 end
 
 end Functor
