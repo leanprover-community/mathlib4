@@ -1248,3 +1248,20 @@ theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (b1 : 1 < b) : a < cof
 #align cardinal.lt_cof_power Cardinal.lt_cof_power
 
 end Cardinal
+
+section Omega1
+
+namespace Ordinal
+
+open Cardinal
+open scoped Ordinal
+
+lemma sup_sequence_lt_omega_1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
+  sup o < ω₁ := by
+  apply sup_lt_ord_lift _ ho
+  rw [initial, Cardinal.isRegular_aleph_one.cof_eq]
+  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
+
+end Ordinal
+
+end Omega1

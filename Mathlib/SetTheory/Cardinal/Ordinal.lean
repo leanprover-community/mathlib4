@@ -24,7 +24,9 @@ using ordinals.
   It is an order isomorphism between ordinals and cardinals.
 * The function `Cardinal.aleph` gives the infinite cardinals listed by their
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on.
+  uncountable cardinal, and so on. The related function `ordinal.initial`
+  (notation: `ω_`) gives the first ordinal of a given infinite cardinality.
+  Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
@@ -1445,3 +1447,80 @@ theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs :
 -- end Bit
 
 end Cardinal
+
+section Initial
+
+namespace Ordinal
+
+open Cardinal
+
+/--
+`Initial i` (notation: `ω_ i`) gives the first ordinal of cardinality
+`Aleph i`. Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
+You can also write `ω_ 1` as `ω₁`.
+-/
+def initial (x : Ordinal.{u}) : Ordinal.{u} := (aleph x).ord
+
+@[inherit_doc]
+scoped notation "ω_" => Ordinal.initial
+@[inherit_doc]
+scoped notation "ω₁" => Ordinal.initial 1
+
+@[simp]
+theorem cardInitial (i : Ordinal): card (initial i) = aleph i := card_ord _
+
+/--
+The first (infinite) initial ordinal is `ω`.
+-/
+@[simp]
+lemma initial0 : ω_ 0 = ω := by
+  unfold initial
+  simp
+
+/--
+An initial ordinal is a limit ordinal.
+-/
+lemma isLimit_initial (i : Ordinal): (ω_ i).IsLimit := ord_isLimit (aleph0_le_aleph i)
+
+lemma omega_lt_omega_1 : ω < ω₁ := by
+  have := (ord_lt_ord.mpr (aleph0_lt_aleph_one))
+  rw [ord_aleph0] at this
+  exact this
+
+end Ordinal
+
+end Initial
+
+section OrdinalIndices
+/-!
+### Cardinal operations with ordinal indices
+
+Results on cardinality of ordinal-indexed families of sets.
+-/
+namespace Cardinal
+
+open scoped Cardinal
+
+/--
+Bounding the cardinal of an ordinal-indexed union of sets.
+-/
+lemma mk_Union_ordinal_le_of_le {β : Type _} {κ : Cardinal} {i : Ordinal}
+  (hi : i ≤ κ.ord) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
+  (hA : ∀ j < i, #(A j) ≤ κ) :
+  #(⋃ j < i, A j) ≤ κ := by
+  have : (⋃ j < i, A j) = ⋃ j : i.out.α, A (@typein _ (· < ·) (by infer_instance) j)
+  · ext x; constructor
+    · rintro ⟨_, ⟨j, rfl⟩, _, ⟨hji, rfl⟩, hx⟩
+      refine mem_iUnion.2 ⟨enum (· < ·) j ?_, ?_⟩
+      · rwa [Ordinal.type_lt]
+      simpa using hx
+    · rintro ⟨_, ⟨j, rfl⟩, hx⟩
+      exact mem_iUnion₂.2 ⟨_, typein_lt_self j, hx⟩
+  rw [this]
+  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hκ)
+  rw [mk_ordinal_out]
+  exact mul_le_mul' (card_le_of_le_ord hi) <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+
+end Cardinal
+
+end OrdinalIndices
