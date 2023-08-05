@@ -397,6 +397,7 @@ elab_rules : tactic
   evalTactic (← `(tactic|
     simp only [bicategoricalComp];
     simp only [monoidalComp];
-    try (first | whisker_simps | monoidal_simps);
+    (try whisker_simps);
+    (try monoidal_simps);
     ))
   coherence_loop

@@ -175,7 +175,7 @@ noncomputable def dualTensorIsoLinHomAux :
     (FdRep.of ρV.dual ⊗ W).V ≅ (FdRep.of (linHom ρV W.ρ)).V :=
   -- Porting note: had to make all types explicit arguments
   @LinearEquiv.toFGModuleCatIso k _ (FdRep.of ρV.dual ⊗ W).V (V →ₗ[k] W)
-  _ _ _ _ _ _ (dualTensorHomEquiv k V W)
+    _ _ _ _ _ _ (dualTensorHomEquiv k V W)
 #align fdRep.dual_tensor_iso_lin_hom_aux FdRep.dualTensorIsoLinHomAux
 
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism

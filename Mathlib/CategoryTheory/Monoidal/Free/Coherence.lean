@@ -41,24 +41,6 @@ universe u
 
 namespace CategoryTheory
 
-namespace MonoidalCategory
-
-variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
-@[simp]
-theorem whiskerLeft_eqToHom (X : C) {Y Z : C} (f : Y = Z) :
-    X ◁ eqToHom f = eqToHom (congr_arg₂ tensorObj rfl f) := by
-  cases f
-  simp only [whiskerLeft_id, eqToHom_refl]
-
-@[simp]
-theorem eqToHom_whiskerRight {X Y : C} (f : X = Y) (Z : C) :
-    eqToHom f ▷ Z = eqToHom (congr_arg₂ tensorObj f rfl) := by
-  cases f
-  simp only [id_whiskerRight, eqToHom_refl]
-
-end MonoidalCategory
-
 open MonoidalCategory
 
 namespace FreeMonoidalCategory

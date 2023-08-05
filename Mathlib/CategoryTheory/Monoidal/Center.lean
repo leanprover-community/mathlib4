@@ -17,18 +17,19 @@ We define `Center C` to be pairs `⟨X, b⟩`, where `X : C` and `b` is a half-b
 We show that `Center C` is braided monoidal,
 and provide the monoidal functor `Center.forget` from `Center C` back to `C`.
 
-## Future work
+## Implementation notes
 
-Verifying the various axioms here is done by tedious rewriting.
+Verifying the various axioms directly requires tedious rewriting.
 Using the `slice` tactic may make the proofs marginally more readable.
 
 More exciting, however, would be to make possible one of the following options:
 1. Integration with homotopy.io / globular to give "picture proofs".
 2. The monoidal coherence theorem, so we can ignore associators
-   (after which most of these proofs are trivial;
-   I'm unsure if the monoidal coherence theorem is even usable in dependent type theory).
+   (after which most of these proofs are trivial).
 3. Automating these proofs using `rewrite_search` or some relative.
 
+In this file, we take the second approach using the monoidal composition `⊗≫` and the
+`coherence` tactic.
 -/
 
 
@@ -140,12 +141,13 @@ def tensorObj (X Y : Center C) : Center C :=
         simp only [HalfBraiding.monoidal]
         -- We'd like to commute `X.1 ◁ U ◁ (HalfBraiding.β Y.2 U').hom`
         -- and `((HalfBraiding.β X.2 U).hom ▷ U' ▷ Y.1)` past each other.
-        -- We do this with the help of the monoidal composition `⊗≫`.
+        -- We do this with the help of the monoidal composition `⊗≫` and the `coherence` tactic.
         calc
           _ = 𝟙 _ ⊗≫
             X.1 ◁ (HalfBraiding.β Y.2 U).hom ▷ U' ⊗≫
-              (_ ◁ (HalfBraiding.β Y.2 U').hom ≫ (HalfBraiding.β X.2 U).hom ▷ _) ⊗≫
-                U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := ?eq1
+              _ ◁ (HalfBraiding.β Y.2 U').hom ≫
+                (HalfBraiding.β X.2 U).hom ▷ _ ⊗≫
+                  U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := ?eq1
           _ = _ := ?eq2
         case eq1 => coherence
         case eq2 => rw [whisker_exchange]; coherence

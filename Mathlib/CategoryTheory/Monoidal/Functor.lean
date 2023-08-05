@@ -97,7 +97,6 @@ structure LaxMonoidalFunctor extends C ⥤ D where
 initialize_simps_projections LaxMonoidalFunctor (+toFunctor, -obj, -map)
 
 --Porting note: was `[simp, reassoc.1]`
--- attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural
 attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural_left
 attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural_right
 
