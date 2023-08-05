@@ -725,8 +725,8 @@ section Single
 variable (p α β)
 
 @[simp]
-theorem nnnorm_equiv_symm_fst [hp : Fact (1 ≤ p)] (x : α) :
-    ‖(ProdLp.equiv p α β).symm (x, 0)‖₊ = ‖x‖₊ := by
+theorem nnnorm_fst [hp : Fact (1 ≤ p)] (x : α) :
+    nnnorm (E := ProdLp p α β) (x, 0) = ‖x‖₊ := by
   induction p using ENNReal.recTopCoe generalizing hp with
   | top =>
     simp [nnnorm_eq_sup]
@@ -736,8 +736,8 @@ theorem nnnorm_equiv_symm_fst [hp : Fact (1 ≤ p)] (x : α) :
     simp [nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
-theorem nnnorm_equiv_symm_snd [hp : Fact (1 ≤ p)] (y : β) :
-    ‖(ProdLp.equiv p α β).symm (0, y)‖₊ = ‖y‖₊ := by
+theorem nnnorm_snd [hp : Fact (1 ≤ p)] (y : β) :
+    nnnorm (E := ProdLp p α β) (0, y) = ‖y‖₊ := by
   induction p using ENNReal.recTopCoe generalizing hp with
   | top =>
     simp [nnnorm_eq_sup]
@@ -747,50 +747,36 @@ theorem nnnorm_equiv_symm_snd [hp : Fact (1 ≤ p)] (y : β) :
     simp [nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
-theorem norm_equiv_symm_fst (x : α) : ‖(ProdLp.equiv p α β).symm (x, 0)‖ = ‖x‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_fst p α β x
+theorem norm_fst (x : α) : norm (E := ProdLp p α β) (x, 0) = ‖x‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_fst p α β x
 
 @[simp]
-theorem norm_equiv_symm_snd (y : β) : ‖(ProdLp.equiv p α β).symm (0, y)‖ = ‖y‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_snd p α β y
+theorem norm_snd (y : β) : norm (E := ProdLp p α β) (0, y) = ‖y‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_snd p α β y
 
 @[simp]
-theorem nndist_equiv_symm_single_fst (x₁ x₂ : α) :
-    nndist ((ProdLp.equiv p α β).symm (x₁, 0)) ((ProdLp.equiv p α β).symm (x₂, 0)) =
-      nndist x₁ x₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← equiv_symm_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_equiv_symm_fst]
+theorem nndist_fst (x₁ x₂ : α) : nndist (α := ProdLp p α β) (x₁, 0) (x₂, 0) = nndist x₁ x₂ := by
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, Prod.mk_sub_mk, sub_zero, nnnorm_fst]
 
 @[simp]
-theorem nndist_equiv_symm_single_snd (y₁ y₂ : β) :
-    nndist ((ProdLp.equiv p α β).symm (0, y₁)) ((ProdLp.equiv p α β).symm (0, y₂)) =
-      nndist y₁ y₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← equiv_symm_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_equiv_symm_snd]
+theorem nndist_snd (y₁ y₂ : β) : nndist (α := ProdLp p α β) (0, y₁) (0, y₂) = nndist y₁ y₂ := by
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, Prod.mk_sub_mk, sub_zero, nnnorm_snd]
 
 @[simp]
-theorem dist_equiv_symm_single_fst (x₁ x₂ : α) :
-    dist ((ProdLp.equiv p α β).symm (x₁, 0)) ((ProdLp.equiv p α β).symm (x₂, 0)) =
-      dist x₁ x₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_fst p α β x₁ x₂
+theorem dist_fst (x₁ x₂ : α) : dist (α := ProdLp p α β) (x₁, 0) (x₂, 0) = dist x₁ x₂ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_fst p α β x₁ x₂
 
 @[simp]
-theorem dist_equiv_symm_single_snd (y₁ y₂ : β) :
-    dist ((ProdLp.equiv p α β).symm (0, y₁)) ((ProdLp.equiv p α β).symm (0, y₂)) =
-      dist y₁ y₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_snd p α β y₁ y₂
+theorem dist_snd (y₁ y₂ : β) : dist (α := ProdLp p α β) (0, y₁) (0, y₂) = dist y₁ y₂ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_snd p α β y₁ y₂
 
 @[simp]
-theorem edist_equiv_symm_single_fst (x₁ x₂ : α) :
-    edist ((ProdLp.equiv p α β).symm (x₁, 0)) ((ProdLp.equiv p α β).symm (x₂, 0)) =
-      edist x₁ x₂ := by
-  simp only [edist_nndist, nndist_equiv_symm_single_fst p α β x₁ x₂]
+theorem edist_fst (x₁ x₂ : α) : edist (α := ProdLp p α β) (x₁, 0) (x₂, 0) = edist x₁ x₂ := by
+  simp only [edist_nndist, nndist_fst p α β x₁ x₂]
 
 @[simp]
-theorem edist_equiv_symm_single_snd (y₁ y₂ : β) :
-    edist ((ProdLp.equiv p α β).symm (0, y₁)) ((ProdLp.equiv p α β).symm (0, y₂)) =
-      edist y₁ y₂ := by
-  simp only [edist_nndist, nndist_equiv_symm_single_snd p α β y₁ y₂]
+theorem edist_snd (y₁ y₂ : β) : edist (α := ProdLp p α β) (0, y₁) (0, y₂) = edist y₁ y₂ := by
+  simp only [edist_nndist, nndist_snd p α β y₁ y₂]
 
 end Single
 
