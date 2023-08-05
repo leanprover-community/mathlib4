@@ -170,8 +170,9 @@ def monoidalComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
     [MonoidalCoherence X Y] (f : W ⟶ X) (g : Y ⟶ Z) : W ⟶ Z :=
   f ≫ MonoidalCoherence.hom ≫ g
 
-@[inherit_doc monoidalComp]
-infixr:80 " ⊗≫ " => monoidalComp -- type as \ot \gg
+@[inherit_doc Mathlib.Tactic.Coherence.monoidalComp]
+scoped[CategoryTheory.MonoidalCategory] infixr:80 " ⊗≫ " =>
+  Mathlib.Tactic.Coherence.monoidalComp -- type as \ot \gg
 
 /-- Compose two isomorphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
@@ -179,8 +180,9 @@ noncomputable def monoidalIsoComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
     [MonoidalCoherence X Y] (f : W ≅ X) (g : Y ≅ Z) : W ≅ Z :=
   f ≪≫ asIso MonoidalCoherence.hom ≪≫ g
 
-@[inherit_doc monoidalIsoComp]
-infixr:80 " ≪⊗≫ " => monoidalIsoComp -- type as \ot \gg
+@[inherit_doc Mathlib.Tactic.Coherence.monoidalIsoComp]
+scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
+  Mathlib.Tactic.Coherence.monoidalIsoComp -- type as \ot \gg
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) : U ⟶ Y := f ⊗≫ g
 
