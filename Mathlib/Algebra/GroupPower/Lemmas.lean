@@ -125,6 +125,7 @@ theorem smul_pow' [MulDistribMulAction M N] (x : M) (m : N) (n : ℕ) : x • m 
 
 end Monoid
 
+@[simp]
 theorem zsmul_one [AddGroupWithOne A] (n : ℤ) : n • (1 : A) = n := by cases n <;> simp
 #align zsmul_one zsmul_one
 
