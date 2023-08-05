@@ -69,8 +69,7 @@ theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommG
       by_cases h1 : (i', k') = (i, k)
       · simp only [Prod.mk.inj_iff] at h1
         simp [h1]
-      · simp only [h1, if_false]
-        simp only [Prod.mk.inj_iff, not_and_or] at h1
+      · simp only [Prod.mk.inj_iff, not_and_or] at h1
         cases' h1 with h1 h1 <;> simp [h1]
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
