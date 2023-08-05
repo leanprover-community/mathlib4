@@ -191,11 +191,11 @@ lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
   obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := complete_distinguished_triangle_morphism _ _
     (rot_of_dist_triangle _ hT₁) (rot_of_dist_triangle _ hT₂) b c comm
   refine' ⟨(shiftFunctor C (1 : ℤ)).preimage a, ⟨_, _⟩⟩
-  . apply (shiftFunctor C (1 : ℤ)).map_injective
+  · apply (shiftFunctor C (1 : ℤ)).map_injective
     dsimp at ha₂
     rw [neg_comp, comp_neg, neg_inj] at ha₂
     simpa only [Functor.map_comp, Functor.image_preimage] using ha₂
-  . simpa only [Functor.image_preimage] using ha₁
+  · simpa only [Functor.image_preimage] using ha₁
 
 /-- A commutative square involving the morphisms `mor₃` of two distinguished triangles
 can be extended as morphism of triangles -/
@@ -228,7 +228,7 @@ lemma contractible_distinguished₂ (X : C) :
     (inv_rot_of_dist_triangle _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ _
   refine' Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat)
-    (by dsimp ; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
+    (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 lemma yoneda_exact₂ (T : Triangle C) (hT : T ∈ distTriang C) {X : C}
     (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) : ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
