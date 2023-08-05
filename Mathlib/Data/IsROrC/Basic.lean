@@ -51,7 +51,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K, PartialOrder K,
+class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -69,10 +69,12 @@ class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing 
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
+  /-- only an instance in the `ComplexOrder` locale -/
+  [toPartialOrder : PartialOrder K]
   le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
 #align is_R_or_C IsROrC
 
-attribute [instance 100] IsROrC.toPartialOrder
+scoped[ComplexOrder] attribute [instance 100] IsROrC.toPartialOrder
 
 end
 
@@ -832,7 +834,8 @@ end Instances
 
 namespace IsROrC
 
-instance toStarOrderedRing : StarOrderedRing K :=
+open scoped ComplexOrder in
+theorem toStarOrderedRing : StarOrderedRing K :=
   StarOrderedRing.ofNonnegIff'
     (h_add := fun {x y} hxy z => by
       rw [IsROrC.le_iff_re_im] at *
@@ -848,6 +851,8 @@ instance toStarOrderedRing : StarOrderedRing K :=
         simp only [IsROrC.star_def, IsROrC.conj_mul]
         rw [IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
         apply IsROrC.normSq_nonneg)
+
+scoped[ComplexOrder] attribute [instance] IsROrC.toStarOrderedRing
 
 open ComplexConjugate
 
