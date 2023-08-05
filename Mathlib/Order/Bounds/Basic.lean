@@ -989,19 +989,15 @@ protected theorem OrderBot.bddBelow [OrderBot α] (s : Set α) : BddBelow s :=
   ⟨⊥, fun a _ => OrderBot.bot_le a⟩
 #align order_bot.bdd_below OrderBot.bddBelow
 
-namespace Set
-
 /-- Sets are automatically bounded or cobounded in complete lattices. To use the same statements
 in complete and conditionally complete lattices but let automation fill automatically the
-boundedness proofs in complete lattices, we use the tactic `Set.bddDefault` in the statements,
-in the form `(hA : BddAbove A := by Set.bddDefault)`. -/
+boundedness proofs in complete lattices, we use the tactic `SetBddDefault` in the statements,
+in the form `(hA : BddAbove A := by SetBddDefault)`. -/
 
-macro "bddDefault" : tactic =>
+macro "setBddDefault" : tactic =>
   `(tactic| first
     | apply OrderTop.bddAbove
     | apply OrderBot.bddBelow)
-
-end Set
 
 /-!
 #### Pair
