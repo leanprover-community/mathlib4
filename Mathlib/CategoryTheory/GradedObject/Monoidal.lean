@@ -5,7 +5,6 @@ Authors: Joël Riou, Kim Liesinger
 -/
 import Mathlib.CategoryTheory.GradedObject.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fintype.Sigma
@@ -367,7 +366,6 @@ lemma tensorObj₃_rightTensor_ext (X₁ X₂ X₃ : GradedObject ℕ V) (n : �
 
 -- This increase to maxHeartbeats is needed during CI, when `X says Y` is reverified.
 set_option maxHeartbeats 300000 in
-set_option says.verify true in
 @[reassoc (attr := simp)]
 lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
     (p₁ p₂ p₃ n : ℕ) (h : p₁ + p₂ + p₃ = n) :
@@ -392,17 +390,16 @@ lemma ιTensorObj₃_comp_associator_hom (X₁ X₂ X₃ : GradedObject ℕ V)
   dsimp [associator_distributor, associator_iterated]
   simp? says simp only [assoc, biproduct.ι_map_assoc, biproduct.ι_comp_lift_assoc, ne_eq,
       biproduct_ι_comp_rightDistributor_hom_assoc]
-  simp? [biproduct.ι_π_biproduct_assoc, dite_comp,
-      comp_dite] says simp only simp only [ne_eq, biproduct.ι_π_biproduct_assoc, biproduct.iterated_reindex, dite_comp,
-    biproduct.whisker_equiv_hom_comp_π, eqToIso.inv, eqToHom_trans, zero_comp, comp_dite, Equiv.transport_symm,
-    comp_zero]
-
-  simp? [biproduct.ι_π_assoc, dite_comp, dite_dite,
-      Equiv.eq_symm_apply] says simp only [Equiv.transport_symm, ne_eq, biproduct.ι_π_assoc, dite_comp, eqToHom_trans,
-      zero_comp, dite_dite]
-
+  simp? [biproduct.ι_π_biproduct_assoc, dite_comp, comp_dite] says
+    simp only [ne_eq, biproduct.ι_π_biproduct_assoc, biproduct.iterated_reindex, dite_comp,
+      biproduct.whisker_equiv_hom_comp_π, eqToIso.inv, eqToHom_trans, zero_comp, comp_dite,
+      comp_zero]
+  simp? [biproduct.ι_π_assoc, dite_comp, dite_dite, Equiv.eq_symm_apply] says
+    simp only [ne_eq, Equiv.eq_symm_apply, biproduct.ι_π_assoc, dite_comp, eqToHom_trans, zero_comp,
+      dite_dite]
   simp? [Equiv.transport, helper] says
-
+    simp only [Equiv.transport, Equiv.cast_apply, Finset.mem_val, mem_antidiagonal, helper,
+      cast_cast, cast_eq, exists_prop, Sigma.eq_fst_and_eq_iff]
   conv in biproduct.lift _ =>
     -- Unfortunately `simp` does not successfully apply `biproduct.lift_dite` here,
     -- presumably because of unification difficulties.
