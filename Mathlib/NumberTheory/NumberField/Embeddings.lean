@@ -450,8 +450,7 @@ theorem prod_eq_abs_norm (x : K) :
       intro _ _ hφ
       rw [← (Finset.mem_filter.mp hφ).2]
       rfl
-    simp_rw [Finset.prod_congr rfl (this _), Finset.mem_univ, forall_true_left, Finset.prod_const,
-      card_filter_mk_eq]
+    simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
