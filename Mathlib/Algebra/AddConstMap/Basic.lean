@@ -6,10 +6,27 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Periodic
 
 /-!
+# Maps (semi)conjugating a shift to a shift
+
+Denote by \(S^1\) the unit circle `UnitAddCircle`.
+A common way to study a self-map \(f\colon S^1\to S^1\) of degree `1`
+is to lift it to a map \(\tilde f\colon \mathbb R\to \mathbb R\)
+such that \(\tilde f(x + 1) = \tilde f(x)+1\) for all `x`.
+
+In this file we define a structure and a typeclass
+for bundled maps satisfying `f (x + a) = f x + b`.
+
+We use parameters `a` and `b` instead of `1` to accomodate for two use cases:
+
+- maps between circles of different lengths;
+- self-maps \(f\colon S^1\to  S^1\) of degree other than one.
 -/
 
 open Function Set
 
+/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`.
+
+One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type _) [Add G] [Add H] (a : G) (b : H) where
   /-- The underlying function of an `AddConstMap`.
   Use automatic coercion to function instead. -/
@@ -17,11 +34,18 @@ structure AddConstMap (G H : Type _) [Add G] [Add H] (a : G) (b : H) where
   /-- An `AddConstMap` satisfies `f (x + a) = f x + b`. Use `map_add_const` instead.-/
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
+@[inherit_doc]
 notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
-notation:25 G " →+1 " H => AddConstMap G H 1 1
 
+/-- Typeclass for maps satisfying `f (x + a) = f x + b`.
+
+Note that `a` and `b` are `outParam`s,
+so one should not add instances like
+`[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
 class AddConstMapClass (F : Type _) (G H : outParam (Type _)) [Add G] [Add H]
     (a : outParam G) (b : outParam H) extends FunLike F G fun _ ↦ H where
+  /-- A map of `AddConstMapClass` class semiconjugages shift by `a` to the shift by `b`:
+  `∀ x, f (x + a) = f x + b`. -/
   map_add_const (f : F) (x : G) : f (x + a) = f x + b
 
 namespace AddConstMapClass
@@ -152,6 +176,11 @@ theorem map_add_zsmul [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
   | .negSucc n => by simp [← sub_eq_add_neg]
 
 @[simp]
+theorem map_zsmul_const [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
+    (f : F) (n : ℤ) : f (n • a) = f 0 + n • b := by
+  simpa using map_add_zsmul f 0 n
+
+@[simp]
 theorem map_add_int' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℤ) : f (x + n) = f x + n • b := by
   rw [← map_add_zsmul f x n, zsmul_one]
@@ -172,9 +201,6 @@ theorem map_sub_int' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
 theorem map_sub_int [AddGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (x : G) (n : ℤ) : f (x - n) = f x - n := by simp
 
-theorem map_fract [LinearOrderedRing R] [FloorRing R] [AddGroup H] [AddConstMapClass F R H 1 b]
-    (f : F) (x : R) : f (Int.fract x) = f x - ⌊x⌋ • b := map_sub_int' ..
-
 @[simp]
 theorem map_zsmul_add [AddCommGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (n : ℤ) (x : G) : f (n • a + x) = f x + n • b := by
@@ -187,6 +213,67 @@ theorem map_int_add' [AddCommGroupWithOne G] [AddGroup H] [AddConstMapClass F G 
 
 theorem map_int_add [AddCommGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n := by simp
+
+theorem map_fract [LinearOrderedRing R] [FloorRing R] [AddGroup H] [AddConstMapClass F R H 1 b]
+    (f : F) (x : R) : f (Int.fract x) = f x - ⌊x⌋ • b := map_sub_int' ..
+
+theorem monotone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+    [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) : Monotone f ↔ MonotoneOn f (Icc 0 a) := by
+  refine ⟨(Monotone.monotoneOn · _), fun hf x y hxy ↦ ?_⟩
+  rcases existsUnique_zsmul_near_of_pos ha x with ⟨mx, hmx, -⟩
+  have hmx' : x - mx • a ∈ Ico 0 a := by simpa [add_one_zsmul, sub_lt_iff_lt_add'] using hmx
+  rcases existsUnique_zsmul_near_of_pos ha y with ⟨my, hmy, -⟩
+  have hmy' : y - my • a ∈ Ico 0 a := by simpa [add_one_zsmul, sub_lt_iff_lt_add'] using hmy
+  suffices f (x - mx • a) ≤ f (y - mx • a) by simpa
+  obtain (rfl | hmlt) : mx = my ∨ mx < my
+  · refine (Int.le_of_lt_add_one ?_).eq_or_lt
+    rw [← zsmul_lt_zsmul_iff ha]
+    exact hmx.1.trans_lt <| hxy.trans_lt hmy.2
+  · exact hf (Ico_subset_Icc_self hmx') (Ico_subset_Icc_self hmy') (by simpa)
+  · calc
+      f (x - mx • a) ≤ f a := hf (Ico_subset_Icc_self hmx') (right_mem_Icc.2 ha.le) hmx'.2.le
+      _ ≤ f ((my - mx) • a) := by
+        rw [map_zsmul_const, map_const, add_le_add_iff_left, ← sub_nonneg, sub_eq_add_neg _ b,
+          ← sub_one_zsmul, sub_sub]
+        refine zsmul_nonneg ?_ (sub_nonneg.2 <| Int.add_one_le_of_lt hmlt)
+        simpa using hf (left_mem_Icc.2 ha.le) (right_mem_Icc.2 ha.le) ha.le
+      _ ≤ f (y - mx • a) := by
+        suffices f 0 ≤ f (y - my • a) by simpa [sub_smul, ← le_sub_iff_add_le]
+        exact hf (left_mem_Icc.2 ha.le) (Ico_subset_Icc_self hmy') hmy'.1
+
+theorem antitone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+    [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) : Antitone f ↔ AntitoneOn f (Icc 0 a) :=
+  monotone_iff_Icc (H := Hᵒᵈ) ha
+
+theorem strictMono_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+    [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) :
+    StrictMono f ↔ StrictMonoOn f (Icc 0 a) := by
+  refine ⟨(StrictMono.strictMonoOn · _), fun hf x y hxy ↦ ?_⟩
+  rcases existsUnique_zsmul_near_of_pos ha x with ⟨mx, hmx, -⟩
+  have hmx' : x - mx • a ∈ Ico 0 a := by simpa [add_one_zsmul, sub_lt_iff_lt_add'] using hmx
+  rcases existsUnique_zsmul_near_of_pos ha y with ⟨my, hmy, -⟩
+  have hmy' : y - my • a ∈ Ico 0 a := by simpa [add_one_zsmul, sub_lt_iff_lt_add'] using hmy
+  suffices f (x - mx • a) < f (y - mx • a) by simpa
+  obtain (rfl | hmlt) : mx = my ∨ mx < my
+  · refine (Int.le_of_lt_add_one ?_).eq_or_lt
+    rw [← zsmul_lt_zsmul_iff ha]
+    exact hmx.1.trans_lt <| hxy.trans hmy.2
+  · exact hf (Ico_subset_Icc_self hmx') (Ico_subset_Icc_self hmy') (by simpa)
+  · calc
+      f (x - mx • a) < f a := hf (Ico_subset_Icc_self hmx') (right_mem_Icc.2 ha.le) hmx'.2
+      _ ≤ f ((my - mx) • a) := by
+        rw [map_zsmul_const, map_const, add_le_add_iff_left, ← sub_nonneg, sub_eq_add_neg _ b,
+          ← sub_one_zsmul, sub_sub]
+        refine zsmul_nonneg ?_ (sub_nonneg.2 <| Int.add_one_le_of_lt hmlt)
+        simpa using (hf (left_mem_Icc.2 ha.le) (right_mem_Icc.2 ha.le) ha).le
+      _ ≤ f (y - mx • a) := by
+        suffices f 0 ≤ f (y - my • a) by simpa [sub_smul, ← le_sub_iff_add_le]
+        exact hf.monotoneOn (left_mem_Icc.2 ha.le) (Ico_subset_Icc_self hmy') hmy'.1
+
+theorem strictAnti_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+    [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) :
+    StrictAnti f ↔ StrictAntiOn f (Icc 0 a) :=
+  strictMono_iff_Icc (H := Hᵒᵈ) ha
 
 end AddConstMapClass
 
@@ -295,6 +382,7 @@ One can show that this defines a multiplicative action of `K` on `(b : H) × (G 
 but we don't do this at the moment because we don't need this.
 -/
 
+/-- Pointwise scalar multiplication of `f : G →+c[a, b] H` as a map `G →+c[a, c • b] H`. -/
 @[simps (config := .asFn)]
 def smul [DistribSMul K H] (c : K) (f : G →+c[a, b] H) : G →+c[a, c • b] H where
   toFun := c • ⇑f
@@ -306,6 +394,8 @@ section AddMonoid
 
 variable [AddMonoid G] {a : G}
 
+/-- The map that sends `c` to a translation by `c`
+as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
 @[simps! (config := .asFn)]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
   toFun c := Multiplicative.toAdd c +ᵥ .id
@@ -332,6 +422,7 @@ section FloorRing
 
 variable [LinearOrderedRing R] [FloorRing R] [AddGroup G] (a : G)
 
+/-- A map `f : R →+c[1, a] G` is defined by its values on `Set.Ico 0 1`. -/
 def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where
   toFun f := ⟨fun x ↦ f ⟨Int.fract x, Int.fract_nonneg _, Int.fract_lt_one _⟩ + ⌊x⌋ • a, fun x ↦ by
     simp [add_one_zsmul, add_assoc]⟩
