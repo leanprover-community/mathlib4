@@ -1390,7 +1390,7 @@ The converse, however, is false (for instance, `i = ω+1` and `κ = ℵ₀`).
 -/
 lemma card_le_of_le_ord {κ : Cardinal} {i : Ordinal} (hi : i ≤ κ.ord) :
   i.card ≤ κ := by
-  rw [← card_ord κ] ; exact Ordinal.card_le_card hi
+  rw [← card_ord κ]; exact Ordinal.card_le_card hi
 
 @[mono]
 theorem ord_strictMono : StrictMono ord :=
