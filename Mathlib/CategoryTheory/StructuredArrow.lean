@@ -113,13 +113,12 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
 picks up on it (seems like a bug). Either way simp solves it.  -/
 attribute [-simp, nolint simpNF] homMk_left
 
-/-- Given a structured arrow `X ⟶ F(U)`, and an arrow `U ⟶ Y`, we can construct a morphism of
-structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
--/
-def homMk' {F : C ⥤ D} {X : D} {Y : C} (U : StructuredArrow X F) (f : U.right ⟶ Y) :
-    U ⟶ mk (U.hom ≫ F.map f) where
+/-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
+    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
+@[simps]
+def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := eqToHom (by ext)
-  right := f
+  right := g
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
 /-- To construct an isomorphism of structured arrows,
@@ -374,6 +373,13 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
 /- Porting note : it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
+
+/-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
+    costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
+@[simps]
+def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.hom) ⟶ f where
+  left := g
+  right := eqToHom (by ext)
 
 /-- To construct an isomorphism of costructured arrows,
 we need an isomorphism of the objects underlying the source,
