@@ -186,7 +186,7 @@ theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
 end CommRing
 
 
-section RankLemmas
+section ConjTransposeRankLemmas
 
 variable {m : Type _} [Fintype m]
 variable {R : Type _} [Field R] [StarRing R] [StarDotProductSpace m R] [StarDotProductSpace n R]
@@ -229,7 +229,7 @@ theorem rank_self_mul_conjTranspose' (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.
   simpa only [rank_conjTranspose', conjTranspose_conjTranspose] using
     rank_conjTranspose_mul_self' Aᴴ
 
-end RankLemmas
+end ConjTransposeRankLemmas
 
 /-! ### Lemmas about transpose and conjugate transpose
 
@@ -261,11 +261,10 @@ theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.r
 
 -- this follows the proof here https://math.stackexchange.com/a/81903/1896
 /-- TODO: prove this in greater generality. -/
-@[simp]
+
 theorem rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank := rank_conjTranspose' _
 #align matrix.rank_conj_transpose Matrix.rank_conjTranspose
 
-@[simp]
 theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank :=
   rank_self_mul_conjTranspose' _
 #align matrix.rank_self_mul_conj_transpose Matrix.rank_self_mul_conjTranspose
