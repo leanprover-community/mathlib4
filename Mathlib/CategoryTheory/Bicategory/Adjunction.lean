@@ -204,7 +204,9 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
           g₂ ◁ (rightZigzag adj₁.unit adj₁.counit) ⊗≫
             (rightZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ 𝟙 _ := ?_
     _ = _ := ?_
-  · dsimp [bicategoricalComp, BicategoricalCoherence.hom, BicategoricalCoherence.hom']; simp; coherence
+  · dsimp [bicategoricalComp, BicategoricalCoherence.hom, BicategoricalCoherence.hom']
+    simp
+    coherence
   · rw [whisker_exchange]; dsimp [bicategoricalComp]; coherence
   · simp_rw [right_triangle]; dsimp [bicategoricalComp]; coherence
 
@@ -316,8 +318,7 @@ def adjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : g ≫
 set_option maxHeartbeats 1600000 in
 @[simp]
 theorem adjointifyCounit_symm (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
-    (adjointifyCounit η ε).symm = adjointifyUnit ε.symm η.symm :=
-  by
+    (adjointifyCounit η ε).symm = adjointifyUnit ε.symm η.symm := by
   apply Iso.ext
   rw [← cancel_mono (adjointifyUnit ε.symm η.symm).inv, Iso.hom_inv_id]
   dsimp [adjointifyUnit, adjointifyCounit, bicategoricalIsoComp]
