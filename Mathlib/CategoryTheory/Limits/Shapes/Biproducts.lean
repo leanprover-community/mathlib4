@@ -804,8 +804,7 @@ is isomorphic to the biproduct over the family at an equal base point. -/
 -- We lazily mark this as `simp`, rather than restate the extensionality lemmas for `whisker_equiv`.
 @[simp]
 def biproduct.iterated_reindex
-    [DecidableEq J] {α : J → Type w} (f : (j : J) → α j → C) [∀ j, HasBiproduct (f j)]
-    {j j' : J} (h : j = j') :
+    {α : J → Type w} (f : (j : J) → α j → C) [∀ j, HasBiproduct (f j)] {j j' : J} (h : j = j') :
     ⨁ f j ≅ ⨁ f j' :=
   (biproduct.whisker_equiv (Equiv.transport α h)
     (fun k => eqToIso (by subst h; simp [Equiv.transport])))
