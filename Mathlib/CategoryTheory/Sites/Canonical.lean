@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.canonical
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
+
+#align_import category_theory.sites.canonical from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # The canonical topology on a category
@@ -101,7 +98,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       simp only [assoc]
     · have h : s _ _ = _ := (ht hf _ hm).symm
       -- porting note: this was done by `simp only [assoc] at`
-      conv_lhs at h => congr ; rw [assoc, assoc]
+      conv_lhs at h => congr; rw [assoc, assoc]
       rw [h]
       simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
   refine' ⟨hU.amalgamate t hT, _, _⟩

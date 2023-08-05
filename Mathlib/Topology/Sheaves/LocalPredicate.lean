@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module topology.sheaves.local_predicate
-! leanprover-community/mathlib commit b8fb47c4f31648a8273c864e75f06c7b759e468c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.SheafOfFunctions
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+
+#align_import topology.sheaves.local_predicate from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Functions satisfying a local predicate form a sheaf.
@@ -191,7 +188,7 @@ open TopCat.Presheaf
 /-- The functions satisfying a local predicate satisfy the sheaf condition.
 -/
 theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredicate).IsSheaf :=
-  Presheaf.isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf sf_comp => by
+  Presheaf.isSheaf_of_isSheafUniqueGluing_types.{v} _ fun ι U sf sf_comp => by
     -- We show the sheaf condition in terms of unique gluing.
     -- First we obtain a family of sections for the underlying sheaf of functions,
     -- by forgetting that the predicate holds
@@ -299,8 +296,8 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
     -- and put it back together again in the correct order.
     refine' ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
     rcases W with ⟨W, m⟩
-    . exact iU
-    . exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
+    · exact iU
+    · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_injective TopCat.stalkToFiber_injective
 

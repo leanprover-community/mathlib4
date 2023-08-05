@@ -2,14 +2,11 @@
 Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
-
-! This file was ported from Lean 3 source module data.pnat.xgcd
-! leanprover-community/mathlib commit 6afc9b06856ad973f6a2619e3e8a0a8d537a58f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.Data.PNat.Prime
+
+#align_import data.pnat.xgcd from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
 /-!
 # Euclidean algorithm for ℕ
@@ -155,8 +152,8 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   let ⟨wp, x, y, zp, ap, bp⟩ := u
   constructor <;> intro h <;> simp [w, z, succPNat] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
-  . simp_all [← h, Nat.mul, Nat.succ_eq_add_one]; ring
-  . simp [Nat.succ_eq_add_one, Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
+  · simp_all [← h, Nat.mul, Nat.succ_eq_add_one]; ring
+  · simp [Nat.succ_eq_add_one, Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
   -- Porting note: Old code has been removed as it was much more longer.
 #align pnat.xgcd_type.is_special_iff PNat.XgcdType.isSpecial_iff
 

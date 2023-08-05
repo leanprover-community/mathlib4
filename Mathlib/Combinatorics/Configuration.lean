@@ -2,16 +2,13 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module combinatorics.configuration
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.SetTheory.Cardinal.Finite
+
+#align_import combinatorics.configuration from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
 /-!
 # Configurations of Points and lines

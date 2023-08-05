@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.antidiagonal
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Powerset
+
+#align_import data.multiset.antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # The antidiagonal on a multiset.
@@ -84,7 +81,7 @@ theorem antidiagonal_cons (a : α) (s) :
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
       coe_map, antidiagonal_coe', coe_add]
     rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr ; simp ; rw [map_reverse] ; simp
+    · congr; simp; rw [map_reverse]; simp
     · simp
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 

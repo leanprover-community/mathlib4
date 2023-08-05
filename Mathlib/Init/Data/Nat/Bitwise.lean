@@ -2,11 +2,6 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module init.data.nat.bitwise
-! leanprover-community/lean commit 53e8520d8964c7632989880372d91ba0cecbaf00
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Init.WFTactics
@@ -15,6 +10,8 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals
+
+#align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 
 /-!
 # Lemmas about bitwise operations on natural numbers.

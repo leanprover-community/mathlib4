@@ -2,16 +2,13 @@
 Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, David Loeffler
-
-! This file was ported from Lean 3 source module number_theory.bernoulli_polynomials
-! leanprover-community/mathlib commit ca3d21f7f4fd613c2a3c54ac7871163e1e5ecb3a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.NumberTheory.Bernoulli
+
+#align_import number_theory.bernoulli_polynomials from "leanprover-community/mathlib"@"ca3d21f7f4fd613c2a3c54ac7871163e1e5ecb3a"
 
 /-!
 # Bernoulli polynomials
@@ -22,9 +19,9 @@ are an important tool obtained from Bernoulli numbers.
 ## Mathematical overview
 
 The $n$-th Bernoulli polynomial is defined as
-$$ B_n(X) = ∑_{k = 0}^n {n \choose k} (-1)^k  B_k  X^{n - k} $$
+$$ B_n(X) = ∑_{k = 0}^n {n \choose k} (-1)^k B_k X^{n - k} $$
 where $B_k$ is the $k$-th Bernoulli number. The Bernoulli polynomials are generating functions,
-$$ \frac{t  e^{tX} }{ e^t - 1} = ∑_{n = 0}^{\infty} B_n(X)  \frac{t^n}{n!} $$
+$$ \frac{t e^{tX} }{ e^t - 1} = ∑_{n = 0}^{\infty} B_n(X) \frac{t^n}{n!} $$
 
 ## Implementation detail
 
@@ -82,7 +79,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
   have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
     apply sum_eq_zero <| fun x hx => _
     intros x hx
-    have h : x  <  n := (mem_range.1 hx)
+    have h : x < n := (mem_range.1 hx)
     simp [h]
   simp [this]
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
@@ -131,11 +128,11 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
     apply_congr
-    . skip
-    . conv =>
+    · skip
+    · conv =>
       apply_congr
-      . skip
-      . rw [← Nat.cast_mul, choose_mul ((le_tsub_iff_left <| mem_range_le (by assumption)).1 <|
+      · skip
+      · rw [← Nat.cast_mul, choose_mul ((le_tsub_iff_left <| mem_range_le (by assumption)).1 <|
             mem_range_le (by assumption)) (le.intro rfl),
           Nat.cast_mul, add_tsub_cancel_left, mul_assoc, mul_comm, ← smul_eq_mul, ←
           smul_monomial]
@@ -203,17 +200,17 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]
   conv_lhs =>
     congr
-    . skip
-    . apply_congr
-      . skip
-      . rw [eval_smul, hd _ (mem_range.1 (by assumption))]
+    · skip
+    · apply_congr
+      · skip
+      · rw [eval_smul, hd _ (mem_range.1 (by assumption))]
   rw [eval_sub, eval_finset_sum]
   simp_rw [eval_smul, smul_add]
   rw [sum_add_distrib, sub_add, sub_eq_sub_iff_sub_eq_sub, _root_.add_sub_sub_cancel]
   conv_rhs =>
     congr
-    . skip
-    . congr
+    · skip
+    · congr
       rw [succ_eq_add_one, ← choose_succ_self_right d]
   rw [Nat.cast_succ, ← smul_eq_mul, ← sum_range_succ _ d, eval_monomial_one_add_sub]
   simp_rw [smul_eq_mul]

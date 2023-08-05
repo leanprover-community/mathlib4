@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.ring.prod
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
+
+#align_import algebra.ring.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-!
 # Semiring, ring etc structures on `R × S`
@@ -33,67 +30,72 @@ variable {α β R R' S S' T T' : Type _}
 namespace Prod
 
 /-- Product of two distributive types is distributive. -/
-instance [Distrib R] [Distrib S] : Distrib (R × S) :=
+instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) :=
   { left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
     right_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
 
 /-- Product of two `NonUnitalNonAssocSemiring`s is a `NonUnitalNonAssocSemiring`. -/
-instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
     NonUnitalNonAssocSemiring (R × S) :=
   { inferInstanceAs (AddCommMonoid (R × S)),
     inferInstanceAs (Distrib (R × S)),
     inferInstanceAs (MulZeroClass (R × S)) with }
 
 /-- Product of two `NonUnitalSemiring`s is a `NonUnitalSemiring`. -/
-instance [NonUnitalSemiring R] [NonUnitalSemiring S] : NonUnitalSemiring (R × S) :=
+instance instNonUnitalSemiring [NonUnitalSemiring R] [NonUnitalSemiring S] :
+    NonUnitalSemiring (R × S) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)),
     inferInstanceAs (SemigroupWithZero (R × S)) with }
 
 /-- Product of two `NonAssocSemiring`s is a `NonAssocSemiring`. -/
-instance [NonAssocSemiring R] [NonAssocSemiring S] : NonAssocSemiring (R × S) :=
+instance instNonAssocSemiring [NonAssocSemiring R] [NonAssocSemiring S] :
+    NonAssocSemiring (R × S) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)),
     inferInstanceAs (MulZeroOneClass (R × S)),
     inferInstanceAs (AddMonoidWithOne (R × S)) with }
 
 /-- Product of two semirings is a semiring. -/
-instance [Semiring R] [Semiring S] : Semiring (R × S) :=
+instance instSemiring [Semiring R] [Semiring S] : Semiring (R × S) :=
   { inferInstanceAs (NonUnitalSemiring (R × S)),
     inferInstanceAs (NonAssocSemiring (R × S)),
     inferInstanceAs (MonoidWithZero (R × S)) with }
 
 /-- Product of two `NonUnitalCommSemiring`s is a `NonUnitalCommSemiring`. -/
-instance [NonUnitalCommSemiring R] [NonUnitalCommSemiring S] : NonUnitalCommSemiring (R × S) :=
+instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [NonUnitalCommSemiring S] :
+    NonUnitalCommSemiring (R × S) :=
   { inferInstanceAs (NonUnitalSemiring (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative semirings is a commutative semiring. -/
-instance [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
+instance instCommSemiring [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
   { inferInstanceAs (Semiring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
 
-instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] : NonUnitalNonAssocRing (R × S) :=
+instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] :
+    NonUnitalNonAssocRing (R × S) :=
   { inferInstanceAs (AddCommGroup (R × S)),
     inferInstanceAs (NonUnitalNonAssocSemiring (R × S)) with }
 
-instance [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) :=
+instance instNonUnitalRing [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) :=
   { inferInstanceAs (NonUnitalNonAssocRing (R × S)),
     inferInstanceAs (NonUnitalSemiring (R × S)) with }
 
-instance [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R × S) :=
+instance instNonAssocRing [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R × S) :=
   { inferInstanceAs (NonUnitalNonAssocRing (R × S)),
     inferInstanceAs (NonAssocSemiring (R × S)),
     inferInstanceAs (AddGroupWithOne (R × S)) with }
 
 /-- Product of two rings is a ring. -/
-instance [Ring R] [Ring S] : Ring (R × S) :=
+instance instRing [Ring R] [Ring S] : Ring (R × S) :=
   { inferInstanceAs (Semiring (R × S)),
     inferInstanceAs (AddCommGroup (R × S)),
     inferInstanceAs (AddGroupWithOne (R × S)) with }
 
 /-- Product of two `NonUnitalCommRing`s is a `NonUnitalCommRing`. -/
-instance [NonUnitalCommRing R] [NonUnitalCommRing S] : NonUnitalCommRing (R × S) :=
+instance instNonUnitalCommRing [NonUnitalCommRing R] [NonUnitalCommRing S] :
+    NonUnitalCommRing (R × S) :=
   { inferInstanceAs (NonUnitalRing (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative rings is a commutative ring. -/
-instance [CommRing R] [CommRing S] : CommRing (R × S) :=
+instance instCommRing [CommRing R] [CommRing S] : CommRing (R × S) :=
   { inferInstanceAs (Ring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
 
 end Prod
@@ -162,7 +164,7 @@ variable [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S'] [NonUnita
 
 variable (f : R →ₙ+* R') (g : S →ₙ+* S')
 
-/-- `prod.map` as a `NonUnitalRingHom`. -/
+/-- `Prod.map` as a `NonUnitalRingHom`. -/
 def prodMap : R × S →ₙ+* R' × S' :=
   (f.comp (fst R S)).prod (g.comp (snd R S))
 #align non_unital_ring_hom.prod_map NonUnitalRingHom.prodMap
@@ -274,7 +276,7 @@ end RingHom
 
 namespace RingEquiv
 
-variable [NonAssocSemiring R] [NonAssocSemiring S]
+variable [NonAssocSemiring R] [NonAssocSemiring S] [NonAssocSemiring R'] [NonAssocSemiring S']
 
 /-- Swapping components as an equivalence of (semi)rings. -/
 def prodComm : R × S ≃+* S × R :=
@@ -282,26 +284,63 @@ def prodComm : R × S ≃+* S × R :=
 #align ring_equiv.prod_comm RingEquiv.prodComm
 
 @[simp]
-theorem coe_prod_comm : ⇑(prodComm : R × S ≃+* S × R) = Prod.swap :=
+theorem coe_prodComm : ⇑(prodComm : R × S ≃+* S × R) = Prod.swap :=
   rfl
-#align ring_equiv.coe_prod_comm RingEquiv.coe_prod_comm
+#align ring_equiv.coe_prod_comm RingEquiv.coe_prodComm
 
 @[simp]
-theorem coe_prod_comm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap :=
+theorem coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap :=
   rfl
-#align ring_equiv.coe_prod_comm_symm RingEquiv.coe_prod_comm_symm
+#align ring_equiv.coe_prod_comm_symm RingEquiv.coe_prodComm_symm
 
 @[simp]
-theorem fst_comp_coe_prod_comm :
+theorem fst_comp_coe_prodComm :
     (RingHom.fst S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.snd R S :=
   RingHom.ext fun _ => rfl
-#align ring_equiv.fst_comp_coe_prod_comm RingEquiv.fst_comp_coe_prod_comm
+#align ring_equiv.fst_comp_coe_prod_comm RingEquiv.fst_comp_coe_prodComm
 
 @[simp]
-theorem snd_comp_coe_prod_comm :
+theorem snd_comp_coe_prodComm :
     (RingHom.snd S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.fst R S :=
   RingHom.ext fun _ => rfl
-#align ring_equiv.snd_comp_coe_prod_comm RingEquiv.snd_comp_coe_prod_comm
+#align ring_equiv.snd_comp_coe_prod_comm RingEquiv.snd_comp_coe_prodComm
+
+section
+
+variable (R R' S S')
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+@[simps apply]
+def prodProdProdComm : (R × R') × S × S' ≃+* (R × S) × R' × S' :=
+  { AddEquiv.prodProdProdComm R R' S S', MulEquiv.prodProdProdComm R R' S S' with
+    toFun := fun rrss => ((rrss.1.1, rrss.2.1), (rrss.1.2, rrss.2.2))
+    invFun := fun rsrs => ((rsrs.1.1, rsrs.2.1), (rsrs.1.2, rsrs.2.2)) }
+#align ring_equiv.prod_prod_prod_comm RingEquiv.prodProdProdComm
+
+@[simp]
+theorem prodProdProdComm_symm : (prodProdProdComm R R' S S').symm = prodProdProdComm R S R' S' :=
+  rfl
+#align ring_equiv.prod_prod_prod_comm_symm RingEquiv.prodProdProdComm_symm
+
+@[simp]
+theorem prodProdProdComm_toAddEquiv :
+    (prodProdProdComm R R' S S' : _ ≃+ _) = AddEquiv.prodProdProdComm R R' S S' :=
+  rfl
+#align ring_equiv.prod_prod_prod_comm_to_add_equiv RingEquiv.prodProdProdComm_toAddEquiv
+
+@[simp]
+theorem prodProdProdComm_toMulEquiv :
+    (prodProdProdComm R R' S S' : _ ≃* _) = MulEquiv.prodProdProdComm R R' S S' :=
+  rfl
+#align ring_equiv.prod_prod_prod_comm_to_mul_equiv RingEquiv.prodProdProdComm_toMulEquiv
+
+@[simp]
+theorem prodProdProdComm_toEquiv :
+    (prodProdProdComm R R' S S' : _ ≃ _) = Equiv.prodProdProdComm R R' S S' :=
+  rfl
+#align ring_equiv.prod_prod_prod_comm_to_equiv RingEquiv.prodProdProdComm_toEquiv
+
+end
 
 variable (R S) [Subsingleton S]
 

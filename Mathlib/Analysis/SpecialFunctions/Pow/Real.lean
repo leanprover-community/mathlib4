@@ -3,14 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.pow.real
-! leanprover-community/mathlib commit 4fa54b337f7d52805480306db1b1439c741848c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Qq
+
+#align_import analysis.special_functions.pow.real from "leanprover-community/mathlib"@"4fa54b337f7d52805480306db1b1439c741848c8"
 
 
 /-! # Power function on `ℝ`
@@ -49,7 +46,7 @@ theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re := rfl
 
 theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) := by
-  simp only [rpow_def, Complex.cpow_def] ; split_ifs <;>
+  simp only [rpow_def, Complex.cpow_def]; split_ifs <;>
   simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 #align real.rpow_def_of_nonneg Real.rpow_def_of_nonneg
@@ -89,11 +86,11 @@ theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * 
 
 theorem rpow_def_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) * cos (y * π) := by
-  split_ifs with h <;> simp [rpow_def, *] ; exact rpow_def_of_neg (lt_of_le_of_ne hx h) _
+  split_ifs with h <;> simp [rpow_def, *]; exact rpow_def_of_neg (lt_of_le_of_ne hx h) _
 #align real.rpow_def_of_nonpos Real.rpow_def_of_nonpos
 
 theorem rpow_pos_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : 0 < x ^ y := by
-  rw [rpow_def_of_pos hx] ; apply exp_pos
+  rw [rpow_def_of_pos hx]; apply exp_pos
 #align real.rpow_pos_of_pos Real.rpow_pos_of_pos
 
 @[simp]
@@ -142,7 +139,7 @@ theorem zero_rpow_nonneg (x : ℝ) : 0 ≤ (0 : ℝ) ^ x := by
 #align real.zero_rpow_nonneg Real.zero_rpow_nonneg
 
 theorem rpow_nonneg_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : 0 ≤ x ^ y := by
-  rw [rpow_def_of_nonneg hx] ; split_ifs <;>
+  rw [rpow_def_of_nonneg hx]; split_ifs <;>
     simp only [zero_le_one, le_refl, le_of_lt (exp_pos _)]
 #align real.rpow_nonneg_of_nonneg Real.rpow_nonneg_of_nonneg
 
@@ -222,7 +219,7 @@ theorem rpow_sum_of_nonneg {ι : Type _} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι
 #align real.rpow_sum_of_nonneg Real.rpow_sum_of_nonneg
 
 theorem rpow_neg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
-  simp only [rpow_def_of_nonneg hx] ; split_ifs <;> simp_all [exp_neg]
+  simp only [rpow_def_of_nonneg hx]; split_ifs <;> simp_all [exp_neg]
 #align real.rpow_neg Real.rpow_neg
 
 theorem rpow_sub {x : ℝ} (hx : 0 < x) (y z : ℝ) : x ^ (y - z) = x ^ y / x ^ z := by
@@ -244,7 +241,7 @@ end Real
 namespace Complex
 
 theorem ofReal_cpow {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : ((x ^ y : ℝ) : ℂ) = (x : ℂ) ^ (y : ℂ) := by
-  simp only [Real.rpow_def_of_nonneg hx, Complex.cpow_def, ofReal_eq_zero] ; split_ifs <;>
+  simp only [Real.rpow_def_of_nonneg hx, Complex.cpow_def, ofReal_eq_zero]; split_ifs <;>
     simp [Complex.ofReal_log hx]
 #align complex.of_real_cpow Complex.ofReal_cpow
 
@@ -288,7 +285,7 @@ theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x 
 
 @[simp]
 theorem abs_cpow_inv_nat (x : ℂ) (n : ℕ) : abs (x ^ (n⁻¹ : ℂ)) = Complex.abs x ^ (n⁻¹ : ℝ) := by
-  rw [← abs_cpow_real] ; simp [-abs_cpow_real]
+  rw [← abs_cpow_real]; simp [-abs_cpow_real]
 #align complex.abs_cpow_inv_nat Complex.abs_cpow_inv_nat
 
 theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y) = x ^ y.re := by

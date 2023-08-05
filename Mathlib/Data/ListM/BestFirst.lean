@@ -39,7 +39,7 @@ We remove the next element from the list contained in the best triple
 enqueue it and return it.
 -/
 -- The return type has `× List α` rather than just `× Option α` so `bestFirstSearch` can use `fixl`.
-unsafe def bestFirstSearchAux
+def bestFirstSearchAux
     (f : Nat → α → ListM m α) (maxQueued : Option Nat := none) :
     RBMap α (Nat × ListM m α) compare → m (RBMap α (Nat × ListM m α) compare × List α) :=
 fun s => do
@@ -74,7 +74,7 @@ This implements a "beam" search, which may be incomplete but uses bounded memory
 The option `removeDuplicates` keeps an `RBSet` of previously visited nodes.
 Otherwise, if the graph is not a tree then nodes will be visited multiple times.
 -/
-unsafe def bestFirstSearch (f : α → ListM m α) (a : α)
+def bestFirstSearch (f : α → ListM m α) (a : α)
     (maxDepth : Option Nat := none) (maxQueued : Option Nat := none) (removeDuplicates := true) :
     ListM m α :=
 let f := match maxDepth with

@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module group_theory.free_group
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Free groups
@@ -201,13 +198,13 @@ theorem Step.diamond_aux :
     ∀ {L₁ L₂ L₃ L₄ : List (α × Bool)} {x1 b1 x2 b2},
       L₁ ++ (x1, b1) :: (x1, !b1) :: L₂ = L₃ ++ (x2, b2) :: (x2, !b2) :: L₄ →
         L₁ ++ L₂ = L₃ ++ L₄ ∨ ∃ L₅, Red.Step (L₁ ++ L₂) L₅ ∧ Red.Step (L₃ ++ L₄) L₅
-  | [], _, [], _, _, _, _, _, H => by injections ; subst_vars ; simp
-  | [], _, [(x3, b3)], _, _, _, _, _, H => by injections ; subst_vars ; simp
-  | [(x3, b3)], _, [], _, _, _, _, _, H => by injections ; subst_vars ; simp
+  | [], _, [], _, _, _, _, _, H => by injections; subst_vars; simp
+  | [], _, [(x3, b3)], _, _, _, _, _, H => by injections; subst_vars; simp
+  | [(x3, b3)], _, [], _, _, _, _, _, H => by injections; subst_vars; simp
   | [], _, (x3, b3) :: (x4, b4) :: tl, _, _, _, _, _, H => by
-    injections ; subst_vars ; simp ; right ; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
+    injections; subst_vars; simp; right; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
   | (x3, b3) :: (x4, b4) :: tl, _, [], _, _, _, _, _, H => by
-    injections ; subst_vars ; simp ; right ; exact ⟨_, Red.Step.cons_not, Red.Step.not⟩
+    injections; subst_vars; simp; right; exact ⟨_, Red.Step.cons_not, Red.Step.not⟩
   | (x3, b3) :: tl, _, (x4, b4) :: tl2, _, _, _, _, _, H =>
     let ⟨H1, H2⟩ := List.cons.inj H
     match Step.diamond_aux H2 with
@@ -673,7 +670,7 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
 @[to_additive "The canonical map from the type to the additive free group is an injection."]
 theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
-  simp [Red.singleton_iff] at hx hy ; aesop
+  simp [Red.singleton_iff] at hx hy; aesop
 #align free_group.of_injective FreeGroup.of_injective
 #align free_add_group.of_injective FreeAddGroup.of_injective
 
@@ -791,7 +788,7 @@ variable {β : Type v} (f : α → β) {x y : FreeGroup α}
   the additive free group over `α` to the additive free group over `β`."]
 def map : FreeGroup α →* FreeGroup β :=
   MonoidHom.mk'
-    (Quot.map (List.map fun x => (f x.1, x.2)) fun L₁ L₂ H => by cases H ; simp)
+    (Quot.map (List.map fun x => (f x.1, x.2)) fun L₁ L₂ H => by cases H; simp)
     (by rintro ⟨L₁⟩ ⟨L₂⟩; simp)
 #align free_group.map FreeGroup.map
 #align free_add_group.map FreeAddGroup.map
@@ -1189,7 +1186,7 @@ theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α
 /-- The second theorem that characterises the function `reduce`: the maximal reduction of a word
 only reduces to itself. -/
 @[to_additive "The second theorem that characterises the function `reduce`: the maximal reduction of
-  a word  only reduces to itself."]
+  a word only reduces to itself."]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction' H with L1 L' L2 H1 H2 ih
   · rfl

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.uniform
-! leanprover-community/mathlib commit bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.SetTheory.Ordinal.Basic
+
+#align_import combinatorics.simple_graph.regularity.uniform from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Graph uniformity and uniform partitions
@@ -222,7 +219,7 @@ theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε
   rintro ⟨u, v⟩
   simp only [Finpartition.mk_mem_nonUniforms_iff, Finpartition.parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
-  rintro x ⟨_,xu⟩  y ⟨_,yv⟩ _
+  rintro x ⟨_,xu⟩ y ⟨_,yv⟩ _
   rw [←xu, ←yv]
   exact G.isUniform_singleton hε
 #align finpartition.non_uniforms_bot Finpartition.nonUniforms_bot

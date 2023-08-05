@@ -2,15 +2,12 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.pi_tensor_product
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.LibrarySearch
+
+#align_import linear_algebra.pi_tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -533,7 +530,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
         smul_eq_mul, mul_one]
       congr
       aesop
-    . simp only
+    · simp only
       intro x y hx hy
       rw [map_add, add_smul, hx, hy]
   right_inv t := by simp

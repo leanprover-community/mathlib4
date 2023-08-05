@@ -2,16 +2,13 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module field_theory.ratfunc
-! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
+
+#align_import field_theory.ratfunc from "leanprover-community/mathlib"@"bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6"
 
 /-!
 # The field of rational functions
@@ -253,8 +250,7 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : ∀ _p _q : K[X], P) (f0 : ∀ 
   · subst hq
     simp only [mk_zero, f0, ← Localization.mk_zero 1, Localization.liftOn_mk,
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
-  ·
-    simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
+  · simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
 #align ratfunc.lift_on_mk RatFunc.liftOn_mk
 
 /-- Non-dependent recursion principle for `RatFunc K`: if `f p q : P` for all `p q`,
@@ -401,7 +397,7 @@ instance : Div (RatFunc K) :=
 -- that does not close the goal
 theorem ofFractionRing_div (p q : FractionRing K[X]) :
     ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q := by
-  simp only [Div.div, HDiv.hDiv,  RatFunc.div]
+  simp only [Div.div, HDiv.hDiv, RatFunc.div]
 #align ratfunc.of_fraction_ring_div RatFunc.ofFractionRing_div
 
 /-- Multiplicative inverse of a rational function. -/

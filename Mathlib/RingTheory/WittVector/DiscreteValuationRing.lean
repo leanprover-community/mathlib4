@@ -2,16 +2,13 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.discrete_valuation_ring
-! leanprover-community/mathlib commit c163ec99dfc664628ca15d215fce0a5b9c265b68
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Domain
 import Mathlib.RingTheory.WittVector.MulCoeff
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.Tactic.LinearCombination
+
+#align_import ring_theory.witt_vector.discrete_valuation_ring from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 
 /-!
 

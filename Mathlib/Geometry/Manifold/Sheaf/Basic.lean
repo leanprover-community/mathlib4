@@ -2,14 +2,11 @@
 Copyright © 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.sheaf.basic
-! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.Topology.Sheaves.LocalPredicate
+
+#align_import geometry.manifold.sheaf.basic from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-! # Generic construction of a sheaf from a `LocalInvariantProp` on a manifold
 

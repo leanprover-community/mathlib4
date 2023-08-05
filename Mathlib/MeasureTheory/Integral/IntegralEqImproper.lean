@@ -2,17 +2,14 @@
 Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Bhavik Mehta
-
-! This file was ported from Lean 3 source module measure_theory.integral.integral_eq_improper
-! leanprover-community/mathlib commit b84aee748341da06a6d78491367e2c0e9f15e8a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+
+#align_import measure_theory.integral.integral_eq_improper from "leanprover-community/mathlib"@"b84aee748341da06a6d78491367e2c0e9f15e8a5"
 
 /-!
 # Links between an integral and its "improper" version
@@ -863,7 +860,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     · intro hx; refine' ⟨x ^ (1 / p), rpow_pos_of_pos hx _, _⟩
       rw [← rpow_mul (le_of_lt hx), one_div_mul_cancel hp, rpow_one]
   have := integral_image_eq_integral_abs_deriv_smul measurableSet_Ioi a1 a2 g
-  rw [a3] at this ; rw [this]
+  rw [a3] at this; rw [this]
   refine' set_integral_congr measurableSet_Ioi _
   intro x hx; dsimp only
   rw [abs_mul, abs_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt hx) _)]

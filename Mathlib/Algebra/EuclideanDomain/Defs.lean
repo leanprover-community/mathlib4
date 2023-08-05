@@ -2,16 +2,13 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.euclidean_domain.defs
-! leanprover-community/mathlib commit ee7b9f9a9ac2a8d9f04ea39bbfe6b1a3be053b38
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
+
+#align_import algebra.euclidean_domain.defs from "leanprover-community/mathlib"@"ee7b9f9a9ac2a8d9f04ea39bbfe6b1a3be053b38"
 
 /-!
 # Euclidean domains

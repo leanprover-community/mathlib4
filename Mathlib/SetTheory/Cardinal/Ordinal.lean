@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module set_theory.cardinal.ordinal
-! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.Linarith
+
+#align_import set_theory.cardinal.ordinal from "leanprover-community/mathlib"@"7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f"
 
 /-!
 # Cardinals and ordinals
@@ -459,12 +456,12 @@ theorem beth_le {o₁ o₂ : Ordinal} : beth o₁ ≤ beth o₂ ↔ o₁ ≤ o�
 #align cardinal.beth_le Cardinal.beth_le
 
 theorem aleph_le_beth (o : Ordinal) : aleph o ≤ beth o := by
-  apply limitRecOn o
-  · simp
-  · intro o h
+  induction o using limitRecOn with
+  | H₁ => simp
+  | H₂ o h =>
     rw [aleph_succ, beth_succ, succ_le_iff]
     exact (cantor _).trans_le (power_le_power_left two_ne_zero h)
-  · intro o ho IH
+  | H₃ o ho IH =>
     rw [aleph_limit ho, beth_limit ho]
     exact ciSup_mono (bddAbove_of_small _) fun x => IH x.1 x.2
 #align cardinal.aleph_le_beth Cardinal.aleph_le_beth
@@ -528,8 +525,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
         typein_inj, mem_setOf_eq] at h
       exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
     suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ Sum { x | r x (g p) } PUnit
-    ·
-      exact
+    · exact
         ⟨(Set.embeddingOfSubset _ _ this).trans
             ((Equiv.Set.prod _ _).trans (H.prodCongr H)).toEmbedding⟩
     refine' (Equiv.Set.insert _).trans ((Equiv.refl _).sumCongr punitEquivPUnit)
@@ -993,7 +989,7 @@ theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
 theorem mk_list_eq_mk (α : Type u) [Infinite α] : #(List α) = #α :=
   have H1 : ℵ₀ ≤ #α := aleph0_le_mk α
   Eq.symm <|
-    le_antisymm ((le_def _ _).2 ⟨⟨fun a => [a], fun _ => by simp⟩⟩)  <|
+    le_antisymm ((le_def _ _).2 ⟨⟨fun a => [a], fun _ => by simp⟩⟩) <|
       calc
         #(List α) = sum fun n : ℕ => #α ^ (n : Cardinal.{u}) := mk_list_eq_sum_pow α
         _ ≤ sum fun _ : ℕ => #α := sum_le_sum _ _ fun n => pow_le H1 <| nat_lt_aleph0 n
@@ -1032,8 +1028,7 @@ theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α :
 theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Zero β] [Nontrivial β] :
     #(α →₀ β) = max (lift.{v} #α) (lift.{u} #β) := by
   apply le_antisymm
-  ·
-    calc
+  · calc
       #(α →₀ β) ≤ #(Finset (α × β)) := mk_le_of_injective (Finsupp.graph_injective α β)
       _ = #(α × β) := mk_finset_of_infinite _
       _ = max (lift.{v} #α) (lift.{u} #β) :=
@@ -1195,7 +1190,7 @@ theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α
 
 theorem extend_function {α β : Type _} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
-  intros ; have := h; cases' this with g
+  intros; have := h; cases' this with g
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
       ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))

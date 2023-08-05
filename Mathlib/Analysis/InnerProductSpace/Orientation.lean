@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.orientation
-! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.LinearAlgebra.Orientation
+
+#align_import analysis.inner_product_space.orientation from "leanprover-community/mathlib"@"bd65478311e4dfd41f48bf38c7e3b02fb75d0163"
 
 /-!
 # Orientations of real inner product spaces.

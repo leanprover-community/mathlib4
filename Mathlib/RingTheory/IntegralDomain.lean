@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.integral_domain
-! leanprover-community/mathlib commit 6e70e0d419bf686784937d64ed4bfde866ff229e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
+
+#align_import ring_theory.integral_domain from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
 /-!
 # Integral domains
@@ -160,8 +157,8 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance subgroup_units_cyclic : IsCyclic S := by
   -- porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
-  . exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
-  . exact Units.ext.comp Subtype.val_injective
+  · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
+  · exact Units.ext.comp Subtype.val_injective
 #align subgroup_units_cyclic subgroup_units_cyclic
 
 end

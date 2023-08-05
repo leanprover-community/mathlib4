@@ -2,11 +2,6 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module topology.instances.add_circle
-! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Totient
 import Mathlib.Algebra.Ring.AddAut
@@ -15,6 +10,9 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.PathConnected
+
+#align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
 /-!
 # The additive circle
@@ -507,6 +505,9 @@ end FiniteOrderPoints
 end LinearOrderedField
 
 variable (p : ℝ)
+
+instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
+  (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by

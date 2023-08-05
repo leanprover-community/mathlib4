@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.field_division
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.RingTheory.EuclideanDomain
+
+#align_import data.polynomial.field_division from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
 /-!
 # Theory of univariate polynomials
@@ -72,7 +69,7 @@ section NormalizationMonoid
 
 variable [NormalizationMonoid R]
 
-instance : NormalizationMonoid R[X] where
+instance instNormalizationMonoid : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
       rw [← RingHom.map_mul, Units.mul_inv, C_1], by rw [← RingHom.map_mul, Units.inv_mul, C_1]⟩
@@ -173,10 +170,10 @@ def mod (p q : R[X]) :=
   p %ₘ (q * C (leadingCoeff q)⁻¹)
 #align polynomial.mod Polynomial.mod
 
-private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p :=
-  if h : q = 0 then by simp only [h, MulZeroClass.zero_mul, mod, modByMonic_zero, zero_add]
-  else by
-    conv =>
+private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
+  by_cases h : q = 0
+  · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
+  · conv =>
       rhs
       rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
     rw [div, mod, add_comm, mul_assoc]
@@ -260,10 +257,10 @@ theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
     rw [← EuclideanDomain.div_add_mod p q, degree_add_eq_left_of_degree_lt this, degree_mul]
 #align polynomial.degree_add_div Polynomial.degree_add_div
 
-theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p :=
-  if hq : q = 0 then by simp [hq]
-  else by
-    rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq]; exact degree_divByMonic_le _ _
+theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
+  by_cases hq : q = 0
+  · simp [hq]
+  · rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq]; exact degree_divByMonic_le _ _
 #align polynomial.degree_div_le Polynomial.degree_div_le
 
 theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
@@ -305,10 +302,10 @@ theorem map_div [Field k] (f : R →+* k) : (p / q).map f = p.map f / q.map f :=
       Polynomial.map_mul, map_C, leadingCoeff_map, map_inv₀]
 #align polynomial.map_div Polynomial.map_div
 
-theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f :=
-  if hq0 : q = 0 then by simp [hq0]
-  else by
-    rw [mod_def, mod_def, leadingCoeff_map f, ← map_inv₀ f, ← map_C f, ← Polynomial.map_mul f,
+theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f := by
+  by_cases hq0 : q = 0
+  · simp [hq0]
+  · rw [mod_def, mod_def, leadingCoeff_map f, ← map_inv₀ f, ← map_C f, ← Polynomial.map_mul f,
       map_modByMonic f (monic_mul_leadingCoeff_inv hq0)]
 #align polynomial.map_mod Polynomial.map_mod
 
@@ -461,9 +458,10 @@ theorem coe_normUnit_of_ne_zero (hp : p ≠ 0) : (normUnit p : R[X]) = C p.leadi
 theorem normalize_monic (h : Monic p) : normalize p = p := by simp [h]
 #align polynomial.normalize_monic Polynomial.normalize_monic
 
-theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y :=
-  if H : x = 0 then by rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, map_eq_zero]
-  else by
+theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
+  by_cases H : x = 0
+  · rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, map_eq_zero]
+  · classical
     rw [← normalize_dvd_iff, ← @normalize_dvd_iff R[X], normalize_apply, normalize_apply,
       coe_normUnit_of_ne_zero H, coe_normUnit_of_ne_zero (mt (map_eq_zero f).1 H),
       leadingCoeff_map, ← map_inv₀ f, ← map_C, ← Polynomial.map_mul,
@@ -473,22 +471,22 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
 theorem degree_normalize : degree (normalize p) = degree p := by simp
 #align polynomial.degree_normalize Polynomial.degree_normalize
 
-theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p :=
+theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
       (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp))
-  (normalize_associated _).prime this
+  exact (normalize_associated _).prime this
 #align polynomial.prime_of_degree_eq_one Polynomial.prime_of_degree_eq_one
 
 theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
   (prime_of_degree_eq_one hp1).irreducible
 #align polynomial.irreducible_of_degree_eq_one Polynomial.irreducible_of_degree_eq_one
 
-theorem not_irreducible_C (x : R) : ¬Irreducible (C x) :=
-  if H : x = 0 then by
-    rw [H, C_0]
+theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
+  by_cases H : x = 0
+  · rw [H, C_0]
     exact not_irreducible_zero
-  else fun hx => Irreducible.not_unit hx <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
+  · exact fun hx => Irreducible.not_unit hx <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
 set_option linter.uppercaseLean3 false in
 #align polynomial.not_irreducible_C Polynomial.not_irreducible_C
 

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.BddLat
-! leanprover-community/mathlib commit 7581030920af3dcb241d1df0e36f6ec8289dd6be
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Order.Category.BddOrdCat
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Category.SemilatCat
+
+#align_import order.category.BddLat from "leanprover-community/mathlib"@"7581030920af3dcb241d1df0e36f6ec8289dd6be"
 
 /-!
 # The category of bounded lattices

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.zpow
-! leanprover-community/mathlib commit 03fda9112aa6708947da13944a19310684bfdfcb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+#align_import linear_algebra.matrix.zpow from "leanprover-community/mathlib"@"03fda9112aa6708947da13944a19310684bfdfcb"
 
 /-!
 # Integer powers of square matrices
@@ -61,8 +58,8 @@ theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m ⬝ A ^ n = A ^ n ⬝ A�
   cases' m with m m
   · simp
   rcases nonsing_inv_cancel_or_zero A with (⟨h, h'⟩ | h)
-  ·  simp only [Nat.succ_eq_add_one]
-     calc
+  · simp only [Nat.succ_eq_add_one]
+    calc
        A⁻¹ ^ (m + 1) ⬝ A ^ (n + 1) = A⁻¹ ^ m ⬝ (A⁻¹ ⬝ A) ⬝ A ^ n := by
         simp only [pow_succ' A⁻¹, pow_succ A, mul_eq_mul, Matrix.mul_assoc]
       _ = A ^ n ⬝ A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.nat.lattice
-! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
+#align_import data.nat.lattice from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 
 /-!
 # Conditionally complete linear order structure on `ℕ`
@@ -126,11 +123,11 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
     (inferInstance : LinearOrder ℕ) with
     -- sup := sSup -- Porting note: removed, unnecessary?
     -- inf := sInf -- Porting note: removed, unnecessary?
-    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb] ; revert a ha ; exact @Nat.find_spec _ _ hb
-    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb]; revert a ha; exact @Nat.find_spec _ _ hb
+    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     le_csInf := fun s a hs hb ↦ by
-      rw [sInf_def hs] ; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
-    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+      rw [sInf_def hs]; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
+    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     csSup_empty := by
       simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
         not_false_iff, exists_const]

@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.determinant
-! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.GeneralLinearGroup
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.FieldSimp
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Basis
+
+#align_import linear_algebra.determinant from "leanprover-community/mathlib"@"bd65478311e4dfd41f48bf38c7e3b02fb75d0163"
 
 /-!
 # Determinant of families of vectors
@@ -171,8 +168,7 @@ theorem detAux_comp (b : Trunc <| Basis ι A M) (f g : M →ₗ[A] M) :
 
 section
 
-open Classical
-
+open scoped Classical in
 -- Discourage the elaborator from unfolding `det` and producing a huge term by marking it
 -- as irreducible.
 /-- The determinant of an endomorphism independent of basis.
@@ -184,6 +180,7 @@ protected irreducible_def det : (M →ₗ[A] M) →* A :=
   else 1
 #align linear_map.det LinearMap.det
 
+open scoped Classical in
 theorem coe_det [DecidableEq M] :
     ⇑(LinearMap.det : (M →ₗ[A] M) →* A) =
       if H : ∃ s : Finset M, Nonempty (Basis s A M) then

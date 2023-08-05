@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.schur
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+
+#align_import category_theory.preadditive.schur from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
 # Schur's lemma
@@ -206,7 +203,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
   refine' ⟨fun h => by rw [h]; simp, fun h => _⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
   interval_cases finrank 𝕜 (X ⟶ Y)
-  . rfl
+  · rfl
   · exact False.elim (h rfl)
 #align category_theory.finrank_hom_simple_simple_eq_zero_iff CategoryTheory.finrank_hom_simple_simple_eq_zero_iff
 

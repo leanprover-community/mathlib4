@@ -2,14 +2,11 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.euler_sine_prod
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Integral.PeakFunction
+
+#align_import analysis.special_functions.trigonometric.euler_sine_prod from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-! # Euler's infinite product for the sine function
 
@@ -161,7 +158,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
       (n - 1 : ℂ) / n *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (n - 2) := by
   have nne : (n : ℂ) ≠ 0 := by
-    contrapose! hn; rw [Nat.cast_eq_zero] at hn ; rw [hn]; exact zero_lt_two
+    contrapose! hn; rw [Nat.cast_eq_zero] at hn; rw [hn]; exact zero_lt_two
   have := integral_cos_mul_cos_pow_aux hn hz
   rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
@@ -179,8 +176,8 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
     nth_rw 2 [← mul_one (2 : ℂ)]
     rw [← mul_add, mul_pow, ← div_div]
     ring
-  · push_cast ; ring
-  · push_cast ; ring
+  · push_cast; ring
+  · push_cast; ring
 #align euler_sine.integral_cos_mul_cos_pow_even EulerSine.integral_cos_mul_cos_pow_even
 
 /-- Relate the integral `cos x ^ n` over `[0, π/2]` to the integral of `sin x ^ n` over `[0, π]`,
@@ -224,7 +221,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       MulZeroClass.mul_zero, Complex.sin_zero, zero_div, sub_zero,
-      (by push_cast ; field_simp; ring : 2 * z * ↑(π / 2) = π * z)]
+      (by push_cast; field_simp; ring : 2 * z * ↑(π / 2) = π * z)]
     field_simp [Complex.ofReal_ne_zero.mpr pi_pos.ne']
     ring
   · rw [hn, Finset.prod_range_succ]
@@ -265,7 +262,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
         simp
       have : 2 * (n : ℂ) + 2 ≠ 0 := by
         convert (Nat.cast_add_one_ne_zero (2 * n + 1) : (↑(2 * n + 1) + 1 : ℂ) ≠ 0) using 1
-        push_cast ; ring
+        push_cast; ring
       field_simp; ring
     convert integral_cos_mul_cos_pow_even n hz
     rw [Nat.cast_succ]

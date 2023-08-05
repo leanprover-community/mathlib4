@@ -2,21 +2,18 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.traversable.instances
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Functor
 
-/-!
-# IsLawfulTraversable instances
+#align_import control.traversable.instances from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
-This file provides instances of `IsLawfulTraversable` for types from the core library: `Option`,
+/-!
+# LawfulTraversable instances
+
+This file provides instances of `LawfulTraversable` for types from the core library: `Option`,
 `List` and `Sum`.
 -/
 
@@ -58,7 +55,7 @@ theorem Option.naturality {α β} (f : α → F β) (x : Option α) :
 
 end Option
 
-instance : IsLawfulTraversable Option :=
+instance : LawfulTraversable Option :=
   { show LawfulMonad Option from inferInstance with
     id_traverse := Option.id_traverse
     comp_traverse := Option.comp_traverse
@@ -100,7 +97,7 @@ protected theorem naturality {α β} (f : α → F β) (x : List α) :
     ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
 #align list.naturality List.naturality
 
-instance : IsLawfulTraversable.{u} List :=
+instance : LawfulTraversable.{u} List :=
   { show LawfulMonad List from inferInstance with
     id_traverse := List.id_traverse
     comp_traverse := List.comp_traverse
@@ -195,7 +192,7 @@ protected theorem naturality {α β} (f : α → F β) (x : σ ⊕ α) :
 
 end Traverse
 
-instance {σ : Type u} : IsLawfulTraversable.{u} (Sum σ) :=
+instance {σ : Type u} : LawfulTraversable.{u} (Sum σ) :=
   { show LawfulMonad (Sum σ) from inferInstance with
     id_traverse := Sum.id_traverse
     comp_traverse := Sum.comp_traverse

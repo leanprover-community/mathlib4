@@ -2,11 +2,6 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.filtration
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
@@ -14,6 +9,8 @@ import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Data.Polynomial.Module
 import Mathlib.Order.Hom.Lattice
+
+#align_import ring_theory.filtration from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -374,8 +371,14 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
   simp_rw [← F.submodule_eq_span_le_iff_stable_ge]
   constructor
   · rintro H
-    apply H.stablizes_of_iSup_eq
-        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), _⟩
+    refine H.stablizes_of_iSup_eq
+        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), ?_⟩ ?_
+    · intro n m e
+      rw [Submodule.span_le, Set.iUnion₂_subset_iff]
+      intro i hi
+      refine Set.Subset.trans ?_ Submodule.subset_span
+      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
+      exact hi.trans e
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
       congr 1
@@ -384,12 +387,6 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
       constructor
       · rintro ⟨-, i, -, e⟩; exact ⟨i, e⟩
       · rintro ⟨i, e⟩; exact ⟨i, i, le_refl i, e⟩
-    · intro n m e
-      rw [Submodule.span_le, Set.iUnion₂_subset_iff]
-      intro i hi
-      refine Set.Subset.trans ?_ Submodule.subset_span
-      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
-      exact hi.trans e
   · rintro ⟨n, hn⟩
     rw [hn]
     simp_rw [Submodule.span_iUnion₂, ← Finset.mem_range_succ_iff, iSup_subtype']

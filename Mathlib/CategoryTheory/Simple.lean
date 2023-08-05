@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.simple
-! leanprover-community/mathlib commit 4ed0bcaef698011b0692b93a042a2282f490f6b6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.Order.Atoms
+
+#align_import category_theory.simple from "leanprover-community/mathlib"@"4ed0bcaef698011b0692b93a042a2282f490f6b6"
 
 /-!
 # Simple objects

@@ -22,7 +22,6 @@ namespace Vector
 def snoc : Vector α n → α → Vector α (n+1) :=
   fun xs x => append xs (x ::ᵥ Vector.nil)
 
-
 /-!
 ## Simplification lemmas
 -/
@@ -51,7 +50,6 @@ theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   simp [toList, (·++·), Vector.append, Append.append]
   rfl
 
-
 theorem replicate_succ_to_snoc (val : α) :
     replicate (n+1) val = (replicate n val).snoc val := by
   clear xs
@@ -65,7 +63,6 @@ theorem replicate_succ_to_snoc (val : α) :
     rw[snoc_cons, ih]
 
 end Simp
-
 
 /-!
 ## Reverse induction principle
@@ -115,7 +112,7 @@ def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x)) :
     C v :=
   revInductionOn v nil fun xs x _ => snoc xs x
-  
+
 end Induction
 
 /-!
@@ -141,8 +138,8 @@ theorem mapAccumr_snoc :
       let r := mapAccumr f xs q.1
       (r.1, r.2.snoc q.2) := by
   induction xs using Vector.inductionOn
-  . rfl
-  . simp[*]
+  · rfl
+  · simp[*]
 
 variable (ys : Vector β n)
 

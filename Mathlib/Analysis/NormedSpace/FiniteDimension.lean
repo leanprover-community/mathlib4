@@ -2,11 +2,6 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.normed_space.finite_dimension
-! leanprover-community/mathlib commit 9425b6f8220e53b059f5a4904786c3c4b50fc057
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.NormedSpace.AddTorsor
@@ -16,6 +11,8 @@ import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
+
+#align_import analysis.normed_space.finite_dimension from "leanprover-community/mathlib"@"9425b6f8220e53b059f5a4904786c3c4b50fc057"
 
 /-!
 # Finite dimensional normed spaces over complete fields
@@ -329,7 +326,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
   obtain
     ⟨C : ℝ, C_pos : 0 < C, hC :
       ∀ {φ : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖φ (v i)‖ ≤ M) → ‖φ‖ ≤ C * M⟩ :=
-    v.exists_op_norm_le
+    v.exists_op_norm_le (E := E) (F := F)
   have h_2C : 0 < 2 * C := mul_pos zero_lt_two C_pos
   have hε2C : 0 < ε / (2 * C) := div_pos ε_pos h_2C
   have : ∀ φ : E →L[𝕜] F, ∃ n : Fin d → ℕ, ‖φ - (v.constrL <| u ∘ n)‖ ≤ ε / 2 := by

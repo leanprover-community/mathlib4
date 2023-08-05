@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.ordinal.notation
-! leanprover-community/mathlib commit b67044ba53af18680e1dd246861d9584e968495d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
+
+#align_import set_theory.ordinal.notation from "leanprover-community/mathlib"@"b67044ba53af18680e1dd246861d9584e968495d"
 
 /-!
 # Ordinal notation
@@ -341,21 +338,21 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       rw [cmpUsing, ite_eq_iff, not_lt] at nh
       case lt =>
         cases' nh with nh nh
-        . exact oadd_lt_oadd_2 h₁ nh.left
-        . rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
+        · exact oadd_lt_oadd_2 h₁ nh.left
+        · rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
       case gt =>
         cases' nh with nh nh
-        . cases nh; contradiction
-        . cases' nh with _ nh
+        · cases nh; contradiction
+        · cases' nh with _ nh
           rw [ite_eq_iff] at nh; cases' nh with nh nh
-          . exact oadd_lt_oadd_2 h₂ nh.left
-          . cases nh; contradiction
+          · exact oadd_lt_oadd_2 h₂ nh.left
+          · cases nh; contradiction
       cases' nh with nh nh
-      . cases nh; contradiction
+      · cases nh; contradiction
       cases' nh with nhl nhr
       rw [ite_eq_iff] at nhr
       cases' nhr with nhr nhr
-      . cases nhr; contradiction
+      · cases nhr; contradiction
       obtain rfl := Subtype.eq (eq_of_incomp ⟨(not_lt_of_ge nhl), nhr.left⟩)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
       revert IHa; cases cmp a₁ a₂ <;> intro IHa <;> dsimp at IHa
@@ -540,7 +537,7 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
     have ee := @cmp_compares _ _ h₁.fst h₂.fst
     cases h : cmp e₁ e₂ <;> simp only [h] at ee
     · rw [Ordinal.sub_eq_zero_iff_le.2]
-      . rfl
+      · rfl
       exact le_of_lt (oadd_lt_oadd_1 h₁ ee)
     · change e₁ = e₂ at ee
       subst e₂
@@ -710,7 +707,7 @@ theorem opow_def (o₁ o₂ : ONote) : o₁ ^ o₂ = opowAux2 o₂ (split o₁) 
 #align onote.opow_def ONote.opow_def
 
 theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → split o = (scale 1 o', m)
-  | 0, o', m, _, p => by injection p ; substs o' m ; rfl
+  | 0, o', m, _, p => by injection p; substs o' m; rfl
   | oadd e n a, o', m, h, p => by
     by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
@@ -733,7 +730,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
 #align onote.split_eq_scale_split' ONote.split_eq_scale_split'
 
 theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ repr o = ω * repr o' + m
-  | 0, o', m, _, p => by injection p ; substs o' m ; simp [NF.zero]
+  | 0, o', m, _, p => by injection p; substs o' m; simp [NF.zero]
   | oadd e n a, o', m, h, p => by
     by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
@@ -810,18 +807,18 @@ theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) :
 theorem mulNat_eq_mul (n o) : mulNat o n = o * ofNat n := by cases o <;> cases n <;> rfl
 #align onote.mul_nat_eq_mul ONote.mulNat_eq_mul
 
-instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp ; exact ONote.mul_nf o (ofNat n)
+instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp; exact ONote.mul_nf o (ofNat n)
 #align onote.NF_mul_nat ONote.nf_mulNat
 
 instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
   intro k m
   unfold opowAux
   cases' m with m m
-  . cases k <;> exact NF.zero
+  · cases k <;> exact NF.zero
   cases' k with k k
-  . exact NF.oadd_zero _ _
-  . haveI := nf_opowAux e a0 a k
-    simp only [Nat.succ_ne_zero m] ; infer_instance
+  · exact NF.oadd_zero _ _
+  · haveI := nf_opowAux e a0 a k
+    simp only [Nat.succ_ne_zero m]; infer_instance
 #align onote.NF_opow_aux ONote.nf_opowAux
 
 instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
@@ -839,8 +836,8 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   · simp [(· ^ ·),Pow.pow,pow, opow, opowAux2, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
     cases' k with k <;> simp <;> skip <;> dsimp
-    . infer_instance
-    . cases k <;> cases m <;> infer_instance
+    · infer_instance
+    · cases k <;> cases m <;> infer_instance
 #align onote.NF_opow ONote.nf_opow
 
 theorem scale_opowAux (e a0 a : ONote) [NF e] [NF a0] [NF a] :
@@ -1245,7 +1242,7 @@ def NONote :=
   { o : ONote // o.NF }
 #align nonote NONote
 
-instance : DecidableEq NONote := by unfold NONote ; infer_instance
+instance : DecidableEq NONote := by unfold NONote; infer_instance
 
 namespace NONote
 

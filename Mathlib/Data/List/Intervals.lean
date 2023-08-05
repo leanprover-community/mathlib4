@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module data.list.intervals
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Range
 import Mathlib.Data.Bool.Basic
+
+#align_import data.list.intervals from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 /-!
 # Intervals in ℕ
 

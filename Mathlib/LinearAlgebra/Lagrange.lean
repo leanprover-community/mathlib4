@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Wrenna Robson
-
-! This file was ported from Lean 3 source module linear_algebra.lagrange
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Basic
+
+#align_import linear_algebra.lagrange from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Lagrange interpolation
@@ -288,8 +285,8 @@ open Finset
 
 variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
 
-/-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map  `v : ι → F` injective on
-`s` and a value function `r : ι → F`,  `interpolate s v r` is the unique
+/-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map `v : ι → F` injective on
+`s` and a value function `r : ι → F`, `interpolate s v r` is the unique
 polynomial of degree `< s.card` that takes value `r i` on `v i` for all `i` in `s`. -/
 @[simps]
 def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where

@@ -2,17 +2,14 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.filtered
-! leanprover-community/mathlib commit 14e80e85cbca5872a329fbfd3d1f3fd64e306934
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.ULift
+
+#align_import category_theory.filtered from "leanprover-community/mathlib"@"14e80e85cbca5872a329fbfd3d1f3fd64e306934"
 
 /-!
 # Filtered categories
@@ -240,8 +237,8 @@ variable [IsFiltered C]
 theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (X ⟶ S) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  . exact ⟨Classical.choice IsFiltered.Nonempty, by intro; simp⟩
-  . obtain ⟨S', w'⟩ := h
+  · exact ⟨Classical.choice IsFiltered.Nonempty, by intro; simp⟩
+  · obtain ⟨S', w'⟩ := h
     use max X S'
     rintro Y mY
     obtain rfl | h := eq_or_ne Y X
@@ -278,9 +275,9 @@ theorem sup_exists :
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
         rcases mf' with mf' | mf'
-        . exfalso
+        · exfalso
           exact hf mf'.symm
-        . exact mf'
+        · exact mf'
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -684,8 +681,8 @@ variable [IsCofiltered C]
 theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (S ⟶ X) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  . exact ⟨Classical.choice IsCofiltered.Nonempty, by intro; simp⟩
-  . obtain ⟨S', w'⟩ := h
+  · exact ⟨Classical.choice IsCofiltered.Nonempty, by intro; simp⟩
+  · obtain ⟨S', w'⟩ := h
     use min X S'
     rintro Y mY
     obtain rfl | h := eq_or_ne Y X
@@ -722,9 +719,9 @@ theorem inf_exists :
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
         rcases mf' with mf' | mf'
-        . exfalso
+        · exfalso
           exact hf mf'.symm
-        . exact mf'
+        · exact mf'
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h

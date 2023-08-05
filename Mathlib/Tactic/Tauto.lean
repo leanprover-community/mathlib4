@@ -190,14 +190,13 @@ def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
   | _ => pure false
 
 /-- Implementation of the `tauto` tactic. -/
-def tautology : TacticM Unit := focus do
+def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
   evalTactic (← `(tactic| classical!))
   tautoCore
   allGoals (iterateUntilFailure
     (evalTactic (← `(tactic| rfl)) <|>
      evalTactic (← `(tactic| solve_by_elim)) <|>
      liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
-  done
 
 /--
 `tauto` breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`

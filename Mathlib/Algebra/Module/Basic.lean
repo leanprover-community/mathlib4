@@ -2,11 +2,6 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.basic
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
@@ -14,6 +9,8 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
+
+#align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Modules over a ring
@@ -122,7 +119,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
     (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { hf.distribMulAction f smul with
-    smul := (· • ·)
     add_smul := fun c₁ c₂ x => hf <| by simp only [smul, f.map_add, add_smul]
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
 #align function.injective.module Function.Injective.module
@@ -130,8 +126,7 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
 /-- Pushforward a `Module` structure along a surjective additive monoid homomorphism. -/
 protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
-  { hf.distribMulAction f smul with
-    smul := (· • ·)
+  { toDistribMulAction := hf.distribMulAction f smul
     add_smul := fun c₁ c₂ x => by
       rcases hf x with ⟨x, rfl⟩
       simp only [add_smul, ← smul, ← f.map_add]
@@ -149,7 +144,6 @@ def Function.Surjective.moduleLeft {R S M : Type _} [Semiring R] [AddCommMonoid 
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
-    smul := (· • ·)
     zero_smul := fun x => by rw [← f.map_zero, hsmul, zero_smul]
     add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
 #align function.surjective.module_left Function.Surjective.moduleLeft
@@ -212,22 +206,6 @@ theorem smul_add_one_sub_smul {R : Type _} [Ring R] [Module R M] {r : R} {m : M}
 
 end AddCommMonoid
 
-variable (R)
-
-/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
-structure.
-See note [reducible non-instances]. -/
-@[reducible]
-def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
-  { (inferInstance : AddCommMonoid M) with
-    neg := fun a => (-1 : R) • a
-    add_left_neg := fun a =>
-      show (-1 : R) • a + a = 0 by
-        nth_rw 2 [← one_smul R a]
-        rw [← add_smul, add_left_neg, zero_smul] }
-#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
-
-variable {R}
 
 section AddCommGroup
 
@@ -324,6 +302,27 @@ theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
 #align sub_smul sub_smul
 
 end Module
+
+variable (R)
+
+/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
+structure.
+See note [reducible non-instances]. -/
+@[reducible]
+def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
+  { (inferInstance : AddCommMonoid M) with
+    neg := fun a => (-1 : R) • a
+    add_left_neg := fun a =>
+      show (-1 : R) • a + a = 0 by
+        nth_rw 2 [← one_smul R a]
+        rw [← add_smul, add_left_neg, zero_smul]
+    zsmul := fun z a => (z : R) • a
+    zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
+    zsmul_succ' := fun z a => by simp [add_comm, add_smul]
+    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
+
+variable {R}
 
 /-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
 as an instance because Lean has no way to guess `R`. -/
@@ -575,7 +574,7 @@ for the vanishing of elements (especially in modules over division rings).
 
 
 /-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
-This a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
+This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
 
 The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
 is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.

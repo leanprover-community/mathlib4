@@ -2,13 +2,10 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.hom.aut
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Basic
+
+#align_import algebra.hom.aut from "leanprover-community/mathlib"@"d4f69d96f3532729da8ebb763f4bc26fcf640f06"
 
 /-!
 # Multiplicative and additive group automorphisms

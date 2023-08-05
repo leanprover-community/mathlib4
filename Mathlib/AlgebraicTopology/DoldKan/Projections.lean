@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.projections
-! leanprover-community/mathlib commit ed98c07faf6d9de3e52771d5b00394c4294ccb4d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Faces
 import Mathlib.CategoryTheory.Idempotents.Basic
+
+#align_import algebraic_topology.dold_kan.projections from "leanprover-community/mathlib"@"ed98c07faf6d9de3e52771d5b00394c4294ccb4d"
 
 /-!
 
@@ -129,7 +126,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFa
       comp_id, ← assoc, hq v.of_succ, add_right_eq_self]
     by_cases hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
-    . obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
+    · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
       have hnaq : n = a + q := by linarith
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
       have eq := v ⟨a, by linarith⟩ (by

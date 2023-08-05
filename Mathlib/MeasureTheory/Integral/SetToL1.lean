@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.integral.set_to_l1
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+
+#align_import measure_theory.integral.set_to_l1 from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -1426,7 +1423,7 @@ theorem setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ]
   by_cases hfi : Integrable f μ
   · have hgi : Integrable g μ := hfi.congr h
     rw [setToFun_eq hT hfi, setToFun_eq hT hgi, (Integrable.toL1_eq_toL1_iff f g hfi hgi).2 h]
-  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi ; exact hfi
+  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi; exact hfi
     rw [setToFun_undef hT hfi, setToFun_undef hT hgi]
 #align measure_theory.set_to_fun_congr_ae MeasureTheory.setToFun_congr_ae
 

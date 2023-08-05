@@ -2,11 +2,6 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
-
-! This file was ported from Lean 3 source module topology.sheaves.stalks
-! leanprover-community/mathlib commit e2e38c005fc6f715502490da6cb0ec84df9ed228
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.OpenNhds
 import Mathlib.Topology.Sheaves.Presheaf
@@ -18,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Sites.Pushforward
+
+#align_import topology.sheaves.stalks from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Stalks
@@ -180,7 +177,7 @@ namespace stalkPushforward
 theorem id (ℱ : X.Presheaf C) (x : X) :
     ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).hom := by
   -- Porting note: We need to this to help ext tactic.
-  change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext1 j
   induction' j with j
   rcases j with ⟨⟨_, _⟩, _⟩
@@ -195,7 +192,7 @@ set_option linter.uppercaseLean3 false in
 theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
       (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
-  change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext U
   rcases U with ⟨⟨_, _⟩, _⟩
   simp only [colimit.ι_map_assoc, colimit.ι_pre_assoc, whiskerRight_app, Category.assoc]
@@ -218,7 +215,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
       dsimp only [Functor.op]
       exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
-  · change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+  · change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
     ext U
     rw [← Iso.comp_inv_eq]
     erw [colimit.ι_map_assoc]
@@ -274,7 +271,7 @@ def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     delta
       stalkPullbackHom stalkPullbackInv stalkFunctor Presheaf.pullback stalkPushforward
       germToPullbackStalk germ
-    change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+    change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
     ext j
     induction' j with j
     cases j
@@ -285,9 +282,9 @@ def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     simp
   inv_hom_id := by
     delta stalkPullbackHom stalkPullbackInv stalkFunctor Presheaf.pullback stalkPushforward
-    change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+    change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
     ext ⟨U_obj, U_property⟩
-    change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+    change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
     ext ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
     erw [colimit.map_desc, colimit.map_desc, colimit.ι_desc_assoc, colimit.ι_desc_assoc,
       colimit.ι_desc, Category.comp_id]
@@ -362,7 +359,7 @@ set_option linter.uppercaseLean3 false in
 theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x y : X} (h : x ⤳ y) :
     F.stalkSpecializes h ≫ (stalkFunctor C x).map f =
       (stalkFunctor C y).map f ≫ G.stalkSpecializes h := by
-  change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_stalk_functor_map TopCat.Presheaf.stalkSpecializes_stalkFunctor_map
@@ -371,7 +368,7 @@ set_option linter.uppercaseLean3 false in
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
-  change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
+  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext; delta stalkPushforward
   simp only [stalkSpecializes, colimit.ι_desc_assoc, colimit.ι_map_assoc, colimit.ι_pre,
     Category.assoc, colimit.pre_desc, colimit.ι_desc]

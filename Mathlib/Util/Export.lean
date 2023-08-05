@@ -110,7 +110,7 @@ partial def exportExpr (E : Expr) : ExportM Nat := do
   | none => match E with
     | .bvar n => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i
     | .fvar _ => unreachable!
-    | .mvar _  => unreachable!
+    | .mvar _ => unreachable!
     | .sort l => let i ← alloc E; IO.println s!"{i} #ES {← exportLevel l}"; pure i
     | .const n ls =>
       exportDef n

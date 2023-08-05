@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.finsupp.big_operators
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finset.Pairwise
+
+#align_import data.finsupp.big_operators from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 
@@ -56,7 +53,7 @@ theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M
 
 theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
     (s.sum id).support ⊆ Finset.sup s Finsupp.support := by
-  classical convert Multiset.support_sum_subset s.1 ; simp
+  classical convert Multiset.support_sum_subset s.1; simp
 #align finset.support_sum_subset Finset.support_sum_subset
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :

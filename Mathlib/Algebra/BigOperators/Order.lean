@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.big_operators.order
-! leanprover-community/mathlib commit 824f9ae93a4f5174d2ea948e2d75843dd83447bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.GCongr.Core
+
+#align_import algebra.big_operators.order from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.
@@ -425,7 +422,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
       exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
     _ ≤ ∏ x in t, f x :=
       mul_le_of_le_one_of_le
-        (prod_le_one' <| by simp only [mem_filter, and_imp] ; exact fun _ _ ↦ le_of_eq)
+        (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
 #align finset.sum_le_sum_of_ne_zero Finset.sum_le_sum_of_ne_zero
@@ -694,13 +691,13 @@ theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, 
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
-@[to_additive sum_strict_mono]
-theorem prod_strict_mono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
+@[to_additive sum_strictMono]
+theorem prod_strictMono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦
   let ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
   Finset.prod_lt_prod' (fun i _ ↦ hle i) ⟨i, Finset.mem_univ i, hlt⟩
-#align fintype.prod_strict_mono' Fintype.prod_strict_mono'
-#align fintype.sum_strict_mono Fintype.sum_strict_mono
+#align fintype.prod_strict_mono' Fintype.prod_strictMono'
+#align fintype.sum_strict_mono Fintype.sum_strictMono
 
 end Fintype
 

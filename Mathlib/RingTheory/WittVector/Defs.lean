@@ -2,25 +2,22 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.defs
-! leanprover-community/mathlib commit f1944b30c97c5eb626e498307dec8b022a05bd0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.StructurePolynomial
+
+#align_import ring_theory.witt_vector.defs from "leanprover-community/mathlib"@"f1944b30c97c5eb626e498307dec8b022a05bd0a"
 
 /-!
 # Witt vectors
 
 In this file we define the type of `p`-typical Witt vectors and ring operations on it.
-The ring axioms are verified in `ring_theory/witt_vector/basic.lean`.
+The ring axioms are verified in `RingTheory.WittVector.Basic`.
 
 For a fixed commutative ring `R` and prime `p`,
 a Witt vector `x : 𝕎 R` is an infinite sequence `ℕ → R` of elements of `R`.
 However, the ring operations `+` and `*` are not defined in the obvious component-wise way.
 Instead, these operations are defined via certain polynomials
-using the machinery in `structure_polynomial.lean`.
+using the machinery in `StructurePolynomial.lean`.
 The `n`th value of the sum of two Witt vectors can depend on the `0`-th through `n`th values
 of the summands. This effectively simulates a “carrying” operation.
 

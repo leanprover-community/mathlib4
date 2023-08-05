@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.structured_arrow
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
+
+#align_import category_theory.structured_arrow from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # The category of "structured arrows"
@@ -83,7 +80,7 @@ theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
 
 @[reassoc (attr := simp)]
 theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
-  have := f.w ; aesop_cat
+  have := f.w; aesop_cat
 #align category_theory.structured_arrow.w CategoryTheory.StructuredArrow.w
 
 @[simp]
@@ -247,6 +244,20 @@ def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ St
   Comma.preRight _ F G
 #align category_theory.structured_arrow.pre CategoryTheory.StructuredArrow.pre
 
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Faithful F] : Faithful (pre S F G) :=
+  show Faithful (Comma.preRight _ _ _) from inferInstance
+
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Full F] : Full (pre S F G) :=
+  show Full (Comma.preRight _ _ _) from inferInstance
+
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) :=
+  show EssSurj (Comma.preRight _ _ _) from inferInstance
+
+/-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
+noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [IsEquivalence F] :
+    IsEquivalence (pre S F G) :=
+  Comma.isEquivalencePreRight _ _ _
+
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
@@ -254,6 +265,20 @@ def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ Structure
   obj X := StructuredArrow.mk (G.map X.hom)
   map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : Faithful (post S F G) where
+  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Faithful G] : Full (post S F G) where
+  preimage {_ _} f := homMk f.right (G.map_injective (by simpa using f.w.symm))
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] : EssSurj (post S F G) where
+  mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
+
+/-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
+noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+    IsEquivalence (post S F G) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -471,6 +496,20 @@ def pre (F : B ⥤ C) (G : C ⥤ D) (S : D) : CostructuredArrow (F ⋙ G) S ⥤ 
   Comma.preLeft F G _
 #align category_theory.costructured_arrow.pre CategoryTheory.CostructuredArrow.pre
 
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Faithful F] : Faithful (pre F G S) :=
+  show Faithful (Comma.preLeft _ _ _) from inferInstance
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Full F] : Full (pre F G S) :=
+  show Full (Comma.preLeft _ _ _) from inferInstance
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) :=
+  show EssSurj (Comma.preLeft _ _ _) from inferInstance
+
+/-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
+noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [IsEquivalence F] :
+    IsEquivalence (pre F G S) :=
+  Comma.isEquivalencePreLeft _ _ _
+
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
 @[simps]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
@@ -478,6 +517,20 @@ def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
   obj X := CostructuredArrow.mk (G.map X.hom)
   map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : Faithful (post F G S) where
+  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Faithful G] : Full (post F G S) where
+  preimage {_ _} f := homMk f.left (G.map_injective (by simpa using f.w))
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Full G] : EssSurj (post F G S) where
+  mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
+
+/-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
+noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+    IsEquivalence (post F G S) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -577,12 +630,12 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk] ; simp )
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp )
     (NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk] ; simp )
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp )
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -597,12 +650,12 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk] ; simp )
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp )
     (NatIso.ofComponents
       (fun X => StructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk] ; simp )
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp )
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johanes Hölzl, Patrick Massot, Yury Kudryashov, Kevin Wilson, Heather Macbeth
-
-! This file was ported from Lean 3 source module order.filter.prod
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Basic
+
+#align_import order.filter.prod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Product and coproduct filters
@@ -450,6 +447,12 @@ theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {
   by simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
 #align filter.tendsto_prod_iff Filter.tendsto_prod_iff
 
+theorem le_prod {f : Filter (α × β)} {g : Filter α} {g' : Filter β} :
+    (f ≤ g ×ˢ g') ↔ Tendsto Prod.fst f g ∧ Tendsto Prod.snd f g' := by
+  dsimp only [SProd.sprod]
+  unfold Filter.prod
+  simp only [le_inf_iff, ← map_le_iff_le_comap, Tendsto]
+
 theorem tendsto_prod_iff' {f : Filter α} {g : Filter β} {g' : Filter γ} {s : α → β × γ} :
     Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by
   dsimp only [SProd.sprod]
@@ -532,9 +535,10 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
 #align filter.map_prod_map_coprod_le Filter.map_prod_map_coprod_le
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, the first under the constant function `λ a, b` and the second under the identity function.
-Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this provides an
-example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict. -/
+`𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity
+function. Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this
+provides an example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict.
+-/
 theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :
     (map (fun _ => b) (𝓟 {a})).coprod (map id (𝓟 {i})) =
       𝓟 ((({b} : Set β) ×ˢ univ) ∪ (univ ×ˢ ({i} : Set ι))) := by
@@ -542,10 +546,9 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α)
     image_id, prod_univ, univ_prod, id]
 #align filter.map_const_principal_coprod_map_id_principal Filter.map_const_principal_coprod_map_id_principal
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, under the `prod.map` of two functions, respectively the constant function `λ a, b` and the
-identity function.  Together with the previous lemma,
+`𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a => b` and
+the identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
 in the lemma `map_prod_map_coprod_le` can be strict. -/
 theorem map_prod_map_const_id_principal_coprod_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :
