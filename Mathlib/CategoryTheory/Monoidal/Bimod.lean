@@ -300,7 +300,8 @@ noncomputable def actRight : X P Q ⊗ T.X ⟶ X P Q :=
           dsimp
           simp only [comp_whiskerRight, whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc]
           slice_lhs 3 4 =>
-            rw [← MonoidalCategory.whiskerLeft_comp, middle_assoc, MonoidalCategory.whiskerLeft_comp]
+            rw [← MonoidalCategory.whiskerLeft_comp, middle_assoc, 
+              MonoidalCategory.whiskerLeft_comp]
           simp))
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.act_right Bimod.TensorBimod.actRight
