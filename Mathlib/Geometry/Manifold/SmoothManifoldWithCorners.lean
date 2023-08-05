@@ -753,11 +753,9 @@ def analyticGroupoid : StructureGroupoid H :=
           use u.preimage I.symm
           apply And.intro
           · exact (hu.preimage I.continuous_symm).mem_nhds hz.left
-          · refine (EqOn.comp_left ?_).symm
-            refine eqOn_comp_right_iff.mpr ?_
+          · refine (EqOn.comp_left (eqOn_comp_right_iff.mpr ?_)).symm
             simp only [EqOn, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-            intro x
-            exact fg (I.symm x)
+            exact fun x => fg (I.symm x)
         · intro x hx
           apply hf.right
           rw [mem_image] at hx ⊢
