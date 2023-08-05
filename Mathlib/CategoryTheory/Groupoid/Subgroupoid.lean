@@ -2,11 +2,6 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
-
-! This file was ported from Lean 3 source module category_theory.groupoid.subgroupoid
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Set.Lattice
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Order.GaloisConnection
+
+#align_import category_theory.groupoid.subgroupoid from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Subgroupoid
@@ -172,7 +169,7 @@ theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
 #align category_theory.subgroupoid.hom.inj_on_objects CategoryTheory.Subgroupoid.hom.inj_on_objects
 
 theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).map f := by
-  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq  hfg
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq hfg
 #align category_theory.subgroupoid.hom.faithful CategoryTheory.Subgroupoid.hom.faithful
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/
@@ -487,7 +484,7 @@ theorem Map.arrows_iff (hφ : Function.Injective φ.obj) (S : Subgroupoid C) {c 
 
 /-- The "forward" image of a subgroupoid under a functor injective on objects -/
 def map (hφ : Function.Injective φ.obj) (S : Subgroupoid C) : Subgroupoid D where
-  arrows := Map.Arrows φ hφ S
+  arrows c d := {x | Map.Arrows φ hφ S c d x}
   inv := by
     rintro _ _ _ ⟨⟩
     rw [inv_eq_inv, ← Functor.map_inv, ← inv_eq_inv]
@@ -538,7 +535,7 @@ theorem mem_map_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
   dsimp [objs, map]
   constructor
   · rintro ⟨f, hf⟩
-    change Map.Arrows φ hφ S d d f at hf ; rw [Map.arrows_iff] at hf
+    change Map.Arrows φ hφ S d d f at hf; rw [Map.arrows_iff] at hf
     obtain ⟨c, d, g, ec, ed, eg, gS, eg⟩ := hf
     exact ⟨c, ⟨mem_objs_of_src S eg, ec⟩⟩
   · rintro ⟨c, ⟨γ, γS⟩, rfl⟩
@@ -592,7 +589,7 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       change Map.Arrows φ hφ S (φ.obj c') (φ.obj c') _
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
       suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by
-        simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this ; exact this
+        simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this; exact this
       · constructor; apply Sn.conj f γS }
 #align category_theory.subgroupoid.is_normal_map CategoryTheory.Subgroupoid.isNormal_map
 
@@ -631,7 +628,7 @@ theorem isTotallyDisconnected_iff :
 
 /-- The isotropy subgroupoid of `S` -/
 def disconnect : Subgroupoid C where
-  arrows c d f := c = d ∧ f ∈ S.arrows c d
+  arrows c d := {f | c = d ∧ f ∈ S.arrows c d}
   inv := by rintro _ _ _ ⟨rfl, h⟩; exact ⟨rfl, S.inv h⟩
   mul := by rintro _ _ _ _ ⟨rfl, h⟩ _ ⟨rfl, h'⟩; exact ⟨rfl, S.mul h h'⟩
 #align category_theory.subgroupoid.disconnect CategoryTheory.Subgroupoid.disconnect
@@ -664,7 +661,7 @@ variable (D : Set C)
 
 /-- The full subgroupoid on a set `D : Set C` -/
 def full : Subgroupoid C where
-  arrows c d _ := c ∈ D ∧ d ∈ D
+  arrows c d := {_f | c ∈ D ∧ d ∈ D}
   inv := by rintro _ _ _ ⟨⟩; constructor <;> assumption
   mul := by rintro _ _ _ _ ⟨⟩ _ ⟨⟩; constructor <;> assumption
 #align category_theory.subgroupoid.full CategoryTheory.Subgroupoid.full

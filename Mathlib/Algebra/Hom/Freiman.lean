@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.hom.freiman
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Data.FunLike.Basic
+
+#align_import algebra.hom.freiman from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Freiman homomorphisms
@@ -329,7 +326,7 @@ theorem one_comp (f : A →*[n] β) {hf} : (1 : B →*[n] γ).comp f hf = 1 :=
 instance : Inhabited (A →*[n] β) :=
   ⟨1⟩
 
-/-- `f * g` is the Freiman homomorphism  sends `x` to `f x * g x`. -/
+/-- `f * g` is the Freiman homomorphism sends `x` to `f x * g x`. -/
 @[to_additive "`f + g` is the Freiman homomorphism sending `x` to `f x + g x`."]
 instance : Mul (A →*[n] β) :=
   ⟨fun f g =>
@@ -524,9 +521,9 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
 #align map_sum_eq_map_sum_of_le map_sum_eq_map_sum_of_le
 
-/-- `α →*[n] β` is naturally included in  `A →*[m] β` for any `m ≤ n`. -/
+/-- `α →*[n] β` is naturally included in `A →*[m] β` for any `m ≤ n`. -/
 @[to_additive AddFreimanHom.toAddFreimanHom
-      "`α →+[n] β` is naturally included in  `α →+[m] β`
+      "`α →+[n] β` is naturally included in `α →+[m] β`
       for any `m ≤ n`"]
 def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β where
   toFun := f

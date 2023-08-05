@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.pairwise
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Lex
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
+
+#align_import data.list.pairwise from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Pairwise relations on a list
@@ -143,9 +140,9 @@ theorem Pairwise.forall_of_forall (H : Symmetric R) (H₁ : ∀ x ∈ l, R x x) 
 theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
     ∀ ⦃a⦄, a ∈ l → ∀ ⦃b⦄, b ∈ l → a ≠ b → R a b := by
   apply Pairwise.forall_of_forall
-  . exact fun a b h hne => hR (h hne.symm)
-  . exact fun _ _ hx => (hx rfl).elim
-  . exact hl.imp (@fun a b h _ => by exact h)
+  · exact fun a b h hne => hR (h hne.symm)
+  · exact fun _ _ hx => (hx rfl).elim
+  · exact hl.imp (@fun a b h _ => by exact h)
 #align list.pairwise.forall List.Pairwise.forall
 
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
@@ -247,7 +244,7 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
     (hS : ∀ ⦃x⦄ (hx : p x) ⦃y⦄ (hy : p y), R x y → S (f x hx) (f y hy)) :
     Pairwise S (l.pmap f h) := by
   refine' (pairwise_pmap h).2 (Pairwise.imp_of_mem _ hl)
-  intros ; apply hS; assumption
+  intros; apply hS; assumption
 #align list.pairwise.pmap List.Pairwise.pmap
 
 theorem pairwise_join {L : List (List α)} :
@@ -329,7 +326,7 @@ theorem pairwise_iff_get : ∀ {l : List α}, Pairwise R l ↔
       have := H ⟨0, show 0 < (a::l).length from Nat.succ_pos _⟩ ⟨n.succ, Nat.succ_lt_succ n.2⟩
         (Nat.succ_pos n)
       simpa
-    . simpa using H i.succ j.succ (show i.1.succ < j.1.succ from Nat.succ_lt_succ hij)
+    · simpa using H i.succ j.succ (show i.1.succ < j.1.succ from Nat.succ_lt_succ hij)
 
 set_option linter.deprecated false in
 @[deprecated pairwise_iff_get]

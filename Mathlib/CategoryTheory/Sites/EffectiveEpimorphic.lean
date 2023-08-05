@@ -178,7 +178,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
         app := fun ⟨T,hT⟩ => hT.choose ≫ e
         naturality := by
           rintro ⟨A,hA⟩ ⟨B,hB⟩ (q : A ⟶ B)
-          dsimp ; simp only [← Category.assoc, Category.comp_id]
+          dsimp; simp only [← Category.assoc, Category.comp_id]
           apply h
           rw [Category.assoc, hB.choose_spec, hA.choose_spec, Over.w] } }
   { desc := fun {W} e h => Hf.desc (aux e h)
@@ -186,7 +186,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
       intro W e h
       dsimp
       have := Hf.fac (aux e h) ⟨Over.mk f, 𝟙 _, by simp⟩
-      dsimp at this ; rw [this] ; clear this
+      dsimp at this; rw [this]; clear this
       nth_rewrite 2 [← Category.id_comp e]
       apply h
       generalize_proofs hh
@@ -298,6 +298,15 @@ attribute [nolint simpNF]
   EffectiveEpiFamily.fac
   EffectiveEpiFamily.fac_assoc
 
+/-- The effective epi family structure on the identity -/
+def effectiveEpiFamilyStructId : EffectiveEpiFamilyStruct (α : Unit → C) (fun _ => 𝟙 (α ())) where
+  desc := fun e _ => e ()
+  fac := by aesop_cat
+  uniq := by aesop_cat
+
+instance : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) :=
+  ⟨⟨effectiveEpiFamilyStructId⟩⟩
+
 example {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
@@ -327,7 +336,7 @@ lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type _} (X : α → C) (π : (a
     m₁ = m₂ := by
   have : m₂ = EffectiveEpiFamily.desc X π (fun a => π a ≫ m₂)
       (fun a₁ a₂ g₁ g₂ h => by simp only [← Category.assoc, h]) := by
-    apply EffectiveEpiFamily.uniq ; intro ; rfl
+    apply EffectiveEpiFamily.uniq; intro; rfl
   rw [this]
   exact EffectiveEpiFamily.uniq _ _ _ _ _ h
 
@@ -373,7 +382,7 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type _}
       rw [S.w]
       rfl
     uniq := by
-      intro S m hm ; dsimp
+      intro S m hm; dsimp
       apply H.uniq
       intro a
       exact hm ⟨Over.mk (π a), a, 𝟙 _, by simp⟩ }
@@ -397,8 +406,8 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type _}
         app := fun ⟨T,hT⟩ => hT.choose_spec.choose ≫ e hT.choose
         naturality := by
           intro ⟨A,a,(g₁ : A.left ⟶ _),ha⟩ ⟨B,b,(g₂ : B.left ⟶ _),hb⟩ (q : A ⟶ B)
-          dsimp ; rw [Category.comp_id, ← Category.assoc]
-          apply h ; rw [Category.assoc]
+          dsimp; rw [Category.comp_id, ← Category.assoc]
+          apply h; rw [Category.assoc]
           generalize_proofs h1 h2 h3 h4
           rw [h2.choose_spec, h4.choose_spec, Over.w] } }
   { desc := fun {W} e h => H.desc (aux e h)
@@ -406,7 +415,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type _}
       intro W e h a
       dsimp
       have := H.fac (aux e h) ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
-      dsimp at this ; rw [this] ; clear this
+      dsimp at this; rw [this]; clear this
       conv_rhs => rw [← Category.id_comp (e a)]
       apply h
       generalize_proofs h1 h2

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.finsupp.multiset
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.Order
+
+#align_import data.finsupp.multiset from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -73,7 +70,7 @@ theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {
 
 theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
     Finsupp.toMultiset (∑ i in s, f i) = ∑ i in s, Finsupp.toMultiset (f i) :=
-  map_sum _ _ _
+  map_sum Finsupp.toMultiset _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 
 theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :

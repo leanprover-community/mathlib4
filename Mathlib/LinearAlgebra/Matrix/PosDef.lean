@@ -1,15 +1,12 @@
 /-
 Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.pos_def
-! leanprover-community/mathlib commit 07992a1d1f7a4176c6d3f160209608be4e198566
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
+Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+#align_import linear_algebra.matrix.pos_def from "leanprover-community/mathlib"@"07992a1d1f7a4176c6d3f160209608be4e198566"
 
 /-! # Positive Definite Matrices
 This file defines positive (semi)definite matrices and connects the notion to positive definiteness
@@ -95,6 +92,17 @@ theorem posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.Pos
   simp only [toQuadraticForm', BilinForm.toQuadraticForm_apply, Matrix.toBilin'_apply']
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.posDef_toQuadraticForm'
+
+/-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
+theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemidef (Aᴴ ⬝ A) := by
+  refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
+  rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star, dotProduct, map_sum]
+  simp_rw [Pi.star_apply, IsROrC.star_def]
+  simpa using Finset.sum_nonneg fun i _ => add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
+
+/-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
+theorem posSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
+  by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 namespace PosDef
 

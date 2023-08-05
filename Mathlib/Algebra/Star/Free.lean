@@ -2,14 +2,11 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.star.free
-! leanprover-community/mathlib commit 07c3cf2d851866ff7198219ed3fedf42e901f25c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.FreeAlgebra
+
+#align_import algebra.star.free from "leanprover-community/mathlib"@"07c3cf2d851866ff7198219ed3fedf42e901f25c"
 
 /-!
 # A *-algebra structure on the free algebra.

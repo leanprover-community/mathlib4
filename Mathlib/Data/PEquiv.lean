@@ -2,13 +2,10 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.pequiv
-! leanprover-community/mathlib commit 7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+
+#align_import data.pequiv from "leanprover-community/mathlib"@"7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4"
 
 /-!
 
@@ -335,12 +332,12 @@ def single (a : α) (b : β) :
   inv x y := by
     dsimp only
     split_ifs with h1 h2
-    . simp [*]
-    . simp only [mem_def, some.injEq, iff_false] at *
+    · simp [*]
+    · simp only [mem_def, some.injEq, iff_false] at *
       exact Ne.symm h2
-    . simp only [mem_def, some.injEq, false_iff] at *
+    · simp only [mem_def, some.injEq, false_iff] at *
       exact Ne.symm h1
-    . simp
+    · simp
 #align pequiv.single PEquiv.single
 
 theorem mem_single (a : α) (b : β) : b ∈ single a b a :=

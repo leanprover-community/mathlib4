@@ -2,16 +2,13 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.sub.defs
-! leanprover-community/mathlib commit de29c328903507bb7aff506af9135f4bdaf1849c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Order.Lattice
+
+#align_import algebra.order.sub.defs from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
 
 /-!
 # Ordered Subtraction

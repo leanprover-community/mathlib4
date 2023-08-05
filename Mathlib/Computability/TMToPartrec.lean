@@ -2,16 +2,13 @@
 Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.tm_to_partrec
-! leanprover-community/mathlib commit 6155d4351090a6fad236e3d2e4e0e4e7342668e8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Halting
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
+
+#align_import computability.tm_to_partrec from "leanprover-community/mathlib"@"6155d4351090a6fad236e3d2e4e0e4e7342668e8"
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -609,7 +606,7 @@ def Code.Ok (c : Code) :=
 
 theorem Code.Ok.zero {c} (h : Code.Ok c) {v} :
     Turing.eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
-  rw [h, ← bind_pure_comp]; congr ; funext v
+  rw [h, ← bind_pure_comp]; congr; funext v
   exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.single rfl, rfl⟩)
 #align turing.to_partrec.code.ok.zero Turing.ToPartrec.Code.Ok.zero
 
@@ -703,13 +700,13 @@ theorem code_is_ok (c) : Code.Ok c := by
   iterate 3 simp only [Code.eval, pure_bind]
   case cons f fs IHf IHfs =>
     rw [Code.eval, IHf]
-    simp only [bind_assoc, Cont.eval, pure_bind]; congr ; funext v
+    simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
     rw [reaches_eval]; swap; exact ReflTransGen.single rfl
-    rw [stepRet, IHfs]; congr ; funext v'
+    rw [stepRet, IHfs]; congr; funext v'
     refine' Eq.trans _ (Eq.symm _) <;> try exact reaches_eval (ReflTransGen.single rfl)
   case comp f g IHf IHg =>
     rw [Code.eval, IHg]
-    simp only [bind_assoc, Cont.eval, pure_bind]; congr ; funext v
+    simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
     rw [reaches_eval]; swap; exact ReflTransGen.single rfl
     rw [stepRet, IHf]
   case case f g IHf IHg =>
@@ -729,20 +726,20 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
   case cons₁ fs as k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
-    simp only [← bind_pure_comp, bind_assoc]; congr ; funext v'
+    simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap; exact ReflTransGen.single rfl
     rw [stepRet, IH, bind_pure_comp]
   case cons₂ ns k IH => rw [Cont.eval, stepRet]; exact IH
   case comp f k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
-    simp only [← bind_pure_comp, bind_assoc]; congr ; funext v'
+    simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap; exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
   case fix f k IH =>
     rw [Cont.eval, stepRet]; simp only [bind_pure_comp]
     split_ifs; · exact IH
     simp only [← bind_pure_comp, bind_assoc, cont_eval_fix (code_is_ok _)]
-    congr ; funext; rw [bind_pure_comp, ← IH]
+    congr; funext; rw [bind_pure_comp, ← IH]
     exact reaches_eval (ReflTransGen.single rfl)
 #align turing.to_partrec.step_ret_eval Turing.ToPartrec.stepRet_eval
 
@@ -1360,7 +1357,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
       rfl
     refine' TransGen.head' rfl _
     simp
-    revert e ; cases' S k₁ with a Sk <;> intro e
+    revert e; cases' S k₁ with a Sk <;> intro e
     · cases e
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
@@ -1984,7 +1981,7 @@ theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStm
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
   induction c generalizing k <;> simp [Λ'.Supports, head]
   case zero' => exact Finset.union_subset_right Hk
-  case succ => intro ; split_ifs <;> exact Finset.union_subset_right Hk
+  case succ => intro; split_ifs <;> exact Finset.union_subset_right Hk
   case tail => exact Finset.union_subset_right Hk
   case cons f fs IHf _ =>
     apply IHf

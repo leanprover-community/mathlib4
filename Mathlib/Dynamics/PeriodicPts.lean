@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.periodic_pts
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.List.Cycle
@@ -14,6 +9,8 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
+
+#align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
 /-!
 # Periodic points
@@ -587,6 +584,42 @@ theorem periodicOrbit_chain' (r : α → α → Prop) {f : α → α} {x : α} (
 #align function.periodic_orbit_chain' Function.periodicOrbit_chain'
 
 end -- noncomputable
+
+end Function
+
+namespace Function
+
+variable {α β : Type _} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+
+@[simp]
+theorem iterate_prod_map (f : α → α) (g : β → β) (n : ℕ) :
+    (Prod.map f g)^[n] = Prod.map (f^[n]) (g^[n]) := by induction n <;> simp [*, Prod.map_comp_map]
+#align function.iterate_prod_map Function.iterate_prod_map
+
+@[simp]
+theorem isFixedPt_prod_map (x : α × β) :
+    IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
+  Prod.ext_iff
+#align function.is_fixed_pt_prod_map Function.isFixedPt_prod_map
+
+@[simp]
+theorem isPeriodicPt_prod_map (x : α × β) :
+    IsPeriodicPt (Prod.map f g) n x ↔ IsPeriodicPt f n x.1 ∧ IsPeriodicPt g n x.2 := by
+  simp [IsPeriodicPt]
+#align function.is_periodic_pt_prod_map Function.isPeriodicPt_prod_map
+
+theorem minimalPeriod_prod_map (f : α → α) (g : β → β) (x : α × β) :
+    minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
+  eq_of_forall_dvd <| by cases x; simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
+#align function.minimal_period_prod_map Function.minimalPeriod_prod_map
+
+theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map f g) x := by
+  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_left _ _
+#align function.minimal_period_fst_dvd Function.minimalPeriod_fst_dvd
+
+theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
+  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_right _ _
+#align function.minimal_period_snd_dvd Function.minimalPeriod_snd_dvd
 
 end Function
 

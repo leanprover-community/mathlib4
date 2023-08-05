@@ -2,12 +2,6 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.ring.defs
-! leanprover-community/mathlib commit 44e29dbcff83ba7114a464d592b8c3743987c1e5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
@@ -20,6 +14,8 @@ import Mathlib.Order.MinMax
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Algebra.Group.Units
+
+#align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
 /-!
 # Ordered rings and semirings

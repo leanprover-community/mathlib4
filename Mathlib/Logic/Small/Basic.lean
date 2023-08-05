@@ -2,13 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module logic.small.basic
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.PPWithUniv
+
+#align_import logic.small.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Small types
@@ -27,6 +25,7 @@ universe u w v
 
 /-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
 -/
+@[mk_iff, pp_with_univ]
 class Small (α : Type v) : Prop where
   /-- If a type is `Small.{w}`, then there exists an equivalence with some `S : Type w` -/
   equiv_small : ∃ S : Type w, Nonempty (α ≃ S)
@@ -49,6 +48,11 @@ def Shrink (α : Type v) [Small.{w} α] : Type w :=
 noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 #align equiv_shrink equivShrink
+
+@[ext]
+theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
+    (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
+  simpa using w
 
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/JLimperg/aesop/issues/59

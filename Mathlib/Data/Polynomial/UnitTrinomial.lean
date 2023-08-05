@@ -2,14 +2,11 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module data.polynomial.unit_trinomial
-! leanprover-community/mathlib commit 302eab4f46abb63de520828de78c04cb0f9b5836
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Data.Polynomial.Mirror
+
+#align_import data.polynomial.unit_trinomial from "leanprover-community/mathlib"@"302eab4f46abb63de520828de78c04cb0f9b5836"
 
 /-!
 # Unit Trinomials

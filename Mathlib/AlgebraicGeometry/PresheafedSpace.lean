@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.presheafed_space
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+
+#align_import algebraic_geometry.presheafed_space from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # Presheafed spaces
@@ -178,11 +175,11 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
   id_comp _ := by
     dsimp
     ext
-    . dsimp
-      simp only [map_id, whiskerRight_id', assoc]
-      erw [comp_id, comp_id]
     · dsimp
       simp
+    · dsimp
+      simp only [map_id, whiskerRight_id', assoc]
+      erw [comp_id, comp_id]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.category_of_PresheafedSpaces AlgebraicGeometry.PresheafedSpace.categoryOfPresheafedSpaces
 
@@ -252,7 +249,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.comp_c_app AlgebraicGeometry.PresheafedSpace.comp_c_app
 
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
-    α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h ; rfl)) := by
+    α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
   subst h
   simp
 set_option linter.uppercaseLean3 false in
@@ -289,14 +286,16 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
       c := Presheaf.toPushforwardOfIso H α.hom }
   hom_inv_id := by
     ext
+    simp only [comp_base, Iso.hom_inv_id, FunctorToTypes.map_id_apply, id_base]
     rw [NatTrans.comp_app]
     simp only [id_base, comp_obj, op_obj, comp_base, Presheaf.pushforwardObj_obj,
       Opens.map_comp_obj, comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, assoc,
       Iso.hom_inv_id_app, comp_id, whiskerRight_app, eqToHom_app, id_c_app, map_id,
       ← Functor.map_comp, eqToHom_trans, eqToHom_refl]
-    simp only [comp_base, Iso.hom_inv_id, FunctorToTypes.map_id_apply, id_base]
   inv_hom_id := by
     ext
+    dsimp
+    rw [H.inv_hom_id]
     dsimp
     rw [NatTrans.comp_app]
     simp only [Presheaf.pushforwardObj_obj, op_obj, Opens.map_comp_obj, comp_obj,
@@ -305,8 +304,6 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     rw [← α.hom.naturality, Presheaf.pushforwardObj_map, eqToHom_map, eqToHom_map,
       eqToHom_map, eqToHom_trans_assoc, eqToHom_refl, id_comp]
     apply Iso.inv_hom_id_app
-    dsimp
-    rw [H.inv_hom_id]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.iso_of_components AlgebraicGeometry.PresheafedSpace.isoOfComponents
 
@@ -387,12 +384,11 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
   constructor
   intro Z g₁ g₂ eq
   ext1
-  swap
   · have := congr_arg PresheafedSpace.Hom.base eq
     simp only [PresheafedSpace.comp_base, PresheafedSpace.ofRestrict_base] at this
     rw [cancel_mono] at this
     exact this
-  . ext V
+  · ext V
     have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.isOpenMap.functor.obj V) = V := by
       ext1
       exact Set.preimage_image_eq _ hf.inj
@@ -459,18 +455,18 @@ def restrictTopIso (X : PresheafedSpace C) : X.restrict (Opens.openEmbedding ⊤
   inv := X.toRestrictTop
   hom_inv_id := by
     ext
+    · rfl
     · dsimp
       erw [comp_c, toRestrictTop_c, whiskerRight_id',
         comp_id, ofRestrict_top_c, eqToHom_map, eqToHom_trans, eqToHom_refl]
       rfl
-    · rfl
   inv_hom_id := by
     ext
+    · rfl
     · dsimp
       erw [comp_c, ofRestrict_top_c, toRestrictTop_c, eqToHom_map, whiskerRight_id', comp_id,
         eqToHom_trans, eqToHom_refl]
       rfl
-    · rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_top_iso AlgebraicGeometry.PresheafedSpace.restrictTopIso
 
@@ -523,12 +519,12 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
   -- porting note: these proofs were automatic in mathlib3
   map_id X := by
     ext U
-    simp
     rfl
+    simp
   map_comp f g := by
     ext U
-    simp
     rfl
+    simp
 #align category_theory.functor.map_presheaf CategoryTheory.Functor.mapPresheaf
 
 @[simp]

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.special_functions.compare_exp
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+
+#align_import analysis.special_functions.compare_exp from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`
@@ -64,7 +61,7 @@ theorem of_isBigO_im_re_rpow (hre : Tendsto re l atTop) (r : ℝ) (hr : im =O[l]
   ⟨hre, fun n =>
     IsLittleO.isBigO <|
       calc
-        (fun z : ℂ => z.im ^ n) =O[l] fun z => (z.re ^ r) ^ n := by norm_cast ; exact hr.pow n
+        (fun z : ℂ => z.im ^ n) =O[l] fun z => (z.re ^ r) ^ n := by norm_cast; exact hr.pow n
         _ =ᶠ[l] fun z => z.re ^ (r * n) :=
           ((hre.eventually_ge_atTop 0).mono fun z hz => by
             simp only [Real.rpow_mul hz r n, Real.rpow_nat_cast])
@@ -74,7 +71,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem of_isBigO_im_re_pow (hre : Tendsto re l atTop) (n : ℕ) (hr : im =O[l] fun z => z.re ^ n) :
     IsExpCmpFilter l :=
-  of_isBigO_im_re_rpow hre n <| by norm_cast at hr ; simpa only [Real.rpow_nat_cast]
+  of_isBigO_im_re_rpow hre n <| by norm_cast at hr; simpa only [Real.rpow_nat_cast]
 set_option linter.uppercaseLean3 false in
 #align complex.is_exp_cmp_filter.of_is_O_im_re_pow Complex.IsExpCmpFilter.of_isBigO_im_re_pow
 
@@ -116,9 +113,9 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
   flip IsLittleO.of_pow two_ne_zero <|
     calc
       ((fun z : ℂ => (z.im ^ n)) ^ 2) = (fun z : ℂ => (z.im ^ n) ^ 2) := funext <| by simp
-      _ = fun z => (Complex.im z) ^ (2 * n) := funext <| fun _ => by norm_cast ; rw [pow_mul']
-      _ =O[l] fun z => Real.exp z.re := by have := hl.isBigO_im_pow_re (2 * n) ; norm_cast at *
-      _ = fun z => Real.exp z.re ^ 1 := funext <| fun _ => by norm_cast ; rw [pow_one]
+      _ = fun z => (Complex.im z) ^ (2 * n) := funext <| fun _ => by norm_cast; rw [pow_mul']
+      _ =O[l] fun z => Real.exp z.re := by have := hl.isBigO_im_pow_re (2 * n); norm_cast at *
+      _ = fun z => Real.exp z.re ^ 1 := funext <| fun _ => by norm_cast; rw [pow_one]
       _ =o[l] fun z => Real.exp z.re ^ 2 := by
         have := (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
           Real.tendsto_exp_atTop.comp hl.tendsto_re

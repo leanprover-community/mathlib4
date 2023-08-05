@@ -2,14 +2,11 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Eric Rodriguez
-
-! This file was ported from Lean 3 source module number_theory.number_field.norm
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm
+
+#align_import number_theory.number_field.norm from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Norm in number fields
@@ -38,8 +35,6 @@ variable {L : Type _} (K : Type _) [Field K] [Field L] [Algebra K L] [FiniteDime
 noncomputable def norm [IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   ((Algebra.norm K).restrict (𝓞 L)).codRestrict (𝓞 K) fun x => isIntegral_norm K x.2
 #align ring_of_integers.norm RingOfIntegers.norm
-
-attribute [local instance] NumberField.ringOfIntegersAlgebra
 
 theorem coe_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=

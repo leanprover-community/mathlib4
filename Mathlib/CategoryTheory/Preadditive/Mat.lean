@@ -2,11 +2,6 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.Mat
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Pi
@@ -18,6 +13,8 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.Algebra.Opposites
+
+#align_import category_theory.preadditive.Mat from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # Matrices over a category.
@@ -221,40 +218,40 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
               split_ifs with h h'
               · substs h h'
                 simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
-              . subst h
+              · subst h
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
-              . rfl }
+              · rfl }
           (by
             dsimp
             ext1 ⟨i, j⟩
             rintro ⟨i', j'⟩
             rw [Finset.sum_apply, Finset.sum_apply]
             dsimp
-            rw [Finset.sum_eq_single i] ; rotate_left
-            . intro b _ hb
+            rw [Finset.sum_eq_single i]; rotate_left
+            · intro b _ hb
               apply Finset.sum_eq_zero
               intro x _
               rw [dif_neg hb.symm, zero_comp]
-            . intro hi
+            · intro hi
               simp at hi
-            rw [Finset.sum_eq_single j] ; rotate_left
-            . intro b _ hb
+            rw [Finset.sum_eq_single j]; rotate_left
+            · intro b _ hb
               rw [dif_pos rfl, dif_neg, zero_comp]
               simp only
               tauto
-            . intro hj
+            · intro hj
               simp at hj
             simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
               Sigma.mk.inj_iff, not_and, id_def]
             by_cases i' = i
-            . subst h
+            · subst h
               rw [dif_pos rfl]
               simp only [heq_eq_eq, true_and]
               by_cases j' = j
-              . subst h
+              · subst h
                 simp
-              . rw [dif_neg h, dif_neg (Ne.symm h)]
-            . rw [dif_neg h, dif_neg]
+              · rw [dif_neg h, dif_neg (Ne.symm h)]
+            · rw [dif_neg h, dif_neg]
               tauto ) }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.has_finite_biproducts CategoryTheory.Mat_.hasFiniteBiproducts
@@ -342,12 +339,12 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     simp only [biproduct.lift_desc]
     funext i j
     dsimp [id_def]
-    rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i] ; rotate_left
-    . intro b _ hb
+    rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
+    · intro b _ hb
       dsimp
       simp only [Finset.sum_const, Finset.card_singleton, one_smul]
       rw [dif_neg hb.symm, zero_comp]
-    . intro h
+    · intro h
       simp at h
     simp
   inv_hom_id := by
@@ -361,9 +358,9 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     simp only [embedding, comp_apply, comp_dite, dite_comp, comp_zero, zero_comp,
       Finset.sum_dite_eq', Finset.mem_univ, ite_true, eqToHom_refl, Category.comp_id]
     split_ifs with h
-    . subst h
+    · subst h
       simp
-    . rfl
+    · rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.iso_biproduct_embedding CategoryTheory.Mat_.isoBiproductEmbedding
 
@@ -386,7 +383,7 @@ set_option linter.uppercaseLean3 false in
 
 @[reassoc (attr := simp)]
 lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
-    (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i  =
+    (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i =
       F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
   dsimp [additiveObjIsoBiproduct]
   rw [biproduct.lift_π, Category.assoc]
@@ -432,6 +429,8 @@ theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality' CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality'
 
+attribute [local simp] biproduct.lift_desc
+
 /-- Any additive functor `C ⥤ D` to a category `D` with finite biproducts extends to
 a functor `Mat_ C ⥤ D`. -/
 @[simps]
@@ -442,8 +441,8 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
     dsimp
     ext i j
     by_cases h : j = i
-    . subst h; simp
-    . simp [h]
+    · subst h; simp
+    · simp [h]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift CategoryTheory.Mat_.lift
 
@@ -458,7 +457,6 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
     (fun X =>
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
-    (by aesop_cat)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.embedding_lift_iso CategoryTheory.Mat_.embeddingLiftIso
 

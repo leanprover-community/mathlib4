@@ -2,14 +2,11 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.uniform_filter_basis
-! leanprover-community/mathlib commit 531db2ef0fdddf8b3c8dcdcd87138fe969e1a81a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.UniformGroup
+
+#align_import topology.algebra.uniform_filter_basis from "leanprover-community/mathlib"@"531db2ef0fdddf8b3c8dcdcd87138fe969e1a81a"
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra

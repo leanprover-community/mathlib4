@@ -2,14 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.calculus
-! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.NormedSpace.HomeomorphBall
+
+#align_import analysis.inner_product_space.calculus from "leanprover-community/mathlib"@"f9dd3204df14a0749cd456fac1e6849dfe7d2b88"
 
 /-!
 # Calculus in inner product spaces
@@ -229,6 +227,14 @@ theorem hasStrictFDerivAt_norm_sq (x : F) :
   simp [two_smul, real_inner_comm]
 #align has_strict_fderiv_at_norm_sq hasStrictFDerivAt_norm_sqₓ
 
+theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt f f' x) :
+    HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=
+  (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp x hf
+
+theorem HasFDerivWithinAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivWithinAt f f' s x) :
+    HasFDerivWithinAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') s x :=
+  (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp_hasFDerivWithinAt x hf
+
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=
   ((contDiffAt_id.norm_sq 𝕜).differentiableAt le_rfl).comp x hf
@@ -364,29 +370,56 @@ open Metric hiding mem_nhds_iff
 
 variable {n : ℕ∞} {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-theorem contDiff_homeomorphUnitBall : ContDiff ℝ n fun x : E => (homeomorphUnitBall x : E) := by
-  suffices ContDiff ℝ n fun x : E => ((1 : ℝ) + ‖x‖ ^ 2).sqrt⁻¹ by exact this.smul contDiff_id
+theorem LocalHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
+  suffices ContDiff ℝ n fun x : E => ((1 : ℝ) + ‖x‖ ^ 2).sqrt⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
   refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
-#align cont_diff_homeomorph_unit_ball contDiff_homeomorphUnitBall
 
-theorem contDiffOn_homeomorphUnitBall_symm {f : E → E}
-    (h : ∀ (y) (hy : y ∈ ball (0 : E) 1), f y = homeomorphUnitBall.symm ⟨y, hy⟩) :
-    ContDiffOn ℝ n f <| ball 0 1 := fun y hy ↦ by
+theorem LocalHomeomorph.contDiffOn_univUnitBall_symm :
+    ContDiffOn ℝ n univUnitBall.symm (ball (0 : E) 1) := fun y hy ↦ by
   apply ContDiffAt.contDiffWithinAt
-  have hf : f =ᶠ[𝓝 y] fun y => ((1 : ℝ) - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E) := by
-    filter_upwards [isOpen_ball.mem_nhds hy] with z hz
-    rw [h z hz]
-    rfl
-  refine' ContDiffAt.congr_of_eventuallyEq _ hf
-  suffices ContDiffAt ℝ n (fun y => ((1 : ℝ) - ‖(y : E)‖ ^ 2).sqrt⁻¹) y from this.smul contDiffAt_id
+  suffices ContDiffAt ℝ n (fun y : E => ((1 : ℝ) - ‖y‖ ^ 2).sqrt⁻¹) y from this.smul contDiffAt_id
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
   refine' ContDiffAt.inv _ (Real.sqrt_ne_zero'.mpr h)
   refine' (contDiffAt_sqrt h.ne').comp y _
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
-#align cont_diff_on_homeomorph_unit_ball_symm contDiffOn_homeomorphUnitBall_symm
+
+theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x : E) :=
+  LocalHomeomorph.contDiff_univUnitBall
+#align cont_diff_homeomorph_unit_ball Homeomorph.contDiff_unitBall
+
+@[deprecated LocalHomeomorph.contDiffOn_univUnitBall_symm]
+theorem Homeomorph.contDiffOn_unitBall_symm {f : E → E}
+    (h : ∀ (y) (hy : y ∈ ball (0 : E) 1), f y = Homeomorph.unitBall.symm ⟨y, hy⟩) :
+    ContDiffOn ℝ n f <| ball 0 1 :=
+  LocalHomeomorph.contDiffOn_univUnitBall_symm.congr h
+#align cont_diff_on_homeomorph_unit_ball_symm Homeomorph.contDiffOn_unitBall_symm
+
+namespace LocalHomeomorph
+
+variable {c : E} {r : ℝ}
+
+theorem contDiff_unitBallBall (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr) :=
+  (contDiff_id.const_smul _).add contDiff_const
+
+theorem contDiff_unitBallBall_symm (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr).symm :=
+  (contDiff_id.sub contDiff_const).const_smul _
+
+theorem contDiff_univBall : ContDiff ℝ n (univBall c r) := by
+  unfold univBall; split_ifs with h
+  · exact (contDiff_unitBallBall h).comp contDiff_univUnitBall
+  · exact contDiff_id.add contDiff_const
+
+theorem contDiffOn_univBall_symm :
+    ContDiffOn ℝ n (univBall c r).symm (ball c r) := by
+  unfold univBall; split_ifs with h
+  · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
+    rw [← unitBallBall_source c r h, ← unitBallBall_target c r h]
+    apply LocalHomeomorph.symm_mapsTo
+  · exact contDiffOn_id.sub contDiffOn_const
+
+end LocalHomeomorph
 
 end DiffeomorphUnitBall
-
