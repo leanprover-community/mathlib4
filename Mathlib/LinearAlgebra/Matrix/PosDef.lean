@@ -109,12 +109,8 @@ lemma PosDef.eigenvalues_pos [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
   rw [hA.1.eigenvalues_eq]
   apply hA.2
-  by_contra h
-  simp_rw [IsHermitian.eigenvectorMatrix, OrthonormalBasis.coe_toBasis,
-    Basis.toMatrix_transpose_apply,  Finsupp.coe_eq_zero, AddEquivClass.map_eq_zero_iff] at h
-  have z := hA.1.eigenvectorBasis.orthonormal.1 i
-  rw [h, norm_zero] at z
-  exact_mod_cast z
+  rw [hA.1.transpose_eigenvectorMatrix_apply]
+  exact hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
