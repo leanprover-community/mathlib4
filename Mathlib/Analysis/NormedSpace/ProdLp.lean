@@ -448,7 +448,7 @@ instance instMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (ProdLp
 
 variable {p α β}
 
-theorem nndist_eq_sum [PseudoMetricSpace α] [PseudoMetricSpace β]
+theorem nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
     (hp : p ≠ ∞) (x y : ProdLp p α β) :
     nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
   -- Porting note: was `Subtype.ext`
@@ -456,7 +456,7 @@ theorem nndist_eq_sum [PseudoMetricSpace α] [PseudoMetricSpace β]
     push_cast
     exact dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
-theorem nndist_eq_iSup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : ProdLp ∞ α β) :
+theorem nndist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : ProdLp ∞ α β) :
     nndist x y = nndist x.fst y.fst ⊔ nndist x.snd y.snd :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
