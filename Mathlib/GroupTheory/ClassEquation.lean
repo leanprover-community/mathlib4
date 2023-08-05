@@ -1,0 +1,76 @@
+/-
+Copyright (c) 2021 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Eric Rodriguez
+-/
+
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Finite.Card
+import Mathlib.Algebra.Group.ConjFinite
+
+/-!
+# Class Equation
+
+This file establishes the class equation for finite groups.
+
+## Main statements
+
+* `Group.card_center_add_sum_card_noncenter_eq_card`: The **class equation** for finite groups.
+  The cardinality of a group is equal to the size of its center plus the sum of the size of all its
+  nontrivial conjugacy classes.
+
+-/
+
+open ConjAct MulAction ConjClasses
+
+open scoped BigOperators
+
+/-- The conjugacy classes form a partition of G, in terms of cardinality. A triviality but helps
+to prove the class equation. -/
+theorem sum_conjClasses_card_eq_card [Group G] [Fintype (ConjClasses G)]
+    [∀ x : ConjClasses G, Fintype x.carrier] [Fintype G] :
+    ∑ x : ConjClasses G, x.carrier.toFinset.card = Fintype.card G := by
+  let e : Quotient (orbitRel (ConjAct G) G) ≃ ConjClasses G :=
+    Quotient.congrRight fun g h ↦ mem_orbit_conjAct
+  classical
+  rw [← e.sum_comp, card_eq_sum_card_group_div_card_stabilizer (ConjAct G) G]
+  refine Finset.sum_congr rfl ?_
+  rintro ⟨g⟩ -
+  rw [← card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) (Quotient.out' (Quot.mk _ g)),
+      Nat.mul_div_cancel _ <| Fintype.card_pos_iff.mpr inferInstance]
+  convert (Fintype.card_ofFinset _ (fun h ↦ ?_)).symm
+  simp only [mem_orbit_conjAct, ← ConjClasses.mk_eq_mk_iff_isConj, Set.mem_toFinset,
+    ConjClasses.mem_carrier_iff_mk_eq]
+  refine eq_iff_eq_cancel_left.2 (ConjClasses.mk_eq_mk_iff_isConj.2 ?_)
+  rw [← mem_orbit_conjAct, ← orbitRel_apply]
+  apply Quotient.exact'
+  rw [Quotient.out_eq']
+  rfl
+
+/-- The **class equation** for finite groups. The cardinality of a group is equal to the size
+of its center plus the sum of the size of all its nontrivial conjugacy classes. -/
+theorem Group.card_center_add_sum_card_noncenter_eq_card [Group G] [Finite G] :
+    Nat.card (Subgroup.center G) + ∑ᶠ x ∈ noncenter G, Nat.card x.carrier = Nat.card G := by
+  classical
+  cases nonempty_fintype G
+  rw [@Nat.card_eq_fintype_card G, ← sum_conjClasses_card_eq_card, ←
+    Finset.sum_sdiff (ConjClasses.noncenter G).toFinset.subset_univ]
+  simp only [Nat.card_eq_fintype_card, Set.toFinset_card]
+  congr 1
+  swap
+  · convert finsum_cond_eq_sum_of_cond_iff _ _
+    simp [Set.mem_toFinset]
+  calc
+    Fintype.card (Subgroup.center G) = Fintype.card ((noncenter G)ᶜ : Set _) :=
+      Fintype.card_congr ((mk_bijOn G).equiv _)
+    _ = Finset.card (Finset.univ \ (noncenter G).toFinset) :=
+      by rw [←Set.toFinset_card, Set.toFinset_compl, Finset.compl_eq_univ_sdiff]
+    _ = _ := ?_
+  rw [Finset.card_eq_sum_ones]
+  refine Finset.sum_congr rfl ?_
+  rintro ⟨g⟩ hg
+  simp only [noncenter, Set.not_subsingleton_iff, Set.toFinset_setOf, Finset.mem_univ, true_and,
+             forall_true_left, Finset.mem_sdiff, Finset.mem_filter, Set.not_nontrivial_iff] at hg
+  rw [eq_comm, ← Set.toFinset_card, Finset.card_eq_one]
+  exact ⟨g, Finset.coe_injective <| by simpa using hg.eq_singleton_of_mem mem_carrier_mk⟩
