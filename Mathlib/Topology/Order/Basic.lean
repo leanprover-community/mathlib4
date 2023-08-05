@@ -731,22 +731,22 @@ theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (
 
 theorem Filter.Tendsto.min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => min a (f i)) l (𝓝 a) :=
-  Filter.Tendsto.max_right (α := αᵒᵈ) (β := β) h
+  Filter.Tendsto.max_right (α := αᵒᵈ) h
 #align filter.tendsto.min_right Filter.Tendsto.min_right
 
 theorem Filter.Tendsto.min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => min (f i) a) l (𝓝 a) :=
-  Filter.Tendsto.max_left (α := αᵒᵈ) (β := β) h
+  Filter.Tendsto.max_left (α := αᵒᵈ) h
 #align filter.tendsto.min_left Filter.Tendsto.min_left
 
 theorem Filter.tendsto_nhds_min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
     Tendsto (fun i => min a (f i)) l (𝓝[<] a) :=
-  Filter.tendsto_nhds_max_right (α := αᵒᵈ) (β := β) h
+  Filter.tendsto_nhds_max_right (α := αᵒᵈ) h
 #align filter.tendsto_nhds_min_right Filter.tendsto_nhds_min_right
 
 theorem Filter.tendsto_nhds_min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
     Tendsto (fun i => min (f i) a) l (𝓝[<] a) :=
-  Filter.tendsto_nhds_max_left (α := αᵒᵈ) (β := β) h
+  Filter.tendsto_nhds_max_left (α := αᵒᵈ) h
 #align filter.tendsto_nhds_min_left Filter.tendsto_nhds_min_left
 
 protected theorem Dense.exists_lt [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
