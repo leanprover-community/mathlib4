@@ -21,8 +21,8 @@ matrices of the same underlying type kernel preserving for linear maps.
 
 open BigOperators Matrix
 
-class StarDotProductSpace (n K) [Fintype n][Ring K][StarRing K] : Prop where
-  dotProduct_star_self_eq_zero (v : n → K) : Matrix.dotProduct (star v) v = 0 ↔ v = 0
+class DotProductInnerProductSpace (n K) [Fintype n][Ring K][StarRing K] : Prop where
+  eq_zero_of_dotProduct_star_self_eq_zero (v : n → K) : Matrix.dotProduct (star v) v = 0 → v = 0
 
 variable {n : Type _}[Fintype n]
 
@@ -32,7 +32,7 @@ lemma dotProduct_self_star_eq_zero  (v : n → K) [Ring K] [StarRing K]
     StarDotProductSpace.dotProduct_star_self_eq_zero (star v)
 
 
-instance instStarDotProduct_IsROrC [IsROrC K] : StarDotProductSpace n K where
+instance IsROrC.toStarDotProduct [IsROrC K] : StarDotProductSpace n K where
   dotProduct_star_self_eq_zero := by
     intro v
     rw [dotProduct, IsROrC.ext_iff, IsROrC.ext_iff, Function.funext_iff]
