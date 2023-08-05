@@ -83,7 +83,7 @@ section OrderClosedTopology
 variable [SemilatticeInf α] [TopologicalSpace α] [OrderTopology α]
 
 theorem isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·) :=
-  @isBounded_le_nhds αᵒᵈ _ _ _ a
+  isBounded_le_nhds (α := αᵒᵈ) a
 #align is_bounded_ge_nhds isBounded_ge_nhds
 
 theorem Filter.Tendsto.isBoundedUnder_ge {f : Filter β} {u : β → α} {a : α}
@@ -167,7 +167,7 @@ set_option linter.uppercaseLean3 false in
 #align Limsup_nhds limsSup_nhds
 
 theorem limsInf_nhds : ∀ a : α, limsInf (𝓝 a) = a :=
-  @limsSup_nhds αᵒᵈ _ _ _
+  limsSup_nhds (α := αᵒᵈ)
 set_option linter.uppercaseLean3 false in
 #align Liminf_nhds limsInf_nhds
 
@@ -188,7 +188,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If a filter is converging, its liminf coincides with its limit. -/
 theorem limsSup_eq_of_le_nhds : ∀ {f : Filter α} {a : α} [NeBot f], f ≤ 𝓝 a → f.limsSup = a :=
-  @limsInf_eq_of_le_nhds αᵒᵈ _ _ _
+  limsInf_eq_of_le_nhds (α := αᵒᵈ)
 set_option linter.uppercaseLean3 false in
 #align Limsup_eq_of_le_nhds limsSup_eq_of_le_nhds
 
@@ -271,7 +271,7 @@ theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBounde
 
 theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, f.liminf u ≤ u b :=
-  @eventually_le_limsup αᵒᵈ _ _ _ _ _ _ _ _ hf
+  eventually_le_limsup (α := αᵒᵈ) hf
 #align eventually_liminf_le eventually_liminf_le
 
 end ConditionallyCompleteLinearOrder
@@ -293,7 +293,7 @@ theorem limsup_eq_bot : f.limsup u = ⊥ ↔ u =ᶠ[f] ⊥ :=
 
 @[simp]
 theorem liminf_eq_top : f.liminf u = ⊤ ↔ u =ᶠ[f] ⊤ :=
-  @limsup_eq_bot αᵒᵈ _ _ _ _ _ _ _ _
+  limsup_eq_bot (α := αᵒᵈ)
 #align liminf_eq_top liminf_eq_top
 
 end CompleteLinearOrder
@@ -376,8 +376,7 @@ theorem Antitone.map_limsInf_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf)
     (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
     (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.limsup f :=
-  @Antitone.map_limsSup_of_continuousAt Rᵒᵈ Sᵒᵈ _ _ _ _ _ _ F _ f
-    f_decr.dual f_cont bdd_below bdd_above
+  Antitone.map_limsSup_of_continuousAt (R := Rᵒᵈ) (S := Sᵒᵈ) f_decr.dual f_cont bdd_below bdd_above
 set_option linter.uppercaseLean3 false in
 #align antitone.map_Liminf_of_continuous_at Antitone.map_limsInf_of_continuousAt
 
@@ -399,8 +398,7 @@ theorem Monotone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup)
     (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
     (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsSup = F.limsup f :=
-  @Antitone.map_limsSup_of_continuousAt R Sᵒᵈ _ _ _ _ _ _ F _ f
-    f_incr f_cont bdd_above bdd_below
+  Antitone.map_limsSup_of_continuousAt (S := Sᵒᵈ) f_incr f_cont bdd_above bdd_below
 set_option linter.uppercaseLean3 false in
 #align monotone.map_Limsup_of_continuous_at Monotone.map_limsSup_of_continuousAt
 
@@ -422,8 +420,7 @@ theorem Monotone.map_limsInf_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf)
     (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
     (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.liminf f :=
-  @Antitone.map_limsSup_of_continuousAt Rᵒᵈ S _ _ _ _ _ _ F _ f
-    f_incr.dual f_cont bdd_below bdd_above
+  Antitone.map_limsSup_of_continuousAt (R := Rᵒᵈ) f_incr.dual f_cont bdd_below bdd_above
 set_option linter.uppercaseLean3 false in
 #align monotone.map_Liminf_of_continuous_at Monotone.map_limsInf_of_continuousAt
 
@@ -456,7 +453,7 @@ theorem iInf_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (x_le : ∀ i, x
 
 theorem iSup_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (le_x : ∀ i, as i ≤ x) {F : Filter ι}
     [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨆ i, as i = x :=
-  @iInf_eq_of_forall_le_of_tendsto ι (OrderDual R) _ _ _ x as le_x F _ as_lim
+  iInf_eq_of_forall_le_of_tendsto (R := Rᵒᵈ) le_x as_lim
 #align supr_eq_of_forall_le_of_tendsto iSup_eq_of_forall_le_of_tendsto
 
 theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type _} (x : R) {as : ι → R} (x_lt : ∀ i, x < as i)
@@ -476,7 +473,7 @@ theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type _} (x : R) {as : ι → R}
 theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type _} (x : R) {as : ι → R} (lt_x : ∀ i, as i < x)
     {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
     ⋃ i : ι, Iic (as i) = Iio x :=
-  @iUnion_Ici_eq_Ioi_of_lt_of_tendsto (OrderDual R) _ _ _ ι x as lt_x F _ as_lim
+  iUnion_Ici_eq_Ioi_of_lt_of_tendsto (R := Rᵒᵈ) x lt_x as_lim
 #align Union_Iic_eq_Iio_of_lt_of_tendsto iUnion_Iic_eq_Iio_of_lt_of_tendsto
 
 end InfiAndSupr
