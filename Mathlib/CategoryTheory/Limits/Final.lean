@@ -383,21 +383,11 @@ end Final
 
 end ArbitraryUniverse
 
-section SmallCategory
+section LocallySmall
 
-variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
+variable {C : Type v} [Category.{v} C] {D : Type u₁} [Category.{v} D] (F : C ⥤ D)
 
 namespace Final
-
-/-- If the universal morphism `colimit (F ⋙ coyoneda.obj (op d)) ⟶ colimit (coyoneda.obj (op d))`
-is an isomorphism (as it always is when `F` is cofinal),
-then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
-(simply because `colimit (coyoneda.obj (op d)) ≅ PUnit`).
--/
-def colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d)) F)] :
-    colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
-  asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
-#align category_theory.functor.final.colimit_comp_coyoneda_iso CategoryTheory.Functor.Final.colimitCompCoyonedaIso
 
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
     (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
@@ -441,6 +431,22 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
     clear e y₁ y₂
     exact Final.zigzag_of_eqvGen_quot_rel t⟩
 #align category_theory.functor.final.cofinal_of_colimit_comp_coyoneda_iso_punit CategoryTheory.Functor.cofinal_of_colimit_comp_coyoneda_iso_pUnit
+
+end LocallySmall
+
+section SmallCategory
+
+variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
+
+/-- If the universal morphism `colimit (F ⋙ coyoneda.obj (op d)) ⟶ colimit (coyoneda.obj (op d))`
+is an isomorphism (as it always is when `F` is cofinal),
+then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
+(simply because `colimit (coyoneda.obj (op d)) ≅ PUnit`).
+-/
+def Final.colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d)) F)] :
+    colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
+  asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
+#align category_theory.functor.final.colimit_comp_coyoneda_iso CategoryTheory.Functor.Final.colimitCompCoyonedaIso
 
 theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
   ⟨fun _ => inferInstance,
