@@ -3,10 +3,10 @@ Copyright (c) 2022 Antoine Labelle, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle, Rémi Bottinelli
 -/
-import Mathbin.Combinatorics.Quiver.Cast
-import Mathbin.Combinatorics.Quiver.Symmetric
-import Mathbin.Data.Sigma.Basic
-import Mathbin.Logic.Equiv.Basic
+import Mathlib.Combinatorics.Quiver.Cast
+import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.Data.Sigma.Basic
+import Mathlib.Logic.Equiv.Basic
 
 #align_import combinatorics.quiver.covering from "leanprover-community/mathlib"@"188a411e916e1119e502dbe35b8b475716362401"
 
@@ -133,8 +133,7 @@ theorem Prefunctor.IsCovering.of_comp_right (hψ : ψ.IsCovering) (hφψ : (φ �
 #align prefunctor.is_covering.of_comp_right Prefunctor.IsCovering.of_comp_right
 
 theorem Prefunctor.IsCovering.of_comp_left (hφ : φ.IsCovering) (hφψ : (φ ⋙q ψ).IsCovering)
-    (φsur : Surjective φ.obj) : ψ.IsCovering :=
-  by
+    (φsur : Surjective φ.obj) : ψ.IsCovering := by
   refine' ⟨fun v => _, fun v => _⟩ <;> obtain ⟨u, rfl⟩ := φsur v
   exacts [(bijective.of_comp_iff _ (hφ.star_bijective u)).mp (hφψ.star_bijective u),
     (bijective.of_comp_iff _ (hφ.costar_bijective u)).mp (hφψ.costar_bijective u)]
@@ -165,8 +164,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
 protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.Symmetrify.Costar u =
       (Quiver.symmetrifyCostar _).symm ∘
-        Sum.map (φ.Costar u) (φ.unit u) ∘ Quiver.symmetrifyCostar u :=
-  by
+        Sum.map (φ.Costar u) (φ.unit u) ∘ Quiver.symmetrifyCostar u := by
   rw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;> simp [Quiver.symmetrifyCostar]
 #align prefunctor.symmetrify_costar Prefunctor.symmetrifyCostar
@@ -202,8 +200,7 @@ theorem Prefunctor.pathStar_apply {u v : U} (p : Path u v) :
 #align prefunctor.path_star_apply Prefunctor.pathStar_apply
 
 theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.unit u)) (u : U) :
-    Injective (φ.PathStar u) :=
-  by
+    Injective (φ.PathStar u) := by
   dsimp [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v₁, p₁⟩
   induction' p₁ with x₁ y₁ p₁ e₁ ih <;> rintro ⟨y₂, p₂⟩ <;> cases' p₂ with x₂ _ p₂ e₂ <;>
@@ -232,8 +229,7 @@ theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.unit u)) (u : 
 #align prefunctor.path_star_injective Prefunctor.pathStar_injective
 
 theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.unit u)) (u : U) :
-    Surjective (φ.PathStar u) :=
-  by
+    Surjective (φ.PathStar u) := by
   dsimp [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v, p⟩
   induction' p with v' v'' p' ev ih
@@ -271,8 +267,7 @@ variable [HasInvolutiveReverse U] [HasInvolutiveReverse V] [Prefunctor.MapRevers
 /-- In a quiver with involutive inverses, the star and costar at every vertex are equivalent.
 This map is induced by `quiver.reverse`. -/
 @[simps]
-def Quiver.starEquivCostar (u : U) : Quiver.Star u ≃ Quiver.Costar u
-    where
+def Quiver.starEquivCostar (u : U) : Quiver.Star u ≃ Quiver.Costar u where
   toFun e := ⟨e.1, reverse e.2⟩
   invFun e := ⟨e.1, reverse e.2⟩
   left_inv e := by simp [Sigma.ext_iff]
