@@ -125,6 +125,16 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
     ⊤ ≤ span R (range u) := by
   intro m _
   have hgm : g m ∈ span R (range (g ∘ u ∘ Sum.inr)) := hw mem_top
+  rw [Finsupp.mem_span_range_iff_exists_finsupp] at hgm
+  obtain ⟨cm, hm⟩ := hgm
+  let m' : M := Finsupp.sum cm fun j a ↦ a • (u (Sum.inr j))
+  have hsub : m - m' ∈ LinearMap.range f
+  · rw [(exact_iff _ _).mp he]
+    simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
+    rw [← hm, map_finsupp_sum]
+    simp only [Function.comp_apply, map_smul]
+  obtain ⟨n, hnm⟩ := hsub
+  have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsupp_sum] at hnm
