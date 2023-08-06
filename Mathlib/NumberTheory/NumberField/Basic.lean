@@ -253,23 +253,6 @@ noncomputable def ringOfIntegersEquiv : ringOfIntegers ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
 #align rat.ring_of_integers_equiv Rat.ringOfIntegersEquiv
 
-example : discr ℚ = 1 := by
-  let b₀ := Basis.singleton (Fin 1) ℤ
-  let b : Basis (Fin 1) ℤ (𝓞 ℚ) := by
-    refine Basis.map b₀ ?_
-    exact ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
-  have := discr_eq_discr ℚ b
-  rw [← this]
-  convert Algebra.discr_def ℤ b
-  rw [Matrix.det_unique, Algebra.traceMatrix_apply, Basis.map_apply, Basis.singleton_apply]
-  dsimp only
-  have : LinearEquiv.symm
-    (AddEquiv.toIntLinearEquiv (RingEquiv.toAddEquiv ringOfIntegersEquiv)) 1 = 1 := sorry
-  rw [this]
-  rw [Algebra.traceForm_apply, mul_one]
-  rw [Algebra.trace_eq_matrix_trace b]
-  norm_num
-
 theorem discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
