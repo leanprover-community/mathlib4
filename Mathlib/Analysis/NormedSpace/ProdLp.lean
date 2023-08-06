@@ -92,6 +92,7 @@ section Edist
 
 variable [EDist α] [EDist β]
 
+open Classical in
 /-- Endowing the space `ProdLp p α β` with the `L^p` edistance. We register this instance
 separate from `ProdLp.instPseudoEMetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -101,7 +102,8 @@ satisfying a relaxed triangle inequality. The terminology for this varies throug
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance instEDist : EDist (ProdLp p α β) where
   edist f g :=
-    if _hp : p = 0 then 0
+    if _hp : p = 0 then
+      (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
     else
       if p = ∞ then edist f.fst g.fst ⊔ edist f.snd g.snd
       else (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
@@ -110,8 +112,10 @@ variable {α β}
 
 variable (x y : ProdLp p α β) (x' : α × β)
 
+open Classical in
 @[simp]
-protected theorem edist_eq_zero (f g : ProdLp 0 α β) : edist f g = 0 :=
+protected theorem edist_eq_card (f g : ProdLp 0 α β) :
+    edist f g = (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
   if_pos rfl
 
 theorem edist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : ProdLp p α β) :
@@ -139,11 +143,12 @@ protected theorem edist_self (f : ProdLp p α β) : edist f f = 0 := by
   · simp [edist_eq_sup]
   · simp [edist_eq_add h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
+open Classical in
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `ProdLp.instPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : ProdLp p α β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [ProdLp.edist_eq_zero, eq_comm, Ne.def]
+  · simp [ProdLp.edist_eq_card, eq_comm]
   · simp only [edist_eq_sup, edist_comm]
   · simp only [edist_eq_add h, edist_comm]
 
@@ -153,6 +158,7 @@ section Dist
 
 variable [Dist α] [Dist β]
 
+open Classical in
 /-- Endowing the space `ProdLp p α β` with the `L^p` distance. We register this instance
 separate from `ProdLp.instPseudoMetricSpace` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -162,14 +168,17 @@ satisfying a relaxed triangle inequality. The terminology for this varies throug
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance instDist : Dist (ProdLp p α β) where
   dist f g :=
-    if _hp : p = 0 then 0 --{ i | f i ≠ g i }.toFinite.toFinset.card
+    if _hp : p = 0 then
+      (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
     else
       if p = ∞ then dist f.fst g.fst ⊔ dist f.snd g.snd
       else (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
 variable {α β}
 
-theorem dist_eq_card (f g : ProdLp 0 α β) : dist f g = 0 :=
+open Classical in
+theorem dist_eq_card (f g : ProdLp 0 α β) : dist f g =
+    (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
   if_pos rfl
 
 theorem dist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : ProdLp p α β) :
@@ -188,6 +197,7 @@ section Norm
 
 variable [Norm α] [Zero α] [Norm β] [Zero β]
 
+open Classical in
 /-- Endowing the space `ProdLp p α β` with the `L^p` norm. We register this instance
 separate from `ProdLp.instSeminormedAddCommGroup` since the latter requires the type class
 hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -196,14 +206,17 @@ Registering this separately allows for a future norm-like structure on `ProdLp p
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
 instance instNorm : Norm (ProdLp p α β) where
   norm f :=
-    if _hp : p = 0 then 0
+    if _hp : p = 0 then
+      (if f.fst = 0 then 0 else 1) + (if f.snd = 0 then 0 else 1)
     else if p = ∞ then ‖f.fst‖ ⊔ ‖f.snd‖
     else (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
 
+open Classical in
 @[simp]
-protected theorem norm_eq_zero (f : ProdLp 0 α β) : ‖f‖ = 0 :=
+protected theorem norm_eq_card (f : ProdLp 0 α β) :
+    ‖f‖ = (if f.fst = 0 then 0 else 1) + (if f.snd = 0 then 0 else 1) :=
   if_pos rfl
 
 theorem norm_eq_sup (f : ProdLp ∞ α β) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := by
