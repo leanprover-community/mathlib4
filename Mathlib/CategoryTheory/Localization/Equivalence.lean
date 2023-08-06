@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.CatCommSq
 
 /-!
-
 # Localization functors are preserved through equivalences
 
 In `Localization/Predicate.lean`, the lemma `Localization.of_equivalence_target` already
