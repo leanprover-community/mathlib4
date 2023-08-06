@@ -157,6 +157,12 @@ instance (priority := 100) initial_of_isLeftAdjoint (F : C ⥤ D) [h : IsLeftAdj
   initial_of_adjunction h.adj
 #align category_theory.functor.initial_of_is_left_adjoint CategoryTheory.Functor.initial_of_isLeftAdjoint
 
+theorem final_of_natIso {F F' : C ⥤ D} [Final F] (i : F ≅ F') : Final F' where
+  out _ := isConnected_of_equivalent (StructuredArrow.mapNatIso i)
+
+theorem initial_of_natIso {F F' : C ⥤ D} [Initial F] (i : F ≅ F') : Initial F' where
+  out _ := isConnected_of_equivalent (CostructuredArrow.mapNatIso i)
+
 namespace Final
 
 variable (F : C ⥤ D) [Final F]
