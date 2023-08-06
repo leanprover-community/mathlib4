@@ -364,7 +364,9 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    simp only [bicategoricalComp];
+    simp only [bicategoricalComp,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom'];
     simp only [monoidalComp];
     try whisker_simps
     ))

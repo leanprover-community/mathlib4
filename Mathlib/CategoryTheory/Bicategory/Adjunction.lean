@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Yuma Mizuno. All rights reserved.
+Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
@@ -45,7 +45,6 @@ a －－－－－－ ▸ a
         b －－－－－－ ▸ b
 ```
 -/
-@[simp]
 def leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   η ▷ f ⊗≫ f ◁ ε
 
@@ -58,7 +57,6 @@ def leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
 b －－－－－－ ▸ b
 ```
 -/
-@[simp]
 def rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   g ◁ η ⊗≫ ε ▷ g
 
@@ -75,17 +73,18 @@ namespace Adjunction
 
 attribute [simp] left_triangle right_triangle
 
+attribute [local simp] leftZigzag rightZigzag
+
 /-- Adjunction between identities. -/
 def id (a : B) : 𝟙 a ⊣ 𝟙 a where
   unit := (ρ_ _).inv
   counit := (ρ_ _).hom
-  left_triangle := by dsimp [bicategoricalComp]; pure_coherence
-  right_triangle := by dsimp [bicategoricalComp]; pure_coherence
+  left_triangle := by dsimp; coherence
+  right_triangle := by dsimp; coherence
 
 instance : Inhabited (Adjunction (𝟙 a) (𝟙 a)) :=
   ⟨id a⟩
 
-set_option maxHeartbeats 500000 in
 theorem right_adjoint_uniq_aux {f : a ⟶ b} {g₁ g₂ : b ⟶ a} (adj₁ : f ⊣ g₁) (adj₂ : f ⊣ g₂) :
     (𝟙 g₁ ⊗≫ g₁ ◁ adj₂.unit ⊗≫ adj₁.counit ▷ g₂ ⊗≫ 𝟙 g₂) ≫
         𝟙 g₂ ⊗≫ g₂ ◁ adj₁.unit ⊗≫ adj₂.counit ▷ g₁ ⊗≫ 𝟙 g₁ =
@@ -105,13 +104,13 @@ theorem right_adjoint_uniq_aux {f : a ⟶ b} {g₁ g₂ : b ⟶ a} (adj₁ : f �
             g₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ adj₁.counit ▷ g₁ ⊗≫ 𝟙 g₁ := ?_
     _ = 𝟙 g₁ ⊗≫ (rightZigzag adj₁.unit adj₁.counit) ⊗≫ 𝟙 g₁ := ?_
     _ = _ := ?_
-  · dsimp [bicategoricalComp]; coherence
-  · rw [← whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · simp_rw [← whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · rw [left_triangle]; dsimp [bicategoricalComp]; coherence
-  · rw [right_triangle]; dsimp [bicategoricalComp]; coherence
+  · simp [bicategoricalComp]; coherence
+  · rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+  · simp_rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+  · rw [left_triangle]; simp [bicategoricalComp]; coherence
+  · rw [right_triangle]; coherence
 
-set_option maxHeartbeats 500000 in
+-- set_option maxHeartbeats 400000 in
 theorem left_adjoint_uniq_aux {f₁ f₂ : a ⟶ b} {g : b ⟶ a} (adj₁ : f₁ ⊣ g) (adj₂ : f₂ ⊣ g) :
     (𝟙 f₁ ⊗≫ adj₂.unit ▷ f₁ ⊗≫ f₂ ◁ adj₁.counit ⊗≫ 𝟙 f₂) ≫
         𝟙 f₂ ⊗≫ adj₁.unit ▷ f₂ ⊗≫ f₁ ◁ adj₂.counit ⊗≫ 𝟙 f₁ =
@@ -134,11 +133,11 @@ theorem left_adjoint_uniq_aux {f₁ f₂ : a ⟶ b} {g : b ⟶ a} (adj₁ : f₁
       ?_
     _ = 𝟙 f₁ ⊗≫ (leftZigzag adj₁.unit adj₁.counit) ⊗≫ 𝟙 f₁ := ?_
     _ = _ := ?_
-  · dsimp [bicategoricalComp]; coherence
-  · rw [whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · simp_rw [whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · rw [right_triangle]; dsimp [bicategoricalComp]; coherence
-  · rw [left_triangle]; dsimp [bicategoricalComp]; coherence
+  · simp [bicategoricalComp]; coherence
+  · rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+  · simp_rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+  · rw [right_triangle]; simp [bicategoricalComp]; coherence
+  · rw [left_triangle]; simp [bicategoricalComp]
 
 /-- If `g₁` and `g₂` are both right adjoint to `f`, then they are isomorphic. -/
 def rightAdjointUniq {f : a ⟶ b} {g₁ g₂ : b ⟶ a} (adj₁ : f ⊣ g₁) (adj₂ : f ⊣ g₂) : g₁ ≅ g₂ where
@@ -168,8 +167,6 @@ def compUnit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : 𝟙 a ⟶ (f�
 def compCounit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : (g₂ ≫ g₁) ≫ f₁ ≫ f₂ ⟶ 𝟙 c :=
   𝟙 _ ⊗≫ g₂ ◁ adj₁.counit ▷ f₂ ⊗≫ adj₂.counit ⊗≫ 𝟙 _
 
-open Mathlib.Tactic.BicategoryCoherence in
-set_option maxHeartbeats 800000 in
 theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) :
     leftZigzag (compUnit adj₁ adj₂) (compCounit adj₁ adj₂) = (λ_ _).hom ≫ (ρ_ _).inv := by
   calc
@@ -183,14 +180,12 @@ theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂)
           (leftZigzag adj₁.unit adj₁.counit) ▷ f₂ ⊗≫
             f₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ⊗≫ 𝟙 _ := ?_
     _ = _ := ?_
-  · dsimp [bicategoricalComp, BicategoricalCoherence.hom, BicategoricalCoherence.hom']
-    simp
-    coherence
-  · rw [← whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · simp_rw [left_triangle]; dsimp [bicategoricalComp]; coherence
+  -- The `simp` in the following three lines are not necessary (`dsimp` is enough), but they
+  -- speed up the proof.
+  · simp [bicategoricalComp]; coherence
+  · rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+  · simp_rw [left_triangle]; simp [bicategoricalComp]
 
-open Mathlib.Tactic.BicategoryCoherence in
-set_option maxHeartbeats 800000 in
 theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) :
     rightZigzag (compUnit adj₁ adj₂) (compCounit adj₁ adj₂) = (ρ_ _).hom ≫ (λ_ _).inv := by
   calc
@@ -204,11 +199,9 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
           g₂ ◁ (rightZigzag adj₁.unit adj₁.counit) ⊗≫
             (rightZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ 𝟙 _ := ?_
     _ = _ := ?_
-  · dsimp [bicategoricalComp, BicategoricalCoherence.hom, BicategoricalCoherence.hom']
-    simp
-    coherence
-  · rw [whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · simp_rw [right_triangle]; dsimp [bicategoricalComp]; coherence
+  · simp [bicategoricalComp]; coherence
+  · rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+  · simp_rw [right_triangle]; simp [bicategoricalComp]
 
 /-- Composition of adjunctions. -/
 def comp (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : f₁ ≫ f₂ ⊣ g₂ ≫ g₁ where
@@ -226,34 +219,40 @@ noncomputable section
 variable (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b)
 
 /-- The isomorphism version of `leftZigzag`. -/
-@[simp]
 def leftZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
   whiskerRightIso η f ≪⊗≫ whiskerLeftIso f ε
 
 /-- The isomorphism version of `rightZigzag`. -/
-@[simp]
 def rightZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
   whiskerLeftIso g η ≪⊗≫ whiskerRightIso ε g
 
+attribute [local simp] leftZigzagIso rightZigzagIso leftZigzag rightZigzag
+
+@[simp]
 theorem leftZigzagIso_hom : (leftZigzagIso η ε).hom = leftZigzag η.hom ε.hom :=
   rfl
 
+@[simp]
 theorem rightZigzagIso_hom : (rightZigzagIso η ε).hom = rightZigzag η.hom ε.hom :=
   rfl
 
+@[simp]
 theorem leftZigzagIso_inv : (leftZigzagIso η ε).inv = rightZigzag ε.inv η.inv := by
   simp [bicategoricalComp, bicategoricalIsoComp]
 
+@[simp]
 theorem rightZigzagIso_inv : (rightZigzagIso η ε).inv = leftZigzag ε.inv η.inv := by
   simp [bicategoricalComp, bicategoricalIsoComp]
 
+@[simp]
 theorem leftZigzagIso_symm : (leftZigzagIso η ε).symm = rightZigzagIso ε.symm η.symm :=
   Iso.ext (leftZigzagIso_inv η ε)
 
+@[simp]
 theorem rightZigzagIso_symm : (rightZigzagIso η ε).symm = leftZigzagIso ε.symm η.symm :=
   Iso.ext (rightZigzagIso_inv η ε)
 
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 400000 in
 theorem right_triangle_of_left_triangle {η : 𝟙 a ≅ f ≫ g} {ε : g ≫ f ≅ 𝟙 b} :
     leftZigzagIso η ε = λ_ f ≪≫ (ρ_ f).symm → rightZigzagIso η ε = ρ_ g ≪≫ (λ_ g).symm := by
   intro H
@@ -287,20 +286,20 @@ theorem right_triangle_of_left_triangle {η : 𝟙 a ≅ f ≫ g} {ε : g ≫ f 
     _ = 𝟙 _ ⊗≫ g ◁ η.hom ⊗≫ (ε.hom ≫ ε.inv) ▷ g ⊗≫ g ◁ η.inv ⊗≫ 𝟙 _ := ?_
     _ = 𝟙 _ ⊗≫ g ◁ (η.hom ≫ η.inv) ⊗≫ 𝟙 _ := ?_
     _ = _ := ?_
-  · rw [← comp_id (ε.hom ▷ g)]; dsimp [bicategoricalComp]; coherence
+  · rw [← comp_id (ε.hom ▷ g)]; coherence
   · rw [Iso.hom_inv_id η, whiskerLeft_id]
-  · rw [Iso.hom_inv_id ε]; dsimp [bicategoricalComp]; coherence
-  · dsimp [bicategoricalComp]; coherence
-  · rw [← whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · rw [← whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · rw [← whisker_exchange]; dsimp [bicategoricalComp]; coherence
-  · rw [H]; dsimp [bicategoricalComp]; coherence
-  · rw [Iso.hom_inv_id ε]; dsimp [bicategoricalComp]; coherence
-  · rw [Iso.hom_inv_id η]; dsimp [bicategoricalComp]; coherence
+  · rw [Iso.hom_inv_id ε]; simp [bicategoricalComp]
+  · simp [bicategoricalComp]; coherence
+  · rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+  · rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+  · rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+  · rw [H]; coherence
+  · rw [Iso.hom_inv_id ε]; simp [bicategoricalComp]
+  · rw [Iso.hom_inv_id η]; simp [bicategoricalComp]
 
 theorem left_triangle_iff_right_triangle {η : 𝟙 a ≅ f ≫ g} {ε : g ≫ f ≅ 𝟙 b} :
     leftZigzagIso η ε = λ_ f ≪≫ (ρ_ f).symm ↔ rightZigzagIso η ε = ρ_ g ≪≫ (λ_ g).symm :=
-  Iff.intro right_triangle_of_left_triangle (by
+  .intro right_triangle_of_left_triangle (by
     intro H
     rw [← Iso.symm_eq_iff] at H ⊢
     rw [leftZigzagIso_symm]
@@ -315,7 +314,7 @@ def adjointifyUnit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : 𝟙 a 
 def adjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : g ≫ f ≅ 𝟙 b :=
   whiskerLeftIso g ((ρ_ f).symm ≪≫ rightZigzagIso ε.symm η.symm ≪≫ λ_ f) ≪≫ ε
 
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 400000 in
 @[simp]
 theorem adjointifyCounit_symm (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
     (adjointifyCounit η ε).symm = adjointifyUnit ε.symm η.symm := by
@@ -330,11 +329,13 @@ theorem adjointifyCounit_symm (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b
         𝟙 _ ⊗≫
           g ◁ η.hom ▷ f ⊗≫
             (𝟙 b ◁ (g ≫ f) ◁ ε.hom ≫ ε.inv ▷ ((g ≫ f) ≫ 𝟙 b)) ⊗≫
-              (g ◁ η.inv) ▷ f ⊗≫ 𝟙 _ := ?_
+              (g ◁ η.inv) ▷ f ⊗≫ 𝟙 _ := by
+      simp [bicategoricalComp]; coherence
     _ =
         𝟙 _ ⊗≫
           (𝟙 b ◁ g ◁ η.hom ≫ ε.inv ▷ (g ≫ f ≫ g)) ▷ f ⊗≫
-            g ◁ ((f ≫ g) ◁ f ◁ ε.hom ≫ η.inv ▷ (f ≫ 𝟙 b)) ⊗≫ 𝟙 _ := ?_
+            g ◁ ((f ≫ g) ◁ f ◁ ε.hom ≫ η.inv ▷ (f ≫ 𝟙 b)) ⊗≫ 𝟙 _ := by
+      rw [whisker_exchange]; simp [bicategoricalComp]; coherence
     _ =
         𝟙 _ ⊗≫
           ε.inv ▷ g ▷ f ⊗≫
@@ -356,7 +357,7 @@ theorem adjointifyUnit_symm (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) 
     (adjointifyUnit η ε).symm = adjointifyCounit ε.symm η.symm :=
   Iso.symm_eq_iff.mpr (adjointifyCounit_symm ε.symm η.symm).symm
 
-set_option maxHeartbeats 500000 in
+-- set_option maxHeartbeats 500000 in
 theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
     leftZigzagIso η (adjointifyCounit η ε) = λ_ f ≪≫ (ρ_ f).symm := by
   apply Iso.ext
@@ -368,11 +369,11 @@ theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f �
     _ = 𝟙 _ ⊗≫ f ◁ ε.inv ⊗≫ (η.inv ≫ η.hom) ▷ f ⊗≫ f ◁ ε.hom := ?_
     _ = 𝟙 _ ⊗≫ f ◁ (ε.inv ≫ ε.hom) := ?_
     _ = _ := ?_
-  · dsimp [bicategoricalComp]; coherence
-  · rw [← whisker_exchange η.hom (f ◁ ε.inv)]; dsimp [bicategoricalComp]; coherence
-  · rw [← whisker_exchange η.hom η.inv]; dsimp [bicategoricalComp]; coherence
-  · rw [Iso.inv_hom_id]; dsimp [bicategoricalComp]; coherence
-  · rw [Iso.inv_hom_id]; dsimp [bicategoricalComp]; coherence
+  · simp [bicategoricalComp]; coherence
+  · rw [← whisker_exchange η.hom (f ◁ ε.inv)]; simp [bicategoricalComp]; coherence
+  · rw [← whisker_exchange η.hom η.inv]; coherence
+  · rw [Iso.inv_hom_id]; simp [bicategoricalComp]
+  · rw [Iso.inv_hom_id]; simp [bicategoricalComp]
 
 theorem adjointifyUnit_right_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
     rightZigzagIso (adjointifyUnit η ε) ε = ρ_ g ≪≫ (λ_ g).symm := by
@@ -397,15 +398,9 @@ theorem right_triangle (f : a ≌ b) :
     rightZigzagIso f.unit f.counit = ρ_ f.inv ≪≫ (λ_ f.inv).symm :=
   right_triangle_of_left_triangle f.left_triangle
 
-open Mathlib.Tactic.BicategoryCoherence in
-def id (a : B) : a ≌ a :=
-  ⟨_, _, (ρ_ _).symm, ρ_ _, by
-    ext
-    dsimp [bicategoricalIsoComp, BicategoricalCoherence.hom, BicategoricalCoherence.hom']
-    coherence⟩
+def id (a : B) : a ≌ a := ⟨_, _, (ρ_ _).symm, ρ_ _, by ext; simp [bicategoricalIsoComp]⟩
 
-instance : Inhabited (Equivalence a a) :=
-  ⟨id a⟩
+instance : Inhabited (Equivalence a a) := ⟨id a⟩
 
 /-- Construct an adjoint equivalence from 2-isomorphisms by upgrading `η` to a unit. -/
 def mkOfAdjointifyUnit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : a ≌ b where
