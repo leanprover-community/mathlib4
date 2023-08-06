@@ -182,10 +182,17 @@ open DirectSum Set
 variable {ι : Type _} [dec_ι : DecidableEq ι]
 variable {𝔼 : ι → Type _} [∀ i, AddCommMonoid (𝔼 i)] [∀ i, Module 𝕜 (𝔼 i)]
 
-def DirectSum (S : ∀ i, PointedCone 𝕜 (𝔼 i)) : PointedCone 𝕜 (⨁ (i : ι), 𝔼 i) := by
-  apply toSubmodule.symm
+-- def DirectSum (S : ∀ i, PointedCone 𝕜 (𝔼 i)) : PointedCone 𝕜 (⨁ (i : ι), 𝔼 i) := ofSubmodule {
+--   carrier := by
+--     apply Set.range
+--     apply DFinsupp.mapRange <| fun i => subtype.linearMap (S := S i)
+--     simp only [map_zero, implies_true]
+--   add_mem' := by
+--     aesop
+--   zero_mem' := _
+--   smul_mem' := _
+-- }
 
--- TODO: Define direct sum of submodules
 
 -- TODO: rewrite using the above equivalence and direct sum of submodules
   -- ofModule <| DFinsupp.mapRange.linearMap <| fun i => subtype.linearMap (S := S i)
