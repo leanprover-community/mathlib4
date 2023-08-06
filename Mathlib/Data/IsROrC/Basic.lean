@@ -835,7 +835,8 @@ end Instances
 namespace IsROrC
 
 open scoped ComplexOrder in
-theorem toStarOrderedRing : StarOrderedRing K :=
+/-- Note this is only an instance with `open scoped ComplexOrder`. -/
+def toStarOrderedRing : StarOrderedRing K :=
   StarOrderedRing.ofNonnegIff'
     (h_add := fun {x y} hxy z => by
       rw [IsROrC.le_iff_re_im] at *
