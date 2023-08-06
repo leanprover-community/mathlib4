@@ -19,6 +19,9 @@ set_option linter.uppercaseLean3 false
 
 universe uK uK' uV
 
+/-- A type synony for the given `V`, associated with the L`p` norm. Note that by default this just
+forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
+instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
 def WithLp (_p : ℝ≥0∞) (V : Type u) : Type u := V
 
@@ -26,27 +29,32 @@ variable (p : ℝ≥0∞) (K : Type uK) (V : Type uV)
 
 namespace WithLp
 
+/-- The canonical equivalence between `WithLp p V` and `V`. This should always be used to convert
+back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 
-instance : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
-instance [Module K V] : Module K (WithLp p V) := ‹Module K V›
+/-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
+instance instAddCommGroup : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
+instance instModule [Module K V] : Module K (WithLp p V) := ‹Module K V›
 
-instance isScalarTower [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
+instance instIsScalarTower [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
   ‹IsScalarTower K K' V›
 
-instance smulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
+instance instSmulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
     SMulCommClass K K' (WithLp p V) :=
   ‹SMulCommClass K K' V›
 
-instance moduleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) :=
+instance instModuleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) :=
   ‹Module.Finite K V›
 
 variable [Module K V]
 variable (c : K) (x y : WithLp p V) (x' y' : V)
+
+/-! `WithLp.equiv` preserves the module structure. -/
 
 @[simp]
 theorem equiv_zero : WithLp.equiv p V 0 = 0 :=
