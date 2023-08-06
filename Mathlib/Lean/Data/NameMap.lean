@@ -24,15 +24,6 @@ where
     if f n i then r.insert n i else r
 
 /--
-`filterName f m` returns the `NameMap` consisting of all
-"`key`/`val`"-pairs in `m` where `f key` returns `true`.
-
-Shorthand for `NameMap.filter (fun n _ => f n) m`.
--/
-def filterName (f : Name → Bool) (m : NameMap α) : NameMap α :=
-  filter (fun n _ => f n) m
-
-/--
 `filterMap f m` allows to filter a `NameMap` and simultaneously modify the filtered values.
 
 It takes a function `f : Name → α → Option β` and applies `f name` to the value with key `name`.
