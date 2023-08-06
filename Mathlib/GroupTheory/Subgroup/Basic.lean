@@ -1457,7 +1457,10 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
 #align subgroup.mem_map_equiv Subgroup.mem_map_equiv
 #align add_subgroup.mem_map_equiv AddSubgroup.mem_map_equiv
 
-@[to_additive (attr := simp)]
+-- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
+-- However that is a lower priority simp lemma, so this doesn't matter.
+-- https://github.com/leanprover/std4/issues/207
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image

@@ -40,11 +40,10 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
 #align option.coe_def Option.coe_def
 
-@[simp 900]
 theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
 #align option.mem_map Option.mem_map
 
-@[simp]
+@[simp 1100] -- This needs to be higher priority than `Option.mem_def`.
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
     f a ∈ o.map f ↔ a ∈ o := by
   aesop
