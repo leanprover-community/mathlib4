@@ -39,7 +39,7 @@ example : true := by
 -- Check that `says` does not reverify the right-hand-side.
 set_option says.no_verify_in_CI true in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says simp only []
+  simp? says skip
   simp
 
 -- Check that with `says.verify` `says` will reverify that the left-hand-side constructs
