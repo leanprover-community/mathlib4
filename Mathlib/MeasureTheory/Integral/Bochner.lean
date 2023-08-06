@@ -540,9 +540,9 @@ theorem integral_add (f g : α →₁ₛ[μ] E) : integral (f + g) = integral f 
 
 -- Porting note: finding `SMul 𝕜 (Lp.simpleFunc E 1 μ)` takes about twice the default
 -- `synthInstance.maxHeartbeats 20000`, so we provide some shortcut instances to speed it up.
--- instance : Module 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
--- instance : MulActionWithZero 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
--- instance : SMul 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
+instance : Module 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
+instance : MulActionWithZero 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
+instance : SMul 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
 
 theorem integral_smul (c : 𝕜) (f : α →₁ₛ[μ] E) : integral (c • f) = c • integral f :=
   setToL1S_smul _ (fun _ _ => weightedSMul_null) weightedSMul_union weightedSMul_smul c f
