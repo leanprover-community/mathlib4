@@ -101,8 +101,7 @@ theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) : pairMap
   simp only [mem_univ, true_and] at h
   split_ifs with h1
   · simp only [h1, implies_true, true_and, and_true] at h
-    simp only [mem_univ, true_and, card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq,
-      eq_self, h1]
+    simp only [mem_univ, true_and, card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
     refine ⟨le_step h, ?_⟩
     by_contra h2
     rw [← h2] at h
@@ -133,14 +132,12 @@ theorem weight_compose_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     have h3 : card t.fst ≥ 1 := lt_iff_add_one_le.mp (card_pos.mpr ⟨t.snd, h1⟩)
     rw [← tsub_tsub_assoc h.right.left h3,
       ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)), h2 (card t.fst - 1),
-      Nat.sub_add_cancel]
-    · simp
-    · exact h3
+      Nat.sub_add_cancel h3]
+    simp
   · simp only [card_cons, prod_cons, mul_comm, mul_assoc (∏ a in t.fst, X a), ← mul_add]
     nth_rewrite 2 [← pow_one (X t.snd)]
     simp only [← pow_add,
-      ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.right.left (mt h.right.right h1)),
-      add_comm, add_tsub_add_eq_tsub_right]
+      ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.right.left (mt h.right.right h1)), add_comm]
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst)), h2]
     simp
 
@@ -193,8 +190,8 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
   simp only [← sum_congr rfl equiv_i]
   have pdisj : Set.PairwiseDisjoint (range k)
       (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
-    simp only [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, coe_range,
-      Set.mem_Iio, ne_eq, le_eq_subset, bot_eq_empty]
+    simp only [Set.PairwiseDisjoint, Disjoint, pairs, filter_filter, ne_eq, le_eq_subset,
+      bot_eq_empty]
     intro x _ y _ xny
     by_contra neg
     simp only [not_forall, exists_prop, exists_and_left] at neg
