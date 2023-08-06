@@ -73,15 +73,16 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
       let mut tacticImports := graph.toList.bind
         (fun ⟨n, i⟩ => if filterMeta n then i.toList else [])
         |>.eraseDup |>.filter (not <| isPrefixOf `Mathlib ·) |>.toArray
-      graph := graph.filter (fun x => not <| filterMeta x)
+      graph := graph.filter (fun x _ => not <| filterMeta x)
         (fun arr => (arr.map (fun n => if filterMeta n then `Mathlib.Tactics else n))
           |>.toList.eraseDup.toArray)
       -- insert a single node `Mathlib.Tactics` that only takes imports from outside Mathlib
       graph := graph.insert `Mathlib.Tactics tacticImports
-    if args.hasFlag "noDep" then
+    if ¬(args.hasFlag "include-deps") then
       let p := getModule to
-      graph := graph.filter (isPrefixOf p) (.filter (isPrefixOf p))
-          if args.hasFlag "reduce" then
+      graph := graph.filterMap (fun n i =>
+        if p.isPrefixOf n then (i.filter (isPrefixOf p)) else none)
+    if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
   match args.variableArgsAs! String with
@@ -103,8 +104,8 @@ def graph : Cmd := `[Cli|
     reduce;         "Remove transitively redundant edges."
     to : Name;      "Only show the upstream imports of the specified module."
     "from" : Name;  "Only show the downstream dependencies of the specified module."
-    noDep; "Do not include any imports from other packages."
     excludeMeta; "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
+    "include-deps"; "Include used files from other projects (e.g. lake packages)"
 
   ARGS:
     ...outputs : String;  "Filename(s) for the output. " ++
