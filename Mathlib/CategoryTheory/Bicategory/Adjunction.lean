@@ -100,6 +100,64 @@ def id (a : B) : 𝟙 a ⊣ 𝟙 a where
 instance : Inhabited (Adjunction (𝟙 a) (𝟙 a)) :=
   ⟨id a⟩
 
+theorem left_adjoint_uniq_aux {f₁ f₂ : a ⟶ b} {g : b ⟶ a} (adj₁ : f₁ ⊣ g) (adj₂ : f₂ ⊣ g) :
+    (𝟙 f₁ ⊗≫ adj₂.unit ▷ f₁ ⊗≫ f₂ ◁ adj₁.counit ⊗≫ 𝟙 f₂) ≫
+        𝟙 f₂ ⊗≫ adj₁.unit ▷ f₂ ⊗≫ f₁ ◁ adj₂.counit ⊗≫ 𝟙 f₁ =
+      𝟙 f₁ := by
+  calc
+    _ = 𝟙 f₁ ⊗≫
+          adj₂.unit ▷ f₁ ⊗≫
+            (𝟙 a ◁ f₂ ◁ adj₁.counit ≫ adj₁.unit ▷ (f₂ ≫ 𝟙 b)) ⊗≫ f₁ ◁ adj₂.counit ⊗≫ 𝟙 f₁ := by
+      simp [bicategoricalComp]; coherence
+    _ = 𝟙 f₁ ⊗≫
+          (𝟙 a ◁ adj₂.unit ≫ adj₁.unit ▷ (f₂ ≫ g)) ▷ f₁ ⊗≫
+            f₁ ◁ ((g ≫ f₂) ◁ adj₁.counit ≫ adj₂.counit ▷ 𝟙 b) ⊗≫ 𝟙 f₁ := by
+      rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+    _ = 𝟙 f₁ ⊗≫
+          adj₁.unit ▷ f₁ ⊗≫
+            f₁ ◁ (rightZigzag adj₂.unit adj₂.counit) ▷ f₁ ⊗≫ f₁ ◁ adj₁.counit ⊗≫ 𝟙 f₁ := by
+      simp_rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+    _ = 𝟙 f₁ ⊗≫ (leftZigzag adj₁.unit adj₁.counit) ⊗≫ 𝟙 f₁ := by
+      rw [right_triangle]; simp [bicategoricalComp]; coherence
+    _ = _ := by
+      rw [left_triangle]; simp [bicategoricalComp]
+
+theorem right_adjoint_uniq_aux {f : a ⟶ b} {g₁ g₂ : b ⟶ a} (adj₁ : f ⊣ g₁) (adj₂ : f ⊣ g₂) :
+    (𝟙 g₁ ⊗≫ g₁ ◁ adj₂.unit ⊗≫ adj₁.counit ▷ g₂ ⊗≫ 𝟙 g₂) ≫
+        𝟙 g₂ ⊗≫ g₂ ◁ adj₁.unit ⊗≫ adj₂.counit ▷ g₁ ⊗≫ 𝟙 g₁ =
+      𝟙 g₁ := by
+  calc
+    _ = 𝟙 g₁ ⊗≫
+          g₁ ◁ adj₂.unit ⊗≫
+            (adj₁.counit ▷ (g₂ ≫ 𝟙 a) ≫ 𝟙 b ◁ g₂ ◁ adj₁.unit) ⊗≫ adj₂.counit ▷ g₁ ⊗≫ 𝟙 g₁ := by
+      simp [bicategoricalComp]; coherence
+    _ = 𝟙 g₁ ⊗≫
+          g₁ ◁ (adj₂.unit ▷ 𝟙 a ≫ (f ≫ g₂) ◁ adj₁.unit) ⊗≫
+            (adj₁.counit ▷ (g₂ ≫ f) ≫ 𝟙 b ◁ adj₂.counit) ▷ g₁ ⊗≫ 𝟙 g₁ := by
+      rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+    _ = 𝟙 g₁ ⊗≫
+          g₁ ◁ adj₁.unit ⊗≫
+            g₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ adj₁.counit ▷ g₁ ⊗≫ 𝟙 g₁ := by
+      simp_rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+    _ = 𝟙 g₁ ⊗≫ (rightZigzag adj₁.unit adj₁.counit) ⊗≫ 𝟙 g₁ := by
+      rw [left_triangle]; simp [bicategoricalComp]; coherence
+    _ = _ := by
+      rw [right_triangle]; coherence
+
+/-- If `f₁` and `f₂` are both left adjoint to `g`, then they are isomorphic. -/
+def leftAdjointUniq {f₁ f₂ : a ⟶ b} {g : b ⟶ a} (adj₁ : f₁ ⊣ g) (adj₂ : f₂ ⊣ g) : f₁ ≅ f₂ where
+  hom := 𝟙 f₁ ⊗≫ adj₂.unit ▷ f₁ ⊗≫ f₂ ◁ adj₁.counit ⊗≫ 𝟙 f₂
+  inv := 𝟙 f₂ ⊗≫ adj₁.unit ▷ f₂ ⊗≫ f₁ ◁ adj₂.counit ⊗≫ 𝟙 f₁
+  hom_inv_id := left_adjoint_uniq_aux adj₁ adj₂
+  inv_hom_id := left_adjoint_uniq_aux adj₂ adj₁
+
+/-- If `g₁` and `g₂` are both right adjoint to `f`, then they are isomorphic. -/
+def rightAdjointUniq {f : a ⟶ b} {g₁ g₂ : b ⟶ a} (adj₁ : f ⊣ g₁) (adj₂ : f ⊣ g₂) : g₁ ≅ g₂ where
+  hom := 𝟙 g₁ ⊗≫ g₁ ◁ adj₂.unit ⊗≫ adj₁.counit ▷ g₂ ⊗≫ 𝟙 g₂
+  inv := 𝟙 g₂ ⊗≫ g₂ ◁ adj₁.unit ⊗≫ adj₂.counit ▷ g₁ ⊗≫ 𝟙 g₁
+  hom_inv_id := right_adjoint_uniq_aux adj₁ adj₂
+  inv_hom_id := right_adjoint_uniq_aux adj₂ adj₁
+
 end Adjunction
 
 noncomputable section
