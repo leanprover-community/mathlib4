@@ -79,11 +79,9 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
         |>.eraseDup |>.filter (not <| isPrefixOf `Mathlib ·) |>.toArray
       -- iterate over the graph, removing all filtered nodes and
       -- replace any filtered import with `«Mathlib.Tactics»`
-      graph := graph.filterMap (fun n i => if filterMeta n then none else
-        some <| (i.map (fun name => if filterMeta name then `«Mathlib.Tactics» else name)
-        |>.toList.eraseDup.toArray)
-
-        )
+      graph := graph.filterMap (fun n i => if filterMeta n then none else some <|
+        (i.map (fun name => if filterMeta name then `«Mathlib.Tactics» else name)
+          |>.toList.eraseDup.toArray))
       -- add the new node `«Mathlib.Tactics»`
       graph := graph.insert `«Mathlib.Tactics» tacticImports
     if args.hasFlag "reduce" then
