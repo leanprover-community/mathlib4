@@ -1,6 +1,8 @@
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Analysis.Convex.Cone.Dual
 
 structure PointedCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
      [SMul 𝕜 E] extends ConvexCone 𝕜 E where
@@ -129,19 +131,7 @@ def subtype.linearMap : S →ₗ[𝕜≥0] E where
   map_add' := by simp
   map_smul' := by simp
 
-def ofSubmodule (M : Submodule { c : 𝕜 // 0 ≤ c } E) : PointedCone 𝕜 E where
-  carrier := M
-  smul_mem' := fun c hc _ hx => M.smul_mem ⟨c, le_of_lt hc⟩ hx
-  add_mem' := fun _ hx _ hy => M.add_mem hx hy
-  zero_mem' := M.zero_mem
-
-theorem ofSubmodule.mem_coe (M : Submodule { c : 𝕜 // 0 ≤ c } E) (x : E) :
-    x ∈ PointedCone.ofSubmodule M ↔ x ∈ M := by
-  let S := PointedCone.ofSubmodule M
-  -- TODO 1: remove this sorry using SetLike.mem_coe
-  sorry
-
-def toSubmodule (S : PointedCone 𝕜 E) : Submodule { c : 𝕜 // 0 ≤ c } E where
+def toSubmodule (S : PointedCone 𝕜 E) : Submodule 𝕜≥0 E where
   carrier := S
   add_mem' := fun hx hy => S.add_mem hx hy
   zero_mem' := S.zero_mem
@@ -154,31 +144,35 @@ def toSubmodule (S : PointedCone 𝕜 E) : Submodule { c : 𝕜 // 0 ≤ c } E w
     . apply ConvexCone.smul_mem
       convert hpos
 
--- TODO 2: add toSubmodule.mem_coe
+def ofSubmodule (M : Submodule 𝕜≥0 E) : (PointedCone 𝕜 E) where
+  carrier := M
+  smul_mem' := fun c hc _ hx => M.smul_mem ⟨c, le_of_lt hc⟩ hx
+  add_mem' := fun _ hx _ hy => M.add_mem hx hy
+  zero_mem' := M.zero_mem
 
 def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule { c : 𝕜 // 0 ≤ c } E) where
   toFun := toSubmodule
   invFun := ofSubmodule
-  left_inv := fun S => by
-    dsimp [Function.LeftInverse]
-    ext
-    sorry
-    -- TODO 3: finish this and the next proof using mem_coes above
-  right_inv := sorry
-
+  left_inv := fun S => by aesop
+  right_inv := fun M => by aesop
 
 section Dual
+variable {E}
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
--- TODO 5: define dual
+def dual (S : PointedCone ℝ E) : PointedCone ℝ E where
+  toConvexCone := (S : Set E).innerDualCone
+  zero_mem' := pointed_innerDualCone (S : Set E)
 
--- TODO 6: construct injection to Module.dual
+@[simp] -- Porting note: removed `norm_cast` (new-style structures)
+theorem coe_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
+  rfl
+
+@[simp]
+theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
+  aesop
 
 end Dual
-
-
-section CompleteSpace
--- TODO 7: show the two dual are is when E is a complete space
-end CompleteSpace
 
 end Module
 
@@ -188,10 +182,15 @@ open DirectSum Set
 variable {ι : Type _} [dec_ι : DecidableEq ι]
 variable {𝔼 : ι → Type _} [∀ i, AddCommMonoid (𝔼 i)] [∀ i, Module 𝕜 (𝔼 i)]
 
-def DirectSum (S : ∀ i, PointedCone 𝕜 (𝔼 i)) : PointedCone 𝕜 (⨁ (i : ι), 𝔼 i) := sorry
--- TODO 4: rewrite using the above equivalence and direct sum of submodules
---   ofModule <| DFinsupp.mapRange.linearMap <| fun i => subtype.linearMap (S := S i)
+def DirectSum (S : ∀ i, PointedCone 𝕜 (𝔼 i)) : PointedCone 𝕜 (⨁ (i : ι), 𝔼 i) := by
+  apply toSubmodule.symm
 
+-- TODO: Define direct sum of submodules
+
+-- TODO: rewrite using the above equivalence and direct sum of submodules
+  -- ofModule <| DFinsupp.mapRange.linearMap <| fun i => subtype.linearMap (S := S i)
+
+-- TODO: DirectSum of Duals
 end DirectSum
 
 end PointedCone
