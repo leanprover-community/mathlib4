@@ -301,7 +301,7 @@ theorem coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' 
   rfl
 #align non_unital_subsemiring.coe_map NonUnitalSubsemiring.coe_map
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   convert Set.mem_image_iff_bex
   simp

@@ -351,7 +351,7 @@ def map {n : ℕ} (f : α → β) (x : Sym α n) : Sym β n :=
   ⟨x.val.map f, by simpa [Multiset.card_map] using x.property⟩
 #align sym.map Sym.map
 
-@[simp]
+@[simp 900]
 theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
     b ∈ Sym.map f l ↔ ∃ a, a ∈ l ∧ f a = b :=
   Multiset.mem_map

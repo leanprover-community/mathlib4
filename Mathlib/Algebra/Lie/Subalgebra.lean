@@ -389,7 +389,7 @@ def map : LieSubalgebra R L₂ :=
       exact ⟨⁅x', y'⁆, K.lie_mem hx' hy', f.map_lie x' y'⟩ }
 #align lie_subalgebra.map LieSubalgebra.map
 
-@[simp]
+@[simp 900]
 theorem mem_map (x : L₂) : x ∈ K.map f ↔ ∃ y : L, y ∈ K ∧ f y = x :=
   Submodule.mem_map
 #align lie_subalgebra.mem_map LieSubalgebra.mem_map

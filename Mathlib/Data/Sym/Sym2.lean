@@ -388,7 +388,7 @@ instance Mem.decidable [DecidableEq α] (x : α) (z : Sym2 α) : Decidable (x �
 
 end Membership
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ ∃ a, a ∈ z ∧ f a = b := by
   induction' z using Sym2.ind with x y
   simp only [map, Quotient.map_mk, Prod.map_mk, mem_iff]

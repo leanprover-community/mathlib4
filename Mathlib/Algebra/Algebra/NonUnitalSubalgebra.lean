@@ -315,6 +315,7 @@ theorem map_map (S : NonUnitalSubalgebra R A) (g : B →ₙₐ[R] C) (f : A →�
     (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+@[simp 900]
 theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   NonUnitalSubsemiring.mem_map
 

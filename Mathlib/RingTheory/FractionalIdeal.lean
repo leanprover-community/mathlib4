@@ -733,7 +733,7 @@ theorem coe_map (g : P →ₐ[R] P') (I : FractionalIdeal S P) :
   rfl
 #align fractional_ideal.coe_map FractionalIdeal.coe_map
 
-@[simp]
+@[simp 900]
 theorem mem_map {I : FractionalIdeal S P} {g : P →ₐ[R] P'} {y : P'} :
     y ∈ I.map g ↔ ∃ x, x ∈ I ∧ g x = y :=
   Submodule.mem_map

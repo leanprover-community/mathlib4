@@ -230,7 +230,7 @@ theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
 #align submonoid.coe_map Submonoid.coe_map
 #align add_submonoid.coe_map AddSubmonoid.coe_map
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp 900)]
 theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := by
   rw [← bex_def]
   exact mem_image_iff_bex
@@ -255,7 +255,10 @@ theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp 
 #align submonoid.map_map Submonoid.map_map
 #align add_submonoid.map_map AddSubmonoid.map_map
 
-@[to_additive]
+-- The simpNF linter says that the LHS can be simplified via `Submonoid.mem_map`.
+-- However that is a lower priority simp lemma, so this doesn't matter.
+-- https://github.com/leanprover/std4/issues/207
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image

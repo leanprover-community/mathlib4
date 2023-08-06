@@ -445,7 +445,7 @@ def map (φ : M →[L] N) (S : L.Substructure M) : L.Substructure N where
 #align first_order.language.substructure.map FirstOrder.Language.Substructure.map
 #align first_order.language.substructure.map_coe FirstOrder.Language.Substructure.map_coe
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : M →[L] N} {S : L.Substructure M} {y : N} :
     y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
   Iff.rfl

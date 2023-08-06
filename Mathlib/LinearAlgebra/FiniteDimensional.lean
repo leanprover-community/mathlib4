@@ -891,9 +891,9 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 /-- On a finite-dimensional space, an injective linear map is surjective. -/
 theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hinj : Injective f) :
     Surjective f := by
-  have h := rank_eq_of_injective _ hinj
+  have h := rank_range_of_injective _ hinj
   rw [← finrank_eq_rank, ← finrank_eq_rank, natCast_inj] at h
-  exact range_eq_top.1 (eq_top_of_finrank_eq h.symm)
+  exact range_eq_top.1 (eq_top_of_finrank_eq h)
 #align linear_map.surjective_of_injective LinearMap.surjective_of_injective
 
 /-- The image under an onto linear map of a finite-dimensional space is also finite-dimensional. -/

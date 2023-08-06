@@ -1221,7 +1221,7 @@ theorem map_nsmul (f : α → β) (n : ℕ) (s) : map f (n • s) = n • map f 
   (mapAddMonoidHom f).map_nsmul _ _
 #align multiset.map_nsmul Multiset.map_nsmul
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : α → β} {b : β} {s : Multiset α} : b ∈ map f s ↔ ∃ a, a ∈ s ∧ f a = b :=
   Quot.inductionOn s fun _l => List.mem_map
 #align multiset.mem_map Multiset.mem_map
@@ -1267,7 +1267,10 @@ theorem map_eq_cons [DecidableEq α] (f : α → β) (s : Multiset α) (t : Mult
     rw [Multiset.erase_cons_head, h]
 #align multiset.map_eq_cons Multiset.map_eq_cons
 
-@[simp]
+-- The simpNF linter says that the LHS can be simplified via `Multiset.mem_map`.
+-- However that is a lower priority simp lemma, so this doesn't matter.
+-- https://github.com/leanprover/std4/issues/207
+@[simp, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {s : Multiset α} :
     f a ∈ map f s ↔ a ∈ s :=
   Quot.inductionOn s fun _l => List.mem_map_of_injective H

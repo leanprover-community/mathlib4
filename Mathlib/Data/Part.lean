@@ -440,7 +440,7 @@ theorem mem_map (f : α → β) {o : Part α} : ∀ {a}, a ∈ o → f a ∈ map
   | _, ⟨_, rfl⟩ => ⟨_, rfl⟩
 #align part.mem_map Part.mem_map
 
-@[simp]
+@[simp 900]
 theorem mem_map_iff (f : α → β) {o : Part α} {b} : b ∈ map f o ↔ ∃ a ∈ o, f a = b :=
   ⟨fun hb => match b, hb with
     | _, ⟨_, rfl⟩ => ⟨_, ⟨_, rfl⟩, rfl⟩,

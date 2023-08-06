@@ -427,7 +427,7 @@ def map {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUni
 theorem coe_map (f : F) (s : NonUnitalSubring R) : (s.map f : Set S) = f '' s :=
   rfl
 
-@[simp]
+@[simp 900]
 theorem mem_map {f : F} {s : NonUnitalSubring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
   Set.mem_image _ _ _
 
