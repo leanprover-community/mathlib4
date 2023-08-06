@@ -205,6 +205,7 @@ theorem ofBits_eq_pow_mul_add : ofBits f z i = 2^i * z + ofBits f 0 i := by
     rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
     simp [bit_val, add_assoc]
 
+
 theorem ofBits_lt : ofBits f 0 i < 2^i := by
   induction' i with i ih
   · simp [ofBits, bit_val, lt_succ, Bool.toNat_le_one]
