@@ -15,26 +15,26 @@ variable (F : C ⥤ D)
 
 class PreservesHomology (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
   [PreservesZeroMorphisms F] where
-  preserves_kernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F :=
+  preservesKernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F :=
     by infer_instance
-  preserves_cokernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F :=
+  preservesCokernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F :=
     by infer_instance
 
-def PreservesHomology.preserves_kernel (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
+def PreservesHomology.preservesKernel (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
     [PreservesZeroMorphisms F] [F.PreservesHomology] {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f 0) F :=
-  PreservesHomology.preserves_kernels _
+  PreservesHomology.preservesKernels _
 
-def PreservesHomology.preserves_cokernel (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
+def PreservesHomology.preservesCokernel (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
     [PreservesZeroMorphisms F] [F.PreservesHomology] {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) F :=
-  PreservesHomology.preserves_cokernels _
+  PreservesHomology.preservesCokernels _
 
 noncomputable instance preservesHomologyOfExact [HasZeroMorphisms C] [HasZeroMorphisms D]
   (F : C ⥤ D) [F.PreservesZeroMorphisms] [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
   F.PreservesHomology where
-  preserves_kernels := inferInstance
-  preserves_cokernels := inferInstance
+  preservesKernels := inferInstance
+  preservesCokernels := inferInstance
 
 end Functor
 
@@ -44,27 +44,24 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D] {S S₁ S₂ : ShortComplex C
 
 namespace LeftHomologyData
 
-class IsPreservedBy (h : S.LeftHomologyData)
-  (F : C ⥤ D) [F.PreservesZeroMorphisms] where
+variable (h : S.LeftHomologyData) (F : C ⥤ D)
+
+class IsPreservedBy [F.PreservesZeroMorphisms] where
   g : PreservesLimit (parallelPair S.g 0) F
   f' : PreservesColimit (parallelPair h.f' 0) F
 
-def IsPreservedBy.hg (h : S.LeftHomologyData) (F : C ⥤ D) [F.PreservesZeroMorphisms]
-    [h.IsPreservedBy F] : PreservesLimit (parallelPair S.g 0) F :=
+noncomputable instance isPreservedByOfPreservesHomology
+  [F.PreservesZeroMorphisms] [F.PreservesHomology] : h.IsPreservedBy F where
+  g := Functor.PreservesHomology.preservesKernel F _
+  f' := Functor.PreservesHomology.preservesCokernel F _
+
+variable [F.PreservesZeroMorphisms] [h.IsPreservedBy F]
+
+def IsPreservedBy.hg : PreservesLimit (parallelPair S.g 0) F :=
   @IsPreservedBy.g _ _ _ _ _ _ _ h F _ _
 
-def IsPreservedBy.hf' (h : S.LeftHomologyData) (F : C ⥤ D) [F.PreservesZeroMorphisms]
-    [h.IsPreservedBy F] : PreservesColimit (parallelPair h.f' 0) F :=
+def IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F :=
   @IsPreservedBy.f' _ _ _ _ _ _ _ h F _ _
-
-noncomputable instance isPreservedByOfPreservesHomology (h : S.LeftHomologyData) (F : C ⥤ D)
-  [F.PreservesZeroMorphisms] [F.PreservesHomology] : h.IsPreservedBy F where
-  g := Functor.PreservesHomology.preserves_kernel F _
-  f' := Functor.PreservesHomology.preserves_cokernel F _
-
-section
-
-variable (h : S.LeftHomologyData) (F : C ⥤ D) [F.PreservesZeroMorphisms] [h.IsPreservedBy F]
 
 @[simps]
 noncomputable def map : (S.map F).LeftHomologyData := by
@@ -101,8 +98,6 @@ noncomputable def map : (S.map F).LeftHomologyData := by
 lemma map_f' : (h.map F).f' = F.map h.f' := by
   rw [← cancel_mono (h.map F).i, f'_i, map_f, map_i, ← F.map_comp, f'_i]
 
-end
-
 end LeftHomologyData
 
 @[simps]
@@ -118,27 +113,24 @@ def LeftHomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData}
 
 namespace RightHomologyData
 
-class IsPreservedBy (h : S.RightHomologyData)
-  (F : C ⥤ D) [F.PreservesZeroMorphisms] where
+variable (h : S.RightHomologyData) (F : C ⥤ D)
+
+class IsPreservedBy [F.PreservesZeroMorphisms] where
   f : PreservesColimit (parallelPair S.f 0) F
   g' : PreservesLimit (parallelPair h.g' 0) F
 
-def IsPreservedBy.hf (h : S.RightHomologyData) (F : C ⥤ D) [F.PreservesZeroMorphisms]
-    [h.IsPreservedBy F] : PreservesColimit (parallelPair S.f 0) F :=
+noncomputable instance isPreservedByOfPreservesHomology
+  [F.PreservesZeroMorphisms] [F.PreservesHomology] : h.IsPreservedBy F where
+  f := Functor.PreservesHomology.preservesCokernel F _
+  g' := Functor.PreservesHomology.preservesKernel F _
+
+variable [F.PreservesZeroMorphisms] [h.IsPreservedBy F]
+
+def IsPreservedBy.hf : PreservesColimit (parallelPair S.f 0) F :=
   @IsPreservedBy.f _ _ _ _ _ _ _ h F _ _
 
-def IsPreservedBy.hg' (h : S.RightHomologyData) (F : C ⥤ D) [F.PreservesZeroMorphisms]
-    [h.IsPreservedBy F] : PreservesLimit (parallelPair h.g' 0) F :=
+def IsPreservedBy.hg' : PreservesLimit (parallelPair h.g' 0) F :=
   @IsPreservedBy.g' _ _ _ _ _ _ _ h F _ _
-
-noncomputable instance isPreservedByOfPreservesHomology (h : S.RightHomologyData) (F : C ⥤ D)
-  [F.PreservesZeroMorphisms] [F.PreservesHomology] : h.IsPreservedBy F where
-  f := Functor.PreservesHomology.preserves_cokernel F _
-  g' := Functor.PreservesHomology.preserves_kernel F _
-
-section
-
-variable (h : S.RightHomologyData) (F : C ⥤ D) [F.PreservesZeroMorphisms] [h.IsPreservedBy F]
 
 @[simps]
 noncomputable def map : (S.map F).RightHomologyData := by
@@ -174,8 +166,6 @@ noncomputable def map : (S.map F).RightHomologyData := by
 @[simp]
 lemma map_g' : (h.map F).g' = F.map h.g' := by
   rw [← cancel_epi (h.map F).p, p_g', map_g, map_p, ← F.map_comp, p_g']
-
-end
 
 end RightHomologyData
 
