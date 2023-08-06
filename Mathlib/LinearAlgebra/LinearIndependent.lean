@@ -222,7 +222,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f` -/
-theorem Submodule.ker_range_disjoint {f : M →ₗ[R] M'}
+theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :
     Disjoint (span R (range v)) (LinearMap.ker f) := by
   rw [LinearIndependent, Finsupp.total_comp, Finsupp.lmapDomain_total R _ f (fun _ ↦ rfl),
