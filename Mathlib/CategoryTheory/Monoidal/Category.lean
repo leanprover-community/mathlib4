@@ -303,7 +303,7 @@ theorem inv_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     inv (X ◁ f) = X ◁ inv f := by
   aesop_cat
 
-/-- The right whiskering of a 2-isomorphism is a 2-isomorphism. -/
+/-- The right whiskering of an isomorphism is an isomorphism. -/
 @[simps!]
 def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
   hom := f.hom ▷ Z
