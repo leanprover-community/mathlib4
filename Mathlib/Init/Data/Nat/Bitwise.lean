@@ -208,10 +208,8 @@ lemma shiftLeft_eq' {m n : Nat} : shiftLeft m n = m <<< n := rfl
 @[simp]
 lemma shiftRight_eq {m n : Nat} : shiftRight m n = m >>> n := rfl
 
-@[simp]
 theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
 
-@[simp]
 theorem shiftLeft_succ (m n) : m <<< (n + 1) = 2 * (m <<< n) := by
   simp only [shiftLeft_eq, Nat.pow_add, Nat.pow_one, ← Nat.mul_assoc, Nat.mul_comm]
 

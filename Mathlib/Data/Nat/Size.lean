@@ -31,7 +31,6 @@ theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ 
 
 end
 
-@[simp]
 theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
 #align nat.zero_shiftl Nat.zero_shiftLeft
 
