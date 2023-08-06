@@ -456,23 +456,6 @@ def tensor_μ (X Y : C × C) : (X.1 ⊗ X.2) ⊗ Y.1 ⊗ Y.2 ⟶ (X.1 ⊗ Y.1) �
         (X.1 ◁ (α_ Y.1 X.2 Y.2).hom) ≫ (α_ X.1 Y.1 (X.2 ⊗ Y.2)).inv
 #align category_theory.tensor_μ CategoryTheory.tensor_μ
 
--- theorem tensor_μ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁: X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
---     (f₁ ⊗ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensor_μ C (Y₁, Y₂) (Z₁, Z₂) =
---       tensor_μ C (X₁, X₂) (Z₁, Z₂) ≫ (f₁ ▷ Z₁ ⊗ f₂ ▷ Z₂) := by
---   dsimp only [tensor_μ, prodMonoidal_tensorObj, tensor_obj]
---   calc
---     _ = 𝟙 _ ⊗≫
---       f₁ ▷ X₂ ▷ Z₁ ▷ Z₂ ⊗≫ Y₁ ◁ (f₂ ▷ Z₁ ≫ (β_ Y₂ Z₁).hom) ▷ Z₂ ⊗≫ 𝟙 _ := ?eq1
---     _ = 𝟙 _ ⊗≫
---       (f₁ ▷ (X₂ ⊗ Z₁) ≫ Y₁ ◁ (β_ X₂ Z₁).hom) ▷ Z₂ ⊗≫ Y₁ ◁ Z₁ ◁ f₂ ▷ Z₂ ⊗≫ 𝟙 _ := ?eq2
---     _ = 𝟙 _ ⊗≫
---       X₁ ◁ (β_ X₂ Z₁).hom ▷ Z₂ ⊗≫ (f₁ ▷ Z₁ ▷ (X₂ ⊗ Z₂) ≫ (Y₁ ⊗ Z₁) ◁ f₂ ▷ Z₂) ⊗≫ 𝟙 _ := ?eq3
---     _ = _ := ?eq4
---   case eq1 => rw [tensorHom_def']; coherence
---   case eq2 => rw [braiding_naturality_left]; coherence
---   case eq3 => rw [← whisker_exchange]; coherence
---   case eq4 => rw [tensorHom_def']; coherence
-
 theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : U₁ ⟶ V₁)
     (g₂ : U₂ ⟶ V₂) :
     ((f₁ ⊗ f₂) ⊗ g₁ ⊗ g₂) ≫ tensor_μ C (Y₁, Y₂) (V₁, V₂) =
