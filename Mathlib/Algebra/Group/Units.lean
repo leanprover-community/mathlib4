@@ -198,8 +198,7 @@ attribute [instance] AddUnits.instAddGroupAddUnits
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]
 instance {α} [CommMonoid α] : CommGroup αˣ :=
-  { (inferInstance : Group αˣ) with
-    mul_comm := fun _ _ => ext <| mul_comm _ _ }
+  { mul_comm := fun _ _ => ext <| mul_comm _ _ }
 attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
 #align units.comm_group Units.instCommGroupUnitsToMonoid
 #align add_units.add_comm_group AddUnits.instAddCommGroupAddUnitsToAddMonoid
