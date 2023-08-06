@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Data.List.Chain
+import Mathlib.Logic.Relation
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Tactic.Linarith
 
 #align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -563,3 +566,33 @@ theorem covby_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
 #align prod.covby_iff Prod.covby_iff
 
 end Prod
+
+section List
+
+lemma relation.refl_trans_gen_of_chain'_wcovby {X : Type _}
+  [DecidableEq X] [Inhabited X] [PartialOrder X]
+  (l : List X) (hl : 0 < l.length) (l_chain : l.Chain' (. ⩿ .)) :
+  Relation.ReflTransGen (. ⋖ .) (l.nthLe 0 hl) (l.nthLe (l.length - 1) <| Nat.pred_lt <|
+    show l.length ≠ 0 by linarith) := by
+  cases l with | nil => ?_ | cons x0 l => ?_
+  · dsimp at hl
+    norm_num at hl
+
+  induction l generalizing x0 with | nil => ?_ | cons x1 l ih => ?_
+  · dsimp
+    exact Relation.ReflTransGen.refl
+  · dsimp at *
+    specialize ih x1 (Nat.zero_lt_succ _) (List.chain'_cons'.mp l_chain).2
+    have h1 : Relation.ReflTransGen (. ⋖ .) x0 x1
+    · rw [List.chain'_cons] at l_chain
+      by_cases eq0 : x0 = x1
+      · subst eq0
+        exact Relation.ReflTransGen.refl
+      · rw [Relation.ReflTransGen.cases_head_iff]
+        right
+        refine ⟨_, l_chain.1.covby_of_ne eq0, by rfl⟩
+    simp only [ge_iff_le, Nat.succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero, and_false,
+      tsub_zero] at ih ⊢
+    exact Relation.ReflTransGen.trans h1 ih
+
+end List
