@@ -705,11 +705,13 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 #align div_le_div_iff_right div_le_div_iff_right
 #align sub_le_sub_iff_right sub_le_sub_iff_right
+
+attribute [simp] div_le_div_iff_right
 
 @[to_additive sub_le_sub_right]
 theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
@@ -727,11 +729,13 @@ alias sub_nonneg ↔ le_of_sub_nonneg sub_nonneg_of_le
 #align sub_nonneg_of_le sub_nonneg_of_le
 #align le_of_sub_nonneg le_of_sub_nonneg
 
-@[to_additive (attr := simp) sub_nonpos]
+@[to_additive sub_nonpos]
 theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
   rw [← mul_le_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_le_one' div_le_one'
 #align sub_nonpos sub_nonpos
+
+attribute [simp] div_le_one'
 
 alias sub_nonpos ↔ le_of_sub_nonpos sub_nonpos_of_le
 #align sub_nonpos_of_le sub_nonpos_of_le
@@ -769,12 +773,14 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
 #align div_le_div_iff_left div_le_div_iff_left
 #align sub_le_sub_iff_left sub_le_sub_iff_left
+
+attribute [simp] div_le_div_iff_left
 
 @[to_additive sub_le_sub_left]
 theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
