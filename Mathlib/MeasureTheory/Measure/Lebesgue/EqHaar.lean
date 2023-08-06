@@ -378,7 +378,7 @@ theorem NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
   obtain ⟨t, ht, hst⟩ := hs
   refine' ⟨_, ht.const_smul_of_ne_zero hr, _⟩
   rw [← measure_symmDiff_eq_zero_iff] at hst ⊢
-  rw [← smul_set_symm_diff₀ hr, addHaar_smul μ, hst, mul_zero]
+  rw [← smul_set_symmDiff₀ hr, addHaar_smul μ, hst, mul_zero]
 #align measure_theory.measure.null_measurable_set.const_smul MeasureTheory.Measure.NullMeasurableSet.const_smul
 
 variable (μ)

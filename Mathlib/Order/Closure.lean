@@ -166,7 +166,7 @@ theorem le_closure_iff (x y : α) : x ≤ c y ↔ c x ≤ c y :=
 #align closure_operator.le_closure_iff ClosureOperator.le_closure_iff
 
 /-- An element `x` is closed for the closure operator `c` if it is a fixed point for it. -/
-def closed : Set α := fun x => c x = x
+def closed : Set α := {x | c x = x}
 #align closure_operator.closed ClosureOperator.closed
 
 theorem mem_closed_iff (x : α) : x ∈ c.closed ↔ c x = x :=
@@ -380,7 +380,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 /-- An element `x` is closed for `l : LowerAdjoint u` if it is a fixed point: `u (l x) = x` -/
-def closed : Set α := fun x => u (l x) = x
+def closed : Set α := {x | u (l x) = x}
 #align lower_adjoint.closed LowerAdjoint.closed
 
 theorem mem_closed_iff (x : α) : x ∈ l.closed ↔ u (l x) = x :=
