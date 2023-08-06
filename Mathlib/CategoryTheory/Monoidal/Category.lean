@@ -145,7 +145,7 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
       whiskerRight (whiskerLeft X f) Z =
         (associator X Y Z).hom ≫ whiskerLeft X (whiskerRight f Z) ≫ (associator X Y' Z).inv := by
     aesop_cat
-  /-- The exchnage identity for the left and right whiskerings -/
+  /-- The exchange identity for the left and right whiskerings -/
   whisker_exchange :
     ∀ {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z),
       whiskerLeft W g ≫ whiskerRight f Z = whiskerRight f Y ≫ whiskerLeft X g := by
