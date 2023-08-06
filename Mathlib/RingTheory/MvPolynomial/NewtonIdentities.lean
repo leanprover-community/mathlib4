@@ -108,7 +108,7 @@ theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) : pairMap
     exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
   · simp only [h1] at h
     simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
-    exact Or.resolve_left (le_iff_eq_or_lt.mp h.1) h.2
+    exact Or.resolve_left (le_iff_eq_or_lt.mp h.left) h.right
 
 @[simp] theorem pairMap_pairMap (t : Finset σ × σ) : pairMap σ (pairMap σ t) = t := by
   rw [pairMap, pairMap]
@@ -164,7 +164,7 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (fun hpl => ⟨mem_powerset_len_univ_iff.mpr hpl.right, hpl.left.right hpl.right⟩) ?_
   intro hpr
   simp only [hpr, implies_true, and_true]
-  have cardpk := mem_powerset_len_univ_iff.mp hpr.1
+  have cardpk := mem_powerset_len_univ_iff.mp hpr.left
   exact And.intro (le_of_eq cardpk) cardpk
 
 theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ → MvPolynomial σ R) :
@@ -174,7 +174,7 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
   simp only [Prod.forall, pairs, mem_filter, mem_univ, true_and, and_true]
   rw [mem_range] at hi
   intro p b
-  refine Iff.intro (fun hpl => mem_powerset_len_univ_iff.mpr hpl.2) ?_
+  refine Iff.intro (fun hpl => mem_powerset_len_univ_iff.mpr hpl.right) ?_
   intro hpr
   refine ⟨?_, mem_powerset_len_univ_iff.mp hpr⟩
   refine ⟨Eq.subst (motive := fun n => n ≤ k)
