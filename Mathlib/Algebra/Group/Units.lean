@@ -646,11 +646,9 @@ theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
 #align is_add_unit_iff_exists_neg isAddUnit_iff_exists_neg
 
--- Porting note: `to_additive` complains if using `simp [isUnit_iff_exists_inv, mul_comm]` proof
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
-  rw [isUnit_iff_exists_inv]
-  simp [mul_comm]
+  simp [isUnit_iff_exists_inv, mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 
