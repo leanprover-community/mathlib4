@@ -230,7 +230,7 @@ theorem coe_map (f : M →ₙ* N) (S : Subsemigroup M) : (S.map f : Set N) = f '
 #align subsemigroup.coe_map Subsemigroup.coe_map
 #align add_subsemigroup.coe_map AddSubsemigroup.coe_map
 
-@[to_additive (attr := simp 900)]
+@[to_additive (attr := simp)]
 theorem mem_map {f : M →ₙ* N} {S : Subsemigroup M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
   mem_image _ _ _
 #align subsemigroup.mem_map Subsemigroup.mem_map
@@ -255,7 +255,7 @@ theorem map_map (g : N →ₙ* P) (f : M →ₙ* N) : (S.map f).map g = S.map (g
 #align add_subsemigroup.map_map AddSubsemigroup.map_map
 
 -- The simpNF linter says that the LHS can be simplified via `Subsemigroup.mem_map`.
--- However that is a lower priority simp lemma, so this doesn't matter.
+-- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp, nolint simpNF)]
 theorem mem_map_iff_mem {f : M →ₙ* N} (hf : Function.Injective f) {S : Subsemigroup M} {x : M} :
