@@ -67,7 +67,7 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
       let p := getModule to
       graph := graph.filterMap (fun n i =>
         if p.isPrefixOf n then (i.filter (isPrefixOf p)) else none)
-    if args.hasFlag "excludeMeta" then
+    if args.hasFlag "exclude-meta" then
       let filterMeta : Name → Bool := fun n => (
         isPrefixOf `Mathlib.Tactic n ∨
         isPrefixOf `Mathlib.Lean n ∨
@@ -78,11 +78,17 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
         (fun ⟨n, i⟩ => if filterMeta n then i.toList else [])
         |>.eraseDup |>.filter (not <| isPrefixOf `Mathlib ·) |>.toArray
       -- iterate over the graph and replace any filtered import with `Mathlib.Tactics`
-      graph := graph.filterMap (fun n i =>
-        if filterMeta n then
-          (i.map (fun n₂ => if filterMeta n₂ then `Mathlib.Tactics else n₂)).toList.eraseDup.toArray
-        else none)
-      graph := graph.insert `Mathlib.Tactics tacticImports
+      graph := graph.filterMap (fun n i => if filterMeta n then none else
+        some <| (i.map (fun name => if filterMeta name then `«Mathlib.Tactics» else name)
+        |>.toList.eraseDup.toArray)
+
+        )
+
+      -- graph := graph.filterMap (fun n i =>
+      --   if filterMeta n then
+      --     (i.map (fun n₂ => if filterMeta n₂ then `Mathlib.Tactics else n₂)).toList.eraseDup.toArray
+      --   else some i)
+      graph := graph.insert `«Mathlib.Tactics» tacticImports
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
@@ -105,7 +111,7 @@ def graph : Cmd := `[Cli|
     reduce;         "Remove transitively redundant edges."
     to : Name;      "Only show the upstream imports of the specified module."
     "from" : Name;  "Only show the downstream dependencies of the specified module."
-    excludeMeta; "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
+    "exclude-meta"; "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
     "include-deps"; "Include used files from other projects (e.g. lake packages)"
 
   ARGS:
