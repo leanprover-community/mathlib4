@@ -50,7 +50,7 @@ theorem punit_ext' (F G : C ⥤ Discrete PUnit) : F = G :=
 #align category_theory.functor.punit_ext' CategoryTheory.Functor.punit_ext'
 
 /-- The functor from `Discrete PUnit` sending everything to the given object. -/
-abbrev fromPUnit (X : C) : Discrete PUnit.{v + 1} ⥤ C :=
+abbrev fromPUnit (X : C) : Discrete PUnit.{1} ⥤ C :=
   (Functor.const _).obj X
 #align category_theory.functor.from_punit CategoryTheory.Functor.fromPUnit
 
