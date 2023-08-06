@@ -32,11 +32,13 @@ For olean caching reasons, this file is separate to the main file,
 variable {α : Type*}
 
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
-class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
+class LinearOrderedSemifield (α : Type*) extends Semifield α, LinearOrder α,
+    LinearOrderedCommSemiring α
 #align linear_ordered_semifield LinearOrderedSemifield
 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
-class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
+class LinearOrderedField (α : Type*) extends Field α, LinearOrder α,
+    LinearOrderedCommRing α
 #align linear_ordered_field LinearOrderedField
 
 -- See note [lower instance priority]

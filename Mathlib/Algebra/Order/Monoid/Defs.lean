@@ -89,20 +89,22 @@ set_option linter.deprecated false in
 #align bit0_pos bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
-class LinearOrderedAddCommMonoid (α : Type*) extends LinearOrder α, OrderedAddCommMonoid α
+class LinearOrderedAddCommMonoid (α : Type*) extends AddCommMonoid α, LinearOrder α,
+    OrderedAddCommMonoid α
 #align linear_ordered_add_comm_monoid LinearOrderedAddCommMonoid
 
 /-- A linearly ordered commutative monoid. -/
 @[to_additive]
-class LinearOrderedCommMonoid (α : Type*) extends LinearOrder α, OrderedCommMonoid α
+class LinearOrderedCommMonoid (α : Type*) extends CommMonoid α, LinearOrder α,
+    OrderedCommMonoid α
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
 
 attribute [to_additive existing] LinearOrderedCommMonoid.toOrderedCommMonoid
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    Top α where
+class LinearOrderedAddCommMonoidWithTop (α : Type*) extends AddCommMonoid α, LinearOrder α,
+    LinearOrderedAddCommMonoid α, Top α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is larger than any other element.-/
   protected le_top : ∀ x : α, x ≤ ⊤
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/

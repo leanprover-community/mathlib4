@@ -1083,13 +1083,14 @@ end LinearOrder
 /-- A linearly ordered additive commutative group is an
 additive commutative group with a linear order in which
 addition is monotone. -/
-class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
+class LinearOrderedAddCommGroup (α : Type u) extends AddCommGroup α, LinearOrder α,
+    OrderedAddCommGroup α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
-  SubNegMonoid α, Nontrivial α where
+class LinearOrderedAddCommGroupWithTop (α : Type u) extends AddCommGroup α, LinearOrder α,
+    LinearOrderedAddCommMonoidWithTop α, SubNegMonoid α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
@@ -1098,7 +1099,7 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
 commutative group with a linear order in which
 multiplication is monotone. -/
 @[to_additive]
-class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
+class LinearOrderedCommGroup (α : Type u) extends CommGroup α, LinearOrder α, OrderedCommGroup α
 #align linear_ordered_comm_group LinearOrderedCommGroup
 
 section LinearOrderedCommGroup

@@ -32,8 +32,8 @@ in another file. However, the lemmas about it are stated here.
 
 
 /-- A linearly ordered commutative group with a zero element. -/
-class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
-  CommGroupWithZero α
+class LinearOrderedCommGroupWithZero (α : Type*) extends
+    CommGroupWithZero α, LinearOrder α, LinearOrderedCommMonoidWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
 
 variable {α : Type*}

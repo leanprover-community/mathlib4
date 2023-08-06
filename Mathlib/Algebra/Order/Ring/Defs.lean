@@ -127,7 +127,8 @@ theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·)
 
 /-- An `OrderedSemiring` is a semiring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
-class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α where
+class OrderedSemiring (α : Type u) extends Semiring α, PartialOrder α,
+    OrderedAddCommMonoid α where
   /-- `0 ≤ 1` in any ordered semiring. -/
   protected zero_le_one : (0 : α) ≤ 1
   /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
@@ -140,12 +141,14 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α
+class OrderedCommSemiring (α : Type u) extends CommSemiring α, PartialOrder α,
+    OrderedSemiring α
 #align ordered_comm_semiring OrderedCommSemiring
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
-class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
+class OrderedRing (α : Type u) extends Ring α, PartialOrder α,
+    OrderedAddCommGroup α where
   /-- `0 ≤ 1` in any ordered ring. -/
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of non-negative elements is non-negative. -/
@@ -154,13 +157,14 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
 
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
-class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
+class OrderedCommRing (α : Type u) extends CommRing α, PartialOrder α,
+    OrderedRing α
 #align ordered_comm_ring OrderedCommRing
 
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α,
-    Nontrivial α where
+class StrictOrderedSemiring (α : Type u) extends Semiring α, PartialOrder α,
+    OrderedCancelAddCommMonoid α, Nontrivial α where
   /-- In a strict ordered semiring, `0 ≤ 1`. -/
   protected zero_le_one : (0 : α) ≤ 1
   /-- Left multiplication by a positive element is strictly monotone. -/
@@ -171,12 +175,14 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
 
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
+class StrictOrderedCommSemiring (α : Type u) extends CommSemiring α, PartialOrder α,
+    StrictOrderedSemiring α,
 #align strict_ordered_comm_semiring StrictOrderedCommSemiring
 
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
+class StrictOrderedRing (α : Type u) extends Ring α, PartialOrder α,
+    OrderedAddCommGroup α, Nontrivial α where
   /-- In a strict ordered ring, `0 ≤ 1`. -/
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of two positive elements is positive. -/
@@ -185,7 +191,8 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
+class StrictOrderedCommRing (α : Type u) extends CommRing α, PartialOrder α,
+    StrictOrderedRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
@@ -193,24 +200,26 @@ explore changing this, but be warned that the instances involving `Domain` may c
 search loops. -/
 /-- A `LinearOrderedSemiring` is a nontrivial semiring with a linear order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
-  LinearOrderedAddCommMonoid α
+class LinearOrderedSemiring (α : Type u) extends Semiring α, LinearOrder α,
+    StrictOrderedSemiring α
 #align linear_ordered_semiring LinearOrderedSemiring
 
 /-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
-  LinearOrderedSemiring α
+class LinearOrderedCommSemiring (α : Type u) extends CommSemiring α, LinearOrder α,
+    LinearOrderedSemiring α
 #align linear_ordered_comm_semiring LinearOrderedCommSemiring
 
 /-- A `LinearOrderedRing` is a ring with a linear order such that addition is monotone and
 multiplication by a positive number is strictly monotone. -/
-class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
+class LinearOrderedRing (α : Type u) extends Ring α, LinearOrder α,
+    StrictOrderedRing α
 #align linear_ordered_ring LinearOrderedRing
 
 /-- A `LinearOrderedCommRing` is a commutative ring with a linear order such that addition is
 monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
+class LinearOrderedCommRing (α : Type u) extends CommRing α, LinearOrder α,
+    LinearOrderedRing α
 #align linear_ordered_comm_ring LinearOrderedCommRing
 
 section OrderedSemiring
