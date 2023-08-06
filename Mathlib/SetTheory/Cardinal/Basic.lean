@@ -400,6 +400,7 @@ theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
 #align cardinal.mk_ne_zero Cardinal.mk_ne_zero
 
 instance : One Cardinal.{u} :=
+  -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 1)⟩
 
 instance : Nontrivial Cardinal.{u} :=
@@ -429,8 +430,6 @@ theorem add_def (α β : Type u) : #α + #β = #(Sum α β) :=
   rfl
 #align cardinal.add_def Cardinal.add_def
 
--- Porting note: Should this be changed to
--- `⟨fun n => lift #(Fin n)⟩` in the future?
 instance : NatCast Cardinal.{u} :=
   ⟨fun n => lift #(Fin n)⟩
 
@@ -1312,7 +1311,7 @@ theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a 
   rw [← lift_natCast.{v,u}, lift_lt]
 #align cardinal.nat_lt_lift_iff Cardinal.nat_lt_lift_iff
 
-theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := by simp
+theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 #align cardinal.lift_mk_fin Cardinal.lift_mk_fin
 
 theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) := by simp
