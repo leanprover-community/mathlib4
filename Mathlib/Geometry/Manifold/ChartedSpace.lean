@@ -178,10 +178,9 @@ instance : Membership (LocalHomeomorph H H) (StructureGroupoid H) :=
 instance : Inter (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
-    (trans' := fun e e' he he' => (mem_inter_iff (e ≫ₕ e') G.members G'.members).mpr
+    (trans' := fun e e' he he' =>
       ⟨G.trans' e e' he.left he'.left, G'.trans' e e' he.right he'.right⟩)
-    (symm' := fun e he => (mem_inter_iff e.symm G.members G'.members).mpr
-      ⟨G.symm' e he.left, G'.symm' e he.right⟩)
+    (symm' := fun e he => ⟨G.symm' e he.left, G'.symm' e he.right⟩)
     (id_mem' := ⟨G.id_mem', G'.id_mem'⟩)
     (locality' := by
       intro e hx

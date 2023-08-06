@@ -679,16 +679,13 @@ def analyticGroupoid : StructureGroupoid H :=
               exact hx.left.right
             · apply hf.right
               rw [mem_image]
-              use x
-              exact ⟨⟨hx.left.left, hx.right⟩, rfl⟩
+              exact ⟨x, ⟨⟨hx.left.left, hx.right⟩, rfl⟩⟩
         · simp only [comp]
           rw [image_comp]
           intro x hx
           rw [mem_image] at hx
           rcases hx with ⟨x', hx'⟩
-          refine hg.right ?_
-          use x'
-          refine And.intro ?_ hx'.right
+          refine hg.right ⟨x', And.intro ?_ hx'.right⟩
           apply And.intro
           · have hx'1 : x' ∈ ((v.preimage f).preimage (I.symm)).image (I ∘ f ∘ I.symm) := by
               refine image_subset (I ∘ f ∘ I.symm) ?_ hx'.left
@@ -702,24 +699,16 @@ def analyticGroupoid : StructureGroupoid H :=
             exact hx''.left
           · rw [mem_image] at hx'
             rcases hx'.left with ⟨x'', hx''⟩
-            refine hf.right ?_
-            use x''
-            refine And.intro ?_ hx''.right
-            rw [preimage_inter] at hx''
-            exact ⟨hx''.left.left.left, hx''.left.right⟩
+            exact hf.right ⟨x'', ⟨⟨hx''.left.left.left, hx''.left.right⟩, hx''.right⟩⟩
       id_mem := by
         apply And.intro
         · simp only [preimage_univ, univ_inter]
-          apply AnalyticOn.congr (f := (1 : E →L[𝕜] E))
-          · intro x _
-            exact (1 : E →L[𝕜] E).analyticAt x
-          · intro z hz
-            refine eventuallyEq_iff_exists_mem.mpr ?_
-            use interior (range I)
-            refine And.intro (isOpen_interior.mem_nhds_iff.mpr hz) ?_
-            simp only [EqOn, id]
-            intro x hx
-            exact (I.right_inv (interior_subset hx)).symm
+          refine AnalyticOn.congr
+            (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x) ?_
+          intro z hz
+          refine eventuallyEq_iff_exists_mem.mpr ?_
+          exact ⟨interior (range I), ⟨isOpen_interior.mem_nhds_iff.mpr hz,
+            fun x hx => (I.right_inv (interior_subset hx)).symm⟩⟩
         · intro x hx
           simp only [left_id, comp_apply, preimage_univ, univ_inter, mem_image] at hx
           rcases hx with ⟨y, hy⟩
@@ -731,19 +720,16 @@ def analyticGroupoid : StructureGroupoid H :=
         apply And.intro
         · intro x hx
           rcases h (I.symm x) (mem_preimage.mp hx.left) with ⟨v, hv⟩
-          have setmem := And.intro (Set.mem_preimage.mpr hv.right.left) hx
-          rw [← mem_inter_iff, ← inter_assoc, ← preimage_inter, inter_comm v u] at setmem
-          exact hv.right.right.left x setmem
+          exact hv.right.right.left x ⟨Set.mem_preimage.mpr ⟨hx.left, hv.right.left⟩, hx.right⟩
         · apply mapsTo'.mp
           simp only [MapsTo]
           intro x hx
           rcases h (I.symm x) hx.left with ⟨v, hv⟩
           apply hv.right.right.right
           rw [mem_image]
-          use x
           have hx' := And.intro hx (mem_preimage.mpr hv.right.left)
           rw [← mem_inter_iff, inter_comm, ← inter_assoc, ← preimage_inter, inter_comm v u] at hx'
-          exact ⟨hx', rfl⟩
+          exact ⟨x, ⟨hx', rfl⟩⟩
       congr := fun {f g u} hu fg hf => by
         simp only [] at hf ⊢
         apply And.intro
@@ -751,17 +737,15 @@ def analyticGroupoid : StructureGroupoid H :=
           intro z hz
           refine Iff.mpr eventuallyEq_iff_exists_mem ?_
           use u.preimage I.symm
-          apply And.intro
-          · exact (hu.preimage I.continuous_symm).mem_nhds hz.left
-          · refine (EqOn.comp_left (eqOn_comp_right_iff.mpr ?_)).symm
-            simp only [EqOn, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-            exact fun x => fg (I.symm x)
+          refine ⟨(hu.preimage I.continuous_symm).mem_nhds hz.left,
+            (EqOn.comp_left (eqOn_comp_right_iff.mpr ?_)).symm⟩
+          simp only [EqOn, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+          exact fun x => fg (I.symm x)
         · intro x hx
           apply hf.right
           rw [mem_image] at hx ⊢
           rcases hx with ⟨y, hy⟩
-          use y
-          refine And.intro hy.left ?_
+          refine ⟨y, ⟨hy.left, ?_⟩⟩
           rw [comp_apply, comp_apply, fg (I.symm y) hy.left.left] at hy
           exact hy.right }
 
