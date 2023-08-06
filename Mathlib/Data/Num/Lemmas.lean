@@ -952,7 +952,7 @@ theorem lxor'_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
 #align num.lxor_to_nat Num.lxor'_to_nat
 
 @[simp, norm_cast]
-theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftLeft m n := by
+theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = (m : ℕ) <<< (n : ℕ) := by
   cases m <;> dsimp only [shiftl]
   · symm
     apply Nat.zero_shiftLeft
@@ -965,14 +965,14 @@ theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftLeft m n := by
 
 @[simp, norm_cast]
 
-theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftRight m n := by
+theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = (m : ℕ) >>> (n : ℕ)  := by
   cases' m with m <;> dsimp only [shiftr];
   · symm
     apply Nat.zero_shiftRight
   induction' n with n IH generalizing m
   · cases m <;> rfl
   cases' m with m m <;> dsimp only [PosNum.shiftr]
-  · rw [Nat.shiftRight_eq, Nat.shiftRight_eq_div_pow]
+  · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt
     simp [@Nat.pow_lt_pow_of_lt_right 2 (by decide) 0 (n + 1) (Nat.succ_pos _)]

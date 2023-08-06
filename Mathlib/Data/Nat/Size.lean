@@ -34,6 +34,8 @@ end
 theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
 #align nat.zero_shiftl Nat.zero_shiftLeft
 
+#align nat.one_shiftl Nat.one_shiftLeft
+
 theorem shiftRight_eq_div_pow (m) : ∀ n, m >>> n = m / 2 ^ n
   | 0 => (Nat.div_one _).symm
   | k + 1 => by
