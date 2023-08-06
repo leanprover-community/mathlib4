@@ -1084,23 +1084,27 @@ end LinearOrder
 additive commutative group with a linear order in which
 addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends AddCommGroup α, LinearOrder α,
-    OrderedAddCommGroup α
+    OrderedAddCommGroup α, LinearOrderedAddCommMonoid α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
-
-/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommGroupWithTop (α : Type u) extends AddCommGroup α, LinearOrder α,
-    LinearOrderedAddCommMonoidWithTop α, SubNegMonoid α, Nontrivial α where
-  protected neg_top : -(⊤ : α) = ⊤
-  protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
-#align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
 
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
 multiplication is monotone. -/
 @[to_additive]
-class LinearOrderedCommGroup (α : Type u) extends CommGroup α, LinearOrder α, OrderedCommGroup α
+class LinearOrderedCommGroup (α : Type u) extends CommGroup α, LinearOrder α,
+    OrderedCommGroup α, LinearOrderedCommMonoid α
 #align linear_ordered_comm_group LinearOrderedCommGroup
+
+attribute [to_additive existing] LinearOrderedCommGroup.toOrderedCommGroup
+attribute [to_additive existing] LinearOrderedCommGroup.toLinearOrderedCommMonoid
+
+/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
+  Instances should include number systems with an infinite element adjoined. -/
+class LinearOrderedAddCommGroupWithTop (α : Type u) extends SubNegMonoid α, LinearOrder α,
+    LinearOrderedAddCommMonoidWithTop α, Nontrivial α where
+  protected neg_top : -(⊤ : α) = ⊤
+  protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
+#align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
 
 section LinearOrderedCommGroup
 

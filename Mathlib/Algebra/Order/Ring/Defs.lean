@@ -176,7 +176,7 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, PartialOrder α,
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommSemiring (α : Type u) extends CommSemiring α, PartialOrder α,
-    StrictOrderedSemiring α,
+    StrictOrderedSemiring α
 #align strict_ordered_comm_semiring StrictOrderedCommSemiring
 
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
@@ -799,8 +799,6 @@ instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosRefle
   ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.toMulPosReflectLT
 
-attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
-
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine' Decidable.or_iff_not_and_not.2 _
@@ -1017,8 +1015,6 @@ instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCom
 section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b c : α}
-
-attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
