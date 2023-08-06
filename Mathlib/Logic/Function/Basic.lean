@@ -434,6 +434,10 @@ theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
 #align function.inv_fun_eq Function.invFun_eq
 
+theorem apply_invFun_apply {α : Type u₁} {β : Type u₂} {f : α → β} {a : α} :
+    f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
+  @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
+
 theorem invFun_neg (h : ¬∃ a, f a = b) : invFun f b = Classical.choice ‹_› :=
   dif_neg h
 #align function.inv_fun_neg Function.invFun_neg

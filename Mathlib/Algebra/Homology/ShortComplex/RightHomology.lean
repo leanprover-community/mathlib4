@@ -984,7 +984,7 @@ lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLe
 lemma rightHomologyMap'_op
     (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     (rightHomologyMap' φ h₁ h₂).op = leftHomologyMap' (opMap φ) h₂.op h₁.op := by
-  let γ : RightHomologyMapData φ h₁ h₂ := default
+  let γ : RightHomologyMapData φ h₁ h₂ := rightHomologyMapData φ h₁ h₂
   simp only [γ.rightHomologyMap'_eq, γ.op.leftHomologyMap'_eq,
     RightHomologyMapData.op_φH]
 
