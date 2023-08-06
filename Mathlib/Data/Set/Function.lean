@@ -117,7 +117,7 @@ theorem restrict_piecewise_compl (f g : α → β) (s : Set α) [∀ x, Decidabl
 @[simp]
 theorem restrict_piecewise' (s : Set α) (f : s → β)
     (g : {i // i ∈ sᶜ} → β) [∀ j, Decidable (j ∈ s)] :
-    s.restrict (s.piecewise' f g : α → β) = f := by
+    s.restrict (piecewise' s f g : α → β) = f := by
   ext x
   dsimp [piecewise']
   split_ifs with h
@@ -129,7 +129,7 @@ theorem restrict_piecewise' (s : Set α) (f : s → β)
 theorem restrict_piecewise'_compl' (s t : Set α) (f : s → β)
     (g : t → β) (hst : sᶜ ⊆ t) (hfg : ∀ x (hx : x ∈ s ∩ t), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
     [∀ j, Decidable (j ∈ s)] :
-    t.restrict (s.piecewise' f (g ∘ Set.inclusion hst) : α → β) = g := by
+    t.restrict (piecewise' s f (g ∘ Set.inclusion hst) : α → β) = g := by
   ext x
   dsimp [piecewise']
   split_ifs with h
@@ -139,7 +139,7 @@ theorem restrict_piecewise'_compl' (s t : Set α) (f : s → β)
 @[simp]
 theorem restrict_piecewise'_compl (s : Set α) (f : s → β)
     (g : {i // i ∈ sᶜ} → β) [∀ j, Decidable (j ∈ s)] :
-    (sᶜ).restrict (s.piecewise' f g : α → β) = g :=
+    (sᶜ).restrict (piecewise' s f g : α → β) = g :=
   restrict_piecewise'_compl' s sᶜ _ _ (subset_refl _) (fun _ h ↦ by simp at h)
 
 theorem restrict_extend_range (f : α → β) (g : α → γ) (g' : β → γ) :
