@@ -611,6 +611,7 @@ end LocallyConstant
 end Piecewise
 
 section TrivialListLexLemmas
+-- This section is PR #6395
 
 namespace List
 namespace Lex
@@ -632,7 +633,7 @@ lemma nil_left_or_nil_eq (l : List α) : List.Lex r [] l ∨ [] = l := by
 end Lex
 end List
 
-section TrivialListLexLemmas
+end TrivialListLexLemmas
 
 namespace NobelingProof
 
