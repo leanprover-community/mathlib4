@@ -460,7 +460,7 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     repeat (ext; simp)
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
-/-- The identity under `X` is terminal. -/
+/-- The identity under `X` is initial. -/
 def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
 
