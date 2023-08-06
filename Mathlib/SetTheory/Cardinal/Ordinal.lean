@@ -24,7 +24,7 @@ using ordinals.
   It is an order isomorphism between ordinals and cardinals.
 * The function `Cardinal.aleph` gives the infinite cardinals listed by their
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on. The related function `ordinal.initial`
+  uncountable cardinal, and so on. The related function `Ordinal.initial`
   (notation: `ω_`) gives the first ordinal of a given infinite cardinality.
   Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
@@ -1467,7 +1467,7 @@ scoped notation "ω_" => Ordinal.initial
 scoped notation "ω₁" => Ordinal.initial 1
 
 @[simp]
-theorem cardInitial (i : Ordinal): card (initial i) = aleph i := card_ord _
+theorem card_initial (i : Ordinal): card (initial i) = aleph i := card_ord _
 
 /--
 The first (infinite) initial ordinal is `ω`.
@@ -1482,7 +1482,7 @@ An initial ordinal is a limit ordinal.
 -/
 lemma isLimit_initial (i : Ordinal): (ω_ i).IsLimit := ord_isLimit (aleph0_le_aleph i)
 
-lemma omega_lt_omega_1 : ω < ω₁ := by
+lemma omega_lt_omega1 : ω < ω₁ := by
   have := (ord_lt_ord.mpr (aleph0_lt_aleph_one))
   rw [ord_aleph0] at this
   exact this
@@ -1504,7 +1504,7 @@ open scoped Cardinal
 /--
 Bounding the cardinal of an ordinal-indexed union of sets.
 -/
-lemma mk_Union_ordinal_le_of_le {β : Type _} {κ : Cardinal} {i : Ordinal}
+lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {κ : Cardinal} {i : Ordinal}
   (hi : i ≤ κ.ord) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
   (hA : ∀ j < i, #(A j) ≤ κ) :
   #(⋃ j < i, A j) ≤ κ := by

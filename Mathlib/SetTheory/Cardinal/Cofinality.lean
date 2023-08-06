@@ -1256,7 +1256,7 @@ namespace Ordinal
 open Cardinal
 open scoped Ordinal
 
-lemma sup_sequence_lt_omega_1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
+lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
   sup o < ω₁ := by
   apply sup_lt_ord_lift _ ho
   rw [initial, Cardinal.isRegular_aleph_one.cof_eq]
