@@ -1126,13 +1126,14 @@ variable [HasKernels C] [HasCokernels C] [HasKernels Cᵒᵖ] [HasCokernels Cᵒ
 @[simps!]
 noncomputable def rightHomologyFunctorOpNatIso :
   (rightHomologyFunctor C).op ≅ opFunctor C ⋙ leftHomologyFunctor Cᵒᵖ :=
-    NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm) (by simp)
-
+    NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm)
+      (by simp [rightHomologyMap_op])
 /-- The opposite of the left homology functor is the right homology functor. -/
 @[simps!]
 noncomputable def leftHomologyFunctorOpNatIso :
   (leftHomologyFunctor C).op ≅ opFunctor C ⋙ rightHomologyFunctor Cᵒᵖ :=
-    NatIso.ofComponents (fun S => (rightHomologyOpIso S.unop).symm) (by simp)
+    NatIso.ofComponents (fun S => (rightHomologyOpIso S.unop).symm)
+      (by simp [leftHomologyMap_op])
 
 end
 
