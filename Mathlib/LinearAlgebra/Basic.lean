@@ -320,12 +320,10 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
-@[simp]
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := by
-  induction' n with n ih
-  · rfl
-  · simp only [Function.comp_apply, Function.iterate_succ, LinearMap.mul_apply, pow_succ, ih]
-    exact (Function.Commute.iterate_self _ _ m).symm
+theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+#align linear_map.coe_pow LinearMap.coe_pow
+
+theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
 #align linear_map.pow_apply LinearMap.pow_apply
 
 theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
@@ -350,11 +348,6 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
 #align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
-
-theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
-  ext m
-  apply pow_apply
-#align linear_map.coe_pow LinearMap.coe_pow
 
 @[simp]
 theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
@@ -412,11 +405,9 @@ theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :
     --Porting note: ugly `HPow.hPow` instead of `^` notation
     HPow.hPow (f'.restrict h) n = (HPow.hPow f' n).restrict h' := by
-  dsimp [optParam] at h'
-  induction' n with n ih <;> ext
-  · simp [restrict_apply]
-  · rw [restrict_apply, LinearMap.iterate_succ, ih (pow_apply_mem_of_forall_mem n h)]
-    simp
+  ext x
+  have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ rfl
+  simp [coe_pow, this.iterate_right _ _]
 #align linear_map.pow_restrict LinearMap.pow_restrict
 
 end

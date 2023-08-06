@@ -145,12 +145,30 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
   rw [LocalEquiv.prod_trans, LocalEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
+protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
+    (extChartAt (IB.prod 𝓘(𝕜, F)) x).target =
+      ((extChartAt IB x.proj).target ∩
+        (extChartAt IB x.proj).symm ⁻¹' (trivializationAt F E x.proj).baseSet) ×ˢ univ := by
+  rw [FiberBundle.extChartAt, LocalEquiv.trans_target, Trivialization.target_eq, inter_prod]
+  rfl
+
+theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y}
+    (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
+    writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) x
+      (trivializationAt F E x.proj) y = y :=
+  writtenInExtChartAt_chartAt_comp _ _ hy
+
+theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F E} {y}
+    (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
+    writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) (trivializationAt F E x.proj x)
+      (trivializationAt F E x.proj).toLocalHomeomorph.symm y = y :=
+  writtenInExtChartAt_chartAt_symm_comp _ _ hy
+
 /-! ### Smoothness of maps in/out fiber bundles
 
 Note: For these results we don't need that the bundle is a smooth vector bundle, or even a vector
 bundle at all, just that it is a fiber bundle over a charted base space.
 -/
-
 
 namespace Bundle
 

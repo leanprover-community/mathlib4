@@ -1769,6 +1769,11 @@ theorem toNat_eq_iff {c : Cardinal} {n : ℕ} (hn : n ≠ 0) : toNat c = n ↔ c
     fun h => (congr_arg toNat h).trans (toNat_cast n)⟩
 #align cardinal.to_nat_eq_iff Cardinal.toNat_eq_iff
 
+/-- A version of `toNat_eq_iff` for literals -/
+theorem toNat_eq_ofNat {c : Cardinal} {n : ℕ} [Nat.AtLeastTwo n] :
+    toNat c = OfNat.ofNat n ↔ c = OfNat.ofNat n :=
+  toNat_eq_iff <| Nat.cast_ne_zero.mpr <| OfNat.ofNat_ne_zero n
+
 @[simp]
 theorem toNat_eq_one {c : Cardinal} : toNat c = 1 ↔ c = 1 := by
   rw [toNat_eq_iff one_ne_zero, Nat.cast_one]
@@ -2402,10 +2407,9 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 #align cardinal.zero_powerlt Cardinal.zero_powerlt
 
 @[simp]
-theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 :=
-  -- Porting note: used to expect that `convert` would leave an instance argument as a goal
-  @Cardinal.iSup_of_empty _ _
-    (Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt)
+theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
+  convert Cardinal.iSup_of_empty _
+  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
 
 end Cardinal

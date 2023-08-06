@@ -54,7 +54,7 @@ section SMul
       "The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in
       locale `Pointwise`."]
 protected def smulSet [SMul α β] : SMul α (Set β) :=
-  ⟨fun a ↦ image (a • .)⟩
+  ⟨fun a ↦ image (a • ·)⟩
 #align set.has_smul_set Set.smulSet
 #align set.has_vadd_set Set.vaddSet
 
@@ -64,7 +64,7 @@ locale `Pointwise`. -/
       "The pointwise scalar addition of sets `s +ᵥ t` is defined as
       `{x +ᵥ y | x ∈ s, y ∈ t}` in locale `Pointwise`."]
 protected def smul [SMul α β] : SMul (Set α) (Set β) :=
-  ⟨image2 (. • .)⟩
+  ⟨image2 (· • ·)⟩
 #align set.has_smul Set.smul
 #align set.has_vadd Set.vadd
 
@@ -941,10 +941,10 @@ theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
 #align set.vadd_set_sdiff Set.vadd_set_sdiff
 
 @[to_additive]
-theorem smul_set_symm_diff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symm_diff (MulAction.injective a) _ _
-#align set.smul_set_symm_diff Set.smul_set_symm_diff
-#align set.vadd_set_symm_diff Set.vadd_set_symm_diff
+theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
+  image_symmDiff (MulAction.injective a) _ _
+#align set.smul_set_symm_diff Set.smul_set_symmDiff
+#align set.vadd_set_symm_diff Set.vadd_set_symmDiff
 
 @[to_additive (attr := simp)]
 theorem smul_set_univ : a • (univ : Set β) = univ :=
@@ -1053,9 +1053,9 @@ theorem smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective₀ ha) _ _
 #align set.smul_set_sdiff₀ Set.smul_set_sdiff₀
 
-theorem smul_set_symm_diff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symm_diff (MulAction.injective₀ ha) _ _
-#align set.smul_set_symm_diff₀ Set.smul_set_symm_diff₀
+theorem smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
+  image_symmDiff (MulAction.injective₀ ha) _ _
+#align set.smul_set_symm_diff₀ Set.smul_set_symmDiff₀
 
 theorem smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective₀ ha

@@ -2,7 +2,6 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
-Ported by: Joël Riou, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
@@ -84,7 +83,7 @@ section MapReverse
 variable [HasReverse U] [HasReverse V] [HasReverse W]
 
 /-- A prefunctor preserving reversal of arrows -/
-class _root_.Prefunctor.MapReverse (φ : U ⥤q V) where
+class _root_.Prefunctor.MapReverse (φ : U ⥤q V) : Prop where
   /-- The image of a reverse is the reverse of the image. -/
   map_reverse' : ∀ {u v : U} (e : u ⟶ v), φ.map (reverse e) = reverse (φ.map e)
 #align prefunctor.map_reverse Prefunctor.MapReverse

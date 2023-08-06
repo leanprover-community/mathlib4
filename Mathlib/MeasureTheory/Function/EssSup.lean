@@ -60,23 +60,21 @@ theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = e
 #align ess_inf_congr_ae essInf_congr_ae
 
 @[simp]
-theorem essSup_const' [μ.ae.NeBot] (c : β) : essSup (fun _ : α => c) μ = c :=
+theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
   limsup_const _
 #align ess_sup_const' essSup_const'
 
 @[simp]
-theorem essInf_const' [μ.ae.NeBot] (c : β) : essInf (fun _ : α => c) μ = c :=
+theorem essInf_const' [NeZero μ] (c : β) : essInf (fun _ : α => c) μ = c :=
   liminf_const _
 #align ess_inf_const' essInf_const'
 
-theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c := by
-  rw [← ae_neBot] at hμ
-  exact essSup_const' _
+theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c :=
+  have := NeZero.mk hμ; essSup_const' _
 #align ess_sup_const essSup_const
 
-theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c := by
-  rw [← ae_neBot] at hμ
-  exact essInf_const' _
+theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c :=
+  have := NeZero.mk hμ; essInf_const' _
 #align ess_inf_const essInf_const
 
 end ConditionallyCompleteLattice
