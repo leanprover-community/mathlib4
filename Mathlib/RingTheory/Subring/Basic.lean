@@ -95,14 +95,12 @@ instance toHasIntCast : IntCast s :=
   ⟨fun n => ⟨n, coe_int_mem s n⟩⟩
 #align subring_class.to_has_int_cast SubringClass.toHasIntCast
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
 instance toRing : Ring s :=
   Subtype.coe_injective.ring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ring SubringClass.toRing
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
     CommRing s :=
@@ -110,13 +108,11 @@ instance toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_comm_ring SubringClass.toCommRing
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
 instance {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
   have := SubsemiringClass.noZeroDivisors (s := s) -- porting note: todo: fails without `have`
   NoZeroDivisors.to_isDomain _
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     OrderedRing s :=
@@ -124,7 +120,6 @@ instance toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ordered_ring SubringClass.toOrderedRing
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
 instance toOrderedCommRing {R} [OrderedCommRing R] [SetLike S R]
     [SubringClass S R] : OrderedCommRing s :=
@@ -132,7 +127,6 @@ instance toOrderedCommRing {R} [OrderedCommRing R] [SetLike S R]
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ordered_comm_ring SubringClass.toOrderedCommRing
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
 instance toLinearOrderedRing {R} [LinearOrderedRing R] [SetLike S R]
     [SubringClass S R] : LinearOrderedRing s :=
@@ -141,7 +135,6 @@ instance toLinearOrderedRing {R} [LinearOrderedRing R] [SetLike S R]
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subring_class.to_linear_ordered_ring SubringClass.toLinearOrderedRing
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
 instance toLinearOrderedCommRing {R} [LinearOrderedCommRing R] [SetLike S R]
     [SubringClass S R] : LinearOrderedCommRing s :=
