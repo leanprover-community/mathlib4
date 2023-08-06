@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
@@ -1748,6 +1749,7 @@ import Mathlib.Data.Seq.WSeq
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Enumerate
@@ -1777,7 +1779,6 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.List
 import Mathlib.Data.Set.MulAntidiagonal
 import Mathlib.Data.Set.NAry
-import Mathlib.Data.Set.Ncard
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
