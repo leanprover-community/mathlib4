@@ -185,19 +185,15 @@ instance : Inter (StructureGroupoid H) :=
     (id_mem' := ⟨G.id_mem', G'.id_mem'⟩)
     (locality' := by
       intro e hx
-      have h : ∀ (x : H), x ∈ e.source → ∃ s, IsOpen s ∧ x ∈ s ∧
-          LocalHomeomorph.restr e s ∈ G.members := by
+      apply (mem_inter_iff e G.members G'.members).mpr
+      refine And.intro (G.locality' e ?_) (G'.locality' e ?_)
+      all_goals
         intro x hex
         rcases hx x hex with ⟨s, hs⟩
         use s
-        exact ⟨hs.left, ⟨hs.right.left, hs.right.right.left⟩⟩
-      have h' : ∀ (x : H), x ∈ e.source → ∃ s, IsOpen s ∧ x ∈ s ∧
-          LocalHomeomorph.restr e s ∈ G'.members := by
-        intro x hex
-        rcases hx x hex with ⟨s, hs⟩
-        use s
-        exact ⟨hs.left, ⟨hs.right.left, hs.right.right.right⟩⟩
-      exact ⟨G.locality' e h, G'.locality' e h'⟩)
+        refine And.intro hs.left (And.intro hs.right.left ?_)
+      · exact hs.right.right.left
+      · exact hs.right.right.right)
     (eq_on_source' := fun e e' he hee' =>
       ⟨G.eq_on_source' e e' he.left hee', G'.eq_on_source' e e' he.right hee'⟩)⟩
 
