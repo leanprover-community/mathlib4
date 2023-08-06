@@ -51,6 +51,7 @@ instance instSmulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
 instance instModuleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) :=
   ‹Module.Finite K V›
 
+variable {K V}
 variable [Module K V]
 variable (c : K) (x y : WithLp p V) (x' y' : V)
 
@@ -107,6 +108,8 @@ theorem equiv_smul : WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
 theorem equiv_symm_smul : (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
   rfl
 #align pi_Lp.equiv_symm_smul WithLp.equiv_symm_smul
+
+variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
 @[simps (config := { fullyApplied := false })]
