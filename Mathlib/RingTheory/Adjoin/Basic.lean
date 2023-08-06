@@ -428,3 +428,23 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
 #align alg_hom.ext_of_adjoin_eq_top AlgHom.ext_of_adjoin_eq_top
 
 end AlgHom
+
+section ClosureEquivAdjoin
+
+/-- The `ℕ`-algebra equivalence between `Subsemiring.closure s` and `Algebra.adjoin ℕ s` given
+by the identity map. -/
+def Subsemiring.closureEquivAdjoinNat {R : Type _} [Semiring R] (s : Set R) :
+    Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s :=
+  Subalgebra.equivOfEq (subalgebraOfSubsemiring <| Subsemiring.closure s) _ <|
+    le_antisymm (closure_le.mpr subset_adjoin) (adjoin_le subset_closure)
+
+/-- The `ℤ`-algebra equivalence between `Subring.closure s` and `Algebra.adjoin ℤ s` given by
+the identity map. -/
+def Subring.closureEquivAdjoinInt {R : Type _} [Ring R] (s : Set R) :
+    Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s :=
+  Subalgebra.equivOfEq (subalgebraOfSubring <| Subring.closure s) _ <|
+    -- Lean is less smart here, probably because of the `with` definition of `subalgebraOfSubring`
+    le_antisymm (closure_le.mpr subset_adjoin : _ ≤ (adjoin ℤ s).toSubring)
+      (adjoin_le subset_closure)
+
+  end ClosureEquivAdjoin

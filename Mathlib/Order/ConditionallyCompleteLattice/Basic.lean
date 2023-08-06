@@ -44,19 +44,21 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 
 open Classical
 
-noncomputable instance {α : Type _} [Preorder α] [SupSet α] : SupSet (WithTop α) :=
+noncomputable instance WithTop.instSupSet {α : Type _} [Preorder α] [SupSet α] :
+    SupSet (WithTop α) :=
   ⟨fun S =>
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
-noncomputable instance {α : Type _} [InfSet α] : InfSet (WithTop α) :=
+noncomputable instance WithTop.instInfSet {α : Type _} [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
-noncomputable instance {α : Type _} [SupSet α] : SupSet (WithBot α) :=
-  ⟨(@instInfSetWithTop αᵒᵈ _).sInf⟩
+noncomputable instance WithBot.instSupSet {α : Type _} [SupSet α] : SupSet (WithBot α) :=
+  ⟨(@WithTop.instInfSet αᵒᵈ _).sInf⟩
 
-noncomputable instance {α : Type _} [Preorder α] [InfSet α] : InfSet (WithBot α) :=
-  ⟨(@instSupSetWithTop αᵒᵈ _).sSup⟩
+noncomputable instance WithBot.instInfSet {α : Type _} [Preorder α] [InfSet α] :
+    InfSet (WithBot α) :=
+  ⟨(@WithTop.instSupSet αᵒᵈ _).sSup⟩
 
 theorem WithTop.sSup_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
@@ -1452,7 +1454,7 @@ open Classical
 gives a conditionally complete lattice -/
 noncomputable instance WithTop.conditionallyCompleteLattice {α : Type _}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithTop α) :=
-  { WithTop.lattice, instSupSetWithTop, instInfSetWithTop with
+  { lattice, instSupSet, instInfSet with
     le_csSup := fun _ a _ haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
     csSup_le := fun _ _ hS haS => (WithTop.isLUB_sSup' hS).2 haS
     csInf_le := fun _ _ hS haS => (WithTop.isGLB_sInf' hS).1 haS
@@ -1473,7 +1475,7 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type _}
 -- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
-  { instInfSetWithTop, instSupSetWithTop, WithTop.boundedOrder, WithTop.lattice with
+  { instInfSet, instSupSet, boundedOrder, lattice with
     le_sSup := fun S a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
     sSup_le := fun S a ha => by
       cases' S.eq_empty_or_nonempty with h h
@@ -1515,7 +1517,7 @@ noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type _}
 
 noncomputable instance WithBot.WithTop.completeLattice {α : Type _}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithBot (WithTop α)) :=
-  { instInfSetWithBot, instSupSetWithBot, WithBot.instBoundedOrderWithBotLe, WithBot.lattice with
+  { instInfSet, instSupSet, instBoundedOrder, lattice with
     le_sSup := (@WithTop.WithBot.completeLattice αᵒᵈ _).sInf_le
     sSup_le := (@WithTop.WithBot.completeLattice αᵒᵈ _).le_sInf
     sInf_le := (@WithTop.WithBot.completeLattice αᵒᵈ _).le_sSup
