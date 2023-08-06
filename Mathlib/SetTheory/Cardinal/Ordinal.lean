@@ -1455,8 +1455,8 @@ namespace Ordinal
 open Cardinal
 
 /--
-`Initial i` (notation: `ω_ i`) gives the first ordinal of cardinality
-`Aleph i`. Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
+`initial i` (notation: `ω_ i`) gives the first ordinal of cardinality
+`aleph i`. Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
 You can also write `ω_ 1` as `ω₁`.
 -/
 def initial (x : Ordinal.{u}) : Ordinal.{u} := (aleph x).ord
