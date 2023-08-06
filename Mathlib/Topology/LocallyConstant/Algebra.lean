@@ -291,4 +291,65 @@ theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = alg
 
 end Algebra
 
+section Comap
+
+variable [TopologicalSpace Y]
+
+/-- `LocallyConstant.comap` is a multiplicative map. -/
+noncomputable
+def comapMul  [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
+    LocallyConstant Y Z →* LocallyConstant X Z where
+  toFun := comap f
+  map_one' := by
+    ext x
+    rw [coe_comap_apply _ _ hf]
+    rfl
+  map_mul' := by
+    intro r s
+    ext x
+    simp
+    rw [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf, coe_comap_apply _ _ hf]
+    simp
+
+/-- `LocallyConstant.comap` is a linear map. -/
+noncomputable
+def comapLinear {R : Type _} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
+    (hf : Continuous f) : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z where
+  toFun := comap f
+  map_add' := by
+    intro r s
+    ext x
+    simp
+    rw [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf, coe_comap_apply _ _ hf]
+    rfl
+  map_smul' := by
+    intro r s
+    ext x
+    simp
+    rw [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf]
+    rfl
+
+lemma comapLinear_injective {R : Type _} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
+    (hf : Continuous f) (hfs : Function.Surjective f) :
+    LinearMap.ker (comapLinear f hf : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z) = ⊥ :=
+  LinearMap.ker_eq_bot_of_injective <| comap_injective _ hf hfs
+
+noncomputable
+def equivLinear {R : Type _} [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
+    LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
+  toFun := (equiv e).toFun
+  map_smul' := (comapLinear _ e.continuous_invFun).map_smul'
+  map_add' := by -- note: (comapLinear _ e.continuous_invFun).map_add' doesn't work.
+    intro r s
+    ext x
+    dsimp [equiv]
+    have hf : Continuous ↑(e.symm) := e.continuous_invFun
+    rw [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf, coe_comap_apply _ _ hf]
+    rfl
+  invFun := (equiv e).invFun
+  left_inv := (equiv e).left_inv
+  right_inv := (equiv e).right_inv
+
+end Comap
+
 end LocallyConstant
