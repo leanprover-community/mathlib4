@@ -115,9 +115,8 @@ theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : (a • x : K) = a • (x : K) :
 
 variable (S)
 
--- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield inherits a field structure -/
-instance (priority := 75) toField (s : S) : Field s :=
+instance toField (s : S) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K)
     (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
     (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
@@ -125,9 +124,8 @@ instance (priority := 75) toField (s : S) : Field s :=
     (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
 #align subfield_class.to_field SubfieldClass.toField
 
--- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLike S K]
+instance toLinearOrderedField {K} [LinearOrderedField K] [SetLike S K]
     [SubfieldClass S K] (s : S) : LinearOrderedField s :=
   Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl)
@@ -345,18 +343,13 @@ instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
 /-- A subfield inherits a field structure -/
-instance toField : Field s :=
-  Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) fun _ => rfl
+abbrev toField : Field s :=
+  inferInstance
 #align subfield.to_field Subfield.toField
 
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+abbrev toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
+  inferInstance
 #align subfield.to_linear_ordered_field Subfield.toLinearOrderedField
 
 @[simp, norm_cast]
