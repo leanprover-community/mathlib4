@@ -82,7 +82,7 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
             isoWhiskerLeft E.inverse ((Functor.associator _ _ _).symm ≪≫
             isoWhiskerRight iso _) ≪≫
             isoWhiskerLeft _ (Localization.fac (E.functor ⋙ W₂.Q) h L₁) ≪≫
-            (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight E.counitIso _ ≪≫ leftUnitor _ )
+            (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight E.counitIso _ ≪≫ leftUnitor _)
           (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso) ⟩ }
 
 /-- If `L₁ : C₁ ⥤ D₁` is a localization functor for `W₁ : MorphismProperty C₁`, then if we
