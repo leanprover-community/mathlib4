@@ -610,32 +610,29 @@ def equivLinear (e : X ≃ₜ Y) : LocallyConstant X Z ≃ₗ[R] LocallyConstant
 end LocallyConstant
 end Piecewise
 
+section TrivialListLexLemmas
+
 namespace List
 namespace Lex
 
 variable {α : Type u} {r : α → α → Prop}
 
 lemma singleton_iff (a b : α) : r a b ↔ List.Lex r [a] [b] := by
-  refine' ⟨List.Lex.rel,_⟩
-  intro h
+  refine' ⟨List.Lex.rel, fun h ↦ _⟩
   by_contra h'
   cases h
-  · apply not_nil_right r []
-    assumption
-  · apply h'
-    assumption
+  · apply not_nil_right r []; assumption
+  · apply h'; assumption
 
-lemma nil_le (l : List α) : List.Lex r [] l ∨ [] = l := by
+lemma nil_left_or_nil_eq (l : List α) : List.Lex r [] l ∨ [] = l := by
   induction l with
-  | nil =>
-    right
-    rfl
-  | cons a as _ =>
-    left
-    apply nil
+  | nil => exact Or.intro_right _ rfl
+  | cons a as _ => exact Or.intro_left _ (by apply nil)
 
 end Lex
 end List
+
+section TrivialListLexLemmas
 
 namespace NobelingProof
 
@@ -943,7 +940,7 @@ instance GoodProducts.singletonUnique :
     dsimp [enil]
     apply Subtype.eq
     dsimp
-    have : [] < l ∨ [] = l  := List.Lex.nil_le l
+    have : [] < l ∨ [] = l  := List.Lex.nil_left_or_nil_eq l
     cases this
     · exfalso
       apply hll
