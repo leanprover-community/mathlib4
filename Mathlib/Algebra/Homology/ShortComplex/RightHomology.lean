@@ -970,12 +970,12 @@ lemma leftHomologyMap'_op
     (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     (leftHomologyMap' φ h₁ h₂).op = rightHomologyMap' (opMap φ) h₂.op h₁.op := by
   let γ : LeftHomologyMapData φ h₁ h₂ := leftHomologyMapData φ h₁ h₂
-  simp only [γ.leftHomologyMap'_eq, (γ.op).rightHomologyMap'_eq,
+  simp only [γ.leftHomologyMap'_eq, γ.op.rightHomologyMap'_eq,
     LeftHomologyMapData.op_φH]
 
 lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
-    (leftHomologyMap φ).op = (S₂.rightHomologyOpIso).inv ≫ rightHomologyMap (opMap φ) ≫
-      (S₁.rightHomologyOpIso).hom := by
+    (leftHomologyMap φ).op = S₂.rightHomologyOpIso.inv ≫ rightHomologyMap (opMap φ) ≫
+      S₁.rightHomologyOpIso.hom := by
   dsimp [rightHomologyOpIso, RightHomologyData.rightHomologyIso, rightHomologyMap,
     leftHomologyMap]
   simp only [← rightHomologyMap'_comp, comp_id, id_comp, leftHomologyMap'_op]
@@ -985,12 +985,12 @@ lemma rightHomologyMap'_op
     (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     (rightHomologyMap' φ h₁ h₂).op = leftHomologyMap' (opMap φ) h₂.op h₁.op := by
   let γ : RightHomologyMapData φ h₁ h₂ := default
-  simp only [γ.rightHomologyMap'_eq, (γ.op).leftHomologyMap'_eq,
+  simp only [γ.rightHomologyMap'_eq, γ.op.leftHomologyMap'_eq,
     RightHomologyMapData.op_φH]
 
 lemma rightHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    (rightHomologyMap φ).op = (S₂.leftHomologyOpIso).inv ≫ leftHomologyMap
-      (opMap φ) ≫ (S₁.leftHomologyOpIso).hom := by
+    (rightHomologyMap φ).op = S₂.leftHomologyOpIso.inv ≫ leftHomologyMap (opMap φ) ≫
+      S₁.leftHomologyOpIso.hom := by
   dsimp [leftHomologyOpIso, LeftHomologyData.leftHomologyIso, leftHomologyMap,
     rightHomologyMap]
   simp only [← leftHomologyMap'_comp, comp_id, id_comp, rightHomologyMap'_op]
@@ -1015,7 +1015,7 @@ noncomputable def ofEpiOfIsIsoOfMono : RightHomologyData S₂ := by
 
 @[simp] lemma ofEpiOfIsIsoOfMono_H : (ofEpiOfIsIsoOfMono φ h).H = h.H := rfl
 
-@[simp] lemma ofEpiOfIsIsoOfMono_p : (ofEpiOfIsIsoOfMono φ h).p = (inv φ.τ₂) ≫ h.p := by
+@[simp] lemma ofEpiOfIsIsoOfMono_p : (ofEpiOfIsIsoOfMono φ h).p = inv φ.τ₂ ≫ h.p := by
   simp [ofEpiOfIsIsoOfMono, opMap]
 
 @[simp] lemma ofEpiOfIsIsoOfMono_ι : (ofEpiOfIsIsoOfMono φ h).ι = h.ι := rfl
