@@ -61,7 +61,7 @@ theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
   fun.
 #align list.lex.not_nil_right List.Lex.not_nil_right
 
-theorem nil_left_or_nil_eq {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ [] = l :=
+theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
   match l with
   | [] => Or.inr rfl
   | (_ :: _) => Or.inl nil
