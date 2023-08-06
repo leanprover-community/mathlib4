@@ -413,7 +413,8 @@ theorem shiftl_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), shiftl m (n + k) = shift
       (fun (i n : ℕ) =>
         by dsimp; simp [- Nat.shiftLeft_eq, ← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n =>
-        by dsimp; simp [- Nat.shiftLeft_eq, Nat.shiftRight_add, ← Nat.shiftLeft_sub, shiftl]
+        by dsimp; simp [- Nat.shiftLeft_eq, Nat.shiftLeft_zero, Nat.shiftRight_add,
+                        ← Nat.shiftLeft_sub, shiftl]
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
       (fun n k i => shiftl -[m+1] i = -[(Nat.shiftl' true m n) >>> k+1])

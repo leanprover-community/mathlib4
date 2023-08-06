@@ -955,7 +955,7 @@ theorem lxor'_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
 theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftLeft m n := by
   cases m <;> dsimp only [shiftl]
   · symm
-    apply Nat.zero_shiftl
+    apply Nat.zero_shiftLeft
   simp only [cast_pos]
   induction' n with n IH
   · rfl
