@@ -72,7 +72,6 @@ variable (𝕜)
 
 open Submodule
 
-set_option synthInstance.maxHeartbeats 35000 in
 /-- `annIdealGenerator 𝕜 a` is the monic generator of `annIdeal 𝕜 a`
 if one exists, otherwise `0`.
 

@@ -743,7 +743,7 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option maxHeartbeats 450000 in
+set_option maxHeartbeats 300000 in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, then
 `g ∘ f` admits the power series `q.comp p` at `x`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}

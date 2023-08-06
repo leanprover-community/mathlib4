@@ -39,7 +39,6 @@ noncomputable section
 
 namespace IsometryEquiv
 
-set_option maxHeartbeats 250000 in
 /-- If an isometric self-homeomorphism of a normed vector space over `ℝ` fixes `x` and `y`,
 then it fixes the midpoint of `[x, y]`. This is a lemma for a more general Mazur-Ulam theorem,
 see below. -/

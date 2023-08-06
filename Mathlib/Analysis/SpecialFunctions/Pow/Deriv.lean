@@ -204,7 +204,6 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
   (Complex.hasStrictDerivAt_cpow_const h0).hasDerivAt.comp_hasDerivWithinAt x hf
 #align has_deriv_within_at.cpow_const HasDerivWithinAt.cpow_const
 
-set_option maxHeartbeats 1000000 in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
 theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
@@ -270,7 +269,6 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
     div_eq_mul_inv, smul_smul, smul_smul, mul_assoc, add_comm]
 #align real.has_strict_fderiv_at_rpow_of_pos Real.hasStrictFDerivAt_rpow_of_pos
 
-set_option maxHeartbeats 1000000 in
 /-- `(x, y) ↦ x ^ y` is strictly differentiable at `p : ℝ × ℝ` such that `p.fst < 0`. -/
 theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
     HasStrictFDerivAt (fun x : ℝ × ℝ => x.1 ^ x.2)
