@@ -239,6 +239,20 @@ def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
           right := 𝟙 _ } }
 #align category_theory.comma.map_left_comp CategoryTheory.Comma.mapLeftComp
 
+/-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
+    `Comma L₁ R ⥤ Comma L₂ R`. -/
+@[simps!]
+def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l' :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+
+/-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
+    `Comma L₁ R ≌ Comma L₂ R`. -/
+@[simps!]
+def mapLeftIso (i : L₁ ≅ L₂) : Comma L₁ R ≌ Comma L₂ R :=
+  Equivalence.mk (mapLeft _ i.inv) (mapLeft _ i.hom)
+    ((mapLeftId _ _).symm ≪≫ mapLeftEq _ _ _ i.hom_inv_id.symm ≪≫ mapLeftComp _ _ _)
+    ((mapLeftComp _ _ _).symm ≪≫ mapLeftEq _ _ _ i.inv_hom_id ≪≫ mapLeftId _ _)
+
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `Comma L R₁ ⥤ Comma L R₂`. -/
 @[simps]
 def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂ where
@@ -280,6 +294,20 @@ def mapRightComp (r : R₁ ⟶ R₂) (r' : R₂ ⟶ R₃) :
         { left := 𝟙 _
           right := 𝟙 _ } }
 #align category_theory.comma.map_right_comp CategoryTheory.Comma.mapRightComp
+
+/-- Two equal natural transformations `R₁ ⟶ R₂` yield naturally isomorphic functors
+    `Comma L R₁ ⥤ Comma L R₂`. -/
+@[simps!]
+def mapRightEq (r r' : R₁ ⟶ R₂) (h : r = r') : mapRight L r ≅ mapRight L r' :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+
+/-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
+    `Comma L R₁ ≌ Comma L R₂`. -/
+@[simps!]
+def mapRightIso (i : R₁ ≅ R₂) : Comma L R₁ ≌ Comma L R₂ :=
+  Equivalence.mk (mapRight _ i.hom) (mapRight _ i.inv)
+    ((mapRightId _ _).symm ≪≫ mapRightEq _ _ _ i.hom_inv_id.symm ≪≫ mapRightComp _ _ _)
+    ((mapRightComp _ _ _).symm ≪≫ mapRightEq _ _ _ i.inv_hom_id ≪≫ mapRightId _ _)
 
 end
 

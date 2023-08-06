@@ -157,6 +157,12 @@ instance (priority := 100) initial_of_isLeftAdjoint (F : C ⥤ D) [h : IsLeftAdj
   initial_of_adjunction h.adj
 #align category_theory.functor.initial_of_is_left_adjoint CategoryTheory.Functor.initial_of_isLeftAdjoint
 
+theorem final_of_natIso {F F' : C ⥤ D} [Final F] (i : F ≅ F') : Final F' where
+  out _ := isConnected_of_equivalent (StructuredArrow.mapNatIso i)
+
+theorem initial_of_natIso {F F' : C ⥤ D} [Initial F] (i : F ≅ F') : Initial F' where
+  out _ := isConnected_of_equivalent (CostructuredArrow.mapNatIso i)
+
 namespace Final
 
 variable (F : C ⥤ D) [Final F]
@@ -347,6 +353,9 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
   HasColimit.mk (colimitCoconeOfComp F (getColimitCocone (F ⋙ G)))
 #align category_theory.functor.final.has_colimit_of_comp CategoryTheory.Functor.Final.hasColimit_of_comp
+
+theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
+  has_colimit := fun _ => hasColimit_of_comp F
 
 section
 
@@ -619,6 +628,9 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
   HasLimit.mk (limitConeOfComp F (getLimitCone (F ⋙ G)))
 #align category_theory.functor.initial.has_limit_of_comp CategoryTheory.Functor.Initial.hasLimit_of_comp
+
+theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
+  has_limit := fun _ => hasLimit_of_comp F
 
 section
 
