@@ -37,6 +37,16 @@ and `A` live in the same universe.
   Cf https://stacks.math.columbia.edu/tag/0073, which is a weaker version of this statement (it's
   only over spaces, not sites) and https://stacks.math.columbia.edu/tag/00YR (a), which
   additionally assumes filtered colimits.
+
+## Implementation notes
+
+Occasionally we need to take a limit in `A` of a collection of morphisms of `C` indexed
+by a collection of objects in `C`. This turns out to force the morphisms of `A` to be
+in a sufficiently large universe. Rather than use `UnivLE` we prove some results for
+a category `A'` instead, whose morphism universe of `A'` is defined to be `max u₁ v₁`, where
+`u₁, v₁` are the universes for `C`. Perhaps after we get better at handling universe
+inequalities this can be changed.
+
 -/
 
 
@@ -456,7 +466,10 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 -- `A` is a general category; `A'` is a variant where the morphisms live in a large enough
 -- universe to guarantee that we can take limits in A of things coming from C.
--- **TODO** can we use `UnivLE` to make these statements cleaner?
+-- I would have liked to use something like `UnivLE.{max v₁ u₁, v₂}` as a hypothesis on
+-- `A`'s morphism universe rather than introducing `A'` but I can't get it to work.
+-- So, for now, results which need max v₁ u₁ ≤ v₂ are just stated for `A'` and `P' : Cᵒᵖ ⥤ A'`
+-- instead.
 variable {A : Type u₂} [Category.{v₂} A]
 variable {A' : Type u₂} [Category.{max v₁ u₁} A']
 
@@ -585,7 +598,8 @@ def IsSheaf' (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ (U : C) (R : Presieve U) (_ : generate R ∈ J U), Nonempty (IsLimit (Fork.ofι _ (w R P)))
 #align category_theory.presheaf.is_sheaf' CategoryTheory.Presheaf.IsSheaf'
 
--- TODO: Can the universes in `s` be generalised?
+-- Again I wonder whether `UnivLE` can somehow be used to allow `s` to take
+-- values in a more general universe.
 /-- (Implementation). An auxiliary lemma to convert between sheaf conditions. -/
 def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
     [∀ J, PreservesLimitsOfShape (Discrete.{max v₁ u₁} J) s] (U : C) (R : Presieve U) :
