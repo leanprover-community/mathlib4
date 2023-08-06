@@ -2,17 +2,14 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Patrick Massot, Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.UniformSpace
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.UniformSpace.Completion
+
+#align_import topology.category.UniformSpace from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of uniform spaces
@@ -69,14 +66,14 @@ instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨(forget UniformSpaceCat).map⟩
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover-community/mathlib4/issues/5081
+-- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
 theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
 #align UniformSpace.coe_comp UniformSpaceCat.coe_comp
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover-community/mathlib4/issues/5081
+-- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl

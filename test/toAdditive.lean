@@ -47,13 +47,13 @@ instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
 theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
-theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * 5 := by decide
+theorem bar2_works : bar2 2 3 (PLift.up 2) = 2 * 5 := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
 
 theorem foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
-theorem bar3_works : bar3 2 3 =  2 * 3 := by decide
+theorem bar3_works : bar3 2 3 = 2 * 3 := by decide
 
 @[to_additive bar4]
 def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
@@ -72,7 +72,7 @@ def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ 
 -- def foo7 := @my_has_pow.pow
 
 -- theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
--- theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
+-- theorem bar7_works : bar7 2 3 = 2 * 3 := by decide
 
 /-- Check that we don't additivize `Nat` expressions. -/
 @[to_additive bar8]

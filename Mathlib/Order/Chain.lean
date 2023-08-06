@@ -2,16 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-Ported by: Anatole Dedecker
-
-! This file was ported from Lean 3 source module order.chain
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
+
+#align_import order.chain from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-!
 # Chains and flags
@@ -90,7 +86,7 @@ theorem isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
 #align is_chain_of_trichotomous isChain_of_trichotomous
 
-theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
+protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
     IsChain r (insert a s) :=
   hs.insert_of_symmetric (fun _ _ => Or.symm) ha
 #align is_chain.insert IsChain.insert

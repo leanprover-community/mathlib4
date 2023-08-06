@@ -2,16 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.big_operators.pi
-! leanprover-community/mathlib commit fa2309577c7009ea243cffdf990cd6c84f0ad497
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Ring.Pi
+
+#align_import algebra.big_operators.pi from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
 
 /-!
 # Big operators for Pi Types
@@ -75,7 +72,7 @@ section MulSingle
 
 variable {I : Type _} [DecidableEq I] {Z : I → Type _}
 
-variable [∀ i, CommMonoid  (Z i)]
+variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
 theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :

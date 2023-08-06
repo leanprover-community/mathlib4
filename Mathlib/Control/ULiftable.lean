@@ -2,16 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.uliftable
-! leanprover-community/mathlib commit cc8c90d4ac61725a8f6c92691d8abcd2dec88115
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Logic.Equiv.Basic
+
+#align_import control.uliftable from "leanprover-community/mathlib"@"cc8c90d4ac61725a8f6c92691d8abcd2dec88115"
 
 /-!
 # Universe lifting for type families
@@ -51,7 +48,7 @@ class ULiftable (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) wher
 
 namespace ULiftable
 
-/-- The most common practical use `ULiftable` (together with `up`), this function takes
+/-- The most common practical use `ULiftable` (together with `down`), this function takes
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
 @[reducible]
 def up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α} :
@@ -60,7 +57,7 @@ def up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULi
 #align uliftable.up ULiftable.up
 
 /-- The most common practical use of `ULiftable` (together with `up`), this function takes
-`x : M.{max u v} (ulift.{v} α)` and lowers it to `M.{u} α` -/
+`x : M.{max u v} (ULift.{v} α)` and lowers it to `M.{u} α` -/
 @[reducible]
 def down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α} :
     g (ULift.{v₀} α) → f α :=

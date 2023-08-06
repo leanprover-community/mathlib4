@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.convergents_equiv
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+
+#align_import algebra.continued_fractions.convergents_equiv from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Equivalence of Recursive and Direct Computations of `GCF` Convergents
@@ -47,7 +44,7 @@ position `n + 1` is equal to evaluating `c'` up to `n`. This is shown in lemma
 `succ_nth_convergent'_eq_squashGCF_nth_convergent'`.
 
 By the inductive hypothesis, the two computations for the `n`th convergent of `c` coincide.
-So all that is left to show is that the recurrence relation for `c` at `n + 1` and and `c'` at
+So all that is left to show is that the recurrence relation for `c` at `n + 1` and `c'` at
 `n` coincide. This can be shown by another induction.
 The corresponding lemma in this file is `succ_nth_convergent_eq_squashGCF_nth_convergent`.
 

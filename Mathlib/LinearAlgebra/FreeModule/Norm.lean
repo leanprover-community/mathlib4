@@ -2,14 +2,11 @@
 Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.norm
-! leanprover-community/mathlib commit 90b0d53ee6ffa910e5c2a977ce7e2fc704647974
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.Norm
+
+#align_import linear_algebra.free_module.norm from "leanprover-community/mathlib"@"90b0d53ee6ffa910e5c2a977ce7e2fc704647974"
 
 /-!
 # Norms on free modules over principal ideal domains

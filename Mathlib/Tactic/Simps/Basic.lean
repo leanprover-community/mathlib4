@@ -262,7 +262,7 @@ namespace Command
 
 /-- Syntax for renaming a projection in `initialize_simps_projections`. -/
 syntax simpsRule.rename := ident " → " ident
-/-- Syntax for making a  projection non-default in `initialize_simps_projections`. -/
+/-- Syntax for making a projection non-default in `initialize_simps_projections`. -/
 syntax simpsRule.erase := "-" ident
 /-- Syntax for making a projection default in `initialize_simps_projections`. -/
 syntax simpsRule.add := "+" ident

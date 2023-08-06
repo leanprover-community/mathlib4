@@ -2,14 +2,11 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.seq.wseq
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Seq.Seq
+
+#align_import data.seq.wseq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Partially defined possibly infinite lists
@@ -1720,7 +1717,7 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
       _ _ _
       (let ⟨s, S, T, h1, h2⟩ := h
       ⟨s, S, T, congr_arg destruct h1, congr_arg destruct h2⟩)
-  rintro c1 c2  ⟨s, S, T, rfl, rfl⟩
+  rintro c1 c2 ⟨s, S, T, rfl, rfl⟩
   induction' s using WSeq.recOn with a s s <;> simp
   · induction' S using WSeq.recOn with s S S <;> simp
     · induction' T using WSeq.recOn with s T T <;> simp

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.continuants_recurrence
-! leanprover-community/mathlib commit 5f11361a98ae4acd77f5c1837686f6f0102cdc25
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Translations
+
+#align_import algebra.continued_fractions.continuants_recurrence from "leanprover-community/mathlib"@"5f11361a98ae4acd77f5c1837686f6f0102cdc25"
 
 /-!
 # Recurrence Lemmas for the `continuants` Function of Continued Fractions.

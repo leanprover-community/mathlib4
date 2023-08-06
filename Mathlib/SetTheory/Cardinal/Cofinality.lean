@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.cardinal.cofinality
-! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Ordinal.FixedPoint
+
+#align_import set_theory.cardinal.cofinality from "leanprover-community/mathlib"@"7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f"
 
 /-!
 # Cofinality
@@ -478,8 +475,10 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 
 @[simp]
-theorem cof_zero : cof 0 = 0 :=
-  (cof_le_card 0).antisymm (Cardinal.zero_le _)
+theorem cof_zero : cof 0 = 0 := by
+  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  rw [← card_zero]
+  exact cof_le_card 0
 #align ordinal.cof_zero Ordinal.cof_zero
 
 @[simp]
@@ -964,7 +963,7 @@ theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
 #align cardinal.is_regular.pos Cardinal.IsRegular.pos
 
 theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
-  rw [Cardinal.lt_ord]
+  rw [Cardinal.lt_ord, card_zero]
   exact H.pos
 #align cardinal.is_regular.ord_pos Cardinal.IsRegular.ord_pos
 

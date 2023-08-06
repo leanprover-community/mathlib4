@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudriashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.hull
-! leanprover-community/mathlib commit 92bd7b1ffeb306a89f450bee126ddd8a284c259d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Order.Closure
+
+#align_import analysis.convex.hull from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 
 /-!
 # Convex hull

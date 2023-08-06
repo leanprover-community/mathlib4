@@ -35,7 +35,7 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
   registerNameMapAttribute {
     name  := `eqns
     descr := "Overrides the equation lemmas for a declaration to the provided list"
-    add   :=  fun
+    add   := fun
     | _, `(attr| eqns $[$names]*) =>
       names.mapM resolveGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }

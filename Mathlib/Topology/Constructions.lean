@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Maps
 import Mathlib.Order.Filter.Pi
+
+#align_import topology.constructions from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -1032,6 +1029,17 @@ theorem IsOpenMap.restrict {f : α → β} (hf : IsOpenMap f) {s : Set α} (hs :
     IsOpenMap (s.restrict f) :=
   hf.comp hs.isOpenMap_subtype_val
 #align is_open_map.restrict IsOpenMap.restrict
+
+lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Set β) :
+    IsClosedMap (T.restrictPreimage f) := by
+  rw [isClosedMap_iff_clusterPt] at hcl ⊢
+  intro A ⟨y, hyT⟩ hy
+  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
+      map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
+  rcases hcl _ y hy with ⟨x, hxy, hx⟩
+  have hxT : f x ∈ T := hxy ▸ hyT
+  refine ⟨⟨x, hxT⟩, Subtype.ext hxy, ?_⟩
+  rwa [← inducing_subtype_val.mapClusterPt_iff, MapClusterPt, map_principal]
 
 nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set α} (hs : IsClosed s) :
     ClosedEmbedding ((↑) : s → α) :=

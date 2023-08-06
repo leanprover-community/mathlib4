@@ -2,13 +2,10 @@
 Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
-
-! This file was ported from Lean 3 source module analysis.normed_space.continuous_linear_map
-! leanprover-community/mathlib commit 41bef4ae1254365bc190aee63b947674d2977f01
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.continuous_linear_map from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 

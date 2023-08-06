@@ -2,15 +2,12 @@
 Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module ring_theory.jacobson
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.JacobsonIdeal
+
+#align_import ring_theory.jacobson from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Jacobson Rings
@@ -186,7 +183,7 @@ theorem isMaximal_iff_isMaximal_disjoint [H : IsJacobson R] (J : Ideal S) :
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
     have : y ∉ (comap (algebraMap R S) J).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
     erw [← H.out hJ.left.isRadical, mem_sInf] at this
-    push_neg  at this
+    push_neg at this
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
     by_cases hJ : J = map (algebraMap R S) I
@@ -515,7 +512,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
       (IsLocalization.map_injective_of_injective M (Localization M) (Localization M')
         quotientMap_injective))]
     refine' isMaximal_comap_of_isIntegral_of_isMaximal' _ _ ⊥ this
-    have isloc : IsLocalization  (Submonoid.map φ M) (Localization M') := by infer_instance
+    have isloc : IsLocalization (Submonoid.map φ M) (Localization M') := by infer_instance
     exact @isIntegral_isLocalization_polynomial_quotient R _
       (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
   rw [(map_bot.symm :
@@ -650,7 +647,7 @@ variable {n : ℕ}
 -- Porting note: split out `aux_IH` and `quotient_mk_comp_C_isIntegral_of_jacobson'`
 -- from the long proof of `Ideal.MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson`
 
-/-- The constant coefficient as a R-linear morphism -/
+/-- The constant coefficient as an R-linear morphism -/
 private noncomputable def Cₐ (R : Type u) (S : Type v)
     [CommRing R] [CommRing S] [Algebra R S] : S →ₐ[R] S[X] :=
   { Polynomial.C with commutes' := fun r => by rfl }

@@ -2,16 +2,13 @@
 Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yaël Dillies, Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.seminorm
-! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
+
+#align_import analysis.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 
 /-!
 # Seminorms
@@ -603,6 +600,10 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
         le_ciSup ⟨q x, forall_range_iff.mpr fun i : s => hq (mem_image_of_mem _ i.2) x⟩ ⟨p, hp⟩⟩⟩
 #align seminorm.bdd_above_iff Seminorm.bddAbove_iff
 
+protected theorem bddAbove_range_iff {p : ι → Seminorm 𝕜 E} :
+    BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) := by
+  rw [Seminorm.bddAbove_iff, ← range_comp, bddAbove_range_pi]; rfl
+
 protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
     ↑(sSup s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
   Seminorm.coe_sSup_eq' (Seminorm.bddAbove_iff.mp hs)
@@ -613,6 +614,19 @@ protected theorem coe_iSup_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : B
   rw [← sSup_range, Seminorm.coe_sSup_eq hp]
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
 #align seminorm.coe_supr_eq Seminorm.coe_iSup_eq
+
+protected theorem sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : E} :
+    (sSup s) x = ⨆ p : s, (p : E → ℝ) x := by
+  rw [Seminorm.coe_sSup_eq hp, iSup_apply]
+
+protected theorem iSup_apply {ι : Type _} {p : ι → Seminorm 𝕜 E}
+    (hp : BddAbove (range p)) {x : E} : (⨆ i, p i) x = ⨆ i, p i x := by
+  rw [Seminorm.coe_iSup_eq hp, iSup_apply]
+
+protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
+  ext
+  rw [Seminorm.sSup_apply bddAbove_empty, Real.ciSup_empty]
+  rfl
 
 private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
@@ -963,6 +977,15 @@ section NormedField
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {A B : Set E} {a : 𝕜}
   {r : ℝ} {x : E}
+
+theorem closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E) {r : ℝ}
+    (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
+  cases isEmpty_or_nonempty ι
+  · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
+    exact closedBall_bot _ hr
+  · ext x
+    have := Seminorm.bddAbove_range_iff.mp hp (x - e)
+    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
 
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by

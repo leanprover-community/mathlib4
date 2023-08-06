@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.projection
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Prod
+
+#align_import linear_algebra.projection from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
 /-!
 # Projection to a subspace

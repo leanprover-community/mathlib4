@@ -2,13 +2,10 @@
 Copyright (c) 2021 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module data.real.pi.wallis
-! leanprover-community/mathlib commit 980755c33b9168bc82f774f665eaa27878140fac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
+
+#align_import data.real.pi.wallis from "leanprover-community/mathlib"@"980755c33b9168bc82f774f665eaa27878140fac"
 
 /-! # The Wallis formula for Pi
 

@@ -2,17 +2,14 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.unique_factorization_domain
-! leanprover-community/mathlib commit 570e9f4877079b3a923135b3027ac3be8695ab8c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Multiplicity
+
+#align_import ring_theory.unique_factorization_domain from "leanprover-community/mathlib"@"570e9f4877079b3a923135b3027ac3be8695ab8c"
 
 /-!
 
@@ -1028,16 +1025,12 @@ theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x
     ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := by
   classical
     let n := (normalizedFactors a₀).count (normalize x)
-    obtain ⟨a, ha1, ha2⟩ :=
-      @exists_eq_pow_mul_and_not_dvd R _ _ x a₀ (ne_top_iff_finite.mp (PartENat.ne_top_iff.mpr _))
+    obtain ⟨a, ha1, ha2⟩ := @exists_eq_pow_mul_and_not_dvd R _ _ x a₀
+      (ne_top_iff_finite.mp (PartENat.ne_top_iff.mpr
+        -- Porting note: this was a hole that was filled at the end of the proof with `use`:
+        ⟨n, multiplicity_eq_count_normalizedFactors hx h⟩))
     simp_rw [← (multiplicity_eq_count_normalizedFactors hx h).symm] at ha1
-    use n
-    use a
-    use ha2
-    rw [ha1]
-    congr
-    use n
-    exact multiplicity_eq_count_normalizedFactors hx h
+    use n, a, ha2, ha1
 #align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_power_factor
 
 
@@ -1559,7 +1552,7 @@ noncomputable instance : Inf (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
 noncomputable instance : Lattice (Associates α) :=
-  { Associates.instPartialOrderAssociatesToMonoidToMonoidWithZeroToCommMonoidWithZero with
+  { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
     sup_le := fun _ _ c hac hbc =>
@@ -1853,7 +1846,7 @@ theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α} (hp : Irreducible 
 
 theorem count_factors_eq_find_of_dvd_pow {a p : Associates α} (hp : Irreducible p)
     [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
-    @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩  = p.count a.factors := by
+    @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
   apply le_antisymm
   · refine' Nat.find_le ⟨1, _⟩
     rw [mul_one]

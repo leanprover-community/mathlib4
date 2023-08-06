@@ -2,14 +2,11 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.invariant_basis_number
-! leanprover-community/mathlib commit 843240b048bbb19942c581fd64caecbbe96337be
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.InvariantBasisNumber
+
+#align_import linear_algebra.matrix.invariant_basis_number from "leanprover-community/mathlib"@"843240b048bbb19942c581fd64caecbbe96337be"
 
 /-!
 # Invertible matrices over a ring with invariant basis number are square.

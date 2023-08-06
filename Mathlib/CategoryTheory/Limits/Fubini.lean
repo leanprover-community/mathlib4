@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.fubini
-! leanprover-community/mathlib commit 59382264386afdbaf1727e617f5fdda511992eb9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Functor.Currying
+
+#align_import category_theory.limits.fubini from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
 /-!
 # A Fubini theorem for categorical limits
@@ -94,8 +91,8 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
                   dsimp; simp only [Category.id_comp]
                   have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
                   dsimp at this
-                  simp only [Category.id_comp, CategoryTheory.Functor.map_id, NatTrans.id_app]
-                    at this
+                  simp? at this says
+                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
                   exact this } }
       naturality := fun j j' f =>
         (Q j').hom_ext

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.closure
-! leanprover-community/mathlib commit f252872231e87a5db80d9938fc05530e70f23a94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.Hom.Basic
+
+#align_import order.closure from "leanprover-community/mathlib"@"f252872231e87a5db80d9938fc05530e70f23a94"
 
 /-!
 # Closure operators between preorders
@@ -169,7 +166,7 @@ theorem le_closure_iff (x y : α) : x ≤ c y ↔ c x ≤ c y :=
 #align closure_operator.le_closure_iff ClosureOperator.le_closure_iff
 
 /-- An element `x` is closed for the closure operator `c` if it is a fixed point for it. -/
-def closed : Set α := fun x => c x = x
+def closed : Set α := {x | c x = x}
 #align closure_operator.closed ClosureOperator.closed
 
 theorem mem_closed_iff (x : α) : x ∈ c.closed ↔ c x = x :=
@@ -383,7 +380,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 /-- An element `x` is closed for `l : LowerAdjoint u` if it is a fixed point: `u (l x) = x` -/
-def closed : Set α := fun x => u (l x) = x
+def closed : Set α := {x | u (l x) = x}
 #align lower_adjoint.closed LowerAdjoint.closed
 
 theorem mem_closed_iff (x : α) : x ∈ l.closed ↔ u (l x) = x :=

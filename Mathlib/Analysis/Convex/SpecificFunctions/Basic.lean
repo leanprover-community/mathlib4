@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.convex.specific_functions.basic
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.LinearCombination
+
+#align_import analysis.convex.specific_functions.basic from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Collection of convex functions

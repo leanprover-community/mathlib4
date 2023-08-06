@@ -165,8 +165,6 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α
   apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
   · apply Coverage.saturate.of
     use α, inferInstance, Y, π
-    simp only [true_and]
-    exact Iff.mp (Sieve.effectiveEpimorphic_family Y π) h'
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]
     apply (coherentTopology C).pullback_stable'
@@ -188,7 +186,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
   · intro h
-    induction' h with Y T hS  Y Y R S _ _ a b
+    induction' h with Y T hS Y Y R S _ _ a b
     · rcases hS with ⟨a, h, Y', π, h'⟩
       use a, h, Y', π, by tauto
       intro a'
