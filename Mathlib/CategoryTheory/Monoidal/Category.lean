@@ -289,7 +289,7 @@ theorem inv_hom_whiskerRight' {X Y : C} (f : X ⟶ Y) [IsIso f] (Z : C) :
     inv f ▷ Z ≫ f ▷ Z = 𝟙 (Y ⊗ Z) := by
   rw [← comp_whiskerRight, IsIso.inv_hom_id, id_whiskerRight]
 
-/-- The left whiskering of a 2-isomorphism is a 2-isomorphism. -/
+/-- The left whiskering of an isomorphism is an isomorphism. -/
 @[simps]
 def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
   hom := X ◁ f.hom
