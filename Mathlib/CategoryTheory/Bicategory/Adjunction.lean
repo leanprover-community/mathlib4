@@ -368,6 +368,7 @@ theorem adjointifyUnit_right_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f �
   rw [← Iso.symm_eq_iff, rightZigzagIso_symm, adjointifyUnit_symm]
   exact adjointifyCounit_left_triangle ε.symm η.symm
 
+/-- Adjoint equivalences between two objects. -/
 structure Equivalence (a b : B) where
   hom : a ⟶ b
   inv : b ⟶ a
