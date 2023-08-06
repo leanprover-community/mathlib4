@@ -192,19 +192,9 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
       (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
     simp only [Set.PairwiseDisjoint, Disjoint, pairs, filter_filter, ne_eq, le_eq_subset,
       bot_eq_empty]
-    intro x _ y _ xny
-    by_contra neg
-    simp only [not_forall, exists_prop, exists_and_left] at neg
-    rcases neg with ⟨sneg, hsneg⟩
-    rw [subset_empty] at hsneg
-    have sneg_ne := nonempty_iff_ne_empty.mpr hsneg.right.right
-    rw [Finset.Nonempty] at sneg_ne
-    rcases sneg_ne with ⟨s, hs⟩
-    have hs1 := hsneg.left hs
-    have hs2 := hsneg.right.left hs
-    simp only [and_assoc, ← filter_filter, mem_filter] at hs1 hs2
-    rw [← hs1.right.right.right, ← hs2.right.right.right] at xny
-    exact xny rfl
+    intro x _ y _ xny s hs hs' a ha
+    rw [← (mem_filter.mp (hs ha)).right.right, ← (mem_filter.mp (hs' ha)).right.right] at xny
+    exact (xny rfl).elim
   have hdisj := @sum_disjiUnion _ _ _ f _ (range k)
     (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) pdisj
   have disj_equiv : disjiUnion (range k) (fun i ↦ filter (fun t ↦ card t.fst = i) (pairs σ k))
