@@ -364,6 +364,7 @@ theorem lift_monotone : Monotone lift :=
 #align cardinal.lift_monotone Cardinal.lift_monotone
 
 instance : Zero Cardinal.{u} :=
+  -- `PEmpty` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 0)⟩
 
 instance : Inhabited Cardinal.{u} :=
