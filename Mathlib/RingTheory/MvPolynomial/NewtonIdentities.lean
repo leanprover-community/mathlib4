@@ -203,8 +203,7 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     intro a
     rw [mem_disjiUnion, mem_filter]
     apply Iff.intro
-    · intro had
-      rcases had with ⟨a1, ha1⟩
+    · rintro ⟨a1, ha1⟩
       rw [mem_filter] at ha1
       refine ⟨ha1.right.left, ?_⟩
       rw [ha1.right.right]
