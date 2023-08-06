@@ -1,8 +1,6 @@
-import Mathlib.Analysis.Convex.Cone.Basic
-import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Analysis.Convex.Cone.Dual
+import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.DirectSum.Module
 
 structure PointedCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
      [SMul 𝕜 E] extends ConvexCone 𝕜 E where
@@ -150,11 +148,17 @@ def ofSubmodule (M : Submodule 𝕜≥0 E) : (PointedCone 𝕜 E) where
   add_mem' := fun _ hx _ hy => M.add_mem hx hy
   zero_mem' := M.zero_mem
 
-def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule { c : 𝕜 // 0 ≤ c } E) where
+def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule 𝕜≥0 E) where
   toFun := toSubmodule
   invFun := ofSubmodule
   left_inv := fun S => by aesop
   right_inv := fun M => by aesop
+
+def ofLinearMap [AddCommMonoid M] [Module 𝕜≥0 M] (f : M →ₗ[𝕜≥0] E) : PointedCone 𝕜 E where
+  carrier := Set.range f
+  smul_mem' := fun c hc _ ⟨y, _⟩ => ⟨(⟨c, le_of_lt hc⟩ : 𝕜≥0) • y, by aesop⟩
+  add_mem' := fun x1 ⟨y1, hy1⟩ x2 ⟨y2, hy2⟩ => ⟨y1 + y2, by aesop⟩
+  zero_mem' := ⟨0, by aesop⟩
 
 section Dual
 variable {E}
@@ -164,7 +168,7 @@ def dual (S : PointedCone ℝ E) : PointedCone ℝ E where
   toConvexCone := (S : Set E).innerDualCone
   zero_mem' := pointed_innerDualCone (S : Set E)
 
-@[simp] -- Porting note: removed `norm_cast` (new-style structures)
+@[simp]
 theorem coe_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
   rfl
 
@@ -182,20 +186,8 @@ open DirectSum Set
 variable {ι : Type _} [dec_ι : DecidableEq ι]
 variable {𝔼 : ι → Type _} [∀ i, AddCommMonoid (𝔼 i)] [∀ i, Module 𝕜 (𝔼 i)]
 
--- def DirectSum (S : ∀ i, PointedCone 𝕜 (𝔼 i)) : PointedCone 𝕜 (⨁ (i : ι), 𝔼 i) := ofSubmodule {
---   carrier := by
---     apply Set.range
---     apply DFinsupp.mapRange <| fun i => subtype.linearMap (S := S i)
---     simp only [map_zero, implies_true]
---   add_mem' := by
---     aesop
---   zero_mem' := _
---   smul_mem' := _
--- }
-
-
--- TODO: rewrite using the above equivalence and direct sum of submodules
-  -- ofModule <| DFinsupp.mapRange.linearMap <| fun i => subtype.linearMap (S := S i)
+protected def DirectSum (S : ∀ i, PointedCone 𝕜 (𝔼 i)) : PointedCone 𝕜 (⨁ (i : ι), 𝔼 i) :=
+  ofLinearMap <| DFinsupp.mapRange.linearMap <| fun i => subtype.linearMap (S := S i)
 
 -- TODO: DirectSum of Duals
 end DirectSum
