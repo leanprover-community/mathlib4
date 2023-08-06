@@ -548,10 +548,8 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
   calc
     _ = 𝟙 _ ⊗≫
       X₁ ◁ ((β_ X₂ Y₁).hom ▷ (Y₂ ⊗ Z₁) ≫ (Y₁ ⊗ X₂) ◁ (β_ Y₂ Z₁).hom) ▷ Z₂ ⊗≫
-        X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := ?eq1
-    _ = _ := ?eq2
-  case eq1 => coherence
-  case eq2 => rw [← whisker_exchange]; coherence
+        X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by coherence
+    _ = _ := by rw [← whisker_exchange]; coherence
 #align category_theory.tensor_associativity CategoryTheory.tensor_associativity
 
 /-- The tensor product functor from `C × C` to `C` as a monoidal functor. -/

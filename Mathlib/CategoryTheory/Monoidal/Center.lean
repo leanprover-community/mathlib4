@@ -147,23 +147,19 @@ def tensorObj (X Y : Center C) : Center C :=
             X.1 ◁ (HalfBraiding.β Y.2 U).hom ▷ U' ⊗≫
               _ ◁ (HalfBraiding.β Y.2 U').hom ≫
                 (HalfBraiding.β X.2 U).hom ▷ _ ⊗≫
-                  U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := ?eq1
-          _ = _ := ?eq2
-        case eq1 => coherence
-        case eq2 => rw [whisker_exchange]; coherence
+                  U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by coherence
+          _ = _ := by rw [whisker_exchange]; coherence
       naturality := fun {U U'} f => by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         calc
           _ = 𝟙 _ ⊗≫
             (X.1 ◁ (Y.1 ◁ f ≫ (HalfBraiding.β Y.2 U').hom)) ⊗≫
-              (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := ?eq1
+              (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by coherence
           _ = 𝟙 _ ⊗≫
             X.1 ◁ (HalfBraiding.β Y.2 U).hom ⊗≫
-              (X.1 ◁ f ≫ (HalfBraiding.β X.2 U').hom) ▷ Y.1 ⊗≫ 𝟙 _ := ?eq2
-          _ = _ := ?eq3
-        case eq1 => coherence
-        case eq2 => rw [HalfBraiding.naturality]; coherence
-        case eq3 => rw [HalfBraiding.naturality]; coherence }⟩
+              (X.1 ◁ f ≫ (HalfBraiding.β X.2 U').hom) ▷ Y.1 ⊗≫ 𝟙 _ := by
+            rw [HalfBraiding.naturality]; coherence
+          _ = _ := by rw [HalfBraiding.naturality]; coherence }⟩
 #align category_theory.center.tensor_obj CategoryTheory.Center.tensorObj
 
 @[reassoc]
@@ -175,14 +171,12 @@ theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y�
   calc
     _ = 𝟙 _ ⊗≫
       X.fst ◁ (f.f ▷ U ≫ (HalfBraiding.β Y₂.snd U).hom) ⊗≫
-        (HalfBraiding.β X.snd U).hom ▷ Y₂.fst ⊗≫ 𝟙 _ := ?eq1
+        (HalfBraiding.β X.snd U).hom ▷ Y₂.fst ⊗≫ 𝟙 _ := by coherence
     _ = 𝟙 _ ⊗≫
       X.fst ◁ (HalfBraiding.β Y₁.snd U).hom ⊗≫
-        ((X.fst ⊗ U) ◁ f.f ≫ (HalfBraiding.β X.snd U).hom ▷ Y₂.fst) ⊗≫ 𝟙 _ := ?eq2
-    _ = _ := ?eq3
-  case eq1 => coherence
-  case eq2 => rw [f.comm]; coherence
-  case eq3 => rw [whisker_exchange]; coherence
+        ((X.fst ⊗ U) ◁ f.f ≫ (HalfBraiding.β X.snd U).hom ▷ Y₂.fst) ⊗≫ 𝟙 _ := by
+      rw [f.comm]; coherence
+    _ = _ := by rw [whisker_exchange]; coherence
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
@@ -199,14 +193,12 @@ theorem whiskerRight_comm {X₁ X₂: Center C} (f : X₁ ⟶ X₂) (Y : Center 
   calc
     _ = 𝟙 _ ⊗≫
       (f.f ▷ (Y.fst ⊗ U) ≫ X₂.fst ◁ (HalfBraiding.β Y.snd U).hom) ⊗≫
-          (HalfBraiding.β X₂.snd U).hom ▷ Y.fst ⊗≫ 𝟙 _ := ?eq1
+        (HalfBraiding.β X₂.snd U).hom ▷ Y.fst ⊗≫ 𝟙 _ := by coherence
     _ = 𝟙 _ ⊗≫
       X₁.fst ◁ (HalfBraiding.β Y.snd U).hom ⊗≫
-        (f.f ▷ U ≫ (HalfBraiding.β X₂.snd U).hom) ▷ Y.fst ⊗≫ 𝟙 _ := ?eq2
-    _ = _ := ?eq3
-  case eq1 => coherence
-  case eq2 => rw [← whisker_exchange]; coherence
-  case eq3 => rw [f.comm]; coherence
+        (f.f ▷ U ≫ (HalfBraiding.β X₂.snd U).hom) ▷ Y.fst ⊗≫ 𝟙 _ := by
+      rw [← whisker_exchange]; coherence
+    _ = _ := by rw [f.comm]; coherence
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
