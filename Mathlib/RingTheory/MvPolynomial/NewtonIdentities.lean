@@ -105,11 +105,8 @@ theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) : pairMap
       eq_self, h1]
     refine ⟨le_step h, ?_⟩
     by_contra h2
-    have h3 : t.fst.Nonempty
-    · use t.snd
-      apply h1
     rw [← h2] at h
-    exact not_le_of_lt (sub_lt (card_pos.mpr h3) zero_lt_one) h
+    exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
   · simp only [h1] at h
     simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
     exact Or.resolve_left (le_iff_eq_or_lt.mp h.1) h.2
@@ -133,11 +130,7 @@ theorem weight_compose_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
       mul_comm, mul_assoc (∏ a in erase t.fst t.snd, X a), ← mul_add]
     nth_rewrite 1 [← pow_one (X t.snd)]
     simp only [← pow_add, add_comm]
-    have h3 : card t.fst ≥ 1
-    · have h4 : t.fst.Nonempty
-      · use t.snd
-        exact h1
-      exact lt_iff_add_one_le.mp (card_pos.mpr h4)
+    have h3 : card t.fst ≥ 1 := lt_iff_add_one_le.mp (card_pos.mpr ⟨t.snd, h1⟩)
     rw [← tsub_tsub_assoc h.right.left h3,
       ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)), h2 (card t.fst - 1),
       Nat.sub_add_cancel]
@@ -184,16 +177,14 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
   simp only [Prod.forall, pairs, mem_filter, mem_univ, true_and, and_true]
   rw [mem_range] at hi
   intro p b
-  apply Iff.intro
-  · intro hpl
-    exact mem_powerset_len_univ_iff.mpr hpl.2
-  · intro hpr
-    refine ⟨?_, mem_powerset_len_univ_iff.mp hpr⟩
-    refine ⟨Eq.subst (motive := fun n => n ≤ k)
-      (mem_powerset_len_univ_iff.mp hpr).symm (Nat.le_of_lt hi), ?_⟩
-    intro cardpk
-    rw [← cardpk, mem_powerset_len_univ_iff.mp hpr] at hi
-    exact ((lt_irrefl _) hi).elim
+  refine Iff.intro (fun hpl => mem_powerset_len_univ_iff.mpr hpl.2) ?_
+  intro hpr
+  refine ⟨?_, mem_powerset_len_univ_iff.mp hpr⟩
+  refine ⟨Eq.subst (motive := fun n => n ≤ k)
+    (mem_powerset_len_univ_iff.mp hpr).symm (Nat.le_of_lt hi), ?_⟩
+  intro cardpk
+  rw [← cardpk, mem_powerset_len_univ_iff.mp hpr] at hi
+  exact ((lt_irrefl _) hi).elim
 
 theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
@@ -232,7 +223,7 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
       rw [ha1.right.right]
       exact mem_range.mp ha1.left
     · intro haf
-      use (card a.fst)
+      use card a.fst
       refine ⟨mem_range.mpr haf.right, ?_⟩
       simp_all [mem_filter]
   simp only [← hdisj, disj_equiv]
@@ -264,9 +255,8 @@ theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
   rw [esymm, sum_equiv_k σ R k (fun t ↦ weight σ R k t),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
-    ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow]
-  · simp
-  · use k
+    ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩]
+  simp
 
 theorem esymm_mul_psum_summand_to_weight (k i : ℕ) :
     ∑ A in powersetLen i univ, ∑ j, weight σ R k (A, j) =
