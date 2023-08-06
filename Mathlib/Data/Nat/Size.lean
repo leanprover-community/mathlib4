@@ -32,9 +32,8 @@ theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ 
 end
 
 @[simp]
-theorem zero_shiftl (n) : 0 <<< n = 0 :=
-  (shiftLeft_eq _ _).trans (Nat.zero_mul _)
-#align nat.zero_shiftl Nat.zero_shiftl
+theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
+#align nat.zero_shiftl Nat.zero_shiftLeft
 
 theorem shiftRight_eq_div_pow (m) : ∀ n, m >>> n = m / 2 ^ n
   | 0 => (Nat.div_one _).symm
@@ -107,9 +106,9 @@ theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = 
 #align nat.size_shiftl' Nat.size_shiftl'
 
 @[simp]
-theorem size_shiftl {m} (h : m ≠ 0) (n) : size (m  <<< n) = size m + n :=
+theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n :=
   by simp only [size_shiftl' (shiftl'_ne_zero_left _ h _), ← shiftLeft_eq_shiftl'_false]
-#align nat.size_shiftl Nat.size_shiftl
+#align nat.size_shiftl Nat.size_shiftLeft
 
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   rw [← one_shiftLeft]
