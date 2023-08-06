@@ -1375,7 +1375,7 @@ noncomputable def map (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
   image fun y => pair y (f y)
 #align Set.map ZFSet.map
 
-@[simp 900]
+@[simp]
 theorem mem_map {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
     y ∈ map f x ↔ ∃ z ∈ x, pair z (f z) = y :=
   mem_image

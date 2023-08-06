@@ -1855,6 +1855,8 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
   f.sets_of_superset hs <| subset_preimage_image m s
 #align filter.image_mem_map Filter.image_mem_map
 
+-- Higher priority so it applies before `mem_map`.
+@[simp 1100]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
   ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
 #align filter.image_mem_map_iff Filter.image_mem_map_iff

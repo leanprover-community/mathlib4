@@ -1529,7 +1529,7 @@ theorem coe_map (s : AffineSubspace k P₁) : (s.map f : Set P₂) = f '' s :=
   rfl
 #align affine_subspace.coe_map AffineSubspace.coe_map
 
-@[simp 900]
+@[simp]
 theorem mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁} :
     x ∈ s.map f ↔ ∃ y ∈ s, f y = x := by
   simpa only [bex_def] using mem_image_iff_bex
@@ -1540,9 +1540,9 @@ theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f 
 #align affine_subspace.mem_map_of_mem AffineSubspace.mem_map_of_mem
 
 -- The simpNF linter says that the LHS can be simplified via `AffineSubspace.mem_map`.
--- However that is a lower priority simp lemma, so this doesn't matter.
+-- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
-@[simp, nolint simpNF]
+@[simp 1100, nolint simpNF]
 theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image
