@@ -141,18 +141,18 @@ theorem weight_compose_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst)), h2]
     simp
 
-theorem weight_zero_for_fixed_by_pairMap' (t : Finset σ × σ) (h : t ∈ pairs σ k)
+theorem weight_zero_for_fixed_by_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k)
     (h2 : pairMap σ t = t) : weight σ R k t = 0 := by
   have h3 := weight_compose_pairMap σ R t h
   rw [h2, ← two_mul, _root_.mul_eq_zero] at h3
   exact h3.resolve_left two_ne_zero
 
-theorem weight_zero_for_fixed_by_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k)
-    (h1 : weight σ R k t ≠ 0) : pairMap σ t ≠ t := mt (weight_zero_for_fixed_by_pairMap' σ R t h) h1
+theorem weight_zero_for_fixed_by_pairMap' (t : Finset σ × σ) (h : t ∈ pairs σ k)
+    (h1 : weight σ R k t ≠ 0) : pairMap σ t ≠ t := mt (weight_zero_for_fixed_by_pairMap σ R t h) h1
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
   sum_involution (fun t _ => pairMap σ t) (weight_compose_pairMap σ R)
-    (weight_zero_for_fixed_by_pairMap σ R) (pairMap_mem_pairs σ) (fun t _ => pairMap_pairMap σ t)
+    (weight_zero_for_fixed_by_pairMap' σ R) (pairMap_mem_pairs σ) (fun t _ => pairMap_pairMap σ t)
 
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
