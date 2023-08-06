@@ -17,7 +17,7 @@ that `f ≫ g = 0`, we define `h : S.RightHomologyData` to be the datum of morph
 to the kernel of the induced map `g' : Q ⟶ X₃`.
 
 When such a `S.RightHomologyData` exists, we shall say that `[S.HasRightHomology]`
-and (TODO) we define `S.rightHomology` to be the `H` field of a chosen right homology data.
+and we define `S.rightHomology` to be the `H` field of a chosen right homology data.
 Similarly, we define `S.opcycles` to be the `Q` field.
 
 In `Homology.lean`, when `S` has two compatible left and right homology data
@@ -973,7 +973,6 @@ lemma leftHomologyMap'_op
   simp only [γ.leftHomologyMap'_eq, (γ.op).rightHomologyMap'_eq,
     LeftHomologyMapData.op_φH]
 
-@[simp]
 lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     (leftHomologyMap φ).op = (S₂.rightHomologyOpIso).inv ≫ rightHomologyMap (opMap φ) ≫
       (S₁.rightHomologyOpIso).hom := by
@@ -989,7 +988,6 @@ lemma rightHomologyMap'_op
   simp only [γ.rightHomologyMap'_eq, (γ.op).leftHomologyMap'_eq,
     RightHomologyMapData.op_φH]
 
-@[simp]
 lemma rightHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
     (rightHomologyMap φ).op = (S₂.leftHomologyOpIso).inv ≫ leftHomologyMap
       (opMap φ) ≫ (S₁.leftHomologyOpIso).hom := by
