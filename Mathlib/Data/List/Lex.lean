@@ -61,6 +61,19 @@ theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
   fun.
 #align list.lex.not_nil_right List.Lex.not_nil_right
 
+theorem nil_left_or_nil_eq {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ [] = l := by
+  induction l with
+  | nil => exact Or.inr rfl
+  | cons a as _ => exact Or.inl (by apply nil)
+
+@[simp]
+theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b := by
+  refine' ⟨fun h ↦ _, List.Lex.rel⟩
+  by_contra h'
+  cases h
+  · apply not_nil_right r []; assumption
+  · apply h'; assumption
+
 instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
