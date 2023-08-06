@@ -573,16 +573,16 @@ instance : LawfulMonad
   map_const := by simp [Functor.mapConst, Functor.map]
   --Porting TODO : In Lean3 these were automatic by a tactic
   seqLeft_eq x y := ext'
-    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (. <$> .), and_comm])
+    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   seqRight_eq x y := ext'
-    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (. <$> .), and_comm])
+    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   pure_seq x y := ext'
-    (by simp [Seq.seq, Part.bind, assert, (. <$> .), pure])
+    (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
     (fun _ _ => rfl)
   bind_map x y := ext'
-    (by simp [(. >>= .), Part.bind, assert, Seq.seq, get, (. <$> .)] )
+    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, get, (· <$> ·)] )
     (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
@@ -692,15 +692,15 @@ instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
 -- Porting note : new theorems to unfold definitions
-theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * .) b := rfl
+theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
-theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (. ⁻¹) a := rfl
-theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / .) b := rfl
-theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % .) b := rfl
-theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ .) b := rfl
-theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ .) b := rfl
-theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y => map (y ∪ .) b := rfl
-theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y => map (y \ .) b := rfl
+theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
+theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % ·) b := rfl
+theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ ·) b := rfl
+theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ ·) b := rfl
+theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y => map (y ∪ ·) b := rfl
+theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y => map (y \ ·) b := rfl
 
 end
 

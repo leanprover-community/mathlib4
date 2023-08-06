@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Bhavik Mehta
 -/
 import Mathlib.Probability.ConditionalProbability
+import Mathlib.MeasureTheory.Measure.Count
 
 #align_import probability.cond_count from "leanprover-community/mathlib"@"117e93f82b5f959f8193857370109935291f0cc4"
 

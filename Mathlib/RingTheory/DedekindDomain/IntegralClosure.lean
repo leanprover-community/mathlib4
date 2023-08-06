@@ -253,7 +253,7 @@ and `C := integralClosure A L`.
 -/
 theorem IsIntegralClosure.isDedekindDomain [h : IsDedekindDomain A] : IsDedekindDomain C :=
   haveI : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
-  ⟨IsIntegralClosure.isNoetherianRing A K L C, h.dimensionLEOne.isIntegralClosure _ L _,
+  ⟨IsIntegralClosure.isNoetherianRing A K L C, h.dimensionLEOne.isIntegralClosure L _,
     (isIntegrallyClosed_iff L).mpr fun {x} hx =>
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (IsIntegralClosure.isIntegral_algebra A L) _ hx),
         IsIntegralClosure.algebraMap_mk' _ _ _⟩⟩

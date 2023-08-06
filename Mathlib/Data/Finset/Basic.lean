@@ -1849,8 +1849,10 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
 
 end Lattice
 
-/-! ### erase -/
+instance isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
+instance isDirected_subset : IsDirected (Finset α) (· ⊆ ·) := isDirected_le
 
+/-! ### erase -/
 
 section Erase
 

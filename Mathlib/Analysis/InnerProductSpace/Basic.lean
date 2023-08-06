@@ -34,7 +34,7 @@ product structure on `n → 𝕜` for `𝕜 = ℝ` or `ℂ`, see `EuclideanSpace
   properties, most notably the Cauchy-Schwarz inequality. Here `𝕜` is understood to be either `ℝ`
   or `ℂ`, through the `IsROrC` typeclass.
 - We show that the inner product is continuous, `continuous_inner`, and bundle it as the
-  the continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
+  continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
 - We define `Orthonormal`, a predicate on a function `v : ι → E`, and prove the existence of a
   maximal orthonormal set, `exists_maximal_orthonormal`.  Bessel's inequality,
   `Orthonormal.tsum_inner_products_le`, states that given an orthonormal set `v` and a vector `x`,
@@ -1976,7 +1976,7 @@ open DirectSum
 /-- An indexed family of mutually-orthogonal subspaces of an inner product space `E`.
 
 The simple way to express this concept would be as a condition on `V : ι → Submodule 𝕜 E`.  We
-We instead implement it as a condition on a family of inner product spaces each equipped with an
+instead implement it as a condition on a family of inner product spaces each equipped with an
 isometric embedding into `E`, thus making it a property of morphisms rather than subobjects.
 The connection to the subobject spelling is shown in `orthogonalFamily_iff_pairwise`.
 

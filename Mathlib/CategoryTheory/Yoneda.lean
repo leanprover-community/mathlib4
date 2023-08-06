@@ -335,7 +335,7 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
   rfl
 #align category_theory.yoneda_pairing_map CategoryTheory.yonedaPairing_map
 
-/-- The Yoneda lemma asserts that that the Yoneda pairing
+/-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
 

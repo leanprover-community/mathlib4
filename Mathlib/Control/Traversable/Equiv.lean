@@ -154,7 +154,7 @@ protected theorem naturality (f : α → F β) (x : t' α) :
 /-- The fact that `t` is a lawful traversable functor carries over the
 equivalences to `t'`, with the traversable functor structure given by
 `Equiv.traversable`. -/
-protected def isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
+protected theorem isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
   -- Porting note: Same `_inst` local variable problem.
   let _inst := Equiv.traversable eqv; {
     toLawfulFunctor := Equiv.lawfulFunctor eqv
@@ -169,7 +169,7 @@ protected def isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv
 carrying the traversable functor structure from `t` over the
 equivalences, then the fact that `t` is a lawful traversable functor
 carries over as well. -/
-protected def isLawfulTraversable' [Traversable t']
+protected theorem isLawfulTraversable' [Traversable t']
     (h₀ : ∀ {α β} (f : α → β), map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), mapConst f = (Equiv.map eqv ∘ Function.const α) f)
     (h₂ :

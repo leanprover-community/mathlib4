@@ -103,7 +103,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · exact sInf_le ⟨hle, inferInstance⟩
     · refine'
         le_sInf fun I hI =>
-          (eq_maximalIdeal <| IsDedekindDomain.dimensionLEOne _ (fun e => ha₂ _) hI.2).ge
+          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ _)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -119,7 +119,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
   have hb₄ : b ≠ 0 := by rintro rfl; apply hb₂; exact zero_mem _
   let K := FractionRing R
   let x : K := algebraMap R K b / algebraMap R K a
-  let M := Submodule.map (Algebra.ofId R K).toLinearMap (maximalIdeal R)
+  let M := Submodule.map (Algebra.linearMap R K) (maximalIdeal R)
   have ha₃ : algebraMap R K a ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr ha₂
   by_cases hx : ∀ y ∈ M, x * y ∈ M
   · have := isIntegral_of_smul_mem_submodule M ?_ ?_ x hx
@@ -131,7 +131,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
-        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.ofId R K).toLinearMap = ⊤ := by
+        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
       by_contra h; apply hx
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm
@@ -177,8 +177,8 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
   tfae_have 4 → 3
   · rintro ⟨h₁, h₂⟩;
     exact
-      ⟨inferInstance, fun I hI hI' =>
-        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R, h₁⟩
+      ⟨inferInstance, ⟨fun hI hI' =>
+        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R⟩, h₁⟩
   tfae_have 3 → 5
   · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 5 → 6
