@@ -310,6 +310,8 @@ initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 @[simps (config := .asFn)]
 protected def id : G →+c[a, a] G := ⟨id, fun _ ↦ rfl⟩
 
+instance : Inhabited (G →+c[a, a] G) := ⟨.id⟩
+
 /-- Composition of two `AddConstMap`s. -/
 @[simps (config := .asFn)]
 def comp {K : Type _} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H) :
