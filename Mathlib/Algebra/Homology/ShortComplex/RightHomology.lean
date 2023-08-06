@@ -969,7 +969,7 @@ noncomputable def cyclesOpIso [S.HasRightHomology] :
 lemma leftHomologyMap'_op
     (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     (leftHomologyMap' φ h₁ h₂).op = rightHomologyMap' (opMap φ) h₂.op h₁.op := by
-  let γ : LeftHomologyMapData φ h₁ h₂ := default
+  let γ : LeftHomologyMapData φ h₁ h₂ := leftHomologyMapData φ h₁ h₂
   simp only [γ.leftHomologyMap'_eq, (γ.op).rightHomologyMap'_eq,
     LeftHomologyMapData.op_φH]
 
