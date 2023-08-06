@@ -122,7 +122,7 @@ theorem coeSubtype.addMonoidHom : (subtype.addMonoidHom : S → E) = Subtype.val
 instance : Module 𝕜≥0 S := by
   apply Function.Injective.module (𝕜≥0) subtype.addMonoidHom
   simp only [coeSubtype.addMonoidHom, Subtype.coe_injective]
-  simp only [coeSubtype.addMonoidHom, PointedCone.coe_smul, Subtype.forall, implies_true, forall_const] -- a single `simp` does not work!
+  simp -- a single `simp` does not work!
 
 def subtype.linearMap : S →ₗ[𝕜≥0] E where
   toFun := Subtype.val
@@ -133,14 +133,14 @@ def toSubmodule (S : PointedCone 𝕜 E) : Submodule 𝕜≥0 E where
   carrier := S
   add_mem' := fun hx hy => S.add_mem hx hy
   zero_mem' := S.zero_mem
-  smul_mem' := fun ⟨c, hc⟩ x => by
+  smul_mem' := fun ⟨c, hc⟩ x hx => by
+    simp_rw [SetLike.mem_coe]
     cases' eq_or_lt_of_le hc with hzero hpos
-    simp
-    . rintro _
-      convert S.zero_mem
+    . convert S.zero_mem
       simpa [← hzero] using smul_eq_zero_of_left rfl x
     . apply ConvexCone.smul_mem
       convert hpos
+      exact hx
 
 def ofSubmodule (M : Submodule 𝕜≥0 E) : (PointedCone 𝕜 E) where
   carrier := M
