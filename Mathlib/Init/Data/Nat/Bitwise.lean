@@ -195,7 +195,7 @@ theorem shiftLeft_eq_shiftl'_false : ∀ n, shiftl' false m n = m <<< n
     simp [shiftl', bit_val, shiftLeft_eq_shiftl'_false, this]
 
 @[simp]
-lemma bit_0 (b : Bool) : Nat.bit b 0 = b.toNat := by
+lemma bit_zero (b : Bool) : Nat.bit b 0 = b.toNat := by
   cases' b <;> simp
 
 @[simp]
