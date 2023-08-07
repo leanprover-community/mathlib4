@@ -61,6 +61,14 @@ variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
 /-- The degree-`n` power sum -/
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
+@[simp]
+theorem psum_zero : psum σ R 0 = card (@univ σ _) := by
+  simp only [psum, _root_.pow_zero, cast_card]
+
+@[simp]
+theorem psum_one : psum σ R 1 = ∑ i, X i := by
+  simp only [psum, _root_.pow_one]
+
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
   simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
 
@@ -74,14 +82,6 @@ open Finset Nat
 
 variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [NoZeroDivisors R]
   [CharZero R]
-
-@[simp]
-theorem psum_zero : psum σ R 0 = card (@univ σ _) := by
-  simp only [psum, _root_.pow_zero, cast_card]
-
-@[simp]
-theorem psum_one : psum σ R 1 = ∑ i, X i := by
-  simp only [psum, _root_.pow_one]
 
 private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
