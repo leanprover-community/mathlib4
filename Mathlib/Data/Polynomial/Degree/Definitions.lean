@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Polynomial.Monomial
@@ -150,9 +151,13 @@ theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
 #align polynomial.degree_eq_iff_nat_degree_eq_of_pos Polynomial.degree_eq_iff_natDegree_eq_of_pos
 
 theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) : natDegree p = n :=
-  have hp0 : p ≠ 0 := fun hp0 => by rw [hp0] at h; exact Option.noConfusion h
-  Option.some_inj.1 <| show (natDegree p : WithBot ℕ) = n by rwa [← degree_eq_natDegree hp0]
+  -- Porting note: `Nat.cast_withBot` is required.
+  by rw [natDegree, h, Nat.cast_withBot, WithBot.unbot'_coe]
 #align polynomial.nat_degree_eq_of_degree_eq_some Polynomial.natDegree_eq_of_degree_eq_some
+
+theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
+  mt natDegree_eq_of_degree_eq_some
+#align polynomial.degree_ne_of_nat_degree_ne Polynomial.degree_ne_of_natDegree_ne
 
 @[simp]
 theorem degree_le_natDegree : degree p ≤ natDegree p :=
@@ -208,11 +213,6 @@ theorem degree_le_degree (h : coeff q (natDegree p) ≠ 0) : degree p ≤ degree
   · rw [degree_eq_natDegree hp]
     exact le_degree_of_ne_zero h
 #align polynomial.degree_le_degree Polynomial.degree_le_degree
-
-theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
-  -- Porting note: `Nat.cast_withBot` is required.
-  mt fun h => by rw [natDegree, h, Nat.cast_withBot, WithBot.unbot'_coe]
-#align polynomial.degree_ne_of_nat_degree_ne Polynomial.degree_ne_of_natDegree_ne
 
 theorem natDegree_le_iff_degree_le {n : ℕ} : natDegree p ≤ n ↔ degree p ≤ n :=
   WithBot.unbot'_bot_le_iff
@@ -627,11 +627,9 @@ theorem degree_le_zero_iff : degree p ≤ 0 ↔ p = C (coeff p 0) :=
   ⟨eq_C_of_degree_le_zero, fun h => h.symm ▸ degree_C_le⟩
 #align polynomial.degree_le_zero_iff Polynomial.degree_le_zero_iff
 
-theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) :=
-  calc
-    degree (p + q) = (p + q).support.sup WithBot.some := rfl
-    _ ≤ (p.support ∪ q.support).sup WithBot.some := (sup_mono support_add)
-    _ = p.support.sup WithBot.some ⊔ q.support.sup WithBot.some := sup_union
+theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) := by
+  simpa only [degree, ←support_toFinsupp, toFinsupp_add]
+    using AddMonoidAlgebra.sup_support_add_le _ _ _
 #align polynomial.degree_add_le Polynomial.degree_add_le
 
 theorem degree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : degree p ≤ n) (hq : degree q ≤ n) :
@@ -777,21 +775,9 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       _ ≤ _ := by rw [sup_insert, sup_eq_max]; exact max_le_max le_rfl ih
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
 
-theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q :=
-  calc
-    degree (p * q) ≤
-        p.support.sup fun i => degree (sum q fun j a => C (coeff p i * a) * X ^ (i + j)) := by
-      -- Porting note: Was `simp only [..]; convert ..; exact mul_eq_sum_sum`.
-      simp only [← C_mul_X_pow_eq_monomial.symm, mul_eq_sum_sum (p := p) (q := q)]
-      exact degree_sum_le _ _
-    _ ≤ p.support.sup fun i => q.support.sup fun j =>
-          degree (C (coeff p i * coeff q j) * X ^ (i + j)) :=
-      (Finset.sup_mono_fun fun i _hi => degree_sum_le _ _)
-    _ ≤ degree p + degree q := by
-      refine Finset.sup_le fun a ha ↦ Finset.sup_le fun b hb ↦ (degree_C_mul_X_pow_le _ _).trans ?_
-      rw [Nat.cast_add]
-      rw [mem_support_iff] at ha hb
-      exact add_le_add (le_degree_of_ne_zero ha) (le_degree_of_ne_zero hb)
+theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
+  simpa only [degree, ←support_toFinsupp, toFinsupp_mul]
+    using AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le _ _
 #align polynomial.degree_mul_le Polynomial.degree_mul_le
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :

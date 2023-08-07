@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Group.Action
 
 #align_import measure_theory.group.integration from "leanprover-community/mathlib"@"ec247d43814751ffceb33b758e8820df2372bf6f"
 

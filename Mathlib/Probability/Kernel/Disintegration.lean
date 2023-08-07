@@ -262,9 +262,8 @@ variable {Ω : Type _} [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace �
 
 /-- Existence of a conditional kernel. Use the definition `condKernel` to get that kernel. -/
 theorem exists_cond_kernel (γ : Type _) [MeasurableSpace γ] :
-    ∃ (η : kernel α Ω) (h : IsMarkovKernel η), kernel.const γ ρ =
-      @kernel.compProd γ α _ _ Ω _ (kernel.const γ ρ.fst) _ (kernel.prodMkLeft γ η)
-        (by haveI := h; infer_instance) := by
+    ∃ (η : kernel α Ω) (_h : IsMarkovKernel η), kernel.const γ ρ =
+      kernel.compProd (kernel.const γ ρ.fst) (kernel.prodMkLeft γ η) := by
   obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
   let ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f)
   -- The general idea is to define `η = kernel.comapRight (condKernelReal ρ') hf`. There is

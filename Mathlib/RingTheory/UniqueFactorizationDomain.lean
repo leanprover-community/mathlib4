@@ -1025,16 +1025,12 @@ theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x
     ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := by
   classical
     let n := (normalizedFactors a₀).count (normalize x)
-    obtain ⟨a, ha1, ha2⟩ :=
-      @exists_eq_pow_mul_and_not_dvd R _ _ x a₀ (ne_top_iff_finite.mp (PartENat.ne_top_iff.mpr _))
+    obtain ⟨a, ha1, ha2⟩ := @exists_eq_pow_mul_and_not_dvd R _ _ x a₀
+      (ne_top_iff_finite.mp (PartENat.ne_top_iff.mpr
+        -- Porting note: this was a hole that was filled at the end of the proof with `use`:
+        ⟨n, multiplicity_eq_count_normalizedFactors hx h⟩))
     simp_rw [← (multiplicity_eq_count_normalizedFactors hx h).symm] at ha1
-    use n
-    use a
-    use ha2
-    rw [ha1]
-    congr
-    use n
-    exact multiplicity_eq_count_normalizedFactors hx h
+    use n, a, ha2, ha1
 #align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_power_factor
 
 
@@ -1556,7 +1552,7 @@ noncomputable instance : Inf (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
 noncomputable instance : Lattice (Associates α) :=
-  { Associates.instPartialOrderAssociatesToMonoidToMonoidWithZeroToCommMonoidWithZero with
+  { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
     sup_le := fun _ _ c hac hbc =>

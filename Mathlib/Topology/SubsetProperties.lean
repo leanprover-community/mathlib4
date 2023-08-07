@@ -455,7 +455,7 @@ theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪
   rw [union_eq_iUnion]; exact isCompact_iUnion fun b => by cases b <;> assumption
 #align is_compact.union IsCompact.union
 
-theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
+protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 #align is_compact.insert IsCompact.insert
 

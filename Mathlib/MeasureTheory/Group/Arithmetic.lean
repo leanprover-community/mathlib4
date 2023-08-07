@@ -192,7 +192,7 @@ theorem measurable_div_const' {G : Type _} [DivInvMonoid G] [MeasurableSpace G] 
 #align measurable_sub_const' measurable_sub_const'
 
 /-- This class assumes that the map `β × γ → β` given by `(x, y) ↦ x ^ y` is measurable. -/
-class MeasurablePow (β γ : Type _) [MeasurableSpace β] [MeasurableSpace γ] [Pow β γ] where
+class MeasurablePow (β γ : Type _) [MeasurableSpace β] [MeasurableSpace γ] [Pow β γ] : Prop where
   measurable_pow : Measurable fun p : β × γ => p.1 ^ p.2
 #align has_measurable_pow MeasurablePow
 
