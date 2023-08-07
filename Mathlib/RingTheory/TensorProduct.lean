@@ -618,8 +618,11 @@ variable (S)
 Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
 protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
+  -- the map `fun r a ↦ a * algebraMap _ _ r`, bilinear in just the right way
   let act : R →ₗ[R] A →ₗ[S] A :=
     (Algebra.lsmul (A := A) S Aᵐᵒᵖ A).toLinearMap.flip.restrictScalars R ∘ₗ Algebra.linearMap R A
+  -- TODO: extract this `let` as `AlgebraTensorModule.rid` once we have
+  -- `Algebra R A → Module Rᵐᵒᵖ A`, with the above as `fun r a ↦ MulOpposite.op r • a`
   let lin : A ⊗[R] R ≃ₗ[S] A := LinearEquiv.ofLinear
     (AlgebraTensorModule.lift <| LinearMap.flip <| act)
     ((AlgebraTensorModule.mk R A A R).flip 1)
