@@ -1075,6 +1075,9 @@ attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.
+
+Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
+on a type with the minumum proof obligations.
 -/
 class Group (G : Type u) extends DivInvMonoid G where
   mul_left_inv : ∀ a : G, a⁻¹ * a = 1
@@ -1084,6 +1087,9 @@ class Group (G : Type u) extends DivInvMonoid G where
 
 There is also a binary operation `-` such that `a - b = a + -b`,
 with a default so that `a - b = a + -b` holds by definition.
+
+Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
+additive group structure on a type with the minumum proof obligations.
 -/
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
