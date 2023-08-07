@@ -194,12 +194,14 @@ section Field
 
 open LinearMap
 
-theorem matrix.rank_transpose' {𝕜 i j : Type _}
-    [Field 𝕜] [Fintype i] [Fintype j] [DecidableEq i][DecidableEq j] (m : Matrix i j 𝕜) :
-    m.transpose.rank = m.rank := by
-  rw [Matrix.rank_eq_finrank_range_toLin mᵀ (Pi.basisFun 𝕜 j).dualBasis (Pi.basisFun 𝕜 i).dualBasis,
+variable [Field R]
+
+theorem rank_transpose [DecidableEq m] [DecidableEq n] (M : Matrix m n R) :
+    M.transpose.rank = M.rank := by
+  rw [Matrix.rank_eq_finrank_range_toLin Mᵀ (Pi.basisFun R n).dualBasis (Pi.basisFun R m).dualBasis,
   Matrix.toLin_transpose, ← dualMap_def, finrank_range_dualMap_eq_finrank_range,
   Matrix.toLin_eq_toLin', Matrix.toLin'_apply', Matrix.rank]
+#align matrix.rank_transpose Matrix.rank_transpose
 
 end Field
 
@@ -225,7 +227,7 @@ theorem ker_mulVecLin_conjTranspose_mul_self' (A : Matrix m n R) :
     rw [h, mulVec_zero]
 
 @[simp]
-theorem rank_conjTranspose_mul_self' (A : Matrix m n R) :
+theorem rank_conjTranspose_mul_self (A : Matrix m n R) :
     (Aᴴ ⬝ A).rank = A.rank := by
   dsimp only [Matrix.rank]
   refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
@@ -236,16 +238,16 @@ theorem rank_conjTranspose_mul_self' (A : Matrix m n R) :
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 
 @[simp]
-theorem rank_conjTranspose' (A : Matrix m n R) : Aᴴ.rank = A.rank :=
+theorem rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank :=
   le_antisymm
-    (((rank_conjTranspose_mul_self' _).symm.trans_le <| rank_mul_le_left _ _).trans_eq <|
+    (((rank_conjTranspose_mul_self _).symm.trans_le <| rank_mul_le_left _ _).trans_eq <|
       congr_arg _ <| conjTranspose_conjTranspose _)
-    ((rank_conjTranspose_mul_self' _).symm.trans_le <| rank_mul_le_left _ _)
+    ((rank_conjTranspose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
 
 @[simp]
-theorem rank_self_mul_conjTranspose' (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank := by
-  simpa only [rank_conjTranspose', conjTranspose_conjTranspose] using
-    rank_conjTranspose_mul_self' Aᴴ
+theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank := by
+  simpa only [rank_conjTranspose, conjTranspose_conjTranspose] using
+    rank_conjTranspose_mul_self Aᴴ
 
 end DotProductInnerProductSpace
 
@@ -288,13 +290,6 @@ theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank 
   · rw [ker_mulVecLin_transpose_mul_self]
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 #align matrix.rank_transpose_mul_self Matrix.rank_transpose_mul_self
-
-/-- TODO: prove this in greater generality. -/
-@[simp]
-theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank :=
-  le_antisymm ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
-    ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
-#align matrix.rank_transpose Matrix.rank_transpose
 
 @[simp]
 theorem rank_self_mul_transpose (A : Matrix m n R) : (A ⬝ Aᵀ).rank = A.rank := by
