@@ -30,7 +30,7 @@ namespace MappingConeCompHomotopyEquiv
 
 @[simp]
 noncomputable def hom : mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
-  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by simp))
+  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_self 1)) (by
     ext ⟨p, _, rfl⟩
     dsimp [mappingConeCompTriangle, map']
@@ -39,8 +39,8 @@ noncomputable def hom : mappingCone g ⟶ mappingCone (mappingConeCompTriangle f
 
 @[simp]
 noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ mappingCone g :=
-  desc _ ((snd f).comp (inl g) (zero_add (-1)))
-    (desc _ ((Cochain.ofHom f).comp (inl g) (zero_add (-1))) (inr g) (by simp)) (by
+  desc _ ((snd f) •[zero_add (-1)] (inl g))
+    (desc _ ((Cochain.ofHom f) •[zero_add (-1)] (inl g)) (inr g) (by simp)) (by
       ext p
       dsimp [map']
       rw [from_ext_iff _ _ _ (p+1) rfl, to_ext_iff _ _ _ (p+1) rfl]
@@ -64,29 +64,30 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
     simp only [δ_neg, δ_zero_cochain_comp, ε_neg, ε_1, one_smul, neg_smul,
       δ_comp _ _ (show 1+(-2) = -1 by linarith) 2 (-1) 0 (by linarith) (by linarith) (by linarith),
       δ_comp _ _ (show (-1)+(-1) = -2 by linarith) 0 0 (-1) (by linarith)
-        (by linarith) (by linarith),
-      ε_even 2 ⟨1, by linarith⟩, δ_inl, δ_snd, Cocycle.δ_eq_zero, Cochain.zero_comp,
-      add_zero, Cochain.neg_comp, neg_neg]
+        (by linarith) (by linarith), ε_even 2 ⟨1, by linarith⟩, δ_inl, δ_snd,
+      Cocycle.δ_eq_zero, Cochain.zero_comp, add_zero, Cochain.neg_comp, neg_neg]
     ext n
     rw [from_ext_iff _ _ _ (n+1) rfl, from_ext_iff _ _ _ (n+1) rfl,
       from_ext_iff _ _ _ (n+2) (show n+1+1 = n+2 by linarith)]
-    simp only [to_ext_iff _ _ _ (n+1) rfl,
-      map', Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
+    simp only [to_ext_iff _ _ _ (n+1) rfl]
+    dsimp [map']
+    simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, descCocycle_coe,
+      ZeroMemClass.coe_zero, Cochain.zero_cochain_comp_v, inl_v_descCochain_v_assoc, assoc,
+      inl_v_snd_v_assoc, zero_comp, Cochain.id_comp, γhmul_assoc_of_first_degree_eq_zero,
+      Cochain.comp_add, Cochain.comp_neg, Cochain.add_v, Cochain.neg_v,
+      γhmul_assoc_of_second_degree_eq_zero, neg_add_rev, neg_neg, Cochain.ofHom_v,
+      HomologicalComplex.id_f, Preadditive.comp_add, Preadditive.comp_neg, neg_zero,
+      add_zero, comp_id, Preadditive.add_comp, Preadditive.neg_comp,
+      inl_v_fst_v, inl_v_fst_v_assoc, inl_v_descCochain_v_assoc,
+      Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
       Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n + 1) (n + 2) n
         (by linarith) (by linarith),
       Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n
-        (by linarith) (by linarith), Cochain.ofHom_v, mappingConeCompTriangle_obj₁,
-      mappingConeCompTriangle_obj₂, mappingConeCompTriangle_mor₁, inv, hom,
-      Cochain.ofHom_comp, ofHom_desc, ofHom_lift, descCocycle_coe, Cocycle.coe_zero,
-      Cochain.zero_cochain_comp_v, inl_v_descCochain_v_assoc, assoc, inl_v_snd_v_assoc,
-      zero_comp, Cochain.id_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
-      Cochain.comp_add, Cochain.comp_neg, Cochain.comp_assoc_of_second_is_zero_cochain,
-      neg_add_rev, neg_neg, Cochain.add_v, Cochain.neg_v, Cochain.comp_zero_cochain_v,
-      HomologicalComplex.id_f, Preadditive.comp_add, Preadditive.comp_neg, inl_v_fst_v_assoc,
-      neg_zero, add_zero, comp_id, add_left_neg, and_self, inr_f_snd_v_assoc,
-      liftCochain_v_fst_v, inl_v_descCochain_v, inr_f_descCochain_v_assoc,
-      inr_f_fst_v_assoc, comp_zero, zero_add, inl_v_fst_v, liftCochain_v_snd_v, Cochain.zero_v,
-      inl_v_snd_v, neg_add_cancel_right, inr_f_descCochain_v, inr_f_fst_v, inr_f_snd_v])
+        (by linarith) (by linarith), add_left_neg, liftCochain_v_fst_v,
+      inl_v_descCochain_v, inr_f_snd_v_assoc, inr_f_descCochain_v_assoc,
+      inr_f_fst_v_assoc, comp_zero, zero_add, liftCochain_v_snd_v, inl_v_snd_v,
+      Cochain.zero_v, inr_f_fst_v, Cochain.comp_zero_cochain_v,
+      inr_f_descCochain_v, inr_f_snd_v])
 
 end MappingConeCompHomotopyEquiv
 

@@ -4,7 +4,7 @@ universe u
 
 abbrev GradedType (M : Type _) := M → Type u
 
-variable {M}
+variable {M : Type _} {G : Type _}
 
 class HasGradedHMul [Add M] (X Y : GradedType M) (Z : outParam (GradedType M)) where
   γhmul' (a b c : M) (h : a + b = c) (α : X a) (β : Y b) : Z c
@@ -19,7 +19,7 @@ variable [AddMonoid M] (X Y Z : GradedType M) (XY YZ XYZ : outParam (GradedType 
   [HasGradedHMul X Y XY] [HasGradedHMul Y Z YZ]
   [HasGradedHMul X YZ XYZ] [HasGradedHMul XY Z XYZ]
 
-class IsAssocGradedHMul where
+class IsAssocGradedHMul : Prop where
   γhmul_assoc : ∀ ⦃a b c : M⦄ (α : X a) (β : Y b) (γ : Z c) (ab bc abc : M)
     (hab : a + b = ab) (hbc : b + c = bc) (habc : ab + c = abc),
       (α •[hab] β) •[habc] γ =
@@ -44,4 +44,16 @@ lemma γhmul_assoc_of_third_degree_eq_zero
     [IsAssocGradedHMul X Y Z XY YZ XYZ]
     {a b : M} (α : X a) (β : Y b) (γ : Z 0) (ab : M) (hab : a + b = ab) :
   (α •[hab] β) •[add_zero _] γ = α •[hab] β •[add_zero _] γ := by
+  apply IsAssocGradedHMul.γhmul_assoc
+
+variable [AddGroup G] (X' Y' Z' : GradedType G) (XY' YZ' XYZ' : outParam (GradedType G))
+  [HasGradedHMul X' Y' XY'] [HasGradedHMul Y' Z' YZ']
+  [HasGradedHMul X' YZ' XYZ'] [HasGradedHMul XY' Z' XYZ']
+
+@[simp]
+lemma γhmul_assoc_of_second_degree_eq_neq_third_degree
+    [IsAssocGradedHMul X' Y' Z' XY' YZ' XYZ']
+    {a b ab : G} (α : X' a) (β : Y' (-b)) (γ : Z' b) (hab : a + (-b) = ab) :
+    (α •[hab] β) •[show ab + b = a by rw [← hab, add_assoc, neg_add_self, add_zero]] γ =
+      α •[add_zero a] (β •[neg_add_self b] γ) := by
   apply IsAssocGradedHMul.γhmul_assoc

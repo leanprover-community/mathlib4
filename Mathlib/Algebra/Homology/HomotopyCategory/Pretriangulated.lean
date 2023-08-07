@@ -54,9 +54,9 @@ variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} {φ₁ : K₁ �
   (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃)
 
 noncomputable def map : mappingCone φ₁ ⟶ mappingCone φ₂ :=
-  desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _) +
-      ((Cochain.equivHomotopy _ _) H : Cochain K₁ L₂ (-1)).comp
-    (Cochain.ofHom (inr φ₂)) (add_zero _)) (b ≫ inr φ₂) (by simp)
+  desc φ₁ ((Cochain.ofHom a) •[zero_add _] (inl φ₂) +
+      ((Cochain.equivHomotopy _ _) H : Cochain K₁ L₂ (-1)) •[add_zero _]
+    (Cochain.ofHom (inr φ₂))) (b ≫ inr φ₂) (by simp)
 
 @[reassoc]
 lemma triangleMap_comm₂ : inr φ₁ ≫ map H = b ≫ inr φ₂ := by
@@ -100,7 +100,7 @@ variable (φ₁ φ₂ a b)
 variable (comm : φ₁ ≫ b = a ≫ φ₂) (comm' : φ₂ ≫ b' = a' ≫ φ₃)
 
 noncomputable def map' : mappingCone φ₁ ⟶ mappingCone φ₂ :=
-  desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _)) (b ≫ inr φ₂)
+  desc φ₁ ((Cochain.ofHom a) •[zero_add _] (inl φ₂)) (b ≫ inr φ₂)
     (by simp only [δ_ofHom_comp, δ_inl, reassoc_of% comm, Cochain.ofHom_comp])
 
 lemma map'_eq_map : map' φ₁ φ₂ a b comm = map (Homotopy.ofEq comm) := by
@@ -161,7 +161,7 @@ noncomputable def rotateHomotopyEquiv :
       Cochain.neg_v, Cochain.rightShift_v _ 1 0 (zero_add 1) p p (add_zero p) (p+1) rfl,
       comp_neg, neg_comp, neg_neg, assoc, inl_v_fst_v_assoc, Iso.hom_inv_id])
   homotopyInvHomId := (Cochain.equivHomotopy _ _).symm
-    ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
+    ⟨-(snd (inr φ)) •[zero_add (-1)] ((snd φ) •[zero_add (-1)] (inl (inr φ))), by
       ext p
       simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
         Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.zero_cochain_comp_v, δ_neg,
@@ -187,7 +187,7 @@ noncomputable def rotateHomotopyEquiv :
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
   Homotopy (triangleδ φ ≫ (rotateHomotopyEquiv φ).hom)
     (inr (CochainComplex.MappingCone.inr φ)) := (Cochain.equivHomotopy _ _).symm
-      ⟨-(snd φ).comp ((inl (inr φ))) (zero_add (-1)), by
+      ⟨-(snd φ) •[zero_add (-1)] ((inl (inr φ))), by
         ext p
         dsimp [rotateHomotopyEquiv]
         simp only [Cochain.ofHom_comp, Cochain.zero_cochain_comp_v, Cochain.ofHom_v,

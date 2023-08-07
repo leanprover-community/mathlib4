@@ -48,35 +48,30 @@ noncomputable def homotopyEquiv : HomotopyEquiv (cylinder K) K where
   hom := π
   inv := inl
   homotopyHomInvId := MappingCone.descHomotopy _ _ _ 0
-    ((Cochain.ofHom biprod.snd).comp (MappingCone.inl _) (zero_add (-1)))
+    (Cochain.ofHom (biprod.snd : K ⊞ K ⟶ K) •[zero_add (-1)] MappingCone.inl (biprod.lift (𝟙 K) (-𝟙 K)))
     (by
       dsimp only [π, inl, desc]
-      rw [MappingCone.cochain_to_ext_iff _ _ _ _ (neg_add_self 1)]
-      simp only [Cochain.ofHom_comp, Cochain.comp_assoc_of_second_is_zero_cochain,
-        Cochain.comp_assoc_of_first_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero,
-        δ_zero, zero_add, Cochain.add_comp, MappingCone.inl_fst, Cochain.comp_id,
-        MappingCone.inr_snd, MappingCone.inl_snd]
-      erw [Cochain.id_comp, Cochain.id_comp]
-      constructor
-      . erw [MappingCone.inl_fst, ← Cochain.ofHom_comp, biprod.lift_snd,
-          Cochain.ofHom_neg, add_left_neg]
-      . erw [MappingCone.inl_snd, MappingCone.ofHom_desc,
-          ← Cochain.comp_assoc_of_third_is_zero_cochain,
-          MappingCone.inl_descCochain, Cochain.ofHomotopy_refl, Cochain.zero_comp])
+      simp only [Cochain.ofHom_comp, ← γhmul_assoc_of_second_degree_eq_zero,
+        MappingCone.inl_desc, Cochain.ofHomotopy_refl, Cochain.zero_comp, δ_zero, zero_add]
+      erw [Cochain.comp_id, ← γhmul_assoc_of_first_degree_eq_zero]
+      rw [← Cochain.ofHom_comp, biprod.lift_snd, Cochain.ofHom_neg]
+      erw [Cochain.neg_comp]
+      rw [Cochain.id_comp, add_left_neg])
     (by
       dsimp only [π, inl, desc]
+      erw [δ_ofHom_comp]
       rw [MappingCone.cochain_to_ext_iff _ _ _ _ (zero_add 1)]
-      simp only [Cochain.ofHomotopy_refl, MappingCone.inr_desc_assoc, Cochain.ofHom_comp,
-        Cochain.comp_assoc_of_first_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero,
-        δ_ofHom_comp, MappingCone.δ_inl, Cochain.add_comp, zero_add,
-        MappingCone.inr_snd, Cochain.comp_id]
-      erw [Cochain.id_comp, Cochain.id_comp]
-      constructor
-      . simp only [MappingCone.inr_fst]
-      . simp only [MappingCone.inr_snd, ← Cochain.ofHom_comp, ← Cochain.ofHom_add]
-        apply congr_arg
-        apply biprod.hom_ext' <;> apply biprod.hom_ext
-        all_goals dsimp ; simp)
+      simp only [Cochain.ofHomotopy_refl, MappingCone.inr_desc_assoc,
+        Cochain.ofHom_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
+        MappingCone.inr_fst, MappingCone.inr_snd, Cochain.comp_zero, Cochain.comp_id]
+      erw [Cochain.comp_id]
+      simp only [MappingCone.δ_inl, Cochain.ofHom_comp, Cochain.add_comp, γhmul_assoc_of_first_degree_eq_zero,
+        Cochain.comp_assoc_of_first_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero, add_zero,
+        MappingCone.inr_snd, Cochain.comp_id, true_and]
+      simp only [MappingCone.inr_snd, ← Cochain.ofHom_comp, ← Cochain.ofHom_add]
+      apply congr_arg
+      apply biprod.hom_ext' <;> apply biprod.hom_ext
+      all_goals dsimp; simp)
   homotopyInvHomId := Homotopy.ofEq (by simp)
 
 end cylinder
