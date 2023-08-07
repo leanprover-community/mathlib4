@@ -230,8 +230,7 @@ section CommRing
 variable [CommRing R] {p q : R[X]}
 
 theorem X_dvd_sub_C : X ∣ p - C (p.coeff 0) := by
-  rw [X_dvd_iff, coeff_sub, coeff_C]
-  simp only [eq_self_iff_true, if_true, sub_self]
+  simp [X_dvd_iff, coeff_C]
 
 theorem modByMonic_eq_sub_mul_div :
     ∀ (p : R[X]) {q : R[X]} (_hq : Monic q), p %ₘ q = p - q * (p /ₘ q)
