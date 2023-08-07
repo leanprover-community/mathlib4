@@ -23,12 +23,12 @@ probability of heads is `p`. -/
 def binominal (p : ENNReal) (h : p ≤ 1) (n : ℕ) : Pmf (Fin (n + 1)) :=
   .ofFintype (fun i => p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ)) (by
     convert (add_pow p (1-p) n).symm
-    . rw [Finset.sum_fin_eq_sum_range]
+    · rw [Finset.sum_fin_eq_sum_range]
       apply Finset.sum_congr rfl
       intro i hi
       simp at hi
       rw [dif_pos hi]
-    . simp [h])
+    · simp [h])
 
 theorem binominal_apply : binominal p h n i =
   p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ) := rfl
