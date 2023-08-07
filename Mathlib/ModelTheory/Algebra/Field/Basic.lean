@@ -141,6 +141,7 @@ attribute [simp] ModelField.funMap_add ModelField.funMap_mul
   ModelField.funMap_neg ModelField.funMap_inv
   ModelField.funMap_zero ModelField.funMap_one
 
+set_option maxHeartbeats 1000000 in
 def ModelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     [Theory.field.Model K] : ModelField K :=
 { add := fun x y => funMap addFunction ![x, y],
@@ -223,12 +224,24 @@ def ModelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
       (show invFunction.apply₁ 0 =' 0 ∈ Theory.field from
         Set.mem_range_self (f := toSentence) .invZero)
     simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h,
-  funMap_add := sorry
-  funMap_mul := sorry
-  funMap_neg := sorry
-  funMap_inv := sorry
-  funMap_zero := sorry
-  funMap_one := sorry  }
+  funMap_add := by
+    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    intros; rfl
+  funMap_mul := by
+    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    intros; rfl
+  funMap_neg := by
+    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    intros; rfl
+  funMap_inv := by
+    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    intros; rfl
+  funMap_zero := by
+    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    intros; rfl
+  funMap_one := by
+    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    intros; rfl }
 
 open FieldFunctions
 
