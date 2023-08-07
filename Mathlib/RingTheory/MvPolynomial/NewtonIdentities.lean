@@ -76,7 +76,7 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [
   [CharZero R]
 
 @[simp]
-theorem psum_zero : psum σ R 0 = (@univ σ).card := by
+theorem psum_zero : psum σ R 0 = card (@univ σ _) := by
   simp only [psum, _root_.pow_zero, cast_card]
 
 private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
