@@ -79,6 +79,10 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [
 theorem psum_zero : psum σ R 0 = card (@univ σ _) := by
   simp only [psum, _root_.pow_zero, cast_card]
 
+@[simp]
+theorem psum_one : psum σ R 1 = ∑ i, X i := by
+  simp only [psum, _root_.pow_one]
+
 private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
 
