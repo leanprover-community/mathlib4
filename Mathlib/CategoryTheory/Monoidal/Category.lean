@@ -223,7 +223,7 @@ theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ �
   whisker_exchange f g ▸ tensorHom_def f g
 
 /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
-theorem tensor_id (X₁ X₂ : C) : tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
+theorem tensor_id (X₁ X₂ : C) : (𝟙 X₁) ⊗ (𝟙 X₂) = 𝟙 (X₁ ⊗ X₂) := by
   simp [tensorHom_def]
 
 /--
