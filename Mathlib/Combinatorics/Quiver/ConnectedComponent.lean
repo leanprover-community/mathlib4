@@ -2,7 +2,6 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-Ported by: Joël Riou
 -/
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Path
@@ -67,7 +66,7 @@ variable {V}
 -- Without the explicit universe level in `Quiver.{v+1}` Lean comes up with
 -- `Quiver.{max u_2 u_3 + 1}`. This causes problems elsewhere, so we write `Quiver.{v+1}`.
 /-- A wide subquiver `H` of `Symmetrify V` determines a wide subquiver of `V`, containing an
-    an arrow `e` if either `e` or its reversal is in `H`. -/
+    arrow `e` if either `e` or its reversal is in `H`. -/
 def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V :=
   fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
 #align quiver.wide_subquiver_symmetrify Quiver.wideSubquiverSymmetrify

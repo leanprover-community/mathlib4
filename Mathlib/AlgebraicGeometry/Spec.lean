@@ -316,7 +316,7 @@ set_option linter.uppercaseLean3 false in
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
-  -- Porting note : `ext` failed to pickup one the three lemmas
+  -- Porting note : `ext` failed to pick up one of the three lemmas
   refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm;
   apply Localization.localRingHom_to_map
 set_option linter.uppercaseLean3 false in

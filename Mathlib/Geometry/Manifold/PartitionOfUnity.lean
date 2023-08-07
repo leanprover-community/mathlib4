@@ -110,7 +110,7 @@ structure SmoothBumpCovering (s : Set M := univ) where
   eventuallyEq_one' : ∀ x ∈ s, ∃ i, toFun i =ᶠ[𝓝 x] 1
 #align smooth_bump_covering SmoothBumpCovering
 
-/-- We say that that a collection of functions form a smooth partition of unity on a set `s` if
+/-- We say that a collection of functions form a smooth partition of unity on a set `s` if
 
 * all functions are infinitely smooth and nonnegative;
 * the family `λ i, support (f i)` is locally finite;
@@ -590,4 +590,3 @@ theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [Chart
   rw [← Metric.emetric_closedBall (hδ0 _).le]
   exact hδ i x hx
 #align metric.exists_smooth_forall_closed_ball_subset Metric.exists_smooth_forall_closedBall_subset
-

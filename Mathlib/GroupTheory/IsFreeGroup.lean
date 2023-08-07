@@ -118,7 +118,7 @@ theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of
   lift.symm.injective (funext h)
 #align is_free_group.ext_hom IsFreeGroup.ext_hom
 
-/-- The universal property of a free group: A functions from the generators of `G` to another
+/-- The universal property of a free group: A function from the generators of `G` to another
 group extends in a unique way to a homomorphism from `G`.
 
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already

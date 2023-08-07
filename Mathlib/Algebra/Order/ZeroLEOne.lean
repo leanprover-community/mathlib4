@@ -17,7 +17,7 @@ variable {α : Type _}
 open Function
 
 /-- Typeclass for expressing that the `0` of a type is less or equal to its `1`. -/
-class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] where
+class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] : Prop where
   /-- Zero is less than or equal to one. -/
   zero_le_one : (0 : α) ≤ 1
 #align zero_le_one_class ZeroLEOneClass

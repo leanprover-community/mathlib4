@@ -126,7 +126,7 @@ Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by conventi
   "`addOrderOf a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
   exists. Otherwise, i.e. if `a` is of infinite order, then `addOrderOf a` is `0` by convention."]
 noncomputable def orderOf (x : G) : ℕ :=
-  minimalPeriod (x * .) 1
+  minimalPeriod (x * ·) 1
 #align order_of orderOf
 #align add_order_of addOrderOf
 

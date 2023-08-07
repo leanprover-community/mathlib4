@@ -70,7 +70,7 @@ once we have a suitable definition.
 -/
 theorem Ring.DimensionLEOne.localization {R : Type _} (Rₘ : Type _) [CommRing R] [IsDomain R]
     [CommRing Rₘ] [Algebra R Rₘ] {M : Submonoid R} [IsLocalization M Rₘ] (hM : M ≤ R⁰)
-    (h : Ring.DimensionLEOne R) : Ring.DimensionLEOne Rₘ := by
+    (h : Ring.DimensionLEOne R) : Ring.DimensionLEOne Rₘ := ⟨by
   intro p hp0 hpp
   refine' Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => _⟩
   have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.isPrime⟩ := hpP
@@ -81,7 +81,7 @@ theorem Ring.DimensionLEOne.localization {R : Type _} (Rₘ : Type _) [CommRing 
     ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨P, hPm.isPrime⟩).2.1
   have _ : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
   refine' h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨_, hpP'⟩
-  exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0
+  exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0⟩
 #align ring.dimension_le_one.localization Ring.DimensionLEOne.localization
 
 /-- The localization of a Dedekind domain is a Dedekind domain. -/
