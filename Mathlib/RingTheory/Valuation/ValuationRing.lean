@@ -173,6 +173,8 @@ noncomputable instance linearOrderedCommGroupWithZero :
     simp only [Classical.not_not] at ha ⊢
     rw [ha]
     rfl
+  le_total := le_total
+  decidableLE := _
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where
