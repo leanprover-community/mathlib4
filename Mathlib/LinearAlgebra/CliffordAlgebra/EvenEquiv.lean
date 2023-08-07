@@ -256,7 +256,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
-set_option maxHeartbeats 400000 in
+-- set_option maxHeartbeats 400000 in
 /-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
@@ -280,7 +280,7 @@ theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
   even.lift_ι _ _ m₁ m₂
 #align clifford_algebra.even_to_neg_ι CliffordAlgebra.evenToNeg_ι
 
-set_option synthInstance.maxHeartbeats 100000 in
+-- set_option synthInstance.maxHeartbeats 100000 in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4

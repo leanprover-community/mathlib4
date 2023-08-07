@@ -55,7 +55,7 @@ section Field
 
 variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
-set_option maxHeartbeats 210000 in
+-- set_option maxHeartbeats 210000 in
 instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
   -- Porting note: we need to do this proof in two stages otherwise it times out
@@ -71,7 +71,7 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
 
 -- Porting note: this proof was already slow in mathlib3 and it is even slower now
 -- See: https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 1000000 in
+-- set_option maxHeartbeats 1000000 in
 /-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
 theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F[X] S]

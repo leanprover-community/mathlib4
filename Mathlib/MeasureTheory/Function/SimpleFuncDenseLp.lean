@@ -572,7 +572,7 @@ theorem toLp_sub (f g : α →ₛ E) (hf : Memℒp f p μ) (hg : Memℒp g p μ)
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
-set_option synthInstance.maxHeartbeats 30000 in
+-- set_option synthInstance.maxHeartbeats 30000 in
 theorem toLp_smul (f : α →ₛ E) (hf : Memℒp f p μ) (c : 𝕜) :
     toLp (c • f) (hf.const_smul c) = c • toLp f hf :=
   rfl
@@ -671,7 +671,7 @@ theorem sub_toSimpleFunc (f g : Lp.simpleFunc E p μ) :
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
-set_option synthInstance.maxHeartbeats 30000 in
+-- set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_toSimpleFunc (k : 𝕜) (f : Lp.simpleFunc E p μ) :
     toSimpleFunc (k • f) =ᵐ[μ] k • ⇑(toSimpleFunc f) := by
   filter_upwards [toSimpleFunc_eq_toFun (k • f), toSimpleFunc_eq_toFun f,

@@ -181,7 +181,7 @@ theorem ClassGroup.induction {P : ClassGroup R → Prop}
 #align class_group.induction ClassGroup.induction
 
 -- Porting note: This definition needs a lot of heartbeats to complete even with some help
-set_option maxHeartbeats 600000 in
+-- set_option maxHeartbeats 600000 in
 /-- The definition of the class group does not depend on the choice of field of fractions. -/
 noncomputable def ClassGroup.equiv :
     ClassGroup R ≃* (FractionalIdeal R⁰ K)ˣ ⧸ (toPrincipalIdeal R K).range := by
@@ -211,7 +211,7 @@ noncomputable def ClassGroup.equiv :
 #align class_group.equiv ClassGroup.equiv
 
 -- Porting note: This proof needs a lot of heartbeats to complete
-set_option maxHeartbeats 600000 in
+-- set_option maxHeartbeats 600000 in
 @[simp]
 theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
