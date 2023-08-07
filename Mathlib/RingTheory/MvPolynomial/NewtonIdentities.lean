@@ -258,6 +258,38 @@ theorem esymm_recurrence (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
     Even.neg_one_pow ⟨k, rfl⟩, one_mul, add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k),
     lt_k_disjunion_k σ k, weight_sum σ R k]
 
+/-- A version of Newton's identities which may be more useful in the case that we know the values of
+the elementary symmetric polynomials and would like to calculate the values of the power sums. -/
+theorem psum_recurrence (k : ℕ) (h : k > 0) : psum σ R k = (-1) ^ (k + 1) * (k * esymm σ R k) -
+    ∑ i in Finset.Ico 1 k, (-1) ^ i * esymm σ R i * psum σ R (k - i) := by
+  have hesymm := esymm_recurrence σ R k
+  have disj : Disjoint {0} (Finset.Ico 1 k) := by simp
+  have disju : range k = disjUnion {0} (Finset.Ico 1 k) disj := by
+    rw [disjUnion_eq_union]
+    apply Finset.ext
+    simp only [mem_range, ge_iff_le, mem_union, mem_singleton, mem_Ico]
+    intro a
+    apply Iff.intro
+    · intro ha
+      simp only [range, mem_mk, Multiset.mem_range] at ha
+      by_contra ha'
+      simp only [not_or, not_and, not_lt] at ha'
+      rcases ha' with ⟨h1, h2⟩
+      exact Nat.not_lt.mpr (h2 (one_le_iff_ne_zero.mpr h1)) ha
+    · intro ha
+      rcases ha with h1 | h2
+      · exact h1.symm.subst h
+      · exact h2.right
+  rw [disju, sum_disjUnion, sum_singleton] at hesymm
+  have sub_both_sides := congrArg (· - (-1) ^ k * (k * esymm σ R k) -
+    ∑ i in Finset.Ico 1 k, (-1) ^ i * esymm σ R i * psum σ R (k - i)) hesymm
+  simp only [_root_.pow_zero, esymm_zero, one_mul, add_sub_cancel', add_sub_cancel, zero_sub]
+    at sub_both_sides
+  rw [← neg_mul, ← neg_one_mul] at sub_both_sides
+  nth_rewrite 1 [← pow_one (-1 : MvPolynomial σ R)] at sub_both_sides
+  rw [← pow_add, add_comm] at sub_both_sides
+  exact sub_both_sides
+
 end NewtonIdentities
 
 end MvPolynomial
