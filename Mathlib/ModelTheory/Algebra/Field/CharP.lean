@@ -18,7 +18,7 @@ open field
 def Theory.hasChar (p : ℕ) : Language.field.Theory :=
   ({eqZero p} ∪ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)}))
 
-theorem model_hasChar_of_charP {K : Type _} [ModelField K] (p : ℕ) [CharP K p] :
+theorem model_hasChar_of_charP {K : Type _} [ModelField K] {p : ℕ} [CharP K p] :
     (Theory.hasChar p).Model K := by
   rw [Theory.hasChar]
   refine Theory.model_union_iff.2 ⟨?_, ?_⟩

@@ -85,15 +85,12 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
     simp
 
 def Theory.ACF (p : ℕ) : Theory Language.field :=
-  Theory.hasChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n} ∪
-  Theory.field
+  Theory.field ∪ Theory.hasChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
 
-structure modelACF (p : ℕ) (K : Type _) extends ModelField K,
-  (Theory.ACF p).Model K
-
-instance {K : Type _} [Field K] [CharP K p] [IsAlgClosed K] :
+instance {K : Type _} [ModelField K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
-  refine Theory.model_union_iff.2 ⟨by infer_instance, ?_⟩
+  refine Theory.model_union_iff.2
+    ⟨Theory.model_union_iff.2 ⟨by infer_instance, model_hasChar_of_charP⟩, ?_⟩
   simp only [Theory.model_iff, Set.mem_iUnion, Set.mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ n hn0 rfl
@@ -102,15 +99,10 @@ instance {K : Type _} [Field K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-@[reducible]
-def fieldOfModelACF {K : Type _} [Language.field.Structure K]
-    (h : (Theory.ACF p).Model K) : Field K :=
-  @fieldOfModelFieldOfCharP p _ _ (Theory.Model.mono h (by simp [Theory.ACF]))
 
 theorem isAlgClosedOfModelACF {p : ℕ} (M : Type _)
-    [Language.field.Structure M] [h : (Theory.ACF p).Model M] : by
-    letI := fieldOfModelACF h; exact IsAlgClosed M := by
-  letI := fieldOfModelACF h
+    [ModelField M] [h : (Theory.ACF p).Model M] :
+    IsAlgClosed M := by
   refine IsAlgClosed.of_exists_root _ ?_
   intro p hpm hpi
   have h : M ⊨ (⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}) :=
@@ -119,30 +111,8 @@ theorem isAlgClosedOfModelACF {p : ℕ} (M : Type _)
     exists_prop, forall_exists_index, and_imp] at h
   have := h _ p.natDegree (natDegree_pos_iff_degree_pos.2
     (degree_pos_of_irreducible hpi)) rfl
-  have : ∀ q : M[X],
-      q.natDegree = p.natDegree → q.Monic → ∃ x, q.eval x = 0 := by
-    rw [← realize_genericMonicPolyHasRoot]
-    convert this
-    ext _ f x
-    . cases f <;> simp [HAdd.hAdd, Distrib.toAdd, Add.add,
-      NonUnitalNonAssocSemiring.toDistrib, AddSemigroup.toAdd,
-      AddMonoid.toAddSemigroup, AddCommMonoid.toAddMonoid,
-      NonUnitalNonAssocSemiring.toAddCommMonoid,
-      NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring,
-      SubNegMonoid.toAddMonoid, AddGroup.toSubNegMonoid,
-      AddCommGroup.toAddGroup, NonUnitalNonAssocRing.toAddCommGroup,
-      NonUnitalNonAssocSemiring.toDistrib,
-      NonAssocRing.toNonUnitalNonAssocRing, Ring.toNonAssocRing,
-      NonUnitalSemiring.toNonUnitalNonAssocSemiring,
-      Semiring.toNonUnitalSemiring, Ring.toSemiring,
-      DivisionRing.toRing, Field.toDivisionRing, CommRing.toRing,
-      Field.toCommRing, fieldOfModelACF,
-      fieldOfModelFieldOfCharP, fieldOfModelField,
-      instStructureField, Matrix.vecCons]
-
-
-
-
+  rw [realize_genericMonicPolyHasRoot] at this
+  exact this _ rfl hpm
 
 end Language
 
