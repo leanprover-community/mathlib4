@@ -145,17 +145,18 @@ theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ span R (range v))
 
 end Span
 
+noncomputable
+def Basis.ofShortExact {M : ModuleCat R} {f : N ⟶ M} {g : M ⟶ P} (h : ShortExact f g)
+    (bN : Basis ι R N) (bP : Basis ι' R P) : Basis (ι ⊕ ι') R M :=
+  Basis.mk (linearIndependent_shortExact bN.linearIndependent bP.linearIndependent h)
+    (span_rightExact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) h.epi h.exact)
+
 /-- In a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0`, if `N` and `P` are free, then `M` is free.-/
 theorem free_shortExact {M : ModuleCat R} {f : N ⟶ M}
     {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Free R P] :
     Module.Free R M :=
-  Module.Free.of_basis (Basis.mk
-    (linearIndependent_shortExact
-      (Module.Free.chooseBasis R N).linearIndependent
-      (Module.Free.chooseBasis R P).linearIndependent h)
-    (span_rightExact
-      (le_of_eq ((Module.Free.chooseBasis R N)).span_eq.symm)
-      (le_of_eq (Module.Free.chooseBasis R P).span_eq.symm) h.epi h.exact))
+  Module.Free.of_basis (Basis.ofShortExact h (Module.Free.chooseBasis R N)
+    (Module.Free.chooseBasis R P))
 
 theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
     {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Free R P] [StrongRankCondition R] :
@@ -163,13 +164,8 @@ theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
   haveI := free_shortExact h
   rw [Module.Free.rank_eq_card_chooseBasisIndex, Module.Free.rank_eq_card_chooseBasisIndex R N,
     Module.Free.rank_eq_card_chooseBasisIndex R P, Cardinal.add_def, Cardinal.eq]
-  exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R M) (Basis.mk
-    (linearIndependent_shortExact
-      (Module.Free.chooseBasis R N).linearIndependent
-      (Module.Free.chooseBasis R P).linearIndependent h)
-    (span_rightExact
-      (le_of_eq ((Module.Free.chooseBasis R N)).span_eq.symm)
-      (le_of_eq (Module.Free.chooseBasis R P).span_eq.symm) h.epi h.exact))⟩
+  exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R M) (Basis.ofShortExact h
+    (Module.Free.chooseBasis R N) (Module.Free.chooseBasis R P))⟩
 
 theorem free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
     {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Finite R N]
