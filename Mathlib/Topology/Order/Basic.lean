@@ -2581,7 +2581,7 @@ variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopol
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
 the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
-    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by setBddDefault) :
+    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by bddDefault) :
     f (sSup A) = sSup (f '' A) :=
   --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
   .symm <| ((isLUB_csSup A_nonemp A_bdd).isLUB_of_tendsto (Mf.monotoneOn _) A_nonemp <|
@@ -2592,7 +2592,7 @@ theorem Monotone.map_sSup_of_continuousAt' {f : α → β} {A : Set α} (Cf : Co
 supremum to the indexed supremum of the composition. -/
 theorem Monotone.map_iSup_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iSup g)) (Mf : Monotone f)
-    (bdd : BddAbove (range g) := by setBddDefault) : f (⨆ i, g i) = ⨆ i, f (g i) := by
+    (bdd : BddAbove (range g) := by bddDefault) : f (⨆ i, g i) = ⨆ i, f (g i) := by
   rw [iSup, Monotone.map_sSup_of_continuousAt' Cf Mf (range_nonempty g) bdd, ← range_comp, iSup]
   rfl
 #align monotone.map_supr_of_continuous_at' Monotone.map_iSup_of_continuousAt'
@@ -2600,7 +2600,7 @@ theorem Monotone.map_iSup_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α �
 /-- A monotone function continuous at the infimum of a nonempty set sends this infimum to
 the infimum of the image of this set. -/
 theorem Monotone.map_sInf_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
-    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by setBddDefault) :
+    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by bddDefault) :
     f (sInf A) = sInf (f '' A) :=
   Monotone.map_sSup_of_continuousAt' (α := αᵒᵈ) (β := βᵒᵈ) Cf Mf.dual A_nonemp A_bdd
 #align monotone.map_Inf_of_continuous_at' Monotone.map_sInf_of_continuousAt'
@@ -2609,7 +2609,7 @@ theorem Monotone.map_sInf_of_continuousAt' {f : α → β} {A : Set α} (Cf : Co
 infimum to the indexed infimum of the composition. -/
 theorem Monotone.map_iInf_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iInf g)) (Mf : Monotone f)
-    (bdd : BddBelow (range g) := by setBddDefault) : f (⨅ i, g i) = ⨅ i, f (g i) := by
+    (bdd : BddBelow (range g) := by bddDefault) : f (⨅ i, g i) = ⨅ i, f (g i) := by
   rw [iInf, Monotone.map_sInf_of_continuousAt' Cf Mf (range_nonempty g) bdd, ← range_comp, iInf]
   rfl
 #align monotone.map_infi_of_continuous_at' Monotone.map_iInf_of_continuousAt'
@@ -2617,7 +2617,7 @@ theorem Monotone.map_iInf_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α �
 /-- An antitone function continuous at the infimum of a nonempty set sends this infimum to
 the supremum of the image of this set. -/
 theorem Antitone.map_sInf_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
-    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by setBddDefault) :
+    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by bddDefault) :
     f (sInf A) = sSup (f '' A) :=
   Monotone.map_sInf_of_continuousAt' (β := βᵒᵈ) Cf Af.dual_right A_nonemp A_bdd
 #align antitone.map_Inf_of_continuous_at' Antitone.map_sInf_of_continuousAt'
@@ -2626,7 +2626,7 @@ theorem Antitone.map_sInf_of_continuousAt' {f : α → β} {A : Set α} (Cf : Co
 infimum to the indexed supremum of the composition. -/
 theorem Antitone.map_iInf_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iInf g)) (Af : Antitone f)
-    (bdd : BddBelow (range g) := by setBddDefault) : f (⨅ i, g i) = ⨆ i, f (g i) := by
+    (bdd : BddBelow (range g) := by bddDefault) : f (⨅ i, g i) = ⨆ i, f (g i) := by
   rw [iInf, Antitone.map_sInf_of_continuousAt' Cf Af (range_nonempty g) bdd, ← range_comp, iSup]
   rfl
 #align antitone.map_infi_of_continuous_at' Antitone.map_iInf_of_continuousAt'
@@ -2634,7 +2634,7 @@ theorem Antitone.map_iInf_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α �
 /-- An antitone function continuous at the supremum of a nonempty set sends this supremum to
 the infimum of the image of this set. -/
 theorem Antitone.map_sSup_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
-    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by setBddDefault) :
+    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by bddDefault) :
     f (sSup A) = sInf (f '' A) :=
   Monotone.map_sSup_of_continuousAt' (β := βᵒᵈ) Cf Af.dual_right A_nonemp A_bdd
 #align antitone.map_Sup_of_continuous_at' Antitone.map_sSup_of_continuousAt'
@@ -2643,7 +2643,7 @@ theorem Antitone.map_sSup_of_continuousAt' {f : α → β} {A : Set α} (Cf : Co
 indexed supremum to the indexed infimum of the composition. -/
 theorem Antitone.map_iSup_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iSup g)) (Af : Antitone f)
-    (bdd : BddAbove (range g) := by setBddDefault) : f (⨆ i, g i) = ⨅ i, f (g i) := by
+    (bdd : BddAbove (range g) := by bddDefault) : f (⨆ i, g i) = ⨅ i, f (g i) := by
   rw [iSup, Antitone.map_sSup_of_continuousAt' Cf Af (range_nonempty g) bdd, ← range_comp, iInf]
   rfl
 #align antitone.map_supr_of_continuous_at' Antitone.map_iSup_of_continuousAt'
