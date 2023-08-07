@@ -2253,6 +2253,10 @@ theorem conjTranspose_map [Star α] [Star β] {A : Matrix m n α} (f : α → β
   Matrix.ext fun _ _ => hf _
 #align matrix.conj_transpose_map Matrix.conjTranspose_map
 
+@[simp]
+theorem conjTranspose_eq_transpose [Star α] [TrivialStar α] {A : Matrix m n α} :
+    Aᴴ = Aᵀ := funext fun _ => funext fun _ => star_trivial _
+
 variable (m n α)
 
 /-- `Matrix.conjTranspose` as an `AddEquiv` -/
