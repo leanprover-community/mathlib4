@@ -237,7 +237,7 @@ theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-
   rfl
 #align localized_module.mk_neg LocalizedModule.mk_neg
 
--- set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 400000 in
 instance {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
   { show (AddCommMonoid (LocalizedModule S A)) by infer_instance with

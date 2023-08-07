@@ -388,10 +388,10 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
--- set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 700000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
--- set_option synthInstance.maxHeartbeats 200000 in
+set_option synthInstance.maxHeartbeats 200000 in
 -- This has type
 -- `Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
 -- But lean times-out if this is given explicitly.
@@ -413,8 +413,8 @@ def KaehlerDifferential.endEquivAuxEquiv :
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
 
--- set_option maxHeartbeats 1200000 in
--- set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 1200000 in
+set_option synthInstance.maxHeartbeats 1000000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -570,7 +570,7 @@ local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
     (Finsupp.lmapDomain A A (algebraMap A B)))
 
--- set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 300000 in
 theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
         Submodule.span A (Set.range fun x : S => single (algebraMap S B x) (1 : B)) =
