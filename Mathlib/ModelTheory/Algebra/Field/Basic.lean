@@ -111,12 +111,12 @@ def Theory.field : Language.field.Theory :=
 class ModelField (K : Type _) extends Field K,
     Language.field.Structure K,
     Theory.field.Model K where
-  ( funMap_add : ∀ x y, funMap addFunction ![x, y] = x + y )
-  ( funMap_mul : ∀ x y, funMap mulFunction ![x, y] = x * y )
-  ( funMap_neg : ∀ x, funMap negFunction ![x] = -x )
-  ( funMap_inv : ∀ x, funMap invFunction ![x] = x⁻¹ )
-  ( coe_zero : ((0 : Language.field.Constants) : K) = 0 )
-  ( coe_one : ((1 : Language.field.Constants) : K) = 1 )
+  ( funMap_add : ∀ x, funMap addFunction x = x 0 + x 1 )
+  ( funMap_mul : ∀ x, funMap mulFunction x = x 0 * x 1 )
+  ( funMap_neg : ∀ x, funMap negFunction x = -x 0 )
+  ( funMap_inv : ∀ x, funMap invFunction x = (x 0)⁻¹ )
+  ( funMap_zero : ∀ x, funMap (0 : Language.field.Constants) x = 0 )
+  ( funMap_one : ∀ x, funMap (1 : Language.field.Constants) x = 1 )
 
 set_option maxHeartbeats 20000000 in
 def fieldOfFieldStructure (K : Type _) [Language.field.Structure K]
