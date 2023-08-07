@@ -62,10 +62,7 @@ theorem coeff_zero_eq_iff {a : R} : p.coeff 0 = a ↔ ∃ g : Polynomial R, p = 
     rw [←h, X_mul_divX_add p]
   · intro h
     cases' h with g hg
-    rw [hg]
-    rw [add_comm]
-    rw [coeff_add]
-    rw [coeff_C]
+    rw [hg, add_comm, coeff_add, coeff_C]
     simp only [eq_self_iff_true, if_true, mul_coeff_zero, coeff_X_zero, MulZeroClass.zero_mul,
       add_zero]
 
