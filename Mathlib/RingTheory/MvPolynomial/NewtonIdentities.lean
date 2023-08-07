@@ -75,7 +75,6 @@ open Finset Nat
 variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [NoZeroDivisors R]
   [CharZero R]
 
-/- The following proof is from [zeilberger1984] -/
 def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
 
