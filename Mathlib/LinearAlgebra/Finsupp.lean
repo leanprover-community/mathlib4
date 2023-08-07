@@ -56,12 +56,13 @@ variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
 
 /-- Interpret `Finsupp.single a` as a linear map. -/
-def lsingle (a : α) : M →ₗ[R] α →₀ M :=
+def lsingle [DecidableEq α] (a : α) : M →ₗ[R] α →₀ M :=
   { Finsupp.singleAddHom a with map_smul' := fun _ _ => (smul_single _ _ _).symm }
 #align finsupp.lsingle Finsupp.lsingle
 
 /-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere. -/
-theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
+theorem lhom_ext [DecidableEq α] ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄
+    (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext h
 #align finsupp.lhom_ext Finsupp.lhom_ext
 
@@ -72,7 +73,8 @@ so that the `ext` tactic can apply a type-specific extensionality lemma to prove
 maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single a 1)`. -/
 -- Porting note: The priority should be higher than `LinearMap.ext`.
 @[ext high]
-theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
+theorem lhom_ext' [DecidableEq α] ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄
+    (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
     φ = ψ :=
   lhom_ext fun a => LinearMap.congr_fun (h a)
 #align finsupp.lhom_ext' Finsupp.lhom_ext'
@@ -116,7 +118,8 @@ theorem lsubtypeDomain_apply (f : α →₀ M) :
 end LSubtypeDomain
 
 @[simp]
-theorem lsingle_apply (a : α) (b : M) : (lsingle a : M →ₗ[R] α →₀ M) b = single a b :=
+theorem lsingle_apply  [DecidableEq α](a : α) (b : M) :
+    (lsingle a : M →ₗ[R] α →₀ M) b = single a b :=
   rfl
 #align finsupp.lsingle_apply Finsupp.lsingle_apply
 
@@ -126,11 +129,11 @@ theorem lapply_apply (a : α) (f : α →₀ M) : (lapply a : (α →₀ M) →�
 #align finsupp.lapply_apply Finsupp.lapply_apply
 
 @[simp]
-theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=
+theorem ker_lsingle [DecidableEq α] (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=
   ker_eq_bot_of_injective (single_injective a)
 #align finsupp.ker_lsingle Finsupp.ker_lsingle
 
-theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
+theorem lsingle_range_le_ker_lapply [DecidableEq α] (s t : Set α) (h : Disjoint s t) :
     ⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) ≤
       ⨅ a ∈ t, ker (lapply a : (α →₀ M) →ₗ[R] M) := by
   refine' iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 _
@@ -145,13 +148,14 @@ theorem iInf_ker_lapply_le_bot : ⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] 
   exact fun a h => Finsupp.ext h
 #align finsupp.infi_ker_lapply_le_bot Finsupp.iInf_ker_lapply_le_bot
 
-theorem iSup_lsingle_range : ⨆ a, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) = ⊤ := by
+theorem iSup_lsingle_range [DecidableEq α] :
+    ⨆ a, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) = ⊤ := by
   refine' eq_top_iff.2 <| SetLike.le_def.2 fun f _ => _
   rw [← sum_single f]
   exact sum_mem fun a _ => Submodule.mem_iSup_of_mem a ⟨_, rfl⟩
 #align finsupp.supr_lsingle_range Finsupp.iSup_lsingle_range
 
-theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
+theorem disjoint_lsingle_lsingle [DecidableEq α] (s t : Set α) (hs : Disjoint s t) :
     Disjoint (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M))
       (⨆ a ∈ t, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) := by
   -- Porting note: 2 placeholders are added to prevent timeout.
@@ -172,7 +176,7 @@ theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
     exact inf_le_of_left_le (iInf_le_of_le i <| iInf_le _ his)
 #align finsupp.disjoint_lsingle_lsingle Finsupp.disjoint_lsingle_lsingle
 
-theorem span_single_image (s : Set M) (a : α) :
+theorem span_single_image [DecidableEq α] (s : Set M) (a : α) :
     Submodule.span R (single a '' s) = (Submodule.span R s).map (lsingle a : M →ₗ[R] α →₀ M) := by
   rw [← span_image]; rfl
 #align finsupp.span_single_image Finsupp.span_single_image
@@ -208,12 +212,12 @@ theorem mem_supported_support (p : α →₀ M) : p ∈ Finsupp.supported M R (p
   rw [Finsupp.mem_supported]
 #align finsupp.mem_supported_support Finsupp.mem_supported_support
 
-theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
+theorem single_mem_supported [DecidableEq α] {s : Set α} {a : α} (b : M) (h : a ∈ s) :
     single a b ∈ supported M R s :=
   Set.Subset.trans support_single_subset (Finset.singleton_subset_set_iff.2 h)
 #align finsupp.single_mem_supported Finsupp.single_mem_supported
 
-theorem supported_eq_span_single (s : Set α) :
+theorem supported_eq_span_single [DecidableEq α] (s : Set α) :
     supported R R s = span R ((fun i => single i 1) '' s) := by
   refine' (span_eq_of_le _ _ (SetLike.le_def.2 fun l hl => _)).symm
   · rintro _ ⟨_, hp, rfl⟩
@@ -286,6 +290,7 @@ theorem supported_iUnion {δ : Type _} (s : δ → Set α) :
     rwa [LinearMap.range_comp, range_restrictDom, Submodule.map_top, range_subtype] at this
   rw [range_le_iff_comap, eq_top_iff]
   rintro l ⟨⟩
+  classical
   -- Porting note: Was ported as `induction l using Finsupp.induction`
   refine Finsupp.induction l ?_ ?_
   · exact zero_mem _
@@ -315,6 +320,7 @@ theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
 
 theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     Disjoint (supported M R s) (supported M R t) ↔ Disjoint s t := by
+  classical
   refine' ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => _, disjoint_supported_supported⟩
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
