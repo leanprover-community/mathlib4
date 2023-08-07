@@ -97,7 +97,6 @@ def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.Iso
     map_app' := by intro m; rw [← f.map_app, ← g.map_app]; rfl }
 #align quadratic_form.isometry.trans QuadraticForm.IsometryEquiv.trans
 
-
 end IsometryEquiv
 
 namespace Equivalent
