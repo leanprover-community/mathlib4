@@ -34,8 +34,6 @@ spaces.
 -/
 
 
-noncomputable section
-
 open Set
 
 open Classical
@@ -51,6 +49,29 @@ in which the closure of every open set is open. -/
 class ExtremallyDisconnected : Prop where
   open_closure : ∀ U : Set X, IsOpen U → IsOpen (closure U)
 #align extremally_disconnected ExtremallyDisconnected
+
+section TotallySeparated
+
+/-- Extremally disconnected spaces are totally separated. -/
+instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
+{ isTotallySeparated_univ := by
+    intro x _ y _ hxy
+    obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
+    use closure U
+    use (closure U)ᶜ
+    refine ⟨ExtremallyDisconnected.open_closure U hUV.1,
+      by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
+      by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
+    simp only [Set.mem_compl_iff]
+    rw [mem_closure_iff]
+    push_neg
+    refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
+    rw [Set.nonempty_iff_ne_empty]
+    simp only [not_not]
+    rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
+    exact hUV.2.2.2.2 }
+
+end TotallySeparated
 
 section
 
@@ -117,3 +138,30 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   · rw [← hφ₁ x]
     exact hx.1
 #align compact_t2.projective.extremally_disconnected CompactT2.Projective.extremallyDisconnected
+
+-- Note: It might be possible to use Gleason for this instead
+/-- The sigma-type of extremally disconneted spaces is extremally disconnected -/
+instance instExtremallyDisconnected
+    {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [h₀ : ∀ i, ExtremallyDisconnected (π i)] :
+    ExtremallyDisconnected (Σi, π i) := by
+  constructor
+  intro s hs
+  rw [isOpen_sigma_iff] at hs ⊢
+  intro i
+  rcases h₀ i with ⟨h₀⟩
+  have h₁ : IsOpen (closure (Sigma.mk i ⁻¹' s))
+  · apply h₀
+    exact hs i
+  suffices h₂ : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
+  · rwa [h₂]
+  apply IsOpenMap.preimage_closure_eq_closure_preimage
+  intro U _
+  · rw [isOpen_sigma_iff]
+    intro j
+    by_cases ij : i = j
+    · rw [← ij]
+      rw [sigma_mk_preimage_image_eq_self]
+      assumption
+    · rw [sigma_mk_preimage_image' ij]
+      apply isOpen_empty
+  · continuity

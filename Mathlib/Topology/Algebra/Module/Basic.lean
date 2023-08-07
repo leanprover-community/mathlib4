@@ -985,11 +985,16 @@ theorem isComplete_ker {M' : Type _} [UniformSpace M'] [CompleteSpace M'] [AddCo
   (isClosed_ker f).isComplete
 #align continuous_linear_map.is_complete_ker ContinuousLinearMap.isComplete_ker
 
-instance (priority := 100) completeSpace_ker {M' : Type _} [UniformSpace M'] [CompleteSpace M']
+instance completeSpace_ker {M' : Type _} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂] [ContinuousSemilinearMapClass F σ₁₂ M' M₂]
     (f : F) : CompleteSpace (ker f) :=
-  (isClosed_ker f).completeSpace_coe
+  (isComplete_ker f).completeSpace_coe
 #align continuous_linear_map.complete_space_ker ContinuousLinearMap.completeSpace_ker
+
+instance completeSpace_eqLocus {M' : Type _} [UniformSpace M'] [CompleteSpace M']
+    [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂] [ContinuousSemilinearMapClass F σ₁₂ M' M₂]
+    (f g : F) : CompleteSpace (LinearMap.eqLocus f g) :=
+  IsClosed.completeSpace_coe <| isClosed_eq (map_continuous f) (map_continuous g)
 
 @[simp]
 theorem ker_prod [Module R₁ M₂] [Module R₁ M₃] (f : M₁ →L[R₁] M₂) (g : M₁ →L[R₁] M₃) :

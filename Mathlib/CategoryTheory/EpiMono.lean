@@ -218,14 +218,14 @@ section
 variable (C)
 
 /-- A split mono category is a category in which every monomorphism is split. -/
-class SplitMonoCategory where
+class SplitMonoCategory : Prop where
   /-- All monos are split -/
   isSplitMono_of_mono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], IsSplitMono f
 #align category_theory.split_mono_category CategoryTheory.SplitMonoCategory
 #align category_theory.split_mono_category.is_split_mono_of_mono CategoryTheory.SplitMonoCategory.isSplitMono_of_mono
 
 /-- A split epi category is a category in which every epimorphism is split. -/
-class SplitEpiCategory where
+class SplitEpiCategory : Prop where
   /-- All epis are split -/
   isSplitEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], IsSplitEpi f
 #align category_theory.split_epi_category CategoryTheory.SplitEpiCategory

@@ -556,6 +556,7 @@ theorem support_reverse {u v : V} (p : G.Walk u v) : p.reverse.support = p.suppo
   induction p <;> simp [support_append, *]
 #align simple_graph.walk.support_reverse SimpleGraph.Walk.support_reverse
 
+@[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
 #align simple_graph.walk.support_ne_nil SimpleGraph.Walk.support_ne_nil
 
@@ -825,6 +826,81 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 #align simple_graph.walk.edges_nodup_of_support_nodup SimpleGraph.Walk.edges_nodup_of_support_nodup
 
+/-- Predicate for the empty walk.
+
+Solves the dependent type problem where `p = G.Walk.nil` typechecks
+only if `p` has defeq endpoints. -/
+inductive Nil : {v w : V} → G.Walk v w → Prop
+  | nil {u : V} : Nil (nil : G.Walk u u)
+
+@[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
+
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := fun.
+
+instance (p : G.Walk v w) : Decidable p.Nil :=
+  match p with
+  | nil => isTrue .nil
+  | cons _ _ => isFalse fun.
+
+protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
+
+lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
+
+lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
+  cases p <;> simp
+
+lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by
+  cases p <;> simp
+
+lemma not_nil_iff {p : G.Walk v w} :
+    ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
+  cases p <;> simp [*]
+
+@[elab_as_elim]
+def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort _}
+    (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
+    (p : G.Walk u w) : (hp : ¬ p.Nil) → motive p hp :=
+  match p with
+  | nil => fun hp => absurd .nil hp
+  | .cons h q => fun _ => cons h q
+
+/-- The second vertex along a non-nil walk. -/
+def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
+  p.notNilRec (@fun _ u _ _ _ => u) hp
+
+@[simp] lemma adj_sndOfNotNil {p : G.Walk v w} (hp : ¬ p.Nil) :
+    G.Adj v (p.sndOfNotNil hp) :=
+  p.notNilRec (fun h _ => h) hp
+
+/-- The walk obtained by removing the first dart of a non-nil walk. -/
+def tail (p : G.Walk x y) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) y :=
+  p.notNilRec (fun _ q => q) hp
+
+/-- The first dart of a walk. -/
+@[simps]
+def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
+  fst := v
+  snd := p.sndOfNotNil hp
+  is_adj := p.adj_sndOfNotNil hp
+
+lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
+    (p.firstDart hp).edge = ⟦(v, p.sndOfNotNil hp)⟧ := rfl
+
+@[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
+    cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
+  p.notNilRec (fun _ _ => rfl) hp
+
+@[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬ p.Nil) :
+    x :: (p.tail hp).support = p.support := by
+  rw [← support_cons, cons_tail_eq]
+
+@[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
+    (p.tail hp).length + 1 = p.length := by
+  rw [← length_cons, cons_tail_eq]
+
+@[simp] lemma nil_copy {p : G.Walk x y} (hx : x = x') (hy : y = y') :
+    (p.copy hx hy).Nil = p.Nil := by
+  subst_vars; rfl
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -972,6 +1048,10 @@ theorem cons_isPath_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   constructor <;> simp (config := { contextual := true }) [isPath_def]
 #align simple_graph.walk.cons_is_path_iff SimpleGraph.Walk.cons_isPath_iff
 
+protected lemma IsPath.cons (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
+    (cons h p).IsPath :=
+  (cons_isPath_iff _ _).2 ⟨hp, hu⟩
+
 @[simp]
 theorem isPath_iff_eq_nil {u : V} (p : G.Walk u u) : p.IsPath ↔ p = nil := by
   cases p <;> simp [IsPath.nil]
@@ -1011,6 +1091,10 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
   tauto
 #align simple_graph.walk.cons_is_cycle_iff SimpleGraph.Walk.cons_isCycle_iff
 
+lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : (p.tail hp').IsPath := by
+  rw [Walk.isPath_def] at hp ⊢
+  rw [← cons_support_tail _ hp', List.nodup_cons] at hp
+  exact hp.2
 
 /-! ### About paths -/
 
@@ -1754,7 +1838,7 @@ theorem transfer_append (q : G.Walk v w) (hpq) :
 @[simp]
 theorem reverse_transfer (hp) :
     (p.transfer H hp).reverse =
-      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse']; exact hp) := by
+      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
   induction p with
   | nil => simp
   | cons _ _ ih => simp only [transfer_append, Walk.transfer, reverse_nil, reverse_cons, ih]
@@ -2486,7 +2570,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   -- so they both contain the edge ⟦(v, w)⟧, but that's a contradiction since c is a trail.
   have hbq := hb (pvu.append puw)
   have hpq' := hb pwv.reverse
-  rw [Walk.edges_reverse, List.mem_reverse'] at hpq'
+  rw [Walk.edges_reverse, List.mem_reverse] at hpq'
   rw [Walk.isTrail_def, this, Walk.edges_append, Walk.edges_append, List.nodup_append_comm,
     ← List.append_assoc, ← Walk.edges_append] at hc
   exact List.disjoint_of_nodup_append hc hbq hpq'

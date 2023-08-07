@@ -8,7 +8,7 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Sign
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import linear_algebra.affine_space.independent from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
