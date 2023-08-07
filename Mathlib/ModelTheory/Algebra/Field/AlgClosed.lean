@@ -9,7 +9,7 @@ namespace Language
 
 open field FreeCommRing BigOperators Polynomial
 
-variable {K : Type _} [Field K]
+variable {K : Type _} [ModelField K]
 
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
     of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
@@ -30,7 +30,7 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
       p.natDegree = n → p.Monic → ∃ x, p.eval x = 0 := by
   simp only [Sentence.Realize, genericMonicPolyHasRoot, BoundedFormula.realize_alls,
     BoundedFormula.realize_ex, BoundedFormula.realize_bdEqual, Term.realize_relabel,
-    Sum.elim_comp_inr, realize_termOfFreeCommRing, Term.realize, instStructureField_funMap]
+    Sum.elim_comp_inr, realize_termOfFreeCommRing, Term.realize, ModelField.funMap_zero]
   constructor
   . rintro h p rfl hpm
     rcases h (fun i => p.coeff i) with ⟨x, hx⟩
@@ -85,7 +85,7 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
     simp
 
 def Theory.ACF (p : ℕ) : Theory Language.field :=
-  Theory.fieldOfChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
+  Theory.hasChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
 
 instance {K : Type _} [Field K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
