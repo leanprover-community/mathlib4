@@ -87,6 +87,7 @@ theorem withSign.not_injective :
     intro h
     -- porting note: `DFinsupp.singleAddHom_apply` doesn't work so we have to unfold
     dsimp [DirectSum.lof_eq_of, DirectSum.of, DFinsupp.singleAddHom] at h
+    set_option linter.deprecated false in
     replace h := DFinsupp.ext_iff.mp h 1
     rw [DFinsupp.zero_apply, DFinsupp.add_apply, DFinsupp.single_eq_same,
       DFinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
