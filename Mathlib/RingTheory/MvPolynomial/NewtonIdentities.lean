@@ -88,7 +88,7 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [
 
 /- The following proof is from [zeilberger1984] -/
 def pairs (k : ℕ) : Finset (Finset σ × σ) :=
-  univ.filter (fun t => card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
+  univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
 
 def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ card t.fst * ((∏ a in t.fst, X a) * X t.snd ^ (k - card t.fst))
@@ -151,8 +151,8 @@ theorem weight_zero_for_fixed_by_pairMap' (t : Finset σ × σ) (h : t ∈ pairs
     (h1 : weight σ R k t ≠ 0) : pairMap σ t ≠ t := mt (weight_zero_for_fixed_by_pairMap σ R t h) h1
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
-  sum_involution (fun t _ => pairMap σ t) (weight_compose_pairMap σ R)
-    (weight_zero_for_fixed_by_pairMap' σ R) (pairMap_mem_pairs σ) (fun t _ => pairMap_pairMap σ t)
+  sum_involution (fun t _ ↦ pairMap σ t) (weight_compose_pairMap σ R)
+    (weight_zero_for_fixed_by_pairMap' σ R) (pairMap_mem_pairs σ) (fun t _ ↦ pairMap_pairMap σ t)
 
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
@@ -161,7 +161,7 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
   simp only [Prod.forall, pairs, mem_filter, mem_univ, true_and]
   intro p b
   refine Iff.intro
-    (fun hpl => ⟨mem_powerset_len_univ_iff.mpr hpl.right, hpl.left.right hpl.right⟩) ?_
+    (fun hpl ↦ ⟨mem_powerset_len_univ_iff.mpr hpl.right, hpl.left.right hpl.right⟩) ?_
   intro hpr
   simp only [hpr, implies_true, and_true]
   have cardpk := mem_powerset_len_univ_iff.mp hpr.left
@@ -174,10 +174,10 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
   simp only [Prod.forall, pairs, mem_filter, mem_univ, true_and, and_true]
   rw [mem_range] at hi
   intro p b
-  refine Iff.intro (fun hpl => mem_powerset_len_univ_iff.mpr hpl.right) ?_
+  refine Iff.intro (fun hpl ↦ mem_powerset_len_univ_iff.mpr hpl.right) ?_
   intro hpr
   refine ⟨?_, mem_powerset_len_univ_iff.mp hpr⟩
-  refine ⟨(mem_powerset_len_univ_iff.mp hpr).symm.subst (motive := fun n => n ≤ k)
+  refine ⟨(mem_powerset_len_univ_iff.mp hpr).symm.subst (motive := fun n ↦ n ≤ k)
     (Nat.le_of_lt hi), ?_⟩
   intro cardpk
   rw [← cardpk, mem_powerset_len_univ_iff.mp hpr] at hi
@@ -217,7 +217,7 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
   rw [disjoint_filter]
-  exact fun _ _ h1 h2 => lt_irrefl _ (h2.symm.subst h1)
+  exact fun _ _ h1 h2 ↦ lt_irrefl _ (h2.symm.subst h1)
 
 theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
@@ -256,7 +256,7 @@ theorem esymm_mul_psum_summand_to_weight (k i : ℕ) :
 theorem esymm_mul_psum_to_weight (k : ℕ) :
     ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) =
     ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
-  rw [← sum_congr rfl (fun i _ => esymm_mul_psum_summand_to_weight σ R k i), sum_equiv_lt_k σ R k]
+  rw [← sum_congr rfl (fun i _ ↦ esymm_mul_psum_summand_to_weight σ R k i), sum_equiv_lt_k σ R k]
 
 /-- Newton's identities give a recurrence relation for the kth elementary symmetric polynomial
 in terms of lower degree elementary symmetric polynomials and power sums. -/
