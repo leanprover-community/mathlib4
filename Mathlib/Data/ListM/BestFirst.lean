@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.ListM.Basic
+import Std.Data.ListM.Basic
 import Std.Data.RBMap.Basic
 
 /-!
@@ -88,8 +88,7 @@ if removeDuplicates then
       if s.contains b then failure
       set <| s.insert b
       pure b
-  consOption
-    (do pure (some a, fixl (bestFirstSearchAux f'' maxQueued) (RBMap.single a (0, f'' 0 a))))
+  cons a (fixl (bestFirstSearchAux f'' maxQueued) (RBMap.single a (0, f'' 0 a)))
     |>.runState' (RBSet.empty.insert a)
 else
-  consOption do pure (some a, fixl (bestFirstSearchAux f' maxQueued) (RBMap.single a (0, f' 0 a)))
+  cons a (fixl (bestFirstSearchAux f' maxQueued) (RBMap.single a (0, f' 0 a)))

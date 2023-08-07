@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.ListM.Basic
+import Std.Data.ListM.Basic
 import Mathlib.Data.ULift
 
 /-!
@@ -52,7 +52,7 @@ partial def splitWhileM (L : ListM m α) (p : α → m (ULift Bool)) :
       let (acc, R) ← splitWhileM xs p
       return (x :: acc, R)
     else
-      return ([], consOption do pure (some x, xs)))
+      return ([], cons x xs))
 
 /--
 Extract a maximal prefix of a lazy list consisting of elements
@@ -75,7 +75,7 @@ partial def groupByM [DecidableEq β] (L : ListM m α) (f : α → m β) : ListM
   L.cases (fun _ => nil) fun a t => squash fun _ => do
     let b ← f a
     let (l, t') ← t.splitWhileM (fun a => do return .up ((← f a) = b))
-    return consOption do pure (some (b, a :: l), t'.groupByM f)
+    return cons (b, a :: l) (t'.groupByM f)
 
 /--
 Splits a lazy list into contiguous sublists of elements with the same value under a function.
@@ -96,10 +96,10 @@ partial def splitAtBecomesTrueM (L : ListM m α) (p : α → m (ULift Bool)) : L
   aux (L.groupByM p)
 where aux (M : ListM m (ULift.{u} Bool × List α)) : ListM m (List α) :=
   M.cases (fun _ => nil) fun (b, l) t => (if b.down then
-    t.cases (fun _ => consOption do pure (some l, nil))
-      fun (_, l') t' => consOption do pure (some (l ++ l'), aux t')
+    t.cases (fun _ => cons l nil)
+      fun (_, l') t' => cons (l ++ l') (aux t')
   else
-    consOption do pure (some l, aux t))
+    cons l (aux t))
 
 /--
 Split a lazy list into contiguous sublists,
