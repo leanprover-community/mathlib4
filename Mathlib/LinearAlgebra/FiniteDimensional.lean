@@ -347,7 +347,7 @@ theorem finrank_zero_iff [FiniteDimensional K V] : finrank K V = 0 ↔ Subsingle
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
-theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
+theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
     (h : finrank K S = finrank K V) : S = ⊤ := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
@@ -372,7 +372,8 @@ theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
   have := bS.span_eq
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
   rw [this, map_top (Submodule.subtype S), range_subtype]
-#align finite_dimensional.eq_top_of_finrank_eq FiniteDimensional.eq_top_of_finrank_eq
+#align finite_dimensional.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
+#align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 
 variable (K)
 
@@ -1115,11 +1116,6 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
-    (h : finrank K S = finrank K V) : S = ⊤ :=
-  FiniteDimensional.eq_of_le_of_finrank_eq le_top (by simp [h, finrank_top])
-#align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
-
 theorem finrank_mono [FiniteDimensional K V] : Monotone fun s : Submodule K V => finrank K s :=
   fun _ _ => finrank_le_finrank_of_le
 #align submodule.finrank_mono Submodule.finrank_mono
@@ -1342,7 +1338,7 @@ theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K
   refine' ⟨fun S => or_iff_not_imp_left.2 fun hn => _⟩
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := finiteDimensional_of_finrank_eq_succ h
-  refine' Submodule.eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
+  refine' eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
   simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
 #align is_simple_module_of_finrank_eq_one is_simple_module_of_finrank_eq_one
 
@@ -1460,7 +1456,7 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
       · right
         rw [← hr] at h
         rw [← Algebra.toSubmodule_eq_top]
-        exact Submodule.eq_top_of_finrank_eq h }
+        exact eq_top_of_finrank_eq h }
 #align subalgebra.is_simple_order_of_finrank Subalgebra.isSimpleOrder_of_finrank
 
 end SubalgebraRank
