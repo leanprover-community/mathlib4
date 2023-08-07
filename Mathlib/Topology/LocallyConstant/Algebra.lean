@@ -304,12 +304,11 @@ def comapMul  [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
     ext x
     rw [coe_comap_apply _ _ hf]
     rfl
-  map_mul' := by
-    intro r s
+  map_mul' r s := by
     ext x
-    simp
+    dsimp only [coe_mul, Pi.mul_apply]
     rw [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf, coe_comap_apply _ _ hf]
-    simp
+    rfl
 
 /-- `LocallyConstant.comap` is a linear map. -/
 noncomputable
@@ -319,13 +318,13 @@ def comapLinear {R : Type _} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X 
   map_add' := by
     intro r s
     ext x
-    simp
+    dsimp only [coe_add, Pi.add_apply]
     rw [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf, coe_comap_apply _ _ hf]
     rfl
-  map_smul' := by
-    intro r s
+  map_smul' r s := by
     ext x
-    simp
+    dsimp only [RingHom.id_apply, coe_add, Pi.add_apply, AddHom.toFun_eq_coe,
+      AddHom.coe_mk, coe_smul, Pi.smul_apply]
     rw [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf]
     rfl
 
@@ -339,8 +338,7 @@ def equivLinear {R : Type _} [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X 
     LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
   toFun := (equiv e).toFun
   map_smul' := (comapLinear _ e.continuous_invFun).map_smul'
-  map_add' := by -- note: (comapLinear _ e.continuous_invFun).map_add' doesn't work.
-    intro r s
+  map_add' r s := by -- note: (comapLinear e.symm hf).map_add' r s -- doesn't work.
     ext x
     dsimp [equiv]
     have hf : Continuous ↑(e.symm) := e.continuous_invFun
