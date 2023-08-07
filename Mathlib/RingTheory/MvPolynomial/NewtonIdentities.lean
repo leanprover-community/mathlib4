@@ -22,7 +22,8 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 
 * `MvPolynomial.psum`: The degree-`n` power sum evaluated at the elements of `s`.
 
-* `MvPolynomial.NewtonIdentities.esymm_recurrence` encapsulating the primary result
+* `MvPolynomial.NewtonIdentities.esymm_recurrence`: a recurrence relation for the kth elementary
+  symmetric polynomial in terms of lower degree elementary symmetric polynomials and power sums.
 
 ## Notation
 
