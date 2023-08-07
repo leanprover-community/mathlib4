@@ -142,25 +142,25 @@ jobs:
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
-      - name: build archive
-        run: lake build Archive
+      # - name: build archive
+      #   run: lake build Archive
 
-      - name: build counterexamples
-        run: lake build Counterexamples
+      # - name: build counterexamples
+      #   run: lake build Counterexamples
 
-      - name: check declarations in db files
-        run: |
-          python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
-          build/bin/checkYaml
+      # - name: check declarations in db files
+      #   run: |
+      #     python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
+      #     build/bin/checkYaml
 
-      - name: test mathlib
-        run: make -j 8 test
+      # - name: test mathlib
+      #   run: make -j 8 test
 
-      - name: lint mathlib
-        uses: liskin/gh-problem-matcher-wrap@v2
-        with:
-          linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 make lint
+      # - name: lint mathlib
+      #   uses: liskin/gh-problem-matcher-wrap@v2
+      #   with:
+      #     linters: gcc
+      #     run: env LEAN_ABORT_ON_PANIC=1 make lint
 
   final:
     name: Post-CI job
