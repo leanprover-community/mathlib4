@@ -163,8 +163,7 @@ theorem natDegree_divX_lt (hpd : 1 ≤ p.natDegree) : p.divX.natDegree < p.natDe
     simp at hpd'
   · exact degree_divX_lt hp
 
-theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree :=
-  by
+theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree := by
   by_cases hpd : p.natDegree ≤ 0
   · nth_rw 1 [eq_C_of_natDegree_le_zero hpd]
     nth_rw 1 [divX_C]
