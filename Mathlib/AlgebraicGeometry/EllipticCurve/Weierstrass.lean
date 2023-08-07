@@ -919,7 +919,7 @@ instance instIsScalarTowerCoordinateRing : IsScalarTower R R[X] W.CoordinateRing
   Quotient.isScalarTower R R[X] _
 #align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.CoordinateRing.instIsScalarTowerCoordinateRing
 
-instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
+instance instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
 #align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.CoordinateRing.instSubsingletonCoordinateRing
 
