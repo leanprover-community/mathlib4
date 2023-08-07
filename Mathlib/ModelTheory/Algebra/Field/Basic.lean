@@ -224,22 +224,22 @@ def ModelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
         Set.mem_range_self (f := toSentence) .invZero)
     simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h,
   funMap_add := by
-    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
   funMap_mul := by
-    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
   funMap_neg := by
-    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
   funMap_inv := by
-    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
   funMap_zero := by
-    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
   funMap_one := by
-    simp [Fin.forall_fin_succ_pi, HAdd.hAdd, Matrix.vecCons];
+    simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl }
 
 open FieldFunctions
