@@ -654,7 +654,7 @@ theorem tensor_inv_hom_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y)
 #align category_theory.monoidal_category.tensor_inv_hom_id' CategoryTheory.MonoidalCategory.tensor_inv_hom_id'
 
 /--
-A constructor for monoidal categaories that requires `tensorHom` instead of `whiskerLeft` and
+A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
 `whiskerRight`.
 -/
 def ofTensorHom
