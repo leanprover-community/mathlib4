@@ -7,6 +7,13 @@ import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Tactic.FinCases
 
+/-!
+# The binominal distribution
+
+This file defines the probability mass function of the binominal distribution, and proves
+it to be equal to `Pmf.bernoulli` for `n = 1`.
+-/
+
 noncomputable section
 
 namespace Pmf
