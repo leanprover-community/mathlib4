@@ -69,13 +69,9 @@ lemma measurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [Zero β]
 -- But why? Could be in `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`!
 
 /-- A characterization of the a.e.-measurability of the indicator function which takes a constant
-value `b` on a set `A` and `0` elsewhere. (This version requires the measurability of the singleton
-`{0}` as an explicit input, see `measurable_indicator_const_iff` for a version with typeclass
-inference.) -/
+value `b` on a set `A` and `0` elsewhere. -/
 lemma aeMeasurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [DecidableEq β]
-  [Zero β] [MeasurableSpace β] [TopologicalSpace β] [TopologicalSpace.PseudoMetrizableSpace β]
-  [BorelSpace β] [TopologicalSpace.SecondCountableTopology β] [OpensMeasurableSpace β]
-  [MeasurableSingletonClass β] (μ : Measure α) (b : β) [NeZero b] :
+  [Zero β] [MeasurableSpace β] [MeasurableSingletonClass β] (μ : Measure α) (b : β) [NeZero b] :
     AEMeasurable (A.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet A μ := by
   constructor <;> intro h
   · obtain ⟨f, ⟨f_mble, f_eq⟩⟩ := h
