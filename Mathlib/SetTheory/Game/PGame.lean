@@ -354,7 +354,7 @@ instance : Inhabited PGame :=
   ⟨0⟩
 
 /-- The pre-game `One` is defined by `1 = { 0 | }`. -/
-instance : One PGame :=
+instance instOnePGame : One PGame :=
   ⟨⟨PUnit, PEmpty, fun _ => 0, PEmpty.elim⟩⟩
 
 @[simp]

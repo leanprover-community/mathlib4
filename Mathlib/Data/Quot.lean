@@ -224,7 +224,7 @@ notation:arg "⟦" a "⟧" => Quotient.mk _ a
 instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
 
-instance (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
+instance instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
   Quot.Subsingleton
 
 instance {α : Type _} [Setoid α] : IsEquiv α (· ≈ ·) where
