@@ -89,24 +89,42 @@ open field
 
 open BoundedFormula
 
+inductive FieldAxiom : Type
+  | addAssoc : FieldAxiom
+  | addComm : FieldAxiom
+  | zeroAdd : FieldAxiom
+  | addZero : FieldAxiom
+  | addLeftNeg : FieldAxiom
+  | addRightNeg : FieldAxiom
+  | mulLeftDistrib : FieldAxiom
+  | mulRightDistrib : FieldAxiom
+  | mulAssoc : FieldAxiom
+  | mulComm : FieldAxiom
+  | oneMul : FieldAxiom
+  | mulOne : FieldAxiom
+  | mulRightInv : FieldAxiom
+  | invZero : FieldAxiom
+  | zeroNeOne : FieldAxiom
+
+def FieldAxiom.toSentence : FieldAxiom → Language.field.Sentence
+  | .addAssoc => addFunction.assoc
+  | .addComm => addFunction.comm
+  | .zeroAdd => addFunction.leftId 0
+  | .addZero => addFunction.rightId 0
+  | .addLeftNeg => addFunction.leftInv negFunction 0
+  | .addRightNeg => addFunction.rightInv negFunction 0
+  | .mulLeftDistrib => mulFunction.leftDistrib addFunction
+  | .mulRightDistrib => mulFunction.rightDistrib addFunction
+  | .mulAssoc => mulFunction.assoc
+  | .mulComm => mulFunction.comm
+  | .oneMul => mulFunction.leftId 1
+  | .mulOne => mulFunction.rightId 1
+  | .mulRightInv => mulFunction.rightNeZeroInv invFunction 0 1
+  | .invZero => invFunction.apply₁ 0 =' 0
+  | .zeroNeOne => (Term.equal 0 1).not
+
 def Theory.field : Language.field.Theory :=
-  show Set Language.field.Sentence from
-  { addFunction.assoc,
-    addFunction.comm,
-    addFunction.leftId 0,
-    addFunction.rightId 0,
-    addFunction.leftInv negFunction 0,
-    addFunction.rightInv negFunction 0,
-    mulFunction.leftDistrib addFunction,
-    mulFunction.rightDistrib addFunction,
-    mulFunction.assoc,
-    mulFunction.comm,
-    mulFunction.leftId 1,
-    mulFunction.rightId 1,
-    mulFunction.leftNeZeroInv invFunction 0 1,
-    mulFunction.rightNeZeroInv invFunction 0 1,
-    invFunction.apply₁ 0 =' 0,
-    (Term.equal 0 1).not}
+  Set.range FieldAxiom.toSentence
 
 class ModelField (K : Type _) extends Field K,
     Language.field.Structure K,
@@ -118,9 +136,13 @@ class ModelField (K : Type _) extends Field K,
   ( funMap_zero : ∀ x, funMap (0 : Language.field.Constants) x = 0 )
   ( funMap_one : ∀ x, funMap (1 : Language.field.Constants) x = 1 )
 
-set_option maxHeartbeats 20000000 in
-def fieldOfFieldStructure (K : Type _) [Language.field.Structure K]
-    [Theory.field.Model K] : Field K :=
+open FieldAxiom
+attribute [simp] ModelField.funMap_add ModelField.funMap_mul
+  ModelField.funMap_neg ModelField.funMap_inv
+  ModelField.funMap_zero ModelField.funMap_one
+
+def ModelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
+    [Theory.field.Model K] : ModelField K :=
 { add := fun x y => funMap addFunction ![x, y],
   zero := constantMap (L := Language.field) (M := K) 0,
   one := constantMap (L := Language.field) (M := K) 1,
@@ -129,71 +151,89 @@ def fieldOfFieldStructure (K : Type _) [Language.field.Structure K]
   neg := fun x => funMap negFunction ![x],
   add_assoc := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.assoc ∈ Theory.field by simp [Theory.field])
+      (show addFunction.assoc ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .addAssoc)
     rwa [Functions.realize_assoc] at h
   add_comm := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.comm ∈ Theory.field by simp [Theory.field])
+      (show addFunction.comm ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .addComm)
     rwa [Functions.realize_comm] at h
   add_zero := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.rightId 0 ∈ Theory.field by simp [Theory.field])
+      (show addFunction.rightId 0 ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .addZero)
     rwa [Functions.realize_rightId] at h
   add_left_neg := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.leftInv negFunction 0 ∈ Theory.field by simp [Theory.field])
+      (show addFunction.leftInv negFunction 0 ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .addLeftNeg)
     rwa [Functions.realize_leftInv] at h
   left_distrib := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.leftDistrib addFunction ∈ Theory.field by simp [Theory.field])
+      (show mulFunction.leftDistrib addFunction ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .mulLeftDistrib)
     rwa [Functions.realize_leftDistrib] at h
   right_distrib := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightDistrib addFunction ∈ Theory.field by simp [Theory.field])
+      (show mulFunction.rightDistrib addFunction ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .mulRightDistrib)
     rwa [Functions.realize_rightDistrib] at h
   mul_assoc := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.assoc ∈ Theory.field by simp [Theory.field])
+      (show mulFunction.assoc ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .mulAssoc)
     rwa [Functions.realize_assoc] at h
   mul_comm := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.comm ∈ Theory.field by simp [Theory.field])
+      (show mulFunction.comm ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .mulComm)
     rwa [Functions.realize_comm] at h
   mul_one := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightId 1 ∈ Theory.field by simp [Theory.field])
+      (show mulFunction.rightId 1 ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .mulOne)
     rwa [Functions.realize_rightId] at h
   zero_add := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.leftId 0 ∈ Theory.field by simp [Theory.field])
+      (show addFunction.leftId 0 ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .zeroAdd)
     rwa [Functions.realize_leftId] at h
   zero_mul := sorry,
   mul_zero := sorry,
   one_mul := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.leftId 1 ∈ Theory.field by simp [Theory.field])
+      (show mulFunction.leftId 1 ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .oneMul)
     rwa [Functions.realize_leftId] at h
   exists_pair_ne := ⟨
     constantMap (L := Language.field) (M := K) 0,
     constantMap (L := Language.field) (M := K) 1, by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show (Term.equal 0 1).not ∈ Theory.field by simp [Theory.field])
+      (show (Term.equal 0 1).not ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .zeroNeOne)
     simpa [Sentence.Realize, zero_def, one_def] using h⟩
   mul_inv_cancel := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightNeZeroInv invFunction 0 1 ∈ Theory.field by simp [Theory.field])
+      (show mulFunction.rightNeZeroInv invFunction 0 1 ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .mulRightInv)
     rwa [Functions.realize_rightNeZeroInv] at h
   inv_zero := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show invFunction.apply₁ 0 =' 0 ∈ Theory.field by simp [Theory.field])
-    simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h }
-
-def modelFieldOfStructureField (K :)
+      (show invFunction.apply₁ 0 =' 0 ∈ Theory.field from
+        Set.mem_range_self (f := toSentence) .invZero)
+    simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h,
+  funMap_add := sorry
+  funMap_mul := sorry
+  funMap_neg := sorry
+  funMap_inv := sorry
+  funMap_zero := sorry
+  funMap_one := sorry  }
 
 open FieldFunctions
 
-@[simps]
-instance {K : Type _} [Field K] : Language.field.Structure K :=
+@[simps, reducible]
+def structureFieldOfField {K : Type _} [Field K] : Language.field.Structure K :=
   { funMap := fun {n} f =>
       match n, f with
       | _, add => fun x => x 0 + x 1
@@ -204,13 +244,24 @@ instance {K : Type _} [Field K] : Language.field.Structure K :=
       | _, one => fun _ => 1,
     RelMap := Empty.elim }
 
-instance {K : Type _} [Field K] : Theory.field.Model K := by
-  simp [Theory.field, addFunction,
-    add_assoc, mulFunction, mul_assoc, add_comm, add_left_comm,
-    mul_comm, mul_left_comm, mul_assoc, mul_add, add_mul, one_def,
-    zero_def]
-  simpa [Sentence.Realize, Formula.Realize, Term.equal,
-    constantMap] using (fun _ => @mul_inv_cancel K _ _)
+def ModelFieldOfField {K : Type _} [Field K] : ModelField K :=
+  { structureFieldOfField with
+    realize_of_mem := by
+      simp only [Theory.field, Set.mem_range, exists_imp]
+      rintro φ a rfl
+      have := @mul_inv_cancel (G₀ := K) _
+      cases a <;>
+      simp [toSentence, add_assoc, add_comm, constantMap, mul_comm,
+        mul_assoc, add_left_comm, mul_left_comm, mul_add, add_mul] <;>
+      simp [Sentence.Realize, Formula.Realize, zero_def, one_def,
+        constantMap, Term.equal];
+      assumption
+    funMap_add := by intros; rfl
+    funMap_mul := by intros; rfl
+    funMap_neg := by intros; rfl
+    funMap_inv := by intros; rfl
+    funMap_zero := by intros; rfl
+    funMap_one := by intros; rfl }
 
 end Language
 
