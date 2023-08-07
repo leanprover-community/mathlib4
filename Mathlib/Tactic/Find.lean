@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Sebastian Ullrich. All rights reserved.
+Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Joachim Breitner
 -/
@@ -12,15 +12,13 @@ import Mathlib.Tactic.Cache
 
 set_option autoImplicit false
 
-open Lean
-open Lean.Meta
-open Lean.Elab
+open Lean Meta Elab
 
 /-!
 ## Utilities, to be moved somewhere else before merging
 -/
 
-/-- The intersection of a (non-empy) array of `NameSet`s -/
+/-- The intersection of a (non-empty) array of `NameSet`s -/
 def Lean.NameSet.intersects (ss : Array NameSet) : NameSet :=
   -- sort smallest set to the back, and iterate over that one
   -- TODO: Does `RBTree` admit faster intersection algorithms?
@@ -58,7 +56,7 @@ def MessageData.andList (xs : Array MessageData) : MessageData :=
 /-- Formats a list of names, as you would expect from a lemma-searching command.  -/
 def MessageData.bulletListOfConsts {m} [Monad m] [MonadEnv m] [MonadError m]
   (names : List Name) : m MessageData := do
-    let es <- names.mapM mkConstWithLevelParams
+    let es ← names.mapM mkConstWithLevelParams
     pure (MessageData.bulletList (es.map ppConst))
 
 
@@ -75,7 +73,7 @@ def ConstMatcher := ConstantInfo → MetaM Bool
 matches that patttern.  -/
 def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
   let head := t.toHeadIndex
-  let pat <- abstractMVars (← instantiateMVars t)
+  let pat ← abstractMVars (← instantiateMVars t)
   pure fun (c : ConstantInfo) => withReducible do
     let found  ← IO.mkRef false
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
@@ -109,7 +107,7 @@ lemma matches the conclusion of the pattern, and all hypotheses of the pattern a
 hypotheses of the lemma.  -/
 def matchConclusion (t : Expr) : MetaM ConstMatcher := withReducible do
   let head := (← forallMetaTelescopeReducing t).2.2.toHeadIndex
-  let pat <- abstractMVars (← instantiateMVars t)
+  let pat ← abstractMVars (← instantiateMVars t)
   pure fun (c : ConstantInfo) => withReducible do
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     forallTelescopeReducing cTy fun cParams cTy' ↦ do
@@ -188,23 +186,23 @@ structure Arguments where
 /-- The core of the `#find` tactic with all parsing/printing factored out, for
 programmatic use.  -/
 def find (args : Arguments) (maxShown := 200) :
-  MetaM (MessageData ⊕ (MessageData × List Name)) := do
+  MetaM (Except MessageData (MessageData × List Name)) := do
   profileitM Exception "#find" (← getOptions) do
     -- Collect set of names to query the index by
     let needles : NameSet :=
           {} |> args.idents.foldl NameSet.insert
              |> args.terms.foldl (fun s (_,t) => t.foldConsts s (flip NameSet.insert))
     if needles.isEmpty then do
-      return .inl m!"Cannot search: No constants in search pattern."
+      return .error m!"Cannot search: No constants in search pattern."
 
     -- Prepare term patterns
-    let pats <- liftM $ args.terms.mapM fun (is_conclusion_pattern, t) =>
+    let pats ← liftM $ args.terms.mapM fun (is_conclusion_pattern, t) =>
       if is_conclusion_pattern
       then matchConclusion t
       else matchAnywhere t
 
     -- Query the declaration cache
-    let (m₁, m₂) <- findDeclsByConsts.get
+    let (m₁, m₂) ← findDeclsByConsts.get
     let hits := NameSet.intersects $ needles.toArray.map $ fun needle =>
       NameSet.union (m₁.findD needle {}) (m₂.findD needle {})
 
@@ -213,8 +211,8 @@ def find (args : Arguments) (maxShown := 200) :
       p.isInfixOf n.toString
 
     -- Filter by term patterns
-    let hits3 <- hits2.filterM fun n => do
-      let env <- getEnv
+    let hits3 ← hits2.filterM fun n => do
+      let env ← getEnv
       if let some ci := env.find? n then do pats.allM (· ci)
       else return false
 
@@ -233,13 +231,13 @@ def find (args : Arguments) (maxShown := 200) :
       add_line $ m!"Of these, {hits3.size} match your patterns."
     unless (hits4.size ≤ maxShown) do
       add_line $ m!"Of these, the first {maxShown} are shown."
-    return .inr (← summary.get, hits4.toList.take maxShown)
+    return .ok (← summary.get, hits4.toList.take maxShown)
 
 /-!
 ## The #find command, syntax and parsing
 -/
 
-open Lean.Parser
+open Parser
 
 /-- `#find` name pattern: `"substring"` -/
 syntax name_pattern := strLit
@@ -279,7 +277,7 @@ def parseFindPatterns (args : TSyntaxArray ``find_pattern) : TermElabM Arguments
     | _ => throwErrorAt arg "unexpected argument to #find"
   pure {idents, name_pats, terms}
 
-open Lean.Elab.Command
+open Command
 
 /--
 The `#find` command finds definitions and lemmas by various ways, which can be combined:
@@ -334,9 +332,9 @@ Inside tactic proofs, the `#find` tactic can be used instead.
 elab s:"#find " args:find_pattern* : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
     match ← find (← parseFindPatterns args) with
-    | .inl warn =>
+    | .error warn =>
       Lean.logWarningAt s warn
-    | .inr (summary, hits) =>
+    | .ok (summary, hits) =>
       Lean.logInfo $ summary ++ (← MessageData.bulletListOfConsts hits)
 
 /--
@@ -346,7 +344,7 @@ See also the `apply?` tactic to search for theorems matching the current goal.
 elab s:"#find " args:find_pattern+ : tactic => do
   profileitM Exception "find" (← getOptions) do
     match ← find (← parseFindPatterns args) with
-    | .inl warn =>
+    | .error warn =>
       Lean.logWarningAt s warn
-    | .inr (summary, hits) =>
+    | .ok (summary, hits) =>
       Lean.logInfo $ summary ++ (← MessageData.bulletListOfConsts hits)
