@@ -378,7 +378,7 @@ end Field
 
 section Int
 
-/-- Two (finite) ℤ-basis have the same discriminant. -/
+/-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr [Fintype ι] (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by
   convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
