@@ -21,19 +21,19 @@ alongside our type parameters (which would appear in almost every lemma).
 Instead, later we work in terms of a list of rewrite rules, which is finite by definition and from
 which we could infer that only a finite set of terminals and a finite set of nonterminals can occur.
 -/
-inductive Symbol (T : Type) (N : Type)
+inductive Symbol (T : Type _) (N : Type _)
   | terminal    (t : T) : Symbol T N
   | nonterminal (n : N) : Symbol T N
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
-structure CFG (T : Type) where
-  nt : Type                              -- type of nonterminals
+structure CFG (T : Type _) where
+  nt : Type _                            -- type of nonterminals
   initial : nt                           -- initial nonterminal
   rules : List (nt × List (Symbol T nt)) -- rewrite rules
 
 namespace CFG
 
-variable {T : Type}
+variable {T : Type _}
 
 /-- One step of context-free transformation. -/
 def Transforms (g : CFG T) (w₁ w₂ : List (Symbol T g.nt)) : Prop :=
@@ -55,8 +55,9 @@ def language (g : CFG T) : Language T :=
   setOf g.Generates
 
 /-- Predicate "[language] is context-free"; defined by existence of a context-free grammar. -/
-def _root_.Language.IsCF (L : Language T) : Prop :=
-  ∃ g : CFG T, g.language = L
+/-def _root_.Language.IsCF (L : Language T) : Prop :=
+--  ∃ g : CFG T, g.language = L-/
+def delete_me := 1
 
 variable {g : CFG T}
 
