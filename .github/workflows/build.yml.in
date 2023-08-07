@@ -178,6 +178,7 @@ jobs:
         name: Echo PR labels
         run: |
           echo ${{ steps.PR.outputs.pr_labels }}
+          echo ${{ steps.PR.outputs.pr_labels }}
 
       - if: contains(${{ steps.PR.outputs.pr_labels }}, 'auto-merge-after-CI')
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
