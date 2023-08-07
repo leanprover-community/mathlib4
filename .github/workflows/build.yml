@@ -194,7 +194,7 @@ jobs:
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
 
-      - id: echo labels
+      - id: echo_labels
         name: Echo PR labels
         run: |
           echo ${{ steps.PR.outputs.pr_labels }}
