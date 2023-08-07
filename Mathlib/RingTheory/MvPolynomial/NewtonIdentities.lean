@@ -98,7 +98,8 @@ theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) : pairMap
     simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
     exact (le_iff_eq_or_lt.mp h.left).resolve_left h.right
 
-@[simp] theorem pairMap_pairMap (t : Finset σ × σ) : pairMap σ (pairMap σ t) = t := by
+@[simp] theorem pairMap_involutive : (pairMap σ).Involutive := by
+  intro t
   rw [pairMap, pairMap]
   split_ifs with h1 h2 h3
   · simp at h2
@@ -140,7 +141,7 @@ theorem weight_zero_for_fixed_by_pairMap' (t : Finset σ × σ) (h : t ∈ pairs
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
   sum_involution (fun t _ ↦ pairMap σ t) (weight_compose_pairMap σ R)
-    (weight_zero_for_fixed_by_pairMap' σ R) (pairMap_mem_pairs σ) (fun t _ ↦ pairMap_pairMap σ t)
+    (weight_zero_for_fixed_by_pairMap' σ R) (pairMap_mem_pairs σ) (fun t _ ↦ pairMap_involutive σ t)
 
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
