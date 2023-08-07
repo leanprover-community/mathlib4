@@ -57,7 +57,8 @@ instance Complex.toStarDotProduct : DotProductInnerProductSpace n ℂ where
       and_true, Complex.zero_re, Complex.re_sum, Complex.ofReal_re, Function.funext_iff,
       Pi.zero_apply]
     rw [Finset.sum_eq_zero_iff_of_nonneg] <;>
-    simp only [Finset.mem_univ, map_eq_zero, forall_true_left, (fun _ => Complex.normSq_nonneg _)]
+    simp only [Finset.mem_univ, map_eq_zero, forall_true_left, implies_true,
+      (fun _ => Complex.normSq_nonneg _)]
 
 
 instance Rat.toStarDotProduct : DotProductInnerProductSpace n ℚ where
