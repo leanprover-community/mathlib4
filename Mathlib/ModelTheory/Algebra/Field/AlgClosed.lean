@@ -99,7 +99,6 @@ instance {K : Type _} [ModelField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-
 theorem isAlgClosedOfModelACF {p : ℕ} (M : Type _)
     [ModelField M] [h : (Theory.ACF p).Model M] :
     IsAlgClosed M := by
