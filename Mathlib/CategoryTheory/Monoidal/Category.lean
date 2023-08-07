@@ -44,7 +44,7 @@ The whiskerings are useful when considering simp-normal forms of morphisms in mo
 ### Simp-normal form for morphisms
 
 Rewriting involving associators and unitors could be very complicated. We try to ease this
-complexity by putting carefully chosen simp lemmas that rewrite any morphisms into simp-normal
+complexity by putting carefully chosen simp lemmas that rewrite any morphisms into the simp-normal
 form defined below. Rewriting into simp-normal form is especially useful in preprocessing
 performed by the `coherence` tactic.
 
@@ -194,10 +194,10 @@ abbrev tensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] : C :=
 /-- Notation for `tensorObj`, the tensor product of objects in a monoidal category -/
 scoped infixr:70 " ⊗ " => MonoidalCategory.tensorObj
 
-/-- Notation for the `whiskerLeft` -/
+/-- Notation for the `whiskerLeft` operator of monoidal categories -/
 scoped infixr:81 " ◁ " => whiskerLeft
 
-/-- Notation for the `whiskerRight` -/
+/-- Notation for the `whiskerRight` operator of monoidal categories -/
 scoped infixl:81 " ▷ " => whiskerRight
 
 /-- Notation for `tensorHom`, the tensor product of morphisms in a monoidal category -/
@@ -654,7 +654,7 @@ theorem tensor_inv_hom_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y)
 #align category_theory.monoidal_category.tensor_inv_hom_id' CategoryTheory.MonoidalCategory.tensor_inv_hom_id'
 
 /--
-A constructor for monoidal categaories that requires `tensorHom` instead of `whiskerLeft` and
+A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
 `whiskerRight`.
 -/
 def ofTensorHom
