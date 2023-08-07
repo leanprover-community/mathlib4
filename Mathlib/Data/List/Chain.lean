@@ -440,3 +440,34 @@ theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain
 
 end List
+
+variable {α : Type _} (r : α → α → Prop)
+
+theorem WellFounded.list_chain' (hwf : WellFounded r) :
+    @WellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) := by
+  refine ⟨fun ⟨l, hl⟩ ↦ ?_⟩
+  cases' l with a l
+  · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+  induction hwf.apply a generalizing l with
+  | intro a _ ih =>
+    have hl' := (List.chain'_cons'.1 hl).2
+    let l' : {l // l.Chain' (flip r)} := ⟨l, hl'⟩
+    have : Acc (fun l m ↦ List.Lex r l.val m.val) l'
+    · cases' l with b l
+      · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      · apply ih b (List.chain'_cons.1 hl).1
+    revert hl
+    rw [(by rfl : l = l'.1)]
+    clear_value l'
+    induction this with
+    | intro l _ ihl =>
+      intro hl
+      apply Acc.intro
+      rintro ⟨_ | ⟨b, l'⟩, hl'⟩ (_|hr|hr)
+      · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      · apply ihl ⟨l', (List.chain'_cons'.1 hl').2⟩ hr
+      · apply ih b hr
+
+instance [hwf : IsWellFounded α r] :
+    IsWellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) :=
+  ⟨hwf.wf.list_chain'⟩
