@@ -194,7 +194,7 @@ abbrev tensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] : C :=
 /-- Notation for `tensorObj`, the tensor product of objects in a monoidal category -/
 scoped infixr:70 " ⊗ " => MonoidalCategory.tensorObj
 
-/-- Notation for the `whiskerLeft` -/
+/-- Notation for the `whiskerLeft` operator of monoidal categories -/
 scoped infixr:81 " ◁ " => whiskerLeft
 
 /-- Notation for the `whiskerRight` operator of monoidal categories -/
