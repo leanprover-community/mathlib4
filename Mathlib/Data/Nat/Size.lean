@@ -31,10 +31,10 @@ theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ 
 
 end
 
+#align nat.one_shiftl Nat.one_shiftLeft
+
 theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
 #align nat.zero_shiftl Nat.zero_shiftLeft
-
-#align nat.one_shiftl Nat.one_shiftLeft
 
 theorem shiftRight_eq_div_pow (m) : ∀ n, m >>> n = m / 2 ^ n
   | 0 => (Nat.div_one _).symm
