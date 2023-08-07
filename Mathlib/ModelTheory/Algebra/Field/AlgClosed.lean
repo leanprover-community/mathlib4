@@ -85,7 +85,11 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
     simp
 
 def Theory.ACF (p : ℕ) : Theory Language.field :=
-  Theory.hasChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
+  Theory.hasChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n} ∪
+  Theory.field
+
+structure modelACF (p : ℕ) (K : Type _) extends ModelField K,
+  (Theory.ACF p).Model K
 
 instance {K : Type _} [Field K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by

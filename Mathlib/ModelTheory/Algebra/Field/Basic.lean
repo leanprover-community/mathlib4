@@ -127,8 +127,7 @@ def Theory.field : Language.field.Theory :=
   Set.range FieldAxiom.toSentence
 
 class ModelField (K : Type _) extends Field K,
-    Language.field.Structure K,
-    Theory.field.Model K where
+    Language.field.Structure K where
   ( funMap_add : ∀ x, funMap addFunction x = x 0 + x 1 )
   ( funMap_mul : ∀ x, funMap mulFunction x = x 0 * x 1 )
   ( funMap_neg : ∀ x, funMap negFunction x = -x 0 )
@@ -259,7 +258,15 @@ def structureFieldOfField {K : Type _} [Field K] : Language.field.Structure K :=
 
 def ModelFieldOfField {K : Type _} [Field K] : ModelField K :=
   { structureFieldOfField with
-    realize_of_mem := by
+    funMap_add := by intros; rfl
+    funMap_mul := by intros; rfl
+    funMap_neg := by intros; rfl
+    funMap_inv := by intros; rfl
+    funMap_zero := by intros; rfl
+    funMap_one := by intros; rfl }
+
+instance {K : Type _} [ModelField K] : Theory.field.Model K :=
+  { realize_of_mem := by
       simp only [Theory.field, Set.mem_range, exists_imp]
       rintro φ a rfl
       have := @mul_inv_cancel (G₀ := K) _
@@ -268,13 +275,7 @@ def ModelFieldOfField {K : Type _} [Field K] : ModelField K :=
         mul_assoc, add_left_comm, mul_left_comm, mul_add, add_mul] <;>
       simp [Sentence.Realize, Formula.Realize, zero_def, one_def,
         constantMap, Term.equal];
-      assumption
-    funMap_add := by intros; rfl
-    funMap_mul := by intros; rfl
-    funMap_neg := by intros; rfl
-    funMap_inv := by intros; rfl
-    funMap_zero := by intros; rfl
-    funMap_one := by intros; rfl }
+      assumption }
 
 end Language
 
