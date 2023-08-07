@@ -1474,7 +1474,7 @@ theorem coeff_zero_one : coeff R 0 (1 : PowerSeries R) = 1 :=
 theorem coeff_mul (n : ℕ) (φ ψ : PowerSeries R) :
     coeff R n (φ * ψ) = ∑ p in Finset.Nat.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   symm
-  erw [MvPowerSeries.coeff_mul]
+  erw [MvPowerSeries.coeff_mul] -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`
   apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
   · rintro ⟨i, j⟩ hij
     rw [Finset.Nat.mem_antidiagonal] at hij
