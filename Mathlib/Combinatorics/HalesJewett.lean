@@ -16,7 +16,7 @@ import Mathlib.Algebra.BigOperators.Basic
 We prove the Hales-Jewett theorem and deduce Van der Waerden's theorem as a corollary.
 
 The Hales-Jewett theorem is a result in Ramsey theory dealing with *combinatorial lines*. Given
-an 'alphabet' `α : Type*` and `a b : α`, an example of a combinatorial line in `α^5` is
+an 'alphabet' `α : Type _` and `a b : α`, an example of a combinatorial line in `α^5` is
 `{ (a, x, x, b, x) | x : α }`. See `Combinatorics.Line` for a precise general definition. The
 Hales-Jewett theorem states that for any fixed finite types `α` and `κ`, there exists a (potentially
 huge) finite type `ι` such that whenever `ι → α` is `κ`-colored (i.e. for any coloring
@@ -99,8 +99,7 @@ def IsMono {α ι κ} (C : (ι → α) → κ) (l : Line α ι) : Prop :=
 #align combinatorics.line.is_mono Combinatorics.Line.IsMono
 
 /-- The diagonal line. It is the identity at every coordinate. -/
-def diagonal (α ι) [Nonempty ι] : Line α ι
-    where
+def diagonal (α ι) [Nonempty ι] : Line α ι where
   idxFun _ := none
   proper := ⟨Classical.arbitrary ι, rfl⟩
 #align combinatorics.line.diagonal Combinatorics.Line.diagonal
@@ -148,29 +147,25 @@ instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C)
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`,
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
-def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι
-    where
+def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
   proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
 #align combinatorics.line.map Combinatorics.Line.map
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
-def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (Sum ι ι')
-    where
+def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (Sum ι ι') where
   idxFun := Sum.elim (some ∘ v) l.idxFun
   proper := ⟨Sum.inr l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.vertical Combinatorics.Line.vertical
 
 /-- A line in `ι → α` and a point in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
-def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (Sum ι ι')
-    where
+def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (Sum ι ι') where
   idxFun := Sum.elim l.idxFun (some ∘ v)
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.horizontal Combinatorics.Line.horizontal
 
 /-- One line in `ι → α` and one in `ι' → α` together determine a line in `ι ⊕ ι' → α`. -/
-def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι')
-    where
+def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι') where
   idxFun := Sum.elim l.idxFun l'.idxFun
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.prod Combinatorics.Line.prod
@@ -227,7 +222,7 @@ private theorem exists_mono_in_high_dimension' :
 -- The proof proceeds by induction on `α`.
   Finite.induction_empty_option
   (-- We have to show that the theorem is invariant under `α ≃ α'` for the induction to work.
-  @fun α α' e =>
+  fun {α α'} e =>
     forall_imp fun κ =>
       forall_imp fun _ =>
         Exists.imp fun ι =>
@@ -248,7 +243,7 @@ private theorem exists_mono_in_high_dimension' :
     -- empty.
     -- Then `Option α` has only one element, so any line is monochromatic.
     by_cases h : Nonempty α
-    on_goal 2 =>
+    case neg =>
       refine' ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
       rintro (_ | ⟨a⟩)
       · rfl
@@ -346,7 +341,6 @@ monoid, and `S` is a finite subset, then there exists a monochromatic homothetic
 theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
-  skip
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
   set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none ) with hs
