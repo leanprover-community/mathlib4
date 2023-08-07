@@ -1,5 +1,6 @@
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.Tactic.FinCases
 
 noncomputable section
 
@@ -33,8 +34,4 @@ theorem binominal_apply_n : binominal p h n n = p^n :=
 /-- The binominal distribution on one coin is the bernoully distribution. -/
 theorem binominal_one_eq_bernoulli :
   binominal p h 1 = (bernoulli p h).map (cond · 1 0) := by
-    ext ⟨i, hi⟩
-    match i with
-    | 0 => simp [tsum_bool, binominal_apply]
-    | 1 => simp [tsum_bool, binominal_apply]
-    | .succ (.succ i) => linarith
+    ext i; fin_cases i <;> simp [tsum_bool, binominal_apply]
