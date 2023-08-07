@@ -200,7 +200,7 @@ variable {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
 /-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
 homomorphism. -/
 @[simps]
-def SMulCommClass.toMulActionHom (c : M) : α →[N] α where
+def toMulActionHom (c : M) : α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
 
