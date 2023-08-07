@@ -70,11 +70,19 @@ protected def equiv : ProdLp p α β ≃ α × β :=
 the use of the type synonym. -/
 
 @[simp]
-theorem equiv_apply (x : ProdLp p α β) : ProdLp.equiv p α β x = x :=
+theorem equiv_fst (x : ProdLp p α β) : (ProdLp.equiv p α β x).fst = x.fst :=
   rfl
 
 @[simp]
-theorem equiv_symm_apply (x : α × β) : (ProdLp.equiv p α β).symm x = x :=
+theorem equiv_snd (x : ProdLp p α β) : (ProdLp.equiv p α β x).snd = x.snd :=
+  rfl
+
+@[simp]
+theorem equiv_symm_fst (x : α × β) : ((ProdLp.equiv p α β).symm x).fst = x.fst :=
+  rfl
+
+@[simp]
+theorem equiv_symm_snd (x : α × β) : ((ProdLp.equiv p α β).symm x).snd = x.snd :=
   rfl
 
 section DistNorm
@@ -340,10 +348,10 @@ theorem lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] 
     LipschitzWith 1 (ProdLp.equiv p α β) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
-  · simp only [equiv_apply, coe_one, one_mul, le_refl]
+  · simp [edist]
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_add (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, equiv_apply, ge_iff_le,
+    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, ge_iff_le,
       sup_le_iff]
     constructor
     · calc
@@ -383,7 +391,7 @@ theorem antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace 
       _ =
           ((2 : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
             edist (ProdLp.equiv p α β x) (ProdLp.equiv p α β y) := by
-        simp only [equiv_apply, ← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg,
+        simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg,
           ← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg,
           coe_ofNat]
 
@@ -685,7 +693,7 @@ def equivₗᵢ : ProdLp ∞ α β ≃ₗᵢ[𝕜] α × β :=
   { ProdLp.equiv ∞ α β with
     map_add' := fun f g => rfl
     map_smul' := fun c f => rfl
-    norm_map' := fun f => by simp }
+    norm_map' := fun f => by simp [Norm.norm] }
 
 variable (x y : ProdLp p α β) (x' y' : α × β) (c : 𝕜)
 
