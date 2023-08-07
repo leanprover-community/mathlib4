@@ -382,13 +382,16 @@ variable {R}
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
 @[simps!]
-def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
-  { S ⊔ star S with
-    star_mem' := fun {a} ha => by
-      simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
-      rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
-      simpa using ha }
+def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
+  toSubalgebra := S ⊔ star S
+  star_mem' := fun {a} ha => by
+    simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
+    rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
+    simpa using ha
 #align subalgebra.star_closure Subalgebra.starClosure
+
+theorem starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
+  rfl
 
 theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
     S₁.starClosure ≤ S₂ :=
