@@ -13,17 +13,17 @@ single nonterminal symbol on the left-hand side of each rule.
 Note that derivation by a grammar is inherently nondeterministic.
 -/
 
-/-- The type of symbols is the disjoint union of terminals and nonterminals. -/
-inductive Symbol (T : Type) (N : Type)
-  | terminal    (t : T) : Symbol T N
-  | nonterminal (n : N) : Symbol T N
-/-
-We do not require T and N to be finite.
+/-- The type of symbols is the disjoint union of terminals and nonterminals.
+
+We do not require `T` and `N` to be finite.
 As a result, we do not need to copy the typeclass instances `[Fintype T]` and `[Fintype N]`
 alongside our type parameters (which would appear in almost every lemma).
 Instead, later we work in terms of a list of rewrite rules, which is finite by definition and from
 which we could infer that only a finite set of terminals and a finite set of nonterminals can occur.
 -/
+inductive Symbol (T : Type) (N : Type)
+  | terminal    (t : T) : Symbol T N
+  | nonterminal (n : N) : Symbol T N
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure CFG (T : Type) where
