@@ -59,34 +59,36 @@ def IsCF (L : Language T) : Prop :=
 variable {g : CFG T}
 
 /-- The relation `CFG.Derives` is reflexive. -/
-lemma CFG.deri_self {w : List (Symbol T g.nt)} :
+@[refl]
+lemma CFG.derives_self {w : List (Symbol T g.nt)} :
     g.Derives w w :=
   Relation.ReflTransGen.refl
 
-lemma CFG.deri_of_tran {v w : List (Symbol T g.nt)} (hyp : g.Transforms v w) :
+lemma CFG.derives_of_transforms {v w : List (Symbol T g.nt)} (hvw : g.Transforms v w) :
     g.Derives v w :=
-  Relation.ReflTransGen.single hyp
+  Relation.ReflTransGen.single hvw
 
 /-- The relation `CFG.Derives` is transitive. -/
-lemma CFG.deri_of_deri_deri {u v w : List (Symbol T g.nt)}
+@[trans]
+lemma CFG.Derives.derives {u v w : List (Symbol T g.nt)}
     (huv : g.Derives u v) (hvw : g.Derives v w) :
     g.Derives u w :=
   Relation.ReflTransGen.trans huv hvw
 
-lemma CFG.deri_of_deri_tran {u v w : List (Symbol T g.nt)}
+lemma CFG.Derives.transforms {u v w : List (Symbol T g.nt)}
     (huv : g.Derives u v) (hvw : g.Transforms v w) :
     g.Derives u w :=
-  CFG.deri_of_deri_deri huv (CFG.deri_of_tran hvw)
+  huv.derives (CFG.derives_of_transforms hvw)
 
-lemma CFG.deri_of_tran_deri {u v w : List (Symbol T g.nt)}
+lemma CFG.Transforms.derives {u v w : List (Symbol T g.nt)}
     (huv : g.Transforms u v) (hvw : g.Derives v w) :
     g.Derives u w :=
-  CFG.deri_of_deri_deri (CFG.deri_of_tran huv) hvw
+  (CFG.derives_of_transforms huv).derives hvw
 
-lemma CFG.eq_or_tran_deri_of_deri {u w : List (Symbol T g.nt)} (hyp : g.Derives u w) :
-    u = w  ∨  ∃ v : List (Symbol T g.nt), g.Transforms u v ∧ g.Derives v w  :=
-  Relation.ReflTransGen.cases_head hyp
+lemma CFG.eq_or_head_of_derives {u w : List (Symbol T g.nt)} (huw : g.Derives u w) :
+    u = w ∨ ∃ v : List (Symbol T g.nt), g.Transforms u v ∧ g.Derives v w :=
+  Relation.ReflTransGen.cases_head huw
 
-lemma CFG.eq_or_deri_tran_of_deri {u w : List (Symbol T g.nt)} (hyp : g.Derives u w) :
-    u = w  ∨  ∃ v : List (Symbol T g.nt), g.Derives u v ∧ g.Transforms v w  :=
-  (Relation.ReflTransGen.cases_tail hyp).casesOn (Or.inl ∘ Eq.symm) Or.inr
+lemma CFG.eq_or_tail_of_derives {u w : List (Symbol T g.nt)} (huw : g.Derives u w) :
+    u = w ∨ ∃ v : List (Symbol T g.nt), g.Derives u v ∧ g.Transforms v w :=
+  (Relation.ReflTransGen.cases_tail huw).casesOn (Or.inl ∘ Eq.symm) Or.inr
