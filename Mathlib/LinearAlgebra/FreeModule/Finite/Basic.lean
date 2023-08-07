@@ -31,12 +31,16 @@ section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M]
 
-/-- If a free module is finite, then any basis is finite. -/
-noncomputable instance ChooseBasisIndex.fintype [Nontrivial R] [Module.Finite R M] :
+/-- If a free module is finite, then the arbitrary basis is finite. -/
+noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
     Fintype (Module.Free.ChooseBasisIndex R M) := by
-  obtain ⟨h⟩ := id ‹Module.Finite R M›
-  choose s hs using h
-  exact basisFintypeOfFiniteSpans (↑s) hs (chooseBasis _ _)
+  refine @Fintype.ofFinite _ ?_
+  cases subsingleton_or_nontrivial R
+  · have := Module.subsingleton R M
+    rw [ChooseBasisIndex]
+    infer_instance
+  · obtain ⟨s, hs⟩ := id ‹Module.Finite R M›
+    exact basis_finite_of_finite_spans (↑s) s.finite_toSet hs (chooseBasis _ _)
 #align module.free.choose_basis_index.fintype Module.Free.ChooseBasisIndex.fintype
 
 end Ring

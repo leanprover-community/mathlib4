@@ -95,13 +95,18 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
   whiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : tensorObj X Y₁ ⟶ tensorObj X Y₂
   /-- right whiskering for morphisms -/
   whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : tensorObj X₁ Y ⟶ tensorObj X₂ Y
+  /-- curried tensor product of morphisms -/
+  tensorHom : ∀ {X₁ Y₁ X₂ Y₂ : C}, (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂)
   /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
-  -- By default, it is defined in terms of whiskerings.
-  tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
-    whiskerRight f X₂ ≫ whiskerLeft Y₁ g
-  tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
-    tensorHom f g = whiskerRight f X₂ ≫ whiskerLeft Y₁ g := by
-      aesop_cat
+  tensor_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by aesop_cat
+  /--
+  Composition of tensor products is tensor product of compositions:
+  `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
+  -/
+  tensor_comp :
+    ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
+      tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+    aesop_cat
   -- Porting note: Adding a prime here, so I can later define `tensorUnit` unprimed with explicit
   --               argument `C`
   /-- The tensor unity in the monoidal structure `𝟙_ C` -/
@@ -193,6 +198,12 @@ abbrev tensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] : C :=
 
 /-- Notation for `tensorObj`, the tensor product of objects in a monoidal category -/
 scoped infixr:70 " ⊗ " => MonoidalCategory.tensorObj
+
+/-- Notation for the `whiskerLeft` operator of monoidal categories -/
+scoped infixr:81 " ◁ " => whiskerLeft
+
+/-- Notation for the `whiskerRight` operator of monoidal categories -/
+scoped infixl:81 " ▷ " => whiskerRight
 
 /-- Notation for the `whiskerLeft` operator of monoidal categories -/
 scoped infixr:81 " ◁ " => whiskerLeft
@@ -842,6 +853,70 @@ theorem rightUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') :
 
 end
 
+/--
+A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
+`whiskerRight`.
+-/
+def ofTensorHom
+    (tensorObj : C → C → C)
+    (tensorHom : ∀ {X₁ Y₁ X₂ Y₂ : C}, (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂))
+    (whiskerLeft : ∀ (X : C) {Y₁ Y₂ : C}  (_f : Y₁ ⟶ Y₂), tensorObj X Y₁ ⟶ tensorObj X Y₂ :=
+      fun X _ _ f ↦ tensorHom (𝟙 X) f)
+    (whiskerRight : ∀ {X₁ X₂ : C} (_f : X₁ ⟶ X₂) (Y : C), tensorObj X₁ Y ⟶ tensorObj X₂ Y :=
+      fun f Y ↦ tensorHom f (𝟙 Y))
+    (tensor_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
+      aesop_cat)
+    (id_tensorHom : ∀ (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂), tensorHom (𝟙 X) f = whiskerLeft X f := by
+      aesop_cat)
+    (tensorHom_id : ∀ {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C), tensorHom f (𝟙 Y) = whiskerRight f Y := by
+      aesop_cat)
+    (tensor_comp :
+      ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
+        tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+          aesop_cat)
+    (tensorUnit' : C)
+    (associator : ∀ X Y Z : C, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z))
+    (associator_naturality :
+      ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
+        tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
+          (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
+            aesop_cat)
+    (leftUnitor : ∀ X : C, tensorObj tensorUnit' X ≅ X)
+    (leftUnitor_naturality :
+      ∀ {X Y : C} (f : X ⟶ Y),
+        tensorHom (𝟙 tensorUnit') f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
+          aesop_cat)
+    (rightUnitor : ∀ X : C, tensorObj X tensorUnit' ≅ X)
+    (rightUnitor_naturality :
+      ∀ {X Y : C} (f : X ⟶ Y),
+        tensorHom f (𝟙 tensorUnit') ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
+          aesop_cat)
+    (pentagon :
+      ∀ W X Y Z : C,
+        tensorHom (associator W X Y).hom (𝟙 Z) ≫
+            (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
+          (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
+            aesop_cat)
+    (triangle :
+      ∀ X Y : C,
+        (associator X tensorUnit' Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
+          tensorHom (rightUnitor X).hom (𝟙 Y) := by
+            aesop_cat) :
+      MonoidalCategory C where
+  tensorObj := tensorObj
+  tensorHom := tensorHom
+  whiskerLeft X _ _ f := whiskerLeft X f
+  whiskerRight f X := whiskerRight f X
+  tensorHom_def := by intros; simp [← id_tensorHom, ←tensorHom_id, ← tensor_comp]
+  tensorUnit' := tensorUnit'
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
+  associator := associator
+  whiskerLeft_id := by intros; simp [← id_tensorHom, ← tensor_id]
+  id_whiskerRight := by intros; simp [← tensorHom_id, tensor_id]
+  pentagon := by intros; simp [← id_tensorHom, ← tensorHom_id, pentagon]
+  triangle := by intros; simp [← id_tensorHom, ← tensorHom_id, triangle]
+
 end
 
 section
@@ -1077,6 +1152,9 @@ instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   whiskerLeft X _ _ f := (whiskerLeft X.1 f.1, whiskerLeft X.2 f.2)
   whiskerRight f X := (whiskerRight f.1 X.1, whiskerRight f.2 X.2)
   whisker_exchange := by simp [whisker_exchange]
+  whiskerLeft X _ _ f := (whiskerLeft X.1 f.1, whiskerLeft X.2 f.2)
+  whiskerRight f X := (whiskerRight f.1 X.1, whiskerRight f.2 X.2)
+  tensorHom_def := by simp [tensorHom_def]
   tensorUnit' := (𝟙_ C₁, 𝟙_ C₂)
   associator X Y Z := (α_ X.1 Y.1 Z.1).prod (α_ X.2 Y.2 Z.2)
   leftUnitor := fun ⟨X₁, X₂⟩ => (λ_ X₁).prod (λ_ X₂)

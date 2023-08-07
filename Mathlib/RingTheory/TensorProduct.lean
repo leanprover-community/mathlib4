@@ -60,15 +60,8 @@ variable (r : R) (f g : M →ₗ[R] N)
 variable (A)
 
 /-- `base_change A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
-def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N where
-  toFun := f.lTensor A
-  map_add' := (f.lTensor A).map_add
-  map_smul' a x :=
-    show
-      (f.lTensor A) (rTensor M (LinearMap.mul R A a) x) =
-        (rTensor N ((LinearMap.mul R A) a)) ((lTensor A f) x) by
-      rw [← comp_apply, ← comp_apply]
-      simp only [lTensor_comp_rTensor, rTensor_comp_lTensor]
+def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
 
 variable {A}
