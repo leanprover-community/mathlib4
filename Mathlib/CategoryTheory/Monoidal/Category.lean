@@ -44,7 +44,7 @@ The whiskerings are useful when considering simp-normal forms of morphisms in mo
 ### Simp-normal form for morphisms
 
 Rewriting involving associators and unitors could be very complicated. We try to ease this
-complexity by putting carefully chosen simp lemmas that rewrite any morphisms into simp-normal
+complexity by putting carefully chosen simp lemmas that rewrite any morphisms into the simp-normal
 form defined below. Rewriting into simp-normal form is especially useful in preprocessing
 performed by the `coherence` tactic.
 
