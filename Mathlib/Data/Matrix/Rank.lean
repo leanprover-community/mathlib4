@@ -249,27 +249,6 @@ theorem rank_self_mul_conjTranspose' (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.
 
 end DotProductInnerProductSpace
 
-section TransposeLemmas
-
-variable {m : Type _} [Fintype m]
-variable {R : Type _} [Field R] [StarRing R] [TrivialStar R]
-variable [DotProductInnerProductSpace m R] [DotProductInnerProductSpace n R]
-
-lemma conjTranspose_eq_transpose_of_trivial (A : Matrix m n R) : transpose A = conjTranspose A := by
-    funext i j
-    simp only [conjTranspose_apply, star_trivial, transpose_apply]
-
-theorem rank_transpose_mul_self' (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank := by
-  rw [conjTranspose_eq_transpose_of_trivial, rank_conjTranspose_mul_self']
-
-theorem rank_transpose' (A : Matrix m n R) : Aᵀ.rank = A.rank := by
-  rw [conjTranspose_eq_transpose_of_trivial, rank_conjTranspose']
-
-theorem rank_self_mul_transpose' (A : Matrix m n R) : (A ⬝ Aᵀ).rank = A.rank := by
-  rw [conjTranspose_eq_transpose_of_trivial, rank_self_mul_conjTranspose']
-
-end TransposeLemmas
-
 /-! ### Lemmas about transpose and conjugate transpose
 
 This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
