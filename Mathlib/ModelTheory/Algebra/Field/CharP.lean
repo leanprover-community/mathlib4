@@ -15,7 +15,7 @@ def ofNat {α : Type} : ℕ → Language.field.Term α
 def eqZero (n : ℕ) : Language.field.Sentence :=
   Term.equal (ofNat n) 0
 
-theorem realize_ofNat {α K : Type _} [Field K] (p : ℕ) (v : α → K) :
+theorem realize_ofNat {α K : Type _} [ModelField K] (p : ℕ) (v : α → K) :
     (Term.realize v (@ofNat α p) : K) = p := by
   induction p <;>
     simp [ofNat, *, zero_def,add_def, one_def, constantMap]
@@ -28,7 +28,7 @@ def Theory.fieldOfChar (p : ℕ) : Language.field.Theory :=
   ({eqZero p} ∪ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)})) ∪
    Theory.field
 
-instance {K : Type _} [Field K] (p : ℕ) [CharP K p] :
+instance {K : Type _} [ModelField K] (p : ℕ) [CharP K p] :
     (Theory.fieldOfChar p).Model K := by
   rw [Theory.fieldOfChar]
   refine Theory.model_union_iff.2 ⟨?_, by infer_instance⟩
@@ -41,7 +41,7 @@ instance {K : Type _} [Field K] (p : ℕ) [CharP K p] :
     rintro φ n hnp rfl
     simp only [Sentence.Realize, eqZero, zero_def, Formula.realize_not,
       Formula.realize_equal, realize_ofNat, Term.realize_constants,
-      constantMap, Structure.funMap]
+      constantMap, Structure.funMap, ModelField.funMap_zero]
     exact (not_iff_not.2 (CharP.cast_eq_zero_iff K p n)).2 hnp
 
 @[reducible]
