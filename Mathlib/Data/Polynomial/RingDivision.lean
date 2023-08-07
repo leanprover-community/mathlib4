@@ -166,13 +166,10 @@ theorem natDegree_divX_lt (hpd : 1 ≤ p.natDegree) : p.divX.natDegree < p.natDe
 theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree := by
   by_cases hpd : p.natDegree ≤ 0
   · nth_rw 1 [eq_C_of_natDegree_le_zero hpd]
-    nth_rw 1 [divX_C]
-    simp only [Polynomial.natDegree_zero, zero_le']
-  · rw [not_le] at hpd
-    rw [Nat.lt_iff_add_one_le] at hpd
-    simp at hpd
-    apply le_of_lt
-    exact natDegree_divX_lt hpd
+    rw [divX_C, Polynomial.natDegree_zero]
+    exact Nat.zero_le (natDegree p)
+  · rw [not_le, Nat.lt_iff_add_one_le, zero_add] at hpd
+    exact le_of_lt $ natDegree_divX_lt hpd
 
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
   by_cases hp : p = 0
