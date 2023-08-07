@@ -5,8 +5,6 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.Discriminant
-import Mathlib.RingTheory.Localization.NormTrace
 
 #align_import number_theory.number_field.basic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -177,61 +175,6 @@ theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDim
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
 #align number_field.ring_of_integers.rank NumberField.RingOfIntegers.rank
 
-section discriminant
-
-open NumberField Matrix
-
-/-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
-`∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then
-`discr ℚ b = discr ℚ b'`. -/
-theorem _root_.Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K] [Fintype ι]
-    [Fintype ι'] {b : Basis ι ℚ K} {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
-    (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : Algebra.discr ℚ b = Algebra.discr ℚ b' := by
-  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j)
-  · intro i j
-    convert h' i ((b.indexEquiv b').symm j)
--- Porting note: `simp; rfl` was `simpa`.
-    simp; rfl
-  classical
-  rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', Algebra.discr_of_matrix_vecMul,
-    ← one_mul (Algebra.discr ℚ b), Basis.coe_reindex, Algebra.discr_reindex]
-  congr
-  have hint : IsIntegral ℤ ((b.reindex (b.indexEquiv b')).toMatrix b').det :=
-    IsIntegral.det fun i j => h _ _
-  obtain ⟨r, hr⟩ := IsIntegrallyClosed.isIntegral_iff.1 hint
-  have hunit : IsUnit r := by
-    have : IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b'))).det :=
-      IsIntegral.det fun i j => h' _ _
-    obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
-    refine' isUnit_iff_exists_inv.2 ⟨r', _⟩
-    suffices algebraMap ℤ ℚ (r * r') = 1 by
-      rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
-      exact (IsFractionRing.injective ℤ ℚ) this
-    rw [RingHom.map_mul, hr, hr', ← det_mul, Basis.toMatrix_mul_toMatrix_flip, det_one]
-  rw [← RingHom.map_one (algebraMap ℤ ℚ), ← hr]
-  cases' Int.isUnit_iff.1 hunit with hp hm
-  · simp [hp]
-  · simp [hm]
-#align algebra.discr_eq_discr_of_to_matrix_coeff_is_integral Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral
-
-/-- The discriminant of a number field. -/
-noncomputable def discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
-
-theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) := by
-  rw [discr]
-  exact (Algebra.discr_localizationLocalization ℤ _ K (RingOfIntegers.basis K)).symm
-
-theorem discr_ne_zero : discr K ≠ 0 := by
-  rw [← (Int.cast_injective (α := ℚ)).ne_iff, coe_discr]
-  exact Algebra.discr_not_zero_of_basis ℚ (integralBasis K)
-
-theorem discr_eq_discr {ι : Type _} [Fintype ι] (b : Basis ι ℤ (𝓞 K)) :
-    Algebra.discr ℤ b = discr K := by
-  let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
-  rw [Algebra.discr_eq_discr (𝓞 K) b b₀, discr, Basis.coe_reindex, Algebra.discr_reindex]
-
-end discriminant
-
 end NumberField
 
 namespace Rat
@@ -252,20 +195,6 @@ instance numberField : NumberField ℚ where
 noncomputable def ringOfIntegersEquiv : ringOfIntegers ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
 #align rat.ring_of_integers_equiv Rat.ringOfIntegersEquiv
-
-theorem discr : discr ℚ = 1 := by
-  let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
-    Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
-  calc NumberField.discr ℚ
-    _ = Algebra.discr ℤ b := by convert (discr_eq_discr ℚ b).symm
-    _ = Matrix.det (Algebra.traceMatrix ℤ b) := rfl
-    _ = Algebra.trace ℤ (𝓞 ℚ) 1 := ?_
-    _ = 1                 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
-  rw [Matrix.det_unique, Algebra.traceMatrix_apply, Basis.map_apply, Basis.singleton_apply,
-    AddEquiv.toIntLinearEquiv_symm, AddEquiv.coe_toIntLinearEquiv, RingEquiv.toAddEquiv_eq_coe,
-    show (AddEquiv.symm ringOfIntegersEquiv) (1 : ℤ) = (1 : 𝓞 ℚ) by
-      rw [AddEquiv.symm_apply_eq, RingEquiv.coe_toAddEquiv, map_one],
-    Algebra.traceForm_apply, mul_one]
 
 end Rat
 
