@@ -188,6 +188,20 @@ theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
 
 end CommRing
 
+/-! ### Lemmas about transpose and conjugate transpose
+
+This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
+
+Unfortunately the proofs are essentially duplicated between the two; `ℚ` is a linearly-ordered ring
+but can't be a star-ordered ring, while `ℂ` is star-ordered (with `open ComplexOrder`) but
+not linearly ordered. For now we don't prove the transpose case for `ℂ`.
+
+TODO: the lemmas `Matrix.rank_transpose` and `Matrix.rank_conjTranspose` current follow a short
+proof that is a simple consequence of `Matrix.rank_transpose_mul_self` and
+`Matrix.rank_conjTranspose_mul_self`. This proof pulls in unnecessary assumptions on `R`, and should
+be replaced with a proof that uses Gaussian reduction or argues via linear combinations.
+-/
+
 section Field
 -- Praneeth Kolichala's proof for rank_tranpose see:
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/row.20rank.20equals.20column.20rank/near/360941958
@@ -196,8 +210,9 @@ open LinearMap
 
 variable [Field R]
 
-theorem rank_transpose [DecidableEq m] [DecidableEq n] (M : Matrix m n R) :
+theorem rank_transpose (M : Matrix m n R) :
     M.transpose.rank = M.rank := by
+  classical
   rw [Matrix.rank_eq_finrank_range_toLin Mᵀ (Pi.basisFun R n).dualBasis (Pi.basisFun R m).dualBasis,
   Matrix.toLin_transpose, ← dualMap_def, finrank_range_dualMap_eq_finrank_range,
   Matrix.toLin_eq_toLin', Matrix.toLin'_apply', Matrix.rank]
@@ -250,20 +265,6 @@ theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.r
     rank_conjTranspose_mul_self Aᴴ
 
 end DotProductInnerProductSpace
-
-/-! ### Lemmas about transpose and conjugate transpose
-
-This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
-
-Unfortunately the proofs are essentially duplicated between the two; `ℚ` is a linearly-ordered ring
-but can't be a star-ordered ring, while `ℂ` is star-ordered (with `open ComplexOrder`) but
-not linearly ordered. For now we don't prove the transpose case for `ℂ`.
-
-TODO: the lemmas `Matrix.rank_transpose` and `Matrix.rank_conjTranspose` current follow a short
-proof that is a simple consequence of `Matrix.rank_transpose_mul_self` and
-`Matrix.rank_conjTranspose_mul_self`. This proof pulls in unnecessary assumptions on `R`, and should
-be replaced with a proof that uses Gaussian reduction or argues via linear combinations.
--/
 
 section LinearOrderedField
 
