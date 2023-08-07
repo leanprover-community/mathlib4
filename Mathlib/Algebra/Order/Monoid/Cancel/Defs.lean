@@ -103,16 +103,17 @@ end OrderedCancelCommMonoid
 is an additive commutative monoid with a decidable linear order
 in which addition is cancellative and monotone. -/
 class LinearOrderedCancelAddCommMonoid (α : Type u) extends AddCommMonoid α, LinearOrder α,
-    OrderedCancelAddCommMonoid α
+    OrderedCancelAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align linear_ordered_cancel_add_comm_monoid LinearOrderedCancelAddCommMonoid
 
 /-- A linearly ordered cancellative commutative monoid
 is a commutative monoid with a linear order
 in which multiplication is cancellative and monotone. -/
 class LinearOrderedCancelCommMonoid (α : Type u) extends CommMonoid α, LinearOrder α,
-    OrderedCancelCommMonoid α
+    OrderedCancelCommMonoid α, LinearOrderedCommMonoid α
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 
 attribute [to_additive LinearOrderedCancelAddCommMonoid] LinearOrderedCancelCommMonoid
 attribute [to_additive existing LinearOrderedCancelAddCommMonoid.toOrderedCancelAddCommMonoid]
   LinearOrderedCancelCommMonoid.toOrderedCancelCommMonoid
+attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid

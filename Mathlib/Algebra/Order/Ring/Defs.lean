@@ -1221,6 +1221,11 @@ theorem eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0
 end LinearOrderedRing
 
 -- see Note [lower instance priority]
+instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommSemiring
+    [d : LinearOrderedCommSemiring α] : StrictOrderedCommSemiring α :=
+  { d with }
+
+-- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
     [d : LinearOrderedCommRing α] : StrictOrderedCommRing α :=
   { d with }

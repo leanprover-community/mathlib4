@@ -44,6 +44,8 @@ section LinearOrderedCancelCommMonoid
 
 variable [LinearOrderedCancelCommMonoid α]
 
+example : RightCancelMonoid.toOne = (Monoid.toOne : One α) := rfl
+
 /-- Pullback a `LinearOrderedCancelCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible) Function.Injective.linearOrderedCancelAddCommMonoid
