@@ -1095,6 +1095,9 @@ class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α,
 
 attribute [instance 150] LinearOrderedAddCommGroup.toOrderedAddCommGroup
 attribute [instance 100] LinearOrderedAddCommGroup.toLinearOrderedAddCommMonoid
+attribute [-instance] LinearOrderedAddCommGroup.toMin
+attribute [-instance] LinearOrderedAddCommGroup.toMax
+attribute [-instance] LinearOrderedAddCommGroup.toOrd
 
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
@@ -1106,16 +1109,27 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α,
 
 attribute [instance 150] LinearOrderedCommGroup.toOrderedCommGroup
 attribute [instance 100] LinearOrderedCommGroup.toLinearOrderedCommMonoid
+attribute [-instance] LinearOrderedCommGroup.toMin
+attribute [-instance] LinearOrderedCommGroup.toMax
+attribute [-instance] LinearOrderedCommGroup.toOrd
 
 attribute [to_additive existing] LinearOrderedCommGroup.toLinearOrderedCommMonoid
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommGroupWithTop (α : Type u) extends SubNegMonoid α, LinearOrder α,
+class LinearOrderedAddCommGroupWithTop (α : Type u) extends SubNegMonoid α,
     LinearOrderedAddCommMonoidWithTop α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
+
+attribute [instance 150] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+attribute [instance 100] LinearOrderedAddCommGroupWithTop.toLinearOrderedAddCommMonoidWithTop
+attribute [instance 50] LinearOrderedAddCommGroupWithTop.toNontrivial
+attribute [-instance] LinearOrderedAddCommGroupWithTop.toMin
+attribute [-instance] LinearOrderedAddCommGroupWithTop.toMax
+attribute [-instance] LinearOrderedAddCommGroupWithTop.toOrd
+attribute [-instance] LinearOrderedAddCommGroupWithTop.toOrderTop
 
 section LinearOrderedCommGroup
 

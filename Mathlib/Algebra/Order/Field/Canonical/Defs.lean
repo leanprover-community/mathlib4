@@ -24,6 +24,7 @@ class CanonicallyLinearOrderedSemifield (α : Type*) extends LinearOrderedSemifi
 
 attribute [instance 150] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
 attribute [instance 100] CanonicallyLinearOrderedSemifield.toCanonicallyOrderedCommSemiring
+attribute [-instance] CanonicallyLinearOrderedSemifield.toOrderBot
 
 -- See note [lower instance priority]
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero

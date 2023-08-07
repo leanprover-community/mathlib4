@@ -27,6 +27,10 @@ class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α
 
 attribute [instance 150] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
 attribute [instance 100] LinearOrderedCommMonoidWithZero.toLinearOrderedCommMonoid
+attribute [-instance] LinearOrderedCommMonoidWithZero.toPartialOrder
+attribute [-instance] LinearOrderedCommMonoidWithZero.toMin
+attribute [-instance] LinearOrderedCommMonoidWithZero.toMax
+attribute [-instance] LinearOrderedCommMonoidWithZero.toOrd
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
     [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=

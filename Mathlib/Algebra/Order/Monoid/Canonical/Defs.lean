@@ -97,21 +97,15 @@ end ExistsMulOfLE
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
-class CanonicallyOrderedAddMonoid (α : Type*) extends OrderedAddCommMonoid α, Bot α where
-  /-- `⊥` is the least element -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
+class CanonicallyOrderedAddMonoid (α : Type*) extends OrderedAddCommMonoid α, OrderBot α where
   /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddMonoid
 
-
--- see Note [lower instance priority]
-instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
-    [h : CanonicallyOrderedAddMonoid α] : OrderBot α :=
-  { h with }
-#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddMonoid.toOrderBot
+attribute [instance 150] CanonicallyOrderedAddMonoid.toOrderedAddCommMonoid
+attribute [instance 50] CanonicallyOrderedAddMonoid.toOrderBot
 
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
@@ -123,21 +117,15 @@ instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
   be more natural that collections of all things ≥ 1).
 -/
 @[to_additive]
-class CanonicallyOrderedMonoid (α : Type*) extends OrderedCommMonoid α, Bot α where
-  /-- `⊥` is the least element -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
+class CanonicallyOrderedMonoid (α : Type*) extends OrderedCommMonoid α, OrderBot α where
   /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
   protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 #align canonically_ordered_monoid CanonicallyOrderedMonoid
 
--- see Note [lower instance priority]
-@[to_additive existing]
-instance (priority := 100) CanonicallyOrderedMonoid.toOrderBot (α : Type u)
-    [h : CanonicallyOrderedMonoid α] : OrderBot α :=
-  { h with }
-#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedMonoid.toOrderBot
+attribute [instance 150] CanonicallyOrderedMonoid.toOrderedCommMonoid
+attribute [instance 50] CanonicallyOrderedMonoid.toOrderBot
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -337,11 +325,23 @@ class CanonicallyLinearOrderedAddMonoid (α : Type*)
   extends CanonicallyOrderedAddMonoid α, LinearOrder α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddMonoid
 
+attribute [instance 150] CanonicallyLinearOrderedAddMonoid.toCanonicallyOrderedAddMonoid
+attribute [instance 100] CanonicallyLinearOrderedAddMonoid.toLinearOrder
+attribute [-instance] CanonicallyLinearOrderedAddMonoid.toMin
+attribute [-instance] CanonicallyLinearOrderedAddMonoid.toMax
+attribute [-instance] CanonicallyLinearOrderedAddMonoid.toOrd
+
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
 class CanonicallyLinearOrderedMonoid (α : Type*) extends CanonicallyOrderedMonoid α, LinearOrder α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedMonoid
+
+attribute [instance 150] CanonicallyLinearOrderedMonoid.toCanonicallyOrderedMonoid
+attribute [instance 100] CanonicallyLinearOrderedMonoid.toLinearOrder
+attribute [-instance] CanonicallyLinearOrderedMonoid.toMin
+attribute [-instance] CanonicallyLinearOrderedMonoid.toMax
+attribute [-instance] CanonicallyLinearOrderedMonoid.toOrd
 
 section CanonicallyLinearOrderedMonoid
 
