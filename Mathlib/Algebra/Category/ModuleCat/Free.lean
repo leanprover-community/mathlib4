@@ -52,12 +52,13 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
   exact range_ker_disjoint hw
 
 /-- In the commutative diagram
+```
              f     g
     0 --→ N --→ M --→  P
           ↑     ↑      ↑
          v|    u|     w|
           ι → ι ⊕ ι' ← ι'
-
+```
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
 `Sum.inr`. If `u` is injective and `v` and `w` are linearly independent, then `u` is linearly
 independent. -/
@@ -67,30 +68,6 @@ theorem linearIndependent_leftExact : LinearIndependent R u :=
     ((LinearMap.linearIndependent_iff (f : N →ₗ[R] M)
     (LinearMap.ker_eq_bot.mpr ((mono_iff_injective _).mp hm))).mpr hv),
     LinearIndependent.of_comp g hw, disjoint_span_sum hw he huv⟩
-
-/-- Given a short exact sequence of modules and injective families `v : ι → N` and `w : ι' → P`
-             f     g
-    0 --→ N --→ M --→ P --→ 0
-          ↑     ↑     ↑
-         v|     |    w|
-          ι   ι ⊕ ι'  ι'
-
-such that `w` does not hit `0`, the family `Sum.elim (f ∘ v) (g.toFun.invFun ∘ w) : ι ⊕ ι' → M`
-is injective. -/
-theorem family_injective_shortExact {w : ι' → P} (hse : ShortExact f g)
-    (hv : v.Injective) (hw : w.Injective) (hw' : ∀ x, w x ≠ 0) :
-    Function.Injective (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) :=
-  Function.Injective.sum_elim
-    (Function.Injective.comp ((mono_iff_injective _).mp hse.mono) hv)
-    (Function.Injective.comp (Function.rightInverse_invFun
-      ((epi_iff_surjective _).mp hse.epi)).injective hw) (fun a b h ↦ by
-    apply_fun g at h
-    dsimp at h
-    rw [Function.rightInverse_invFun ((epi_iff_surjective _).mp hse.epi)] at h
-    change (f ≫ g) (v a) = _ at h
-    rw [hse.exact.w] at h
-    change 0 = _ at h
-    exact hw' _ h.symm )
 
 /-- Given a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` of `R`-modules and linearly independent
     families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
@@ -111,12 +88,13 @@ section Span
 variable {M : ModuleCat R} {u : ι⊕ ι' → M} {f : N ⟶ M} {g : M ⟶ P}
 
 /-- In the commutative diagram
+```
     f     g
  N --→ M --→  P
  ↑     ↑      ↑
 v|    u|     w|
  ι → ι ⊕ ι' ← ι'
-
+```
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
 `Sum.inr`. If `v` spans `N` and `w` spans `P`, then `u` spans `M`. -/
 theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
