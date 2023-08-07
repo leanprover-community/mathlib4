@@ -198,6 +198,8 @@ attribute [instance] AddUnits.instAddGroupAddUnits
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]
 instance {α} [CommMonoid α] : CommGroup αˣ :=
+  -- note: the original ported file had `{ (inferInstance : Group αˣ) with ... }`
+  -- and this was removed because it was causing slowdowns: see lean4#2387
   { mul_comm := fun _ _ => ext <| mul_comm _ _ }
 attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
 #align units.comm_group Units.instCommGroupUnitsToMonoid
