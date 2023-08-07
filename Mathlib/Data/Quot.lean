@@ -511,7 +511,7 @@ protected theorem eq (a b : Trunc α) : a = b :=
   Trunc.induction_on₂ a b fun _ _ ↦ Quot.sound trivial
 #align trunc.eq Trunc.eq
 
-instance : Subsingleton (Trunc α) :=
+instance instSubsingletonTrunc : Subsingleton (Trunc α) :=
   ⟨Trunc.eq⟩
 
 /-- The `bind` operator for the `Trunc` monad. -/

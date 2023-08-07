@@ -105,7 +105,6 @@ variable [Monoid α]
 @[to_additive "An additive unit can be interpreted as a term in the base `AddMonoid`."]
 instance : CoeHead αˣ α :=
   ⟨val⟩
-attribute [instance] AddUnits.instCoeHeadAddUnits
 
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
@@ -152,7 +151,6 @@ theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
-attribute [instance] AddUnits.instDecidableEqAddUnits
 
 @[to_additive (attr := simp)]
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
@@ -183,7 +181,6 @@ instance : MulOneClass αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
-attribute [instance] AddUnits.instAddZeroClassAddUnits
 
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
@@ -192,30 +189,27 @@ instance : Group αˣ :=
     one := 1,
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
-attribute [instance] AddUnits.instAddGroupAddUnits
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]
-instance {α} [CommMonoid α] : CommGroup αˣ :=
+instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ :=
   { (inferInstance : Group αˣ) with
     mul_comm := fun _ _ => ext <| mul_comm _ _ }
-attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
-#align units.comm_group Units.instCommGroupUnitsToMonoid
-#align add_units.add_comm_group AddUnits.instAddCommGroupAddUnitsToAddMonoid
+#align units.comm_group Units.instCommGroupUnits
+#align add_units.add_comm_group AddUnits.instAddCommGroupAddUnits
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
 instance : Inhabited αˣ :=
   ⟨1⟩
-attribute [instance] AddUnits.instInhabitedAddUnits
+
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
 @[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
-attribute [instance] AddUnits.instReprAddUnits
 
 variable (a b c : αˣ) {u : αˣ}
 
@@ -756,7 +750,6 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 @[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
-attribute [instance] IsAddUnit.instDecidableIsAddUnit
 
 @[to_additive]
 theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=

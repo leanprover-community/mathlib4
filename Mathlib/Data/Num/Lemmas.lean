@@ -465,7 +465,7 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       apply mul_lt_mul_of_pos_right
     decidableLT := Num.decidableLT
     decidableLE := Num.decidableLE
-    decidableEq := instDecidableEqNum
+    decidableEq := instDecidableEqNum_ᾰ
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
 
@@ -1458,7 +1458,7 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
-  decidableEq := instDecidableEqZNum
+  decidableEq := instDecidableEqZNum_ᾰ
   decidableLE := ZNum.decidableLE
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder

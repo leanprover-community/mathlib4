@@ -61,7 +61,7 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pullback_shape.hom CategoryTheory.Limits.WidePullbackShape.Hom
 
-attribute [nolint unusedArguments] instDecidableEqHom
+attribute [nolint unusedArguments] instDecidableEqHom_ᾰ
 
 instance struct : CategoryStruct (WidePullbackShape J) where
   Hom := Hom
@@ -176,7 +176,7 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pushout_shape.hom CategoryTheory.Limits.WidePushoutShape.Hom
 
-attribute [nolint unusedArguments] instDecidableEqHom
+attribute [nolint unusedArguments] instDecidableEqHom_ᾰ
 
 instance struct : CategoryStruct (WidePushoutShape J) where
   Hom := Hom

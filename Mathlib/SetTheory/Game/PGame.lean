@@ -249,7 +249,7 @@ def Subsequent : PGame → PGame → Prop :=
 #align pgame.subsequent PGame.Subsequent
 
 instance : IsTrans _ Subsequent :=
-  Relation.instIsTransTransGen
+  inferInstanceAs <| IsTrans _ (TransGen _)
 
 @[trans]
 theorem Subsequent.trans {x y z} : Subsequent x y → Subsequent y z → Subsequent x z :=
