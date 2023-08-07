@@ -1621,7 +1621,7 @@ variable {R M N}
 
 @[simp]
 theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
-    dualDistrib R A M N (f ⊗ₜ g) (m ⊗ₜ n) = f m * algebraMap _ _ (g n) :=
+    dualDistrib R A M N (f ⊗ₜ g) (m ⊗ₜ n) = g n • f m :=
   rfl
 
 end AlgebraTensorModule
