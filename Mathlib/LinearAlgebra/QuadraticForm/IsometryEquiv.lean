@@ -96,6 +96,10 @@ def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.Iso
     map_app' := by intro m; rw [← f.map_app, ← g.map_app]; rfl }
 #align quadratic_form.isometry.trans QuadraticForm.IsometryEquiv.trans
 
+instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
+  map_add := fun f a b => map_add f.toLinearMap a b
+  map_smulₛₗ := fun f a b => map_smulₛₗ f.toLinearMap a b
+
 end IsometryEquiv
 
 namespace Equivalent
