@@ -191,3 +191,48 @@ jobs:
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+
+      - name: Get PR labels
+        id: pr_labels
+        uses: octokit/graphql-action@v2.x
+        with:
+          query: |
+            query PR($owner: String!, $repo: String!, $number: Int!) {
+              repository(owner:$owner, name:$repo) {
+                pullRequest(number:$number) {
+                  labels(first:100) {
+                    nodes {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+          number: ${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for the `auto-merge-after-CI` label.
+        id: check_label
+        run: |
+          LABELS=$(jq -r '.data.repository.pullRequest.labels.nodes[] | .name' <<< "${{ steps.pr_labels.outputs.data }}")
+          if echo "${LABELS}" | grep -q 'auto-merge-after-CI'; then
+            echo "AUTO_MERGE=true" >> $GITHUB_ENV
+          else
+            echo "AUTO_MERGE=false" >> $GITHUB_ENV
+
+      - name: Run if label exists
+        if: ${{ env.AUTO_MERGE == 'true' }}
+        run: |
+          echo "This will run if the PR has the 'my-label' label"
+
+      - name: If `AUTO_MERGE` is set, add a `bors merge` comment.
+        uses: GrantBirki/comment@v2.0.1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            As this PR is labelled `auto-merge-after-CI`, we are now sending it to bors:
+
+            bors merge
