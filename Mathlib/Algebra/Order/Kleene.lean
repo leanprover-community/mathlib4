@@ -69,7 +69,7 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
-class IdemCommSemiring (α : Type u) extends CommSemiring α, SemilatticeSup α, IdemSemiring α
+class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
 
 /-- Notation typeclass for the Kleene star `∗`. -/

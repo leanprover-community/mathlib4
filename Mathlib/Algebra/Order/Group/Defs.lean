@@ -35,12 +35,18 @@ class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
 
+attribute [instance 200] OrderedAddCommGroup.toAddCommGroup
+attribute [instance 150] OrderedAddCommGroup.toPartialOrder
+
 /-- An ordered commutative group is a commutative group
 with a partial order in which multiplication is strictly monotone. -/
 class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
+
+attribute [instance 200] OrderedCommGroup.toCommGroup
+attribute [instance 150] OrderedCommGroup.toPartialOrder
 
 attribute [to_additive] OrderedCommGroup
 
@@ -1083,19 +1089,24 @@ end LinearOrder
 /-- A linearly ordered additive commutative group is an
 additive commutative group with a linear order in which
 addition is monotone. -/
-class LinearOrderedAddCommGroup (α : Type u) extends AddCommGroup α, LinearOrder α,
-    OrderedAddCommGroup α, LinearOrderedAddCommMonoid α
+class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α,
+    LinearOrderedAddCommMonoid α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
+
+attribute [instance 150] LinearOrderedAddCommGroup.toOrderedAddCommGroup
+attribute [instance 100] LinearOrderedAddCommGroup.toLinearOrderedAddCommMonoid
 
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
 multiplication is monotone. -/
 @[to_additive]
-class LinearOrderedCommGroup (α : Type u) extends CommGroup α, LinearOrder α,
-    OrderedCommGroup α, LinearOrderedCommMonoid α
+class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α,
+    LinearOrderedCommMonoid α
 #align linear_ordered_comm_group LinearOrderedCommGroup
 
-attribute [to_additive existing] LinearOrderedCommGroup.toOrderedCommGroup
+attribute [instance 150] LinearOrderedCommGroup.toOrderedCommGroup
+attribute [instance 100] LinearOrderedCommGroup.toLinearOrderedCommMonoid
+
 attribute [to_additive existing] LinearOrderedCommGroup.toLinearOrderedCommMonoid
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.

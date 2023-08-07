@@ -32,9 +32,12 @@ in another file. However, the lemmas about it are stated here.
 
 
 /-- A linearly ordered commutative group with a zero element. -/
-class LinearOrderedCommGroupWithZero (α : Type*) extends CommGroupWithZero α, LinearOrder α,
+class LinearOrderedCommGroupWithZero (α : Type*) extends CommGroupWithZero α,
     LinearOrderedCommMonoidWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
+
+attribute [instance 200] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+attribute [instance 100] LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero
 
 variable {α : Type*}
 

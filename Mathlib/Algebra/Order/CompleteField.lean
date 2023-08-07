@@ -57,8 +57,11 @@ open scoped Classical Pointwise
 This axiomatizes the reals. -/
 -- @[protect_proj] -- Porting note: does not exist anymore
 class ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α, LinearOrderedField α
+    LinearOrderedField α, ConditionallyCompleteLinearOrder α
 #align conditionally_complete_linear_ordered_field ConditionallyCompleteLinearOrderedField
+
+attribute [instance 150] ConditionallyCompleteLinearOrderedField.toLinearOrderedField
+attribute [instance 100] ConditionallyCompleteLinearOrderedField.toConditionallyCompleteLinearOrder
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/

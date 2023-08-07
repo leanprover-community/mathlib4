@@ -19,11 +19,14 @@ universe u
 variable {α : Type u}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
-class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
+class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α,
     LinearOrderedCommMonoid α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
+
+attribute [instance 150] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+attribute [instance 100] LinearOrderedCommMonoidWithZero.toLinearOrderedCommMonoid
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
     [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=

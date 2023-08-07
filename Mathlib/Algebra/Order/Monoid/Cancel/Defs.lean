@@ -29,6 +29,9 @@ class OrderedCancelAddCommMonoid (α : Type u) extends AddCommMonoid α, Partial
   protected le_of_add_le_add_left : ∀ a b c : α, a + b ≤ a + c → b ≤ c
 #align ordered_cancel_add_comm_monoid OrderedCancelAddCommMonoid
 
+attribute [instance 150] OrderedCancelAddCommMonoid.toAddCommMonoid
+attribute [instance 100] OrderedCancelAddCommMonoid.toPartialOrder
+
 /-- An ordered cancellative commutative monoid
 is a commutative monoid with a partial order,
 in which multiplication is cancellative and monotone. -/
@@ -38,6 +41,9 @@ class OrderedCancelCommMonoid (α : Type u) extends CommMonoid α, PartialOrder 
   /-- Cancellation is compatible with the order in an ordered cancellative commutative monoid. -/
   protected le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
 #align ordered_cancel_comm_monoid OrderedCancelCommMonoid
+
+attribute [instance 150] OrderedCancelCommMonoid.toCommMonoid
+attribute [instance 100] OrderedCancelCommMonoid.toPartialOrder
 
 attribute [to_additive OrderedCancelAddCommMonoid] OrderedCancelCommMonoid
 
@@ -102,18 +108,22 @@ end OrderedCancelCommMonoid
 /-- A linearly ordered cancellative additive commutative monoid
 is an additive commutative monoid with a decidable linear order
 in which addition is cancellative and monotone. -/
-class LinearOrderedCancelAddCommMonoid (α : Type u) extends AddCommMonoid α, LinearOrder α,
-    OrderedCancelAddCommMonoid α, LinearOrderedAddCommMonoid α
+class LinearOrderedCancelAddCommMonoid (α : Type u) extends OrderedCancelAddCommMonoid α,
+    LinearOrderedAddCommMonoid α
 #align linear_ordered_cancel_add_comm_monoid LinearOrderedCancelAddCommMonoid
+
+attribute [instance 150] LinearOrderedCancelAddCommMonoid.toOrderedCancelAddCommMonoid
+attribute [instance 100] LinearOrderedCancelAddCommMonoid.toLinearOrderedAddCommMonoid
 
 /-- A linearly ordered cancellative commutative monoid
 is a commutative monoid with a linear order
 in which multiplication is cancellative and monotone. -/
-class LinearOrderedCancelCommMonoid (α : Type u) extends CommMonoid α, LinearOrder α,
-    OrderedCancelCommMonoid α, LinearOrderedCommMonoid α
+class LinearOrderedCancelCommMonoid (α : Type u) extends OrderedCancelCommMonoid α,
+    LinearOrderedCommMonoid α
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 
+attribute [instance 150] LinearOrderedCancelCommMonoid.toOrderedCancelCommMonoid
+attribute [instance 100] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
+
 attribute [to_additive LinearOrderedCancelAddCommMonoid] LinearOrderedCancelCommMonoid
-attribute [to_additive existing LinearOrderedCancelAddCommMonoid.toOrderedCancelAddCommMonoid]
-  LinearOrderedCancelCommMonoid.toOrderedCancelCommMonoid
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
