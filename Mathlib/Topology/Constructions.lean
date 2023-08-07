@@ -58,7 +58,8 @@ instance instTopologicalSpaceProd [t₁ : TopologicalSpace α] [t₂ : Topologic
     TopologicalSpace (α × β) :=
   induced Prod.fst t₁ ⊓ induced Prod.snd t₂
 
-instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α ⊕ β) :=
+instance instTopologicalSpaceSum [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] :
+    TopologicalSpace (α ⊕ β) :=
   coinduced Sum.inl t₁ ⊔ coinduced Sum.inr t₂
 
 instance instTopologicalSpaceSigma {β : α → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] :

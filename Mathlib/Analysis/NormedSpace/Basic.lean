@@ -185,7 +185,7 @@ instance ULift.normedSpace : NormedSpace α (ULift E) :=
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
 instance Prod.normedSpace : NormedSpace α (E × F) :=
-  { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.module with
+  { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
       simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
         mul_max_of_nonneg, norm_nonneg, le_rfl] }
@@ -482,7 +482,7 @@ variable {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance MulOpposite.normedAlgebra {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.normedSpace, MulOpposite.instAlgebraMulOppositeSemiring with }
+  { MulOpposite.normedSpace, MulOpposite.instAlgebraMulOpposite with }
 #align mul_opposite.normed_algebra MulOpposite.normedAlgebra
 
 end NormedAlgebra

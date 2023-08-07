@@ -873,7 +873,7 @@ variable {σ}
 
 /- Porting note: this suffers from serious time out issues without removing
 this instance -/
-attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
+attribute [-instance] MvPolynomial.instCommRingMvPolynomial in
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
   classical
@@ -890,7 +890,7 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         dsimp
         erw [iterToSum_C_X, rename_X, rename_X]
         rfl
-    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomialToCommSemiring p]
+    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomial p]
     rw [@MulEquiv.prime_iff (MvPolynomial ↑sᶜ (MvPolynomial ↑s R)) (MvPolynomial σ R) (_) (_)]
     rotate_left
     exact eqv.toMulEquiv
