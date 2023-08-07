@@ -194,6 +194,11 @@ jobs:
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
 
+      - id: echo labels
+        name: Echo PR labels
+        run: |
+          echo ${{ steps.PR.outputs.pr_labels }}
+
       - name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         if: contains(${{ steps.PR.outputs.pr_labels }}, 'auto-merge-after-CI')
         uses: GrantBirki/comment@v2.0.1

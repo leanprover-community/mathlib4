@@ -175,7 +175,7 @@ jobs:
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
 
       - name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
-        if: contains( ${{ steps.PR.outputs.pr_labels }}, 'auto-merge-after-CI')
+        if: contains(${{ steps.PR.outputs.pr_labels }}, 'auto-merge-after-CI')
         uses: GrantBirki/comment@v2.0.1
         with:
           issue-number: ${{ github.event.issue.number }}
