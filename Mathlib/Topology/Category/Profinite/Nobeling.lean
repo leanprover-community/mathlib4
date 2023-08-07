@@ -37,323 +37,42 @@ We follow the proof of theorem 5.4 in [scholze2019condensed], ordinal induction,
 
 universe u
 
-section Scott
--- This section is PR #6361
+section ListWellFounded
 
-variable (α : Type _) [LinearOrder α]
+-- This section is PR #6432
 
-lemma Antitone.eventually_constant [wfa : WellFoundedLT α] (f : ℕ → α) (h : Antitone f) :
-    ∃ N a, ∀ n, N ≤ n → f n = a := by
-  let a := WellFounded.min ((IsWellFounded_iff α (·<·)).mp inferInstance)
-    (Set.range f) (Set.range_nonempty f)
-  have ha : (f ⁻¹' {a}).Nonempty
-  · refine Iff.mpr Set.preimage_singleton_nonempty ?_
-    exact WellFounded.min_mem _ (Set.range f) (Set.range_nonempty f)
-  let N := ha.choose
-  refine' ⟨N, a, _⟩
-  intro n hn
-  rw [← ha.choose_spec]
-  refine' eq_of_le_of_not_lt (h hn) _
-  rw [ha.choose_spec]
-  exact WellFounded.not_lt_min _ _ _ (Set.mem_range_self n)
+variable {α : Type _} (r : α → α → Prop)
 
-theorem wellFoundedLT_iff_not_strictAnti : WellFoundedLT α ↔ ∀ f : ℕ → α, ¬ StrictAnti f := by
-  dsimp [WellFoundedLT]
-  rw [IsWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
-  constructor
-  <;> intro h
-  · intro f hf
-    rw [isEmpty_iff] at h
-    apply h
-    refine' ⟨⟨f, hf.injective⟩,_⟩
-    intro a b
-    refine' ⟨_, fun h ↦ hf h⟩
-    intro hfab
-    dsimp at hfab
-    by_contra hab
-    simp only [gt_iff_lt, not_lt] at hab
-    have := hf.antitone hab
-    rw [← not_lt] at this
-    exact this hfab
-  · rw [isEmpty_iff]
-    intro f
-    apply h f.toEmbedding
-    intro a b hab
-    rwa [f.map_rel_iff']
+theorem WellFounded.list_chain' (hwf : WellFounded r) :
+    @WellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) := by
+  refine ⟨fun ⟨l, hl⟩ ↦ ?_⟩
+  cases' l with a l
+  · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+  induction hwf.apply a generalizing l with
+  | intro a _ ih =>
+    have hl' := (List.chain'_cons'.1 hl).2
+    let l' : {l // l.Chain' (flip r)} := ⟨l, hl'⟩
+    have : Acc (fun l m ↦ List.Lex r l.val m.val) l'
+    · cases' l with b l
+      · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      · apply ih b (List.chain'_cons.1 hl).1
+    revert hl
+    rw [(by rfl : l = l'.1)]
+    clear_value l'
+    induction this with
+    | intro l _ ihl =>
+      intro hl
+      apply Acc.intro
+      rintro ⟨_ | ⟨b, l'⟩, hl'⟩ (_|hr|hr)
+      · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      · apply ihl ⟨l', (List.chain'_cons'.1 hl').2⟩ hr
+      · apply ih b hr
 
-variable {α}
+instance [hwf : IsWellFounded α r] :
+    IsWellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) :=
+  ⟨hwf.wf.list_chain'⟩
 
-@[simp] theorem List.cons_lt (a : α) (x y : List α) : a :: x < a :: y ↔ x < y := by
-  constructor
-  · intro h
-    cases h
-    case cons h =>
-      exact h
-    case rel h =>
-      simp at h
-  · intro h
-    apply Lex.cons h
-
-@[simp] theorem List.append_lt (x y z : List α) : x ++ y < x ++ z ↔ y < z := by
-  induction x
-  · case nil => rfl
-  · case cons h t ih =>
-      simpa
-
-@[simp]
-theorem List.head?_isNone_iff (l : List α) : l.head?.isNone ↔ l = [] := by cases l <;> simp
-
-@[simp] theorem List.lt_nil_iff (l : List α) : ¬ l < [] := by
-  cases l
-  · simp
-  · exact of_decide_eq_false rfl
-
-theorem List.take_one_eq_singleton_iff (l : List α) (a : α) :
-    l.take 1 = [a] ↔ l.head? = some a := by
-  cases l <;> simp
-
-theorem Option.get?_eq_some (o : Option α) (w : o.isSome) (a : α) : o.get w = a ↔ o = some a := by
-  cases o
-  · simp at w
-  · simp
-
-theorem List.maximum_of_length_pos_mem (l : List α) (h : 0 < l.length) :
-    l.maximum_of_length_pos h ∈ l := by
-  apply maximum_mem
-  simp
-
-theorem List.exists_mem_eq_maximum_of_length_pos (l : List α) (h : 0 < l.length) :
-    ∃ a, a ∈ l ∧ a = l.maximum_of_length_pos h := by
-  simp only [exists_eq_right]
-  exact maximum_of_length_pos_mem l h
-
-theorem List.some_get_eq_get? (l : List α) (x : Fin l.length) : some (l.get x) = l.get? x.1 := by
-  rw [List.get?_eq_get]
-
-theorem List.get_eq_get_of_take_eq_take (la lb : List α) (n m : ℕ)
-    (ha : n < la.length) (hb : n < lb.length) (lt : n < m) (w : la.take m = lb.take m) :
-    la.get ⟨n, ha⟩ = lb.get ⟨n, hb⟩ := by
-  rw [List.get_eq_iff]
-  simp only [some_get_eq_get?]
-  rw [← List.take_append_drop m la, ← List.take_append_drop m lb]
-  rw [List.get?_append, List.get?_append, w]
-  · aesop
-  · aesop
-
-/--
-Constructs the smallest monotone function larger than a given function,
-defined by `leastOrderHom f n = [f 0, f 1, ..., f n].maximum_of_length_pos (by simp)`.
--/
--- One could prove `leastOrderHom_le (f : ℕ → α) (g : ℕ →o α) (w : f ≤ g) : leastOrderHom f ≤ g`,
--- and that this is a Galois connection.
--- One could generalize from `ℕ` to any `LocallyFiniteOrderBot`.
-def leastOrderHom (f : ℕ → α) : ℕ →o α where
-  toFun n := (List.range (n + 1)).map f |>.maximum_of_length_pos (by simp)
-  monotone' n m h := by
-    apply List.le_maximum_of_length_pos_of_mem
-    dsimp
-    obtain ⟨a, m, w⟩ :=
-      List.exists_mem_eq_maximum_of_length_pos ((List.range (n + 1)).map f) (by simp)
-    rw [← w]
-    simp at m
-    obtain ⟨b, w', rfl⟩ := m
-    simp only [List.mem_map, List.mem_range]
-    exact ⟨b, (lt_of_lt_of_le w' (Nat.add_le_add_right h 1)), rfl⟩
-
-theorem le_leastOrderHom (f : ℕ → α) : f ≤ leastOrderHom f := by
-  intro n
-  dsimp [leastOrderHom]
-  apply List.le_maximum_of_length_pos_of_mem
-  simp only [List.mem_map, List.mem_range]
-  exact ⟨n, Nat.lt_succ_self _, rfl⟩
-
-namespace wellFoundedLT_sorted
-
-variable (α)
-variable [WellFoundedLT α]
-
-def IncreasingList := { l : List α // l.Sorted (· > · ) }
-
-instance : LinearOrder (IncreasingList α) := inferInstanceAs <| LinearOrder { _l : List α // _ }
-
-@[simp] lemma IncreasingList.lt_iff (x y : IncreasingList α) : x < y ↔ x.1 < y.1 := Iff.rfl
-
-def SDS := { f : ℕ → IncreasingList α // StrictAnti f }
-
-variable {α}
-
-def Q (n : ℕ) (L : SDS α) :=
-  Σ' N, Σ' S : List α, S.length = n ∧ ∀ (m), N ≤ m → (L.1 m).1.take n = S
-
-def P (L : SDS α) := ∀ n, Q n L
-
-def IncreasingList.drop (l : IncreasingList α) (m : ℕ) : IncreasingList α :=
-  ⟨l.1.drop m, l.2.drop⟩
-
-def SDS.drop₁ (L : SDS α) (m : ℕ) : SDS α :=
-  ⟨fun n => L.1 (n + m), fun _ _ h => L.2 (Nat.add_lt_add_right h m)⟩
-
-def SDS.drop₂ (L : SDS α) (S : List α) (m : ℕ) (w : ∀ n, (L.1 n).1.take m = S) : SDS α :=
-  ⟨fun n => (L.1 n).drop m, by
-    intro a b h
-    have := L.2 h
-    change (L.1 b).1 < (L.1 a).1 at this
-    rw [← List.take_append_drop m (L.1 a).1, ← List.take_append_drop m (L.1 b).1, w, w] at this
-    simpa using this⟩
-
-def SDS.dropQ (n : ℕ) (L : SDS α) (w : Q n L) : SDS α := by
-  obtain ⟨N, S, w⟩ := w
-  refine (L.drop₁ N).drop₂ S n ?_
-  intro m
-  exact (w.2 (m + N) (Nat.le_add_left N m))
-
-theorem SDS.dropQ_apply (n m : ℕ) (L : SDS α) (w : Q n L) :
-    ((L.dropQ n w).1 m).1 = (L.1 (m + w.1)).1.drop n :=
-  rfl
-
-variable {L : SDS α}
-
-def Q_succ (n : ℕ) (L : SDS α) (w' : Q n L) (w₁ : Q 1 (L.dropQ n w')) : Q (n+1) L := by
-  obtain ⟨N', S', s', w'⟩ := w'
-  obtain ⟨N₁, S₁, s₁, w₁⟩ := w₁
-  use N' + N₁
-  use S' ++ S₁
-  constructor
-  · simp [s', s₁]
-  intro m h
-  specialize w' m (le_of_add_le_left h)
-  specialize w₁ (m - N') (le_tsub_of_add_le_left h)
-  simp only [SDS.dropQ_apply] at w₁
-  rw [Nat.sub_add_cancel (le_of_add_le_left h)] at w₁
-  rw [List.take_add]
-  rw [w', w₁]
-
-def SDS.head? (L : SDS α) : ℕ → Option α := fun n => (L.1 n).1.head?
-
-lemma SDS.head?_isSome (L : SDS α) (n : ℕ) : (L.head? n).isSome := by
-  by_contra h
-  simp [SDS.head?] at h
-  have := L.2 (Nat.lt_succ_self n)
-  simp [h] at this
-
-def SDS.head (L : SDS α) : ℕ → α := fun n => (L.head? n).get (L.head?_isSome n)
-
-lemma aux (l₁ l₂ : List α) (h₁ : l₁.head?.isSome) (h₂ : l₂.head?.isSome) : l₁ < l₂ →
-    l₁.head?.get h₁ ≤ l₂.head?.get h₂ := by
-  match l₁, h₁, l₂, h₂ with
-  | x₁ :: t₁, _, x₂ :: t₂, _ =>
-    intro h
-    cases h
-    case cons => rfl
-    case rel h =>
-      exact h.le
-
-lemma SDS.head_antitone (L : SDS α) : Antitone L.head := by
-  intro a b h
-  rcases lt_or_eq_of_le h with (h | rfl)
-  · have := L.2 h
-    simp [SDS.head, SDS.head?]
-    apply aux _ _ _ _ this
-  · rfl
-
-lemma SDS.head_eventually_constant (L : SDS α) : ∃ N a, ∀ n, N ≤ n → L.head n = a :=
-  Antitone.eventually_constant α _ L.head_antitone
-
-theorem Q_one : Nonempty (Q 1 L) := by
-  obtain ⟨N, a, w⟩ := L.head_eventually_constant
-  apply Nonempty.intro
-  use N
-  use [a]
-  use rfl
-  intro m h
-  specialize w m h
-  simp [SDS.head, SDS.head?, Option.get?_eq_some] at w
-  simpa [List.take_one_eq_singleton_iff]
-
-noncomputable
-def main (L : SDS α) : P L := by
-  intro n
-  apply Nonempty.some
-  induction n using Nat.strong_induction_on generalizing L
-  case h n a =>
-    cases n
-    case zero =>
-      use 0
-      use []
-      use rfl
-      intro m _
-      simp
-    case succ n =>
-      cases n
-      case zero =>
-        apply Q_one
-      case succ n =>
-        apply Nonempty.intro
-        apply Q_succ
-        · apply Nonempty.some
-          apply a
-          exact Nat.one_lt_succ_succ n
-        · apply Nonempty.some
-          apply a
-          exact Nat.lt_succ_self _
-
-def P' (L : SDS α) :=
-  ∃ g : ℕ →o ℕ, ∀ n, ∃ S : List α, S.length = n ∧ ∀ (m), g n ≤ m → (L.1 m).1.take n = S
-
-theorem main' (L : SDS α) : P' L := by
-  let this := main L
-  use leastOrderHom fun n => (this n).1
-  intro n
-  use (this n).2.1
-  use (this n).2.2.1
-  intro m h
-  apply (this n).2.2.2
-  exact (le_leastOrderHom _ _).trans h
-
-def P'' (L : SDS α) :=
-  ∃ g : ℕ →o ℕ, ∀ (n : ℕ), ∀ (m₁ : ℕ), g n ≤ m₁ → n ≤ (L.1 m₁).1.length ∧
-    ∀ m₂, g n ≤ m₂ → ∀ x, x < n → (h₁ : _) → (h₂ : _) →
-      (L.1 m₁).1.get ⟨x, h₁⟩ = (L.1 m₂).1.get ⟨x, h₂⟩
-
-theorem main'' (L : SDS α) : P'' L := by
-  obtain ⟨g, w⟩ := main' L
-  use g
-  intro n m₁ mh₁
-  constructor
-  · obtain ⟨S, s, w⟩ := w n
-    specialize w m₁ mh₁
-    rw [←List.take_append_drop n (L.1 m₁).1]
-    simp [s, w]
-  · intro m₂ mh₂ x lt h₁ h₂
-    obtain ⟨S, _, w⟩ := w n
-    have w₁ := w m₁ mh₁
-    have w₂ := w m₂ mh₂
-    apply List.get_eq_get_of_take_eq_take _ _ _ _ _ _ lt
-    simp [w₁, w₂]
-
-end wellFoundedLT_sorted
-
-open wellFoundedLT_sorted
-
-instance wellFoundedLT_sorted [WellFoundedLT α] :
-    WellFoundedLT { l : List α // l.Sorted (· > · ) } :=
-  (wellFoundedLT_iff_not_strictAnti _).mpr (fun f w => by
-    obtain ⟨g, h⟩ := main'' ⟨f, w⟩
-    have lt_length : ∀ n, n < (f (g (n + 1))).1.length :=
-      fun n => lt_of_lt_of_le (Nat.lt_succ_self n) (h (n + 1) (g (n + 1)) (le_refl _)).1
-    let z : ℕ → α := fun n => (f (g (n + 1))).1.get ⟨n, lt_length n⟩
-    apply (wellFoundedLT_iff_not_strictAnti α).mp ‹_› z
-    intro a b lt
-    calc
-      z b = (f (g (b + 1))).1.get ⟨b, lt_length b⟩ := rfl
-      _   < (f (g (b + 1))).1.get ⟨a, lt.trans (lt_length _)⟩ :=
-              List.pairwise_iff_get.mp (f (g (b + 1))).2 _ _ lt
-      _   = (f (g (a + 1))).1.get ⟨a, lt_length a⟩ :=
-              ((h (a + 1) (g (a + 1)) (le_refl _)).2
-                (g (b + 1)) (g.2 (Nat.succ_le_succ lt.le)) a (Nat.lt_succ_self _) _ _).symm
-      _   = z a := rfl)
-
-end Scott
+end ListWellFounded
 
 section Piecewise
 -- This section is PR #6373 and #6396
@@ -571,6 +290,53 @@ lemma surjective_projRestrict :
   refine' ⟨⟨y, hy.1⟩, _⟩
   exact Subtype.ext hy.2
 
+lemma proj_eq_self {x : (i : ι) → X i} : Proj (Set.univ) x = x := by
+  ext i
+  dsimp [Proj]
+  split_ifs with hh
+  · rfl
+  · simp only [Set.mem_univ, not_true] at hh
+
+lemma proj_univ_eq_self : C.proj Set.univ = C := by
+  ext x
+  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  · obtain ⟨y, hy⟩ := h
+    suffices x = y by rw [this]; exact hy.1
+    rw [← hy.2, proj_eq_self]
+  · refine' ⟨x, ⟨h, _⟩⟩
+    rw [proj_eq_self]
+
+lemma proj_comp_of_subset (h : J ⊆ K) : (Proj J ∘ Proj K) =
+    (Proj J : ((i : ι) → X i) → ((i : ι) → X i)) := by
+  ext x i
+  dsimp [Proj]
+  split_ifs with hh hh'
+  · rfl
+  · exfalso
+    exact hh' (h hh)
+  · rfl
+
+lemma proj_eq_of_subset (h : J ⊆ K) : (C.proj K).proj J = C.proj J := by
+  ext x
+  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  · obtain ⟨y, hy⟩ := h
+    obtain ⟨z, hz⟩ := hy.1
+    rw [← hy.2, ← hz.2]
+    suffices Proj J z = (Proj J ∘ Proj K) z by dsimp at this; rw [← this]; refine' ⟨z, ⟨hz.1, rfl⟩⟩
+    rw [proj_comp_of_subset J K h]
+  · obtain ⟨y, hy⟩ := h
+    dsimp [Set.proj]
+    rw [← Set.image_comp]
+    refine' ⟨y, ⟨hy.1, _⟩⟩
+    rw [proj_comp_of_subset _ _ h]
+    exact hy.2
+
+def ProjRestricts (h : J ⊆ K) : C.proj K → C.proj J :=
+  Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
+
+lemma continuous_projRestricts (h : J ⊆ K) : Continuous (ProjRestricts C J K h) :=
+  Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
+
 end Projections
 
 namespace NobelingProof
@@ -719,18 +485,18 @@ lemma continuous_swapFalse (o : Ordinal) :
   · exact continuous_apply _
 
 noncomputable
-def ProjOrd (o : Ordinal) : (I → Bool) → (I → Bool) :=
+def ProjOrd' (o : Ordinal) : (I → Bool) → (I → Bool) :=
   fun c i ↦ if ord I i < o then c i else false
 
 noncomputable
-def ProjOrd' (o : Ordinal) : (I → Bool) → (I → Bool) :=
+def ProjOrd (o : Ordinal) : (I → Bool) → (I → Bool) :=
   Proj {j | ord I j < o}
 
 lemma continuous_ProjOrd (o : Ordinal) :
     Continuous (ProjOrd o : (I → Bool) → (I → Bool)) := by
   refine' continuous_pi _
   intro i
-  dsimp [ProjOrd]
+  dsimp [ProjOrd, Proj]
   split_ifs
   · exact continuous_apply _
   · exact continuous_const
@@ -745,7 +511,7 @@ def contained (o : Ordinal) : Prop := ∀ f, f ∈ C → ∀ (i : I), f i = true
 
 lemma projOrdC {o : Ordinal} (h : contained C o) (f : I → Bool)
     (hf : f ∈ C) : f = ProjOrd o f := by
-  dsimp [ProjOrd]
+  dsimp [ProjOrd, Proj]
   ext x
   split_ifs with ho
   · rfl
@@ -773,51 +539,20 @@ lemma contained_res (o : Ordinal) : contained (Res C o) o := by
   intro x hx j hj
   dsimp [Res, ProjOrd] at hx
   obtain ⟨_, ⟨_, h⟩⟩ := hx
-  dsimp at hj
+  dsimp [Proj] at h
   rw [← congr_fun h j] at hj
   simp only [Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
   exact hj.1
 
 noncomputable
-def ResOnSubset (o : Ordinal) : {i // i ∈ C} → {i // i ∈ Res C o} :=
-fun ⟨i, h⟩ ↦ ⟨ProjOrd o i, Set.mem_image_of_mem _ h⟩
+def ResOnSubset (o : Ordinal) : {i // i ∈ C} → {i // i ∈ Res C o} := ProjRestrict C _
+-- fun ⟨i, h⟩ ↦ ⟨ProjOrd o i, Set.mem_image_of_mem _ h⟩
 
-lemma resOnSubset_eq (o : Ordinal) : Subtype.val ∘ ResOnSubset C o =
-    (ProjOrd o : (I → Bool) → _) ∘ Subtype.val := by
-  rfl
+lemma continuous_resOnSubset (o : Ordinal) : Continuous (ResOnSubset C o) :=
+  continuous_projRestrict _ _
 
-lemma continuous_val_comp_resOnSubset (o : Ordinal) :
-    Continuous (Subtype.val ∘ ResOnSubset C o) := by
-  rw [resOnSubset_eq _]
-  exact Continuous.comp (continuous_ProjOrd o) continuous_subtype_val
-
-lemma continuous_resOnSubset (o : Ordinal) : Continuous (ResOnSubset C o) := by
-  rw [continuous_induced_rng]
-  exact continuous_val_comp_resOnSubset _ _
-
-lemma surjective_resOnSubset (o : Ordinal) : Function.Surjective (ResOnSubset C o) := by
-  rintro ⟨i, h⟩
-  obtain ⟨b, hb⟩ := h
-  dsimp [ResOnSubset]
-  use ⟨b, hb.1⟩
-  simp_rw [← hb.2]
-
-lemma res_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) {f : I → Bool}
-    (hf : ProjOrd o₂ f ∈ Res C o₂) : ProjOrd o₁ f ∈ Res C o₁ := by
-  obtain ⟨c,⟨_,hc⟩⟩  := hf
-  dsimp [ProjOrd] at hc
-  dsimp [Res, ProjOrd]
-  use c
-  refine' ⟨(by assumption),_⟩
-  ext i
-  dsimp
-  have hc' := congr_fun hc i
-  split_ifs
-  · split_ifs at hc' with h₁
-    · exact hc'
-    · exfalso
-      apply h₁ (lt_of_lt_of_le (by assumption) h)
-  · rfl
+lemma surjective_resOnSubset (o : Ordinal) : Function.Surjective (ResOnSubset C o) :=
+  surjective_projRestrict _ _
 
 variable (I)
 
@@ -886,7 +621,8 @@ instance GoodProducts.singletonUnique :
     · exfalso
       apply hll
       have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩ }
-      · simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_setOf_eq]
+      · simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff,
+          Set.mem_setOf_eq]
       apply Submodule.span_mono (Set.image_subset _ he)
       rw [Products.span_nil_eq_top]
       exact Submodule.mem_top
@@ -911,42 +647,26 @@ lemma GoodProducts.linearIndependentSingleton :
   refine' linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) _
   simp only [eval, Products.eval, List.map, List.prod_nil, ne_eq, one_ne_zero, not_false_eq_true]
 
-lemma ProjOrdSelf (o : Ordinal) {f : I → Bool} (hf : f ∈ Res C o) :
-    ProjOrd o f = f := by
-  dsimp [ProjOrd]
-  ext i
-  split_ifs
-  · rfl
-  · obtain ⟨c,hc⟩ := hf
-    rw [←congr_fun hc.2 i]
-    dsimp [ProjOrd]
-    rw [eq_ite_iff]
-    right
-    exact ⟨(by assumption), (by rfl)⟩
-
-lemma res_mono' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) {f : I → Bool}
-    (hf : f ∈ Res C o₂) : ProjOrd o₁ f ∈ Res C o₁ := by
-  rw [← ProjOrdSelf C o₂ hf] at hf
-  exact res_mono C h hf
-
 noncomputable
 def ResOnSubsets {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : {i // i ∈ Res C o₂} → {i // i ∈ Res C o₁} :=
-  fun e ↦ ⟨ProjOrd o₁ e.val, res_mono' C h e.property⟩
+  ProjRestricts _ _ _ (fun _ hh ↦ by simp only [Set.mem_setOf_eq]; exact lt_of_lt_of_le hh h)
 
 lemma resOnSubsets_eq {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : ResOnSubset C o₁ =
     ResOnSubsets C h ∘ ResOnSubset C o₂  := by
   ext e i
-  dsimp [ResOnSubsets, ResOnSubset]
-  dsimp [ProjOrd]
-  split_ifs with h₁ h₂
+  simp only [ResOnSubset, ProjRestrict, Proj, Set.mem_setOf_eq, Bool.default_bool,
+    Set.val_codRestrict_apply, Function.comp_apply, ResOnSubsets, ProjRestricts]
+  dsimp [Homeomorph.setCongr, Equiv.setCongr, Equiv.subtypeEquivProp, Equiv.subtypeEquiv]
+  split_ifs with hh hh'
   · rfl
   · exfalso
-    apply h₂ (lt_of_lt_of_le h₁ h)
+    exact hh' (lt_of_lt_of_le hh h)
   · rfl
 
-lemma continuous_resOnSubsets {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Continuous (ResOnSubsets C h) := by
-  rw [continuous_induced_rng]
-  exact continuous_val_comp_resOnSubset (Res C o₂) o₁
+lemma continuous_resOnSubsets {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Continuous (ResOnSubsets C h) :=
+  continuous_projRestricts _ _ _ _
+  -- rw [continuous_induced_rng]
+  -- exact continuous_val_comp_resOnSubset (Res C o₂) o₁
 
 lemma surjective_resOnSubsets {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
     Function.Surjective (ResOnSubsets C h) := by
@@ -960,10 +680,36 @@ lemma Products.evalCons {l : List I} {a : I}
   dsimp [eval]
   simp only [List.prod_cons]
 
+open Classical in
+lemma eEqeSets {J K : Set I} {a : I} (ha : a ∈ J) (h : J ⊆ K) :
+    e (C.proj J) a ∘ ProjRestricts C J K h = e (C.proj K) a := by
+  ext ⟨f,hf⟩
+  dsimp [e, ResOnSubsets, Int.ofBool, ProjOrd, ProjRestricts]
+  dsimp [Homeomorph.setCongr, Equiv.setCongr, Equiv.subtypeEquivProp, Equiv.subtypeEquiv]
+  split_ifs with hh hh' hh'
+  · rfl
+  · exfalso
+    apply hh'
+    rw [← hh]
+    apply Eq.symm
+    simp [ProjRestrict, Proj, ite_eq_left_iff]
+    intro _
+    simp only [Bool.not_eq_true] at hh'
+    exact hh'.symm
+  · exfalso
+    apply hh
+    rw [← hh']
+    simp [ProjRestrict, Proj, ite_eq_left_iff]
+    intro hha
+    exfalso
+    exact hha ha
+  · rfl
+
 lemma eEqe {o₁ o₂ : Ordinal} {a : I} (ha : ord I a < o₁) (h : o₁ ≤ o₂) :
     e (Res C o₁) a ∘ ResOnSubsets C h = e (Res C o₂) a := by
-  ext ⟨f,hf⟩
-  dsimp [e, ResOnSubsets, Int.ofBool, ProjOrd]
+  ext
+  dsimp [e, Int.ofBool, ResOnSubsets, ProjRestricts, ProjRestrict, Proj, Homeomorph.setCongr,
+    Equiv.setCongr, Equiv.subtypeEquivProp, Equiv.subtypeEquiv]
   split_ifs
   · rfl
   · rfl
@@ -971,7 +717,8 @@ lemma eEqe {o₁ o₂ : Ordinal} {a : I} (ha : ord I a < o₁) (h : o₁ ≤ o�
 lemma eEqeC {o : Ordinal} {a : I} (ha : ord I a < o) :
     e (Res C o) a ∘ ResOnSubset C o = e C a := by
   ext ⟨f,hf⟩
-  dsimp [e, ResOnSubset, Int.ofBool, ProjOrd]
+  dsimp [e, Int.ofBool, ResOnSubset, ProjRestrict, Proj, Homeomorph.setCongr,
+    Equiv.setCongr, Equiv.subtypeEquivProp, Equiv.subtypeEquiv]
   split_ifs
   · rfl
   · rfl
@@ -1063,7 +810,7 @@ lemma Products.head_lt_ord_of_isGood {l : Products I} {o : Ordinal}
   · dsimp [e]
     ext ⟨f,hf⟩
     dsimp [Int.ofBool]
-    dsimp [Res, ProjOrd] at hf
+    dsimp [Res, ProjOrd, Proj] at hf
     obtain ⟨g, hg⟩ := hf
     rw [← hg.2]
     split_ifs
@@ -1095,7 +842,7 @@ lemma Products.eval_comapFacC {l : Products I} {o : Ordinal}
     (hl : l.isGood (Res C o)) :
     LocallyConstant.comap (ResOnSubset C o) (l.eval (Res C o)) = l.eval C := by
   ext f
-  rw [LocallyConstant.coe_comap_apply _ _ (continuous_resOnSubset _ _)]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_resOnSubset C _)]
   exact congr_fun (goodEvalFacC C hl) _
 
 lemma Products.eval_comapFac' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
@@ -1199,7 +946,7 @@ instance [Nonempty C] : Inhabited (Res C 0) := by
   obtain ⟨x,hx⟩ := this
   use x
   refine' ⟨hx,_⟩
-  dsimp [ProjOrd]
+  dsimp [ProjOrd, Proj]
   ext i
   split_ifs with h
   · exfalso
@@ -1761,7 +1508,7 @@ lemma swapTrue_mem_C1 (f : {i // i ∈ Res (C1 C ho) o}) : SwapTrue o f.val ∈ 
     dsimp [ord] at hg
     simp only [Ordinal.enum_typein, Set.mem_inter_iff, Set.mem_setOf_eq] at hg
     exact hg.1.2.symm
-  · dsimp [ProjOrd] at hg
+  · dsimp [ProjOrd, Proj] at hg
     have := congr_fun hg.2 i
     split_ifs at this with h'
     · exact this.symm
@@ -1884,7 +1631,7 @@ lemma swapTrue_swapFalse (x : I → Bool) (hx : x ∈ Res (C1 C ho) o) :
   split_ifs with h
   · obtain ⟨y, hy⟩ := hx
     rw [← hy.2]
-    dsimp [ProjOrd]
+    dsimp [ProjOrd, Proj]
     split_ifs with h'
     · exfalso
       exact (ne_of_lt h') h
@@ -1904,7 +1651,7 @@ lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((Linear_ResC C o) y) = 0 := b
   suffices : ResOnSubset C o (CC'₁ C hsC ho x) = ResOnSubset C o (CC'₀ C ho x)
   · rw [this]
     simp only [sub_self]
-  dsimp [CC'₀, CC'₁, ResOnSubset, ProjOrd]
+  dsimp [CC'₀, CC'₁, ResOnSubset, ProjRestrict, Proj]
   ext i
   dsimp
   split_ifs with h
@@ -1918,7 +1665,7 @@ lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((Linear_ResC C o) y) = 0 := b
 lemma C0_projOrd : ∀ x, x ∈ C0 C ho → ProjOrd o x = x := by
   intro x hx
   ext i
-  simp only [ProjOrd, ite_eq_left_iff, not_lt]
+  simp only [ProjOrd, Proj, Set.mem_setOf, ite_eq_left_iff, not_lt]
   intro hi
   rw [le_iff_lt_or_eq] at hi
   cases' hi with hi hi
@@ -1926,7 +1673,7 @@ lemma C0_projOrd : ∀ x, x ∈ C0 C ho → ProjOrd o x = x := by
     rw [← not_imp_not] at hsC
     simp only [not_lt, Bool.not_eq_true, Order.succ_le_iff] at hsC
     exact (hsC hi).symm
-  · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
+  · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq, ← Bool.default_bool] at hx
     rw [← hx.2]
     congr 1
     dsimp [term]
@@ -1936,7 +1683,7 @@ lemma C0_projOrd : ∀ x, x ∈ C0 C ho → ProjOrd o x = x := by
 lemma C1_projOrd : ∀ x, x ∈ C1 C ho → SwapTrue o (ProjOrd o x) = x := by
   intro x hx
   ext i
-  dsimp [SwapTrue, ProjOrd]
+  dsimp [SwapTrue, ProjOrd, Proj]
   split_ifs with hi h
   · rw [hx.2.symm]
     congr
@@ -1962,7 +1709,8 @@ lemma C0_eq_res : C0 C ho = Res (C0 C ho) o := by
     constructor
     · rw [C0_projOrd C hsC ho z hz.1]
       exact hz.1.1
-    · simp only [ProjOrd, ord, term, Ordinal.typein_enum, lt_self_iff_false, ite_false]
+    · simp only [ProjOrd, Proj, term, ord, Set.mem_setOf_eq, Ordinal.typein_enum,
+        lt_self_iff_false, Bool.default_bool, ite_false]
 
 lemma mem_res_of_mem_C0 : ∀ x, x ∈ C0 C ho → x ∈ Res C o := by
   intro x hx
@@ -1998,7 +1746,7 @@ def C0_homeo : C0 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C0 C ho) o} where
 lemma projOrd_eq_swapFalse : ∀ x, x ∈ C → ProjOrd o x = SwapFalse o x := by
   intro x hx
   ext i
-  dsimp [ProjOrd, SwapFalse]
+  dsimp [ProjOrd, Proj, SwapFalse]
   split_ifs with hi hi' hi'
   · exfalso
     exact (ne_of_lt hi) hi'
@@ -2123,9 +1871,9 @@ lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC h
         rw [LocallyConstant.coe_comap_apply _ _ h₀]
         congr 1
         ext i
-        dsimp [ResOnSubset] at h ⊢
+        dsimp [ResOnSubset, ProjRestrict] at h ⊢
         dsimp [C0_homeo]
-        rw [C0_projOrd C hsC ho x hx₀]
+        rw [← ProjOrd, C0_projOrd C hsC ho x hx₀]
       · dsimp [LocallyConstant.equiv]
         exfalso
         apply h
@@ -2150,9 +1898,9 @@ lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC h
         rw [LocallyConstant.coe_comap_apply _ _ h₁]
         congr 1
         ext i
-        dsimp [ResOnSubset] at h ⊢
+        dsimp [ResOnSubset, ProjRestrict] at h ⊢
         dsimp [C1_homeo]
-        rw [C1_projOrd C hsC ho x hx₁]
+        rw [← ProjOrd, C1_projOrd C hsC ho x hx₁]
 
 noncomputable
 def C1_homeo' : C1' C ho ≃ₜ {i : Res C o | i.val ∈ Res (C1 C ho) o} where
@@ -2212,7 +1960,7 @@ lemma swapTrue_eq_true : ∀ x, SwapTrue o x (term I ho) = true := by
 lemma mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
   rintro x ⟨_,⟨y,⟨_,hy⟩⟩⟩
   rw [← hy]
-  dsimp [ProjOrd]
+  dsimp [ProjOrd, Proj]
   split_ifs with h
   · dsimp [ord, term] at h
     simp only [Ordinal.typein_enum, lt_self_iff_false] at h
@@ -2523,7 +2271,7 @@ lemma Products.head_lt_ord_of_isGood' {l : Products I}
   · dsimp [e]
     ext ⟨f,hf⟩
     dsimp [Int.ofBool]
-    dsimp [C',Res, ProjOrd] at hf
+    dsimp [C',Res, ProjOrd, Proj] at hf
     obtain ⟨g, hg⟩ := hf.2
     rw [← hg.2]
     split_ifs
@@ -2843,23 +2591,15 @@ lemma GoodProducts.hhw (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C
 
 end Successor
 
-lemma Products.sorted (l : Products I) : l.val.Sorted (· > ·) := by
-  have := l.prop
-  rw [List.chain'_iff_pairwise] at this
-  exact this
-
-def Products_emb : Products I ↪o {l : List I // l.Sorted (· > ·)} where
-  toFun := fun l ↦ ⟨l.val, l.sorted⟩
-  inj' := by
-    intro l m h
-    rw [Subtype.ext_iff] at h
-    exact Subtype.ext h
-  map_rel_iff' := Iff.rfl
-
-instance : WellFoundedLT (Products I) where
-  wf := (@Products_emb I _).wellFounded IsWellFounded.wf
-
-instance : IsWellFounded (Products I) (·<·) := inferInstance
+instance : IsWellFounded (Products I) (·<·) := by
+  have : (fun (l m : Products I) ↦ l < m) = (fun l m ↦ List.Lex (·<·) l.val m.val)
+  · ext l m
+    exact Products.lt_iff_lex_lt l m
+  rw [this]
+  have hflip : (·>· : I → I → Prop) = flip (·<· : I → I → Prop) := rfl
+  dsimp [Products]
+  rw [hflip]
+  exact inferInstance
 
 def L (l : Products I) : Prop :=
   l.eval C ∈ Submodule.span ℤ (Set.range (GoodProducts.eval C))
