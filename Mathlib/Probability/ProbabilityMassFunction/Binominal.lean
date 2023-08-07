@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Joachim Breitner. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joachim Breitner
+-/
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Tactic.FinCases
@@ -11,12 +16,12 @@ probability of heads is `p`. -/
 def binominal (p : ENNReal) (h : p ≤ 1) (n : ℕ) : Pmf (Fin (n + 1)) :=
   .ofFintype (f := fun i => p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ))
     (h := by calc
-      _ = Finset.sum (Finset.range (n + 1)) fun m ↦ p ^ m * (1 - p) ^ (n - m) * ↑(Nat.choose n m) := by
-        rw [Finset.sum_fin_eq_sum_range]
-        apply Finset.sum_congr rfl
-        intro i hi
-        simp at hi
-        rw [dif_pos hi]
+      _ = Finset.sum (Finset.range (n + 1)) fun m ↦ p ^ m * (1 - p) ^ (n - m) * ↑(Nat.choose n m) :=
+       by rw [Finset.sum_fin_eq_sum_range]
+          apply Finset.sum_congr rfl
+          intro i hi
+          simp at hi
+          rw [dif_pos hi]
       _ = (p + (1-p))^n := (add_pow _ _ _).symm
       _ = 1 := by simp [h])
 
