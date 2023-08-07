@@ -150,7 +150,7 @@ then calling `solveByElim` on the resulting goals.
 -/
 def librarySearchCore (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
-  .squash do
+  .squash fun _ => do
     let ty ← goal.getType
     let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
@@ -163,7 +163,7 @@ Run `librarySearchCore` on both the goal and `symm` applied to the goal.
 def librarySearchSymm (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) :
     ListM MetaM (MetavarContext × List MVarId) :=
-  .append (librarySearchCore goal required solveByElimDepth) <| .squash do
+  .append (librarySearchCore goal required solveByElimDepth) <| fun _ => .squash fun _ => do
     if let some symm ← try? goal.symm then
       return librarySearchCore symm required solveByElimDepth
     else

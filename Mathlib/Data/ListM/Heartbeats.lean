@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.ListM.Basic
+import Std.Data.ListM.Basic
 import Mathlib.Lean.CoreM
 
 /-!
@@ -16,7 +16,7 @@ open Lean.Core (CoreM)
 trying to leave at least `percent` of the remaining allowed heartbeats. -/
 def ListM.whileAtLeastHeartbeatsPercent [Monad m] [MonadLiftT CoreM m]
     (L : ListM m α) (percent : Nat := 10) : ListM m α :=
-ListM.squash do
+ListM.squash fun _ => do
   if (← getMaxHeartbeats) = 0 then do
     return L
   let initialHeartbeats ← getRemainingHeartbeats

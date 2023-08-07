@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.ListM.Basic
+import Std.Data.RBMap.Basic
 
 /-!
 # Best first search
@@ -77,17 +78,18 @@ Otherwise, if the graph is not a tree then nodes will be visited multiple times.
 def bestFirstSearch (f : α → ListM m α) (a : α)
     (maxDepth : Option Nat := none) (maxQueued : Option Nat := none) (removeDuplicates := true) :
     ListM m α :=
-let f := match maxDepth with
+let f' : Nat → α → ListM m α := match maxDepth with
 | none => fun _ a => f a
-| some d => fun n a => if d < n then empty else f a
+| some d => fun n a => if d < n then nil else f a
 if removeDuplicates then
-  let f' : Nat → α → ListM (StateT.{u} (RBSet α compare) m) α := fun n a =>
-    (f n a).liftM >>= fun b => do
+  let f'' : Nat → α → ListM (StateT.{u} (RBSet α compare) m) α := fun n a =>
+    (f' n a).liftM >>= fun b => do
       let s ← get
       if s.contains b then failure
       set <| s.insert b
       pure b
-  cons (do pure (some a, fixl (bestFirstSearchAux f' maxQueued) (RBMap.single a (0, f' 0 a))))
+  consOption
+    (do pure (some a, fixl (bestFirstSearchAux f'' maxQueued) (RBMap.single a (0, f'' 0 a))))
     |>.runState' (RBSet.empty.insert a)
 else
-  cons do pure (some a, fixl (bestFirstSearchAux f maxQueued) (RBMap.single a (0, f 0 a)))
+  consOption do pure (some a, fixl (bestFirstSearchAux f' maxQueued) (RBMap.single a (0, f' 0 a)))

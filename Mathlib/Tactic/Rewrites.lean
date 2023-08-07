@@ -134,7 +134,7 @@ This core function returns a monadic list, to allow the caller to decide how lon
 See also `rewrites` for a more convenient interface.
 -/
 def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (target : Expr) : ListM MetaM RewriteResult := ListM.squash do
+    (goal : MVarId) (target : Expr) : ListM MetaM RewriteResult := ListM.squash fun _ => do
 
   -- Get all lemmas which could match some subexpression
   let candidates := (← lemmas.1.getSubexpressionMatches target)

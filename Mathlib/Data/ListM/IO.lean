@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.ListM.Basic
+import Std.Data.ListM.Basic
 
 /-!
 # Reading from handles, files, and processes as lazy lists.
@@ -32,7 +32,7 @@ def linesFromHandle (h : Handle) : ListM IO String :=
   |>.takeWhile (·.isSome) |>.map (fun o => o.getD "")
 
 /-- Read lines of text from a file, as a lazy list in `IO`. -/
-def lines (f : FilePath) : ListM IO String := .squash do
+def lines (f : FilePath) : ListM IO String := .squash fun _ => do
   return linesFromHandle (← Handle.mk f Mode.read)
 
 open IO.Process in
