@@ -219,11 +219,20 @@ theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %�
   exact (degree_modByMonic_lt _ hq).le
 #align polynomial.degree_mod_by_monic_le Polynomial.degree_modByMonic_le
 
+theorem natDegree_modByMonic_le (p : Polynomial R) {g : Polynomial R} (hg : g.Monic) :
+    natDegree (p %ₘ g) ≤ g.natDegree :=
+natDegree_le_natDegree (degree_modByMonic_le p hg)
+
 end Ring
 
 section CommRing
 
 variable [CommRing R] {p q : R[X]}
+
+theorem X_dvd_sub_C : X ∣ p - C (p.coeff 0) := by
+  rw [X_dvd_iff]
+  rw [coeff_sub, coeff_C]
+  simp only [eq_self_iff_true, if_true, sub_self]
 
 theorem modByMonic_eq_sub_mul_div :
     ∀ (p : R[X]) {q : R[X]} (_hq : Monic q), p %ₘ q = p - q * (p /ₘ q)
