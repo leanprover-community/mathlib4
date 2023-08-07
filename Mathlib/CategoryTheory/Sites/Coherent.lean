@@ -31,7 +31,8 @@ namespace CategoryTheory
 
 open Limits
 
-variable (C : Type*) [Category C]
+universe v u
+variable (C : Type u) [Category.{v} C]
 
 /--
 The condition `Precoherent C` is essentially the minimal condition required to define the

@@ -695,7 +695,7 @@ instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Pro
 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
 notation for `OrderDual α`. -/
-def OrderDual (α : Type _) : Type _ :=
+def OrderDual (α : Type*) : Type _ :=
   α
 #align order_dual OrderDual
 

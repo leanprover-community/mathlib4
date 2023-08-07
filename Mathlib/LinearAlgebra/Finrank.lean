@@ -55,7 +55,7 @@ Defined by convention to be `0` if the space has infinite rank.
 For a vector space `V` over a field `K`, this is the same as the finite dimension
 of `V` over `K`.
 -/
-noncomputable def finrank (R V : Type _) [Semiring R] [AddCommGroup V] [Module R V] : ℕ :=
+noncomputable def finrank (R V : Type*) [Semiring R] [AddCommGroup V] [Module R V] : ℕ :=
   Cardinal.toNat (Module.rank R V)
 #align finite_dimensional.finrank FiniteDimensional.finrank
 

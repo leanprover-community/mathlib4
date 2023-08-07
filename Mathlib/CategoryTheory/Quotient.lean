@@ -157,7 +157,7 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   · apply Quotient.sound
 #align category_theory.quotient.functor_map_eq_iff CategoryTheory.Quotient.functor_map_eq_iff
 
-variable {D : Type _} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category D] (F : C ⥤ D)
   (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 /-- The induced functor on the quotient category. -/

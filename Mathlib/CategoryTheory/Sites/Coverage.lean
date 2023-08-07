@@ -47,7 +47,8 @@ the following sources:
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C]
+universe v u
+variable {C : Type u} [Category.{v} C]
 
 namespace Presieve
 

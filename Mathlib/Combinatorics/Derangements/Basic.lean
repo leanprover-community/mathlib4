@@ -26,6 +26,7 @@ In order to prove the above, we also prove some results about the effect of `Equ
 on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 -/
 
+universe u v
 
 open Equiv Function
 
@@ -34,7 +35,7 @@ def derangements (α : Type*) : Set (Perm α) :=
   { f : Perm α | ∀ x : α, f x ≠ x }
 #align derangements derangements
 
-variable {α β : Type*}
+variable {α : Type u} {β : Type v}
 
 theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
     f ∈ derangements α ↔ fixedPoints f = ∅ :=
@@ -73,7 +74,6 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
         simp_rw [exists_prop, ← forall_and, ← iff_iff_implies_and_implies]
 #align derangements.subtype_equiv derangements.subtypeEquiv
 
-universe u
 /-- The set of permutations that fix either `a` or nothing is equivalent to the sum of:
     - derangements on `α`
     - derangements on `α` minus `a`. -/
@@ -197,7 +197,7 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     "derangements on `α` ⊕ derangements on `{a}ᶜ`". -/
 def derangementsRecursionEquiv :
     derangements (Option α) ≃
-      Σa : α, Sum (derangements (({a}ᶜ : Set α) : Type _)) (derangements α) :=
+      Σa : α, Sum (derangements (({a}ᶜ : Set α) : Type u)) (derangements α) :=
   derangementsOptionEquivSigmaAtMostOneFixedPoint.trans
     (sigmaCongrRight atMostOneFixedPointEquivSum_derangements)
 #align derangements.derangements_recursion_equiv derangements.derangementsRecursionEquiv

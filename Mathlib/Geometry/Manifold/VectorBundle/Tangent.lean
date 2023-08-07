@@ -30,6 +30,7 @@ This defines a smooth vector bundle `TangentBundle` with fibers `TangentSpace`.
   bundle.
 -/
 
+universe ue
 
 open Bundle Set SmoothManifoldWithCorners LocalHomeomorph ContinuousLinearMap
 
@@ -39,7 +40,7 @@ noncomputable section
 
 section General
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type ue} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -145,7 +146,7 @@ variable (M)
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
 @[reducible] -- porting note: was nolint has_nonempty_instance
 def TangentBundle :=
-  Bundle.TotalSpace E (TangentSpace I : M → Type _)
+  Bundle.TotalSpace E (TangentSpace I : M → Type ue)
 #align tangent_bundle TangentBundle
 
 local notation "TM" => TangentBundle I M
@@ -170,10 +171,10 @@ end
 instance : TopologicalSpace TM :=
   (tangentBundleCore I M).toTopologicalSpace
 
-instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
+instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type ue) :=
   (tangentBundleCore I M).fiberBundle
 
-instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
+instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type ue) :=
   (tangentBundleCore I M).vectorBundle
 
 namespace TangentBundle
@@ -313,7 +314,7 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   · apply inter_subset_left
 #align tangent_bundle_core.is_smooth tangentBundleCore.isSmooth
 
-instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type _) I :=
+instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type ue) I :=
   (tangentBundleCore I M).smoothVectorBundle _
 #align tangent_bundle.smooth_vector_bundle TangentBundle.smoothVectorBundle
 

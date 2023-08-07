@@ -383,7 +383,7 @@ def mk' {α : Type u} [EMetricSpace α] (f : α → β) (g : β → α) (hfg : �
 #align isometry_equiv.mk' IsometryEquiv.mk'
 
 /-- The identity isometry of a space. -/
-protected def refl (α : Type _) [PseudoEMetricSpace α] : α ≃ᵢ α :=
+protected def refl (α : Type*) [PseudoEMetricSpace α] : α ≃ᵢ α :=
   { Equiv.refl α with isometry_toFun := isometry_id }
 #align isometry_equiv.refl IsometryEquiv.refl
 

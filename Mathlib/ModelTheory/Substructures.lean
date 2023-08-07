@@ -43,7 +43,7 @@ namespace FirstOrder
 
 namespace Language
 
-variable {L : Language.{u, v}} {M : Type w} {N P : Type _}
+variable {L : Language.{u, v}} {M : Type w} {N P : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P]
 

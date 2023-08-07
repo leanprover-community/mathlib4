@@ -1,0 +1,37 @@
+- `AlgHom.Simps.apply`: cannot change the simps projection with `Type*`
+- `GroupCat.ofHom_apply`: same issue in a different form
+- `RingCat.RingEquiv_coe_of` and friends: `of` requires both rings to be in the same universe
+- `IsLocalization.epi`: same `Bundled.of` universe restriction
+- `SemiGroupCat.MulEquiv_coe_of` and friends: same
+- `SMul` and `VAdd`: problems with `to_additive` generation. Example
+```lean
+error: application type mismatch
+  SMul β
+argument has type
+  Type u_2
+but function has type
+  Type u_1 → Type u_2 → Type (max u_1 u_2)
+```
+- `Algebra.Module.LocalizedModules`: `Semiring (LocalizedModule S A)` instance is much slower with
+	`Type *`. `Semiring (LocalizedModule S A)` instance is stuck solving universe conditions
+- `Concrete.widePushout_exists_rep` and `'`:
+```lean
+typeclass instance problem is stuck, it is often due to metavariables
+  HasWidePushout B (fun j ↦ X j) f
+```
+- `ConvexOn.exists_ge_of_mem_convexHull`: there is a loose universe variable in `convexHull_eq` as
+reported by a porting note
+- `CategoryTheory.Functor.sections_property`: we have an unused universe parameter (it should be max of other stuff)
+- In general monads cannot handle full universe polynmorphism
+- `FinEnum.mem_pi`: stuck solving universe constraints; a little dubious
+- `FinSet.coe_empty` and friend: the universe should be same as for \a
+- `AddAction.QuotientAction`: another `to_additive` issue
+- `StoneWeierstrass`: at line 390
+```lean
+(A.toSubmodule.restrictScalars ℝ).topologicalClosure
+```
+times out if we make `𝕜` on line 336 `Type*`
+- `IsometryEquiv`: another `initialize_simps_projection` failure
+- `NormedSpace.AddTorsor`: issues with `VAdd` problems above
+- `Analysis.NormedSpace.Ray`: `F` has to unify with `ℝ`
+- `Geometry.Manifold.ContMDiffMFDeriv` : `tangentMap_tangentBundle_pure` the universe is constrained in the `haveI`
