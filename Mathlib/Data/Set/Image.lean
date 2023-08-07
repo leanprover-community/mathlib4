@@ -760,7 +760,7 @@ theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
   range_eq_empty_iff.2 ‹_›
 #align set.range_eq_empty Set.range_eq_empty
 
-instance [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
+instance instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
   (range_nonempty f).to_subtype
 
 @[simp]
