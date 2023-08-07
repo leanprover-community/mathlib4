@@ -41,8 +41,8 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CommSemiring α,
 
 attribute [instance 150] CanonicallyOrderedCommSemiring.toCommSemiring
 attribute [instance 150] CanonicallyOrderedCommSemiring.toCanonicallyOrderedAddMonoid
-attribute [-instance] CanonicallyOrderedCommSemiring.toPartialOrder
-attribute [-instance] CanonicallyOrderedCommSemiring.toOrderBot
+attribute [instance 0] CanonicallyOrderedCommSemiring.toPartialOrder
+attribute [instance 0] CanonicallyOrderedCommSemiring.toOrderBot
 
 section StrictOrderedSemiring
 

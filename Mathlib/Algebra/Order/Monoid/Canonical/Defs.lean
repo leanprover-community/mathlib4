@@ -327,9 +327,9 @@ class CanonicallyLinearOrderedAddMonoid (α : Type*)
 
 attribute [instance 150] CanonicallyLinearOrderedAddMonoid.toCanonicallyOrderedAddMonoid
 attribute [instance 100] CanonicallyLinearOrderedAddMonoid.toLinearOrder
-attribute [-instance] CanonicallyLinearOrderedAddMonoid.toMin
-attribute [-instance] CanonicallyLinearOrderedAddMonoid.toMax
-attribute [-instance] CanonicallyLinearOrderedAddMonoid.toOrd
+attribute [instance 0] CanonicallyLinearOrderedAddMonoid.toMin
+attribute [instance 0] CanonicallyLinearOrderedAddMonoid.toMax
+attribute [instance 0] CanonicallyLinearOrderedAddMonoid.toOrd
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
@@ -339,9 +339,9 @@ class CanonicallyLinearOrderedMonoid (α : Type*) extends CanonicallyOrderedMono
 
 attribute [instance 150] CanonicallyLinearOrderedMonoid.toCanonicallyOrderedMonoid
 attribute [instance 100] CanonicallyLinearOrderedMonoid.toLinearOrder
-attribute [-instance] CanonicallyLinearOrderedMonoid.toMin
-attribute [-instance] CanonicallyLinearOrderedMonoid.toMax
-attribute [-instance] CanonicallyLinearOrderedMonoid.toOrd
+attribute [instance 0] CanonicallyLinearOrderedMonoid.toMin
+attribute [instance 0] CanonicallyLinearOrderedMonoid.toMax
+attribute [instance 0] CanonicallyLinearOrderedMonoid.toOrd
 
 section CanonicallyLinearOrderedMonoid
 

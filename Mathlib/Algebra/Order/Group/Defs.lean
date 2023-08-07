@@ -1095,9 +1095,9 @@ class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α,
 
 attribute [instance 150] LinearOrderedAddCommGroup.toOrderedAddCommGroup
 attribute [instance 100] LinearOrderedAddCommGroup.toLinearOrderedAddCommMonoid
-attribute [-instance] LinearOrderedAddCommGroup.toMin
-attribute [-instance] LinearOrderedAddCommGroup.toMax
-attribute [-instance] LinearOrderedAddCommGroup.toOrd
+attribute [instance 0] LinearOrderedAddCommGroup.toMin
+attribute [instance 0] LinearOrderedAddCommGroup.toMax
+attribute [instance 0] LinearOrderedAddCommGroup.toOrd
 
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
@@ -1109,9 +1109,9 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α,
 
 attribute [instance 150] LinearOrderedCommGroup.toOrderedCommGroup
 attribute [instance 100] LinearOrderedCommGroup.toLinearOrderedCommMonoid
-attribute [-instance] LinearOrderedCommGroup.toMin
-attribute [-instance] LinearOrderedCommGroup.toMax
-attribute [-instance] LinearOrderedCommGroup.toOrd
+attribute [instance 0] LinearOrderedCommGroup.toMin
+attribute [instance 0] LinearOrderedCommGroup.toMax
+attribute [instance 0] LinearOrderedCommGroup.toOrd
 
 attribute [to_additive existing] LinearOrderedCommGroup.toLinearOrderedCommMonoid
 
@@ -1126,10 +1126,10 @@ class LinearOrderedAddCommGroupWithTop (α : Type u) extends SubNegMonoid α,
 attribute [instance 150] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
 attribute [instance 100] LinearOrderedAddCommGroupWithTop.toLinearOrderedAddCommMonoidWithTop
 attribute [instance 50] LinearOrderedAddCommGroupWithTop.toNontrivial
-attribute [-instance] LinearOrderedAddCommGroupWithTop.toMin
-attribute [-instance] LinearOrderedAddCommGroupWithTop.toMax
-attribute [-instance] LinearOrderedAddCommGroupWithTop.toOrd
-attribute [-instance] LinearOrderedAddCommGroupWithTop.toOrderTop
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toMin
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toMax
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toOrd
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toOrderTop
 
 section LinearOrderedCommGroup
 

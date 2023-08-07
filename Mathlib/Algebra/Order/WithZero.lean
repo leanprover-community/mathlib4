@@ -38,10 +38,10 @@ class LinearOrderedCommGroupWithZero (α : Type*) extends CommGroupWithZero α,
 
 attribute [instance 200] LinearOrderedCommGroupWithZero.toCommGroupWithZero
 attribute [instance 100] LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero
-attribute [-instance] LinearOrderedCommGroupWithZero.toPartialOrder
-attribute [-instance] LinearOrderedCommGroupWithZero.toMin
-attribute [-instance] LinearOrderedCommGroupWithZero.toMax
-attribute [-instance] LinearOrderedCommGroupWithZero.toOrd
+attribute [instance 0] LinearOrderedCommGroupWithZero.toPartialOrder
+attribute [instance 0] LinearOrderedCommGroupWithZero.toMin
+attribute [instance 0] LinearOrderedCommGroupWithZero.toMax
+attribute [instance 0] LinearOrderedCommGroupWithZero.toOrd
 
 variable {α : Type*}
 

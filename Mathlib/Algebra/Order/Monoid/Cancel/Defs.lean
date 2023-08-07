@@ -114,9 +114,9 @@ class LinearOrderedCancelAddCommMonoid (α : Type u) extends OrderedCancelAddCom
 
 attribute [instance 150] LinearOrderedCancelAddCommMonoid.toOrderedCancelAddCommMonoid
 attribute [instance 100] LinearOrderedCancelAddCommMonoid.toLinearOrderedAddCommMonoid
-attribute [-instance] LinearOrderedCancelAddCommMonoid.toMin
-attribute [-instance] LinearOrderedCancelAddCommMonoid.toMax
-attribute [-instance] LinearOrderedCancelAddCommMonoid.toOrd
+attribute [instance 0] LinearOrderedCancelAddCommMonoid.toMin
+attribute [instance 0] LinearOrderedCancelAddCommMonoid.toMax
+attribute [instance 0] LinearOrderedCancelAddCommMonoid.toOrd
 
 /-- A linearly ordered cancellative commutative monoid
 is a commutative monoid with a linear order
@@ -127,9 +127,9 @@ class LinearOrderedCancelCommMonoid (α : Type u) extends OrderedCancelCommMonoi
 
 attribute [instance 150] LinearOrderedCancelCommMonoid.toOrderedCancelCommMonoid
 attribute [instance 100] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
-attribute [-instance] LinearOrderedCancelCommMonoid.toMin
-attribute [-instance] LinearOrderedCancelCommMonoid.toMax
-attribute [-instance] LinearOrderedCancelCommMonoid.toOrd
+attribute [instance 0] LinearOrderedCancelCommMonoid.toMin
+attribute [instance 0] LinearOrderedCancelCommMonoid.toMax
+attribute [instance 0] LinearOrderedCancelCommMonoid.toOrd
 
 attribute [to_additive LinearOrderedCancelAddCommMonoid] LinearOrderedCancelCommMonoid
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
