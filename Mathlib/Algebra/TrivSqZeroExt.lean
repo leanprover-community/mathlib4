@@ -195,10 +195,10 @@ instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
   Prod.instNegProd
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
-  Prod.instAddSemigroupSum_ᾰ
+  Prod.instAddSemigroupProd
 
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
-  Prod.instAddZeroClassSum_ᾰ
+  Prod.instAddZeroClassProd
 
 instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
   Prod.instAddMonoidProd

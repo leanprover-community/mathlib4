@@ -1465,7 +1465,7 @@ theorem uniformity_multiplicative : 𝓤 (Multiplicative α) = (𝓤 α).map (Pr
 
 end
 
-instance {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
+instance instUniformSpaceSubtype {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
   UniformSpace.comap Subtype.val t
 
 theorem uniformity_subtype {p : α → Prop} [UniformSpace α] :
@@ -1553,7 +1553,7 @@ section Prod
 
 /- a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
-instance [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
+instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
 
 -- check the above produces no diamond

@@ -191,8 +191,8 @@ instance [MulZeroClass M] [MulZeroClass N] : MulZeroClass (M × N) :=
   { zero_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨zero_mul _, zero_mul _⟩,
     mul_zero := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_zero _, mul_zero _⟩ }
 
-@[to_additive]
-instance [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
+@[to_additive instAddSemigroupProd]
+instance instSemigroupProd [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
   { mul_assoc := fun _ _ _ => mk.inj_iff.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
 
 @[to_additive instAddCommSemigroupProd]
@@ -203,8 +203,8 @@ instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N
   { zero_mul := by simp,
     mul_zero := by simp }
 
-@[to_additive]
-instance [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
+@[to_additive instAddZeroClassProd]
+instance instMulOneClassProd [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
   { one_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨one_mul _, one_mul _⟩,
     mul_one := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_one _, mul_one _⟩ }
 

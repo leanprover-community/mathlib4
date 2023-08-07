@@ -29,7 +29,7 @@ namespace MulOpposite
 /-- Put the same topological space structure on the opposite monoid as on the original space. -/
 @[to_additive "Put the same topological space structure on the opposite monoid as on the original
 space."]
-instance [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
+instance instTopologicalSpaceMulOpposite [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
   TopologicalSpace.induced (unop : Mᵐᵒᵖ → M) ‹_›
 
 variable [TopologicalSpace M]
@@ -94,7 +94,7 @@ variable [TopologicalSpace M] [Monoid M] [TopologicalSpace X]
 /-- The units of a monoid are equipped with a topology, via the embedding into `M × M`. -/
 @[to_additive "The additive units of a monoid are equipped with a topology, via the embedding into
 `M × M`."]
-instance : TopologicalSpace Mˣ :=
+instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
   TopologicalSpace.induced (embedProduct M) inferInstance
 
 @[to_additive]

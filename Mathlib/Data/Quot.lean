@@ -221,7 +221,7 @@ variable {φ : Quotient sa → Quotient sb → Sort _}
 @[inherit_doc]
 notation:arg "⟦" a "⟧" => Quotient.mk _ a
 
-instance (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
+instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
 
 instance (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
