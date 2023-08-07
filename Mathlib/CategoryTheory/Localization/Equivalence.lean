@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Joël Riou. All rights reserved.
+Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.CatCommSq
 
 /-!
-
 # Localization functors are preserved through equivalences
 
 In `Localization/Predicate.lean`, the lemma `Localization.of_equivalence_target` already
@@ -77,14 +76,21 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
     { inverts := hW₂
       nonempty_isEquivalence :=
         ⟨Localization.isEquivalence W₂.Q W₂ L₁ W₁ L₂ (Construction.lift L₂ hW₂)
-          (E.functor ⋙ W₂.Q) (Localization.lift (E.functor ⋙ W₂.Q) h L₁)
-          ((leftUnitor _).symm ≪≫ isoWhiskerRight E.counitIso.symm _ ≪≫
-            Functor.associator _ _ _ ≪≫
-            isoWhiskerLeft E.inverse ((Functor.associator _ _ _).symm ≪≫
-            isoWhiskerRight iso _) ≪≫
-            isoWhiskerLeft _ (Localization.fac (E.functor ⋙ W₂.Q) h L₁) ≪≫
-            (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight E.counitIso _ ≪≫ leftUnitor _ )
-          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso) ⟩ }
+          (E.functor ⋙ W₂.Q) (Localization.lift (E.functor ⋙ W₂.Q) h L₁) (by
+            calc
+              L₂ ⋙ lift (E.functor ⋙ W₂.Q) h L₁ ≅ _ := (leftUnitor _).symm
+              _ ≅ _ := isoWhiskerRight E.counitIso.symm _
+              _ ≅ E.inverse ⋙ E.functor ⋙ L₂ ⋙ lift (E.functor ⋙ W₂.Q) h L₁ :=
+                    Functor.associator _ _ _
+              _ ≅ E.inverse ⋙ L₁ ⋙ lift (E.functor ⋙ W₂.Q) h L₁ :=
+                    isoWhiskerLeft E.inverse ((Functor.associator _ _ _).symm ≪≫
+                      isoWhiskerRight iso _)
+              _ ≅ E.inverse ⋙ E.functor ⋙ W₂.Q :=
+                    isoWhiskerLeft _ (Localization.fac (E.functor ⋙ W₂.Q) h L₁)
+              _ ≅ (E.inverse ⋙ E.functor) ⋙ W₂.Q := (Functor.associator _ _ _).symm
+              _ ≅ 𝟭 C₂ ⋙ W₂.Q := isoWhiskerRight E.counitIso _
+              _ ≅ W₂.Q := leftUnitor _)
+          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso)⟩ }
 
 /-- If `L₁ : C₁ ⥤ D₁` is a localization functor for `W₁ : MorphismProperty C₁`, then if we
 transport this functor `L₁` via equivalences `C₁ ≌ C₂` and `D₁ ≌ D₂` to get a functor

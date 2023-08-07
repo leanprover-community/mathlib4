@@ -33,7 +33,7 @@ namespace CategoryTheory.Limits
 
 namespace KernelFork
 
-variable {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
+variable {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
   (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
 @[reassoc (attr := simp)]
@@ -58,7 +58,8 @@ def isLimitMapConeEquiv :
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
 preserves the corresponding limit. -/
-def mapIsLimit [PreservesLimit (parallelPair f 0) G] :
+def mapIsLimit (hc : IsLimit c) (G : C ⥤ D)
+    [Functor.PreservesZeroMorphisms G] [PreservesLimit (parallelPair f 0) G] :
     IsLimit (c.map G) :=
   c.isLimitMapConeEquiv G (isLimitOfPreserves G hc)
 
@@ -159,7 +160,7 @@ end Kernels
 
 namespace CokernelCofork
 
-variable {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
+variable {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
   (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
 @[reassoc (attr := simp)]
@@ -184,7 +185,8 @@ def isColimitMapCoconeEquiv :
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
-def mapIsColimit [PreservesColimit (parallelPair f 0) G] :
+def mapIsColimit  (hc : IsColimit c) (G : C ⥤ D)
+    [Functor.PreservesZeroMorphisms G] [PreservesColimit (parallelPair f 0) G] :
     IsColimit (c.map G) :=
   c.isColimitMapCoconeEquiv G (isColimitOfPreserves G hc)
 
