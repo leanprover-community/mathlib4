@@ -54,8 +54,7 @@ set_option linter.uppercaseLean3 false in
 theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
   ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
 
-theorem coeff_zero_eq_iff {a : R} : p.coeff 0 = a ↔ ∃ g : Polynomial R, p = X * g + C a :=
-  by
+theorem coeff_zero_eq_iff {a : R} : p.coeff 0 = a ↔ ∃ g : Polynomial R, p = X * g + C a := by
   constructor
   · intro h
     use p.divX
