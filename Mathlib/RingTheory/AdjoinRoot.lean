@@ -105,7 +105,7 @@ def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 #align adjoin_root.of AdjoinRoot.of
 
-instance [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
   Submodule.Quotient.instSMul' _
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=

@@ -588,5 +588,12 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
 
+-- This has been PR'd to Std and will be removed shortly.
+-- https://github.com/leanprover/std4/pull/208
+theorem union_def [DecidableEq α] (l₁ l₂ : List α)  : l₁ ∪ l₂ = foldr .insert l₂ l₁ := rfl
+
+-- This has been PR'd to Std and will be removed shortly.
+-- https://github.com/leanprover/std4/pull/208
+theorem inter_def [DecidableEq α] (l₁ l₂ : List α)  : l₁ ∩ l₂ = filter (· ∈ l₂) l₁ := rfl
 
 end List

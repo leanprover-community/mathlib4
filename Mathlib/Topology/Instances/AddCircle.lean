@@ -204,7 +204,7 @@ protected theorem continuous_mk' :
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
-instance : CircularOrder (AddCircle p) :=
+instance instCircularOrderAddCircle : CircularOrder (AddCircle p) :=
   QuotientAddGroup.circularOrder
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse

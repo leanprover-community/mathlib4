@@ -92,7 +92,9 @@ theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p
 /-! list subset -/
 
 #align list.subset List.Subset
-#align list.has_subset List.instHasSubsetList_ᾰ -- This is relying on an automatically generated instance name.
+-- This is relying on an automatically generated instance name from Std.
+-- See https://github.com/leanprover/lean4/issues/2343
+#align list.has_subset List.instHasSubsetList_ᾰ
 #align list.nil_subset List.nil_subset
 #align list.subset.refl List.Subset.refl
 #align list.subset.trans List.Subset.trans

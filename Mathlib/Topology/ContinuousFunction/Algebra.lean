@@ -392,7 +392,7 @@ instance [Group β] [TopologicalGroup β] : Group C(α, β) :=
   coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance [CommGroup β] [TopologicalGroup β] : CommGroup C(α, β) :=
+instance instCommGroupContinuousMap [CommGroup β] [TopologicalGroup β] : CommGroup C(α, β) :=
   coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
@@ -505,7 +505,7 @@ instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
   coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_nat_cast coe_int_cast
 
-instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
+instance instRingContinuousMap {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
     [TopologicalRing β] : Ring C(α, β) :=
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_nat_cast coe_int_cast
