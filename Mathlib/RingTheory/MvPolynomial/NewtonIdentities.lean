@@ -46,7 +46,7 @@ namespace Multiset
 variable {R : Type _} [CommSemiring R]
 
 /-- The degree-`n` power sum evaluated at the elements of `s` -/
-def psum (s : Multiset R) (n : ℕ) : R := (s.map (fun (x : R) ↦ x ^ n)).sum
+def psum (s : Multiset R) (n : ℕ) : R := (s.map (· ^ n : R → R)).sum
 
 end Multiset
 
