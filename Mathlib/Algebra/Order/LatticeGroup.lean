@@ -60,9 +60,15 @@ lattices.
 lattice, ordered, group
 -/
 
+open Function
+
 universe u v
 
-variable {α : Type u} {β : Type v} [Lattice α] [CommGroup α]
+variable {α : Type u} {β : Type v}
+
+section Group
+
+variable [Lattice α] [Group α]
 
 -- Special case of Bourbaki A.VI.9 (1)
 -- c + (a ⊔ b) = (c + a) ⊔ (c + b)
@@ -73,7 +79,8 @@ theorem mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : c * 
 #align add_sup add_sup
 
 @[to_additive]
-theorem sup_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : (a ⊔ b) * c = a * c ⊔ b * c :=
+theorem sup_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    (a ⊔ b) * c = a * c ⊔ b * c :=
   (OrderIso.mulRight _).map_sup _ _
 #align sup_mul sup_mul
 #align sup_add sup_add
@@ -85,7 +92,8 @@ theorem mul_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : c * 
 #align add_inf add_inf
 
 @[to_additive]
-theorem inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : (a ⊓ b) * c = a * c ⊓ b * c :=
+theorem inf_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    (a ⊓ b) * c = a * c ⊓ b * c :=
   (OrderIso.mulRight _).map_inf _ _
 #align inf_mul inf_mul
 #align inf_add inf_add
@@ -93,7 +101,8 @@ theorem inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : (a �
 -- Special case of Bourbaki A.VI.9 (2)
 -- -(a ⊔ b)=(-a) ⊓ (-b)
 @[to_additive]
-theorem inv_sup_eq_inv_inf_inv [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
+theorem inv_sup_eq_inv_inf_inv
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
     (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ :=
   (OrderIso.inv α).map_sup _ _
 #align inv_sup_eq_inv_inf_inv inv_sup_eq_inv_inf_inv
@@ -101,11 +110,271 @@ theorem inv_sup_eq_inv_inf_inv [CovariantClass α α (· * ·) (· ≤ ·)] (a b
 
 -- -(a ⊓ b) = -a ⊔ -b
 @[to_additive]
-theorem inv_inf_eq_sup_inv [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ :=
+theorem inv_inf_eq_sup_inv
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
+    (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ :=
   (OrderIso.inv α).map_inf _ _
 #align inv_inf_eq_sup_inv inv_inf_eq_sup_inv
 #align neg_inf_eq_sup_neg neg_inf_eq_sup_neg
 
+namespace LatticeOrderedGroup
+
+-- see Note [lower instance priority]
+/--
+Let `α` be a lattice ordered commutative group with identity `1`. For an element `a` of type `α`,
+the element `a ⊔ 1` is said to be the *positive component* of `a`, denoted `a⁺`.
+-/
+@[to_additive
+      "Let `α` be a lattice ordered commutative group with identity `0`. For an element `a` of type
+      `α`,the element `a ⊔ 0` is said to be the *positive component* of `a`, denoted `a⁺`."]
+instance (priority := 100) hasOneLatticeHasPosPart : PosPart α :=
+  ⟨fun a => a ⊔ 1⟩
+#align lattice_ordered_comm_group.has_one_lattice_has_pos_part LatticeOrderedGroup.hasOneLatticeHasPosPart
+#align lattice_ordered_comm_group.has_zero_lattice_has_pos_part LatticeOrderedGroup.hasZeroLatticeHasPosPart
+
+@[to_additive pos_part_def]
+theorem m_pos_part_def (a : α) : a⁺ = a ⊔ 1 :=
+  rfl
+#align lattice_ordered_comm_group.m_pos_part_def LatticeOrderedGroup.m_pos_part_def
+#align lattice_ordered_comm_group.pos_part_def LatticeOrderedGroup.pos_part_def
+
+-- see Note [lower instance priority]
+/--
+Let `α` be a lattice ordered commutative group with identity `1`. For an element `a` of type `α`,
+the element `(-a) ⊔ 1` is said to be the *negative component* of `a`, denoted `a⁻`.
+-/
+@[to_additive
+      "Let `α` be a lattice ordered commutative group with identity `0`. For an element `a` of type
+      `α`, the element `(-a) ⊔ 0` is said to be the *negative component* of `a`, denoted `a⁻`."]
+instance (priority := 100) hasOneLatticeHasNegPart : NegPart α :=
+  ⟨fun a => a⁻¹ ⊔ 1⟩
+#align lattice_ordered_comm_group.has_one_lattice_has_neg_part LatticeOrderedGroup.hasOneLatticeHasNegPart
+#align lattice_ordered_comm_group.has_zero_lattice_has_neg_part LatticeOrderedGroup.hasZeroLatticeHasNegPart
+
+@[to_additive neg_part_def]
+theorem m_neg_part_def (a : α) : a⁻ = a⁻¹ ⊔ 1 :=
+  rfl
+#align lattice_ordered_comm_group.m_neg_part_def LatticeOrderedGroup.m_neg_part_def
+#align lattice_ordered_comm_group.neg_part_def LatticeOrderedGroup.neg_part_def
+
+@[to_additive (attr := simp)]
+theorem pos_one : (1 : α)⁺ = 1 :=
+  sup_idem
+#align lattice_ordered_comm_group.pos_one LatticeOrderedGroup.pos_one
+#align lattice_ordered_comm_group.pos_zero LatticeOrderedGroup.pos_zero
+
+@[to_additive (attr := simp)]
+theorem neg_one : (1 : α)⁻ = 1 := by rw [m_neg_part_def, inv_one, sup_idem]
+#align lattice_ordered_comm_group.neg_one LatticeOrderedGroup.neg_one
+#align lattice_ordered_comm_group.neg_zero LatticeOrderedGroup.neg_zero
+
+-- a⁻ = -(a ⊓ 0)
+@[to_additive]
+theorem neg_eq_inv_inf_one
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
+    a⁻ = (a ⊓ 1)⁻¹ := by
+  rw [m_neg_part_def, ← inv_inj, inv_sup_eq_inv_inf_inv, inv_inv, inv_inv, inv_one]
+#align lattice_ordered_comm_group.neg_eq_inv_inf_one LatticeOrderedGroup.neg_eq_inv_inf_one
+#align lattice_ordered_comm_group.neg_eq_neg_inf_zero LatticeOrderedGroup.neg_eq_neg_inf_zero
+
+@[to_additive le_abs]
+theorem le_mabs (a : α) : a ≤ |a| :=
+  le_sup_left
+#align lattice_ordered_comm_group.le_mabs LatticeOrderedGroup.le_mabs
+#align lattice_ordered_comm_group.le_abs LatticeOrderedGroup.le_abs
+
+-- -a ≤ |a|
+@[to_additive]
+theorem inv_le_abs (a : α) : a⁻¹ ≤ |a| :=
+  le_sup_right
+#align lattice_ordered_comm_group.inv_le_abs LatticeOrderedGroup.inv_le_abs
+#align lattice_ordered_comm_group.neg_le_abs LatticeOrderedGroup.neg_le_abs
+
+@[to_additive (attr := simp)]
+theorem abs_inv (a : α) : |a⁻¹| = |a| := calc
+  |a⁻¹| = a⁻¹ ⊔ (a⁻¹)⁻¹ := rfl
+  _ = a ⊔ a⁻¹ := by rw [inv_inv, sup_comm]
+
+-- 0 ≤ a⁺
+@[to_additive pos_nonneg]
+theorem one_le_pos (a : α) : 1 ≤ a⁺ :=
+  le_sup_right
+#align lattice_ordered_comm_group.one_le_pos LatticeOrderedGroup.one_le_pos
+#align lattice_ordered_comm_group.pos_nonneg LatticeOrderedGroup.pos_nonneg
+
+-- 0 ≤ a⁻
+@[to_additive neg_nonneg]
+theorem one_le_neg (a : α) : 1 ≤ a⁻ :=
+  le_sup_right
+#align lattice_ordered_comm_group.one_le_neg LatticeOrderedGroup.one_le_neg
+#align lattice_ordered_comm_group.neg_nonneg LatticeOrderedGroup.neg_nonneg
+
+-- pos_nonpos_iff
+@[to_additive]
+theorem pos_le_one_iff {a : α} : a⁺ ≤ 1 ↔ a ≤ 1 := by
+  rw [m_pos_part_def, sup_le_iff, and_iff_left le_rfl]
+#align lattice_ordered_comm_group.pos_le_one_iff LatticeOrderedGroup.pos_le_one_iff
+#align lattice_ordered_comm_group.pos_nonpos_iff LatticeOrderedGroup.pos_nonpos_iff
+
+-- neg_nonpos_iff
+@[to_additive]
+theorem neg_le_one_iff {a : α} : a⁻ ≤ 1 ↔ a⁻¹ ≤ 1 := by
+  rw [m_neg_part_def, sup_le_iff, and_iff_left le_rfl]
+#align lattice_ordered_comm_group.neg_le_one_iff LatticeOrderedGroup.neg_le_one_iff
+#align lattice_ordered_comm_group.neg_nonpos_iff LatticeOrderedGroup.neg_nonpos_iff
+
+@[to_additive]
+theorem pos_eq_one_iff {a : α} : a⁺ = 1 ↔ a ≤ 1 :=
+  sup_eq_right
+#align lattice_ordered_comm_group.pos_eq_one_iff LatticeOrderedGroup.pos_eq_one_iff
+#align lattice_ordered_comm_group.pos_eq_zero_iff LatticeOrderedGroup.pos_eq_zero_iff
+
+@[to_additive]
+theorem neg_eq_one_iff' {a : α} : a⁻ = 1 ↔ a⁻¹ ≤ 1 :=
+  sup_eq_right
+#align lattice_ordered_comm_group.neg_eq_one_iff' LatticeOrderedGroup.neg_eq_one_iff'
+#align lattice_ordered_comm_group.neg_eq_zero_iff' LatticeOrderedGroup.neg_eq_zero_iff'
+
+@[to_additive]
+theorem neg_eq_one_iff [CovariantClass α α Mul.mul LE.le] {a : α} : a⁻ = 1 ↔ 1 ≤ a := by
+  rw [le_antisymm_iff, neg_le_one_iff, inv_le_one', and_iff_left (one_le_neg _)]
+#align lattice_ordered_comm_group.neg_eq_one_iff LatticeOrderedGroup.neg_eq_one_iff
+#align lattice_ordered_comm_group.neg_eq_zero_iff LatticeOrderedGroup.neg_eq_zero_iff
+
+@[to_additive le_pos]
+theorem m_le_pos (a : α) : a ≤ a⁺ :=
+  le_sup_left
+#align lattice_ordered_comm_group.m_le_pos LatticeOrderedGroup.m_le_pos
+#align lattice_ordered_comm_group.le_pos LatticeOrderedGroup.le_pos
+
+-- -a ≤ a⁻
+@[to_additive]
+theorem inv_le_neg (a : α) : a⁻¹ ≤ a⁻ :=
+  le_sup_left
+#align lattice_ordered_comm_group.inv_le_neg LatticeOrderedGroup.inv_le_neg
+#align lattice_ordered_comm_group.neg_le_neg LatticeOrderedGroup.neg_le_neg
+
+-- Bourbaki A.VI.12
+--  a⁻ = (-a)⁺
+@[to_additive]
+theorem neg_eq_pos_inv (a : α) : a⁻ = a⁻¹⁺ :=
+  rfl
+#align lattice_ordered_comm_group.neg_eq_pos_inv LatticeOrderedGroup.neg_eq_pos_inv
+#align lattice_ordered_comm_group.neg_eq_pos_neg LatticeOrderedGroup.neg_eq_pos_neg
+
+-- a⁺ = (-a)⁻
+@[to_additive]
+theorem pos_eq_neg_inv (a : α) : a⁺ = a⁻¹⁻ := by rw [neg_eq_pos_inv, inv_inv]
+#align lattice_ordered_comm_group.pos_eq_neg_inv LatticeOrderedGroup.pos_eq_neg_inv
+#align lattice_ordered_comm_group.pos_eq_neg_neg LatticeOrderedGroup.pos_eq_neg_neg
+
+-- We use this in Bourbaki A.VI.12 Prop 9 a)
+-- c + (a ⊓ b) = (c + a) ⊓ (c + b)
+@[to_additive]
+theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+    c * (a ⊓ b) = c * a ⊓ c * b := by
+  refine' le_antisymm _ _
+  rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left]
+  simp
+  rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
+    inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
+  simp
+#align lattice_ordered_comm_group.mul_inf_eq_mul_inf_mul LatticeOrderedGroup.mul_inf_eq_mul_inf_mul
+#align lattice_ordered_comm_group.add_inf_eq_add_inf_add LatticeOrderedGroup.add_inf_eq_add_inf_add
+
+-- Bourbaki A.VI.12 Prop 9 a)
+-- a = a⁺ - a⁻
+@[to_additive (attr := simp)]
+theorem pos_div_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁺ / a⁻ = a := by
+  symm
+  rw [div_eq_mul_inv]
+  apply eq_mul_inv_of_mul_eq
+  rw [m_neg_part_def, mul_sup, mul_one, mul_right_inv, sup_comm, m_pos_part_def]
+#align lattice_ordered_comm_group.pos_div_neg LatticeOrderedGroup.pos_div_neg
+#align lattice_ordered_comm_group.pos_sub_neg LatticeOrderedGroup.pos_sub_neg
+
+-- pos_of_nonneg
+/-- If `a` is positive, then it is equal to its positive component `a⁺`. -/
+@[to_additive "If `a` is positive, then it is equal to its positive component `a⁺`."]
+theorem pos_of_one_le (a : α) (h : 1 ≤ a) : a⁺ = a := by
+  rw [m_pos_part_def]
+  exact sup_of_le_left h
+#align lattice_ordered_comm_group.pos_of_one_le LatticeOrderedGroup.pos_of_one_le
+#align lattice_ordered_comm_group.pos_of_nonneg LatticeOrderedGroup.pos_of_nonneg
+
+-- 0 ≤ a implies a⁺ = a
+-- pos_of_nonpos
+@[to_additive]
+theorem pos_of_le_one (a : α) (h : a ≤ 1) : a⁺ = 1 :=
+  pos_eq_one_iff.mpr h
+#align lattice_ordered_comm_group.pos_of_le_one LatticeOrderedGroup.pos_of_le_one
+#align lattice_ordered_comm_group.pos_of_nonpos LatticeOrderedGroup.pos_of_nonpos
+
+@[to_additive neg_of_inv_nonneg]
+theorem neg_of_one_le_inv (a : α) (h : 1 ≤ a⁻¹) : a⁻ = a⁻¹ := by
+  rw [neg_eq_pos_inv]
+  exact pos_of_one_le _ h
+#align lattice_ordered_comm_group.neg_of_one_le_inv LatticeOrderedGroup.neg_of_one_le_inv
+#align lattice_ordered_comm_group.neg_of_inv_nonneg LatticeOrderedGroup.neg_of_inv_nonneg
+
+-- neg_of_neg_nonpos
+@[to_additive]
+theorem neg_of_inv_le_one (a : α) (h : a⁻¹ ≤ 1) : a⁻ = 1 :=
+  neg_eq_one_iff'.mpr h
+#align lattice_ordered_comm_group.neg_of_inv_le_one LatticeOrderedGroup.neg_of_inv_le_one
+#align lattice_ordered_comm_group.neg_of_neg_nonpos LatticeOrderedGroup.neg_of_neg_nonpos
+
+-- neg_of_nonpos
+@[to_additive]
+theorem neg_of_le_one [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : a ≤ 1) : a⁻ = a⁻¹ :=
+  sup_eq_left.2 <| one_le_inv'.2 h
+#align lattice_ordered_comm_group.neg_of_le_one LatticeOrderedGroup.neg_of_le_one
+#align lattice_ordered_comm_group.neg_of_nonpos LatticeOrderedGroup.neg_of_nonpos
+
+-- pos_eq_self_of_pos_pos
+@[to_additive]
+theorem pos_eq_self_of_one_lt_pos {α} [LinearOrder α] [CommGroup α] {x : α} (hx : 1 < x⁺) :
+    x⁺ = x := by
+  rw [m_pos_part_def, right_lt_sup, not_le] at hx
+  rw [m_pos_part_def, sup_eq_left]
+  exact hx.le
+#align lattice_ordered_comm_group.pos_eq_self_of_one_lt_pos LatticeOrderedGroup.pos_eq_self_of_one_lt_pos
+#align lattice_ordered_comm_group.pos_eq_self_of_pos_pos LatticeOrderedGroup.pos_eq_self_of_pos_pos
+
+-- neg_of_nonneg'
+@[to_additive]
+theorem neg_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : 1 ≤ a) : a⁻ = 1 :=
+  neg_eq_one_iff.mpr h
+#align lattice_ordered_comm_group.neg_of_one_le LatticeOrderedGroup.neg_of_one_le
+#align lattice_ordered_comm_group.neg_of_nonneg LatticeOrderedGroup.neg_of_nonneg
+
+-- 0 ≤ a implies |a| = a
+@[to_additive abs_of_nonneg]
+theorem mabs_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : 1 ≤ a) : |a| = a :=
+  sup_eq_left.2 <| Left.inv_le_self h
+#align lattice_ordered_comm_group.mabs_of_one_le LatticeOrderedGroup.mabs_of_one_le
+#align lattice_ordered_comm_group.abs_of_nonneg LatticeOrderedGroup.abs_of_nonneg
+
+-- |a - b| = |b - a|
+@[to_additive]
+theorem abs_div_comm (a b : α) : |a / b| = |b / a| := by
+  dsimp only [Abs.abs]
+  rw [inv_div a b, ← inv_inv (a / b), inv_div, sup_comm]
+#align lattice_ordered_comm_group.abs_inv_comm LatticeOrderedGroup.abs_div_comm
+#align lattice_ordered_comm_group.abs_neg_comm LatticeOrderedGroup.abs_sub_comm
+
+end LatticeOrderedGroup
+
+end Group
+
+
+variable [Lattice α] [CommGroup α]
+
+
+
+
+
+-- Fuchs p67
 -- Bourbaki A.VI.10 Prop 7
 -- a ⊓ b + (a ⊔ b) = a + b
 @[to_additive]
@@ -120,177 +389,7 @@ theorem inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a
 
 namespace LatticeOrderedCommGroup
 
--- see Note [lower instance priority]
-/--
-Let `α` be a lattice ordered commutative group with identity `1`. For an element `a` of type `α`,
-the element `a ⊔ 1` is said to be the *positive component* of `a`, denoted `a⁺`.
--/
-@[to_additive
-      "Let `α` be a lattice ordered commutative group with identity `0`. For an element `a` of type
-      `α`,the element `a ⊔ 0` is said to be the *positive component* of `a`, denoted `a⁺`."]
-instance (priority := 100) hasOneLatticeHasPosPart : PosPart α :=
-  ⟨fun a => a ⊔ 1⟩
-#align lattice_ordered_comm_group.has_one_lattice_has_pos_part LatticeOrderedCommGroup.hasOneLatticeHasPosPart
-#align lattice_ordered_comm_group.has_zero_lattice_has_pos_part LatticeOrderedCommGroup.hasZeroLatticeHasPosPart
-
-@[to_additive pos_part_def]
-theorem m_pos_part_def (a : α) : a⁺ = a ⊔ 1 :=
-  rfl
-#align lattice_ordered_comm_group.m_pos_part_def LatticeOrderedCommGroup.m_pos_part_def
-#align lattice_ordered_comm_group.pos_part_def LatticeOrderedCommGroup.pos_part_def
-
--- see Note [lower instance priority]
-/--
-Let `α` be a lattice ordered commutative group with identity `1`. For an element `a` of type `α`,
-the element `(-a) ⊔ 1` is said to be the *negative component* of `a`, denoted `a⁻`.
--/
-@[to_additive
-      "Let `α` be a lattice ordered commutative group with identity `0`. For an element `a` of type
-      `α`, the element `(-a) ⊔ 0` is said to be the *negative component* of `a`, denoted `a⁻`."]
-instance (priority := 100) hasOneLatticeHasNegPart : NegPart α :=
-  ⟨fun a => a⁻¹ ⊔ 1⟩
-#align lattice_ordered_comm_group.has_one_lattice_has_neg_part LatticeOrderedCommGroup.hasOneLatticeHasNegPart
-#align lattice_ordered_comm_group.has_zero_lattice_has_neg_part LatticeOrderedCommGroup.hasZeroLatticeHasNegPart
-
-@[to_additive neg_part_def]
-theorem m_neg_part_def (a : α) : a⁻ = a⁻¹ ⊔ 1 :=
-  rfl
-#align lattice_ordered_comm_group.m_neg_part_def LatticeOrderedCommGroup.m_neg_part_def
-#align lattice_ordered_comm_group.neg_part_def LatticeOrderedCommGroup.neg_part_def
-
-@[to_additive (attr := simp)]
-theorem pos_one : (1 : α)⁺ = 1 :=
-  sup_idem
-#align lattice_ordered_comm_group.pos_one LatticeOrderedCommGroup.pos_one
-#align lattice_ordered_comm_group.pos_zero LatticeOrderedCommGroup.pos_zero
-
-@[to_additive (attr := simp)]
-theorem neg_one : (1 : α)⁻ = 1 := by rw [m_neg_part_def, inv_one, sup_idem]
-#align lattice_ordered_comm_group.neg_one LatticeOrderedCommGroup.neg_one
-#align lattice_ordered_comm_group.neg_zero LatticeOrderedCommGroup.neg_zero
-
--- a⁻ = -(a ⊓ 0)
-@[to_additive]
-theorem neg_eq_inv_inf_one [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁻ = (a ⊓ 1)⁻¹ := by
-  rw [m_neg_part_def, ← inv_inj, inv_sup_eq_inv_inf_inv, inv_inv, inv_inv, inv_one]
-#align lattice_ordered_comm_group.neg_eq_inv_inf_one LatticeOrderedCommGroup.neg_eq_inv_inf_one
-#align lattice_ordered_comm_group.neg_eq_neg_inf_zero LatticeOrderedCommGroup.neg_eq_neg_inf_zero
-
-@[to_additive le_abs]
-theorem le_mabs (a : α) : a ≤ |a| :=
-  le_sup_left
-#align lattice_ordered_comm_group.le_mabs LatticeOrderedCommGroup.le_mabs
-#align lattice_ordered_comm_group.le_abs LatticeOrderedCommGroup.le_abs
-
--- -a ≤ |a|
-@[to_additive]
-theorem inv_le_abs (a : α) : a⁻¹ ≤ |a| :=
-  le_sup_right
-#align lattice_ordered_comm_group.inv_le_abs LatticeOrderedCommGroup.inv_le_abs
-#align lattice_ordered_comm_group.neg_le_abs LatticeOrderedCommGroup.neg_le_abs
-
-@[to_additive (attr := simp)]
-theorem abs_inv (a : α) : |a⁻¹| = |a| := calc
-  |a⁻¹| = a⁻¹ ⊔ (a⁻¹)⁻¹ := rfl
-  _ = a ⊔ a⁻¹ := by rw [inv_inv, sup_comm]
-
--- 0 ≤ a⁺
-@[to_additive pos_nonneg]
-theorem one_le_pos (a : α) : 1 ≤ a⁺ :=
-  le_sup_right
-#align lattice_ordered_comm_group.one_le_pos LatticeOrderedCommGroup.one_le_pos
-#align lattice_ordered_comm_group.pos_nonneg LatticeOrderedCommGroup.pos_nonneg
-
--- 0 ≤ a⁻
-@[to_additive neg_nonneg]
-theorem one_le_neg (a : α) : 1 ≤ a⁻ :=
-  le_sup_right
-#align lattice_ordered_comm_group.one_le_neg LatticeOrderedCommGroup.one_le_neg
-#align lattice_ordered_comm_group.neg_nonneg LatticeOrderedCommGroup.neg_nonneg
-
--- pos_nonpos_iff
-@[to_additive]
-theorem pos_le_one_iff {a : α} : a⁺ ≤ 1 ↔ a ≤ 1 := by
-  rw [m_pos_part_def, sup_le_iff, and_iff_left le_rfl]
-#align lattice_ordered_comm_group.pos_le_one_iff LatticeOrderedCommGroup.pos_le_one_iff
-#align lattice_ordered_comm_group.pos_nonpos_iff LatticeOrderedCommGroup.pos_nonpos_iff
-
--- neg_nonpos_iff
-@[to_additive]
-theorem neg_le_one_iff {a : α} : a⁻ ≤ 1 ↔ a⁻¹ ≤ 1 := by
-  rw [m_neg_part_def, sup_le_iff, and_iff_left le_rfl]
-#align lattice_ordered_comm_group.neg_le_one_iff LatticeOrderedCommGroup.neg_le_one_iff
-#align lattice_ordered_comm_group.neg_nonpos_iff LatticeOrderedCommGroup.neg_nonpos_iff
-
-@[to_additive]
-theorem pos_eq_one_iff {a : α} : a⁺ = 1 ↔ a ≤ 1 :=
-  sup_eq_right
-#align lattice_ordered_comm_group.pos_eq_one_iff LatticeOrderedCommGroup.pos_eq_one_iff
-#align lattice_ordered_comm_group.pos_eq_zero_iff LatticeOrderedCommGroup.pos_eq_zero_iff
-
-@[to_additive]
-theorem neg_eq_one_iff' {a : α} : a⁻ = 1 ↔ a⁻¹ ≤ 1 :=
-  sup_eq_right
-#align lattice_ordered_comm_group.neg_eq_one_iff' LatticeOrderedCommGroup.neg_eq_one_iff'
-#align lattice_ordered_comm_group.neg_eq_zero_iff' LatticeOrderedCommGroup.neg_eq_zero_iff'
-
-@[to_additive]
-theorem neg_eq_one_iff [CovariantClass α α Mul.mul LE.le] {a : α} : a⁻ = 1 ↔ 1 ≤ a := by
-  rw [le_antisymm_iff, neg_le_one_iff, inv_le_one', and_iff_left (one_le_neg _)]
-#align lattice_ordered_comm_group.neg_eq_one_iff LatticeOrderedCommGroup.neg_eq_one_iff
-#align lattice_ordered_comm_group.neg_eq_zero_iff LatticeOrderedCommGroup.neg_eq_zero_iff
-
-@[to_additive le_pos]
-theorem m_le_pos (a : α) : a ≤ a⁺ :=
-  le_sup_left
-#align lattice_ordered_comm_group.m_le_pos LatticeOrderedCommGroup.m_le_pos
-#align lattice_ordered_comm_group.le_pos LatticeOrderedCommGroup.le_pos
-
--- -a ≤ a⁻
-@[to_additive]
-theorem inv_le_neg (a : α) : a⁻¹ ≤ a⁻ :=
-  le_sup_left
-#align lattice_ordered_comm_group.inv_le_neg LatticeOrderedCommGroup.inv_le_neg
-#align lattice_ordered_comm_group.neg_le_neg LatticeOrderedCommGroup.neg_le_neg
-
--- Bourbaki A.VI.12
---  a⁻ = (-a)⁺
-@[to_additive]
-theorem neg_eq_pos_inv (a : α) : a⁻ = a⁻¹⁺ :=
-  rfl
-#align lattice_ordered_comm_group.neg_eq_pos_inv LatticeOrderedCommGroup.neg_eq_pos_inv
-#align lattice_ordered_comm_group.neg_eq_pos_neg LatticeOrderedCommGroup.neg_eq_pos_neg
-
--- a⁺ = (-a)⁻
-@[to_additive]
-theorem pos_eq_neg_inv (a : α) : a⁺ = a⁻¹⁻ := by rw [neg_eq_pos_inv, inv_inv]
-#align lattice_ordered_comm_group.pos_eq_neg_inv LatticeOrderedCommGroup.pos_eq_neg_inv
-#align lattice_ordered_comm_group.pos_eq_neg_neg LatticeOrderedCommGroup.pos_eq_neg_neg
-
--- We use this in Bourbaki A.VI.12 Prop 9 a)
--- c + (a ⊓ b) = (c + a) ⊓ (c + b)
-@[to_additive]
-theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    c * (a ⊓ b) = c * a ⊓ c * b := by
-  refine' le_antisymm _ _
-  rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left]
-  simp
-  rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
-    inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
-  simp
-#align lattice_ordered_comm_group.mul_inf_eq_mul_inf_mul LatticeOrderedCommGroup.mul_inf_eq_mul_inf_mul
-#align lattice_ordered_comm_group.add_inf_eq_add_inf_add LatticeOrderedCommGroup.add_inf_eq_add_inf_add
-
--- Bourbaki A.VI.12 Prop 9 a)
--- a = a⁺ - a⁻
-@[to_additive (attr := simp)]
-theorem pos_div_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁺ / a⁻ = a := by
-  symm
-  rw [div_eq_mul_inv]
-  apply eq_mul_inv_of_mul_eq
-  rw [m_neg_part_def, mul_sup, mul_one, mul_right_inv, sup_comm, m_pos_part_def]
-#align lattice_ordered_comm_group.pos_div_neg LatticeOrderedCommGroup.pos_div_neg
-#align lattice_ordered_comm_group.pos_sub_neg LatticeOrderedCommGroup.pos_sub_neg
+open LatticeOrderedGroup
 
 -- Bourbaki A.VI.12 Prop 9 a)
 -- a⁺ ⊓ a⁻ = 0 (`a⁺` and `a⁻` are co-prime, and, since they are positive, disjoint)
@@ -460,68 +559,6 @@ theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
 #align lattice_ordered_comm_group.abs_div_sup_mul_abs_div_inf LatticeOrderedCommGroup.abs_div_sup_mul_abs_div_inf
 #align lattice_ordered_comm_group.abs_sub_sup_add_abs_sub_inf LatticeOrderedCommGroup.abs_sub_sup_add_abs_sub_inf
 
--- pos_of_nonneg
-/-- If `a` is positive, then it is equal to its positive component `a⁺`. -/
-@[to_additive "If `a` is positive, then it is equal to its positive component `a⁺`."]
-theorem pos_of_one_le (a : α) (h : 1 ≤ a) : a⁺ = a := by
-  rw [m_pos_part_def]
-  exact sup_of_le_left h
-#align lattice_ordered_comm_group.pos_of_one_le LatticeOrderedCommGroup.pos_of_one_le
-#align lattice_ordered_comm_group.pos_of_nonneg LatticeOrderedCommGroup.pos_of_nonneg
-
--- pos_eq_self_of_pos_pos
-@[to_additive]
-theorem pos_eq_self_of_one_lt_pos {α} [LinearOrder α] [CommGroup α] {x : α} (hx : 1 < x⁺) :
-    x⁺ = x := by
-  rw [m_pos_part_def, right_lt_sup, not_le] at hx
-  rw [m_pos_part_def, sup_eq_left]
-  exact hx.le
-#align lattice_ordered_comm_group.pos_eq_self_of_one_lt_pos LatticeOrderedCommGroup.pos_eq_self_of_one_lt_pos
-#align lattice_ordered_comm_group.pos_eq_self_of_pos_pos LatticeOrderedCommGroup.pos_eq_self_of_pos_pos
-
--- 0 ≤ a implies a⁺ = a
--- pos_of_nonpos
-@[to_additive]
-theorem pos_of_le_one (a : α) (h : a ≤ 1) : a⁺ = 1 :=
-  pos_eq_one_iff.mpr h
-#align lattice_ordered_comm_group.pos_of_le_one LatticeOrderedCommGroup.pos_of_le_one
-#align lattice_ordered_comm_group.pos_of_nonpos LatticeOrderedCommGroup.pos_of_nonpos
-
-@[to_additive neg_of_inv_nonneg]
-theorem neg_of_one_le_inv (a : α) (h : 1 ≤ a⁻¹) : a⁻ = a⁻¹ := by
-  rw [neg_eq_pos_inv]
-  exact pos_of_one_le _ h
-#align lattice_ordered_comm_group.neg_of_one_le_inv LatticeOrderedCommGroup.neg_of_one_le_inv
-#align lattice_ordered_comm_group.neg_of_inv_nonneg LatticeOrderedCommGroup.neg_of_inv_nonneg
-
--- neg_of_neg_nonpos
-@[to_additive]
-theorem neg_of_inv_le_one (a : α) (h : a⁻¹ ≤ 1) : a⁻ = 1 :=
-  neg_eq_one_iff'.mpr h
-#align lattice_ordered_comm_group.neg_of_inv_le_one LatticeOrderedCommGroup.neg_of_inv_le_one
-#align lattice_ordered_comm_group.neg_of_neg_nonpos LatticeOrderedCommGroup.neg_of_neg_nonpos
-
--- neg_of_nonpos
-@[to_additive]
-theorem neg_of_le_one [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : a ≤ 1) : a⁻ = a⁻¹ :=
-  sup_eq_left.2 <| one_le_inv'.2 h
-#align lattice_ordered_comm_group.neg_of_le_one LatticeOrderedCommGroup.neg_of_le_one
-#align lattice_ordered_comm_group.neg_of_nonpos LatticeOrderedCommGroup.neg_of_nonpos
-
--- neg_of_nonneg'
-@[to_additive]
-theorem neg_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : 1 ≤ a) : a⁻ = 1 :=
-  neg_eq_one_iff.mpr h
-#align lattice_ordered_comm_group.neg_of_one_le LatticeOrderedCommGroup.neg_of_one_le
-#align lattice_ordered_comm_group.neg_of_nonneg LatticeOrderedCommGroup.neg_of_nonneg
-
--- 0 ≤ a implies |a| = a
-@[to_additive abs_of_nonneg]
-theorem mabs_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : 1 ≤ a) : |a| = a :=
-  sup_eq_left.2 <| Left.inv_le_self h
-#align lattice_ordered_comm_group.mabs_of_one_le LatticeOrderedCommGroup.mabs_of_one_le
-#align lattice_ordered_comm_group.abs_of_nonneg LatticeOrderedCommGroup.abs_of_nonneg
-
 /-- The unary operation of taking the absolute value is idempotent. -/
 @[to_additive (attr := simp) abs_abs
   "The unary operation of taking the absolute value is idempotent."]
@@ -571,14 +608,6 @@ theorem mabs_mul_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : |a
     exact mul_le_mul' (inv_le_abs _) (inv_le_abs _)
 #align lattice_ordered_comm_group.mabs_mul_le LatticeOrderedCommGroup.mabs_mul_le
 #align lattice_ordered_comm_group.abs_add_le LatticeOrderedCommGroup.abs_add_le
-
--- |a - b| = |b - a|
-@[to_additive]
-theorem abs_div_comm (a b : α) : |a / b| = |b / a| := by
-  dsimp only [Abs.abs]
-  rw [inv_div a b, ← inv_inv (a / b), inv_div, sup_comm]
-#align lattice_ordered_comm_group.abs_inv_comm LatticeOrderedCommGroup.abs_div_comm
-#align lattice_ordered_comm_group.abs_neg_comm LatticeOrderedCommGroup.abs_sub_comm
 
 -- | |a| - |b| | ≤ |a - b|
 @[to_additive]
