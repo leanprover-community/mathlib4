@@ -118,7 +118,7 @@ add_decl_doc a₄
 /-- The `a₆` coefficient of a Weierstrass curve. -/
 add_decl_doc a₆
 
-instance [Inhabited R] : Inhabited <| WeierstrassCurve R :=
+instance instInhabitedWeierstrassCurve [Inhabited R] : Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
 #align weierstrass_curve.inhabited WeierstrassCurve.instInhabitedWeierstrassCurve
 
