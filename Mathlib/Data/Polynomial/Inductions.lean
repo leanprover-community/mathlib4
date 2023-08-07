@@ -51,6 +51,24 @@ theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_mul_X_add Polynomial.divX_mul_X_add
 
+theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
+  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
+
+theorem coeff_zero_eq_iff {a : R} : p.coeff 0 = a ↔ ∃ g : Polynomial R, p = X * g + C a :=
+  by
+  constructor
+  · intro h
+    use p.divX
+    rw [←h, X_mul_divX_add p]
+  · intro h
+    cases' h with g hg
+    rw [hg]
+    rw [add_comm]
+    rw [coeff_add]
+    rw [coeff_C]
+    simp only [eq_self_iff_true, if_true, mul_coeff_zero, coeff_X_zero, MulZeroClass.zero_mul,
+      add_zero]
+
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
   ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]

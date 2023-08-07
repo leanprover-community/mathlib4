@@ -136,6 +136,54 @@ theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDeg
     ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
+theorem natDegree_divX_eq_natDegree_sub_one [Nontrivial R] (hp : 1 ≤ p.natDegree) :
+    p.divX.natDegree = p.natDegree - 1 := by
+  nth_rw 2 [← divX_mul_X_add p]
+  rw [natDegree_add_C]
+  rw [natDegree_mul]
+  · rw [natDegree_X]
+    norm_num
+  · by_contra h
+    rw [divX_eq_zero_iff] at h
+    rw [h] at hp
+    simp [natDegree_C] at hp
+  · rw [← monomial_zero_right 1]
+    rw [← monomial_one_one_eq_X]
+    simp only [Polynomial.monomial_zero_right, Ne.def, not_false_iff, one_ne_zero,
+      Polynomial.monomial_eq_zero_iff]
+
+theorem natDegree_divX_lt (hpd : 1 ≤ p.natDegree) : p.divX.natDegree < p.natDegree :=
+  by
+  have hp : p ≠ 0 := by
+    intro h
+    rw [h] at hpd
+    simp at hpd
+  have hpd' : (C (p.coeff 0)).natDegree < p.natDegree :=
+    by
+    rw [natDegree_C (p.coeff 0)]
+    by_contra h
+    simp at h
+    rw [h] at hpd
+    simp at hpd
+  apply natDegree_lt_natDegree
+  · by_contra h'
+    nth_rw 2 [divX_eq_zero_iff.mp h'] at hpd'
+    simp at hpd'
+    -- exact hpd'
+  · exact degree_divX_lt hp
+
+theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree :=
+  by
+  by_cases hpd : p.natDegree ≤ 0
+  · nth_rw 1 [eq_C_of_natDegree_le_zero hpd]
+    nth_rw 1 [divX_C]
+    simp only [Polynomial.natDegree_zero, zero_le']
+  · rw [not_le] at hpd
+    rw [Nat.lt_iff_add_one_le] at hpd
+    simp at hpd
+    apply le_of_lt
+    exact natDegree_divX_lt hpd
+
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
   by_cases hp : p = 0
   · rw [hp, MulZeroClass.zero_mul, trailingDegree_zero, top_add]
