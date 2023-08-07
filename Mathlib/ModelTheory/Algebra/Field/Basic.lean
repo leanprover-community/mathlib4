@@ -108,8 +108,18 @@ def Theory.field : Language.field.Theory :=
     invFunction.apply₁ 0 =' 0,
     (Term.equal 0 1).not}
 
+class ModelField (K : Type _) extends Field K,
+    Language.field.Structure K,
+    Theory.field.Model K where
+  ( funMap_add : ∀ x y, funMap addFunction ![x, y] = x + y )
+  ( funMap_mul : ∀ x y, funMap mulFunction ![x, y] = x * y )
+  ( funMap_neg : ∀ x, funMap negFunction ![x] = -x )
+  ( funMap_inv : ∀ x, funMap invFunction ![x] = x⁻¹ )
+  ( coe_zero : ((0 : Language.field.Constants) : K) = 0 )
+  ( coe_one : ((1 : Language.field.Constants) : K) = 1 )
+
 set_option maxHeartbeats 20000000 in
-def fieldOfModelField (K : Type _) [Language.field.Structure K]
+def fieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     [Theory.field.Model K] : Field K :=
 { add := fun x y => funMap addFunction ![x, y],
   zero := constantMap (L := Language.field) (M := K) 0,
@@ -177,6 +187,8 @@ def fieldOfModelField (K : Type _) [Language.field.Structure K]
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show invFunction.apply₁ 0 =' 0 ∈ Theory.field by simp [Theory.field])
     simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h }
+
+def modelFieldOfStructureField (K :)
 
 open FieldFunctions
 
