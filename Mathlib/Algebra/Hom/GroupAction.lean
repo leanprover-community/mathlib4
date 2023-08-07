@@ -100,7 +100,7 @@ namespace SMulHomClass
 
 variable {M M' X Y}
 
-theorem comp_smul {f : X →[M'] Y} {m : M'} : f ∘ (m • ·) = (m • ·) ∘ f := funext <| map_smul _ _
+theorem comp_smul (f : X →[M'] Y) (m : M') : f ∘ (m • ·) = (m • ·) ∘ f := funext <| map_smul _ _
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
