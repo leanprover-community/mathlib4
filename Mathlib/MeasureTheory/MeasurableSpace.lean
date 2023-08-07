@@ -375,7 +375,7 @@ instance Bool.instMeasurableSpace : MeasurableSpace Bool := ⊤
 #align bool.measurable_space Bool.instMeasurableSpace
 instance Nat.instMeasurableSpace : MeasurableSpace ℕ := ⊤
 #align nat.measurable_space Nat.instMeasurableSpace
-instance Fin.instMeasurableSpace n : MeasurableSpace (Fin n) := ⊤
+instance Fin.instMeasurableSpace (n : ℕ) : MeasurableSpace (Fin n) := ⊤
 instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
 #align int.measurable_space Int.instMeasurableSpace
 instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
@@ -389,7 +389,8 @@ instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := �
 #align bool.measurable_singleton_class Bool.instMeasurableSingletonClass
 instance Nat.instMeasurableSingletonClass : MeasurableSingletonClass ℕ := ⟨fun _ => trivial⟩
 #align nat.measurable_singleton_class Nat.instMeasurableSingletonClass
-instance Fin.instMeasurableSingletonClass n : MeasurableSingletonClass (Fin n) := ⟨fun _ => trivial⟩
+instance Fin.instMeasurableSingletonClass (n : ℕ) : MeasurableSingletonClass (Fin n) :=
+  ⟨fun _ => trivial⟩
 instance Int.instMeasurableSingletonClass : MeasurableSingletonClass ℤ := ⟨fun _ => trivial⟩
 #align int.measurable_singleton_class Int.instMeasurableSingletonClass
 instance Rat.instMeasurableSingletonClass : MeasurableSingletonClass ℚ := ⟨fun _ => trivial⟩
