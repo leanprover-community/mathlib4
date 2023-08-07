@@ -138,11 +138,8 @@ theorem ofComp {X Y Z: Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)[hg : IsClosedImmersio
     . rw [Scheme.comp_val_base] at comp_closed
       apply closedEmbedding_of_continuous_injective_closed
       . apply Scheme.Hom.continuous
-      . intro x y hxy
-        have : (f.val.base ≫ g.val.base) x = (f.val.base ≫ g.val.base) y := by
-          rw [comp_apply, hxy]
-          rfl
-        exact comp_closed.inj this
+      . apply Function.Injective.of_comp
+        exact comp_closed.inj
       . intro Z hZ
         rw [ClosedEmbedding.closed_iff_image_closed g_closed, ←Set.image_comp]
         exact ClosedEmbedding.isClosedMap comp_closed _ hZ
