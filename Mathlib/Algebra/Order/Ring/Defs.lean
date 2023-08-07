@@ -1006,6 +1006,11 @@ theorem mul_self_inj {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b �
 
 end LinearOrderedSemiring
 
+-- see Note [lower instance priority]
+instance (priority := 100) LinearOrderedSemiring.toLinearOrderedAddCommMonoid
+    [LinearOrderedSemiring α] : LinearOrderedAddCommMonoid α :=
+  { ‹LinearOrderedSemiring α› with }
+
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
     [LinearOrderedCommSemiring α] : LinearOrderedCancelAddCommMonoid α :=
