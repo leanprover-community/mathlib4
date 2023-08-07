@@ -618,27 +618,16 @@ variable (S)
 Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
 protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
-  -- the map `fun r a ↦ a * algebraMap _ _ r`, bilinear in just the right way
-  let act : R →ₗ[R] A →ₗ[S] A :=
-    (Algebra.lsmul (A := A) S Aᵐᵒᵖ A).toLinearMap.flip.restrictScalars R ∘ₗ Algebra.linearMap R A
-  -- TODO: extract this `let` as `AlgebraTensorModule.rid` once we have
-  -- `Algebra R A → Module Rᵐᵒᵖ A`, with the above as `fun r a ↦ MulOpposite.op r • a`
-  let lin : A ⊗[R] R ≃ₗ[S] A := LinearEquiv.ofLinear
-    (AlgebraTensorModule.lift <| LinearMap.flip <| act)
-    ((AlgebraTensorModule.mk R A A R).flip 1)
-    (LinearMap.ext <| fun x => show x * algebraMap R A 1 = x by simp)
-    (AlgebraTensorModule.ext <| fun x y => show (x * algebraMap R A y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y
-      by rw [←Algebra.commutes, ←_root_.Algebra.smul_def, smul_tmul, smul_eq_mul, mul_one])
-  algEquivOfLinearEquivTensorProduct lin
-    (fun a₁ a₂ r₁ r₂ => by
-      show a₁ * a₂ * algebraMap R A (r₁ * r₂) = a₁ * algebraMap R A r₁ * (a₂ * algebraMap R A r₂)
-      simp_rw [←Algebra.commutes, ←Algebra.smul_def, smul_mul_smul])
-    (fun s => show algebraMap S A s * algebraMap R A 1 = algebraMap S A s by simp)
+  algEquivOfLinearEquivTensorProduct (AlgebraTensorModule.rid R S A)
+    (fun _a₁ _a₂ _r₁ _r₂ => smul_mul_smul _ _ _ _ |>.symm)
+    (fun _s => one_smul _ _)
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
 
+variable {R A} in
 @[simp]
-theorem rid_tmul (r : R) (a : A) : TensorProduct.rid R S A (a ⊗ₜ r) = a * algebraMap _ _ r := rfl
+theorem rid_tmul (r : R) (a : A) : TensorProduct.rid R S A (a ⊗ₜ r) = r • a := rfl
 #align algebra.tensor_product.rid_tmul Algebra.TensorProduct.rid_tmul
+
 
 section
 
