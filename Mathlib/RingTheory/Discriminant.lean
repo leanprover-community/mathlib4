@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.Norm
 
