@@ -229,7 +229,7 @@ instance : MonoidalCategory (Center C) where
   -- Todo: replace it by `X.1 ◁ f.f`
   whiskerLeft X _ _ f := tensorHom (𝟙 X) f
   -- Todo: replace it by `f.f ▷ Y.1`
-  whiskerRight f X := tensorHom f (𝟙 X)
+  whiskerRight f Y := tensorHom f (𝟙 Y)
   tensorUnit' := tensorUnit
   associator := associator
   leftUnitor := leftUnitor
