@@ -14,16 +14,14 @@ namespace Pmf
 /-- The binomial `Pmf`: The probability of that `i` out of `n` coins come up heads if the
 probability of heads is `p`. -/
 def binominal (p : ENNReal) (h : p ≤ 1) (n : ℕ) : Pmf (Fin (n + 1)) :=
-  .ofFintype (f := fun i => p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ))
-    (h := by calc
-      _ = Finset.sum (Finset.range (n + 1)) fun m ↦ p ^ m * (1 - p) ^ (n - m) * ↑(Nat.choose n m) :=
-       by rw [Finset.sum_fin_eq_sum_range]
-          apply Finset.sum_congr rfl
-          intro i hi
-          simp at hi
-          rw [dif_pos hi]
-      _ = (p + (1-p))^n := (add_pow _ _ _).symm
-      _ = 1 := by simp [h])
+  .ofFintype (fun i => p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ)) (by
+    convert (add_pow p (1-p) n).symm
+    . rw [Finset.sum_fin_eq_sum_range]
+      apply Finset.sum_congr rfl
+      intro i hi
+      simp at hi
+      rw [dif_pos hi]
+    . simp [h])
 
 theorem binominal_apply : binominal p h n i =
   p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ) := rfl
