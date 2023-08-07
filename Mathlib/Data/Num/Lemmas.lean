@@ -468,7 +468,7 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
     -- This is relying on an automatically generated instance name,
     -- generated in a `deriving` handler.
     -- See https://github.com/leanprover/lean4/issues/2343
-    decidableEq := instDecidableEqNum_ᾰ
+    decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
 
@@ -1463,7 +1463,7 @@ instance linearOrder : LinearOrder ZNum where
     apply le_total
   -- This is relying on an automatically generated instance name, generated in a `deriving` handler.
   -- See https://github.com/leanprover/lean4/issues/2343
-  decidableEq := instDecidableEqZNum_ᾰ
+  decidableEq := instDecidableEqZNum
   decidableLE := ZNum.decidableLE
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
