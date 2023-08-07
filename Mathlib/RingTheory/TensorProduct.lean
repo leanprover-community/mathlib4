@@ -1065,4 +1065,3 @@ theorem smul_def (a : A) (b : B) (m : M) : a ⊗ₜ[R] b • m = a • b • m :
 #align tensor_product.algebra.smul_def TensorProduct.Algebra.smul_def
 
 end TensorProduct.Algebra
-#lint
