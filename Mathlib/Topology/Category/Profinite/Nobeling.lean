@@ -532,31 +532,6 @@ def equivLinear (e : X ≃ₜ Y) : LocallyConstant X Z ≃ₗ[R] LocallyConstant
 end LocallyConstant
 end Piecewise
 
-section TrivialListLexLemmas
--- This section is PR #6395
-
-namespace List
-namespace Lex
-
-variable {α : Type u} {r : α → α → Prop}
-
-lemma singleton_iff (a b : α) : r a b ↔ List.Lex r [a] [b] := by
-  refine' ⟨List.Lex.rel, fun h ↦ _⟩
-  by_contra h'
-  cases h
-  · apply not_nil_right r []; assumption
-  · apply h'; assumption
-
-lemma nil_left_or_nil_eq (l : List α) : List.Lex r [] l ∨ [] = l := by
-  induction l with
-  | nil => exact Or.intro_right _ rfl
-  | cons a as _ => exact Or.intro_left _ (by apply nil)
-
-end Lex
-end List
-
-end TrivialListLexLemmas
-
 section Projections
 
 variable {ι : Type _} {X : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, CompactSpace (X i)]
@@ -907,7 +882,7 @@ instance GoodProducts.singletonUnique :
   uniq := by
     rintro ⟨⟨l, hl⟩, hll⟩
     ext
-    cases' (List.Lex.nil_left_or_nil_eq l : List.Lex (·<·) [] l ∨ [] = l) with h h
+    cases' (List.Lex.nil_left_or_eq_nil l : List.Lex (·<·) [] l ∨ l = []) with h h
     · exfalso
       apply hll
       have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩ }
@@ -915,7 +890,7 @@ instance GoodProducts.singletonUnique :
       apply Submodule.span_mono (Set.image_subset _ he)
       rw [Products.span_nil_eq_top]
       exact Submodule.mem_top
-    · exact Subtype.ext h.symm }
+    · exact Subtype.ext h }
 
 instance (α : Type _) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
   constructor
