@@ -338,13 +338,13 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       exact (B.mono fun x hx ↦ f_decr hx)
     push_neg at h'
     by_contra' H
+    have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦ by
+      simpa only [lt_self_iff_false] using lt_of_le_of_lt
+        (liminf_le_of_frequently_le (frequently_of_forall (fun r ↦ f_decr (maybe_bot r)))
+          (bdd_above.isBoundedUnder f_decr)) H
     obtain ⟨l, l_lt, h'l⟩ : ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f }
     · apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
-      by_contra con
-      simp only [not_exists, not_lt] at con
-      simpa only [lt_self_iff_false] using lt_of_le_of_lt
-        (@liminf_le_of_frequently_le R S _ F f (f (limsSup F))
-          (frequently_of_forall (fun r ↦ f_decr (con r))) (bdd_above.isBoundedUnder f_decr)) H
+      simpa [not_bot] using isBot_or_exists_lt F.limsSup
     obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
       contrapose! h'
       refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
