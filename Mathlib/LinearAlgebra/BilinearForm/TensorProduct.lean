@@ -51,11 +51,13 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)).toLinearMap
 #align bilin_form.tensor_distrib BilinForm.tensorDistrib
 
+-- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
+-- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in #6306.
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
     tensorDistrib (A := A) (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
-      = B₁ m₁ m₁' * algebraMap R A (B₂ m₂ m₂') :=
+      = B₂ m₂ m₂' • B₁ m₁ m₁' :=
   rfl
 #align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmulₓ
 
@@ -72,7 +74,7 @@ protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
 @[simp]
 theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
-    B₂.baseChange (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') * algebraMap R A (B₂ m₂ m₂') :=
+    B₂.baseChange (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
   rfl
 
 end CommSemiring
@@ -103,10 +105,28 @@ noncomputable def tensorDistribEquiv :
   (TensorProduct.lift.equiv R _ _ _).symm ≪≫ₗ LinearMap.toBilin
 #align bilin_form.tensor_distrib_equiv BilinForm.tensorDistribEquiv
 
+
+@[simp]
+theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
+    (m₁' : M₁) (m₂' : M₂) :
+    tensorDistribEquiv (R := R) (M₁ := M₁) (M₂ := M₂) (B₁ ⊗ₜ[R] B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
+      = B₁ m₁ m₁' * B₂ m₂ m₂' :=
+  rfl
+
+variable (R M₁ M₂) in
+-- TODO: make this `rfl`
+@[simp]
+theorem tensorDistribEquiv_toLinearMap :
+    (tensorDistribEquiv (R := R) (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib (A := R) := by
+  ext B₁ B₂ : 3
+  apply toLin.injective
+  ext
+  exact mul_comm _ _
+
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
     tensorDistribEquiv (R := R) (M₁ := M₁) (M₂ := M₂) B = tensorDistrib (A := R) B :=
-  rfl
+  FunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
 #align bilin_form.tensor_distrib_equiv_apply BilinForm.tensorDistribEquiv_apply
 
 end CommRing
