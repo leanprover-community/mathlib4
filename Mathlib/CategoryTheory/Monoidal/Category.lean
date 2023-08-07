@@ -197,7 +197,7 @@ scoped infixr:70 " ⊗ " => MonoidalCategory.tensorObj
 /-- Notation for the `whiskerLeft` -/
 scoped infixr:81 " ◁ " => whiskerLeft
 
-/-- Notation for the `whiskerRight` -/
+/-- Notation for the `whiskerRight` operator of monoidal categories -/
 scoped infixl:81 " ▷ " => whiskerRight
 
 /-- Notation for `tensorHom`, the tensor product of morphisms in a monoidal category -/
