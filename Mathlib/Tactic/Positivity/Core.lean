@@ -193,7 +193,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     if 0 < q then
       haveI' w : decide (0 < $n) =Q true := ⟨⟩
       pure (.positive (by
-        convert q(pos_of_isRat (A := $α) $p $w) using 0))
+        convert q(pos_of_isRat $p $w) using 0))
     else if q = 0 then -- should not be reachable, but just in case
       haveI' w : decide ($n = 0) =Q true := ⟨⟩
       pure (.nonnegative (by
