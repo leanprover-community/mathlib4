@@ -28,6 +28,6 @@
   {"git":
    {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "14ec52fc8e70f157cdd78a9c0a37db98fd8c0c68",
+    "rev": "c3e1dcc6727d9589900ade5e85ed18019a6ce319",
     "name": "std",
     "inputRev?": "ListM"}}]}
