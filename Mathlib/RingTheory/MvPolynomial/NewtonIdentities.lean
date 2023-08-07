@@ -29,18 +29,6 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 + `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
   `(X i)^n` over `i ∈ σ`.
 
-As in other polynomial files, we typically use the notation:
-
-+ `σ τ : Type _` (indexing the variables)
-
-+ `R S : Type _` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
-
-+ `r : R` elements of the coefficient ring
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `φ ψ : MvPolynomial σ R`
-
 ## References
 
 See [zeilberger1984] for the combinatorial proof of Newton's identities.
