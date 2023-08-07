@@ -129,5 +129,27 @@ instance spec_of_quotient_mk {R : CommRingCat.{u}} (I : Ideal R) :
 spec_of_surjective (CommRingCat.ofHom (Ideal.Quotient.mk I))
   Ideal.Quotient.mk_surjective
 
+-- Is this a MorphismProperty somewhere?
+theorem ofComp {X Y Z: Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)[hg : IsClosedImmersion g]
+  [hcomp : IsClosedImmersion (f ≫ g)] : IsClosedImmersion f := by
+    rcases hcomp with ⟨comp_closed, comp_stalk_surj⟩
+    rcases hg with ⟨g_closed, -⟩
+    constructor
+    . rw [Scheme.comp_val_base] at comp_closed
+      apply closedEmbedding_of_continuous_injective_closed
+      . apply Scheme.Hom.continuous
+      . intro x y hxy
+        have : (f.val.base ≫ g.val.base) x = (f.val.base ≫ g.val.base) y := by
+          rw [comp_apply, hxy]
+          rfl
+        exact comp_closed.inj this
+      . intro Z hZ
+        rw [ClosedEmbedding.closed_iff_image_closed g_closed, ←Set.image_comp]
+        exact ClosedEmbedding.isClosedMap comp_closed _ hZ
+    . intro x
+      specialize comp_stalk_surj x
+      erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at comp_stalk_surj
+      exact Function.Surjective.of_comp comp_stalk_surj
+
 end Scheme.IsClosedImmersion
 end AlgebraicGeometry
