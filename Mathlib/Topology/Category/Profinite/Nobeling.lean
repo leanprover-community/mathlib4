@@ -6,8 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
+import Mathlib.Algebra.Category.ModuleCat.Free
 import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Data.List.MinMax
 import Mathlib.SetTheory.Ordinal.Arithmetic
@@ -356,85 +355,8 @@ instance wellFoundedLT_sorted [WellFoundedLT α] :
 
 end Scott
 
-section FreeModules
--- This section is PR #6360
-
-namespace ModuleCat
-
-variable {I : Type _} {J : Type _} {R : Type _} [Ring R] {N P : ModuleCat R} {v : I → N} {w : J → P}
-
-open CategoryTheory
-open CategoryTheory.Limits
-
-section LinearIndependent
-
-variable (hv : LinearIndependent R v) (hw : LinearIndependent R w)
-
-variable {M : ModuleCat R} {u : I ⊕ J → M} (hu : Function.Injective u) {f : N ⟶ M}
-  {g : M ⟶ P} (hse : Mono f ∧ Exact f g) (huv : u ∘ Sum.inl = f ∘ v) (huw : g ∘ u ∘ Sum.inr = w)
-
-lemma linearIndependent_leftExact : LinearIndependent R u := by
-  rw [linearIndependent_sum]
-  refine' ⟨_,_,_⟩
-  · rw [huv]
-    refine' (LinearMap.linearIndependent_iff (f : N →ₗ[R] M) _).mpr hv
-    rw [LinearMap.ker_eq_bot]
-    rw [← mono_iff_injective]
-    exact hse.1
-  · rw [← huw] at hw
-    refine' LinearIndependent.of_comp g _
-    exact hw
-  · rw [huv]
-    have he := hse.2
-    rw [exact_iff] at he
-    rw [Submodule.disjoint_def]
-    intro m hml hmr
-    have hm : m ∈ Submodule.span R (Set.range f) :=
-      Submodule.span_mono (Set.range_comp_subset_range v f) hml
-    have h₁ : Set.range f ⊆ LinearMap.range f
-    · rw [LinearMap.range_coe]
-    have h₂ : LinearMap.range f ≤ Submodule.span R (Set.range f)
-    · intro x hx
-      exact Submodule.subset_span hx
-    rw [Submodule.span_eq_of_le (LinearMap.range f) h₁ h₂, he] at hm
-    simp only [LinearMap.mem_ker] at hm
-    rw [mem_span_set] at hmr
-    obtain ⟨c, ⟨hc, hsum⟩⟩ := hmr
-    rw [← hsum, map_finsupp_sum] at hm
-    simp only [map_smul] at hm
-    rw [linearIndependent_iff'] at hw
-    have hui : Function.Injective (u ∘ Sum.inr) := Function.Injective.comp hu Sum.inr_injective
-    specialize hw (Finset.preimage c.support (u ∘ Sum.inr) (Set.injOn_of_injective hui _))
-    dsimp [Finsupp.sum] at hm
-    rw [← Finset.sum_preimage (u ∘ Sum.inr) c.support (Set.injOn_of_injective hui _) _ _] at hm
-    · rw [← huw] at hw
-      specialize hw (c ∘ u ∘ Sum.inr) hm
-      dsimp [Finsupp.sum] at hsum
-      rw [← hsum]
-      apply Finset.sum_eq_zero
-      intro x hx
-      obtain ⟨y,hy⟩ := hc hx
-      specialize hw y
-      rw [← hy]
-      suffices : (c ∘ u ∘ Sum.inr) y = 0
-      · dsimp at this ⊢
-        rw [this]
-        simp only [zero_smul]
-      apply hw
-      simp only [Finset.mem_preimage, Function.comp_apply]
-      dsimp at hy
-      rwa [hy]
-    · intro x hx hnx
-      exfalso
-      exact hnx (hc hx)
-
-end LinearIndependent
-
-end ModuleCat
-end FreeModules
-
 section Piecewise
--- This section is PR #6373
+-- This section is PR #6373 and #6396
 
 namespace Set
 
@@ -4010,6 +3932,8 @@ lemma GoodProducts.Plimit :
   rw [ModProducts.smaller_linear_independent_iff] at h'
   exact h'
 
+-- lemma GoodProducts.linearIndependent_succ (h₁ : ⊤ ≤ Submodule.span) :
+
 lemma GoodProducts.linearIndependentAux (μ : Ordinal) : P' I μ := by
   refine' Ordinal.limitRecOn μ P0 _
       (fun o ho h ↦ (GoodProducts.Plimit o ho (fun o' ho' ↦ (h o' ho'))))
@@ -4020,16 +3944,12 @@ lemma GoodProducts.linearIndependentAux (μ : Ordinal) : P' I μ := by
     lt_of_lt_of_le (Order.lt_succ _) ho
   by_cases hnC : Nonempty C
   · rw [linearIndependent_iff_sum C o hsC]
-    suffices : LinearIndependent ℤ (u C o)
-    · exact this
-    refine' ModuleCat.linearIndependent_leftExact _ _ _
-        (LocallyConstant.LeftExact C hC hsC ho') (huv C o) (huw C hsC ho')
-    · refine h (le_of_lt ho') (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
-    · have h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o))) :=
-        span (Res C o) (isClosed_Res C o hC)
-      apply (hhw C hC hsC ho' h₁)
-      refine h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho') (support_C' C ho')
-    · exact injective_u C o hsC
+    refine ModuleCat.linearIndependent_leftExact ?_ ?_ (injective_u C o hsC)
+        (LocallyConstant.LeftExact C hC hsC ho').1 (LocallyConstant.LeftExact C hC hsC ho').2
+        (huv C o)
+    · exact h (le_of_lt ho') (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
+    · exact hhw C hC hsC ho' (span (Res C o) (isClosed_Res C o hC))
+        (h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho') (support_C' C ho'))
   · rw [Set.nonempty_coe_sort, Set.not_nonempty_iff_eq_empty] at hnC
     subst hnC
     specialize h (le_of_lt ho') ∅ hC
