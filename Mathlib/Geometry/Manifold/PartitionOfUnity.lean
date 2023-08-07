@@ -503,7 +503,7 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
   haveI : LocallyCompactSpace H := I.locally_compact
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompact H M
   haveI : NormalSpace M := normal_of_paracompact_t2
-  -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
+  -- porting note(https://github.com/leanprover/std4/issues/116):
   -- split `rcases` into `have` + `rcases`
   have := BumpCovering.exists_isSubordinate_of_prop (Smooth I 𝓘(ℝ)) ?_ hs U ho hU
   · rcases this with ⟨f, hf, hfU⟩
