@@ -263,10 +263,10 @@ variable (R A M)
 /-- Heterobasic version of `TensorProduct.rid`. -/
 protected def rid : M ⊗[R] R ≃ₗ[A] M :=
   LinearEquiv.ofLinear
-    (AlgebraTensorModule.lift <| LinearMap.flip <| Algebra.lsmul _ _ _ |>.toLinearMap)
-    ((AlgebraTensorModule.mk R A M R).flip 1)
+    (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
+    (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
-    (AlgebraTensorModule.ext <| fun _ _ => (smul_tmul _ _ _).trans <| congr_arg _ <| mul_one _)
+    (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
 variable {R M}
 
