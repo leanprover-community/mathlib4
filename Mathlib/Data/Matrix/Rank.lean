@@ -10,6 +10,9 @@ import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.Matrix.DotProductStarClass
+import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Matrix.Dual
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
 
@@ -185,8 +188,22 @@ theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
 
 end CommRing
 
+section Field
+-- Praneeth Kolichala's proof for rank_tranpose see:
+-- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/row.20rank.20equals.20column.20rank/near/360941958
 
-section ConjTransposeRankLemmas
+open LinearMap
+
+theorem matrix.rank_transpose' {𝕜 i j : Type _}
+    [Field 𝕜] [Fintype i] [Fintype j] [DecidableEq i][DecidableEq j] (m : Matrix i j 𝕜) :
+    m.transpose.rank = m.rank := by
+  rw [Matrix.rank_eq_finrank_range_toLin mᵀ (Pi.basisFun 𝕜 j).dualBasis (Pi.basisFun 𝕜 i).dualBasis,
+  Matrix.toLin_transpose, ← dualMap_def, finrank_range_dualMap_eq_finrank_range,
+  Matrix.toLin_eq_toLin', Matrix.toLin'_apply', Matrix.rank]
+
+end Field
+
+section DotProductInnerProductSpace
 
 variable {m : Type _} [Fintype m]
 variable {R : Type _} [Field R] [StarRing R]
@@ -230,7 +247,7 @@ theorem rank_self_mul_conjTranspose' (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.
   simpa only [rank_conjTranspose', conjTranspose_conjTranspose] using
     rank_conjTranspose_mul_self' Aᴴ
 
-end ConjTransposeRankLemmas
+end DotProductInnerProductSpace
 
 section TransposeLemmas
 
@@ -266,32 +283,6 @@ proof that is a simple consequence of `Matrix.rank_transpose_mul_self` and
 `Matrix.rank_conjTranspose_mul_self`. This proof pulls in unnecessary assumptions on `R`, and should
 be replaced with a proof that uses Gaussian reduction or argues via linear combinations.
 -/
-
-
-section StarOrderedField
-
-variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
-
-theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
-    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) :=
-  ker_mulVecLin_conjTranspose_mul_self' _
-#align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
-
-theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank :=
-  rank_conjTranspose_mul_self' _
-#align matrix.rank_conj_transpose_mul_self Matrix.rank_conjTranspose_mul_self
-
--- this follows the proof here https://math.stackexchange.com/a/81903/1896
-/-- TODO: prove this in greater generality. -/
-
-theorem rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank := rank_conjTranspose' _
-#align matrix.rank_conj_transpose Matrix.rank_conjTranspose
-
-theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A ⬝ Aᴴ).rank = A.rank :=
-  rank_self_mul_conjTranspose' _
-#align matrix.rank_self_mul_conj_transpose Matrix.rank_self_mul_conjTranspose
-
-end StarOrderedField
 
 section LinearOrderedField
 
