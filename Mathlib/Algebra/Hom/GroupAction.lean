@@ -193,23 +193,18 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
 
 end MulActionHom
 
-/-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
-homomorphism. -/
-@[simps]
-def SMulCommClass.toMulActionHom {M} (N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α]
-    (c : M) : α →[N] α where
-  toFun := (c • ·)
-  map_smul' := smul_comm _
-
 namespace SMulCommClass
 
 variable {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
 
-@[simp]
-theorem toMulActionHom_coe (c : M) : ⇑(toMulActionHom N α c) = (c • ·) := rfl
+/-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
+homomorphism. -/
+@[simps]
+def SMulCommClass.toMulActionHom (c : M) : α →[N] α where
+  toFun := (c • ·)
+  map_smul' := smul_comm _
 
-@[simp]
-theorem toMulActionHom_apply (c : M) (a : α) : toMulActionHom N α c a = c • a := rfl
+theorem toMulActionHom_coe (c : M) : ⇑(toMulActionHom N α c) = (c • ·) := rfl
 
 end SMulCommClass
 
