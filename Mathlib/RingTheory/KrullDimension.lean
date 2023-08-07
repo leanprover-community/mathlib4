@@ -217,6 +217,21 @@ def _root_.PrimeSpectrum.IicToLocalizationAtPrime :
   Set.Iic I → PrimeSpectrum (Localization.AtPrime I.asIdeal) :=
 λ I' ↦ ⟨I'.1.asIdeal.localization' I.asIdeal.primeCompl, inferInstance⟩
 
+/--
+There is a canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I`.
+-/
+@[simp]
+def _root_.PrimeSpectrum.LocalizationAtPrimeToIic :
+  PrimeSpectrum (Localization.AtPrime I.asIdeal) → Set.Iic I :=
+  λ J ↦ ⟨⟨_, Ideal.IsPrime.comap (algebraMap R (Localization.AtPrime I.asIdeal))⟩, λ z hz ↦
+    @@Decidable.byContradiction (Classical.dec _) $ λ hnz ↦ J.IsPrime.ne_top $ eq_top_iff.mpr $
+    False.elim $ J.IsPrime.1 $ (Ideal.eq_top_iff_one _).mpr (by
+      rw [show (1 : Localization.AtPrime I.asIdeal) = Localization.mk z 1 * Localization.mk 1
+        ⟨z, hnz⟩ by simpa only [Localization.mk_one_eq_algebraMap, ←Algebra.smul_def,
+          Localization.smul_mk, smul_eq_mul, mul_one, eq_comm] using Localization.mk_self
+            (⟨z, hnz⟩ : I.asIdeal.primeCompl)]
+      exact Ideal.mul_mem_right _ _ hz)⟩
+
 end aboutHeightAndLocalization
 
 end ringKrullDim
