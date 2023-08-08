@@ -1821,9 +1821,9 @@ theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α �
   (hf : Integrable f (μ.restrict s)) : ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
--- TODO: Can we drop Integrable for fintypes?
 theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ)
   (hf : Integrable f μ) : ∫ x, f x ∂μ = ∑ x, f x * (μ {x}).toReal := by
+  -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ , Finset.coe_univ, Measure.restrict_univ]
   simp only [Finset.coe_univ, Measure.restrict_univ, hf]
 
