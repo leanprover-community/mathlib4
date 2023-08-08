@@ -81,7 +81,7 @@ instance : Unique (HomologyMapData φ h₁ h₂) := Unique.mk' _
 
 variable (φ h₁ h₂)
 
-def some : HomologyMapData φ h₁ h₂ := default
+def homologyMapData : HomologyMapData φ h₁ h₂ := default
 
 variable {φ h₁ h₂}
 

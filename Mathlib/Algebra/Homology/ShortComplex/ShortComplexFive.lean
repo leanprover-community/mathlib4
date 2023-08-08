@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 namespace CategoryTheory
@@ -124,10 +125,44 @@ def shortComplex₂ : ShortComplex C :=
 def shortComplex₃ : ShortComplex C :=
   ShortComplex.mk _ _ S.zero₃
 
+@[simps]
+def shortComplex₄Functor₁₂₃₄ : ShortComplex₅ C ⥤ ShortComplex₄ C where
+  obj K := ShortComplex₄.mk K.f K.g K.h
+  map φ :=
+    { τ₁ := φ.τ₁
+      τ₂ := φ.τ₂
+      τ₃ := φ.τ₃
+      τ₄ := φ.τ₄ }
+
+@[simps]
+def shortComplex₄Functor₂₃₄₅ : ShortComplex₅ C ⥤ ShortComplex₄ C where
+  obj K := ShortComplex₄.mk K.g K.h K.i
+  map φ :=
+    { τ₁ := φ.τ₂
+      τ₂ := φ.τ₃
+      τ₃ := φ.τ₄
+      τ₄ := φ.τ₅ }
+
 structure Exact : Prop where
   exact₂ : S.shortComplex₁.Exact
   exact₃ : S.shortComplex₂.Exact
   exact₄ : S.shortComplex₃.Exact
+
+namespace Exact
+
+variable {S}
+
+lemma exact₁₂₃₄ (hS : S.Exact) :
+    (shortComplex₄Functor₁₂₃₄.obj S).Exact where
+  exact₂ := hS.exact₂
+  exact₃ := hS.exact₃
+
+lemma exact₂₃₄₅ (hS : S.Exact) :
+    (shortComplex₄Functor₂₃₄₅.obj S).Exact where
+  exact₂ := hS.exact₃
+  exact₃ := hS.exact₄
+
+end Exact
 
 end
 
