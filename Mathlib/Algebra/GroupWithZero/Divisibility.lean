@@ -168,7 +168,7 @@ lemma divide_not_dvd {x y : M₀} (hx : ¬y ∣ x) : divide x y = 0 := by
 lemma divide_zero (x : M₀) : divide x 0 = 0 := by
   simp only [divide, dif_neg, ne_eq, false_and]
 
-lemma divide_one [NeZero (1 : M₀)] (x : M₀) : divide x 1 = x := by
+lemma divide_one [Nontrivial M₀] (x : M₀) : divide x 1 = x := by
   rw [divide_dvd one_ne_zero <| one_dvd x, ← one_mul <| Exists.choose _]
   exact (one_dvd x).choose_spec.symm
 
