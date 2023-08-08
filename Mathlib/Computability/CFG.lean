@@ -33,7 +33,8 @@ structure CFG (T : Type _) where
 
 namespace CFG
 
-variable {T : Type _}
+universe u
+variable {T : Type u}
 
 /-- One step of context-free transformation. -/
 def Transforms (g : CFG T) (w₁ w₂ : List (Symbol T g.nt)) : Prop :=
@@ -55,9 +56,8 @@ def language (g : CFG T) : Language T :=
   setOf g.Generates
 
 /-- Predicate "[language] is context-free"; defined by existence of a context-free grammar. -/
-/-def _root_.Language.IsCF (L : Language T) : Prop :=
---  ∃ g : CFG T, g.language = L-/
-def delete_me := 1
+def _root_.Language.IsCF (L : Language T) : Prop :=
+  ∃ g : CFG.{u, u} T, g.language = L
 
 variable {g : CFG T}
 
