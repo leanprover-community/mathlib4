@@ -17,6 +17,9 @@ import Mathlib.Data.Nat.Prime
 -- `build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 
+-- We need to set this here, as the lakefile does not enable this during testing.
+set_option pp.unicode.fun true
+
 noncomputable section
 
 /-- info: Try this: exact Nat.lt.base x -/
