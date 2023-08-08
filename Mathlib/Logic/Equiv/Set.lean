@@ -596,8 +596,8 @@ def ofLeftInverse {α : Sort*} {β : Type*} (f : α → β) (f_inv : Nonempty α
 
 Note that if `α` is empty, no such `f_inv` exists and so this definition can't be used, unlike
 the stronger but less convenient `ofLeftInverse`. -/
-abbrev ofLeftInverse' {α : Sort*} {β : Type*} (f : α → β) (f_inv : β → α) (hf : LeftInverse f_inv f) :
-    α ≃ range f :=
+abbrev ofLeftInverse' {α : Sort*} {β : Type*}
+    (f : α → β) (f_inv : β → α) (hf : LeftInverse f_inv f) : α ≃ range f :=
   ofLeftInverse f (fun _ => f_inv) fun _ => hf
 #align equiv.of_left_inverse' Equiv.ofLeftInverse'
 
