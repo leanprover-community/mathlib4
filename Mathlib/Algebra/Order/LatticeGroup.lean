@@ -363,6 +363,42 @@ theorem abs_div_comm (a b : α) : |a / b| = |b / a| := by
 #align lattice_ordered_comm_group.abs_inv_comm LatticeOrderedGroup.abs_div_comm
 #align lattice_ordered_comm_group.abs_neg_comm LatticeOrderedGroup.abs_sub_comm
 
+-- Everything above more or less as before
+-- Now need to start doing something special
+
+-- In fact 0 ≤ n•a implies 0 ≤ a, see L. Fuchs, "Partially ordered algebraic systems"
+-- Chapter V, 1.E
+@[to_additive]
+lemma pow_two_semiclosed
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
+    (1 : α) ≤ a^2 → 1 ≤ a := by
+  introv h
+  have s1 : (a⊓1)^2 = a⊓1 := by
+    rw [pow_two, mul_inf, inf_mul,
+     ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
+     inf_assoc]
+    rw [← right_eq_inf, inf_comm] at h
+    rw [← h]
+  rw [pow_two] at s1
+  simp at s1
+  exact s1
+
+@[to_additive abs_nonneg]
+theorem one_le_abs
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
+    1 ≤ |a| := by
+  have s1: (1 : α) ≤ |a|^2 := by
+    rw [abs_eq_sup_inv]
+    rw [pow_two, mul_sup,  sup_mul,
+    ←pow_two]
+    simp
+    rw [sup_comm, ← sup_assoc]
+    apply le_sup_right
+  apply pow_two_semiclosed
+  exact s1
+
+
+
 end LatticeOrderedGroup
 
 end Group
@@ -465,13 +501,6 @@ theorem m_pos_abs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |a|⁺
 #align lattice_ordered_comm_group.m_pos_abs LatticeOrderedCommGroup.m_pos_abs
 #align lattice_ordered_comm_group.pos_abs LatticeOrderedCommGroup.pos_abs
 
-@[to_additive abs_nonneg]
-theorem one_le_abs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : 1 ≤ |a| := by
-  rw [← m_pos_abs]
-  exact one_le_pos _
-#align lattice_ordered_comm_group.one_le_abs LatticeOrderedCommGroup.one_le_abs
-#align lattice_ordered_comm_group.abs_nonneg LatticeOrderedCommGroup.abs_nonneg
-
 -- The proof from Bourbaki A.VI.12 Prop 9 d)
 -- |a| = a⁺ - a⁻
 @[to_additive]
@@ -512,6 +541,7 @@ theorem inf_sq_eq_mul_div_abs_div [CovariantClass α α (· * ·) (· ≤ ·)] (
 
 /-- Every lattice ordered commutative group is a distributive lattice
 -/
+-- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
 @[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
 def latticeOrderedCommGroupToDistribLattice (α : Type u) [s : Lattice α] [CommGroup α]
     [CovariantClass α α (· * ·) (· ≤ ·)] : DistribLattice α :=
