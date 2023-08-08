@@ -1,87 +1,24 @@
 import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Propose
-import Mathlib.Tactic.GCongr
+import Mathlib.Tactic
+
+/-!
+# Outline of portmanteau implication: liminf condition for open sets implies weak convergence
+
+This file contains steps needed to prove the portmanteau implication
+`le_liminf_open_implies_convergence`. Some intermediate steps need to be generalized
+and cleaned up, and are to be placed in appropriate files. The main part should go
+to the file `Mathlib.MeasureTheory.Measure.Portmanteau`.
+-/
 
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
 
--- This file contains steps needed to prove the portmanteau implication
--- `le_liminf_open_implies_convergence`. Some intermediate steps need to be generalized
--- and cleaned up, and are to be placed in appropriate files. The main part should go
--- to the file `Mathlib.MeasureTheory.Measure.Portmanteau`.
 
-
-
-section liminf_lemma
-
-variable {ι R S : Type _} {F : Filter ι} [NeBot F]
-  [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-  [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
-
-#check Monotone.map_sSup_of_continuousAt'
-
--- NOTE: The result `Monotone.map_sSup_of_continuousAt'` in the library has a natural version
--- generalized to *conditionally* complete linear orders. One just needs a hypothesis `BddAbove s`.
-/-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
-the supremum of the image of this set. -/
-theorem Monotone.map_sSup_of_continuousAt'' {f : R → S} {A : Set R} (Cf : ContinuousAt f (sSup A))
-    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
-    f (sSup A) = sSup (f '' A) := by
-  --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
-  refine ((@IsLUB.isLUB_of_tendsto R S _ _ _ _ _ _ f A (sSup A) (f (sSup A)) (Mf.monotoneOn _) ?_ A_nonemp ?_).csSup_eq (Set.nonempty_image_iff.mpr A_nonemp)).symm
-  · exact isLUB_csSup A_nonemp A_bdd
-  · exact tendsto_nhdsWithin_of_tendsto_nhds Cf
-
-theorem Monotone.map_sInf_of_continuousAt'' {f : R → S} {A : Set R} (Cf : ContinuousAt f (sInf A))
-    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
-    f (sInf A) = sInf (f '' A) :=
-  @Monotone.map_sSup_of_continuousAt'' Rᵒᵈ Sᵒᵈ _ _ _ _ _ _ f A Cf Mf.dual A_nonemp A_bdd
-
-theorem Antitone.map_sInf_of_continuousAt'' {f : R → S} {A : Set R} (Cf : ContinuousAt f (sInf A))
-    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
-    f (sInf A) = sSup (f '' A) :=
-  @Monotone.map_sInf_of_continuousAt'' R Sᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
-
-theorem Antitone.map_sSup_of_continuousAt'' {f : R → S} {A : Set R} (Cf : ContinuousAt f (sSup A))
-    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
-    f (sSup A) = sInf (f '' A) :=
-  @Monotone.map_sSup_of_continuousAt'' R Sᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
-
-#check Filter.IsBounded.isCobounded_flip
-
--- NOTE: Missing from Mathlib? Probably not, but what is the name...?
-lemma Monotone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f) {u : ι → X}
-    (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
-    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) := by
-  --refine Filter.IsBounded.isCobounded_flip ?_
-  obtain ⟨b, hb⟩ := bdd
-  refine ⟨f b, fun y hy ↦ ?_⟩
-  have obs : ∀ᶠ _ in map u F, y ≤ f b := by
-    filter_upwards [hb, Filter.map_compose.symm ▸ hy] with x h₁ h₂ using h₂.trans (hf h₁)
-  exact eventually_const.mp obs
-
--- NOTE: Missing from Mathlib? Probably not, but what is the name...?
-lemma Monotone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f) {u : ι → X}
-    (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
-    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
-  @Monotone.isCoboundedUnder_ge ι Xᵒᵈ Yᵒᵈ _ _ f hf.dual u F _ bdd
-
--- NOTE: Missing from Mathlib? Probably not, but what is the name...?
-lemma Antitone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f) {u : ι → X}
-    (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
-    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
-  @Monotone.isCoboundedUnder_ge ι X Yᵒᵈ _ _ f hf u F _ bdd
-
--- NOTE: Missing from Mathlib? Probably not, but what is the name...?
-lemma Antitone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f) {u : ι → X}
-    (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
-    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) :=
-  @Monotone.isCoboundedUnder_le ι X Yᵒᵈ _ _ f hf u F _ bdd
 
 -- NOTE: Missing from Mathlib?
--- What would be a good generality? (Mixes order and metric, so typeclasses don't readily exist.)
+-- What would be a good generality?
+-- (Mixes order-boundedness and metric-boundedness, so typeclasses don't readily exist.)
 lemma Filter.isBounded_le_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
     (h : Metric.Bounded (Set.range f)) :
     (F.map f).IsBounded (· ≤ ·) := by
@@ -100,117 +37,119 @@ lemma Filter.isBounded_ge_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
   use c
   simpa [mem_lowerBounds] using hc
 
-#check Antitone.map_limsSup_of_continuousAt
+section limsup_liminf_add_sub
 
--- NOTE: This was the key lemma to generalize.
-/-- An antitone function between conditionally complete linear ordered spaces sends
-a `Filter.limsSup` to the `Filter.liminf` of the image if it is continuous at the `limsSup`. -/
-theorem Antitone.map_limsSup_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBounded (· ≤ ·)) (bdd_below : F.IsBounded (· ≥ ·))
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.liminf f := by
-  have cobdd : F.IsCobounded (· ≤ ·) := bdd_below.isCobounded_flip
-  apply le_antisymm
-  · rw [limsSup, f_decr.map_sInf_of_continuousAt'' f_cont bdd_above cobdd]
-    apply le_of_forall_lt
-    intro c hc
-    simp only [liminf, limsInf, eventually_map] at hc ⊢
-    obtain ⟨d, hd, h'd⟩ := exists_lt_of_lt_csSup ((@Set.nonempty_image_iff R S f _).mpr bdd_above) hc
-    apply lt_csSup_of_lt ?_ ?_ h'd
-    · exact f_decr.isCoboundedUnder_ge F bdd_below
-    · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
-      filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
-  · by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
-    · rcases h' with ⟨c, c_lt, hc⟩
-      have B : ∃ᶠ n in F, F.limsSup ≤ n := by
-        apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
-        intro x hx
-        by_contra'
-        have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
-        simp only [hc, Set.not_nonempty_empty] at this
-      apply @liminf_le_of_frequently_le R S _ F f (f (limsSup F)) (B.mono fun x hx ↦ f_decr hx) ?_
-      obtain ⟨b, hb⟩ := bdd_above
-      use f b
-      simp only [ge_iff_le, eventually_map]
-      filter_upwards [hb] with t ht using f_decr ht
-    simp only [gt_iff_lt, not_lt, ge_iff_le, not_exists, not_and] at h'
-    by_contra' H
-    obtain ⟨l, l_lt, h'l⟩ : ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f }
-    · apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
-      by_contra con
-      simp only [not_exists, not_lt] at con
-      simpa only [lt_self_iff_false] using lt_of_le_of_lt
-        (@liminf_le_of_frequently_le R S _ F f (f (limsSup F))
-          (frequently_of_forall (fun r ↦ f_decr (con r))) (bdd_above.isBoundedUnder f_decr)) H
-    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
-      contrapose! h'
-      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
-    have B : F.liminf f ≤ f m := by
-      apply @liminf_le_of_frequently_le R S _ F f (f m)
-      · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
-        exact fun x hx ↦ f_decr hx.le
-      · exact IsBounded.isBoundedUnder f_decr bdd_above
-    have I : f m < F.liminf f := h'l ⟨l_m, m_lt.le⟩
-    exact lt_irrefl _ (B.trans_lt I)
+example : ContinuousAdd ℝ := by exact LipschitzAdd.continuousAdd -- ok.
+example : ContinuousAdd ℝ≥0 := by exact LipschitzAdd.continuousAdd -- ok.
+example : ContinuousAdd ℝ≥0∞ := by infer_instance -- ok.
 
-theorem Antitone.map_limsInf_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBoundedUnder (· ≤ ·) id) (bdd_below : F.IsBoundedUnder (· ≥ ·) id)
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf) : f F.limsInf = F.limsup f :=
-  @Antitone.map_limsSup_of_continuousAt' Rᵒᵈ Sᵒᵈ _ _ _ _ _ _ F _ f
-    bdd_below bdd_above f_decr.dual f_cont
+variable {R : Type _} [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
-theorem Monotone.map_limsSup_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBoundedUnder (· ≤ ·) id) (bdd_below : F.IsBoundedUnder (· ≥ ·) id)
-    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.limsup f :=
-  @Antitone.map_limsSup_of_continuousAt' R Sᵒᵈ _ _ _ _ _ _ F _ f
-    bdd_above bdd_below f_incr f_cont
+#check add_le_add_iff_right
 
-theorem Monotone.map_limsInf_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBoundedUnder (· ≤ ·) id) (bdd_below : F.IsBoundedUnder (· ≥ ·) id)
-    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf) : f F.limsInf = F.liminf f :=
-  @Antitone.map_limsSup_of_continuousAt' Rᵒᵈ S _ _ _ _ _ _ F _ f
-    bdd_below bdd_above f_incr.dual f_cont
+lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
+    [CovariantClass R R (Function.swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1]
+    [ContravariantClass R R (Function.swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1]
+    (f : ι → R) (c : R)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
+    Filter.limsup (fun i ↦ f i + c) F = Filter.limsup f F + c := by
+  convert (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c) ?_
+            (continuous_add_right c).continuousAt bdd_above bdd_below).symm
+  intro x y hxy
+  simp only
+  simp only [add_le_add_iff_right, hxy]
 
+lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
+    [CovariantClass R R (Function.swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1]
+    [ContravariantClass R R (Function.swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1]
+    (f : ι → R) (c : R)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
+    Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c := by
+  convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c) ?_
+            (continuous_add_right c).continuousAt bdd_above bdd_below).symm
+  intro x y hxy
+  simp only [add_le_add_iff_right, hxy]
+
+#check AddLECancellable
+#check AddLECancellable.add_le_add_iff_right
+#check AddLECancellable.add_le_add_iff_left
+
+example : AddLECancellable (15 : ℝ≥0) := by exact Contravariant.AddLECancellable
+example : AddLECancellable (15 : ℝ) := by exact Contravariant.AddLECancellable
+--example : AddLECancellable (1 : ℝ≥0∞) := by exact?
+
+lemma ENNReal.addLECancellable_of_ne_top {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
+    AddLECancellable c := fun _ _ h ↦ (ENNReal.add_le_add_iff_left c_ne_top).mp h
+
+--#check StrictMono.add_monotone
+#check add_le_add
+
+lemma liminf_const_add_improved (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
+    [CovariantClass R R (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] (f : ι → R) (c : R)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
+    Filter.liminf (fun i ↦ c + f i) F = c + Filter.liminf f F := by
+  convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x) ?_
+            (continuous_add_left c).continuousAt bdd_above bdd_below).symm
+  exact fun _ _ h ↦ add_le_add_left h c
+
+lemma liminf_add_const_improved (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
+    [CovariantClass R R (Function.swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] (f : ι → R) (c : R)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
+    Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c := by
+  convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c) ?_
+            (continuous_add_right c).continuousAt bdd_above bdd_below).symm
+  exact fun _ _ h ↦ add_le_add_right h c
+
+lemma liminf_add_const_real (F : Filter ι) [NeBot F] (f : ι → ℝ) (c : ℝ)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
+    Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c := by
+  exact liminf_add_const_improved F (fun i ↦ f i) c bdd_above bdd_below
+
+lemma liminf_add_const_nnReal (F : Filter ι) [NeBot F] (f : ι → ℝ≥0) (c : ℝ≥0)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
+    Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c := by
+  exact liminf_add_const_improved F (fun i ↦ f i) c bdd_above bdd_below
+
+lemma liminf_add_const_ennReal (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞)
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
+    Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c := by
+  exact liminf_add_const_improved F (fun i ↦ f i) c bdd_above bdd_below
+
+/-
 lemma limsup_add_const (F : Filter ι) [NeBot F] (f : ι → ℝ) (c : ℝ)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ f i + c) F = Filter.limsup f F + c := by
-  have key := @Monotone.map_limsSup_of_continuousAt' ℝ ℝ _ _ _ _ _ _ (F.map f) _ (fun x ↦ x + c) bdd_above bdd_below ?_ ?_
-  simp only at key
-  convert key.symm
-  · intro x y hxy
-    simp only [add_le_add_iff_right, hxy]
-  · exact (continuous_add_right c).continuousAt
+  convert (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ) ↦ x + c) ?_
+            (continuous_add_right c).continuousAt bdd_above bdd_below).symm
+  intro x y hxy
+  simp only [add_le_add_iff_right, hxy]
 
 lemma liminf_add_const (F : Filter ι) [NeBot F] (f : ι → ℝ) (c : ℝ)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c := by
-  have key := @Monotone.map_limsInf_of_continuousAt' ℝ ℝ _ _ _ _ _ _ (F.map f) _ (fun x ↦ x + c) bdd_above bdd_below ?_ ?_
-  simp only at key
-  convert key.symm
-  · intro x y hxy
-    simp only [add_le_add_iff_right, hxy]
-  · exact (continuous_add_right c).continuousAt
+  convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ) ↦ x + c) ?_
+            (continuous_add_right c).continuousAt bdd_above bdd_below).symm
+  intro x y hxy
+  simp only [add_le_add_iff_right, hxy]
 
 lemma limsup_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ) (c : ℝ)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ c - f i ) F = c - Filter.liminf f F := by
-  have key := @Antitone.map_limsInf_of_continuousAt' ℝ ℝ _ _ _ _ _ _ (F.map f) _ (fun x ↦ c - x) bdd_above bdd_below ?_ ?_
-  simp only at key
-  convert key.symm
-  · intro x y hxy
-    simp only [sub_le_sub_iff_left, hxy]
-  · exact (continuous_sub_left c).continuousAt
+  convert (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ) ↦ c - x) ?_
+            (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
+  intro x y hxy
+  simp only [sub_le_sub_iff_left, hxy]
 
 lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ) (c : ℝ)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ c - f i ) F = c - Filter.limsup f F := by
-  have key := @Antitone.map_limsSup_of_continuousAt' ℝ ℝ _ _ _ _ _ _ (F.map f) _ (fun x ↦ c - x) bdd_above bdd_below ?_ ?_
-  simp only at key
-  convert key.symm
-  · intro x y hxy
-    simp only [sub_le_sub_iff_left, hxy]
-  · exact (continuous_sub_left c).continuousAt
+  convert (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ) ↦ c - x) ?_
+            (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
+  intro x y hxy
+  simp only [sub_le_sub_iff_left, hxy]
+ -/
+end limsup_liminf_add_sub -- section
 
-end liminf_lemma
 
 
 
