@@ -505,8 +505,8 @@ instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
   coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_nat_cast coe_int_cast
 
-instance instRingContinuousMap {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
-    [TopologicalRing β] : Ring C(α, β) :=
+instance instRingContinuousMap {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+    [Ring β] [TopologicalRing β] : Ring C(α, β) :=
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_nat_cast coe_int_cast
 
