@@ -183,6 +183,23 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     . rw [hM]; exact Order.lt_succ _
     . rw [hM, hN]
 
+--Every Finite subset of Theory.ACF 0 is modeled by ACF p for infinitely many p
+
+theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence)
+    (hφ : Set.Infinite { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }) :
+    Theory.ACF 0 ⊨ᵇ φ := by
+  rw [← @not_not (_ ⊨ᵇ _), ← Theory.IsComplete.models_not_iff,
+    Theory.models_iff_finset_models]
+  push_neg
+  intro T0 hT0
+  rw [Theory.IsComplete.models_not_iff, not_not]
+  have h : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ },
+      ∀ φ ∈ T0, (Theory.ACF p) ⊨ᵇ φ := by
+
+
+
+
+
 end Language
 
 end FirstOrder
