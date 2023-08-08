@@ -724,6 +724,7 @@ def nameDict : String → List String
   | "group"       => ["add", "Group"]
   | "subgroup"    => ["add", "Subgroup"]
   | "semigroup"   => ["add", "Semigroup"]
+  | "subsemigroup" => ["add", "Subsemigroup"]
   | "magma"       => ["add", "Magma"]
   | "haar"        => ["add", "Haar"]
   | "prehaar"     => ["add", "Prehaar"]

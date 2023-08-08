@@ -9,8 +9,13 @@ class Implies (p q : Set α → Prop) : Prop where
 
 instance : Implies p p := ⟨fun _ ↦ id⟩
 
-theorem Implies.comp (p q r : Set α → Prop) [Implies p q] [Implies q r] : Implies p r where
+theorem Implies.comp (p q r : Set α → Prop) [Implies p q] [Implies q r] :
+    Implies p r where
   implies s hs := implies s (implies s hs : q s)
+
+theorem Implies.comp' {p q r : Set α → Prop} [Implies p q] (h : ∀ {s}, q s → r s) :
+    Implies p r where
+  implies s hs := h (implies s hs)
 
 @[coe, simps]
 def weaken [Implies p q] (s : BundledSet α p) : BundledSet α q := ⟨s, Implies.implies _ s.2⟩

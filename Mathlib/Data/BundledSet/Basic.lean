@@ -19,10 +19,10 @@ instance : Membership α (BundledSet α p) := ⟨(· ∈ carrier ·)⟩
 instance : CoeSort (BundledSet α p) (Type _) := ⟨fun s ↦ {x // x ∈ s}⟩
 
 @[simp] theorem mem_carrier : a ∈ s.carrier ↔ a ∈ s := Iff.rfl
-
 @[simp, norm_cast] theorem coeSort_carrier : ((s : Set α) : Type _) = s := rfl
-
 @[simp] theorem coe_mem (x : s) : ↑x ∈ s := x.2
+@[simp] theorem mem_mk {x : α} {s : Set α} {hs : p s} : x ∈ mk s hs ↔ x ∈ s := Iff.rfl
+theorem carrier_mk (s : Set α) (hs : p s) : (mk s hs).1 = s := rfl
 
 theorem carrier_injective : Injective (carrier (p := p)) | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
@@ -35,7 +35,16 @@ protected theorem ext_iff : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t := by
 
 @[ext] protected theorem ext (h : ∀ x, x ∈ s ↔ x ∈ t) : s = t := BundledSet.ext_iff.2 h
 
-instance : PartialOrder (BundledSet α p) :=
+/-- Copy of a `BundledSet` with a different carrier.
+
+Useful to fix definitional equalities. -/
+@[simps]
+def copy (s : BundledSet α p) (t : Set α) (ht : t = s) : BundledSet α p :=
+  ⟨t, ht.symm ▸ s.2⟩
+
+theorem copy_eq (s : BundledSet α p) {t : Set α} (ht : t = s) : copy s t ht = s := by subst t; rfl
+
+protected instance instPartialOrder : PartialOrder (BundledSet α p) :=
   { PartialOrder.lift carrier carrier_injective with
     le := fun s t ↦ ∀ ⦃x⦄, x ∈ s → x ∈ t
     lt := fun s t ↦ s ≤ t ∧ ¬t ≤ s }
@@ -44,6 +53,8 @@ theorem le_def : s ≤ t ↔ ∀ ⦃x⦄, x ∈ s → x ∈ t := Iff.rfl
 
 @[simp, norm_cast] theorem carrier_subset_carrier : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
 @[simp, norm_cast] theorem carrier_ssubset_carrier : (s : Set α) ⊂ t ↔ s < t := Iff.rfl
+@[simp] theorem mk_le_mk {s t : Set α} {hs : p s} {ht : p t} : mk s hs ≤ mk t ht ↔ s ⊆ t := Iff.rfl
+@[simp] theorem mk_lt_mk {s t : Set α} {hs : p s} {ht : p t} : mk s hs < mk t ht ↔ s ⊂ t := Iff.rfl
 
 theorem carrier_mono : Monotone (carrier (p := p)) := fun _ _ ↦ id
 theorem carrier_strictMono : StrictMono (carrier (p := p)) := fun _ _ ↦ id
