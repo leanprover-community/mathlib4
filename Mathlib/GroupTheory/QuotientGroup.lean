@@ -190,6 +190,11 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
 #align quotient_group.coe_zpow QuotientGroup.mk_zpow
 #align quotient_add_group.coe_zsmul QuotientAddGroup.mk_zsmul
 
+@[to_additive (attr := simp)]
+theorem mk_prod {G ι : Type _} [CommGroup G] (N : Subgroup G) [Fintype ι] {f : ι → G} :
+    ((Finset.univ.prod f : G) : G ⧸ N) = Finset.univ.prod (fun i => (f i : G ⧸ N)) :=
+  map_prod (QuotientGroup.mk' N) _ _
+
 /-- A group homomorphism `φ : G →* H` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* H`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ H` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
