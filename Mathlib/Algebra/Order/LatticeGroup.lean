@@ -397,7 +397,17 @@ theorem one_le_abs
   apply pow_two_semiclosed
   exact s1
 
-
+-- The proof from Bourbaki A.VI.12 Prop 9 d)
+-- |a| = a⁺ - a⁻
+@[to_additive]
+theorem pos_mul_neg
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
+    |a| = a⁺ * a⁻ := by
+  rw [m_pos_part_def, sup_mul, one_mul, m_neg_part_def, mul_sup, mul_one, mul_inv_self, sup_assoc,
+    ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
+  exact (sup_eq_left.2 <| one_le_abs a).symm
+#align lattice_ordered_comm_group.pos_mul_neg LatticeOrderedGroup.pos_mul_neg
+#align lattice_ordered_comm_group.pos_add_neg LatticeOrderedGroup.pos_add_neg
 
 end LatticeOrderedGroup
 
@@ -500,16 +510,6 @@ theorem m_pos_abs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |a|⁺
   exact m_neg_abs a
 #align lattice_ordered_comm_group.m_pos_abs LatticeOrderedCommGroup.m_pos_abs
 #align lattice_ordered_comm_group.pos_abs LatticeOrderedCommGroup.pos_abs
-
--- The proof from Bourbaki A.VI.12 Prop 9 d)
--- |a| = a⁺ - a⁻
-@[to_additive]
-theorem pos_mul_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |a| = a⁺ * a⁻ := by
-  rw [m_pos_part_def, sup_mul, one_mul, m_neg_part_def, mul_sup, mul_one, mul_inv_self, sup_assoc,
-    ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
-  exact (sup_eq_left.2 <| one_le_abs a).symm
-#align lattice_ordered_comm_group.pos_mul_neg LatticeOrderedCommGroup.pos_mul_neg
-#align lattice_ordered_comm_group.pos_add_neg LatticeOrderedCommGroup.pos_add_neg
 
 -- a ⊔ b - (a ⊓ b) = |b - a|
 @[to_additive]
