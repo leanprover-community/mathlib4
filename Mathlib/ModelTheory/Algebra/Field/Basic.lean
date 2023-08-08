@@ -144,8 +144,8 @@ set_option maxHeartbeats 1000000 in
 def modelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     [Theory.field.Model K] : ModelField K :=
 { add := fun x y => funMap addFunction ![x, y],
-  zero := constantMap (L := Language.field) (M := K) 0,
-  one := constantMap (L := Language.field) (M := K) 1,
+  zero := constantMap (L := Language.field) (M := K) zeroFunction,
+  one := constantMap (L := Language.field) (M := K) oneFunction,
   mul := fun x y => funMap mulFunction ![x, y],
   inv := fun x => funMap invFunction ![x],
   neg := fun x => funMap negFunction ![x],
@@ -156,9 +156,8 @@ def modelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     rwa [Functions.realize_assoc] at h
   add_comm := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.comm ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .addComm)
-    rwa [Functions.realize_comm] at h
+      (Set.mem_range_self (f := toSentence) .addComm)
+    rwa [toSentence, Functions.realize_comm] at h
   add_zero := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show addFunction.rightId 0 ∈ Theory.field from
@@ -191,7 +190,7 @@ def modelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     rwa [Functions.realize_comm] at h
   mul_one := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightId 1 ∈ Theory.field from
+      (show mulFunction.rightId oneFunction ∈ Theory.field from
         Set.mem_range_self (f := toSentence) .mulOne)
     rwa [Functions.realize_rightId] at h
   zero_add := by
