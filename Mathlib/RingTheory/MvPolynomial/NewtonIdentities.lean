@@ -62,8 +62,9 @@ variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 @[simp]
-theorem psum_zero : psum σ R 0 = card (@univ σ _) := by
-  simp only [psum, _root_.pow_zero, cast_card]
+theorem psum_zero : psum σ R 0 = Fintype.card σ := by
+  simp only [psum, _root_.pow_zero, ← cast_card]
+  exact rfl
 
 @[simp]
 theorem psum_one : psum σ R 1 = ∑ i, X i := by
