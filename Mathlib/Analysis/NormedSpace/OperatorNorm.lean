@@ -190,11 +190,6 @@ theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
     (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
 #align continuous_linear_map.le_op_norm ContinuousLinearMap.le_op_norm
 
-theorem op_norm_le_iff (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) :
-    ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
-  ⟨fun H x ↦ (le_op_norm _ _).trans (mul_le_mul_of_nonneg_right H (norm_nonneg x)),
-    op_norm_le_bound f hMp⟩
-
 theorem dist_le_op_norm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := by
   simp_rw [dist_eq_norm, ← map_sub, f.le_op_norm]
 #align continuous_linear_map.dist_le_op_norm ContinuousLinearMap.dist_le_op_norm
@@ -210,6 +205,10 @@ theorem le_op_norm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f�
 theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c * ‖x‖ :=
   f.le_of_op_norm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_op_norm_le
+
+theorem op_norm_le_iff (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) :
+    ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
+  ⟨f.le_of_op_norm_le, op_norm_le_bound f hMp⟩
 
 theorem ratio_le_op_norm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_nonneg_of_le_mul (norm_nonneg _) f.op_norm_nonneg (le_op_norm _ _)

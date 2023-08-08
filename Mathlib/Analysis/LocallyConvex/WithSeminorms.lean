@@ -669,8 +669,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type _}
   rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng,
       equicontinuous_iInf_rng, equicontinuousAt_iInf_rng]
   refine forall_tfae [_, _, _, _, _] fun i ↦ ?_
-  letI : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
-  letI : NormedSpace 𝕜₂ F := ⟨fun c x ↦ (map_smul_eq_mul (q i) _ _).le⟩
+  let _ : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
   clear u hu hq
   -- Now we can prove the equivalence in this setting
   simp only [List.map]
