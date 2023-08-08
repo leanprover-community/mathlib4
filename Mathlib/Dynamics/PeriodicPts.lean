@@ -137,18 +137,18 @@ protected theorem iterate (hf : IsPeriodicPt f n x) (m : ℕ) : IsPeriodicPt f^[
   exact hf.isFixedPt.iterate m
 #align function.is_periodic_pt.iterate Function.IsPeriodicPt.iterate
 
-theorem comp {g : α → α} (hco : Commute f g) (hf : IsPeriodicPt f n x) (hg : IsPeriodicPt g n x) :
-    IsPeriodicPt (f ∘ g) n x := by
+theorem comp {g : α → α} (hco : Function.Commute f g) (hf : IsPeriodicPt f n x)
+    (hg : IsPeriodicPt g n x) : IsPeriodicPt (f ∘ g) n x := by
   rw [IsPeriodicPt, hco.comp_iterate]
   exact IsFixedPt.comp hf hg
 #align function.is_periodic_pt.comp Function.IsPeriodicPt.comp
 
-theorem comp_lcm {g : α → α} (hco : Commute f g) (hf : IsPeriodicPt f m x)
+theorem comp_lcm {g : α → α} (hco : Function.Commute f g) (hf : IsPeriodicPt f m x)
     (hg : IsPeriodicPt g n x) : IsPeriodicPt (f ∘ g) (Nat.lcm m n) x :=
   (hf.trans_dvd <| Nat.dvd_lcm_left _ _).comp hco (hg.trans_dvd <| Nat.dvd_lcm_right _ _)
 #align function.is_periodic_pt.comp_lcm Function.IsPeriodicPt.comp_lcm
 
-theorem left_of_comp {g : α → α} (hco : Commute f g) (hfg : IsPeriodicPt (f ∘ g) n x)
+theorem left_of_comp {g : α → α} (hco : Function.Commute f g) (hfg : IsPeriodicPt (f ∘ g) n x)
     (hg : IsPeriodicPt g n x) : IsPeriodicPt f n x := by
   rw [IsPeriodicPt, hco.comp_iterate] at hfg
   exact hfg.left_of_comp hg
@@ -438,7 +438,7 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Fun
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
   suffices :
     ∀ {f g : α → α},
-      Commute f g →
+      Function.Commute f g →
         coprime (minimalPeriod f x) (minimalPeriod g x) →
           minimalPeriod f x ∣ minimalPeriod (f ∘ g) x
   · exact hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
