@@ -27,7 +27,7 @@ open Set
 
 open Pointwise
 
-variable {ι : Sort _} {α : Type*} [LinearOrderedField α]
+variable {ι : Sort*} {α : Type*} [LinearOrderedField α]
 
 section MulActionWithZero
 

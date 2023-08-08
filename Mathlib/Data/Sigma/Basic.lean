@@ -28,7 +28,7 @@ exactly two elements (see `Equiv.sumEquivSigmaBool`).
 ## Notes
 
 The definition of `Sigma` takes values in `Type*`. This effectively forbids `Prop`- valued sigma
-types. To that effect, we have `PSigma`, which takes value in `Sort _` and carries a more
+types. To that effect, we have `PSigma`, which takes value in `Sort*` and carries a more
 complicated universe signature as a consequence.
 -/
 
@@ -200,7 +200,7 @@ end Sigma
 
 namespace PSigma
 
-variable {α : Sort _} {β : α → Sort _}
+variable {α : Sort*} {β : α → Sort*}
 
 /-- Nondependent eliminator for `PSigma`. -/
 def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
@@ -257,17 +257,17 @@ theorem «exists» {p : (Σ'a, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨
 
 /-- A specialized ext lemma for equality of `PSigma` types over an indexed subtype. -/
 @[ext]
-theorem subtype_ext {β : Sort _} {p : α → β → Prop} :
+theorem subtype_ext {β : Sort*} {p : α → β → Prop} :
     ∀ {x₀ x₁ : Σ'a, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl, rfl => rfl
 #align psigma.subtype_ext PSigma.subtype_ext
 
-theorem subtype_ext_iff {β : Sort _} {p : α → β → Prop} {x₀ x₁ : Σ'a, Subtype (p a)} :
+theorem subtype_ext_iff {β : Sort*} {p : α → β → Prop} {x₀ x₁ : Σ'a, Subtype (p a)} :
     x₀ = x₁ ↔ x₀.fst = x₁.fst ∧ (x₀.snd : β) = x₁.snd :=
   ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ ↦ subtype_ext h₁ h₂⟩
 #align psigma.subtype_ext_iff PSigma.subtype_ext_iff
 
-variable {α₁ : Sort _} {α₂ : Sort _} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort _}
+variable {α₁ : Sort*} {α₂ : Sort*} {β₁ : α₁ → Sort*} {β₂ : α₂ → Sort*}
 
 /-- Map the left and right components of a sigma -/
 def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) : PSigma β₁ → PSigma β₂

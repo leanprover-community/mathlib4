@@ -42,7 +42,7 @@ Frame homs are Heyting homs.
 
 open Function OrderDual Set
 
-variable {F α β γ δ : Type*} {ι : Sort _} {κ : ι → Sort _}
+variable {F α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 -- Porting note: mathport made this & sInfHom into "SupHomCat" and "InfHomCat".
 /-- The type of `⨆`-preserving functions from `α` to `β`. -/

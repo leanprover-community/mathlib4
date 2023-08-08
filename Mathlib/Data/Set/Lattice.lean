@@ -58,7 +58,7 @@ open Function Tactic Set
 
 universe u
 
-variable {α β γ : Type*} {ι ι' ι₂ : Sort _} {κ κ₁ κ₂ : ι → Sort _} {κ' : ι' → Sort _}
+variable {α β γ : Type*} {ι ι' ι₂ : Sort*} {κ κ₁ κ₂ : ι → Sort*} {κ' : ι' → Sort*}
 
 namespace Set
 
@@ -469,12 +469,12 @@ theorem iInter₂_mono' {s : ∀ i, κ i → Set α} {t : ∀ i', κ' i' → Set
     (iInter₂_subset _ _).trans hst
 #align set.Inter₂_mono' Set.iInter₂_mono'
 
-theorem iUnion₂_subset_iUnion (κ : ι → Sort _) (s : ι → Set α) :
+theorem iUnion₂_subset_iUnion (κ : ι → Sort*) (s : ι → Set α) :
     ⋃ (i) (_ : κ i), s i ⊆ ⋃ i, s i :=
   iUnion_mono fun _ => iUnion_subset fun _ => Subset.rfl
 #align set.Union₂_subset_Union Set.iUnion₂_subset_iUnion
 
-theorem iInter_subset_iInter₂ (κ : ι → Sort _) (s : ι → Set α) :
+theorem iInter_subset_iInter₂ (κ : ι → Sort*) (s : ι → Set α) :
     ⋂ i, s i ⊆ ⋂ (i) (_ : κ i), s i :=
   iInter_mono fun _ => subset_iInter fun _ => Subset.rfl
 #align set.Inter_subset_Inter₂ Set.iInter_subset_iInter₂
@@ -2123,13 +2123,13 @@ variable {s t u : Set α} {f : α → β}
 namespace Set
 
 @[simp]
-theorem disjoint_iUnion_left {ι : Sort _} {s : ι → Set α} :
+theorem disjoint_iUnion_left {ι : Sort*} {s : ι → Set α} :
     Disjoint (⋃ i, s i) t ↔ ∀ i, Disjoint (s i) t :=
   iSup_disjoint_iff
 #align set.disjoint_Union_left Set.disjoint_iUnion_left
 
 @[simp]
-theorem disjoint_iUnion_right {ι : Sort _} {s : ι → Set α} :
+theorem disjoint_iUnion_right {ι : Sort*} {s : ι → Set α} :
     Disjoint t (⋃ i, s i) ↔ ∀ i, Disjoint t (s i) :=
   disjoint_iSup_iff
 #align set.disjoint_Union_right Set.disjoint_iUnion_right

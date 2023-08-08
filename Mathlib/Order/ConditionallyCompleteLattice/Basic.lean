@@ -33,7 +33,7 @@ with an additional assumption that `s` is bounded below.
 
 open Function OrderDual Set
 
-variable {α β γ : Type*} {ι : Sort _}
+variable {α β γ : Type*} {ι : Sort*}
 
 section
 
@@ -1527,7 +1527,7 @@ noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
   { WithBot.WithTop.completeLattice, WithBot.linearOrder with }
 #align with_bot.with_top.complete_linear_order WithBot.WithTop.completeLinearOrder
 
-theorem WithTop.iSup_coe_eq_top {ι : Sort _} {α : Type*} [ConditionallyCompleteLinearOrderBot α]
+theorem WithTop.iSup_coe_eq_top {ι : Sort*} {α : Type*} [ConditionallyCompleteLinearOrderBot α]
     (f : ι → α) : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (Set.range f) := by
   rw [iSup_eq_top, not_bddAbove_iff]
   refine' ⟨fun hf r => _, fun hf a ha => _⟩
@@ -1537,7 +1537,7 @@ theorem WithTop.iSup_coe_eq_top {ι : Sort _} {α : Type*} [ConditionallyComplet
     exact ⟨i, by simpa only [WithTop.coe_untop _ ha.ne] using WithTop.coe_lt_coe.mpr hi⟩
 #align with_top.supr_coe_eq_top WithTop.iSup_coe_eq_top
 
-theorem WithTop.iSup_coe_lt_top {ι : Sort _} {α : Type*} [ConditionallyCompleteLinearOrderBot α]
+theorem WithTop.iSup_coe_lt_top {ι : Sort*} {α : Type*} [ConditionallyCompleteLinearOrderBot α]
     (f : ι → α) : ⨆ x, (f x : WithTop α) < ⊤ ↔ BddAbove (Set.range f) :=
   lt_top_iff_ne_top.trans <| (WithTop.iSup_coe_eq_top f).not.trans not_not
 #align with_top.supr_coe_lt_top WithTop.iSup_coe_lt_top

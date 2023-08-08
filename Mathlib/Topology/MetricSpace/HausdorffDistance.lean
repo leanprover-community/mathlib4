@@ -38,7 +38,7 @@ open Classical NNReal ENNReal Topology Set Function TopologicalSpace Filter Poin
 
 universe u v w
 
-variable {ι : Sort _} {α : Type u} {β : Type v}
+variable {ι : Sort*} {α : Type u} {β : Type v}
 
 namespace EMetric
 

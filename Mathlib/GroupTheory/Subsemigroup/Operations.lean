@@ -330,7 +330,7 @@ theorem map_sup (S T : Subsemigroup M) (f : M →ₙ* N) : (S ⊔ T).map f = S.m
 #align add_subsemigroup.map_sup AddSubsemigroup.map_sup
 
 @[to_additive]
-theorem map_iSup {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
+theorem map_iSup {ι : Sort*} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align subsemigroup.map_supr Subsemigroup.map_iSup
@@ -343,7 +343,7 @@ theorem comap_inf (S T : Subsemigroup N) (f : M →ₙ* N) : (S ⊓ T).comap f =
 #align add_subsemigroup.comap_inf AddSubsemigroup.comap_inf
 
 @[to_additive]
-theorem comap_iInf {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup N) :
+theorem comap_iInf {ι : Sort*} (f : M →ₙ* N) (s : ι → Subsemigroup N) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align subsemigroup.comap_infi Subsemigroup.comap_iInf

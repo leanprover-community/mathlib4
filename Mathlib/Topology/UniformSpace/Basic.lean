@@ -123,7 +123,7 @@ universe ua ub uc ud
 -/
 
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort _}
+variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
 
 /-- The identity relation, or the graph of the identity function -/
 def idRel {α : Type*} :=
@@ -1225,7 +1225,7 @@ instance : CompleteLattice (UniformSpace α) :=
     le_sInf := fun _ _ hs => UniformSpace.le_sInf hs
     sInf_le := fun _ _ ha => UniformSpace.sInf_le ha }
 
-theorem iInf_uniformity {ι : Sort _} {u : ι → UniformSpace α} : 𝓤[iInf u] = ⨅ i, 𝓤[u i] :=
+theorem iInf_uniformity {ι : Sort*} {u : ι → UniformSpace α} : 𝓤[iInf u] = ⨅ i, 𝓤[u i] :=
   iInf_range
 #align infi_uniformity iInf_uniformity
 
@@ -1346,7 +1346,7 @@ theorem toTopologicalSpace_top : @UniformSpace.toTopologicalSpace α ⊤ = ⊤ :
       this.symm ▸ @isOpen_univ _ ⊤
 #align to_topological_space_top toTopologicalSpace_top
 
-theorem toTopologicalSpace_iInf {ι : Sort _} {u : ι → UniformSpace α} :
+theorem toTopologicalSpace_iInf {ι : Sort*} {u : ι → UniformSpace α} :
     (iInf u).toTopologicalSpace = ⨅ i, (u i).toTopologicalSpace :=
   eq_of_nhds_eq_nhds fun a => by simp only [@nhds_eq_comap_uniformity _ (iInf u), nhds_iInf,
     iInf_uniformity, @nhds_eq_comap_uniformity _ (u _), comap_iInf]

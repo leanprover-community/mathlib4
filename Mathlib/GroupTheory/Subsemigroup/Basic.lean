@@ -249,13 +249,13 @@ theorem mem_sInf {S : Set (Subsemigroup M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈
 #align add_subsemigroup.mem_Inf AddSubsemigroup.mem_sInf
 
 @[to_additive]
-theorem mem_iInf {ι : Sort _} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+theorem mem_iInf {ι : Sort*} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align subsemigroup.mem_infi Subsemigroup.mem_iInf
 #align add_subsemigroup.mem_infi AddSubsemigroup.mem_iInf
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_iInf {ι : Sort _} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align subsemigroup.coe_infi Subsemigroup.coe_iInf
 #align add_subsemigroup.coe_infi AddSubsemigroup.coe_iInf
@@ -445,7 +445,7 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} 
 #align add_subsemigroup.closure_singleton_le_iff_mem AddSubsemigroup.closure_singleton_le_iff_mem
 
 @[to_additive]
-theorem mem_iSup {ι : Sort _} (p : ι → Subsemigroup M) {m : M} :
+theorem mem_iSup {ι : Sort*} (p : ι → Subsemigroup M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_iSup_iff]
   simp only [closure_singleton_le_iff_mem]
@@ -453,7 +453,7 @@ theorem mem_iSup {ι : Sort _} (p : ι → Subsemigroup M) {m : M} :
 #align add_subsemigroup.mem_supr AddSubsemigroup.mem_iSup
 
 @[to_additive]
-theorem iSup_eq_closure {ι : Sort _} (p : ι → Subsemigroup M) :
+theorem iSup_eq_closure {ι : Sort*} (p : ι → Subsemigroup M) :
     ⨆ i, p i = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Subsemigroup.closure_iUnion, Subsemigroup.closure_eq]
 #align subsemigroup.supr_eq_closure Subsemigroup.iSup_eq_closure

@@ -36,7 +36,7 @@ open Function Set
 
 namespace Set
 
-variable {α β γ : Type*} {ι ι' : Sort _}
+variable {α β γ : Type*} {ι ι' : Sort*}
 
 /-! ### Inverse image -/
 
@@ -882,7 +882,7 @@ theorem _root_.Prod.range_snd [Nonempty α] : range (Prod.snd : α × β → β)
 #align prod.range_snd Prod.range_snd
 
 @[simp]
-theorem range_eval {ι : Type*} {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
+theorem range_eval {ι : Type*} {α : ι → Sort*} [∀ i, Nonempty (α i)] (i : ι) :
     range (eval i : (∀ i, α i) → α i) = univ :=
   Function.Surjective.range_eq (surjective_eval i)
   -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
@@ -1248,7 +1248,7 @@ theorem subsingleton_of_preimage {α β : Type*} {f : α → β} (hf : Function.
   exact congr_arg f (hs hx hy)
 #align set.subsingleton_of_preimage Set.subsingleton_of_preimage
 
-theorem subsingleton_range {α : Sort _} [Subsingleton α] (f : α → β) : (range f).Subsingleton :=
+theorem subsingleton_range {α : Sort*} [Subsingleton α] (f : α → β) : (range f).Subsingleton :=
   forall_range_iff.2 fun x => forall_range_iff.2 fun y => congr_arg f (Subsingleton.elim x y)
 #align set.subsingleton_range Set.subsingleton_range
 
@@ -1285,7 +1285,7 @@ end Set
 
 namespace Function
 
-variable {ι : Sort _} {α : Type*} {β : Type*} {f : α → β}
+variable {ι : Sort*} {α : Type*} {β : Type*} {f : α → β}
 
 open Set
 

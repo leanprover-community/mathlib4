@@ -53,7 +53,7 @@ universe u
 /-! ### Closure operator -/
 
 
-variable (α : Type*) {ι : Sort _} {κ : ι → Sort _}
+variable (α : Type*) {ι : Sort*} {κ : ι → Sort*}
 
 /-- A closure operator on the preorder `α` is a monotone function which is extensive (every `x`
 is less than its closure) and idempotent. -/

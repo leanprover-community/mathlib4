@@ -821,7 +821,7 @@ which is either terminal (meaning `a = b`) or where the next point also satisfie
 holds of any point where `eval f a` evaluates to `b`. This formalizes the notion that if
 `eval f a` evaluates to `b` then it reaches terminal state `b` in finitely many steps. -/
 @[elab_as_elim]
-def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : σ}
+def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
   PFun.fixInduction h fun a' ha' h' ↦
     H _ ha' fun b' e ↦ h' _ <| Part.mem_some_iff.2 <| by rw [e]; rfl

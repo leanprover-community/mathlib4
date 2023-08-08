@@ -57,7 +57,7 @@ end Type'
 -- porting notes: `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
-variable (F G : Sort _) {α γ : Sort _} {β : α → Sort _} [FunLike F α β] [FunLike G α fun _ => γ]
+variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [FunLike F α β] [FunLike G α fun _ => γ]
 
 /-- All `FunLike`s are finite if their domain and codomain are.
 

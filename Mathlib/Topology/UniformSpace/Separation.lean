@@ -105,7 +105,7 @@ theorem separated_equiv : Equivalence fun x y => (x, y) ∈ 𝓢 α :=
     h_ts <| show (x, z) ∈ compRel t t from ⟨y, hxy t ht, hyz t ht⟩⟩
 #align separated_equiv separated_equiv
 
-theorem Filter.HasBasis.mem_separationRel {ι : Sort _} {p : ι → Prop} {s : ι → Set (α × α)}
+theorem Filter.HasBasis.mem_separationRel {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : (𝓤 α).HasBasis p s) {a : α × α} : a ∈ 𝓢 α ↔ ∀ i, p i → a ∈ s i :=
   h.forall_mem_mem
 #align filter.has_basis.mem_separation_rel Filter.HasBasis.mem_separationRel
@@ -181,7 +181,7 @@ theorem separationRel_comap {f : α → β}
   rfl
 #align separation_rel_comap separationRel_comap
 
-protected theorem Filter.HasBasis.separationRel {ι : Sort _} {p : ι → Prop} {s : ι → Set (α × α)}
+protected theorem Filter.HasBasis.separationRel {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (_ : p i), s i := by
   unfold separationRel
   rw [h.sInter_sets]

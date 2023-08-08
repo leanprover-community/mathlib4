@@ -52,7 +52,7 @@ variable {α β γ : Type*}
 namespace Finite
 
 -- see Note [lower instance priority]
-instance (priority := 100) of_subsingleton {α : Sort _} [Subsingleton α] : Finite α :=
+instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Finite α :=
   of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 #align finite.of_subsingleton Finite.of_subsingleton
 
@@ -67,7 +67,7 @@ instance [Finite α] [Finite β] : Finite (α × β) := by
   haveI := Fintype.ofFinite β
   infer_instance
 
-instance {α β : Sort _} [Finite α] [Finite β] : Finite (PProd α β) :=
+instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) :=
   of_equiv _ Equiv.pprodEquivProdPLift.symm
 
 theorem prod_left (β) [Finite (α × β)] [Nonempty β] : Finite α :=
@@ -96,7 +96,7 @@ instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, �
   letI := fun a => Fintype.ofFinite (β a)
   infer_instance
 
-instance {ι : Sort _} {π : ι → Sort _} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
+instance {ι : Sort*} {π : ι → Sort*} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
   of_equiv _ (Equiv.psigmaEquivSigmaPLift π).symm
 
 instance [Finite α] : Finite (Set α) := by
@@ -106,11 +106,11 @@ instance [Finite α] : Finite (Set α) := by
 end Finite
 
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
-instance Subtype.finite {α : Sort _} [Finite α] {p : α → Prop} : Finite { x // p x } :=
+instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
   Finite.of_injective (↑) Subtype.coe_injective
 #align subtype.finite Subtype.finite
 
-instance Pi.finite {α : Sort _} {β : α → Sort _} [Finite α] [∀ a, Finite (β a)] :
+instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
   haveI := Fintype.ofFinite (PLift α)
   haveI := fun a => Fintype.ofFinite (PLift (β a))
@@ -124,15 +124,15 @@ instance Vector.finite {α : Type*} [Finite α] {n : ℕ} : Finite (Vector α n)
   infer_instance
 #align vector.finite Vector.finite
 
-instance Quot.finite {α : Sort _} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
+instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
   Finite.of_surjective _ (surjective_quot_mk r)
 #align quot.finite Quot.finite
 
-instance Quotient.finite {α : Sort _} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
+instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
   Quot.finite _
 #align quotient.finite Quotient.finite
 
-instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪ β) := by
+instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
   cases' isEmpty_or_nonempty (α ↪ β) with _ h
   · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
     -- "stuck at solving universe constraint" error.
@@ -143,12 +143,12 @@ instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪
     exact Finite.of_injective _ FunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite
 
-instance Equiv.finite_right {α β : Sort _} [Finite β] : Finite (α ≃ β) :=
+instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
   Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
     convert FunLike.congr_fun h using 0
 #align equiv.finite_right Equiv.finite_right
 
-instance Equiv.finite_left {α β : Sort _} [Finite α] : Finite (α ≃ β) :=
+instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
 #align equiv.finite_left Equiv.finite_left
 

@@ -509,20 +509,20 @@ theorem iInf_mul_right {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0�
   iInf_mul_right' h fun _ => ‹Nonempty ι›
 #align ennreal.infi_mul_right ENNReal.iInf_mul_right
 
-theorem inv_map_iInf {ι : Sort _} {x : ι → ℝ≥0∞} : (iInf x)⁻¹ = ⨆ i, (x i)⁻¹ :=
+theorem inv_map_iInf {ι : Sort*} {x : ι → ℝ≥0∞} : (iInf x)⁻¹ = ⨆ i, (x i)⁻¹ :=
   OrderIso.invENNReal.map_iInf x
 #align ennreal.inv_map_infi ENNReal.inv_map_iInf
 
-theorem inv_map_iSup {ι : Sort _} {x : ι → ℝ≥0∞} : (iSup x)⁻¹ = ⨅ i, (x i)⁻¹ :=
+theorem inv_map_iSup {ι : Sort*} {x : ι → ℝ≥0∞} : (iSup x)⁻¹ = ⨅ i, (x i)⁻¹ :=
   OrderIso.invENNReal.map_iSup x
 #align ennreal.inv_map_supr ENNReal.inv_map_iSup
 
-theorem inv_limsup {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
+theorem inv_limsup {ι : Sort*} {x : ι → ℝ≥0∞} {l : Filter ι} :
     (limsup x l)⁻¹ = liminf (fun i => (x i)⁻¹) l :=
   OrderIso.invENNReal.limsup_apply
 #align ennreal.inv_limsup ENNReal.inv_limsup
 
-theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
+theorem inv_liminf {ι : Sort*} {x : ι → ℝ≥0∞} {l : Filter ι} :
     (liminf x l)⁻¹ = limsup (fun i => (x i)⁻¹) l :=
   OrderIso.invENNReal.liminf_apply
 #align ennreal.inv_liminf ENNReal.inv_liminf
@@ -557,18 +557,18 @@ protected theorem tendsto_inv_nat_nhds_zero : Tendsto (fun n : ℕ => (n : ℝ�
   ENNReal.inv_top ▸ ENNReal.tendsto_inv_iff.2 tendsto_nat_nhds_top
 #align ennreal.tendsto_inv_nat_nhds_zero ENNReal.tendsto_inv_nat_nhds_zero
 
-theorem iSup_add {ι : Sort _} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + a = ⨆ b, s b + a :=
+theorem iSup_add {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + a = ⨆ b, s b + a :=
   Monotone.map_iSup_of_continuousAt' (continuousAt_id.add continuousAt_const) <|
     monotone_id.add monotone_const
 #align ennreal.supr_add ENNReal.iSup_add
 
-theorem biSup_add' {ι : Sort _} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
+theorem biSup_add' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
     (⨆ (i) (_ : p i), f i) + a = ⨆ (i) (_ : p i), f i + a := by
   haveI : Nonempty { i // p i } := nonempty_subtype.2 h
   simp only [iSup_subtype', iSup_add]
 #align ennreal.bsupr_add' ENNReal.biSup_add'
 
-theorem add_biSup' {ι : Sort _} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
+theorem add_biSup' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
     (a + ⨆ (i) (_ : p i), f i) = ⨆ (i) (_ : p i), a + f i := by
   simp only [add_comm a, biSup_add' h]
 #align ennreal.add_bsupr' ENNReal.add_biSup'
@@ -587,11 +587,11 @@ theorem sSup_add {s : Set ℝ≥0∞} (hs : s.Nonempty) : sSup s + a = ⨆ b ∈
   rw [sSup_eq_iSup, biSup_add hs]
 #align ennreal.Sup_add ENNReal.sSup_add
 
-theorem add_iSup {ι : Sort _} {s : ι → ℝ≥0∞} [Nonempty ι] : a + iSup s = ⨆ b, a + s b := by
+theorem add_iSup {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : a + iSup s = ⨆ b, a + s b := by
   rw [add_comm, iSup_add]; simp [add_comm]
 #align ennreal.add_supr ENNReal.add_iSup
 
-theorem iSup_add_iSup_le {ι ι' : Sort _} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞}
+theorem iSup_add_iSup_le {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞}
     {a : ℝ≥0∞} (h : ∀ i j, f i + g j ≤ a) : iSup f + iSup g ≤ a := by
   simp_rw [iSup_add, add_iSup]; exact iSup₂_le h
 #align ennreal.supr_add_supr_le ENNReal.iSup_add_iSup_le
@@ -609,7 +609,7 @@ theorem biSup_add_biSup_le {ι ι'} {s : Set ι} {t : Set ι'} (hs : s.Nonempty)
   biSup_add_biSup_le' hs ht h
 #align ennreal.bsupr_add_bsupr_le ENNReal.biSup_add_biSup_le
 
-theorem iSup_add_iSup {ι : Sort _} {f g : ι → ℝ≥0∞} (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) :
+theorem iSup_add_iSup {ι : Sort*} {f g : ι → ℝ≥0∞} (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) :
     iSup f + iSup g = ⨆ a, f a + g a := by
   cases isEmpty_or_nonempty ι
   · simp only [iSup_of_empty, bot_eq_zero, zero_add]
@@ -635,7 +635,7 @@ theorem finset_sum_iSup_nat {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : �
     exact Finset.sum_le_sum fun a _ => hf a h
 #align ennreal.finset_sum_supr_nat ENNReal.finset_sum_iSup_nat
 
-theorem mul_iSup {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
+theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
   · obtain rfl : f = fun _ => 0
     exact funext hf
@@ -649,11 +649,11 @@ theorem mul_sSup {s : Set ℝ≥0∞} {a : ℝ≥0∞} : a * sSup s = ⨆ i ∈ 
   simp only [sSup_eq_iSup, mul_iSup]
 #align ennreal.mul_Sup ENNReal.mul_sSup
 
-theorem iSup_mul {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f * a = ⨆ i, f i * a := by
+theorem iSup_mul {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f * a = ⨆ i, f i * a := by
   rw [mul_comm, mul_iSup]; congr; funext; rw [mul_comm]
 #align ennreal.supr_mul ENNReal.iSup_mul
 
-theorem smul_iSup {ι : Sort _} {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞)
+theorem smul_iSup {ι : Sort*} {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞)
     (c : R) : (c • ⨆ i, f i) = ⨆ i, c • f i := by
   -- Porting note: replaced `iSup _` with `iSup f`
   simp only [← smul_one_mul c (f _), ← smul_one_mul c (iSup f), ENNReal.mul_iSup]
@@ -665,7 +665,7 @@ theorem smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞
   simp_rw [← smul_one_mul c (sSup s), ENNReal.mul_sSup, smul_one_mul]
 #align ennreal.smul_Sup ENNReal.smul_sSup
 
-theorem iSup_div {ι : Sort _} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f / a = ⨆ i, f i / a :=
+theorem iSup_div {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f / a = ⨆ i, f i / a :=
   iSup_mul
 #align ennreal.supr_div ENNReal.iSup_div
 
@@ -674,7 +674,7 @@ protected theorem tendsto_coe_sub {b : ℝ≥0∞} :
   continuous_nnreal_sub.tendsto _
 #align ennreal.tendsto_coe_sub ENNReal.tendsto_coe_sub
 
-theorem sub_iSup {ι : Sort _} [Nonempty ι] {b : ι → ℝ≥0∞} (hr : a < ⊤) :
+theorem sub_iSup {ι : Sort*} [Nonempty ι] {b : ι → ℝ≥0∞} (hr : a < ⊤) :
     (a - ⨆ i, b i) = ⨅ i, a - b i :=
   antitone_const_tsub.map_iSup_of_continuousAt' (continuous_sub_left hr.ne).continuousAt
 #align ennreal.sub_supr ENNReal.sub_iSup

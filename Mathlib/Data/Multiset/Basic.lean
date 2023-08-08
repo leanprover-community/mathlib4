@@ -168,7 +168,7 @@ theorem cons_swap (a b : α) (s : Multiset α) : a ::ₘ b ::ₘ s = b ::ₘ a :
 
 section Rec
 
-variable {C : Multiset α → Sort _}
+variable {C : Multiset α → Sort*}
 
 /-- Dependent recursor on multisets.
 TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
@@ -809,7 +809,7 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
 
 /-- The strong induction principle for multisets. -/
 @[elab_as_elim]
-def strongInductionOn {p : Multiset α → Sort _} (s : Multiset α) (ih : ∀ s, (∀ t < s, p t) → p s) :
+def strongInductionOn {p : Multiset α → Sort*} (s : Multiset α) (ih : ∀ s, (∀ t < s, p t) → p s) :
     p s :=
     (ih s) fun t _h =>
       strongInductionOn t ih
@@ -817,7 +817,7 @@ termination_by _ => card s
 decreasing_by exact card_lt_of_lt _h
 #align multiset.strong_induction_on Multiset.strongInductionOnₓ -- Porting note: reorderd universes
 
-theorem strongInductionOn_eq {p : Multiset α → Sort _} (s : Multiset α) (H) :
+theorem strongInductionOn_eq {p : Multiset α → Sort*} (s : Multiset α) (H) :
     @strongInductionOn _ p s H = H s fun t _h => @strongInductionOn _ p t H := by
   rw [strongInductionOn]
 #align multiset.strong_induction_eq Multiset.strongInductionOn_eq
@@ -834,7 +834,7 @@ theorem case_strongInductionOn {p : Multiset α → Prop} (s : Multiset α) (h�
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all multisets `s` of
 cardinality less than `n`, starting from multisets of card `n` and iterating. This
 can be used either to define data, or to prove properties. -/
-def strongDownwardInduction {p : Multiset α → Sort _} {n : ℕ}
+def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
     (s : Multiset α) :
     card s ≤ n → p s :=
@@ -845,7 +845,7 @@ decreasing_by exact (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_of_lt _h)
 -- Porting note: reorderd universes
 #align multiset.strong_downward_induction Multiset.strongDownwardInductionₓ
 
-theorem strongDownwardInduction_eq {p : Multiset α → Sort _} {n : ℕ}
+theorem strongDownwardInduction_eq {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
     (s : Multiset α) :
     strongDownwardInduction H s = H s fun ht _hst => strongDownwardInduction H _ ht := by
@@ -854,14 +854,14 @@ theorem strongDownwardInduction_eq {p : Multiset α → Sort _} {n : ℕ}
 
 /-- Analogue of `strongDownwardInduction` with order of arguments swapped. -/
 @[elab_as_elim]
-def strongDownwardInductionOn {p : Multiset α → Sort _} {n : ℕ} :
+def strongDownwardInductionOn {p : Multiset α → Sort*} {n : ℕ} :
     ∀ s : Multiset α,
       (∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁) →
         card s ≤ n → p s :=
   fun s H => strongDownwardInduction H s
 #align multiset.strong_downward_induction_on Multiset.strongDownwardInductionOn
 
-theorem strongDownwardInductionOn_eq {p : Multiset α → Sort _} (s : Multiset α) {n : ℕ}
+theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset α) {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁) :
     s.strongDownwardInductionOn H = H s fun {t} ht _h => t.strongDownwardInductionOn H ht := by
   dsimp only [strongDownwardInductionOn]

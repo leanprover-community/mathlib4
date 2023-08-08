@@ -61,7 +61,7 @@ instance : HasFiniteLimits (FdRep k G) := inferInstance
 instance : Linear k (FdRep k G) := by infer_instance
 
 instance : CoeSort (FdRep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+  ConcreteCategory.hasCoeToSort*
 
 instance (V : FdRep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (FdRep k G) (FGModuleCat k)).obj V).obj; infer_instance

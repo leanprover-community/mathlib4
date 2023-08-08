@@ -187,7 +187,7 @@ end Main
 
 section LatticeOps
 
-variable {ι : Sort _} {M X : Type*} [TopologicalSpace M] [SMul M X]
+variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}

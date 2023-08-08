@@ -306,30 +306,30 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
 -- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
 
 /-- cases distinction for 0-length type vector -/
-protected def casesNil {β : TypeVec 0 → Sort _} (f : β Fin2.elim0) : ∀ v, β v
+protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v
   := fun v => cast (by congr; funext i; cases i) f
 #align typevec.cases_nil TypeVec.casesNil
 
 /-- cases distinction for (n+1)-length type vector -/
-protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort _}
+protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort*}
                         (f : ∀ (t) (v : TypeVec n), β (v ::: t)) :
     ∀ v, β v :=
   fun v : TypeVec (n + 1) => cast (by simp) (f v.last v.drop)
 #align typevec.cases_cons TypeVec.casesCons
 
-protected theorem casesNil_append1 {β : TypeVec 0 → Sort _} (f : β Fin2.elim0) :
+protected theorem casesNil_append1 {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) :
     TypeVec.casesNil f Fin2.elim0 = f :=
   rfl
 #align typevec.cases_nil_append1 TypeVec.casesNil_append1
 
-protected theorem casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort _}
+protected theorem casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort*}
     (f : ∀ (t) (v : TypeVec n), β (v ::: t)) (v : TypeVec n) (α) :
     TypeVec.casesCons n f (v ::: α) = f α v :=
   rfl
 #align typevec.cases_cons_append1 TypeVec.casesCons_append1
 
 /-- cases distinction for an arrow in the category of 0-length type vectors -/
-def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort _}
+def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort*}
     (f : β Fin2.elim0 Fin2.elim0 nilFun) :
     ∀ v v' fs, β v v' fs := fun v v' fs => by
   refine' cast _ f
@@ -340,7 +340,7 @@ def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort _}
 #align typevec.typevec_cases_nil₃ TypeVec.typevecCasesNil₃
 
 /-- cases distinction for an arrow in the category of (n+1)-length type vectors -/
-def typevecCasesCons₃ (n : ℕ) {β : ∀ v v' : TypeVec (n + 1), v ⟹ v' → Sort _}
+def typevecCasesCons₃ (n : ℕ) {β : ∀ v v' : TypeVec (n + 1), v ⟹ v' → Sort*}
                       (F : ∀ (t t') (f : t → t') (v v' : TypeVec n) (fs : v ⟹ v'),
                               β (v ::: t) (v' ::: t') (fs ::: f)) :
     ∀ v v' fs, β v v' fs := by
@@ -352,7 +352,7 @@ def typevecCasesCons₃ (n : ℕ) {β : ∀ v v' : TypeVec (n + 1), v ⟹ v' →
 #align typevec.typevec_cases_cons₃ TypeVec.typevecCasesCons₃
 
 /-- specialized cases distinction for an arrow in the category of 0-length type vectors -/
-def typevecCasesNil₂ {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort _} (f : β nilFun) : ∀ f, β f := by
+def typevecCasesNil₂ {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f : β nilFun) : ∀ f, β f := by
   intro g
   have : g = nilFun
   ext ⟨⟩
@@ -362,7 +362,7 @@ def typevecCasesNil₂ {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort _} (f : β nilFu
 
 /-- specialized cases distinction for an arrow in the category of (n+1)-length type vectors -/
 def typevecCasesCons₂ (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
-                      {β : (v ::: t) ⟹ (v' ::: t') → Sort _}
+                      {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
     (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f)) : ∀ fs, β fs := by
   intro fs
   rw [← split_dropFun_lastFun fs]
@@ -370,13 +370,13 @@ def typevecCasesCons₂ (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
 #align typevec.typevec_cases_cons₂ TypeVec.typevecCasesCons₂
 
 
-theorem typevecCasesNil₂_appendFun {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort _} (f : β nilFun) :
+theorem typevecCasesNil₂_appendFun {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f : β nilFun) :
     typevecCasesNil₂ f nilFun = f :=
   rfl
 #align typevec.typevec_cases_nil₂_append_fun TypeVec.typevecCasesNil₂_appendFun
 
 theorem typevecCasesCons₂_appendFun (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
-                                      {β : (v ::: t) ⟹ (v' ::: t') → Sort _}
+                                      {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
                                       (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f))
                                       (f fs) :
     typevecCasesCons₂ n t t' v v' F (fs ::: f) = F f fs :=
@@ -403,7 +403,7 @@ section Liftp'
 open Nat
 
 /-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
-def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
+def «repeat» : ∀ (n : ℕ), Sort* → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t
 #align typevec.repeat TypeVec.repeat
@@ -490,7 +490,7 @@ def dropRepeat (α : Type*) : ∀ {n}, drop («repeat» (succ n) α) ⟹ «repea
 #align typevec.drop_repeat TypeVec.dropRepeat
 
 /-- projection for a repeat vector -/
-def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
+def ofRepeat {α : Sort*} : ∀ {n i}, «repeat» n α i → α
   | _, Fin2.fz   => fun (a : α) => a
   | _, Fin2.fs i => @ofRepeat _ _ i
 #align typevec.of_repeat TypeVec.ofRepeat

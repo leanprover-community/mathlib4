@@ -743,7 +743,7 @@ theorem map_sup (s t : NonUnitalSubsemiring R) (f : F) :
   @GaloisConnection.l_sup _ _ s t _ _ _ _ (gc_map_comap f)
 #align non_unital_subsemiring.map_sup NonUnitalSubsemiring.map_sup
 
-theorem map_iSup {ι : Sort _} (f : F) (s : ι → NonUnitalSubsemiring R) :
+theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring R) :
     (map f (iSup s) : NonUnitalSubsemiring S) = ⨆ i, map f (s i) :=
   @GaloisConnection.l_iSup _ _ _ _ _ _ _ (gc_map_comap f) s
 #align non_unital_subsemiring.map_supr NonUnitalSubsemiring.map_iSup
@@ -753,7 +753,7 @@ theorem comap_inf (s t : NonUnitalSubsemiring S) (f : F) :
   @GaloisConnection.u_inf _ _ s t _ _ _ _ (gc_map_comap f)
 #align non_unital_subsemiring.comap_inf NonUnitalSubsemiring.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : F) (s : ι → NonUnitalSubsemiring S) :
+theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring S) :
     (comap f (iInf s) : NonUnitalSubsemiring R) = ⨅ i, comap f (s i) :=
   @GaloisConnection.u_iInf _ _ _ _ _ _ _ (gc_map_comap f) s
 #align non_unital_subsemiring.comap_infi NonUnitalSubsemiring.comap_iInf

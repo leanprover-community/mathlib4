@@ -157,18 +157,18 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
 #align intermediate_field.Inf_to_subfield IntermediateField.sInf_toSubfield
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} (S : ι → IntermediateField F E) : (↑(iInf S) : Set E) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} (S : ι → IntermediateField F E) : (↑(iInf S) : Set E) = ⋂ i, S i := by
   simp [iInf]
 #align intermediate_field.coe_infi IntermediateField.coe_iInf
 
 @[simp]
-theorem iInf_toSubalgebra {ι : Sort _} (S : ι → IntermediateField F E) :
+theorem iInf_toSubalgebra {ι : Sort*} (S : ι → IntermediateField F E) :
     (iInf S).toSubalgebra = ⨅ i, (S i).toSubalgebra :=
   SetLike.coe_injective <| by simp [iInf]
 #align intermediate_field.infi_to_subalgebra IntermediateField.iInf_toSubalgebra
 
 @[simp]
-theorem iInf_toSubfield {ι : Sort _} (S : ι → IntermediateField F E) :
+theorem iInf_toSubfield {ι : Sort*} (S : ι → IntermediateField F E) :
     (iInf S).toSubfield = ⨅ i, (S i).toSubfield :=
   SetLike.coe_injective <| by simp [iInf]
 #align intermediate_field.infi_to_subfield IntermediateField.iInf_toSubfield

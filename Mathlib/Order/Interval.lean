@@ -25,7 +25,7 @@ interval arithmetic.
 
 open Function OrderDual Set
 
-variable {α β γ δ : Type*} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-- The nonempty closed intervals in an order.
 

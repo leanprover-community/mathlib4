@@ -31,7 +31,7 @@ open Set Filter
 
 open Filter
 
-variable {ι : Sort _} {α β : Type*}
+variable {ι : Sort*} {α β : Type*}
 
 /-- A filter `l` has the countable intersection property if for any countable collection
 of sets `s ∈ l` their intersection belongs to `l` as well. -/

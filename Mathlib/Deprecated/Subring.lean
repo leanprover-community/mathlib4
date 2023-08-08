@@ -79,7 +79,7 @@ theorem IsSubring.inter {S₁ S₂ : Set R} (hS₁ : IsSubring S₁) (hS₂ : Is
     IsSubmonoid.inter hS₁.toIsSubmonoid hS₂.toIsSubmonoid with }
 #align is_subring.inter IsSubring.inter
 
-theorem IsSubring.iInter {ι : Sort _} {S : ι → Set R} (h : ∀ y : ι, IsSubring (S y)) :
+theorem IsSubring.iInter {ι : Sort*} {S : ι → Set R} (h : ∀ y : ι, IsSubring (S y)) :
     IsSubring (Set.iInter S) :=
   { IsAddSubgroup.iInter fun i ↦ (h i).toIsAddSubgroup,
     IsSubmonoid.iInter fun i ↦ (h i).toIsSubmonoid with }

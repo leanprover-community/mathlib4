@@ -27,7 +27,7 @@ open BigOperators
 
 namespace Function
 
-variable {α β A B M N P R S G M₀ G₀ : Type*} {ι : Sort _}
+variable {α β A B M N P R S G M₀ G₀ : Type*} {ι : Sort*}
 
 section One
 

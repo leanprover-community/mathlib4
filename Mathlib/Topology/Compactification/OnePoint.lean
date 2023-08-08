@@ -104,7 +104,7 @@ theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
 @[elab_as_elim]
-protected def rec {C : OnePoint X → Sort _} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
+protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
     ∀ z : OnePoint X, C z
   | ∞ => h₁
   | (x : X) => h₂ x

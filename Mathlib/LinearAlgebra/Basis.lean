@@ -1357,7 +1357,7 @@ variable [AddCommGroup M] [Module R M] {b : ι → M}
 
 /-- If `N` is a submodule with finite rank, do induction on adjoining a linear independent
 element to a submodule. -/
-def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort _)
+def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*)
     (ih : ∀ N : Submodule R M,
       (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
     (n : ℕ) (N : Submodule R M)

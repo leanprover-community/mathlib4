@@ -262,7 +262,7 @@ theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
 -- Porting notes:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
 -- 2) Why do I have to specify the type of `(1 : I → β)`?
--- 3) Removed `{β : Sort _}` as `[One β]` converts it to a type anyways.
+-- 3) Removed `{β : Sort*}` as `[One β]` converts it to a type anyways.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
 theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :

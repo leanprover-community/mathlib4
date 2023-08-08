@@ -42,7 +42,7 @@ open Filter
 
 namespace Filter
 
-variable {α β γ δ : Type*} {ι : Sort _}
+variable {α β γ δ : Type*} {ι : Sort*}
 
 section Prod
 

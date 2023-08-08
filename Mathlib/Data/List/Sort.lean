@@ -448,7 +448,7 @@ theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
 #align list.sorted_merge_sort List.sorted_mergeSort
 
 theorem mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=
-  eq_of_perm_of_sorted (perm_mergeSort _ _) (sorted_mergeSort _ _)
+  eq_of_perm_of_sorted (perm_mergeSort* _) (sorted_mergeSort* _)
 #align list.merge_sort_eq_self List.mergeSort_eq_self
 
 theorem mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :

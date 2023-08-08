@@ -41,7 +41,7 @@ This file expands on the development in the core library.
   `Fin.castAdd n i` and `Fin.natAdd m i`;
 * `Fin.succAboveCases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
   handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insertNth` but marked
-  as eliminator and works for `Sort _`. -- Porting note: this is in another file
+  as eliminator and works for `Sort*`. -- Porting note: this is in another file
 
 ### Order embeddings and an order isomorphism
 
@@ -79,7 +79,7 @@ universe u v
 open Fin Nat Function
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
-def finZeroElim {α : Fin 0 → Sort _} (x : Fin 0) : α x :=
+def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
   x.elim0
 #align fin_zero_elim finZeroElim
 
@@ -89,7 +89,7 @@ instance : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
 /-- A non-dependent variant of `elim0`. -/
-def elim0' {α : Sort _} (x : Fin 0) : α :=
+def elim0' {α : Sort*} (x : Fin 0) : α :=
   x.elim0
 #align fin.elim0' Fin.elim0'
 
@@ -173,7 +173,7 @@ theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
 
 /-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
 then they coincide (in the heq sense). -/
-protected theorem heq_fun_iff {α : Sort _} {k l : ℕ} (h : k = l) {f : Fin k → α} {g : Fin l → α} :
+protected theorem heq_fun_iff {α : Sort*} {k l : ℕ} (h : k = l) {f : Fin k → α} {g : Fin l → α} :
     HEq f g ↔ ∀ i : Fin k, f i = g ⟨(i : ℕ), h ▸ i.2⟩ := by
   subst h
   simp [Function.funext_iff]
@@ -182,7 +182,7 @@ protected theorem heq_fun_iff {α : Sort _} {k l : ℕ} (h : k = l) {f : Fin k �
 /-- Assume `k = l` and `k' = l'`.
 If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equal on each pair,
 then they coincide (in the heq sense). -/
-protected theorem heq_fun₂_iff {α : Sort _} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
+protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
   {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
     HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
   subst h

@@ -876,17 +876,17 @@ theorem sInf_toSubsemiring (S : Set (Subalgebra R A)) :
 #align algebra.Inf_to_subsemiring Algebra.sInf_toSubsemiring
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 #align algebra.coe_infi Algebra.coe_iInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align algebra.mem_infi Algebra.mem_iInf
 
 open Subalgebra in
 @[simp]
-theorem iInf_toSubmodule {ι : Sort _} (S : ι → Subalgebra R A) :
+theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
     toSubmodule (⨅ i, S i) = ⨅ i, toSubmodule (S i) :=
   SetLike.coe_injective <| by simp
 #align algebra.infi_to_submodule Algebra.iInf_toSubmodule

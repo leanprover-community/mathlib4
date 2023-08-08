@@ -59,7 +59,7 @@ universe u v w z
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
-structure Equiv (α : Sort _) (β : Sort _) where
+structure Equiv (α : Sort*) (β : Sort*) where
   toFun : α → β
   invFun : β → α
   left_inv : LeftInverse invFun toFun
@@ -83,7 +83,7 @@ instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
 
 /-- `Perm α` is the type of bijections from `α` to itself. -/
 @[reducible]
-def Equiv.Perm (α : Sort _) :=
+def Equiv.Perm (α : Sort*) :=
   Equiv α α
 #align equiv.perm Equiv.Perm
 
@@ -143,7 +143,7 @@ theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x :=
 #align equiv.perm.ext_iff Equiv.Perm.ext_iff
 
 /-- Any type is equivalent to itself. -/
-@[refl] protected def refl (α : Sort _) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
+@[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 #align equiv.refl Equiv.refl
 
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
@@ -244,7 +244,7 @@ protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjectiv
 #align equiv.unique Equiv.unique
 
 /-- Equivalence between equal types. -/
-protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
+protected def cast {α β : Sort*} (h : α = β) : α ≃ β :=
   ⟨cast h, cast h.symm, fun _ => by cases h; rfl, fun _ => by cases h; rfl⟩
 #align equiv.cast Equiv.cast
 
@@ -447,7 +447,7 @@ theorem permCongr_trans (p p' : Equiv.Perm α') :
 end permCongr
 
 /-- Two empty types are equivalent. -/
-def equivOfIsEmpty (α β : Sort _) [IsEmpty α] [IsEmpty β] : α ≃ β :=
+def equivOfIsEmpty (α β : Sort*) [IsEmpty α] [IsEmpty β] : α ≃ β :=
   ⟨isEmptyElim, isEmptyElim, isEmptyElim, isEmptyElim⟩
 #align equiv.equiv_of_is_empty Equiv.equivOfIsEmpty
 
@@ -469,7 +469,7 @@ def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsE
 #align equiv.prop_equiv_pempty Equiv.propEquivPEmpty
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
-def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
+def equivOfUnique (α β : Sort*) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
   left_inv _ := Subsingleton.elim _ _
@@ -505,7 +505,7 @@ def ofIff {P Q : Prop} (h : P ↔ Q) : P ≃ Q := ⟨h.mp, h.mpr, fun _ => rfl, 
 is equivalent to the type of maps `α₂ → β₂`. -/
 -- porting note: removing `congr` attribute
 @[simps apply]
-def arrowCongr {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) where
+def arrowCongr {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) where
   toFun f := e₂ ∘ f ∘ e₁.symm
   invFun f := e₂.symm ∘ f ∘ e₁
   left_inv f := funext fun x => by simp only [comp_apply, symm_apply_apply]
@@ -513,13 +513,13 @@ def arrowCongr {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂
 #align equiv.arrow_congr_apply Equiv.arrowCongr_apply
 #align equiv.arrow_congr Equiv.arrowCongr
 
-theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
+theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
     (f : α₁ → β₁) (g : β₁ → γ₁) :
     arrowCongr ea ec (g ∘ f) = arrowCongr eb ec g ∘ arrowCongr ea eb f := by
   ext; simp only [comp, arrowCongr_apply, eb.symm_apply_apply]
 #align equiv.arrow_congr_comp Equiv.arrowCongr_comp
 
-@[simp] theorem arrowCongr_refl {α β : Sort _} :
+@[simp] theorem arrowCongr_refl {α β : Sort*} :
     arrowCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) := rfl
 #align equiv.arrow_congr_refl Equiv.arrowCongr_refl
 
@@ -611,13 +611,13 @@ noncomputable def propEquivBool : Prop ≃ Bool where
 section
 
 /-- The sort of maps to `PUnit.{v}` is equivalent to `PUnit.{w}`. -/
-def arrowPUnitEquivPUnit (α : Sort _) : (α → PUnit.{v}) ≃ PUnit.{w} :=
+def arrowPUnitEquivPUnit (α : Sort*) : (α → PUnit.{v}) ≃ PUnit.{w} :=
   ⟨fun _ => .unit, fun _ _ => .unit, fun _ => rfl, fun _ => rfl⟩
 #align equiv.arrow_punit_equiv_punit Equiv.arrowPUnitEquivPUnit
 
 /-- If `α` is `Subsingleton` and `a : α`, then the type of dependent functions `Π (i : α), β i`
 is equivalent to `β a`. -/
-@[simps] def piSubsingleton (β : α → Sort _) [Subsingleton α] (a : α) : (∀ a', β a') ≃ β a where
+@[simps] def piSubsingleton (β : α → Sort*) [Subsingleton α] (a : α) : (∀ a', β a') ≃ β a where
   toFun := eval a
   invFun x b := cast (congr_arg β <| Subsingleton.elim a b) x
   left_inv _ := funext fun b => by rw [Subsingleton.elim b a]; rfl
@@ -633,15 +633,15 @@ def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piSubsingleton _ d
 #align equiv.fun_unique_apply Equiv.funUnique_apply
 
 /-- The sort of maps from `PUnit` is equivalent to the codomain. -/
-def punitArrowEquiv (α : Sort _) : (PUnit.{u} → α) ≃ α := funUnique PUnit.{u} α
+def punitArrowEquiv (α : Sort*) : (PUnit.{u} → α) ≃ α := funUnique PUnit.{u} α
 #align equiv.punit_arrow_equiv Equiv.punitArrowEquiv
 
 /-- The sort of maps from `True` is equivalent to the codomain. -/
-def trueArrowEquiv (α : Sort _) : (True → α) ≃ α := funUnique _ _
+def trueArrowEquiv (α : Sort*) : (True → α) ≃ α := funUnique _ _
 #align equiv.true_arrow_equiv Equiv.trueArrowEquiv
 
 /-- The sort of maps from a type that `IsEmpty` is equivalent to `PUnit`. -/
-def arrowPUnitOfIsEmpty (α β : Sort _) [IsEmpty α] : (α → β) ≃ PUnit.{u} where
+def arrowPUnitOfIsEmpty (α β : Sort*) [IsEmpty α] : (α → β) ≃ PUnit.{u} where
   toFun _ := PUnit.unit
   invFun _ := isEmptyElim
   left_inv _ := funext isEmptyElim
@@ -649,15 +649,15 @@ def arrowPUnitOfIsEmpty (α β : Sort _) [IsEmpty α] : (α → β) ≃ PUnit.{u
 #align equiv.arrow_punit_of_is_empty Equiv.arrowPUnitOfIsEmpty
 
 /-- The sort of maps from `Empty` is equivalent to `PUnit`. -/
-def emptyArrowEquivPUnit (α : Sort _) : (Empty → α) ≃ PUnit.{u} := arrowPUnitOfIsEmpty _ _
+def emptyArrowEquivPUnit (α : Sort*) : (Empty → α) ≃ PUnit.{u} := arrowPUnitOfIsEmpty _ _
 #align equiv.empty_arrow_equiv_punit Equiv.emptyArrowEquivPUnit
 
 /-- The sort of maps from `PEmpty` is equivalent to `PUnit`. -/
-def pemptyArrowEquivPUnit (α : Sort _) : (PEmpty → α) ≃ PUnit.{u} := arrowPUnitOfIsEmpty _ _
+def pemptyArrowEquivPUnit (α : Sort*) : (PEmpty → α) ≃ PUnit.{u} := arrowPUnitOfIsEmpty _ _
 #align equiv.pempty_arrow_equiv_punit Equiv.pemptyArrowEquivPUnit
 
 /-- The sort of maps from `False` is equivalent to `PUnit`. -/
-def falseArrowEquivPUnit (α : Sort _) : (False → α) ≃ PUnit.{u} := arrowPUnitOfIsEmpty _ _
+def falseArrowEquivPUnit (α : Sort*) : (False → α) ≃ PUnit.{u} := arrowPUnitOfIsEmpty _ _
 #align equiv.false_arrow_equiv_punit Equiv.falseArrowEquivPUnit
 
 end
@@ -677,7 +677,7 @@ def psigmaEquivSigma {α} (β : α → Type*) : (Σ' i, β i) ≃ Σ i, β i whe
 
 /-- A `PSigma`-type is equivalent to the corresponding `Sigma`-type. -/
 @[simps apply symm_apply]
-def psigmaEquivSigmaPLift {α} (β : α → Sort _) : (Σ' i, β i) ≃ Σ i : PLift α, PLift (β i.down) where
+def psigmaEquivSigmaPLift {α} (β : α → Sort*) : (Σ' i, β i) ≃ Σ i : PLift α, PLift (β i.down) where
   toFun a := ⟨PLift.up a.1, PLift.up a.2⟩
   invFun a := ⟨a.1.down, a.2.down⟩
   left_inv _ := rfl
@@ -689,7 +689,7 @@ def psigmaEquivSigmaPLift {α} (β : α → Sort _) : (Σ' i, β i) ≃ Σ i : P
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ' a, β₁ a` and
 `Σ' a, β₂ a`. -/
 @[simps apply]
-def psigmaCongrRight {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂ a) : (Σ' a, β₁ a) ≃ Σ' a, β₂ a where
+def psigmaCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (Σ' a, β₁ a) ≃ Σ' a, β₂ a where
   toFun a := ⟨a.1, F a.1 a.2⟩
   invFun a := ⟨a.1, (F a.1).symm a.2⟩
   left_inv | ⟨a, b⟩ => congr_arg (PSigma.mk a) <| symm_apply_apply (F a) b
@@ -698,19 +698,19 @@ def psigmaCongrRight {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂
 #align equiv.psigma_congr_right_apply Equiv.psigmaCongrRight_apply
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort _}
+theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (psigmaCongrRight F).trans (psigmaCongrRight G) =
       psigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.psigma_congr_right_trans Equiv.psigmaCongrRight_trans
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂ a) :
+theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.psigma_congr_right_symm Equiv.psigmaCongrRight_symm
 
 -- Porting note: simp can now prove this, so I have removed `@[simp]`
-theorem psigmaCongrRight_refl {α} {β : α → Sort _} :
+theorem psigmaCongrRight_refl {α} {β : α → Sort*} :
     (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := rfl
 #align equiv.psigma_congr_right_refl Equiv.psigmaCongrRight_refl
 
@@ -767,22 +767,22 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 namespace Perm
 
 /-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
-@[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
+@[reducible] def sigmaCongrRight {α} {β : α → Sort*} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight
 
-@[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort _}
+@[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort*}
     (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
   Equiv.sigmaCongrRight_trans F G
 #align equiv.perm.sigma_congr_right_trans Equiv.Perm.sigmaCongrRight_trans
 
-@[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
+@[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort*} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
   Equiv.sigmaCongrRight_symm F
 #align equiv.perm.sigma_congr_right_symm Equiv.Perm.sigmaCongrRight_symm
 
-@[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
+@[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
   Equiv.sigmaCongrRight_refl
 #align equiv.perm.sigma_congr_right_refl Equiv.Perm.sigmaCongrRight_refl
@@ -790,7 +790,7 @@ namespace Perm
 end Perm
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
-@[simps apply] def sigmaCongrLeft {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
+@[simps apply] def sigmaCongrLeft {β : α₂ → Sort*} (e : α₁ ≃ α₂) :
     (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
   toFun a := ⟨e a.1, a.2⟩
   invFun a := ⟨e.symm a.1, (e.right_inv' a.1).symm ▸ a.2⟩
@@ -807,13 +807,13 @@ end Perm
 #align equiv.sigma_congr_left Equiv.sigmaCongrLeft
 
 /-- Transporting a sigma type through an equivalence of the base -/
-def sigmaCongrLeft' {α₁ α₂} {β : α₁ → Sort _} (f : α₁ ≃ α₂) :
+def sigmaCongrLeft' {α₁ α₂} {β : α₁ → Sort*} (f : α₁ ≃ α₂) :
     (Σ a : α₁, β a) ≃ Σ a : α₂, β (f.symm a) := (sigmaCongrLeft f.symm).symm
 #align equiv.sigma_congr_left' Equiv.sigmaCongrLeft'
 
 /-- Transporting a sigma type through an equivalence of the base and a family of equivalences
 of matching fibers -/
-def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort _} (f : α₁ ≃ α₂)
+def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort*} {β₂ : α₂ → Sort*} (f : α₁ ≃ α₂)
     (F : ∀ a, β₁ a ≃ β₂ (f a)) : Sigma β₁ ≃ Sigma β₂ :=
   (sigmaCongrRight F).trans (sigmaCongrLeft f)
 #align equiv.sigma_congr Equiv.sigmaCongr
@@ -828,7 +828,7 @@ def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
 
 /-- If each fiber of a `Sigma` type is equivalent to a fixed type, then the sigma type
 is equivalent to the product. -/
-def sigmaEquivProdOfEquiv {α β} {β₁ : α → Sort _} (F : ∀ a, β₁ a ≃ β) : Sigma β₁ ≃ α × β :=
+def sigmaEquivProdOfEquiv {α β} {β₁ : α → Sort*} (F : ∀ a, β₁ a ≃ β) : Sigma β₁ ≃ α × β :=
   (sigmaCongrRight F).trans (sigmaEquivProd α β)
 #align equiv.sigma_equiv_prod_of_equiv Equiv.sigmaEquivProdOfEquiv
 

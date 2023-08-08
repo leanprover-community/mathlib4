@@ -42,7 +42,7 @@ open Set Encodable Function Equiv
 
 open Classical
 
-variable {α β γ δ δ' : Type*} {ι : Sort _} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
 @[class] structure MeasurableSpace (α : Type*) where

@@ -134,7 +134,7 @@ simp. -/
 
 
 @[simp]
-theorem trans_one {α : Sort _} {β : Type*} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
+theorem trans_one {α : Sort*} {β : Type*} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
   Equiv.trans_refl e
 #align equiv.perm.trans_one Equiv.Perm.trans_one
 
@@ -154,7 +154,7 @@ theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
 #align equiv.perm.refl_inv Equiv.Perm.refl_inv
 
 @[simp]
-theorem one_trans {α : Type*} {β : Sort _} (e : α ≃ β) : (1 : Perm α).trans e = e :=
+theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
   Equiv.refl_trans e
 #align equiv.perm.one_trans Equiv.Perm.one_trans
 

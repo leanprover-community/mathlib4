@@ -84,7 +84,7 @@ theorem fixingSubmonoid_union {s t : Set α} :
 #align fixing_submonoid_union fixingSubmonoid_union
 
 /-- Fixing submonoid of iUnion is intersection -/
-theorem fixingSubmonoid_iUnion {ι : Sort _} {s : ι → Set α} :
+theorem fixingSubmonoid_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubmonoid M (⋃ i, s i) = ⨅ i, fixingSubmonoid M (s i) :=
   (fixingSubmonoid_fixedPoints_gc M α).l_iSup
 #align fixing_submonoid_Union fixingSubmonoid_iUnion
@@ -96,7 +96,7 @@ theorem fixedPoints_submonoid_sup {P Q : Submonoid M} :
 #align fixed_points_submonoid_sup fixedPoints_submonoid_sup
 
 /-- Fixed points of iSup of submonoids is intersection -/
-theorem fixedPoints_submonoid_iSup {ι : Sort _} {P : ι → Submonoid M} :
+theorem fixedPoints_submonoid_iSup {ι : Sort*} {P : ι → Submonoid M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubmonoid_fixedPoints_gc M α).u_iInf
 #align fixed_points_submonoid_supr fixedPoints_submonoid_iSup
@@ -144,7 +144,7 @@ theorem fixingSubgroup_union {s t : Set α} :
 #align fixing_subgroup_union fixingSubgroup_union
 
 /-- Fixing subgroup of iUnion is intersection -/
-theorem fixingSubgroup_iUnion {ι : Sort _} {s : ι → Set α} :
+theorem fixingSubgroup_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubgroup M (⋃ i, s i) = ⨅ i, fixingSubgroup M (s i) :=
   (fixingSubgroup_fixedPoints_gc M α).l_iSup
 #align fixing_subgroup_Union fixingSubgroup_iUnion
@@ -156,7 +156,7 @@ theorem fixedPoints_subgroup_sup {P Q : Subgroup M} :
 #align fixed_points_subgroup_sup fixedPoints_subgroup_sup
 
 /-- Fixed points of iSup of subgroups is intersection -/
-theorem fixedPoints_subgroup_iSup {ι : Sort _} {P : ι → Subgroup M} :
+theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 #align fixed_points_subgroup_supr fixedPoints_subgroup_iSup

@@ -409,7 +409,7 @@ theorem mem_sup_right {S T : Ideal R} : ∀ {x : R}, x ∈ T → x ∈ S ⊔ T :
   @le_sup_right _ _ S T
 #align ideal.mem_sup_right Ideal.mem_sup_right
 
-theorem mem_iSup_of_mem {ι : Sort _} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
+theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
   @le_iSup _ _ _ S _
 #align ideal.mem_supr_of_mem Ideal.mem_iSup_of_mem
 
@@ -428,7 +428,7 @@ theorem mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J 
 #align ideal.mem_inf Ideal.mem_inf
 
 @[simp 1001] -- porting note: increased priority to appease `simpNF`
-theorem mem_iInf {ι : Sort _} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
+theorem mem_iInf {ι : Sort*} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
   Submodule.mem_iInf _
 #align ideal.mem_infi Ideal.mem_iInf
 

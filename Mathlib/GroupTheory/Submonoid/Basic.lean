@@ -321,13 +321,13 @@ theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S,
 #align add_submonoid.mem_Inf AddSubmonoid.mem_sInf
 
 @[to_additive]
-theorem mem_iInf {ι : Sort _} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align submonoid.mem_infi Submonoid.mem_iInf
 #align add_submonoid.mem_infi AddSubmonoid.mem_iInf
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_iInf {ι : Sort _} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align submonoid.coe_infi Submonoid.coe_iInf
 #align add_submonoid.coe_infi AddSubmonoid.coe_iInf
@@ -540,7 +540,7 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤
 #align add_submonoid.closure_singleton_le_iff_mem AddSubmonoid.closure_singleton_le_iff_mem
 
 @[to_additive]
-theorem mem_iSup {ι : Sort _} (p : ι → Submonoid M) {m : M} :
+theorem mem_iSup {ι : Sort*} (p : ι → Submonoid M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_iSup_iff]
   simp only [closure_singleton_le_iff_mem]
@@ -548,7 +548,7 @@ theorem mem_iSup {ι : Sort _} (p : ι → Submonoid M) {m : M} :
 #align add_submonoid.mem_supr AddSubmonoid.mem_iSup
 
 @[to_additive]
-theorem iSup_eq_closure {ι : Sort _} (p : ι → Submonoid M) :
+theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
     ⨆ i, p i = Submonoid.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Submonoid.closure_iUnion, Submonoid.closure_eq]
 #align submonoid.supr_eq_closure Submonoid.iSup_eq_closure

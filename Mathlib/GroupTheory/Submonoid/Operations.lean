@@ -329,7 +329,7 @@ theorem map_sup (S T : Submonoid M) (f : F) : (S ⊔ T).map f = S.map f ⊔ T.ma
 #align add_submonoid.map_sup AddSubmonoid.map_sup
 
 @[to_additive]
-theorem map_iSup {ι : Sort _} (f : F) (s : ι → Submonoid M) : (iSup s).map f = ⨆ i, (s i).map f :=
+theorem map_iSup {ι : Sort*} (f : F) (s : ι → Submonoid M) : (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
 #align submonoid.map_supr Submonoid.map_iSup
 #align add_submonoid.map_supr AddSubmonoid.map_iSup
@@ -341,7 +341,7 @@ theorem comap_inf (S T : Submonoid N) (f : F) : (S ⊓ T).comap f = S.comap f �
 #align add_submonoid.comap_inf AddSubmonoid.comap_inf
 
 @[to_additive]
-theorem comap_iInf {ι : Sort _} (f : F) (s : ι → Submonoid N) :
+theorem comap_iInf {ι : Sort*} (f : F) (s : ι → Submonoid N) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_iInf
 #align submonoid.comap_infi Submonoid.comap_iInf

@@ -82,7 +82,7 @@ equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def uniqueOfSubsingleton {α : Sort _} [Subsingleton α] (a : α) : Unique α where
+def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton

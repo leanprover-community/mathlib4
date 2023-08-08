@@ -146,7 +146,7 @@ end LinearOrderedField
 
 section LatticeOps
 
-variable {ι : Sort _} {𝕜 E F : Type*} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable {ι : Sort*} {𝕜 E F : Type*} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
   [AddCommMonoid F] [Module 𝕜 F]
 
 theorem locallyConvexSpace_sInf {ts : Set (TopologicalSpace E)}

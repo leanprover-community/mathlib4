@@ -220,12 +220,12 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
+theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
   by simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → L.Substructure M} :
+theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
     ((⨅ i, S i : L.Substructure M) : Set M) = ⋂ i, (S i : Set M) := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align first_order.language.substructure.coe_infi FirstOrder.Language.Substructure.coe_iInf
@@ -511,7 +511,7 @@ theorem map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.
   (gc_map_comap f).l_sup
 #align first_order.language.substructure.map_sup FirstOrder.Language.Substructure.map_sup
 
-theorem map_iSup {ι : Sort _} (f : M →[L] N) (s : ι → L.Substructure M) :
+theorem map_iSup {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure M) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align first_order.language.substructure.map_supr FirstOrder.Language.Substructure.map_iSup
@@ -521,7 +521,7 @@ theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
   (gc_map_comap f).u_inf
 #align first_order.language.substructure.comap_inf FirstOrder.Language.Substructure.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : M →[L] N) (s : ι → L.Substructure N) :
+theorem comap_iInf {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure N) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align first_order.language.substructure.comap_infi FirstOrder.Language.Substructure.comap_iInf

@@ -123,7 +123,7 @@ theorem ofUpperSet_inj {a b : WithUpperSetTopology α} : ofUpperSet a = ofUpperS
   Iff.rfl
 
 /-- A recursor for `WithUpperSetTopology`. Use as `induction x using WithUpperSetTopology.rec`. -/
-protected def rec {β : WithUpperSetTopology α → Sort _} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
+protected def rec {β : WithUpperSetTopology α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
   fun a => h (ofUpperSet a)
 
 instance [Nonempty α] : Nonempty (WithUpperSetTopology α) := ‹Nonempty α›
@@ -181,7 +181,7 @@ theorem ofLowerSet_inj {a b : WithLowerSetTopology α} : ofLowerSet a = ofLowerS
   Iff.rfl
 
 /-- A recursor for `WithLowerSetTopology`. Use as `induction x using WithLowerSetTopology.rec`. -/
-protected def rec {β : WithLowerSetTopology α → Sort _} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
+protected def rec {β : WithLowerSetTopology α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
   fun a => h (ofLowerSet a)
 
 instance [Nonempty α] : Nonempty (WithLowerSetTopology α) := ‹Nonempty α›

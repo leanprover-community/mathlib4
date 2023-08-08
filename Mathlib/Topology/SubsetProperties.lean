@@ -429,8 +429,8 @@ theorem Set.Finite.isCompact_sUnion {S : Set (Set α)} (hf : S.Finite) (hc : ∀
     IsCompact (⋃₀ S) := by
   rw [sUnion_eq_biUnion]; exact hf.isCompact_biUnion hc
 
--- porting note: generalized to `ι : Sort _`
-theorem isCompact_iUnion {ι : Sort _} {f : ι → Set α} [Finite ι] (h : ∀ i, IsCompact (f i)) :
+-- porting note: generalized to `ι : Sort*`
+theorem isCompact_iUnion {ι : Sort*} {f : ι → Set α} [Finite ι] (h : ∀ i, IsCompact (f i)) :
     IsCompact (⋃ i, f i) :=
   (finite_range f).isCompact_sUnion <| forall_range_iff.2 h
 #align is_compact_Union isCompact_iUnion

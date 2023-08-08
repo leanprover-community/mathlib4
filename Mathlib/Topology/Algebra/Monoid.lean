@@ -832,7 +832,7 @@ instance [TopologicalSpace M] [Add M] [ContinuousAdd M] : ContinuousMul (Multipl
 
 section LatticeOps
 
-variable {ι' : Sort _} [Mul M]
+variable {ι' : Sort*} [Mul M]
 
 @[to_additive]
 theorem continuousMul_sInf {ts : Set (TopologicalSpace M)}

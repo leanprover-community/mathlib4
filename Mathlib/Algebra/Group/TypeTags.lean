@@ -500,7 +500,7 @@ then `Additive α` should also coerce to the same function.
 This allows `Additive` to be used on bundled function types with a multiplicative structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
-instance Additive.coeToFun {α : Type*} {β : α → Sort _} [CoeFun α β] :
+instance Additive.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Additive α) fun a => β (toMul a) :=
   ⟨fun a => CoeFun.coe (toMul a)⟩
 #align additive.has_coe_to_fun Additive.coeToFun
@@ -511,7 +511,7 @@ then `Multiplicative α` should also coerce to the same function.
 This allows `Multiplicative` to be used on bundled function types with an additive structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
-instance Multiplicative.coeToFun {α : Type*} {β : α → Sort _} [CoeFun α β] :
+instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Multiplicative α) fun a => β (toAdd a) :=
   ⟨fun a => CoeFun.coe (toAdd a)⟩
 #align multiplicative.has_coe_to_fun Multiplicative.coeToFun

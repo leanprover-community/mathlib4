@@ -78,7 +78,7 @@ section sort
 variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 
 /-!
-### Operations on `Sort _`s
+### Operations on `Sort*`s
 -/
 
 instance (priority := 500) SetCoe.countable {α} [Countable α] (s : Set α) : Countable s :=

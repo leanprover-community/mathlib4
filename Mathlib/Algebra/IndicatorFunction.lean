@@ -177,7 +177,7 @@ theorem mulIndicator_mulSupport : mulIndicator (mulSupport f) f = f :=
 #align set.indicator_support Set.indicator_support
 
 @[to_additive (attr := simp)]
-theorem mulIndicator_range_comp {ι : Sort _} (f : ι → α) (g : α → M) :
+theorem mulIndicator_range_comp {ι : Sort*} (f : ι → α) (g : α → M) :
     mulIndicator (range f) g ∘ f = g ∘ f :=
   letI := Classical.decPred (· ∈ range f)
   piecewise_range_comp _ _ _

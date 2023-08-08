@@ -126,7 +126,7 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
 @[notation_class * toFun Simps.findCoercionArgs]
-class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sort _) where
+class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
   /-- The coercion to functions must be injective. -/
@@ -140,7 +140,7 @@ section Dependent
 
 /-! ### `FunLike F α β` where `β` depends on `a : α` -/
 
-variable (F α : Sort _) (β : α → Sort _)
+variable (F α : Sort*) (β : α → Sort*)
 
 namespace FunLike
 
@@ -206,7 +206,7 @@ section NonDependent
 
 /-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort _} [i : FunLike F α fun _ ↦ β]
+variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 

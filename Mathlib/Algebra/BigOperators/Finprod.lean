@@ -79,7 +79,7 @@ open Function Set
 -- Porting note: Used to be section Sort
 section sort
 
-variable {G M N : Type*} {α β ι : Sort _} [CommMonoid M] [CommMonoid N]
+variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
 
 open BigOperators
 

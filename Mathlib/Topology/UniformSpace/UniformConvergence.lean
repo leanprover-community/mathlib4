@@ -648,7 +648,7 @@ theorem TendstoLocallyUniformlyOn.mono (h : TendstoLocallyUniformlyOn F f p s) (
 #align tendsto_locally_uniformly_on.mono TendstoLocallyUniformlyOn.mono
 
 -- porting note: generalized from `Type` to `Sort`
-theorem tendstoLocallyUniformlyOn_iUnion {ι' : Sort _} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
+theorem tendstoLocallyUniformlyOn_iUnion {ι' : Sort*} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
     (h : ∀ i, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i, S i) :=
   (isOpen_iUnion hS).tendstoLocallyUniformlyOn_iff_forall_tendsto.2 $ fun _x hx =>

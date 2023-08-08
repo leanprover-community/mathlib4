@@ -39,9 +39,9 @@ namespace Nat
 -- without having to then add all the other underscores
 
 -- /-- The non-dependent recursor on naturals. -/
--- def elim {C : Sort _} : C → (ℕ → C → C) → ℕ → C :=
+-- def elim {C : Sort*} : C → (ℕ → C → C) → ℕ → C :=
 --   @Nat.rec fun _ => C
--- example {C : Sort _} (base : C) (succ : ℕ → C → C) (a : ℕ) :
+-- example {C : Sort*} (base : C) (succ : ℕ → C → C) (a : ℕ) :
 --   a.elim base succ = a.rec base succ := rfl
 
 #align nat.elim Nat.rec
@@ -54,9 +54,9 @@ namespace Nat
 -- at inferring motive types (I think this is the reason)
 
 -- /-- Cases on whether the input is 0 or a successor. -/
--- def cases {C : Sort _} (a : C) (f : ℕ → C) : ℕ → C :=
+-- def cases {C : Sort*} (a : C) (f : ℕ → C) : ℕ → C :=
 --   Nat.elim a fun n _ => f n
--- example {C : Sort _} (a : C) (f : ℕ → C) (n : ℕ) :
+-- example {C : Sort*} (a : C) (f : ℕ → C) (n : ℕ) :
 --   n.cases a f = n.casesOn a f := rfl
 
 #align nat.cases Nat.casesOn

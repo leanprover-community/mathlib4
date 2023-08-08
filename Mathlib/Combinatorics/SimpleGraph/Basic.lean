@@ -187,7 +187,7 @@ def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W)
 
 namespace SimpleGraph
 
-variable {ι : Sort _} {𝕜 : Type*} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
+variable {ι : Sort*} {𝕜 : Type*} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
   (G' : SimpleGraph W) {a b c u v w : V} {e : Sym2 V}
 
 @[simp]

@@ -16,7 +16,7 @@ open Set Classical Filter Function
 
 namespace Filter
 
-variable {α β γ : Type*} {ι : Sort _}
+variable {α β γ : Type*} {ι : Sort*}
 
 section lift
 

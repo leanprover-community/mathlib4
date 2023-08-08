@@ -359,7 +359,7 @@ theorem Finset.interior_iInter {ι : Type*} (s : Finset ι) (f : ι → Set α) 
     simp [h₂]
 #align finset.interior_Inter Finset.interior_iInter
 
--- todo: generalize to `ι : Sort _`
+-- todo: generalize to `ι : Sort*`
 @[simp]
 theorem interior_iInter {ι : Type*} [Finite ι] (f : ι → Set α) :
     interior (⋂ i, f i) = ⋂ i, interior (f i) := by
@@ -387,7 +387,7 @@ theorem interior_iInter_subset (s : ι → Set α) : interior (⋂ i, s i) ⊆ �
   subset_iInter fun _ => interior_mono <| iInter_subset _ _
 #align interior_Inter_subset interior_iInter_subset
 
-theorem interior_Inter₂_subset (p : ι → Sort _) (s : ∀ i, p i → Set α) :
+theorem interior_Inter₂_subset (p : ι → Sort*) (s : ∀ i, p i → Set α) :
     interior (⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), interior (s i j) :=
   (interior_iInter_subset _).trans <| iInter_mono fun _ => interior_iInter_subset _
 #align interior_Inter₂_subset interior_Inter₂_subset

@@ -282,7 +282,7 @@ instance FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a => a ∈ s
 #align finset.finset_coe.can_lift Finset.FinsetCoe.canLift
 
 @[simp, norm_cast]
-theorem coe_sort_coe (s : Finset α) : ((s : Set α) : Sort _) = s :=
+theorem coe_sort_coe (s : Finset α) : ((s : Set α) : Sort*) = s :=
   rfl
 #align finset.coe_sort_coe Finset.coe_sort_coe
 
@@ -2448,11 +2448,11 @@ section Piecewise
 
 /-- `s.piecewise f g` is the function equal to `f` on the finset `s`, and to `g` on its
 complement. -/
-def piecewise {α : Type*} {δ : α → Sort _} (s : Finset α) (f g : ∀ i, δ i)
+def piecewise {α : Type*} {δ : α → Sort*} (s : Finset α) (f g : ∀ i, δ i)
     [∀ j, Decidable (j ∈ s)] : ∀ i, δ i := fun i => if i ∈ s then f i else g i
 #align finset.piecewise Finset.piecewise
 
-variable {δ : α → Sort _} (s : Finset α) (f g : ∀ i, δ i)
+variable {δ : α → Sort*} (s : Finset α) (f g : ∀ i, δ i)
 
 -- Porting note: @[simp] can prove this
 theorem piecewise_insert_self [DecidableEq α] {j : α} [∀ i, Decidable (i ∈ insert j s)] :

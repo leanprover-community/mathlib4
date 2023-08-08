@@ -106,7 +106,7 @@ theorem ofLower_inj {a b : WithLowerTopology α} : ofLower a = ofLower b ↔ a =
 #align with_lower_topology.of_lower_inj WithLowerTopology.ofLower_inj
 
 /-- A recursor for `WithLowerTopology`. Use as `induction x using WithLowerTopology.rec`. -/
-protected def rec {β : WithLowerTopology α → Sort _} (h : ∀ a, β (toLower a)) : ∀ a, β a := fun a =>
+protected def rec {β : WithLowerTopology α → Sort*} (h : ∀ a, β (toLower a)) : ∀ a, β a := fun a =>
   h (ofLower a)
 #align with_lower_topology.rec WithLowerTopology.rec
 
@@ -182,7 +182,7 @@ theorem ofUpper_inj {a b : WithUpperTopology α} : ofUpper a = ofUpper b ↔ a =
   Iff.rfl
 
 /-- A recursor for `WithUpperTopology`. Use as `induction x using WithUpperTopology.rec`. -/
-protected def rec {β : WithUpperTopology α → Sort _} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a =>
+protected def rec {β : WithUpperTopology α → Sort*} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a =>
   h (ofUpper a)
 
 instance [Nonempty α] : Nonempty (WithUpperTopology α) :=

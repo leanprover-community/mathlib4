@@ -415,7 +415,7 @@ instance instCountableInterFilter : CountableInterFilter μ.ae :=
     exact (measure_biUnion_null_iff hSc).2 hS⟩
 #align measure_theory.measure.ae.countable_Inter_filter MeasureTheory.instCountableInterFilter
 
-theorem ae_all_iff {ι : Sort _} [Countable ι] {p : α → ι → Prop} :
+theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
     (∀ᵐ a ∂μ, ∀ i, p a i) ↔ ∀ i, ∀ᵐ a ∂μ, p a i :=
   eventually_countable_forall
 #align measure_theory.ae_all_iff MeasureTheory.ae_all_iff

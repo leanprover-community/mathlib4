@@ -52,7 +52,7 @@ This is demonstrated by means of the following four lemmas:
 complete lattice, well-founded, compact
 -/
 
-variable {ι : Sort _} {α : Type*} [CompleteLattice α] {f : ι → α}
+variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α}
 
 namespace CompleteLattice
 

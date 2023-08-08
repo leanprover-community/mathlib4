@@ -102,18 +102,18 @@ theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s
   ⟨fun _ hx _ hy => subset_sInter fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
 #align set.ord_connected_sInter Set.ordConnected_sInter
 
-theorem ordConnected_iInter {ι : Sort _} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
+theorem ordConnected_iInter {ι : Sort*} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
     OrdConnected (⋂ i, s i) :=
   ordConnected_sInter <| forall_range_iff.2 hs
 #align set.ord_connected_Inter Set.ordConnected_iInter
 
-instance ordConnected_iInter' {ι : Sort _} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
+instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
     OrdConnected (⋂ i, s i) :=
   ordConnected_iInter ‹_›
 #align set.ord_connected_Inter' Set.ordConnected_iInter'
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem ordConnected_biInter {ι : Sort _} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
+theorem ordConnected_biInter {ι : Sort*} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
     (hs : ∀ i hi, OrdConnected (s i hi)) : OrdConnected (⋂ (i) (hi), s i hi) :=
   ordConnected_iInter fun i => ordConnected_iInter <| hs i
 #align set.ord_connected_bInter Set.ordConnected_biInter

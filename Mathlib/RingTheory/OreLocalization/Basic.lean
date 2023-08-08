@@ -144,7 +144,7 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t 
 
 /-- A function or predicate over `R` and `S` can be lifted to `R[S⁻¹]` if it is invariant
 under expansion on the right. -/
-def liftExpand {C : Sort _} (P : R → S → C)
+def liftExpand {C : Sort*} (P : R → S → C)
     (hP : ∀ (r t : R) (s : S) (ht : (s : R) * t ∈ S), P r s = P (r * t) ⟨s * t, ht⟩) : R[S⁻¹] → C :=
   Quotient.lift (fun p : R × S => P p.1 p.2) fun (r₁, s₁) (r₂, s₂) ⟨u, v, hr₂, hs₂⟩ => by
     dsimp at *
@@ -158,7 +158,7 @@ def liftExpand {C : Sort _} (P : R → S → C)
 #align ore_localization.lift_expand OreLocalization.liftExpand
 
 @[simp]
-theorem liftExpand_of {C : Sort _} {P : R → S → C}
+theorem liftExpand_of {C : Sort*} {P : R → S → C}
     {hP : ∀ (r t : R) (s : S) (ht : (s : R) * t ∈ S), P r s = P (r * t) ⟨s * t, ht⟩} (r : R)
     (s : S) : liftExpand P hP (r /ₒ s) = P r s :=
   rfl
@@ -166,7 +166,7 @@ theorem liftExpand_of {C : Sort _} {P : R → S → C}
 
 /-- A version of `liftExpand` used to simultaneously lift functions with two arguments
 in `R[S⁻¹]`. -/
-def lift₂Expand {C : Sort _} (P : R → S → R → S → C)
+def lift₂Expand {C : Sort*} (P : R → S → R → S → C)
     (hP :
       ∀ (r₁ t₁ : R) (s₁ : S) (ht₁ : (s₁ : R) * t₁ ∈ S) (r₂ t₂ : R) (s₂ : S)
         (ht₂ : (s₂ : R) * t₂ ∈ S),
@@ -183,7 +183,7 @@ def lift₂Expand {C : Sort _} (P : R → S → R → S → C)
 #align ore_localization.lift₂_expand OreLocalization.lift₂Expand
 
 @[simp]
-theorem lift₂Expand_of {C : Sort _} {P : R → S → R → S → C}
+theorem lift₂Expand_of {C : Sort*} {P : R → S → R → S → C}
     {hP :
       ∀ (r₁ t₁ : R) (s₁ : S) (ht₁ : (s₁ : R) * t₁ ∈ S) (r₂ t₂ : R) (s₂ : S)
         (ht₂ : (s₂ : R) * t₂ ∈ S),

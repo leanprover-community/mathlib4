@@ -671,7 +671,7 @@ theorem le_nhdsAdjoint_iff {α : Type*} (a : α) (f : Filter α) (t : Topologica
   rw [@isOpen_singleton_iff_nhds_eq_pure α t b]
 #align le_nhds_adjoint_iff le_nhdsAdjoint_iff
 
-theorem nhds_iInf {ι : Sort _} {t : ι → TopologicalSpace α} {a : α} :
+theorem nhds_iInf {ι : Sort*} {t : ι → TopologicalSpace α} {a : α} :
     @nhds α (iInf t) a = ⨅ i, @nhds α (t i) a :=
   (gc_nhds a).u_iInf
 #align nhds_infi nhds_iInf
@@ -698,7 +698,7 @@ theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
 
 open TopologicalSpace
 
-variable {γ : Type*} {f : α → β} {ι : Sort _}
+variable {γ : Type*} {f : α → β} {ι : Sort*}
 
 theorem continuous_iff_coinduced_le {t₁ : TopologicalSpace α} {t₂ : TopologicalSpace β} :
     Continuous[t₁, t₂] f ↔ coinduced f t₁ ≤ t₂ :=

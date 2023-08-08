@@ -130,7 +130,7 @@ injective coercion to bijections between `α` and `β`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
 -/
-class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
+class EquivLike (E : Sort*) (α β : outParam (Sort*)) where
   /-- The coercion to a function in the forward direction. -/
   coe : E → α → β
   /-- The coercion to a function in the backwards direction. -/
@@ -147,7 +147,7 @@ class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
 
 namespace EquivLike
 
-variable {E F α β γ : Sort _} [iE : EquivLike E α β] [iF : EquivLike F β γ]
+variable {E F α β γ : Sort*} [iE : EquivLike E α β] [iF : EquivLike F β γ]
 
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h

@@ -222,11 +222,11 @@ theorem smul_inf_le (M₁ M₂ : Submodule R M) : I • (M₁ ⊓ M₂) ≤ I �
   le_inf (Submodule.smul_mono_right inf_le_left) (Submodule.smul_mono_right inf_le_right)
 #align submodule.smul_inf_le Submodule.smul_inf_le
 
-theorem smul_iSup {ι : Sort _} {I : Ideal R} {t : ι → Submodule R M} : I • iSup t = ⨆ i, I • t i :=
+theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • iSup t = ⨆ i, I • t i :=
   map₂_iSup_right _ _ _
 #align submodule.smul_supr Submodule.smul_iSup
 
-theorem smul_iInf_le {ι : Sort _} {I : Ideal R} {t : ι → Submodule R M} :
+theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
     I • iInf t ≤ ⨅ i, I • t i :=
   le_iInf fun _ => smul_mono_right (iInf_le _ _)
 #align submodule.smul_infi_le Submodule.smul_iInf_le
@@ -1468,7 +1468,7 @@ theorem comap_inf : comap f (K ⊓ L) = comap f K ⊓ comap f L :=
   rfl
 #align ideal.comap_inf Ideal.comap_inf
 
-variable {ι : Sort _}
+variable {ι : Sort*}
 
 theorem map_iSup (K : ι → Ideal R) : (iSup K).map f = ⨆ i, (K i).map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup

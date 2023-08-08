@@ -92,7 +92,7 @@ theorem IsSubmonoid.inter {s₁ s₂ : Set M} (is₁ : IsSubmonoid s₁) (is₂ 
 @[to_additive
       "The intersection of an indexed set of `AddSubmonoid`s of an `AddMonoid` `M` is
       an `AddSubmonoid` of `M`."]
-theorem IsSubmonoid.iInter {ι : Sort _} {s : ι → Set M} (h : ∀ y : ι, IsSubmonoid (s y)) :
+theorem IsSubmonoid.iInter {ι : Sort*} {s : ι → Set M} (h : ∀ y : ι, IsSubmonoid (s y)) :
     IsSubmonoid (Set.iInter s) :=
   { one_mem := Set.mem_iInter.2 fun y => (h y).one_mem
     mul_mem := fun h₁ h₂ =>

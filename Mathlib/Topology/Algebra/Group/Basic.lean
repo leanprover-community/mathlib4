@@ -372,7 +372,7 @@ end ContinuousInvolutiveInv
 
 section LatticeOps
 
-variable {ι' : Sort _} [Inv G]
+variable {ι' : Sort*} [Inv G]
 
 @[to_additive]
 theorem continuousInv_sInf {ts : Set (TopologicalSpace G)}
@@ -836,7 +836,7 @@ theorem map_mul_right_nhds_one (x : G) : map (fun y => y * x) (𝓝 1) = 𝓝 x 
 #align map_add_right_nhds_zero map_add_right_nhds_zero
 
 @[to_additive]
-theorem Filter.HasBasis.nhds_of_one {ι : Sort _} {p : ι → Prop} {s : ι → Set G}
+theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → Set G}
     (hb : HasBasis (𝓝 1 : Filter G) p s) (x : G) :
     HasBasis (𝓝 x) p fun i => { y | y / x ∈ s i } := by
   rw [← nhds_translation_mul_inv]
@@ -1838,7 +1838,7 @@ end Units
 
 section LatticeOps
 
-variable {ι : Sort _} [Group G]
+variable {ι : Sort*} [Group G]
 
 @[to_additive]
 theorem topologicalGroup_sInf {ts : Set (TopologicalSpace G)}

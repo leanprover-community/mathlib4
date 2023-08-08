@@ -26,7 +26,7 @@ variable {α : Type*}
 
 /-- The empty dependent product function, defined on the empty set. The assumption `a ∈ ∅` is never
 satisfied. -/
-def Pi.empty (β : α → Sort _) (a : α) (h : a ∈ (∅ : Finset α)) : β a :=
+def Pi.empty (β : α → Sort*) (a : α) (h : a ∈ (∅ : Finset α)) : β a :=
   Multiset.Pi.empty β a h
 #align finset.pi.empty Finset.Pi.empty
 

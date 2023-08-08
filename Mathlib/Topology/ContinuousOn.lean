@@ -653,7 +653,7 @@ theorem ContinuousOn.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : 
   fun ⟨x, y⟩ ⟨hx, hy⟩ => ContinuousWithinAt.prod_map (hf x hx) (hg y hy)
 #align continuous_on.prod_map ContinuousOn.prod_map
 
-theorem continuous_of_cover_nhds {ι : Sort _} {f : α → β} {s : ι → Set α}
+theorem continuous_of_cover_nhds {ι : Sort*} {f : α → β} {s : ι → Set α}
     (hs : ∀ x : α, ∃ i, s i ∈ 𝓝 x) (hf : ∀ i, ContinuousOn f (s i)) :
     Continuous f :=
   continuous_iff_continuousAt.mpr fun x ↦ let ⟨i, hi⟩ := hs x; by

@@ -131,12 +131,12 @@ theorem neg_top : -(⊤ : Submodule R M) = ⊤ :=
 #align submodule.neg_top Submodule.neg_top
 
 @[simp]
-theorem neg_iInf {ι : Sort _} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
+theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iInf _
 #align submodule.neg_infi Submodule.neg_iInf
 
 @[simp]
-theorem neg_iSup {ι : Sort _} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
+theorem neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
 #align submodule.neg_supr Submodule.neg_iSup
 

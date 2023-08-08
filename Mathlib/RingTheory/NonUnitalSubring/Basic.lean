@@ -555,10 +555,10 @@ theorem mem_sInf {S : Set (NonUnitalSubring R)} {x : R} : x ∈ sInf S ↔ ∀ p
   Set.mem_iInter₂
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → NonUnitalSubring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort _} {S : ι → NonUnitalSubring R} {x : R} :
+theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} {x : R} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
 
 @[simp]
@@ -790,14 +790,14 @@ theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, clo
 theorem map_sup (s t : NonUnitalSubring R) (f : F) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
   (@gc_map_comap F R S _ _ _ f).l_sup
 
-theorem map_iSup {ι : Sort _} (f : F) (s : ι → NonUnitalSubring R) :
+theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (@gc_map_comap F R S _ _ _ f).l_iSup
 
 theorem comap_inf (s t : NonUnitalSubring S) (f : F) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (@gc_map_comap F R S _ _ _ f).u_inf
 
-theorem comap_iInf {ι : Sort _} (f : F) (s : ι → NonUnitalSubring S) :
+theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (@gc_map_comap F R S _ _ _ f).u_iInf
 

@@ -46,7 +46,7 @@ Lattice structure on antichains. Order equivalence between upper/lower sets and 
 
 open OrderDual Set
 
-variable {α β γ : Type*} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-! ### Unbundled upper/lower sets -/
 

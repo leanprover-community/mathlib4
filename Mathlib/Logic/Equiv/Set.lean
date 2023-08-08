@@ -580,7 +580,7 @@ empty too. This hypothesis is absent on analogous definitions on stronger `Equiv
 `LinearEquiv.ofLeftInverse` and `RingEquiv.ofLeftInverse` as their typeclass assumptions
 are already sufficient to ensure non-emptiness. -/
 @[simps]
-def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β → α)
+def ofLeftInverse {α β : Sort*} (f : α → β) (f_inv : Nonempty α → β → α)
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
     α ≃ range f where
   toFun a := ⟨f a, a, rfl⟩
@@ -596,7 +596,7 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
 
 Note that if `α` is empty, no such `f_inv` exists and so this definition can't be used, unlike
 the stronger but less convenient `ofLeftInverse`. -/
-abbrev ofLeftInverse' {α β : Sort _} (f : α → β) (f_inv : β → α) (hf : LeftInverse f_inv f) :
+abbrev ofLeftInverse' {α β : Sort*} (f : α → β) (f_inv : β → α) (hf : LeftInverse f_inv f) :
     α ≃ range f :=
   ofLeftInverse f (fun _ => f_inv) fun _ => hf
 #align equiv.of_left_inverse' Equiv.ofLeftInverse'
@@ -706,7 +706,7 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 updated function. -/
 -- porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
 -- former now unfolds syntactically to a less general case of the latter.
-theorem dite_comp_equiv_update {α : Type*} {β : Sort _} {γ : Sort _} {p : α → Prop}
+theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
     (e : β ≃ Subtype p)
     (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
     [∀ j, Decidable (p j)] :

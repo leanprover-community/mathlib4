@@ -43,7 +43,7 @@ open Set
 
 open Pointwise Topology
 
-variable {𝕜 𝕝 E : Type*} {ι : Sort _} {κ : ι → Sort _}
+variable {𝕜 𝕝 E : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section SeminormedRing
 
