@@ -138,18 +138,16 @@ end
 
 section
 
-variable {A B C D E : Type u} [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
-  [TopologicalSpace D] [TopologicalSpace E]
+variable {A D E : Type u} [TopologicalSpace A] [TopologicalSpace D] [TopologicalSpace E]
 
 /-- Lemma 2.4 in [Gleason, *Projective topological spaces*][gleason1958]:
 a continuous surjection $\pi$ from a compact space $D$ to a Fréchet space $A$ restricts to
 a compact subset $E$ of $D$, such that $\pi$ maps $E$ onto $A$ and satisfies the
-"Zorn subset condition", where $\pi(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$.
-
-Proof. Apply Zorn's lemma on the closed subsets $E$ of $D$ such that $\pi(E) = A$. -/
+"Zorn subset condition", where $\pi(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$. -/
 lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D → A}
     (π_cont : Continuous π) (π_surj : π.Surjective) : ∃ E : Set D, CompactSpace E ∧ π '' E = univ ∧
     ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → E.restrict π '' E₀ ≠ univ := by
+  -- suffices to apply Zorn's lemma on the subsets of $D$ that are closed and mapped onto $A$
   let S : Set <| Set D := {E : Set D | IsClosed E ∧ π '' E = univ}
   suffices ∀ (C : Set <| Set D) (_ : C ⊆ S) (_ : IsChain (· ⊆ ·) C), ∃ s ∈ S, ∀ c ∈ C, s ⊆ c by
     rcases zorn_superset S this with ⟨E, ⟨E_closed, E_surj⟩, E_min⟩
@@ -158,11 +156,15 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     contrapose! E₀_min
     exact eq_univ_of_coe_eq <|
       E_min E₀ ⟨E₀_closed.trans E_closed, image_coe_eq_restrict_image ▸ E₀_min⟩ coe_subset
+  -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
+  -- prove intersection of chain is closed
   refine ⟨iInter (fun c : C => c), ⟨isClosed_iInter fun ⟨_, h⟩ => (C_sub h).left, ?_⟩,
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
+  -- prove intersection of chain is mapped onto $A$
   by_cases hC : Nonempty C
   · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+    -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _
       ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
@@ -177,27 +179,26 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
 /-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
 if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$
 satisfying the "Zorn subset condition", then $\rho(G)$ is contained in
-the closure of $A \setminus \rho(E \setminus G)}$ for any open set $G$ of $E$.
-
-Proof. Suffices to prove that if $G$ is nonempty, and if $N$ is a neighbourhood of $a \in \rho(G)$,
-then $N \cap (A \setminus \rho(E \setminus G))$ is nonempty. Since $G \cap \rho^{-1}(N)$ is nonempty
-and open, there is some $x \in A$ such that $\rho(E \setminus G \cap \rho^{-1}(N))$, so in
-particular $x \in A \setminus \rho(E \setminus G)$. Since $\rho$ is onto, $x = \rho(y)$ for some
-$y \in G \cap \rho^{-1}(N)$, so in particular $x = \rho(y) \in \rho(\rho^{-1}(N)) = N$. -/
+the closure of $A \setminus \rho(E \setminus G)}$ for any open set $G$ of $E$. -/
 lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ)
     {G : Set E} (hG : IsOpen G) : ρ '' G ⊆ closure ((ρ '' Gᶜ)ᶜ) := by
+  -- suffices to prove for nonempty $G$
   by_cases G_empty : G = ∅
   · simpa only [G_empty, image_empty] using empty_subset _
-  · intro a ha
+  · -- let $a \in \rho(G)$
+    intro a ha
     rw [mem_closure_iff]
+    -- let $N$ be a neighbourhood of $a$
     intro N N_open hN
+    -- get $x \in A$ from nonempty open $G \cap \rho^{-1}(N)$
     rcases (G.mem_image ρ a).mp ha with ⟨e, he, rfl⟩
     have nonempty : (G ∩ ρ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
     have is_open : IsOpen <| G ∩ ρ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
     have ne_univ : ρ '' (G ∩ ρ⁻¹' N)ᶜ ≠ univ :=
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
+    -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
     have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_subset ρ (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
     have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
@@ -205,10 +206,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
 
 /-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
 in an extremally disconnected space, if $U_1$ and $U_2$ are disjoint open sets,
-then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint.
-
-Proof. $U_1$ and $\overline{U_2}$ are disjoint because $U_1$ is open.
-Then $\overline{U_1}$ and $\overline{U_2}$ are disjoint because $\overline{U_2}$ is open. -/
+then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint. -/
 lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_IsOpen [ExtremallyDisconnected A]
     {U₁ U₂ : Set A} (h : Disjoint U₁ U₂) (hU₁ : IsOpen U₁) (hU₂ : IsOpen U₂) :
     Disjoint (closure U₁) (closure U₂) :=
@@ -218,9 +216,12 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
     [T2Space A] [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) :
     ρ.Injective := by
+  -- let $x_1, x_2 \in E$ be distinct points such that $\rho(x_1) = \rho(x_2)$
   intro x₁ x₂ hρx
   by_contra hx
+  -- let $G_1$ and $G_2$ be disjoint open neighbourhoods of $x_1$ and $x_2$ respectively
   rcases t2_separation hx with ⟨G₁, G₂, G₁_open, G₂_open, hx₁, hx₂, disj⟩
+  -- prove $A \setminus \rho(E - G_1)$ and $A \setminus \rho(E - G_2)$ are disjoint
   have G₁_comp : IsCompact G₁ᶜ := IsClosed.isCompact G₁_open.isClosed_compl
   have G₂_comp : IsCompact G₂ᶜ := IsClosed.isCompact G₂_open.isClosed_compl
   have G₁_open' : IsOpen (ρ '' G₁ᶜ)ᶜ := (G₁_comp.image ρ_cont).isClosed.isOpen_compl
@@ -229,8 +230,10 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
     rw [disjoint_iff_inter_eq_empty, ← compl_union, ← image_union, ← compl_inter,
       disjoint_iff_inter_eq_empty.mp disj, compl_empty, compl_empty_iff,
       image_univ_of_surjective ρ_surj]
+  -- apply Lemma 2.2 to prove their closures are disjoint
   have disj'' : Disjoint (closure (ρ '' G₁ᶜ)ᶜ) (closure (ρ '' G₂ᶜ)ᶜ) :=
     disjoint_closure_of_disjoint_IsOpen disj' G₁_open' G₂_open'
+  -- apply Lemma 2.1 to prove $\rho(x_1) = \rho(x_2)$ lies in their intersection
   have hx₁' := image_subset_closure_compl_image_compl_of_isOpen ρ_cont ρ_surj zorn_subset G₁_open <|
     mem_image_of_mem ρ hx₁
   have hx₂' := image_subset_closure_compl_image_compl_of_isOpen ρ_cont ρ_surj zorn_subset G₂_open <|
@@ -239,12 +242,7 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
 
 /-- Lemma 2.3 in [Gleason, *Projective topological spaces*][gleason1958]:
 a continuous surjection from a compact Hausdorff space to an extremally disconnected Hausdorff space
-satisfying the "Zorn subset condition" is a homeomorphism.
-
-Proof. Suffices to prove injectivity, so suppose otherwise that $x_1$ and $x_2$ are distinct points
-with disjoint open neighbourhoods $G_1$ and $G_2$ respectively such that $\rho(x_1) = \rho(x_2)$.
-The sets $A \setminus \rho(E - G_1)$ and $A \setminus \rho(E - G_2)$ are disjoint, so their closures
-are disjoint by Lemma 2.2, but $\rho(x_1) = \rho(x_2)$ is common to these sets by Lemma 2.1. -/
+satisfying the "Zorn subset condition" is a homeomorphism. -/
 noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnected A] [T2Space A]
     [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ) (ρ_surj : ρ.Surjective)
     (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) : E ≃ₜ A :=
@@ -253,28 +251,27 @@ noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnecte
 
 /-- Theorem 2.5 in [Gleason, *Projective topological spaces*][gleason1958]:
 in the category of compact spaces and continuous maps,
-the projective spaces are precisely the extremally disconnected spaces.
-
-Proof. Let $A$ be an extremally disconnected compact space, let $B$ and $C$ be compact spaces, and
-let $f : B \twoheadrightarrow C$ and $\phi : A \to C$ be continuous maps. Consider the compact space
-$D := \{(a, b) : \phi(a) = f(b)\}$ with projections $\pi_1 : D \to A$ and $\pi_2 : D \to B$, which
-has a closed subset $E$ satisfying the "Zorn subset condition" by Lemma 2.4, such that $\pi_1|_E$
-is a homeomorphism by Lemma 2.3. Then $\phi = f \circ \pi_2|_E \circ \pi_1|_E^{-1}$. -/
+the projective spaces are precisely the extremally disconnected spaces.-/
 protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconnected A]
     [CompactSpace A] [T2Space A] : CompactT2.Projective A := by
+  -- let $B$ and $C$ be compact; let $f : B \twoheadrightarrow C$ and $\phi : A \to C$ be continuous
   intro B C _ _ _ _ _ _ φ f φ_cont f_cont f_surj
+  -- let $D := \{(a, b) : \phi(a) = f(b)\}$ with projections $\pi_1 : D \to A$ and $\pi_2 : D \to B$
   let D : Set <| A × B := {x | φ x.fst = f x.snd}
   have D_comp : CompactSpace D := isCompact_iff_compactSpace.mp
     (isClosed_eq (φ_cont.comp continuous_fst) (f_cont.comp continuous_snd)).isCompact
+  -- apply Lemma 2.4 to get closed $E$ satisfying "Zorn subset condition"
   let π₁ : D → A := Prod.fst ∘ Subtype.val
   have π₁_cont : Continuous π₁ := continuous_fst.comp continuous_subtype_val
   have π₁_surj : π₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
   rcases exists_compact_surjective_zorn_subset π₁_cont π₁_surj with ⟨E, _, E_onto, E_min⟩
+  -- apply Lemma 2.3 to get homeomorphism $\pi_1|_E : E \to A$
   let ρ : E → A := E.restrict π₁
   have ρ_cont : Continuous ρ := π₁_cont.continuousOn.restrict
   have ρ_surj : ρ.Surjective := fun a => by
     rcases (E_onto ▸ mem_univ a : a ∈ π₁ '' E) with ⟨d, ⟨hd, rfl⟩⟩; exact ⟨⟨d, hd⟩, rfl⟩
   let ρ' := ExtremallyDisconnected.homeoCompactToT2 ρ_cont ρ_surj E_min
+  -- prove $\rho := \pi_2|_E \circ \pi_1|_E^{-1}$ satisfies $\phi = f \circ \rho$
   let π₂ : D → B := Prod.snd ∘ Subtype.val
   have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
   refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
@@ -291,9 +288,8 @@ end
 
 -- Note: It might be possible to use Gleason for this instead
 /-- The sigma-type of extremally disconnected spaces is extremally disconnected. -/
-instance instExtremallyDisconnected
-    {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [h₀ : ∀ i, ExtremallyDisconnected (π i)] :
-    ExtremallyDisconnected (Σi, π i) := by
+instance instExtremallyDisconnected {π : ι → Type _} [∀ i, TopologicalSpace (π i)]
+    [h₀ : ∀ i, ExtremallyDisconnected (π i)] : ExtremallyDisconnected (Σ i, π i) := by
   constructor
   intro s hs
   rw [isOpen_sigma_iff] at hs ⊢
