@@ -175,10 +175,6 @@ protected theorem nsmul_eq_smul_cast (x : S) (n : ℕ) :
 theorem coe_nsmul (x : S) (n : ℕ) : (n • x : E) = n • (x : E) := by
   simp_rw [PointedCone.coe_smul, PointedCone.nsmul_eq_smul_cast]; rfl
 
-@[simp]
-theorem coe_add : ∀ (x y : { x // x ∈ S }), (x + y : E) = ↑x + ↑y := by
-  aesop
-
 theorem add_mem ⦃x⦄ (hx : x ∈ S) ⦃y⦄ (hy : y ∈ S) : x + y ∈ S :=
   S.add_mem' hx hy
 
@@ -186,7 +182,9 @@ instance instAddMemClass : AddMemClass (PointedCone 𝕜 E) E where
   add_mem ha hb := add_mem ha hb
 
 instance instAddCommMonoid : AddCommMonoid S :=
-  Function.Injective.addCommMonoid (Subtype.val : S → E) Subtype.coe_injective rfl coe_add coe_nsmul
+  Function.Injective.addCommMonoid (Subtype.val : S → E) Subtype.coe_injective
+    rfl (by aesop) coe_nsmul
+    -- Note: linter says `coe_add` is a syntactic tautology
 
 def subtype.addMonoidHom : S →+ E where
   toFun := Subtype.val
