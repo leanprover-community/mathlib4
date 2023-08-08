@@ -1818,7 +1818,7 @@ namespace ContinuousLinearMap
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- set_option maxHeartbeats 500000 in
--- set_option synthInstance.maxHeartbeats 40000 in
+set_option synthInstance.maxHeartbeats 40000 in
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
 noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=

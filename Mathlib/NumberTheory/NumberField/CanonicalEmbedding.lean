@@ -137,7 +137,7 @@ def integerLattice : Subring E :=
 
 -- Porting note: See https://github.com/leanprover-community/mathlib4/issues/5028
 -- set_option maxHeartbeats 400000 in
--- set_option synthInstance.maxHeartbeats 30000 in
+set_option synthInstance.maxHeartbeats 30000 in
 /-- The linear equiv between `𝓞 K` and the integer lattice. -/
 def equivIntegerLattice [NumberField K] : 𝓞 K ≃ₗ[ℤ] integerLattice K :=
   LinearEquiv.ofBijective

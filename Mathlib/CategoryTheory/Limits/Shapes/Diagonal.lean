@@ -112,7 +112,7 @@ theorem pullback_diagonal_map_snd_snd_fst :
 
 variable [HasPullback i₁ i₂]
 
--- set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 400000 in
 /-- This iso witnesses the fact that
 given `f : X ⟶ Y`, `i : U ⟶ Y`, and `i₁ : V₁ ⟶ X ×[Y] U`, `i₂ : V₂ ⟶ X ×[Y] U`, the diagram
 
