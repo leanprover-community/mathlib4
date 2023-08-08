@@ -2,6 +2,7 @@ import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.Algebra.Ring.Equiv
 
 namespace FirstOrder
 
@@ -268,12 +269,12 @@ instance {K : Type _} [ModelField K] : Theory.field.Model K :=
 def languageHomEquivRingHom {K L : Type _} [ModelField K] [ModelField L] :
     (K →+* L) ≃ (Language.field.Hom K L) :=
   { toFun := fun f =>
-    { toFun := f,
+    { f with
       map_fun' := fun {n} f => by
         cases f <;> simp
       map_rel' := fun {n} f => by cases f },
     invFun := fun f =>
-      { toFun := f,
+      { f with
         map_add' := by
           intro x y
           simpa using f.map_fun addFunction ![x, y]
@@ -284,6 +285,25 @@ def languageHomEquivRingHom {K L : Type _} [ModelField K] [ModelField L] :
           simpa using f.map_fun zeroFunction ![],
         map_one' := by
           simpa using f.map_fun oneFunction ![], }
+    left_inv := fun f => by ext; rfl
+    right_inv := fun f => by ext; rfl }
+
+
+def languageEquivEquivRingEquiv {K L : Type _} [ModelField K] [ModelField L] :
+    (K ≃+* L) ≃ (Language.field.Equiv K L) :=
+  { toFun := fun f =>
+    { f with
+      map_fun' := fun {n} f => by
+        cases f <;> simp
+      map_rel' := fun {n} f => by cases f },
+    invFun := fun f =>
+    { f with
+      map_add' := by
+        intro x y
+        simpa using f.map_fun addFunction ![x, y]
+      map_mul' := by
+        intro x y
+        simpa using f.map_fun mulFunction ![x, y] }
     left_inv := fun f => by ext; rfl
     right_inv := fun f => by ext; rfl }
 
