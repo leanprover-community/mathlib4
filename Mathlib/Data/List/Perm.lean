@@ -991,7 +991,7 @@ theorem Perm.union_right {l₁ l₂ : List α} (t₁ : List α) (h : l₁ ~ l₂
   · exact ih_1.trans ih_2
 #align list.perm.union_right List.Perm.union_right
 
-theorem Perm.union_left (l : List α) {t₁ t₂ : List α} (h : t₁ ~ t₂) : l.union t₁ ~ l.union t₂ := by
+theorem Perm.union_left (l : List α) {t₁ t₂ : List α} (h : t₁ ~ t₂) : l ∪ t₁ ~ l ∪ t₂ := by
   induction l <;> simp [*, Perm.insert]
 #align list.perm.union_left List.Perm.union_left
 
