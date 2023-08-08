@@ -27,7 +27,7 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) : List α :=
   Quot.liftOn s (mergeSort r) fun _ _ h =>
-    eq_of_perm_of_sorted ((perm_mergeSort* _).trans <| h.trans (perm_mergeSort* _).symm)
+    eq_of_perm_of_sorted ((perm_mergeSort _ _).trans <| h.trans (perm_mergeSort _ _).symm)
       (sorted_mergeSort r _) (sorted_mergeSort r _)
 #align multiset.sort Multiset.sort
 
@@ -43,7 +43,7 @@ theorem sort_sorted (s : Multiset α) : Sorted r (sort r s) :=
 
 @[simp]
 theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
-  Quot.inductionOn s fun _ => Quot.sound <| perm_mergeSort* _
+  Quot.inductionOn s fun _ => Quot.sound <| perm_mergeSort _ _
 #align multiset.sort_eq Multiset.sort_eq
 
 @[simp]
@@ -52,7 +52,7 @@ theorem mem_sort {s : Multiset α} {a : α} : a ∈ sort r s ↔ a ∈ s := by r
 
 @[simp]
 theorem length_sort {s : Multiset α} : (sort r s).length = card s :=
-  Quot.inductionOn s <| length_mergeSort*
+  Quot.inductionOn s <| length_mergeSort _
 #align multiset.length_sort Multiset.length_sort
 
 @[simp]

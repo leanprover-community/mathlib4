@@ -461,7 +461,7 @@ theorem snoc_castSucc : snoc p x (castSucc i) = p i := by
 #align fin.snoc_cast_succ Fin.snoc_castSucc
 
 @[simp]
-theorem snoc_comp_castSucc {n : ℕ} {α : Sort*} {a : α} {f : Fin n → α} :
+theorem snoc_comp_castSucc {n : ℕ} {α : Type*} {a : α} {f : Fin n → α} :
     (snoc f a : Fin (n + 1) → α) ∘ castSucc = f :=
   funext fun i ↦ by rw [Function.comp_apply, snoc_castSucc]
 #align fin.snoc_comp_cast_succ Fin.snoc_comp_castSucc
@@ -471,7 +471,7 @@ theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
 #align fin.snoc_last Fin.snoc_last
 
 @[simp]
-theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
+theorem snoc_comp_nat_add {n m : ℕ} {α : Type*} (f : Fin (m + n) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
       snoc (f ∘ natAdd m) a := by
   ext i
@@ -490,7 +490,7 @@ theorem snoc_cast_add {α : Fin (n + m + 1) → Type*} (f : ∀ i : Fin (n + m),
 
 -- Porting note: Had to `unfold comp`
 @[simp]
-theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
+theorem snoc_comp_cast_add {n m : ℕ} {α : Type*} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
   funext (by unfold comp; exact snoc_cast_add _ _)
 #align fin.snoc_comp_cast_add Fin.snoc_comp_cast_add

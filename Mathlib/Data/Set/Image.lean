@@ -882,7 +882,7 @@ theorem _root_.Prod.range_snd [Nonempty α] : range (Prod.snd : α × β → β)
 #align prod.range_snd Prod.range_snd
 
 @[simp]
-theorem range_eval {ι : Type*} {α : ι → Sort*} [∀ i, Nonempty (α i)] (i : ι) :
+theorem range_eval {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)] (i : ι) :
     range (eval i : (∀ i, α i) → α i) = univ :=
   Function.Surjective.range_eq (surjective_eval i)
   -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works

@@ -282,7 +282,7 @@ instance FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a => a ∈ s
 #align finset.finset_coe.can_lift Finset.FinsetCoe.canLift
 
 @[simp, norm_cast]
-theorem coe_sort_coe (s : Finset α) : ((s : Set α) : Sort*) = s :=
+theorem coe_sort_coe (s : Finset α) : ((s : Set α) : Type ua) = s :=
   rfl
 #align finset.coe_sort_coe Finset.coe_sort_coe
 

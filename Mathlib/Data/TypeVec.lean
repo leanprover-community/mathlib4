@@ -403,7 +403,7 @@ section Liftp'
 open Nat
 
 /-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
-def «repeat» : ∀ (n : ℕ), Sort* → TypeVec n
+def «repeat» : ∀ (n : ℕ), Type* → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t
 #align typevec.repeat TypeVec.repeat
@@ -490,7 +490,7 @@ def dropRepeat (α : Type*) : ∀ {n}, drop («repeat» (succ n) α) ⟹ «repea
 #align typevec.drop_repeat TypeVec.dropRepeat
 
 /-- projection for a repeat vector -/
-def ofRepeat {α : Sort*} : ∀ {n i}, «repeat» n α i → α
+def ofRepeat {α : Type*} : ∀ {n i}, «repeat» n α i → α
   | _, Fin2.fz   => fun (a : α) => a
   | _, Fin2.fs i => @ofRepeat _ _ i
 #align typevec.of_repeat TypeVec.ofRepeat

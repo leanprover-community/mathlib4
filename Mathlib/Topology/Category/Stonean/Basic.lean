@@ -105,7 +105,7 @@ instance : Faithful toCompHaus := {}
 instance : ConcreteCategory Stonean where
   forget := toCompHaus ⋙ forget _
 
-instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort*
+instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
 instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X (fun _ => Y) := ConcreteCategory.funLike
 
 /-- Stonean spaces are topological spaces. -/
