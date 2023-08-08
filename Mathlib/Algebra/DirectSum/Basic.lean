@@ -47,6 +47,9 @@ instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
+instance [∀ i, AddCommMonoid (β i)] : FunLike (DirectSum ι β) _ fun i : ι => β i :=
+  inferInstanceAs (FunLike (Π₀ i, β i) _ _)
+
 instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
   inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
 
