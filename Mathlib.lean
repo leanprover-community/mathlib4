@@ -2691,6 +2691,7 @@ import Mathlib.Probability.Moments
 import Mathlib.Probability.Notation
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
+import Mathlib.Probability.ProbabilityMassFunction.Integrals
 import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.Probability.ProbabilityMassFunction.Uniform
 import Mathlib.Probability.Process.Adapted
