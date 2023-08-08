@@ -671,6 +671,17 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (hf2 (p i)).choose)
     (fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.strictMono h))
 
+lemma exists_len_gt_of_infinite_dim [NoTopOrder (LTSeries α)] [Nonempty α] (n : ℕ) :
+  ∃ (p : LTSeries α), n < p.length := by
+haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance
+induction n with
+| zero => { obtain ⟨p, hp⟩ := NoTopOrder.exists_not_le (default : LTSeries α)
+            refine ⟨p, lt_of_not_le hp⟩ }
+| succ n ih => { rcases ih with ⟨p, hp⟩
+                 rcases NoTopOrder.exists_not_le p with ⟨q, hq⟩
+                 simp only [RelSeries.le_def, not_le, Nat.succ_eq_add_one] at *
+                 exact ⟨q, by linarith⟩ }
+
 lemma top_len_unique [OrderTop (LTSeries α)] (p : LTSeries α) (hp : IsTop p) :
     p.length = (⊤ : LTSeries α).length :=
   le_antisymm (@le_top (LTSeries α) _ _ _) (hp ⊤)
