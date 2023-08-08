@@ -288,7 +288,6 @@ def languageHomEquivRingHom {K L : Type _} [ModelField K] [ModelField L] :
     left_inv := fun f => by ext; rfl
     right_inv := fun f => by ext; rfl }
 
-
 def languageEquivEquivRingEquiv {K L : Type _} [ModelField K] [ModelField L] :
     (K ≃+* L) ≃ (Language.field.Equiv K L) :=
   { toFun := fun f =>
@@ -306,6 +305,5 @@ def languageEquivEquivRingEquiv {K L : Type _} [ModelField K] [ModelField L] :
         simpa using f.map_fun mulFunction ![x, y] }
     left_inv := fun f => by ext; rfl
     right_inv := fun f => by ext; rfl }
-
 
 end FirstOrder
