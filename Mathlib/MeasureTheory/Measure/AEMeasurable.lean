@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.Order.Filter.IndicatorFunction
 
 #align_import measure_theory.measure.ae_measurable from "leanprover-community/mathlib"@"3310acfa9787aa171db6d4cba3945f6f275fe9f2"
 
@@ -345,10 +346,11 @@ theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
 #align ae_measurable_indicator_iff aemeasurable_indicator_iff
 
 @[measurability]
-theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
-    AEMeasurable (s.indicator f) μ :=
-  (aemeasurable_indicator_iff hs).mpr hfm.restrict
-#align ae_measurable.indicator AEMeasurable.indicator
+theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (s.indicator f) μ := by
+  rcases hs with ⟨t, ht, hst⟩
+  refine ((aemeasurable_indicator_iff ht).mpr hfm.restrict).congr
+    (indicator_ae_eq_of_ae_eq_set hst.symm)
 
 theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf : AEMeasurable f μ)
     {s : Set δ} (hs : MeasurableSet s) : (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=
