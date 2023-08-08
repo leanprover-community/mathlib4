@@ -105,6 +105,7 @@ inductive FieldAxiom : Type
   | invZero : FieldAxiom
   | zeroNeOne : FieldAxiom
 
+@[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.field.Sentence
   | .addAssoc => addFunction.assoc
   | .addComm => addFunction.comm
@@ -151,76 +152,63 @@ def modelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
   neg := fun x => funMap negFunction ![x],
   add_assoc := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.assoc ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .addAssoc)
-    rwa [Functions.realize_assoc] at h
+      (Set.mem_range_self (f := toSentence) .addAssoc)
+    rwa [toSentence, Functions.realize_assoc] at h
   add_comm := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (Set.mem_range_self (f := toSentence) .addComm)
     rwa [toSentence, Functions.realize_comm] at h
   add_zero := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.rightId 0 ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .addZero)
-    rwa [Functions.realize_rightId] at h
+      (Set.mem_range_self (f := toSentence) .addZero)
+    rwa [toSentence, Functions.realize_rightId] at h
   add_left_neg := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.leftInv negFunction 0 ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .addLeftNeg)
-    rwa [Functions.realize_leftInv] at h
+      (Set.mem_range_self (f := toSentence) .addLeftNeg)
+    rwa [toSentence, Functions.realize_leftInv] at h
   left_distrib := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.leftDistrib addFunction ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .mulLeftDistrib)
-    rwa [Functions.realize_leftDistrib] at h
+      (Set.mem_range_self (f := toSentence) .mulLeftDistrib)
+    rwa [toSentence, Functions.realize_leftDistrib] at h
   right_distrib := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightDistrib addFunction ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .mulRightDistrib)
-    rwa [Functions.realize_rightDistrib] at h
+      (Set.mem_range_self (f := toSentence) .mulRightDistrib)
+    rwa [toSentence, Functions.realize_rightDistrib] at h
   mul_assoc := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.assoc ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .mulAssoc)
-    rwa [Functions.realize_assoc] at h
+      (Set.mem_range_self (f := toSentence) .mulAssoc)
+    rwa [toSentence, Functions.realize_assoc] at h
   mul_comm := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.comm ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .mulComm)
-    rwa [Functions.realize_comm] at h
+      (Set.mem_range_self (f := toSentence) .mulComm)
+    rwa [toSentence, Functions.realize_comm] at h
   mul_one := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightId oneFunction ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .mulOne)
-    rwa [Functions.realize_rightId] at h
+      (Set.mem_range_self (f := toSentence) .mulOne)
+    rwa [toSentence, Functions.realize_rightId] at h
   zero_add := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show addFunction.leftId 0 ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .zeroAdd)
-    rwa [Functions.realize_leftId] at h
+      (Set.mem_range_self (f := toSentence) .zeroAdd)
+    rwa [toSentence, Functions.realize_leftId] at h
   zero_mul := sorry,
   mul_zero := sorry,
   one_mul := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.leftId 1 ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .oneMul)
-    rwa [Functions.realize_leftId] at h
+      (Set.mem_range_self (f := toSentence) .oneMul)
+    rwa [toSentence, Functions.realize_leftId] at h
   exists_pair_ne := ⟨
-    constantMap (L := Language.field) (M := K) 0,
-    constantMap (L := Language.field) (M := K) 1, by
+    constantMap (L := Language.field) (M := K) zeroFunction,
+    constantMap (L := Language.field) (M := K) oneFunction, by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show (Term.equal 0 1).not ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .zeroNeOne)
+      (Set.mem_range_self (f := toSentence) .zeroNeOne)
     simpa [Sentence.Realize, zero_def, one_def] using h⟩
   mul_inv_cancel := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightNeZeroInv invFunction 0 1 ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .mulRightInv)
-    rwa [Functions.realize_rightNeZeroInv] at h
+      (Set.mem_range_self (f := toSentence) .mulRightInv)
+    rwa [toSentence, Functions.realize_rightNeZeroInv] at h
   inv_zero := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show invFunction.apply₁ 0 =' 0 ∈ Theory.field from
-        Set.mem_range_self (f := toSentence) .invZero)
+      (Set.mem_range_self (f := toSentence) .invZero)
     simpa [Sentence.Realize, zero_def, funMap, Formula.Realize] using h,
   funMap_add := by
     simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
