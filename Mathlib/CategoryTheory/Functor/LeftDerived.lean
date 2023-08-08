@@ -2,13 +2,10 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.left_derived
-! leanprover-community/mathlib commit 13ff898b0eee75d3cc75d1c06a491720eaaf911d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
+
+#align_import category_theory.functor.left_derived from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
 
 /-!
 # Left-derived functors

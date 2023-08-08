@@ -2,11 +2,6 @@
 Copyright (c) 2021 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.kronecker
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.RingTheory.TensorProduct
+
+#align_import data.matrix.kronecker from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Kronecker product of matrices
@@ -563,7 +560,8 @@ theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n
     (A : Matrix m m α) (B : Matrix n n β) :
     det (A ⊗ₖₜ[R] B) = (det A ^ Fintype.card n) ⊗ₜ[R] (det B ^ Fintype.card m) := by
   refine' (det_kroneckerMapBilinear (TensorProduct.mk R α β) tmul_mul_tmul _ _).trans _
-  simp (config := { eta := false }) only [mk_apply, ← includeLeft_apply, ← includeRight_apply]
+  simp (config := { eta := false }) only [mk_apply, ← includeLeft_apply (S := R),
+    ← includeRight_apply]
   simp only [← AlgHom.mapMatrix_apply, ← AlgHom.map_det]
   simp only [includeLeft_apply, includeRight_apply, tmul_pow, tmul_mul_tmul, one_pow,
     _root_.mul_one, _root_.one_mul]

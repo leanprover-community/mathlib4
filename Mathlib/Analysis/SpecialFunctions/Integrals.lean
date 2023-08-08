@@ -2,14 +2,11 @@
 Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.integrals
-! leanprover-community/mathlib commit 011cafb4a5bc695875d186e245d6b3df03bf6c40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+
+#align_import analysis.special_functions.integrals from "leanprover-community/mathlib"@"011cafb4a5bc695875d186e245d6b3df03bf6c40"
 
 /-!
 # Integration of specific interval integrals

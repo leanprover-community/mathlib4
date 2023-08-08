@@ -2,13 +2,10 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module algebra.indicator_function
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Support
+
+#align_import algebra.indicator_function from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 # Indicator function
@@ -511,6 +508,30 @@ theorem indicator_const_smul (s : Set α) (r : M) (f : α → A) :
 
 end DistribMulAction
 
+section SMulWithZero
+
+variable {A : Type _} [Zero A] [Zero M] [SMulWithZero M A]
+
+theorem indicator_smul_apply_left (s : Set α) (r : α → M) (f : α → A) (x : α) :
+    indicator s (fun x => r x • f x) x = indicator s r x • f x := by
+  dsimp only [indicator]
+  split_ifs
+  exacts [rfl, (zero_smul _ (f x)).symm]
+
+theorem indicator_smul_left (s : Set α) (r : α → M) (f : α → A) :
+    (indicator s fun x : α => r x • f x) = fun x : α => indicator s r x • f x :=
+  funext <| indicator_smul_apply_left s r f
+
+theorem indicator_smul_const_apply (s : Set α) (r : α → M) (a : A) (x : α) :
+    indicator s (fun x => r x • a) x = indicator s r x • a :=
+  indicator_smul_apply_left s r (fun _ => a) x
+
+theorem indicator_smul_const (s : Set α) (r : α → M) (a : A) :
+    (indicator s fun x : α => r x • a) = fun x : α => indicator s r x • a :=
+  funext <| indicator_smul_const_apply s r a
+
+end SMulWithZero
+
 section Group
 
 variable {G : Type _} [Group G] {s t : Set α} {f g : α → G} {a : α}
@@ -847,6 +868,20 @@ theorem mulIndicator_iUnion_apply {ι M} [CompleteLattice M] [One M] (h1 : (⊥ 
     simp [hx, ← h1]
 #align set.mul_indicator_Union_apply Set.mulIndicator_iUnion_apply
 #align set.indicator_Union_apply Set.indicator_iUnion_apply
+
+@[to_additive] lemma mulIndicator_iInter_apply {ι M} [Nonempty ι] [CompleteLattice M] [One M]
+    (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
+    mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
+  by_cases hx : x ∈ ⋂ i, s i
+  · rw [mulIndicator_of_mem hx]
+    rw [mem_iInter] at hx
+    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
+    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
+  · rw [mulIndicator_of_not_mem hx]
+    simp only [mem_iInter, not_exists, not_forall] at hx
+    rcases hx with ⟨j, hj⟩
+    refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
+    simpa [mulIndicator_of_not_mem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
 
 end Order
 

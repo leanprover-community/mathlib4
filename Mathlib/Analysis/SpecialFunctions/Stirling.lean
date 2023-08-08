@@ -2,14 +2,11 @@
 Copyright (c) 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
-
-! This file was ported from Lean 3 source module analysis.special_functions.stirling
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.PSeries
 import Mathlib.Data.Real.Pi.Wallis
+
+#align_import analysis.special_functions.stirling from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # Stirling's formula
@@ -77,7 +74,7 @@ theorem log_stirlingSeq_formula (n : ℕ) : log (stirlingSeq n.succ) =
 
 -- Porting note: the custom discharger of the simp in the theorem below has
 -- unreachable tactics for some of its invocations
-set_option linter.unreachableTactic false
+set_option linter.unreachableTactic false in
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
    `∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`
 -/
@@ -104,7 +101,6 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
       cast_mul, cast_succ, cast_zero, range_one, sum_singleton, h]
     ring
 #align stirling.log_stirling_seq_diff_has_sum Stirling.log_stirlingSeq_diff_hasSum
-set_option linter.unreachableTactic true
 
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/
 theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ) :=

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.analytic.basic
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Topology.Algebra.InfiniteSum.Module
+
+#align_import analysis.analytic.basic from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Analytic functions
@@ -984,7 +981,7 @@ set_option linter.uppercaseLean3 false in
 #align asymptotics.is_O.continuous_multilinear_map_apply_eq_zero Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero
 
 /-- If a formal multilinear series `p` represents the zero function at `x : E`, then the
-terms `p n (fun i ↦ y)` appearing the in sum are zero for any `n : ℕ`, `y : E`. -/
+terms `p n (fun i ↦ y)` appearing in the sum are zero for any `n : ℕ`, `y : E`. -/
 theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (h : HasFPowerSeriesAt 0 p x) (n : ℕ) : ∀ y : E, (p n fun _ => y) = 0 := by
   refine' Nat.strong_induction_on n fun k hk => _
@@ -1378,6 +1375,16 @@ theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
   rintro x ⟨p, r, hr⟩
   exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.analyticAt_of_mem hy
 #align is_open_analytic_at isOpen_analyticAt
+
+variable {𝕜}
+
+theorem AnalyticAt.eventually_analyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+    ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
+(isOpen_analyticAt 𝕜 f).mem_nhds h
+
+theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+    ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
+h.eventually_analyticAt.exists_mem
 
 end
 

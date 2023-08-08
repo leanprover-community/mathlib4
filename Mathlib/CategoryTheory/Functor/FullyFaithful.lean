@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.fully_faithful
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
+
+#align_import category_theory.functor.fully_faithful from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Full and faithful functors
@@ -84,11 +81,10 @@ theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
 #align category_theory.functor.map_iso_injective CategoryTheory.Functor.mapIso_injective
 
 /-- The specified preimage of a morphism under a full functor. -/
+@[pp_dot]
 def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   Full.preimage.{v₁, v₂} f
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage
-
-pp_extended_field_notation preimage
 
 @[simp]
 theorem image_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :

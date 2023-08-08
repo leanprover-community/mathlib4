@@ -37,6 +37,7 @@ partial def importGraph (env : Environment) : NameMap (Array Name) :=
   let main := env.header.mainModule
   let imports := env.header.imports.map Import.module
   imports.foldl (fun m i => process env i m) (({} : NameMap _).insert main imports)
+    |>.erase Name.anonymous
 where
   process (env) (i) (m) : NameMap (Array Name) :=
     if m.contains i then
@@ -44,8 +45,6 @@ where
     else
       let imports := env.importsOf i
       imports.foldr (fun i m => process env i m) (m.insert i imports)
-
-end Lean.Environment
 
 /--
 Return the redundant imports (i.e. those transitively implied by another import)
@@ -65,6 +64,48 @@ where
       (visited'.insert n,
         imports.foldl (fun s t => if targets.contains t then s.insert t else s) seen')
 
+end Lean.Environment
+
+namespace Lean.NameMap
+
+/--
+Compute the transitive closure of an import graph.
+-/
+partial def transitiveClosure (m : NameMap (Array Name)) : NameMap NameSet :=
+  m.fold (fun r n i => process r n i) {}
+where
+  process (r : NameMap NameSet) (n : Name) (i : Array Name) : NameMap NameSet :=
+    if r.contains n then
+      r
+    else
+      let r' := i.foldr (fun i r => process r i ((m.find? i).getD #[])) r
+      let t := i.foldr
+        (fun j s => ((r'.find? j).getD {}).fold NameSet.insert s)
+        (RBTree.ofList i.toList)
+      r'.insert n t
+
+/--
+Compute the transitive reduction of an import graph.
+
+Typical usage is `transitiveReduction (← importGraph)`.
+-/
+def transitiveReduction (m : NameMap (Array Name)) : NameMap (Array Name) :=
+  let c := transitiveClosure m
+  m.fold (fun r n a =>
+    r.insert n (a.foldr (fun i b => b.filter (fun j => ! ((c.find? i).getD {}).contains j)) a)) {}
+
+/-- Restrict an import graph to only the downstream dependencies of some set of modules. -/
+def dependenciesOf (m : NameMap (Array Name)) (targets : NameSet) : NameMap (Array Name) :=
+  let tc := transitiveClosure m
+  let P (n : Name):= targets.contains n || ((tc.find? n).getD {}).any fun j => targets.contains j
+  m.fold (init := {}) fun r n i =>
+    if P n then
+      r.insert n (i.filter P)
+    else
+      r
+
+end Lean.NameMap
+
 /--
 Return the redundant imports (i.e. those transitively implied by another import)
 of a specified module (or the current module if `none` is specified).
@@ -72,7 +113,7 @@ of a specified module (or the current module if `none` is specified).
 def redundantImports (n? : Option Name := none) : CoreM NameSet := do
   let env ← getEnv
   let imports := env.importsOf (n?.getD (env.header.mainModule))
-  return findRedundantImports env imports
+  return env.findRedundantImports imports
 
 /--
 List the imports in this file which can be removed
@@ -110,3 +151,30 @@ elab "#minimize_imports" : command => do
   let imports := (← getEnv).minimalRequiredModules.qsort Name.lt
     |>.toList.map (fun n => "import " ++ n.toString)
   logInfo <| Format.joinSep imports "\n"
+
+/--
+Find locations as high as possible in the import hierarchy
+where the named declaration could live.
+-/
+def Lean.Name.findHome (n : Name) : CoreM NameSet := do
+  let required ← n.requiredModules
+  let imports := (← getEnv).importGraph.transitiveClosure
+  let mut candidates : NameSet := {}
+  for (n, i) in imports do
+    if required.all fun r => n == r || i.contains r then
+      candidates := candidates.insert n
+  for c in candidates do
+    for i in candidates do
+      if imports.find? i |>.getD {} |>.contains c then
+        candidates := candidates.erase i
+  return candidates
+
+open Elab in
+/--
+Find locations as high as possible in the import hierarchy
+where the named declaration could live.
+-/
+elab "#find_home" n:ident : command => do
+  let n ← resolveGlobalConstNoOverloadWithInfo n
+  for i in (← Elab.Command.liftCoreM do n.findHome) do
+    logInfo i

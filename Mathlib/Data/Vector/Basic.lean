@@ -2,17 +2,14 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.vector.basic
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+
+#align_import data.vector.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -706,7 +703,7 @@ variable [LawfulApplicative F] [LawfulApplicative G]
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
--- the `IsLawfulTraversable` instance below expects a particular signature.
+-- the `LawfulTraversable` instance below expects a particular signature.
 @[nolint unusedArguments]
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector α n) :
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
@@ -715,7 +712,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
   simp! [cast, *, functor_norm]
   · rfl
   · rw [Vector.traverse_def, ih]
-    simp [functor_norm, (. ∘ .)]
+    simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
@@ -739,7 +736,7 @@ instance : Traversable.{u} (flip Vector n) where
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 
-instance : IsLawfulTraversable.{u} (flip Vector n) where
+instance : LawfulTraversable.{u} (flip Vector n) where
   id_traverse := @Vector.id_traverse n
   comp_traverse := Vector.comp_traverse
   traverse_eq_map_id := @Vector.traverse_eq_map_id n
@@ -809,8 +806,6 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     cases i using Fin.cases
     · simp only [get_zero, head_cons]
     · simp only [get_cons_succ, ih]
-
-
 
 @[simp]
 theorem mapAccumr_cons :

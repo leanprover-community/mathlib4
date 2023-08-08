@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
-
-! This file was ported from Lean 3 source module ring_theory.valuation.basic
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.TFAE
+
+#align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 

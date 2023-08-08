@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.prod
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Order.PartialSups
 import Mathlib.Algebra.Algebra.Prod
+
+#align_import linear_algebra.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-! ### Products of modules
 
@@ -759,6 +756,36 @@ theorem snd_comp_prodComm :
   ext <;> simp
 
 end prodComm
+
+section
+
+variable (R M M₂ M₃ M₄)
+variable [Semiring R]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+@[simps apply]
+def prodProdProdComm : ((M × M₂) × M₃ × M₄) ≃ₗ[R] (M × M₃) × M₂ × M₄ :=
+  { AddEquiv.prodProdProdComm M M₂ M₃ M₄ with
+    toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
+    invFun := fun mmnn => ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
+    map_smul' := fun _c _mnmn => rfl }
+#align linear_equiv.prod_prod_prod_comm LinearEquiv.prodProdProdComm
+
+@[simp]
+theorem prodProdProdComm_symm :
+    (prodProdProdComm R M M₂ M₃ M₄).symm = prodProdProdComm R M M₃ M₂ M₄ :=
+  rfl
+#align linear_equiv.prod_prod_prod_comm_symm LinearEquiv.prodProdProdComm_symm
+
+@[simp]
+theorem prodProdProdComm_toAddEquiv :
+    (prodProdProdComm R M M₂ M₃ M₄ : _ ≃+ _) = AddEquiv.prodProdProdComm M M₂ M₃ M₄ :=
+  rfl
+#align linear_equiv.prod_prod_prod_comm_to_add_equiv LinearEquiv.prodProdProdComm_toAddEquiv
+
+end
 
 section
 

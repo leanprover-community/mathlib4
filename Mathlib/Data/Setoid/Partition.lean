@@ -2,16 +2,13 @@
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot
-
-! This file was ported from Lean 3 source module data.setoid.partition
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Partition.Finpartition
+
+#align_import data.setoid.partition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Equivalence relations: partitions
@@ -159,7 +156,7 @@ theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! (b : _) (_ : b ∈ c),
 -- warning: expanding binder collection (b «expr ∈ » c) -/
 theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! (b : _) (_ : b ∈ c), a ∈ b) {x} :
     { y : α | (mkClasses c H).Rel x y } ∈ c := by
-  convert @Setoid.eqv_class_mem _ _  H x using 3
+  convert @Setoid.eqv_class_mem _ _ H x using 3
   rw [Setoid.comm']
 #align setoid.eqv_class_mem' Setoid.eqv_class_mem'
 

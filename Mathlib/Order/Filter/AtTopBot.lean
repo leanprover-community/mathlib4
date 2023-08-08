@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module order.filter.at_top_bot
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Preimage
@@ -15,6 +10,8 @@ import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Algebra.Order.Group.MinMax
+
+#align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorded sets, monoids and groups.
@@ -253,6 +250,16 @@ theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
     (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
   eventually_forall_ge_atTop (α := αᵒᵈ)
 
+theorem Tendsto.eventually_forall_ge_atTop {α β : Type _} [Preorder β] {l : Filter α}
+    {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
+    ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
+  rw [←Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
+
+theorem Tendsto.eventually_forall_le_atBot {α β : Type _} [Preorder β] {l : Filter α}
+    {p : β → Prop} {f : α → β} (hf : Tendsto f l atBot) (h_evtl : ∀ᶠ x in atBot, p x) :
+    ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
+  rw [←Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
+
 theorem atTop_basis_Ioi [Nonempty α] [SemilatticeSup α] [NoMaxOrder α] :
     (@atTop α _).HasBasis (fun _ => True) Ioi :=
   atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
@@ -319,6 +326,18 @@ theorem Eventually.exists_forall_of_atBot [SemilatticeInf α] [Nonempty α] {p :
     (h : ∀ᶠ x in atBot, p x) : ∃ a, ∀ b ≤ a, p b :=
   eventually_atBot.mp h
 #align filter.eventually.exists_forall_of_at_bot Filter.Eventually.exists_forall_of_atBot
+
+lemma exists_eventually_atTop [SemilatticeSup α] [Nonempty α] {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
+  simp_rw [eventually_atTop, ← exists_swap (α := α)]
+  exact exists_congr fun a ↦ .symm <| forall_ge_iff <| Monotone.exists fun _ _ _ hb H n hn ↦
+    H n (hb.trans hn)
+
+lemma exists_eventually_atBot [SemilatticeInf α] [Nonempty α] {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in atBot, r a b) ↔ ∀ᶠ a₀ in atBot, ∃ b, ∀ a ≤ a₀, r a b := by
+  simp_rw [eventually_atBot, ← exists_swap (α := α)]
+  exact exists_congr fun a ↦ .symm <| forall_le_iff <| Antitone.exists fun _ _ _ hb H n hn ↦
+    H n (hn.trans hb)
 
 theorem frequently_atTop [SemilatticeSup α] [Nonempty α] {p : α → Prop} :
     (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b ≥ a, p b :=

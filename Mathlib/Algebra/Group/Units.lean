@@ -2,16 +2,13 @@
 Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.group.units
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
+
+#align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -201,8 +198,9 @@ attribute [instance] AddUnits.instAddGroupAddUnits
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]
 instance {α} [CommMonoid α] : CommGroup αˣ :=
-  { (inferInstance : Group αˣ) with
-    mul_comm := fun _ _ => ext <| mul_comm _ _ }
+  -- note: the original ported file had `{ (inferInstance : Group αˣ) with ... }`
+  -- and this was removed because it was causing slowdowns: see lean4#2387
+  { mul_comm := fun _ _ => ext <| mul_comm _ _ }
 attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
 #align units.comm_group Units.instCommGroupUnitsToMonoid
 #align add_units.add_comm_group AddUnits.instAddCommGroupAddUnitsToAddMonoid
@@ -649,11 +647,9 @@ theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
 #align is_add_unit_iff_exists_neg isAddUnit_iff_exists_neg
 
--- Porting note: `to_additive` complains if using `simp [isUnit_iff_exists_inv, mul_comm]` proof
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
-  rw [isUnit_iff_exists_inv]
-  simp [mul_comm]
+  simp [isUnit_iff_exists_inv, mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 

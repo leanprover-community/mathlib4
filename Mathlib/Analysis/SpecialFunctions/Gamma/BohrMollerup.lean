@@ -2,14 +2,11 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.gamma.bohr_mollerup
-! leanprover-community/mathlib commit a3209ddf94136d36e5e5c624b10b2a347cc9d090
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.Gaussian
+
+#align_import analysis.special_functions.gamma.bohr_mollerup from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
 
 /-! # Convexity properties of the Gamma function
 

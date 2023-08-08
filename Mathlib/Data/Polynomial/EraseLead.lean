@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.erase_lead
-! leanprover-community/mathlib commit fa256f00ce018e7b40e1dc756e403c86680bf448
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import data.polynomial.erase_lead from "leanprover-community/mathlib"@"fa256f00ce018e7b40e1dc756e403c86680bf448"
 
 /-!
 # Erase the leading term of a univariate polynomial
@@ -322,14 +319,15 @@ theorem card_support_eq {n : ℕ} :
       ⟨Function.extend Fin.castSucc k fun _ => f.natDegree,
         Function.extend Fin.castSucc x fun _ => f.leadingCoeff, _, _, _⟩
     · intro i j hij
-      have hi : i ∈ Set.range (Fin.castSucc : Fin n ↪o Fin (n + 1)) := by
+      have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
         rw [Fin.range_castSucc, Set.mem_def]
         exact lt_of_lt_of_le hij (Nat.lt_succ_iff.mp j.2)
       obtain ⟨i, rfl⟩ := hi
-      rw [Fin.castSucc.injective.extend_apply]
+      rw [Fin.strictMono_castSucc.injective.extend_apply]
       by_cases hj : ∃ j₀, Fin.castSucc j₀ = j
       · obtain ⟨j, rfl⟩ := hj
-        rwa [Fin.castSucc.injective.extend_apply, hk.lt_iff_lt, ← Fin.castSucc_lt_castSucc_iff]
+        rwa [Fin.strictMono_castSucc.injective.extend_apply, hk.lt_iff_lt,
+          ← Fin.castSucc_lt_castSucc_iff]
       · rw [Function.extend_apply' _ _ _ hj]
         apply lt_natDegree_of_mem_eraseLead_support
         rw [mem_support_iff, hf, finset_sum_coeff]
@@ -341,12 +339,12 @@ theorem card_support_eq {n : ℕ} :
     · intro i
       by_cases hi : ∃ i₀, Fin.castSucc i₀ = i
       · obtain ⟨i, rfl⟩ := hi
-        rw [Fin.castSucc.injective.extend_apply]
+        rw [Fin.strictMono_castSucc.injective.extend_apply]
         exact hx i
       · rw [Function.extend_apply' _ _ _ hi, Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, h]
         exact n.succ_ne_zero
     · rw [Fin.sum_univ_castSucc]
-      simp only [Fin.castSucc.injective.extend_apply]
+      simp only [Fin.strictMono_castSucc.injective.extend_apply]
       rw [← hf, Function.extend_apply', Function.extend_apply', eraseLead_add_C_mul_X_pow]
       all_goals exact H
 #align polynomial.card_support_eq Polynomial.card_support_eq

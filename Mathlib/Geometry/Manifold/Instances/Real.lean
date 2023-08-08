@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module geometry.manifold.instances.real
-! leanprover-community/mathlib commit 6a033cb3d188a12ca5c509b33e2eaac1c61916cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import geometry.manifold.instances.real from "leanprover-community/mathlib"@"6a033cb3d188a12ca5c509b33e2eaac1c61916cd"
 
 /-!
 # Constructing examples of manifolds over ℝ

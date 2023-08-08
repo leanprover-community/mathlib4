@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.algebra.module.multilinear
-! leanprover-community/mathlib commit f40476639bac089693a489c9e354ebd75dc0f886
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basic
+
+#align_import topology.algebra.module.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
 /-!
 # Continuous multilinear maps
@@ -398,7 +395,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
 #align continuous_multilinear_map.map_piecewise_add ContinuousMultilinearMap.map_piecewise_add
 
 /-- Additivity of a continuous multilinear map along all coordinates at the same time,
-writing `f (m + m')` as the sum  of `f (s.piecewise m m')` over all sets `s`. -/
+writing `f (m + m')` as the sum of `f (s.piecewise m m')` over all sets `s`. -/
 theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ∀ i, M₁ i) :
     f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
   f.toMultilinearMap.map_add_univ _ _

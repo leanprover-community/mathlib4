@@ -2,15 +2,14 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.module.localized_module
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Module
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.RingTheory.IsTensorProduct
+
+#align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Localized Module
@@ -21,7 +20,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 ## Main definitions
 
 * `LocalizedModule.r` : the equivalence relation defining this localization, namely
-  `(m, s) ≈ (m', s')` if and only if if there is some `u : S` such that `u • s' • m = u • s • m'`.
+  `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S` : the localized module by `S`.
 * `LocalizedModule.mk`  : the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
 * `LocalizedModule.liftOn` : any well defined function `f : M × S → α` respecting `r` descents to
@@ -34,6 +33,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
+* `IsLocalizedModule.IsBaseChange` : A localization of modules is a base change.
 
 ## Future work
 
@@ -503,7 +503,7 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
     x.inductionOn <| by
       intro
       dsimp only
-      change liftOn (mk _ _) _ _  = r • (liftOn (mk _ _) _ _)
+      change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
       simp [LocalizedModule.liftOn_mk, smul'_mk]
 #align localized_module.div_by LocalizedModule.divBy
 
@@ -1003,7 +1003,7 @@ theorem mk'_mul_mk'_of_map_mul {M M' : Type _} [Semiring M] [Semiring M'] [Modul
     [IsLocalizedModule S f] (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f m₁ s₁ * mk' f m₂ s₂ = mk' f (m₁ * m₂) (s₁ * s₂) := by
   symm
-  apply (Module.End_algebraMap_isUnit_inv_apply_eq_iff _ _ _).mpr
+  apply (Module.End_algebraMap_isUnit_inv_apply_eq_iff _ _ _ _).mpr
   simp_rw [Submonoid.coe_mul, ← smul_eq_mul]
   rw [smul_smul_smul_comm, ← mk'_smul, ← mk'_smul]
   simp_rw [← Submonoid.smul_def, mk'_cancel, smul_eq_mul, hf]
@@ -1081,6 +1081,32 @@ theorem mkOfAlgebra {R S S' : Type _} [CommRing R] [CommRing S] [CommRing S'] [A
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
+
+variable {A : Type _}
+  [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
+
+
+/-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
+`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
+bilinear map).
+In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
+given by `m/s ↦ (1/s) ⊗ₜ m`.
+-/
+theorem isBaseChange : IsBaseChange A f := by
+  refine' IsBaseChange.of_lift_unique _ (fun Q _ _ _ _ g ↦ _)
+  have := IsLocalizedModule.is_universal S f g <| by
+    intro s
+    simp_rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique,
+      Module.algebraMap_end_apply]
+    intro q
+    refine' ⟨(IsLocalization.mk' _ 1 s : A) • q, _, _⟩
+    · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
+    · rintro q rfl
+      simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
+  rcases this with ⟨ℓ, rfl, h₂⟩
+  refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
+  ext x
+  simp [← h₂ (LinearMap.restrictScalars R g'') h]
 
 end IsLocalizedModule
 

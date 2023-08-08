@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module ring_theory.subsemiring.basic
-! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
@@ -16,6 +11,8 @@ import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import ring_theory.subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
 /-!
 # Bundled subsemirings
@@ -98,7 +95,7 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
-  { SubmonoidClass.Subtype s, AddSubmonoidClass.Subtype s with toFun := (↑) }
+  { SubmonoidClass.subtype s, AddSubmonoidClass.subtype s with toFun := (↑) }
 #align subsemiring_class.subtype SubsemiringClass.subtype
 
 @[simp]
@@ -922,6 +919,21 @@ theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s)
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
   (@closure_le _ _ _ ⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩).2 Hs h
 #align subsemiring.closure_induction Subsemiring.closure_induction
+
+@[elab_as_elim]
+theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
+    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H0 : p 0 (zero_mem _)) (H1 : p 1 (one_mem _))
+    (Hadd : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {a : R} (ha : a ∈ closure s) : p a ha := by
+  refine' Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine'
+    closure_induction ha (fun m hm => ⟨subset_closure hm, Hs m hm⟩) ⟨zero_mem _, H0⟩
+      ⟨one_mem _, H1⟩ ?_ ?_
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨add_mem hx' hy', Hadd _ _ _ _ hx hy⟩)
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨mul_mem hx' hy', Hmul _ _ _ _ hx hy⟩)
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]

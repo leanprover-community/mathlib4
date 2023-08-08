@@ -2,17 +2,14 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
+
+#align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Order instances on the integers

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
-
-! This file was ported from Lean 3 source module order.upper_lower.basic
-! leanprover-community/mathlib commit e9ce88cd0d54891c714c604076084f763dd480ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
+
+#align_import order.upper_lower.basic from "leanprover-community/mathlib"@"e9ce88cd0d54891c714c604076084f763dd480ed"
 
 /-!
 # Up-sets and down-sets
@@ -499,8 +496,8 @@ instance : SupSet (UpperSet α) :=
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance : CompleteDistribLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completeDistribLattice _ (fun _ _ => rfl)
+instance : CompletelyDistribLattice (UpperSet α) :=
+  (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (UpperSet α) :=
@@ -648,8 +645,8 @@ instance : SupSet (LowerSet α) :=
 instance : InfSet (LowerSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance : CompleteDistribLattice (LowerSet α) :=
-  SetLike.coe_injective.completeDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+instance : CompletelyDistribLattice (LowerSet α) :=
+  SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=

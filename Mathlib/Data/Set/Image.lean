@@ -2,14 +2,10 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module data.set.image
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+
+#align_import data.set.image from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Images and preimages of sets
@@ -73,6 +69,7 @@ theorem preimage_congr {f g : α → β} {s : Set β} (h : ∀ x : α, f x = g x
   simp [h]
 #align set.preimage_congr Set.preimage_congr
 
+@[gcongr]
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f ⁻¹' s ⊆ f ⁻¹' t := fun _ hx => h hx
 #align set.preimage_mono Set.preimage_mono
 
@@ -104,6 +101,10 @@ theorem preimage_compl {s : Set β} : f ⁻¹' sᶜ = (f ⁻¹' s)ᶜ :=
 theorem preimage_diff (f : α → β) (s t : Set β) : f ⁻¹' (s \ t) = f ⁻¹' s \ f ⁻¹' t :=
   rfl
 #align set.preimage_diff Set.preimage_diff
+
+@[simp]
+lemma preimage_symmDiff {f : α → β} (s t : Set β) : f ⁻¹' (s ∆ t) = (f ⁻¹' s) ∆ (f ⁻¹' t) :=
+  rfl
 
 @[simp]
 theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
@@ -155,7 +156,6 @@ theorem preimage_comp_eq : preimage (g ∘ f) = preimage f ∘ preimage g :=
   rfl
 #align set.preimage_comp_eq Set.preimage_comp_eq
 
-@[simp]
 theorem preimage_iterate_eq {f : α → α} {n : ℕ} : Set.preimage f^[n] = (Set.preimage f)^[n] := by
   induction' n with n ih; · simp
   rw [iterate_succ, iterate_succ', Set.preimage_comp_eq, ih]
@@ -299,6 +299,7 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
 
 /-- Image is monotone with respect to `⊆`. See `Set.monotone_image` for the statement in
 terms of `≤`. -/
+@[gcongr]
 theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b := by
   simp only [subset_def, mem_image]
   exact fun x => fun ⟨w, h1, h2⟩ => ⟨w, h h1, h2⟩
@@ -435,10 +436,10 @@ theorem subset_image_diff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f
   exact image_subset f (subset_union_right t s)
 #align set.subset_image_diff Set.subset_image_diff
 
-theorem subset_image_symm_diff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
+theorem subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
   (union_subset_union (subset_image_diff _ _ _) <| subset_image_diff _ _ _).trans
     (superset_of_eq (image_union _ _ _))
-#align set.subset_image_symm_diff Set.subset_image_symm_diff
+#align set.subset_image_symm_diff Set.subset_image_symmDiff
 
 theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
@@ -446,9 +447,9 @@ theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \
     (subset_image_diff f s t)
 #align set.image_diff Set.image_diff
 
-theorem image_symm_diff (hf : Injective f) (s t : Set α) : f '' s ∆ t = (f '' s) ∆ (f '' t) := by
+theorem image_symmDiff (hf : Injective f) (s t : Set α) : f '' s ∆ t = (f '' s) ∆ (f '' t) := by
   simp_rw [Set.symmDiff_def, image_union, image_diff hf]
-#align set.image_symm_diff Set.image_symm_diff
+#align set.image_symm_diff Set.image_symmDiff
 
 theorem Nonempty.image (f : α → β) {s : Set α} : s.Nonempty → (f '' s).Nonempty
   | ⟨x, hx⟩ => ⟨f x, mem_image_of_mem f hx⟩
@@ -509,7 +510,6 @@ theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
   · calc
       f '' (s ∩ f ⁻¹' t) ⊆ f '' s ∩ f '' (f ⁻¹' t) := image_inter_subset _ _ _
       _ ⊆ f '' s ∩ t := inter_subset_inter_right _ (image_preimage_subset f t)
-
   · rintro _ ⟨⟨x, h', rfl⟩, h⟩
     exact ⟨x, ⟨h', h⟩, rfl⟩
 #align set.image_inter_preimage Set.image_inter_preimage
@@ -987,6 +987,9 @@ theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotie
   range_quot_mk _
 #align set.range_quotient_mk' Set.range_quotient_mk'
 
+@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+  range_quotient_mk
+
 @[simp]
 theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
     (range fun x : Quotient s => Quotient.liftOn' x f hf) = range f :=
@@ -1090,7 +1093,7 @@ theorem Sum.elim_range (f : α → γ) (g : β → γ) : range (Sum.elim f g) = 
 
 theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
     range (if p then f else g) ⊆ range f ∪ range g := by
-  by_cases h : p;
+  by_cases h : p
   · rw [if_pos h]
     exact subset_union_left _ _
   · rw [if_neg h]
@@ -1638,3 +1641,17 @@ theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (ra
 end Set
 
 end Disjoint
+
+section Sigma
+
+variable {α : Type _} {β : α → Type _} {i j : α} {s : Set (β i)}
+
+lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' s) = ∅ := by
+  change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ s} = ∅
+  simp [h]
+
+lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s := by
+  change Sigma.mk i ⁻¹' {⟨i, u⟩ | u ∈ s} = s
+  simp
+
+end Sigma

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.asymptotics.theta
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
+
+#align_import analysis.asymptotics.theta from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Asymptotic equivalence up to a constant
@@ -57,6 +54,10 @@ notation:100 f " =Θ[" l "] " g:100 => IsTheta l f g
 theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=
   ⟨h₁, h₂⟩
 #align asymptotics.is_O.antisymm Asymptotics.IsBigO.antisymm
+
+lemma IsTheta.isBigO (h : f =Θ[l] g) : f =O[l] g := h.1
+
+lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
 
 @[refl]
 theorem isTheta_refl (f : α → E) (l : Filter α) : f =Θ[l] f :=
@@ -313,5 +314,9 @@ theorem isTheta_const_mul_right {c : 𝕜} {g : α → 𝕜} (hc : c ≠ 0) :
 alias isTheta_const_mul_right ↔ IsTheta.of_const_mul_right IsTheta.const_mul_right
 #align asymptotics.is_Theta.of_const_mul_right Asymptotics.IsTheta.of_const_mul_right
 #align asymptotics.is_Theta.const_mul_right Asymptotics.IsTheta.const_mul_right
+
+lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'}
+    (h : f₂ =o[l] f₁) : (f₁ + f₂) =Θ[l] f₁ :=
+  ⟨(isBigO_refl _ _).add_isLittleO h, by rw [add_comm]; exact h.right_isBigO_add⟩
 
 end Asymptotics

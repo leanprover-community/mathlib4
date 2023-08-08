@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.away.basic
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import ring_theory.localization.away.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Localizations away from an element

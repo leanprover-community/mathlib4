@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.split
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
+
+#align_import analysis.box_integral.partition.split from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Split a box along one or more hyperplanes

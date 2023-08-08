@@ -2,11 +2,6 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.integral.set_integral
-! leanprover-community/mathlib commit 24e0c85412ff6adbeca08022c25ba4876eedf37a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.Bochner
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousFunction.Compact
+
+#align_import measure_theory.integral.set_integral from "leanprover-community/mathlib"@"24e0c85412ff6adbeca08022c25ba4876eedf37a"
 
 /-!
 # Set integral
@@ -70,7 +67,7 @@ section NormedAddCommGroup
 
 variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α} {l l' : Filter α}
 
-variable [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedSpace ℝ E]
 
 theorem set_integral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
@@ -444,12 +441,12 @@ theorem integral_norm_eq_pos_sub_neg {f : α → ℝ} (hfi : Integrable f μ) :
       rw [← set_integral_neg_eq_set_integral_nonpos hfi.1]; congr; ext1 x; simp
 #align measure_theory.integral_norm_eq_pos_sub_neg MeasureTheory.integral_norm_eq_pos_sub_neg
 
-theorem set_integral_const (c : E) : ∫ _ in s, c ∂μ = (μ s).toReal • c := by
+theorem set_integral_const [CompleteSpace E] (c : E) : ∫ _ in s, c ∂μ = (μ s).toReal • c := by
   rw [integral_const, Measure.restrict_apply_univ]
 #align measure_theory.set_integral_const MeasureTheory.set_integral_const
 
 @[simp]
-theorem integral_indicator_const (e : E) ⦃s : Set α⦄ (s_meas : MeasurableSet s) :
+theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set α⦄ (s_meas : MeasurableSet s) :
     (∫ a : α, s.indicator (fun _ : α => e) a ∂μ) = (μ s).toReal • e := by
   rw [integral_indicator s_meas, ← set_integral_const]
 #align measure_theory.integral_indicator_const MeasureTheory.integral_indicator_const
@@ -460,8 +457,8 @@ theorem integral_indicator_one ⦃s : Set α⦄ (hs : MeasurableSet s) :
   (integral_indicator_const 1 hs).trans ((smul_eq_mul _).trans (mul_one _))
 #align measure_theory.integral_indicator_one MeasureTheory.integral_indicator_one
 
-theorem set_integral_indicatorConstLp {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμt : μ t ≠ ∞) (x : E) :
+theorem set_integral_indicatorConstLp [CompleteSpace E]
+    {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
     ∫ a in s, indicatorConstLp p ht hμt x a ∂μ = (μ (t ∩ s)).toReal • x :=
   calc
     ∫ a in s, indicatorConstLp p ht hμt x a ∂μ = ∫ a in s, t.indicator (fun _ => x) a ∂μ := by
@@ -470,7 +467,8 @@ theorem set_integral_indicatorConstLp {p : ℝ≥0∞} (hs : MeasurableSet s) (h
 set_option linter.uppercaseLean3 false in
 #align measure_theory.set_integral_indicator_const_Lp MeasureTheory.set_integral_indicatorConstLp
 
-theorem integral_indicatorConstLp {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
+theorem integral_indicatorConstLp [CompleteSpace E]
+    {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
     ∫ a, indicatorConstLp p ht hμt x a ∂μ = (μ t).toReal • x :=
   calc
     ∫ a, indicatorConstLp p ht hμt x a ∂μ = ∫ a in univ, indicatorConstLp p ht hμt x a ∂μ := by
@@ -710,6 +708,10 @@ theorem set_integral_mono_set (hfi : IntegrableOn f t μ) (hf : 0 ≤ᵐ[μ.rest
   integral_mono_measure (Measure.restrict_mono_ae hst) hf hfi
 #align measure_theory.set_integral_mono_set MeasureTheory.set_integral_mono_set
 
+theorem set_integral_le_integral (hfi : Integrable f μ) (hf : 0 ≤ᵐ[μ] f) :
+    (∫ x in s, f x ∂μ) ≤ ∫ x, f x ∂μ :=
+  integral_mono_measure (Measure.restrict_le_self) hf hfi
+
 theorem set_integral_ge_of_const_le {c : ℝ} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : α => f x) s μ) :
     c * (μ s).toReal ≤ ∫ x in s, f x ∂μ := by
@@ -933,7 +935,7 @@ set_option linter.uppercaseLean3 false in
 variable {𝕜}
 
 @[continuity]
-theorem continuous_set_integral [NormedSpace ℝ E] [CompleteSpace E] (s : Set α) :
+theorem continuous_set_integral [NormedSpace ℝ E] (s : Set α) :
     Continuous fun f : α →₁[μ] E => ∫ x in s, f x ∂μ := by
   haveI : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
   have h_comp :

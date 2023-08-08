@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.comm_ring
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import data.mv_polynomial.comm_ring from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Multivariate polynomials over a ring
@@ -127,7 +124,7 @@ theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
 
 end Vars
 
-section Eval₂
+section Eval
 
 variable [CommRing S]
 
@@ -138,10 +135,16 @@ theorem eval₂_sub : (p - q).eval₂ f g = p.eval₂ f g - q.eval₂ f g :=
   (eval₂Hom f g).map_sub _ _
 #align mv_polynomial.eval₂_sub MvPolynomial.eval₂_sub
 
+theorem eval_sub (f : σ → R) : eval f (p - q) = eval f p - eval f q :=
+  eval₂_sub _ _ _
+
 @[simp]
 theorem eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g :=
   (eval₂Hom f g).map_neg _
 #align mv_polynomial.eval₂_neg MvPolynomial.eval₂_neg
+
+theorem eval_neg (f : σ → R) : eval f (-p) = -eval f p :=
+  eval₂_neg _ _ _
 
 theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
   eq_intCast (f.comp C) n
@@ -175,7 +178,7 @@ def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   right_inv f := funext fun x => by simp only [coe_eval₂Hom, Function.comp_apply, eval₂_X]
 #align mv_polynomial.hom_equiv MvPolynomial.homEquiv
 
-end Eval₂
+end Eval
 
 section DegreeOf
 

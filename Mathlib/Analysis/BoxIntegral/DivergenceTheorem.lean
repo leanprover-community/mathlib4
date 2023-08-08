@@ -2,11 +2,6 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.divergence_theorem
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+
+#align_import analysis.box_integral.divergence_theorem from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
 /-!
 # Divergence integral for Henstock-Kurzweil integral

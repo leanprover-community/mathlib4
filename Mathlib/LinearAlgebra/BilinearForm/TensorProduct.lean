@@ -2,14 +2,11 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.bilinear_form.tensor_product
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.LinearAlgebra.TensorProduct
+
+#align_import linear_algebra.bilinear_form.tensor_product from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # The bilinear form on a tensor product

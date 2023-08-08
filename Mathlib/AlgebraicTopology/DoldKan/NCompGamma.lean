@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.n_comp_gamma
-! leanprover-community/mathlib commit 19d6240dcc5e5c8bd6e1e3c588b92e837af76f9e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
+
+#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"19d6240dcc5e5c8bd6e1e3c588b92e837af76f9e"
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
@@ -187,6 +184,12 @@ lemma compatibility_Γ₂N₁_Γ₂N₂_hom_app (X : SimplicialObject C) :
 
 -- Porting note: added to speed up elaboration
 attribute [irreducible] compatibility_Γ₂N₁_Γ₂N₂
+
+lemma compatibility_Γ₂N₁_Γ₂N₂_inv_app (X : SimplicialObject C) :
+    compatibility_Γ₂N₁_Γ₂N₂.inv.app X =
+      eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
+  rw [← cancel_mono (compatibility_Γ₂N₁_Γ₂N₂.hom.app X), Iso.inv_hom_id_app,
+    compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_trans, eqToHom_refl]
 
 namespace Γ₂N₂
 

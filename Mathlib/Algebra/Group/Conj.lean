@@ -2,16 +2,13 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
-
-! This file was ported from Lean 3 source module algebra.group.conj
-! leanprover-community/mathlib commit 0743cc5d9d86bcd1bba10f480e948a257d65056f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Algebra.Hom.Group
+
+#align_import algebra.group.conj from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"
 
 /-!
 # Conjugacy of group elements

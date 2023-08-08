@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.finset.pi
-! leanprover-community/mathlib commit b2c89893177f66a48daf993b7ba5ef7cddeff8c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Pi
+
+#align_import data.finset.pi from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
 /-!
 # The cartesian product of finsets

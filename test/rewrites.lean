@@ -103,3 +103,7 @@ example : ∀ (x : ℕ) (w : x ≤ 6), x ≤ 8 := by
   rw?!
   guard_target = ∀ (x : ℕ) (w : x ≤ 7), x ≤ 8
   admit
+
+-- check we can look inside let expressions
+example (n : ℕ) : let y := 3; n + y = 3 + n := by
+  rw?!

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
-
-! This file was ported from Lean 3 source module algebra.category.Module.monoidal.basic
-! leanprover-community/mathlib commit 74403a3b2551b0970855e14ef5e8fd0d6af1bfc2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Monoidal.Linear
+
+#align_import algebra.category.Module.monoidal.basic from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 
 /-!
 # The monoidal category structure on R-modules
@@ -63,6 +60,16 @@ def tensorHom {M N M' N' : ModuleCat R} (f : M ⟶ N) (g : M' ⟶ N') :
     tensorObj M M' ⟶ tensorObj N N' :=
   TensorProduct.map f g
 #align Module.monoidal_category.tensor_hom ModuleCat.MonoidalCategory.tensorHom
+
+/-- (implementation) left whiskering for R-modules -/
+def whiskerLeft (M : ModuleCat R) {N₁ N₂ : ModuleCat R} (f : N₁ ⟶ N₂) :
+    tensorObj M N₁ ⟶ tensorObj M N₂ :=
+  f.lTensor M
+
+/-- (implementation) right whiskering for R-modules -/
+def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R) :
+    tensorObj M₁ N ⟶ tensorObj M₂ N :=
+  f.rTensor N
 
 theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   -- Porting note: even with high priority ext fails to find this
@@ -190,22 +197,24 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) where
+instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
   -- data
-  tensorObj := tensorObj
-  tensorHom := @tensorHom _ _
-  tensorUnit' := ModuleCat.of R R
-  associator := associator
-  leftUnitor := leftUnitor
-  rightUnitor := rightUnitor
+  (tensorObj := MonoidalCategory.tensorObj)
+  (tensorHom := @tensorHom _ _)
+  (whiskerLeft := @whiskerLeft _ _)
+  (whiskerRight := @whiskerRight _ _)
+  (tensorUnit' := ModuleCat.of R R)
+  (associator := associator)
+  (leftUnitor := leftUnitor)
+  (rightUnitor := rightUnitor)
   -- properties
-  tensor_id M N := tensor_id M N
-  tensor_comp f g h := MonoidalCategory.tensor_comp f g h
-  associator_naturality f g h := MonoidalCategory.associator_naturality f g h
-  leftUnitor_naturality f := MonoidalCategory.leftUnitor_naturality f
-  rightUnitor_naturality f := rightUnitor_naturality f
-  pentagon M N K L := pentagon M N K L
-  triangle M N := triangle M N
+  (tensor_id := fun M N ↦ tensor_id M N)
+  (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
+  (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
+  (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
+  (rightUnitor_naturality := fun f ↦ rightUnitor_naturality f)
+  (pentagon := fun M N K L ↦ pentagon M N K L)
+  (triangle := fun M N ↦ triangle M N)
 #align Module.monoidal_category ModuleCat.monoidalCategory
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/

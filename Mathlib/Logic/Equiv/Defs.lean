@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.defs
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
+
+#align_import logic.equiv.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Equivalence between types
@@ -152,11 +149,9 @@ theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x :=
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
-@[symm]
+@[symm, pp_dot]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 #align equiv.symm Equiv.symm
-
-pp_extended_field_notation Equiv.symm
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
@@ -172,12 +167,10 @@ theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
-@[trans]
+@[trans, pp_dot]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
-
-pp_extended_field_notation Equiv.trans
 
 @[simps]
 instance : Trans Equiv Equiv Equiv where

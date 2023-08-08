@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
-
-! This file was ported from Lean 3 source module combinatorics.additive.pluennecke_ruzsa
-! leanprover-community/mathlib commit 4aab2abced69a9e579b1e6dc2856ed3db48e2cbd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Rat.NNRat
 import Mathlib.Tactic.GCongr
+
+#align_import combinatorics.additive.pluennecke_ruzsa from "leanprover-community/mathlib"@"4aab2abced69a9e579b1e6dc2856ed3db48e2cbd"
 
 /-!
 # The Plünnecke-Ruzsa inequality

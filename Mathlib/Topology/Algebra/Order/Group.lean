@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.group
-! leanprover-community/mathlib commit 84dc0bd6619acaea625086d6f53cb35cdd554219
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Algebra.Group.Basic
+
+#align_import topology.algebra.order.group from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
 /-!
 # Topology on a linear ordered additive commutative group

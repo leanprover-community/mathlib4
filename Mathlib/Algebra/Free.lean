@@ -2,11 +2,6 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.free
-! leanprover-community/mathlib commit 6d0adfa76594f304b4650d098273d4366edeb61b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Equiv.Basic
@@ -14,6 +9,8 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.List.Basic
+
+#align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
 /-!
 # Free constructions
@@ -268,17 +265,17 @@ theorem mul_map_seq (x y : FreeMagma α) :
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
 
 @[to_additive]
-instance : IsLawfulTraversable FreeMagma.{u} :=
+instance : LawfulTraversable FreeMagma.{u} :=
   { instLawfulMonadFreeMagmaInstMonadFreeMagma with
     id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
-        (fun x ↦ by simp only [(. ∘ .), traverse_pure, traverse_pure', functor_norm])
+        (fun x ↦ by simp only [(· ∘ ·), traverse_pure, traverse_pure', functor_norm])
         (fun x y ih1 ih2 ↦ by
           rw [traverse_mul, ih1, ih2, traverse_mul];
-          simp [Functor.Comp.map_mk, Functor.map_map, (. ∘ .), Comp.seq_mk, seq_map_assoc,
+          simp [Functor.Comp.map_mk, Functor.map_map, (· ∘ ·), Comp.seq_mk, seq_map_assoc,
             map_seq, traverse_mul])
     naturality := fun η α β f x ↦
       FreeMagma.recOnPure x
@@ -684,13 +681,13 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq
 
 @[to_additive]
-instance : IsLawfulTraversable FreeSemigroup.{u} :=
+instance : LawfulTraversable FreeSemigroup.{u} :=
   { instLawfulMonadFreeSemigroupInstMonadFreeSemigroup with
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, (. ∘ .)])
+      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, (· ∘ ·)])
         fun x y ih1 ih2 ↦ by (rw [traverse_mul, ih1, ih2,
           traverse_mul, Functor.Comp.map_mk]; simp only [Function.comp, functor_norm, traverse_mul])
     naturality := fun η α β f x ↦

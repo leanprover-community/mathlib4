@@ -2,13 +2,10 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.opposites
-! leanprover-community/mathlib commit 63417e01fbc711beaf25fa73b6edb395c0cfddd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import ring_theory.polynomial.opposites from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
 /-!  #  Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 

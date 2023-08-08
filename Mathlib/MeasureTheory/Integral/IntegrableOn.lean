@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.integral.integrable_on
-! leanprover-community/mathlib commit 8b8ba04e2f326f3f7cf24ad129beda58531ada61
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
+
+#align_import measure_theory.integral.integrable_on from "leanprover-community/mathlib"@"8b8ba04e2f326f3f7cf24ad129beda58531ada61"
 
 /-! # Functions integrable on a set and at a filter
 
@@ -49,7 +46,7 @@ theorem stronglyMeasurableAt_bot {f : α → β} : StronglyMeasurableAtFilter f 
 
 protected theorem StronglyMeasurableAtFilter.eventually (h : StronglyMeasurableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, AEStronglyMeasurable f (μ.restrict s) :=
-  (eventually_small_sets' fun _ _ => AEStronglyMeasurable.mono_set).2 h
+  (eventually_smallSets' fun _ _ => AEStronglyMeasurable.mono_set).2 h
 #align strongly_measurable_at_filter.eventually StronglyMeasurableAtFilter.eventually
 
 protected theorem StronglyMeasurableAtFilter.filter_mono (h : StronglyMeasurableAtFilter f l μ)
@@ -400,8 +397,27 @@ theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
 
 protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
-  Iff.mpr (eventually_small_sets' fun _s _t hst ht => ht.mono_set hst) h
+  Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
 #align measure_theory.integrable_at_filter.eventually MeasureTheory.IntegrableAtFilter.eventually
+
+protected theorem IntegrableAtFilter.add {f g : α → E}
+    (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
+    IntegrableAtFilter (f + g) l μ := by
+  rcases hf with ⟨s, sl, hs⟩
+  rcases hg with ⟨t, tl, ht⟩
+  refine ⟨s ∩ t, inter_mem sl tl, ?_⟩
+  exact (hs.mono_set (inter_subset_left _ _)).add (ht.mono_set (inter_subset_right _ _))
+
+protected theorem IntegrableAtFilter.neg {f : α → E} (hf : IntegrableAtFilter f l μ) :
+    IntegrableAtFilter (-f) l μ := by
+  rcases hf with ⟨s, sl, hs⟩
+  exact ⟨s, sl, hs.neg⟩
+
+protected theorem IntegrableAtFilter.sub {f g : α → E}
+    (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
+    IntegrableAtFilter (f - g) l μ := by
+  rw [sub_eq_add_neg]
+  exact hf.add hg.neg
 
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=

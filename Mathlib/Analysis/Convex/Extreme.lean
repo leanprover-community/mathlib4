@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.extreme
-! leanprover-community/mathlib commit c5773405394e073885e2a144c9ca14637e8eb963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
+
+#align_import analysis.convex.extreme from "leanprover-community/mathlib"@"c5773405394e073885e2a144c9ca14637e8eb963"
 
 /-!
 # Extreme sets

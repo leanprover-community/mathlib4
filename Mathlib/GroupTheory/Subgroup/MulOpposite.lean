@@ -2,13 +2,10 @@
 Copyright (c) 2022 Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich
-
-! This file was ported from Lean 3 source module group_theory.subgroup.mul_opposite
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Actions
+
+#align_import group_theory.subgroup.mul_opposite from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Mul-opposite subgroups

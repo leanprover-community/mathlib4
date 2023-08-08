@@ -2,13 +2,10 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.domain
-! leanprover-community/mathlib commit b1d911acd60ab198808e853292106ee352b648ea
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Identities
+
+#align_import ring_theory.witt_vector.domain from "leanprover-community/mathlib"@"b1d911acd60ab198808e853292106ee352b648ea"
 
 /-!
 

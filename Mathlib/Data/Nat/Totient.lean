@@ -2,17 +2,14 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.totient
-! leanprover-community/mathlib commit 5cc2dfdd3e92f340411acea4427d701dc7ed26f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.Monotonicity
+
+#align_import data.nat.totient from "leanprover-community/mathlib"@"5cc2dfdd3e92f340411acea4427d701dc7ed26f8"
 
 /-!
 # Euler's totient function
@@ -286,7 +283,7 @@ We prove several different statements of this formula. -/
 theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
     φ n = n.factorization.prod fun p k => p ^ (k - 1) * (p - 1) := by
   rw [multiplicative_factorization φ (@totient_mul) totient_one hn]
-  apply Finsupp.prod_congr  _
+  apply Finsupp.prod_congr _
   intro p hp
   have h := zero_lt_iff.mpr (Finsupp.mem_support_iff.mp hp)
   rw [totient_prime_pow (prime_of_mem_factorization hp) h]

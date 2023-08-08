@@ -2,17 +2,14 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.Fintype
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Data.Fintype.Card
+
+#align_import category_theory.Fintype from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # The category of finite types.

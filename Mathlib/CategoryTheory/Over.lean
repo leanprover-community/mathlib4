@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.over
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+#align_import category_theory.over from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # Over and under categories
@@ -200,12 +197,16 @@ end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
   reflects {Y Z} f t := by
-    let g : Z ⟶  Y := Over.homMk (inv ((forget X).map f))
+    let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
     repeat (ext; simp)
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
+
+/-- The identity over `X` is terminal. -/
+def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
+  CostructuredArrow.mkIdTerminal
 
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.over.forget_faithful CategoryTheory.Over.forget_faithful
@@ -241,7 +242,7 @@ instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left :
   refine' ⟨fun { Y : T } l m a => _⟩
   let l' : mk (m ≫ f.hom) ⟶ f := homMk l (by
         dsimp; rw [← Over.w k, ←Category.assoc, congrArg (· ≫ g.hom) a, Category.assoc])
-  suffices l' = (homMk m : mk (m ≫ f.hom) ⟶  f) by apply congrArg CommaMorphism.left this
+  suffices l' = (homMk m : mk (m ≫ f.hom) ⟶ f) by apply congrArg CommaMorphism.left this
   rw [← cancel_mono k]
   ext
   apply a
@@ -452,12 +453,16 @@ end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
   reflects {Y Z} f t := by
-    let g : Z ⟶  Y := Under.homMk (inv ((Under.forget X).map f))
+    let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
     repeat (ext; simp)
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
+
+/-- The identity under `X` is initial. -/
+def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
+  StructuredArrow.mkIdInitial
 
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful
@@ -493,7 +498,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m  : g ⟶  mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m  : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 

@@ -2,11 +2,6 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.euclidean_domain.instances
-! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Defs
@@ -16,6 +11,8 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Order.Basic
+
+#align_import algebra.euclidean_domain.instances from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
 
 /-!
 # Instances for Euclidean domains
@@ -38,7 +35,7 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
       not_lt_of_ge <| by
         rw [← mul_one a.natAbs, Int.natAbs_mul]
         rw [←Int.natAbs_pos] at b0
-        exact Nat.mul_le_mul_of_nonneg_left b0  }
+        exact Nat.mul_le_mul_of_nonneg_left b0 }
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toEuclideanDomain {K : Type _} [Field K] : EuclideanDomain K :=

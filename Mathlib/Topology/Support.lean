@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.support
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # The topological support of a function
@@ -158,6 +155,11 @@ theorem HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro
 #align has_compact_support.intro HasCompactSupport.intro
+
+@[to_additive]
+theorem HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
+    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+  isCompact_closure_of_subset_compact hK h
 
 @[to_additive]
 theorem HasCompactMulSupport.isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=

@@ -2,15 +2,12 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.cond_cdf
-! leanprover-community/mathlib commit 3b88f4005dc2e28d42f974cc1ce838f0dafb39b8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+
+#align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
 /-!
 # Conditional cumulative distribution function
@@ -165,7 +162,7 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
     _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
       rw [lintegral_iInf ?_ h_directed.sequence_anti]
       · exact hf_int _
-      · exact  (fun n => hf _)
+      · exact (fun n => hf _)
     _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
       refine' le_antisymm (le_iInf fun b => _) (le_iInf fun n => _)
       · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
@@ -457,7 +454,7 @@ theorem tendsto_preCdf_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
     ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCdf ρ r a) atBot (𝓝 0) := by
   -- We show first that `preCdf` has a limit in ℝ≥0∞ almost everywhere.
   -- We then show that the integral of `pre_cdf` tends to 0, and that it also tends
-  -- to the integral of the limit. Since the limit is has integral 0, it is equal to 0 a.e.
+  -- to the integral of the limit. Since the limit has integral 0, it is equal to 0 a.e.
   suffices ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCdf ρ (-r) a) atTop (𝓝 0) by
     filter_upwards [this] with a ha
     have h_eq_neg : (fun r : ℚ => preCdf ρ r a) = fun r : ℚ => preCdf ρ (- -r) a := by
