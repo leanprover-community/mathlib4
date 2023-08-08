@@ -421,16 +421,13 @@ theorem sup_div_inf_eq_abs_div
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
     (a ⊔ b) / (a ⊓ b) = |b / a| :=
 calc
-  (a ⊔ b) / (a ⊓ b) = (a ⊔ b) * (a ⊓ b)⁻¹ := by rw [div_eq_mul_inv]
-  _ = (a ⊔ b) * (a⁻¹ ⊔ b⁻¹) := by rw [← inv_inf_eq_sup_inv]
-  _ = (a ⊔ b) * a⁻¹ ⊔ (a ⊔ b) * b⁻¹ := by rw [mul_sup]
-  _ = (a * a⁻¹ ⊔ b * a⁻¹) ⊔ (a * b⁻¹ ⊔ b * b⁻¹) := by rw [sup_mul, sup_mul]
-  _ = (1 ⊔ b * a⁻¹) ⊔ (a * b⁻¹ ⊔ 1) := by rw [mul_right_inv, mul_right_inv]
-  _ = (1 ⊔ b / a) ⊔ (a / b ⊔ 1) := by rw [←div_eq_mul_inv, ←div_eq_mul_inv]
+  (a ⊔ b) / (a ⊓ b) = (a ⊔ b) * (a⁻¹ ⊔ b⁻¹) := by rw [div_eq_mul_inv, ← inv_inf_eq_sup_inv]
+  _ = (a * a⁻¹ ⊔ b * a⁻¹) ⊔ (a * b⁻¹ ⊔ b * b⁻¹) := by rw [mul_sup, sup_mul, sup_mul]
+  _ = (1 ⊔ b / a) ⊔ (a / b ⊔ 1) := by
+    rw [mul_right_inv, mul_right_inv, ←div_eq_mul_inv, ←div_eq_mul_inv]
   _ = 1 ⊔ b / a ⊔ (1 / (b / a) ⊔ 1) := by rw [one_div_div]
-  _ = 1 ⊔ ((b / a) ⊔ ((b / a)⁻¹ ⊔ 1)) := by rw [inv_eq_one_div, sup_assoc]
-  _ = 1 ⊔ (((b / a) ⊔ (b / a)⁻¹) ⊔ 1) := by rw [sup_assoc]
-  _ = 1 ⊔ (((b / a) ⊔ (b / a)⁻¹) ⊔ 1) := by rw [sup_assoc]
+  _ = 1 ⊔ (b / a) ⊔ ((b / a)⁻¹ ⊔ 1) := by rw [inv_eq_one_div]
+  _ = 1 ⊔ (((b / a) ⊔ (b / a)⁻¹) ⊔ 1) := by rw [sup_assoc, sup_assoc]
   _= 1 ⊔ (|b / a| ⊔ 1) := by rw [abs_eq_sup_inv]
   _= 1 ⊔ |b / a| := by rw [← m_pos_part_def, m_pos_abs]
   _= |b / a| ⊔ 1 := by rw [sup_comm]
