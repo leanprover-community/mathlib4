@@ -94,8 +94,8 @@ Another method is using the following steps.
 See `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` for a complicated example, which proves
 that `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
 function `f : α → ℝ`, and second and third integral sign being the integral on `ℝ≥0∞`-valued
-functions (called `lintegral`). The proof of `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` is
-scattered in sections with the name `posPart`.
+functions (called `lintegral`). The proof of `integral_eq_lintegral_pos_part_sub_lintegral_neg_part`
+is scattered in sections with the name `posPart`.
 
 Here are the usual steps of proving that a property `p`, say `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, holds for all
 functions :
