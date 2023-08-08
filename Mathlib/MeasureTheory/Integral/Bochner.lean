@@ -1804,13 +1804,18 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
   {s : Set α} (hs : s.Countable) (hf : Integrable f (μ.restrict s)) :
   ∫ a in s, f a ∂μ = ∑' a : s, f a * (μ {(a : α)}).toReal := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
-  rw [set_integral_eq_subtype' hs.measurableSet, integral_countable']
+  have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
+    rw [← map_comap_subtype_coe, integrable_map_measure] at hf
+    apply hf
+    exact Integrable.aestronglyMeasurable hf
+    exact Measurable.aemeasurable measurable_subtype_coe
+    exact Countable.measurableSet hs
+  rw [set_integral_eq_subtype' hs.measurableSet, integral_countable' hf']
   congr 1 with a : 1
   rw [Measure.comap_apply Subtype.val Subtype.coe_injective
     (fun s' hs' => MeasurableSet.subtype_image (Countable.measurableSet hs) hs') _
     (MeasurableSet.singleton a)]
   simp
-  sorry -- here we need Integrable f (Measure.comap Subtype.val μ), note the different measure
 
 theorem integral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h : a ∉ s)
     (f : α → ℝ) : ∫ x in insert a s, f x ∂μ = f a * (μ {a}).toReal + ∫ x in s, f x ∂μ := by
