@@ -186,34 +186,34 @@ instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
   Prod.instZeroSum
 
 instance add [Add R] [Add M] : Add (tsze R M) :=
-  Prod.instAddProd
+  Prod.instAdd
 
 instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
-  Prod.instSubProd
+  Prod.instSub
 
 instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
-  Prod.instNegProd
+  Prod.instNeg
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
-  Prod.instAddSemigroupProd
+  Prod.instAddSemigroup
 
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
-  Prod.instAddZeroClassProd
+  Prod.instAddZeroClass
 
 instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  Prod.instAddMonoidProd
+  Prod.instAddMonoid
 
 instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  Prod.instAddGroupProd
+  Prod.instAddGroup
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
-  Prod.instAddCommSemigroupProd
+  Prod.instAddCommSemigroup
 
 instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
-  Prod.instAddCommMonoidProd
+  Prod.instAddCommMonoid
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
-  Prod.instAddCommGroupProd
+  Prod.instAddCommGroup
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
   Prod.smul
