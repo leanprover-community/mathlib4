@@ -15,6 +15,7 @@ Main definitions:
 * `Complex.partialOrder`
 * `Complex.strictOrderedCommRing`
 * `Complex.starOrderedRing`
+* `Complex.orderedSMul`
 
 These are all only available with `open scoped ComplexOrder`.
 -/
