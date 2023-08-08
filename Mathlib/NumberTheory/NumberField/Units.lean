@@ -15,9 +15,22 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 We prove results about the group `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number
 field `K`.
 
+## Main definitions
+
+* `Units.rank`: the unit rank of the number field `K`
+
+* `Units.fund_system`: a fundamental system of units of `K`
+
+* `Units.basis_mod_torsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)` (as an additive `ℤ`-module)
+
 ## Main results
+
 * `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
-* `mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
+
+* `Units.mem_torsion`: an unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
+
+* `Units.exist_unique_eq_mul_prod`: an unit `x : (𝓞 K)ˣ` can be written in a unique way as the
+product of a root of unity times the product of powers of units of the fundamenal system.
 
 ## Tags
 number field, units
@@ -55,6 +68,7 @@ theorem isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
 #align is_unit_iff_norm isUnit_iff_norm
 
 end IsUnit
+
 namespace NumberField.Units
 
 section coe
