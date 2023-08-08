@@ -18,6 +18,7 @@ import Mathlib.Data.Nat.Prime
 -- so that the cache is rebuilt.
 
 -- We need to set this here, as the lakefile does not enable this during testing.
+-- https://github.com/leanprover-community/mathlib4/issues/6440
 set_option pp.unicode.fun true
 
 noncomputable section
