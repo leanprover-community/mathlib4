@@ -10,6 +10,8 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Data.IsROrC.Basic
 
 #align_import linear_algebra.matrix.to_linear_equiv from "leanprover-community/mathlib"@"e42cfdb03b7902f8787a1eb552cb8f77766b45b9"
 
@@ -232,6 +234,55 @@ lemma det_ne_zero_of_neg [DecidableEq n] {S : Type _} [LinearOrderedCommRing S]
       · exact (mul_le_mul_right_of_neg (h1 i j₀ h)).mpr (h_j₀ ▸ Finset.le_sup' v hi)
   · have := (isEmpty_or_nonempty n).resolve_right hn
     simp
+
+lemma abs_vec_eq_zero_iff [Fintype n] (v : n → S) [LinearOrderedCommRing S] :
+  abs v = 0 ↔ v = 0 := by
+  constructor
+  · intro h
+    rw [Function.funext_iff] at *
+    simp only [Pi.zero_apply] at *
+    intro a
+    apply (((abs_eq_zero.1 (h _))))
+  · intro h
+    rw [h]
+    funext i
+    apply abs_eq_zero.2
+    simp only [Pi.zero_apply]
+
+open BigOperators
+
+lemma det_ne_diagdom [DecidableEq n] {S : Type _} {S : Type _} [LinearOrderedCommRing S]
+    {A : Matrix n n S}
+    (h1 : ∀ i, ((∑ j, |A i j|) - |A i i| ) < 0)  :
+    A.det ≠ 0 := by
+  by_cases hn : Nonempty n
+  · by_contra h
+    obtain ⟨v, ⟨h_vnz, h_vA⟩⟩ := Matrix.exists_mulVec_eq_zero_iff.mpr h
+    let max_v := Finset.sup' Finset.univ Finset.univ_nonempty (abs (v))
+    have hmax : 0 < max_v := by sorry
+    simp_rw [Finset.lt_sup'_iff, Finset.mem_univ, true_and] at hmax
+    obtain ⟨b, hb⟩ := hmax
+    rw [Function.funext_iff] at h_vA
+    specialize h_vA b
+    rw [Pi.zero_apply, mulVec, dotProduct] at h_vA
+    rw [Finset.sum_eq_sum_diff_singleton_add (Finset.mem_univ b)] at h_vA
+    rw [← eq_neg_add_iff_add_eq, add_zero] at h_vA
+    apply_fun (abs ·) at h_vA
+    rw [abs_mul] at h_vA
+    have z := (ne_of_gt hb)
+
+    -- simp only [Finset.mem_univ, not_true, Finset.subset_univ,
+    -- Finset.sum_sdiff_eq_sub, Finset.sum_singleton, neg_sub] at h_vA
+    specialize h1 b
+    -- contrapose h1
+    -- simp only [sub_neg, not_lt]
+
+
+
+
+
+
+
 
 end Determinant
 
