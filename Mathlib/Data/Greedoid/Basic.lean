@@ -453,13 +453,6 @@ def rank (G : Greedoid α) (s : Finset α) :=
     simp [Finset.max_eq_bot, filter_eq_empty_iff] at h
     exact h _ G.containsEmpty (empty_subset _))
 
--- TODO: move to somewhere else like `Mathlib.Order.WithBot`
-theorem unbot_le_iff [LE α] {a : α} {b : WithBot α} (h : b ≠ ⊥) :
-    WithBot.unbot b h ≤ a ↔ b ≤ (a : WithBot α) := by
-  lift b to α
-  . exact h
-  . simp only [WithBot.unbot_coe, WithBot.coe_le_coe]
-
 section Rank
 
 variable {s t : Finset α} {x y : α}
@@ -475,7 +468,7 @@ theorem rank_eq_basis_card
     simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter]
     exists b
     simp only [basis_mem_feasible hb, basis_subset hb]
-  . simp [rank, unbot_le_iff]
+  . simp [rank, WithBot.unbot_le_iff]
     apply Finset.max_le
     rintro n hn
     simp at *
@@ -551,14 +544,15 @@ theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := by
   have ⟨_, hb⟩ : Nonempty (G.bases s) := G.bases_nonempty
   exact mem_bases_self_iff.mpr (bases_of_card_eq hb (rank_eq_basis_card hb ▸ h) ▸ hb)
 
-@[simp]
-theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
-  apply Iff.intro _ (fun h => rank_of_feasible h)
-  intro h
+theorem card_le_rank (h : s.card ≤ G.rank s) : s ∈ G := by
   have := mt (@rank_of_infeasible _ _ _ G s)
   simp only [not_lt, not_not] at this
   apply this
   simp only [h, le_refl]
+
+@[simp]
+theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G :=
+  Iff.intro (fun h => card_le_rank (h ▸ le_refl _)) (fun h => rank_of_feasible h)
 
 theorem bases_subset_of_rank_eq_of_subset
   (h₁ : s ⊆ t) (h₂ : G.rank s = G.rank t) :
@@ -1232,5 +1226,82 @@ theorem monotoneClosureOperator_subset_of_subset (h : s ⊆ t) :
   exact ha (subset_trans h h₁) h₂
 
 end MonotoneClosureOperator
+
+def basisRank (G : Greedoid α) (s : Finset α) : ℕ :=
+  (Finset.max (G.feasibleSet.image fun t => (s ∩ t).card)).unbot (by
+    intro h
+    simp only [Finset.max_eq_bot, image_eq_empty] at h
+    exact ne_empty_of_mem G.containsEmpty h)
+
+def rankFeasible (G : Greedoid α) (s : Finset α) : Prop :=
+  G.basisRank s = G.rank s
+
+instance : DecidablePred G.rankFeasible :=
+  fun s => if h : G.basisRank s = G.rank s then isTrue h else isFalse h
+
+def rankFeasibleFamily (G : Greedoid α) : Finset (Finset α) :=
+  univ.filter fun s => G.rankFeasible s
+
+section BasisRank
+
+variable {s : Finset α}
+
+theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
+  simp only [rank, system_feasible_set_mem_mem, basisRank, WithBot.le_unbot_iff, WithBot.coe_unbot]
+  apply Finset.max_le
+  intro n hn
+  simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter] at hn
+  let ⟨t, ⟨ht₁, ht₂⟩, ht₃⟩ := hn
+  apply Finset.le_max
+  simp only [mem_image, system_feasible_set_mem_mem]
+  exists t
+  simp only [ht₁, (inter_eq_right_iff_subset _ _).mpr ht₂, ht₃]
+
+theorem mem_rankFeasibleFamily_iff {s : Finset α} :
+    s ∈ G.rankFeasibleFamily ↔ G.rankFeasible s := by
+  simp only [rankFeasibleFamily, mem_univ, Finset.mem_filter, true_and]
+
+theorem rankFeasible_of_feasible {s : Finset α} (h : s ∈ G) :
+    G.rankFeasible s := by
+  simp only [rankFeasible]
+  apply Nat.le_antisymm _ rank_le_basisRank
+  simp [basisRank, WithBot.unbot_le_iff]
+  apply Finset.max_le
+  intro _ ha
+  simp only [mem_image, system_feasible_set_mem_mem] at ha
+  have ⟨t, _, ht⟩ := ha
+  simp only [← ht, h, rank_of_feasible, WithBot.coe_le_coe,
+    card_le_of_subset (inter_subset_left s t)]
+
+theorem feasibleSet_subset_rankFeasibleFamily :
+    G.feasibleSet ⊆ G.rankFeasibleFamily := by
+  intro _ h
+  rw [mem_rankFeasibleFamily_iff]
+  exact rankFeasible_of_feasible h
+
+@[simp]
+theorem feasible_iff_rankFeasible_of_full [Full G] :
+    G.feasibleSet = G.rankFeasibleFamily := by
+  apply subset_antisymm feasibleSet_subset_rankFeasibleFamily
+  intro s hs
+  rw [mem_rankFeasibleFamily_iff] at hs
+  have h₁ : G.basisRank s ≤ G.rank s := hs ▸ Nat.le_refl _
+  simp [basisRank, WithBot.unbot_le_iff, Finset.max] at h₁
+  apply card_le_rank
+  have h₂ : s ∩ univ = s := inter_univ s
+  apply h₂ ▸ h₁ _
+  exact Full.full
+
+-- G.rankFeasibleFamily ↔ G is a matroid.
+
+-- TODO: make `Accessible` property as a class on `Finset (Finset α)`.
+theorem accessibleProperty_rankFeasibleFamily :
+    _root_.accessibleProperty G.rankFeasibleFamily := by
+  simp only [_root_.accessibleProperty, ne_eq]
+  intro s hs₁ hs₂
+  simp only [mem_rankFeasibleFamily_iff] at *
+  sorry
+
+end BasisRank
 
 end Greedoid
