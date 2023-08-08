@@ -11,9 +11,9 @@ import Mathlib.Algebra.Module.Submodule.Basic
 /-!
 # Pointed cones
 
-We define a pointed cones as convex cones which contain `0`. This is a bundled version of
-`ConvexCone.Pointed`. Pointed cones have a nicer algebraic structure than convex cones. The form
-a submodule of the ambient space when the scalars are restricted to being positive. This allows us
+We define a pointed cones as convex cones which contain `0`· This is a bundled version of
+`ConvexCone.Pointed`· Pointed cones have a nicer algebraic structure than convex cones· The form
+a submodule of the ambient space when the scalars are restricted to being positive· This allows us
 to use the Module API to work with convex cones.
 
 
@@ -24,7 +24,7 @@ to use the Module API to work with convex cones.
 
 -/
 
-/-- A pointed cone is a convex cone that contains  `0`. -/
+/-- A pointed cone is a convex cone that contains  `0`· -/
 structure PointedCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
      [SMul 𝕜 E] extends ConvexCone 𝕜 E where
 -- `0` is in the carrier
@@ -71,7 +71,7 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 variable {F} [AddCommMonoid F] [Module 𝕜 F]
 variable {G} [AddCommMonoid G] [Module 𝕜 G]
 
-/-- The image of a convex cone under a `𝕜`-linear map is a convex cone. -/
+/-- The image of a convex cone under a `𝕜`-linear map is a convex cone· -/
 def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F where
   toConvexCone := (S.toConvexCone).map f
   zero_mem' := ⟨0, by simp⟩
@@ -88,7 +88,7 @@ theorem map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : PointedCone �
 theorem map_id (S : PointedCone 𝕜 E) : S.map LinearMap.id = S :=
   SetLike.coe_injective <| Set.image_id _
 
-/-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone. -/
+/-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone· -/
 def comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : PointedCone 𝕜 E where
   toConvexCone := ConvexCone.comap (f : E →ₗ[𝕜] F) S
   zero_mem' := by simp [ConvexCone.comap]
@@ -118,7 +118,7 @@ variable (𝕜 E)
 variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
-module. -/
+module· -/
 def positive : PointedCone 𝕜 E where
   toConvexCone := ConvexCone.positive 𝕜 E
   zero_mem' := ConvexCone.pointed_positive _ _
@@ -139,7 +139,7 @@ section Module
 ## Module Instance
 
 In this section, we put a module instance over pointed cones, where the scalars are restricted to
-being non-negative. We also show that the type of pointed cones in a module is equivalent to the
+being non-negative· We also show that the type of pointed cones in a module is equivalent to the
 type of submodules of the ambient space when the scalars are restricted to being non-negative.
 
 -/
@@ -152,9 +152,9 @@ local instance : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.c
 
 protected theorem smul_mem {c : 𝕜} {x : E} (hc : 0 ≤ c) (hx : x ∈ S) : c • x ∈ S := by
   cases' eq_or_lt_of_le hc with hzero hpos
-  . rw [← hzero, zero_smul]
+  · rw [← hzero, zero_smul]
     exact S.zero_mem
-  . exact @ConvexCone.smul_mem 𝕜 E _ _ _ S _ _ hpos hx
+  · exact @ConvexCone.smul_mem 𝕜 E _ _ _ S _ _ hpos hx
 
 instance hasSmul : SMul { c : 𝕜 // 0 ≤ c } S where
   smul := fun ⟨c, hc⟩ ⟨x, hx⟩ => ⟨c • x, S.smul_mem hc hx⟩
@@ -167,12 +167,13 @@ protected theorem coe_smul (x : S) (n : { c : 𝕜 // 0 ≤ c }) : n • x = n �
   rfl
 
 @[simp]
-protected theorem nsmul_eq_smul_cast (x : S) (n : ℕ) : n • (x : E) = (n : { c : 𝕜 // 0 ≤ c }) • (x : E) :=
+protected theorem nsmul_eq_smul_cast (x : S) (n : ℕ) :
+    n • (x : E) = (n : { c : 𝕜 // 0 ≤ c }) • (x : E) :=
   nsmul_eq_smul_cast _ _ _
 
 @[simp]
 theorem coe_nsmul (x : S) (n : ℕ) : (n • x : E) = n • (x : E) := by
-  simp_rw [PointedCone.coe_smul, PointedCone.nsmul_eq_smul_cast] ; rfl
+  simp_rw [PointedCone.coe_smul, PointedCone.nsmul_eq_smul_cast]; rfl
 
 @[simp]
 theorem coe_add : ∀ (x y : { x // x ∈ S }), (x + y : E) = ↑x + ↑y := by
@@ -212,9 +213,9 @@ def toSubmodule (S : PointedCone 𝕜 E) : Submodule { c : 𝕜 // 0 ≤ c } E w
   smul_mem' := fun ⟨c, hc⟩ x hx => by
     simp_rw [SetLike.mem_coe]
     cases' eq_or_lt_of_le hc with hzero hpos
-    . convert S.zero_mem
+    · convert S.zero_mem
       simpa [← hzero] using smul_eq_zero_of_left rfl x
-    . apply ConvexCone.smul_mem
+    · apply ConvexCone.smul_mem
       convert hpos
       exact hx
 
@@ -224,7 +225,7 @@ def ofSubmodule (M : Submodule { c : 𝕜 // 0 ≤ c } E) : (PointedCone 𝕜 E)
   add_mem' := fun _ hx _ hy => M.add_mem hx hy
   zero_mem' := M.zero_mem
 
-/- The equivalence between pointed cones and submodules. -/
+/- The equivalence between pointed cones and submodules· -/
 def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule { c : 𝕜 // 0 ≤ c } E) where
   toFun := toSubmodule
   invFun := ofSubmodule
@@ -236,7 +237,7 @@ end Module
 section Dual
 variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-/-- The inner dual cone of a pointed cone is a pointed cone. -/
+/-- The inner dual cone of a pointed cone is a pointed cone· -/
 def dual (S : PointedCone ℝ E) : PointedCone ℝ E where
   toConvexCone := (S : Set E).innerDualCone
   zero_mem' := pointed_innerDualCone (S : Set E)
