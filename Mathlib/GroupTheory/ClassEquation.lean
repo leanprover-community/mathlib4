@@ -32,22 +32,9 @@ variable (G : Type u) [Group G]
 theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
     [∀ x : ConjClasses G, Fintype x.carrier] :
     ∑ x : ConjClasses G, x.carrier.toFinset.card = Fintype.card G := by
-  let e : Quotient (orbitRel (ConjAct G) G) ≃ ConjClasses G :=
-    Quotient.congrRight fun g h ↦ mem_orbit_conjAct
-  classical
-  rw [← e.sum_comp, card_eq_sum_card_group_div_card_stabilizer (ConjAct G) G]
-  refine Finset.sum_congr rfl ?_
-  rintro ⟨g⟩ -
-  rw [← card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) (Quotient.out' (Quot.mk _ g)),
-      Nat.mul_div_cancel _ <| Fintype.card_pos_iff.mpr inferInstance]
-  convert (Fintype.card_ofFinset _ (fun h ↦ ?_)).symm
-  simp only [mem_orbit_conjAct, ← ConjClasses.mk_eq_mk_iff_isConj, Set.mem_toFinset,
-    ConjClasses.mem_carrier_iff_mk_eq]
-  refine eq_iff_eq_cancel_left.2 (ConjClasses.mk_eq_mk_iff_isConj.2 ?_)
-  rw [← mem_orbit_conjAct, ← orbitRel_apply]
-  apply Quotient.exact'
-  rw [Quotient.out_eq']
-  rfl
+  suffices : (Σ x : ConjClasses G, x.carrier) ≃ G
+  · simpa using (Fintype.card_congr this)
+  simpa [carrier_eq_preimage_mk] using Equiv.sigmaFiberEquiv ConjClasses.mk
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
 theorem Group.sum_card_conj_classes_eq_card [Finite G] :
