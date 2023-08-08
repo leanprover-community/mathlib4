@@ -15,7 +15,8 @@ import Mathlib.LinearAlgebra.Quotient
 
 * `TensorProduct.lTensor_exact` says that one can tensor a short exact sequence on the left
 
-* `TensorProduct.map_ker` computes the kernel of `TensorProduct.map g g'` in the presence of two short exact sequences.
+* `TensorProduct.map_ker` computes the kernel of `TensorProduct.map g g'`
+in the presence of two short exact sequences.
 
 The proofs are those of Bourbaki, Algèbre, chap. 2, §3, n°6
 
@@ -172,10 +173,10 @@ private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
 theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
   dsimp only [Exact]
   apply le_antisymm
-  . rintro y ⟨x, rfl⟩
+  · rintro y ⟨x, rfl⟩
     rw [mem_ker, ← rTensor_comp_apply, comp_eq_zero hfg]
     simp only [rTensor_zero, zero_apply]
-  . intro x hx
+  · intro x hx
     rw [mem_ker] at hx
     rw [← Submodule.Quotient.mk_eq_zero, ← rTensor.inverse_apply Q hg hfg, hx, map_zero]
 
@@ -274,10 +275,10 @@ private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
 theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
   dsimp only [Exact]
   apply le_antisymm
-  . rintro y ⟨x, rfl⟩
+  · rintro y ⟨x, rfl⟩
     rw [mem_ker, ← lTensor_comp_apply, comp_eq_zero hfg]
     simp only [lTensor_zero, zero_apply]
-  . intro x hx
+  · intro x hx
     rw [mem_ker] at hx
     rw [← Submodule.Quotient.mk_eq_zero, ← lTensor.inverse_apply Q hg hfg, hx, map_zero]
 
