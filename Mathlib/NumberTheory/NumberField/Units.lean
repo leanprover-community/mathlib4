@@ -17,11 +17,11 @@ field `K`.
 
 ## Main definitions
 
-* `Units.rank`: the unit rank of the number field `K`
+* `Units.rank`: the unit rank of the number field `K`.
 
-* `Units.fund_system`: a fundamental system of units of `K`
+* `Units.fund_system`: a fundamental system of units of `K`.
 
-* `Units.basis_mod_torsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)` (as an additive `ℤ`-module)
+* `Units.basis_mod_torsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)` (as an additive `ℤ`-module).
 
 ## Main results
 
@@ -30,7 +30,7 @@ field `K`.
 * `Units.mem_torsion`: an unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
 
 * `Units.exist_unique_eq_mul_prod`: an unit `x : (𝓞 K)ˣ` can be written in a unique way as the
-product of a root of unity times the product of powers of units of the fundamenal system.
+product of a root of unity times the product of powers of units of the fundamental system.
 
 ## Tags
 number field, units
