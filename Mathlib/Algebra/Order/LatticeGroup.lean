@@ -441,6 +441,15 @@ calc
 #align lattice_ordered_comm_group.sup_div_inf_eq_abs_div LatticeOrderedGroup.sup_div_inf_eq_abs_div
 #align lattice_ordered_comm_group.sup_sub_inf_eq_abs_sub LatticeOrderedGroup.sup_sub_inf_eq_abs_sub
 
+/-- The unary operation of taking the absolute value is idempotent. -/
+@[to_additive (attr := simp) abs_abs
+  "The unary operation of taking the absolute value is idempotent."]
+theorem mabs_mabs [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+    (a : α) : |(|a|)| = |a| :=
+  mabs_of_one_le _ (one_le_abs _)
+#align lattice_ordered_comm_group.mabs_mabs LatticeOrderedGroup.mabs_mabs
+#align lattice_ordered_comm_group.abs_abs LatticeOrderedGroup.abs_abs
+
 end LatticeOrderedGroup
 
 end Group
@@ -600,14 +609,6 @@ theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
     _ = |a / b| := by rw [sup_div_inf_eq_abs_div]
 #align lattice_ordered_comm_group.abs_div_sup_mul_abs_div_inf LatticeOrderedCommGroup.abs_div_sup_mul_abs_div_inf
 #align lattice_ordered_comm_group.abs_sub_sup_add_abs_sub_inf LatticeOrderedCommGroup.abs_sub_sup_add_abs_sub_inf
-
-/-- The unary operation of taking the absolute value is idempotent. -/
-@[to_additive (attr := simp) abs_abs
-  "The unary operation of taking the absolute value is idempotent."]
-theorem mabs_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |(|a|)| = |a| :=
-  mabs_of_one_le _ (one_le_abs _)
-#align lattice_ordered_comm_group.mabs_mabs LatticeOrderedCommGroup.mabs_mabs
-#align lattice_ordered_comm_group.abs_abs LatticeOrderedCommGroup.abs_abs
 
 @[to_additive abs_sup_sub_sup_le_abs]
 theorem mabs_sup_div_sup_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
