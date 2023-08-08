@@ -363,39 +363,26 @@ theorem abs_div_comm (a b : α) : |a / b| = |b / a| := by
 #align lattice_ordered_comm_group.abs_inv_comm LatticeOrderedGroup.abs_div_comm
 #align lattice_ordered_comm_group.abs_neg_comm LatticeOrderedGroup.abs_sub_comm
 
--- Everything above more or less as before
--- Now need to start doing something special
-
 -- In fact 0 ≤ n•a implies 0 ≤ a, see L. Fuchs, "Partially ordered algebraic systems"
 -- Chapter V, 1.E
 @[to_additive]
 lemma pow_two_semiclosed
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     (1 : α) ≤ a^2 → 1 ≤ a := by
-  introv h
-  have s1 : (a⊓1)^2 = a⊓1 := by
-    rw [pow_two, mul_inf, inf_mul,
-     ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
-     inf_assoc]
-    rw [← right_eq_inf, inf_comm] at h
-    rw [← h]
-  rw [pow_two] at s1
-  simp at s1
-  exact s1
+  intro h
+  have e1 : (a ⊓ 1) * (a ⊓ 1) = a⊓1 := by
+    rw [mul_inf, inf_mul, ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
+     inf_assoc, (inf_of_le_left h)]
+  rw [← inf_eq_right]
+  exact mul_right_eq_self.mp e1
 
 @[to_additive abs_nonneg]
 theorem one_le_abs
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     1 ≤ |a| := by
-  have s1: (1 : α) ≤ |a|^2 := by
-    rw [abs_eq_sup_inv]
-    rw [pow_two, mul_sup,  sup_mul,
-    ←pow_two]
-    simp
-    rw [sup_comm, ← sup_assoc]
-    apply le_sup_right
-  apply pow_two_semiclosed
-  exact s1
+  apply pow_two_semiclosed _ _
+  rw [abs_eq_sup_inv, pow_two, mul_sup,  sup_mul, ←pow_two, mul_left_inv, sup_comm, ← sup_assoc]
+  apply le_sup_right
 
 -- The proof from Bourbaki A.VI.12 Prop 9 d)
 -- |a| = a⁺ - a⁻
@@ -475,12 +462,7 @@ end LatticeOrderedGroup
 
 end Group
 
-
 variable [Lattice α] [CommGroup α]
-
-
-
-
 
 -- Fuchs p67
 -- Bourbaki A.VI.10 Prop 7
