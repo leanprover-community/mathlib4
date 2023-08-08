@@ -729,6 +729,8 @@ theorem coeff_C_zero : coeff (C a) 0 = a :=
 theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
 #align polynomial.coeff_C_ne_zero Polynomial.coeff_C_ne_zero
 
+@[simp] lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
+
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by
@@ -888,6 +890,9 @@ theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
   · rw [pow_zero, monomial_zero_one]
   · rw [pow_succ', hn, X, monomial_mul_monomial, one_mul]
 #align polynomial.X_pow_eq_monomial Polynomial.X_pow_eq_monomial
+
+@[simp] lemma coeff_pow_X {m n : ℕ} : coeff (X^n) m = if n = m then 1 else 0 := by
+  rw [X_pow_eq_monomial, coeff_monomial]
 
 @[simp high]
 theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by

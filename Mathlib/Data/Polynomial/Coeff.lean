@@ -300,9 +300,25 @@ theorem mul_X_pow_injective (n : ℕ) : Function.Injective fun P : R[X] => X ^ n
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 #align polynomial.mul_X_pow_injective Polynomial.mul_X_pow_injective
 
+theorem pow_X_mul_injective (n : ℕ) : Function.Injective fun P : R[X] => P * X ^ n := by
+  convert mul_X_pow_injective n using 1
+  ext
+  rw [commute_X_pow]
+
 theorem mul_X_injective : Function.Injective fun P : R[X] => X * P :=
   pow_one (X : R[X]) ▸ mul_X_pow_injective 1
 #align polynomial.mul_X_injective Polynomial.mul_X_injective
+
+theorem X_mul_injective : Function.Injective fun P : R[X] => P * X :=
+  pow_one (X : R[X]) ▸ pow_X_mul_injective 1
+
+@[simp] lemma eq_zero_of_X_mul_eq_zero : X * p = 0 ↔ p = 0 := by
+  nth_rw 1 [← mul_zero X]
+  exact ⟨fun h ↦ mul_X_injective h, fun hp ↦ by rw [hp, mul_zero]⟩
+
+@[simp] lemma eq_zero_of_mul_X_eq_zero : p * X = 0 ↔ p = 0 := by
+  nth_rw 1 [← zero_mul X]
+  exact ⟨fun h ↦ X_mul_injective h, fun hp ↦ by rw [hp, zero_mul]⟩
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
