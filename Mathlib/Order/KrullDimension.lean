@@ -12,6 +12,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Krull dimension of a preordered set
@@ -66,6 +67,9 @@ noncomputable section Preorder
 variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
+
+lemma krull_dim_eq_bot_of_is_empty [IsEmpty α] : krullDim α = ⊥ :=
+  WithBot.ciSup_empty _
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   iSup_le $ λ p ↦ le_sSup ⟨p.map f hf, rfl⟩
