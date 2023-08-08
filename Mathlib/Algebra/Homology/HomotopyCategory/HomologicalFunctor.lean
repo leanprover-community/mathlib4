@@ -17,8 +17,8 @@ attribute [simp] comp_liftCycles_assoc
 -- exactness of H^n K ⟶ H^n L ⟶ H^n cône
 lemma homology_triangle_exact {K L : CochainComplex C ℤ}
     (φ : K ⟶ L) (n : ℤ) :
-    (ShortComplex.mk ((newHomologyFunctor _ _ n).map φ)
-      ((newHomologyFunctor _ _ n).map (inr φ))
+    (ShortComplex.mk ((homologyFunctor _ _ n).map φ)
+      ((homologyFunctor _ _ n).map (inr φ))
         (by dsimp ; rw [← homologyMap_comp, (homotopySelfCompInr φ).homologyMap_eq,
           homologyMap_zero])).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
@@ -47,16 +47,16 @@ end CochainComplex
 
 namespace HomotopyCategory
 
-instance (n : ℤ) : (newHomologyFunctor C (ComplexShape.up ℤ) n).IsHomological :=
+instance (n : ℤ) : (homologyFunctor C (ComplexShape.up ℤ) n).IsHomological :=
   Functor.IsHomological.mk' _ (by
     rintro T ⟨K, L, φ, ⟨e⟩⟩
     refine' ⟨_, e, _⟩
     refine' (ShortComplex.exact_iff_of_iso _).1
       (CochainComplex.MappingCone.homology_triangle_exact φ n)
     refine' ShortComplex.isoMk
-      ((newHomologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm
-      ((newHomologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm
-      ((newHomologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm _ _
+      ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm
+      ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm
+      ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm _ _
     all_goals
       dsimp
       erw [← NatTrans.naturality]

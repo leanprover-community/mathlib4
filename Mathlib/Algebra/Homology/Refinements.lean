@@ -8,7 +8,7 @@ namespace HomologicalComplex
 variable {C : Type _} [Category C] [Abelian C] {ι : Type _} {c : ComplexShape ι}
   (K L : HomologicalComplex C c) (φ : K ⟶ L)
 
-lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.newHomology i)
+lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.homology i)
   (j : ι) (hj : c.next i = j) :
     ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ K.X i) (hz : z ≫ K.d i j = 0),
       π ≫ γ = K.liftCycles z j hj hz ≫ K.homologyπ i := by

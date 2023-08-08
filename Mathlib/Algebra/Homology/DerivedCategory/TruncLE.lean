@@ -13,7 +13,7 @@ variable (K L M : CochainComplex C ℤ) (φ : K ⟶ L) (ψ : L ⟶ M)
 
 noncomputable def truncLEX (n i : ℤ) : C :=
   if n < i then 0
-  else if i = n then K.newCycles i
+  else if i = n then K.cycles i
     else K.X i
 
 lemma isZero_truncLEX (n i : ℤ) (hi : n < i) : IsZero (K.truncLEX n i) := by
@@ -28,7 +28,7 @@ noncomputable def truncLEXIsoX (n i : ℤ) (hi : i < n) :
   all_goals linarith)
 
 noncomputable def truncLEXIsoCycles (n i : ℤ) (hi : i = n) :
-    K.truncLEX n i ≅ K.newCycles i := eqToIso (by
+    K.truncLEX n i ≅ K.cycles i := eqToIso (by
   dsimp [truncLEX]
   rw [if_neg, if_pos hi]
   linarith)
@@ -233,7 +233,7 @@ lemma truncLEι_naturality (n : ℤ) :
 variable (K L)
 
 lemma isZero_homology_truncLE (n i : ℤ) (hi : n < i) :
-    IsZero ((K.truncLE n).newHomology i) := by
+    IsZero ((K.truncLE n).homology i) := by
   rw [isZero_homology_iff]
   exact ShortComplex.exact_of_isZero_X₂ _ (K.isZero_truncLEX _ _ hi)
 
@@ -413,7 +413,7 @@ noncomputable def natTransTruncLEι (n : ℤ) : functorTruncLE C n ⟶ 𝟭 _  :
 noncomputable def QCompFunctorTruncLECompHomologyFunctorIso (n i : ℤ) :
     Q ⋙ functorTruncLE C n ⋙ homologyFunctor C i ≅
       CochainComplex.functorTruncLE C n ⋙
-        HomologicalComplex.newHomologyFunctor _ _ i :=
+        HomologicalComplex.homologyFunctor _ _ i :=
   (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (functorTruncLEFactors C n) _ ≪≫ Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (homologyFunctorFactors _ i)

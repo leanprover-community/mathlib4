@@ -94,7 +94,7 @@ structure IteratedExtCategory (X₁ X₂ : C) (n : ℕ) where
   K : CochainComplex C ℤ
   hK₀ : K.IsStrictlyGE 0
   hK₁ : K.IsStrictlyLE (n+2)
-  hK (n : ℤ) : IsZero (K.newHomology n)
+  hK (n : ℤ) : IsZero (K.homology n)
   iso₁ : K.X (n+2) ≅ X₁
   iso₂ : K.X 0 ≅ X₂
 
@@ -187,7 +187,7 @@ noncomputable def ZToX₂ (n' : ℤ) (hn' : n' + n + 1 = 0) :
       linarith⟩
 
 lemma isZero_homology_ZToX₁ (d : ℤ) (hd : d ≠ 0) :
-    IsZero (E.Z.newHomology d) := by
+    IsZero (E.Z.homology d) := by
   by_cases 0 < d
   . apply ShortComplex.isZero_homology_of_isZero_X₂
     dsimp
@@ -270,7 +270,7 @@ noncomputable def leftHomologyMapData : ShortComplex.LeftHomologyMapData
     erw [comp_id]
 
 lemma ZToX₁_quasi_iso (n : ℤ) :
-    IsIso ((HomologicalComplex.newHomologyFunctor _ _ n).map E.ZToX₁) := by
+    IsIso ((HomologicalComplex.homologyFunctor _ _ n).map E.ZToX₁) := by
   by_cases n = 0
   . subst h
     suffices IsIso (ShortComplex.homologyMap

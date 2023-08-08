@@ -56,20 +56,20 @@ abbrev HasHomology (i : ι) := (K.sc i).HasHomology
 
 variable (i : ι) [K.HasHomology i] [L.HasHomology i] [M.HasHomology i]
 
-noncomputable def newHomology := (K.sc i).homology
-noncomputable def newCycles := (K.sc i).cycles
-noncomputable def homologyπ : K.newCycles i ⟶ K.newHomology i := (K.sc i).homologyπ
-noncomputable def iCycles : K.newCycles i ⟶ K.X i := (K.sc i).iCycles
+noncomputable def homology := (K.sc i).homology
+noncomputable def cycles := (K.sc i).cycles
+noncomputable def homologyπ : K.cycles i ⟶ K.homology i := (K.sc i).homologyπ
+noncomputable def iCycles : K.cycles i ⟶ K.X i := (K.sc i).iCycles
 
 variable {i}
 
 noncomputable def liftCycles {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
-    (hk : k ≫ K.d i j = 0) : A ⟶ K.newCycles i :=
+    (hk : k ≫ K.d i j = 0) : A ⟶ K.cycles i :=
   (K.sc i).liftCycles k (by subst hj ; exact hk)
 
 @[reducible]
 noncomputable def liftCycles' {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.Rel i j)
-    (hk : k ≫ K.d i j = 0) : A ⟶ K.newCycles i :=
+    (hk : k ≫ K.d i j = 0) : A ⟶ K.cycles i :=
   K.liftCycles k j (c.next_eq' hj) hk
 
 @[reassoc (attr := simp)]
@@ -79,7 +79,7 @@ lemma liftCycles_i {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
   simp
 
 noncomputable def toCycles (i j : ι) [K.HasHomology j] :
-  K.X i ⟶ K.newCycles j :=
+  K.X i ⟶ K.cycles j :=
   K.liftCycles (K.d i j) (c.next j) rfl (K.d_comp_d _ _ _)
 
 variable (i)
@@ -138,7 +138,7 @@ noncomputable def homologyIsCokernel (i j : ι) (hi : c.prev j = i) [K.HasHomolo
 variable (i)
 
 noncomputable def opcycles := (K.sc i).opcycles
-noncomputable def homologyι : K.newHomology i ⟶ K.opcycles i := (K.sc i).homologyι
+noncomputable def homologyι : K.homology i ⟶ K.opcycles i := (K.sc i).homologyι
 noncomputable def pOpcycles : K.X i ⟶ K.opcycles i := (K.sc i).pOpcycles
 
 variable {i}
@@ -186,10 +186,10 @@ instance [K.HasHomology i] : Mono (K.homologyι i) := by
 
 variable {K L M}
 
-noncomputable def homologyMap : K.newHomology i ⟶ L.newHomology i :=
+noncomputable def homologyMap : K.homology i ⟶ L.homology i :=
   ShortComplex.homologyMap ((shortComplexFunctor C c i).map φ)
 
-noncomputable def cyclesMap : K.newCycles i ⟶ L.newCycles i :=
+noncomputable def cyclesMap : K.cycles i ⟶ L.cycles i :=
   ShortComplex.cyclesMap ((shortComplexFunctor C c i).map φ)
 
 noncomputable def opcyclesMap : K.opcycles i ⟶ L.opcycles i :=
@@ -281,15 +281,15 @@ section
 attribute [local simp] homologyMap_comp
 
 @[simps]
-noncomputable def newHomologyFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
-  obj K := K.newHomology i
+noncomputable def homologyFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
+  obj K := K.homology i
   map f := homologyMap f i
 
 end
 
 @[simps!]
-noncomputable def newHomologyFunctorIso [CategoryWithHomology C] :
-    newHomologyFunctor C c i ≅ shortComplexFunctor C c i ⋙ ShortComplex.homologyFunctor C :=
+noncomputable def homologyFunctorIso [CategoryWithHomology C] :
+    homologyFunctor C c i ≅ shortComplexFunctor C c i ⋙ ShortComplex.homologyFunctor C :=
   NatIso.ofComponents (fun T => Iso.refl _) (by aesop_cat)
 
 /- TODO : adapt more of the homology of ShortComplex API to this situation, including the
@@ -309,13 +309,13 @@ noncomputable abbrev isoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
     K.sc j ≅ K.sc' i j k := (natIsoSc' C c i j k hi hk).app K
 
 lemma isZero_homology_iff (i : ι) [K.HasHomology i] :
-    IsZero (K.newHomology i) ↔ (K.sc i).Exact := by
-  dsimp only [newHomology]
+    IsZero (K.homology i) ↔ (K.sc i).Exact := by
+  dsimp only [homology]
   rw [← ShortComplex.exact_iff_isZero_homology]
 
 lemma isZero_homology_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
     [K.HasHomology j] :
-    IsZero (K.newHomology j) ↔ (K.sc' i j k).Exact := by
+    IsZero (K.homology j) ↔ (K.sc' i j k).Exact := by
   rw [isZero_homology_iff]
   exact ShortComplex.exact_iff_of_iso ((natIsoSc' C c i j k hi hk).app K)
 
@@ -397,7 +397,7 @@ lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (i j : ι) (hj : c.next i =
   exact ShortComplex.isIso_homologyMap_of_isIso_opcyclesMap_of_mono _ h₁ h₂
 
 lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i]:
-    IsZero (K.newHomology i) :=
+    IsZero (K.homology i) :=
   ShortComplex.isZero_homology_of_isZero_X₂ _ (by exact hi)
 
 end HomologicalComplex
@@ -455,7 +455,7 @@ lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.
   ShortComplex.Homotopy.congr_homologyMap (ho.toShortComplex i)
 
 noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
-  [K.HasHomology i] [L.HasHomology i] : K.newHomology i ≅ L.newHomology i where
+  [K.HasHomology i] [L.HasHomology i] : K.homology i ≅ L.homology i where
   hom := homologyMap h.hom i
   inv := homologyMap h.inv i
   hom_inv_id := by rw [← homologyMap_comp, h.homotopyHomInvId.homologyMap_eq, homologyMap_id]
@@ -477,7 +477,7 @@ lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap
   rw [← ShortComplex.homologyMap_add]
   rfl
 
-instance [CategoryWithHomology C] : (newHomologyFunctor C c i).Additive where
+instance [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
 
 variable (C c)
 
@@ -497,7 +497,7 @@ variable [HasZeroObject C] [DecidableEq ι]
 instance (A : C) : ((single C c i).obj A).HasHomology i :=
   ⟨⟨ShortComplex.HomologyData.ofZeros _ rfl rfl⟩⟩
 
-noncomputable def singleHomologyIso (A : C) : ((single C c i).obj A).newHomology i ≅ A :=
+noncomputable def singleHomologyIso (A : C) : ((single C c i).obj A).homology i ≅ A :=
   (ShortComplex.HomologyData.ofZeros (sc ((single C c i).obj A) i) rfl rfl).left.homologyIso ≪≫
     singleObjXSelf C c i A
 
@@ -513,7 +513,7 @@ variable (C)
 
 @[simps!]
 noncomputable def singleCompHomologyFunctorIso [CategoryWithHomology C] :
-    single C c i ⋙ newHomologyFunctor C c i ≅ 𝟭 C :=
+    single C c i ⋙ homologyFunctor C c i ≅ 𝟭 C :=
   NatIso.ofComponents (singleHomologyIso c i) (by aesop_cat)
 
 end single
@@ -525,21 +525,21 @@ namespace HomotopyCategory
 variable (C) (c)
 variable [CategoryWithHomology C]
 
-noncomputable def newHomologyFunctor (i : ι) : HomotopyCategory C c ⥤ C :=
-  CategoryTheory.Quotient.lift _ (HomologicalComplex.newHomologyFunctor C c i) (by
+noncomputable def homologyFunctor (i : ι) : HomotopyCategory C c ⥤ C :=
+  CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor C c i) (by
     rintro K L f g ⟨h⟩
     exact h.homologyMap_eq i)
 
-noncomputable def newHomologyFunctorFactors (i : ι) :
-    quotient C c ⋙ newHomologyFunctor C c i ≅
-      HomologicalComplex.newHomologyFunctor C c i :=
+noncomputable def homologyFunctorFactors (i : ι) :
+    quotient C c ⋙ homologyFunctor C c i ≅
+      HomologicalComplex.homologyFunctor C c i :=
   Quotient.lift.isLift _ _ _
 
 -- this is to prevent any abuse of defeq
-attribute [irreducible] newHomologyFunctor newHomologyFunctorFactors
+attribute [irreducible] homologyFunctor homologyFunctorFactors
 
-instance : (newHomologyFunctor C c i).Additive := by
-  have := Functor.additive_of_iso (newHomologyFunctorFactors C c i).symm
+instance : (homologyFunctor C c i).Additive := by
+  have := Functor.additive_of_iso (homologyFunctorFactors C c i).symm
   exact Functor.additive_of_full_essSurj_comp (quotient C c) _
 
 end HomotopyCategory

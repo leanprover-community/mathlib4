@@ -16,25 +16,25 @@ namespace HomotopyCategory
 
 def subcategoryAcyclic :
     Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
-  Functor.homologicalKernel (newHomologyFunctor C (ComplexShape.up ℤ) 0)
+  Functor.homologicalKernel (homologyFunctor C (ComplexShape.up ℤ) 0)
 
 lemma mem_subCategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :
-    X ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), IsZero ((newHomologyFunctor _ _ n).obj X) :=
+    X ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj X) :=
   Functor.mem_homologicalKernel_iff _ X
 
 def qis : MorphismProperty (HomotopyCategory C (ComplexShape.up ℤ)) := (subcategoryAcyclic C).W
 
 lemma mem_qis_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
-    qis _ f ↔ ∀ (n : ℤ), IsIso ((newHomologyFunctor _ _ n).map f) := by
+    qis _ f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor _ _ n).map f) := by
   dsimp only [qis, subcategoryAcyclic]
   rw [← Functor.IsHomological.W_eq_homologicalKernelW]
   apply Functor.IsHomological.mem_W_iff
 
 lemma mem_qis_iff' {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
     qis C ((quotient _ _).map f) ↔
-    ∀ (n : ℤ), IsIso ((HomologicalComplex.newHomologyFunctor _ _ n).map f) := by
+    ∀ (n : ℤ), IsIso ((HomologicalComplex.homologyFunctor _ _ n).map f) := by
   simp only [mem_qis_iff,
-    ← fun n => NatIso.isIso_map_iff (newHomologyFunctorFactors C (ComplexShape.up ℤ) n) f]
+    ← fun n => NatIso.isIso_map_iff (homologyFunctorFactors C (ComplexShape.up ℤ) n) f]
   rfl
 
 end HomotopyCategory
@@ -189,7 +189,7 @@ noncomputable def singleFunctorShiftIso (n a a' : ℤ) (ha' : n + a = a') :
 
 lemma homologyFunctor_inverts_qis (n : ℤ) :
     (HomotopyCategory.qis C).IsInvertedBy
-      (HomotopyCategory.newHomologyFunctor C _ n) := fun X Y f hf => by
+      (HomotopyCategory.homologyFunctor C _ n) := fun X Y f hf => by
   rw [HomotopyCategory.mem_qis_iff] at hf
   exact hf n
 
@@ -197,15 +197,15 @@ noncomputable def homologyFunctor (n : ℤ) : DerivedCategory C ⥤ C :=
   Localization.lift _ (homologyFunctor_inverts_qis C n) Qh
 
 noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n ≅
-  HomotopyCategory.newHomologyFunctor C _ n := Localization.fac _ _ _
+  HomotopyCategory.homologyFunctor C _ n := Localization.fac _ _ _
 
 attribute [irreducible] homologyFunctor homologyFunctorFactorsh
 
 noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n ≅
-    HomologicalComplex.newHomologyFunctor _ _ n :=
+    HomologicalComplex.homologyFunctor _ _ n :=
   Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (homologyFunctorFactorsh C n) ≪≫
-    HomotopyCategory.newHomologyFunctorFactors _ _ _
+    HomotopyCategory.homologyFunctorFactors _ _ _
 
 noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
@@ -247,7 +247,7 @@ lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X �
 
 lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔
-      ∀ (n : ℤ), IsIso ((HomologicalComplex.newHomologyFunctor C _ n).map φ) := by
+      ∀ (n : ℤ), IsIso ((HomologicalComplex.homologyFunctor C _ n).map φ) := by
   dsimp only [Q, Functor.comp]
   rw [← HomotopyCategory.mem_qis_iff', isIso_Qh_map_iff]
 
@@ -279,7 +279,7 @@ lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
     rw [isIso_Qh_map_iff, HomotopyCategory.mem_qis_iff]
     intro n
     have e : Arrow.mk ((homologyFunctor C n).map f) ≅
-        Arrow.mk ((HomotopyCategory.newHomologyFunctor _ _ n).map g.hom) :=
+        Arrow.mk ((HomotopyCategory.homologyFunctor _ _ n).map g.hom) :=
       ((homologyFunctor C n).mapArrow.mapIso
         (((Functor.mapArrow Qh).objObjPreimageIso (Arrow.mk f)).symm)) ≪≫
         ((Functor.mapArrowFunctor _ _).mapIso (homologyFunctorFactorsh C n)).app (Arrow.mk g.hom)

@@ -235,7 +235,7 @@ lemma truncGEπ_naturality (n : ℤ) :
 variable (K L)
 
 lemma isZero_homology_truncGE (n i : ℤ) (hi : i < n) :
-    IsZero ((K.truncGE n).newHomology i) := by
+    IsZero ((K.truncGE n).homology i) := by
   rw [isZero_homology_iff]
   exact ShortComplex.exact_of_isZero_X₂ _ (K.isZero_truncGEX _ _ hi)
 
@@ -415,7 +415,7 @@ noncomputable def natTransTruncGEπ (n : ℤ) : 𝟭 _ ⟶ functorTruncGE C n :=
 noncomputable def QCompFunctorTruncGECompHomologyFunctorIso (n i : ℤ) :
     Q ⋙ functorTruncGE C n ⋙ homologyFunctor C i ≅
       CochainComplex.functorTruncGE C n ⋙
-        HomologicalComplex.newHomologyFunctor _ _ i :=
+        HomologicalComplex.homologyFunctor _ _ i :=
   (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (functorTruncGEFactors C n) _ ≪≫ Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (homologyFunctorFactors _ i)

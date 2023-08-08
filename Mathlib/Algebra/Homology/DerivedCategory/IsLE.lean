@@ -23,16 +23,16 @@ lemma isZero_of_isStrictlyGE (i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
     IsZero (K.X i) := IsStrictlyGE.isZero i hi
 
 class IsLE : Prop where
-  isZero (i : ℤ) (hi : n < i) : IsZero (K.newHomology i)
+  isZero (i : ℤ) (hi : n < i) : IsZero (K.homology i)
 
 lemma isZero_of_isLE (i : ℤ) (hi : n < i) [K.IsLE n] :
-    IsZero (K.newHomology i) := IsLE.isZero i hi
+    IsZero (K.homology i) := IsLE.isZero i hi
 
 class IsGE : Prop where
-  isZero (i : ℤ) (hi : i < n) : IsZero (K.newHomology i)
+  isZero (i : ℤ) (hi : i < n) : IsZero (K.homology i)
 
 lemma isZero_of_isGE (i : ℤ) (hi : i < n) [K.IsGE n] :
-    IsZero (K.newHomology i) := IsGE.isZero i hi
+    IsZero (K.homology i) := IsGE.isZero i hi
 
 instance (K : CochainComplex C ℤ) [K.IsStrictlyLE n] : K.IsLE n := ⟨fun i hi =>
   K.isZero_homology_of_isZero _ (K.isZero_of_isStrictlyLE n i hi)⟩
@@ -64,11 +64,11 @@ lemma isStrictlyGE_of_iso [K.IsStrictlyGE n] : L.IsStrictlyGE n := ⟨fun i hi =
 
 lemma isLE_of_iso [K.IsLE n] : L.IsLE n := ⟨fun i hi =>
   IsZero.of_iso (K.isZero_of_isLE n i hi)
-    ((newHomologyFunctor _ _ i).mapIso e.symm)⟩
+    ((homologyFunctor _ _ i).mapIso e.symm)⟩
 
 lemma isGE_of_iso [K.IsGE n] : L.IsGE n := ⟨fun i hi =>
   IsZero.of_iso (K.isZero_of_isGE n i hi)
-    ((newHomologyFunctor _ _ i).mapIso e.symm)⟩
+    ((homologyFunctor _ _ i).mapIso e.symm)⟩
 
 variable (K)
 
@@ -82,11 +82,11 @@ lemma isStrictlyGE_shift [K.IsStrictlyGE n] (a n' : ℤ) (h : a + n' = n) :
 
 lemma isLE_shift [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsLE n' := ⟨fun i hi =>
   IsZero.of_iso (K.isZero_of_isLE n (a+i) (by linarith))
-    (((newHomologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
+    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
 
 lemma isGE_shift [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsGE n' := ⟨fun i hi =>
   IsZero.of_iso (K.isZero_of_isGE n (a+i) (by linarith))
-    (((newHomologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
+    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)⟩
 
 lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
     ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) := by
