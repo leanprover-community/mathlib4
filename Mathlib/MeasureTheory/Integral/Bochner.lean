@@ -1817,14 +1817,6 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
     (MeasurableSet.singleton a)]
   simp
 
-theorem integral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h : a ∉ s)
-    (f : α → ℝ) : ∫ x in insert a s, f x ∂μ = f a * (μ {a}).toReal + ∫ x in s, f x ∂μ := by
-  -- TODO: integral_union
-  -- rw [← union_singleton, integral_union (measurableSet_singleton a), integral_singleton,
-  -- add_comm]
-  -- rwa [disjoint_singleton_right]
-  sorry
-
 theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ)
   (hf : Integrable f (μ.restrict s)) : ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
