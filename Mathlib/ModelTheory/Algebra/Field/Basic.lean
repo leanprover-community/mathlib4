@@ -1,14 +1,11 @@
 import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Algebra.Ring.Basic
+import Mathlib.ModelTheory.LanguageMap
 
 namespace FirstOrder
 
-namespace Language
-
 open FirstOrder
-
-open Structure
 
 inductive FieldFunctions : ℕ → Type
   | add : FieldFunctions 2
@@ -18,17 +15,19 @@ inductive FieldFunctions : ℕ → Type
   | zero : FieldFunctions 0
   | one : FieldFunctions 0
 
-protected def field : Language :=
+protected def Language.field : Language :=
   { Functions := FieldFunctions
     Relations := fun _ => Empty }
+
+namespace Language
 
 namespace field
 
 open FieldFunctions
 
-instance : Zero Language.field.Constants := ⟨zero⟩
+abbrev zeroFunction : Language.field.Functions 0 := zero
 
-instance : One Language.field.Constants := ⟨one⟩
+abbrev oneFunction : Language.field.Functions 0 := one
 
 abbrev addFunction : Language.field.Functions 2 := add
 
@@ -39,14 +38,14 @@ abbrev negFunction : Language.field.Functions 1 := neg
 abbrev invFunction : Language.field.Functions 1 := inv
 
 instance (α : Type _) : Zero (Language.field.Term α) :=
-{ zero := Constants.term 0 }
+{ zero := Constants.term zeroFunction }
 
-theorem zero_def (α : Type _) : (0 : Language.field.Term α) = Constants.term 0 := rfl
+theorem zero_def (α : Type _) : (0 : Language.field.Term α) = Constants.term zeroFunction := rfl
 
 instance (α : Type _) : One (Language.field.Term α) :=
-{ one := Constants.term 1 }
+{ one := Constants.term oneFunction }
 
-theorem one_def (α : Type _) : (1 : Language.field.Term α) = Constants.term 1 := rfl
+theorem one_def (α : Type _) : (1 : Language.field.Term α) = Constants.term oneFunction := rfl
 
 instance (α : Type _) : Add (Language.field.Term α) :=
 { add := addFunction.apply₂ }
@@ -85,9 +84,9 @@ instance : Language.ring.Structure (Language.field.Term α) :=
 
 end field
 
-open field
+end Language
 
-open BoundedFormula
+open Language field Structure BoundedFormula
 
 inductive FieldAxiom : Type
   | addAssoc : FieldAxiom
@@ -109,17 +108,17 @@ inductive FieldAxiom : Type
 def FieldAxiom.toSentence : FieldAxiom → Language.field.Sentence
   | .addAssoc => addFunction.assoc
   | .addComm => addFunction.comm
-  | .zeroAdd => addFunction.leftId 0
-  | .addZero => addFunction.rightId 0
-  | .addLeftNeg => addFunction.leftInv negFunction 0
-  | .addRightNeg => addFunction.rightInv negFunction 0
+  | .zeroAdd => addFunction.leftId zeroFunction
+  | .addZero => addFunction.rightId zeroFunction
+  | .addLeftNeg => addFunction.leftInv negFunction zeroFunction
+  | .addRightNeg => addFunction.rightInv negFunction zeroFunction
   | .mulLeftDistrib => mulFunction.leftDistrib addFunction
   | .mulRightDistrib => mulFunction.rightDistrib addFunction
   | .mulAssoc => mulFunction.assoc
   | .mulComm => mulFunction.comm
-  | .oneMul => mulFunction.leftId 1
-  | .mulOne => mulFunction.rightId 1
-  | .mulRightInv => mulFunction.rightNeZeroInv invFunction 0 1
+  | .oneMul => mulFunction.leftId oneFunction
+  | .mulOne => mulFunction.rightId oneFunction
+  | .mulRightInv => mulFunction.rightNeZeroInv invFunction zeroFunction oneFunction
   | .invZero => invFunction.apply₁ 0 =' 0
   | .zeroNeOne => (Term.equal 0 1).not
 
@@ -132,16 +131,17 @@ class ModelField (K : Type _) extends Field K,
   ( funMap_mul : ∀ x, funMap mulFunction x = x 0 * x 1 )
   ( funMap_neg : ∀ x, funMap negFunction x = -x 0 )
   ( funMap_inv : ∀ x, funMap invFunction x = (x 0)⁻¹ )
-  ( funMap_zero : ∀ x, funMap (0 : Language.field.Constants) x = 0 )
-  ( funMap_one : ∀ x, funMap (1 : Language.field.Constants) x = 1 )
+  ( funMap_zero : ∀ x, funMap (zeroFunction : Language.field.Constants) x = 0 )
+  ( funMap_one : ∀ x, funMap (oneFunction : Language.field.Constants) x = 1 )
 
 open FieldAxiom
+
 attribute [simp] ModelField.funMap_add ModelField.funMap_mul
   ModelField.funMap_neg ModelField.funMap_inv
   ModelField.funMap_zero ModelField.funMap_one
 
 set_option maxHeartbeats 1000000 in
-def ModelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
+def modelFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     [Theory.field.Model K] : ModelField K :=
 { add := fun x y => funMap addFunction ![x, y],
   zero := constantMap (L := Language.field) (M := K) 0,
@@ -256,7 +256,7 @@ def structureFieldOfField {K : Type _} [Field K] : Language.field.Structure K :=
       | _, one => fun _ => 1,
     RelMap := Empty.elim }
 
-def ModelFieldOfField {K : Type _} [Field K] : ModelField K :=
+def modelFieldOfField {K : Type _} [Field K] : ModelField K :=
   { structureFieldOfField with
     funMap_add := by intros; rfl
     funMap_mul := by intros; rfl
@@ -277,6 +277,28 @@ instance {K : Type _} [ModelField K] : Theory.field.Model K :=
         constantMap, Term.equal];
       assumption }
 
-end Language
+@[simps]
+def languageHomEquivRingHom {K L : Type _} [ModelField K] [ModelField L] :
+    (K →+* L) ≃ (Language.field.Hom K L) :=
+  { toFun := fun f =>
+    { toFun := f,
+      map_fun' := fun {n} f => by
+        cases f <;> simp
+      map_rel' := fun {n} f => by cases f },
+    invFun := fun f =>
+      { toFun := f,
+        map_add' := by
+          intro x y
+          simpa using f.map_fun addFunction ![x, y]
+        map_mul' := by
+          intro x y
+          simpa using f.map_fun mulFunction ![x, y],
+        map_zero' := by
+          simpa using f.map_fun zeroFunction ![],
+        map_one' := by
+          simpa using f.map_fun oneFunction ![], }
+    left_inv := fun f => by ext; rfl
+    right_inv := fun f => by ext; rfl }
+
 
 end FirstOrder
