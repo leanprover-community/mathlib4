@@ -102,7 +102,14 @@ instance {K : Type _} [ModelField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-theorem isAlgClosed_of_model_ACF {p : ℕ} (M : Type _)
+def modelFieldOfModelACF (K : Type _) (p : ℕ) [Language.field.Structure K]
+    [h : (Theory.ACF p).Model K] : ModelField K := by
+  haveI : Theory.field.Model K :=
+    Theory.Model.mono h (Set.subset_union_of_subset_left
+      (Set.subset_union_left _ _) _)
+  exact modelFieldOfFieldStructure K
+
+theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
     [ModelField M] [h : (Theory.ACF p).Model M] :
     IsAlgClosed M := by
   refine IsAlgClosed.of_exists_root _ ?_
@@ -116,7 +123,7 @@ theorem isAlgClosed_of_model_ACF {p : ℕ} (M : Type _)
   rw [realize_genericMonicPolyHasRoot] at this
   exact this _ rfl hpm
 
-theorem charP_of_model_ACF {p : ℕ} (M : Type _)
+theorem charP_of_model_ACF (p : ℕ) (M : Type _)
     [ModelField M] [h : (Theory.ACF p).Model M] :
     CharP M p := by
   have : (Theory.hasChar p).Model M :=
@@ -148,6 +155,33 @@ theorem ACF_isSatisfiable_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
   | inr hp =>
     subst hp
     exact ACF0_isSatisfiable
+
+open Cardinal
+
+theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
+    (Theory.ACF p).IsComplete := by
+  apply Categorical.isComplete.{0, 0, 0} (Order.succ ℵ₀) _ _
+    (Order.le_succ ℵ₀)
+  . simp only [card_field, lift_id']
+    exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
+  . exact ACF_isSatisfiable_of_prime_or_zero hp
+  . rintro ⟨M⟩
+    letI := modelFieldOfModelACF M p
+    letI := isAlgClosed_of_model_ACF p M
+    infer_instance
+  . rintro ⟨M⟩ ⟨N⟩ hM hN
+    letI := modelFieldOfModelACF M p
+    haveI := isAlgClosed_of_model_ACF p M
+    haveI := charP_of_model_ACF p M
+    letI := modelFieldOfModelACF N p
+    haveI := isAlgClosed_of_model_ACF p N
+    haveI := charP_of_model_ACF p N
+    constructor
+    refine languageEquivEquivRingEquiv ?_
+    apply Classical.choice
+    refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
+    . rw [hM]; exact Order.lt_succ _
+    . rw [hM, hN]
 
 end Language
 
