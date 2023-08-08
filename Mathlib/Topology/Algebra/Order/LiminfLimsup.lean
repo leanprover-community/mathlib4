@@ -6,8 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Topology.Algebra.Group.Basic
---import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Group.Basic --import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
@@ -615,7 +614,6 @@ generalized to something better than an `AddGroup R` (when `sub_le_sub_right` is
 
 /-- `limsup (xᵢ - c) = (limsup xᵢ) - c`. -/
 lemma limsup_sub_const (F : Filter ι) [NeBot F] [AddGroup R] [ContinuousSub R]
-    [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y]
     [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
@@ -641,7 +639,6 @@ generalized to something better than an `AddGroup R` (when `sub_le_sub_right` is
 
 /-- `liminf (xᵢ - c) = (liminf xᵢ) - c`. -/
 lemma liminf_sub_const (F : Filter ι) [NeBot F] [AddGroup R] [ContinuousSub R]
-    [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y]
     [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ f i - c) F = Filter.liminf f F - c := by
