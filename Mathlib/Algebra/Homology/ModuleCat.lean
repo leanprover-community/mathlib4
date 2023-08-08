@@ -35,8 +35,8 @@ namespace ModuleCat
 /-- To prove that two maps out of a homology group are equal,
 it suffices to check they are equal on the images of cycles.
 -/
-theorem homology_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
-    {h k : homology f g w ⟶ K}
+theorem homology'_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
+    {h k : homology' f g w ⟶ K}
     (w :
       ∀ x : LinearMap.ker g,
         h (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x)) =
@@ -49,7 +49,7 @@ theorem homology_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f 
     ModuleCat.kernelIsoKer g).toLinearEquiv.toEquiv.symm.surjective n
   exact w n
 set_option linter.uppercaseLean3 false in
-#align Module.homology_ext ModuleCat.homology_ext
+#align Module.homology_ext ModuleCat.homology'_ext
 
 /-- Bundle an element `C.X i` such that `C.dFrom i x = 0` as a term of `C.cycles i`. -/
 abbrev toCycles {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
@@ -78,19 +78,19 @@ theorem cyclesMap_toCycles (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)
 set_option linter.uppercaseLean3 false in
 #align Module.cycles_map_to_cycles ModuleCat.cyclesMap_toCycles
 
-/-- Build a term of `C.homology i` from an element `C.X i` such that `C.d_from i x = 0`. -/
-abbrev toHomology {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
-    (x : LinearMap.ker (C.dFrom i)) : C.homology i :=
-  homology.π (C.dTo i) (C.dFrom i) _ (toCycles x)
+/-- Build a term of `C.homology' i` from an element `C.X i` such that `C.d_from i x = 0`. -/
+abbrev tohomology' {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
+    (x : LinearMap.ker (C.dFrom i)) : C.homology' i :=
+  homology'.π (C.dTo i) (C.dFrom i) _ (toCycles x)
 set_option linter.uppercaseLean3 false in
-#align Module.to_homology ModuleCat.toHomology
+#align Module.to_homology ModuleCat.tohomology'
 
 @[ext]
-theorem homology_ext' {M : ModuleCat R} (i : ι) {h k : C.homology i ⟶ M}
-    (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology x) = k (toHomology x)) : h = k :=
-  homology_ext _ w
+theorem homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
+    (w : ∀ x : LinearMap.ker (C.dFrom i), h (tohomology' x) = k (tohomology' x)) : h = k :=
+  homology'_ext _ w
 set_option linter.uppercaseLean3 false in
-#align Module.homology_ext' ModuleCat.homology_ext'
+#align Module.homology_ext' ModuleCat.homology'_ext'
 
 /-set_option maxHeartbeats 400000 in
 -- porting note: `erw` had to be used instead of `simp`

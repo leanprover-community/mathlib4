@@ -119,31 +119,31 @@ theorem imageToKernel_as_boundariesToCycles (C : HomologicalComplex V c) (i : ι
 variable [HasCokernels V]
 
 /-- The homology of a complex at index `i`. -/
-abbrev homology (C : HomologicalComplex V c) (i : ι) : V :=
-  _root_.homology (C.dTo i) (C.dFrom i) (C.dTo_comp_dFrom i)
-#align homological_complex.homology HomologicalComplex.homology
+abbrev homology' (C : HomologicalComplex V c) (i : ι) : V :=
+  _root_.homology' (C.dTo i) (C.dFrom i) (C.dTo_comp_dFrom i)
+#align homological_complex.homology HomologicalComplex.homology'
 
 /-- The `j`th homology of a homological complex (as kernel of 'the differential from `Cⱼ`' modulo
 the image of 'the differential to `Cⱼ`') is isomorphic to the kernel of `d : Cⱼ → Cₖ` modulo
 the image of `d : Cᵢ → Cⱼ` when `Rel i j` and `Rel j k`. -/
-def homologyIso (C : HomologicalComplex V c) {i j k : ι} (hij : c.Rel i j) (hjk : c.Rel j k) :
-    C.homology j ≅ _root_.homology (C.d i j) (C.d j k) (C.d_comp_d i j k) :=
-  homology.mapIso _ _
+def homology'Iso (C : HomologicalComplex V c) {i j k : ι} (hij : c.Rel i j) (hjk : c.Rel j k) :
+    C.homology' j ≅ _root_.homology' (C.d i j) (C.d j k) (C.d_comp_d i j k) :=
+  homology'.mapIso _ _
     (Arrow.isoMk (C.xPrevIso hij) (Iso.refl _) <| by dsimp; rw [C.dTo_eq hij, Category.comp_id])
     (Arrow.isoMk (Iso.refl _) (C.xNextIso hjk) <| by
       dsimp
       rw [C.dFrom_comp_xNextIso hjk, Category.id_comp])
     rfl
-#align homological_complex.homology_iso HomologicalComplex.homologyIso
+#align homological_complex.homology_iso HomologicalComplex.homology'Iso
 
 end
 
 end HomologicalComplex
 
 /-- The 0th homology of a chain complex is isomorphic to the cokernel of `d : C₁ ⟶ C₀`. -/
-def ChainComplex.homologyZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
-    (C : ChainComplex V ℕ) [Epi (factorThruImage (C.d 1 0))] : C.homology 0 ≅ cokernel (C.d 1 0) :=
-  (homology.mapIso _ _
+def ChainComplex.homology'ZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
+    (C : ChainComplex V ℕ) [Epi (factorThruImage (C.d 1 0))] : C.homology' 0 ≅ cokernel (C.d 1 0) :=
+  (homology'.mapIso _ _
       (Arrow.isoMk (C.xPrevIso rfl) (Iso.refl _) <| by
         rw [C.dTo_eq rfl]
         exact (Category.comp_id _).symm : Arrow.mk (C.dTo 0) ≅ Arrow.mk (C.d 1 0))
@@ -152,38 +152,38 @@ def ChainComplex.homologyZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
           one_ne_zero <| by rwa [ChainComplex.next_nat_zero, Nat.zero_add] at h] :
         Arrow.mk (C.dFrom 0) ≅ Arrow.mk 0)
       rfl).trans <|
-    homologyOfZeroRight _
-#align chain_complex.homology_zero_iso ChainComplex.homologyZeroIso
+    homology'OfZeroRight _
+#align chain_complex.homology_zero_iso ChainComplex.homology'ZeroIso
 
 /-- The 0th cohomology of a cochain complex is isomorphic to the kernel of `d : C₀ → C₁`. -/
-def CochainComplex.homologyZeroIso [HasZeroObject V] [HasKernels V] [HasImages V] [HasCokernels V]
-    (C : CochainComplex V ℕ) : C.homology 0 ≅ kernel (C.d 0 1) :=
-  (homology.mapIso _ _
+def CochainComplex.homology'ZeroIso [HasZeroObject V] [HasKernels V] [HasImages V] [HasCokernels V]
+    (C : CochainComplex V ℕ) : C.homology' 0 ≅ kernel (C.d 0 1) :=
+  (homology'.mapIso _ _
       (Arrow.isoMk (C.xPrevIsoSelf (by rw [CochainComplex.prev_nat_zero]; exact one_ne_zero))
           (Iso.refl _) (by simp) : Arrow.mk (C.dTo 0) ≅ Arrow.mk 0)
       (Arrow.isoMk (Iso.refl _) (C.xNextIso rfl) (by simp) :
         Arrow.mk (C.dFrom 0) ≅ Arrow.mk (C.d 0 1)) <|
       by simp).trans <|
-    homologyOfZeroLeft _
-#align cochain_complex.homology_zero_iso CochainComplex.homologyZeroIso
+    homology'OfZeroLeft _
+#align cochain_complex.homology_zero_iso CochainComplex.homology'ZeroIso
 
 /-- The `n + 1`th homology of a chain complex (as kernel of 'the differential from `Cₙ₊₁`' modulo
 the image of 'the differential to `Cₙ₊₁`') is isomorphic to the kernel of `d : Cₙ₊₁ → Cₙ` modulo
 the image of `d : Cₙ₊₂ → Cₙ₊₁`. -/
-def ChainComplex.homologySuccIso [HasKernels V] [HasImages V] [HasCokernels V]
+def ChainComplex.homology'SuccIso [HasKernels V] [HasImages V] [HasCokernels V]
     (C : ChainComplex V ℕ) (n : ℕ) :
-    C.homology (n + 1) ≅ homology (C.d (n + 2) (n + 1)) (C.d (n + 1) n) (C.d_comp_d _ _ _) :=
-  C.homologyIso rfl rfl
-#align chain_complex.homology_succ_iso ChainComplex.homologySuccIso
+    C.homology' (n + 1) ≅ homology' (C.d (n + 2) (n + 1)) (C.d (n + 1) n) (C.d_comp_d _ _ _) :=
+  C.homology'Iso rfl rfl
+#align chain_complex.homology_succ_iso ChainComplex.homology'SuccIso
 
 /-- The `n + 1`th cohomology of a cochain complex (as kernel of 'the differential from `Cₙ₊₁`'
 modulo the image of 'the differential to `Cₙ₊₁`') is isomorphic to the kernel of `d : Cₙ₊₁ → Cₙ₊₂`
 modulo the image of `d : Cₙ → Cₙ₊₁`. -/
-def CochainComplex.homologySuccIso [HasKernels V] [HasImages V] [HasCokernels V]
+def CochainComplex.homology'SuccIso [HasKernels V] [HasImages V] [HasCokernels V]
     (C : CochainComplex V ℕ) (n : ℕ) :
-    C.homology (n + 1) ≅ homology (C.d n (n + 1)) (C.d (n + 1) (n + 2)) (C.d_comp_d _ _ _) :=
-  C.homologyIso rfl rfl
-#align cochain_complex.homology_succ_iso CochainComplex.homologySuccIso
+    C.homology' (n + 1) ≅ homology' (C.d n (n + 1)) (C.d (n + 1) (n + 2)) (C.d_comp_d _ _ _) :=
+  C.homology'Iso rfl rfl
+#align cochain_complex.homology_succ_iso CochainComplex.homology'SuccIso
 
 open HomologicalComplex
 
@@ -287,41 +287,41 @@ def boundariesToCyclesNatTrans (i : ι) : boundariesFunctor V c i ⟶ cyclesFunc
 
 /-- The `i`-th homology, as a functor to `V`. -/
 @[simps]
-def homologyFunctor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V where
+def homology'Functor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V where
   -- It would be nice if we could just write
   -- `cokernel (boundariesToCyclesNatTrans V c i)`
   -- here, but universe implementation details get in the way...
-  obj C := C.homology i
-  map {C₁ C₂} f := homology.map _ _ (f.sqTo i) (f.sqFrom i) rfl
+  obj C := C.homology' i
+  map {C₁ C₂} f := homology'.map _ _ (f.sqTo i) (f.sqFrom i) rfl
   map_id _ := by
     simp only
     ext1
-    simp only [homology.π_map, kernelSubobjectMap_id, Hom.sqFrom_id, Category.id_comp,
+    simp only [homology'.π_map, kernelSubobjectMap_id, Hom.sqFrom_id, Category.id_comp,
       Category.comp_id]
   map_comp _ _ := by
     simp only
     ext1
-    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map,
+    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology'.π_map_assoc, homology'.π_map,
       Category.assoc]
-#align homology_functor homologyFunctor
+#align homology_functor homology'Functor
 
 /-- The homology functor from `ι`-indexed complexes to `ι`-graded objects in `V`. -/
 @[simps]
-def gradedHomologyFunctor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
-  obj C i := C.homology i
-  map {C C'} f i := (homologyFunctor V c i).map f
+def gradedhomology'Functor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
+  obj C i := C.homology' i
+  map {C C'} f i := (homology'Functor V c i).map f
   map_id _ := by
     ext
     simp only [GradedObject.categoryOfGradedObjects_id]
     ext
-    simp only [homology.π_map, homologyFunctor_map, kernelSubobjectMap_id, Hom.sqFrom_id,
+    simp only [homology'.π_map, homology'Functor_map, kernelSubobjectMap_id, Hom.sqFrom_id,
       Category.id_comp, Category.comp_id]
   map_comp _ _ := by
     ext
     simp only [GradedObject.categoryOfGradedObjects_comp]
     ext
-    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map,
-      homologyFunctor_map, Category.assoc]
-#align graded_homology_functor gradedHomologyFunctor
+    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology'.π_map_assoc, homology'.π_map,
+      homology'Functor_map, Category.assoc]
+#align graded_homology_functor gradedhomology'Functor
 
 end

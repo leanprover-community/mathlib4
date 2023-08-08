@@ -787,11 +787,11 @@ variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 /-- Homotopic maps induce the same map on homology.
 -/
 theorem homology_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
-    (homologyFunctor V c i).map f = (homologyFunctor V c i).map g := by
-  dsimp [homologyFunctor]
+    (homology'Functor V c i).map f = (homology'Functor V c i).map g := by
+  dsimp [homology'Functor]
   apply eq_of_sub_eq_zero
   ext
-  simp only [homology.π_map, comp_zero, Preadditive.comp_sub]
+  simp only [homology'.π_map, comp_zero, Preadditive.comp_sub]
   dsimp [kernelSubobjectMap]
   simp_rw [h.comm i]
   simp only [zero_add, zero_comp, dNext_eq_dFrom_fromNext, kernelSubobject_arrow_comp_assoc,
@@ -806,9 +806,9 @@ theorem homology_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
 
 /-- Homotopy equivalent complexes have isomorphic homologies. -/
 def homologyObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
-    (homologyFunctor V c i).obj C ≅ (homologyFunctor V c i).obj D where
-  hom := (homologyFunctor V c i).map f.hom
-  inv := (homologyFunctor V c i).map f.inv
+    (homology'Functor V c i).obj C ≅ (homology'Functor V c i).obj D where
+  hom := (homology'Functor V c i).map f.hom
+  inv := (homology'Functor V c i).map f.inv
   hom_inv_id := by
     rw [← Functor.map_comp, homology_map_eq_of_homotopy f.homotopyHomInvId,
       CategoryTheory.Functor.map_id]

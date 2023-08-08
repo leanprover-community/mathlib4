@@ -165,7 +165,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 then `X` is a projective resolution of `Y.` -/
 def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
     -- porting note: autoporter incorrectly went for `X.pt` at the end there
-    (f : X ⟶ (ChainComplex.single₀ C).obj Y) [QuasiIso f] (H : ∀ n, Projective (X.X n)) :
+    (f : X ⟶ (ChainComplex.single₀ C).obj Y) [QuasiIso' f] (H : ∀ n, Projective (X.X n)) :
     ProjectiveResolution Y where
   complex := X
   π := f
