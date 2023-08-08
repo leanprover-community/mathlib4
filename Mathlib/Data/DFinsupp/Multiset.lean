@@ -12,8 +12,6 @@ import Mathlib.Data.DFinsupp.Order
 
 This defines `DFinsupp.toMultiset` the equivalence between `Π₀ a : α, ℕ` and `Multiset α`, along
 with `Multiset.toDFinsupp` the reverse equivalence.
-
-Note that this provides a computable alternative to `Finsupp.toMultiset`.
 -/
 
 open Function
@@ -29,7 +27,7 @@ instance addZeroClass' {β} [AddZeroClass β] : AddZeroClass (Π₀ _ : α, β) 
 
 variable [DecidableEq α] {s t : Multiset α}
 
-/-- A computable version of `Finsupp.toMultiset`. -/
+/-- A DFinsupp version of `Finsupp.toMultiset`. -/
 def toMultiset : (Π₀ _ : α, ℕ) →+ Multiset α :=
   DFinsupp.sumAddHom fun a : α ↦ Multiset.replicateAddMonoidHom a
 #align dfinsupp.to_multiset DFinsupp.toMultiset
@@ -46,7 +44,7 @@ namespace Multiset
 
 variable [DecidableEq α] {s t : Multiset α}
 
-/-- A computable version of `Multiset.toFinsupp`. -/
+/-- A DFinsupp version of `Multiset.toFinsupp`. -/
 def toDFinsupp : Multiset α →+ Π₀ _ : α, ℕ where
   toFun s :=
     { toFun := fun n ↦ s.count n
