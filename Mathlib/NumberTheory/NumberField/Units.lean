@@ -448,20 +448,30 @@ def _root_.NumberField.Units.rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
 open FiniteDimensional
 
+theorem unit_lattice_discrete : DiscreteTopology (unit_lattice K) := by
+  refine discreteTopology_of_open_singleton_zero ?_
+  refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
+  · exact Metric.closedBall_mem_nhds _ (by norm_num)
+  · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective _)
+    convert unit_lattice_inter_ball_finite K 1
+    ext x
+    refine ⟨?_, fun ⟨hx1, hx2⟩ => ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
+    rintro ⟨x, hx, rfl⟩
+    exact ⟨Subtype.mem x, hx⟩
+
 theorem rank_space :
-    finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = rank K := by
+    finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-theorem unit_lattice_moduleFree : Module.Free ℤ (unit_lattice K) :=
-Zlattice.module_free ℝ ((unit_lattice_inter_ball_finite K)) (unit_lattice_span_eq_top K)
+theorem unit_lattice_moduleFree : Module.Free ℤ (unit_lattice K) := by
+  have := unit_lattice_discrete K
+  exact Zlattice.module_free ℝ (unit_lattice_span_eq_top K)
 
-theorem unit_lattice_moduleFinite : Module.Finite ℤ (unit_lattice K) :=
-Zlattice.module_finite ℝ ((unit_lattice_inter_ball_finite K)) (unit_lattice_span_eq_top K)
-
-theorem unit_lattice_rank : finrank ℤ (unit_lattice K) = rank K := by
+theorem unit_lattice.rank : finrank ℤ (unit_lattice K) = Units.rank K := by
+  have := unit_lattice_discrete K
   rw [← rank_space]
-  exact Zlattice.rank ℝ ((unit_lattice_inter_ball_finite K)) (unit_lattice_span_eq_top K)
+  exact Zlattice.rank ℝ (unit_lattice_span_eq_top K)
 
 end dirichlet
 
