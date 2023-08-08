@@ -993,7 +993,7 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
 
 /-- `s.piecewise' f g` is a variant of `s.piecewise f g` when `f` is only defined on `s` and `g`
     is only defined on its complement. -/
-def piecewise' {α : Type _} {β : α → Sort _} (s : Set α) (f : ∀ i : {i // i ∈ s}, β i.val)
+def Set.piecewise' {α : Type _} {β : α → Sort _} (s : Set α) (f : ∀ i : {i // i ∈ s}, β i.val)
     (g : ∀ i : {i // i ∉ s}, β i.val) [∀ j, Decidable (j ∈ s)] : ∀ i, β i :=
   fun i ↦ if h : i ∈ s then f ⟨i, h⟩ else g ⟨i, h⟩
 

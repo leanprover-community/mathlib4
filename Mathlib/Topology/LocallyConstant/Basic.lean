@@ -575,7 +575,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     (f : LocallyConstant {i // i ∈ C₁} Z) (g : LocallyConstant {i // i ∈ C₂} Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
     [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z where
-  toFun := Set.piecewise' C₁ f.toFun ((g.toFun ∘ Set.inclusion (Set.compl_subset_iff_union.mpr h)))
+  toFun := C₁.piecewise' f.toFun ((g.toFun ∘ Set.inclusion (Set.compl_subset_iff_union.mpr h)))
   isLocallyConstant := by
     let dZ : TopologicalSpace Z := ⊥
     haveI : DiscreteTopology Z := discreteTopology_bot Z
