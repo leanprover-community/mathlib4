@@ -1136,8 +1136,7 @@ independent of the first one. -/
 theorem exists_linear_independent_pair_of_of_one_lt_rank
     (h : 1 < Module.rank K V) {x : V} (hx : x ≠ 0) :
     ∃ y, LinearIndependent K ![x, y] := by
-  have A : ((1 : ℕ) : Cardinal) < Module.rank K V := by convert h; exact Nat.cast_one
-  obtain ⟨y, hy⟩ := exists_linear_independent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) A
+  obtain ⟨y, hy⟩ := exists_linear_independent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
   have : Fin.snoc ![x] y = ![x, y] := Iff.mp List.ofFn_inj rfl
   rw [this] at hy
   exact ⟨y, hy⟩
