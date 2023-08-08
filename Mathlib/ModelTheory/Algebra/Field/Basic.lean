@@ -15,6 +15,7 @@ inductive FieldFunctions : ℕ → Type
   | inv : FieldFunctions 1
   | zero : FieldFunctions 0
   | one : FieldFunctions 0
+  deriving DecidableEq
 
 protected def Language.field : Language :=
   { Functions := FieldFunctions
@@ -25,6 +26,12 @@ namespace Language
 namespace field
 
 open FieldFunctions
+
+instance (n : ℕ) : DecidableEq (Language.field.Functions n) := by
+  dsimp [Language.field]; infer_instance
+
+instance (n : ℕ) : DecidableEq (Language.field.Relations n) := by
+  dsimp [Language.field]; infer_instance
 
 abbrev zeroFunction : Language.field.Functions 0 := zero
 
@@ -83,6 +90,26 @@ instance : Language.ring.Structure (Language.field.Term α) :=
       | _, .zero => fun _ => 0
       | _, .one => fun _ => 1 }
 
+instance : Fintype Language.field.Symbols :=
+  ⟨⟨Multiset.ofList
+      [Sum.inl ⟨2, .add⟩,
+       Sum.inl ⟨2, .mul⟩,
+       Sum.inl ⟨1, .inv⟩,
+       Sum.inl ⟨1, .neg⟩,
+       Sum.inl ⟨0, .zero⟩,
+       Sum.inl ⟨0, .one⟩], by
+    dsimp [Language.Symbols]; decide⟩, by
+    intro x
+    dsimp [Language.Symbols]
+    rcases x with ⟨_, f⟩ | ⟨_, f⟩
+    . cases f <;> decide
+    . cases f ⟩
+
+@[simp]
+theorem card_field : card Language.field = 6 := by
+  have : Fintype.card Language.field.Symbols = 6 := rfl
+  simp [Language.card, this]
+
 end field
 
 end Language
@@ -105,7 +132,7 @@ inductive FieldAxiom : Type
   | mulRightInv : FieldAxiom
   | invZero : FieldAxiom
   | zeroNeOne : FieldAxiom
-
+#exit
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.field.Sentence
   | .addAssoc => addFunction.assoc
