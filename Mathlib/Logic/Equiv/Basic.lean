@@ -1959,6 +1959,10 @@ def uniqueUniqueEquiv : Unique (Unique α) ≃ Unique α :=
     { default := h, uniq := fun _ => Subsingleton.elim _ _ }
 #align unique_unique_equiv uniqueUniqueEquiv
 
+/-- If `Unique β`, then `Unique α` is equivalent to `α ≃ β`. -/
+def uniqueEquivEquivUnique (α : Sort u) (β : Sort v) [Unique β] : Unique α ≃ (α ≃ β) :=
+  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.equivOfUnique _ _) Equiv.unique
+
 namespace Function
 
 theorem update_comp_equiv [DecidableEq α'] [DecidableEq α] (f : α → β)

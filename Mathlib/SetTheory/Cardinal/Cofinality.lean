@@ -475,8 +475,10 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 
 @[simp]
-theorem cof_zero : cof 0 = 0 :=
-  (cof_le_card 0).antisymm (Cardinal.zero_le _)
+theorem cof_zero : cof 0 = 0 := by
+  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  rw [← card_zero]
+  exact cof_le_card 0
 #align ordinal.cof_zero Ordinal.cof_zero
 
 @[simp]
@@ -961,7 +963,7 @@ theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
 #align cardinal.is_regular.pos Cardinal.IsRegular.pos
 
 theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
-  rw [Cardinal.lt_ord]
+  rw [Cardinal.lt_ord, card_zero]
   exact H.pos
 #align cardinal.is_regular.ord_pos Cardinal.IsRegular.ord_pos
 
