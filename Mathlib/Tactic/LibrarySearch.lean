@@ -9,7 +9,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Data.ListM.Heartbeats
+import Mathlib.Data.MLList.Heartbeats
 import Mathlib.Control.Basic
 
 /-!
@@ -149,12 +149,12 @@ Returns a lazy list of the results of applying a library lemma,
 then calling `solveByElim` on the resulting goals.
 -/
 def librarySearchCore (goal : MVarId)
-    (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
+    (required : List Expr) (solveByElimDepth := 6) : MLList MetaM (MetavarContext × List MVarId) :=
   .squash fun _ => do
     let ty ← goal.getType
     let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
-    return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
+    return (MLList.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
 /--
@@ -162,7 +162,7 @@ Run `librarySearchCore` on both the goal and `symm` applied to the goal.
 -/
 def librarySearchSymm (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) :
-    ListM MetaM (MetavarContext × List MVarId) :=
+    MLList MetaM (MetavarContext × List MVarId) :=
   .append (librarySearchCore goal required solveByElimDepth) <| fun _ => .squash fun _ => do
     if let some symm ← try? goal.symm then
       return librarySearchCore symm required solveByElimDepth
