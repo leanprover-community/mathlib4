@@ -1800,8 +1800,9 @@ theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : 
   simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, smul_eq_mul,
      mul_comm]
 
-theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ) (hf : Integrable f μ)
-  {s : Set α} (hs : s.Countable) : ∫ a in s, f a ∂μ = ∑' a : s, f a * (μ {(a : α)}).toReal := by
+theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
+  {s : Set α} (hs : s.Countable) (hf : Integrable f (μ.restrict s)) :
+  ∫ a in s, f a ∂μ = ∑' a : s, f a * (μ {(a : α)}).toReal := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   rw [set_integral_eq_subtype' hs.measurableSet, integral_countable']
   congr 1 with a : 1
@@ -1820,13 +1821,14 @@ theorem integral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h :
   sorry
 
 theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ)
-  (hf : Integrable f μ) : ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
-  simp only [integral_countable _ hf s.countable_toSet, ← Finset.tsum_subtype']
+  (hf : Integrable f (μ.restrict s)) : ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
+  rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
 -- TODO: Can we drop Integrable for fintypes?
 theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ)
   (hf : Integrable f μ) : ∫ x, f x ∂μ = ∑ x, f x * (μ {x}).toReal := by
-  rwa [← integral_finset, Finset.coe_univ, Measure.restrict_univ]
+  rw [← integral_finset .univ , Finset.coe_univ, Measure.restrict_univ]
+  simp only [Finset.coe_univ, Measure.restrict_univ, hf]
 
 theorem integral_unique [Unique α] (f : α → ℝ) : ∫ x, f x ∂μ = f default * (μ univ).toReal :=
   calc
