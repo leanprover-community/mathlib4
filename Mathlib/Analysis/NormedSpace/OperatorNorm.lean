@@ -2025,7 +2025,8 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_have 6 ↔ 8
   · simp_rw [bddAbove_def, Set.forall_range_iff]
   tfae_have 8 ↔ 9
-  · have := (WithTop.iSup_coe_lt_top (fun i ↦ ‖f i‖₊)).symm -- can't `rw` into goal
+  · rw [ENNReal.iSup_coe_lt_top (fun i ↦ ‖f i‖₊)]
+    have := (WithTop.iSup_coe_lt_top (fun i ↦ ‖f i‖₊)).symm -- can't `rw` into goal
     rwa [← NNReal.bddAbove_coe, ← Set.range_comp] at this
   -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
   -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns

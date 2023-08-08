@@ -979,7 +979,7 @@ theorem iSup_coe_eq_top {ι : Sort _} (f : ι → ℝ≥0) :
   WithTop.iSup_coe_eq_top f
 
 theorem iSup_coe_lt_top {ι : Sort _} (f : ι → ℝ≥0) :
-    ⨆ x, (f x : WithTop ℝ≥0) < ⊤ ↔ BddAbove (Set.range f) :=
+    ⨆ x, (f x : ℝ≥0∞) < ⊤ ↔ BddAbove (Set.range f) :=
   WithTop.iSup_coe_lt_top f
 
 end CompleteLattice
