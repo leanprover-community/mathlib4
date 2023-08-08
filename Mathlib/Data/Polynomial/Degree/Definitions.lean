@@ -1137,14 +1137,9 @@ theorem eq_C_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) 
   rw [eq_C_of_natDegree_eq_zero hfd, hf]
 
 theorem natDegree_pos_of_monic_ne_one (hf : p.Monic) (hfne : p ≠ 1) : 0 < p.natDegree := by
-  by_contra'
-  have h : p.natDegree = 0 := Nat.eq_zero_of_le_zero this
-  by_cases hp : p = C 1
-  · rw [hp] at hfne
-    simp at hfne
-  · rw [← Ne.def] at hp
-    rw [eq_C_one_of_monic_natDegree_zero hf h] at hp
-    contradiction
+  by_contra' H
+  refine hfne (eq_C_one_of_monic_natDegree_zero hf ?_)
+  exact Nat.le_zero.mp H
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
   zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg
