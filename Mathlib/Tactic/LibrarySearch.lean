@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Mathlib.Util.Pickle
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Data.ListM.Heartbeats
