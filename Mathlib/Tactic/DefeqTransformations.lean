@@ -21,19 +21,21 @@ open Lean Meta Elab Elab.Tactic
 If `loc?` is none, then transforms the type of target. `m` is provided with an expression
 with instantiated metavariables.
 
-`m` *must* transform expressions to defeq expressions. `runDefeqTactic` will throw
-an error if the result is not defeq. -/
+`m` *must* transform expressions to defeq expressions.
+If `checkDefEq = true` (the default) then `runDefeqTactic` will throw an error
+if the resulting expression is not definitionally equal to the original expression. -/
 def runDefeqTactic (m : Expr → MetaM Expr)
     (loc? : Option (TSyntax ``Parser.Tactic.location))
-    (tacticName : String) :
+    (tacticName : String)
+    (checkDefEq : Bool := true) :
     TacticM Unit := withMainContext do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc?))
     (atLocal := fun h => liftMetaTactic1 fun mvarId => do
       let ty ← instantiateMVars (← h.getType)
-      mvarId.changeLocalDecl' h (← m ty))
+      mvarId.changeLocalDecl' (checkDefEq := checkDefEq) h (← m ty))
     (atTarget := liftMetaTactic1 fun mvarId => do
       let ty ← instantiateMVars (← mvarId.getType)
-      mvarId.change (← m ty))
+      mvarId.change (checkDefEq := checkDefEq) (← m ty))
     (failed := fun _ => throwError "{tacticName} failed")
 
 /-- Like `Mathlib.Tactic.runDefeqTactic` but for `conv` mode. -/
@@ -77,7 +79,7 @@ elab "beta_reduce" : conv => runDefeqConvTactic (Core.betaReduce ·)
 `reduce at loc` completely reduces the given location.
 This also exists as a `conv`-mode tactic.
 
-This does the same transformation at the `#reduce` command.
+This does the same transformation as the `#reduce` command.
 -/
 elab "reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefeqTactic (reduce · (skipTypes := false) (skipProofs := false)) loc? "reduce"
@@ -260,7 +262,7 @@ where
         return .none
     return .undef
 
-/-- Finds all occurrences of expressions of the form ``S.mk x.1 ... x.n` where `S.mk`
+/-- Finds all occurrences of expressions of the form `S.mk x.1 ... x.n` where `S.mk`
 is a structure constructor and replaces them by `x`.
 -/
 def etaStructAll (e : Expr) : MetaM Expr :=
@@ -278,7 +280,7 @@ This also exists as a `conv`-mode tactic.
 The transformation is known as eta reduction for structures, and it yields definitionally
 equal expressions.
 
-For example, for `x : α × β`, then `(x.1, x.2)` becomes `x`.
+For example, given `x : α × β`, then `(x.1, x.2)` becomes `x` after this transformation.
 -/
 elab (name := etaStructStx) "eta_struct" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefeqTactic etaStructAll loc? "eta_struct"
