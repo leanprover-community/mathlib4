@@ -5,11 +5,6 @@ Authors: Daniel Selsam
 -/
 import Lean
 
-open Lean in
-elab "Type*" : term => do
-  let u ← Lean.Meta.mkFreshLevelMVar
-  Elab.Term.levelMVarToParam (.sort (.succ u))
-
 namespace Mathlib.Prelude.Rename
 
 open Lean

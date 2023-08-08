@@ -13,11 +13,6 @@ import Mathlib.Init.Set
 # Miscellaneous function constructions and lemmas
 -/
 
-open Lean in
-elab "Sort*" : term => do
-  let u ← Lean.Meta.mkFreshLevelMVar
-  Elab.Term.levelMVarToParam (.sort u)
-
 open Function
 
 universe u v w
