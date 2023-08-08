@@ -626,6 +626,26 @@ theorem combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head
     simp only [Fin.val_succ, Fin.coe_natAdd, ge_iff_le]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
+lemma exists_len_gt_of_infinite_dim [NoTopOrder (RelSeries r)] [Nonempty α] (n : ℕ) :
+  ∃ (p : RelSeries r), n < p.length := by
+haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance
+induction n with
+| zero =>
+  obtain ⟨p, hp⟩ := NoTopOrder.exists_not_le (default : RelSeries r)
+  exact ⟨p, lt_of_not_le hp⟩
+| succ n ih =>
+  rcases ih with ⟨p, hp⟩
+  rcases NoTopOrder.exists_not_le p with ⟨q, hq⟩
+  simp only [RelSeries.le_def, not_le, Nat.succ_eq_add_one] at *
+  exact ⟨q, by linarith⟩
+
+lemma top_len_unique [OrderTop (RelSeries r)] (p : RelSeries r) (hp : IsTop p) :
+    p.length = (⊤ : RelSeries r).length :=
+  le_antisymm (@le_top (RelSeries r) _ _ _) (hp ⊤)
+
+lemma top_len_unique' (H1 H2 : OrderTop (RelSeries r)) : H1.top.length = H2.top.length :=
+  le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
+
 end RelSeries
 
 section LTSeries
@@ -670,24 +690,6 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   (hf2 : Function.Surjective f) :
   LTSeries α := mk p.length (fun i ↦ (hf2 (p i)).choose)
     (fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.strictMono h))
-
-lemma exists_len_gt_of_infinite_dim [NoTopOrder (LTSeries α)] [Nonempty α] (n : ℕ) :
-  ∃ (p : LTSeries α), n < p.length := by
-haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance
-induction n with
-| zero => { obtain ⟨p, hp⟩ := NoTopOrder.exists_not_le (default : LTSeries α)
-            refine ⟨p, lt_of_not_le hp⟩ }
-| succ n ih => { rcases ih with ⟨p, hp⟩
-                 rcases NoTopOrder.exists_not_le p with ⟨q, hq⟩
-                 simp only [RelSeries.le_def, not_le, Nat.succ_eq_add_one] at *
-                 exact ⟨q, by linarith⟩ }
-
-lemma top_len_unique [OrderTop (LTSeries α)] (p : LTSeries α) (hp : IsTop p) :
-    p.length = (⊤ : LTSeries α).length :=
-  le_antisymm (@le_top (LTSeries α) _ _ _) (hp ⊤)
-
-lemma top_len_unique' (H1 H2 : OrderTop (LTSeries α)) : H1.top.length = H2.top.length :=
-  le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
 
 section PartialOrder
 
