@@ -788,35 +788,14 @@ instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
 #align zmod.subsingleton_units ZMod.subsingleton_units
 
-theorem le_div_two_iff_lt_neg (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {x : ZMod n} (hx0 : x ≠ 0) :
-    x.val ≤ (n / 2 : ℕ) ↔ (n / 2 : ℕ) < (-x).val := by
-  haveI npos : NeZero n :=
-    ⟨by
-      rintro rfl
-      simp [fact_iff] at hn⟩
-  have _hn2 : (n : ℕ) / 2 < n :=
-    Nat.div_lt_of_lt_mul ((lt_mul_iff_one_lt_left <| NeZero.pos n).2 (by decide))
-  have hn2' : (n : ℕ) - n / 2 = n / 2 + 1 := by
-    conv =>
-      lhs
-      congr
-      rw [← Nat.succ_sub_one n, Nat.succ_sub <| NeZero.pos n]
-    rw [← Nat.two_mul_odd_div_two hn.1, two_mul, ← Nat.succ_add, add_tsub_cancel_right]
-  have hxn : (n : ℕ) - x.val < n := by
-    rw [tsub_lt_iff_tsub_lt x.val_le le_rfl, tsub_self]
-    rw [← ZMod.nat_cast_zmod_val x] at hx0
-    exact Nat.pos_of_ne_zero fun h => by simp [h] at hx0
-  · conv =>
-      rhs
-      rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← hn2', ← zero_add (-x), ← ZMod.nat_cast_self, ←
-        sub_eq_add_neg, ← ZMod.nat_cast_zmod_val x, ← Nat.cast_sub x.val_le, ZMod.val_nat_cast,
-        Nat.mod_eq_of_lt hxn, tsub_le_tsub_iff_left x.val_le]
-#align zmod.le_div_two_iff_lt_neg ZMod.le_div_two_iff_lt_neg
+@[simp]
+theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
+    a + a = 0 ↔ a = 0 := by
+  rw [Nat.odd_iff, ← Nat.two_dvd_ne_zero, ← Nat.prime_two.coprime_iff_not_dvd] at hn
+  rw [←mul_two, ←@Nat.cast_two (ZMod n), ←ZMod.coe_unitOfCoprime 2 hn, Units.mul_left_eq_zero]
 
-theorem ne_neg_self (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {a : ZMod n} (ha : a ≠ 0) : a ≠ -a :=
-  fun h => by
-  have : a.val ≤ n / 2 ↔ (n : ℕ) / 2 < (-a).val := le_div_two_iff_lt_neg n ha
-  rwa [← h, ← not_lt, ← not_iff, iff_self, not_true] at this
+theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -a := by
+  rwa [Ne, eq_neg_iff_add_eq_zero, add_self_eq_zero_iff_eq_zero hn]
 #align zmod.ne_neg_self ZMod.ne_neg_self
 
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=

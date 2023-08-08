@@ -114,39 +114,13 @@ instance : Inhabited (ColimitType F) := by
   infer_instance
 
 instance monoidColimitType : Monoid (ColimitType F) where
-  mul := by
-    fapply @Quot.lift _ _ (ColimitType F → ColimitType F)
-    · intro x
-      fapply @Quot.lift
-      · intro y
-        exact Quot.mk _ (mul x y)
-      · intro y y' r
-        apply Quot.sound
-        exact Relation.mul_2 _ _ _ r
-    · intro x x' r
-      funext y
-      induction y using Quot.inductionOn
-      dsimp
-      apply Quot.sound
-      apply Relation.mul_1 _ _ _ r
-  one := Quot.mk _ one
-  mul_assoc x y z := by
-    induction x using Quot.inductionOn
-    induction y using Quot.inductionOn
-    induction z using Quot.inductionOn
-    dsimp [HMul.hMul]
-    apply Quot.sound
-    apply Relation.mul_assoc
-  one_mul x := by
-    induction x using Quot.inductionOn
-    dsimp
-    apply Quot.sound
-    apply Relation.one_mul
-  mul_one x := by
-    induction x using Quot.inductionOn
-    dsimp
-    apply Quot.sound
-    apply Relation.mul_one
+  one := Quotient.mk _ one
+  mul := Quotient.map₂ mul <| fun x x' rx y y' ry =>
+    Setoid.trans (Relation.mul_1 _ _ y rx) (Relation.mul_2 x' _ _ ry)
+  one_mul := Quotient.ind <| fun _ => Quotient.sound <| Relation.one_mul _
+  mul_one := Quotient.ind <| fun _ => Quotient.sound <| Relation.mul_one _
+  mul_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+    Quotient.sound <| Relation.mul_assoc _ _ _
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.monoid_colimit_type MonCat.Colimits.monoidColimitType
 
