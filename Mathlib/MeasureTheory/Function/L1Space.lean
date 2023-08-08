@@ -193,7 +193,6 @@ theorem hasFiniteIntegral_of_fintype [Fintype α] [IsFiniteMeasure μ] {f : α �
     apply NNReal.toReal_le_toReal
     apply Finset.le_sup (Finset.mem_univ x)
 
-
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
   lt_of_le_of_lt (lintegral_mono' hμ le_rfl) h
