@@ -582,7 +582,6 @@ lemma combine_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p
   rw [dif_pos i.2]
   rfl
 
-
 @[simp]
 theorem combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
     (i : Fin s₁.length) : combine s₁ s₂ h (Fin.castAdd s₂.length i).succ = s₁ i.succ := by
@@ -626,6 +625,7 @@ theorem combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head
     simp only [Fin.val_succ, Fin.coe_natAdd, ge_iff_le]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
+variable (r)
 lemma exists_len_gt_of_infinite_dim [NoTopOrder (RelSeries r)] [Nonempty α] (n : ℕ) :
   ∃ (p : RelSeries r), n < p.length := by
 haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance

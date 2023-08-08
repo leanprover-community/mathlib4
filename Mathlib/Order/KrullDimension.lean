@@ -49,6 +49,8 @@ unbounded, its Krull dimension is defined to be positive infinity.
 noncomputable def krullDim : WithBot (WithTop ℕ) :=
   ⨆ (p : LTSeries α), p.length
 
+lemma krullDim_eq_krullDimOfRel : krullDim α = krullDimOfRel (. < . : α → _) := rfl
+
 /--
 Height of an element `a` of a preordered set `α` is the Krull dimension of the subset `(-∞, a]`
 -/
@@ -61,13 +63,65 @@ noncomputable def coheight (a : α) : WithBot (WithTop ℕ) := krullDim (Set.Ici
 
 end definitions
 
-noncomputable section Preorder
+namespace krullDimOfRel
+
+variable {α β : Type _} (r : Rel α α) (s : Rel β β)
+
+lemma eq_bot_of_isEmpty [IsEmpty α] : krullDimOfRel r = ⊥ := WithBot.ciSup_empty _
+
+variable {r s}
+lemma le_of_map (f : α → β) (map : ∀ (x y : α), r x y → s (f x) (f y)) :
+    krullDimOfRel r ≤ krullDimOfRel s :=
+  iSup_le $ fun p => le_sSup ⟨p.map _ f map, rfl⟩
+
+variable (r)
+lemma eq_top_of_noTopOrder [Nonempty α] [NoTopOrder (RelSeries r)] :
+  krullDimOfRel r = ⊤ :=
+le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
+| ⊥, hm => False.elim $ by
+  haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance
+  exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) $ hm default
+| some ⊤, _ => le_refl _
+| some (some m), hm => by
+  obtain ⟨p, hp⟩ := RelSeries.exists_len_gt_of_infinite_dim r m
+  specialize hm p
+  refine (not_lt_of_le hm ?_).elim
+  erw [WithBot.some_eq_coe, WithBot.coe_lt_coe, WithTop.some_eq_coe, WithTop.coe_lt_coe]
+  assumption
+
+lemma eq_len_of_orderTop [OrderTop (RelSeries r)] :
+  krullDimOfRel r = (⊤ : RelSeries r).length :=
+le_antisymm
+  (iSup_le $ fun i => WithBot.coe_le_coe.mpr $ WithTop.coe_le_coe.mpr $ OrderTop.le_top i) $
+  le_iSup (fun (i : RelSeries r) => (i.length : WithBot (WithTop ℕ  ))) (⊤ : RelSeries r)
+
+variable {r}
+lemma eq_len_of_orderTop' [OrderTop (RelSeries r)]
+  (q : RelSeries r) (h : IsTop q) : krullDimOfRel r = q.length :=
+(eq_len_of_orderTop r).trans $ RelSeries.top_len_unique r _ h ▸ rfl
+
+
+end krullDimOfRel
+
+namespace krullDim
 
 variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
 
-lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-  iSup_le $ λ p ↦ le_sSup ⟨p.map f hf, rfl⟩
+lemma eq_bot_of_is_empty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
 
-end Preorder
+lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
+  krullDimOfRel.le_of_map f hf
+
+lemma eq_top_of_noTopOrder [Nonempty α] [NoTopOrder (LTSeries α)] :
+  krullDim α = ⊤ := krullDimOfRel.eq_top_of_noTopOrder _
+
+lemma eq_len_of_orderTop [OrderTop (LTSeries α)] :
+  krullDim α = (⊤ : LTSeries α).length := krullDimOfRel.eq_len_of_orderTop _
+
+lemma eq_len_of_orderTop' [OrderTop (LTSeries α)]
+  (q : LTSeries α) (h : IsTop q) : krullDim α = q.length :=
+krullDimOfRel.eq_len_of_orderTop' _ h
+
+end krullDim
