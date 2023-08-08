@@ -101,6 +101,89 @@ variable {S₁ S₂}
 
 instance : HasZeroMorphisms (ShortComplex C) where
 
+/-- The opposite `ShortComplex₄` in `Cᵒᵖ` associated to a short complex in `C`. -/
+@[simps]
+def op : ShortComplex₄ Cᵒᵖ :=
+  mk S.h.op S.g.op S.f.op (by simp only [← op_comp, S.zero₂]; rfl)
+    (by simp only [← op_comp, S.zero₁]; rfl)
+
+/-- The opposite morphism in `ShortComplex₄ Cᵒᵖ` associated to a morphism in `ShortComplex₄ C` -/
+@[simps]
+def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
+  τ₁ := φ.τ₄.op
+  τ₂ := φ.τ₃.op
+  τ₃ := φ.τ₂.op
+  τ₄ := φ.τ₁.op
+  commf := by
+    dsimp
+    simp only [← op_comp, φ.commh]
+  commg := by
+    dsimp
+    simp only [← op_comp, φ.commg]
+  commh := by
+    dsimp
+    simp only [← op_comp, φ.commf]
+
+@[simp]
+lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
+
+/-- The `ShortComplex` in `C` associated to a short complex in `Cᵒᵖ`. -/
+@[simps]
+def unop (S : ShortComplex₄ Cᵒᵖ) : ShortComplex₄ C :=
+  mk S.h.unop S.g.unop S.f.unop (by simp only [← unop_comp, S.zero₂]; rfl)
+    (by simp only [← unop_comp, S.zero₁]; rfl)
+
+/-- The morphism in `ShortComplex₄ C` associated to a morphism in `ShortComplex₄ Cᵒᵖ` -/
+@[simps]
+def unopMap {S₁ S₂ : ShortComplex₄ Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop ⟶ S₁.unop where
+  τ₁ := φ.τ₄.unop
+  τ₂ := φ.τ₃.unop
+  τ₃ := φ.τ₂.unop
+  τ₄ := φ.τ₁.unop
+  commf := by
+    dsimp
+    simp only [← unop_comp, φ.commh]
+  commg := by
+    dsimp
+    simp only [← unop_comp, φ.commg]
+  commh := by
+    dsimp
+    simp only [← unop_comp, φ.commf]
+
+@[simp]
+lemma unopMap_id (S : ShortComplex₄ Cᵒᵖ) : unopMap (𝟙 S) = 𝟙 S.unop := rfl
+
+variable (C)
+
+/-- The obvious functor `(ShortComplex₄ C)ᵒᵖ ⥤ ShortComplex₄ Cᵒᵖ`. -/
+@[simps]
+def opFunctor : (ShortComplex₄ C)ᵒᵖ ⥤ ShortComplex₄ Cᵒᵖ where
+  obj S := (Opposite.unop S).op
+  map φ := opMap φ.unop
+
+/-- The obvious functor `ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ`. -/
+@[simps]
+def unopFunctor : ShortComplex₄ Cᵒᵖ ⥤ (ShortComplex₄ C)ᵒᵖ where
+  obj S := Opposite.op (S.unop)
+  map φ := (unopMap φ).op
+
+/-- The obvious equivalence of categories `(ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ`. -/
+@[simps]
+def opEquiv : (ShortComplex₄ C)ᵒᵖ ≌ ShortComplex₄ Cᵒᵖ where
+  functor := opFunctor C
+  inverse := unopFunctor C
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+variable {C}
+
+/-- The canonical isomorphism `S.unop.op ≅ S` for a short complex `S` in `Cᵒᵖ` -/
+abbrev unopOp (S : ShortComplex₄ Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counitIso.app S
+
+/-- The canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
+abbrev opUnop (S : ShortComplex₄ C) : S.op.unop ≅ S :=
+  Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
+
 @[simps]
 def shortComplex₁ : ShortComplex C :=
   ShortComplex.mk _ _ S.zero₁
@@ -112,6 +195,20 @@ def shortComplex₂ : ShortComplex C :=
 structure Exact : Prop where
   exact₂ : S.shortComplex₁.Exact
   exact₃ : S.shortComplex₂.Exact
+
+namespace Exact
+
+variable {S}
+
+lemma op (hS : S.Exact) : S.op.Exact where
+  exact₃ := hS.exact₂.op
+  exact₂ := hS.exact₃.op
+
+lemma unop {S : ShortComplex₄ Cᵒᵖ} (hS : S.Exact) : S.unop.Exact where
+  exact₃ := hS.exact₂.unop
+  exact₂ := hS.exact₃.unop
+
+end Exact
 
 section
 
