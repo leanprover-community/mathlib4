@@ -378,9 +378,7 @@ end Field
 
 section Int
 
-end Int
-
-/-- Two (finite) ℤ-basis have the same discriminant. -/
+/-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr [Fintype ι] (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by
   convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
@@ -390,6 +388,8 @@ theorem discr_eq_discr [Fintype ι] (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
       rw [this, one_mul]
     rw [← LinearMap.toMatrix_id_eq_basis_toMatrix b b']
     exact LinearEquiv.isUnit_det (LinearEquiv.refl ℤ A) b b'
+
+end Int
 
 end Discr
 

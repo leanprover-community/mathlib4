@@ -198,8 +198,9 @@ attribute [instance] AddUnits.instAddGroupAddUnits
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]
 instance {α} [CommMonoid α] : CommGroup αˣ :=
-  { (inferInstance : Group αˣ) with
-    mul_comm := fun _ _ => ext <| mul_comm _ _ }
+  -- note: the original ported file had `{ (inferInstance : Group αˣ) with ... }`
+  -- and this was removed because it was causing slowdowns: see lean4#2387
+  { mul_comm := fun _ _ => ext <| mul_comm _ _ }
 attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
 #align units.comm_group Units.instCommGroupUnitsToMonoid
 #align add_units.add_comm_group AddUnits.instAddCommGroupAddUnitsToAddMonoid
@@ -646,11 +647,9 @@ theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
 #align is_add_unit_iff_exists_neg isAddUnit_iff_exists_neg
 
--- Porting note: `to_additive` complains if using `simp [isUnit_iff_exists_inv, mul_comm]` proof
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
-  rw [isUnit_iff_exists_inv]
-  simp [mul_comm]
+  simp [isUnit_iff_exists_inv, mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 
