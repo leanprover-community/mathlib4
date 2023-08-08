@@ -199,7 +199,7 @@ variable {α : Type _}
 /-- Alternative definition of multinomial based on `Multiset` delegating to the
   finsupp definition
 -/
-noncomputable def multinomial (m : Multiset α) : ℕ :=
+def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 #align multiset.multinomial Multiset.multinomial
 
@@ -208,7 +208,6 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
   dsimp only [multinomial]
   convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
-  · simp only [toFinsupp_apply]
   · ext1 a
     rw [toFinsupp_apply, count_filter, Finsupp.coe_update]
     split_ifs with h
