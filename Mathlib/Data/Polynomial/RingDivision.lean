@@ -137,18 +137,10 @@ theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDeg
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
 theorem natDegree_divX_lt (hpd : 1 ≤ p.natDegree) : p.divX.natDegree < p.natDegree := by
-  have hp : p ≠ 0 := by
-    contrapose! hpd
-    rw [hpd, natDegree_zero]
-    exact Nat.one_pos
-  have hpd' : (C (p.coeff 0)).natDegree < p.natDegree := by
-    rw [natDegree_C (p.coeff 0)]
-    exact hpd
   apply natDegree_lt_natDegree
-  · by_contra h'
-    nth_rw 2 [divX_eq_zero_iff.mp h'] at hpd'
-    simp at hpd'
-  · exact degree_divX_lt hp
+  · apply divX_eq_zero_iff.not.mpr
+    rwa [eq_C_coeff_zero_iff_natDegree_eq_zero, ← Ne.def, ← Nat.pos_iff_ne_zero]
+  · exact degree_divX_lt (ne_zero_of_natDegree_gt hpd)
 
 theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree := by
   by_cases hpd : p.natDegree ≤ 0
