@@ -1064,7 +1064,8 @@ lemma Products.limitOrdinal [Nonempty C] {o : Ordinal} (ho : o.IsLimit) (l : Pro
           have hlin : LocallyConstant.comap (ResOnSubsets C (le_of_lt (ho.2 (ord I a) this))) =
               ↑(LocallyConstant.comapLinear (ResOnSubsets C (le_of_lt (ho.2 (ord I a) this)))
               (continuous_resOnSubsets _ _) :
-              LocallyConstant {i // i ∈ C.proj (ord I · < o₁)} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C.proj (ord I · < o)} ℤ) :=
+              LocallyConstant {i // i ∈ C.proj (ord I · < o₁)} ℤ →ₗ[ℤ]
+              LocallyConstant {i // i ∈ C.proj (ord I · < o)} ℤ) :=
             rfl
           rw [hlin, map_finsupp_sum]
           apply Finsupp.sum_congr
@@ -1145,8 +1146,9 @@ lemma GoodProducts.linearIndependent_iff_union_smaller {o : Ordinal} (ho : o.IsL
   exact linearIndependent_equiv (range_equiv C ho hsC)
 
 noncomputable
-def GoodProducts.range_equiv_smaller_toFun (o : Ordinal) : range (C.proj (ord I · < o)) → smaller C o :=
-fun x ↦ ⟨(↑(LocallyConstant.comapLinear (ResOnSubset C o) (continuous_resOnSubset _ _) :
+def GoodProducts.range_equiv_smaller_toFun (o : Ordinal) :
+    range (C.proj (ord I · < o)) → smaller C o :=
+  fun x ↦ ⟨(↑(LocallyConstant.comapLinear (ResOnSubset C o) (continuous_resOnSubset _ _) :
     LocallyConstant {i // i ∈ C.proj (ord I · < o)} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) :
     LocallyConstant {i // i ∈ C.proj (ord I · < o)} ℤ → LocallyConstant {i // i ∈ C} ℤ) ↑x,
     by { dsimp [smaller]; use x.val; exact ⟨x.property, rfl⟩  } ⟩
@@ -1232,7 +1234,8 @@ def GoodProducts.StartingWithMax : Set (Products I) :=
 {l | l.isGood C ∧ l.val ≠ [] ∧ ord I l.val.head! = o}
 
 open Classical in
-lemma GoodProducts.union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C o := by
+lemma GoodProducts.union_succ :
+    GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C o := by
   ext ⟨l,hl⟩
   dsimp [GoodProducts, StartingWithMax]
   simp only [Set.mem_union, Set.mem_setOf_eq]
@@ -1294,7 +1297,8 @@ lemma GoodProducts.union_succ : GoodProducts C = GoodProducts (C.proj (ord I · 
           have hlin : LocallyConstant.comap (ResOnSubset C o) =
               ↑(LocallyConstant.comapLinear (ResOnSubset C o)
               (continuous_resOnSubset _ _) :
-              LocallyConstant {i // i ∈ C.proj (ord I · < o)} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) :=
+              LocallyConstant {i // i ∈ C.proj (ord I · < o)} ℤ →ₗ[ℤ]
+              LocallyConstant {i // i ∈ C} ℤ) :=
             rfl
           rw [hlin, map_finsupp_sum]
           congr! 1
@@ -1360,9 +1364,10 @@ lemma GoodProducts.sum_to_range :
     · use ⟨l,hl⟩
 
 noncomputable
-def GoodProducts.sum_equiv : GoodProducts (C.proj (ord I · < o)) ⊕ (StartingWithMax C o) ≃ GoodProducts C :=
-Equiv.trans (Equiv.trans (sum_to_equiv C o) (Equiv.Set.ofEq (sum_to_range C o)))
-  (Equiv.Set.ofEq (union_succ C o hsC).symm)
+def GoodProducts.sum_equiv :
+    GoodProducts (C.proj (ord I · < o)) ⊕ (StartingWithMax C o) ≃ GoodProducts C :=
+  Equiv.trans (Equiv.trans (sum_to_equiv C o) (Equiv.Set.ofEq (sum_to_range C o)))
+    (Equiv.Set.ofEq (union_succ C o hsC).symm)
 
 lemma GoodProducts.sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C o hsC).toFun =
     (Sum.elim (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
@@ -1389,7 +1394,8 @@ noncomputable
 def GoodProducts.equiv_smaller : GoodProducts (C.proj (ord I · < o)) ≃ smaller C o :=
 Equiv.trans (equiv_range (C.proj (ord I · < o))) (range_equiv_smaller C o)
 
-lemma GoodProducts.eval_eq_comp_equiv : (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1) =
+lemma GoodProducts.eval_eq_comp_equiv :
+    (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1) =
     (fun p ↦ ↑p) ∘ ↑(equiv_smaller C o) := by
   ext p f
   dsimp [equiv_smaller, range_equiv_smaller, range_equiv_smaller_toFun,
@@ -2232,7 +2238,8 @@ def LocconstEvalMul (x : {i // i ∈ C}) : LocallyConstant {i // i ∈ C} ℤ �
     rfl
 
 lemma GoodProducts.maxTail_isGood (l : StartingWithMax C o)
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) : (MaxTail C l).isGood (C' C ho) := by
+    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
+    (MaxTail C l).isGood (C' C ho) := by
   intro h
   rw [Finsupp.mem_span_image_iff_total, ← max_eq_eval C hsC ho] at h
   obtain ⟨m, ⟨hmmem, hmsum⟩⟩ := h
@@ -2422,7 +2429,8 @@ lemma GoodProducts.maxTail_isGood (l : StartingWithMax C o)
       rfl
 
 noncomputable
-def GoodProducts.StartingWithMaxFunToGood (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
+def GoodProducts.StartingWithMaxFunToGood
+    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
     StartingWithMax C o → GoodProducts (C' C ho) :=
   fun l ↦ ⟨MaxTail C l, maxTail_isGood C hC hsC ho l h₁⟩
 
