@@ -308,16 +308,19 @@ variable {C c} (K L)
 noncomputable abbrev isoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     K.sc j ≅ K.sc' i j k := (natIsoSc' C c i j k hi hk).app K
 
+abbrev ExactAt (i : ι) := (K.sc i).Exact
+
+lemma exactAt_iff (i : ι) :
+    K.ExactAt i ↔ (K.sc i).Exact := by rfl
+
+lemma exactAt_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k):
+    K.ExactAt j ↔ (K.sc' i j k).Exact :=
+  ShortComplex.exact_iff_of_iso (K.isoSc' i j k hi hk)
+
 lemma isZero_homology_iff (i : ι) [K.HasHomology i] :
-    IsZero (K.homology i) ↔ (K.sc i).Exact := by
+    IsZero (K.homology i) ↔ K.ExactAt i := by
   dsimp only [homology]
   rw [← ShortComplex.exact_iff_isZero_homology]
-
-lemma isZero_homology_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
-    [K.HasHomology j] :
-    IsZero (K.homology j) ↔ (K.sc' i j k).Exact := by
-  rw [isZero_homology_iff]
-  exact ShortComplex.exact_iff_of_iso ((natIsoSc' C c i j k hi hk).app K)
 
 lemma isIso_iCycles (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
     IsIso (K.iCycles i) := by
