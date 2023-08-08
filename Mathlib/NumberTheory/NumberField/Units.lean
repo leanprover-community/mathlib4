@@ -468,7 +468,11 @@ theorem unit_lattice_moduleFree : Module.Free ℤ (unit_lattice K) := by
   have := unit_lattice_discrete K
   exact Zlattice.module_free ℝ (unit_lattice_span_eq_top K)
 
-theorem unit_lattice.rank : finrank ℤ (unit_lattice K) = Units.rank K := by
+theorem unit_lattice_moduleFinite : Module.Finite ℤ (unit_lattice K) := by
+  have := unit_lattice_discrete K
+  exact Zlattice.module_finite ℝ (unit_lattice_span_eq_top K)
+
+theorem unit_lattice_rank : finrank ℤ (unit_lattice K) = Units.rank K := by
   have := unit_lattice_discrete K
   rw [← rank_space]
   exact Zlattice.rank ℝ (unit_lattice_span_eq_top K)
