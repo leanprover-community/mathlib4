@@ -835,7 +835,10 @@ end Instances
 namespace IsROrC
 
 open scoped ComplexOrder in
-/-- Note this is only an instance with `open scoped ComplexOrder`. -/
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `IsROrC K` is a star ordered ring.
+(That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
+
+Note this is only an instance with `open scoped ComplexOrder`. -/
 def toStarOrderedRing : StarOrderedRing K :=
   StarOrderedRing.ofNonnegIff'
     (h_add := fun {x y} hxy z => by
