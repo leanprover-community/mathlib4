@@ -217,7 +217,7 @@ instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   top := some ⊤
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
-instance [OrderTop α] : BoundedOrder (WithBot α) :=
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderBot, WithBot.orderTop with }
 
 theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
@@ -247,6 +247,11 @@ protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
 theorem le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
     a ≤ unbot b h ↔ (a : WithBot α) ≤ b := by
   match b, h with
+  | some _, _ => simp only [unbot_coe, coe_le_coe]
+
+theorem unbot_le_iff {a : WithBot α} (h : a ≠ ⊥) {b : α} :
+    unbot a h ≤ b ↔ a ≤ (b : WithBot α) := by
+  match a, h with
   | some _, _ => simp only [unbot_coe, coe_le_coe]
 
 end LE
@@ -869,6 +874,10 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
 theorem untop_le_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
     untop a h ≤ b ↔ a ≤ (b : WithTop α) :=
   @WithBot.le_unbot_iff αᵒᵈ _ _ _ _
+
+theorem le_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
+    a ≤ untop b h ↔ (a : WithTop α) ≤ b :=
+  @WithBot.unbot_le_iff αᵒᵈ _ _ _ _
 
 end LE
 

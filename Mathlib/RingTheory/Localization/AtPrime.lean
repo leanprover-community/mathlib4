@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Localization.Ideal
 
 ## Main definitions
 
- * `IsLocalization.AtPrime (I : Ideal R) [IsPrime I] (S : Type*)` expresses that `S` is a
+ * `IsLocalization.AtPrime (I : Ideal R) [IsPrime I] (S : Type _)` expresses that `S` is a
    localization at (the complement of) a prime ideal `I`, as an abbreviation of
    `IsLocalization I.prime_compl S`
 
@@ -180,7 +180,7 @@ variable (I : Ideal R) [hI : I.IsPrime]
 
 variable {I}
 
-/-- The unique maximal ideal of the localization at `I.prime_compl` lies over the ideal `I`. -/
+/-- The unique maximal ideal of the localization at `I.primeCompl` lies over the ideal `I`. -/
 theorem AtPrime.comap_maximalIdeal :
     Ideal.comap (algebraMap R (Localization.AtPrime I))
         (LocalRing.maximalIdeal (Localization I.primeCompl)) =
@@ -189,8 +189,8 @@ theorem AtPrime.comap_maximalIdeal :
   IsLocalization.AtPrime.comap_maximalIdeal _ _
 #align localization.at_prime.comap_maximal_ideal Localization.AtPrime.comap_maximalIdeal
 
-/-- The image of `I` in the localization at `I.prime_compl` is a maximal ideal, and in particular
-it is the unique maximal ideal given by the local ring structure `at_prime.local_ring` -/
+/-- The image of `I` in the localization at `I.primeCompl` is a maximal ideal, and in particular
+it is the unique maximal ideal given by the local ring structure `AtPrime.localRing` -/
 theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       LocalRing.maximalIdeal (Localization I.primeCompl) := by
@@ -205,7 +205,8 @@ theorem le_comap_primeCompl_iff {J : Ideal P} [hJ : J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
   ⟨fun h x hx => by
     contrapose! hx
-    exact h hx, fun h x hx hfxJ => hx (h hfxJ)⟩
+    exact h hx,
+   fun h x hx hfxJ => hx (h hfxJ)⟩
 #align localization.le_comap_prime_compl_iff Localization.le_comap_primeCompl_iff
 
 variable (I)

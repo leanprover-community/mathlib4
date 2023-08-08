@@ -194,7 +194,7 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
       intro K β hK
       cases' hK with α hK
       rw [← hK, adjoin_simple_adjoin_simple]
-      haveI : Infinite F := is_empty_fintype.mp F_inf
+      haveI : Infinite F := isEmpty_fintype.mp F_inf
       cases' primitive_element_inf_aux F α β with γ hγ
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤

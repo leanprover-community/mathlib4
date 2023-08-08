@@ -235,8 +235,8 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
     (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
   rw[Vector.map_eq_mapAccumr]
   apply mapAccumr_bisim_tail
-  use fun s _ => s ∈ S
-  exact ⟨h₀, @fun s q a h => ⟨closure a s h, out a s s₀ h h₀⟩⟩
+  use fun s _ => s ∈ S, h₀
+  exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
 
 protected theorem map₂_eq_mapAccumr₂ :
     map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
@@ -253,8 +253,8 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
     (mapAccumr₂ f xs ys s₀).snd = map₂ (f · · s₀ |>.snd) xs ys := by
   rw[Vector.map₂_eq_mapAccumr₂]
   apply mapAccumr₂_bisim_tail
-  use fun s _ => s ∈ S
-  exact ⟨h₀, @fun s q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩⟩
+  use fun s _ => s ∈ S, h₀
+  exact @fun s _q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩
 
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
