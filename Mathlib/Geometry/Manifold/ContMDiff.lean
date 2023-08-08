@@ -1923,7 +1923,7 @@ theorem ContMDiff.clm_postcomp {f : M → F₂ →L[𝕜] F₃} (hf : ContMDiff 
   (hf x).clm_postcomp
 
 -- porting note: Lean 3 code didn't need `@`
-set_option maxHeartbeats 400000 in
+-- set_option maxHeartbeats 400000 in
 theorem ContMDiffWithinAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
     {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s x)
