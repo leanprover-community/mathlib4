@@ -487,11 +487,11 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 /-- Interpreting as a base p number and dividing by p is the same as interpreting the tail.
 -/
 lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
-    (w₁ : ∀ l ∈ digits, l < p) : ofDigits p (digits) / p = ofDigits p (digits.tail) := by
+    (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
   induction' digits with hd tl
   · unfold ofDigits
     simp
-  refine' Eq.trans (@add_mul_div_left hd (ofDigits p (tl)) p hpos) _
+  refine' Eq.trans (@add_mul_div_left hd (ofDigits p tl) p hpos) _
   rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self hd tl, zero_add]
   rfl
 
