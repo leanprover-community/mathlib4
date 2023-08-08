@@ -183,7 +183,7 @@ instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   instInhabitedProd
 
 instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
-  Prod.instZeroSum
+  Prod.instZero
 
 instance add [Add R] [Add M] : Add (tsze R M) :=
   Prod.instAdd

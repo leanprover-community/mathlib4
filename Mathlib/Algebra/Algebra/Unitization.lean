@@ -152,7 +152,7 @@ instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A)
   instInhabitedProd
 
 instance instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
-  Prod.instZeroSum
+  Prod.instZero
 
 instance instAdd [Add R] [Add A] : Add (Unitization R A) :=
   Prod.instAdd
