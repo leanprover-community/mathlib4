@@ -215,11 +215,16 @@ abbrev HashMap := Lean.HashMap FilePath UInt64
 
 namespace HashMap
 
-def filter (hashMap : HashMap) (set : Lean.RBTree String compare) (keep : Bool) : HashMap :=
-  hashMap.fold (init := default) fun acc path hash =>
-    let contains := set.contains hash.asLTar
-    let add := if keep then contains else !contains
-    if add then acc.insert path hash else acc
+/-- Filter the hashmap by whether the entries exist as files in the cache directory.
+
+If `keep` is true, the result will contain the entries that do exist;
+if `keep` is false, the result will contain the entries that do not exist.
+-/
+def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
+  hashMap.foldM (init := default) fun acc path hash => do
+    let exist ← (CACHEDIR / hash.asLTar).pathExists
+    let add := if keep then exist else !exist
+    if add then return acc.insert path hash else return acc
 
 def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
   hashMap.fold (init := default) fun acc _ hash => acc.insert hash
@@ -283,7 +288,7 @@ def isPathFromMathlib (path : FilePath) : Bool :=
 
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
-  let hashMap := hashMap.filter (← getLocalCacheSet) true
+  let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
