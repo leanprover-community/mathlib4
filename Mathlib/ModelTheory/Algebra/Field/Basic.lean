@@ -271,7 +271,7 @@ def structureFieldOfField {K : Type _} [Field K] : Language.field.Structure K :=
       | _, one => fun _ => 1,
     RelMap := Empty.elim }
 
-def modelFieldOfField {K : Type _} [Field K] : ModelField K :=
+def modelFieldOfField (K : Type _) [Field K] : ModelField K :=
   { structureFieldOfField with
     funMap_add := by intros; rfl
     funMap_mul := by intros; rfl

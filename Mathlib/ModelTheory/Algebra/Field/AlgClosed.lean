@@ -2,6 +2,9 @@ import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Algebra.Field.FreeCommRing
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.FreeCommRing
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.IsAlgClosed.Classification
+import Mathlib.ModelTheory.Satisfiability
 
 namespace FirstOrder
 
@@ -99,7 +102,7 @@ instance {K : Type _} [ModelField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-theorem isAlgClosedOfModelACF {p : ℕ} (M : Type _)
+theorem isAlgClosed_of_model_ACF {p : ℕ} (M : Type _)
     [ModelField M] [h : (Theory.ACF p).Model M] :
     IsAlgClosed M := by
   refine IsAlgClosed.of_exists_root _ ?_
@@ -112,6 +115,39 @@ theorem isAlgClosedOfModelACF {p : ℕ} (M : Type _)
     (degree_pos_of_irreducible hpi)) rfl
   rw [realize_genericMonicPolyHasRoot] at this
   exact this _ rfl hpm
+
+theorem charP_of_model_ACF {p : ℕ} (M : Type _)
+    [ModelField M] [h : (Theory.ACF p).Model M] :
+    CharP M p := by
+  have : (Theory.hasChar p).Model M :=
+    Theory.Model.mono h
+      (Set.subset_union_of_subset_left (Set.subset_union_right _ _) _)
+  exact charP_of_model_hasChar
+
+set_option synthInstance.maxHeartbeats 100000 in
+theorem ACF0_isSatisfiable : (Theory.ACF 0).IsSatisfiable := by
+  letI := modelFieldOfField (AlgebraicClosure ℚ)
+  haveI : CharP (AlgebraicClosure ℚ) 0 :=
+    charP_of_injective_algebraMap
+      (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
+  exact ⟨⟨AlgebraicClosure ℚ⟩⟩
+
+theorem ACF0_isSatisfiable_of_prime {p : ℕ} (hp : p.Prime) :
+    (Theory.ACF p).IsSatisfiable := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  letI := modelFieldOfField (AlgebraicClosure (ZMod p))
+  haveI : CharP (AlgebraicClosure (ZMod p)) p :=
+    charP_of_injective_algebraMap
+      (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
+  exact ⟨⟨AlgebraicClosure (ZMod p)⟩⟩
+
+theorem ACF_isSatisfiable_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
+    (Theory.ACF p).IsSatisfiable := by
+  cases hp with
+  | inl hp => exact ACF0_isSatisfiable_of_prime hp
+  | inr hp =>
+    subst hp
+    exact ACF0_isSatisfiable
 
 end Language
 
