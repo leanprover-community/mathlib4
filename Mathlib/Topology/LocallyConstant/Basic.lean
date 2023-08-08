@@ -238,29 +238,6 @@ theorem of_constant_on_preconnected_clopens [LocallyConnectedSpace X] {f : X →
   of_constant_on_connected_clopens fun U hU ↦ h U hU.isPreconnected
 #align is_locally_constant.of_constant_on_preconnected_clopens IsLocallyConstant.of_constant_on_preconnected_clopens
 
-theorem piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
-    (f : LocallyConstant {i // i ∈ C₁} Z) (g : LocallyConstant {i // i ∈ C₂} Z)
-    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
-    [∀ j, Decidable (j ∈ C₁)] : IsLocallyConstant (C₁.piecewise' f.toFun
-    (g.toFun ∘ Set.inclusion (Set.compl_subset_iff_union.mpr h))) := by
-  let dZ : TopologicalSpace Z := ⊥
-  haveI : DiscreteTopology Z := discreteTopology_bot Z
-  obtain ⟨f, hf⟩ := f
-  obtain ⟨g, hg⟩ := g
-  rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
-  dsimp
-  rw [Set.union_eq_iUnion] at h
-  refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
-  · cases i; exact h₂; exact h₁
-  · cases i
-    <;> rw [continuousOn_iff_continuous_restrict]
-    · rw [Set.restrict_piecewise'_compl']
-      · exact hg
-      · exact hfg
-    · dsimp
-      rw [Set.restrict_piecewise']
-      exact hf
-
 end IsLocallyConstant
 
 /-- A (bundled) locally constant function from a topological space `X` to a type `Y`. -/
@@ -597,9 +574,26 @@ section Piecewise
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
     (f : LocallyConstant {i // i ∈ C₁} Z) (g : LocallyConstant {i // i ∈ C₂} Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
-    [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z :=
-{ toFun := C₁.piecewise' f.toFun ((g.toFun ∘ Set.inclusion (Set.compl_subset_iff_union.mpr h)))
-  isLocallyConstant := isLocallyConstant_piecewise h₁ h₂ h f g hfg}
+    [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z where
+  toFun := Set.piecewise' C₁ f.toFun ((g.toFun ∘ Set.inclusion (Set.compl_subset_iff_union.mpr h)))
+  isLocallyConstant := by
+    let dZ : TopologicalSpace Z := ⊥
+    haveI : DiscreteTopology Z := discreteTopology_bot Z
+    obtain ⟨f, hf⟩ := f
+    obtain ⟨g, hg⟩ := g
+    rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
+    dsimp
+    rw [Set.union_eq_iUnion] at h
+    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
+    · cases i; exact h₂; exact h₁
+    · cases i
+      <;> rw [continuousOn_iff_continuous_restrict]
+      · rw [Set.restrict_piecewise'_compl']
+        · exact hg
+        · exact hfg
+      · dsimp
+        rw [Set.restrict_piecewise']
+        exact hf
 
 end Piecewise
 
