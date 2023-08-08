@@ -3,6 +3,8 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Infix
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.List
@@ -1131,6 +1133,10 @@ theorem closure_kernel_eq_closure :
   rw [rank_kernel] at h
   exact Nat.le_antisymm (G.rank_le_of_subset (insert_subset hx G.kernel_subset)) h
 
+theorem kernelClosureOperator_subset_closure :
+    G.kernelClosureOperator s ⊆ G.closure s := by
+  simp only [kernelClosureOperator_eq_kernel_closure, kernel_subset]
+
 @[simp]
 theorem closure_kernelClosureOperator_eq_closure :
     G.closure (G.kernelClosureOperator s) = G.closure s := by
@@ -1151,9 +1157,9 @@ theorem kernelClosureOperator_eq_iff_closure_eq {s t : Finset α} :
       kernelClosureOperator_closure_eq_kernelClosureOperator]
 
 @[simp]
-theorem rank_kernelClosureOperator_feasible (hs : s ∈ G) :
+theorem rank_kernelClosureOperator :
     G.rank (G.kernelClosureOperator s) = G.rank s := by
-  sorry
+  simp only [kernelClosureOperator_eq_kernel_closure, rank_kernel, rank_closure_eq_rank_self]
 
 theorem subset_kernelClosureOperator_of_mem_partialAlphabets
   (h : s ∈ G.partialAlphabets) :
@@ -1173,19 +1179,58 @@ theorem subset_kernelClosureOperator_of_mem_partialAlphabets
   simp only [hS₁, mem_biUnion, id_eq]
   exists t
 
+theorem kernelClosureOperator_eq_of_subset_adj_kernelClosureOperator {s t : Finset α}
+  (hs : s ⊆ G.kernelClosureOperator t) (ht : t ⊆ G.kernelClosureOperator s) :
+    G.kernelClosureOperator s = G.kernelClosureOperator t := by
+  rw [kernelClosureOperator_eq_iff_closure_eq]
+  exact closure_eq_of_subset_adj_closure
+    (subset_trans hs kernelClosureOperator_subset_closure)
+    (subset_trans ht kernelClosureOperator_subset_closure)
+
 @[simp]
-theorem rank_kernelClosureOperator_eq_rank :
-    G.rank (G.kernelClosureOperator s) = G.rank s := by
-  let ⟨b, hb⟩ : Nonempty (G.bases s) := bases_nonempty
-  have h₁ : G.rank (G.kernelClosureOperator b) = G.rank b :=
-    rank_kernelClosureOperator_feasible (basis_mem_feasible hb)
-  have h₂ : b ⊆ G.kernelClosureOperator s := by
-    apply subset_of_subset_of_eq
-    . apply G.subset_kernelClosureOperator_of_mem_partialAlphabets
-      sorry
-    . sorry
-  sorry
+theorem kernelClosureOperator_idempotent :
+    G.kernelClosureOperator (G.kernelClosureOperator s) = G.kernelClosureOperator s := by
+  rw [kernelClosureOperator_eq_kernel_closure, kernelClosureOperator_eq_kernel_closure,
+    closure_kernel_eq_closure, closure_idempotent]
 
 end Kernel
+
+def monotoneClosureOperator (s : Finset α) : Finset α :=
+  univ.filter fun a => ∀ {t}, s ⊆ t → G.closure t = t → a ∈ t
+
+section MonotoneClosureOperator
+
+variable {s t : Finset α}
+
+theorem mem_monotoneClosureOperator_iff {a : α} :
+    a ∈ G.monotoneClosureOperator s ↔ (∀ {t}, s ⊆ t → G.closure t = t → a ∈ t) := by
+  simp only [monotoneClosureOperator, mem_univ, Finset.mem_filter, true_and]
+
+theorem subset_monotoneClosureOperator : s ⊆ G.monotoneClosureOperator s := by
+  intro _ hx
+  rw [mem_monotoneClosureOperator_iff]
+  intro _ h _
+  exact h hx
+
+@[simp]
+theorem monotoneClosureOperator_idempotent :
+    G.monotoneClosureOperator (G.monotoneClosureOperator s) = G.monotoneClosureOperator s := by
+  apply subset_antisymm _ subset_monotoneClosureOperator
+  intro a ha
+  rw [mem_monotoneClosureOperator_iff] at *
+  intro _ ht₁ ht₂
+  apply ha _ ht₂
+  intro _ hx
+  rw [mem_monotoneClosureOperator_iff] at hx
+  exact hx ht₁ ht₂
+
+theorem monotoneClosureOperator_subset_of_subset (h : s ⊆ t) :
+    G.monotoneClosureOperator s ⊆ G.monotoneClosureOperator t := by
+  intro _ ha
+  rw [mem_monotoneClosureOperator_iff] at *
+  intro _ h₁ h₂
+  exact ha (subset_trans h h₁) h₂
+
+end MonotoneClosureOperator
 
 end Greedoid
