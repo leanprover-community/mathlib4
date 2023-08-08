@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Topology.Algebra.Group.Basic --import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
