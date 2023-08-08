@@ -53,7 +53,7 @@ Weak-head normal form is when the outer-most expression has been fully reduced, 
 may contain subexpressions which have not been reduced.
 -/
 elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic whnf loc? "whnf"
+  runDefeqTactic (checkDefEq := false) whnf loc? "whnf"
 
 
 /-! ### `beta_reduce` -/
@@ -67,7 +67,7 @@ This means that whenever there is an applied lambda expression such as
 yielding an expression such as `f y`.
 -/
 elab (name := betaReduceStx) "beta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic (Core.betaReduce ·) loc? "beta_reduce"
+  runDefeqTactic (checkDefEq := false) (Core.betaReduce ·) loc? "beta_reduce"
 
 @[inherit_doc betaReduceStx]
 elab "beta_reduce" : conv => runDefeqConvTactic (Core.betaReduce ·)
