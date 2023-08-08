@@ -93,13 +93,8 @@ theorem Unitization.lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem Unitization.lift_range (f : A →ₙₐ[R] C) :
-    (Unitization.lift f).range = Algebra.adjoin R (NonUnitalAlgHom.range f : Set C) := by
-  refine le_antisymm (Unitization.lift_range_le.mpr Algebra.subset_adjoin) <| Algebra.adjoin_le ?_
-  rintro - ⟨x, rfl⟩
-  use x
-  simp only [lift_apply, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, NonUnitalAlgHom.toAlgHom_apply,
-    fst_inr, snd_inr, map_zero, zero_add]
-  rfl
+    (Unitization.lift f).range = Algebra.adjoin R (NonUnitalAlgHom.range f : Set C) :=
+  eq_of_forall_ge_iff fun c ↦ by rw [Unitization.lift_range_le, Algebra.adjoin_le_iff]; rfl
 
 end LiftRange
 
@@ -162,7 +157,7 @@ isomorphic to its `Algebra.adjoin`. -/
 @[simps!]
 noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
     Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) := by
-  letI algHom : Unitization R s →ₐ[R] Algebra.adjoin R (s : Set A) :=
+  let algHom : Unitization R s →ₐ[R] Algebra.adjoin R (s : Set A) :=
     ((NonUnitalSubalgebra.unitization s).codRestrict _
       fun x ↦ NonUnitalSubalgebra.unitization_range s ▸ ⟨x, rfl⟩)
   refine AlgEquiv.ofBijective algHom ⟨?_, fun x ↦ ?_⟩
@@ -319,15 +314,10 @@ theorem Unitization.starLift_range_le
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem Unitization.starLift_range (f : A →⋆ₙₐ[R] C) :
-    (starLift f).range = StarSubalgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) := by
-  refine le_antisymm (starLift_range_le.mpr <| StarSubalgebra.subset_adjoin R _) <|
-    StarSubalgebra.adjoin_le ?_
-  rintro - ⟨x, rfl⟩
-  use x
-  simp only [starLift_apply, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-    NonUnitalAlgHom.toAlgHom_apply, fst_inr, snd_inr, map_zero,
-    NonUnitalStarAlgHom.coe_toNonUnitalAlgHom, zero_add]
-  rfl
+    (starLift f).range = StarSubalgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) :=
+  eq_of_forall_ge_iff fun c ↦ by 
+    rw [Unitization.starLift_range_le, StarSubalgebra.adjoin_le_iff]
+    rfl
 
 end StarLiftRange
 
@@ -366,7 +356,7 @@ isomorphic to its `StarSubalgebra.adjoin`. -/
 @[simps!]
 noncomputable def NonUnitalStarSubalgebra.unitizationStarAlgEquiv (h1 : (1 : A) ∉ S) :
     Unitization R S ≃⋆ₐ[R] StarSubalgebra.adjoin R (S : Set A) := by
-  letI starAlgHom : Unitization R S →⋆ₐ[R] StarSubalgebra.adjoin R (S : Set A) :=
+  let starAlgHom : Unitization R S →⋆ₐ[R] StarSubalgebra.adjoin R (S : Set A) :=
     (S.unitization.codRestrict _
       fun x ↦ S.unitization_range ▸ ⟨x, rfl⟩)
   refine StarAlgEquiv.ofBijective starAlgHom ⟨?_, fun x ↦ ?_⟩
