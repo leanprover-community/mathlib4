@@ -132,7 +132,7 @@ inductive FieldAxiom : Type
   | mulRightInv : FieldAxiom
   | invZero : FieldAxiom
   | zeroNeOne : FieldAxiom
-#exit
+
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.field.Sentence
   | .addAssoc => addFunction.assoc
