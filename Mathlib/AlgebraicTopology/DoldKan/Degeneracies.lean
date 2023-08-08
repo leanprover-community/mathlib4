@@ -23,6 +23,8 @@ if `X : SimplicialObject C` with `C` a preadditive category,
 `X.map θ.op ≫ P_infty.f n = 0`. It follows from the more precise
 statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
