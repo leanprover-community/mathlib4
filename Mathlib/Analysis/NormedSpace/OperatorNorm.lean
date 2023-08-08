@@ -206,7 +206,7 @@ theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c
   f.le_of_op_norm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_op_norm_le
 
-theorem op_norm_le_iff (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) :
+theorem op_norm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ} (hMp : 0 ≤ M) :
     ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
   ⟨f.le_of_op_norm_le, op_norm_le_bound f hMp⟩
 
@@ -2033,7 +2033,7 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
     exact fun C₁ C₂ hC ↦ forall₂_imp fun i x ↦ le_trans' <| by gcongr
   tfae_have 5 ↔ 7
   · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
-    rw [(f i).op_norm_le_iff hC]
+    rw [ContinuousLinearMap.op_norm_le_iff hC]
   tfae_have 7 ↔ 8
   · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
   tfae_have 6 ↔ 8
