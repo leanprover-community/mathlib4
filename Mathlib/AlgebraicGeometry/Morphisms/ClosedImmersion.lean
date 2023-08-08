@@ -84,8 +84,6 @@ instance ofIsIso {X Y : Scheme} (f : X ⟶ Y) [hf : IsIso f] :
   . intro x
     exact (ConcreteCategory.bijective_of_isIso _).2
 
-variable (R : CommRingCat) (M : Submonoid R)
-
 /-- Composition with an iso preserves closed embeddings. This is a direct
 corollary from `ofIsIso` and `stableUnderComposition`. -/
 theorem respectsIso :
@@ -138,8 +136,7 @@ theorem ofComp {X Y Z: Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)[hg : IsClosedImmersio
     . rw [Scheme.comp_val_base] at comp_closed
       apply closedEmbedding_of_continuous_injective_closed
       . apply Scheme.Hom.continuous
-      . apply Function.Injective.of_comp
-        exact comp_closed.inj
+      . exact Function.Injective.of_comp comp_closed.inj
       . intro Z hZ
         rw [ClosedEmbedding.closed_iff_image_closed g_closed, ←Set.image_comp]
         exact ClosedEmbedding.isClosedMap comp_closed _ hZ
