@@ -2031,8 +2031,7 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   -- and `congr` lemmas
   tfae_have 4 ↔ 5
   · rw [exists_ge_and_iff_exists]
-    exact fun C₁ C₂ hC ↦ forall₂_imp (fun i x ↦ le_trans'
-      (mul_le_mul_of_nonneg_right hC (norm_nonneg x)))
+    exact fun C₁ C₂ hC ↦ forall₂_imp fun i x ↦ le_trans' <| by gcongr
   tfae_have 5 ↔ 7
   · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
     rw [(f i).op_norm_le_iff hC]

@@ -664,8 +664,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type _}
       Equicontinuous ((↑) ∘ f),
       UniformEquicontinuous ((↑) ∘ f),
       ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p,
-      ∀ i, BddAbove (range fun k ↦ (q i).comp (f k)) ∧
-        Continuous (⨆ k, (q i).comp (f k)) ] := by
+      ∀ i, BddAbove (range fun k ↦ (q i).comp (f k)) ∧ Continuous (⨆ k, (q i).comp (f k)) ] := by
   -- We start by reducing to the case where the target is a seminormed space
   rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng,
       equicontinuous_iInf_rng, equicontinuousAt_iInf_rng]
@@ -686,28 +685,20 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type _}
     have : ∀ᶠ x in 𝓝 0, ∀ k, q i (f k x) ≤ 1 := by
       filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
         with x hx k
-      replace hx : dist (f k 0) (f k x) ≤ 1 := (hx k).le
-      rwa [map_zero, dist_zero_left] at hx
+      simpa using (hx k).le
     have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
       Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
         (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
     rw [← Seminorm.coe_iSup_eq bdd]
     refine ⟨bdd, Seminorm.continuous' (r := 1) ?_⟩
     filter_upwards [this] with x hx
-    rw [closedBall_iSup bdd _ one_pos, mem_iInter]
-    exact fun k ↦ (mem_closedBall_zero _).mpr (hx k)
+    simpa only [closedBall_iSup bdd _ one_pos, mem_iInter, mem_closedBall_zero] using hx
   tfae_have 5 → 4
-  · refine fun H ↦ ⟨⨆ k, (q i).comp (f k), ?_, le_ciSup H.1⟩
-    rw [Seminorm.coe_iSup_eq H.1]
-    exact H.2
+  · exact fun H ↦ ⟨⨆ k, (q i).comp (f k), Seminorm.coe_iSup_eq H.1 ▸ H.2, le_ciSup H.1⟩
   tfae_have 4 → 1 -- This would work over any `NormedField`
   · intro ⟨p, hp, hfp⟩
-    have hp' : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-    refine (Metric.equicontinuousAt_of_continuity_modulus p hp' _ <|
-      eventually_of_forall fun x k ↦ ?_)
-    change dist (f k 0) (f k x) ≤ p x
-    rw [map_zero, dist_zero_left]
-    exact hfp k x
+    exact Metric.equicontinuousAt_of_continuity_modulus p (map_zero p ▸ hp.tendsto 0) _ <|
+      eventually_of_forall fun x k ↦ by simpa using hfp k x
   tfae_finish
 
 theorem _root_.WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type _}
