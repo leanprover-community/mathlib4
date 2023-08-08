@@ -1218,7 +1218,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
       simp only [update_same, map_add, tail_update_zero, MultilinearMap.add_apply]
     · simp_rw [update_noteq (Ne.symm h)]
       revert x y
-      rw [← succ_pred i (Fin.vne_of_ne h)]
+      rw [← succ_pred i h]
       intro x y
       rw [tail_update_succ, MultilinearMap.map_add, tail_update_succ, tail_update_succ]
   map_smul' := @fun dec m i c x => by
@@ -1229,7 +1229,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
       simp only [update_same, map_smul, tail_update_zero, MultilinearMap.smul_apply]
     · simp_rw [update_noteq (Ne.symm h)]
       revert x
-      rw [← succ_pred i (Fin.vne_of_ne h)]
+      rw [← succ_pred i h]
       intro x
       rw [tail_update_succ, tail_update_succ, MultilinearMap.map_smul]
 #align linear_map.uncurry_left LinearMap.uncurryLeft

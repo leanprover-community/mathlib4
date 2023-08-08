@@ -115,14 +115,11 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M
     simp
   map_mul' f g := by
     classical
-      simp only
-      have := @Finset.noncommProd_mul_distrib _ _ _ Finset.univ (fun i => ϕ i (f i))
-        (fun i => ϕ i (g i)) ?_ ?_ ?_
-      · convert this
-        exact map_mul _ _ _
-      · exact fun i _ j _ hij => hcomm hij _ _
-      · exact fun i _ j _ hij => hcomm hij _ _
-      · exact fun i _ j _ hij => hcomm hij _ _
+    simp only
+    convert @Finset.noncommProd_mul_distrib _ _ _ _ (fun i => ϕ i (f i)) (fun i => ϕ i (g i)) _ _ _
+    · exact map_mul _ _ _
+    · rintro i - j - h
+      exact hcomm h _ _
 #align monoid_hom.noncomm_pi_coprod MonoidHom.noncommPiCoprod
 #align add_monoid_hom.noncomm_pi_coprod AddMonoidHom.noncommPiCoprod
 

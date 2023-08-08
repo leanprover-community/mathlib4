@@ -143,7 +143,6 @@ theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
     use { x : A // x ∈ s }, inferInstance, f
-    exact hsur
   · rintro ⟨ι, ⟨hfintype, ⟨f, hsur⟩⟩⟩
     letI : Fintype ι := hfintype
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R ι) f hsur
@@ -373,7 +372,7 @@ section Ring
 
 variable [CommRing R] [AddCommMonoid M]
 
-/-- If `AddMonoidAlgebra R M` is of finite type, there there is a `G : Finset M` such that its
+/-- If `AddMonoidAlgebra R M` is of finite type, then there is a `G : Finset M` such that its
 image generates, as algebra, `AddMonoidAlgebra R M`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R (AddMonoidAlgebra R M)] :
     ∃ G : Finset M, Algebra.adjoin R (of' R M '' G) = ⊤ := by
@@ -534,7 +533,7 @@ section Ring
 
 variable [CommRing R] [CommMonoid M]
 
-/-- If `MonoidAlgebra R M` is of finite type, there there is a `G : Finset M` such that its image
+/-- If `MonoidAlgebra R M` is of finite type, then there is a `G : Finset M` such that its image
 generates, as algebra, `MonoidAlgebra R M`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
     ∃ G : Finset M, Algebra.adjoin R (of R M '' G) = ⊤ := by
