@@ -152,9 +152,7 @@ theorem ACF_isSatisfiable_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsSatisfiable := by
   cases hp with
   | inl hp => exact ACF0_isSatisfiable_of_prime hp
-  | inr hp =>
-    subst hp
-    exact ACF0_isSatisfiable
+  | inr hp => exact hp ▸ ACF0_isSatisfiable
 
 open Cardinal
 
@@ -185,20 +183,25 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
 
 --Every Finite subset of Theory.ACF 0 is modeled by ACF p for infinitely many p
 
+example (T0 : Finset (Sentence Language.field))
+    (hT0 : (T0 : Language.field.Theory) ⊆ Theory.ACF 0) :
+    Set.Infinite { p : Nat.Primes | ∀φ ∈T0,  (Theory.ACF p) ⊨ᵇ φ } := by
+
+
 theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence)
     (hφ : Set.Infinite { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }) :
     Theory.ACF 0 ⊨ᵇ φ := by
-  rw [← @not_not (_ ⊨ᵇ _), ← Theory.IsComplete.models_not_iff,
+  rw [← @not_not (_ ⊨ᵇ _), ← (ACF_isComplete_of_prime_or_zero (Or.inr rfl)).models_not_iff,
     Theory.models_iff_finset_models]
   push_neg
   intro T0 hT0
-  rw [Theory.IsComplete.models_not_iff, not_not]
   have h : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ },
-      ∀ φ ∈ T0, (Theory.ACF p) ⊨ᵇ φ := by
-
-
-
-
+    ∀ φ ∈ T0, Theory.ACF p ⊨ᵇ φ := sorry
+  rcases h with ⟨p, hp1, hp2⟩
+  intro h
+  have : Theory.ACF p ⊨ᵇ Formula.not φ := Theory.models_of_models_theory hp2 h
+  rw [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff] at this
+  exact this hp1
 
 end Language
 
