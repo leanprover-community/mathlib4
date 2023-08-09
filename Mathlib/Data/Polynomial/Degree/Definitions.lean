@@ -1136,7 +1136,7 @@ theorem eq_C_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) 
   rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf]
 
-theorem natDegree_pos_of_monic_ne_one (hf : p.Monic) (hfne : p ≠ 1) : 0 < p.natDegree := by
+theorem natDegree_pos_of_monic_ne_one (hf : p.Monic) (hfne : p ≠ 1) : p.natDegree ≠ 0 := by
   by_contra' H
   refine hfne (eq_C_one_of_monic_natDegree_zero hf ?_)
   exact Nat.le_zero.mp H
