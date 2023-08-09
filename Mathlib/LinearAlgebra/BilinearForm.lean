@@ -950,14 +950,15 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 #align bilin_form.is_symm_neg BilinForm.isSymm_neg
 
-theorem isSymm_iff_flip' [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B := by
+variable (R₂) in
+theorem isSymm_iff_flip [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B := by
   constructor
   · intro h
     ext x y
     exact h y x
   · intro h x y
     conv_lhs => rw [← h]
-#align bilin_form.is_symm_iff_flip' BilinForm.isSymm_iff_flip'
+#align bilin_form.is_symm_iff_flip' BilinForm.isSymm_iff_flip
 
 /-- The proposition that a bilinear form is alternating -/
 def IsAlt (B : BilinForm R M) : Prop :=
