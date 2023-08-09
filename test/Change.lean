@@ -1,6 +1,8 @@
 import Mathlib.Tactic.Change
 import Std.Tactic.GuardMsgs
 
+set_option pp.unicode.fun true
+
 /-- info: change 0 = 1
 ---
 info: change (fun x ↦ x) 0 = 1
