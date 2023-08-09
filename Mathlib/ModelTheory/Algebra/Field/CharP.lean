@@ -24,7 +24,7 @@ open field
 def Theory.hasChar (p : ℕ) : Language.field.Theory :=
   ({eqZero p} ∪ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)}))
 
-theorem model_hasChar_of_charP {K : Type _} [ModelField K] {p : ℕ} [CharP K p] :
+theorem model_hasChar_of_charP {K : Type _} [CompatibleField K] {p : ℕ} [CharP K p] :
     (Theory.hasChar p).Model K := by
   rw [Theory.hasChar]
   refine Theory.model_union_iff.2 ⟨?_, ?_⟩
@@ -36,10 +36,10 @@ theorem model_hasChar_of_charP {K : Type _} [ModelField K] {p : ℕ} [CharP K p]
     rintro φ n hnp rfl
     simp only [Sentence.Realize, eqZero, zero_def, Formula.realize_not, Formula.realize_equal,
       realize_termOfFreeCommRing, map_natCast, Term.realize_constants, constantMap,
-      ModelField.funMap_zero]
+      CompatibleField.funMap_zero]
     exact (not_iff_not.2 (CharP.cast_eq_zero_iff K p n)).2 hnp
 
-theorem charP_of_model_hasChar {K : Type _} [ModelField K]
+theorem charP_of_model_hasChar {K : Type _} [CompatibleField K]
     [h : (Theory.hasChar p).Model K] : CharP K p := by
   rw [charP_iff]
   intro x
@@ -53,14 +53,14 @@ theorem charP_of_model_hasChar {K : Type _} [ModelField K]
     by_contra hpx
     have := h _ x hpx rfl
     simp only [eqZero, Formula.realize_not, Formula.realize_equal, realize_termOfFreeCommRing,
-      map_natCast, Term.realize, ModelField.funMap_zero] at this
+      map_natCast, Term.realize, CompatibleField.funMap_zero] at this
     exact this hx
   . rintro ⟨y, rfl⟩
     have h : K ⊨ {eqZero p} :=
       Theory.Model.mono h (Set.subset_union_left _ _)
     simp only [eqZero, Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize, forall_eq,
       Formula.realize_equal, realize_termOfFreeCommRing, map_natCast, Term.realize,
-      ModelField.funMap_zero] at h
+      CompatibleField.funMap_zero] at h
     simp [h]
 
 end Language

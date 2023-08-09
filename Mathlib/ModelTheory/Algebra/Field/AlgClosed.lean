@@ -19,7 +19,7 @@ namespace Language
 
 open field FreeCommRing BigOperators Polynomial
 
-variable {K : Type _} [ModelField K]
+variable {K : Type _} [CompatibleField K]
 
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
     of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
@@ -40,7 +40,7 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
       p.natDegree = n → p.Monic → ∃ x, p.eval x = 0 := by
   simp only [Sentence.Realize, genericMonicPolyHasRoot, BoundedFormula.realize_alls,
     BoundedFormula.realize_ex, BoundedFormula.realize_bdEqual, Term.realize_relabel,
-    Sum.elim_comp_inr, realize_termOfFreeCommRing, Term.realize, ModelField.funMap_zero]
+    Sum.elim_comp_inr, realize_termOfFreeCommRing, Term.realize, CompatibleField.funMap_zero]
   constructor
   . rintro h p rfl hpm
     rcases h (fun i => p.coeff i) with ⟨x, hx⟩
@@ -97,7 +97,7 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
 def Theory.ACF (p : ℕ) : Theory Language.field :=
   Theory.field ∪ Theory.hasChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
 
-instance {K : Type _} [ModelField K] [CharP K p] [IsAlgClosed K] :
+instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2
     ⟨Theory.model_union_iff.2 ⟨by infer_instance, model_hasChar_of_charP⟩, ?_⟩
@@ -109,15 +109,15 @@ instance {K : Type _} [ModelField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-def modelFieldOfModelACF (K : Type _) (p : ℕ) [Language.field.Structure K]
-    [h : (Theory.ACF p).Model K] : ModelField K := by
+def CompatibleFieldOfModelACF (K : Type _) (p : ℕ) [Language.field.Structure K]
+    [h : (Theory.ACF p).Model K] : CompatibleField K := by
   haveI : Theory.field.Model K :=
     Theory.Model.mono h (Set.subset_union_of_subset_left
       (Set.subset_union_left _ _) _)
-  exact modelFieldOfFieldStructure K
+  exact compatibleFieldOfFieldStructure K
 
 theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
-    [ModelField M] [h : (Theory.ACF p).Model M] :
+    [CompatibleField M] [h : (Theory.ACF p).Model M] :
     IsAlgClosed M := by
   refine IsAlgClosed.of_exists_root _ ?_
   intro p hpm hpi
@@ -131,7 +131,7 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
   exact this _ rfl hpm
 
 theorem charP_of_model_ACF (p : ℕ) (M : Type _)
-    [ModelField M] [h : (Theory.ACF p).Model M] :
+    [CompatibleField M] [h : (Theory.ACF p).Model M] :
     CharP M p := by
   have : (Theory.hasChar p).Model M :=
     Theory.Model.mono h
@@ -140,7 +140,7 @@ theorem charP_of_model_ACF (p : ℕ) (M : Type _)
 
 set_option synthInstance.maxHeartbeats 100000 in
 theorem ACF0_isSatisfiable : (Theory.ACF 0).IsSatisfiable := by
-  letI := modelFieldOfField (AlgebraicClosure ℚ)
+  letI := compatibleFieldOfField (AlgebraicClosure ℚ)
   haveI : CharP (AlgebraicClosure ℚ) 0 :=
     charP_of_injective_algebraMap
       (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
@@ -149,7 +149,7 @@ theorem ACF0_isSatisfiable : (Theory.ACF 0).IsSatisfiable := by
 theorem ACF0_isSatisfiable_of_prime {p : ℕ} (hp : p.Prime) :
     (Theory.ACF p).IsSatisfiable := by
   haveI : Fact p.Prime := ⟨hp⟩
-  letI := modelFieldOfField (AlgebraicClosure (ZMod p))
+  letI := compatibleFieldOfField (AlgebraicClosure (ZMod p))
   haveI : CharP (AlgebraicClosure (ZMod p)) p :=
     charP_of_injective_algebraMap
       (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
@@ -171,14 +171,14 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
   . exact ACF_isSatisfiable_of_prime_or_zero hp
   . rintro ⟨M⟩
-    letI := modelFieldOfModelACF M p
+    letI := CompatibleFieldOfModelACF M p
     letI := isAlgClosed_of_model_ACF p M
     infer_instance
   . rintro ⟨M⟩ ⟨N⟩ hM hN
-    letI := modelFieldOfModelACF M p
+    letI := CompatibleFieldOfModelACF M p
     haveI := isAlgClosed_of_model_ACF p M
     haveI := charP_of_model_ACF p M
-    letI := modelFieldOfModelACF N p
+    letI := CompatibleFieldOfModelACF N p
     haveI := isAlgClosed_of_model_ACF p N
     haveI := charP_of_model_ACF p N
     constructor
@@ -213,7 +213,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
         Sum.elim_comp_inl, Term.realize_func, Fin.forall_fin_zero_pi, not_forall,
         false_iff, not_exists, not_not, imp_false]
       intro p X _
-      letI := modelFieldOfModelACF X p
+      letI := CompatibleFieldOfModelACF X p
       simp
     · refine ⟨⟨((Nat.factors n).pmap (fun (p : ℕ) (hp : p.Prime) => ⟨p, hp⟩)
         (fun p => Nat.prime_of_mem_factors)).toFinset, ?_⟩⟩
@@ -227,10 +227,10 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
       simp only [Theory.models_sentence_iff, Nat.isUnit_iff, Sentence.Realize, eqZero, zero_def,
         Formula.realize_equal, Term.realize_constants, constantMap] at hpT
       rcases ACF_isSatisfiable_of_prime_or_zero (Or.inl p.2) with ⟨M⟩
-      letI := modelFieldOfModelACF M p
+      letI := CompatibleFieldOfModelACF M p
       haveI := charP_of_model_ACF p M
       have := hpT M
-      simp only [realize_termOfFreeCommRing, map_natCast, ModelField.funMap_zero] at this
+      simp only [realize_termOfFreeCommRing, map_natCast, CompatibleField.funMap_zero] at this
       rwa [CharP.cast_eq_zero_iff M p n] at this
     · refine ⟨⟨∅, ?_⟩⟩
       simp only [Finset.not_mem_empty, false_iff, not_not, imp_false]

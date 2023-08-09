@@ -16,7 +16,7 @@ namespace field
 noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.field.Term α :=
   (ring.termOfFreeCommRing p).realize Term.var
 
-variable {K : Type _} [ModelField K]
+variable {K : Type _} [CompatibleField K]
 
 @[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → K) :
