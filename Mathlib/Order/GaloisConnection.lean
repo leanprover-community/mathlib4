@@ -530,6 +530,10 @@ theorem leftInverse_l_u [Preorder α] [PartialOrder β] (gi : GaloisInsertion l 
   gi.l_u_eq
 #align galois_insertion.left_inverse_l_u GaloisInsertion.leftInverse_l_u
 
+theorem l_top [Preorder α] [PartialOrder β] [OrderTop α] [OrderTop β]
+    (gi : GaloisInsertion l u) : l ⊤ = ⊤ :=
+  top_unique <| (gi.le_l_u _).trans <| gi.gc.monotone_l le_top
+
 theorem l_surjective [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u) : Surjective l :=
   gi.leftInverse_l_u.surjective
 #align galois_insertion.l_surjective GaloisInsertion.l_surjective
