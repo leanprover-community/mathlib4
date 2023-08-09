@@ -705,9 +705,8 @@ def analyticGroupoid : StructureGroupoid H :=
         · simp only [preimage_univ, univ_inter]
           refine AnalyticOn.congr
             (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x) ?_
-          intro z hz
-          refine eventuallyEq_iff_exists_mem.mpr ?_
-          exact ⟨interior (range I), ⟨isOpen_interior.mem_nhds_iff.mpr hz,
+          exact fun z hz => eventuallyEq_iff_exists_mem.mpr ⟨interior (range I),
+            ⟨isOpen_interior.mem_nhds_iff.mpr hz,
             fun x hx => (I.right_inv (interior_subset hx)).symm⟩⟩
         · intro x hx
           simp only [left_id, comp_apply, preimage_univ, univ_inter, mem_image] at hx
@@ -748,6 +747,48 @@ def analyticGroupoid : StructureGroupoid H :=
           refine ⟨y, ⟨hy.left, ?_⟩⟩
           rw [comp_apply, comp_apply, fg (I.symm y) hy.left.left] at hy
           exact hy.right }
+
+/-- An identity local homeomorphism belongs to the analytic groupoid. -/
+theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
+    LocalHomeomorph.ofSet s hs ∈ analyticGroupoid I := by
+  rw [analyticGroupoid]
+  refine And.intro (ofSet_mem_contDiffGroupoid ∞ I hs) ?_
+  apply mem_groupoid_of_pregroupoid.mpr
+  suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
+      (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
+  · simp [h]
+    intro x hx
+    refine mem_preimage.mpr ?_
+    rw [← I.right_inv (interior_subset hx.right)] at hx
+    exact hx.right
+  apply And.intro
+  · have : AnalyticOn 𝕜 (1 : E →L[𝕜] E) (univ : Set E) := (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
+    refine (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr ?_
+    exact fun z hz => eventuallyEq_iff_exists_mem.mpr ⟨interior (range I),
+      ⟨isOpen_interior.mem_nhds_iff.mpr hz.right,
+      fun x hx => (I.right_inv (interior_subset hx)).symm⟩⟩
+  · intro x hx
+    simp only [comp_apply, mem_image] at hx
+    rcases hx with ⟨y, hy⟩
+    rw [← hy.right, I.right_inv (interior_subset hy.left.right)]
+    exact hy.left.right
+
+/-- The composition of a local homeomorphism from `H` to `M` and its inverse belongs to
+the analytic groupoid. -/
+theorem symm_trans_mem_analyticGroupoid (e : LocalHomeomorph M H) :
+    e.symm.trans e ∈ analyticGroupoid I :=
+  haveI : e.symm.trans e ≈ LocalHomeomorph.ofSet e.target e.open_target :=
+    LocalHomeomorph.trans_symm_self _
+  StructureGroupoid.eq_on_source _ (ofSet_mem_analyticGroupoid I e.open_target) this
+
+/-- The analytic groupoid is closed under restriction. -/
+instance : ClosedUnderRestriction (analyticGroupoid I) :=
+  (closedUnderRestriction_iff_id_le _).mpr
+    (by
+      apply StructureGroupoid.le_iff.mpr
+      rintro e ⟨s, hs, hes⟩
+      apply (analyticGroupoid I).eq_on_source' _ _ _ hes
+      exact ofSet_mem_analyticGroupoid I hs)
 
 end analyticGroupoid
 
