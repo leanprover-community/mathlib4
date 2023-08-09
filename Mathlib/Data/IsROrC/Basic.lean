@@ -845,7 +845,7 @@ theorem lt_iff_re_im {z w : K} : z < w ↔ re z < re w ∧ im z = im w := by
     exact ⟨⟨hr, hi⟩, ne_of_apply_ne _ hrn⟩
 
 open scoped ComplexOrder in
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `IsROrC K` is a star ordered ring.
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
@@ -869,6 +869,7 @@ def toStarOrderedRing : StarOrderedRing K :=
 scoped[ComplexOrder] attribute [instance] IsROrC.toStarOrderedRing
 
 open scoped ComplexOrder in
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings. -/
 def toStrictOrderedCommRing : StrictOrderedCommRing K where
   zero_le_one := by simp [@IsROrC.le_iff_re_im K]
   add_le_add_left _ _ := add_le_add_left
