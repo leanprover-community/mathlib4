@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.continuous_function.compact
-! leanprover-community/mathlib commit d3af0609f6db8691dffdc3e1fb7feb7da72698f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
+
+#align_import topology.continuous_function.compact from "leanprover-community/mathlib"@"d3af0609f6db8691dffdc3e1fb7feb7da72698f2"
 
 /-!
 # Continuous functions on a compact space
@@ -167,17 +164,6 @@ instance [CompleteSpace β] : CompleteSpace C(α, β) :=
 theorem continuous_eval : Continuous fun p : C(α, β) × α => p.1 p.2 :=
   continuous_eval.comp ((isometryEquivBoundedOfCompact α β).continuous.prod_map continuous_id)
 #align continuous_map.continuous_eval ContinuousMap.continuous_eval
-
-/-- See also `ContinuousMap.continuous_eval_const'`. -/
-@[continuity]
-theorem continuous_eval_const (x : α) : Continuous fun f : C(α, β) => f x :=
-  continuous_eval.comp (continuous_id.prod_mk continuous_const)
-#align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const
-
-/-- See also `ContinuousMap.continuous_coe'`. -/
-theorem continuous_coe : @Continuous C(α, β) (α → β) _ _ (↑) :=
-  continuous_pi continuous_eval_const
-#align continuous_map.continuous_coe ContinuousMap.continuous_coe
 
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
@@ -457,7 +443,7 @@ def compRightContinuousMap {X Y : Type _} (T : Type _) [TopologicalSpace X] [Com
     refine' Metric.continuous_iff.mpr _
     intro g ε ε_pos
     refine' ⟨ε, ε_pos, fun g' h => _⟩
-    rw [ContinuousMap.dist_lt_iff ε_pos] at h⊢
+    rw [ContinuousMap.dist_lt_iff ε_pos] at h ⊢
     exact fun x => h (f x)
 #align continuous_map.comp_right_continuous_map ContinuousMap.compRightContinuousMap
 

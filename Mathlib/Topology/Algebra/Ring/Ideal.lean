@@ -2,14 +2,11 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.ring.ideal
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import topology.algebra.ring.ideal from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Ideals and quotients of topological rings
@@ -38,10 +35,13 @@ theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
   rfl
 #align ideal.coe_closure Ideal.coe_closure
 
-@[simp]
-theorem Ideal.closure_eq_of_isClosed (I : Ideal R) [hI : IsClosed (I : Set R)] : I.closure = I :=
+-- porting note: removed `@[simp]` because we make the instance argument explicit since otherwise
+-- it causes timeouts as `simp` tries and fails to generated an `IsClosed` instance.
+-- we also `alignₓ` because of the change in argument type
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.20heartbeats.20of.20the.20linter
+theorem Ideal.closure_eq_of_isClosed (I : Ideal R) (hI : IsClosed (I : Set R)) : I.closure = I :=
   SetLike.ext' hI.closure_eq
-#align ideal.closure_eq_of_is_closed Ideal.closure_eq_of_isClosed
+#align ideal.closure_eq_of_is_closed Ideal.closure_eq_of_isClosedₓ
 
 end Ring
 

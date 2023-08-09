@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module logic.equiv.embedding
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Embedding.Set
+
+#align_import logic.equiv.embedding from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
 /-!
 # Equivalences on embeddings
@@ -71,7 +68,7 @@ def codRestrict (α : Type _) {β : Type _} (bs : Set β) :
 in which the second embedding cannot take values in the range of the first. -/
 def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type _} :
     { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } ≃
-      Σf : α ↪ γ, β ↪ ↥(Set.range fᶜ) :=
+      Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   (subtypeProdEquivSigmaSubtype fun (a : α ↪ γ) (b : β ↪ _) =>
         Disjoint (Set.range a) (Set.range b)).trans <|
     Equiv.sigmaCongrRight fun a =>
@@ -85,7 +82,7 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type _} :
 into two dependent embeddings, the second of which avoids any members of the range
 of the first. This is helpful for constructing larger embeddings out of smaller ones. -/
 def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type _} :
-    (Sum α β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range fᶜ) :=
+    (Sum α β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 #align equiv.sum_embedding_equiv_sigma_embedding_restricted Equiv.sumEmbeddingEquivSigmaEmbeddingRestricted

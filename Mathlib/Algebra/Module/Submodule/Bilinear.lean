@@ -2,14 +2,11 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.module.submodule.bilinear
-! leanprover-community/mathlib commit 6010cf523816335f7bae7f8584cb2edaace73940
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.BilinearMap
+
+#align_import algebra.module.submodule.bilinear from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"
 
 /-!
 # Images of pairs of submodules under bilinear maps
@@ -48,7 +45,7 @@ variable [Module R M] [Module R N] [Module R P]
 
 This is the submodule version of `Set.image2`.  -/
 def map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) : Submodule R P :=
-  ⨆ s : p, q.map <| f s
+  ⨆ s : p, q.map (f s)
 #align submodule.map₂ Submodule.map₂
 
 theorem apply_mem_map₂ (f : M →ₗ[R] N →ₗ[R] P) {m : M} {n : N} {p : Submodule R M}
@@ -93,7 +90,7 @@ theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : m
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=
   eq_bot_iff.2 <|
     map₂_le.2 fun m hm n hn => by
-      rw [Submodule.mem_bot] at hm⊢
+      rw [Submodule.mem_bot] at hm ⊢
       rw [hm, LinearMap.map_zero₂]
 #align submodule.map₂_bot_left Submodule.map₂_bot_left
 

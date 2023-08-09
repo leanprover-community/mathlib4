@@ -2,16 +2,13 @@
 Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
-
-! This file was ported from Lean 3 source module combinatorics.derangements.basic
-! leanprover-community/mathlib commit 9407b03373c8cd201df99d6bc5514fc2db44054f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Option
+
+#align_import combinatorics.derangements.basic from "leanprover-community/mathlib"@"9407b03373c8cd201df99d6bc5514fc2db44054f"
 
 /-!
 # Derangements on types
@@ -91,10 +88,10 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
       -- porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine' Equiv.sumCongr _ _
-      . exact subtypeSubtypeEquivSubtypeInter
+      · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (a ∈ fixedPoints ·)
-      . exact subtypeSubtypeEquivSubtypeInter
+      · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
@@ -146,7 +143,7 @@ theorem RemoveNone.fiber_some (a : α) :
   · rw [RemoveNone.mem_fiber]
     rintro ⟨F, F_derangement, F_none, rfl⟩ x x_fixed
     rw [mem_fixedPoints_iff] at x_fixed
-    apply_fun some  at x_fixed
+    apply_fun some at x_fixed
     cases' Fx : F (some x) with y
     · rwa [removeNone_none F Fx, F_none, Option.some_inj, eq_comm] at x_fixed
     · exfalso

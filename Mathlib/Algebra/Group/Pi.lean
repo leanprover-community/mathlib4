@@ -2,16 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.group.pi
-! leanprover-community/mathlib commit e4bc74cbaf429d706cb9140902f7ca6c431e75a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Pairwise
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Function
+
+#align_import algebra.group.pi from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
 /-!
 # Pi instances for groups and monoids
@@ -82,6 +79,12 @@ instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) 
 #align pi.add_zero_class Pi.addZeroClass
 
 @[to_additive]
+instance invOneClass [∀ i, InvOneClass <| f i] : InvOneClass (∀ i : I, f i) :=
+  { one := (1 : ∀ i, f i)
+    inv := (· ⁻¹)
+    inv_one := by intros; ext; exact inv_one }
+
+@[to_additive]
 instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
   { semigroup, mulOneClass with
     npow := fun n x i => x i ^ n
@@ -117,6 +120,11 @@ instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f 
     zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
     zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
   }
+
+@[to_additive Pi.subNegZeroMonoid]
+instance divInvOneMonoid [∀ i, DivInvOneMonoid <| f i] : DivInvOneMonoid (∀ i : I, f i) :=
+  { divInvMonoid with
+    inv_one := by ext; exact inv_one }
 
 @[to_additive]
 instance involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=
@@ -380,7 +388,7 @@ def Pi.constMonoidHom (α β : Type _) [MulOneClass β] : β →* α → β wher
 
 See also `MonoidHom.eval`. -/
 @[to_additive (attr := simps) "Coercion of an `AddMonoidHom` into a function is itself
-a `AddMonoidHom`.
+an `AddMonoidHom`.
 
 See also `AddMonoidHom.eval`."]
 def MonoidHom.coeFn (α β : Type _) [MulOneClass α] [CommMonoid β] : (α →* β) →* α → β where

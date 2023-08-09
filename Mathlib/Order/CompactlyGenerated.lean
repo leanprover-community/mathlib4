@@ -2,11 +2,6 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module order.compactly_generated
-! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Atoms
 import Mathlib.Order.OrderIsoNat
@@ -17,6 +12,8 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
+
+#align_import order.compactly_generated from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
 
 /-!
 # Compactness properties for complete lattices
@@ -207,7 +204,7 @@ theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α �
   refine' ⟨t, ht₁, (sSup_le _ _ fun y hy => _).antisymm _⟩
   · classical
     rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
-        (hm _ ⟨insert y t, by simp [Set.insert_subset, hy, ht₁]⟩)]
+        (hm _ ⟨insert y t, by simp [Set.insert_subset_iff, hy, ht₁]⟩)]
     simp
   · rw [Finset.sup_id_eq_sSup]
     exact sSup_le_sSup ht₁
@@ -411,7 +408,7 @@ protected theorem Directed.disjoint_iSup_left (h : Directed (· ≤ ·) f) :
 
 /-- This property is equivalent to `α` being upper continuous. -/
 theorem inf_sSup_eq_iSup_inf_sup_finset :
-    a ⊓ sSup s = ⨆ (t : Finset α) (_H : ↑t ⊆ s), a ⊓ t.sup id :=
+    a ⊓ sSup s = ⨆ (t : Finset α) (_ : ↑t ⊆ s), a ⊓ t.sup id :=
   le_antisymm
     (by
       rw [le_iff_compact_le_imp]
@@ -436,7 +433,7 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
       have h' := (h (insert a t) ?_ (t.mem_insert_self a)).eq_bot
       · rwa [Finset.coe_insert, Set.insert_diff_self_of_not_mem] at h'
         exact fun con => ((Set.mem_diff a).1 (ht con)).2 (Set.mem_singleton a)
-      · rw [Finset.coe_insert, Set.insert_subset]
+      · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
 
@@ -481,8 +478,7 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   obtain rfl | H := eq_or_ne b k
   · left; ext; simp only [Set.Iic.coe_top, Subtype.coe_mk]
   right
-  have ih : ?_ := ?_ -- Porting note: this is an ugly hack, but `?ih` on the next line fails
-  obtain ⟨a, a₀, ba, h⟩ := zorn_nonempty_partialOrder₀ (Set.Iio k) ih b (lt_of_le_of_ne hbk H)
+  have ⟨a, a₀, ba, h⟩ := zorn_nonempty_partialOrder₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
   · refine' ⟨⟨a, le_of_lt a₀⟩, ⟨ne_of_lt a₀, fun c hck => by_contradiction fun c₀ => _⟩, ba⟩
     cases h c.1 (lt_of_le_of_ne c.2 fun con => c₀ (Subtype.ext con)) hck.le
     exact lt_irrefl _ hck
@@ -550,12 +546,13 @@ Now we will prove that a compactly generated modular atomistic lattice is a comp
 Most explicitly, every element is the complement of a supremum of indepedendent atoms.
 -/
 
-/-- In an atomic lattice, every element `b` has a complement of the form `Sup s`, where each element
-of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
+element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
 theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
     ∃ s : Set α, CompleteLattice.SetIndependent s ∧
     IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
-  -- porting note: `obtain` chokes on the placeholder.
+  -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
+  -- `obtain` chokes on the placeholder.
   have := zorn_subset
     {s : Set α | CompleteLattice.SetIndependent s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a}
     fun c hc1 hc2 =>

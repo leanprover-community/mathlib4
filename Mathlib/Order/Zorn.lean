@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.zorn
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Chain
+
+#align_import order.zorn from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Zorn's lemmas
@@ -36,7 +33,7 @@ walkthrough:
 1. Know what relation on which type/set you're looking for. See Variants above. You can discharge
   some conditions to Zorn's lemma directly using a `_nonempty` variant.
 2. Write down the definition of your type/set, put a `suffices : ∃ m, ∀ a, m ≺ a → a ≺ m, { ... },`
-  (or whatever you actually need) followed by a `apply some_version_of_zorn`.
+  (or whatever you actually need) followed by an `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
 A typical proof using Zorn could look like this (TODO: update to mathlib4)
@@ -137,7 +134,7 @@ theorem zorn_nonempty_preorder₀ (s : Set α)
   -- rcases zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_ with ⟨m, ⟨hms, hxm⟩, hm⟩
   -- · exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   have H := zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
-  . rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
+  · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
     exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   · rcases c.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
     · exact ⟨x, ⟨hxs, le_rfl⟩, fun z => False.elim⟩

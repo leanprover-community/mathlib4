@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.localization_localization
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.FractionRing
+
+#align_import ring_theory.localization.localization_localization from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Localizations of localizations
@@ -55,7 +52,7 @@ variable {M N}
 @[simp]
 theorem mem_localizationLocalizationSubmodule {x : R} :
     x ∈ localizationLocalizationSubmodule M N ↔
-      ∃ (y : N)(z : M), algebraMap R S x = y * algebraMap R S z := by
+      ∃ (y : N) (z : M), algebraMap R S x = y * algebraMap R S z := by
   rw [localizationLocalizationSubmodule, Submonoid.mem_comap, Submonoid.mem_sup]
   constructor
   · rintro ⟨y, hy, _, ⟨z, hz, rfl⟩, e⟩
@@ -221,7 +218,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
       obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
       refine' Iff.trans _ (Set.exists_image_iff (algebraMap R S) N fun c => c * x₁ = c * x₂).symm
-      dsimp only at e₁ e₂⊢
+      dsimp only at e₁ e₂ ⊢
       suffices : algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) ↔
         ∃ a : N, algebraMap R S (a * (y₁ * s₂)) = algebraMap R S (a * (y₂ * s₁))
       · have h₁ := @IsUnit.mul_left_inj T _ _ (algebraMap S T x₁) (algebraMap S T x₂)

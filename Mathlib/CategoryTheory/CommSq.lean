@@ -2,13 +2,10 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.comm_sq
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Arrow
+
+#align_import category_theory.comm_sq from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Commutative squares
@@ -106,7 +103,7 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
   B ---g---> Y
 ```
 
-The datum of a lift in a commutative square, i.e. a up-right-diagonal
+The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
 -- Porting note: removed @[nolint has_nonempty_instance]
 @[ext]
@@ -203,7 +200,7 @@ variable (sq)
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor
-  exacts[fun h => h.exists_lift, fun h => mk h]
+  exacts [fun h => h.exists_lift, fun h => mk h]
 #align category_theory.comm_sq.has_lift.iff CategoryTheory.CommSq.HasLift.iff
 
 theorem iff_op : HasLift sq ↔ HasLift sq.op := by

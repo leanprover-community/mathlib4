@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.Lat
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Hom.Lattice
+
+#align_import order.category.Lat from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of lattices
@@ -100,8 +97,8 @@ def dual : LatCat ⥤ LatCat where
 def dualEquiv : LatCat ≌ LatCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align Lat.dual_equiv LatCat.dualEquiv
 
 end LatCat

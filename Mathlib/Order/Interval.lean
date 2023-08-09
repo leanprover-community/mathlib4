@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.interval
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Init.Data.Prod
+
+#align_import order.interval from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Order intervals
@@ -259,11 +256,8 @@ theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
 
--- Porting note: Did I port this correctly?
--- lean3 statement was `(coe_hom : nonempty_interval α → set α) = coe`
--- is it even needed?
 @[simp]
-theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = setLike.coe :=
+theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = ((↑) : NonemptyInterval α → Set α) :=
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
@@ -322,7 +316,7 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
-@[reducible] -- Porting note: added reducible, it seems to help with coersions
+@[reducible] -- Porting note: added reducible, it seems to help with coercions
 def Interval (α : Type _) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
@@ -438,7 +432,7 @@ theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.ma
 variable [BoundedOrder α]
 
 instance boundedOrder : BoundedOrder (Interval α) :=
-  WithBot.instBoundedOrderWithBotLe
+  WithBot.instBoundedOrder
 
 @[simp]
 theorem dual_top : dual (⊤ : Interval α) = ⊤ :=
@@ -454,7 +448,7 @@ variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 instance partialOrder : PartialOrder (Interval α) :=
   WithBot.partialOrder
 
-/-- Consider a interval `[a, b]` as the set `[a, b]`. -/
+/-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff
     (fun s =>
@@ -537,8 +531,7 @@ section Decidable
 variable [@DecidableRel α (· ≤ ·)]
 
 instance lattice : Lattice (Interval α) :=
-  {
-    Interval.semilatticeSup with
+  { Interval.semilatticeSup with
     inf := fun s t =>
       match s, t with
       | ⊥, _ => ⊥
@@ -681,8 +674,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           if h : S ⊆ {⊥} then ⊥
           else
             some
-              ⟨⟨⨅ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.fst,
-                  ⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩, by
+              ⟨⟨⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
+                  ⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩, by
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
@@ -716,8 +709,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 ∀ ⦃s : NonemptyInterval α⦄,
                   ↑s ∈ S → ∀ ⦃t : NonemptyInterval α⦄, ↑t ∈ S → s.fst ≤ t.snd then
             some
-              ⟨⟨⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.fst,
-                  ⨅ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩,
+              ⟨⟨⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
+                  ⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩,
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
         sInf_le := fun s₁ s ha => by
@@ -762,7 +755,7 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
   classical -- Porting note: added
   -- Porting note: this `change` was
   -- change ↑ (dite _ _ _) = _
-  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (_H : s ∈ S), (s : Set α)
+  change ((dite _ _ _ : Interval α) : Set α) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
   · ext
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
@@ -781,7 +774,8 @@ theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 #align interval.coe_infi Interval.coe_iInf
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+-- @[simp] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 #align interval.coe_infi₂ Interval.coe_iInf₂

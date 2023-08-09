@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.normal_mono.basic
-! leanprover-community/mathlib commit bbe25d4d92565a5fd773e52e041a90387eee3c93
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.shapes.normal_mono.basic from "leanprover-community/mathlib"@"bbe25d4d92565a5fd773e52e041a90387eee3c93"
 
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.
@@ -20,7 +17,7 @@ A normal monomorphism is a morphism that is the kernel of some other morphism.
 We give the construction `NormalMono → RegularMono` (`CategoryTheory.NormalMono.regularMono`)
 as well as the dual construction for normal epimorphisms. We show equivalences reflect normal
 monomorphisms (`CategoryTheory.equivalenceReflectsNormalMono`), and that the pullback of a
-normal monomorphism is normal (`CategoryTheoCy.normalOfIsPullbackSndOfNormal`).
+normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 
 We also define classes `NormalMonoCategory` and `NormalEpiCategory` for classes in which
 every monomorphism or epimorphism is normal, and deduce that these categories are
@@ -68,7 +65,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
   Z := F.objPreimage hf.Z
   g := Full.preimage (hf.g ≫ (F.objObjPreimageIso hf.Z).inv)
   w := F.map_injective <| by
-    have reassoc' {W : D} (h : hf.Z ⟶  W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
+    have reassoc' {W : D} (h : hf.Z ⟶ W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
   isLimit :=
@@ -111,7 +108,7 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
   Z := hn.Z
   g := k ≫ hn.g
   w := by
-    have reassoc' {W : C} (h' : S ⟶  W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
+    have reassoc' {W : C} (h' : S ⟶ W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
       simp only [← Category.assoc, eq_whisker comm]
     rw [← reassoc', hn.w, HasZeroMorphisms.comp_zero]
   isLimit := by
@@ -209,7 +206,7 @@ instance (priority := 100) NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] 
 
 /-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `normal_epi.g ≫ k = 0`
     induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
-def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef: NormalEpi f] (k : X ⟶ W) (h : nef.g ≫ k = 0) :
+def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef : NormalEpi f] (k : X ⟶ W) (h : nef.g ≫ k = 0) :
     { l : Y ⟶ W // f ≫ l = k } :=
   CokernelCofork.IsColimit.desc' NormalEpi.isColimit _ h
 #align category_theory.normal_epi.desc' CategoryTheory.NormalEpi.desc'
@@ -225,7 +222,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
   W := gn.W
   g := gn.g ≫ f
   w := by
-    have reassoc' {W : C} (h' : R ⟶  W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
+    have reassoc' {W : C} (h' : R ⟶ W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
       rw [← Category.assoc, eq_whisker gn.w]
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by

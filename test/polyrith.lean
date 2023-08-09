@@ -16,7 +16,7 @@ A full test suite is provided at the bottom of the file.
 -/
 
 /-!
-## Set up testing infrastructre
+## Set up testing infrastructure
 -/
 
 -- section tactic
@@ -93,7 +93,7 @@ A full test suite is provided at the bottom of the file.
 -- end tactic
 
 -- /-!
--- ## SageCell communcation tests
+-- ## SageCell communication tests
 -- -/
 
 -- example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :

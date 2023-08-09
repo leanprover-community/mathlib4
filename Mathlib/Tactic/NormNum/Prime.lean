@@ -2,15 +2,12 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.prime_norm_num
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum.Basic
+
+#align_import data.nat.prime_norm_num from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -26,7 +23,7 @@ that is thousands of levels deep, and the Lean kernel seems to raise a stack ove
 type-checking that proof. If we want an implementation that works for larger primes, we should
 generate a proof that has a smaller depth.
 
-Note: `evalMinFac.aux` does not raise an stack overflow, which can be checked by replacing the
+Note: `evalMinFac.aux` does not raise a stack overflow, which can be checked by replacing the
 `prf'` in the recursive call by something like `(.sort .zero)`
 -/
 
@@ -184,15 +181,14 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
 @[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let ⟨nn, pn⟩ ← deriveNat n sℕ
+  let ⟨nn, pn⟩ ← deriveNat n _
   let n' := nn.natLit!
   -- note: if `n` is not prime, we don't have to verify the calculation of `n.minFac`, we just have
   -- to compute it, which is a lot quicker
   let rec core : MetaM (Result q(Nat.Prime $n)) := do
     match n' with
-    | 0 => let pn : Q(IsNat $n 0) := pn; return .isFalse q(isNat_prime_0 $pn)
-    | 1 => let pn : Q(IsNat $n 1) := pn; return .isFalse q(isNat_prime_1 $pn)
+    | 0 => haveI' : $nn =Q 0 := ⟨⟩; return .isFalse q(isNat_prime_0 $pn)
+    | 1 => haveI' : $nn =Q 1 := ⟨⟩; return .isFalse q(isNat_prime_1 $pn)
     | _ =>
       let d := n'.minFac
       if d < n' then
@@ -200,7 +196,7 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
         return .isFalse q(isNat_not_prime $pn $prf)
       let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
       let .isNat _ _lit (p2n : Q(IsNat (minFac $nn) $nn)) ←
-        evalMinFac.core nn nn q(.raw_refl _) nn.natLit! | failure
+        evalMinFac.core nn _ nn q(.raw_refl _) nn.natLit! | failure
       return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
 

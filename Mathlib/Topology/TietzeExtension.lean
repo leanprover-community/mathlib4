@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.tietze_extension
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Set.Intervals.IsoIoo
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.UrysohnsBounded
+
+#align_import topology.tietze_extension from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Tietze extension theorem
@@ -108,7 +105,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
   /- For the proof, we iterate `tietze_extension_step`. Each time we apply it to the difference
     between the previous approximation and `f`. -/
   choose F hF_norm hF_dist using fun f : X →ᵇ ℝ => tietze_extension_step f e he
-  set g : ℕ → Y →ᵇ ℝ := fun n => ((fun g => g + F (f - g.compContinuous e))^[n]) 0
+  set g : ℕ → Y →ᵇ ℝ := fun n => (fun g => g + F (f - g.compContinuous e))^[n] 0
   have g0 : g 0 = 0 := rfl
   have g_succ : ∀ n, g (n + 1) = g n + F (f - (g n).compContinuous e) := fun n =>
     Function.iterate_succ_apply' _ _ _

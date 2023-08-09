@@ -2,16 +2,13 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.nonarchimedean.adic_topology
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.UniformRing
+
+#align_import topology.algebra.nonarchimedean.adic_topology from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Adic topology
@@ -42,7 +39,7 @@ corresponding adic topology to the type class inference system.
 ## Implementation notes
 
 The `I`-adic topology on a ring `R` has a contrived definition using `I^n • ⊤` instead of `I`
-to make sure it is definitionally equal to the `I`-topology on `R` seen as a `R`-module.
+to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R`-module.
 
 -/
 
@@ -130,7 +127,7 @@ theorem adic_module_basis :
         exact smul_mem_smul a_in mem_top⟩ }
 #align ideal.adic_module_basis Ideal.adic_module_basis
 
-/-- The topology on a `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
+/-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
@@ -138,7 +135,7 @@ def adicModuleTopology : TopologicalSpace M :=
 #align ideal.adic_module_topology Ideal.adicModuleTopology
 
 /-- The elements of the basis of neighborhoods of zero for the `I`-adic topology
-on a `R`-module `M`, seen as open additive subgroups of `M`. -/
+on an `R`-module `M`, seen as open additive subgroups of `M`. -/
 def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
@@ -191,7 +188,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
 variable [TopologicalSpace R] [TopologicalRing R]
 
 theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
-  rw [isAdic_iff] at h⊢
+  rw [isAdic_iff] at h ⊢
   constructor
   · intro m
     rw [← pow_mul]
@@ -248,7 +245,7 @@ instance (priority := 100) : UniformSpace R :=
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
 
-/-- The adic topology on a `R` module coming from the ideal `WithIdeal.I`.
+/-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
 def topologicalSpaceModule (M : Type _) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M

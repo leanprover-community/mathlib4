@@ -2,16 +2,13 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module algebra.quadratic_discriminant
-! leanprover-community/mathlib commit e085d1df33274f4b32f611f483aae678ba0b42df
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
+
+#align_import algebra.quadratic_discriminant from "leanprover-community/mathlib"@"e085d1df33274f4b32f611f483aae678ba0b42df"
 
 /-!
 # Quadratic discriminants and roots of a quadratic

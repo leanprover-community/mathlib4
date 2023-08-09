@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández
-
-! This file was ported from Lean 3 source module data.finsupp.alist
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.List.AList
+
+#align_import data.finsupp.alist from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Connections between `Finsupp` and `AList`
@@ -65,8 +62,8 @@ absent keys to zero. -/
 noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
     where
   support := by
-    haveI := Classical.decEq α ; haveI := Classical.decEq M ;
-      exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
+    haveI := Classical.decEq α; haveI := Classical.decEq M
+    exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
   toFun a :=
     haveI := Classical.decEq α
     (l.lookup a).getD 0
@@ -88,8 +85,8 @@ theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x
     l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
     -- porting note: was `convert rfl`
      simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
-     . apply Subsingleton.elim
-     . funext ; congr
+     · apply Subsingleton.elim
+     · funext; congr
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun _x : α => M} {a : α} {x : M}

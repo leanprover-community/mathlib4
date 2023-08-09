@@ -2,17 +2,14 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.dickson
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.RingTheory.Ideal.LocalRing
+
+#align_import ring_theory.polynomial.dickson from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Dickson polynomials
@@ -205,7 +202,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   -- Since `X ^ p` also satisfies this property in characteristic `p`,
   -- we can use a variant on `Polynomial.funext` to conclude that these polynomials are equal.
   -- For this argument, we need an arbitrary infinite field of characteristic `p`.
-  obtain ⟨K, _, _, H⟩ : ∃ (K : Type)(_ : Field K), ∃ _ : CharP K p, Infinite K := by
+  obtain ⟨K, _, _, H⟩ : ∃ (K : Type) (_ : Field K), ∃ _ : CharP K p, Infinite K := by
     let K := FractionRing (Polynomial (ZMod p))
     let f : ZMod p →+* K := (algebraMap _ (FractionRing _)).comp C
     have : CharP K p := by

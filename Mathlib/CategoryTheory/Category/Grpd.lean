@@ -2,16 +2,13 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.category.Groupoid
-! leanprover-community/mathlib commit c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Limits.IsLimit
+
+#align_import category_theory.category.Groupoid from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
 /-!
 # Category of groupoids
@@ -75,7 +72,7 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
   comp F G := F ⋙ G
   id_comp _ := by rfl
   comp_id _ := by rfl
-  assoc := by intros ; rfl
+  assoc := by intros; rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.category CategoryTheory.Grpd.category
 
@@ -116,8 +113,6 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.id_to_functor CategoryTheory.Grpd.id_to_functor
 
 section Products
-
---attribute [local tidy] tactic.discrete_cases
 
 /-- Construct the product over an indexed family of groupoids, as a fan. -/
 def piLimitFan ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.Fan F :=

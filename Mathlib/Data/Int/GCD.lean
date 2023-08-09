@@ -2,11 +2,6 @@
 Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.int.gcd
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Algebra.GroupPower.Lemmas
@@ -14,18 +9,20 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Order.Bounds.Basic
 
+#align_import data.int.gcd from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
+
 /-!
 # Extended GCD and divisibility over ℤ
 
 ## Main definitions
 
 * Given `x y : ℕ`, `xgcd x y` computes the pair of integers `(a, b)` such that
-  `gcd x y = x * a + y * b`. `gcd_a x y` and `gcd_b x y` are defined to be `a` and `b`,
+  `gcd x y = x * a + y * b`. `gcdA x y` and `gcdB x y` are defined to be `a` and `b`,
   respectively.
 
 ## Main statements
 
-* `gcd_eq_gcd_ab`: Bézout's lemma, given `x y : ℕ`, `gcd x y = x * gcd_a x y + y * gcd_b x y`.
+* `gcd_eq_gcd_ab`: Bézout's lemma, given `x y : ℕ`, `gcd x y = x * gcdA x y + y * gcdB x y`.
 
 ## Tags
 
@@ -58,11 +55,11 @@ theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
 #align nat.xgcd_zero_left Nat.xgcd_zero_left
 
-theorem xgcd_aux_rec {r s t r' s' t'} (h : 0 < r) :
+theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
   rfl
-#align nat.xgcd_aux_rec Nat.xgcd_aux_rec
+#align nat.xgcd_aux_rec Nat.xgcdAux_rec
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
   satisfying `gcd x y = x * a + y * b`. -/
@@ -96,7 +93,8 @@ theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
+  -- Porting note (https://github.com/leanprover/lean4/issues/2330):
+  -- `simp [xgcdAux_succ]` crashes Lean here
   rw [xgcdAux_succ]
   rfl
 #align nat.gcd_a_zero_right Nat.gcdA_zero_right
@@ -105,21 +103,22 @@ theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
+  -- Porting note (https://github.com/leanprover/lean4/issues/2330):
+  -- `simp [xgcdAux_succ]` crashes Lean here
   rw [xgcdAux_succ]
   rfl
 #align nat.gcd_b_zero_right Nat.gcdB_zero_right
 
 @[simp]
-theorem xgcd_aux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
+theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
   gcd.induction x y (by simp) fun x y h IH s t s' t' => by
-    simp [xgcd_aux_rec, h, IH]
+    simp [xgcdAux_rec, h, IH]
     rw [← gcd_rec]
-#align nat.xgcd_aux_fst Nat.xgcd_aux_fst
+#align nat.xgcd_aux_fst Nat.xgcdAux_fst
 
-theorem xgcd_aux_val (x y) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
-  rw [xgcd, ← xgcd_aux_fst x y 1 0 0 1]
-#align nat.xgcd_aux_val Nat.xgcd_aux_val
+theorem xgcdAux_val (x y) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
+  rw [xgcd, ← xgcdAux_fst x y 1 0 0 1]
+#align nat.xgcd_aux_val Nat.xgcdAux_val
 
 theorem xgcd_val (x y) : xgcd x y = (gcdA x y, gcdB x y) := by
   unfold gcdA gcdB; cases xgcd x y; rfl
@@ -132,25 +131,25 @@ variable (x y : ℕ)
 private def P : ℕ × ℤ × ℤ → Prop
   | (r, s, t) => (r : ℤ) = x * s + y * t
 
-theorem xgcd_aux_P {r r'} :
+theorem xgcdAux_P {r r'} :
     ∀ {s t s' t'}, P x y (r, s, t) → P x y (r', s', t') → P x y (xgcdAux r s t r' s' t') := by
   induction r, r' using gcd.induction with
   | H0 => simp
   | H1 a b h IH =>
     intro s t s' t' p p'
-    rw [xgcd_aux_rec h]; refine' IH _ p; dsimp [P] at *
+    rw [xgcdAux_rec h]; refine' IH _ p; dsimp [P] at *
     rw [Int.emod_def]; generalize (b / a : ℤ) = k
     rw [p, p', mul_sub, sub_add_eq_add_sub, mul_sub, add_mul, mul_comm k t, mul_comm k s,
       ← mul_assoc, ← mul_assoc, add_comm (x * s * k), ← add_sub_assoc, sub_sub]
 set_option linter.uppercaseLean3 false in
-#align nat.xgcd_aux_P Nat.xgcd_aux_P
+#align nat.xgcd_aux_P Nat.xgcdAux_P
 
 /-- **Bézout's lemma**: given `x y : ℕ`, `gcd x y = x * a + y * b`, where `a = gcd_a x y` and
 `b = gcd_b x y` are computed by the extended Euclidean algorithm.
 -/
 theorem gcd_eq_gcd_ab : (gcd x y : ℤ) = x * gcdA x y + y * gcdB x y := by
-  have := @xgcd_aux_P x y x y 1 0 0 1 (by simp [P]) (by simp [P])
-  rwa [xgcd_aux_val, xgcd_val] at this
+  have := @xgcdAux_P x y x y 1 0 0 1 (by simp [P]) (by simp [P])
+  rwa [xgcdAux_val, xgcd_val] at this
 #align nat.gcd_eq_gcd_ab Nat.gcd_eq_gcd_ab
 
 end
@@ -212,8 +211,8 @@ theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB
 
 theorem natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
   rcases Nat.eq_zero_or_pos (natAbs b) with (h | h)
-  rw [natAbs_eq_zero.1 h]
-  simp [Int.ediv_zero]
+  · rw [natAbs_eq_zero.1 h]
+    simp [Int.ediv_zero]
   calc
     natAbs (a / b) = natAbs (a / b) * 1 := by rw [mul_one]
     _ = natAbs (a / b) * (natAbs b / natAbs b) := by rw [Nat.div_self h]
@@ -377,7 +376,7 @@ theorem exists_gcd_one {m n : ℤ} (H : 0 < gcd m n) :
 #align int.exists_gcd_one Int.exists_gcd_one
 
 theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
-    ∃ (g : ℕ)(m' n' : ℤ), 0 < g ∧ gcd m' n' = 1 ∧ m = m' * g ∧ n = n' * g :=
+    ∃ (g : ℕ) (m' n' : ℤ), 0 < g ∧ gcd m' n' = 1 ∧ m = m' * g ∧ n = n' * g :=
   let ⟨m', n', h⟩ := exists_gcd_one H
   ⟨_, m', n', H, h⟩
 #align int.exists_gcd_one' Int.exists_gcd_one'

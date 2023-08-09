@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module group_theory.divisible
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Algebra.Group.Pi
+
+#align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Divisible Group and rootable group
@@ -37,7 +34,7 @@ For additive monoids and groups:
 * `smul_right_surj_of_divisibleBy` : the constructive definition of divisiblity implies
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `Prod.divisibleBy` : `A × B` is divisible for any two divisible additive monoids.
-* `Pi.divisibleBy` : any product of divisble additive monoids is divisible.
+* `Pi.divisibleBy` : any product of divisible additive monoids is divisible.
 * `AddGroup.divisibleByIntOfDivisibleByNat` : for additive groups, int divisiblity is implied
   by nat divisiblity.
 * `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisiblity is implied

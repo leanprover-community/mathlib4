@@ -2,14 +2,10 @@
 Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
-
-! This file was ported from Lean 3 source module linear_algebra.bilinear_form
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+#align_import linear_algebra.bilinear_form from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Bilinear form
@@ -226,6 +222,21 @@ theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R 
     (B : BilinForm R M) (x y : M) : (a • B) x y = a • B x y :=
   rfl
 #align bilin_form.smul_apply BilinForm.smul_apply
+
+instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
+    [SMulCommClass α R R] [SMulCommClass β R R] [SMulCommClass α β R] :
+    SMulCommClass α β (BilinForm R M) :=
+  ⟨fun a b B => ext $ fun x y => smul_comm a b (B x y)⟩
+
+instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
+    [SMulCommClass α R R] [SMulCommClass β R R] [IsScalarTower α β R] :
+    IsScalarTower α β (BilinForm R M) :=
+  ⟨fun a b B => ext $ fun x y => smul_assoc a b (B x y)⟩
+
+instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
+    [SMulCommClass α R R] [IsCentralScalar α R] :
+    IsCentralScalar α (BilinForm R M) :=
+  ⟨fun a B => ext $ fun x y => op_smul_eq_smul a (B x y)⟩
 
 instance : AddCommMonoid (BilinForm R M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
@@ -641,8 +652,7 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
     (hᵣ : Function.Surjective r) : B₁.comp l r = B₂.comp l r ↔ B₁ = B₂ := by
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
-    ext x
-    intro y
+    ext x y
     cases' hₗ x with x' hx
     subst hx
     cases' hᵣ y with y' hy
@@ -943,8 +953,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 theorem isSymm_iff_flip' [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B := by
   constructor
   · intro h
-    ext x
-    intro y
+    ext x y
     exact h y x
   · intro h x y
     conv_lhs => rw [← h]
@@ -1210,7 +1219,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
   refine' eq_bot_iff.2 fun y h => _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   have := h.2 x ?_
-  · rw [Finset.sum_singleton] at this⊢
+  · rw [Finset.sum_singleton] at this ⊢
     suffices hμzero : μ x = 0
     · rw [hμzero, zero_smul, Submodule.mem_bot]
     change B x (μ x • x) = 0 at this
@@ -1417,13 +1426,13 @@ theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
 
 variable [FiniteDimensional K V]
 
-open FiniteDimensional
+open FiniteDimensional Submodule
 
 theorem finrank_add_finrank_orthogonal {B : BilinForm K V} {W : Subspace K V} (b₁ : B.IsRefl) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
-    toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, Submodule.finrank_map_subtype_eq]
+    toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, finrank_map_subtype_eq]
   conv_rhs =>
     rw [← @Subspace.finrank_add_finrank_dualCoannihilator_eq K V _ _ _ _
         (LinearMap.range (B.toLin.domRestrict W)),
@@ -1438,14 +1447,14 @@ theorem restrict_nondegenerate_of_isCompl_orthogonal {B : BilinForm K V} {W : Su
   have : W ⊓ B.orthogonal W = ⊥ := by
     rw [eq_bot_iff]
     intro x hx
-    obtain ⟨hx₁, hx₂⟩ := Submodule.mem_inf.1 hx
+    obtain ⟨hx₁, hx₂⟩ := mem_inf.1 hx
     refine' Subtype.mk_eq_mk.1 (b₂ ⟨x, hx₁⟩ _)
     rintro ⟨n, hn⟩
-    rw [restrict_apply, Submodule.coe_mk, Submodule.coe_mk, b₁]
+    rw [restrict_apply, coe_mk, coe_mk, b₁]
     exact hx₂ n hn
-  refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (Submodule.finrank_le _).antisymm _)
+  refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm _)
   conv_rhs => rw [← add_zero (finrank K _)]
-  rw [← finrank_bot K V, ← this, Submodule.finrank_sup_add_finrank_inf_eq,
+  rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq,
     finrank_add_finrank_orthogonal b₁]
   exact le_self_add
 #align bilin_form.restrict_nondegenerate_of_is_compl_orthogonal BilinForm.restrict_nondegenerate_of_isCompl_orthogonal

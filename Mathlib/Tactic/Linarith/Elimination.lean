@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 
@@ -47,9 +46,9 @@ Two comparisons can be added to produce a new comparison,
 and one comparison can be scaled by a natural number to produce a new comparison.
  -/
 inductive CompSource : Type
-| assump : Nat → CompSource
-| add : CompSource → CompSource → CompSource
-| scale : Nat → CompSource → CompSource
+  | assump : Nat → CompSource
+  | add : CompSource → CompSource → CompSource
+  | scale : Nat → CompSource → CompSource
 deriving Inhabited
 
 /--
@@ -61,16 +60,16 @@ and adding to that the sum of assumptions 1 and 2.
 `cs.flatten` maps `1 ↦ 1, 2 ↦ 6`.
  -/
 def CompSource.flatten : CompSource → HashMap Nat Nat
-| (CompSource.assump n) => HashMap.empty.insert n 1
-| (CompSource.add c1 c2) =>
-    (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
-| (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
+  | (CompSource.assump n) => HashMap.empty.insert n 1
+  | (CompSource.add c1 c2) =>
+      (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
+  | (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
 
 /-- Formats a `CompSource` for printing. -/
 def CompSource.toString : CompSource → String
-| (CompSource.assump e) => ToString.toString e
-| (CompSource.add c1 c2) => CompSource.toString c1 ++ " + " ++ CompSource.toString c2
-| (CompSource.scale n c) => ToString.toString n ++ " * " ++ CompSource.toString c
+  | (CompSource.assump e) => ToString.toString e
+  | (CompSource.add c1 c2) => CompSource.toString c1 ++ " + " ++ CompSource.toString c2
+  | (CompSource.scale n c) => ToString.toString n ++ " * " ++ CompSource.toString c
 
 instance : ToFormat CompSource :=
   ⟨fun a => CompSource.toString a⟩
@@ -107,7 +106,7 @@ structure PComp : Type where
   /-- The set of original assumptions which have been used in constructing this comparison. -/
   history : RBSet ℕ Ord.compare
   /-- The variables which have been *effectively eliminated*,
-  i.e. the by running the elimination algorithm on that variable. -/
+  i.e. by running the elimination algorithm on that variable. -/
   effective : RBSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
@@ -328,7 +327,7 @@ def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
 `produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`
 by eliminating all variables ≤ `maxVar`.
 If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
-This map represents that we can find a contradiction by taking the sum  `∑ (coeff i) * hyps[i]`.
+This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 -/
 def FourierMotzkin.produceCertificate : CertificateOracle :=
   fun hyps maxVar => match ExceptT.run

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.group.order_synonym
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Synonym
+
+#align_import algebra.group.order_synonym from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
 /-!
 # Group structure on the order type synonyms
@@ -140,25 +137,25 @@ theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDua
 #align of_dual_div ofDual_div
 #align of_dual_sub ofDual_sub
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) toDual_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 #align to_dual_pow toDual_pow
 #align to_dual_smul toDual_smul
 #align to_dual_vadd toDual_vadd
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) ofDual_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 #align of_dual_pow ofDual_pow
 #align of_dual_smul ofDual_smul
 #align of_dual_vadd ofDual_vadd
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) toDual_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 #align pow_to_dual pow_toDual
 #align to_dual_smul' toDual_smul'
 #align to_dual_vadd' toDual_vadd'
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) ofDual_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 #align pow_of_dual pow_ofDual
 #align of_dual_smul' ofDual_smul'
@@ -280,25 +277,25 @@ theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b :=
 #align of_lex_div ofLex_div
 #align of_lex_sub ofLex_sub
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) toLex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
 #align to_lex_pow toLex_pow
 #align to_lex_smul toLex_smul
 #align to_lex_vadd toLex_vadd
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) ofLex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 #align of_lex_pow ofLex_pow
 #align of_lex_smul ofLex_smul
 #align of_lex_vadd ofLex_vadd
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) toLex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 #align pow_to_lex pow_toLex
 #align to_lex_smul' toLex_smul'
 #align to_lex_vadd' toLex_vadd'
 
-@[to_additive (attr := simp, to_additive) (reorder:= 1 2, 4 5) ofLex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
 #align of_lex_smul' ofLex_smul'

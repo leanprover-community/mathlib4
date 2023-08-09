@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.subalgebra.basic
-! leanprover-community/mathlib commit 8130e5155d637db35907c272de9aec9dc851c03a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Set.UnionLift
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Operations
+
+#align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
 /-!
 # Subalgebras over Commutative Semiring
@@ -104,8 +101,16 @@ theorem copy_eq (S : Subalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs =
 
 variable (S : Subalgebra R A)
 
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
-  S.algebraMap_mem' r
+instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
+  smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
+
+theorem _root_.algebraMap_mem {S R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+    [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
+    algebraMap R A r ∈ s :=
+  Algebra.algebraMap_eq_smul_one (A := A) r ▸ SMulMemClass.smul_mem r (one_mem s)
+
+protected theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
+  algebraMap_mem S r
 #align subalgebra.algebra_map_mem Subalgebra.algebraMap_mem
 
 theorem rangeS_le : (algebraMap R A).rangeS ≤ S.toSubsemiring := fun _x ⟨r, hr⟩ =>
@@ -120,10 +125,8 @@ theorem range_le : Set.range (algebraMap R A) ≤ S :=
 #align subalgebra.range_le Subalgebra.range_le
 
 theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
-  (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem r) hx
+  SMulMemClass.smul_mem r hx
 #align subalgebra.smul_mem Subalgebra.smul_mem
-
-instance : SMulMemClass (Subalgebra R A) R A where smul_mem r _x hx := smul_mem _ hx r
 
 protected theorem one_mem : (1 : A) ∈ S :=
   one_mem S
@@ -652,7 +655,7 @@ theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀
   ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
 #align alg_hom.injective_cod_restrict AlgHom.injective_codRestrict
 
-/-- Restrict the codomain of a alg_hom `f` to `f.range`.
+/-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
 @[reducible]
@@ -1403,9 +1406,18 @@ theorem mem_centralizer_iff {s : Set A} {z : A} : z ∈ centralizer R s ↔ ∀ 
   Iff.rfl
 #align subalgebra.mem_centralizer_iff Subalgebra.mem_centralizer_iff
 
+theorem center_le_centralizer (s) : center R A ≤ centralizer R s :=
+  s.center_subset_centralizer
+#align subalgebra.center_le_centralizer Subalgebra.center_le_centralizer
+
 theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
   Set.centralizer_subset h
 #align subalgebra.centralizer_le Subalgebra.centralizer_le
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {s : Set A} : centralizer R s = ⊤ ↔ s ⊆ center R A :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align subalgebra.centralizer_eq_top_iff_subset Subalgebra.centralizer_eq_top_iff_subset
 
 @[simp]
 theorem centralizer_univ : centralizer R Set.univ = center R A :=
@@ -1419,7 +1431,7 @@ end Centralizer
 `sᵢ ^ n • x ∈ S'` for some `n` for each `sᵢ`. -/
 theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type _} [CommRing S] [Algebra R S]
     (S' : Subalgebra R S) {ι : Type _} (ι' : Finset ι) (s : ι → S) (l : ι → S)
-    (e : (∑ i in ι', l i * s i) = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
+    (e : ∑ i in ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
   -- Porting note: needed to add this instance
   let _i : Algebra { x // x ∈ S' } { x // x ∈ S' } := Algebra.id _
@@ -1429,7 +1441,7 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type _} [CommRing S] [Alge
   choose n hn using H
   let s' : ι → S' := fun x => ⟨s x, hs x⟩
   let l' : ι → S' := fun x => ⟨l x, hl x⟩
-  have e' : (∑ i in ι', l' i * s' i) = 1 := by
+  have e' : ∑ i in ι', l' i * s' i = 1 := by
     ext
     show S'.subtype (∑ i in ι', l' i * s' i) = 1
     simpa only [map_sum, map_mul] using e
@@ -1461,7 +1473,7 @@ section Nat
 
 variable {R : Type _} [Semiring R]
 
-/-- A subsemiring is a `ℕ`-subalgebra. -/
+/-- A subsemiring is an `ℕ`-subalgebra. -/
 def subalgebraOfSubsemiring (S : Subsemiring R) : Subalgebra ℕ R :=
   { S with algebraMap_mem' := fun i => coe_nat_mem S i }
 #align subalgebra_of_subsemiring subalgebraOfSubsemiring

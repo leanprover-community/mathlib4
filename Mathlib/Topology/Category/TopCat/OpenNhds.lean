@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.Top.open_nhds
-! leanprover-community/mathlib commit 1ec4876214bf9f1ddfbf97ae4b0d777ebd5d6938
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Opens
+
+#align_import topology.category.Top.open_nhds from "leanprover-community/mathlib"@"1ec4876214bf9f1ddfbf97ae4b0d777ebd5d6938"
 
 /-!
 # The category of open neighborhoods of a point
@@ -134,7 +131,7 @@ theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
 with the inclusion functors into `Opens X`. -/
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
-  NatIso.ofComponents (fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _) (by simp)
+  NatIso.ofComponents fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _
 #align topological_space.open_nhds.inclusion_map_iso TopologicalSpace.OpenNhds.inclusionMapIso
 
 @[simp]

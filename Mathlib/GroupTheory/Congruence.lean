@@ -2,16 +2,13 @@
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
-
-! This file was ported from Lean 3 source module group_theory.congruence
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
+
+#align_import group_theory.congruence from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Congruence relations
@@ -257,7 +254,7 @@ variable (c)
 @[to_additive "Defining the quotient by an additive congruence relation of a type with
 an addition."]
 protected def Quotient :=
-  Quotient <| c.toSetoid
+  Quotient c.toSetoid
 #align con.quotient Con.Quotient
 #align add_con.quotient AddCon.Quotient
 
@@ -315,7 +312,7 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 #align add_con.lift_on₂ AddCon.liftOn₂
 
 /-- A version of `Quotient.hrecOn₂'` for quotients by `Con`. -/
-@[to_additive "A version of `quotient.hrec_on₂'` for quotients by `add_con`."]
+@[to_additive "A version of `Quotient.hrecOn₂'` for quotients by `AddCon`."]
 protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort _}
     (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
     (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) : φ a b :=
@@ -344,7 +341,7 @@ protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : �
 #align add_con.induction_on AddCon.induction_on
 
 /-- A version of `Con.induction_on` for predicates which take two arguments. -/
-@[to_additive (attr := elab_as_elim) "A version of `add_con.induction_on` for predicates which take
+@[to_additive (attr := elab_as_elim) "A version of `AddCon.induction_on` for predicates which take
 two arguments."]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
@@ -471,8 +468,7 @@ instance : PartialOrder (Con M) where
 @[to_additive "The complete lattice of additive congruence relations on a given type with
 an addition."]
 instance : CompleteLattice (Con M) :=
-  {
-    (completeLatticeOfInf (Con M)) fun s =>
+  { (completeLatticeOfInf (Con M)) fun s =>
       ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : Con M) x y) r hr, fun r hr x y h r' hr' =>
         hr hr'
           h⟩ with
@@ -512,11 +508,11 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y
     (le_sInf (fun s hs x y (hxy : (conGen r).r x y) =>
       show s.r x y by
         apply ConGen.Rel.recOn (motive := fun x y _ => s.r x y) hxy
-        . exact fun x y h => hs x y h
-        . exact s.refl'
-        . exact fun _ => s.symm'
-        . exact fun _ _ => s.trans'
-        . exact fun _ _ => s.mul))
+        · exact fun x y h => hs x y h
+        · exact s.refl'
+        · exact fun _ => s.symm'
+        · exact fun _ _ => s.trans'
+        · exact fun _ _ => s.mul))
     (sInf_le ConGen.Rel.of)
 #align con.con_gen_eq Con.conGen_eq
 #align add_con.add_con_gen_eq AddCon.addConGen_eq
@@ -716,10 +712,10 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient
           Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
   map_rel_iff' := @fun s t => by
     constructor
-    . intros h x y hs
+    · intros h x y hs
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
       exact t.1.trans (t.1.symm <| t.2 <| eq_rel.1 hx) (t.1.trans ht (t.2 <| eq_rel.1 hy))
-    . intros h _ _ hs
+    · intros h _ _ hs
       rcases hs with ⟨a, b, hx, hy, Hs⟩
       exact ⟨a, b, hx, hy, h Hs⟩
 #align con.correspondence Con.correspondence
@@ -760,7 +756,7 @@ variable (c)
 
 --Porting note: made M implicit
 /-- The submonoid of `M × M` defined by a congruence relation on a monoid `M`. -/
-@[to_additive (attr := coe) "The `add_submonoid` of `M × M` defined by an additive congruence
+@[to_additive (attr := coe) "The `AddSubmonoid` of `M × M` defined by an additive congruence
 relation on an `AddMonoid` `M`."]
 protected def submonoid : Submonoid (M × M)
     where
@@ -882,16 +878,11 @@ theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
 #align con.mrange_mk' Con.mrange_mk'
 #align add_con.mrange_mk' AddCon.mrange_mk'
 
-/-- The elements related to `x ∈ M`, `M` a monoid, by the kernel of a monoid homomorphism are
-    those in the preimage of `f(x)` under `f`. -/
-@[to_additive "The elements related to `x ∈ M`, `M` an `AddMonoid`, by the kernel of
-an `AddMonoid` homomorphism are those in the preimage of `f(x)` under `f`. "]
-theorem ker_apply_eq_preimage {f : M →* P} (x) : (ker f) x = f ⁻¹' {f x} :=
-  Set.ext fun _ =>
-    ⟨fun h => Set.mem_preimage.2 <| Set.mem_singleton_iff.2 h.symm, fun h =>
-      (Set.mem_singleton_iff.1 <| Set.mem_preimage.1 h).symm⟩
-#align con.ker_apply_eq_preimage Con.ker_apply_eq_preimage
-#align add_con.ker_apply_eq_preimage AddCon.ker_apply_eq_preimage
+-- Porting note: used to abuse defeq between sets and predicates
+@[to_additive]
+theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
+#noalign con.ker_apply_eq_preimage
+#noalign add_con.ker_apply_eq_preimage
 
 /-- Given a monoid homomorphism `f : N → M` and a congruence relation `c` on `M`, the congruence
     relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism composed with
@@ -959,7 +950,7 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
 
 /-- Homomorphisms on the quotient of a monoid by a congruence relation are equal if they
     are equal on elements that are coercions from the monoid. -/
-@[to_additive "Homomorphisms on the quotient of an AddMonoid` by an additive congruence relation
+@[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
 theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
@@ -1110,12 +1101,12 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 
-For a `computable` version, see `con.quotientKerEquivOfRightOnverse`.
+For a `computable` version, see `Con.quotientKerEquivOfRightInverse`.
 -/
 @[to_additive "The first isomorphism theorem for `AddMonoid`s in the case of a surjective
 homomorphism.
 
-For a `computable` version, see `add_con.quotient_ker_equiv_of_right_inverse`.
+For a `computable` version, see `AddCon.quotientKerEquivOfRightInverse`.
 "]
 noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f) :
     (ker f).Quotient ≃* P :=
@@ -1190,7 +1181,7 @@ instance semigroup {M : Type _} [Semigroup M] (c : Con M) : Semigroup c.Quotient
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
-an `AddSemigroup`."]
+an `AddCommSemigroup`."]
 instance commSemigroup {M : Type _} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
   Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.comm_semigroup Con.commSemigroup
@@ -1241,10 +1232,10 @@ protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
 #align con.zpow Con.zpow
 #align add_con.zsmul AddCon.zsmul
 
-/-- The inversion induced on the quotient by a congruence relation on a type with a
+/-- The inversion induced on the quotient by a congruence relation on a type with an
     inversion. -/
 @[to_additive "The negation induced on the quotient by an additive congruence relation on a type
-with an negation."]
+with a negation."]
 instance hasInv : Inv c.Quotient :=
   ⟨(Quotient.map' Inv.inv) fun _ _ => c.inv⟩
 #align con.has_inv Con.hasInv
@@ -1305,10 +1296,10 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
       (fun x y x' y' hx hy => _) u.3 u.4
   refine' Function.hfunext _ _
   rw [c.eq.2 hx, c.eq.2 hy]
-  . rintro Hxy Hxy' -
+  · rintro Hxy Hxy' -
     refine' Function.hfunext _ _
     · rw [c.eq.2 hx, c.eq.2 hy]
-    . rintro Hyx Hyx' -
+    · rintro Hyx Hyx' -
       exact heq_of_eq (Hf _ _ _ _ _ _ _ _ hx hy)
 #align con.lift_on_units Con.liftOnUnits
 #align add_con.lift_on_add_units AddCon.liftOnAddUnits
@@ -1342,10 +1333,11 @@ end Units
 section Actions
 
 @[to_additive]
-instance smulinst {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
-    SMul α c.Quotient where smul a := (Quotient.map' ((· • ·) a)) fun _ _ => c.smul a
-#align con.has_smul Con.smulinst
-#align add_con.has_vadd AddCon.smulinst
+instance instSMul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
+    SMul α c.Quotient where
+  smul a := (Quotient.map' ((· • ·) a)) fun _ _ => c.smul a
+#align con.has_smul Con.instSMul
+#align add_con.has_vadd AddCon.instVAdd
 
 @[to_additive]
 theorem coe_smul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)

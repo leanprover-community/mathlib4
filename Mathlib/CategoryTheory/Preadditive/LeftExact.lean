@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.preadditive.left_exact
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+#align_import category_theory.preadditive.left_exact from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Left exactness of functors between preadditive categories
@@ -169,7 +166,7 @@ attribute [local instance] preservesBinaryCoproductsOfPreservesCokernels
 
 variable [HasBinaryBiproducts C]
 
-/-- A functor between preadditive categoris preserves the coequalizer of two
+/-- A functor between preadditive categories preserves the coequalizer of two
 morphisms if it preserves all cokernels. -/
 def preservesCoequalizerOfPreservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] {X Y : C} (f g : X ⟶ Y) :

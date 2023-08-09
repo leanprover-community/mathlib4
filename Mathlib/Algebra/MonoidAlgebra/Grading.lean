@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.monoid_algebra.grading
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import algebra.monoid_algebra.grading from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
@@ -123,7 +120,7 @@ instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
 
 variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M →+ ι)
 
-set_option maxHeartbeats 250000 in
+set_option maxHeartbeats 260000 in
 /-- Auxiliary definition; the canonical grade decomposition, used to provide
 `DirectSum.decompose`. -/
 def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=

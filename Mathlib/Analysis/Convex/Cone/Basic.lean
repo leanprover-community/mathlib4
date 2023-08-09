@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.convex.cone.basic
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.LinearPMap
+
+#align_import analysis.convex.cone.basic from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Convex cones
@@ -646,7 +643,7 @@ namespace Convex
 
 /-- The set of vectors proportional to those in a convex set forms a convex cone. -/
 def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
-  apply ConvexCone.mk (⋃ (c : 𝕜) (_H : 0 < c), c • s) <;> simp only [mem_iUnion, mem_smul_set]
+  apply ConvexCone.mk (⋃ (c : 𝕜) (_ : 0 < c), c • s) <;> simp only [mem_iUnion, mem_smul_set]
   · rintro c c_pos _ ⟨c', c'_pos, x, hx, rfl⟩
     exact ⟨c * c', mul_pos c_pos c'_pos, x, hx, (smul_smul _ _ _).symm⟩
   · rintro _ ⟨cx, cx_pos, x, hx, rfl⟩ _ ⟨cy, cy_pos, y, hy, rfl⟩
@@ -771,7 +768,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
       rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
         smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
     · subst r
-      simp only [zero_smul, add_zero] at hzs⊢
+      simp only [zero_smul, add_zero] at hzs ⊢
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by

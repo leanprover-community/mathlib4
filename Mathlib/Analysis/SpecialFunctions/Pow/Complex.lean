@@ -3,13 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.pow.complex
-! leanprover-community/mathlib commit 4fa54b337f7d52805480306db1b1439c741848c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+
+#align_import analysis.special_functions.pow.complex from "leanprover-community/mathlib"@"4fa54b337f7d52805480306db1b1439c741848c8"
 
 /-! # Power function on `ℂ`
 
@@ -164,9 +161,7 @@ theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : HPow.hPow (x ^ (n�
 
 #align complex.cpow_nat_inv_pow Complex.cpow_nat_inv_pow
 
--- TODO: should log_of_real_mul and of_real_log use ofReal in their names?
-
-theorem mul_cpow_of_real_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
+theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp only [cpow_zero, mul_one]
@@ -176,9 +171,9 @@ theorem mul_cpow_of_real_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : �
   · rw [ofReal_zero, MulZeroClass.mul_zero, zero_cpow hr, MulZeroClass.mul_zero]
   have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
   have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
-  rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_of_real_mul ha' hb'', of_real_log ha,
+  rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,
     add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
-#align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_of_real_nonneg
+#align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_ofReal_nonneg
 
 theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
     x⁻¹ ^ n = if x.arg = π then conj (x ^ conj n)⁻¹ else (x ^ n)⁻¹ := by

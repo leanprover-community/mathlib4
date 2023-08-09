@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.sigma.basic
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Function
 import Std.Tactic.Ext
 import Mathlib.Logic.Function.Basic
+
+#align_import data.sigma.basic from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Sigma types
@@ -26,7 +23,7 @@ exactly two elements (see `Equiv.sumEquivSigmaBool`).
 `Σ x, A x` is notation for `Sigma A` (note that this is `\Sigma`, not the sum operator `∑`).
 `Σ x y z ..., A x y z ...` is notation for `Σ x, Σ y, Σ z, ..., A x y z ...`. Here we have
 `α : Type _`, `β : α → Type _`, `γ : Π a : α, β a → Type _`, ...,
-`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _`  with `x : α` `y : β x`, `z : γ x y`, ...
+`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _` with `x : α` `y : β x`, `z : γ x y`, ...
 
 ## Notes
 
@@ -74,6 +71,14 @@ theorem ext {x₀ x₁ : Sigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x
 theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
   cases x₀; cases x₁; exact Sigma.mk.inj_iff
 #align sigma.ext_iff Sigma.ext_iff
+
+/-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
+theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type _} [Nonempty γ]
+    {a b : α} {f : γ → β a} {g : γ → β b} (h : Sigma.mk a ∘ f = Sigma.mk b ∘ g) :
+    a = b ∧ HEq f g := by
+  rcases ‹Nonempty γ› with ⟨i⟩
+  obtain rfl : a = b := congr_arg Sigma.fst (congr_fun h i)
+  simpa [Function.funext_iff] using h
 
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]

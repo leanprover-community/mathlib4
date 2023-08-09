@@ -2,17 +2,13 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
-Ported by: Jon Eugster
-
-! This file was ported from Lean 3 source module data.pi.algebra
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
+
+#align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Instances and theorems on pi types
@@ -130,7 +126,7 @@ theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i 
 #align pi.smul_def Pi.smul_def
 #align pi.vadd_def Pi.vadd_def
 
-@[to_additive (attr := simp, to_additive) (reorder:= 2 3, 5 6) smul_const]
+@[to_additive (attr := simp, to_additive) (reorder := 2 3, 5 6) smul_const]
 theorem const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) :=
   rfl
 #align pi.const_pow Pi.const_pow
@@ -365,7 +361,7 @@ theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) 
 #align function.extend_zero Function.extend_zero
 
 @[to_additive]
-theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ):
+theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
   classical
   funext x

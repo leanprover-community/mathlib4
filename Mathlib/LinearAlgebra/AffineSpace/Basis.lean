@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.basis
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.Basis
+
+#align_import linear_algebra.affine_space.basis from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Affine bases and barycentric coordinates
@@ -203,7 +200,7 @@ theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s
 #align affine_basis.coord_apply_combination_of_not_mem AffineBasis.coord_apply_combination_of_not_mem
 
 @[simp]
-theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : (∑ i, b.coord i q) = 1 := by
+theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
@@ -228,7 +225,7 @@ theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
 affine space is a module so we can talk about linear combinations. -/
 @[simp]
 theorem linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (v : V) :
-    (∑ i, b.coord i v • b i) = v := by
+    ∑ i, b.coord i v • b i = v := by
   have hb := b.affineCombination_coord_eq_self v
   rwa [Finset.univ.affineCombination_eq_linear_combination _ _ (b.sum_coord_apply_eq_one v)] at hb
 #align affine_basis.linear_combination_coord_eq_self AffineBasis.linear_combination_coord_eq_self
@@ -290,7 +287,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
     -- mathlib3 proof was:
     -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
     --   AffineMap.map_vadd]
-    -- but now we need to `dsimp` before `AffinteMap.map_vadd` works.
+    -- but now we need to `dsimp` before `AffineMap.map_vadd` works.
     rw [LinearMap.coe_mk, Pi.vadd_apply']
     dsimp
     rw [AffineMap.map_vadd, linear_eq_sumCoords,
@@ -318,7 +315,7 @@ theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset �
 #align affine_basis.coord_apply_centroid AffineBasis.coord_apply_centroid
 
 theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
-    ∃ (s : _)(_ : s ⊆ t)(b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
+    ∃ (s : _) (_ : s ⊆ t) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
   refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
   rw [Subtype.range_coe, h_tot, ht]
@@ -326,7 +323,7 @@ theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
 
 variable (k V P)
 
-theorem exists_affineBasis : ∃ (s : Set P)(b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
+theorem exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
   let ⟨s, _, hs⟩ := exists_affine_subbasis (AffineSubspace.span_univ k V P)
   ⟨s, hs⟩
 #align affine_basis.exists_affine_basis AffineBasis.exists_affineBasis

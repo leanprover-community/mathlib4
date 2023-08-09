@@ -2,17 +2,14 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.option.basic
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
 import Mathlib.Tactic.Common
+
+#align_import data.option.basic from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
 # Option of a type
@@ -43,12 +40,16 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
 #align option.coe_def Option.coe_def
 
-#align option.get_or_else Option.getD
+theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
+#align option.mem_map Option.mem_map
 
-@[simp]
-theorem getD_coe (x y : α) : Option.getD (↑x) y = x :=
-  rfl
-#align option.get_or_else_coe Option.getD_coe
+theorem forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+    (∀ y ∈ o.map f, p y) ↔ ∀ x ∈ o, p (f x) := by simp
+#align option.forall_mem_map Option.forall_mem_map
+
+theorem exists_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+    (∃ y ∈ o.map f, p y) ↔ ∃ x ∈ o, p (f x) := by simp
+#align option.exists_mem_map Option.exists_mem_map
 
 theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
   Option.some_get h
@@ -59,7 +60,7 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
 #align option.eq_of_mem_of_mem Option.eq_of_mem_of_mem
 
 theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
-fun _ _ _=> mem_unique
+  fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
 theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp

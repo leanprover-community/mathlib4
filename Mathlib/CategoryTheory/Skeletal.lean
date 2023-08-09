@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.skeletal
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.Thin
+
+#align_import category_theory.skeletal from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
 /-!
 # Skeleton of a category
@@ -231,16 +228,16 @@ def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ Th
   fun x =>
     { obj := fun y => map₂ObjMap F x y
       map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
-        (fun x => (y₁ ⟶  y₂) → (map₂ObjMap F x y₁ ⟶  map₂ObjMap F x y₂)) _ x fun X
+        (fun x => (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY =>
             homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
 
-/-- This provides natural transformations `map₂Functor F x₁ ⟶  map₂Functor F x₂` given
-`x₁ ⟶  x₂` -/
-def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ ⟶  x₂) →
-    (map₂Functor F x₁ ⟶  map₂Functor F x₂) := fun {x₁} {x₂} =>
+/-- This provides natural transformations `map₂Functor F x₁ ⟶ map₂Functor F x₂` given
+`x₁ ⟶ x₂` -/
+def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ ⟶ x₂) →
+    (map₂Functor F x₁ ⟶ map₂Functor F x₂) := fun {x₁} {x₂} =>
   @Quotient.recOnSubsingleton₂ C C (isIsomorphicSetoid C) (isIsomorphicSetoid C)
-    (fun x x' : ThinSkeleton C => (x ⟶  x') → (map₂Functor F x ⟶  map₂Functor F x')) _ x₁ x₂
+    (fun x x' : ThinSkeleton C => (x ⟶ x') → (map₂Functor F x ⟶ map₂Functor F x')) _ x₁ x₂
     (fun X₁ X₂ f => { app := fun y =>
       Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) })
 
@@ -273,9 +270,9 @@ noncomputable def fromThinSkeleton : ThinSkeleton C ⥤ C where
 
 noncomputable instance fromThinSkeletonEquivalence : IsEquivalence (fromThinSkeleton C) where
   inverse := toThinSkeleton C
-  counitIso := NatIso.ofComponents (fun X => Nonempty.some (Quotient.mk_out X)) (by aesop_cat)
-  unitIso := NatIso.ofComponents (fun x => Quotient.recOnSubsingleton x fun X =>
-          eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)) (fun _ => rfl)
+  counitIso := NatIso.ofComponents fun X => Nonempty.some (Quotient.mk_out X)
+  unitIso := NatIso.ofComponents fun x => Quotient.recOnSubsingleton x fun X =>
+    eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)
 #align category_theory.thin_skeleton.from_thin_skeleton_equivalence CategoryTheory.ThinSkeleton.fromThinSkeletonEquivalence
 
 /-- The equivalence between the thin skeleton and the category itself. -/
@@ -304,12 +301,12 @@ theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
 
 theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents (fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _) (by aesop_cat)
+    NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _
 #align category_theory.thin_skeleton.map_comp_eq CategoryTheory.ThinSkeleton.map_comp_eq
 
 theorem map_id_eq : map (𝟭 C) = 𝟭 (ThinSkeleton C) :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents (fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _) (by aesop_cat)
+    NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _
 #align category_theory.thin_skeleton.map_id_eq CategoryTheory.ThinSkeleton.map_id_eq
 
 theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F₂ :=

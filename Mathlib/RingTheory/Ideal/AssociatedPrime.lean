@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ideal.associated_prime
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Noetherian
+
+#align_import ring_theory.ideal.associated_prime from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -99,7 +96,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   rw [Submodule.mem_annihilator_span_singleton] at ha hab
   have H₁ : (R ∙ y).annihilator ≤ (R ∙ a • y).annihilator := by
     intro c hc
-    rw [Submodule.mem_annihilator_span_singleton] at hc⊢
+    rw [Submodule.mem_annihilator_span_singleton] at hc ⊢
     rw [smul_comm, hc, smul_zero]
   have H₂ : (Submodule.span R {a • y}).annihilator ≠ ⊤ := by
     rwa [Ne.def, Submodule.annihilator_eq_top_iff, Submodule.span_singleton_eq_bot]

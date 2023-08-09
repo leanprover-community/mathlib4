@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.coeff
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Sum
+
+#align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
 /-!
 # Theory of univariate polynomials
@@ -67,7 +64,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
 theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp [mem_support_iff] at hi⊢
+  simp [mem_support_iff] at hi ⊢
   contrapose! hi
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul
@@ -197,7 +194,7 @@ open Finset
 theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     support (C x * X ^ k + C y * X ^ m) = {k, m} := by
   apply subset_antisymm (support_binomial' k m x y)
-  simp_rw [insert_subset, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
+  simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
     add_zero, Ne.def, hx, hy]
 #align polynomial.support_binomial Polynomial.support_binomial
@@ -206,7 +203,7 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
     (hy : y ≠ 0) (hz : z ≠ 0) :
     support (C x * X ^ k + C y * X ^ m + C z * X ^ n) = {k, m, n} := by
   apply subset_antisymm (support_trinomial' k m n x y z)
-  simp_rw [insert_subset, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
+  simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
     if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
     zero_add, Ne.def, hx, hy, hz]
@@ -385,7 +382,7 @@ theorem nat_cast_inj {m n : ℕ} {R : Type _} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
-    apply_fun fun p => p.coeff 0  at h
+    apply_fun fun p => p.coeff 0 at h
     simpa using h
   · rintro rfl
     rfl
@@ -400,7 +397,7 @@ theorem int_cast_coeff_zero {i : ℤ} {R : Type _} [Ring R] : (i : R[X]).coeff 0
 theorem int_cast_inj {m n : ℤ} {R : Type _} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
-    apply_fun fun p => p.coeff 0  at h
+    apply_fun fun p => p.coeff 0 at h
     simpa using h
   · rintro rfl
     rfl

@@ -2,15 +2,12 @@
 Copyright (c) 2021 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.conj_act
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.Algebra.GroupRingAction.Basic
+
+#align_import group_theory.group_action.conj_act from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # Conjugation action of a group on itself
@@ -282,10 +279,6 @@ instance : MulDistribMulAction (ConjAct G) G where
     simp only [smul_def]
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
 
--- porting note: type class inference fails on `stabilizer_eq_centralizer` below without this
--- shortcut instance
-instance : MulAction (ConjAct G) G := MulDistribMulAction.toMulAction
-
 instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
     SMulCommClass α (ConjAct G) G
     where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
@@ -307,7 +300,17 @@ theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
   simp [mem_center_iff, smul_def, mul_inv_eq_iff_eq_mul]
 #align conj_act.fixed_points_eq_center ConjAct.fixedPoints_eq_center
 
-theorem stabilizer_eq_centralizer (g : G) : stabilizer (ConjAct G) g = (zpowers g).centralizer :=
+@[simp]
+theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
+  rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
+#align conj_act.mem_orbit_conj_act ConjAct.mem_orbit_conjAct
+
+theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
+  funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
+#align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
+
+theorem stabilizer_eq_centralizer (g : G) :
+    stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
 #align conj_act.stabilizer_eq_centralizer ConjAct.stabilizer_eq_centralizer

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module group_theory.subgroup.saturated
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.subgroup.saturated from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Saturated subgroups
@@ -46,7 +43,7 @@ theorem saturated_iff_zpow {H : Subgroup G} :
   constructor
   · intros hH n g hgn
     induction' n with n n
-    · simp only [Int.coe_nat_eq_zero, Int.ofNat_eq_coe, zpow_ofNat] at hgn⊢
+    · simp only [Int.coe_nat_eq_zero, Int.ofNat_eq_coe, zpow_ofNat] at hgn ⊢
       exact hH hgn
     · suffices g ^ (n + 1) ∈ H by
         refine' (hH this).imp _ id

@@ -2,17 +2,14 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.category.Module.adjunctions
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+
+#align_import algebra.category.Module.adjunctions from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
@@ -45,8 +42,8 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {X Y} f := Finsupp.lmapDomain _ _ f
-  map_id := by intros ; exact Finsupp.lmapDomain_id _ _
-  map_comp := by intros ; exact Finsupp.lmapDomain_comp _ _ _ _
+  map_id := by intros; exact Finsupp.lmapDomain_id _ _
+  map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
 #align Module.free ModuleCat.free
 
 /-- The free-forgetful adjunction for R-modules.
@@ -66,6 +63,8 @@ instance : IsRightAdjoint (forget (ModuleCat.{u} R)) :=
 end
 
 namespace Free
+
+open MonoidalCategory
 
 variable [CommRing R]
 
@@ -214,6 +213,8 @@ instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
 
 end Free
 
+open MonoidalCategory
+
 variable [CommRing R]
 
 /-- The free functor `Type u ⥤ ModuleCat R`, as a monoidal functor. -/
@@ -287,7 +288,7 @@ instance : Preadditive (Free R C) where
   comp_add X Y Z f g g' := by
     dsimp [CategoryTheory.categoryFree]
     rw [← Finsupp.sum_add]
-    congr ; ext (r h)
+    congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
 instance : Linear R (Free R C) where
@@ -298,7 +299,7 @@ instance : Linear R (Free R C) where
   comp_smul X Y Z f r g := by
     dsimp [CategoryTheory.categoryFree]
     simp_rw [Finsupp.smul_sum]
-    congr ; ext (h s)
+    congr; ext h s
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_left_comm]
 
 theorem single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :
@@ -344,10 +345,10 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       dsimp at *
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
       · simp only [w₁, w₂, add_comp]
-      · intros ; rw [zero_smul]
-      · intros ; simp only [add_smul]
-      · intros ; rw [zero_smul]
-      · intros ; simp only [add_smul]
+      · intros; rw [zero_smul]
+      · intros; simp only [add_smul]
+      · intros; rw [zero_smul]
+      · intros; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
       · -- Porting note: simp used to be able to close this goal
@@ -358,10 +359,10 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         dsimp at *
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
         · simp only [w₁, w₂, comp_add]
-        · intros ; rw [zero_smul]
-        · intros ; simp only [add_smul]
-        · intros ; rw [zero_smul]
-        · intros ; simp only [add_smul]
+        · intros; rw [zero_smul]
+        · intros; simp only [add_smul]
+        · intros; rw [zero_smul]
+        · intros; simp only [add_smul]
       · intro g' s
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]
@@ -387,7 +388,7 @@ instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
 is isomorphic to the original functor.
 -/
 def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.Free.embedding_lift_iso CategoryTheory.Free.embeddingLiftIso
 
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module analysis.normed.group.add_circle
-! leanprover-community/mathlib commit 084f76e20c88eae536222583331abd9468b08e1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Topology.Instances.AddCircle
+
+#align_import analysis.normed.group.add_circle from "leanprover-community/mathlib"@"084f76e20c88eae536222583331abd9468b08e1c"
 
 /-!
 # The additive circle as a normed group
@@ -47,7 +44,7 @@ instance : NormedAddCommGroup (AddCircle p) :=
 theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
   have aux : ∀ {a b c : ℝ}, a ∈ zmultiples b → c * a ∈ zmultiples (c * b) := fun {a b c} h => by
-    simp only [mem_zmultiples_iff] at h⊢
+    simp only [mem_zmultiples_iff] at h ⊢
     obtain ⟨n, rfl⟩ := h
     exact ⟨n, (mul_smul_comm n c b).symm⟩
   rcases eq_or_ne t 0 with (rfl | ht); · simp
@@ -59,7 +56,7 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
   ext z
   rw [mem_smul_set_iff_inv_smul_mem₀ ht']
   show
-    (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = (|t|)⁻¹ * z
+    (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = |t|⁻¹ * z
   constructor
   · rintro ⟨y, hy, rfl⟩
     refine' ⟨t⁻¹ * y, _, by rw [abs_mul, abs_inv]⟩
@@ -195,7 +192,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
   refine' ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, _⟩
   rintro ⟨n, hn⟩
   rw [← mul_le_mul_left (abs_pos.mpr <| inv_ne_zero hp), ← abs_mul, mul_sub, mul_comm _ p,
-    inv_mul_cancel_left₀ hp] at hn⊢
+    inv_mul_cancel_left₀ hp] at hn ⊢
   exact (round_le (p⁻¹ * (y - x)) n).trans hn
 #align add_circle.coe_real_preimage_closed_ball_eq_Union AddCircle.coe_real_preimage_closedBall_eq_iUnion
 
@@ -217,7 +214,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
       simp [-zsmul_eq_mul, ← QuotientAddGroup.mk_zero, coe_real_preimage_closedBall_eq_iUnion,
         iUnion_inter, iUnion_ite, this, hε]
     intro z
-    simp only [Real.closedBall_eq_Icc, zero_sub, zero_add] at hs⊢
+    simp only [Real.closedBall_eq_Icc, zero_sub, zero_add] at hs ⊢
     rcases eq_or_ne z 0 with (rfl | hz)
     · simp
     simp only [hz, zsmul_eq_mul, if_false, eq_empty_iff_forall_not_mem]

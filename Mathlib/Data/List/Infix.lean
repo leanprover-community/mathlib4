@@ -2,21 +2,18 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.infix
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 
+#align_import data.list.infix from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
+
 /-!
-# Prefixes, subfixes, infixes
+# Prefixes, suffixes, infixes
 
 This file proves properties about
-* `List.prefix`: `l₁` is a prefix of `l₂` if `l₂` starts with `l₁`.
-* `List.subfix`: `l₁` is a subfix of `l₂` if `l₂` ends with `l₁`.
-* `List.infix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some subfix of `l₂`.
+* `List.isPrefix`: `l₁` is a prefix of `l₂` if `l₂` starts with `l₁`.
+* `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
+* `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
@@ -26,7 +23,7 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 ## Notation
 
 `l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
-`l₁ <:+ l₂`: `l₁` is a subfix of `l₂`.
+`l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
 `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 

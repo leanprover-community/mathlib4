@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.ring_homs
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
+
+#align_import number_theory.padics.ring_homs from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
 /-!
 
@@ -164,7 +161,7 @@ theorem zmod_congr_of_sub_mem_max_ideal (x : ℤ_[p]) (m n : ℕ) (hm : x - m �
   have := zmod_congr_of_sub_mem_span_aux 1 x m n
   simp only [pow_one] at this
   specialize this hm hn
-  apply_fun ZMod.castHom (show p ∣ p ^ 1 by rw [pow_one]) (ZMod p)  at this
+  apply_fun ZMod.castHom (show p ∣ p ^ 1 by rw [pow_one]) (ZMod p) at this
   simp only [map_intCast] at this
   simpa only [Int.cast_ofNat] using this
 #align padic_int.zmod_congr_of_sub_mem_max_ideal PadicInt.zmod_congr_of_sub_mem_max_ideal
@@ -186,7 +183,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   use n
   constructor
   · exact_mod_cast hnp
-  simp only [norm_def, coe_sub, Subtype.coe_mk, coe_nat_cast] at hn⊢
+  simp only [norm_def, coe_sub, Subtype.coe_mk, coe_nat_cast] at hn ⊢
   rw [show (x - n : ℚ_[p]) = x - r + (r - n) by ring]
   apply lt_of_le_of_lt (padicNormE.nonarchimedean _ _)
   apply max_lt hr
@@ -266,7 +263,7 @@ def toZMod : ℤ_[p] →+* ZMod p :=
 /-- `z - (toZMod z : ℤ_[p])` is contained in the maximal ideal of `ℤ_[p]`, for every `z : ℤ_[p]`.
 
 The coercion from `ZMod p` to `ℤ_[p]` is `ZMod.cast`,
-which coerces `ZMod p` into artibrary rings.
+which coerces `ZMod p` into arbitrary rings.
 This is unfortunate, but a consequence of the fact that we allow `ZMod p`
 to coerce to rings of arbitrary characteristic, instead of only rings of characteristic `p`.
 This coercion is only a ring homomorphism if it coerces into a ring whose characteristic divides
@@ -579,7 +576,7 @@ theorem limNthHom_spec (r : R) :
     ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, ‖limNthHom f_compat r - nthHom f r n‖ < ε := by
   intro ε hε
   obtain ⟨ε', hε'0, hε'⟩ : ∃ v : ℚ, (0 : ℝ) < v ∧ ↑v < ε := exists_rat_btwn hε
-  norm_cast  at hε'0
+  norm_cast at hε'0
   obtain ⟨N, hN⟩ := padicNormE.defn (nthHomSeq f_compat r) hε'0
   use N
   intro n hn
@@ -663,7 +660,7 @@ theorem lift_unique (g : R →+* ℤ_[p]) (hg : ∀ n, (toZModPow n).comp g = f 
 theorem lift_self (z : ℤ_[p]) : @lift p _ ℤ_[p] _ toZModPow zmod_cast_comp_toZModPow z = z := by
   show _ = RingHom.id _ z
   rw [@lift_unique p _ ℤ_[p] _ _ zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
-  intro ; rw [RingHom.comp_id]
+  intro; rw [RingHom.comp_id]
 #align padic_int.lift_self PadicInt.lift_self
 
 end lift

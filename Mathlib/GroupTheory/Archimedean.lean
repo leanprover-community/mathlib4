@@ -2,14 +2,11 @@
 Copyright (c) 2020 Heather Macbeth, Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Patrick Massot
-
-! This file was ported from Lean 3 source module group_theory.archimedean
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.archimedean from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Archimedean groups
@@ -72,7 +69,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
       exact ⟨m, hm', hm⟩
   have : ∃ n : ℕ, Set.Nonempty (H ∩ Ioc (n • a) ((n + 1) • a))
   · rcases (bot_or_exists_ne_zero H).resolve_left hbot with ⟨g, hgH, hg₀⟩
-    rcases hex (|g|) (abs_pos.2 hg₀) with ⟨n, hn⟩
+    rcases hex |g| (abs_pos.2 hg₀) with ⟨n, hn⟩
     exact ⟨n, _, (@abs_mem_iff (AddSubgroup G) G _ _).2 hgH, hn⟩
   classical rcases Nat.findX this with ⟨n, ⟨x, hxH, hnx, hxn⟩, hmin⟩
   by_contra hxmin

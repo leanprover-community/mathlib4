@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.function.special_functions.basic
-! leanprover-community/mathlib commit 83a66c8775fa14ee5180c85cab98e970956401ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+
+#align_import measure_theory.function.special_functions.basic from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 
 /-!
 # Measurability of real and complex functions
@@ -84,9 +81,9 @@ theorem measurable_im : Measurable im :=
 #align complex.measurable_im Complex.measurable_im
 
 @[measurability]
-theorem measurable_of_real : Measurable ((↑) : ℝ → ℂ) :=
+theorem measurable_ofReal : Measurable ((↑) : ℝ → ℂ) :=
   continuous_ofReal.measurable
-#align complex.measurable_of_real Complex.measurable_of_real
+#align complex.measurable_of_real Complex.measurable_ofReal
 
 @[measurability]
 theorem measurable_exp : Measurable exp :=
@@ -126,8 +123,8 @@ theorem measurable_arg : Measurable arg :=
 
 @[measurability]
 theorem measurable_log : Measurable log :=
-  (measurable_of_real.comp <| Real.measurable_log.comp measurable_norm).add <|
-    (measurable_of_real.comp measurable_arg).mul_const I
+  (measurable_ofReal.comp <| Real.measurable_log.comp measurable_norm).add <|
+    (measurable_ofReal.comp measurable_arg).mul_const I
 #align complex.measurable_log Complex.measurable_log
 
 end Complex
@@ -228,8 +225,8 @@ instance Complex.hasMeasurablePow : MeasurablePow ℂ ℂ :=
 
 instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ :=
   ⟨Complex.measurable_re.comp <|
-      (Complex.measurable_of_real.comp measurable_fst).pow
-        (Complex.measurable_of_real.comp measurable_snd)⟩
+      (Complex.measurable_ofReal.comp measurable_fst).pow
+        (Complex.measurable_ofReal.comp measurable_snd)⟩
 #align real.has_measurable_pow Real.hasMeasurablePow
 
 instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=

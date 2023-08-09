@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.finset.pi
-! leanprover-community/mathlib commit b2c89893177f66a48daf993b7ba5ef7cddeff8c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Pi
+
+#align_import data.finset.pi from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
 /-!
 # The cartesian product of finsets
@@ -107,7 +104,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
                     Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
       _ (insert_val_of_not_mem ha)
   subst s'; rw [pi_cons]
-  congr ; funext b
+  congr; funext b
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
 #align finset.pi_insert Finset.pi_insert
 
@@ -117,7 +114,7 @@ theorem pi_singletons {β : Type _} (s : Finset α) (f : α → β) :
   constructor
   · simp
   intro a ha
-  ext (i hi)
+  ext i hi
   rw [mem_pi] at ha
   simpa using ha i hi
 #align finset.pi_singletons Finset.pi_singletons

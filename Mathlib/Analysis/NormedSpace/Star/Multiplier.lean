@@ -2,17 +2,14 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.multiplier
-! leanprover-community/mathlib commit ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Analysis.NormedSpace.Star.Mul
+import Mathlib.Analysis.NormedSpace.Star.Unitization
+
+#align_import analysis.normed_space.star.multiplier from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
 
 /-!
 # Multiplier Algebra of a C⋆-algebra
@@ -71,7 +68,7 @@ If `x : 𝓜(𝕜, A)`, then `x.fst` and `x.snd` are what is usually referred to
 structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] extends
     (A →L[𝕜] A) × (A →L[𝕜] A) where
-  /-- The centrality codnition that the maps linear maps intertwine one another. -/
+  /-- The centrality condition that the maps linear maps intertwine one another. -/
   central : ∀ x y : A, snd x * y = x * fst y
 #align double_centralizer DoubleCentralizer
 
@@ -80,7 +77,7 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 
 open MultiplierAlgebra
 
--- porting note: `ext` was generating the wrong extensionality lemma; it deconstucted the `×`.
+-- porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
@@ -207,7 +204,7 @@ instance instPow : Pow 𝓜(𝕜, A) ℕ where
     ⟨a.toProd ^ n, fun x y => by
       induction' n with k hk generalizing x y
       · rfl
-      · rw [Prod.pow_snd, Prod.pow_fst] at hk⊢
+      · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
         rw [pow_succ a.snd, mul_apply, a.central, hk, pow_succ' a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
@@ -507,10 +504,10 @@ theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul �
 #align double_centralizer.coe_snd DoubleCentralizer.coe_snd
 
 theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
-  ext <;>
-  simp only [coe_fst, mul_apply', mul_one, algebraMap_toProd, Prod.algebraMap_apply, coe_snd,
-    flip_apply, one_mul] <;>
-  simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply, smul_eq_mul, mul_one]
+  ext x : 3
+  · rfl -- `fst` is defeq
+  · refine ContinuousLinearMap.ext fun y => ?_
+    exact mul_comm y x  -- `snd` multiplies on the wrong side
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 
 /-- The coercion of an algebra into its multiplier algebra as a non-unital star algebra
@@ -519,17 +516,15 @@ homomorphism. -/
 noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [NormedStarGroup A] :
     A →⋆ₙₐ[𝕜] 𝓜(𝕜, A) where
   toFun a := a
-  map_smul' k a := by
-    ext <;> simp only [coe_fst, coe_snd, ContinuousLinearMap.map_smul, smul_fst, smul_snd]
-  map_zero' := by ext <;> simp only [coe_fst, coe_snd, map_zero, zero_fst, zero_snd]
-  map_add' a b := by ext <;> simp only [coe_fst, coe_snd, map_add, add_fst, add_snd]
-  map_mul' a b := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', flip_apply, mul_fst, mul_snd,
-        ContinuousLinearMap.coe_mul, Function.comp_apply, mul_assoc]
-  map_star' a := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', star_fst, star_snd, flip_apply, star_mul, star_star]
+  map_smul' _ _ := ext _ _ _ _ <| Prod.ext (map_smul _ _ _) (map_smul _ _ _)
+  map_zero' := ext _ _ _ _ <| Prod.ext (map_zero _) (map_zero _)
+  map_add' _ _ := ext _ _ _ _ <| Prod.ext (map_add _ _ _) (map_add _ _ _)
+  map_mul' _ _ :=  ext _ _ _ _ <| Prod.ext
+    (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _))
+    (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _).symm)
+  map_star' _ := ext _ _ _ _ <| Prod.ext
+    (ContinuousLinearMap.ext fun _ => (star_star_mul _ _).symm)
+    (ContinuousLinearMap.ext fun _ => (star_mul_star _ _).symm)
 #align double_centralizer.coe_hom DoubleCentralizer.coeHom
 
 /-!
@@ -544,7 +539,7 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 `‖a‖ = ‖a.fst‖ = ‖a.snd‖`. -/
 
 
-/-- The normed group structure is inherited as the pullback under the ring monomoprhism
+/-- The normed group structure is inherited as the pullback under the ring monomorphism
 `DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
 noncomputable instance : NormedRing 𝓜(𝕜, A) :=
   NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
@@ -669,7 +664,7 @@ variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
 instance instCstarRing : CstarRing 𝓜(𝕜, A) where
-  norm_star_mul_self := @fun (a : 𝓜(𝕜, A)) =>  congr_arg ((↑) : ℝ≥0 → ℝ) <|
+  norm_star_mul_self := @fun (a : 𝓜(𝕜, A)) => congr_arg ((↑) : ℝ≥0 → ℝ) <|
     show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by
     /- The essence of the argument is this: let `a = (L,R)` and recall `‖a‖ = ‖L‖`.
     `star a = (star ∘ R ∘ star, star ∘ L ∘ star)`. Then for any `x y : A`, we have

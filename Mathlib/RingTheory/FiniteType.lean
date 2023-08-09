@@ -2,16 +2,13 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.finite_type
-! leanprover-community/mathlib commit bb168510ef455e9280a152e7f31673cabd3d7496
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Noetherian
+
+#align_import ring_theory.finite_type from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -125,7 +122,8 @@ theorem trans [Algebra A B] [IsScalarTower R A B] (hRA : FiniteType R A) (hAB : 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a finset. -/
 theorem iff_quotient_mvPolynomial :
-    FiniteType R A ↔ ∃ (s : Finset A)(f : MvPolynomial { x // x ∈ s } R →ₐ[R] A), Surjective f := by
+    FiniteType R A ↔
+      ∃ (s : Finset A) (f : MvPolynomial { x // x ∈ s } R →ₐ[R] A), Surjective f := by
   constructor
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
@@ -140,12 +138,11 @@ theorem iff_quotient_mvPolynomial :
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a fintype. -/
 theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
-    ∃ (ι : Type u) (_ : Fintype ι)(f : MvPolynomial ι R →ₐ[R] A), Surjective f := by
+    ∃ (ι : Type u) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
     use { x : A // x ∈ s }, inferInstance, f
-    exact hsur
   · rintro ⟨ι, ⟨hfintype, ⟨f, hsur⟩⟩⟩
     letI : Fintype ι := hfintype
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R ι) f hsur
@@ -154,7 +151,7 @@ theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
 /-- An algebra is finitely generated if and only if it is a quotient of a polynomial ring in `n`
 variables. -/
 theorem iff_quotient_mvPolynomial'' :
-    FiniteType R A ↔ ∃ (n : ℕ)(f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f := by
+    FiniteType R A ↔ ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial']
     rintro ⟨ι, hfintype, ⟨f, hsur⟩⟩
@@ -353,7 +350,7 @@ theorem support_gen_of_gen {S : Set (AddMonoidAlgebra R M)} (hS : Algebra.adjoin
   rw [← hS, adjoin_le_iff]
   intro f hf
   have hincl :
-    of' R M '' f.support ⊆ ⋃ (g : AddMonoidAlgebra R M) (_H : g ∈ S), of' R M '' g.support := by
+    of' R M '' f.support ⊆ ⋃ (g : AddMonoidAlgebra R M) (_ : g ∈ S), of' R M '' g.support := by
     intro s hs
     exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
   exact adjoin_mono hincl (mem_adjoin_support f)
@@ -375,8 +372,8 @@ section Ring
 
 variable [CommRing R] [AddCommMonoid M]
 
-/-- If `AddMonoidAlgebra R M` is of finite type, there there is a `G : Finset M` such that its
-image generates, as algera, `AddMonoidAlgebra R M`. -/
+/-- If `AddMonoidAlgebra R M` is of finite type, then there is a `G : Finset M` such that its
+image generates, as algebra, `AddMonoidAlgebra R M`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R (AddMonoidAlgebra R M)] :
     ∃ G : Finset M, Algebra.adjoin R (of' R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
@@ -536,8 +533,8 @@ section Ring
 
 variable [CommRing R] [CommMonoid M]
 
-/-- If `MonoidAlgebra R M` is of finite type, there there is a `G : Finset M` such that its image
-generates, as algera, `MonoidAlgebra R M`. -/
+/-- If `MonoidAlgebra R M` is of finite type, then there is a `G : Finset M` such that its image
+generates, as algebra, `MonoidAlgebra R M`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
     ∃ G : Finset M, Algebra.adjoin R (of R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h

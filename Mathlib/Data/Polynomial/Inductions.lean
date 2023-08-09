@@ -2,16 +2,13 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Damiano Testa, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.inductions
-! leanprover-community/mathlib commit 57e09a1296bfb4330ddf6624f1028ba186117d82
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Induction
+
+#align_import data.polynomial.inductions from "leanprover-community/mathlib"@"57e09a1296bfb4330ddf6624f1028ba186117d82"
 
 /-!
 # Induction on polynomials
@@ -116,7 +113,7 @@ noncomputable def recOnHorner {M : R[X] → Sort _} (p : R[X]) (M0 : M 0)
         MC _ _ (coeff_mul_X_zero _) hcp0
           (if hpX0 : divX p = 0 then show M (divX p * X) by rw [hpX0, zero_mul]; exact M0
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
-termination_by' invImage PSigma.fst ⟨_, degree_lt_wf⟩
+termination_by _ => p.degree
 #align polynomial.rec_on_horner Polynomial.recOnHorner
 
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`

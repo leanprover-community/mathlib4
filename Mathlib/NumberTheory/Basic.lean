@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
-
-! This file was ported from Lean 3 source module number_theory.basic
-! leanprover-community/mathlib commit 168ad7fc5d8173ad38be9767a22d50b8ecf1cd00
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import number_theory.basic from "leanprover-community/mathlib"@"168ad7fc5d8173ad38be9767a22d50b8ecf1cd00"
 
 /-!
 # Basic results in number theory

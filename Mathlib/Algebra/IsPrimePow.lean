@@ -2,14 +2,11 @@
 Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module algebra.is_prime_pow
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.NumberTheory.Divisors
+
+#align_import algebra.is_prime_pow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Prime powers
@@ -23,16 +20,16 @@ variable {R : Type _} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 /-- `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be
 written as `p^k`. -/
 def IsPrimePow : Prop :=
-  ∃ (p : R)(k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n
+  ∃ (p : R) (k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n
 #align is_prime_pow IsPrimePow
 
-theorem isPrimePow_def : IsPrimePow n ↔ ∃ (p : R)(k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n :=
+theorem isPrimePow_def : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n :=
   Iff.rfl
 #align is_prime_pow_def isPrimePow_def
 
 /-- An equivalent definition for prime powers: `n` is a prime power iff there is a prime `p` and a
 natural `k` such that `n` can be written as `p^(k+1)`. -/
-theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R)(k : ℕ), Prime p ∧ p ^ (k + 1) = n :=
+theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ p ^ (k + 1) = n :=
   (isPrimePow_def _).trans
     ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨_, _, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨p, k, hp, hn⟩ =>
       ⟨_, _, hp, Nat.succ_pos', hn⟩⟩
@@ -98,7 +95,7 @@ instance {n : ℕ} : Decidable (IsPrimePow n) :=
   decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
-  rw [isPrimePow_nat_iff] at hn⊢
+  rw [isPrimePow_nat_iff] at hn ⊢
   rcases hn with ⟨p, k, hp, _hk, rfl⟩
   obtain ⟨i, hik, rfl⟩ := (Nat.dvd_prime_pow hp).1 hm
   refine' ⟨p, i, hp, _, rfl⟩
@@ -129,4 +126,3 @@ theorem IsPrimePow.one_lt {n : ℕ} (h : IsPrimePow n) : 1 < n :=
 #align is_prime_pow.one_lt IsPrimePow.one_lt
 
 end Nat
-

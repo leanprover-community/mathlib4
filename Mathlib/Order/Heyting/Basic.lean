@@ -2,20 +2,17 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.basic
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.PropInstances
+
+#align_import order.heyting.basic from "leanprover-community/mathlib"@"9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4"
 
 /-!
 # Heyting algebras
 
 This file defines Heyting, co-Heyting and bi-Heyting algebras.
 
-An Heyting algebra is a bounded distributive lattice with an implication operation `⇨` such that
+A Heyting algebra is a bounded distributive lattice with an implication operation `⇨` such that
 `a ≤ b ⇨ c ↔ a ⊓ b ≤ c`. It also comes with a pseudo-complement `ᶜ`, such that `aᶜ = a ⇨ ⊥`.
 
 Co-Heyting algebras are dual to Heyting algebras. They have a difference `\` and a negation `￢`
@@ -209,7 +206,7 @@ class HeytingAlgebra (α : Type _) extends GeneralizedHeytingAlgebra α, Bot α,
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 #align heyting_algebra HeytingAlgebra
 
-/-- A co-Heyting algebra is a bounded  lattice with an additional binary difference operation `\`
+/-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `\ a` is right adjoint to `⊔ a`. -/
 class CoheytingAlgebra (α : Type _) extends GeneralizedCoheytingAlgebra α, Top α, HNot α where
   /-- `⊤` is a greatest element -/
@@ -840,19 +837,19 @@ alias le_compl_comm ← le_compl_iff_le_compl
 alias le_compl_comm ↔ le_compl_of_le_compl _
 #align le_compl_of_le_compl le_compl_of_le_compl
 
-theorem disjoint_compl_left : Disjoint (aᶜ) a :=
+theorem disjoint_compl_left : Disjoint aᶜ a :=
   disjoint_iff_inf_le.mpr <| le_himp_iff.1 (himp_bot _).ge
 #align disjoint_compl_left disjoint_compl_left
 
-theorem disjoint_compl_right : Disjoint a (aᶜ) :=
+theorem disjoint_compl_right : Disjoint a aᶜ :=
   disjoint_compl_left.symm
 #align disjoint_compl_right disjoint_compl_right
 
-theorem LE.le.disjoint_compl_left (h : b ≤ a) : Disjoint (aᶜ) b :=
+theorem LE.le.disjoint_compl_left (h : b ≤ a) : Disjoint aᶜ b :=
   disjoint_compl_left.mono_right h
 #align has_le.le.disjoint_compl_left LE.le.disjoint_compl_left
 
-theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a (bᶜ) :=
+theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a bᶜ :=
   disjoint_compl_right.mono_left h
 #align has_le.le.disjoint_compl_right LE.le.disjoint_compl_right
 
@@ -895,6 +892,20 @@ theorem compl_top : (⊤ : α)ᶜ = ⊥ :=
 theorem compl_bot : (⊥ : α)ᶜ = ⊤ := by rw [← himp_bot, himp_self]
 #align compl_bot compl_bot
 
+@[simp] theorem le_compl_self : a ≤ aᶜ ↔ a = ⊥ := by
+  rw [le_compl_iff_disjoint_left, disjoint_self]
+
+@[simp] theorem ne_compl_self [Nontrivial α] : a ≠ aᶜ := by
+  intro h
+  cases le_compl_self.1 (le_of_eq h)
+  simp at h
+
+@[simp] theorem compl_ne_self [Nontrivial α] : aᶜ ≠ a :=
+  ne_comm.1 ne_compl_self
+
+@[simp] theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
+  rw [lt_iff_le_and_ne]; simp
+
 theorem le_compl_compl : a ≤ aᶜᶜ :=
   disjoint_compl_right.le_compl_right
 #align le_compl_compl le_compl_compl
@@ -903,6 +914,7 @@ theorem compl_anti : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
 #align compl_anti compl_anti
 
+@[gcongr]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
   compl_anti h
 #align compl_le_compl compl_le_compl
@@ -913,12 +925,12 @@ theorem compl_compl_compl (a : α) : aᶜᶜᶜ = aᶜ :=
 #align compl_compl_compl compl_compl_compl
 
 @[simp]
-theorem disjoint_compl_compl_left_iff : Disjoint (aᶜᶜ) b ↔ Disjoint a b := by
+theorem disjoint_compl_compl_left_iff : Disjoint aᶜᶜ b ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_left, compl_compl_compl]
 #align disjoint_compl_compl_left_iff disjoint_compl_compl_left_iff
 
 @[simp]
-theorem disjoint_compl_compl_right_iff : Disjoint a (bᶜᶜ) ↔ Disjoint a b := by
+theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]
 #align disjoint_compl_compl_right_iff disjoint_compl_compl_right_iff
 
@@ -953,12 +965,12 @@ instance : CoheytingAlgebra αᵒᵈ :=
     top_sdiff := @himp_bot α _ }
 
 @[simp]
-theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = ofDual aᶜ :=
+theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = (ofDual a)ᶜ :=
   rfl
 #align of_dual_hnot ofDual_hnot
 
 @[simp]
-theorem toDual_compl (a : α) : toDual (aᶜ) = ￢toDual a :=
+theorem toDual_compl (a : α) : toDual aᶜ = ￢toDual a :=
   rfl
 #align to_dual_compl toDual_compl
 
@@ -1133,7 +1145,7 @@ instance : HeytingAlgebra αᵒᵈ :=
     himp_bot := @top_sdiff' α _ }
 
 @[simp]
-theorem ofDual_compl (a : αᵒᵈ) : ofDual (aᶜ) = ￢ofDual a :=
+theorem ofDual_compl (a : αᵒᵈ) : ofDual aᶜ = ￢ofDual a :=
   rfl
 #align of_dual_compl ofDual_compl
 
@@ -1143,7 +1155,7 @@ theorem ofDual_himp (a b : αᵒᵈ) : ofDual (a ⇨ b) = ofDual b \ ofDual a :=
 #align of_dual_himp ofDual_himp
 
 @[simp]
-theorem toDual_hnot (a : α) : toDual (￢a) = toDual aᶜ :=
+theorem toDual_hnot (a : α) : toDual (￢a) = (toDual a)ᶜ :=
   rfl
 #align to_dual_hnot toDual_hnot
 
@@ -1261,7 +1273,7 @@ protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [
 protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f (aᶜ) = f aᶜ)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : HeytingAlgebra α :=
   { hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp, ‹Bot α›, ‹HasCompl α› with
     bot_le := fun a => by
@@ -1294,7 +1306,7 @@ protected def Function.Injective.biheytingAlgebra [Sup α] [Inf α] [Top α] [Bo
     [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
     (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
-    (map_compl : ∀ a, f (aᶜ) = f aᶜ) (map_hnot : ∀ a, f (￢a) = ￢f a)
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_hnot : ∀ a, f (￢a) = ￢f a)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     BiheytingAlgebra α :=
   { hf.heytingAlgebra f map_sup map_inf map_top map_bot map_compl map_himp,

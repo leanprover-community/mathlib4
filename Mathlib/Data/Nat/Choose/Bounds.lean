@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.nat.choose.bounds
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Nat.Choose.Basic
+
+#align_import data.nat.choose.bounds from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Inequalities for binomial coefficients
@@ -31,7 +28,7 @@ variable {α : Type _} [LinearOrderedSemifield α]
 
 namespace Nat
 
-theorem choose_le_pow (r n : ℕ) : (n.choose r : α)  ≤ (n ^ r : α) / r ! := by
+theorem choose_le_pow (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r ! := by
   rw [le_div_iff']
   · norm_cast
     rw [← Nat.descFactorial_eq_factorial_mul_choose]

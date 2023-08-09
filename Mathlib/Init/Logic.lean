@@ -220,7 +220,7 @@ theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
 open Lean TSyntax.Compat in
-macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
+macro "∃!" xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
 /-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
     for `Exists`. -/
@@ -475,7 +475,7 @@ lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Refle
 
 lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := λ _ _ => h.symm
 
-lemma Equivalence.transitive  {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
+lemma Equivalence.transitive {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
   λ _ _ _ => h.trans
 
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/

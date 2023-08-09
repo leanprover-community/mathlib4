@@ -2,13 +2,10 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.W.basic
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.List
+
+#align_import data.W.basic from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 # W types
@@ -136,7 +133,7 @@ theorem depth_pos (t : WType β) : 0 < t.depth := by
 #align W_type.depth_pos WType.depth_pos
 
 theorem depth_lt_depth_mk (a : α) (f : β a → WType β) (i : β a) : depth (f i) < depth ⟨a, f⟩ :=
-  Nat.lt_succ_of_le (Finset.le_sup (f:=(depth <| f ·)) (Finset.mem_univ i))
+  Nat.lt_succ_of_le (Finset.le_sup (f := (depth <| f ·)) (Finset.mem_univ i))
 #align W_type.depth_lt_depth_mk WType.depth_lt_depth_mk
 
 /-

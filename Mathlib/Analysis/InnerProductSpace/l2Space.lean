@@ -2,15 +2,12 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.l2_space
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import analysis.inner_product_space.l2_space from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Hilbert sum of a family of inner product spaces
@@ -147,7 +144,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
     add_left := fun f₁ f₂ g => by
       calc
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
-        _ = ∑' i, ⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫ := by
+        _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
           simp only [inner_add_left, Pi.add_apply, coeFn_add]
         _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := (tsum_add ?_ ?_)
         _ = _ := by congr
@@ -251,7 +248,7 @@ protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι,
     hV.linearIsometry (∑ i in W₀.support, lp.single 2 i (W₀ i)) =
       ∑ i in W₀.support, hV.linearIsometry (lp.single 2 i (W₀ i)) :=
     hV.linearIsometry.toLinearMap.map_sum
-  simp (config := { contextual := true }) [Dfinsupp.sum, this]
+  simp (config := { contextual := true }) [DFinsupp.sum, this]
 #align orthogonal_family.linear_isometry_apply_dfinsupp_sum_single OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of
@@ -293,7 +290,7 @@ Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type 
 to `DirectSum.IsInternal`, except that we don't express it in terms of actual submodules. -/
 structure IsHilbertSum : Prop where
   ofSurjective ::
-  /-- The orthogonal family consituting the summands in the Hilbert sum. -/
+  /-- The orthogonal family constituting the summands in the Hilbert sum. -/
   protected OrthogonalFamily : OrthogonalFamily 𝕜 G V
   /-- The isometry `lp G 2 → E` induced by the orthogonal family is surjective. -/
   protected surjective_isometry : Function.Surjective OrthogonalFamily.linearIsometry
@@ -374,7 +371,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
-  simp (config := { contextual := true }) [Dfinsupp.sum, lp.single_apply]
+  simp (config := { contextual := true }) [DFinsupp.sum, lp.single_apply]
 #align is_hilbert_sum.linear_isometry_equiv_apply_dfinsupp_sum_single IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`
@@ -411,7 +408,7 @@ variable (ι) (𝕜) (E)
 /-- A Hilbert basis on `ι` for an inner product space `E` is an identification of `E` with the `lp`
 space `ℓ²(ι, 𝕜)`. -/
 structure HilbertBasis where ofRepr ::
-  /-- The linear isometric equivlence implementing identifiying the hilbert space with `ℓ²`. -/
+  /-- The linear isometric equivalence implementing identifying the Hilbert space with `ℓ²`. -/
   repr : E ≃ₗᵢ[𝕜] ℓ²(ι, 𝕜)
 #align hilbert_basis HilbertBasis
 
@@ -503,7 +500,7 @@ protected theorem summable_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E
 #align hilbert_basis.summable_inner_mul_inner HilbertBasis.summable_inner_mul_inner
 
 protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
-    (∑' i, ⟪x, b i⟫ * ⟪b i, y⟫) = ⟪x, y⟫ :=
+    ∑' i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ :=
   (b.hasSum_inner_mul_inner x y).tsum_eq
 #align hilbert_basis.tsum_inner_mul_inner HilbertBasis.tsum_inner_mul_inner
 
@@ -575,7 +572,7 @@ protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = 
 
 -- Note : this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
-/-- An orthonormal basis is an Hilbert basis. -/
+/-- An orthonormal basis is a Hilbert basis. -/
 protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk b.orthonormal <| by
@@ -602,7 +599,7 @@ theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
 variable (𝕜 E)
 
 /-- A Hilbert space admits a Hilbert basis. -/
-theorem _root_.exists_hilbertBasis : ∃ (w : Set E)(b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
+theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩
 #align exists_hilbert_basis exists_hilbertBasis

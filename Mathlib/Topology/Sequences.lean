@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.sequences
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import topology.sequences from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Sequences in topological spaces
@@ -164,7 +161,7 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
   refine ⟨fun s x hcx => ?_⟩
   by_cases hx : x ∈ s;
   · exact subset_seqClosure hx
-  · obtain ⟨u, hux, hus⟩ : ∃ u, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s
+  · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s
     · simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,
         ← mem_closure_iff_frequently, hcx, imp_false, not_forall, not_not] using h (· ∉ s) x
     rcases extraction_of_frequently_atTop hus with ⟨φ, φ_mono, hφ⟩
@@ -309,7 +306,7 @@ instance (priority := 100) FirstCountableTopology.seq_compact_of_compact [Compac
 #align first_countable_topology.seq_compact_of_compact FirstCountableTopology.seq_compact_of_compact
 
 theorem CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
-    ∃ (a : _)(φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
+    ∃ (a : _) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   SeqCompactSpace.tendsto_subseq x
 #align compact_space.tendsto_subseq CompactSpace.tendsto_subseq
 
@@ -368,7 +365,7 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
       simpa only [l.basis_sets.prod_self.mem_iff, true_imp_iff, subset_inter_iff,
         prod_self_subset_prod_self, and_assoc] using this
     choose t htl htW hts using this
-    have : ∀ n : ℕ, (⋂ k ≤ n, t k) ⊆ t n := fun n => by apply iInter₂_subset; rfl
+    have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n => by apply iInter₂_subset; rfl
     exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
       biInter_subset_biInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
       (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>

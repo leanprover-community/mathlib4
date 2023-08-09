@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.real.cau_seq_completion
-! leanprover-community/mathlib commit cf4c49c445991489058260d75dae0ff2b1abca28
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.CauSeq
+
+#align_import data.real.cau_seq_completion from "leanprover-community/mathlib"@"cf4c49c445991489058260d75dae0ff2b1abca28"
 
 /-!
 # Cauchy completion
@@ -28,7 +25,7 @@ variable {α : Type _} [LinearOrderedField α]
 
 variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
--- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Caucy`.
+-- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
 /-- The Cauchy completion of a ring with absolute value. -/
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv

@@ -42,7 +42,7 @@ sorry
 sorry
 
 structure ModelWithCorners (𝕜 E H : Type u) extends LocalEquiv H E :=
-(source_eq : source = Set.univ)
+  (source_eq : source = Set.univ)
 
 attribute [mfld_simps] ModelWithCorners.source_eq
 

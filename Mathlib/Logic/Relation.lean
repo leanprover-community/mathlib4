@@ -2,16 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.relation
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
 import Mathlib.Tactic.Common
+
+#align_import logic.relation from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relation closures
@@ -440,7 +437,7 @@ theorem _root_.Acc.TransGen (h : Acc r a) : Acc (TransGen r) a := by
   induction' h with x _ H
   refine' Acc.intro x fun y hy ↦ _
   cases' hy with _ hyx z _ hyz hzx
-  exacts[H y hyx, (H z hzx).inv hyz]
+  exacts [H y hyx, (H z hzx).inv hyz]
 #align acc.trans_gen Acc.TransGen
 
 theorem _root_.acc_transGen_iff : Acc (TransGen r) a ↔ Acc r a :=

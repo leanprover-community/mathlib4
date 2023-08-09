@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.finset.nat_antidiagonal
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
+
+#align_import data.finset.nat_antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
@@ -124,7 +121,7 @@ theorem filter_fst_eq_antidiagonal (n m : ℕ) :
 theorem filter_snd_eq_antidiagonal (n m : ℕ) :
     filter (fun x : ℕ × ℕ ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
   have : (fun x : ℕ × ℕ ↦ (x.snd = m)) ∘ Prod.swap = fun x : ℕ × ℕ ↦ x.fst = m := by
-    ext ; simp
+    ext; simp
   rw [← map_swap_antidiagonal]
   simp [filter_map, this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
 #align finset.nat.filter_snd_eq_antidiagonal Finset.Nat.filter_snd_eq_antidiagonal

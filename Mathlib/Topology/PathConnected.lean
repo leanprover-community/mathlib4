@@ -2,16 +2,13 @@
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.path_connected
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UnitInterval
+
+#align_import topology.path_connected from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Path connectedness
@@ -110,7 +107,7 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk_mk
--- porting note: the name `Path.coe_mk` better refes to a new lemma below
+-- porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 
@@ -413,13 +410,17 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
         rwa [γ₂.extend_extends]
 #align path.trans_range Path.trans_range
 
-/-- Image of a path from `x` to `y` by a continuous map -/
-def map (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y} (h : Continuous f) :
-    Path (f x) (f y) where
+/-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
+def map' (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y}
+    (h : ContinuousOn f (range γ)) : Path (f x) (f y) where
   toFun := f ∘ γ
-  continuous_toFun := by continuity
+  continuous_toFun := h.comp_continuous γ.continuous (fun x ↦ mem_range_self x)
   source' := by simp
   target' := by simp
+
+/-- Image of a path from `x` to `y` by a continuous map -/
+def map (γ : Path x y) {Y : Type _} [TopologicalSpace Y] {f : X → Y} (h : Continuous f) :
+    Path (f x) (f y) := γ.map' h.continuousOn
 #align path.map Path.map
 
 @[simp]
@@ -591,7 +592,7 @@ theorem pi_coe (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => �
 /-- Path composition commutes with products -/
 theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i, Path (bs i) (cs i)) :
     (Path.pi γ₀).trans (Path.pi γ₁) = Path.pi fun i => (γ₀ i).trans (γ₁ i) := by
-  ext (t i)
+  ext t i
   unfold Path.trans
   simp only [Path.coe_mk_mk, Function.comp_apply, pi_coe]
   split_ifs <;> rfl
@@ -924,7 +925,7 @@ theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = path
     rw [pathComponent_symm]
     exact (h.trans h').symm
   · intro h'
-    rw [pathComponent_symm] at h'⊢
+    rw [pathComponent_symm] at h' ⊢
     exact h'.trans h
 #align path_component_congr pathComponent_congr
 
@@ -977,12 +978,16 @@ theorem isPathConnected_iff :
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
 #align is_path_connected_iff isPathConnected_iff
 
-theorem IsPathConnected.image {Y : Type _} [TopologicalSpace Y] (hF : IsPathConnected F) {f : X → Y}
-    (hf : Continuous f) : IsPathConnected (f '' F) := by
+theorem IsPathConnected.image' {Y : Type _} [TopologicalSpace Y] (hF : IsPathConnected F)
+    {f : X → Y} (hf : ContinuousOn f F) : IsPathConnected (f '' F) := by
   rcases hF with ⟨x, x_in, hx⟩
   use f x, mem_image_of_mem f x_in
   rintro _ ⟨y, y_in, rfl⟩
-  exact ⟨(hx y_in).somePath.map hf, fun t => ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
+  refine ⟨(hx y_in).somePath.map' ?_, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
+  exact hf.mono (range_subset_iff.2 (hx y_in).somePath_mem)
+
+theorem IsPathConnected.image {Y : Type _} [TopologicalSpace Y] (hF : IsPathConnected F) {f : X → Y}
+    (hf : Continuous f) : IsPathConnected (f '' F) := hF.image' hf.continuousOn
 #align is_path_connected.image IsPathConnected.image
 
 theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
@@ -993,6 +998,11 @@ theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ 
 theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) :
     F ⊆ pathComponent x := fun _y y_in => h.mem_pathComponent x_in y_in
 #align is_path_connected.subset_path_component IsPathConnected.subset_pathComponent
+
+theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
+  refine ⟨x, rfl, ?_⟩
+  rintro y rfl
+  exact JoinedIn.refl rfl
 
 theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPathConnected V)
     (hUV : (U ∩ V).Nonempty) : IsPathConnected (U ∪ V) := by
@@ -1071,7 +1081,7 @@ theorem IsPathConnected.exists_path_through_family {X : Type _} [TopologicalSpac
 
 theorem IsPathConnected.exists_path_through_family' {X : Type _} [TopologicalSpace X] {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
-    ∃ (γ : Path (p 0) (p n))(t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
+    ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
   rcases h.exists_path_through_family p hp with ⟨γ, hγ⟩
   rcases hγ with ⟨h₁, h₂⟩
   simp only [range, mem_setOf_eq] at h₂
@@ -1145,6 +1155,29 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
     exact ⟨⟨x⟩, by simpa using h'⟩
 #align path_connected_space_iff_univ pathConnectedSpace_iff_univ
 
+theorem isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
+  pathConnectedSpace_iff_univ.mp inferInstance
+
+theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continuous f) :
+    IsPathConnected (range f) := by
+  rw [← image_univ]
+  exact isPathConnected_univ.image hf
+
+theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
+  {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
+  rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
+  exact isPathConnected_range hf'
+
+instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
+    PathConnectedSpace (Quotient s) :=
+  (surjective_quotient_mk X).pathConnectedSpace continuous_coinduced_rng
+
+/-- This is a special case of `NormedSpace.path_connected` (and
+`TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
+instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
+  Nonempty := inferInstance
+  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]
 #align path_connected_space_iff_eq pathConnectedSpace_iff_eq
@@ -1177,7 +1210,7 @@ theorem exists_path_through_family {n : ℕ} (p : Fin (n + 1) → X) :
 #align path_connected_space.exists_path_through_family PathConnectedSpace.exists_path_through_family
 
 theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
-    ∃ (γ : Path (p 0) (p n))(t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
+    ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
   have : IsPathConnected (univ : Set X) := pathConnectedSpace_iff_univ.mp (by infer_instance)
   rcases this.exists_path_through_family' p fun _i => True.intro with ⟨γ, t, -, h⟩
   exact ⟨γ, t, h⟩

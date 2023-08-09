@@ -2,17 +2,14 @@
 Copyright (c) 2021 Alex Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Zhao
-
-! This file was ported from Lean 3 source module number_theory.frobenius_number
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.ModEq
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
+
+#align_import number_theory.frobenius_number from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Frobenius Number in Two Variables
@@ -54,7 +51,7 @@ def FrobeniusNumber (n : ℕ) (s : Set ℕ) : Prop :=
 
 variable {m n : ℕ}
 
-/-- The **Chicken Mcnugget theorem** stating that the Frobenius number
+/-- The **Chicken McNugget theorem** stating that the Frobenius number
   of positive numbers `m` and `n` is `m * n - m - n`. -/
 theorem frobeniusNumber_pair (cop : coprime m n) (hm : 1 < m) (hn : 1 < n) :
     FrobeniusNumber (m * n - m - n) {m, n} := by

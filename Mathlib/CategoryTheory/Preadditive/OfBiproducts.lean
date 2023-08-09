@@ -2,15 +2,12 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.preadditive.of_biproducts
-! leanprover-community/mathlib commit 061ea99a5610cfc72c286aa930d3c1f47f74f3d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Tactic.CategoryTheory.Reassoc
+
+#align_import category_theory.preadditive.of_biproducts from "leanprover-community/mathlib"@"061ea99a5610cfc72c286aa930d3c1f47f74f3d0"
 /-!
 # Constructing a semiadditive structure from binary biproducts
 
@@ -60,13 +57,13 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
   have hr : ∀ f : X ⟶ Y, biprod.lift (0 : X ⟶ Y) f = f ≫ biprod.inr := by
     intro f
     ext
-    aesop_cat
-    simp [biprod.lift_fst, Category.assoc, biprod.inr_fst, comp_zero]
+    · aesop_cat
+    · simp [biprod.lift_fst, Category.assoc, biprod.inr_fst, comp_zero]
   have hl : ∀ f : X ⟶ Y, biprod.lift f (0 : X ⟶ Y) = f ≫ biprod.inl := by
     intro f
     ext
-    aesop_cat
-    simp [biprod.lift_snd, Category.assoc, biprod.inl_snd, comp_zero]
+    · aesop_cat
+    · simp [biprod.lift_snd, Category.assoc, biprod.inl_snd, comp_zero]
   exact ⟨⟨fun f => by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc]⟩,
     ⟨fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]⟩⟩
 #align category_theory.semiadditive_of_binary_biproducts.is_unital_left_add CategoryTheory.SemiadditiveOfBinaryBiproducts.isUnital_leftAdd
@@ -75,13 +72,13 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
   have h₂ : ∀ f : X ⟶ Y, biprod.desc (0 : X ⟶ Y) f = biprod.snd ≫ f := by
     intro f
     ext
-    aesop_cat
-    simp only [biprod.inr_desc, BinaryBicone.inr_snd_assoc]
-  have h₁ : ∀ f : X ⟶ Y,  biprod.desc f (0 : X ⟶ Y) = biprod.fst ≫ f := by
+    · aesop_cat
+    · simp only [biprod.inr_desc, BinaryBicone.inr_snd_assoc]
+  have h₁ : ∀ f : X ⟶ Y, biprod.desc f (0 : X ⟶ Y) = biprod.fst ≫ f := by
     intro f
     ext
-    aesop_cat
-    simp only [biprod.inr_desc, BinaryBicone.inr_fst_assoc, zero_comp]
+    · aesop_cat
+    · simp only [biprod.inr_desc, BinaryBicone.inr_fst_assoc, zero_comp]
   exact ⟨⟨fun f => by simp [h₂ f, rightAdd, biprod.lift_snd_assoc, Category.id_comp]⟩,
     ⟨fun f => by simp [h₁ f, rightAdd, biprod.lift_fst_assoc, Category.id_comp]⟩⟩
 #align category_theory.semiadditive_of_binary_biproducts.is_unital_right_add CategoryTheory.SemiadditiveOfBinaryBiproducts.isUnital_rightAdd
@@ -93,7 +90,7 @@ theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ
   have h₁ : biprod.lift (f +ᵣ g) (h +ᵣ k) = biprod.lift (𝟙 X) (𝟙 X) ≫ diag := by
       ext <;> aesop_cat
   have h₂ : diag ≫ biprod.desc (𝟙 Y) (𝟙 Y) = biprod.desc (f +ₗ h) (g +ₗ k) := by
-    ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂] <;> aesop_cat
+    ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
 #align category_theory.semiadditive_of_binary_biproducts.distrib CategoryTheory.SemiadditiveOfBinaryBiproducts.distrib
 

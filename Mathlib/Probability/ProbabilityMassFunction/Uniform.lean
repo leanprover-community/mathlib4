@@ -2,13 +2,10 @@
 Copyright (c) 2022 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module probability.probability_mass_function.uniform
-! leanprover-community/mathlib commit e50b8c261b0a000b806ec0e1356b41945eda61f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
+
+#align_import probability.probability_mass_function.uniform from "leanprover-community/mathlib"@"e50b8c261b0a000b806ec0e1356b41945eda61f7"
 
 /-!
 # Uniform Probability Mass Functions
@@ -40,12 +37,12 @@ section UniformOfFinset
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
 def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : Pmf α := by
   refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
-  . simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
+  · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
-            simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
-              Finset.nonempty_iff_ne_empty.1 hs
+      simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
+        Finset.nonempty_iff_ne_empty.1 hs
     refine' ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
-  . exact fun x hx => by simp only [hx, if_false]
+  · exact fun x hx => by simp only [hx, if_false]
 #align pmf.uniform_of_finset Pmf.uniformOfFinset
 
 variable {s : Finset α} (hs : s.Nonempty) {a : α}

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.ord_connected_component
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
+
+#align_import data.set.intervals.ord_connected_component from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Order connected components of a set
@@ -32,7 +29,7 @@ def ordConnectedComponent (s : Set α) (x : α) : Set α :=
   { y | [[x, y]] ⊆ s }
 #align set.ord_connected_component Set.ordConnectedComponent
 
-theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔  [[x, y]] ⊆ s :=
+theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]] ⊆ s :=
   Iff.rfl
 #align set.mem_ord_connected_component Set.mem_ordConnectedComponent
 
@@ -168,7 +165,7 @@ belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some
 `Set.ordConnectedComponent sᶜ x`, `x ∈ t`. In the case of two disjoint closed sets, this is the
 union of all open intervals $(a, b)$ such that their endpoints belong to different sets. -/
 def ordSeparatingSet (s t : Set α) : Set α :=
-  (⋃ x ∈ s, ordConnectedComponent (tᶜ) x) ∩ ⋃ x ∈ t, ordConnectedComponent (sᶜ) x
+  (⋃ x ∈ s, ordConnectedComponent tᶜ x) ∩ ⋃ x ∈ t, ordConnectedComponent sᶜ x
 #align set.ord_separating_set Set.ordSeparatingSet
 
 theorem ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparatingSet t s :=

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.group
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.GroupTheory.GroupAction.Units
+
+#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
 /-!
 # Group actions applied to various types of group
@@ -79,7 +76,7 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
 #align mul_action.to_perm_hom MulAction.toPermHom
 #align mul_action.to_perm_hom_apply MulAction.toPermHom_apply
 
-/-- Given an action of a additive group `α` on a set `β`, each `g : α` defines a permutation of
+/-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
 `β`. -/
 @[simps!]
 def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
@@ -314,7 +311,7 @@ def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
 
 variable (α)
 
-/-- Each element of the group defines an multiplicative monoid isomorphism.
+/-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]

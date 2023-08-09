@@ -2,19 +2,16 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.filtered
-! leanprover-community/mathlib commit c43486ecf2a5a17479a32ce09e4818924145e90e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Filtered
 
+#align_import category_theory.limits.preserves.filtered from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
+
 /-!
 # Preservation of filtered colimits and cofiltered limits.
 Typically forgetful functors from algebraic categories preserve filtered colimits
-(although not general colimits). See e.g. `Algebra/Category/Mon/FilteredColimits`.
+(although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
 
 ## Future work
 This could be generalised to allow diagrams in lower universes.

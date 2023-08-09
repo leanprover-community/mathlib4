@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.biproducts
-! leanprover-community/mathlib commit 362c2263e25ed3b9ed693773f32f91243612e1da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+#align_import category_theory.idempotents.biproducts from "leanprover-community/mathlib"@"362c2263e25ed3b9ed693773f32f91243612e1da"
 
 /-!
 
@@ -64,12 +61,12 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
       comm := by simp only [biproduct.ι_map, assoc, idem_assoc] }
   ι_π j j' := by
     split_ifs with h
-    . subst h
+    · subst h
       simp only [biproduct.ι_map, biproduct.bicone_π, biproduct.map_π, eqToHom_refl,
         id_eq, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
-    . dsimp
+    · dsimp
       simp only [hom_ext_iff, biproduct.ι_map, biproduct.map_π, comp_f, assoc, ne_eq,
-        biproduct.ι_π_ne_assoc  _ h, comp_zero, zero_comp]
+        biproduct.ι_π_ne_assoc _ h, comp_zero, zero_comp]
 #align category_theory.idempotents.karoubi.biproducts.bicone CategoryTheory.Idempotents.Karoubi.Biproducts.bicone
 
 end Biproducts
@@ -84,10 +81,10 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
             biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
             idem_assoc, id_eq, Biproducts.bicone_pt_p, comp_sum]
           rw [Finset.sum_eq_single j]
-          . simp only [bicone_ι_π_self_assoc]
-          . intro b _ hb
+          · simp only [bicone_ι_π_self_assoc]
+          · intro b _ hb
             simp only [biproduct.ι_π_ne_assoc _ hb.symm, zero_comp]
-          . intro hj
+          · intro hj
             simp only [Finset.mem_univ, not_true] at hj } }
 #align category_theory.idempotents.karoubi.karoubi_has_finite_biproducts CategoryTheory.Idempotents.Karoubi.karoubi_hasFiniteBiproducts
 
@@ -132,13 +129,13 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
   inv := biprod.lift P.decompId_p P.complement.decompId_p
   hom_inv_id := by
     apply biprod.hom_ext'
-    . rw [biprod.inl_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
+    · rw [biprod.inl_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_right_eq_self, ← assoc]
       refine' (_ =≫ _).trans zero_comp
       ext
       simp only [comp_f, toKaroubi_obj_X, decompId_i_f, decompId_p_f,
         complement_p, comp_sub, comp_id, idem, sub_self, instAddCommGroupHom_zero]
-    . rw [biprod.inr_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
+    · rw [biprod.inr_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_left_eq_self, ← assoc]
       refine' (_ =≫ _).trans zero_comp
       ext

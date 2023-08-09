@@ -2,13 +2,10 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.monoid_algebra.no_zero_divisors
-! leanprover-community/mathlib commit 3e067975886cf5801e597925328c335609511b1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
+
+#align_import algebra.monoid_algebra.no_zero_divisors from "leanprover-community/mathlib"@"3e067975886cf5801e597925328c335609511b1a"
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
@@ -100,7 +97,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
     refine' ⟨a + gmin, mem_support_iff.mpr _⟩
     rw [mul_apply_add_eq_mul_of_forall_ne _]
     · refine' mul_ne_zero _ _
-      exacts[mem_support_iff.mp ha, mem_support_iff.mp (Finset.min'_mem _ _)]
+      exacts [mem_support_iff.mp ha, mem_support_iff.mp (Finset.min'_mem _ _)]
     · rw [H]
       rintro b c bf cg (hb | hc) <;> refine' ne_of_gt _
       · refine' lt_of_lt_of_le (_ : _ < b + gmin) _
@@ -139,7 +136,7 @@ theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigro
     refine' ⟨fmin + a, mem_support_iff.mpr _⟩
     rw [mul_apply_add_eq_mul_of_forall_ne _]
     · refine' mul_ne_zero _ _
-      exacts[mem_support_iff.mp (Finset.min'_mem _ _), mem_support_iff.mp ha]
+      exacts [mem_support_iff.mp (Finset.min'_mem _ _), mem_support_iff.mp ha]
     · rw [H]
       rintro b c bf cg (hb | hc) <;> refine' ne_of_gt _
       · refine' lt_of_le_of_lt (_ : _ ≤ fmin + c) _

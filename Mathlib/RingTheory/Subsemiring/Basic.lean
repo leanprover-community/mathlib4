@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module ring_theory.subsemiring.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
@@ -16,6 +11,8 @@ import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import ring_theory.subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
 /-!
 # Bundled subsemirings
@@ -98,7 +95,7 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
-  { SubmonoidClass.Subtype s, AddSubmonoidClass.Subtype s with toFun := (↑) }
+  { SubmonoidClass.subtype s, AddSubmonoidClass.subtype s with toFun := (↑) }
 #align subsemiring_class.subtype SubsemiringClass.subtype
 
 @[simp]
@@ -136,7 +133,7 @@ instance toOrderedSemiring {R} [OrderedSemiring R] [SetLike S R] [SubsemiringCla
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_ordered_semiring SubsemiringClass.toOrderedSemiring
 
-/-- A subsemiring of an `StrictOrderedSemiring` is an `StrictOrderedSemiring`. -/
+/-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
 instance toStrictOrderedSemiring {R} [StrictOrderedSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedSemiring s :=
   Subtype.coe_injective.strictOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -150,7 +147,7 @@ instance toOrderedCommSemiring {R} [OrderedCommSemiring R] [SetLike S R] [Subsem
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_ordered_comm_semiring SubsemiringClass.toOrderedCommSemiring
 
-/-- A subsemiring of an `StrictOrderedCommSemiring` is an `StrictOrderedCommSemiring`. -/
+/-- A subsemiring of a `StrictOrderedCommSemiring` is a `StrictOrderedCommSemiring`. -/
 instance toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedCommSemiring s :=
   Subtype.coe_injective.strictOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -354,7 +351,7 @@ protected theorem prod_mem {R : Type _} [CommSemiring R] (s : Subsemiring R) {ι
   prod_mem h
 #align subsemiring.prod_mem Subsemiring.prod_mem
 
-/-- Sum of elements in an `Subsemiring` of an `Semiring` indexed by a `Finset`
+/-- Sum of elements in a `Subsemiring` of a `Semiring` indexed by a `Finset`
 is in the `add_subsemiring`. -/
 protected theorem sum_mem (s : Subsemiring R) {ι : Type _} {t : Finset ι} {f : ι → R}
     (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
@@ -772,9 +769,19 @@ theorem mem_centralizer_iff {R} [Semiring R] {s : Set R} {z : R} :
   Iff.rfl
 #align subsemiring.mem_centralizer_iff Subsemiring.mem_centralizer_iff
 
+theorem center_le_centralizer {R} [Semiring R] (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+#align subsemiring.center_le_centralizer Subsemiring.center_le_centralizer
+
 theorem centralizer_le {R} [Semiring R] (s t : Set R) (h : s ⊆ t) : centralizer t ≤ centralizer s :=
   Set.centralizer_subset h
 #align subsemiring.centralizer_le Subsemiring.centralizer_le
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {R} [Semiring R] {s : Set R} :
+    centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align subsemiring.centralizer_eq_top_iff_subset Subsemiring.centralizer_eq_top_iff_subset
 
 @[simp]
 theorem centralizer_univ {R} [Semiring R] : centralizer Set.univ = center R :=
@@ -912,6 +919,21 @@ theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s)
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
   (@closure_le _ _ _ ⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩).2 Hs h
 #align subsemiring.closure_induction Subsemiring.closure_induction
+
+@[elab_as_elim]
+theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
+    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H0 : p 0 (zero_mem _)) (H1 : p 1 (one_mem _))
+    (Hadd : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {a : R} (ha : a ∈ closure s) : p a ha := by
+  refine' Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine'
+    closure_induction ha (fun m hm => ⟨subset_closure hm, Hs m hm⟩) ⟨zero_mem _, H0⟩
+      ⟨one_mem _, H1⟩ ?_ ?_
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨add_mem hx' hy', Hadd _ _ _ _ hx hy⟩)
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨mul_mem hx' hy', Hmul _ _ _ _ hx hy⟩)
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
@@ -1084,7 +1106,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
       (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id) (⨆ i, (S i).toAddSubmonoid)
       (AddSubmonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
   -- Porting note: gave the hypothesis an explicit name because `@this` doesn't work
-  suffices h : (⨆ i, S i) ≤ U by simpa using @h x
+  suffices h : ⨆ i, S i ≤ U by simpa using @h x
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align subsemiring.mem_supr_of_directed Subsemiring.mem_iSup_of_directed
 
@@ -1173,6 +1195,7 @@ theorem rangeS_top_iff_surjective {f : R →+* S} :
 #align ring_hom.srange_top_iff_surjective RingHom.rangeS_top_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
+@[simp]
 theorem rangeS_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.rangeS = (⊤ : Subsemiring S) :=
   rangeS_top_iff_surjective.2 hf

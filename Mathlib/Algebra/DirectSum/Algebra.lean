@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.direct_sum.algebra
-! leanprover-community/mathlib commit e5ba338e9ae4e7feae5027fd5198850971f0fa6a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
+
+#align_import algebra.direct_sum.algebra from "leanprover-community/mathlib"@"e5ba338e9ae4e7feae5027fd5198850971f0fa6a"
 
 /-! # Additively-graded algebra structures on `⨁ i, A i`
 
@@ -69,22 +66,22 @@ instance : Algebra R (⨁ i, A i) where
   map_mul' a b := by
     simp only [AddMonoidHom.comp_apply]
     rw [of_mul_of]
-    apply Dfinsupp.single_eq_of_sigma_eq (GAlgebra.map_mul a b)
+    apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.map_mul a b)
   commutes' r x := by
     change AddMonoidHom.mul (DirectSum.of _ _ _) x = AddMonoidHom.mul.flip (DirectSum.of _ _ _) x
     apply FunLike.congr_fun _ x
-    ext (i xi) : 2
+    ext i xi : 2
     dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.mul_apply, AddMonoidHom.flip_apply]
     rw [of_mul_of, of_mul_of]
-    apply Dfinsupp.single_eq_of_sigma_eq (GAlgebra.commutes r ⟨i, xi⟩)
+    apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.commutes r ⟨i, xi⟩)
   smul_def' r x := by
     change DistribMulAction.toAddMonoidHom _ r x = AddMonoidHom.mul (DirectSum.of _ _ _) x
     apply FunLike.congr_fun _ x
-    ext (i xi) : 2
+    ext i xi : 2
     dsimp only [AddMonoidHom.comp_apply, DistribMulAction.toAddMonoidHom_apply,
       AddMonoidHom.mul_apply]
     rw [DirectSum.of_mul_of, ← of_smul]
-    apply Dfinsupp.single_eq_of_sigma_eq (GAlgebra.smul_def r ⟨i, xi⟩)
+    apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.smul_def r ⟨i, xi⟩)
 
 theorem algebraMap_apply (r : R) :
     algebraMap R (⨁ i, A i) r = DirectSum.of A 0 (GAlgebra.toFun r) :=

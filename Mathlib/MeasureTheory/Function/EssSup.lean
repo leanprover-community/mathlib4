@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.ess_sup
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Order.Filter.ENNReal
+
+#align_import measure_theory.function.ess_sup from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Essential supremum and infimum
@@ -63,23 +60,21 @@ theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = e
 #align ess_inf_congr_ae essInf_congr_ae
 
 @[simp]
-theorem essSup_const' [μ.ae.NeBot] (c : β) : essSup (fun _ : α => c) μ = c :=
+theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
   limsup_const _
 #align ess_sup_const' essSup_const'
 
 @[simp]
-theorem essInf_const' [μ.ae.NeBot] (c : β) : essInf (fun _ : α => c) μ = c :=
+theorem essInf_const' [NeZero μ] (c : β) : essInf (fun _ : α => c) μ = c :=
   liminf_const _
 #align ess_inf_const' essInf_const'
 
-theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c := by
-  rw [← ae_neBot] at hμ
-  exact essSup_const' _
+theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c :=
+  have := NeZero.mk hμ; essSup_const' _
 #align ess_sup_const essSup_const
 
-theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c := by
-  rw [← ae_neBot] at hμ
-  exact essInf_const' _
+theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c :=
+  have := NeZero.mk hμ; essInf_const' _
 #align ess_inf_const essInf_const
 
 end ConditionallyCompleteLattice
@@ -278,7 +273,7 @@ theorem essSup_indicator_eq_essSup_restrict [Zero β] {s : Set α} {f : α → �
       (limsSup_le_limsSup_of_le (map_restrict_ae_le_map_indicator_ae hs)
         (by isBoundedDefault) (by isBoundedDefault) )
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_restrict_le => _)
-  rw [eventually_map] at h_restrict_le⊢
+  rw [eventually_map] at h_restrict_le ⊢
   rw [ae_restrict_iff' hs] at h_restrict_le
   have hc : 0 ≤ c := by
     rsuffices ⟨x, hx⟩ : ∃ x, 0 ≤ f x ∧ f x ≤ c

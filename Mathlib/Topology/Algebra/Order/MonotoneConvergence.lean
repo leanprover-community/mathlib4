@@ -2,13 +2,10 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.monotone_convergence
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
+
+#align_import topology.algebra.order.monotone_convergence from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Bounded monotone sequences converge
@@ -129,7 +126,7 @@ variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → 
 theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
   cases isEmpty_or_nonempty ι
-  exacts[tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_ciSup hbdd)]
+  exacts [tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_ciSup hbdd)]
 #align tendsto_at_top_csupr tendsto_atTop_ciSup
 
 theorem tendsto_atBot_ciSup (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
@@ -182,8 +179,9 @@ end iInf
 
 end
 
-instance supConvergenceClassProd [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
-  [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
+instance Prod.supConvergenceClass
+    [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+    [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
   rw [isLUB_prod, ← range_restrict, ← range_restrict] at h
@@ -212,15 +210,15 @@ instance Pi.infConvergenceClass
     [∀ i, InfConvergenceClass (α i)] : InfConvergenceClass (∀ i, α i) :=
   show InfConvergenceClass (∀ i, (α i)ᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
-instance Pi.Sup_convergence_class' {ι : Type _} [Preorder α] [TopologicalSpace α]
+instance Pi.supConvergenceClass' {ι : Type _} [Preorder α] [TopologicalSpace α]
     [SupConvergenceClass α] : SupConvergenceClass (ι → α) :=
   supConvergenceClass
-#align pi.Sup_convergence_class' Pi.Sup_convergence_class'
+#align pi.Sup_convergence_class' Pi.supConvergenceClass'
 
-instance Pi.Inf_convergence_class' {ι : Type _} [Preorder α] [TopologicalSpace α]
+instance Pi.infConvergenceClass' {ι : Type _} [Preorder α] [TopologicalSpace α]
     [InfConvergenceClass α] : InfConvergenceClass (ι → α) :=
   Pi.infConvergenceClass
-#align pi.Inf_convergence_class' Pi.Inf_convergence_class'
+#align pi.Inf_convergence_class' Pi.infConvergenceClass'
 
 theorem tendsto_of_monotone {ι α : Type _} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
@@ -248,7 +246,6 @@ for the range of `f`.
 Related theorems above (`IsLUB.isLUB_of_tendsto`, `IsGLB.isGLB_of_tendsto` etc) cover the case
 when `f x` tends to `a` as `x` tends to some point `b` in the domain. -/
 
-set_option autoImplicit false
 theorem Monotone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [SemilatticeSup β] {f : β → α} {a : α} (hf : Monotone f) (ha : Tendsto f atTop (𝓝 a)) (b : β) :
     f b ≤ a :=
@@ -315,7 +312,7 @@ theorem iInf_eq_of_tendsto {α} [TopologicalSpace α] [CompleteLinearOrder α] [
 
 theorem iSup_eq_iSup_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
-    (hφ : Tendsto φ l atTop) : (⨆ i, f i) = ⨆ i, f (φ i) :=
+    (hφ : Tendsto φ l atTop) : ⨆ i, f i = ⨆ i, f (φ i) :=
   le_antisymm
     (iSup_mono' fun i =>
       Exists.imp (fun j (hj : i ≤ φ j) => hf hj) (hφ.eventually <| eventually_ge_atTop i).exists)
@@ -324,6 +321,6 @@ theorem iSup_eq_iSup_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι�
 
 theorem iInf_eq_iInf_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
-    (hφ : Tendsto φ l atBot) : (⨅ i, f i) = ⨅ i, f (φ i) :=
+    (hφ : Tendsto φ l atBot) : ⨅ i, f i = ⨅ i, f (φ i) :=
   iSup_eq_iSup_subseq_of_monotone hf.dual hφ
 #align infi_eq_infi_subseq_of_monotone iInf_eq_iInf_subseq_of_monotone

@@ -46,7 +46,7 @@ We partly define this as a separate definition so that the unused arguments lint
 def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
 
 /-- Find arguments for a notation class -/
-def defaultfindArgs : findArgType := λ _ className args =>  do
+def defaultfindArgs : findArgType := λ _ className args => do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   if arity == args.size then
@@ -64,7 +64,7 @@ def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD
 def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
-def nsmulArgs: findArgType := λ _ _ args =>
+def nsmulArgs : findArgType := λ _ _ args =>
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ` and duplicating the first argument. Used for `zsmul`. -/
@@ -80,7 +80,7 @@ def findOneArgs : findArgType := λ _ _ args =>
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
 /-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
-def findCoercionArgs : findArgType := λ str className args =>  do
+def findCoercionArgs : findArgType := λ str className args => do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   let eStr := mkAppN (← mkConstWithLevelParams str) args
@@ -93,7 +93,7 @@ structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
   /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `FunLike` and SetLike`). If this is set to true, we add the current
+    (false for the coercions `FunLike` and `SetLike`). If this is set to true, we add the current
     class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/

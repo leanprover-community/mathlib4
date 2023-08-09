@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.additive.ruzsa_covering
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Pointwise
+
+#align_import combinatorics.additive.ruzsa_covering from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Ruzsa's covering lemma
@@ -46,7 +43,7 @@ theorem exists_subset_mul_div (ht : t.Nonempty) :
   · exact subset_mul_left _ ht.one_mem_div hau
   by_cases H : ∀ b ∈ u, Disjoint (a • t) (b • t)
   · refine' (hCmax _ _ <| ssubset_insert hau).elim
-    rw [mem_filter, mem_powerset, insert_subset, coe_insert]
+    rw [mem_filter, mem_powerset, insert_subset_iff, coe_insert]
     exact ⟨⟨ha, hu.1⟩, hu.2.insert fun _ hb _ ↦ H _ hb⟩
   push_neg at H
   simp_rw [not_disjoint_iff, ← inv_smul_mem_iff] at H

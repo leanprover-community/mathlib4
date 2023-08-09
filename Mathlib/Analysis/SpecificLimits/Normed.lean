@@ -2,23 +2,19 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Sébastien Gouëzel, Yury G. Kudryashov, Dylan MacKenzie, Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.specific_limits.normed
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 
+#align_import analysis.specific_limits.normed from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+
 /-!
 # A collection of specific limit computations
 
 This file contains important specific limit computations in (semi-)normed groups/rings/spaces, as
-as well as such computations in `ℝ` when the natural proof passes through a fact about normed
-spaces.
+well as such computations in `ℝ` when the natural proof passes through a fact about normed spaces.
 
 -/
 
@@ -71,7 +67,7 @@ theorem tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type _} [No
     [NormedAddCommGroup 𝔸] [NormedSpace 𝕜 𝔸] {l : Filter ι} {ε : ι → 𝕜} {f : ι → 𝔸}
     (hε : Tendsto ε l (𝓝 0)) (hf : Filter.IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
     Tendsto (ε • f) l (𝓝 0) := by
-  rw [← isLittleO_one_iff 𝕜] at hε⊢
+  rw [← isLittleO_one_iff 𝕜] at hε ⊢
   simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
 #align normed_field.tendsto_zero_smul_of_tendsto_zero_of_bounded NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded
 
@@ -183,7 +179,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     simpa only [Real.norm_eq_abs, one_mul, abs_pow, abs_of_nonneg this]
   -- porting note: used to work without explicitly having 6 → 7
   tfae_have 6 → 7
-  · exact fun h ↦  tfae_8_to_7 <| tfae_2_to_8 <| tfae_3_to_2 <| tfae_5_to_3 <| tfae_6_to_5 h
+  · exact fun h ↦ tfae_8_to_7 <| tfae_2_to_8 <| tfae_3_to_2 <| tfae_5_to_3 <| tfae_6_to_5 h
   tfae_finish
 #align tfae_exists_lt_is_o_pow TFAE_exists_lt_isLittleO_pow
 
@@ -212,7 +208,7 @@ theorem isLittleO_coe_const_pow_of_one_lt {R : Type _} [NormedRing R] {r : ℝ} 
   simpa only [pow_one] using @isLittleO_pow_const_const_pow_of_one_lt R _ 1 _ hr
 #align is_o_coe_const_pow_of_one_lt isLittleO_coe_const_pow_of_one_lt
 
-/-- If `‖r₁‖ < r₂`, then for any naturak `k` we have `n ^ k r₁ ^ n = o (r₂ ^ n)` as `n → ∞`. -/
+/-- If `‖r₁‖ < r₂`, then for any natural `k` we have `n ^ k r₁ ^ n = o (r₂ ^ n)` as `n → ∞`. -/
 theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type _} [NormedRing R] (k : ℕ)
     {r₁ : R} {r₂ : ℝ} (h : ‖r₁‖ < r₂) :
     (fun n ↦ (n : R) ^ k * r₁ ^ n : ℕ → R) =o[atTop] fun n ↦ r₂ ^ n := by
@@ -238,7 +234,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
   by_cases h0 : r = 0
   · exact tendsto_const_nhds.congr'
       (mem_atTop_sets.2 ⟨1, fun n hn ↦ by simp [zero_lt_one.trans_le hn, h0]⟩)
-  have hr' : 1 < (|r|)⁻¹ := one_lt_inv (abs_pos.2 h0) hr
+  have hr' : 1 < |r|⁻¹ := one_lt_inv (abs_pos.2 h0) hr
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
 #align tendsto_pow_const_mul_const_pow_of_abs_lt_one tendsto_pow_const_mul_const_pow_of_abs_lt_one
@@ -298,7 +294,7 @@ theorem summable_geometric_of_norm_lt_1 (h : ‖ξ‖ < 1) : Summable fun n : �
   ⟨_, hasSum_geometric_of_norm_lt_1 h⟩
 #align summable_geometric_of_norm_lt_1 summable_geometric_of_norm_lt_1
 
-theorem tsum_geometric_of_norm_lt_1 (h : ‖ξ‖ < 1) : (∑' n : ℕ, ξ ^ n) = (1 - ξ)⁻¹ :=
+theorem tsum_geometric_of_norm_lt_1 (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_1 h).tsum_eq
 #align tsum_geometric_of_norm_lt_1 tsum_geometric_of_norm_lt_1
 
@@ -310,7 +306,7 @@ theorem summable_geometric_of_abs_lt_1 {r : ℝ} (h : |r| < 1) : Summable fun n 
   summable_geometric_of_norm_lt_1 h
 #align summable_geometric_of_abs_lt_1 summable_geometric_of_abs_lt_1
 
-theorem tsum_geometric_of_abs_lt_1 {r : ℝ} (h : |r| < 1) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ :=
+theorem tsum_geometric_of_abs_lt_1 {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   tsum_geometric_of_norm_lt_1 h
 #align tsum_geometric_of_abs_lt_1 tsum_geometric_of_abs_lt_1
 

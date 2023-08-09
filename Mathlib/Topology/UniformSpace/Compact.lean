@@ -2,16 +2,13 @@
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.uniform_space.compact
-! leanprover-community/mathlib commit 735b22f8f9ff9792cf4212d7cb051c4c994bc685
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Support
+
+#align_import topology.uniform_space.compact from "leanprover-community/mathlib"@"735b22f8f9ff9792cf4212d7cb051c4c994bc685"
 
 /-!
 # Compact separated uniform spaces
@@ -95,21 +92,21 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     rw [le_iff_forall_inf_principal_compl]
     intro V V_in
     by_contra H
-    haveI : NeBot (F ⊓ 𝓟 (Vᶜ)) := ⟨H⟩
+    haveI : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
     -- Hence compactness would give us a cluster point (x, y) for F ⊓ 𝓟 Vᶜ
-    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 (Vᶜ)) := cluster_point_of_compact _
+    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := cluster_point_of_compact _
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,
     -- and a fortiori not in Δ, so x ≠ y
     have clV : ClusterPt (x, y) (𝓟 <| Vᶜ) := hxy.of_inf_right
     have : (x, y) ∉ interior V := by
-      have : (x, y) ∈ closure (Vᶜ) := by rwa [mem_closure_iff_clusterPt]
+      have : (x, y) ∈ closure Vᶜ := by rwa [mem_closure_iff_clusterPt]
       rwa [closure_compl] at this
     have diag_subset : diagonal γ ⊆ interior V := subset_interior_iff_mem_nhdsSet.2 V_in
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this
     -- Since γ is compact and Hausdorff, it is normal, hence T₃.
     haveI : NormalSpace γ := normalOfCompactT2
-    -- So there are closed neighboords V₁ and V₂ of x and y contained in disjoint open neighborhoods
-    -- U₁ and U₂.
+    -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
+    -- disjoint open neighborhoods U₁ and U₂.
     obtain
       ⟨U₁, _, V₁, V₁_in, U₂, _, V₂, V₂_in, V₁_cl, V₂_cl, U₁_op, U₂_op, VU₁, VU₂, hU₁₂⟩ :=
       disjoint_nested_nhds x_ne_y
@@ -201,7 +198,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
   refine' ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU _), hb _ _ _ haU _⟩
-  exacts[mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
+  exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 #align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}

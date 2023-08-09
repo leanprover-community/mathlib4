@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.cast
-! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Lemmas
@@ -14,6 +9,8 @@ import Mathlib.Data.Int.CharZero
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Order.Field.Basic
+
+#align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 
 /-!
@@ -106,9 +103,9 @@ theorem cast_add_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m + n : ℚ) : α) = m + n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 ; exact d₁0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 ; exact d₂0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', add_def'' d₁0' d₂0']
     suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
         = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹ by
@@ -130,7 +127,7 @@ theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
 @[norm_cast]
 theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
     ((m - n : ℚ) : α) = m - n := by
-  have : ((-n).den : α) ≠ 0 := by cases n ; exact n0
+  have : ((-n).den : α) ≠ 0 := by cases n; exact n0
   simp [sub_eq_add_neg, cast_add_of_ne_zero m0 this]
 #align rat.cast_sub_of_ne_zero Rat.cast_sub_of_ne_zero
 
@@ -139,9 +136,9 @@ theorem cast_mul_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m * n : ℚ) : α) = m * n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 ; exact d₁0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 ; exact d₂0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', mul_def' d₁0' d₂0']
     suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹)) by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
@@ -171,9 +168,9 @@ theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 theorem cast_inv_of_ne_zero :
   ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
   | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) => by
-    have _ : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0 ; exact n0 Int.cast_zero
+    have _ : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0; exact n0 Int.cast_zero
     have _ : (d : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d0 ; exact d0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d0; exact d0 Nat.cast_zero
     rw [num_den', inv_def']
     rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, inv_div] <;> simp [n0, d0]
 #align rat.cast_inv_of_ne_zero Rat.cast_inv_of_ne_zero
@@ -186,7 +183,7 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
     apply den_dvd
   have : (n⁻¹.den : α) = 0 → (n.num : α) = 0 := fun h => by
     let ⟨k, e⟩ := this
-    have := congr_arg ((↑) : ℤ → α) e ; rwa [Int.cast_mul, Int.cast_ofNat, h, zero_mul] at this
+    have := congr_arg ((↑) : ℤ → α) e; rwa [Int.cast_mul, Int.cast_ofNat, h, zero_mul] at this
   rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
 
@@ -196,8 +193,8 @@ theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
     refine' ⟨fun h => _, congr_arg _⟩
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
     have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
-    rw [num_den', num_den'] at h⊢
-    rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero] at h <;> simp [d₁0, d₂0] at h⊢
+    rw [num_den', num_den'] at h ⊢
+    rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero] at h <;> simp [d₁0, d₂0] at h ⊢
     rwa [eq_div_iff_mul_eq d₂a, division_def, mul_assoc, (d₁.cast_commute (d₂ : α)).inv_left₀.eq, ←
       mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_ofNat d₁, ←
       Int.cast_mul, ← Int.cast_ofNat d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0] at h
@@ -241,7 +238,7 @@ theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α
 
 @[simp, norm_cast]
 theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
-  rw [bit1, cast_add, cast_one, cast_bit0] ; rfl
+  rw [bit1, cast_add, cast_one, cast_bit0]; rfl
 #align rat.cast_bit1 Rat.cast_bit1
 
 end

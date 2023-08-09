@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfunctor.multivariate.basic
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Data.PFunctor.Univariate.Basic
+
+#align_import data.pfunctor.multivariate.basic from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Multivariate polynomial functors.
@@ -123,7 +120,7 @@ end Const
 def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m
     where
   A := Σa₂ : P.1, ∀ i, P.2 a₂ i → (Q i).1
-  B a i := Σ(j : _)(b : P.2 a.1 j), (Q j).2 (a.snd j b) i
+  B a i := Σ(j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
 #align mvpfunctor.comp MvPFunctor.comp
 
 variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
@@ -174,7 +171,7 @@ theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (
   simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
-  . intro
+  · intro
     repeat' first |constructor|assumption
 #align mvpfunctor.liftp_iff' MvPFunctor.liftP_iff'
 
@@ -227,15 +224,15 @@ open TypeVec
 
 variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
-/-- Split polynomial functor, get a n-ary functor
-from a `n+1`-ary functor -/
+/-- Split polynomial functor, get an n-ary functor
+from an `n+1`-ary functor -/
 def drop : MvPFunctor n where
   A := P.A
   B a := (P.B a).drop
 #align mvpfunctor.drop MvPFunctor.drop
 
 /-- Split polynomial functor, get a univariate functor
-from a `n+1`-ary functor -/
+from an `n+1`-ary functor -/
 def last : PFunctor where
   A := P.A
   B a := (P.B a).last

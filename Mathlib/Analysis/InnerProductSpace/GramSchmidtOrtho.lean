@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.gram_schmidt_ortho
-! leanprover-community/mathlib commit 1a4df69ca1a9a0e5e26bfe12e2b92814216016d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.Matrix.Block
+
+#align_import analysis.inner_product_space.gram_schmidt_ortho from "leanprover-community/mathlib"@"1a4df69ca1a9a0e5e26bfe12e2b92814216016d0"
 
 /-!
 # Gram-Schmidt Orthogonalization and Orthonormalization
@@ -401,8 +398,11 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 #align gram_schmidt_orthonormal_basis_inv_block_triangular gramSchmidtOrthonormalBasis_inv_blockTriangular
 
-theorem gramSchmidtOrthonormalBasis_det : (gramSchmidtOrthonormalBasis h f).toBasis.det f =
-    ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
+-- Porting note: added a `DecidableEq` argument to help with timeouts in
+-- `Mathlib/Analysis/InnerProductSpace/Orientation.lean`
+theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
+    (gramSchmidtOrthonormalBasis h f).toBasis.det f =
+      ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
   convert Matrix.det_of_upperTriangular (gramSchmidtOrthonormalBasis_inv_blockTriangular h f)
   exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f _) _).symm
 #align gram_schmidt_orthonormal_basis_det gramSchmidtOrthonormalBasis_det

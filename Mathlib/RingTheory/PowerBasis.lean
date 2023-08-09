@@ -2,13 +2,10 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.power_basis
-! leanprover-community/mathlib commit d1d69e99ed34c95266668af4e288fc1c598b9a7f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Minpoly.Field
+
+#align_import ring_theory.power_basis from "leanprover-community/mathlib"@"d1d69e99ed34c95266668af4e288fc1c598b9a7f"
 
 /-!
 # Power basis
@@ -113,7 +110,7 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     · rintro ⟨f, h, hy⟩
       refine' ⟨f, _, hy⟩
       by_cases hf : f = 0
-      · simp only [hf, natDegree_zero, degree_zero] at h⊢
+      · simp only [hf, natDegree_zero, degree_zero] at h ⊢
         first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
       simp_all only [degree_eq_natDegree hf]
       · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
@@ -334,8 +331,9 @@ polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 noncomputable def liftEquiv' (pb : PowerBasis A S) :
     (S →ₐ[A] B) ≃ { y : B // y ∈ ((minpoly A pb.gen).map (algebraMap A B)).roots } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
-    rw [mem_roots, IsRoot.def, Equiv.refl_apply, ← eval₂_eq_eval_map, ← aeval_def]
-    exact map_monic_ne_zero (minpoly.monic pb.isIntegral_gen))
+    rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
+    · simp
+    · exact map_monic_ne_zero (minpoly.monic pb.isIntegral_gen))
 #align power_basis.lift_equiv' PowerBasis.liftEquiv'
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`
@@ -351,7 +349,7 @@ where "the same" means that `pb` is a root of `pb'`s minimal polynomial and vice
 See also `PowerBasis.equivOfMinpoly` which takes the hypothesis that the
 minimal polynomials are identical.
 -/
-@[simps! (config := { attrs := [] }) apply]
+@[simps! (config := { isSimp := false }) apply]
 noncomputable def equivOfRoot (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0) :
     S ≃ₐ[A] S' :=
@@ -366,14 +364,14 @@ noncomputable def equivOfRoot (pb : PowerBasis A S) (pb' : PowerBasis A S')
       simp)
 #align power_basis.equiv_of_root PowerBasis.equivOfRoot
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfRoot_aeval (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0)
     (f : A[X]) : pb.equivOfRoot pb' h₁ h₂ (aeval pb.gen f) = aeval pb'.gen f :=
   pb.lift_aeval _ h₂ _
 #align power_basis.equiv_of_root_aeval PowerBasis.equivOfRoot_aeval
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfRoot_gen (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0) :
     pb.equivOfRoot pb' h₁ h₂ pb.gen = pb'.gen :=
@@ -393,20 +391,20 @@ where "the same" means that they have identical minimal polynomials.
 See also `PowerBasis.equivOfRoot` which takes the hypothesis that each generator is a root of the
 other basis' minimal polynomial; `PowerBasis.equivOfRoot` is more general if `A` is not a field.
 -/
-@[simps! (config := { attrs := [] }) apply]
+@[simps! (config := { isSimp := false }) apply]
 noncomputable def equivOfMinpoly (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) : S ≃ₐ[A] S' :=
   pb.equivOfRoot pb' (h ▸ minpoly.aeval _ _) (h.symm ▸ minpoly.aeval _ _)
 #align power_basis.equiv_of_minpoly PowerBasis.equivOfMinpoly
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfMinpoly_aeval (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) (f : A[X]) :
     pb.equivOfMinpoly pb' h (aeval pb.gen f) = aeval pb'.gen f :=
   pb.equivOfRoot_aeval pb' _ _ _
 #align power_basis.equiv_of_minpoly_aeval PowerBasis.equivOfMinpoly_aeval
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfMinpoly_gen (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) : pb.equivOfMinpoly pb' h pb.gen = pb'.gen :=
   pb.equivOfRoot_gen pb' _ _

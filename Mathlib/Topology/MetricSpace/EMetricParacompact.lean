@@ -2,15 +2,13 @@
 Copyright (c) 202 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.emetric_paracompact
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Tactic.GCongr
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Paracompact
+
+#align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -52,7 +50,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   refine' ⟨fun ι s ho hcov => _⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι
+  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
   let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
   have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
@@ -154,8 +152,8 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) + (2⁻¹ ^ (n + k + 1) + 2⁻¹ ^ m) := by
           apply_rules [ENNReal.add_lt_add]
         _ = 2 * (2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1)) := by simp only [two_mul, add_comm]
-        _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) :=
-          (mul_le_mul' le_rfl <| add_le_add le_rfl <| hpow_le (add_le_add hm le_rfl))
+        _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) := by
+          gcongr 2 * (_ + ?_); exact hpow_le (add_le_add hm le_rfl)
         _ = 3 * 2⁻¹ ^ m := by
           rw [mul_add, h2pow, ← two_add_one_eq_three, add_mul, one_mul]
     -- Finally, we glue `Hgt` and `Hle`

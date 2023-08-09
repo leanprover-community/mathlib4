@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
-
-! This file was ported from Lean 3 source module topology.category.Top.limits.basic
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
+
+#align_import topology.category.Top.limits.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # The category of topological spaces has all limits and colimits
@@ -99,7 +96,7 @@ def limitConeIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitCone.{v,u} F) 
           rw [← S.w f]
           rfl }
   uniq S m h := by
-    apply ContinuousMap.ext ; intros a ; apply Subtype.ext ; funext j
+    apply ContinuousMap.ext; intros a; apply Subtype.ext; funext j
     dsimp
     rw [← h]
     rfl
@@ -115,7 +112,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{
     (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
     intro _ _ _
-    rw [←comp_apply, ←s.π.naturality]
+    rw [←comp_apply', forget_map_eq_coe, ←s.π.naturality, forget_map_eq_coe]
     dsimp
     rw [Category.id_comp]
   · exact
@@ -178,7 +175,7 @@ def colimitCoconeIsColimit (F : J ⥤ TopCatMax.{v, u}) : IsColimit (colimitCoco
       ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
   · intro _ _ ⟨_, h⟩
     dsimp
-    rw [h, Functor.comp_map, ← comp_apply, s.ι.naturality]
+    rw [h, Functor.comp_map, ← comp_apply', s.ι.naturality]
     dsimp
     rw [Category.comp_id]
   · exact

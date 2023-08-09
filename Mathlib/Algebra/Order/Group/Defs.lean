@@ -2,15 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.group.defs
-! leanprover-community/mathlib commit b599f4e4e5cf1fbcb4194503671d3d9e569c1fce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Order.Hom.Basic
+
+#align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
 
 /-!
 # Ordered groups
@@ -34,14 +31,14 @@ variable {α : Type u}
 /-- An ordered additive commutative group is an additive commutative group
 with a partial order in which addition is strictly monotone. -/
 class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
-  /-- Addition is monotone in a ordered additive commutative group. -/
+  /-- Addition is monotone in an ordered additive commutative group. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
 
-/-- An ordered commutative group is an commutative group
+/-- An ordered commutative group is a commutative group
 with a partial order in which multiplication is strictly monotone. -/
 class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
-  /-- Multiplication is monotone in a ordered commutative group. -/
+  /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
 
@@ -361,15 +358,13 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
 
 @[to_additive (attr := simp)]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
-  -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff]
+  simp [div_eq_mul_inv]
 #align div_le_self_iff div_le_self_iff
 #align sub_le_self_iff sub_le_self_iff
 
 @[to_additive (attr := simp)]
 theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
-  -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff]
+  simp [div_eq_mul_inv]
 #align le_div_self_iff le_div_self_iff
 #align le_sub_self_iff le_sub_self_iff
 
@@ -421,8 +416,7 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
 
 @[to_additive (attr := simp)]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
-  -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff]
+  simp [div_eq_mul_inv]
 #align div_lt_self_iff div_lt_self_iff
 #align sub_lt_self_iff sub_lt_self_iff
 
@@ -1093,7 +1087,7 @@ class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, Li
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined.` -/
+  Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type _) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤

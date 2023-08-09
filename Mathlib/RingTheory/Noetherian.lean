@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
-
-! This file was ported from Lean 3 source module ring_theory.noetherian
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
@@ -17,6 +12,8 @@ import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.OrderIsoNat
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Nilpotent
+
+#align_import ring_theory.noetherian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
 /-!
 # Noetherian rings and modules
@@ -421,7 +418,7 @@ theorem IsNoetherian.exists_endomorphism_iterate_ker_inf_range_eq_bot [I : IsNoe
   rw [eq_bot_iff]
   rintro - ⟨h, ⟨y, rfl⟩⟩
   rw [mem_bot, ← LinearMap.mem_ker, w]
-  erw [LinearMap.mem_ker] at h⊢
+  erw [LinearMap.mem_ker] at h ⊢
   change (f ^ (n + 1) * f ^ (n + 1)) y = 0 at h
   rw [← pow_add] at h
   convert h using 3
@@ -466,7 +463,7 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot [I : IsNoetherian R M]
 
 /-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
 -/
-noncomputable def IsNoetherian.equivPunitOfProdInjective [IsNoetherian R M] (f : M × N →ₗ[R] M)
+noncomputable def IsNoetherian.equivPUnitOfProdInjective [IsNoetherian R M] (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} := by
   apply Nonempty.some
   obtain ⟨n, w⟩ :=
@@ -477,7 +474,7 @@ noncomputable def IsNoetherian.equivPunitOfProdInjective [IsNoetherian R M] (f :
   refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
   rw [w]
   apply Submodule.botEquivPUnit
-#align is_noetherian.equiv_punit_of_prod_injective IsNoetherian.equivPunitOfProdInjective
+#align is_noetherian.equiv_punit_of_prod_injective IsNoetherian.equivPUnitOfProdInjective
 
 end
 
@@ -515,13 +512,13 @@ instance (priority := 100) isNoetherian_of_subsingleton (R M) [Subsingleton R] [
 
 theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (h : IsNoetherian R M) : IsNoetherian R N := by
-  rw [isNoetherian_iff_wellFounded] at h⊢
+  rw [isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h
 #align is_noetherian_of_submodule_of_noetherian isNoetherian_of_submodule_of_noetherian
 
 instance Submodule.Quotient.isNoetherian {R} [Ring R] {M} [AddCommGroup M] [Module R M]
     (N : Submodule R M) [h : IsNoetherian R M] : IsNoetherian R (M ⧸ N) := by
-  rw [isNoetherian_iff_wellFounded] at h⊢
+  rw [isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (Submodule.comapMkQOrderEmbedding N).dual h
 #align submodule.quotient.is_noetherian Submodule.Quotient.isNoetherian
 
@@ -529,7 +526,7 @@ instance Submodule.Quotient.isNoetherian {R} [Ring R] {M} [AddCommGroup M] [Modu
 also noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M := by
-  rw [isNoetherian_iff_wellFounded] at h⊢
+  rw [isNoetherian_iff_wellFounded] at h ⊢
   refine' (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
 #align is_noetherian_of_tower isNoetherian_of_tower
 
@@ -583,7 +580,7 @@ theorem isNoetherian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R 
 
 theorem isNoetherianRing_of_surjective (R) [Ring R] (S) [Ring S] (f : R →+* S)
     (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S := by
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H⊢
+  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H ⊢
   exact OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H
 #align is_noetherian_ring_of_surjective isNoetherianRing_of_surjective
 

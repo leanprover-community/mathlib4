@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.nerve
-! leanprover-community/mathlib commit 841aef25c9d7a5a5d63a3dcf7bc43386b2c206d6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet
+
+#align_import algebraic_topology.nerve from "leanprover-community/mathlib"@"841aef25c9d7a5a5d63a3dcf7bc43386b2c206d6"
 
 /-!
 
@@ -34,10 +31,6 @@ namespace CategoryTheory
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := SimplexCategory.toCat.obj Δ.unop ⥤ C
   map f x := SimplexCategory.toCat.map f.unop ⋙ x
-  map_id Δ := by
-    simp only [unop_id, id_eq]
-    ext x
-    apply Functor.id_comp
 #align category_theory.nerve CategoryTheory.nerve
 
 instance {C : Type _} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
@@ -48,10 +41,6 @@ instance {C : Type _} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((ner
 def nerveFunctor : Cat ⥤ SSet where
   obj C := nerve C
   map F := { app := fun Δ x => x ⋙ F }
-  map_id C := by
-    apply CategoryTheory.NatTrans.ext
-    funext Δ x
-    apply Functor.comp_id
 #align category_theory.nerve_functor CategoryTheory.nerveFunctor
 
 end CategoryTheory

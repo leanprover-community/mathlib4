@@ -2,16 +2,13 @@
 Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Amelia Livingston
-
-! This file was ported from Lean 3 source module category_theory.abelian.homology
-! leanprover-community/mathlib commit 956af7c76589f444f2e1313911bad16366ea476d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
+
+#align_import category_theory.abelian.homology from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
 
 /-!
 
@@ -61,10 +58,7 @@ abbrev homologyK : A :=
   This is an isomorphism, and it is used in obtaining the API for `homology f g w`
   in the bottom of this file. -/
 abbrev homologyCToK : homologyC f g w ⟶ homologyK f g w :=
-  cokernel.desc _ (kernel.lift _ (kernel.ι _ ≫ cokernel.π _) (by simp))
-    (by
-      apply Limits.equalizer.hom_ext
-      simp)
+  cokernel.desc _ (kernel.lift _ (kernel.ι _ ≫ cokernel.π _) (by simp)) (by ext; simp)
 #align category_theory.abelian.homology_c_to_k CategoryTheory.Abelian.homologyCToK
 
 attribute [local instance] Pseudoelement.homToFun Pseudoelement.hasZero
@@ -73,7 +67,7 @@ instance : Mono (homologyCToK f g w) := by
   apply Pseudoelement.mono_of_zero_of_map_zero
   intro a ha
   obtain ⟨a, rfl⟩ := Pseudoelement.pseudo_surjective_of_epi (cokernel.π (kernel.lift g f w)) a
-  apply_fun kernel.ι (cokernel.desc f g w)  at ha
+  apply_fun kernel.ι (cokernel.desc f g w) at ha
   simp only [← Pseudoelement.comp_apply, cokernel.π_desc, kernel.lift_ι,
     Pseudoelement.apply_zero] at ha
   simp only [Pseudoelement.comp_apply] at ha
@@ -169,7 +163,7 @@ theorem hom_from_ext {W : A} (a b : homology f g w ⟶ W)
   apply_fun fun e => (homologyIsoCokernelLift f g w).inv ≫ e
   swap
   · intro i j hh
-    apply_fun fun e => (homologyIsoCokernelLift f g w).hom ≫ e  at hh
+    apply_fun fun e => (homologyIsoCokernelLift f g w).hom ≫ e at hh
     simpa using hh
   simp only [Category.assoc] at h
   exact coequalizer.hom_ext h
@@ -181,7 +175,7 @@ theorem hom_to_ext {W : A} (a b : W ⟶ homology f g w) (h : a ≫ ι f g w = b 
   apply_fun fun e => e ≫ (homologyIsoKernelDesc f g w).hom
   swap
   · intro i j hh
-    apply_fun fun e => e ≫ (homologyIsoKernelDesc f g w).inv  at hh
+    apply_fun fun e => e ≫ (homologyIsoKernelDesc f g w).inv at hh
     simpa using hh
   simp only [← Category.assoc] at h
   exact equalizer.hom_ext h
@@ -212,7 +206,7 @@ theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
   apply_fun fun e => (kernelSubobjectIso _).hom ≫ e
   swap
   · intro i j hh
-    apply_fun fun e => (kernelSubobjectIso _).inv ≫ e  at hh
+    apply_fun fun e => (kernelSubobjectIso _).inv ≫ e at hh
     simpa using hh
   dsimp [map]
   simp only [π'_eq_π_assoc]
@@ -223,7 +217,7 @@ theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
     (kernelSubobjectIso g).inv ≫ kernelSubobjectMap β =
       kernel.map _ _ β.left β.right β.w.symm ≫ (kernelSubobjectIso _).inv := by
     rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
-    refine Limits.equalizer.hom_ext ?_
+    ext
     dsimp
     simp
   rw [this]
@@ -252,8 +246,7 @@ theorem map_eq_desc'_lift_left (α β h) :
   dsimp [π', lift]
   rw [Iso.eq_comp_inv]
   dsimp [homologyIsoKernelDesc]
-  -- Porting note: previously ext
-  apply Limits.equalizer.hom_ext
+  ext
   simp [h]
 #align homology.map_eq_desc'_lift_left homology.map_eq_desc'_lift_left
 

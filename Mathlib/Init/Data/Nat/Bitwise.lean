@@ -2,11 +2,6 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module init.data.nat.bitwise
-! leanprover-community/lean commit 53e8520d8964c7632989880372d91ba0cecbaf00
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Init.WFTactics
@@ -16,6 +11,8 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals
 
+#align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
+
 /-!
 # Lemmas about bitwise operations on natural numbers.
 
@@ -24,7 +21,7 @@ Possibly only of archaeological significance.
 
 universe u
 
--- Once we're in the `Nat` namespace, `xor` will inconventiently resolve to `Nat.xor`.
+-- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
@@ -285,7 +282,7 @@ def land' : ℕ → ℕ → ℕ :=
 
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ  ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
+  boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
 def ldiff' : ℕ → ℕ → ℕ :=
   bitwise' fun a b => a && not b
 #align nat.ldiff Nat.ldiff'
@@ -380,7 +377,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
       (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
     revert e
     rw [bodd_bit, div2_bit]
-    intros ; rfl
+    intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq
 
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
@@ -413,8 +410,8 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
 @[simp]
 theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
     bitwise' f m 0 = cond (f true false) m 0 := by
-  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero];
-    exact bitwise'_bit_aux h
+  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero]
+  exact bitwise'_bit_aux h
 #align nat.bitwise_zero_right Nat.bitwise'_zero_right
 
 @[simp]

@@ -2,15 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.lattice
-! leanprover-community/mathlib commit e4bc74cbaf429d706cb9140902f7ca6c431e75a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Algebra.Order
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.ULift
+import Mathlib.Tactic.GCongr.Core
+
+#align_import order.lattice from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
 /-!
 # (Semi-)lattices
@@ -32,7 +31,7 @@ of `sup` over `inf`, on the left or on the right.
   commutative, associative and idempotent.
 
 * `Lattice`: a type class for lattices
-* `Lattice.mk'`: an alternative constructor for `Lattice` via profs that `⊔` and `⊓` are
+* `Lattice.mk'`: an alternative constructor for `Lattice` via proofs that `⊔` and `⊓` are
   commutative, associative and satisfy a pair of "absorption laws".
 
 * `DistribLattice`: a type class for distributive lattices.
@@ -226,14 +225,17 @@ theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
     exact le_sup_left
 #align le_iff_exists_sup le_iff_exists_sup
 
+@[gcongr]
 theorem sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
   sup_le (le_sup_of_le_left h₁) (le_sup_of_le_right h₂)
 #align sup_le_sup sup_le_sup
 
+@[gcongr]
 theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
   sup_le_sup le_rfl h₁
 #align sup_le_sup_left sup_le_sup_left
 
+@[gcongr]
 theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
@@ -472,14 +474,17 @@ theorem inf_lt_left_or_right (h : a ≠ b) : a ⊓ b < a ∨ a ⊓ b < b :=
   @left_or_right_lt_sup αᵒᵈ _ _ _ h
 #align inf_lt_left_or_right inf_lt_left_or_right
 
+@[gcongr]
 theorem inf_le_inf (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊓ c ≤ b ⊓ d :=
   @sup_le_sup αᵒᵈ _ _ _ _ _ h₁ h₂
 #align inf_le_inf inf_le_inf
 
+@[gcongr]
 theorem inf_le_inf_right (a : α) {b c : α} (h : b ≤ c) : b ⊓ a ≤ c ⊓ a :=
   inf_le_inf h le_rfl
 #align inf_le_inf_right inf_le_inf_right
 
+@[gcongr]
 theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c :=
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
@@ -680,11 +685,11 @@ theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, 
 #align sup_le_inf sup_le_inf
 
 @[simp] lemma inf_eq_sup : a ⊓ b = a ⊔ b ↔ a = b := by rw [←inf_le_sup.ge_iff_eq, sup_le_inf]
+#align inf_eq_sup inf_eq_sup
 @[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
+#align sup_eq_inf sup_eq_inf
 @[simp] lemma inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by rw [inf_le_sup.lt_iff_ne, Ne.def, inf_eq_sup]
 #align inf_lt_sup inf_lt_sup
-#align sup_eq_inf sup_eq_inf
-#align inf_eq_sup inf_eq_sup
 
 lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
   refine' ⟨fun h ↦ _, _⟩
@@ -899,19 +904,19 @@ end LinearOrder
 theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
-  ext (x y)
+  ext x y
   unfold maxDefault
   split_ifs with h'
-  exacts[sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
+  exacts [sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
 #align sup_eq_max_default sup_eq_maxDefault
 
 theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
-  ext (x y)
+  ext x y
   unfold minDefault
   split_ifs with h'
-  exacts[inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
+  exacts [inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
 #align inf_eq_min_default inf_eq_minDefault
 
 /-- A lattice with total order is a linear order.
@@ -1211,25 +1216,25 @@ end Antitone
 
 namespace AntitoneOn
 
-/-- Pointwise supremum of two antitone functions is a antitone function. -/
+/-- Pointwise supremum of two antitone functions is an antitone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊔ g) s :=
   fun _ hx _ hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
 #align antitone_on.sup AntitoneOn.sup
 
-/-- Pointwise infimum of two antitone functions is a antitone function. -/
+/-- Pointwise infimum of two antitone functions is an antitone function. -/
 protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊓ g) s :=
   (hf.dual.sup hg.dual).dual
 #align antitone_on.inf AntitoneOn.inf
 
-/-- Pointwise maximum of two antitone functions is a antitone function. -/
+/-- Pointwise maximum of two antitone functions is an antitone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => max (f x) (g x)) s :=
   hf.sup hg
 #align antitone_on.max AntitoneOn.max
 
-/-- Pointwise minimum of two antitone functions is a antitone function. -/
+/-- Pointwise minimum of two antitone functions is an antitone function. -/
 protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg
@@ -1471,6 +1476,26 @@ protected def Function.Injective.distribLattice [Sup α] [Inf α] [DistribLattic
 #align function.injective.distrib_lattice Function.Injective.distribLattice
 
 end lift
+
+namespace ULift
+
+instance [SemilatticeSup α] : SemilatticeSup (ULift.{v} α) :=
+  ULift.down_injective.semilatticeSup _ down_sup
+
+instance [SemilatticeInf α] : SemilatticeInf (ULift.{v} α) :=
+  ULift.down_injective.semilatticeInf _ down_inf
+
+instance [Lattice α] : Lattice (ULift.{v} α) :=
+  ULift.down_injective.lattice _ down_sup down_inf
+
+instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
+  ULift.down_injective.distribLattice _ down_sup down_inf
+
+instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
+  LinearOrder.liftWithOrd ULift.down ULift.down_injective down_sup down_inf
+    fun _x _y => (down_compare _ _).symm
+
+end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
 instance : DistribLattice Bool :=

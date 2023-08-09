@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.normed
-! leanprover-community/mathlib commit a63928c34ec358b5edcda2bf7513c50052a5230f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Ray
+
+#align_import analysis.convex.normed from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
 /-!
 # Topological and metric properties of convex sets in normed spaces
@@ -100,7 +97,7 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
   exact le_trans Hx' (dist_comm y x' ▸ dist_comm y' x' ▸ Hy')
 #align convex_hull_exists_dist_ge2 convexHull_exists_dist_ge2
 
-/-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s. -/
+/-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
 theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
   refine' (EMetric.diam_le fun x hx y hy => _).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
@@ -111,7 +108,7 @@ theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric
   exact EMetric.edist_le_diam_of_mem hx' hy'
 #align convex_hull_ediam convexHull_ediam
 
-/-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s. -/
+/-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
 theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.diam s := by
   simp only [Metric.diam, convexHull_ediam]
@@ -140,7 +137,7 @@ theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
 
 /-- The set of vectors in the same ray as `x` is connected. -/
 theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
-  by_cases hx : x = 0; · simpa [hx] using isConnected_univ
+  by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
   exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn
 #align is_connected_set_of_same_ray isConnected_setOf_sameRay

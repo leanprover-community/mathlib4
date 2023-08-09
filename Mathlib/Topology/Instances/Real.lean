@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.instances.real
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Algebra.UniformGroup
@@ -20,6 +15,8 @@ import Mathlib.GroupTheory.Archimedean
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Instances.Int
+
+#align_import topology.instances.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Topological properties of ℝ
@@ -67,7 +64,7 @@ instance : ProperSpace ℝ where
 instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
-    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) b}) :=
+    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
   isTopologicalBasis_of_open_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
     fun a v hav hv =>
     let ⟨l, u, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
@@ -86,7 +83,7 @@ theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
 #align real.cocompact_eq Real.cocompact_eq
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
-lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (λp:ℚ, p + r) :=
+lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
 _
 
 lemma uniform_embedding_mul_rat {q : ℚ} (hq : q ≠ 0) : uniform_embedding ((*) q) :=
@@ -171,12 +168,13 @@ theorem closure_of_rat_image_lt {q : ℚ} :
 #align closure_of_rat_image_lt closure_of_rat_image_lt
 
 /- TODO(Mario): Put these back only if needed later
-lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe:ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
-_
+lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
+  _
 
 lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
-  closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
-_-/
+    closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
+  _
+-/
 theorem Real.bounded_iff_bddBelow_bddAbove {s : Set ℝ} : Bounded s ↔ BddBelow s ∧ BddAbove s :=
   ⟨by
     intro bdd
@@ -229,21 +227,32 @@ namespace Int
 
 open Metric
 
+/-- This is a special case of `NormedSpace.discreteTopology_zmultiples`. It exists only to simplify
+dependencies. -/
+instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
+  rcases eq_or_ne a 0 with (rfl | ha)
+  · rw [AddSubgroup.zmultiples_zero_eq_bot]
+    exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
+  rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+  refine' ⟨ball 0 |a|, isOpen_ball, _⟩
+  ext ⟨x, hx⟩
+  obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
+  simp [ha, Real.dist_eq, abs_mul, (by norm_cast : |(k : ℝ)| < 1 ↔ |k| < 1)]
+
 /-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
 theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact ℝ) := by
-  refine' tendsto_cocompact_of_tendsto_dist_comp_atTop (0 : ℝ) _
-  simp only [Filter.tendsto_atTop, eventually_cofinite, not_le, ← mem_ball]
-  change ∀ r : ℝ, (Int.cast ⁻¹' ball (0 : ℝ) r).Finite
-  simp [Real.ball_eq_Ioo, Set.finite_Ioo]
+  apply (castAddHom ℝ).tendsto_coe_cofinite_of_discrete cast_injective
+  rw [range_castAddHom]
+  infer_instance
 #align int.tendsto_coe_cofinite Int.tendsto_coe_cofinite
 
 /-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
-  convert (tendsto_cocompact_mul_right₀ ha).comp Int.tendsto_coe_cofinite
-  ext n
-  simp
+  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete $ smul_left_injective ℤ ha
+  rw [AddSubgroup.range_zmultiplesHom]
+  infer_instance
 #align int.tendsto_zmultiples_hom_cofinite Int.tendsto_zmultiplesHom_cofinite
 
 end Int
@@ -253,14 +262,8 @@ namespace AddSubgroup
 /-- The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite. -/
 theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
-    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) := by
-  rcases eq_or_ne a 0 with rfl | ha
-  · rw [zmultiples_zero_eq_bot, cofinite_eq_bot]; exact tendsto_bot
-  · calc cofinite.map (zmultiples a).subtype
-      ≤ .map (zmultiples a).subtype (.map (rangeFactorization (· • a)) (@cofinite ℤ)) :=
-        Filter.map_mono surjective_onto_range.le_map_cofinite
-    _ = (@cofinite ℤ).map (zmultiplesHom ℝ a) := Filter.map_map
-    _ ≤ cocompact ℝ := Int.tendsto_zmultiplesHom_cofinite ha
+    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) :=
+  (zmultiples a).tendsto_coe_cofinite_of_discrete
 #align add_subgroup.tendsto_zmultiples_subtype_cofinite AddSubgroup.tendsto_zmultiples_subtype_cofinite
 
 end AddSubgroup

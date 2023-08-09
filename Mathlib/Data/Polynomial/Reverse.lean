@@ -2,15 +2,12 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.reverse
-! leanprover-community/mathlib commit 44de64f183393284a16016dfb2a48ac97382f2bd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Degree.TrailingDegree
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.reverse from "leanprover-community/mathlib"@"44de64f183393284a16016dfb2a48ac97382f2bd"
 
 /-!
 # Reverse of a univariate polynomial
@@ -65,7 +62,7 @@ def revAt (N : ℕ) : Function.Embedding ℕ ℕ
   inj' := revAtFun_inj
 #align polynomial.rev_at Polynomial.revAt
 
-/-- We prefer to use the bundled `revAt` over unbundled `revAtfun`. -/
+/-- We prefer to use the bundled `revAt` over unbundled `revAtFun`. -/
 @[simp]
 theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
   rfl

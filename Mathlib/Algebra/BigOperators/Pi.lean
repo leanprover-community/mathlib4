@@ -2,16 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.big_operators.pi
-! leanprover-community/mathlib commit fa2309577c7009ea243cffdf990cd6c84f0ad497
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Ring.Pi
+
+#align_import algebra.big_operators.pi from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
 
 /-!
 # Big operators for Pi Types
@@ -41,7 +38,7 @@ theorem multiset_prod_apply {α : Type _} {β : α → Type _} [∀ a, CommMonoi
 
 end Pi
 
-@[to_additive (attr:=simp)]
+@[to_additive (attr := simp)]
 theorem Finset.prod_apply {α : Type _} {β : α → Type _} {γ} [∀ a, CommMonoid (β a)] (a : α)
     (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c in s, g c) a = ∏ c in s, g c a :=
   (Pi.evalMonoidHom β a).map_prod _ _
@@ -51,7 +48,7 @@ theorem Finset.prod_apply {α : Type _} {β : α → Type _} {γ} [∀ a, CommMo
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
 @[to_additive "An 'unapplied' analogue of `Finset.sum_apply`."]
 theorem Finset.prod_fn {α : Type _} {β : α → Type _} {γ} [∀ a, CommMonoid (β a)] (s : Finset γ)
-    (g : γ → ∀ a, β a) : (∏ c in s, g c) = fun a ↦ ∏ c in s, g c a :=
+    (g : γ → ∀ a, β a) : ∏ c in s, g c = fun a ↦ ∏ c in s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
 #align finset.prod_fn Finset.prod_fn
 #align finset.sum_fn Finset.sum_fn
@@ -75,7 +72,7 @@ section MulSingle
 
 variable {I : Type _} [DecidableEq I] {Z : I → Type _}
 
-variable [∀ i, CommMonoid  (Z i)]
+variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
 theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :

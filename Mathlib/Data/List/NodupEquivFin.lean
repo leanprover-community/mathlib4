@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module data.list.nodup_equiv_fin
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+
+#align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 # Equivalence between `Fin (length l)` and elements of a list

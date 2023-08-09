@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.basic
-! leanprover-community/mathlib commit d78597269638367c3863d40d45108f52207e03cf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
+
+#align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
 /-!
 # Finite types
@@ -174,7 +171,7 @@ theorem not_mem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 #align finset.not_mem_compl Finset.not_mem_compl
 
 @[simp, norm_cast]
-theorem coe_compl (s : Finset α) : ↑(sᶜ) = (↑s : Set α)ᶜ :=
+theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
   Set.ext fun _ => mem_compl
 #align finset.coe_compl Finset.coe_compl
 
@@ -219,13 +216,13 @@ theorem compl_inter (s t : Finset α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
 #align finset.compl_inter Finset.compl_inter
 
 @[simp]
-theorem compl_erase : s.erase aᶜ = insert a (sᶜ) := by
+theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
   ext
   simp only [or_iff_not_imp_left, mem_insert, not_and, mem_compl, mem_erase]
 #align finset.compl_erase Finset.compl_erase
 
 @[simp]
-theorem compl_insert : insert a sᶜ = sᶜ.erase a := by
+theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   ext
   simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
 #align finset.compl_insert Finset.compl_insert
@@ -237,7 +234,7 @@ theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
 
 @[simp]
 theorem compl_filter (p : α → Prop) [DecidablePred p] [∀ x, Decidable ¬p x] :
-    univ.filter pᶜ = univ.filter fun x => ¬p x :=
+    (univ.filter p)ᶜ = univ.filter fun x => ¬p x :=
   ext <| by simp
 #align finset.compl_filter Finset.compl_filter
 
@@ -778,6 +775,7 @@ theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) [Fintype (S
   simp
 #align set.to_finset_range Set.toFinset_range
 
+@[simp] -- porting note: new attribute
 theorem toFinset_singleton (a : α) [Fintype ({a} : Set α)] : ({a} : Set α).toFinset = {a} := by
   ext
   simp
@@ -823,8 +821,9 @@ theorem Fin.image_succ_univ (n : ℕ) : (univ : Finset (Fin n)).image Fin.succ =
 #align fin.image_succ_univ Fin.image_succ_univ
 
 @[simp]
-theorem Fin.image_castSucc (n : ℕ) : (univ : Finset (Fin n)).image Fin.castSucc = {Fin.last n}ᶜ :=
-  by rw [← Fin.succAbove_last, Fin.image_succAbove_univ]
+theorem Fin.image_castSucc (n : ℕ) :
+    (univ : Finset (Fin n)).image Fin.castSucc = {Fin.last n}ᶜ := by
+  rw [← Fin.succAbove_last, Fin.image_succAbove_univ]
 #align fin.image_cast_succ Fin.image_castSucc
 
 /- The following three lemmas use `Finset.cons` instead of `insert` and `Finset.map` instead of
@@ -837,16 +836,17 @@ theorem Fin.univ_succ (n : ℕ) :
 #align fin.univ_succ Fin.univ_succ
 
 /-- Embed `Fin n` into `Fin (n + 1)` by appending a new `Fin.last n` to the `univ` -/
-theorem Fin.univ_castSucc (n : ℕ) :
+theorem Fin.univ_castSuccEmb (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      cons (Fin.last n) (univ.map Fin.castSucc.toEmbedding) (by simp [map_eq_image]) :=
+      cons (Fin.last n) (univ.map Fin.castSuccEmb.toEmbedding) (by simp [map_eq_image]) :=
   by simp [map_eq_image]
-#align fin.univ_cast_succ Fin.univ_castSucc
+#align fin.univ_cast_succ Fin.univ_castSuccEmb
 
 /-- Embed `Fin n` into `Fin (n + 1)` by inserting
 around a specified pivot `p : Fin (n + 1)` into the `univ` -/
 theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
-    (univ : Finset (Fin (n + 1))) = cons p (univ.map <| (Fin.succAbove p).toEmbedding) (by simp) :=
+    (univ : Finset (Fin (n + 1))) =
+      cons p (univ.map <| (Fin.succAboveEmb p).toEmbedding) (by simp) :=
   by simp [map_eq_image]
 #align fin.univ_succ_above Fin.univ_succAbove
 

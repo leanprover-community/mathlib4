@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.limits.kan_extension
-! leanprover-community/mathlib commit c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.StructuredArrow
+
+#align_import category_theory.limits.kan_extension from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
 /-!
 

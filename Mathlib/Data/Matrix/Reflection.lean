@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.reflection
-! leanprover-community/mathlib commit 820b22968a2bc4a47ce5cf1d2f36a9ebe52510aa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
+
+#align_import data.matrix.reflection from "leanprover-community/mathlib"@"820b22968a2bc4a47ce5cf1d2f36a9ebe52510aa"
 
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
@@ -25,7 +22,7 @@ This allows "proof by reflection", where we prove `A = !![A 0 0, A 0 1;  A 1 0, 
 The definitions in this file should normally not be used directly; the intent is for the
 corresponding `*_eq` lemmas to be used in a place where they are definitionally unfolded.
 
-## Main definitionss
+## Main definitions
 
 * `Matrix.transposeᵣ`
 * `Matrix.dotProductᵣ`
@@ -57,7 +54,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 ```
 -/
 theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
-  | 0, n, P => Iff.symm  Fin.forall_fin_zero_pi
+  | 0, n, P => Iff.symm Fin.forall_fin_zero_pi
   | m + 1, n, P => by
     simp only [Forall, FinVec.forall_iff, forall_iff]
     exact Iff.symm Fin.forall_fin_succ_pi
@@ -91,7 +88,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
     (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
   (exists_iff _).symm
 
-/-- `matrix.tranpose` with better defeq for `Fin` -/
+/-- `Matrix.transpose` with better defeq for `Fin` -/
 def transposeᵣ : ∀ {m n}, Matrix (Fin m) (Fin n) α → Matrix (Fin n) (Fin m) α
   | _, 0, _ => of ![]
   | _, _ + 1, A =>

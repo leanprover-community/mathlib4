@@ -2,13 +2,10 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.function.ae_measurable_order
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+#align_import measure_theory.function.ae_measurable_order from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Measurability criterion for ennreal-valued functions
@@ -73,7 +70,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
         refine ENNReal.tsum_le_tsum fun p => ?_
         refine ENNReal.tsum_le_tsum fun q => measure_mono ?_
         exact inter_subset_inter_left _ (biInter_subset_of_mem q.2)
-      _ = ∑' (p : s) (_q : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by
+      _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by
         congr
         ext1 p
         congr

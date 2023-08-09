@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.adjoin_root
-! leanprover-community/mathlib commit 5c4b3d41a84bd2a1d79c7d9265e58a891e71be89
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Polynomial.FieldDivision
@@ -18,6 +13,8 @@ import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
 
+#align_import ring_theory.adjoin_root from "leanprover-community/mathlib"@"5c4b3d41a84bd2a1d79c7d9265e58a891e71be89"
+
 /-!
 # Adjoining roots of polynomials
 
@@ -25,8 +22,8 @@ This file defines the commutative ring `AdjoinRoot f`, the ring R[X]/(f) obtaine
 commutative ring `R` and a polynomial `f : R[X]`. If furthermore `R` is a field and `f` is
 irreducible, the field structure on `AdjoinRoot f` is constructed.
 
-We suggest stating results on `is_adjoin_root` instead of `AdjoinRoot` to achieve higher
-generality, since `is_adjoin_root` works for all different constructions of `R[α]`
+We suggest stating results on `IsAdjoinRoot` instead of `AdjoinRoot` to achieve higher
+generality, since `IsAdjoinRoot` works for all different constructions of `R[α]`
 including `AdjoinRoot f = R[X]/(f)` itself.
 
 ## Main definitions and results
@@ -109,10 +106,10 @@ def of : R →+* AdjoinRoot f :=
 #align adjoin_root.of AdjoinRoot.of
 
 instance [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
-  Submodule.Quotient.hasSmul' _
+  Submodule.Quotient.instSMul' _
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
-  Submodule.Quotient.distribSmul' _
+  Submodule.Quotient.distribSMul' _
 
 @[simp]
 theorem smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
@@ -240,7 +237,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
   induction x using AdjoinRoot.induction_on with
-    | ih p =>  exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
+    | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
 
 @[simp]
@@ -350,18 +347,18 @@ theorem liftHom_of {x : R} : liftHom f a hfx (of f x) = algebraMap _ _ x :=
 section AdjoinInv
 
 @[simp]
-theorem root_is_inv (r : R) : of _ r * root (C r * X - 1) = 1 := by
+theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
   convert sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
-#align adjoin_root.root_is_inv AdjoinRoot.root_is_inv
+#align adjoin_root.root_is_inv AdjoinRoot.root_isInv
 
 theorem algHom_subsingleton {S : Type _} [CommRing S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
       (@inv_unique _ _ (algebraMap R S r) _ _
-        (by rw [← f.commutes, ← f.map_mul, algebraMap_eq, root_is_inv, map_one])
-        (by rw [← g.commutes, ← g.map_mul, algebraMap_eq, root_is_inv, map_one]))⟩
+        (by rw [← f.commutes, ← f.map_mul, algebraMap_eq, root_isInv, map_one])
+        (by rw [← g.commutes, ← g.map_mul, algebraMap_eq, root_isInv, map_one]))⟩
 #align adjoin_root.alg_hom_subsingleton AdjoinRoot.algHom_subsingleton
 
 end AdjoinInv
@@ -394,16 +391,16 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
 noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
-  { AdjoinRoot.instCommRing f,
-    Quotient.groupWithZero (span {f} : Ideal K[X]) with
+  { Quotient.groupWithZero (span {f} : Ideal K[X]) with
+    toCommRing := AdjoinRoot.instCommRing f
     ratCast := fun a => of f (a : K)
     ratCast_mk := fun a b h1 h2 => by
       letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
       -- porting note: was
       -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
       convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
-      . simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
-      . simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
     qsmul := (· • ·)
     qsmul_eq_mul' := fun a x =>
       -- porting note: I gave the explicit motive and changed `rw` to `simp`.
@@ -424,8 +421,7 @@ theorem coe_injective' [Fact (Irreducible f)] : Function.Injective ((↑) : K �
 variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
-    -- porting note: I do not know how to get this to typecheck without using the ugly `Div.div`
-    (X - C (root f)) * (Div.div (f.map (of f)) (X - C (root f))) = f.map (of f) :=
+    (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
   mul_div_eq_iff_isRoot.2 <| isRoot_root _
 #align adjoin_root.mul_div_root_cancel AdjoinRoot.mul_div_root_cancel
 
@@ -617,7 +613,7 @@ open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is a GCD domain and `x` is integral, this is an isomorphism,
-see `adjoin_root.minpoly.equiv_adjoin`. -/
+see `minpoly.equivAdjoin`. -/
 @[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftHom _ ⟨x, self_mem_adjoin_singleton R x⟩
@@ -666,9 +662,7 @@ guaranteed to be identical to `g`. -/
 @[simps (config := { fullyApplied := false })]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
-  {
-    AdjoinRoot.liftHom g pb.gen
-      h₂ with
+  { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
     -- porting note: another term-mode proof converted to tactic-mode.

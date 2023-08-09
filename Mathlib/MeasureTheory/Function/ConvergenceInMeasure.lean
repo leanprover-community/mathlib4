@@ -2,15 +2,12 @@
 Copyright (c) 2022 Rémy Degenne, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.function.convergence_in_measure
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.MeasureTheory.Function.Egorov
 import Mathlib.MeasureTheory.Function.LpSpace
+
+#align_import measure_theory.function.convergence_in_measure from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Convergence in measure
@@ -108,7 +105,7 @@ variable [MetricSpace E]
 variable {f : ℕ → α → E} {g : α → E}
 
 /-- Auxiliary lemma for `tendstoInMeasure_of_tendsto_ae`. -/
-theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [FiniteMeasure μ]
+theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [IsFiniteMeasure μ]
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   refine' fun ε hε => ENNReal.tendsto_atTop_zero.mpr fun δ hδ => _
@@ -129,7 +126,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [FiniteMeasure μ]
 #align measure_theory.tendsto_in_measure_of_tendsto_ae_of_strongly_measurable MeasureTheory.tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable
 
 /-- Convergence a.e. implies convergence in measure in a finite measure space. -/
-theorem tendstoInMeasure_of_tendsto_ae [FiniteMeasure μ] (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   have hg : AEStronglyMeasurable g μ := aestronglyMeasurable_of_tendsto_ae _ hf hfg
   refine' TendstoInMeasure.congr (fun i => (hf i).ae_eq_mk.symm) hg.ae_eq_mk.symm _
@@ -292,7 +289,7 @@ theorem tendstoInMeasure_of_tendsto_snorm_of_stronglyMeasurable (hp_ne_zero : p 
     (Tendsto.ennrpow_const p.toReal hfg) (Or.inr <| @ENNReal.ofReal_ne_top (1 / ε ^ p.toReal))
   simp only [MulZeroClass.mul_zero,
     ENNReal.zero_rpow_of_pos (ENNReal.toReal_pos hp_ne_zero hp_ne_top)] at hfg
-  rw [ENNReal.tendsto_nhds_zero] at hfg⊢
+  rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro δ hδ
   refine' (hfg δ hδ).mono fun n hn => _
   refine' le_trans _ hn
@@ -328,7 +325,7 @@ theorem tendstoInMeasure_of_tendsto_snorm_top {E} [NormedAddCommGroup E] {f : ι
     TendstoInMeasure μ f l g := by
   intro δ hδ
   simp only [snorm_exponent_top, snormEssSup] at hfg
-  rw [ENNReal.tendsto_nhds_zero] at hfg⊢
+  rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro ε hε
   specialize hfg (ENNReal.ofReal δ / 2)
       (ENNReal.div_pos_iff.2 ⟨(ENNReal.ofReal_pos.2 hδ).ne.symm, ENNReal.two_ne_top⟩)

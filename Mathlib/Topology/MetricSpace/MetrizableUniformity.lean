@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.metrizable_uniformity
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Metrizable
+
+#align_import topology.metric_space.metrizable_uniformity from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Metrizable uniform spaces
@@ -76,7 +73,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
     refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
     calc
-      (⨅ l, (zipWith d (x::l) (l ++ [z])).sum) ≤
+      ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=
         ciInf_le (OrderBot.bddBelow _) (lxy ++ y::lyz)
       _ = (zipWith d (x::lxy) (lxy ++ [y])).sum + (zipWith d (y::lyz) (lyz ++ [z])).sum := by
@@ -169,7 +166,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
     rw [get_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
-    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le _ _ M.succ_pos hMl
+    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine' (ihn _ hlen_lt _ y _ hlen).trans _
     rw [cons_get_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
@@ -229,7 +226,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
     split_ifs with h
     · rw [(strictAnti_pow hr.1 hr.2).le_iff_le, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
-    · push_neg  at h
+    · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_le]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine' PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => _
@@ -241,19 +238,16 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
       refine' Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) _)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
     · exact (dif_neg H).trans_le (zero_le _)
+  -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
+  -- `Subtype.val` applications instead of `NNReal.toReal`.
+  rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr
   refine' ⟨I, uniformSpace_eq <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis _ _⟩
   · refine' fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt _⟩
-    -- Porting note: for some reason, some coercions are `Subtype.val` instead of
-    -- `NNReal.toReal`, which messes up the rewrites. So we have to `change` them in the goal
-    change _ < (toReal _) ^ _
     rwa [← NNReal.coe_pow, NNReal.coe_lt_coe, ← not_le, hle_d, Classical.not_not, Prod.mk.eta]
   · refine' fun n _ => ⟨n + 1, trivial, fun x hx => _⟩
     rw [mem_setOf_eq] at hx
     contrapose! hx
     refine' le_trans _ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
-    -- Porting note: for some reason, some coercions are `Subtype.val` instead of
-    -- `NNReal.toReal`, which messes up the rewrites. So we have to `change` them in the goal
-    change (toReal _) ^ _ ≤ _
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ',
       mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel _ (two_ne_zero' ℝ≥0), hle_d,
       Prod.mk.eta]

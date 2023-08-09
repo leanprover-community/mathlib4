@@ -2,11 +2,6 @@
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne
-
-! This file was ported from Lean 3 source module topology.category.Profinite.basic
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Connected
@@ -15,6 +10,8 @@ import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.CategoryTheory.FintypeCat
+
+#align_import topology.category.Profinite.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # The category of Profinite Types
@@ -250,7 +247,7 @@ end DiscreteTopology
 end Profinite
 
 namespace Profinite
--- set_option pp.universes true
+
 -- TODO the following construction of limits could be generalised
 -- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of
@@ -284,7 +281,7 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
   Adjunction.adjunctionOfEquivLeft _ _
 #align Profinite.to_Profinite_adj_to_CompHaus Profinite.toProfiniteAdjToCompHaus
 
-/-- The category of profinite sets is reflective in the category of compact hausdroff spaces -/
+/-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus
     where toIsRightAdjoint := ⟨CompHaus.toProfinite, Profinite.toProfiniteAdjToCompHaus⟩
 #align Profinite.to_CompHaus.reflective Profinite.toCompHaus.reflective
@@ -302,11 +299,11 @@ noncomputable instance toTopCat.createsLimits : CreatesLimits Profinite.toTopCat
 #align Profinite.to_Top.creates_limits Profinite.toTopCat.createsLimits
 
 instance hasLimits : Limits.HasLimits Profinite :=
-  has_limits_of_has_limits_creates_limits Profinite.toTopCat
+  hasLimits_of_hasLimits_createsLimits Profinite.toTopCat
 #align Profinite.has_limits Profinite.hasLimits
 
 instance hasColimits : Limits.HasColimits Profinite :=
-  has_colimits_of_reflective profiniteToCompHaus
+  hasColimits_of_reflective profiniteToCompHaus
 #align Profinite.has_colimits Profinite.hasColimits
 
 noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Profinite) := by
@@ -401,13 +398,13 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         ext x
         apply ULift.ext
         dsimp [LocallyConstant.ofClopen]
-        simp only [FunctorToTypes.map_comp_apply, forget_ContinuousMap_mk, Function.comp_apply]
-        rw [if_neg]
+        rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
+          Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
-      apply_fun fun e => (e y).down  at H
+      apply_fun fun e => (e y).down at H
       dsimp [LocallyConstant.ofClopen] at H
-      rw [if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
@@ -418,8 +415,7 @@ theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Func
   · intro h
     haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance
     haveI : Mono (profiniteToCompHaus.map f) := inferInstance
-    -- Porting note: now need `erw`?
-    erw [← CompHaus.mono_iff_injective]
+    rw [← CompHaus.mono_iff_injective]
     assumption
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget Profinite).mono_of_mono_map

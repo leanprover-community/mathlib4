@@ -2,15 +2,12 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module analysis.normed.order.lattice
-! leanprover-community/mathlib commit 5dc275ec639221ca4d5f56938eb966f6ad9bc89f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Algebra.Order.LatticeGroup
+
+#align_import analysis.normed.order.lattice from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
 /-!
 # Normed lattice ordered groups
@@ -120,7 +117,7 @@ theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
 
 theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
-  refine' le_trans (solid _) (norm_add_le (|a - c|) (|b - d|))
+  refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊓ b - c ⊓ d| = |a ⊓ b - c ⊓ b + (c ⊓ b - c ⊓ d)| := by rw [sub_add_sub_cancel]
@@ -134,7 +131,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
 
 theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
-  refine' le_trans (solid _) (norm_add_le (|a - c|) (|b - d|))
+  refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊔ b - c ⊔ d| = |a ⊔ b - c ⊔ b + (c ⊔ b - c ⊔ d)| := by rw [sub_add_sub_cancel]
@@ -220,7 +217,7 @@ theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0
     exact IsClosed.preimage continuous_neg' isClosed_singleton
   ext1 x
   simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq,
-    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)  ]
+    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)]
   -- porting note: I'm not sure why Lean couldn't synthesize this instance because it works with
   -- `have : CovariantClass E E (· + ·) (· ≤ ·) := inferInstance`
 #align is_closed_nonneg isClosed_nonneg

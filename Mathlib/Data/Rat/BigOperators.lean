@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.big_operators
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Cast
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import data.rat.big_operators from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-! # Casting lemmas for rational numbers involving sums and products
 -/
@@ -35,7 +32,7 @@ theorem cast_multiset_sum (s : Multiset ℚ) : (↑s.sum : α) = (s.map (↑)).s
 #align rat.cast_multiset_sum Rat.cast_multiset_sum
 
 @[simp, norm_cast]
-theorem cast_sum (s : Finset ι) (f : ι → ℚ) : (∑ i in s, f i) = ∑ i in s, (f i : α) :=
+theorem cast_sum (s : Finset ι) (f : ι → ℚ) : ∑ i in s, f i = ∑ i in s, (f i : α) :=
   (map_sum (Rat.castHom α) _ s)
 #align rat.cast_sum Rat.cast_sum
 
@@ -56,7 +53,7 @@ theorem cast_multiset_prod (s : Multiset ℚ) : (↑s.prod : α) = (s.map (↑))
 #align rat.cast_multiset_prod Rat.cast_multiset_prod
 
 @[simp, norm_cast]
-theorem cast_prod (s : Finset ι) (f : ι → ℚ) : (∏ i in s, f i) = ∏ i in s, (f i : α) :=
+theorem cast_prod (s : Finset ι) (f : ι → ℚ) : ∏ i in s, f i = ∏ i in s, (f i : α) :=
   map_prod (Rat.castHom α) _ _
 #align rat.cast_prod Rat.cast_prod
 

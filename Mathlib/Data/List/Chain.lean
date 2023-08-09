@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.list.chain
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Pairwise
 import Mathlib.Logic.Relation
+
+#align_import data.list.chain from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Relation chain
@@ -131,7 +128,7 @@ theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l �
 
 protected theorem Chain.sublist [IsTrans α R] (hl : l₂.Chain R a) (h : l₁ <+ l₂) :
     l₁.Chain R a := by
-  rw [chain_iff_pairwise] at hl⊢
+  rw [chain_iff_pairwise] at hl ⊢
   exact hl.sublist (h.cons_cons a)
 #align list.chain.sublist List.Chain.sublist
 
@@ -155,7 +152,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       intro i w
       cases' i with i
       · apply h0
-      . exact h i (lt_pred_iff.2 <| by simpa using w)
+      · exact h i (lt_pred_iff.2 <| by simpa using w)
     rintro ⟨h0, h⟩; constructor
     · apply h0
       simp
@@ -250,7 +247,7 @@ theorem chain'_iff_pairwise [IsTrans α R] : ∀ {l : List α}, Chain' R l ↔ P
 #align list.chain'_iff_pairwise List.chain'_iff_pairwise
 
 protected theorem Chain'.sublist [IsTrans α R] (hl : l₂.Chain' R) (h : l₁ <+ l₂) : l₁.Chain' R := by
-  rw [chain'_iff_pairwise] at hl⊢
+  rw [chain'_iff_pairwise] at hl ⊢
   exact hl.sublist h
 #align list.chain'.sublist List.Chain'.sublist
 
@@ -389,8 +386,8 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and $ Iff.rfl.and and_comm)
 
-/-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is a `r`-chain
-starting from `a` and ending on `b`.
+/-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
+`r`-chain starting from `a` and ending on `b`.
 The converse of `relationReflTransGen_of_exists_chain`.
 -/
 theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :

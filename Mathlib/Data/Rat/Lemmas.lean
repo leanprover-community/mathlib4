@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.lemmas
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+
+#align_import data.rat.lemmas from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Further lemmas for the Rational Numbers
@@ -188,7 +185,7 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
 @[simp]
 theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1)q ; (rw [← @num_den q])
+    conv => pattern (occs := 1)q; (rw [← @num_den q])
     simp only [coe_int_eq_divInt, coe_nat_eq_divInt, num_den] at this ⊢; assumption
   have : (q.den : ℤ) ≠ 0 := ne_of_gt (by exact_mod_cast q.pos)
   rw [Rat.mul_def' this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]

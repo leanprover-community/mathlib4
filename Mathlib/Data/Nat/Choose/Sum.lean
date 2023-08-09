@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
-
-! This file was ported from Lean 3 source module data.nat.choose.sum
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Linarith
@@ -14,6 +9,8 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+
+#align_import data.nat.choose.sum from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Sums of binomial coefficients
@@ -130,8 +127,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
   calc
     4 ^ n = (1 + 1) ^ (2 * n) := by simp only [pow_mul, one_add_one_eq_two]; rfl
     _ = ∑ m in range (2 * n + 1), choose (2 * n) m := by simp [add_pow]
-    _ ≤ ∑ m in range (2 * n + 1), choose (2 * n) (2 * n / 2) :=
-      sum_le_sum fun i _ ↦ choose_le_middle i (2 * n)
+    _ ≤ ∑ m in range (2 * n + 1), choose (2 * n) (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
 #align nat.four_pow_le_two_mul_add_one_mul_central_binom Nat.four_pow_le_two_mul_add_one_mul_central_binom
 
@@ -154,7 +150,7 @@ theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
 namespace Finset
 
 theorem sum_powerset_apply_card {α β : Type _} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
-    (∑ m in x.powerset, f m.card) = ∑ m in range (x.card + 1), x.card.choose m • f m := by
+    ∑ m in x.powerset, f m.card = ∑ m in range (x.card + 1), x.card.choose m • f m := by
   trans ∑ m in range (x.card + 1), ∑ j in x.powerset.filter fun z ↦ z.card = m, f j.card
   · refine' (sum_fiberwise_of_maps_to _ _).symm
     intro y hy

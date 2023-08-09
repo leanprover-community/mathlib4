@@ -10,7 +10,7 @@ import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
 In this file, we shall define the homology of short complexes `S`, i.e. diagrams
 `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`. We shall say that
-`[S.HasHomology]` when there exists `h : S.HomologyData` (TODO). An homology data
+`[S.HasHomology]` when there exists `h : S.HomologyData` (TODO). A homology data
 for `S` consists of compatible left/right homology data `left` and `right`. The
 left homology data `left` involves an object `left.H` that is a cokernel of the canonical
 map `S.X₁ ⟶ K` where `K` is a kernel of `g`. On the other hand, the dual notion `right.H`
@@ -37,6 +37,8 @@ variable {C : Type _} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 
 namespace ShortComplex
 
+/-- A homology data for a short complex consists of two compatible left and
+right homology data -/
 structure HomologyData where
   left : S.LeftHomologyData
   right : S.RightHomologyData

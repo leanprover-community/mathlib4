@@ -2,13 +2,10 @@
 Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach, Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.lifting_properties.basic
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CommSq
+
+#align_import category_theory.lifting_properties.basic from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Lifting properties
@@ -42,7 +39,7 @@ variable {C : Type _} [Category C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶
 property with respect to `p`, or equivalently that `p` has
 the right lifting property with respect to `i`. -/
 class HasLiftingProperty : Prop where
-  /-- Unique field expressing the any commutative square built from `f` and `g` has a lift -/
+  /-- Unique field expressing that any commutative square built from `f` and `g` has a lift -/
   sq_hasLift : ∀ {f : A ⟶ X} {g : B ⟶ Y} (sq : CommSq f i p g), sq.HasLift
 #align category_theory.has_lifting_property CategoryTheory.HasLiftingProperty
 #align category_theory.has_lifting_property.sq_has_lift CategoryTheory.HasLiftingProperty.sq_hasLift
@@ -138,13 +135,13 @@ theorem iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) :
     HasLiftingProperty i p ↔ HasLiftingProperty i' p := by
   constructor <;> intro
-  exacts[of_arrow_iso_left e p, of_arrow_iso_left e.symm p]
+  exacts [of_arrow_iso_left e p, of_arrow_iso_left e.symm p]
 #align category_theory.has_lifting_property.iff_of_arrow_iso_left CategoryTheory.HasLiftingProperty.iff_of_arrow_iso_left
 
 theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
     (e : Arrow.mk p ≅ Arrow.mk p') : HasLiftingProperty i p ↔ HasLiftingProperty i p' := by
   constructor <;> intro
-  exacts[of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
+  exacts [of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
 #align category_theory.has_lifting_property.iff_of_arrow_iso_right CategoryTheory.HasLiftingProperty.iff_of_arrow_iso_right
 
 end HasLiftingProperty

@@ -3,18 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.group
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Init.CcLemmas
+import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.FunLike.Basic
+
+#align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Monoid and group homomorphisms
@@ -23,7 +19,7 @@ This file defines the bundled structures for monoid and group homomorphisms. Nam
 `MonoidHom` (resp., `AddMonoidHom`) to be bundled homomorphisms between multiplicative (resp.,
 additive) monoids or groups.
 
-We also define coercion to a function, and  usual operations: composition, identity homomorphism,
+We also define coercion to a function, and usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
 
 This file also defines the lesser-used (and notation-less) homomorphism types which are used as
@@ -301,7 +297,7 @@ class MulHomClass (F : Type _) (M N : outParam (Type _)) [Mul M] [Mul N]
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
 
-/-- `MulHom` is a type of multiplication-preseving homomorphisms -/
+/-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive "`AddHom` is a type of addition-preserving homomorphisms"]
 instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
   coe := MulHom.toFun
@@ -325,7 +321,7 @@ def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
   toFun := f
   map_mul' := map_mul f
 
-/-- Any type satisfying `MulHomCLass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
+/-- Any type satisfying `MulHomClass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
 @[to_additive "Any type satisfying `AddHomClass` can be cast into `AddHom` via
 `AddHomClass.toAddHom`."]
 instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
@@ -395,7 +391,7 @@ attribute [to_additive existing] MonoidHomClass.toOneHomClass
 "Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
 actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`."]
 def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
-{ (f : M →ₙ* N), (f : OneHom M N) with }
+  { (f : M →ₙ* N), (f : OneHom M N) with }
 
 /-- Any type satisfying `MonoidHomClass` can be cast into `MonoidHom` via
 `MonoidHomClass.toMonoidHom`. -/
@@ -520,7 +516,7 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
 `MonoidWithZeroHom`. This is declared as the default coercion from `F` to `M →*₀ N`. -/
 @[coe]
 def MonoidWithZeroHomClass.toMonoidWithZeroHom [MonoidWithZeroHomClass F M N] (f : F) : M →*₀ N :=
-{ (f : M →* N), (f : ZeroHom M N) with }
+  { (f : M →* N), (f : ZeroHom M N) with }
 
 /-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
 `MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
@@ -1032,10 +1028,10 @@ def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
 #align monoid_with_zero_hom.id MonoidWithZeroHom.id
 #align monoid_with_zero_hom.id_apply MonoidWithZeroHom.id_apply
 
-/-- The identity map from an type with zero to itself. -/
+/-- The identity map from a type with zero to itself. -/
 add_decl_doc ZeroHom.id
 
-/-- The identity map from an type with addition to itself. -/
+/-- The identity map from a type with addition to itself. -/
 add_decl_doc AddHom.id
 
 /-- The identity map from an additive monoid to itself. -/
@@ -1079,7 +1075,7 @@ def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneCl
 /-- Composition of `ZeroHom`s as a `ZeroHom`. -/
 add_decl_doc ZeroHom.comp
 
-/-- Composition of `AddHom`s as a `AddHom`. -/
+/-- Composition of `AddHom`s as an `AddHom`. -/
 add_decl_doc AddHom.comp
 
 /-- Composition of additive monoid morphisms as an additive monoid morphism. -/

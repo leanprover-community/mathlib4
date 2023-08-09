@@ -2,16 +2,13 @@
 Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
-
-! This file was ported from Lean 3 source module algebraic_topology.fundamental_groupoid.basic
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
+
+#align_import algebraic_topology.fundamental_groupoid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Fundamental groupoid of a space
@@ -22,6 +19,7 @@ homotopy equivalence. With this, the fundamental group of `X` based at `x` is ju
 group of `x`.
 -/
 
+open CategoryTheory
 
 universe u v
 
@@ -345,8 +343,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
       map_id := fun X => rfl
       map_comp := fun {x y z} p q => by
         refine' Quotient.inductionOn₂ p q fun a b => _
-        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
-        rfl }
+        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
   map_id X := by
     simp only
     change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)

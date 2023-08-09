@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.wide_pullbacks
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Thin
+
+#align_import category_theory.limits.shapes.wide_pullbacks from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # Wide pullbacks
@@ -87,14 +84,14 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_: WidePullbackShape _) ⟶  (_ : WidePullbackShape _) ))
+      (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash
 
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶  (_ : WidePullbackShape _)
+  casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
   rfl; rfl; rfl
 #align category_theory.limits.wide_pullback_shape.subsingleton_hom CategoryTheory.Limits.WidePullbackShape.subsingleton_hom
 
@@ -129,7 +126,7 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
-  (NatIso.ofComponents fun j => eqToIso <| by aesop_cat) <| by aesop_cat
+  NatIso.ofComponents fun j => eqToIso <| by aesop_cat
 #align category_theory.limits.wide_pullback_shape.diagram_iso_wide_cospan CategoryTheory.Limits.WidePullbackShape.diagramIsoWideCospan
 
 /-- Construct a cone over a wide cospan. -/
@@ -201,14 +198,14 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_: WidePushoutShape _) ⟶  (_ : WidePushoutShape _) ))
+      (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash'
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶  (_ : WidePushoutShape _)
+  casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
   repeat rfl
 #align category_theory.limits.wide_pushout_shape.subsingleton_hom CategoryTheory.Limits.WidePushoutShape.subsingleton_hom
 
@@ -247,7 +244,7 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
     F ≅ wideSpan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.init j) :=
-  (NatIso.ofComponents fun j => eqToIso <| by cases j; repeat rfl) <| by aesop_cat
+  NatIso.ofComponents fun j => eqToIso <| by cases j; repeat rfl
 #align category_theory.limits.wide_pushout_shape.diagram_iso_wide_span CategoryTheory.Limits.WidePushoutShape.diagramIsoWideSpan
 
 /-- Construct a cocone over a wide span. -/
@@ -261,8 +258,26 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           | none => f
           | some j => ι j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> refine id _  <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> refine id _ <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
+
+/-- Wide pushout diagrams of equivalent index types are equivalent. -/
+def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J'
+    where
+  functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
+  inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
+  unitIso :=
+    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+      simp only [eq_iff_true_of_subsingleton]
+  counitIso :=
+    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+      simp only [eq_iff_true_of_subsingleton]
+
+/-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
+def uliftEquivalence :
+    ULiftHom.{w'} (ULift.{w'} (WidePushoutShape J)) ≌ WidePushoutShape (ULift J) :=
+  (ULiftHomULiftCategory.equiv.{w', w', w, w} (WidePushoutShape J)).symm.trans
+    (equivalenceOfEquiv _ (Equiv.ulift.{w', w}.symm : J ≃ ULift.{w'} J))
 
 end WidePushoutShape
 
@@ -510,25 +525,25 @@ def widePushoutShapeUnop : (WidePushoutShape J)ᵒᵖ ⥤ WidePullbackShape J :=
 /-- The inverse of the unit isomorphism of the equivalence
 `widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePushoutShapeOpUnop : widePushoutShapeUnop J ⋙ widePullbackShapeOp J ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.limits.wide_pushout_shape_op_unop CategoryTheory.Limits.widePushoutShapeOpUnop
 
 /-- The counit isomorphism of the equivalence
 `widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePushoutShapeUnopOp : widePushoutShapeOp J ⋙ widePullbackShapeUnop J ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.limits.wide_pushout_shape_unop_op CategoryTheory.Limits.widePushoutShapeUnopOp
 
 /-- The inverse of the unit isomorphism of the equivalence
 `widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePullbackShapeOpUnop : widePullbackShapeUnop J ⋙ widePushoutShapeOp J ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.limits.wide_pullback_shape_op_unop CategoryTheory.Limits.widePullbackShapeOpUnop
 
 /-- The counit isomorphism of the equivalence
 `widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePullbackShapeUnopOp : widePullbackShapeOp J ⋙ widePushoutShapeUnop J ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.limits.wide_pullback_shape_unop_op CategoryTheory.Limits.widePullbackShapeUnopOp
 
 /-- The duality equivalence `(WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
@@ -548,6 +563,11 @@ def widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape 
   unitIso := (widePullbackShapeOpUnop J).symm
   counitIso := widePushoutShapeUnopOp J
 #align category_theory.limits.wide_pullback_shape_op_equiv CategoryTheory.Limits.widePullbackShapeOpEquiv
+
+/-- If a category has wide pushouts on a higher universe level it also has wide pushouts
+on a lower universe level. -/
+theorem hasWidePushouts_shrink [HasWidePushouts.{max w w'} C] : HasWidePushouts.{w} C := fun _ =>
+  hasColimitsOfShape_of_equivalence (WidePushoutShape.equivalenceOfEquiv _ Equiv.ulift.{w'})
 
 /-- If a category has wide pullbacks on a higher universe level it also has wide pullbacks
 on a lower universe level. -/

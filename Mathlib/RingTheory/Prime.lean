@@ -2,14 +2,11 @@
 Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.prime
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import ring_theory.prime from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 # Prime elements in rings
@@ -30,7 +27,7 @@ open BigOperators
   a product over a subset of `s`  -/
 theorem mul_eq_mul_prime_prod {α : Type _} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
     (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i in s, p i) :
-    ∃ (t u : Finset α)(b c : R),
+    ∃ (t u : Finset α) (b c : R),
       t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i in t, p i) ∧ y = c * ∏ i in u, p i := by
   induction' s using Finset.induction with i s his ih generalizing x y a
   · exact ⟨∅, ∅, x, y, by simp [hx]⟩
@@ -53,7 +50,7 @@ theorem mul_eq_mul_prime_prod {α : Type _} [DecidableEq α] {x y a : R} {s : Fi
 /-- If ` x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
   as the product of a power of `p` and a divisor of `a`. -/
 theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y = a * p ^ n) :
-    ∃ (i j : ℕ)(b c : R), i + j = n ∧ a = b * c ∧ x = b * p ^ i ∧ y = c * p ^ j := by
+    ∃ (i j : ℕ) (b c : R), i + j = n ∧ a = b * c ∧ x = b * p ^ i ∧ y = c * p ^ j := by
   rcases mul_eq_mul_prime_prod (fun _ _ ↦ hp)
     (show x * y = a * (range n).prod fun _ ↦ p by simpa) with
       ⟨t, u, b, c, htus, htu, rfl, rfl, rfl⟩

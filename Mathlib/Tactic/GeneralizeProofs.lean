@@ -100,7 +100,7 @@ example : List.nthLe [1, 2] 1 dec_trivial = 2 := by
 ```
 -/
 elab (name := generalizeProofs) "generalize_proofs"
-    hs:(ppSpace (colGt binderIdent))* loc:(ppSpace location)? : tactic => do
+    hs:(ppSpace colGt binderIdent)* loc:(location)? : tactic => do
   let ou := if loc.isSome then
     match expandLocation loc.get! with
     | .wildcard => #[]

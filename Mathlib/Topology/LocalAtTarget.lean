@@ -2,13 +2,10 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.local_at_target
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.local_at_target from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Properties of maps that are local at the target.
@@ -33,7 +30,7 @@ variable {s : Set β} {ι : Type _} {U : ι → Opens β} (hU : iSup U = ⊤)
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by
   simp_rw [inducing_subtype_val.inducing_iff, inducing_iff_nhds, restrictPreimage,
-    MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f, Function.comp_apply] at h⊢
+    MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f, Function.comp_apply] at h ⊢
   intro a
   rw [← h, ← inducing_subtype_val.nhds_eq_comap]
 #align set.restrict_preimage_inducing Set.restrictPreimage_inducing
@@ -83,7 +80,7 @@ theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpe
   constructor
   · exact fun H i => H.inter (U i).2
   · intro H
-    have : (⋃ i, (U i : Set β)) = Set.univ := by
+    have : ⋃ i, (U i : Set β) = Set.univ := by
       convert congr_arg (SetLike.coe) hU
       simp
     rw [← s.inter_univ, ← this, Set.inter_iUnion]
@@ -102,7 +99,7 @@ theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
 
 theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) := by
-  simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU (sᶜ)
+  simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU sᶜ
 #align is_closed_iff_coe_preimage_of_supr_eq_top isClosed_iff_coe_preimage_of_iSup_eq_top
 
 theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :

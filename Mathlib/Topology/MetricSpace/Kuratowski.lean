@@ -2,19 +2,18 @@
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.kuratowski
-! leanprover-community/mathlib commit 95d4f6586d313c8c28e00f36621d2a6a66893aa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Topology.Sets.Compacts
 
+#align_import topology.metric_space.kuratowski from "leanprover-community/mathlib"@"95d4f6586d313c8c28e00f36621d2a6a66893aa6"
+
 /-!
 # The Kuratowski embedding
 
-Any separable metric space can be embedded isometrically in `ℓ^∞(ℝ)`.
+Any separable metric space can be embedded isometrically in `ℓ^∞(ℕ, ℝ)`.
+Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole space.
+
 -/
 
 
@@ -22,11 +21,7 @@ noncomputable section
 
 set_option linter.uppercaseLean3 false
 
-open Set Metric TopologicalSpace
-
-open scoped ENNReal
-
-local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
+open Set Metric TopologicalSpace NNReal ENNReal lp Function
 
 universe u v w
 
@@ -34,15 +29,15 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace KuratowskiEmbedding
 
-/-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℝ) -/
+/-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
 
 
-variable {f g : ℓ_infty_ℝ} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ → α) (a b : α)
+variable {f g : ℓ^∞(ℕ)} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ → α) (a b : α)
 
 /-- A metric space can be embedded in `l^∞(ℝ)` via the distances to points in
 a fixed countable set, if this set is dense. This map is given in `kuratowskiEmbedding`,
 without density assumptions. -/
-def embeddingOfSubset : ℓ_infty_ℝ :=
+def embeddingOfSubset : ℓ^∞(ℕ) :=
   ⟨fun n => dist a (x n) - dist (x 0) (x n), by
     apply memℓp_infty
     use dist a (x 0)
@@ -93,9 +88,9 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
   simpa [dist_comm] using this
 #align Kuratowski_embedding.embedding_of_subset_isometry KuratowskiEmbedding.embeddingOfSubset_isometry
 
-/-- Every separable metric space embeds isometrically in `ℓ_infty_ℝ`. -/
+/-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
-    ∃ f : α → ℓ_infty_ℝ, Isometry f := by
+    ∃ f : α → ℓ^∞(ℕ), Isometry f := by
   cases' (univ : Set α).eq_empty_or_nonempty with h h
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
@@ -112,12 +107,15 @@ end KuratowskiEmbedding
 
 open TopologicalSpace KuratowskiEmbedding
 
-/-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℝ)`. -/
-def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α → ℓ_infty_ℝ :=
+/-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`.
+-/
+def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α → ℓ^∞(ℕ) :=
   Classical.choose (KuratowskiEmbedding.exists_isometric_embedding α)
 #align Kuratowski_embedding kuratowskiEmbedding
 
-/-- The Kuratowski embedding is an isometry. -/
+/--
+The Kuratowski embedding is an isometry.
+Theorem 2.1 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]. -/
 protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
     Isometry (kuratowskiEmbedding α) :=
   Classical.choose_spec (exists_isometric_embedding α)
@@ -125,8 +123,43 @@ protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [S
 
 /-- Version of the Kuratowski embedding for nonempty compacts -/
 nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
-    [Nonempty α] : NonemptyCompacts ℓ_infty_ℝ where
+    [Nonempty α] : NonemptyCompacts ℓ^∞(ℕ) where
   carrier := range (kuratowskiEmbedding α)
   isCompact' := isCompact_range (kuratowskiEmbedding.isometry α).continuous
   nonempty' := range_nonempty _
 #align nonempty_compacts.Kuratowski_embedding NonemptyCompacts.kuratowskiEmbedding
+
+/--
+A function `f : α → ℓ^∞(ι, ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
+extension to the whole space.
+
+Theorem 2.2 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]
+
+The same result for the case of a finite type `ι` is implemented in
+`LipschitzOnWith.extend_pi`.
+-/
+theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
+    {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
+  -- Construct the coordinate-wise extensions
+  rw [LipschitzOnWith.coordinate] at hfl
+  have : ∀ i : ι, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s
+  · intro i
+    exact LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
+  choose g hgl hgeq using this
+  rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
+  · exact ⟨0, LipschitzWith.const' 0, by simp⟩
+  · -- Show that the extensions are uniformly bounded
+    have hf_extb : ∀ a : α, Memℓp (swap g a) ∞
+    · apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
+      use ‖f a₀‖
+      rintro - ⟨i, rfl⟩
+      simp_rw [←hgeq i ha₀_in_s]
+      exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
+    -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
+    let f_ext' : α → ℓ^∞(ι) := fun i ↦ ⟨swap g i, hf_extb i⟩
+    refine ⟨f_ext', ?_, ?_⟩
+    · rw [LipschitzWith.coordinate]
+      exact hgl
+    · intro a hyp
+      ext i
+      exact (hgeq i) hyp

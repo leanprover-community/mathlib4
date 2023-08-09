@@ -2,14 +2,11 @@
 Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.small_sets
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.AtTopBot
+
+#align_import order.filter.small_sets from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # The filter of small sets
@@ -20,7 +17,7 @@ containing all powersets of members of `f`.
 `g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`.
 
 An example usage is that if `f : ι → E → ℝ` is a family of nonnegative functions with integral 1,
-then saying that `λ i, support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
+then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
 `f` tends to the Dirac delta distribution.
 -/
 
@@ -69,11 +66,11 @@ theorem eventually_smallSets {p : Set α → Prop} :
   exact monotone_powerset
 #align filter.eventually_small_sets Filter.eventually_smallSets
 
-theorem eventually_small_sets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
+theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
     (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, p s :=
   eventually_smallSets.trans <|
     exists_congr fun s => Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
-#align filter.eventually_small_sets' Filter.eventually_small_sets'
+#align filter.eventually_small_sets' Filter.eventually_smallSets'
 
 theorem frequently_smallSets {p : Set α → Prop} :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, ∃ s, s ⊆ t ∧ p s :=
@@ -156,7 +153,7 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
     (∀ᶠ s in l.smallSets, ∀ᶠ x in l', x ∈ s → p x) ↔ ∀ᶠ x in l ⊓ l', p x :=
   calc
     _ ↔ ∃ s ∈ l, ∀ᶠ x in l', x ∈ s → p x :=
-      eventually_small_sets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
+      eventually_smallSets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
 #align filter.eventually_small_sets_eventually Filter.eventually_smallSets_eventually

@@ -2,15 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module data.int.cast.lemmas
-! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
+
+#align_import data.int.cast.lemmas from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 /-!
 # Cast of integers (additional theorems)
@@ -53,7 +49,7 @@ lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
 #align int.to_nat_lt Int.toNat_lt'
 
 lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-(toNat_lt' hb).2 $ emod_lt_of_pos _ $ coe_nat_pos.2 hb.bot_lt
+  (toNat_lt' hb).2 $ emod_lt_of_pos _ $ coe_nat_pos.2 hb.bot_lt
 #align int.nat_mod_lt Int.natMod_lt
 
 section cast

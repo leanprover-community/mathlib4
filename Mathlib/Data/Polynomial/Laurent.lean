@@ -2,14 +2,11 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.laurent
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import data.polynomial.laurent from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!  # Laurent polynomials
 
@@ -93,7 +90,7 @@ local notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 -- Porting note: `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
-theorem ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
+theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
   Finsupp.ext h
 
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
@@ -390,7 +387,7 @@ theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f
   (map_ne_zero_iff _ Polynomial.toLaurent_injective).symm
 #align polynomial.to_laurent_ne_zero Polynomial.toLaurent_ne_zero
 
-theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ)(f' : R[X]), toLaurent f' = f * T n := by
+theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f' = f * T n := by
   refine f.induction_on' ?_ fun n a => ?_ <;> clear f
   · rintro f g ⟨m, fn, hf⟩ ⟨n, gn, hg⟩
     refine' ⟨m + n, fn * X ^ n + gn * X ^ m, _⟩

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.module.bimodule
-! leanprover-community/mathlib commit 58cef51f7a819e7227224461e392dee423302f2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.TensorProduct
+
+#align_import algebra.module.bimodule from "leanprover-community/mathlib"@"58cef51f7a819e7227224461e392dee423302f2d"
 
 /-!
 # Bimodules
@@ -32,8 +29,8 @@ Note that the corresponding result holds for the canonically isomorphic ring `R 
 preferable to use the `R ⊗[ℕ] Sᵐᵒᵖ` instance since it works without additive inverses.
 
 Bimodules are thus just a special case of `Module`s and most of their properties follow from the
-theory of `Module`s`. In particular a two-sided Submodule of a bimodule is simply a term of type
-`submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
+theory of `Module`s. In particular a two-sided Submodule of a bimodule is simply a term of type
+`Submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
 
 This file is a place to collect results which are specific to bimodules.
 
