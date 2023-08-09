@@ -1119,7 +1119,7 @@ theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summa
 
 /-- Summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
-  f.support.Countable := by
+    f.support.Countable := by
   let eps := fun (n : ℕ) => (1/(n+1) : ℝ≥0)
   let s := fun (n : ℕ) => { x : α | eps n ≤ f x }
   have hf : f.support ⊆ ⋃ (n : ℕ), s n := by
@@ -1326,7 +1326,7 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
 
 /-- Summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support {f : α → ℝ} (hf : ∀ x, 0 ≤ f x) (h : Summable f) :
-  f.support.Countable := by
+    f.support.Countable := by
   convert Summable.countable_support_nnreal _ h.toNNReal
   ext x; simp [lt_iff_le_and_ne]; tauto
 
