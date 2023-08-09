@@ -251,38 +251,51 @@ lemma abs_vec_eq_zero_iff [Fintype n] (v : n → S) [LinearOrderedCommRing S] :
 
 open BigOperators
 
-lemma det_ne_diagdom [DecidableEq n] {S : Type _} {S : Type _} [LinearOrderedCommRing S]
-    {A : Matrix n n S}
-    (h1 : ∀ i, ((∑ j, |A i j|) - |A i i| ) < 0)  :
-    A.det ≠ 0 := by
+
+lemma det_ne_diagdom_gen
+    {n K : Type}
+    [Fintype n][DecidableEq n] [NormedField K]
+    {A : Matrix n n K}
+    (h : ∀ i, ((∑ j in Finset.univ \ {i}  , ‖A i j‖ )) < ‖A i i‖) : A.det ≠ 0 := by
   by_cases hn : Nonempty n
-  · by_contra h
-    obtain ⟨v, ⟨h_vnz, h_vA⟩⟩ := Matrix.exists_mulVec_eq_zero_iff.mpr h
-    let max_v := Finset.sup' Finset.univ Finset.univ_nonempty (abs (v))
-    have hmax : 0 < max_v := by sorry
-    simp_rw [Finset.lt_sup'_iff, Finset.mem_univ, true_and] at hmax
-    obtain ⟨b, hb⟩ := hmax
-    rw [Function.funext_iff] at h_vA
-    specialize h_vA b
-    rw [Pi.zero_apply, mulVec, dotProduct] at h_vA
-    rw [Finset.sum_eq_sum_diff_singleton_add (Finset.mem_univ b)] at h_vA
-    rw [← eq_neg_add_iff_add_eq, add_zero] at h_vA
-    apply_fun (abs ·) at h_vA
-    rw [abs_mul] at h_vA
-    have z := (ne_of_gt hb)
+  · contrapose! h
+    obtain ⟨v, ⟨hvnz, hvA⟩ ⟩ := Matrix.exists_mulVec_eq_zero_iff.mpr h
+    wlog hsup : 0 < Finset.sup' Finset.univ Finset.univ_nonempty (fun i : n => ‖ v i‖)
+    · simp only [Finset.lt_sup'_iff, Finset.mem_univ, norm_pos_iff, ne_eq,
+        true_and, not_exists, not_not] at hsup
+      exfalso
+      apply hvnz (Function.funext_iff.2 hsup)
+    · obtain ⟨ m, -, hm ⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty (fun i : n => ‖ v i‖)
+      refine ⟨m, ?_⟩
+      replace hvA := congrFun hvA m
+      rw [mulVec, dotProduct, Pi.zero_apply] at hvA
+      have hm_max : ∀ (i : n), ‖v i‖ ≤ ‖v m‖ := by
+        intro i
+        rw [← hm, Finset.le_sup'_iff]
+        refine ⟨ i, Finset.mem_univ i , le_refl _⟩
+      rw [Finset.sum_eq_add_sum_diff_singleton (Finset.mem_univ m), ← eq_sub_iff_add_eq,
+        zero_sub] at hvA
+      apply_fun norm at hvA
+      simp_rw [norm_mul, norm_neg] at hvA
+      simp_rw [neg_mul, Finset.sum_mul , norm_neg, mul_inv] at hvA
 
-    -- simp only [Finset.mem_univ, not_true, Finset.subset_univ,
-    -- Finset.sum_sdiff_eq_sub, Finset.sum_singleton, neg_sub] at h_vA
-    specialize h1 b
-    -- contrapose h1
-    -- simp only [sub_neg, not_lt]
-
-
-
-
-
-
-
+      have h0 : 0 < ‖v m‖ := by
+        rwa [← hm]
+      have h1 : ‖∑ j in Finset.univ \ {m}, A m j * v j‖ ≤ ∑ j in Finset.univ \ {m}, ‖A m j * v j‖ := by
+        apply norm_sum_le _
+      have h2 : ∑ j in Finset.univ \ {m}, ‖A m j * v j‖ ≤ ∑ j in Finset.univ \ {m}, ‖A m j‖ * ‖v j‖ := by
+        apply Finset.sum_le_sum (fun _ _ => norm_mul_le _ _)
+      have h3 : ∑ j in Finset.univ \ {m}, ‖A m j‖ * ‖v j‖ ≤ ∑ j in Finset.univ \ {m}, ‖A m j‖ * ‖v m‖ := by
+        apply Finset.sum_le_sum (fun _ _ => mul_le_mul (le_refl _) (hm_max _)
+          (norm_nonneg _) (norm_nonneg _))
+      rw [← Finset.sum_mul] at h3
+      have h4 : ‖A m m‖*‖ v m‖ ≤ (∑ j in Finset.univ \ {m}, ‖A m j‖) * ‖v m‖ := by
+        apply le_trans (le_of_eq hvA) (le_trans h1 (le_trans h2 h3))
+      rw [← mul_le_mul_right h0 ]
+      assumption
+  · haveI h : IsEmpty n := by exact Iff.mp not_nonempty_iff hn
+    rw [det_isEmpty]
+    apply one_ne_zero
 
 end Determinant
 
