@@ -692,7 +692,7 @@ def toQuadraticFormAddMonoidHom : BilinForm R M →+ QuadraticForm R M where
   map_add' := toQuadraticForm_add
 #align bilin_form.to_quadratic_form_add_monoid_hom BilinForm.toQuadraticFormAddMonoidHom
 
-/-- `BilinForm.toQuadraticForm` as a linearMap -/
+/-- `BilinForm.toQuadraticForm` as a linear map -/
 @[simps!]
 def toQuadraticFormLinearMap [Semiring S] [Module S R] [SMulCommClass S R R] :
     BilinForm R M →ₗ[S] QuadraticForm R M where
