@@ -256,6 +256,9 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
   rw [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff] at this
   exact this hp1
 
+/-- The Lefschetz principle. A first order sentence is modeled by the theory
+of algebraically closed fields of characteristic zero if and only if it is modeled by
+the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.field.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔
     Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
