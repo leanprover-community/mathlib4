@@ -3037,6 +3037,7 @@ import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.Observe
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
@@ -3223,6 +3224,7 @@ import Mathlib.Topology.CountableSeparatingOn
 import Mathlib.Topology.Covering
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
+import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
