@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.traversable.basic
-! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Option.Defs
+
+#align_import control.traversable.basic from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 
 /-!
 # Traversable type class
@@ -251,7 +248,7 @@ send the composition of applicative functors to the composition of the
 satisfy a naturality condition with respect to applicative
 transformations. -/
 class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
-    Type (u + 1) where
+    Prop where
   /-- `traverse` plays well with `pure` of the identity monad-/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/

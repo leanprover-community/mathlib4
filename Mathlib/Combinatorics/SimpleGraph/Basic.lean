@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.basic
-! leanprover-community/mathlib commit c6ef6387ede9983aee397d442974e61f89dfd87b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
+
+#align_import combinatorics.simple_graph.basic from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
 /-!
 # Simple graphs
@@ -96,6 +93,15 @@ to standard `aesop`:
   use `aesop_graph` for auto-params.
 -/
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
+  `(tactic|
+    aesop $c*
+      (options := { introsTransparency? := some .default, terminal := true })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+
+/--
+Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph`
+-/
+macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (options := { introsTransparency? := some .default, terminal := true })
@@ -2024,5 +2030,12 @@ theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f 
 end Iso
 
 end Maps
+
+/-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
+@[simps!]
+def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
+  toEquiv := Equiv.Set.univ V
+  map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_Adj, Embedding.coe_subtype,
+                                Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
 
 end SimpleGraph

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.lawful_fix
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
+
+#align_import control.lawful_fix from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Lawful fixed point operators
@@ -158,7 +155,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     dsimp [approx]
     rfl
   · apply ωSup_le _ _ _
-    simp only [Fix.approxChain, OrderHom.coe_fun_mk]
+    simp only [Fix.approxChain, OrderHom.coe_mk]
     intro y x
     apply approx_le_fix f
 #align part.fix_eq_ωSup Part.fix_eq_ωSup
@@ -166,7 +163,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
 theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
-  simp only [Fix.approxChain, OrderHom.coe_fun_mk]
+  simp only [Fix.approxChain, OrderHom.coe_mk]
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le

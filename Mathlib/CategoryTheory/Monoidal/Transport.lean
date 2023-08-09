@@ -2,13 +2,10 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.transport
-! leanprover-community/mathlib commit 31529827d0f68d1fbd429edc393a928f677f4aba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+
+#align_import category_theory.monoidal.transport from "leanprover-community/mathlib"@"31529827d0f68d1fbd429edc393a928f677f4aba"
 
 /-!
 # Transport a monoidal structure along an equivalence.
@@ -44,6 +41,9 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps]
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
+  whiskerLeft := fun X _ _ f ↦ e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
+  whiskerRight := fun f X ↦ e.functor.map (e.inverse.map f ▷ e.inverse.obj X)
+  tensorHom_def := by simp [tensorHom_def]
   tensorHom f g := e.functor.map (e.inverse.map f ⊗ e.inverse.map g)
   tensorUnit' := e.functor.obj (𝟙_ C)
   associator X Y Z :=

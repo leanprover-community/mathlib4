@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.cofinite
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Pi
+
+#align_import order.filter.cofinite from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # The cofinite filter
@@ -138,6 +135,21 @@ theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite
 theorem disjoint_cofinite_right : Disjoint l cofinite ↔ ∃ s ∈ l, Set.Finite s :=
   disjoint_comm.trans disjoint_cofinite_left
 #align filter.disjoint_cofinite_right Filter.disjoint_cofinite_right
+
+/-- If `l ≥ Filter.cofinite` is a countably generated filter, then `⋂₀ l.sets` is cocountable. -/
+theorem countable_compl_sInter_sets [l.IsCountablyGenerated] (h : cofinite ≤ l) :
+    Set.Countable (⋂₀ l.sets)ᶜ := by
+  rcases exists_antitone_basis l with ⟨s, hs⟩
+  simp only [hs.sInter_sets, iInter_true, compl_iInter]
+  exact countable_iUnion fun n ↦ Set.Finite.countable <| h <| hs.mem _
+
+/-- If `f` tends to a countably generated filter `l` along `Filter.cofinite`,
+then for all but countably many elements, `f x ∈ ⋂₀ l.sets`. -/
+theorem Tendsto.countable_compl_preimage_sInter_sets {f : α → β}
+    {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
+    Set.Countable (f ⁻¹' (⋂₀ l.sets))ᶜ := by
+  erw [preimage_sInter, ← sInter_comap_sets]
+  exact countable_compl_sInter_sets h.le_comap
 
 end Filter
 

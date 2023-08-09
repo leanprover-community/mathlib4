@@ -2,15 +2,12 @@
 Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
-
-! This file was ported from Lean 3 source module combinatorics.derangements.finite
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
+
+#align_import combinatorics.derangements.finite from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Derangements on fintypes

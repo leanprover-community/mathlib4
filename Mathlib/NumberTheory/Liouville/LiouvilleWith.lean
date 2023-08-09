@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module number_theory.liouville.liouville_with
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.NumberTheory.Liouville.Basic
 import Mathlib.Topology.Instances.Irrational
+
+#align_import number_theory.liouville.liouville_with from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Liouville numbers with a given exponent
@@ -340,7 +337,7 @@ namespace Liouville
 
 variable {x : ℝ}
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note : see issue#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- If `x` is a Liouville number, then for any `n`, for infinitely many denominators `b` there
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/

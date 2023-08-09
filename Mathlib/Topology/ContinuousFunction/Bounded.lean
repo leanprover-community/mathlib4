@@ -2,11 +2,6 @@
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.continuous_function.bounded
-! leanprover-community/mathlib commit 5dc275ec639221ca4d5f56938eb966f6ad9bc89f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm
@@ -14,6 +9,8 @@ import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.MetricSpace.Equicontinuity
+
+#align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
 /-!
 # Bounded continuous functions

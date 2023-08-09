@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.witt_polynomial
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Fintype.BigOperators
@@ -14,6 +9,8 @@ import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.Data.ZMod.Basic
+
+#align_import ring_theory.witt_vector.witt_polynomial from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Witt polynomials
@@ -158,7 +155,7 @@ theorem aeval_wittPolynomial {A : Type _} [CommRing A] [Algebra R A] (f : ℕ �
 by expanding the `n`th Witt polynomial by `p`.
 -/
 @[simp]
-theorem wittPolynomial_zMod_self (n : ℕ) :
+theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
@@ -168,7 +165,7 @@ theorem wittPolynomial_zMod_self (n : ℕ) :
   congr
   rw [mem_range] at hk
   rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm]
-#align witt_polynomial_zmod_self wittPolynomial_zMod_self
+#align witt_polynomial_zmod_self wittPolynomial_zmod_self
 
 section PPrime
 

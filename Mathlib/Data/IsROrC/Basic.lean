@@ -2,15 +2,12 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module data.is_R_or_C.basic
-! leanprover-community/mathlib commit baa88307f3e699fa7054ef04ec79fa4f056169cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+
+#align_import data.is_R_or_C.basic from "leanprover-community/mathlib"@"baa88307f3e699fa7054ef04ec79fa4f056169cb"
 
 /-!
 # `IsROrC`: a typeclass for ℝ or ℂ

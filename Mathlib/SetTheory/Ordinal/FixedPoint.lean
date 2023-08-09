@@ -2,14 +2,11 @@
 Copyright (c) 2018 Violeta Hernández Palacios, Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.ordinal.fixed_point
-! leanprover-community/mathlib commit 0dd4319a17376eda5763cd0a7e0d35bbaaa50e83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
+
+#align_import set_theory.ordinal.fixed_point from "leanprover-community/mathlib"@"0dd4319a17376eda5763cd0a7e0d35bbaaa50e83"
 
 /-!
 # Fixed points of normal functions
@@ -613,7 +610,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
 -- local infixr:0 "^" => @Pow.pow Ordinal Ordinal Ordinal.hasPow
 
 @[simp]
-theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * .) 1 = (a^omega) := by
+theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := by
   rw [← sup_iterate_eq_nfp, ← sup_opow_nat]
   · dsimp
     congr
@@ -626,7 +623,7 @@ theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * .) 1 = (a^omega) := by
 #align ordinal.nfp_mul_one Ordinal.nfp_mul_one
 
 @[simp]
-theorem nfp_mul_zero (a : Ordinal) : nfp (a * .) 0 = 0 := by
+theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
   rw [← Ordinal.le_zero, nfp_le_iff]
   intro n
   induction' n with n hn; · rfl

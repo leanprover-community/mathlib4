@@ -2,15 +2,12 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module number_theory.zeta_function
-! leanprover-community/mathlib commit 57f9349f2fe19d2de7207e99b0341808d977cdcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Basic
 import Mathlib.NumberTheory.ZetaValues
+
+#align_import number_theory.zeta_function from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
 /-!
 # Definition of the Riemann zeta function
@@ -71,8 +68,7 @@ noncomputable section
 ## Definition of the Riemann zeta function and related functions
 -/
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=

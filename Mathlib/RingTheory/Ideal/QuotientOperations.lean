@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.ideal.quotient_operations
-! leanprover-community/mathlib commit b88d81c84530450a8989e918608e5960f015e6c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
 /-!
 # More operations on modules and ideals related to quotients
@@ -164,12 +161,7 @@ variable [Algebra R₁ A] [Algebra R₂ A] [Algebra R₁ B]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
-  {
-    RingHom.comp (Ideal.Quotient.mk I)
-      (algebraMap R₁
-        A) with
-    toFun := fun x => Ideal.Quotient.mk I (algebraMap R₁ A x)
-    smul := (· • ·)
+  { toRingHom :=  RingHom.comp (Ideal.Quotient.mk I) (algebraMap R₁ A)
     smul_def' := fun _ x =>
       Quotient.inductionOn' x fun _ =>
         ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
@@ -178,6 +170,7 @@ instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
 
 -- Lean can struggle to find this instance later if we don't provide this shortcut
 -- Porting note: this can probably now be deleted
+-- update: maybe not - removal causes timeouts
 instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
 #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
@@ -454,12 +447,13 @@ theorem quotient_map_comp_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] 
 where`J = f(I)`. -/
 def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
-  { quotientEquiv I J (f : A ≃+* B) hIJ with commutes' := fun r => by
-  { -- Porting note: Needed to add the below lemma because Equivs coerce weird
-    have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
-    rw [this]
-    simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
-  RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}}
+  { quotientEquiv I J (f : A ≃+* B) hIJ with
+    commutes' := fun r => by
+      -- Porting note: Needed to add the below lemma because Equivs coerce weird
+      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
+      rw [this]
+      simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
+      RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}
 #align ideal.quotient_equiv_alg Ideal.quotientEquivAlg
 
 instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
@@ -471,9 +465,6 @@ theorem algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
-  -- Porting note: Needed to add these two lines b/c we removed deinstanced this earlier
-  letI : NonAssocRing R := Ring.toNonAssocRing
-  letI : NonAssocRing A := Ring.toNonAssocRing
   rw [← RingHom.map_sub] at hab
   exact Quotient.eq.mpr hab
 #align ideal.algebra_map_quotient_injective Ideal.algebraMap_quotient_injective

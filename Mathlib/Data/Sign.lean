@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.sign
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Int.Lemmas
+
+#align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!
 # Sign function
 
@@ -74,17 +71,17 @@ instance : Mul SignType :=
     | zero => zero
     | pos => y⟩
 
-/-- The less-than relation on signs. -/
-inductive Le : SignType → SignType → Prop
-  | of_neg (a) : Le neg a
-  | zero : Le zero zero
-  | of_pos (a) : Le a pos
-#align sign_type.le SignType.Le
+/-- The less-than-or-equal relation on signs. -/
+protected inductive LE : SignType → SignType → Prop
+  | of_neg (a) : SignType.LE neg a
+  | zero : SignType.LE zero zero
+  | of_pos (a) : SignType.LE a pos
+#align sign_type.le SignType.LE
 
 instance : LE SignType :=
-  ⟨Le⟩
+  ⟨SignType.LE⟩
 
-instance Le.decidableRel : DecidableRel Le := fun a b => by
+instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 instance decidableEq : DecidableEq SignType := fun a b => by
@@ -123,14 +120,14 @@ instance : LinearOrder SignType where
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm
   le_trans := le_trans
-  decidableLE := Le.decidableRel
+  decidableLE := LE.decidableRel
   decidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1
-  le_top := Le.of_pos
+  le_top := LE.of_pos
   bot := -1
-  bot_le := Le.of_neg
+  bot_le := LE.of_neg
 
 instance : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl
@@ -138,8 +135,7 @@ instance : HasDistribNeg SignType :=
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
 
 /-- `SignType` is equivalent to `Fin 3`. -/
-def fin3Equiv : SignType ≃* Fin 3
-    where
+def fin3Equiv : SignType ≃* Fin 3 where
   toFun a :=
     match a with
     | 0 => ⟨0, by simp⟩
@@ -274,8 +270,7 @@ end cast
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
 @[simps]
-def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
-    where
+def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α where
   toFun := cast
   map_zero' := rfl
   map_one' := rfl
@@ -283,8 +278,8 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
 #align sign_type.cast_hom SignType.castHom
 
 --Porting note: new theorem
-theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} :=
-  by decide
+theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
+  decide
 
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
   classical rw [← Fintype.coe_image_univ, univ_eq]

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.monadicity
-! leanprover-community/mathlib commit 4bd8c855d6ba8f0d5eefbf80c20fa00ee034dec9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Monad.Coequalizer
 import Mathlib.CategoryTheory.Monad.Limits
+
+#align_import category_theory.monad.monadicity from "leanprover-community/mathlib"@"4bd8c855d6ba8f0d5eefbf80c20fa00ee034dec9"
 
 /-!
 # Monadicity theorems
@@ -279,7 +276,7 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 -- Porting note: added these to replace parametric instances lean4#2311
 -- When this is fixed the proofs below that struggle with instances should be reviewed.
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g]
-class HasCoequalizerOfIsSplitPair (G : D ⥤ C) where
+class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g
 
 -- Porting note: cannot find synth order

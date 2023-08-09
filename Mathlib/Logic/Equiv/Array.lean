@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.array
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Equiv.List
 import Mathlib.Control.Traversable.Equiv
+
+#align_import logic.equiv.array from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Equivalences involving `Array`

@@ -2,11 +2,6 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.finite
-! leanprover-community/mathlib commit ea0bcd84221246c801a6f8fbe8a4372f6d04b176
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -15,6 +10,8 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.Norm
+
+#align_import number_theory.class_number.finite from "leanprover-community/mathlib"@"ea0bcd84221246c801a6f8fbe8a4372f6d04b176"
 
 /-!
 # Class numbers of global fields

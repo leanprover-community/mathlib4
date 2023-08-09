@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.archimedean
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.GCongr
+
+#align_import order.filter.archimedean from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields

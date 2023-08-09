@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.filter.n_ary
-! leanprover-community/mathlib commit 78f647f8517f021d839a7553d5dc97e79b508dea
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Prod
+
+#align_import order.filter.n_ary from "leanprover-community/mathlib"@"78f647f8517f021d839a7553d5dc97e79b508dea"
 
 /-!
 # N-ary maps of filter

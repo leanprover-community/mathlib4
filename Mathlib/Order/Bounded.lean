@@ -2,13 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-! This file was ported from Lean 3 source module order.bounded
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelClasses
 import Mathlib.Data.Set.Intervals.Basic
+
+#align_import order.bounded from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
 /-!
 # Bounded and unbounded sets

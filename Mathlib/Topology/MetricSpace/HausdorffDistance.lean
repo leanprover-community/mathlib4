@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.hausdorff_distance
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Instances.ENNReal
+
+#align_import topology.metric_space.hausdorff_distance from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Hausdorff distance
@@ -908,6 +905,15 @@ theorem mem_thickening_iff_infEdist_lt : x ∈ thickening δ s ↔ infEdist x s 
   Iff.rfl
 #align metric.mem_thickening_iff_inf_edist_lt Metric.mem_thickening_iff_infEdist_lt
 
+/-- An exterior point of a subset `E` (i.e., a point outside the closure of `E`) is not in the
+(open) `δ`-thickening of `E` for small enough positive `δ`. -/
+lemma eventually_not_mem_thickening_of_infEdist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
+    ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ Metric.thickening δ E := by
+  obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
+  filter_upwards [eventually_lt_nhds ε_pos] with δ hδ
+  simp only [thickening, mem_setOf_eq, not_lt]
+  exact (ENNReal.ofReal_le_ofReal hδ.le).trans ε_lt.le
+
 /-- The (open) thickening equals the preimage of an open interval under `EMetric.infEdist`. -/
 theorem thickening_eq_preimage_infEdist (δ : ℝ) (E : Set α) :
     thickening δ E = (infEdist · E) ⁻¹' Iio (ENNReal.ofReal δ) :=
@@ -1028,6 +1034,15 @@ def cthickening (δ : ℝ) (E : Set α) : Set α :=
 theorem mem_cthickening_iff : x ∈ cthickening δ s ↔ infEdist x s ≤ ENNReal.ofReal δ :=
   Iff.rfl
 #align metric.mem_cthickening_iff Metric.mem_cthickening_iff
+
+/-- An exterior point of a subset `E` (i.e., a point outside the closure of `E`) is not in the
+closed `δ`-thickening of `E` for small enough positive `δ`. -/
+lemma eventually_not_mem_cthickening_of_infEdist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
+    ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ Metric.cthickening δ E := by
+  obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
+  filter_upwards [eventually_lt_nhds ε_pos] with δ hδ
+  simp only [cthickening, mem_setOf_eq, not_le]
+  exact ((ofReal_lt_ofReal_iff ε_pos).mpr hδ).trans ε_lt
 
 theorem mem_cthickening_of_edist_le (x y : α) (δ : ℝ) (E : Set α) (h : y ∈ E)
     (h' : edist x y ≤ ENNReal.ofReal δ) : x ∈ cthickening δ E :=

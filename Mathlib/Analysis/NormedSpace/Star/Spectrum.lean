@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.spectrum
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
+
+#align_import analysis.normed_space.star.spectrum from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-! # Spectral properties in C⋆-algebras
 In this file, we establish various properties related to the spectrum of elements in C⋆-algebras.

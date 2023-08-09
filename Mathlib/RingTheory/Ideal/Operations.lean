@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.ideal.operations
-! leanprover-community/mathlib commit e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Ring.Equiv
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.NonZeroDivisors
+
+#align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
 /-!
 # More operations on modules and ideals
@@ -2241,7 +2238,7 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
 /-- `liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
 
 * such that `φ.comp f = g` (`RingHom.liftOfRightInverse_comp`),
-* where `f : A →+* B` is has a right_inverse `f_inv` (`hf`),
+* where `f : A →+* B` has a right_inverse `f_inv` (`hf`),
 * and `g : B →+* C` satisfies `hg : f.ker ≤ g.ker`.
 
 See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.

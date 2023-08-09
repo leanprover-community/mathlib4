@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.complex.log_deriv
-! leanprover-community/mathlib commit 6a5c85000ab93fe5dcfdf620676f614ba8e18c26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+
+#align_import analysis.special_functions.complex.log_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
 
 /-!
 # Differentiability of the complex `log` function

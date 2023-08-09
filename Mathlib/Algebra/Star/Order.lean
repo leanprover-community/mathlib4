@@ -2,14 +2,11 @@
 Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.star.order
-! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.Submonoid.Basic
+
+#align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-! # Star ordered rings
 

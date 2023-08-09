@@ -2,16 +2,13 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton
-
-! This file was ported from Lean 3 source module category_theory.limits.types
-! leanprover-community/mathlib commit 4aa2a2e17940311e47007f087c9df229e7f12942
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Filtered
+
+#align_import category_theory.limits.types from "leanprover-community/mathlib"@"4aa2a2e17940311e47007f087c9df229e7f12942"
 
 /-!
 # Limits in the category of types.
@@ -639,16 +636,5 @@ instance : HasImageMaps (Type u) where
         replace p := congr_fun p (Classical.choose x.2)
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
         erw [p, Classical.choose_spec x.2]⟩⟩) rfl
-
--- porting note: the following three instances have been added to ease
--- the automation in a definition in `AlgebraicTopology.SimplicialSet`
-noncomputable instance : Inhabited (⊤_ (Type u)) :=
-  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
-
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
-  congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
-    (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
-
-noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 
 end CategoryTheory.Limits.Types

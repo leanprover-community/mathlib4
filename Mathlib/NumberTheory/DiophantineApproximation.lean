@@ -2,11 +2,6 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.diophantine_approximation
-! leanprover-community/mathlib commit e25a317463bd37d88e33da164465d8c47922b1cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
@@ -15,6 +10,8 @@ import Mathlib.Data.Int.Units
 import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.Basic
+
+#align_import number_theory.diophantine_approximation from "leanprover-community/mathlib"@"e25a317463bd37d88e33da164465d8c47922b1cd"
 
 /-!
 # Diophantine Approximation
@@ -152,7 +149,9 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
-such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`. -/
+such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
+
+See also `AddCircle.exists_norm_nsmul_le`. -/
 theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ q : ℚ, |ξ - q| ≤ 1 / ((n + 1) * q.den) ∧ q.den ≤ n := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos

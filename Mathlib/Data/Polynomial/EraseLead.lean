@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.erase_lead
-! leanprover-community/mathlib commit fa256f00ce018e7b40e1dc756e403c86680bf448
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import data.polynomial.erase_lead from "leanprover-community/mathlib"@"fa256f00ce018e7b40e1dc756e403c86680bf448"
 
 /-!
 # Erase the leading term of a univariate polynomial

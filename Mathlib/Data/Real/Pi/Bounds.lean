@@ -2,13 +2,10 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.real.pi.bounds
-! leanprover-community/mathlib commit 402f8982dddc1864bd703da2d6e2ee304a866973
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+
+#align_import data.real.pi.bounds from "leanprover-community/mathlib"@"402f8982dddc1864bd703da2d6e2ee304a866973"
 
 /-!
 # Pi
@@ -22,7 +19,7 @@ See also `Mathlib/Data/Real/Pi/Leibniz.lean` and `Mathlib/Data/Real/Pi/Wallis.le
 formulas for `π`.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 -- Porting note: needed to add a lot of type ascriptions for lean to interpret numbers as reals.
 

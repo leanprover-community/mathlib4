@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.uniform_space.uniform_convergence_topology
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
+
+#align_import topology.uniform_space.uniform_convergence_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -245,7 +242,6 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
 protected def phi (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) : β × β :=
   (uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
--- mathport name: exprlower_adjoint
 set_option quotPrecheck false -- Porting note: error message suggested to do this
 /- This is a lower adjoint to `UniformFun.filter` (see `UniformFun.gc`).
 The exact definition of the lower adjoint `l` is not interesting; we will only use that it exists
@@ -449,7 +445,7 @@ protected def congrRight [UniformSpace γ] (e : γ ≃ᵤ β) : (α →ᵤ γ) �
     uniformContinuous_invFun := UniformFun.postcomp_uniformContinuous e.symm.uniformContinuous }
 #align uniform_fun.congr_right UniformFun.congrRight
 
-/-- Pre-composition by a any function is uniformly continuous for the uniform structures of
+/-- Pre-composition by any function is uniformly continuous for the uniform structures of
 uniform convergence.
 
 More precisely, for any `f : γ → α`, the function `(λ g, g ∘ f) : (α →ᵤ β) → (γ →ᵤ β)` is uniformly

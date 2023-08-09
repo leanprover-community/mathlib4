@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
+
+#align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -243,6 +240,18 @@ theorem not_gt (h : x = y) : ¬y < x :=
 #align eq.not_gt Eq.not_gt
 
 end Eq
+
+
+section
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+
+-- Making this a @[simp] lemma causes confluences problems downstream.
+lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
+
+end
 
 namespace LE.le
 
@@ -727,8 +736,7 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.linearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
-
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
 theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl

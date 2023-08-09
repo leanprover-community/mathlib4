@@ -2,14 +2,11 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module topology.algebra.module.linear_pmap
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.module.linear_pmap from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Partially defined linear operators over topological vector spaces
@@ -87,11 +84,9 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
   have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
-  refine' ⟨g.graph.topologicalClosure.toLinearPMap _, _⟩
-  · intro x hx hx'
-    cases x
-    exact f'.graph_fst_eq_zero_snd (this hx) hx'
+  use g.graph.topologicalClosure.toLinearPMap
   rw [Submodule.toLinearPMap_graph_eq]
+  exact fun _ hx hx' => f'.graph_fst_eq_zero_snd (this hx) hx'
 #align linear_pmap.is_closable.le_is_closable LinearPMap.IsClosable.leIsClosable
 
 /-- The closure is unique. -/

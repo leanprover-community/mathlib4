@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module topology.continuous_function.basic
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.continuous_function.basic from "leanprover-community/mathlib"@"55d771df074d0dd020139ee1cd4b95521422df9f"
 
 /-!
 # Continuous bundled maps
@@ -98,6 +95,8 @@ instance : CoeFun C(α, β) fun _ => α → β :=
 theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
+
+instance : CanLift (α → β) C(α, β) FunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 /-- See note [custom simps projection]. -/
 def Simps.apply (f : C(α, β)) : α → β := f
@@ -382,6 +381,11 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
     f.restrict s ⟨x, hx⟩ = f x :=
   rfl
 #align continuous_map.restrict_apply_mk ContinuousMap.restrict_apply_mk
+
+theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
+    Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
+  FunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
+    congr_arg FunLike.coe h
 
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]

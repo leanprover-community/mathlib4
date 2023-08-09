@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.syntax
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+
+#align_import model_theory.syntax from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # Basics on First-Order Syntax
@@ -1023,17 +1020,17 @@ def graph (f : L.Functions n) : L.Formula (Fin (n + 1)) :=
 #align first_order.language.formula.graph FirstOrder.Language.Formula.graph
 
 /-- The negation of a formula. -/
-protected nonrec def not (φ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
   φ.not
 #align first_order.language.formula.not FirstOrder.Language.Formula.not
 
 /-- The implication between formulas, as a formula. -/
-protected def imp : L.Formula α → L.Formula α → L.Formula α :=
+protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
 
 /-- The biimplication between formulas, as a formula. -/
-protected nonrec def iff (φ ψ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 #align first_order.language.formula.iff FirstOrder.Language.Formula.iff
 

@@ -2,14 +2,11 @@
 Copyright (c) 2023 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module combinatorics.quiver.single_obj
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.Symmetric
+
+#align_import combinatorics.quiver.single_obj from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Single-object quiver

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.limits.has_limits
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.ULift
+
+#align_import category_theory.limits.has_limits from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # Existence of limits and colimits
@@ -1272,14 +1269,14 @@ def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
       rfl
 #align category_theory.limits.is_colimit.unop CategoryTheory.Limits.IsColimit.unop
 
-/-- `t : Cone F` is a limit cone if and only is `t.op : Cocone F.op` is a colimit cocone.
+/-- `t : Cone F` is a limit cone if and only if `t.op : Cocone F.op` is a colimit cocone.
 -/
 def isLimitEquivIsColimitOp {t : Cone F} : IsLimit t ≃ IsColimit t.op :=
   equivOfSubsingletonOfSubsingleton IsLimit.op fun P =>
     P.unop.ofIsoLimit (Cones.ext (Iso.refl _))
 #align category_theory.limits.is_limit_equiv_is_colimit_op CategoryTheory.Limits.isLimitEquivIsColimitOp
 
-/-- `t : Cocone F` is a colimit cocone if and only is `t.op : Cone F.op` is a limit cone.
+/-- `t : Cocone F` is a colimit cocone if and only if `t.op : Cone F.op` is a limit cone.
 -/
 def isColimitEquivIsLimitOp {t : Cocone F} : IsColimit t ≃ IsLimit t.op :=
   equivOfSubsingletonOfSubsingleton IsColimit.op fun P =>

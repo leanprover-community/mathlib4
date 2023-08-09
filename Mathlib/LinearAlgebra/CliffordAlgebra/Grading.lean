@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.grading
-! leanprover-community/mathlib commit 34020e531ebc4e8aac6d449d9eecbcd1508ea8d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import linear_algebra.clifford_algebra.grading from "leanprover-community/mathlib"@"34020e531ebc4e8aac6d449d9eecbcd1508ea8d0"
 
 /-!
 # Results about the grading structure of the clifford algebra

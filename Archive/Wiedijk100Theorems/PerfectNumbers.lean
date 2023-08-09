@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.perfect_numbers
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Multiplicity
+
+#align_import wiedijk_100_theorems.perfect_numbers from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Perfect Numbers

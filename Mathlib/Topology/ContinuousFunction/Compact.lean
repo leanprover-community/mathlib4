@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.continuous_function.compact
-! leanprover-community/mathlib commit d3af0609f6db8691dffdc3e1fb7feb7da72698f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
+
+#align_import topology.continuous_function.compact from "leanprover-community/mathlib"@"d3af0609f6db8691dffdc3e1fb7feb7da72698f2"
 
 /-!
 # Continuous functions on a compact space

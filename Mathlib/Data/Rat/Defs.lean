@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.defs
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
@@ -14,6 +9,8 @@ import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.PNat.Defs
+
+#align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Basics for the Rational Numbers
@@ -330,13 +327,7 @@ instance commRing : CommRing ℚ where
       ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
-  { Rat.commRing with
-    zero := 0
-    one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    div := (· / ·)
-    exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
+  { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
     inv_zero := by
       change Rat.inv 0 = 0
       rw [Rat.inv_def]

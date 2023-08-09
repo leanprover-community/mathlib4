@@ -2,16 +2,13 @@
 Copyright (c) 2022 Hans Parshall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hans Parshall
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.matrix
-! leanprover-community/mathlib commit 468b141b14016d54b479eb7a0fff1e360b7e3cf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Matrix
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.LinearAlgebra.UnitaryGroup
+
+#align_import analysis.normed_space.star.matrix from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
 
 /-!
 # Unitary matrices
@@ -22,7 +19,7 @@ This file collects facts about the unitary matrices over `𝕜` (either `ℝ` or
 
 open scoped BigOperators Matrix
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {𝕜 m n E : Type _}
 

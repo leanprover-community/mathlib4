@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.mv_polynomial.derivation
-! leanprover-community/mathlib commit b608348ffaeb7f557f2fd46876037abafd326ff3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Supported
 import Mathlib.RingTheory.Derivation.Basic
+
+#align_import data.mv_polynomial.derivation from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
 /-!
 # Derivations of multivariate polynomials
@@ -17,7 +14,7 @@ import Mathlib.RingTheory.Derivation.Basic
 In this file we prove that a derivation of `MvPolynomial σ R` is determined by its values on all
 monomials `MvPolynomial.X i`. We also provide a constructor `MvPolynomial.mkDerivation` that
 builds a derivation from its values on `X i`s and a linear equivalence
-`MvPolynomial.equivDerivation` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
+`MvPolynomial.mkDerivationEquiv` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
 
 
@@ -66,17 +63,11 @@ theorem derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) 
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.derivation_C MvPolynomial.derivation_C
 
--- @[simp] -- Porting note: simp normal form is `derivation_C_mul'`
-theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
-    D (C a * f) = a • D f := by rw [C_mul', D.map_smul]
-set_option linter.uppercaseLean3 false in
-#align mv_polynomial.derivation_C_mul MvPolynomial.derivation_C_mul
-
 @[simp]
-theorem derivation_C_mul' (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
+theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
     C (σ := σ) a • D f = a • D f := by
   have : C (σ := σ) a • D f = D (C a * f) := by simp
-  rw [this, derivation_C_mul]
+  rw [this, C_mul', D.map_smul]
 
 /-- If two derivations agree on `X i`, `i ∈ s`, then they agree on all polynomials from
 `MvPolynomial.supported R s`. -/

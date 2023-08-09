@@ -2,13 +2,10 @@
 Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.monoidal.free.basic
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
+
+#align_import category_theory.monoidal.free.basic from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # The free monoidal category over a type
@@ -162,6 +159,28 @@ instance : MonoidalCategory (F C) where
     Quotient.map₂ Hom.tensor <| by
       intro _ _ h _ _ h'
       exact HomEquiv.tensor h h'
+  whiskerLeft := fun X _ _ f =>
+    Quotient.map (fun f' => Hom.tensor (Hom.id X) f')
+      (fun _ _ h => HomEquiv.tensor (HomEquiv.refl (Hom.id X)) h) f
+  whiskerRight := fun f Y =>
+    Quotient.map (fun f' => Hom.tensor f' (Hom.id Y))
+      (fun _ _ h => HomEquiv.tensor h (HomEquiv.refl (Hom.id Y))) f
+  tensorHom_def := by
+    rintro W X Y Z ⟨f⟩ ⟨g⟩
+    apply Quotient.sound
+    calc Hom.tensor f g
+      _ ≈ Hom.tensor (Hom.comp f (Hom.id X)) (Hom.comp (Hom.id Y) g) := by
+        apply HomEquiv.tensor (HomEquiv.comp_id f).symm (HomEquiv.id_comp g).symm
+      _ ≈ Hom.comp (Hom.tensor f (Hom.id Y)) (Hom.tensor (Hom.id X) g) := by
+        apply HomEquiv.tensor_comp
+  whiskerLeft_id := by
+    rintro X Y
+    apply Quotient.sound
+    apply HomEquiv.tensor_id
+  id_whiskerRight := by
+    intro X Y
+    apply Quotient.sound
+    apply HomEquiv.tensor_id
   tensor_id X Y := Quotient.sound tensor_id
   tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩

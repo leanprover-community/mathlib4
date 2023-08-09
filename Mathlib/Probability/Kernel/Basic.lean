@@ -2,14 +2,11 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.basic
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
+
+#align_import probability.kernel.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Markov Kernels
@@ -212,6 +209,21 @@ protected theorem measurable_coe (κ : kernel α β) {s : Set β} (hs : Measurab
     Measurable fun a => κ a s :=
   (Measure.measurable_coe hs).comp (kernel.measurable κ)
 #align probability_theory.kernel.measurable_coe ProbabilityTheory.kernel.measurable_coe
+
+lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
+    (κ : kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
+    Integrable (fun x => (κ x s).toReal) μ := by
+  refine' Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
+    ((kernel.measurable_coe κ hs).ennreal_toReal.aestronglyMeasurable)
+    (ae_of_all μ <| fun x => _)
+  rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
+    ENNReal.toReal_le_toReal (measure_ne_top _ _) (IsFiniteKernel.bound_ne_top _)]
+  exact kernel.measure_le_bound _ _ _
+
+lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
+    (κ : kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
+    Integrable (fun x => (κ x s).toReal) μ :=
+  IsFiniteKernel.integrable μ κ hs
 
 section Sum
 

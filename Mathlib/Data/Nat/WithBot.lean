@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.with_bot
-! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
+
+#align_import data.nat.with_bot from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 
 /-!
 # `WithBot ℕ`

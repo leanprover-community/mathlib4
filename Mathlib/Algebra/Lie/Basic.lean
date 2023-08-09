@@ -2,15 +2,12 @@
 Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.Bracket
 import Mathlib.LinearAlgebra.Basic
+
+#align_import algebra.lie.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Lie algebras
@@ -93,7 +90,7 @@ class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] exten
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/
 class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] where
+  [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop where
   /-- A Lie module bracket is compatible with scalar multiplication in its first argument. -/
   protected smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
   /-- A Lie module bracket is compatible with scalar multiplication in its second argument. -/
@@ -470,9 +467,7 @@ variable (f : L₁ →ₗ⁅R⁆ L₂)
 /-- A Lie ring module may be pulled back along a morphism of Lie algebras.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def LieRingModule.compLieHom : LieRingModule L₁ M
-    where
+def LieRingModule.compLieHom : LieRingModule L₁ M where
   bracket x m := ⁅f x, m⁆
   lie_add x := lie_add (f x)
   add_lie x y m := by simp only [LieHom.map_add, add_lie]
@@ -485,11 +480,8 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
   rfl
 #align lie_ring_module.comp_lie_hom_apply LieRingModule.compLieHom_apply
 
-/-- A Lie module may be pulled back along a morphism of Lie algebras.
-
-See note [reducible non-instances]. -/
-@[reducible]
-def LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
+/-- A Lie module may be pulled back along a morphism of Lie algebras. -/
+theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { LieRingModule.compLieHom M f with
     smul_lie := fun t x m => by

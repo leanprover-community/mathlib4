@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
-
-! This file was ported from Lean 3 source module linear_algebra.quotient_pi
-! leanprover-community/mathlib commit 398f60f60b43ef42154bd2bdadf5133daf1577a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient
+
+#align_import linear_algebra.quotient_pi from "leanprover-community/mathlib"@"398f60f60b43ef42154bd2bdadf5133daf1577a4"
 
 /-!
 # Submodule quotients and direct sums

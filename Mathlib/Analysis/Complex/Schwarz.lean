@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.schwarz
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Complex.RemovableSingularity
+
+#align_import analysis.complex.schwarz from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Schwarz lemma
@@ -192,7 +189,7 @@ theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R)
   exact (nonempty_ball.1 ⟨z, hz⟩).ne'
 #align complex.dist_le_dist_of_maps_to_ball_self Complex.dist_le_dist_of_mapsTo_ball_self
 
-/-- The **Schwarz Lemma**: if `f : ℂ → ℂ` sends an open disk with center `0` to itself, the for any
+/-- The **Schwarz Lemma**: if `f : ℂ → ℂ` sends an open disk with center `0` to itself, then for any
 point `z` of this disk we have `abs (f z) ≤ abs z`. -/
 theorem abs_le_abs_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (ball 0 R)) (h₀ : f 0 = 0) (hz : abs z < R) :

@@ -2,11 +2,6 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.measure.lebesgue.eq_haar
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.LinearAlgebra.FiniteDimensional
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Measure.Doubling
+
+#align_import measure_theory.measure.lebesgue.eq_haar from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Relationship between the Haar and Lebesgue measures
@@ -46,7 +43,7 @@ density one for the rescaled copies `{x} + r • t` of a given set `t` with posi
 small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 assert_not_exists MeasureTheory.integral
 
@@ -381,7 +378,7 @@ theorem NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
   obtain ⟨t, ht, hst⟩ := hs
   refine' ⟨_, ht.const_smul_of_ne_zero hr, _⟩
   rw [← measure_symmDiff_eq_zero_iff] at hst ⊢
-  rw [← smul_set_symm_diff₀ hr, addHaar_smul μ, hst, mul_zero]
+  rw [← smul_set_symmDiff₀ hr, addHaar_smul μ, hst, mul_zero]
 #align measure_theory.measure.null_measurable_set.const_smul MeasureTheory.Measure.NullMeasurableSet.const_smul
 
 variable (μ)

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
-
-! This file was ported from Lean 3 source module miu_language.decision_nec
-! leanprover-community/mathlib commit 3813d4ea1c6a34dbb472de66e73b8c6855b03964
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Archive.MiuLanguage.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Ring
+
+#align_import miu_language.decision_nec from "leanprover-community/mathlib"@"3813d4ea1c6a34dbb472de66e73b8c6855b03964"
 
 /-!
 # Decision procedure: necessary condition

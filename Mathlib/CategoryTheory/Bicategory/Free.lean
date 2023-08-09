@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.free
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor
+
+#align_import category_theory.bicategory.free from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Free bicategories

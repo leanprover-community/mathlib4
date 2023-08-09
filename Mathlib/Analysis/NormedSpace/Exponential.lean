@@ -2,11 +2,6 @@
 Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.normed_space.exponential
-! leanprover-community/mathlib commit 62748956a1ece9b26b33243e2e3a2852176666f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Complex.Basic
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Topology.Algebra.Algebra
+
+#align_import analysis.normed_space.exponential from "leanprover-community/mathlib"@"62748956a1ece9b26b33243e2e3a2852176666f5"
 
 /-!
 # Exponential in a Banach algebra

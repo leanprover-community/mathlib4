@@ -2,15 +2,12 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.pi_Lp
-! leanprover-community/mathlib commit 9d013ad8430ddddd350cff5c3db830278ded3c79
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
+
+#align_import analysis.normed_space.pi_Lp from "leanprover-community/mathlib"@"9d013ad8430ddddd350cff5c3db830278ded3c79"
 
 /-!
 # `L^p` distance on finite products of metric spaces
@@ -66,7 +63,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
 

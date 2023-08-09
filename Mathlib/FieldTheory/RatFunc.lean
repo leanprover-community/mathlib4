@@ -2,16 +2,13 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module field_theory.ratfunc
-! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
+
+#align_import field_theory.ratfunc from "leanprover-community/mathlib"@"bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6"
 
 /-!
 # The field of rational functions
@@ -200,7 +197,7 @@ theorem mk_eq_div' (p q : K[X]) :
     RatFunc.mk p q = ofFractionRing (algebraMap _ _ p / algebraMap _ _ q) := by rw [RatFunc.mk]
 #align ratfunc.mk_eq_div' RatFunc.mk_eq_div'
 
-theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing 0 := by
+theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing (0 : FractionRing K[X]) := by
   rw [mk_eq_div', RingHom.map_zero, div_zero]
 #align ratfunc.mk_zero RatFunc.mk_zero
 

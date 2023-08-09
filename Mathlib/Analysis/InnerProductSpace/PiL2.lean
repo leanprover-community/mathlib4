@@ -2,16 +2,13 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.pi_L2
-! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.UnitaryGroup
+
+#align_import analysis.inner_product_space.pi_L2 from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -56,7 +53,7 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.uppercaseLean3 false
 

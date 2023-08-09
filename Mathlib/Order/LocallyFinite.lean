@@ -2,14 +2,12 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.locally_finite
-! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Intervals.UnorderedInterval
+import Mathlib.Data.Set.Intervals.Image
+
+#align_import order.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Locally finite orders
@@ -1240,7 +1238,8 @@ end OrderIso
 
 variable [Preorder α] (p : α → Prop) [DecidablePred p]
 
-instance [LocallyFiniteOrder α] : LocallyFiniteOrder (Subtype p) where
+instance Subtype.instLocallyFiniteOrder [LocallyFiniteOrder α] :
+    LocallyFiniteOrder (Subtype p) where
   finsetIcc a b := (Icc (a : α) b).subtype p
   finsetIco a b := (Ico (a : α) b).subtype p
   finsetIoc a b := (Ioc (a : α) b).subtype p
@@ -1252,13 +1251,15 @@ instance [LocallyFiniteOrder α] : LocallyFiniteOrder (Subtype p) where
     simp_rw [Finset.mem_subtype, mem_Ioc, Subtype.coe_le_coe, Subtype.coe_lt_coe]
   finset_mem_Ioo a b x := by simp_rw [Finset.mem_subtype, mem_Ioo, Subtype.coe_lt_coe]
 
-instance [LocallyFiniteOrderTop α] : LocallyFiniteOrderTop (Subtype p) where
+instance Subtype.instLocallyFiniteOrderTop [LocallyFiniteOrderTop α] :
+    LocallyFiniteOrderTop (Subtype p) where
   finsetIci a := (Ici (a : α)).subtype p
   finsetIoi a := (Ioi (a : α)).subtype p
   finset_mem_Ici a x := by simp_rw [Finset.mem_subtype, mem_Ici, Subtype.coe_le_coe]
   finset_mem_Ioi a x := by simp_rw [Finset.mem_subtype, mem_Ioi, Subtype.coe_lt_coe]
 
-instance [LocallyFiniteOrderBot α] : LocallyFiniteOrderBot (Subtype p) where
+instance Subtype.instLocallyFiniteOrderBot [LocallyFiniteOrderBot α] :
+    LocallyFiniteOrderBot (Subtype p) where
   finsetIic a := (Iic (a : α)).subtype p
   finsetIio a := (Iio (a : α)).subtype p
   finset_mem_Iic a x := by simp_rw [Finset.mem_subtype, mem_Iic, Subtype.coe_le_coe]
@@ -1394,3 +1395,78 @@ theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFini
     fun ⟨⟨a,ha⟩,⟨b,hb⟩⟩ ↦ (Set.finite_Icc a b).subset (fun x hx ↦ ⟨ha hx,hb hx⟩ )⟩
 
 end Finite
+
+/-! We make the instances below low priority
+so when alternative constructions are available they are preferred. -/
+
+instance (priority := low) [Preorder α] [DecidableRel ((· : α) ≤ ·)] [LocallyFiniteOrder α] :
+    LocallyFiniteOrderTop { x : α // x ≤ y } where
+  finsetIoi a := Finset.Ioc a ⟨y, by rfl⟩
+  finsetIci a := Finset.Icc a ⟨y, by rfl⟩
+  finset_mem_Ici a b := by
+    simp only [Finset.mem_Icc, and_iff_left_iff_imp]
+    exact fun _ => b.property
+  finset_mem_Ioi a b := by
+    simp only [Finset.mem_Ioc, and_iff_left_iff_imp]
+    exact fun _ => b.property
+
+instance (priority := low) [Preorder α] [DecidableRel ((· : α) < ·)] [LocallyFiniteOrder α] :
+    LocallyFiniteOrderTop { x : α // x < y } where
+  finsetIoi a := (Finset.Ioo ↑a y).subtype _
+  finsetIci a := (Finset.Ico ↑a y).subtype _
+  finset_mem_Ici a b := by
+    simp only [Finset.mem_subtype, Finset.mem_Ico, Subtype.coe_le_coe, and_iff_left_iff_imp]
+    exact fun _ => b.property
+  finset_mem_Ioi a b := by
+    simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_left_iff_imp]
+    exact fun _ => b.property
+
+instance (priority := low) [Preorder α] [DecidableRel ((· : α) ≤ ·)] [LocallyFiniteOrder α] :
+    LocallyFiniteOrderBot { x : α // y ≤ x } where
+  finsetIio a := Finset.Ico ⟨y, by rfl⟩ a
+  finsetIic a := Finset.Icc ⟨y, by rfl⟩ a
+  finset_mem_Iic a b := by
+    simp only [Finset.mem_Icc, and_iff_right_iff_imp]
+    exact fun _ => b.property
+  finset_mem_Iio a b := by
+    simp only [Finset.mem_Ico, and_iff_right_iff_imp]
+    exact fun _ => b.property
+
+instance (priority := low) [Preorder α] [DecidableRel ((· : α) < ·)] [LocallyFiniteOrder α] :
+    LocallyFiniteOrderBot { x : α // y < x } where
+  finsetIio a := (Finset.Ioo y ↑a).subtype _
+  finsetIic a := (Finset.Ioc y ↑a).subtype _
+  finset_mem_Iic a b := by
+    simp only [Finset.mem_subtype, Finset.mem_Ioc, Subtype.coe_le_coe, and_iff_right_iff_imp]
+    exact fun _ => b.property
+  finset_mem_Iio a b := by
+    simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_right_iff_imp]
+    exact fun _ => b.property
+
+instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Iic y).finite_toSet using 1
+  ext
+  simp
+  rfl
+
+instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Iio y).finite_toSet using 1
+  ext
+  simp
+  rfl
+
+instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Ici y).finite_toSet using 1
+  ext
+  simp
+  rfl
+
+instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Ioi y).finite_toSet using 1
+  ext
+  simp
+  rfl

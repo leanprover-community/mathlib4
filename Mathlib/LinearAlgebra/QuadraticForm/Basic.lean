@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.quadratic_form.basic
-! leanprover-community/mathlib commit 11b92770e4d49ff3982504c4dab918ac0887fe33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+
+#align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"11b92770e4d49ff3982504c4dab918ac0887fe33"
 
 /-!
 # Quadratic forms
@@ -71,7 +68,7 @@ quadratic form, homogeneous polynomial, quadratic polynomial
 
 universe u v w
 
-variable {S : Type _}
+variable {S T : Type _}
 
 variable {R R₁ : Type _} {M : Type _}
 
@@ -368,7 +365,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 section SMul
 
-variable [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
+variable [Monoid S] [Monoid T] [DistribMulAction S R] [DistribMulAction T R]
+variable [SMulCommClass S R R] [SMulCommClass T R R]
 
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
@@ -390,6 +388,12 @@ theorem coeFn_smul (a : S) (Q : QuadraticForm R M) : ⇑(a • Q) = a • ⇑Q :
 theorem smul_apply (a : S) (Q : QuadraticForm R M) (x : M) : (a • Q) x = a • Q x :=
   rfl
 #align quadratic_form.smul_apply QuadraticForm.smul_apply
+
+instance [SMulCommClass S T R] : SMulCommClass S T (QuadraticForm R M) where
+  smul_comm _s _t _q := ext <| fun _ => smul_comm _ _ _
+
+instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticForm R M) where
+  smul_assoc _s _t _q := ext <| fun _ => smul_assoc _ _ _
 
 end SMul
 
@@ -678,7 +682,7 @@ theorem toQuadraticForm_smul [Monoid S] [DistribMulAction S R] [SMulCommClass S 
 
 section
 
-variable (R M)
+variable (S R M)
 
 /-- `BilinForm.toQuadraticForm` as an additive homomorphism -/
 @[simps]
@@ -687,6 +691,14 @@ def toQuadraticFormAddMonoidHom : BilinForm R M →+ QuadraticForm R M where
   map_zero' := toQuadraticForm_zero _ _
   map_add' := toQuadraticForm_add
 #align bilin_form.to_quadratic_form_add_monoid_hom BilinForm.toQuadraticFormAddMonoidHom
+
+/-- `BilinForm.toQuadraticForm` as a linear map -/
+@[simps!]
+def toQuadraticFormLinearMap [Semiring S] [Module S R] [SMulCommClass S R R] :
+    BilinForm R M →ₗ[S] QuadraticForm R M where
+  toFun := toQuadraticForm
+  map_smul' := toQuadraticForm_smul
+  map_add' := toQuadraticForm_add
 
 end
 
@@ -757,9 +769,9 @@ variable [Invertible (2 : R)] {B₁ : BilinForm R M}
 associated symmetric bilinear form.  As provided here, this has the structure of an `S`-linear map
 where `S` is a commutative subring of `R`.
 
-Over a commutative ring, use `Associated`, which gives an `R`-linear map.  Over a general ring with
-no nontrivial distinguished commutative subring, use `Associated'`, which gives an additive
-homomorphism (or more precisely a `ℤ`-linear map.) -/
+Over a commutative ring, use `QuadraticForm.associated`, which gives an `R`-linear map.  Over a
+general ring with no nontrivial distinguished commutative subring, use `QuadraticForm.associated'`,
+which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M where
   toFun Q :=
     ((· • ·) : Submonoid.center R → BilinForm R M → BilinForm R M)
@@ -853,7 +865,7 @@ variable [CommRing R₁] [AddCommGroup M] [Module R₁ M]
 variable [Invertible (2 : R₁)]
 
 -- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
--- the more general `AssociatedHom` and place it in the previous section.
+-- the more general `associatedHom` and place it in the previous section.
 /-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
 abbrev associated : QuadraticForm R₁ M →ₗ[R₁] BilinForm R₁ M :=

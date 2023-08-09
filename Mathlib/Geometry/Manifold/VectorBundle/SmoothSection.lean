@@ -2,15 +2,12 @@
 Copyright © 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.smooth_section
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
+
+#align_import geometry.manifold.vector_bundle.smooth_section from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # Smooth sections
