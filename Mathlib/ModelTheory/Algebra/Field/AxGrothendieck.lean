@@ -13,12 +13,13 @@ open MvPolynomial FreeCommRing
 
 variable {ι : Type}
 
-def genericPolyMap {ι : Type _} (mons : ι → Finset (ι →₀ ℕ)) :
-    ι → FreeCommRing (ι ⊕ (Σ i : ι, mons i)) :=
-  fun i => (mons i).attach.sum
+def genericPolyMap {ι : Type _} (monoms : ι → Finset (ι →₀ ℕ)) :
+    ι → FreeCommRing (ι ⊕ (Σ i : ι, monoms i)) :=
+  fun i => (monoms i).attach.sum
     (fun m => FreeCommRing.of (Sum.inr ⟨i, m⟩) *
       Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inl j)^ n))
 
+@[simp]
 theorem lift_genericPolyMap {R : Type _} [CommRing R]
     {p : ι → MvPolynomial ι R} (x : ι → R) (i : ι) :
     FreeCommRing.lift
@@ -28,5 +29,10 @@ theorem lift_genericPolyMap {R : Type _} [CommRing R]
   conv_rhs => rw [MvPolynomial.eval_eq, ← Finset.sum_attach]
   simp only [genericPolyMap, Finsupp.prod, map_sum, map_mul, lift_of, Sum.elim_inr,
     map_prod, map_pow, Sum.elim_inl]
+
+-- def genericPolyMapSurjectiveOfInjective {ι : Type _} [Finite ι]
+--     (mons : Fin n → Finset (ι →₀ ℕ)) :
+--     Language.field.Sentence :=
+
 
 end FirstOrder
