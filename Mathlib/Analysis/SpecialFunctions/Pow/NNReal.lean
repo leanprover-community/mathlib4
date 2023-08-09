@@ -138,6 +138,66 @@ theorem mul_rpow {x y : ℝ≥0} {z : ℝ} : (x * y) ^ z = x ^ z * y ^ z :=
   NNReal.eq <| Real.mul_rpow x.2 y.2
 #align nnreal.mul_rpow NNReal.mul_rpow
 
+/-- `rpow` as a `MonoidHom`-/
+@[simps]
+def rpowMonoidHom (r : ℝ) : ℝ≥0 →* ℝ≥0 where
+  toFun := (· ^ r)
+  map_one' := one_rpow _
+  map_mul' _x _y := mul_rpow
+
+/-- `rpow` variant of `List.prod_map_pow` for `ℝ≥0`-/
+theorem list_prod_map_rpow (l : List ℝ≥0) (r : ℝ) :
+    (l.map (· ^ r)).prod = l.prod ^ r :=
+  l.prod_hom (rpowMonoidHom r)
+
+theorem list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ≥0) (r : ℝ) :
+    (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
+  rw [←list_prod_map_rpow, List.map_map]; rfl
+
+/-- `rpow` version of `Multiset.prod_map_pow` for `ℝ≥0`. -/
+lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : ℝ) :
+    (s.map (f · ^ r)).prod = (s.map f).prod ^ r :=
+  s.prod_hom' (rpowMonoidHom r) _
+
+/-- `rpow` version of `Finset.prod_pow` for `ℝ≥0`. -/
+lemma finset_prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
+    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+  multiset_prod_map_rpow _ _ _
+
+-- note: these don't really belong here, but they're much easier to prove in terms of the above
+
+section Real
+
+/-- `rpow` version of `List.prod_map_pow` for `Real`. -/
+theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : ℝ) ≤ x) (r : ℝ) :
+    (l.map (· ^ r)).prod = l.prod ^ r := by
+  lift l to List ℝ≥0 using hl
+  have := congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.list_prod_map_rpow l r)
+  push_cast at this
+  rw [List.map_map] at this ⊢
+  exact_mod_cast this
+
+theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
+    (hl : ∀ i ∈ l, (0 : ℝ) ≤ f i) (r : ℝ) :
+    (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
+  rw [←Real.list_prod_map_rpow (l.map f) _ r, List.map_map]; rfl
+  simpa using hl
+
+/-- `rpow` version of `Multiset.prod_map_pow`. -/
+theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ)
+    (hs : ∀ i ∈ s, (0 : ℝ) ≤ f i) (r : ℝ) :
+    (s.map (f · ^ r)).prod = (s.map f).prod ^ r := by
+  induction' s using Quotient.inductionOn with l
+  simpa using Real.list_prod_map_rpow' l f hs r
+
+/-- `rpow` version of `Finset.prod_pow`. -/
+theorem _root_.Real.finset_prod_rpow
+    {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
+    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+  Real.multiset_prod_map_rpow s.val f hs r
+
+end Real
+
 theorem rpow_le_rpow {x y : ℝ≥0} {z : ℝ} (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z :=
   Real.rpow_le_rpow x.2 h₁ h₂
 #align nnreal.rpow_le_rpow NNReal.rpow_le_rpow
