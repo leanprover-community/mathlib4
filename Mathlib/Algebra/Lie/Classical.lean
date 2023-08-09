@@ -47,7 +47,7 @@ which approach should be preferred so the choice should be assumed to be somewha
 ### Diagonal quadratic form or diagonal Cartan subalgebra
 
 For the algebras of type `B` and `D`, there are two natural definitions. For example since the
-the `2l × 2l` matrix:
+`2l × 2l` matrix:
 $$
   J = \left[\begin{array}{cc}
               0_l & 1_l\\

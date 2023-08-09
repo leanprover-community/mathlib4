@@ -22,7 +22,7 @@ cyclic group, as well as the fact that every finite integral domain is a field
 
 ## Main results
 
-1. `Fintype.card_units`: The unit group of a finite field is has cardinality `q - 1`.
+1. `Fintype.card_units`: The unit group of a finite field has cardinality `q - 1`.
 2. `sum_pow_units`: The sum of `x^i`, where `x` ranges over the units of `K`, is
    - `q-1` if `q-1 ∣ i`
    - `0`   otherwise

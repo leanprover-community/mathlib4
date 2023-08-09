@@ -108,18 +108,6 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-section
-
-open ComplexOrder
-
-protected theorem orderedSMul : OrderedSMul ℝ ℂ :=
-  OrderedSMul.mk' fun a b r hab hr => ⟨by simp [hr, hab.1.le], by simp [hab.2]⟩
-#align complex.ordered_smul Complex.orderedSMul
-
-scoped[ComplexOrder] attribute [instance] Complex.orderedSMul
-
-end
-
 open Submodule FiniteDimensional
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
@@ -318,7 +306,7 @@ variable {A : Type _} [Ring A] [Algebra ℝ A]
 See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
-    ((Algebra.ofId ℝ A).toLinearMap.comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
+    ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
     (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [RingHom.map_one, zero_smul, add_zero])
     fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
     show

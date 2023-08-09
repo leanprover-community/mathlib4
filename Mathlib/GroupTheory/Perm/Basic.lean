@@ -96,11 +96,14 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 #align equiv.perm.coe_one Equiv.Perm.coe_one
+
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
 #align equiv.perm.coe_mul Equiv.Perm.coe_mul
+
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 #align equiv.perm.coe_pow Equiv.Perm.coe_pow
+
 @[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := (coe_pow _ _).symm
 #align equiv.perm.iterate_eq_pow Equiv.Perm.iterate_eq_pow
 
@@ -119,6 +122,7 @@ theorem zpow_apply_comm {α : Type _} (σ : Perm α) (m n : ℤ) {x : α} :
 
 @[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
 #align equiv.perm.image_inv Equiv.Perm.image_inv
+
 @[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
   (f.image_eq_preimage _).symm
 #align equiv.perm.preimage_inv Equiv.Perm.preimage_inv
@@ -647,14 +651,14 @@ lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 #align equiv.mul_right_one Equiv.mulRight_one
 
-@[to_additive existing (attr := simp)] lemma mulLeft_mul :
-  Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
-ext $ mul_assoc _ _
+@[to_additive existing (attr := simp)]
+lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
+  ext $ mul_assoc _ _
 #align equiv.mul_left_mul Equiv.mulLeft_mul
 
-@[to_additive existing (attr := simp)] lemma mulRight_mul :
-  Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
-ext $ fun _ ↦ (mul_assoc _ _ _).symm
+@[to_additive existing (attr := simp)]
+lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+  ext $ fun _ ↦ (mul_assoc _ _ _).symm
 #align equiv.mul_right_mul Equiv.mulRight_mul
 
 @[to_additive existing (attr := simp) inv_addLeft]

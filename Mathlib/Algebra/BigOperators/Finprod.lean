@@ -110,14 +110,14 @@ open Std.ExtendedBinder
 
 -- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
 
-/-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the the
+/-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
 -- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
 
-/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the the
+/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
@@ -589,6 +589,14 @@ theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : �
   simp (config := { contextual := true }) [h]
 #align finprod_eq_one_of_forall_eq_one finprod_eq_one_of_forall_eq_one
 #align finsum_eq_zero_of_forall_eq_zero finsum_eq_zero_of_forall_eq_zero
+
+@[to_additive finsum_pos']
+theorem one_lt_finprod' {M : Type _} [OrderedCancelCommMonoid M] {f : ι → M}
+    (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
+  rcases h' with ⟨i, hi⟩
+  rw [finprod_eq_prod _ hf]
+  refine Finset.one_lt_prod' (fun i _ ↦ h i) ⟨i, ?_, hi⟩
+  simpa only [Finite.mem_toFinset, mem_mulSupport] using ne_of_gt hi
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication

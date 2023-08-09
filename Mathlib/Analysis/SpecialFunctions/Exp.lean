@@ -207,7 +207,7 @@ theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
 @[simp]
 theorem isBoundedUnder_le_exp_comp {f : α → ℝ} :
     (IsBoundedUnder (· ≤ ·) l fun x => exp (f x)) ↔ IsBoundedUnder (· ≤ ·) l f :=
-  exp_monotone.isBoundedUnder_le_comp tendsto_exp_atTop
+  exp_monotone.isBoundedUnder_le_comp_iff tendsto_exp_atTop
 #align real.is_bounded_under_le_exp_comp Real.isBoundedUnder_le_exp_comp
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/

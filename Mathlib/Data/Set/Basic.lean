@@ -179,12 +179,12 @@ theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 #align set.coe_set_of Set.coe_setOf
 
--- Porting: removed `simp` because `simp` can prove it
+-- Porting note: removed `simp` because `simp` can prove it
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 #align set_coe.forall SetCoe.forall
 
--- Porting: removed `simp` because `simp` can prove it
+-- Porting note: removed `simp` because `simp` can prove it
 theorem SetCoe.exists {s : Set α} {p : s → Prop} :
     (∃ x : s, p x) ↔ ∃ (x : _) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
@@ -307,34 +307,34 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 
 
 instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (. ≤ .) by infer_instance
+  show IsRefl (Set α) (· ≤ ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
-  show IsTrans (Set α) (. ≤ .) by infer_instance
+  show IsTrans (Set α) (· ≤ ·) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (. ≤ .) (. ≤ .) (. ≤ .) by infer_instance
+  show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
 
 instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  show IsAntisymm (Set α) (. ≤ .) by infer_instance
+  show IsAntisymm (Set α) (· ≤ ·) by infer_instance
 
 instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  show IsIrrefl (Set α) (. < .) by infer_instance
+  show IsIrrefl (Set α) (· < ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊂ ·) :=
-  show IsTrans (Set α) (. < .) by infer_instance
+  show IsTrans (Set α) (· < ·) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. < .) (. < .) by infer_instance
+  show Trans (· < ·) (· < ·) (· < ·) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. ≤ .) (. < .) by infer_instance
+  show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. ≤ .) (. < .) (. < .) by infer_instance
+  show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
 instance : IsAsymm (Set α) (· ⊂ ·) :=
-  show IsAsymm (Set α) (. < .) by infer_instance
+  show IsAsymm (Set α) (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
@@ -423,7 +423,7 @@ theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
   id
 #align set.not_mem_empty Set.not_mem_empty
 
--- Porting: removed `simp` because `simp` can prove it
+-- Porting note: removed `simp` because `simp` can prove it
 theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 #align set.not_not_mem Set.not_not_mem
@@ -606,6 +606,14 @@ theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 #align set.nonempty_iff_ne_empty Set.nonempty_iff_ne_empty
+
+/-- See also `nonempty_iff_ne_empty'`. -/
+theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
+  rw [nonempty_subtype, not_exists, eq_empty_iff_forall_not_mem]
+
+/-- See also `not_nonempty_iff_eq_empty'`. -/
+theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
+  not_nonempty_iff_eq_empty'.not_right
 
 alias nonempty_iff_ne_empty ↔ Nonempty.ne_empty _
 #align set.nonempty.ne_empty Set.Nonempty.ne_empty

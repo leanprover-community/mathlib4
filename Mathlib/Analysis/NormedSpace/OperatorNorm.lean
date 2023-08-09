@@ -211,6 +211,10 @@ theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c
   f.le_of_op_norm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_op_norm_le
 
+theorem op_norm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ} (hMp : 0 ≤ M) :
+    ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
+  ⟨f.le_of_op_norm_le, op_norm_le_bound f hMp⟩
+
 theorem ratio_le_op_norm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_nonneg_of_le_mul (norm_nonneg _) f.op_norm_nonneg (le_op_norm _ _)
 #align continuous_linear_map.ratio_le_op_norm ContinuousLinearMap.ratio_le_op_norm
@@ -1193,7 +1197,7 @@ variable [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 �
 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : 𝕜' →L[𝕜] E →L[𝕜] E :=
-  ((Algebra.lsmul 𝕜 E).toLinearMap : 𝕜' →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
+  ((Algebra.lsmul 𝕜 𝕜 E).toLinearMap : 𝕜' →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
     simpa only [one_mul] using norm_smul_le c x
 #align continuous_linear_map.lsmul ContinuousLinearMap.lsmul
 
@@ -1696,8 +1700,8 @@ def extend : Fₗ →SL[σ₁₂] F :=
         exact f.map_add _ _
     map_smul' := fun k => by
       refine' fun b => h_dense.induction_on b _ _
-      · exact
-          isClosed_eq (cont.comp (continuous_const_smul _)) ((continuous_const_smul _).comp cont)
+      · exact isClosed_eq (cont.comp (continuous_const_smul _))
+          ((continuous_const_smul _).comp cont)
       · intro x
         rw [← map_smul]
         simp only [eq]
@@ -1727,40 +1731,26 @@ section
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
-set_option quotPrecheck false in
--- Porting note: this should be `local notation`, not `scoped notation`,
--- as we don't want it beyond the next declaration, but that causes errors.
-/-- Convenient notation for `op_norm_extend_le`. -/
-scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
-
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
-theorem op_norm_extend_le : ‖ψ‖ ≤ N * ‖f‖ := by
-  have uni : UniformInducing e := (uniformEmbedding_of_bound _ h_e).toUniformInducing
-  have eq : ∀ x, ψ (e x) = f x := uniformly_extend_of_ind uni h_dense f.uniformContinuous
-  by_cases N0 : 0 ≤ N
-  · refine' op_norm_le_bound ψ _ (isClosed_property h_dense (isClosed_le _ _) _)
-    · exact mul_nonneg N0 (norm_nonneg _)
-    · exact continuous_norm.comp (cont ψ)
-    · exact continuous_const.mul continuous_norm
-    · intro x
-      rw [eq]
-      calc
-        ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-        _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
-        _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
-  · have he : ∀ x : E, x = 0 := by
-      intro x
-      have N0 : N ≤ 0 := le_of_lt (lt_of_not_ge N0)
-      rw [← norm_le_zero_iff]
-      exact le_trans (h_e x) (mul_nonpos_of_nonpos_of_nonneg N0 (norm_nonneg _))
-    have hf : f = 0 := by
-      ext x
-      simp only [he x, zero_apply, map_zero]
-    have hψ : ψ = 0 := by
-      rw [hf]
-      apply extend_zero
-    rw [hψ, hf, norm_zero, norm_zero, MulZeroClass.mul_zero]
+theorem op_norm_extend_le :
+    ‖f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing‖ ≤ N * ‖f‖ := by
+  -- Add `op_norm_le_of_dense`?
+  refine op_norm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ ?_) fun x ↦ ?_)
+  · cases le_total 0 N with
+    | inl hN => exact mul_nonneg hN (norm_nonneg _)
+    | inr hN =>
+      have : Unique E := ⟨⟨0⟩, fun x ↦ norm_le_zero_iff.mp <|
+        (h_e x).trans (mul_nonpos_of_nonpos_of_nonneg hN (norm_nonneg _))⟩
+      obtain rfl : f = 0 := Subsingleton.elim ..
+      simp
+  · exact (cont _).norm
+  · exact continuous_const.mul continuous_norm
+  · rw [extend_eq]
+    calc
+      ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
+      _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
+      _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 #align continuous_linear_map.op_norm_extend_le ContinuousLinearMap.op_norm_extend_le
 
 end
@@ -2009,7 +1999,8 @@ variable {ι : Type _} [NontriviallyNormedField 𝕜] [NontriviallyNormedField �
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
-between normed spaces. -/
+between normed spaces. See also `WithSeminorms.equicontinuous_TFAE` for similar characterizations
+between spaces satisfying `WithSeminorms`. -/
 protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
     [ EquicontinuousAt ((↑) ∘ f) 0,
       Equicontinuous ((↑) ∘ f),
@@ -2031,18 +2022,17 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   -- and `congr` lemmas
   tfae_have 4 ↔ 5
   · rw [exists_ge_and_iff_exists]
-    exact fun C₁ C₂ hC ↦ forall₂_imp (fun i x ↦ le_trans'
-      (mul_le_mul_of_nonneg_right hC (norm_nonneg x)))
+    exact fun C₁ C₂ hC ↦ forall₂_imp fun i x ↦ le_trans' <| by gcongr
   tfae_have 5 ↔ 7
   · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
-    rw [(f i).op_norm_le_iff hC]
+    rw [ContinuousLinearMap.op_norm_le_iff hC]
   tfae_have 7 ↔ 8
   · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
   tfae_have 6 ↔ 8
   · simp_rw [bddAbove_def, Set.forall_range_iff]
   tfae_have 8 ↔ 9
-  · have := (WithTop.iSup_coe_lt_top (fun i ↦ ‖f i‖₊)).symm -- can't `rw` into goal
-    rwa [← NNReal.bddAbove_coe, ← Set.range_comp] at this
+  · rw [ENNReal.iSup_coe_lt_top (fun i ↦ ‖f i‖₊), ← NNReal.bddAbove_coe, ← Set.range_comp]
+    rfl
   -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
   -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns
   -- equicontinuity into existence of some continuous seminorm and

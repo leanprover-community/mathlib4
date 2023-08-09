@@ -1022,7 +1022,7 @@ definition, instead of `Trivialization.continuousLinearEquivAt`, so that
 This is the (second component of the) underlying function of a trivialization of the hom-bundle
 (see `hom_trivialization_at_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
 defined even when `x` and `y` live in different base sets.
-Therefore, it is is also convenient when working with the hom-bundle between pulled back bundles.
+Therefore, it is also convenient when working with the hom-bundle between pulled back bundles.
 -/
 def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL[σ] F' :=
   ((trivializationAt F' E' y₀).continuousLinearMapAt 𝕜₂ y).comp <|

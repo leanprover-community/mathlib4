@@ -322,7 +322,7 @@ theorem hasFDerivAt_iff_isLittleO_nhds_zero :
 #align has_fderiv_at_iff_is_o_nhds_zero hasFDerivAt_iff_isLittleO_nhds_zero
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then it its derivative at `x₀` has norm bounded by `C`. This version
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
 only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
 theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) : ‖f'‖ ≤ C := by
@@ -339,7 +339,7 @@ theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (h
 #align has_fderiv_at.le_of_lip' HasFDerivAt.le_of_lip'
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then it its derivative at `x₀` has norm bounded by `C`. -/
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
 theorem HasFDerivAt.le_of_lip {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
   refine' hf.le_of_lip' C.coe_nonneg _
@@ -402,7 +402,7 @@ alias hasFDerivWithinAt_insert ↔ HasFDerivWithinAt.of_insert HasFDerivWithinAt
 #align has_fderiv_within_at.of_insert HasFDerivWithinAt.of_insert
 #align has_fderiv_within_at.insert' HasFDerivWithinAt.insert'
 
-theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
+protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt g g' (insert x s) x :=
   h.insert'
 #align has_fderiv_within_at.insert HasFDerivWithinAt.insert
@@ -543,7 +543,7 @@ theorem fderiv_eq {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x
 #align fderiv_eq fderiv_eq
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then it its derivative at `x₀` has norm bounded by `C`.
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
 Version using `fderiv`. -/
 -- Porting note: renamed so that dot-notation makes sense
 theorem DifferentiableAt.le_of_lip {f : E → F} {x₀ : E} (hf : DifferentiableAt 𝕜 f x₀)
@@ -823,6 +823,17 @@ theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
 #align filter.eventually_eq.has_strict_fderiv_at_iff Filter.EventuallyEq.hasStrictFDerivAt_iff
+
+theorem HasStrictFDerivAt.congr_fderiv (h : HasStrictFDerivAt f f' x) (h' : f' = g') :
+    HasStrictFDerivAt f g' x :=
+  h' ▸ h
+
+theorem HasFDerivAt.congr_fderiv (h : HasFDerivAt f f' x) (h' : f' = g') : HasFDerivAt f g' x :=
+  h' ▸ h
+
+theorem HasFDerivWithinAt.congr_fderiv (h : HasFDerivWithinAt f f' s x) (h' : f' = g') :
+    HasFDerivWithinAt f g' s x :=
+  h' ▸ h
 
 theorem HasStrictFDerivAt.congr_of_eventuallyEq (h : HasStrictFDerivAt f f' x)
     (h₁ : f =ᶠ[𝓝 x] f₁) : HasStrictFDerivAt f₁ f' x :=
@@ -1140,17 +1151,32 @@ end
 
 /-! ### Support of derivatives -/
 
-
 section Support
 
 open Function
 
 variable (𝕜 : Type _) {E F : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
+
+theorem HasStrictFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
+  rw [not_mem_tsupport_iff_eventuallyEq] at h
+  exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
+
+theorem HasFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasFDerivAt f (0 : E →L[𝕜] F) x :=
+  (HasStrictFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivAt
+
+theorem HasFDerivWithinAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
+  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivWithinAt
+
+theorem fderiv_of_not_mem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
+  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).fderiv
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
-  rw [← not_imp_not, not_mem_tsupport_iff_eventuallyEq, nmem_support]
-  exact fun hx => hx.fderiv_eq.trans <| fderiv_const_apply 0
+  rw [← not_imp_not, nmem_support]
+  exact fderiv_of_not_mem_tsupport _
 #align support_fderiv_subset support_fderiv_subset
 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=

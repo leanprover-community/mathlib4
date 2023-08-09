@@ -632,7 +632,7 @@ def wideEqualizer.lift' [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂, k
   ⟨wideEqualizer.lift k h, wideEqualizer.lift_ι _ _⟩
 #align category_theory.limits.wide_equalizer.lift' CategoryTheory.Limits.wideEqualizer.lift'
 
-/-- Two maps into a wide equalizer are equal if they are are equal when composed with the wide
+/-- Two maps into a wide equalizer are equal if they are equal when composed with the wide
     equalizer map. -/
 @[ext]
 theorem wideEqualizer.hom_ext [Nonempty J] {W : C} {k l : W ⟶ wideEqualizer f}

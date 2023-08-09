@@ -15,7 +15,7 @@ We introduce `M`-regular elements, in the context of an `R`-module `M`.  The cor
 predicate is called `IsSMulRegular`.
 
 There are very limited typeclass assumptions on `R` and `M`, but the "mathematical" case of interest
-is a commutative ring `R` acting an a module `M`. Since the properties are "multiplicative", there
+is a commutative ring `R` acting on a module `M`. Since the properties are "multiplicative", there
 is no actual requirement of having an addition, but there is a zero in both `R` and `M`.
 SMultiplications involving `0` are, of course, all trivial.
 

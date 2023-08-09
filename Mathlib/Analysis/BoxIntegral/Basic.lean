@@ -457,7 +457,7 @@ theorem dist_integralSum_integral_le_of_memBaseSet (h : Integrable I l f vol) (h
   exact (hasIntegral_iff.1 h.hasIntegral ε h₀).choose_spec.2 c _ hπ hπp
 #align box_integral.integrable.dist_integral_sum_integral_le_of_mem_base_set BoxIntegral.Integrable.dist_integralSum_integral_le_of_memBaseSet
 
-/-- **Henstock-Sacks inequality**. Let `r₁ r₂ : ℝⁿ → (0, ∞)` be function such that for any tagged
+/-- **Henstock-Sacks inequality**. Let `r₁ r₂ : ℝⁿ → (0, ∞)` be a function such that for any tagged
 *partition* of `I` subordinate to `rₖ`, `k=1,2`, the integral sum of `f` over this partition differs
 from the integral of `f` by at most `εₖ`. Then for any two tagged *prepartition* `π₁ π₂` subordinate
 to `r₁` and `r₂` respectively and covering the same part of `I`, the integral sums of `f` over these
@@ -712,7 +712,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
 
 variable {l}
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- This is an auxiliary lemma used to prove two statements at once. Use one of the next two
 lemmas instead. -/

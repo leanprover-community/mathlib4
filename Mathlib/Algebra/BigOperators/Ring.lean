@@ -121,12 +121,12 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
         Subtype.exists, exists_prop, exists_eq_right] using ha
 #align finset.prod_sum Finset.prod_sum
 
-open Classical
 /-- The product of `f a + g a` over all of `s` is the sum
   over the powerset of `s` of the product of `f` over a subset `t` times
   the product of `g` over the complement of `t`  -/
-theorem prod_add (f g : α → β) (s : Finset α) :
-    ∏ a in s, (f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
+theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
+    ∏ a in s, (f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a := by
+  classical
   calc
     ∏ a in s, (f a + g a) =
         ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
@@ -151,8 +151,9 @@ theorem prod_add (f g : α → β) (s : Finset α) :
             (by simp) (by simp))
         (fun t _ a _ => a ∈ t)
         (by simp [Classical.em])
-        (by simp [Function.funext_iff]; tauto)
-        (by simp [Finset.ext_iff, @mem_filter _ _ (id _)]; tauto)
+        (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_singleton, mem_pi,
+          mem_insert, iff_true, iff_false]; tauto)
+        (by simp_rw [ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
 #align finset.prod_add Finset.prod_add
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
@@ -203,6 +204,7 @@ theorem prod_one_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : 
 gives `(a + b)^s.card`.-/
 theorem sum_pow_mul_eq_add_pow {α R : Type _} [CommSemiring R] (a b : R) (s : Finset α) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
+  classical
   rw [← prod_const, prod_add]
   refine' Finset.sum_congr rfl fun t ht => _
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]

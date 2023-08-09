@@ -99,7 +99,7 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 theorem prod_hom (l : List M) {F : Type _} [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldl_map, ← map_one f]
-  exact l.foldl_hom f (. * .) (. * f .) 1 (fun x y => (map_mul f x y).symm)
+  exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
 #align list.prod_hom List.prod_hom
 #align list.sum_hom List.sum_hom
 
