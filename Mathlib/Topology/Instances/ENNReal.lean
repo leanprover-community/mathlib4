@@ -1330,6 +1330,12 @@ theorem _root_.Summable.countable_support {f : α → ℝ} (hf : ∀ x, 0 ≤ f 
   convert Summable.countable_support_nnreal _ h.toNNReal
   ext x; simp [lt_iff_le_and_ne]; tauto
 
+/-- Finitely summable non-negative functions have countable support -/
+theorem _root_.Summable.countable_support_ennreal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ⊤) :
+    f.support.Countable := by
+  convert Summable.countable_support_nnreal _ (ENNReal.summable_toNNReal_of_tsum_ne_top h)
+  ext x; simp [ENNReal.toNNReal_eq_zero_iff, ENNReal.ne_top_of_tsum_ne_top h]
+
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat_of_nonneg {f : ℕ → ℝ} (hf : ∀ i, 0 ≤ f i) (r : ℝ) :
