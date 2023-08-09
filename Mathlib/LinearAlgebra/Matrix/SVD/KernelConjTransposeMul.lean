@@ -6,7 +6,6 @@ Authors: Mohanad Ahmed
 
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
-
 /-! # Kernel of the products of a Matrix Conjugate Transpose of a Matrix -/
 open Matrix BigOperators
 

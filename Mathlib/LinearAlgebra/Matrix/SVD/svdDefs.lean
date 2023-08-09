@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
 
-import Mathlib.LinearAlgebra.Matrix.SVD.ColumnRowBlocks
-import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMatricesRank
-import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
-import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMulSelfPosSemiDef
+
+import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.SVD.KernelConjTransposeMul
 import Mathlib.LinearAlgebra.Matrix.SVD.svdReindex
-import Mathlib.LinearAlgebra.Matrix.SVD.RankMulIsUnit
+
 
 
 /-! # Singular Value Decomposition
