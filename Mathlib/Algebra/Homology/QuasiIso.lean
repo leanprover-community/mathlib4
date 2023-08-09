@@ -5,6 +5,7 @@ Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.CategoryTheory.Abelian.Homology
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 #align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
 
@@ -24,6 +25,8 @@ open CategoryTheory
 open CategoryTheory.Limits
 
 universe v u
+
+section
 
 variable {ι : Type _}
 
@@ -47,21 +50,21 @@ instance (priority := 100) quasiIso'_of_iso (f : C ⟶ D) [IsIso f] : QuasiIso' 
     infer_instance
 #align quasi_iso_of_iso quasiIso'_of_iso
 
-instance quasiIso_comp (f : C ⟶ D) [QuasiIso' f] (g : D ⟶ E) [QuasiIso' g] : QuasiIso' (f ≫ g) where
+instance quasiIso'_comp (f : C ⟶ D) [QuasiIso' f] (g : D ⟶ E) [QuasiIso' g] : QuasiIso' (f ≫ g) where
   IsIso i := by
     rw [Functor.map_comp]
     infer_instance
-#align quasi_iso_comp quasiIso_comp
+#align quasi_iso_comp quasiIso'_comp
 
-theorem quasiIso_of_comp_left (f : C ⟶ D) [QuasiIso' f] (g : D ⟶ E) [QuasiIso' (f ≫ g)] :
+theorem quasiIso'_of_comp_left (f : C ⟶ D) [QuasiIso' f] (g : D ⟶ E) [QuasiIso' (f ≫ g)] :
     QuasiIso' g :=
   { IsIso := fun i => IsIso.of_isIso_fac_left ((homology'Functor V c i).map_comp f g).symm }
-#align quasi_iso_of_comp_left quasiIso_of_comp_left
+#align quasi_iso_of_comp_left quasiIso'_of_comp_left
 
-theorem quasiIso_of_comp_right (f : C ⟶ D) (g : D ⟶ E) [QuasiIso' g] [QuasiIso' (f ≫ g)] :
+theorem quasiIso'_of_comp_right (f : C ⟶ D) (g : D ⟶ E) [QuasiIso' g] [QuasiIso' (f ≫ g)] :
     QuasiIso' f :=
   { IsIso := fun i => IsIso.of_isIso_fac_right ((homology'Functor V c i).map_comp f g).symm }
-#align quasi_iso_of_comp_right quasiIso_of_comp_right
+#align quasi_iso_of_comp_right quasiIso'_of_comp_right
 
 namespace HomotopyEquiv
 
@@ -79,13 +82,13 @@ theorem toQuasiIso' {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : Qua
     exacts [e.homotopyHomInvId, e.homotopyInvHomId]⟩
 #align homotopy_equiv.to_quasi_iso HomotopyEquiv.toQuasiIso'
 
-theorem toQuasiIso_inv {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) (i : ι) :
+theorem toQuasiIso'_inv {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) (i : ι) :
     (@asIso _ _ _ _ _ (e.toQuasiIso'.1 i)).inv = (homology'Functor W c i).map e.inv := by
   symm
   haveI := e.toQuasiIso'.1 i -- Porting note: Added this to get `asIso_hom` to work.
   simp only [← Iso.hom_comp_eq_id, asIso_hom, ← Functor.map_comp, ← (homology'Functor W c i).map_id,
     homology_map_eq_of_homotopy e.homotopyHomInvId _]
-#align homotopy_equiv.to_quasi_iso_inv HomotopyEquiv.toQuasiIso_inv
+#align homotopy_equiv.to_quasi_iso_inv HomotopyEquiv.toQuasiIso'_inv
 
 end
 
@@ -215,3 +218,60 @@ theorem CategoryTheory.Functor.quasiIso_of_map_quasiIso {C D : HomologicalComple
       infer_instance
     isIso_of_reflects_iso _ F⟩
 #align category_theory.functor.quasi_iso_of_map_quasi_iso CategoryTheory.Functor.quasiIso_of_map_quasiIso
+
+end
+
+section
+
+variable {ι : Type _}
+
+variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
+
+variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
+
+class QuasiIsoInDegree (f : C ⟶ D) (i : ι) [C.HasHomology i] [D.HasHomology i] : Prop where
+  quasiIso : ShortComplex.QuasiIso ((HomologicalComplex.shortComplexFunctor V c i).map f)
+
+lemma quasiIsoInDegree_iff (f : C ⟶ D) (i : ι) [C.HasHomology i] [D.HasHomology i] :
+    QuasiIsoInDegree f i ↔
+      ShortComplex.QuasiIso ((HomologicalComplex.shortComplexFunctor V c i).map f) := by
+  constructor
+  · intro h
+    exact h.quasiIso
+  · intro h
+    exact ⟨h⟩
+
+lemma quasiIsoInDegree_iff' (f : C ⟶ D) (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [C.HasHomology j] [D.HasHomology j] [(C.sc' i j k).HasHomology] [(D.sc' i j k).HasHomology] :
+    QuasiIsoInDegree f j ↔
+      ShortComplex.QuasiIso ((HomologicalComplex.shortComplexFunctor' V c i j k).map f) := by
+  rw [quasiIsoInDegree_iff]
+  exact ShortComplex.quasiIso_iff_of_arrow_mk_iso _ _
+    (Arrow.isoOfNatIso (HomologicalComplex.natIsoSc' V c i j k hi hk) (Arrow.mk f))
+
+lemma quasiIsoInDegree_iff_exactAt (f : C ⟶ D) (i : ι) [C.HasHomology i] [D.HasHomology i]
+    (hC : C.ExactAt i) :
+    QuasiIsoInDegree f i ↔ D.ExactAt i := by
+  simp only [quasiIsoInDegree_iff, ShortComplex.quasiIso_iff, HomologicalComplex.exactAt_iff,
+    ShortComplex.exact_iff_isZero_homology] at hC ⊢
+  constructor
+  · intro h
+    exact IsZero.of_iso hC (@asIso _ _ _ _ _ h).symm
+  · intro hD
+    exact ⟨⟨0, IsZero.eq_of_src hC _ _, IsZero.eq_of_tgt hD _ _⟩⟩
+
+lemma quasiIsoInDegree_iff_exactAt' (f : C ⟶ D) (i : ι) [C.HasHomology i] [D.HasHomology i]
+    (hD : D.ExactAt i) :
+    QuasiIsoInDegree f i ↔ C.ExactAt i := by
+  simp only [quasiIsoInDegree_iff, ShortComplex.quasiIso_iff, HomologicalComplex.exactAt_iff,
+    ShortComplex.exact_iff_isZero_homology] at hD ⊢
+  constructor
+  · intro h
+    exact IsZero.of_iso hD (@asIso _ _ _ _ _ h)
+  · intro hC
+    exact ⟨⟨0, IsZero.eq_of_src hC _ _, IsZero.eq_of_tgt hD _ _⟩⟩
+
+class QuasiIso (f : C ⟶ D) [∀ i, C.HasHomology i] [∀ i, D.HasHomology i] : Prop where
+  quasiIso : ∀ i, QuasiIsoInDegree f i
+
+end
