@@ -47,6 +47,9 @@ instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
+instance [∀ i, AddCommMonoid (β i)] : FunLike (DirectSum ι β) _ fun i : ι => β i :=
+  inferInstanceAs (FunLike (Π₀ i, β i) _ _)
+
 instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
   inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
 
@@ -356,7 +359,7 @@ indexed by `ι`.
 When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`. -/
 protected def coeAddMonoidHom {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
-  toAddMonoid fun i => AddSubmonoidClass.Subtype (A i)
+  toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 #align direct_sum.coe_add_monoid_hom DirectSum.coeAddMonoidHom
 
 @[simp]
