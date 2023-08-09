@@ -10,8 +10,8 @@ import Mathlib.Algebra.Group.MinimalAxioms
 /-!
 # Minimal Axioms for a Ring
 
-This file defines constructors to define a `Ring` or `CommRing` structure on a Type, while proving only three
-equalities.
+This file defines constructors to define a `Ring` or `CommRing` structure on a Type, while proving
+a minimum number of equalities.
 
 ## Main Definitions
 
@@ -34,7 +34,7 @@ def Ring.ofMinimalAxioms {R : Type u}
     (one_mul : ∀ a : R, 1 * a = a)
     (mul_one : ∀ a : R, a * 1 = a)
     (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c)
-    (right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c) : Ring R := by
+    (right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c) : Ring R :=
   letI := AddGroup.ofLeftAxioms add_assoc zero_add add_left_neg
   haveI add_comm : ∀ a b, a + b = b + a := by
     intro a b
@@ -56,7 +56,6 @@ def Ring.ofMinimalAxioms {R : Type u}
       calc a * 0 = a * (0 + 0) := by rw [zero_add]
       _ = a * 0 + a * 0 := by rw [left_distrib]
     rwa [self_eq_add_right] at this
-  exact
   { add_comm := add_comm
     left_distrib := left_distrib
     right_distrib := right_distrib
@@ -79,12 +78,11 @@ def CommRing.ofMinimalAxioms {R : Type u}
     (mul_assoc : ∀ a b c : R, a * b * c = a * (b * c))
     (mul_comm : ∀ a b : R, a * b = b * a)
     (one_mul : ∀ a : R, 1 * a = a)
-    (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c) : CommRing R := by
+    (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c) : CommRing R :=
   haveI mul_one : ∀ a : R, a * 1 = a := fun a => by
     rw [mul_comm, one_mul]
   haveI right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c := fun a b c => by
     rw [mul_comm, left_distrib, mul_comm, mul_comm b c]
   letI := Ring.ofMinimalAxioms add_assoc zero_add add_left_neg mul_assoc
     one_mul mul_one left_distrib right_distrib
-  exact
   { mul_comm := mul_comm }

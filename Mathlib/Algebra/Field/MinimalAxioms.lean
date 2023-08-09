@@ -10,8 +10,8 @@ import Mathlib.Algebra.Ring.MinimalAxioms
 /-!
 # Minimal Axioms for a Field
 
-This file defines constructors to define a `Field` structure on a Type, while proving only three
-equalities.
+This file defines constructors to define a `Field` structure on a Type, while proving
+a minimum number of equalities.
 
 ## Main Definitions
 
@@ -34,10 +34,9 @@ def Field.ofMinimalAxioms (K : Type u)
     (mul_inv_cancel : ∀ a : K, a ≠ 0 → a * a⁻¹ = 1)
     (inv_zero : (0 : K)⁻¹ = 0)
     (left_distrib : ∀ a b c : K, a * (b + c) = a * b + a * c)
-    (exists_pair_ne : ∃ x y : K, x ≠ y) : Field K := by
+    (exists_pair_ne : ∃ x y : K, x ≠ y) : Field K :=
   letI := CommRing.ofMinimalAxioms add_assoc zero_add
     add_left_neg mul_assoc mul_comm one_mul left_distrib
-  exact
   { exists_pair_ne := exists_pair_ne
     mul_inv_cancel := mul_inv_cancel
     inv_zero := inv_zero }
