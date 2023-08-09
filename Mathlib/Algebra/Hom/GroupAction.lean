@@ -98,23 +98,23 @@ instance : SMulHomClass (X →[M'] Y) M' X Y where
 
 namespace SMulHomClass
 
-variable {M M' X Y}
+variable {M X Y} [SMul M X] [SMul M Y] [SMulHomClass F M X Y]
 
-theorem comp_smul (f : X →[M'] Y) (m : M') : f ∘ (m • ·) = (m • ·) ∘ f := funext <| map_smul _ _
+theorem comp_smul (f : F) (m : M) : f ∘ (m • ·) = (m • ·) ∘ f :=
+  funext <| map_smul f m
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) : X →[M] Y where
+def toMulActionHom (f : F) : X →[M] Y where
   toFun := FunLike.coe f
   map_smul' := map_smul f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [SMul M X] [SMul M Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
-  ⟨SMulHomClass.toMulActionHom⟩
+instance : CoeTC F (X →[M] Y) := ⟨SMulHomClass.toMulActionHom⟩
 
 end SMulHomClass
 
