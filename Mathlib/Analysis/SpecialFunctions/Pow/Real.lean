@@ -403,6 +403,17 @@ theorem log_rpow {x : ℝ} (hx : 0 < x) (y : ℝ) : log (x ^ y) = y * log x := b
   rw [exp_log (rpow_pos_of_pos hx y), ← exp_log hx, mul_comm, rpow_def_of_pos (exp_pos (log x)) y]
 #align real.log_rpow Real.log_rpow
 
+theorem rpow_eq_of_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) (h : y * log x = log z) :
+    x ^ y = z := by
+  rw [← log_rpow hx] at h
+  apply_fun Real.exp at h
+  rwa [exp_log, exp_log hz] at h
+  exact rpow_pos_of_pos hx y
+
+theorem rpow_eq_iff_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
+    y * log x = log z ↔ x ^ y = z :=
+  ⟨rpow_eq_of_mul_log hx hz, by rintro rfl ; rw [log_rpow hx]⟩
+
 /-!
 ## Order and monotonicity
 -/
