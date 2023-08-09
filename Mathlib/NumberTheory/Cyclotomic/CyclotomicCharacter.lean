@@ -10,7 +10,7 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 
 # The cyclotomic character
 
-Let `L` is a field and let `n : ℕ+` be a positive integer. If `μₙ` is the
+Let `L` be an integral domain and let `n : ℕ+` be a positive integer. If `μₙ` is the
 group of `n`th roots of unity in `L` then any field automorphism `g` of `L`
 induces an automorphism of `μₙ` which, being a cyclic group, must be of
 the form `ζ ↦ ζ^j` for some integer `j = j(g)`, well-defined in `ZMod d`, with
@@ -25,7 +25,8 @@ a group homomorphism `(L ≃+* L) →* ℤₚ`; this is the `p`-adic cyclotomic 
 
 ## Important definitions
 
-Let `L` be a field, `g : L ≃+* L` and `n : ℕ+`. Let `d` be the number of `n`th roots of `1` in `L`.
+Let `L` be an integral domain, `g : L ≃+* L` and `n : ℕ+`. Let `d` be the number of `n`th roots
+of `1` in `L`.
 
 * `ModularCyclotomicCharacter n : L ≃+* L →* ZMod d` sends `g` to the unique `j` such
    that `g(ζ)=ζ^j` for all `ζ : rootsOfUnity n L`.
@@ -45,7 +46,7 @@ cyclotomic character
 -/
 
 universe u
-variable {L : Type u} [Field L]
+variable {L : Type u} [CommRing L] [IsDomain L]
 
 /-
 
@@ -116,7 +117,7 @@ lemma id : χ n (RingEquiv.refl L) = 1 := by
   · have := Fact.mk h
     simp [ZMod.val_one]
   · have := Fintype.card_le_one_iff_subsingleton.mp h.ge
-    obtain rfl : ζ = 1 := by apply Subsingleton.elim
+    obtain rfl : ζ = 1 := Subsingleton.elim ζ 1
     simp
 
 lemma comp (g h : L ≃+* L) : χ n (g * h) =
@@ -133,6 +134,8 @@ lemma comp (g h : L ≃+* L) : χ n (g * h) =
 
 end ModularCyclotomicCharacter
 
+-- see also `IsPrimitiveRoot.autToPow`, which is the same construction under the more
+-- restrictive condition that there exists a primitive n'th root of unity.
 /-- Given a positive integer `n`, `ModularCyclotomicCharacter n` is a
 multiplicative homomorphism from the automorphisms of a field `L` to `ℤ/dℤ`,
 where `d` is the number of `n`'th roots of unity in `L`. It is uniquely
@@ -140,7 +143,7 @@ characterised by the property that `g(ζ)=ζ^(ModularCyclotomicCharacter n g)`
 for `g` an automorphism of `L` and `ζ` an `n`th root of unity. -/
 noncomputable
 def ModularCyclotomicCharacter (n : ℕ+) :
-    (L ≃+* L) →* ZMod (Fintype.card { x // x ∈ rootsOfUnity n L }) where
-      toFun := ModularCyclotomicCharacter.toFun n
-      map_one' := ModularCyclotomicCharacter.id n
-      map_mul' := ModularCyclotomicCharacter.comp n
+    (L ≃+* L) →* (ZMod (Fintype.card { x // x ∈ rootsOfUnity n L }))ˣ := MonoidHom.toHomUnits
+  { toFun := ModularCyclotomicCharacter.toFun n
+    map_one' := ModularCyclotomicCharacter.id n
+    map_mul' := ModularCyclotomicCharacter.comp n }
