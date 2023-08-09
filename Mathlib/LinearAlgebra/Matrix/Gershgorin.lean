@@ -24,7 +24,9 @@ variable {K n : Type _} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix 
 
 theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin' A) μ) :
       ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j in Finset.univ.erase k, ‖A k j‖) := by
-  by_cases hn : Nonempty n
+  cases isEmpty_or_nonempty n
+  · exfalso
+    exact hμ (Submodule.eq_bot_of_subsingleton _)
   · obtain ⟨v, h_eg, h_nz⟩ := hμ.exists_hasEigenvector
     obtain ⟨i, -, h_i⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty (fun i => ‖v i‖)
     have h_nz : v i ≠ 0 := by
@@ -51,9 +53,6 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
                 exact (norm_sum_le _ _).trans (le_of_eq (by simp_rw [mul_assoc, norm_mul]))
       _ ≤ ∑ j in Finset.univ.erase i, ‖A i j‖ :=
                 (Finset.sum_le_sum fun j _ => mul_le_of_le_one_right (norm_nonneg _) (h_le j))
-  · rw [not_nonempty_iff] at hn
-    exfalso
-    exact hμ (Submodule.eq_bot_of_subsingleton _)
 
 theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j in Finset.univ.erase k, ‖A k j‖ < ‖A k k‖) :
     A.det ≠ 0 := by
