@@ -8,16 +8,14 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.MinimalAxioms
 
 /-!
-# Minimal Axioms for a Ring
+# Minimal Axioms for a Field
 
-This file defines constructors to define a `Ring` or `CommRing` structure on a Type, while proving only three
+This file defines constructors to define a `Field` structure on a Type, while proving only three
 equalities.
 
 ## Main Definitions
 
-* `Ring.ofMinimalAxioms`: Define a `Ring` structure on a Type by proving a minimized set of axioms
-* `CommRing.ofMinimalAxioms`: Define a `CommRing` structure on a Type by proving a minimized set of
-  axioms
+* `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimized set of axioms
 
 -/
 
