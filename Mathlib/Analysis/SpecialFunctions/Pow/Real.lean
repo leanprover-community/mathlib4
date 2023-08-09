@@ -404,11 +404,8 @@ theorem log_rpow {x : ℝ} (hx : 0 < x) (y : ℝ) : log (x ^ y) = y * log x := b
 #align real.log_rpow Real.log_rpow
 
 theorem rpow_eq_of_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) (h : y * log x = log z) :
-    x ^ y = z := by
-  rw [← log_rpow hx] at h
-  apply_fun Real.exp at h
-  rwa [exp_log, exp_log hz] at h
-  exact rpow_pos_of_pos hx y
+    x ^ y = z :=
+  log_injOn_pos (rpow_pos_of_pos hx _) hz <| log_rpow hx _ |>.trans h
 
 theorem rpow_eq_iff_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
     y * log x = log z ↔ x ^ y = z :=
