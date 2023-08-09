@@ -26,6 +26,14 @@ open Matrix BigOperators
 
 namespace Matrix
 
+lemma rank_eq_card_pos_eigs_conj_transpose_mul_self (A: Matrix (Fin M) (Fin N) 𝕂) :
+    A.rank = Fintype.card {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} := by
+  rw[← rank_conjTranspose_mul_self, IsHermitian.rank_eq_card_non_zero_eigs]
+
+lemma rank_eq_card_pos_eigs_self_mul_conj_transpose (A: Matrix (Fin M) (Fin N) 𝕂) :
+    A.rank = Fintype.card {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} := by
+  rw[← rank_self_mul_conjTranspose, IsHermitian.rank_eq_card_non_zero_eigs]
+
 noncomputable def er (A: Matrix (Fin M) (Fin N) 𝕂) :
   {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (A.rank) := by
     apply Fintype.equivFinOfCardEq

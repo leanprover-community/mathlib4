@@ -6,6 +6,7 @@ Authors: Mohanad Ahmed
 
 
 import Mathlib.Data.Matrix.Rank
+import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.LinearAlgebra.Matrix.SVD.KernelConjTransposeMul
 import Mathlib.LinearAlgebra.Matrix.SVD.svdReindex
 
@@ -108,8 +109,14 @@ noncomputable def svdV (A: Matrix (Fin M) (Fin N) 𝕂):
 
 lemma U_columns' (A: Matrix (Fin M) (Fin N) 𝕂) :
   ((reindex (Equiv.refl (Fin M)) (emz A))
-    (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix) = fromColumns A.svdU₁' A.svdU₂ :=
-  fromColumns_toColumns _
+    (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix) = fromColumns A.svdU₁' A.svdU₂ := by
+  rw [svdU₂, svdU₁']
+  simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, fromColumns_toColumns]
+
+lemma eigenvector_matrix_inv_mul_self [Fintype n] [DecidableEq n]
+    {Z: Matrix n n 𝕂} (hZ : IsHermitian Z) :
+    hZ.eigenvectorMatrixInv ⬝ hZ.eigenvectorMatrix = 1 :=
+    Matrix.mul_eq_one_comm.1 hZ.eigenvectorMatrix_mul_inv
 
 lemma V_conjTranspose_mul_V (A: Matrix (Fin M) (Fin N) 𝕂):
   (A.svdV₁ᴴ ⬝ A.svdV₁ = 1 ∧ A.svdV₂ᴴ ⬝ A.svdV₂ = 1) ∧
@@ -117,7 +124,7 @@ lemma V_conjTranspose_mul_V (A: Matrix (Fin M) (Fin N) 𝕂):
   simp_rw [svdV₁, toColumns₁, svdV₂, toColumns₂, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
     submatrix_apply, id_eq, Matrix.mul, dotProduct, conjTranspose_apply, of_apply,
     ← conjTranspose_apply, IsHermitian.conjTranspose_eigenvectorMatrix, ← mul_apply,
-    eigenvector_matrix_inv_mul_self]
+    Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _)]
   constructor
   swap
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, EmbeddingLike.apply_eq_iff_eq,
@@ -260,9 +267,9 @@ lemma reduced_spectral_theorem (A: Matrix (Fin M) (Fin N) 𝕂):
   Aᴴ⬝A = A.svdV₁ ⬝ (A.svdμ.map (algebraMap ℝ 𝕂))⬝ A.svdV₁ᴴ := by
   let hAHA := isHermitian_transpose_mul_self A
 
-  rw [← submatrix_id_id (Aᴴ⬝A), modified_spectral_theorem hAHA,
+  rw [← submatrix_id_id (Aᴴ⬝A), IsHermitian.spectral_theorem' hAHA,
     ← IsHermitian.conjTranspose_eigenvectorMatrix]
-  rw [← submatrix_mul_equiv
+  rw [Matrix.mul_assoc, ← submatrix_mul_equiv
     hAHA.eigenvectorMatrix
     (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues) ⬝ (hAHA.eigenvectorMatrixᴴ)) _ (enz A).symm _]
   rw [← submatrix_mul_equiv
@@ -282,9 +289,9 @@ lemma reduced_spectral_theorem (A: Matrix (Fin M) (Fin N) 𝕂):
 lemma reduced_spectral_theorem' (A: Matrix (Fin M) (Fin N) 𝕂):
   A⬝Aᴴ = A.svdU₁' ⬝ (A.svdμ'.map (algebraMap ℝ 𝕂))⬝ A.svdU₁'ᴴ := by
   let hAAH := isHermitian_mul_conjTranspose_self A
-  rw [← submatrix_id_id (A⬝Aᴴ), modified_spectral_theorem hAAH,
+  rw [← submatrix_id_id (A⬝Aᴴ), IsHermitian.spectral_theorem' hAAH,
     ← IsHermitian.conjTranspose_eigenvectorMatrix]
-  rw [← submatrix_mul_equiv
+  rw [Matrix.mul_assoc, ← submatrix_mul_equiv
     hAAH.eigenvectorMatrix
     (diagonal (IsROrC.ofReal ∘ hAAH.eigenvalues) ⬝ (hAAH.eigenvectorMatrixᴴ)) _ (emz A).symm _]
   rw [← submatrix_mul_equiv
