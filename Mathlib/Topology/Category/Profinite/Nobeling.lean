@@ -301,13 +301,11 @@ lemma projRestricts_eq_self (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) (
   simp only [Set.val_codRestrict_apply, Function.comp_apply, ite_eq_left_iff]
   exact fun hJ ↦ (by exfalso; exact hJ h)
 
-@[simp]
 lemma projRestricts_ne_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
     (ProjRestricts C hJK x).val i ≠ default ↔ J i ∧ x.val i ≠ default := by
   dsimp [ProjRestricts, Homeomorph.setCongr, ProjRestrict, Proj]
   simp only [ite_eq_right_iff, not_forall, exists_prop]
 
-@[simp]
 lemma projRestricts_eq_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
     (ProjRestricts C hJK x).val i = default ↔ ¬ J i ∨ x.val i = default := by
   rw [← not_iff_not]
@@ -1705,7 +1703,7 @@ lemma Products.limitOrdinal {o : Ordinal} (ho : o.IsLimit) (l : Products I) :
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (C.proj (ord I · < o')) := by
   refine ⟨fun h ↦ ?_, fun h ↦ by obtain ⟨o',⟨ho',hl⟩⟩ := h; exact isGood_mono C (le_of_lt ho') hl⟩
   refine Or.elim C.eq_empty_or_nonempty (fun hC ↦
-    (by rw [hC] at h; simp only [Set.proj, Set.image_empty] at h ; exact isEmptyElim (⟨l, h⟩ :
+    (by rw [hC] at h; simp only [Set.proj, Set.image_empty] at h; exact isEmptyElim (⟨l, h⟩ :
     {m : Products I // m.isGood (∅ : Set (I → Bool))}))) (fun hC ↦ ?_)
   dsimp [Ordinal.IsLimit] at ho
   obtain ⟨l, hl⟩ := l
