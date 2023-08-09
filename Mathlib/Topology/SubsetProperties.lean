@@ -1453,7 +1453,7 @@ structure CompactExhaustion (X : Type _) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
-instance : OrderHomClass (CompactExhaustion α) ℕ (Set α) where
+instance : @RelHomClass (CompactExhaustion α) ℕ (Set α) LE.le HasSubset.subset where
   coe := toFun
   coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
   map_rel f _ _ h := monotone_nat_of_le_succ
