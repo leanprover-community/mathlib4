@@ -152,7 +152,7 @@ instance (priority := 75) toLinearOrderedCommRing {R} [LinearOrderedCommRing R] 
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : S) : s →+* R :=
-  { SubmonoidClass.Subtype s, AddSubgroupClass.subtype s with
+  { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
 #align subring_class.subtype SubringClass.subtype
 
