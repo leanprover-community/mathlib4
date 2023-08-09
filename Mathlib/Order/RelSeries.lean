@@ -626,7 +626,7 @@ theorem combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head
     rw [add_assoc, Nat.add_sub_cancel_left]
 
 variable (r)
-lemma exists_len_gt_of_infinite_dim [NoTopOrder (RelSeries r)] [Nonempty α] (n : ℕ) :
+lemma exists_len_gt_of_noTopOrder [NoTopOrder (RelSeries r)] [Nonempty α] (n : ℕ) :
   ∃ (p : RelSeries r), n < p.length := by
 haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance
 induction n with
@@ -690,6 +690,10 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   (hf2 : Function.Surjective f) :
   LTSeries α := mk p.length (fun i ↦ (hf2 (p i)).choose)
     (fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.strictMono h))
+
+lemma exists_len_gt_of_noTopOrder [NoTopOrder (LTSeries α)] [Nonempty α] (n : ℕ) :
+  ∃ (p : LTSeries α), n < p.length :=
+RelSeries.exists_len_gt_of_noTopOrder (fun x x_1 ↦ x < x_1) n
 
 section PartialOrder
 

@@ -84,7 +84,7 @@ le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
   exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) $ hm default
 | some ⊤, _ => le_refl _
 | some (some m), hm => by
-  obtain ⟨p, hp⟩ := RelSeries.exists_len_gt_of_infinite_dim r m
+  obtain ⟨p, hp⟩ := RelSeries.exists_len_gt_of_noTopOrder r m
   specialize hm p
   refine (not_lt_of_le hm ?_).elim
   erw [WithBot.some_eq_coe, WithBot.coe_lt_coe, WithTop.some_eq_coe, WithTop.coe_lt_coe]
@@ -110,14 +110,14 @@ variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
 
+/--
+A function `f : α → β` is said to be strictly comonotonic (dual to strictly monotonic)
+if and only if `a < b` is implied by `f a < f b` for all `a, b : β`.
+-/
+def strictComono (f : α → β) : Prop := ∀ ⦃a b⦄, f a < f b → a < b
+
 lemma krull_dim_eq_bot_of_is_empty [IsEmpty α] : krullDim α = ⊥ :=
   WithBot.ciSup_empty _
-
-lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-  iSup_le $ λ p ↦ le_sSup ⟨p.map f hf, rfl⟩
-
-lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-  krullDimOfRel.le_of_map f hf
 
 lemma eq_top_of_noTopOrder [Nonempty α] [NoTopOrder (LTSeries α)] :
   krullDim α = ⊤ := krullDimOfRel.eq_top_of_noTopOrder _
@@ -128,5 +128,34 @@ lemma eq_len_of_orderTop [OrderTop (LTSeries α)] :
 lemma eq_len_of_orderTop' [OrderTop (LTSeries α)]
   (q : LTSeries α) (h : IsTop q) : krullDim α = q.length :=
 krullDimOfRel.eq_len_of_orderTop' _ h
+
+lemma NoTopOrder_of_strictMono (f : α → β) (hf : StrictMono f) [NoTopOrder (LTSeries α)]
+  [Nonempty α]: (NoTopOrder (LTSeries β)) where
+    exists_not_le := by
+      intro smb
+      rcases (RelSeries.exists_len_gt_of_noTopOrder ((. < .) : Rel α α) smb.length) with ⟨p, hp⟩
+      exact ⟨LTSeries.map p f hf, not_le_of_lt hp⟩
+
+lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
+  iSup_le $ λ p ↦ le_sSup ⟨p.map f hf, rfl⟩
+
+lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
+  krullDimOfRel.le_of_map f hf
+
+lemma krullDim_le_of_strictComono_and_surj
+  (f : α → β) (hf : strictComono f) (hf' : Function.Surjective f) :
+    krullDim β ≤ krullDim α :=
+iSup_le $ λ p ↦ le_sSup ⟨p.comap _ hf hf', rfl⟩
+
+lemma krullDim_eq_of_OrderIso (f : α ≃o β) : krullDim α = krullDim β :=
+  le_antisymm (krullDim_le_of_strictMono f f.strictMono) $ krullDim_le_of_strictComono_and_surj
+    f (λ _ _ h ↦ Iff.mp (map_lt_map_iff f) h) f.surjective
+
+lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), height α a := by
+{ refine' le_antisymm (iSup_le $ λ i ↦ le_iSup_of_le (i ⟨i.length, lt_add_one _⟩)
+    $ le_sSup ⟨⟨?_, λ m ↦ ⟨i m, i.strictMono.monotone $ by
+      rw [show m = ⟨m.1, m.2⟩ by cases m; rfl, Fin.mk_le_mk]; linarith [m.2]⟩,
+        λ j ↦ i.step j⟩, rfl⟩) $ iSup_le $ λ a ↦ krullDim_le_of_strictMono Subtype.val $
+          λ _ _ h ↦ h }
 
 end krullDim
