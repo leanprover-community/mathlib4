@@ -308,7 +308,23 @@ lemma reduced_spectral_theorem' (A: Matrix (Fin M) (Fin N) 𝕂):
   rw [Matrix.mul_assoc]
   rw [map_zero]
 
-lemma svdσ_inv (A: Matrix (Fin M) (Fin N) 𝕂): A.svdσ⁻¹ =
+-- lemma sing_vals_ne_zero_pos {m n: Type}
+--   [Fintype m][Fintype n][DecidableEq n]
+--   (A: Matrix m n 𝕂)
+--   (z: {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0 }):
+--     0 < Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues z) := by
+--   rw [Real.sqrt_pos]
+--   apply lt_of_le_of_ne
+--   apply Matrix.PosSemidef.eigenvalues_nonneg (posSemidef_conjTranspose_mul_self _)
+--   exact z.prop.symm
+
+lemma eig_vals_ne_zero_pos {m n: Type} [Fintype m] [Fintype n] [DecidableEq n]
+    (A: Matrix m n 𝕂) (z: {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0 }):
+    0 < ((isHermitian_transpose_mul_self A).eigenvalues z) := lt_of_le_of_ne
+  (Matrix.PosSemidef.eigenvalues_nonneg (posSemidef_conjTranspose_mul_self _) _) -- 0 ≤
+  (z.prop.symm) -- 0 ≠
+
+lemma svdσ_inv (A: Matrix (Fin M) (Fin N) 𝕂) : A.svdσ⁻¹ =
   (reindex (er A) (er A))
   (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
       1 / Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues i))) := by
@@ -320,7 +336,7 @@ lemma svdσ_inv (A: Matrix (Fin M) (Fin N) 𝕂): A.svdσ⁻¹ =
   intros i
   rw [mul_one_div_cancel]
   apply ne_of_gt
-  apply sing_vals_ne_zero_pos
+  apply (Real.sqrt_pos.2 (eig_vals_ne_zero_pos _ _))
 
 lemma σ_inv_μ_σ_inv_eq_one (A: Matrix (Fin M) (Fin N) 𝕂):
   (A.svdσ⁻¹)ᴴ⬝A.svdμ⬝A.svdσ⁻¹ = 1 := by
@@ -345,7 +361,7 @@ lemma IsUnit_det_svdσ (A: Matrix (Fin M) (Fin N) 𝕂): IsUnit (A.svdσ.det) :=
   apply Finset.prod_ne_zero_iff.2
   intros i _
   apply (ne_of_gt)
-  apply sing_vals_ne_zero_pos
+  apply (Real.sqrt_pos.2 (eig_vals_ne_zero_pos _ _))
 
 lemma IsUnit_det_svdσ_mapK (A: Matrix (Fin M) (Fin N) 𝕂):
   IsUnit (det (map A.svdσ (algebraMap ℝ 𝕂))) := by
@@ -357,7 +373,7 @@ lemma IsUnit_det_svdσ_mapK (A: Matrix (Fin M) (Fin N) 𝕂):
   intro i
   simp only [Finset.mem_univ, ne_eq, map_eq_zero, forall_true_left]
   apply ne_of_gt
-  apply sing_vals_ne_zero_pos
+  apply (Real.sqrt_pos.2 (eig_vals_ne_zero_pos _ _))
 
 lemma svdσ_inv_mapK (A: Matrix (Fin M) (Fin N) 𝕂):
   (map (A.svdσ) (algebraMap ℝ 𝕂))⁻¹ = (map (A.svdσ)⁻¹ (algebraMap ℝ 𝕂)) := by
