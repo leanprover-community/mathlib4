@@ -647,27 +647,12 @@ end GoodProducts
 
 namespace Products
 
-def Apply (l : Products I) (x : C) : List ℤ :=
-List.map ((LocallyConstant.eval x) ∘ (e C)) l.val
-
-lemma eval_apply (l : Products I) (x : C) :
-    l.eval C x = List.prod (Apply C l x) := by
-  dsimp [eval, Apply, LocallyConstant.eval]
-  obtain ⟨l,hl⟩ := l
-  induction l with
-  | nil => rfl
-  | cons a as ih =>
-    · simp only [List.map, List.prod_cons, LocallyConstant.coe_mul, Pi.mul_apply,
-        Function.comp_apply, mul_eq_mul_left_iff]
-      specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
-      left
-      exact ih
-
 lemma eval_eq (l : Products I) (x : C) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
-  rw [eval_apply]
+  change LocallyConstant.evalMul x (l.eval C) = _
+  rw [eval, map_list_prod]
   split_ifs with h
-  · dsimp [Apply]
+  · simp only [List.map_map]
     suffices : ∀ y, y ∈ List.map (LocallyConstant.eval x ∘ e C) l.val → y = 1
     · exact List.prod_eq_one this
     intro y hy
@@ -678,16 +663,11 @@ lemma eval_eq (l : Products I) (x : C) :
     rw [← hi.2]
     simp only [ite_eq_left_iff]
     exact fun hx ↦ hx h
-  · simp only [List.prod_eq_zero_iff]
-    dsimp [Apply]
-    simp only [List.mem_map, Function.comp_apply]
+  · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push_neg at h
-    obtain ⟨i,hi⟩ := h
-    use i
-    refine ⟨hi.1, ?_⟩
-    dsimp [LocallyConstant.eval, e, Int.ofBool]
+    convert h with i
+    dsimp [LocallyConstant.evalMul, e, Int.ofBool]
     simp only [ite_eq_right_iff]
-    exact hi.2
 
 lemma evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]
@@ -717,28 +697,6 @@ lemma evalFacProps {l : Products I} (J K : I → Prop)
     · exfalso
       exact h' (h i hi)
   · rfl
-  -- rw [eval, eval, LocallyConstant.comapList _ (continuous_projRestricts _ _)]
-  -- ext x
-  -- have : ∀ (g : LocallyConstant _ ℤ), g x = LocallyConstant.evalMul x g := fun g ↦ rfl
-  -- rw [this, this, map_list_prod, map_list_prod]
-  -- simp only [List.map_map, FunLike.coe_fn_eq]
-  -- congr
-  -- ext i
-  -- dsimp [LocallyConstant.evalMul]
-  -- rw [LocallyConstant.coe_comap_apply _ _ (continuous_projRestricts _ _)]
-  -- dsimp [e, Int.ofBool]
-  -- split_ifs with h₁ h₂ h₂
-  -- · rfl
-  -- · exfalso
-  --   rw [← h₁] at h₂
-  --   rw [← Bool.not_eq_false, ← Bool.default_bool, ← ne_eq, projRestricts_ne_default_iff] at h₁
-  --   exact h₂ (Eq.symm (projRestricts_eq_self C x i hJK h₁.1))
-  -- · exfalso
-  --   rw [Bool.not_eq_true, ← Bool.default_bool, projRestricts_eq_default_iff] at h₁
-  --   obtain ⟨y, hy⟩ := x.prop
-  --   rw [← hy.2, Proj] at h₂
-  --   simp only [Bool.default_bool, Bool.ite_eq_true_distrib, if_false_right_eq_and] at h₂
-
 
 lemma evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
