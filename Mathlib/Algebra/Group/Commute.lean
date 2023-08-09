@@ -43,7 +43,7 @@ section Mul
 variable {S : Type _} [Mul S]
 
 /-- Equality behind `Commute a b`; useful for rewriting. -/
-@[to_additive "Equality behind `add_commute a b`; useful for rewriting."]
+@[to_additive "Equality behind `AddCommute a b`; useful for rewriting."]
 protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
   h
 #align commute.eq Commute.eq
@@ -79,7 +79,7 @@ protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
 instance : IsRefl S Commute :=
   ⟨Commute.refl⟩
 
--- This instance is useful for `Finset.noncomm_prod`
+-- This instance is useful for `Finset.noncommProd`
 @[to_additive]
 instance on_isRefl {f : G → S} : IsRefl G fun a b => Commute (f a) (f b) :=
   ⟨fun _ => Commute.refl _⟩

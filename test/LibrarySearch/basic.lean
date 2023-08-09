@@ -25,11 +25,6 @@ example (x y : Nat) : x + y = y + x := by apply?
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
-example (x y : Nat) : True := by
-  observe h : x + y = y + x
-  guard_hyp h : x + y = y + x
-  trivial
-
 example : Int := by apply?
 
 example : x < x + 1 := exact?%
