@@ -312,7 +312,6 @@ lemma projRestricts_eq_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i →
   simp only [projRestricts_ne_default_iff, ne_eq]
   rw [not_or, not_not]
 
-
 lemma continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
   Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
 
