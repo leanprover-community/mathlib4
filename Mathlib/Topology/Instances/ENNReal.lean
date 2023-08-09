@@ -1120,24 +1120,8 @@ theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summa
 /-- Summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
     f.support.Countable := by
-  let eps := fun (n : ℕ) => (1/(n+1) : ℝ≥0)
-  let s := fun (n : ℕ) => { x : α | eps n ≤ f x }
-  have hf : f.support ⊆ ⋃ (n : ℕ), s n := by
-    intro a ha
-    change f a ≠ 0 at ha
-    have ⟨N, hN⟩ := exists_nat_one_div_lt (by positivity : 0 < (f a : ℝ))
-    exact Set.mem_iUnion_of_mem N hN.le
-  apply Set.Countable.mono hf
-  rw [Set.countable_iUnion_iff]
-  intro n
-  apply Set.Finite.countable
-  rw [← Set.finite_coe_iff]
-  apply Finite.of_summable_const (ι := s n) (b := (eps n : ℝ))
-  · simp; positivity
-  · have hs : Summable ((s n).indicator (fun _ => (eps n : ℝ≥0))) :=
-      NNReal.summable_of_le (fun a ↦ Set.indicator_le (fun b hb ↦ hb) a) h
-    rw [← summable_subtype_iff_indicator] at hs
-    rwa [NNReal.summable_coe]
+  rw [← NNReal.summable_coe] at h
+  simpa [support] using h.countable_support
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
@@ -1324,17 +1308,11 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 #align summable.to_nnreal Summable.toNNReal
 
-/-- Summable non-negative functions have countable support -/
-theorem _root_.Summable.countable_support {f : α → ℝ} (hf : ∀ x, 0 ≤ f x) (h : Summable f) :
-    f.support.Countable := by
-  convert Summable.countable_support_nnreal _ h.toNNReal
-  ext x; simp [lt_iff_le_and_ne]; tauto
-
 /-- Finitely summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support_ennreal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ⊤) :
     f.support.Countable := by
-  convert Summable.countable_support_nnreal _ (ENNReal.summable_toNNReal_of_tsum_ne_top h)
-  ext x; simp [ENNReal.toNNReal_eq_zero_iff, ENNReal.ne_top_of_tsum_ne_top h]
+  lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top h
+  simpa [support] using (ENNReal.tsum_coe_ne_top_iff_summable.1 h).countable_support_nnreal
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
