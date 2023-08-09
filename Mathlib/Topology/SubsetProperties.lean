@@ -1461,6 +1461,9 @@ instance : @RelHomClass (CompactExhaustion α) ℕ (Set α) LE.le HasSubset.subs
 
 variable (K : CompactExhaustion α)
 
+@[simp]
+theorem toFun_eq_coe : K.toFun = K := rfl
+
 protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
   K.isCompact' n
 #align compact_exhaustion.is_compact CompactExhaustion.isCompact
