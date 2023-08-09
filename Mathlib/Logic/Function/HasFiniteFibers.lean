@@ -79,4 +79,9 @@ lemma HasFiniteFibers.prod_map {g : α' → β'} (hf : HasFiniteFibers f) (hg : 
   rw [hasFiniteFibers_iff_tendsto_cofinite, ← coprod_cofinite, ← coprod_cofinite] at *
   exact hf.prod_map_coprod hg
 
+lemma HasFiniteFibers.sum_map {g : α' → β'} (hf : HasFiniteFibers f) (hg : HasFiniteFibers g) :
+    HasFiniteFibers (Sum.map f g) := by
+  rw [hasFiniteFibers_iff_tendsto_cofinite, cofinite_sum, cofinite_sum] at *
+  exact tendsto_sup_sup (tendsto_map' <| tendsto_map.comp hf) (tendsto_map' <| tendsto_map.comp hg)
+
 end Function
