@@ -280,7 +280,7 @@ theorem toMeasure_apply_inter_support (hs : MeasurableSet s) (hp : MeasurableSet
 
 @[simp]
 theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClass α]  (p : Pmf α)
-  (h : p.support.Countable) :
+  (h : p.support.Countable) : -- NB: This conditions should always be true
   Measure.restrict (toMeasure p) (support p) = toMeasure p := by
   ext s hs
   apply (MeasureTheory.Measure.restrict_apply hs).trans

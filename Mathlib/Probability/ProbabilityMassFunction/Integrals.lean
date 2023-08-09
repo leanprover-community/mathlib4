@@ -20,7 +20,6 @@ namespace Pmf
 
 open MeasureTheory BigOperators
 
-
 theorem integral_eq_tsum' [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
   (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) (hs : p.support.Countable):
   ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := calc
