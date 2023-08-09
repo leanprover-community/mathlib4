@@ -1453,9 +1453,11 @@ structure CompactExhaustion (X : Type _) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
-instance : FunLike (CompactExhaustion α) ℕ fun _ => Set α where
+instance : OrderHomClass (CompactExhaustion α) ℕ (Set α) where
   coe := toFun
   coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+  map_rel f _ _ h := monotone_nat_of_le_succ
+    (fun n ↦ (f.subset_interior_succ' n).trans interior_subset) h
 
 variable (K : CompactExhaustion α)
 
@@ -1467,14 +1469,13 @@ theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
 #align compact_exhaustion.subset_interior_succ CompactExhaustion.subset_interior_succ
 
-theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) :=
-  Subset.trans (K.subset_interior_succ n) interior_subset
-#align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
-
 @[mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
-  show K m ≤ K n from monotone_nat_of_le_succ K.subset_succ h
+  OrderHomClass.mono K h
 #align compact_exhaustion.subset CompactExhaustion.subset
+
+theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
+#align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
 theorem subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
   Subset.trans (K.subset_interior_succ m) <| interior_mono <| K.subset h
