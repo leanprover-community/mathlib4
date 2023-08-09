@@ -403,6 +403,9 @@ theorem log_rpow {x : ℝ} (hx : 0 < x) (y : ℝ) : log (x ^ y) = y * log x := b
   rw [exp_log (rpow_pos_of_pos hx y), ← exp_log hx, mul_comm, rpow_def_of_pos (exp_pos (log x)) y]
 #align real.log_rpow Real.log_rpow
 
+/-! Note: lemmas about `(∏ i in s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
+in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
+
 /-!
 ## Order and monotonicity
 -/
