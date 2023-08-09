@@ -55,10 +55,6 @@ set_option linter.uppercaseLean3 false in
 theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
   ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
 
-theorem coeff_zero_eq_iff {a : R} : p.coeff 0 = a ↔ ∃ g : Polynomial R, p = X * g + C a := by
-  conv_rhs => rw [← X_mul_divX_add p]
-  exact ⟨fun h => ⟨p.divX, by congr⟩, fun ⟨g, h⟩ => by simpa using congr_arg (coeff · 0) h⟩
-
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
   ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
