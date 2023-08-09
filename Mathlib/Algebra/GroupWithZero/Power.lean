@@ -15,25 +15,6 @@ In this file we define integer power functions for groups with an adjoined zero 
 This generalises the integer power function on a division ring.
 -/
 
-section MonoidWithZero
-
-variable {M₀ : Type _} [MonoidWithZero M₀] {x y : M₀} {k : ℕ}
-
-/-- If `x` is not a (left) zero divisor then neither is `x^k` for any `k`. -/
-lemma eq_zero_of_forall_mul_eq_zero_of_mul_pow_eq_zero_left
-    (h : ∀ y, y * x = 0 → y = 0) (h' : y * (x^k) = 0) : y = 0 := by
-  induction' k with l ih; simpa using h'
-  rw [pow_succ', ← mul_assoc] at h'
-  exact ih (h _ h')
-
-/-- If `x` is not a (right) zero divisor then neither is `x^k` for any `k`. -/
-lemma eq_zero_of_forall_mul_eq_zero_of_mul_pow_eq_zero_right
-    (h : ∀ y, x * y = 0 → y = 0) (h' : (x^k) * y = 0) : y = 0 := by
-  induction' k with l ih; simpa using h'
-  rw [pow_succ, mul_assoc] at h'
-  exact ih (h _ h')
-
-end MonoidWithZero
 
 section GroupWithZero
 

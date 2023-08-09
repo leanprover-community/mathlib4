@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.GroupTheory.Submonoid.ZeroDivisors
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
 
@@ -195,7 +196,7 @@ protected lemma isNilpotent_mul_left_iff (hy : ∀ z, z * y = 0 → z = 0) :
   refine' ⟨_, h_comm.isNilpotent_mul_left⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
-  exact ⟨k, eq_zero_of_forall_mul_eq_zero_of_mul_pow_eq_zero_left hy hk⟩
+  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
 
 theorem isNilpotent_mul_right (h : IsNilpotent y) : IsNilpotent (x * y) := by
   rw [h_comm.eq]
@@ -207,7 +208,7 @@ protected lemma isNilpotent_mul_right_iff (hx : ∀ z, x * z = 0 → z = 0) :
   refine' ⟨_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
-  exact ⟨k, eq_zero_of_forall_mul_eq_zero_of_mul_pow_eq_zero_right hx hk⟩
+  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
 
 end Semiring
 
@@ -234,14 +235,6 @@ lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
     IsNilpotent (s.sum f) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
-
-@[simp] lemma isNilpotent_mul_left_iff [NoZeroDivisors R] (hy : y ≠ 0) :
-    IsNilpotent (x * y) ↔ IsNilpotent x :=
-  Commute.isNilpotent_mul_left_iff (Commute.all _ _) (by simp [hy])
-
-@[simp] lemma isNilpotent_mul_right_iff [NoZeroDivisors R] (hx : x ≠ 0) :
-    IsNilpotent (x * y) ↔ IsNilpotent y :=
-  Commute.isNilpotent_mul_right_iff (Commute.all _ _) (by simp [hx])
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/
 def nilradical (R : Type _) [CommSemiring R] : Ideal R :=

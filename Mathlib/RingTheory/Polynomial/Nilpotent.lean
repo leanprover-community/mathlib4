@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Polynomial.Basic
 /-!
 # Nilpotency in polynomial rings.
 
-This file is a place for results related nilpotency in (single-variable) polynomial rings.
+This file is a place for results related to nilpotency in (single-variable) polynomial rings.
 
 ## Main results:
  * `Polynomial.isNilpotent_iff`
