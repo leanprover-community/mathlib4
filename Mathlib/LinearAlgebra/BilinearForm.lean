@@ -1426,13 +1426,13 @@ theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
 
 variable [FiniteDimensional K V]
 
-open FiniteDimensional
+open FiniteDimensional Submodule
 
 theorem finrank_add_finrank_orthogonal {B : BilinForm K V} {W : Subspace K V} (b₁ : B.IsRefl) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
-    toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, Submodule.finrank_map_subtype_eq]
+    toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, finrank_map_subtype_eq]
   conv_rhs =>
     rw [← @Subspace.finrank_add_finrank_dualCoannihilator_eq K V _ _ _ _
         (LinearMap.range (B.toLin.domRestrict W)),
@@ -1447,14 +1447,14 @@ theorem restrict_nondegenerate_of_isCompl_orthogonal {B : BilinForm K V} {W : Su
   have : W ⊓ B.orthogonal W = ⊥ := by
     rw [eq_bot_iff]
     intro x hx
-    obtain ⟨hx₁, hx₂⟩ := Submodule.mem_inf.1 hx
+    obtain ⟨hx₁, hx₂⟩ := mem_inf.1 hx
     refine' Subtype.mk_eq_mk.1 (b₂ ⟨x, hx₁⟩ _)
     rintro ⟨n, hn⟩
-    rw [restrict_apply, Submodule.coe_mk, Submodule.coe_mk, b₁]
+    rw [restrict_apply, coe_mk, coe_mk, b₁]
     exact hx₂ n hn
-  refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (Submodule.finrank_le _).antisymm _)
+  refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm _)
   conv_rhs => rw [← add_zero (finrank K _)]
-  rw [← finrank_bot K V, ← this, Submodule.finrank_sup_add_finrank_inf_eq,
+  rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq,
     finrank_add_finrank_orthogonal b₁]
   exact le_self_add
 #align bilin_form.restrict_nondegenerate_of_is_compl_orthogonal BilinForm.restrict_nondegenerate_of_isCompl_orthogonal

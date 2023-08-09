@@ -45,12 +45,18 @@ We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
  * `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
    the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
    `addWellApproximable 𝕊 δ` is almost empty or almost full.
+ * `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
+ * `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
 
 ## TODO:
 
 The hypothesis `hδ` in `AddCircle.addWellApproximable_ae_empty_or_univ` can be dropped.
 An elementary (non-measure-theoretic) argument shows that if `¬ hδ` holds then
 `addWellApproximable 𝕊 δ = univ` (provided `δ` is non-negative).
+
+Use `AddCircle.exists_norm_nsmul_le` to prove:
+`addWellApproximable 𝕊 (fun n ↦ 1 / n^2) = { ξ | ¬ IsOfFinAddOrder ξ }`
+(which is equivalent to `Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`).
 -/
 
 
@@ -329,5 +335,52 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       have := union_ae_eq_univ_of_ae_eq_univ_right (s := A ↑p) h
       exact union_ae_eq_univ_of_ae_eq_univ_left (t := C ↑p) this
 #align add_circle.add_well_approximable_ae_empty_or_univ AddCircle.addWellApproximable_ae_empty_or_univ
+
+/-- A general version of **Dirichlet's approximation theorem**.
+
+See also `AddCircle.exists_norm_nsmul_le`. -/
+lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type _}
+    [NormedAddCommGroup A] [CompactSpace A] [ConnectedSpace A]
+    [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
+    (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ/2))) :
+    ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
+  have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
+  let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)
+  have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_ball
+  suffices : ¬ Pairwise (Disjoint on B)
+  · obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise_disjoint this
+    refine' ⟨j - i, ⟨le_tsub_of_add_le_left hij, _⟩, _⟩
+    · simpa only [tsub_le_iff_right] using j.property.2.trans le_self_add
+    · rw [sub_nsmul _ (Subtype.coe_le_coe.mpr hij.le), ← sub_eq_add_neg, ← dist_eq_norm]
+      refine' (dist_triangle (↑j • ξ) x (↑i • ξ)).trans _
+      linarith [mem_closedBall.mp hx.1, mem_closedBall'.mp hx.2]
+  by_contra h
+  apply hn.ne'
+  have h' : ⋃ j, B j = univ := by
+    rw [← (isClosed_iUnion hB).measure_eq_univ_iff_eq (μ := μ)]
+    refine' le_antisymm (μ.mono (subset_univ _)) _
+    simp_rw [measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
+      μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
+      tsub_zero]
+    exact hδ
+  replace hδ : 0 ≤ δ/2 := by
+    by_contra contra
+    suffices : μ (closedBall 0 (δ/2)) = 0
+    · apply isOpen_univ.measure_ne_zero μ univ_nonempty $ le_zero_iff.mp $ le_trans hδ _
+      simp [this]
+    rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
+    simp [contra]
+  have h'' : ∀ j, (B j).Nonempty := by intro j; rwa [nonempty_closedBall]
+  simpa using subsingleton_of_disjoint_isClosed_iUnion_eq_univ h'' h hB h'
+
+/-- **Dirichlet's approximation theorem**
+
+See also `Real.exists_rat_abs_sub_le_and_den_le`. -/
+lemma exists_norm_nsmul_le (ξ : 𝕊) {n : ℕ} (hn : 0 < n) :
+    ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ T / ↑(n + 1) := by
+  apply NormedAddCommGroup.exists_norm_nsmul_le (μ := volume) ξ hn
+  rw [AddCircle.measure_univ, volume_closedBall, ← ENNReal.ofReal_nsmul,
+    mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le $ by simp), nsmul_eq_mul,
+    mul_div_cancel' _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)]
 
 end AddCircle
