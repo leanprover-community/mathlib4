@@ -39,7 +39,7 @@ theorem integral_eq_tsum' [MeasurableSpace α] [MeasurableSingletonClass α] (p 
     tauto
 
 theorem integral_eq_tsum [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
-  (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
+  (f : α → ℝ) (hf : Integrable (fun a ↦ f a) p.toMeasure) :
   ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := by
   rw [integral_countable' hf]
   congr 1 with x
