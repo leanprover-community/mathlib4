@@ -99,9 +99,6 @@ lemma le_comap_range_rTensor (q : Q) :
   rintro x ⟨n, rfl⟩
   exact ⟨n ⊗ₜ[R] q, rfl⟩
 
-lemma rTensor.mem_range {p : P} (q : Q) (hp : p ∈ LinearMap.range g) :
-    p ⊗ₜ[R] q ∈  LinearMap.range (rTensor Q g) := le_comap_range_rTensor g q hp
-
 variable (Q) {g}
 
 variable (hg : Function.Surjective g) (hfg : Exact f g)
@@ -119,19 +116,6 @@ theorem rTensor.Surjective : Function.Surjective (rTensor Q g) := by
       obtain ⟨y, rfl⟩ := hy
       use x + y
       rw [map_add]
-
-/-
-private noncomputable
-def inverse : P →ₗ[R] (N ⧸ (LinearMap.range f)) := {
-  toFun := fun z ↦ Submodule.Quotient.mk ((hg z).choose)
-  map_add' := fun z z' ↦ by
-    dsimp
-    rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq, hfg, mem_ker]
-    simp only [map_sub, map_add, Exists.choose_spec (hg _), sub_self]
-  map_smul' := fun r z ↦ by
-    dsimp
-    rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq, hfg, mem_ker]
-    simp only [map_sub, map_smul, Exists.choose_spec (hg _), sub_self] } -/
 
 private noncomputable
 def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
@@ -210,10 +194,8 @@ lemma le_comap_range_lTensor (q : Q) :
   rintro x ⟨n, rfl⟩
   exact ⟨q ⊗ₜ[R] n, rfl⟩
 
-lemma lTensor.mem_range {p : P} (q : Q) (hp : p ∈ LinearMap.range g) :
-    q ⊗ₜ[R] p ∈  LinearMap.range (lTensor Q g) := le_comap_range_lTensor g q hp
-
 variable (Q) {g}
+
 variable (hg : Function.Surjective g) (hfg : Exact f g)
 
 theorem lTensor.Surjective : Function.Surjective (lTensor Q g) := by
