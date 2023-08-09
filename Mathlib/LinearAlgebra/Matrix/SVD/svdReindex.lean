@@ -6,8 +6,7 @@ Authors: Mohanad Ahmed
 
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
-import Mathlib.LinearAlgebra.Matrix.SVD.RankMulIsUnit
-import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMatricesRank
+import Mathlib.Data.Matrix.Rank
 
 /-! # Reindexing using Non-zero/Zero Partition Eigenvalues of AAᴴ and AᴴA
 
