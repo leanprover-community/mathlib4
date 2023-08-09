@@ -585,7 +585,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     obtain ⟨f, hf⟩ := f
     obtain ⟨g, hg⟩ := g
     rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
-    dsimp
+    dsimp only [coe_mk]
     rw [Set.union_eq_iUnion] at h
     refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
     · cases i; exact h₂; exact h₁
