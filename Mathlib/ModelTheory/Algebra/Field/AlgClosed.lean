@@ -95,12 +95,12 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
     simp
 
 def Theory.ACF (p : ℕ) : Theory Language.field :=
-  Theory.field ∪ Theory.hasChar p ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
+  Theory.hasChar p ∪ Theory.field ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
 
 instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2
-    ⟨Theory.model_union_iff.2 ⟨by infer_instance, model_hasChar_of_charP⟩, ?_⟩
+    ⟨Theory.model_union_iff.2 ⟨model_hasChar_of_charP, inferInstance⟩, ?_⟩
   simp only [Theory.model_iff, Set.mem_iUnion, Set.mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ n hn0 rfl
@@ -113,7 +113,7 @@ def CompatibleFieldOfModelACF (K : Type _) (p : ℕ) [Language.field.Structure K
     [h : (Theory.ACF p).Model K] : CompatibleField K := by
   haveI : Theory.field.Model K :=
     Theory.Model.mono h (Set.subset_union_of_subset_left
-      (Set.subset_union_left _ _) _)
+      (Set.subset_union_right _ _) _)
   exact compatibleFieldOfFieldStructure K
 
 theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
@@ -135,7 +135,7 @@ theorem charP_of_model_ACF (p : ℕ) (M : Type _)
     CharP M p := by
   have : (Theory.hasChar p).Model M :=
     Theory.Model.mono h
-      (Set.subset_union_of_subset_left (Set.subset_union_right _ _) _)
+      (Set.subset_union_of_subset_left (Set.subset_union_left _ _) _)
   exact charP_of_model_hasChar
 
 set_option synthInstance.maxHeartbeats 100000 in
@@ -198,15 +198,11 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
   have h1 : ∀ φ ∈ Theory.ACF 0,
       { s : Finset Nat.Primes // ∀ p : Nat.Primes, (¬ (Theory.ACF p) ⊨ᵇ φ) → p ∈ s } := by
     intro φ hφ
-    simp only [Theory.ACF, Set.mem_union, Set.mem_iUnion, Set.mem_singleton_iff,
-      exists_prop, Theory.hasChar, or_assoc] at hφ
+    rw [Theory.ACF, Theory.hasChar, Set.union_assoc, Set.mem_union,
+      Set.mem_union, Set.mem_singleton_iff, Set.mem_iUnion] at hφ
+    simp only [Set.mem_iUnion] at hφ
     apply Classical.choice
-    rcases hφ with fi | rfl | ⟨n, hn, rfl⟩ | ⟨i, h0i, rfl⟩
-    · refine ⟨⟨∅, ?_⟩⟩
-      simp only [Finset.not_mem_empty, false_iff, not_not, imp_false]
-      intro p
-      exact Theory.models_sentence_of_mem
-        (Set.mem_union_left _ (Set.mem_union_left _ fi))
+    rcases hφ with (rfl | ⟨n, hn, rfl⟩) | h
     · refine ⟨⟨∅, ?_⟩⟩
       simp only [Finset.not_mem_empty, Theory.ModelsBoundedFormula, eqZero, Term.equal,
         Nat.cast_zero, Term.relabel, BoundedFormula.realize_bdEqual, Term.realize_relabel,
@@ -235,8 +231,8 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
     · refine ⟨⟨∅, ?_⟩⟩
       simp only [Finset.not_mem_empty, false_iff, not_not, imp_false]
       intro p
-      exact Theory.models_sentence_of_mem
-        (Set.mem_union_right _ (Set.mem_biUnion h0i (by simp)))
+      simp only [Theory.ACF, Set.union_assoc]
+      exact Theory.models_sentence_of_mem (Set.mem_union_right _ h)
   have h : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ },
       ∀ φ ∈ T0, Theory.ACF p ⊨ᵇ φ := by
     let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => h1 φ (hT0 φ.2))
@@ -261,8 +257,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.field.Sentence} :
-    Theory.ACF 0 ⊨ᵇ φ ↔
-    Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
+    Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
   refine ⟨?_, ACF0_realize_of_infinite_ACF_prime_realize φ⟩
   rw [← not_imp_not, ← (ACF_isComplete_of_prime_or_zero (Or.inr rfl)).models_not_iff,
     Set.not_infinite]
