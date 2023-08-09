@@ -1327,7 +1327,7 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
 /-- Summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support {f : α → ℝ} (hf : ∀ x, 0 ≤ f x) (h : Summable f) :
   f.support.Countable := by
-  convert Summable.countable_support_nnreal (fun x => (f x).toNNReal) (h.toNNReal)
+  convert Summable.countable_support_nnreal _ h.toNNReal
   ext x; simp [lt_iff_le_and_ne]; tauto
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
