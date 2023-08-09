@@ -62,17 +62,15 @@ def _root_.Language.IsCF (L : Language T) : Prop :=
 
 variable {g : CFG T}
 
-/-- The relation `CFG.Derives` is reflexive. -/
-@[refl]
-lemma derives_self {w : List (Symbol T g.nt)} :
-    g.Derives w w :=
-  Relation.ReflTransGen.refl
-
-lemma derives_of_transforms {v w : List (Symbol T g.nt)} (hvw : g.Transforms v w) :
+lemma Transforms.single {v w : List (Symbol T g.nt)} (hvw : g.Transforms v w) :
     g.Derives v w :=
   Relation.ReflTransGen.single hvw
 
-/-- The relation `CFG.Derives` is transitive. -/
+@[refl]
+lemma Derives.refl {w : List (Symbol T g.nt)} :
+    g.Derives w w :=
+  Relation.ReflTransGen.refl
+
 @[trans]
 lemma Derives.derives {u v w : List (Symbol T g.nt)}
     (huv : g.Derives u v) (hvw : g.Derives v w) :
@@ -82,17 +80,17 @@ lemma Derives.derives {u v w : List (Symbol T g.nt)}
 lemma Derives.transforms {u v w : List (Symbol T g.nt)}
     (huv : g.Derives u v) (hvw : g.Transforms v w) :
     g.Derives u w :=
-  huv.derives (derives_of_transforms hvw)
+  huv.derives hvw.single
 
 lemma Transforms.derives {u v w : List (Symbol T g.nt)}
     (huv : g.Transforms u v) (hvw : g.Derives v w) :
     g.Derives u w :=
-  (CFG.derives_of_transforms huv).derives hvw
+  huv.single.derives hvw
 
-lemma eq_or_head_of_derives {u w : List (Symbol T g.nt)} (huw : g.Derives u w) :
+lemma Derives.eq_or_head {u w : List (Symbol T g.nt)} (huw : g.Derives u w) :
     u = w ∨ ∃ v : List (Symbol T g.nt), g.Transforms u v ∧ g.Derives v w :=
   Relation.ReflTransGen.cases_head huw
 
-lemma eq_or_tail_of_derives {u w : List (Symbol T g.nt)} (huw : g.Derives u w) :
+lemma Derives.eq_or_tail {u w : List (Symbol T g.nt)} (huw : g.Derives u w) :
     u = w ∨ ∃ v : List (Symbol T g.nt), g.Derives u v ∧ g.Transforms v w :=
   (Relation.ReflTransGen.cases_tail huw).casesOn (Or.inl ∘ Eq.symm) Or.inr
