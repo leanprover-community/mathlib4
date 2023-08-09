@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Tactic.TryThis
+<<<<<<< HEAD
 import Lean.Meta.Tactic.Util
+=======
+>>>>>>> origin/master
 import Mathlib.Util.Syntax
 
 /-!
