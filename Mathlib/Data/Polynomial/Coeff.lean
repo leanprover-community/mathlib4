@@ -302,20 +302,15 @@ theorem isRegular_X_pow (n : ℕ) : IsRegular ((X : R[X]) ^ n) := by
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 
-theorem mul_X_injective : Function.Injective fun P : R[X] => X * P :=
-  pow_one (X : R[X]) ▸ (isRegular_X_pow 1).left
-#align polynomial.mul_X_injective Polynomial.mul_X_injective
-
-theorem X_mul_injective : Function.Injective fun P : R[X] => P * X :=
-  pow_one (X : R[X]) ▸ (isRegular_X_pow 1).right
+theorem isRegular_X : IsRegular (X : R[X]) := by simpa using isRegular_X_pow 1
 
 @[simp] lemma eq_zero_of_X_mul_eq_zero : X * p = 0 ↔ p = 0 := by
   nth_rw 1 [← mul_zero X]
-  exact ⟨fun h ↦ mul_X_injective h, fun hp ↦ by rw [hp, mul_zero]⟩
+  exact ⟨fun h ↦ isRegular_X.left h, fun hp ↦ by rw [hp, mul_zero]⟩
 
 @[simp] lemma eq_zero_of_mul_X_eq_zero : p * X = 0 ↔ p = 0 := by
   nth_rw 1 [← zero_mul X]
-  exact ⟨fun h ↦ X_mul_injective h, fun hp ↦ by rw [hp, zero_mul]⟩
+  exact ⟨fun h ↦ isRegular_X.right h, fun hp ↦ by rw [hp, zero_mul]⟩
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
