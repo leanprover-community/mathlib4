@@ -209,7 +209,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the hypothesis {
           ← f.getUserName}"
       for r in results do
-        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+        addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
@@ -226,7 +226,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the goal"
       for r in results do
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
-        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+        addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           newGoal (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
