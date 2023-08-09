@@ -38,8 +38,15 @@ instance {α : Type _} [DecidableEq α] : @DecidablePred (Finset (Finset α)) ex
 def accessibleProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop :=
   {s : Finset α} → s ∈ Sys → s ≠ ∅ → ∃ x ∈ s, s \ {x} ∈ Sys
 
+class Accessible {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop where
+  accessible : {s : Finset α} → s ∈ Sys → s ≠ ∅ → ∃ x ∈ s, s \ {x} ∈ Sys
+
+theorem accessible_accessibleProperty {α : Type _} [DecidableEq α]
+  {Sys : Finset (Finset α)} [Accessible Sys] :
+    accessibleProperty Sys := Accessible.accessible
+
 theorem induction_on_accessible {α : Type _} [DecidableEq α]
-  {Sys : Finset (Finset α)} (hSys : accessibleProperty Sys)
+  {Sys : Finset (Finset α)} [Accessible Sys]
   {s : Finset α} (hs₀ : s ∈ Sys)
   {p : Finset α → Prop}
   (empty : p ∅)
@@ -47,13 +54,13 @@ theorem induction_on_accessible {α : Type _} [DecidableEq α]
     p (Insert.insert a s)) :
     p s := by
   by_cases h : s = ∅ <;> try exact h ▸ empty
-  have ⟨x, hx₁, hx₂⟩ := hSys hs₀ h
+  have ⟨x, hx₁, hx₂⟩ := Accessible.accessible hs₀ h
   have h' := Finset.sdiff_insert_insert_of_mem_of_not_mem hx₁ (Finset.not_mem_empty x)
   simp only [insert_emptyc_eq, Finset.mem_sdiff, Finset.mem_singleton, Finset.sdiff_empty] at h'
   have : p (Insert.insert x (s \ {x})) := insert (by
       simp only [Finset.mem_sdiff, Finset.mem_singleton, and_false] : x ∉ s \ {x}) hx₂ (by
       simp only [Finset.mem_sdiff, Finset.mem_singleton, h', hs₀])
-    (induction_on_accessible hSys hx₂ empty insert)
+    (induction_on_accessible hx₂ empty insert)
   exact h' ▸ this
 termination_by induction_on_accessible => s.card
 decreasing_by
@@ -62,11 +69,11 @@ decreasing_by
   simp only [Nat.sub_lt (Finset.card_pos.mpr ⟨x, hx₁⟩)]
 
 theorem construction_of_accessible {α : Type _} [DecidableEq α]
-  {Sys : Finset (Finset α)} (hSys : ∅ ∈ Sys ∧ accessibleProperty Sys)
+  {Sys : Finset (Finset α)} [Accessible Sys] (hSys : ∅ ∈ Sys)
   {s : Finset α} (hs₀ : s ∈ Sys) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s ∧ ∀ l' ∈ l.tails, l'.toFinset ∈ Sys := by
-  apply induction_on_accessible hSys.2 hs₀
-  . exists []; simp [hSys.1]
+  apply induction_on_accessible hs₀
+  . exists []; simp [hSys]
   . simp only [List.mem_tails, forall_exists_index, and_imp]
     intro a s ha _ hs l hl₁ hl₂ hl₃
     exists a :: l
@@ -142,6 +149,8 @@ instance : Fintype (Greedoid α) where
   complete G := by
     simp; exists G.feasibleSet; simp only [exists_prop, and_true]
     exact ⟨G.containsEmpty, G.accessibleProperty, G.exchangeProperty⟩
+
+instance : Accessible G.feasibleSet := ⟨G.accessibleProperty⟩
 
 section Membership
 
@@ -530,7 +539,7 @@ theorem rank_le_of_subset (hs : s ⊆ t) : G.rank s ≤ G.rank t := by
 
 @[simp]
 theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card :=
-  @induction_on_accessible α _ _ G.accessibleProperty _ hs (fun x => G.rank x = x.card)
+  @induction_on_accessible α _ _ _ _ hs (fun x => G.rank x = x.card)
     rank_of_empty (by
       simp only [system_feasible_set_mem_mem]
       intro _ _ h₁ _ h₂ _
@@ -1228,7 +1237,7 @@ theorem monotoneClosureOperator_subset_of_subset (h : s ⊆ t) :
 end MonotoneClosureOperator
 
 def basisRank (G : Greedoid α) (s : Finset α) : ℕ :=
-  (Finset.max (G.feasibleSet.image fun t => (s ∩ t).card)).unbot (by
+  (G.feasibleSet.image fun t => (s ∩ t).card).max.unbot (by
     intro h
     simp only [Finset.max_eq_bot, image_eq_empty] at h
     exact ne_empty_of_mem G.containsEmpty h)
@@ -1245,6 +1254,10 @@ def rankFeasibleFamily (G : Greedoid α) : Finset (Finset α) :=
 section BasisRank
 
 variable {s : Finset α}
+
+theorem exists_feasible_satisfying_basisRank :
+    ∃ b ∈ G, G.basisRank s = (s ∩ b).card := by
+  sorry
 
 theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   simp only [rank, system_feasible_set_mem_mem, basisRank, WithBot.le_unbot_iff, WithBot.coe_unbot]
@@ -1292,15 +1305,19 @@ theorem feasible_iff_rankFeasible_of_full [Full G] :
   apply h₂ ▸ h₁ _
   exact Full.full
 
--- G.rankFeasibleFamily ↔ G is a matroid.
+-- G.rankFeasibleFamily = univ.powerset ↔ G is a matroid.
 
--- TODO: make `Accessible` property as a class on `Finset (Finset α)`.
-theorem accessibleProperty_rankFeasibleFamily :
-    _root_.accessibleProperty G.rankFeasibleFamily := by
-  simp only [_root_.accessibleProperty, ne_eq]
-  intro s hs₁ hs₂
-  simp only [mem_rankFeasibleFamily_iff] at *
+theorem exists_superset_feasible_satisfying_basisRank {t : Finset α} (ht₁ : t ⊆ s) (ht₂ : t ∈ G) :
+    ∃ b ∈ G, t ⊆ b ∧ G.basisRank b = (s ∩ b).card := by
   sorry
+
+/- The following instance will be created later.
+instance : Accessible G.rankFeasibleFamily where
+  accessible {s} h₁ h₂ := by
+    simp only [mem_rankFeasibleFamily_iff, rankFeasible, basisRank] at *
+    sorry
+-/
+
 
 end BasisRank
 
