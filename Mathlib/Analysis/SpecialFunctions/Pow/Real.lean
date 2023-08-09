@@ -310,7 +310,7 @@ end Complex
 
 namespace Real
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {x y z : ℝ}
 
@@ -410,6 +410,9 @@ theorem rpow_eq_of_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) (h : y * log 
 theorem mul_log_eq_log_iff {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
     y * log x = log z ↔ x ^ y = z :=
   ⟨rpow_eq_of_mul_log hx hz, by rintro rfl; rw [log_rpow hx]⟩
+
+/-! Note: lemmas about `(∏ i in s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
+in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 /-!
 ## Order and monotonicity
@@ -675,7 +678,7 @@ end Sqrt
 
 variable {n : ℕ}
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
     ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by

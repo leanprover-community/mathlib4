@@ -148,7 +148,7 @@ theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
 #align units.ext_iff Units.ext_iff
 #align add_units.ext_iff AddUnits.ext_iff
 
-/-- Units have decidable equality if the base `Monoid` has deciable equality. -/
+/-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
@@ -409,7 +409,7 @@ end Units
 
 /-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
 @[to_additive
-  "For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an add_unit out of `a`."]
+  "For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an addUnit out of `a`."]
 def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
   ⟨a, b, hab, (mul_comm b a).trans hab⟩
 #align units.mk_of_mul_eq_one Units.mkOfMulEqOne
