@@ -327,6 +327,18 @@ theorem Eventually.exists_forall_of_atBot [SemilatticeInf α] [Nonempty α] {p :
   eventually_atBot.mp h
 #align filter.eventually.exists_forall_of_at_bot Filter.Eventually.exists_forall_of_atBot
 
+lemma exists_eventually_atTop [SemilatticeSup α] [Nonempty α] {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
+  simp_rw [eventually_atTop, ← exists_swap (α := α)]
+  exact exists_congr fun a ↦ .symm <| forall_ge_iff <| Monotone.exists fun _ _ _ hb H n hn ↦
+    H n (hb.trans hn)
+
+lemma exists_eventually_atBot [SemilatticeInf α] [Nonempty α] {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in atBot, r a b) ↔ ∀ᶠ a₀ in atBot, ∃ b, ∀ a ≤ a₀, r a b := by
+  simp_rw [eventually_atBot, ← exists_swap (α := α)]
+  exact exists_congr fun a ↦ .symm <| forall_le_iff <| Antitone.exists fun _ _ _ hb H n hn ↦
+    H n (hn.trans hb)
+
 theorem frequently_atTop [SemilatticeSup α] [Nonempty α] {p : α → Prop} :
     (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b ≥ a, p b :=
   atTop_basis.frequently_iff.trans <| by simp

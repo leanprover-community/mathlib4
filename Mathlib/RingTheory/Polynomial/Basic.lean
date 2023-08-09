@@ -871,9 +871,6 @@ set_option linter.uppercaseLean3 false in
 
 variable {σ}
 
-/- Porting note: this suffers from serious time out issues without removing
-this instance -/
-attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
   classical

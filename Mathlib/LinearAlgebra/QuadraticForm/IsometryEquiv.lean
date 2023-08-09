@@ -51,20 +51,21 @@ namespace IsometryEquiv
 
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
+instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
+  coe f := f.toLinearEquiv
+  inv f := f.toLinearEquiv.symm
+  left_inv f := f.toLinearEquiv.left_inv
+  right_inv f := f.toLinearEquiv.right_inv
+  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  map_add f := map_add f.toLinearEquiv
+  map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
+
 -- Porting note: was `Coe`
 instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
   ⟨IsometryEquiv.toLinearEquiv⟩
 
 -- Porting note: syntaut
 #noalign quadratic_form.isometry.to_linear_equiv_eq_coe
-
---Porting note: replace `CoeFun` with `EquivLike`
-instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ :=
-  { coe := fun f => ⇑(f : M₁ ≃ₗ[R] M₂),
-    inv := fun f => ⇑(f : M₁ ≃ₗ[R] M₂).symm,
-    left_inv := fun f => (f : M₁ ≃ₗ[R] M₂).left_inv
-    right_inv := fun f => (f : M₁ ≃ₗ[R] M₂).right_inv
-    coe_injective' := fun f g => by cases f; cases g; simp (config := {contextual := true}) }
 
 @[simp]
 theorem coe_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=

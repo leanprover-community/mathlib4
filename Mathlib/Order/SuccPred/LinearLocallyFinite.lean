@@ -94,7 +94,7 @@ theorem isMax_of_succFn_le [LocallyFiniteOrder ι] (i : ι) (hi : succFn i ≤ i
     rw [h_succFn_eq] at h
     exact isGLB_Ioc_of_isGLB_Ioi hij_lt h
   have hi_mem : i ∈ Finset.Ioc i j := by
-    refine' Finset.is_glb_mem _ h_glb _
+    refine' Finset.isGLB_mem _ h_glb _
     exact ⟨_, Finset.mem_Ioc.mpr ⟨hij_lt, le_rfl⟩⟩
   rw [Finset.mem_Ioc] at hi_mem
   exact lt_irrefl i hi_mem.1

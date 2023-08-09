@@ -148,7 +148,7 @@ theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
 #align units.ext_iff Units.ext_iff
 #align add_units.ext_iff AddUnits.ext_iff
 
-/-- Units have decidable equality if the base `Monoid` has deciable equality. -/
+/-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
@@ -198,8 +198,9 @@ attribute [instance] AddUnits.instAddGroupAddUnits
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]
 instance {α} [CommMonoid α] : CommGroup αˣ :=
-  { (inferInstance : Group αˣ) with
-    mul_comm := fun _ _ => ext <| mul_comm _ _ }
+  -- note: the original ported file had `{ (inferInstance : Group αˣ) with ... }`
+  -- and this was removed because it was causing slowdowns: see lean4#2387
+  { mul_comm := fun _ _ => ext <| mul_comm _ _ }
 attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
 #align units.comm_group Units.instCommGroupUnitsToMonoid
 #align add_units.add_comm_group AddUnits.instAddCommGroupAddUnitsToAddMonoid
@@ -408,7 +409,7 @@ end Units
 
 /-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
 @[to_additive
-  "For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an add_unit out of `a`."]
+  "For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an addUnit out of `a`."]
 def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
   ⟨a, b, hab, (mul_comm b a).trans hab⟩
 #align units.mk_of_mul_eq_one Units.mkOfMulEqOne
@@ -646,11 +647,9 @@ theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
 #align is_add_unit_iff_exists_neg isAddUnit_iff_exists_neg
 
--- Porting note: `to_additive` complains if using `simp [isUnit_iff_exists_inv, mul_comm]` proof
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
-  rw [isUnit_iff_exists_inv]
-  simp [mul_comm]
+  simp [isUnit_iff_exists_inv, mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 

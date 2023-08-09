@@ -100,8 +100,7 @@ def dgoToHomologicalComplex :
       comm' := fun i j h => by
         dsimp at h ⊢
         subst h
-        simp [Category.comp_id, eqToHom_refl, dif_pos rfl, Category.assoc,
-          eqToHom_f']
+        simp only [dite_true, Category.assoc, eqToHom_f']
         -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         rw [reassoc_of% this] }

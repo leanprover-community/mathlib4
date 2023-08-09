@@ -76,20 +76,14 @@ section Union
 
 #align list.nil_union List.nil_union
 #align list.cons_union List.cons_unionₓ
-
-@[simp]
-theorem mem_union : a ∈ l₁ ∪ l₂ ↔ a ∈ l₁ ∨ a ∈ l₂ := by
-  induction l₁
-  · simp only [not_mem_nil, false_or_iff, instUnionList, nil_union]
-  · simp only [find?, mem_cons, or_assoc, instUnionList, cons_union, mem_union_iff, mem_insert_iff]
-#align list.mem_union List.mem_union
+#align list.mem_union List.mem_union_iff
 
 theorem mem_union_left (h : a ∈ l₁) (l₂ : List α) : a ∈ l₁ ∪ l₂ :=
-  mem_union.2 (Or.inl h)
+  mem_union_iff.2 (Or.inl h)
 #align list.mem_union_left List.mem_union_left
 
 theorem mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ :=
-  mem_union.2 (Or.inr h)
+  mem_union_iff.2 (Or.inr h)
 #align list.mem_union_right List.mem_union_right
 
 theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ t ++ l₂ = l₁ ∪ l₂
@@ -116,7 +110,7 @@ theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l�
 #align list.union_sublist_append List.union_sublist_append
 
 theorem forall_mem_union : (∀ x ∈ l₁ ∪ l₂, p x) ↔ (∀ x ∈ l₁, p x) ∧ ∀ x ∈ l₂, p x := by
-  simp only [mem_union, or_imp, forall_and]
+  simp only [mem_union_iff, or_imp, forall_and]
 #align list.forall_mem_union List.forall_mem_union
 
 theorem forall_mem_of_forall_mem_union_left (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₁, p x :=
@@ -160,9 +154,7 @@ theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ 
   mem_filter_of_mem h₁ $ by simpa using h₂
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
-@[simp]
-theorem mem_inter : a ∈ l₁ ∩ l₂ ↔ a ∈ l₁ ∧ a ∈ l₂ := by erw [mem_filter]; simp
-#align list.mem_inter List.mem_inter
+#align list.mem_inter List.mem_inter_iff
 
 theorem inter_subset_left (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₁ :=
   filter_subset _
@@ -172,11 +164,11 @@ theorem inter_subset_right (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₂ := fun
 #align list.inter_subset_right List.inter_subset_right
 
 theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h =>
-  mem_inter.2 ⟨h₁ h, h₂ h⟩
+  mem_inter_iff.2 ⟨h₁ h, h₂ h⟩
 #align list.subset_inter List.subset_inter
 
 theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ := by
-  simp only [eq_nil_iff_forall_not_mem, mem_inter, not_and]
+  simp only [eq_nil_iff_forall_not_mem, mem_inter_iff, not_and]
   rfl
 #align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint
 

@@ -2642,6 +2642,10 @@ theorem rangeRestrict_surjective (f : G →* N) : Function.Surjective f.rangeRes
 #align monoid_hom.range_restrict_surjective MonoidHom.rangeRestrict_surjective
 #align add_monoid_hom.range_restrict_surjective AddMonoidHom.rangeRestrict_surjective
 
+@[to_additive (attr := simp)]
+lemma rangeRestrict_injective_iff {f : G →* N} : Injective f.rangeRestrict ↔ Injective f := by
+  convert Set.injective_codRestrict _
+
 @[to_additive]
 theorem map_range (g : N →* P) (f : G →* N) : f.range.map g = (g.comp f).range := by
   rw [range_eq_map, range_eq_map]; exact (⊤ : Subgroup G).map_map g f

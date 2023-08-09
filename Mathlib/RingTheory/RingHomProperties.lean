@@ -136,7 +136,7 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
       ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
         ∀ [Algebra R S] [Algebra R T],
           P (algebraMap R T) →
-            P (Algebra.TensorProduct.includeLeft.toRingHom : S →+* TensorProduct R S T)) :
+            P (Algebra.TensorProduct.includeLeftRingHom : S →+* TensorProduct R S T)) :
     StableUnderBaseChange @P := by
   introv R h H
   let e := h.symm.1.equiv

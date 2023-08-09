@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp
+Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
@@ -92,6 +92,28 @@ theorem posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.Pos
   simp only [toQuadraticForm', BilinForm.toQuadraticForm_apply, Matrix.toBilin'_apply']
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.posDef_toQuadraticForm'
+
+/-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
+theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemidef (Aᴴ ⬝ A) := by
+  refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
+  rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star, dotProduct, map_sum]
+  simp_rw [Pi.star_apply, IsROrC.star_def]
+  simpa using Finset.sum_nonneg fun i _ => add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
+
+/-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
+theorem posSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
+  by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+
+/-- The eigenvalues of a positive definite matrix are positive -/
+lemma PosDef.eigenvalues_pos [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
+    (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
+  rw [hA.1.eigenvalues_eq, hA.1.transpose_eigenvectorMatrix_apply]
+  exact hA.2 _ <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
+
+/-- The eigenvalues of a positive semi-definite matrix are non-negative -/
+lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
+    (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
+  (hA.2 _).trans_eq (hA.1.eigenvalues_eq _).symm
 
 namespace PosDef
 

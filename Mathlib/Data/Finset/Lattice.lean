@@ -1710,9 +1710,7 @@ theorem exists_min_image (s : Finset β) (f : β → α) (h : s.Nonempty) :
 
 end ExistsMaxMin
 
--- TODO names
-
-theorem is_glb_iff_is_least [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
+theorem isGLB_iff_isLeast [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsGLB (s : Set α) i ↔ IsLeast (↑s) i := by
   refine' ⟨fun his => _, IsLeast.isGLB⟩
   suffices i = min' s hs by
@@ -1720,23 +1718,23 @@ theorem is_glb_iff_is_least [LinearOrder α] (i : α) (s : Finset α) (hs : s.No
     exact isLeast_min' s hs
   rw [IsGLB, IsGreatest, mem_lowerBounds, mem_upperBounds] at his
   exact le_antisymm (his.1 (Finset.min' s hs) (Finset.min'_mem s hs)) (his.2 _ (Finset.min'_le s))
-#align finset.is_glb_iff_is_least Finset.is_glb_iff_is_least
+#align finset.is_glb_iff_is_least Finset.isGLB_iff_isLeast
 
-theorem is_lub_iff_is_greatest [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
+theorem isLUB_iff_isGreatest [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsLUB (s : Set α) i ↔ IsGreatest (↑s) i :=
-  @is_glb_iff_is_least αᵒᵈ _ i s hs
-#align finset.is_lub_iff_is_greatest Finset.is_lub_iff_is_greatest
+  @isGLB_iff_isLeast αᵒᵈ _ i s hs
+#align finset.is_lub_iff_is_greatest Finset.isLUB_iff_isGreatest
 
-theorem is_glb_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsGLB (s : Set α) i)
+theorem isGLB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsGLB (s : Set α) i)
     (hs : s.Nonempty) : i ∈ s := by
   rw [← mem_coe]
-  exact ((is_glb_iff_is_least i s hs).mp his).1
-#align finset.is_glb_mem Finset.is_glb_mem
+  exact ((isGLB_iff_isLeast i s hs).mp his).1
+#align finset.is_glb_mem Finset.isGLB_mem
 
-theorem is_lub_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Set α) i)
+theorem isLUB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Set α) i)
     (hs : s.Nonempty) : i ∈ s :=
-  @is_glb_mem αᵒᵈ _ i s his hs
-#align finset.is_lub_mem Finset.is_lub_mem
+  @isGLB_mem αᵒᵈ _ i s his hs
+#align finset.is_lub_mem Finset.isLUB_mem
 
 end Finset
 
@@ -1819,9 +1817,9 @@ variable {ι' : Sort*} [CompleteLattice α]
 that works for `ι : Sort*`. -/
 theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
   classical
-    refine le_antisymm ?_ ?_
-    exact iSup_le fun b => le_iSup_of_le {b} <| le_iSup_of_le b <| le_iSup_of_le (by simp) <| le_rfl
-    exact iSup_le fun t => iSup_le fun b => iSup_le fun _ => le_iSup _ _
+  refine le_antisymm ?_ ?_
+  · exact iSup_le fun b => le_iSup_of_le {b} <| le_iSup_of_le b <| le_iSup_of_le (by simp) <| le_rfl
+  · exact iSup_le fun t => iSup_le fun b => iSup_le fun _ => le_iSup _ _
 #align supr_eq_supr_finset iSup_eq_iSup_finset
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema

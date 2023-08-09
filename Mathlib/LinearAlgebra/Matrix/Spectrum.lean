@@ -76,6 +76,11 @@ theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenv
     PiLp.basisFun_repr]
 #align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorMatrix_apply
 
+/-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
+theorem transpose_eigenvectorMatrix_apply (i : n) :
+    hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
+  funext <| fun j => eigenvectorMatrix_apply hA j i
+
 theorem eigenvectorMatrixInv_apply (i j : n) :
     hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
   rw [eigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
