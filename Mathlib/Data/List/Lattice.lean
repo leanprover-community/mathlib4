@@ -92,12 +92,10 @@ theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ 
     let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then
       ⟨t, sublist_cons_of_sublist _ s, by
-        simp only [Union.union] at h
-        simp only [e, Union.union, cons_union, insert_of_mem h]⟩
+        simp only [e, cons_union, insert_of_mem h]⟩
     else
       ⟨a :: t, s.cons_cons _, by
-        simp only [Union.union] at h
-        simp only [cons_append, Union.union, cons_union, e, insert_of_not_mem h]⟩
+        simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
 #align list.sublist_suffix_of_union List.sublist_suffix_of_union
 
 theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
