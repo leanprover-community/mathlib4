@@ -13,6 +13,8 @@ single nonterminal symbol on the left-hand side of each rule.
 Derivation by a grammar is inherently nondeterministic.
 -/
 
+universe u
+
 /--
 The type of symbols is the disjoint union of terminals `T` and nonterminals `N`.
 We do not require `T` and `N` to be finite in this definition.
@@ -21,7 +23,7 @@ alongside our type parameters (which would appear in almost every lemma).
 Instead, later we work in terms of a list of rewrite rules, which is finite by definition and from
 which we could infer that only a finite set of terminals and a finite set of nonterminals can occur.
 -/
-inductive Symbol (T : Type _) (N : Type _)
+inductive Symbol (T : Type u) (N : Type u)
   | terminal    (t : T) : Symbol T N
   | nonterminal (n : N) : Symbol T N
 
@@ -33,7 +35,6 @@ structure CFG (T : Type _) where
 
 namespace CFG
 
-universe u
 variable {T : Type u}
 
 /-- One step of context-free transformation. -/
@@ -57,7 +58,7 @@ def language (g : CFG T) : Language T :=
 
 /-- Predicate "[language] is context-free"; defined by existence of a context-free grammar. -/
 def _root_.Language.IsCF (L : Language T) : Prop :=
-  ∃ g : CFG.{u, u} T, g.language = L
+  ∃ g : CFG T, g.language = L
 
 variable {g : CFG T}
 
