@@ -278,6 +278,14 @@ theorem toMeasure_apply_inter_support (hs : MeasurableSet s) (hp : MeasurableSet
     p.toMeasure_apply_eq_toOuterMeasure_apply _ (hs.inter hp)]
 #align pmf.to_measure_apply_inter_support Pmf.toMeasure_apply_inter_support
 
+@[simp]
+theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClass α]  (p : Pmf α)
+  (h : p.support.Countable) :
+  Measure.restrict (toMeasure p) (support p) = toMeasure p := by
+  ext s hs
+  apply (MeasureTheory.Measure.restrict_apply hs).trans
+  apply toMeasure_apply_inter_support p s hs h.measurableSet
+
 theorem toMeasure_mono {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : s ∩ p.support ⊆ t) : p.toMeasure s ≤ p.toMeasure t := by
   simpa only [p.toMeasure_apply_eq_toOuterMeasure_apply, hs, ht] using toOuterMeasure_mono p h

@@ -20,14 +20,6 @@ namespace Pmf
 
 open MeasureTheory BigOperators
 
-@[simp]
-theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClass α]  (p : Pmf α)
-  (hs : p.support.Countable) :
-  Measure.restrict (toMeasure p) (support p) = toMeasure p := by
-  apply MeasureTheory.Measure.restrict_eq_self_of_ae_mem
-  apply Iff.mp measure_zero_iff_ae_nmem
-  rw [p.toMeasure_apply (hs := MeasurableSet.of_compl (Set.Countable.measurableSet hs))]
-  simp; tauto
 
 theorem integral_eq_tsum' [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
   (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) (hs : p.support.Countable):
