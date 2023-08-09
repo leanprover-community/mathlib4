@@ -742,15 +742,15 @@ theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.instPreor
   Preorder.ext fun _ _ ↦ Iff.rfl
 #align order_dual.preorder.dual_dual OrderDual.Preorder.dual_dual
 
-theorem partialOrder.dual_dual (α : Type _) [H : PartialOrder α] :
+theorem instPartialOrder.dual_dual (α : Type _) [H : PartialOrder α] :
     OrderDual.instPartialOrder αᵒᵈ = H :=
   PartialOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.partial_order.dual_dual OrderDual.partialOrder.dual_dual
+#align order_dual.partial_order.dual_dual OrderDual.instPartialOrder.dual_dual
 
-theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] :
+theorem instLinearOrder.dual_dual (α : Type _) [H : LinearOrder α] :
     OrderDual.instLinearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.linear_order.dual_dual OrderDual.linearOrder.dual_dual
+#align order_dual.linear_order.dual_dual OrderDual.instLinearOrder.dual_dual
 
 end OrderDual
 
