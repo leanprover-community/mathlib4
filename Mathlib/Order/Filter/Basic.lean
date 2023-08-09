@@ -44,7 +44,7 @@ The examples of filters appearing in the description of the two motivating ideas
 * `(Filter.atTop : Filter ℕ)` : made of sets of `ℕ` containing `{n | n ≥ N}` for some `N`
 * `𝓝 x` : made of neighborhoods of `x` in a topological space (defined in topology.basic)
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
-  defined in topology.uniform_space.basic)
+  defined in `Mathlib/Topology/UniformSpace/Basic.lean`)
 * `μ.ae` : made of sets whose complement has zero measure with respect to `μ` (defined in
   `MeasureTheory.MeasureSpace`)
 
