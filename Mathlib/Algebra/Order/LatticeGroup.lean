@@ -16,36 +16,38 @@ import Mathlib.Order.Closure
 Lattice ordered groups were introduced by [Birkhoff][birkhoff1942].
 They form the algebraic underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
 
-This file develops the basic theory, concentrating on the commutative case.
+This file develops the basic theory.
 
 ## Main statements
 
-- `pos_div_neg`: Every element `a` of a lattice ordered commutative group has a decomposition
-  `a⁺-a⁻` into the difference of the positive and negative component.
+- `pos_div_neg`: Every element `a` of a lattice ordered group has a decomposition `a⁺-a⁻` into the
+  difference of the positive and negative component.
 - `pos_inf_neg_eq_one`: The positive and negative components are coprime.
-- `abs_triangle`: The absolute value operation satisfies the triangle inequality.
+- `abs_triangle`: The absolute value operation satisfies the triangle inequality (stated for a
+  commutative group).
 
 It is shown that the inf and sup operations are related to the absolute value operation by a
 number of equations and inequalities.
 
 ## Notations
 
-- `a⁺ = a ⊔ 0`: The *positive component* of an element `a` of a lattice ordered commutative group
-- `a⁻ = (-a) ⊔ 0`: The *negative component* of an element `a` of a lattice ordered commutative group
-- `|a| = a⊔(-a)`: The *absolute value* of an element `a` of a lattice ordered commutative group
+- `a⁺ = a ⊔ 0`: The *positive component* of an element `a` of a lattice ordered group
+- `a⁻ = (-a) ⊔ 0`: The *negative component* of an element `a` of a lattice ordered group
+- `|a| = a⊔(-a)`: The *absolute value* of an element `a` of a lattice ordered group
 
 ## Implementation notes
 
-A lattice ordered commutative group is a type `α` satisfying:
+A lattice ordered group is a type `α` satisfying:
 
 * `[Lattice α]`
 * `[CommGroup α]`
 * `[CovariantClass α α (*) (≤)]`
+* `[CovariantClass α α (swap (· * ·)) (· ≤ ·)]`
 
-The remainder of the file establishes basic properties of lattice ordered commutative groups. A
-number of these results also hold in the non-commutative case ([Birkhoff][birkhoff1942],
-[Fuchs][fuchs1963]) but we have not developed that here, since we are primarily interested in vector
-lattices.
+The remainder of the file establishes basic properties of lattice ordered groups. It is shown that
+when the group is commutative, the lattice is distributive. This also holds in the non-commutative
+case ([Birkhoff][birkhoff1942],[Fuchs][fuchs1963]) but we do not yet have the machinery to establish
+this in Mathlib.
 
 ## References
 
