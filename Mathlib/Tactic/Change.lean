@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Tactic.ElabTerm
+import Std.Tactic.TryThis
 
 /-!
 
@@ -26,9 +27,9 @@ example : (fun x : Nat => x) 0 = 1 := by
 -/
 syntax "change?" (ppSpace colGt term)? : tactic
 
-open Lean Meta Elab.Tactic in
+open Lean Meta Elab.Tactic Std.Tactic.TryThis in
 elab_rules : tactic
-| `(tactic| change? $[$h]?) => do
+| `(tactic| change?%$tk $[$h]?) => do
   let expr := ← match h with
     | none => getMainTarget
     | some ex => do
@@ -36,4 +37,5 @@ elab_rules : tactic
       let defeq? := ← isDefEq ex (← getMainTarget)
       if ! defeq? then throwError "The given term is not DefEq to the goal"
       instantiateMVars ex
-  logInfo m!"change {expr}"
+  let stx := ← delabToRefinableSyntax expr
+  addSuggestion tk (← `(tactic| change $stx))
