@@ -38,8 +38,9 @@ Add
 namespace AddMonoidHom
 
 def Exact {M N P : Type _} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-  (f : outParam (M →+ N)) (g : outParam (N →+ P)) :=
-  ∀ y, y ∈ g.ker ↔ y ∈ f.range
+--   (f : outParam (M →+ N)) (g : outParam (N →+ P)) :=
+  (f : M →+ N) (g : N →+ P) :=
+  ∀ y, y ∈ ker g ↔ y ∈ Set.range f
 
 end AddMonoidHom
 
@@ -54,19 +55,37 @@ variable {M N P : Type _} [AddCommGroup M] [AddCommGroup N][AddCommGroup P]
 variable (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
 variable {R}
-def Exact := LinearMap.range f = LinearMap.ker g
+-- def Exact := AddMonoidHom.Exact f.toAddMonoidHom g.toAddMonoidHom
+
+def Exact := ∀ y, y ∈ ker g ↔ y ∈ range f
+
+
+variable {f g}
+
+lemma _root_.Exact.linearMap_ker_eq (hfg : Exact f g) :
+  ker g = range f := by
+  ext y
+  exact hfg y
+
+lemma exact_iff :
+  LinearMap.Exact f g ↔ LinearMap.ker g = LinearMap.range f := by
+  constructor
+  . exact Exact.linearMap_ker_eq
+  . intro h y
+    -- rw [AddMonoidHom.mem_ker, toAddMonoidHom_coe, ← LinearMap.mem_ker, h] ; rfl
+    rw [h]
+
 
 namespace Exact
 
-variable {f g}
 lemma comp_eq_zero (h : Exact f g) : g.comp f = 0 := by
   ext x
   simp only [coe_comp, Function.comp_apply, zero_apply]
-  rw [← mem_ker, ← h]
+  rw [← mem_ker] -- , Exact.exact_iff h]
+  rw [Exact.linearMap_ker_eq h]
   apply mem_range_self
 
 section rTensor
-
 
 open scoped TensorProduct
 
@@ -126,13 +145,13 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
     rw [← TensorProduct.add_tmul, ← TensorProduct.sub_tmul]
     apply le_comap_range_rTensor f
-    rw [hfg, mem_ker, map_sub, map_add]
+    rw [← hfg, mem_ker, map_sub, map_add]
     simp only [hgh _, sub_self]
   . intro r p q
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
     rw [TensorProduct.smul_tmul', ← TensorProduct.sub_tmul]
     apply le_comap_range_rTensor f
-    rw [hfg, mem_ker, map_sub, map_smul]
+    rw [← hfg, mem_ker, map_sub, map_smul]
     simp only [hgh _, sub_self]
   . intro p q q'
     rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
@@ -142,7 +161,7 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     apply Submodule.add_mem
     all_goals {
       apply le_comap_range_rTensor f
-      rw [hfg, mem_ker, map_sub]
+      rw [← hfg, mem_ker, map_sub]
       simp only [hgh _, sub_self] }
   . intro r p q
     simp only [TensorProduct.tmul_smul, Submodule.Quotient.mk_smul]
@@ -166,20 +185,31 @@ private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
   rw [Submodule.Quotient.eq]
   rw [← TensorProduct.sub_tmul]
   apply le_comap_range_rTensor f
-  rw [hfg, mem_ker, map_sub, sub_eq_zero]
+  rw [← hfg, mem_ker, map_sub, sub_eq_zero]
   rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
+
+-- Which proof is better?
 
 /-- Tensoring an exact pair on the right gives an exact pair -/
 theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
-  dsimp only [Exact]
+  rw [LinearMap.exact_iff]
   apply le_antisymm
-  · rintro y ⟨x, rfl⟩
-    rw [mem_ker, ← rTensor_comp_apply, comp_eq_zero hfg]
-    simp only [rTensor_zero, zero_apply]
   · intro x hx
     rw [mem_ker] at hx
     rw [← Submodule.Quotient.mk_eq_zero, ← rTensor.inverse_apply Q hg hfg, hx, map_zero]
+  · rintro y ⟨x, rfl⟩
+    rw [mem_ker, ← rTensor_comp_apply, comp_eq_zero hfg]
+    simp only [rTensor_zero, zero_apply]
 
+/-- Tensoring an exact pair on the right gives an exact pair -/
+theorem rTensor_exact' : Exact (rTensor Q f) (rTensor Q g) := by
+  intro y
+  rw [mem_ker]
+  constructor
+  . intro hy
+    rw [← Submodule.Quotient.mk_eq_zero, ← rTensor.inverse_apply Q hg hfg, hy, map_zero]
+  . rintro ⟨x, rfl⟩
+    rw [← rTensor_comp_apply, comp_eq_zero hfg, rTensor_zero, zero_apply]
 end rTensor
 
 section lTensor
@@ -225,7 +255,7 @@ def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     apply Submodule.add_mem
     all_goals {
       apply le_comap_range_lTensor f
-      rw [hfg, mem_ker, map_sub]
+      rw [← hfg, mem_ker, map_sub]
       simp only [hgh _, sub_self] }
   . intro r p q
     rw [← TensorProduct.smul_tmul', ← Submodule.Quotient.mk_smul]
@@ -233,13 +263,13 @@ def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
     rw [← TensorProduct.tmul_add, ← TensorProduct.tmul_sub]
     apply le_comap_range_lTensor f
-    rw [hfg, mem_ker, map_sub, map_add]
+    rw [← hfg, mem_ker, map_sub, map_add]
     simp only [hgh _, sub_self]
   . intro r q p
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
     rw [← TensorProduct.tmul_smul, ← TensorProduct.tmul_sub]
     apply le_comap_range_lTensor f
-    rw [hfg, mem_ker, map_sub, map_smul]
+    rw [← hfg, mem_ker, map_sub, map_smul]
     simp only [hgh _, sub_self]
 
 private noncomputable
@@ -261,19 +291,19 @@ private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
   rw [Submodule.Quotient.eq]
   rw [← TensorProduct.tmul_sub]
   apply le_comap_range_lTensor f n
-  rw [hfg, mem_ker, map_sub, sub_eq_zero]
+  rw [← hfg, mem_ker, map_sub, sub_eq_zero]
   rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
 
 /-- Tensoring an exact pair on the left gives an exact pair -/
 theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
-  dsimp only [Exact]
+  rw [LinearMap.exact_iff]
   apply le_antisymm
-  · rintro y ⟨x, rfl⟩
-    rw [mem_ker, ← lTensor_comp_apply, comp_eq_zero hfg]
-    simp only [lTensor_zero, zero_apply]
   · intro x hx
     rw [mem_ker] at hx
     rw [← Submodule.Quotient.mk_eq_zero, ← lTensor.inverse_apply Q hg hfg, hx, map_zero]
+  · rintro y ⟨x, rfl⟩
+    rw [mem_ker, ← lTensor_comp_apply, comp_eq_zero hfg]
+    simp only [lTensor_zero, zero_apply]
 
 end lTensor
 
@@ -297,12 +327,11 @@ theorem TensorProduct.map_ker :
   ext y
   rw [← LinearMap.lTensor_comp_rTensor]
   rw [mem_ker, comp_apply, ← mem_ker]
-  rw [rTensor_exact N' hg hfg]
-  -- rw [← lTensor_exact P hg' hfg']
+  rw [← Exact.linearMap_ker_eq (rTensor_exact N' hg hfg)]
   rw [← Submodule.comap_map_eq]
   rw [Submodule.mem_comap]
   generalize rTensor N' g y = z
-  rw [← lTensor_exact P hg' hfg']
+  rw [Exact.linearMap_ker_eq (lTensor_exact P hg' hfg')]
   conv_rhs =>
     rw [LinearMap.range_eq_map, ← Submodule.map_comp,
       LinearMap.rTensor_comp_lTensor, Submodule.map_top]
