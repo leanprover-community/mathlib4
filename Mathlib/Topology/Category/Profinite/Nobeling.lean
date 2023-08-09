@@ -2622,63 +2622,13 @@ lemma Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
 
 lemma GoodProducts.max_eq_eval (l : StartingWithMax C o) :
     Linear_CC' C hsC ho (l.val.eval C) = (MaxTail C l).eval (C' C ho) := by
-  have hl' : l.val.val = (term I ho) :: (MaxTail C l).val := max_eq_o_cons_tail C ho l
-  have hlc : ((term I ho) :: (MaxTail C l).val).Chain' (·>·)
-  · rw [← hl']
-    exact l.val.prop
-  have hl : l.val = ⟨(term I ho) :: (MaxTail C l).val, hlc⟩
-  · simp_rw [← hl']
-    rfl
-  rw [hl, Products.evalCons]
-  ext x
-  dsimp [Linear_CC', Linear_CC'₁, Linear_CC'₀, LocallyConstant.comapLinear]
-  rw [LocallyConstant.sub_apply]
-  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
-  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)]
-  dsimp [CC'₀, CC'₁]
-  rw [Products.eval_eq]
-  rw [Products.eval_eq]
-  rw [Products.eval_eq]
-  simp only [mul_ite, mul_one, mul_zero]
-  have hi' : ∀ i, i ∈ (MaxTail C l).val → (x.val i = SwapTrue o x.val i)
-  · intro i hi
-    dsimp [SwapTrue]
-    split_ifs with h₁
-    · exfalso
-      suffices : i < term I ho
-      · dsimp [term] at this
-        simp_rw [← h₁] at this
-        dsimp [ord] at this
-        simp only [Ordinal.enum_typein, lt_self_iff_false] at this
-      rw [← gt_iff_lt]
-      apply List.Chain.rel _ hi
-      exact hlc
-    · rfl
-  split_ifs with h₁ h₂ h₂
-  <;> dsimp [e, Int.ofBool]
-  · split_ifs with hh₁ hh₂
-    · exfalso
-      rwa [mem_C'_eq_false C ho x x.prop, Bool.coe_false] at hh₂
-    · rfl
-    · exfalso
-      exact hh₁ (swapTrue_eq_true _ _)
-    · exfalso
-      exact hh₁ (swapTrue_eq_true _ _)
-  · push_neg at h₂
-    obtain ⟨i, hi⟩ := h₂
-    specialize h₁ i hi.1
-    specialize hi' i hi.1
-    exfalso
-    apply hi.2
-    rwa [hi']
-  · push_neg at h₁
-    obtain ⟨i, hi⟩ := h₁
-    specialize h₂ i hi.1
-    specialize hi' i hi.1
-    exfalso
-    apply hi.2
-    rwa [← hi']
+  rw [Products.max_eq_eval]
   · rfl
+  · exact l.prop.2.1
+  · have := l.prop.2.2
+    dsimp [term]
+    simp_rw [← l.prop.2.2]
+    simp only [ord, Ordinal.enum_typein]
 
 lemma GoodProducts.max_eq_eval_unapply :
     (Linear_CC' C hsC ho) ∘ (fun (l : StartingWithMax C o) ↦ Products.eval C l.val) =
