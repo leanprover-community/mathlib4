@@ -18,7 +18,7 @@ We construct the power functions `x ^ y` where
 We also prove basic properties of these functions.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -788,6 +788,7 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 
 end ENNReal
 
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
 -- section Tactics
 
 -- /-!

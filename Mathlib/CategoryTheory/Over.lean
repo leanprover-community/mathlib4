@@ -204,6 +204,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     repeat (ext; simp)
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
+/-- The identity over `X` is terminal. -/
+def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
+  CostructuredArrow.mkIdTerminal
+
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.over.forget_faithful CategoryTheory.Over.forget_faithful
 
@@ -455,6 +459,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
     repeat (ext; simp)
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
+
+/-- The identity under `X` is initial. -/
+def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
+  StructuredArrow.mkIdInitial
 
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful

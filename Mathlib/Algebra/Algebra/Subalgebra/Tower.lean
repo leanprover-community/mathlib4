@@ -43,7 +43,7 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 variable {A}
 
-theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R A x :=
+theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
   Eq.symm <| LinearMap.ext <| smul_def x
 #align algebra.lmul_algebra_map Algebra.lmul_algebraMap
 

@@ -5,7 +5,7 @@ Authors: Eric Wieser, Utensil Song
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 #align_import linear_algebra.clifford_algebra.basic from "leanprover-community/mathlib"@"d46774d43797f5d1f507a63a6e904f7a533ae74a"
 
@@ -315,7 +315,7 @@ variable {Q₁ Q₂ Q₃}
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
 @[simps! apply]
-def equivOfIsometry (e : Q₁.Isometry Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
+def equivOfIsometry (e : Q₁.IsometryEquiv Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
   AlgEquiv.ofAlgHom (map Q₁ Q₂ e e.map_app) (map Q₂ Q₁ e.symm e.symm.map_app)
     ((map_comp_map _ _ _ _ _ _ _).trans <| by
       convert map_id Q₂ using 2  -- porting note: replaced `_` with `Q₂`
@@ -328,13 +328,13 @@ def equivOfIsometry (e : Q₁.Isometry Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] Cl
 #align clifford_algebra.equiv_of_isometry CliffordAlgebra.equivOfIsometry
 
 @[simp]
-theorem equivOfIsometry_symm (e : Q₁.Isometry Q₂) :
+theorem equivOfIsometry_symm (e : Q₁.IsometryEquiv Q₂) :
     (equivOfIsometry e).symm = equivOfIsometry e.symm :=
   rfl
 #align clifford_algebra.equiv_of_isometry_symm CliffordAlgebra.equivOfIsometry_symm
 
 @[simp]
-theorem equivOfIsometry_trans (e₁₂ : Q₁.Isometry Q₂) (e₂₃ : Q₂.Isometry Q₃) :
+theorem equivOfIsometry_trans (e₁₂ : Q₁.IsometryEquiv Q₂) (e₂₃ : Q₂.IsometryEquiv Q₃) :
     (equivOfIsometry e₁₂).trans (equivOfIsometry e₂₃) = equivOfIsometry (e₁₂.trans e₂₃) := by
   ext x
   exact AlgHom.congr_fun (map_comp_map Q₁ Q₂ Q₃ _ _ _ _) x
@@ -342,7 +342,7 @@ theorem equivOfIsometry_trans (e₁₂ : Q₁.Isometry Q₂) (e₂₃ : Q₂.Iso
 
 @[simp]
 theorem equivOfIsometry_refl :
-    (equivOfIsometry <| QuadraticForm.Isometry.refl Q₁) = AlgEquiv.refl := by
+    (equivOfIsometry <| QuadraticForm.IsometryEquiv.refl Q₁) = AlgEquiv.refl := by
   ext x
   exact AlgHom.congr_fun (map_id Q₁) x
 #align clifford_algebra.equiv_of_isometry_refl CliffordAlgebra.equivOfIsometry_refl

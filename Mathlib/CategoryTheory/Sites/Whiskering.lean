@@ -27,13 +27,13 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-universe v₁ v₂ u₁ u₂ u₃
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-variable {A : Type u₂} [Category.{max v₁ u₁} A]
+variable {A : Type u₂} [Category.{v₂} A]
 
-variable {B : Type u₃} [Category.{max v₁ u₁} B]
+variable {B : Type u₃} [Category.{v₃} B]
 
 variable {J : GrothendieckTopology C}
 
