@@ -589,8 +589,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     rw [Set.union_eq_iUnion] at h
     refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
     · cases i <;> [exact h₂; exact h₁]
-    · cases i
-      <;> rw [continuousOn_iff_continuous_restrict]
+    · cases i <;> rw [continuousOn_iff_continuous_restrict]
       · convert hg
         ext x
         simp only [cond_false, restrict_apply, Subtype.coe_eta, dite_eq_right_iff]
