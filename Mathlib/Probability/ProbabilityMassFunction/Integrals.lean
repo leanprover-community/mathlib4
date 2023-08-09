@@ -25,7 +25,7 @@ theorem integral_eq_tsum' [MeasurableSpace α] [MeasurableSingletonClass α] (p 
   ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : ↑(support p)), f a * (p.toMeasure {a.val}).toReal := by
-    apply integral_countable f hs
+    apply integral_countable f p.support_countable
     rwa [restrict_toMeasure_support p]
   _ = ∑' (a : ↑(support p)), f a.val * (p a.val).toReal := by
     congr with x; congr
