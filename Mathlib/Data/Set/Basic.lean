@@ -179,12 +179,12 @@ theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 #align set.coe_set_of Set.coe_setOf
 
--- Porting: removed `simp` because `simp` can prove it
+-- Porting note: removed `simp` because `simp` can prove it
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 #align set_coe.forall SetCoe.forall
 
--- Porting: removed `simp` because `simp` can prove it
+-- Porting note: removed `simp` because `simp` can prove it
 theorem SetCoe.exists {s : Set α} {p : s → Prop} :
     (∃ x : s, p x) ↔ ∃ (x : _) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
@@ -423,7 +423,7 @@ theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
   id
 #align set.not_mem_empty Set.not_mem_empty
 
--- Porting: removed `simp` because `simp` can prove it
+-- Porting note: removed `simp` because `simp` can prove it
 theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 #align set.not_not_mem Set.not_not_mem
