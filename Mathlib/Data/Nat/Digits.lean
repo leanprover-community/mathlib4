@@ -484,7 +484,7 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
   exact base_pow_length_digits_le' b m
 #align nat.base_pow_length_digits_le Nat.base_pow_length_digits_le
 
-/-- Interpreting as a base p number and dividing by p is the same as interpreting the tail.
+/-- Interpreting as a base `p` number and dividing by `p` is the same as interpreting the tail.
 -/
 lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
@@ -495,7 +495,7 @@ lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
   rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self _ _, zero_add]
   rfl
 
-/-- Interpreting as a base p number and dividing by p^i is the same as dropping i.
+/-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
 -/
 lemma ofDigits_div_pow_eq_ofDigits_drop
     (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
