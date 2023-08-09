@@ -412,7 +412,7 @@ theorem rpow_eq_of_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) (h : y * log 
 
 theorem rpow_eq_iff_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
     y * log x = log z ↔ x ^ y = z :=
-  ⟨rpow_eq_of_mul_log hx hz, by rintro rfl ; rw [log_rpow hx]⟩
+  ⟨rpow_eq_of_mul_log hx hz, by rintro rfl; rw [log_rpow hx]⟩
 
 /-!
 ## Order and monotonicity
