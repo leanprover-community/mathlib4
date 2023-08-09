@@ -24,7 +24,8 @@ variable {K : Type _} [CompatibleField K]
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
     of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-theorem lift_genericPoly {p : Polynomial K} (hpm : p.Monic) (x : K) :
+theorem lift_genericPoly {R : Type _} [CommRing R]
+    {p : Polynomial R} (hpm : p.Monic) (x : R) :
     FreeCommRing.lift
       (Fin.snoc (fun i => p.coeff i) x)
       (genericMonicPoly p.natDegree) = p.eval x := by
