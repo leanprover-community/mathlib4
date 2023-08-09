@@ -6,6 +6,15 @@ Authors: Damiano Testa
 
 import Lean.Elab.Tactic.ElabTerm
 
+/-!
+
+# Tactic `change? _`
+
+This tactic is used to replace the goal with a definitionally equal one.
+The `_` is a general term and is intended to be used to guide which unfolding you want
+Lean to perform.
+-/
+
 /--  `change? term?` unifies the optional `term?` with the current goal, defaulting to the
 goal, if `term?` is not present.
 It then prints in the infoView the unified term.
