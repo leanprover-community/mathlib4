@@ -914,10 +914,6 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
   toFinite _
 #align set.finite_le_nat Set.finite_le_nat
 
-theorem finite_iff_exists_finset {s : Set α} : s.Finite ↔ ∃ t : Finset α, s ⊆ t :=
-  ⟨fun hs => ⟨hs.toFinset, by simp [Set.Subset.refl]⟩,
-    fun ⟨t, ht⟩ => Finite.subset (Finset.finite_toSet _) ht⟩
-
 section Prod
 
 variable {s : Set α} {t : Set β}
@@ -1338,10 +1334,6 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
 
 alias infinite_image_iff ↔ _ Infinite.image
 #align set.infinite.image Set.Infinite.image
-
-theorem infinite_iff_exists_not_mem_finset {s : Set α} :
-    s.Infinite ↔ ∀ t : Finset α, ∃ a ∈ s, a ∉ t := by
-  rw [← not_iff_not]; simpa [Set.subset_def] using finite_iff_exists_finset
 
 -- Porting note: attribute [protected] doesn't work
 -- attribute [protected] infinite.image
