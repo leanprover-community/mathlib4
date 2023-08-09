@@ -21,7 +21,7 @@ limᵢ Aᵢ.indicator = A.indicator implies limᵢ μ(Aᵢ) = μ(A).
 
 ## Tags
 
-indicator function, measure, dominated convergence
+indicator function, measure, dominated convergence of measure
 
 -/
 
@@ -149,13 +149,13 @@ lemma tendsto_measure_of_ae_tendsto_indicator (μ : Measure α) (A_mble : Measur
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
 almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
 the measure `μ A`. -/
-lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure' [IsCountablyGenerated L]
+lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGenerated L]
     (μ : Measure α) [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
     (As_mble : ∀ i, MeasurableSet (As i))
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
-  tendsto_measure_of_tendsto_indicator' L μ A_mble As_mble MeasurableSet.univ
+  tendsto_measure_of_ae_tendsto_indicator L μ A_mble As_mble MeasurableSet.univ
     (measure_ne_top μ univ) (eventually_of_forall (fun i ↦ subset_univ (As i))) h_lim
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
@@ -167,7 +167,7 @@ lemma tendsto_measure_of_tendsto_indicator [NeBot L] (μ : Measure α)
     (h_lim : Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)))
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞))))) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  apply tendsto_measure_of_tendsto_indicator' L μ ?_ As_mble B_mble B_finmeas As_le_B
+  apply tendsto_measure_of_ae_tendsto_indicator L μ ?_ As_mble B_mble B_finmeas As_le_B
   · apply eventually_of_forall
     simpa only [tendsto_pi_nhds] using h_lim
   · exact measurableSet_of_tendsto_indicator L As_mble h_lim
@@ -179,7 +179,7 @@ lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
     (h_lim : Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)))
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞))))) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  apply tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure' L μ ?_ As_mble
+  apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L μ ?_ As_mble
   · apply eventually_of_forall
     simpa only [tendsto_pi_nhds] using h_lim
   · exact measurableSet_of_tendsto_indicator L As_mble h_lim
