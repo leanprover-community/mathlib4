@@ -72,7 +72,7 @@ lemma exact_iff :
   constructor
   · exact Exact.linearMap_ker_eq
   · intro h y
-    -- rw [AddMonoidHom.mem_ker, toAddMonoidHom_coe, ← LinearMap.mem_ker, h] ; rfl
+    -- rw [AddMonoidHom.mem_ker, toAddMonoidHom_coe, ← LinearMap.mem_ker, h]; rfl
     rw [h]
 
 
@@ -114,7 +114,8 @@ example (R : Type _) [CommSemiring R]
 
 variable {Q} (g)
 lemma le_comap_range_rTensor (q : Q) :
-    LinearMap.range g ≤ (LinearMap.range (rTensor Q g)).comap ((TensorProduct.mk R P Q).flip q) := by
+    LinearMap.range g ≤ (LinearMap.range (rTensor Q g)).comap
+      ((TensorProduct.mk R P Q).flip q) := by
   rintro x ⟨n, rfl⟩
   exact ⟨n ⊗ₜ[R] q, rfl⟩
 
@@ -338,3 +339,9 @@ theorem TensorProduct.map_ker :
     rw [← LinearMap.lTensor_comp_rTensor, LinearMap.range_eq_map,
       Submodule.map_comp, Submodule.map_top]
   rw [LinearMap.range_eq_top.mpr (rTensor.Surjective M' hg), Submodule.map_top]
+
+end TensorProduct_map
+
+end Exact
+
+end LinearMap
