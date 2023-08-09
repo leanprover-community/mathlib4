@@ -20,6 +20,33 @@ namespace Pmf
 
 open MeasureTheory BigOperators
 
+@[simp]
+theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClass α]  (p : Pmf α)
+  (hs : p.support.Countable) :
+  Measure.restrict (toMeasure p) (support p) = toMeasure p := by
+  apply MeasureTheory.Measure.restrict_eq_self_of_ae_mem
+  apply Iff.mp measure_zero_iff_ae_nmem
+  rw [p.toMeasure_apply (hs := MeasurableSet.of_compl (Set.Countable.measurableSet hs))]
+  simp; tauto
+
+theorem integral_eq_tsum' [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
+  (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) (hs : p.support.Countable):
+  ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := calc
+  _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p hs]
+  _ = ∑' (a : ↑(support p)), f a * (p.toMeasure {a.val}).toReal := by
+    apply integral_countable f hs
+    rwa [restrict_toMeasure_support p hs]
+  _ = ∑' (a : ↑(support p)), f a.val * (p a.val).toReal := by
+    congr with x; congr
+    apply Pmf.toMeasure_apply_singleton p x.val (MeasurableSet.singleton x.val)
+  _ = _ := by
+    apply tsum_subtype_eq_of_support_subset (s := p.support)
+      (f := fun a=>f ↑a * ENNReal.toReal (p ↑a))
+    trans; refine Function.support_mul_subset_right _ _
+    intro x
+    simp [ENNReal.toReal_eq_zero_iff]
+    tauto
+
 theorem integral_eq_tsum [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
   (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
   ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := by
