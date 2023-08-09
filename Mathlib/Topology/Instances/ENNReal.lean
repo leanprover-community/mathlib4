@@ -1133,8 +1133,8 @@ theorem _root_.Summable.countable_support (f : α → ℝ≥0) (h : Summable f) 
   apply Set.Finite.countable
   rw [← Set.finite_coe_iff]
   apply Finite.of_summable_const (ι := s n) (b := (eps n : ℝ))
-  . simp; positivity
-  . have hs : Summable ((s n).indicator (fun _ => (eps n : ℝ≥0))) :=
+  · simp; positivity
+  · have hs : Summable ((s n).indicator (fun _ => (eps n : ℝ≥0))) :=
       NNReal.summable_of_le (fun a ↦ Set.indicator_le (fun b hb ↦ hb) a) h
     rw [← summable_subtype_iff_indicator] at hs
     rwa [NNReal.summable_coe]
