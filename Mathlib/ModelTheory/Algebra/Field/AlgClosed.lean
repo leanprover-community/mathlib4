@@ -245,7 +245,8 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
       refine Finset.mem_biUnion.2 ?_
       refine ⟨⟨φ, hφ⟩, Finset.mem_attach _ _, ?_⟩
       exact (h1 φ (hT0 hφ)).2 p hpφ
-    have : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }, p ∉ s := sorry
+    have : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }, p ∉ s :=
+      hφ.exists_not_mem_finset s
     rcases this with ⟨p, hp₁, hp₂⟩
     refine ⟨p, hp₁, ?_⟩
     intro φ hφ
