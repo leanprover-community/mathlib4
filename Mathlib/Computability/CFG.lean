@@ -28,8 +28,8 @@ inductive Symbol (T : Type u) (N : Type u)
   | nonterminal (n : N) : Symbol T N
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
-structure CFG (T : Type _) where
-  nt : Type _                            -- type of nonterminals
+structure CFG (T : Type u) where
+  nt : Type u                            -- type of nonterminals
   initial : nt                           -- initial nonterminal
   rules : List (nt × List (Symbol T nt)) -- rewrite rules
 
