@@ -112,15 +112,13 @@ variable {M : Type u} {α : Type v} {β : Type w}
 theorem SMulInvariantMeasure_map {F : Type _} [SMul M α] [SMul M β] [SMulHomClass F M α β]
     [MeasurableSMul M β]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (f : F) (hf: Measurable f) :
-    SMulInvariantMeasure M β (map f μ) := by
-  refine' ⟨fun m S hS => _⟩
-  calc
-    map f μ ((m • ·) ⁻¹' S) = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf (MeasurableSet.preimage
-      hS (measurable_const_smul _))
-    _ = μ (((m • ·) ∘ (f : α →[M] β)) ⁻¹' S) := by rw [@preimage_comp]; rfl
-    _ = μ (((f : α →[M] β) ∘ (m • ·)) ⁻¹' S) := by rw [←SMulHomClass.comp_smul
-                                                        (SMulHomClass.toMulActionHom f)]
-    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [preimage_comp]; rfl
+    SMulInvariantMeasure M β (map f μ) where
+  measure_preimage_smul m S hS := calc
+    map f μ ((m • ·) ⁻¹' S)
+    _ = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf <| hS.preimage (measurable_const_smul _)
+    _ = μ (((m • ·) ∘ f) ⁻¹' S) := by rw [preimage_comp]
+    _ = μ (((f) ∘ (m • ·)) ⁻¹' S) := by rw [SMulHomClass.comp_smul f]
+    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [preimage_comp]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
     _ = (map f μ) S  := by rw [←map_apply hf hS]
 
