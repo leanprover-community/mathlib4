@@ -4,14 +4,30 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.RingTheory.FreeCommRing
+import Mathlib.ModelTheory.Algebra.Ring.Basic
 
 namespace FirstOrder
 
 namespace Language
 
 namespace ring
+
+@[simp]
+def freeCommRingRingStructure (α : Type _) :
+    Language.ring.Structure (FreeCommRing α) :=
+  { funMap := fun {n} f =>
+      match n, f with
+      | _, .add => fun x => x 0 + x 1
+      | _, .mul => fun x => x 0 * x 1
+      | _, .neg => fun x => - x 0
+      | _, .zero => fun _ => 0
+      | _, .one => fun _ => 1,
+    RelMap := fun f => by cases f }
+
+section
+
+attribute [local instance] freeCommRingRingStructure
 
 theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
     ∃ t : Language.ring.Term α,
@@ -24,20 +40,10 @@ theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
     (fun x y ⟨t₁, ht₁⟩ ⟨t₂, ht₂⟩ =>
       ⟨t₁ * t₂, by simp_all [Term.realize]⟩)
 
+end
+
 noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term α :=
   Classical.choose (exists_term_realize_eq_freeCommRing p)
-
-variable {R : Type _} [CommRing R]
-
-@[simp]
-theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
-    (termOfFreeCommRing p).realize v = FreeCommRing.lift v p := by
-  have : (termOfFreeCommRing p).realize FreeCommRing.of = p :=
-    Classical.choose_spec (exists_term_realize_eq_freeCommRing p)
-  conv_rhs => rw [← this]
-  induction termOfFreeCommRing p with
-  | var _ => simp
-  | func f _ ih => cases f <;> simp_all
 
 end ring
 

@@ -6,8 +6,8 @@ Authors: Chris Hughes
 
 import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Field.MinimalAxioms
 
@@ -86,17 +86,6 @@ instance (α : Type _) : Inv (Language.field.Term α) :=
 theorem inv_def (α : Type _) (t : Language.field.Term α) :
     t⁻¹ = invFunction.apply₁ t := rfl
 
-@[simp]
-instance : Language.ring.Structure (Language.field.Term α) :=
-  { RelMap := Empty.elim,
-    funMap := fun {n} f =>
-      match n, f with
-      | _, .add => fun x => x 0 + x 1
-      | _, .mul => fun x => x 0 * x 1
-      | _, .neg => fun x => -x 0
-      | _, .zero => fun _ => 0
-      | _, .one => fun _ => 1 }
-
 instance : Fintype Language.field.Symbols :=
   ⟨⟨Multiset.ofList
       [Sum.inl ⟨2, .add⟩,
@@ -116,6 +105,16 @@ instance : Fintype Language.field.Symbols :=
 theorem card_field : card Language.field = 6 := by
   have : Fintype.card Language.field.Symbols = 6 := rfl
   simp [Language.card, this]
+
+def ofRing : Language.ring →ᴸ Language.field :=
+  { onFunction := fun n f =>
+      match n, f with
+      | _, .add => .add
+      | _, .mul => .mul
+      | _, .neg => .neg
+      | _, .zero => .zero
+      | _, .one => .one
+    onRelation := fun _ => id }
 
 end field
 
