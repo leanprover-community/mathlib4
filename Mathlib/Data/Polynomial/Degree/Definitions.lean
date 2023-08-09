@@ -1139,7 +1139,7 @@ theorem eq_C_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) 
 theorem natDegree_pos_of_monic_ne_one (hf : p.Monic) (hfne : p ≠ 1) : p.natDegree ≠ 0 := by
   by_contra' H
   refine hfne (eq_C_one_of_monic_natDegree_zero hf ?_)
-  exact Nat.le_zero.mp H
+  exact H
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
   zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg
