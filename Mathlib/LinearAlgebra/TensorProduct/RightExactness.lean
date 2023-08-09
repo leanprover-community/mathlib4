@@ -79,15 +79,30 @@ example (N' : Submodule R N) : Submodule R (N ⊗[R] P) :=
 
 variable (Q : Type _) [AddCommGroup Q] [Module R Q]
 
-variable (g)
-lemma rTensor.mem_range {p : P} {q : Q} (hp : p ∈ LinearMap.range g) :
-  p ⊗ₜ[R] q ∈  LinearMap.range (rTensor Q g) := by
-  simp only [mem_range] at hp ⊢
-  obtain ⟨n, rfl⟩ := hp
-  use n ⊗ₜ[R] q
-  simp only [rTensor_tmul]
+variable (q : Q)
 
-variable {g}
+example (R : Type _) [CommSemiring R]
+    (M N P : Type _) [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+      [Module R M] [Module R N] [Module R P]
+      (f : M →ₗ[R] N →ₗ[R] P) (m : M) :
+  N →ₗ[R] P := f m
+
+example (R : Type _) [CommSemiring R]
+    (M N P : Type _) [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+      [Module R M] [Module R N] [Module R P]
+      (f : M →ₗ[R] N →ₗ[R] P) (n : N) :
+  M →ₗ[R] P := f.flip n
+
+variable {Q} (g)
+lemma le_comap_range_rTensor (q : Q) :
+    LinearMap.range g ≤ (LinearMap.range (rTensor Q g)).comap ((TensorProduct.mk R P Q).flip q) := by
+  rintro x ⟨n, rfl⟩
+  exact ⟨n ⊗ₜ[R] q, rfl⟩
+
+lemma rTensor.mem_range {p : P} (q : Q) (hp : p ∈ LinearMap.range g) :
+    p ⊗ₜ[R] q ∈  LinearMap.range (rTensor Q g) := le_comap_range_rTensor g q hp
+
+variable (Q) {g}
 
 variable (hg : Function.Surjective g) (hfg : Exact f g)
 
@@ -126,13 +141,13 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
   . intro p p' q
     rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
     rw [← TensorProduct.add_tmul, ← TensorProduct.sub_tmul]
-    apply rTensor.mem_range
+    apply le_comap_range_rTensor f
     rw [hfg, mem_ker, map_sub, map_add]
     simp only [hgh _, sub_self]
   . intro r p q
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
     rw [TensorProduct.smul_tmul', ← TensorProduct.sub_tmul]
-    apply rTensor.mem_range
+    apply le_comap_range_rTensor f
     rw [hfg, mem_ker, map_sub, map_smul]
     simp only [hgh _, sub_self]
   . intro p q q'
@@ -142,7 +157,7 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     simp only [← TensorProduct.sub_tmul]
     apply Submodule.add_mem
     all_goals {
-      apply rTensor.mem_range
+      apply le_comap_range_rTensor f
       rw [hfg, mem_ker, map_sub]
       simp only [hgh _, sub_self] }
   . intro r p q
@@ -166,7 +181,7 @@ private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
   simp only [TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk, mk₂_apply]
   rw [Submodule.Quotient.eq]
   rw [← TensorProduct.sub_tmul]
-  apply rTensor.mem_range
+  apply le_comap_range_rTensor f
   rw [hfg, mem_ker, map_sub, sub_eq_zero]
   rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
 
@@ -189,15 +204,16 @@ open scoped TensorProduct
 
 variable (Q : Type _) [AddCommGroup Q] [Module R Q]
 
-variable (g)
-lemma lTensor.mem_range {p : P} {q : Q} (hp : p ∈ LinearMap.range g) :
-  q ⊗ₜ[R] p ∈  LinearMap.range (lTensor Q g) := by
-  simp only [mem_range] at hp ⊢
-  obtain ⟨n, rfl⟩ := hp
-  use q ⊗ₜ[R] n
-  simp only [lTensor_tmul]
+variable (g) {Q}
+lemma le_comap_range_lTensor (q : Q) :
+    LinearMap.range g ≤ (LinearMap.range (lTensor Q g)).comap (TensorProduct.mk R Q P q) := by
+  rintro x ⟨n, rfl⟩
+  exact ⟨q ⊗ₜ[R] n, rfl⟩
 
-variable {g}
+lemma lTensor.mem_range {p : P} (q : Q) (hp : p ∈ LinearMap.range g) :
+    q ⊗ₜ[R] p ∈  LinearMap.range (lTensor Q g) := le_comap_range_lTensor g q hp
+
+variable (Q) {g}
 variable (hg : Function.Surjective g) (hfg : Exact f g)
 
 theorem lTensor.Surjective : Function.Surjective (lTensor Q g) := by
@@ -226,7 +242,7 @@ def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     simp only [← TensorProduct.tmul_sub]
     apply Submodule.add_mem
     all_goals {
-      apply lTensor.mem_range
+      apply le_comap_range_lTensor f
       rw [hfg, mem_ker, map_sub]
       simp only [hgh _, sub_self] }
   . intro r p q
@@ -234,13 +250,13 @@ def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
   . intro q p p'
     rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
     rw [← TensorProduct.tmul_add, ← TensorProduct.tmul_sub]
-    apply lTensor.mem_range
+    apply le_comap_range_lTensor f
     rw [hfg, mem_ker, map_sub, map_add]
     simp only [hgh _, sub_self]
   . intro r q p
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
     rw [← TensorProduct.tmul_smul, ← TensorProduct.tmul_sub]
-    apply lTensor.mem_range
+    apply le_comap_range_lTensor f
     rw [hfg, mem_ker, map_sub, map_smul]
     simp only [hgh _, sub_self]
 
@@ -262,7 +278,7 @@ private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
   simp only [TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk, mk₂_apply]
   rw [Submodule.Quotient.eq]
   rw [← TensorProduct.tmul_sub]
-  apply lTensor.mem_range
+  apply le_comap_range_lTensor f n
   rw [hfg, mem_ker, map_sub, sub_eq_zero]
   rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
 
