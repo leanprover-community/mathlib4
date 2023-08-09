@@ -371,7 +371,7 @@ end Coeff
 section cast
 
 theorem nat_cast_coeff_zero {n : ℕ} {R : Type _} [Semiring R] : (n : R[X]).coeff 0 = n := by
-  simp? says simp only [coeff_nat_cast_ite, ite_true]
+  simp only [coeff_nat_cast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.nat_cast_coeff_zero
 
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
