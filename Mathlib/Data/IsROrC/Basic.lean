@@ -834,8 +834,10 @@ end Instances
 
 namespace IsROrC
 
+section Order
 
-open scoped ComplexOrder in
+open scoped ComplexOrder
+
 theorem lt_iff_re_im {z w : K} : z < w ↔ re z < re w ∧ im z = im w := by
   simp_rw [lt_iff_le_and_ne, @IsROrC.le_iff_re_im K]
   constructor
@@ -844,7 +846,6 @@ theorem lt_iff_re_im {z w : K} : z < w ↔ re z < re w ∧ im z = im w := by
   · rintro ⟨⟨hr, hrn⟩, hi⟩
     exact ⟨⟨hr, hi⟩, ne_of_apply_ne _ hrn⟩
 
-open scoped ComplexOrder in
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
@@ -868,8 +869,9 @@ def toStarOrderedRing : StarOrderedRing K :=
 
 scoped[ComplexOrder] attribute [instance] IsROrC.toStarOrderedRing
 
-open scoped ComplexOrder in
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings. -/
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
+
+Note this is only an instance with `open scoped ComplexOrder`. -/
 def toStrictOrderedCommRing : StrictOrderedCommRing K where
   zero_le_one := by simp [@IsROrC.le_iff_re_im K]
   add_le_add_left _ _ := add_le_add_left
@@ -878,8 +880,9 @@ def toStrictOrderedCommRing : StrictOrderedCommRing K where
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
   mul_comm := by intros; apply ext <;> ring_nf
 
-open scoped ComplexOrder in
-protected theorem toOrderedSMul : OrderedSMul ℝ K :=
+scoped[ComplexOrder] attribute [instance] IsROrC.toStrictOrderedCommRing
+
+theorem toOrderedSMul : OrderedSMul ℝ K :=
   OrderedSMul.mk' fun a b r hab hr => by
     replace hab := hab.le
     rw [IsROrC.le_iff_re_im] at hab
@@ -887,6 +890,8 @@ protected theorem toOrderedSMul : OrderedSMul ℝ K :=
     exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
 
 scoped[ComplexOrder] attribute [instance] IsROrC.toOrderedSMul
+
+end Order
 
 open ComplexConjugate
 
