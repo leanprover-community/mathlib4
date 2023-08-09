@@ -134,6 +134,7 @@ inductive FieldAxiom : Type
   | invZero : FieldAxiom
   | leftDistrib : FieldAxiom
   | existsPairNe : FieldAxiom
+  deriving DecidableEq
 
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.field.Sentence
