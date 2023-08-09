@@ -637,15 +637,4 @@ instance : HasImageMaps (Type u) where
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
         erw [p, Classical.choose_spec x.2]⟩⟩) rfl
 
--- porting note: the following three instances have been added to ease
--- the automation in a definition in `AlgebraicTopology.SimplicialSet`
-noncomputable instance : Inhabited (⊤_ (Type u)) :=
-  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
-
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
-  congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
-    (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
-
-noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
-
 end CategoryTheory.Limits.Types

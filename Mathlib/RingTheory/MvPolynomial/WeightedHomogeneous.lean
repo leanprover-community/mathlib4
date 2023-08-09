@@ -176,6 +176,7 @@ variable {R}
 theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
     weightedHomogeneousSubmodule R w m * weightedHomogeneousSubmodule R w n ≤
       weightedHomogeneousSubmodule R w (m + n) := by
+  classical
   rw [Submodule.mul_le]
   intro φ hφ ψ hψ c hc
   rw [coeff_mul] at hc

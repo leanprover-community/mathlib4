@@ -220,6 +220,38 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
   exact fun _ => rfl
 #align linear_independent.map LinearIndependent.map
 
+/-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
+    spans a submodule disjoint from the kernel of `f` -/
+theorem Submodule.ker_range_disjoint {f : M →ₗ[R] M'} (hi : v.Injective)
+    (hv : LinearIndependent R (f ∘ v)) :
+    Disjoint (LinearMap.ker f) (Submodule.span R (Set.range v)) := by
+  rw [Submodule.disjoint_def]
+  intro m hm hmr
+  simp only [LinearMap.mem_ker] at hm
+  rw [mem_span_set] at hmr
+  obtain ⟨c, ⟨hc, hsum⟩⟩ := hmr
+  rw [← hsum, map_finsupp_sum] at hm
+  simp_rw [f.map_smul] at hm
+  dsimp [Finsupp.sum] at hm
+  rw [linearIndependent_iff'] at hv
+  specialize hv (Finset.preimage c.support v (Set.injOn_of_injective hi _))
+  rw [← Finset.sum_preimage v c.support (Set.injOn_of_injective hi _) _ _] at hm
+  · rw [← hsum]
+    apply Finset.sum_eq_zero
+    intro x hx
+    obtain ⟨y, hy⟩ := hc hx
+    rw [← hy]
+    have : c (v y) = 0
+    · apply hv (c ∘ v) hm y
+      simp only [Finset.mem_preimage, Function.comp_apply]
+      dsimp at hy
+      rwa [hy]
+    rw [this]
+    simp only [zero_smul]
+  · intro x hx hnx
+    exfalso
+    exact hnx (hc hx)
+
 /-- An injective linear map sends linearly independent families of vectors to linearly independent
 families of vectors. See also `LinearIndependent.map` for a more general statement. -/
 theorem LinearIndependent.map' (hv : LinearIndependent R v) (f : M →ₗ[R] M')
