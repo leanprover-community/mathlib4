@@ -39,7 +39,7 @@ namespace AddMonoidHom
 
 def Exact {M N P : Type _} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
   (f : outParam (M →+ N)) (g : outParam (N →+ P)) :=
-  g.ker = f.range
+  ∀ y, y ∈ g.ker ↔ y ∈ f.range
 
 end AddMonoidHom
 
@@ -119,41 +119,40 @@ def inverse : P →ₗ[R] (N ⧸ (LinearMap.range f)) := {
     simp only [map_sub, map_smul, Exists.choose_spec (hg _), sub_self] } -/
 
 private noncomputable
-def rTensor.inverse : P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) := by
+def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+  P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) := by
   apply TensorProduct.lift
-  exact {
-    toFun := fun z ↦ {
-      toFun := fun q ↦ Submodule.Quotient.mk ((hg z).choose ⊗ₜ[R] q)
-      map_add' := fun q q' ↦ by
-        dsimp
-        rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
-        rw [TensorProduct.tmul_add]
-        rw [add_sub_add_comm]
-        simp only [← TensorProduct.sub_tmul]
-        apply Submodule.add_mem
-        all_goals {
-          apply rTensor.mem_range
-          rw [hfg, mem_ker, map_sub]
-          simp only [Exists.choose_spec (hg _), sub_self] }
-      map_smul' := fun r q ↦ by
-        dsimp
-        simp only [TensorProduct.tmul_smul, Submodule.Quotient.mk_smul] }
-    map_add' := fun p p' ↦ by
-      ext q
-      simp only [coe_mk, AddHom.coe_mk, add_apply]
-      rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
-      rw [← TensorProduct.add_tmul, ← TensorProduct.sub_tmul]
+  apply LinearMap.mk₂ R (fun p q ↦ Submodule.Quotient.mk (h p ⊗ₜ[R] q))
+  . intro p p' q
+    rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
+    rw [← TensorProduct.add_tmul, ← TensorProduct.sub_tmul]
+    apply rTensor.mem_range
+    rw [hfg, mem_ker, map_sub, map_add]
+    simp only [hgh _, sub_self]
+  . intro r p q
+    rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
+    rw [TensorProduct.smul_tmul', ← TensorProduct.sub_tmul]
+    apply rTensor.mem_range
+    rw [hfg, mem_ker, map_sub, map_smul]
+    simp only [hgh _, sub_self]
+  . intro p q q'
+    rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
+    rw [TensorProduct.tmul_add]
+    rw [add_sub_add_comm]
+    simp only [← TensorProduct.sub_tmul]
+    apply Submodule.add_mem
+    all_goals {
       apply rTensor.mem_range
-      rw [hfg, mem_ker, map_sub, map_add]
-      simp only [Exists.choose_spec (hg _), sub_self]
-    map_smul' := fun r p ↦ by
-      ext q
-      simp only [coe_mk, AddHom.coe_mk,RingHom.id_apply, smul_apply]
-      rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
-      rw [TensorProduct.smul_tmul', ← TensorProduct.sub_tmul]
-      apply rTensor.mem_range
-      rw [hfg, mem_ker, map_sub, map_smul]
-      simp only [Exists.choose_spec (hg _), sub_self] }
+      rw [hfg, mem_ker, map_sub]
+      simp only [hgh _, sub_self] }
+  . intro r p q
+    simp only [TensorProduct.tmul_smul, Submodule.Quotient.mk_smul]
+
+private noncomputable
+def rTensor.inverse :
+  P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) :=
+  rTensor.inverse_ofRightInverse Q hfg
+    (Function.Surjective.hasRightInverse hg).choose_spec
 
 private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
   (rTensor.inverse Q hg hfg) ((rTensor Q g) y) =
@@ -163,11 +162,13 @@ private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
   apply TensorProduct.ext'
   intro n q
   simp only [coe_comp, Function.comp_apply, rTensor_tmul, Submodule.mkQ_apply]
-  simp only [rTensor.inverse, TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk]
+  simp only [rTensor.inverse, rTensor.inverse_ofRightInverse]
+  simp only [TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk, mk₂_apply]
   rw [Submodule.Quotient.eq]
   rw [← TensorProduct.sub_tmul]
   apply rTensor.mem_range
-  rw [hfg, mem_ker, map_sub, Exists.choose_spec (hg _), sub_self]
+  rw [hfg, mem_ker, map_sub, sub_eq_zero]
+  rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
 
 /-- Tensoring an exact pair on the right gives an exact pair -/
 theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
@@ -179,8 +180,6 @@ theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
   · intro x hx
     rw [mem_ker] at hx
     rw [← Submodule.Quotient.mk_eq_zero, ← rTensor.inverse_apply Q hg hfg, hx, map_zero]
-
-
 
 end rTensor
 
@@ -216,46 +215,40 @@ theorem lTensor.Surjective : Function.Surjective (lTensor Q g) := by
       rw [map_add]
 
 private noncomputable
-def lTensor.inverse_aux (q : Q) : P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) := {
-  toFun := fun p ↦ Submodule.Quotient.mk (q ⊗ₜ[R] (hg p).choose)
-  map_add' := fun p p' ↦ by
-    simp only [coe_mk, AddHom.coe_mk, add_apply]
+def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+  Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) := by
+  apply TensorProduct.lift
+  apply LinearMap.mk₂ R (fun q p ↦ Submodule.Quotient.mk (q ⊗ₜ[R] (h p)))
+  . intro q q' p
+    rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
+    rw [TensorProduct.add_tmul]
+    rw [add_sub_add_comm]
+    simp only [← TensorProduct.tmul_sub]
+    apply Submodule.add_mem
+    all_goals {
+      apply lTensor.mem_range
+      rw [hfg, mem_ker, map_sub]
+      simp only [hgh _, sub_self] }
+  . intro r p q
+    rw [← TensorProduct.smul_tmul', ← Submodule.Quotient.mk_smul]
+  . intro q p p'
     rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
     rw [← TensorProduct.tmul_add, ← TensorProduct.tmul_sub]
     apply lTensor.mem_range
     rw [hfg, mem_ker, map_sub, map_add]
-    simp only [Exists.choose_spec (hg _), sub_self]
-  map_smul' := fun r p ↦ by
-    simp only [coe_mk, AddHom.coe_mk,RingHom.id_apply, smul_apply]
+    simp only [hgh _, sub_self]
+  . intro r q p
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
     rw [← TensorProduct.tmul_smul, ← TensorProduct.tmul_sub]
     apply lTensor.mem_range
     rw [hfg, mem_ker, map_sub, map_smul]
-    simp only [Exists.choose_spec (hg _), sub_self] }
+    simp only [hgh _, sub_self]
 
 private noncomputable
-def lTensor.inverse : Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) := by
-  apply TensorProduct.lift
-  exact {
-    toFun := lTensor.inverse_aux Q hg hfg
-    map_smul' := fun r q ↦ by
-      ext p
-      dsimp only [lTensor.inverse_aux]
-      simp only [coe_mk, AddHom.coe_mk, RingHom.id_apply, smul_apply]
-      rw [← Submodule.Quotient.mk_smul]
-      rfl
-    map_add' := fun q q' ↦ by
-      ext p
-      dsimp [lTensor.inverse_aux]
-      rw [← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
-      rw [TensorProduct.add_tmul]
-      rw [add_sub_add_comm]
-      simp only [← TensorProduct.tmul_sub]
-      apply Submodule.add_mem
-      all_goals {
-        apply lTensor.mem_range
-        rw [hfg, mem_ker, map_sub]
-        simp only [Exists.choose_spec (hg _), sub_self] } }
+def lTensor.inverse :
+  Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) :=
+  lTensor.inverse_ofRightInverse Q hfg
+    (Function.Surjective.hasRightInverse hg).choose_spec
 
 private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
   (lTensor.inverse Q hg hfg) ((lTensor Q g) y) =
@@ -265,11 +258,13 @@ private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
   apply TensorProduct.ext'
   intro n q
   simp only [coe_comp, Function.comp_apply, lTensor_tmul, Submodule.mkQ_apply]
-  simp only [lTensor.inverse, lTensor.inverse_aux, TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk]
+  simp only [lTensor.inverse, lTensor.inverse_ofRightInverse]
+  simp only [TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk, mk₂_apply]
   rw [Submodule.Quotient.eq]
   rw [← TensorProduct.tmul_sub]
   apply lTensor.mem_range
-  rw [hfg, mem_ker, map_sub, Exists.choose_spec (hg _), sub_self]
+  rw [hfg, mem_ker, map_sub, sub_eq_zero]
+  rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
 
 /-- Tensoring an exact pair on the left gives an exact pair -/
 theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
