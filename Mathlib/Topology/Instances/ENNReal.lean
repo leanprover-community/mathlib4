@@ -1118,7 +1118,7 @@ theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summa
 #align nnreal.summable_of_le NNReal.summable_of_le
 
 /-- Summable non-negative functions have countable support -/
-theorem _root_.Summable.countable_support (f : α → ℝ≥0) (h : Summable f) :
+theorem _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
   f.support.Countable := by
   let eps := fun (n : ℕ) => (1/(n+1) : ℝ≥0)
   let s := fun (n : ℕ) => { x : α | eps n ≤ f x }
@@ -1323,6 +1323,12 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
   refine' summable_of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => _) hf.abs
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 #align summable.to_nnreal Summable.toNNReal
+
+/-- Summable non-negative functions have countable support -/
+theorem _root_.Summable.countable_support {f : α → ℝ} (hf : ∀ x, 0 ≤ f x) (h : Summable f) :
+  f.support.Countable := by
+  convert Summable.countable_support_nnreal (fun x => (f x).toNNReal) (h.toNNReal)
+  ext x; simp [lt_iff_le_and_ne]; tauto
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
