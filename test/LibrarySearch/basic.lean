@@ -43,11 +43,6 @@ example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 #guard_msgs in
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
-example (x y : Nat) : True := by
-  observe h : x + y = y + x
-  guard_hyp h : x + y = y + x
-  trivial
-
 /-- info: Try this: exact Int.one -/
 #guard_msgs in
 example : Int := by apply?
