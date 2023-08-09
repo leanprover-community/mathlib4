@@ -10,8 +10,8 @@ import Mathlib.Algebra.Group.MinimalAxioms
 /-!
 # Minimal Axioms for a Ring
 
-This file defines constructors to define a `Ring` or `CommRing` structure on a Type, while proving only three
-equalities.
+This file defines constructors to define a `Ring` or `CommRing` structure on a Type, while proving
+a minimum number of equalities.
 
 ## Main Definitions
 

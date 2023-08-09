@@ -10,8 +10,8 @@ import Mathlib.Algebra.Ring.MinimalAxioms
 /-!
 # Minimal Axioms for a Field
 
-This file defines constructors to define a `Field` structure on a Type, while proving only three
-equalities.
+This file defines constructors to define a `Field` structure on a Type, while proving
+a minimum number of equalities.
 
 ## Main Definitions
 
