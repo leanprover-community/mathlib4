@@ -10,6 +10,12 @@ import Mathlib.Data.Complex.Module
 
 This order is defined by `z ≤ w ↔ z.re ≤ w.re ∧ z.im = w.im`.
 
+This is a natural order on `ℂ` because, as is well-known, there does not exist an order on `ℂ`
+making it into a `LinearOrderedField`. However, the order described above is the canonical order
+stemming from the structure of `ℂ` as a ⋆-ring (i.e., it becomes a `StarOrderedRing`). Moreover,
+with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ → ℂ` is an order
+embedding.
+
 Main definitions:
 
 * `Complex.partialOrder`
