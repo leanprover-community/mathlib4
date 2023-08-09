@@ -1239,29 +1239,6 @@ protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
 
 scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
 
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a star ordered ring.
-(That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
--/
-protected def starOrderedRing : StarOrderedRing ℂ :=
-  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
-    refine' ⟨fun hr => ⟨Real.sqrt r.re, _⟩, fun h => _⟩
-    · have h₁ : 0 ≤ r.re := by
-        rw [le_def] at hr
-        exact hr.1
-      have h₂ : r.im = 0 := by
-        rw [le_def] at hr
-        exact hr.2.symm
-      ext
-      · simp only [ofReal_im, star_def, ofReal_re, sub_zero, conj_re, mul_re, mul_zero,
-          ← Real.sqrt_mul h₁ r.re, Real.sqrt_mul_self h₁]
-      · simp only [h₂, add_zero, ofReal_im, star_def, zero_mul, conj_im, mul_im, mul_zero,
-          neg_zero]
-    · obtain ⟨s, rfl⟩ := h
-      simp only [← normSq_eq_conj_mul_self, normSq_nonneg, zero_le_real, star_def]
-#align complex.star_ordered_ring Complex.starOrderedRing
-
-scoped[ComplexOrder] attribute [instance] Complex.starOrderedRing
-
 end ComplexOrder
 
 /-! ### Cauchy sequences -/
