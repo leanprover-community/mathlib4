@@ -56,15 +56,8 @@ theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
   ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
 
 theorem coeff_zero_eq_iff {a : R} : p.coeff 0 = a ↔ ∃ g : Polynomial R, p = X * g + C a := by
-  constructor
-  · intro h
-    use p.divX
-    rw [←h, X_mul_divX_add p]
-  · intro h
-    cases' h with g hg
-    rw [hg, add_comm, coeff_add, coeff_C]
-    simp only [eq_self_iff_true, if_true, mul_coeff_zero, coeff_X_zero, MulZeroClass.zero_mul,
-      add_zero]
+  conv_rhs => rw [← X_mul_divX_add p]
+  exact ⟨fun h => ⟨p.divX, by congr⟩, fun ⟨g, h⟩ => by simpa using congr_arg (coeff · 0) h⟩
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
