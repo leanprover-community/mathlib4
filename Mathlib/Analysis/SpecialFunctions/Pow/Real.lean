@@ -407,7 +407,7 @@ theorem rpow_eq_of_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) (h : y * log 
     x ^ y = z :=
   log_injOn_pos (rpow_pos_of_pos hx _) hz <| log_rpow hx _ |>.trans h
 
-theorem rpow_eq_iff_mul_log {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
+theorem mul_log_eq_log_iff {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
     y * log x = log z ↔ x ^ y = z :=
   ⟨rpow_eq_of_mul_log hx hz, by rintro rfl ; rw [log_rpow hx]⟩
 
