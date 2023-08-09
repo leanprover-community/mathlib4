@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Eric Wieer
+Authors: Johan Commelin, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.Data.Complex.Module
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
@@ -100,6 +101,26 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
   obtain ⟨A, rfl⟩ := h
   exact rank_unit A
 #align matrix.rank_of_is_unit Matrix.rank_of_isUnit
+
+/-- Right multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
+    (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
+    (B ⬝ A).rank = B.rank := by
+  suffices : Function.Surjective A.mulVecLin
+  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+    (LinearMap.range_eq_top.mpr this), ← rank]
+  intro v
+  exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
+
+/-- Left multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_right_of_isUnit_det [DecidableEq m]
+    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
+    (A ⬝ B).rank = B.rank := by
+  let b : Basis m R (m → R) := Pi.basisFun R m
+  replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
+    convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
+  have hAB : mulVecLin (A ⬝ B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
+  rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)

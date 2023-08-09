@@ -89,7 +89,7 @@ subgroup, subgroups
 open Function
 open Int
 
-variable {G G' : Type _} [Group G] [Group G']
+variable {G G' G'' : Type _} [Group G] [Group G'] [Group G'']
 
 variable {A : Type _} [AddGroup A]
 
@@ -2642,6 +2642,10 @@ theorem rangeRestrict_surjective (f : G →* N) : Function.Surjective f.rangeRes
 #align monoid_hom.range_restrict_surjective MonoidHom.rangeRestrict_surjective
 #align add_monoid_hom.range_restrict_surjective AddMonoidHom.rangeRestrict_surjective
 
+@[to_additive (attr := simp)]
+lemma rangeRestrict_injective_iff {f : G →* N} : Injective f.rangeRestrict ↔ Injective f := by
+  convert Set.injective_codRestrict _
+
 @[to_additive]
 theorem map_range (g : N →* P) (f : G →* N) : f.range.map g = (g.comp f).range := by
   rw [range_eq_map, range_eq_map]; exact (⊤ : Subgroup G).map_map g f
@@ -2868,6 +2872,10 @@ theorem ker_prodMap {G' : Type _} {N' : Type _} [Group G'] [Group N'] (f : G →
   rw [← comap_bot, ← comap_bot, ← comap_bot, ← prodMap_comap_prod, bot_prod_bot]
 #align monoid_hom.ker_prod_map MonoidHom.ker_prodMap
 #align add_monoid_hom.ker_sum_map AddMonoidHom.ker_sumMap
+
+@[to_additive]
+theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
+  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact FunLike.congr_fun h y⟩
 
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
