@@ -124,6 +124,10 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
   simp [comp, inv, flip, and_comm]
 #align rel.inv_comp Rel.inv_comp
 
+theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by simp[Bot.bot, inv, flip]
+
+theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by simp[Top.top, inv, flip]
+
 /-- Image of a set under a relation -/
 def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
 #align rel.image Rel.image
@@ -168,6 +172,19 @@ theorem image_univ : r.image Set.univ = r.codom := by
   simp [mem_image, codom]
 #align rel.image_univ Rel.image_univ
 
+theorem image_empty : r.image ∅ = ∅ := by
+  ext x
+  simp [mem_image]
+
+theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
+  rw[Set.eq_empty_iff_forall_not_mem]
+  intro x h
+  simp[mem_image, Bot.bot] at h
+
+theorem image_top [Nonempty β] {s : Set α} (h : Set.Nonempty s) :
+    (⊤ : Rel α β).image s = Set.univ :=
+    Set.eq_univ_of_forall λ x ↦ ⟨h.some, by simp[h.some_mem, Top.top]⟩
+
 /-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
 def preimage (s : Set β) : Set α :=
   r.inv.image s
@@ -203,6 +220,29 @@ theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = prei
 
 theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
 #align rel.preimage_univ Rel.preimage_univ
+
+theorem preimage_empty : r.preimage ∅ = ∅ := by rw [preimage, image_empty]
+
+theorem preimage_inv (s : Set α) : r.inv.preimage s = r.image s := by rw [preimage, inv_inv]
+
+theorem preimage_bot (s : Set β) : (⊥ : Rel α β).preimage s = ∅ :=
+  by rw[preimage, inv_bot, image_bot]
+
+theorem preimage_top [Nonempty α] {s : Set β} (h : Set.Nonempty s) :
+    (⊤ : Rel α β).preimage s = Set.univ := by rwa[← inv_top, preimage, inv_inv, image_top]
+
+theorem image_eq_dom_of_codomain_subset {s : Set β} (h : r.codom ⊆ s) : r.preimage s = r.dom := by
+  rw[← preimage_univ]
+  apply Set.eq_of_subset_of_subset
+  · exact image_subset _ (Set.subset_univ _)
+  · intro x hx
+    simp only [mem_preimage, Set.mem_univ, true_and] at hx
+    rcases hx with ⟨y, ryx⟩
+    have hy : y ∈ s := h ⟨x, ryx⟩
+    exact ⟨y, ⟨hy, ryx⟩⟩
+
+theorem preimage_eq_codom_of_domain_subset {s : Set α} (h : r.dom ⊆ s) : r.image s = r.codom :=
+  by apply r.inv.image_eq_dom_of_codomain_subset (by rwa[← codom_inv] at h)
 
 /-- Core of a set `s : Set β` w.r.t `r : Rel α β` is the set of `x : α` that are related *only*
 to elements of `s`. Other generalization of `Function.preimage`. -/
