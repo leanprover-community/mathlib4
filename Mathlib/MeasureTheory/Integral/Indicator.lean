@@ -57,12 +57,8 @@ lemma measurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [Zero β]
     simp [‹NeZero b›.ne]
   · have A_mble : MeasurableSet A := by simpa only [‹NeZero b›.ne, false_or] using h
     intro B _
-    rcases indicator_const_preimage A B b with ⟨hB⟩ | ⟨hB | ⟨hB | hB⟩⟩
-    · simp only [hB, MeasurableSet.univ]
-    · simp only [hB, A_mble]
-    · simp only [hB, MeasurableSet.compl_iff, A_mble]
-    · simp only [mem_singleton_iff] at hB
-      simp only [hB, MeasurableSet.empty]
+    rcases indicator_const_preimage A B b with ⟨hB⟩ | ⟨hB | ⟨hB | (hB : _ = _)⟩⟩ <;>
+    simp [hB, A_mble]
 
 -- #find_home measurable_indicator_const_iff
 -- Gives: `Mathlib.MeasureTheory.Integral.Indicator`, i.e., this file itself...
@@ -116,14 +112,8 @@ lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableS
     (h_lim : Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)))
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞))))) :
     MeasurableSet A := by
-  have obs := measurable_indicator_const_iff A (1 : ℝ≥0∞)
-  simp only [one_ne_zero, false_or] at obs
-  rw [←obs]
-  apply measurable_of_tendsto_ennreal' (f := fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
-          (g := A.indicator (fun _ ↦ (1 : ℝ≥0∞))) L
-  · intro i
-    simp only [measurable_indicator_const_iff, one_ne_zero, As_mble i, or_true]
-  · simpa [tendsto_pi_nhds] using h_lim
+  simp_rw [← measurable_indicator_const_iff _ (1 : ℝ≥0∞)] at As_mble ⊢
+  exact measurable_of_tendsto_ennreal' L As_mble h_lim
 
 /-- If the indicator functions of a.e.-measurable sets `Aᵢ` converge a.e. to the indicator function
 of a set `A` along a nontrivial countably generated filter, then `A` is also a.e.-measurable. -/
@@ -132,18 +122,13 @@ lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] (μ : Measure α)
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
     NullMeasurableSet A μ := by
-  have obs := aeMeasurable_indicator_const_iff A μ (1 : ℝ≥0∞)
-  simp only [one_ne_zero, false_or] at obs
-  rw [←obs]
-  refine aemeasurable_of_tendsto_metrizable_ae (μ := μ)
-          (f := fun i x ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
-          (g := A.indicator (fun _ ↦ (1 : ℝ≥0∞))) L (fun i ↦ ?_) h_lim
-  simp [aeMeasurable_indicator_const_iff, As_mble i]
+  simp_rw [← aeMeasurable_indicator_const_iff _ μ (1 : ℝ≥0∞)] at As_mble ⊢
+  exact aemeasurable_of_tendsto_metrizable_ae L As_mble h_lim
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
 the measures of `Aᵢ` tend to the measure of `A`. -/
-lemma tendsto_measure_of_tendsto_indicator' (μ : Measure α) (A_mble : MeasurableSet A)
+lemma tendsto_measure_of_ae_tendsto_indicator (μ : Measure α) (A_mble : MeasurableSet A)
     (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
     (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
