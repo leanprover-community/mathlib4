@@ -179,12 +179,12 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
   exact AddMonoidAlgebra.mul_single_zero_apply p a n
 #align polynomial.coeff_mul_C Polynomial.coeff_mul_C
 
+@[simp]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
   simp only [one_mul, RingHom.map_one, ← coeff_C_mul_X_pow]
 #align polynomial.coeff_X_pow Polynomial.coeff_X_pow
 
-@[simp]
-theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp [coeff_X_pow]
+theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp
 #align polynomial.coeff_X_pow_self Polynomial.coeff_X_pow_self
 
 section Fewnomials
@@ -293,24 +293,21 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
-theorem mul_X_pow_injective (n : ℕ) : Function.Injective fun P : R[X] => X ^ n * P := by
+-- TODO Unify this with `Polynomial.Monic.isRegular`
+theorem isRegular_X_pow (n : ℕ) : IsRegular ((X : R[X]) ^ n) := by
+  suffices : IsLeftRegular ((X : R[X]) ^ n)
+  · exact ⟨this, IsLeftRegular.right_of_commute (fun p ↦ commute_X_pow p n) this⟩
   intro P Q hPQ
   simp only at hPQ
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
-#align polynomial.mul_X_pow_injective Polynomial.mul_X_pow_injective
-
-theorem pow_X_mul_injective (n : ℕ) : Function.Injective fun P : R[X] => P * X ^ n := by
-  convert mul_X_pow_injective n using 1
-  ext
-  rw [commute_X_pow]
 
 theorem mul_X_injective : Function.Injective fun P : R[X] => X * P :=
-  pow_one (X : R[X]) ▸ mul_X_pow_injective 1
+  pow_one (X : R[X]) ▸ (isRegular_X_pow 1).left
 #align polynomial.mul_X_injective Polynomial.mul_X_injective
 
 theorem X_mul_injective : Function.Injective fun P : R[X] => P * X :=
-  pow_one (X : R[X]) ▸ pow_X_mul_injective 1
+  pow_one (X : R[X]) ▸ (isRegular_X_pow 1).right
 
 @[simp] lemma eq_zero_of_X_mul_eq_zero : X * p = 0 ↔ p = 0 := by
   nth_rw 1 [← mul_zero X]

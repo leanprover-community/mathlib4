@@ -891,9 +891,6 @@ theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
   · rw [pow_succ', hn, X, monomial_mul_monomial, one_mul]
 #align polynomial.X_pow_eq_monomial Polynomial.X_pow_eq_monomial
 
-@[simp] lemma coeff_pow_X {m n : ℕ} : coeff (X^n) m = if n = m then 1 else 0 := by
-  rw [X_pow_eq_monomial, coeff_monomial]
-
 @[simp high]
 theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by
   rw [X_pow_eq_monomial, toFinsupp_monomial]

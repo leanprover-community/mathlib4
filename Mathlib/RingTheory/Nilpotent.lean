@@ -191,7 +191,7 @@ theorem isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
   rw [h_comm.mul_pow, hn, MulZeroClass.zero_mul]
 #align commute.is_nilpotent_mul_left Commute.isNilpotent_mul_left
 
-protected lemma isNilpotent_mul_left_iff (hy : ∀ z, z * y = 0 → z = 0) :
+protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
   refine' ⟨_, h_comm.isNilpotent_mul_left⟩
   rintro ⟨k, hk⟩
@@ -203,7 +203,7 @@ theorem isNilpotent_mul_right (h : IsNilpotent y) : IsNilpotent (x * y) := by
   exact h_comm.symm.isNilpotent_mul_left h
 #align commute.is_nilpotent_mul_right Commute.isNilpotent_mul_right
 
-protected lemma isNilpotent_mul_right_iff (hx : ∀ z, x * z = 0 → z = 0) :
+protected lemma isNilpotent_mul_right_iff (hx : x ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent y := by
   refine' ⟨_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
