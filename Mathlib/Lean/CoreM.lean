@@ -3,13 +3,14 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean.CoreM
+import Lean
+import Mathlib.Tactic.ToExpr
 
 /-!
 # Additional functions using `CoreM` state.
 -/
 
-open Lean
+open Lean Core
 
 /-- Return the current `maxHeartbeats`. -/
 def getMaxHeartbeats : CoreM Nat := do pure <| (← read).maxHeartbeats
@@ -33,3 +34,22 @@ def reportOutOfHeartbeats (tac : Name) (stx : Syntax) (threshold : Nat := 90) : 
   if (← heartbeatsPercent) ≥ threshold then
     logInfoAt stx (s!"`{tac}` stopped because it was running out of time.\n" ++
       "You may get better results using `set_option maxHeartbeats 0`.")
+
+/--
+Term elaborator that retrieves the current `SearchPath`.
+-/
+elab "compileTimeSearchPath" : term =>
+  return toExpr (← searchPathRef.get)
+
+/--
+Run a `CoreM α` in a fresh `Environment` with specified `modules : List Name` imported.
+-/
+def CoreM.withImportModules (modules : List Name) (run : CoreM α)
+    (searchPath : Option SearchPath := none) (trustLevel : UInt32 := 1024) (fileName := "") :
+    IO α := unsafe do
+  searchPathRef.set (searchPath.getD compileTimeSearchPath)
+  Lean.withImportModules (modules.map (Import.mk · false)) {} trustLevel fun env =>
+    let ctx := {fileName, fileMap := default}
+    let state := {env}
+    Prod.fst <$> (CoreM.toIO · ctx state) do
+      run

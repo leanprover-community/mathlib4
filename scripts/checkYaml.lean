@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.ToExpr
+import Mathlib.Lean.CoreM
 
 /-! # Script to check `undergrad.yaml`, `overview.yaml`, and `100.yaml`
 
@@ -42,16 +42,9 @@ def processDb (decls : ConstMap) : String × String → IO Bool
   else
     return false
 
-elab "compileTimeSearchPath" : term =>
-  return toExpr (← searchPathRef.get)
-
 unsafe def main : IO Unit := do
-  searchPathRef.set compileTimeSearchPath
-  withImportModules [{module := `Mathlib}] {} (trustLevel := 1024) fun env =>
-    let ctx := {fileName := "", fileMap := default}
-    let state := {env}
-    Prod.fst <$> (CoreM.toIO · ctx state) do
-      let decls := env.constants
-      let results ← databases.mapM (fun p => processDb decls p)
-      if results.any id then
-        IO.Process.exit 1
+  CoreM.withImportModules [`Mathlib] do
+    let decls := (←getEnv).constants
+    let results ← databases.mapM (fun p => processDb decls p)
+    if results.any id then
+      IO.Process.exit 1
