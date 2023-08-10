@@ -22,7 +22,7 @@ import Mathlib.Data.List.AList
 
 namespace Finsupp
 
-variable {α M : Type _} [Zero M]
+variable {α M : Type*} [Zero M]
 
 /-- Produce an association list for the finsupp over its support using choice. -/
 @[simps]
@@ -53,7 +53,7 @@ end Finsupp
 
 namespace AList
 
-variable {α M : Type _} [Zero M]
+variable {α M : Type*} [Zero M]
 
 open List
 

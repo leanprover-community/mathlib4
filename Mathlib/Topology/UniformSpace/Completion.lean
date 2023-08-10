@@ -281,7 +281,7 @@ end Extend
 
 end
 
-theorem cauchyFilter_eq {α : Type _} [Inhabited α] [UniformSpace α] [CompleteSpace α]
+theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteSpace α]
     [SeparatedSpace α] {f g : CauchyFilter α} :
     lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
   constructor
@@ -318,7 +318,7 @@ section
 attribute [local instance] UniformSpace.separationSetoid
 
 -- porting note: added types in Function.Injective
-theorem separated_pureCauchy_injective {α : Type _} [UniformSpace α] [s : SeparatedSpace α] :
+theorem separated_pureCauchy_injective {α : Type*} [UniformSpace α] [s : SeparatedSpace α] :
     @Function.Injective α (Quotient (UniformSpace.separationSetoid (CauchyFilter α)))
       fun a : α => ⟦pureCauchy a⟧
   | a, b, h => by
@@ -339,11 +339,11 @@ open CauchyFilter Set
 
 namespace UniformSpace
 
-variable (α : Type _) [UniformSpace α]
+variable (α : Type*) [UniformSpace α]
 
-variable {β : Type _} [UniformSpace β]
+variable {β : Type*} [UniformSpace β]
 
-variable {γ : Type _} [UniformSpace γ]
+variable {γ : Type*} [UniformSpace γ]
 
 instance completeSpace_separation [h : CompleteSpace α] :
     CompleteSpace (Quotient (separationSetoid α)) := by
@@ -365,7 +365,7 @@ def Completion :=
 namespace Completion
 
 instance inhabited [Inhabited α] : Inhabited (Completion α) :=
-  Quotient.instInhabitedQuotient (separationSetoid (CauchyFilter α))
+  inferInstanceAs <| Inhabited (Quotient _)
 
 instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
@@ -418,7 +418,7 @@ theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
 variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
-def cPkg {α : Type _} [UniformSpace α] : AbstractCompletion α where
+def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   space := Completion α
   coe := (↑)
   uniformStruct := by infer_instance
@@ -513,12 +513,12 @@ theorem induction_on₃ {p : Completion α → Completion β → Completion γ �
   this (a, b, c)
 #align uniform_space.completion.induction_on₃ UniformSpace.Completion.induction_on₃
 
-theorem ext {Y : Type _} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
+theorem ext {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
     (hf : Continuous f) (hg : Continuous g) (h : ∀ a : α, f a = g a) : f = g :=
   cPkg.funext hf hg h
 #align uniform_space.completion.ext UniformSpace.Completion.ext
 
-theorem ext' {Y : Type _} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
+theorem ext' {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
     (hf : Continuous f) (hg : Continuous g) (h : ∀ a : α, f a = g a) (a : Completion α) :
     f a = g a :=
   congr_fun (ext hf hg h) a

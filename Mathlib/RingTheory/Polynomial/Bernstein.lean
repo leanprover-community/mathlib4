@@ -17,7 +17,7 @@ import Mathlib.Data.MvPolynomial.PDeriv
 
 The definition of the Bernstein polynomials
 ```
-bernsteinPolynomial (R : Type _) [CommRing R] (n ν : ℕ) : R[X] :=
+bernsteinPolynomial (R : Type*) [CommRing R] (n ν : ℕ) : R[X] :=
 (choose n ν) * X^ν * (1 - X)^(n - ν)
 ```
 and the fact that for `ν : fin (n+1)` these are linearly independent over `ℚ`.
@@ -42,7 +42,7 @@ open Polynomial (X)
 
 open scoped BigOperators Polynomial
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-- `bernsteinPolynomial R n ν` is `(choose n ν) * X^ν * (1 - X)^(n - ν)`.
 
@@ -67,7 +67,7 @@ theorem eq_zero_of_lt {n ν : ℕ} (h : n < ν) : bernsteinPolynomial R n ν = 0
 
 section
 
-variable {R} {S : Type _} [CommRing S]
+variable {R} {S : Type*} [CommRing S]
 
 @[simp]
 theorem map (f : R →+* S) (n ν : ℕ) :
