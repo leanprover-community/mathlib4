@@ -296,7 +296,7 @@ section Comap
 variable [TopologicalSpace Y]
 
 /-- `LocallyConstant.comap` is a `MonoidHom`. -/
-@[to_additive]
+@[to_additive "`LocallyConstant.comap` is an `AddMonoidHom`."]
 noncomputable
 def comapMonoidHom [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →* LocallyConstant X Z where
