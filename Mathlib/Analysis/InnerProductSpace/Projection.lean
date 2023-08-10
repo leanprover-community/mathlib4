@@ -1250,8 +1250,7 @@ orthogonal group is a product of at most as many reflections as the dimension of
 
 Special case of the **Cartan–Dieudonné theorem**. -/
 theorem LinearIsometryEquiv.reflections_generate_dim [FiniteDimensional ℝ F] (φ : F ≃ₗᵢ[ℝ] F) :
-    ∃ l : List F, l.length ≤ finrank ℝ F ∧ φ =
-    (l.map fun (v : F) => reflection (ℝ • v)ᗮ).prod :=
+    ∃ l : List F, l.length ≤ finrank ℝ F ∧ φ = (l.map fun (v : F) => reflection (ℝ • v)ᗮ).prod :=
   let ⟨l, hl₁, hl₂⟩ := φ.reflections_generate_dim_aux le_rfl
   ⟨l, hl₁.trans (Submodule.finrank_le _), hl₂⟩
 #align linear_isometry_equiv.reflections_generate_dim LinearIsometryEquiv.reflections_generate_dim

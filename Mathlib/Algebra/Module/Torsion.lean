@@ -808,7 +808,7 @@ namespace Ideal.Quotient
 open Submodule
 
 theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a ∈ R⁰) :
-    torsionBy R (R ⧸ R • (a * b)) a = R • mk (R • (a * b)) b := by
+    torsionBy R (R ⧸ R • a * b) a = R • mk (R • a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]
   obtain ⟨x, rfl⟩ := mk_surjective x; constructor <;> intro h
   · rw [← mk_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero, Submodule.mem_span_singleton] at h

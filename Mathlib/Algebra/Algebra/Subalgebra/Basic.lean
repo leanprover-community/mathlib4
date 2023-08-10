@@ -902,7 +902,7 @@ theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (alge
 
 open Span in
 
-theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = R • (1: A) := by
+theorem toSubmodule_bot : Subalgebra.toSubmodule ⊥ = R • (1 : A) := by
   ext x
   simp [mem_bot, Submodule.mem_span_singleton, Algebra.smul_def]
 #align algebra.to_submodule_bot Algebra.toSubmodule_bot

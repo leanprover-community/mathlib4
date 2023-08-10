@@ -55,15 +55,34 @@ def span (s : Set M) : Submodule R M :=
   sInf { p | s ⊆ p }
 #align submodule.span Submodule.span
 
--- -- Note that the dot in the mathport name is a different one than
--- -- the one in the notation, due to a refactor after porting.
+/- Observations
+- prec. of `x`:
+  - `≤ 70` for `R • x * y`
+  - `≤ 73` for `R • r • x`
+  - `≥ 66` or we get problems with `SMul`
+  - `R • (x - y)`
+- prec. of `R`: nothing observed
+- prec. of the notation:
+  - `≥ 69` for `I ⊔ R • x`
+-/
+
 -- mathport name: «expr ∙ »
 @[inherit_doc]
-scoped[Span] notation:72 R:73 " • " x:73 => Submodule.span R (singleton x)
+scoped[Span] notation:69 R:70 " • " x:70 => Submodule.span R (singleton x)
 
 end
 
 open Span
+
+section test
+
+variable (I : Submodule R M)
+
+variable [CommRing M] (r : R)
+
+
+
+end test
 
 variable {s t : Set M}
 

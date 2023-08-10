@@ -1265,13 +1265,11 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) :
     exact hr
 #align rank_submodule_le_one_iff rank_submodule_le_one_iff
 
--- TODO: That's the first encounter where `•` yields "ambiguous notation", was `K • v₀`
-
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
 theorem rank_submodule_le_one_iff' (s : Submodule K V) :
-    Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ span K {v₀} := by
+    Module.rank K s ≤ 1 ↔ ∃ (v₀ : V), s ≤ K • v₀ := by
   rw [rank_submodule_le_one_iff]
   constructor
   · rintro ⟨v₀, _, h⟩
