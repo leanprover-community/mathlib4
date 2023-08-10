@@ -28,10 +28,10 @@ homomorphism, iterate
 
 open Function
 
-variable {M : Type _} {N : Type _} {G : Type _} {H : Type _}
+variable {M : Type*} {N : Type*} {G : Type*} {H : Type*}
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
-theorem hom_coe_pow {F : Type _} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
+theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
   | 0 => by
     rw [pow_zero, h1]
@@ -119,7 +119,7 @@ namespace RingHom
 
 section Semiring
 
-variable {R : Type _} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
+variable {R : Type*} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
 
 theorem coe_pow (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ => rfl) f n
@@ -151,7 +151,7 @@ theorem iterate_map_smul (n m : ℕ) (x : R) : f^[n] (m • x) = m • f^[n] x :
 
 end Semiring
 
-variable {R : Type _} [Ring R] (f : R →+* R) (n : ℕ) (x y : R)
+variable {R : Type*} [Ring R] (f : R →+* R) (n : ℕ) (x y : R)
 
 theorem iterate_map_sub : f^[n] (x - y) = f^[n] x - f^[n] y :=
   f.toAddMonoidHom.iterate_map_sub n x y

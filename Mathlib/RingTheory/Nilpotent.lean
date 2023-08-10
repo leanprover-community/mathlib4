@@ -59,7 +59,7 @@ theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 #align is_nilpotent_neg_iff isNilpotent_neg_iff
 
-theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type _}
+theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
@@ -84,7 +84,7 @@ theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilp
 
 /-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
 @[mk_iff isReduced_iff]
-class IsReduced (R : Type _) [Zero R] [Pow R ℕ] : Prop where
+class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
   /-- A reduced structure has no nonzero nilpotent elements. -/
   eq_zero : ∀ x : R, IsNilpotent x → x = 0
 #align is_reduced IsReduced
@@ -108,7 +108,7 @@ theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x
   ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
 #align is_nilpotent_iff_eq_zero isNilpotent_iff_eq_zero
 
-theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type _}
+theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [MonoidWithZeroHomClass F R S] (f : F) (hf : Function.Injective f) [IsReduced S] :
     IsReduced R := by
   constructor
@@ -237,7 +237,7 @@ lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/
-def nilradical (R : Type _) [CommSemiring R] : Ideal R :=
+def nilradical (R : Type*) [CommSemiring R] : Ideal R :=
   (0 : Ideal R).radical
 #align nilradical nilradical
 
@@ -245,7 +245,7 @@ theorem mem_nilradical : x ∈ nilradical R ↔ IsNilpotent x :=
   Iff.rfl
 #align mem_nilradical mem_nilradical
 
-theorem nilradical_eq_sInf (R : Type _) [CommSemiring R] :
+theorem nilradical_eq_sInf (R : Type*) [CommSemiring R] :
     nilradical R = sInf { J : Ideal R | J.IsPrime } :=
   (Ideal.radical_eq_sInf ⊥).trans <| by simp_rw [and_iff_right bot_le]
 #align nilradical_eq_Inf nilradical_eq_sInf
@@ -260,7 +260,7 @@ theorem nilradical_le_prime (J : Ideal R) [H : J.IsPrime] : nilradical R ≤ J :
 #align nilradical_le_prime nilradical_le_prime
 
 @[simp]
-theorem nilradical_eq_zero (R : Type _) [CommSemiring R] [IsReduced R] : nilradical R = 0 :=
+theorem nilradical_eq_zero (R : Type*) [CommSemiring R] [IsReduced R] : nilradical R = 0 :=
   Ideal.ext fun _ => isNilpotent_iff_eq_zero
 #align nilradical_eq_zero nilradical_eq_zero
 
