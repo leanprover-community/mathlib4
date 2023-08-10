@@ -83,6 +83,13 @@ theorem eq_of_ringEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S)
 le_antisymm (le_of_surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
   (le_of_surj R S e (EquivLike.surjective e))
 
+instance (F : Type _) [Field F] : Unique (PrimeSpectrum F) where
+  default := ⟨⊥, Ideal.bot_prime⟩
+  uniq := λ p ↦ PrimeSpectrum.ext _ _ $ Ideal.ext $ λ x ↦ by
+    erw [Submodule.mem_bot]
+    refine ⟨λ h ↦ ?_, λ h ↦ h.symm ▸ Submodule.zero_mem _⟩
+    rwa [p.asIdeal.eq_bot_of_prime, Submodule.mem_bot] at h
+
 /-
 Here we aim to show that for any prime ideal `I` of a commutative ring `R`, the
 height of `I` equals the krull dimension of `Localization.AtPrime I.asIdeal`.
