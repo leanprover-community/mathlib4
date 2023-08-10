@@ -163,17 +163,17 @@ def FieldAxiom.toProp (M : Type _) [Add M] [Mul M] [Neg M] [Inv M] [Zero M] [One
   | .existsPairNe => ∃ x y : M, x ≠ y
 
 theorem FieldAxiom.realize_toSentence_iff_toProp {K : Type _}
-  [Add K] [Mul K] [Neg K] [Inv K] [Zero K] [One K] [Language.field.Structure K]
-  (ax : FieldAxiom)
-  (funMap_add : ∀ x : Fin 2 → K, funMap addFunction x = x 0 + x 1 := by assumption)
-  (funMap_mul : ∀ x : Fin 2 → K, funMap mulFunction x = x 0 * x 1 := by assumption)
-  (funMap_neg : ∀ x : Fin 1 → K, funMap negFunction x = -x 0 := by assumption)
-  (funMap_inv : ∀ x : Fin 1 → K, funMap invFunction x = (x 0)⁻¹ := by assumption)
-  (funMap_zero : ∀ x : Fin 0 → K, funMap (zeroFunction : Language.field.Constants) x = 0
-    := by assumption)
-  (funMap_one : ∀ x : Fin 0 → K, funMap (oneFunction : Language.field.Constants) x = 1
-    := by assumption) :
-  (K ⊨ (ax.toSentence : Sentence Language.field)) ↔ ax.toProp K := by
+    [Add K] [Mul K] [Neg K] [Inv K] [Zero K] [One K] [Language.field.Structure K]
+    (ax : FieldAxiom)
+    (funMap_add : ∀ x : Fin 2 → K, funMap addFunction x = x 0 + x 1 := by assumption)
+    (funMap_mul : ∀ x : Fin 2 → K, funMap mulFunction x = x 0 * x 1 := by assumption)
+    (funMap_neg : ∀ x : Fin 1 → K, funMap negFunction x = -x 0 := by assumption)
+    (funMap_inv : ∀ x : Fin 1 → K, funMap invFunction x = (x 0)⁻¹ := by assumption)
+    (funMap_zero : ∀ x : Fin 0 → K, funMap (zeroFunction : Language.field.Constants) x = 0
+      := by assumption)
+    (funMap_one : ∀ x : Fin 0 → K, funMap (oneFunction : Language.field.Constants) x = 1
+      := by assumption) :
+    (K ⊨ (ax.toSentence : Sentence Language.field)) ↔ ax.toProp K := by
   cases ax <;>
   simp [Sentence.Realize, Formula.Realize, toProp, Fin.snoc, constantMap,
     add_def, mul_def, neg_def, inv_def, zero_def, one_def,
@@ -291,7 +291,7 @@ instance {K : Type _} [CompatibleField K] : Theory.field.Model K :=
         CompatibleField.funMap_zero
         CompatibleField.funMap_one]
       cases a with
-      | existsPairNe => exact ⟨0, 1, zero_ne_one⟩
+      | existsPairNe => exact exists_pair_ne K
       | mulInvCancel => exact fun x => mul_inv_cancel
       | addAssoc => exact add_assoc
       | zeroAdd => exact zero_add
@@ -300,7 +300,7 @@ instance {K : Type _} [CompatibleField K] : Theory.field.Model K :=
       | mulComm => exact mul_comm
       | oneMul => exact one_mul
       | invZero => exact inv_zero
-      | leftDistrib => exact fun x y z => left_distrib x y z }
+      | leftDistrib => exact mul_add }
 
 @[simps]
 def languageHomEquivRingHom {K L : Type _} [CompatibleField K] [CompatibleField L] :

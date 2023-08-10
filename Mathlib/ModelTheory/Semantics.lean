@@ -907,11 +907,12 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 #align first_order.language.bounded_formula.realize_exs FirstOrder.Language.BoundedFormula.realize_exs
 
 @[simp]
-theorem realize_allsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+theorem _root_.FirstOrder.Language.Formula.realize_allsᵢ
+    {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) : (φ.allsᵢ f).Realize v ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  rw [allsᵢ]
+  rw [Formula.allsᵢ]
   simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
     castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   refine Equiv.forall_congr ?_ ?_
@@ -925,11 +926,20 @@ theorem realize_allsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
       exact i.elim0
 
 @[simp]
-theorem realize_exsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+theorem realize_allsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) (v : β → M) :
+    BoundedFormula.Realize (φ.allsᵢ f) v Fin.elim0 ↔
+      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) :=
+  Formula.realize_allsᵢ f φ v
+
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
+    {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) : (φ.exsᵢ f).Realize v ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  rw [exsᵢ]
+  rw [Formula.exsᵢ]
   simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
     castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   rw [← not_iff_not, not_exists, not_exists]
@@ -942,6 +952,13 @@ theorem realize_exsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
     congr
     . funext i
       exact i.elim0
+
+@[simp]
+theorem realize_exsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) (v : β → M) :
+    BoundedFormula.Realize (φ.exsᵢ f) v Fin.elim0 ↔
+      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) :=
+  Formula.realize_exsᵢ f φ v
 
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
