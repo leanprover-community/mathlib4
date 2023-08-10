@@ -78,7 +78,7 @@ theorem of_associative_ring_bracket (x y : A) : ⁅x, y⁆ = x * y - y * x :=
 #align lie_ring.of_associative_ring_bracket LieRing.of_associative_ring_bracket
 
 @[simp]
-theorem lie_apply {α : Type _} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a, g a⁆ :=
+theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a, g a⁆ :=
   rfl
 #align lie_ring.lie_apply LieRing.lie_apply
 

@@ -38,7 +38,7 @@ uniform space, uniform continuity, compact space
 
 open Classical Uniformity Topology Filter UniformSpace Set
 
-variable {α β γ : Type _} [UniformSpace α] [UniformSpace β]
+variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
 /-!
 ### Uniformity on compact spaces
@@ -263,7 +263,7 @@ section UniformConvergence
 
 /-- An equicontinuous family of functions defined on a compact uniform space is automatically
 uniformly equicontinuous. -/
-theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type _} {F : ι → β → α}
+theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type*} {F : ι → β → α}
     [CompactSpace β] (h : Equicontinuous F) : UniformEquicontinuous F := by
   rw [equicontinuous_iff_continuous] at h
   rw [uniformEquicontinuous_iff_uniformContinuous]

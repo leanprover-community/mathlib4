@@ -24,7 +24,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 universe u v w uι uR uA uM₁ uM₂
 
-variable {ι : Type _} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
+variable {ι : Type uι} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
 

@@ -23,9 +23,9 @@ open Nat
 
 namespace Int
 
-instance : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
-instance : CommRing ℤ where
+instance instCommRingInt : CommRing ℤ where
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
@@ -98,7 +98,7 @@ instance : AddCommSemigroup ℤ := by infer_instance
 instance : AddSemigroup ℤ     := by infer_instance
 instance : CommSemiring ℤ     := by infer_instance
 instance : Semiring ℤ         := by infer_instance
-instance : Ring ℤ             := by infer_instance
+instance instRingInt : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
 
 #align int.neg_succ_not_nonneg Int.negSucc_not_nonneg

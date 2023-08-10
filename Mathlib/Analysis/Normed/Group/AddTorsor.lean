@@ -30,18 +30,18 @@ structure and require the distance to be the same as results from the
 norm (which in fact implies the distance yields a pseudometric space, but
 bundling just the distance and using an instance for the pseudometric space
 results in type class problems). -/
-class NormedAddTorsor (V : outParam <| Type _) (P : Type _) [outParam <| SeminormedAddCommGroup V]
+class NormedAddTorsor (V : outParam <| Type*) (P : Type*) [outParam <| SeminormedAddCommGroup V]
   [PseudoMetricSpace P] extends AddTorsor V P where
   dist_eq_norm' : ∀ x y : P, dist x y = ‖(x -ᵥ y : V)‖
 #align normed_add_torsor NormedAddTorsor
 
 /-- Shortcut instance to help typeclass inference out. -/
-instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type _} [NormedAddCommGroup V]
+instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
 #align normed_add_torsor.to_add_torsor' NormedAddTorsor.toAddTorsor'
 
-variable {α V P W Q : Type _} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
@@ -57,7 +57,7 @@ instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddT
 
 -- Because of the AddTorsor.nonempty instance.
 /-- A nonempty affine subspace of a `NormedAddTorsor` is itself a `NormedAddTorsor`. -/
-instance AffineSubspace.toNormedAddTorsor {R : Type _} [Ring R] [Module R V]
+instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
     dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }
@@ -205,7 +205,7 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedAddCommGroup V]
+def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   -- porting note: `edist_dist` is no longer an `autoParam`
@@ -220,7 +220,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedA
 
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGroup V]
+def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
@@ -303,7 +303,7 @@ end
 
 section
 
-variable {R : Type _} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul R V]
+variable {R : Type*} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul R V]
 
 theorem Filter.Tendsto.lineMap {l : Filter α} {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) (hg : Tendsto g l (𝓝 c)) :
