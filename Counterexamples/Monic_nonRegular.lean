@@ -40,58 +40,63 @@ instance : Zero N₃ := ⟨zero⟩
 instance : One N₃ := ⟨one⟩
 
 /-- Truncated addition on `N₃`. -/
-def add : N₃ → N₃ → N₃
+instance : Add N₃ where
+  add
   | 0, x => x
   | x, 0 => x
   | 1, 1 => two
   | _, _ => more
 
 /-- Truncated multiplication on `N₃`. -/
-def mul : N₃ → N₃ → N₃
+instance : Mul N₃ where
+  mul
   | 1, x => x
   | x, 1 => x
   | 0, _ => 0
   | _, 0 => 0
   | _, _ => more
 
-instance : CommSemiring N₃ :=
-{ add := add
-  add_assoc := by rintro ⟨⟩ <;> rintro ⟨⟩ <;> rintro ⟨⟩ <;> rfl
+instance : CommSemiring N₃ where
+  add_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
   zero_add  := by rintro ⟨⟩ <;> rfl
   add_zero  := by rintro ⟨⟩ <;> rfl
-  add_comm  := by rintro ⟨⟩ <;> rintro ⟨⟩ <;> rfl
-  mul := mul
-  left_distrib := by rintro ⟨⟩ <;> rintro ⟨⟩ <;> rintro ⟨⟩ <;> rfl
-  right_distrib := by rintro ⟨⟩ <;> rintro ⟨⟩ <;> rintro ⟨⟩ <;> rfl
-  mul_assoc := by rintro ⟨⟩ <;> rintro ⟨⟩ <;> rintro ⟨⟩ <;> rfl
-  mul_comm := by rintro ⟨⟩ <;> rintro ⟨⟩ <;> rfl
+  add_comm  := by rintro ⟨⟩ ⟨⟩ <;> rfl
+  left_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+  right_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+  mul_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+  mul_comm := by rintro ⟨⟩ ⟨⟩ <;> rfl
   zero_mul := by rintro ⟨⟩ <;> rfl
   mul_zero := by rintro ⟨⟩ <;> rfl
   one_mul := by rintro ⟨⟩ <;> rfl
-  mul_one := by rintro ⟨⟩ <;> rfl }
+  mul_one := by rintro ⟨⟩ <;> rfl
 
-theorem mul_example : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
+theorem X_add_two_mul_X_add_two : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
   simp only [mul_add, add_mul, X_mul, add_assoc]
   apply congr_arg
   rw [← add_assoc, ← add_mul, ← C_add, ← C_mul, ← C_mul]
   rw [← add_assoc, ← add_mul, ← C_add]
   rfl
 
-/-- The main example: multiplication by the polynomial `X + 2` is not injective,
+/-! The main example: multiplication by the polynomial `X + 2` is not injective,
 yet the polynomial is monic. -/
-theorem Monic_and_nonLeftRegular : Monic (X + C 2 : N₃[X]) ∧ ¬ IsLeftRegular (X + C 2 : N₃[X]) := by
-  constructor
-  · unfold Monic leadingCoeff
-    nontriviality
-    rw [natDegree_X_add_C 2]
-    simp only [natDegree_X_add_C 2, coeff_C, coeff_add, coeff_X_one, ite_false, add_zero]
-  · unfold IsLeftRegular Function.Injective
-    simp only [not_forall, exists_prop]
-    refine ⟨(X + C 2), (X + C 3), mul_example, ?_⟩
-    by_contra H
-    apply_fun (coeff · 0) at H
-    simp only [coeff_add, coeff_X_zero, zero_add, coeff_C, ite_true] at H
-    cases H
+
+theorem monic_X_add_two : Monic (X + C 2 : N₃[X]) := by
+  unfold Monic leadingCoeff
+  nontriviality
+  rw [natDegree_X_add_C 2]
+  simp only [natDegree_X_add_C 2, coeff_C, coeff_add, coeff_X_one, ite_false, add_zero]
+
+theorem not_isLeftRegular_X_add_two : ¬ IsLeftRegular (X + C 2 : N₃[X]) := by
+  intro h
+  have H := h X_add_two_mul_X_add_two
+  apply_fun (coeff · 0) at H
+  simp only [coeff_add, coeff_X_zero, zero_add, coeff_C, ite_true] at H
+  cases H
+
+/-- The statement of the counterexample: not all monic polynomials over semiring are regular. -/
+theorem not_monic_implies_isLeftRegular :
+    ¬∀ {R : Type} [Semiring R] (p : R[X]), Monic p → IsLeftRegular p :=
+  fun h => not_isLeftRegular_X_add_two (h _ monic_X_add_two)
 
 end N₃
 
