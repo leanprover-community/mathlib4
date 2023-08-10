@@ -659,34 +659,6 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
 def vanishingPolynomial (G : Subgroup (Units F)) [Fintype G] : Polynomial F :=
   Polynomial.monomial (Fintype.card G) 1 - Polynomial.C 1
 
-
--- TODO find_home
-
-theorem leadingCoeff_add_of_degree_lt_left [Semiring R] (p q : R[X]) (h : degree q < degree p) :
-    leadingCoeff (p + q) = leadingCoeff p := by
-  rw [add_comm]
-  apply leadingCoeff_add_of_degree_lt
-  exact h
-
-#find_home leadingCoeff_add_of_degree_lt_left
-
-theorem leadingCoeff_sub_of_degree_lt [Ring R] (p q : R[X])
-    (h : Polynomial.degree q < Polynomial.degree p) : (p - q).leadingCoeff = p.leadingCoeff := by
-  rw [sub_eq_add_neg]
-  apply leadingCoeff_add_of_degree_lt_left
-  rw [degree_neg]
-  exact h
-
-theorem leadingCoeff_sub_of_degree_eq [Ring R] (p q : R[X]) (h : degree p = degree q)
-    (hlc : leadingCoeff p - leadingCoeff q ≠ 0) :
-    leadingCoeff (p - q) = leadingCoeff p - leadingCoeff q := by
-  rw [sub_eq_add_neg, leadingCoeff_add_of_degree_eq, leadingCoeff_neg, sub_eq_add_neg]
-  · rw [h, degree_neg]
-  · rw [leadingCoeff_neg, <-sub_eq_add_neg]
-    exact hlc
-
-
--- TODO is decidable eq necessary?
 /--
 The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1
 -/

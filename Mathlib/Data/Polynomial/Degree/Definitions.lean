@@ -888,6 +888,12 @@ theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
     coeff_add, zero_add]
 #align polynomial.leading_coeff_add_of_degree_lt Polynomial.leadingCoeff_add_of_degree_lt
 
+theorem leadingCoeff_add_of_degree_lt_left [Semiring R] (p q : R[X]) (h : degree q < degree p) :
+    leadingCoeff (p + q) = leadingCoeff p := by
+  rw [add_comm]
+  apply leadingCoeff_add_of_degree_lt
+  exact h
+
 theorem leadingCoeff_add_of_degree_eq (h : degree p = degree q)
     (hlc : leadingCoeff p + leadingCoeff q ≠ 0) :
     leadingCoeff (p + q) = leadingCoeff p + leadingCoeff q := by
@@ -1305,6 +1311,21 @@ theorem degree_sub_le (p q : R[X]) : degree (p - q) ≤ max (degree p) (degree q
 theorem degree_sub_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p - q) ≤ max a b :=
 (p.degree_sub_le q).trans <| max_le_max ‹_› ‹_›
+
+theorem leadingCoeff_sub_of_degree_lt [Ring R] (p q : R[X])
+    (h : Polynomial.degree q < Polynomial.degree p) : (p - q).leadingCoeff = p.leadingCoeff := by
+  rw [sub_eq_add_neg]
+  apply leadingCoeff_add_of_degree_lt_left
+  rw [degree_neg]
+  exact h
+
+theorem leadingCoeff_sub_of_degree_eq [Ring R] (p q : R[X]) (h : degree p = degree q)
+    (hlc : leadingCoeff p - leadingCoeff q ≠ 0) :
+    leadingCoeff (p - q) = leadingCoeff p - leadingCoeff q := by
+  rw [sub_eq_add_neg, leadingCoeff_add_of_degree_eq, leadingCoeff_neg, sub_eq_add_neg]
+  · rw [h, degree_neg]
+  · rw [leadingCoeff_neg, <-sub_eq_add_neg]
+    exact hlc
 
 theorem natDegree_sub_le (p q : R[X]) : natDegree (p - q) ≤ max (natDegree p) (natDegree q) := by
   simpa only [← natDegree_neg q] using natDegree_add_le p (-q)
