@@ -456,14 +456,12 @@ end Det
 
 end CommRing
 
-/-! ### Lemmas about `ℝ` and `ℂ`-/
+/-! ### Lemmas about `ℝ` and `ℂ` and other `StarOrderedRing`s -/
 
 
-section IsROrC
+section StarOrderedRing
 
-open scoped Matrix
-
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type _} [CommRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
@@ -547,6 +545,6 @@ theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A :
     | simp
 #align matrix.pos_semidef.from_blocks₂₂ Matrix.PosSemidef.fromBlocks₂₂
 
-end IsROrC
+end StarOrderedRing
 
 end Matrix
