@@ -295,6 +295,18 @@ theorem OrderBot.atBot_eq (α) [PartialOrder α] [OrderBot α] : (atBot : Filter
   @OrderTop.atTop_eq αᵒᵈ _ _
 #align filter.order_bot.at_bot_eq Filter.OrderBot.atBot_eq
 
+lemma atTop_eq_pure_of_isTop [LinearOrder α] {x : α} (hx : IsTop x) :
+    (atTop : Filter α) = pure x := by
+  have : Nonempty α := ⟨x⟩
+  have : (atTop : Filter α).NeBot := atTop_basis.neBot_iff.2 (fun _ ↦ ⟨x, hx _⟩)
+  apply eq_pure_iff_singleton_mem.2
+  convert Ici_mem_atTop x using 1
+  exact (Ici_eq_singleton_iff_isTop.2 hx).symm
+
+lemma atBot_eq_pure_of_isBot [LinearOrder α] {x : α} (hx : IsBot x) :
+    (atBot : Filter α) = pure x :=
+  @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
+
 @[nontriviality]
 theorem Subsingleton.atTop_eq (α) [Subsingleton α] [Preorder α] : (atTop : Filter α) = ⊤ := by
   refine' top_unique fun s hs x => _
@@ -396,6 +408,23 @@ theorem tendsto_atBot_mono [Preorder β] {l : Filter α} {f g : α → β} (h : 
     Tendsto g l atBot → Tendsto f l atBot :=
   @tendsto_atTop_mono _ βᵒᵈ _ _ _ _ h
 #align filter.tendsto_at_bot_mono Filter.tendsto_atBot_mono
+
+lemma atTop_eq_generate_of_forall_exists_le {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
+    (atTop : Filter α) = generate (Ici '' s) := by
+  rcases isEmpty_or_nonempty α with hα|hα
+  · simp only [eq_iff_true_of_subsingleton]
+  · rw [(atTop_basis (α := α)).eq_generate]
+    apply le_antisymm
+    · rw [le_generate_iff]
+      rintro - ⟨y, -, rfl⟩
+      simp only [true_and, Filter.mem_sets]
+      exact mem_generate_of_mem ⟨y, rfl⟩
+    · rw [le_generate_iff]
+      rintro - ⟨x, -, -, rfl⟩
+      rcases hs x with ⟨y, ys, hy⟩
+      have A : Ici y ∈ generate (Ici '' s) := mem_generate_of_mem (mem_image_of_mem _ ys)
+      have B : Ici y ⊆ Ici x := Ici_subset_Ici.2 hy
+      exact sets_of_superset (generate (Ici '' s)) A B
 
 end Filter
 

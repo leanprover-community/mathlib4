@@ -14,6 +14,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+import Mathlib.Topology.Algebra.Order.LeftRightLim
+
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -52,6 +54,96 @@ open Classical BigOperators Topology NNReal ENNReal MeasureTheory
 universe u v w x y
 
 variable {α β γ γ₂ δ : Type _} {ι : Sort y} {s t u : Set α}
+
+section movethis
+
+open Filter Set Topology
+
+theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
+    (hf_mono : Monotone f) : ⨅ r : Ioi x, f r = ⨅ q : { q' : ℚ // x < q' }, f q := by
+  refine' le_antisymm _ _
+  · have : Nonempty { r' : ℚ // x < ↑r' } := by
+      obtain ⟨r, hrx⟩ := exists_rat_gt x
+      exact ⟨⟨r, hrx⟩⟩
+    refine' le_ciInf fun r => _
+    obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
+    refine' ciInf_set_le hf (hxy.trans _)
+    exact_mod_cast hyr
+  · refine' le_ciInf fun q => _
+    have hq := q.prop
+    rw [mem_Ioi] at hq
+    obtain ⟨y, hxy, hyq⟩ := exists_rat_btwn hq
+    refine' (ciInf_le _ _).trans _
+    · refine' ⟨hf.some, fun z => _⟩
+      rintro ⟨u, rfl⟩
+      suffices hfu : f u ∈ f '' Ioi x
+      exact hf.choose_spec hfu
+      exact ⟨u, u.prop, rfl⟩
+    · exact ⟨y, hxy⟩
+    · refine' hf_mono (le_trans _ hyq.le)
+      norm_cast
+#align infi_Ioi_eq_infi_rat_gt iInf_Ioi_eq_iInf_rat_gt
+
+-- todo after the port: move to topology/algebra/order/left_right_lim
+theorem rightLim_eq_of_tendsto {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+    [TopologicalSpace α] [OrderTopology α] [T2Space β] {f : α → β} {a : α} {y : β}
+    (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) : Function.rightLim f a = y :=
+  @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
+#align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
+
+-- todo after the port: move to topology/algebra/order/left_right_lim
+theorem rightLim_eq_sInf {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+    [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} (hf : Monotone f) {x : α}
+    [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
+    Function.rightLim f x = sInf (f '' Ioi x) :=
+  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
+#align right_lim_eq_Inf rightLim_eq_sInf
+
+-- todo after the port: move to order/filter/at_top_bot
+theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α] [Nonempty α]
+    [(atTop : Filter α).IsCountablyGenerated] :
+    ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
+  haveI h_ne_bot : (atTop : Filter α).NeBot := atTop_neBot
+  obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
+  let xs : ℕ → α := fun n => Finset.sup' (Finset.range (n + 1)) Finset.nonempty_range_succ ys
+  have h_mono : Monotone xs := by
+    intro i j hij
+    rw [Finset.sup'_le_iff]
+    intro k hk
+    refine' Finset.le_sup'_of_le _ _ le_rfl
+    rw [Finset.mem_range] at hk ⊢
+    exact hk.trans_le (add_le_add_right hij _)
+  refine' ⟨xs, h_mono, _⟩
+  · refine' tendsto_atTop_atTop_of_monotone h_mono _
+    have : ∀ a : α, ∃ n : ℕ, a ≤ ys n := by
+      rw [tendsto_atTop_atTop] at h
+      intro a
+      obtain ⟨i, hi⟩ := h a
+      exact ⟨i, hi i le_rfl⟩
+    intro a
+    obtain ⟨i, hi⟩ := this a
+    refine' ⟨i, hi.trans _⟩
+    refine' Finset.le_sup'_of_le _ _ le_rfl
+    rw [Finset.mem_range_succ_iff]
+#align exists_seq_monotone_tendsto_at_top_at_top exists_seq_monotone_tendsto_atTop_atTop
+
+theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type _) [SemilatticeInf α] [Nonempty α]
+    [h2 : (atBot : Filter α).IsCountablyGenerated] :
+    ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
+  @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ h2
+#align exists_seq_antitone_tendsto_at_top_at_bot exists_seq_antitone_tendsto_atTop_atBot
+
+-- todo after the port: move to topology/algebra/order/monotone_convergence
+theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
+    {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Antitone f)
+    (hφ : Tendsto φ l atBot) : ⨆ i, f i = ⨆ i, f (φ i) :=
+  le_antisymm
+    (iSup_mono' fun i =>
+      Exists.imp (fun j (hj : φ j ≤ i) => hf hj) (hφ.eventually <| eventually_le_atBot i).exists)
+    (iSup_mono' fun i => ⟨φ i, le_rfl⟩)
+#align supr_eq_supr_subseq_of_antitone iSup_eq_iSup_subseq_of_antitone
+
+end movethis
 
 open MeasurableSpace TopologicalSpace
 
@@ -1231,29 +1323,98 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
 
 end LinearOrder
 
+lemma ciSup_neg {α : Type _} [ConditionallyCompleteLattice α] {p : Prop} {f : p → α} (hp : ¬ p) :
+    ⨆ (h : p), f h = sSup (∅ : Set α) := by
+  rw [iSup]
+  congr
+  rw [range_eq_empty_iff]
+  exact { false := hp }
+
+lemma ciInf_neg {α : Type _} [ConditionallyCompleteLattice α] {p : Prop} {f : p → α} (hp : ¬ p) :
+    ⨅ (h : p), f h = sInf (∅ : Set α) :=
+  @ciSup_neg αᵒᵈ _ _ _ hp
+
 @[measurability]
-theorem Measurable.iSup_Prop {α} [MeasurableSpace α] [CompleteLattice α] (p : Prop) {f : δ → α}
-    (hf : Measurable f) : Measurable fun b => ⨆ _ : p, f b :=
-  _root_.by_cases (fun h : p => by convert hf; funext; exact iSup_pos h) fun h : ¬p => by
-    convert measurable_const using 1; funext; exact iSup_neg h
+theorem Measurable.iSup_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α]
+    (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨆ _ : p, f b :=
+  _root_.by_cases (fun h : p => by convert hf; funext; exact ciSup_pos h) fun h : ¬p => by
+    convert measurable_const using 1; funext; exact ciSup_neg h
 #align measurable.supr_Prop Measurable.iSup_Prop
 
 @[measurability]
-theorem Measurable.iInf_Prop {α} [MeasurableSpace α] [CompleteLattice α] (p : Prop) {f : δ → α}
+theorem Measurable.iInf_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α] (p : Prop) {f : δ → α}
     (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b :=
-  _root_.by_cases (fun h : p => by convert hf; funext; exact iInf_pos h) fun h : ¬p => by
-    convert measurable_const using 1; funext; exact iInf_neg h
+  _root_.by_cases (fun h : p => by convert hf; funext; exact ciInf_pos h) fun h : ¬p => by
+    convert measurable_const using 1; funext; exact ciInf_neg h
 #align measurable.infi_Prop Measurable.iInf_Prop
+
+
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
+variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
+
+open Filter
+
+lemma isCountablyGenerated_atTop : IsCountablyGenerated (atTop : Filter α) := by
+  by_cases h : ∃ (x : α), IsTop x
+  · rcases h with ⟨x, hx⟩
+    rw [atTop_eq_pure_of_isTop hx]
+    exact isCountablyGenerated_pure x
+  · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
+    have : Countable b := by exact Iff.mpr countable_coe_iff b_count
+    have A : ∀ (s : b), ∃ (x : α), x ∈ (s : Set α) := by
+      intro s
+      have : (s : Set α) ≠ ∅ := by
+        intro H
+        apply b_ne
+        convert s.2
+        exact H.symm
+      exact Iff.mp nmem_singleton_empty this
+    choose a ha using A
+    have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
+      apply atTop_eq_generate_of_forall_exists_le
+      intro x
+      simp only [IsTop, not_exists, not_forall, not_le] at h
+      rcases h x with ⟨y, hy⟩
+      obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
+        hb.exists_subset_of_mem_open hy isOpen_Ioi
+      refine ⟨a ⟨s, sb⟩, mem_range_self _, ?_⟩
+      apply le_of_lt (hs _)
+      exact ha _
+    rw [this]
+    exact ⟨_, (countable_range _).image _, rfl⟩
+
+
+
+
+
+
+
+#exit
+
 
 @[measurability]
 theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun b => ⨆ i, f i b :=
-  Measurable.isLUB hf fun _ => isLUB_iSup
+    Measurable fun b => ⨆ i, f i b := by
+  have A : ∀ (i : ι) (c : α), MeasurableSet {x | c < f i x} := by
+    intro i c
+    apply measurableSet_lt measurable_const (hf i)
+  have : ∀ (c : α), MeasurableSet (⋃ i, {x | c < f i x}) := by
+    intro c
+    apply MeasurableSet.iUnion (fun i ↦ A i c)
+  have : MeasurableSet {x | ∃ c, ∀ i, f i x ≤ c} := by
+    have : ∃ (u : ℕ → α), Tendsto u atTop atTop := by
+      have : IsCountablyGenerated (atTop : Filter α) := by
+        exact?
+      have Z := exists_seq_tendsto (atTop : Filter α)
+
+
+
+--  Measurable.isLUB hf fun _ => isLUB_iSup
 #align measurable_supr measurable_iSup
+
+#exit
 
 @[measurability]
 theorem aemeasurable_iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
