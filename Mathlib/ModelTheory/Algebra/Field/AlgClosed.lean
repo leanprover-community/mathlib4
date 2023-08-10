@@ -43,11 +43,11 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
     BoundedFormula.realize_ex, BoundedFormula.realize_bdEqual, Term.realize_relabel,
     Sum.elim_comp_inr, realize_termOfFreeCommRing, Term.realize, CompatibleField.funMap_zero]
   constructor
-  . rintro h p rfl hpm
+  · rintro h p rfl hpm
     rcases h (fun i => p.coeff i) with ⟨x, hx⟩
     use x
     rwa [← lift_genericPoly hpm]
-  . rintro h xs
+  · rintro h xs
     let p : K[X] := X ^ n + ∑ i : Fin n, C (xs i) * X ^ (i : ℕ)
     have hpc : p.coeff = fun i => if h : i < n then xs ⟨i, h⟩
         else if i = n then 1 else 0 := by
@@ -55,31 +55,31 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
       simp only [coeff_add, coeff_X_pow, finset_sum_coeff, coeff_C_mul,
         mul_ite, mul_one, mul_zero]
       by_cases hin : i = n
-      . subst i
+      · subst i
         simp only [ite_true, lt_self_iff_false, dite_false, add_right_eq_self]
         exact Finset.sum_eq_zero (fun i _ => by rw [if_neg (ne_of_gt i.2)])
-      . by_cases hin₂ : i < n
-        . simp only [hin, ite_false, zero_add, hin₂, dite_true]
+      · by_cases hin₂ : i < n
+        · simp only [hin, ite_false, zero_add, hin₂, dite_true]
           rw [Finset.sum_eq_single ⟨i, hin₂⟩]
-          . simp
-          . simp only [Finset.mem_univ, ne_eq, ite_eq_right_iff, forall_true_left]
+          · simp
+          · simp only [Finset.mem_univ, ne_eq, ite_eq_right_iff, forall_true_left]
             rintro _ _ rfl
             simp_all
-          . simp
-        . simp only [hin, ite_false, zero_add, hin₂, dite_false]
+          · simp
+        · simp only [hin, ite_false, zero_add, hin₂, dite_false]
           refine Finset.sum_eq_zero (fun i _ => ?_)
           simp [ne_of_gt (lt_of_lt_of_le i.2 (le_of_not_lt hin₂))]
     have hpn : p.natDegree = n := by
       refine le_antisymm ?_ ?_
-      . refine natDegree_le_iff_coeff_eq_zero.2 ?_
+      · refine natDegree_le_iff_coeff_eq_zero.2 ?_
         rw [hpc]
         intro i hi
         simp [not_lt_of_gt hi, ne_of_gt hi]
-      . refine le_natDegree_of_ne_zero ?_
+      · refine le_natDegree_of_ne_zero ?_
         simp only [coeff_add, coeff_X_pow_self, finset_sum_coeff, coeff_C_mul, ne_eq]
         rw [Finset.sum_eq_zero, add_zero]
-        . simp
-        . rintro ⟨i, hi⟩ _
+        · simp
+        · rintro ⟨i, hi⟩ _
           simp [coeff_X_pow, ne_of_gt hi]
     have hpm : p.Monic := by
       simp only [Monic.def, leadingCoeff, hpn, coeff_add, coeff_X_pow_self, finset_sum_coeff,
@@ -168,14 +168,14 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
   apply Categorical.isComplete.{0, 0, 0} (Order.succ ℵ₀) _ _
     (Order.le_succ ℵ₀)
-  . simp only [card_field, lift_id']
+  · simp only [card_field, lift_id']
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
-  . exact ACF_isSatisfiable_of_prime_or_zero hp
-  . rintro ⟨M⟩
+  · exact ACF_isSatisfiable_of_prime_or_zero hp
+  · rintro ⟨M⟩
     letI := CompatibleFieldOfModelACF M p
     letI := isAlgClosed_of_model_ACF p M
     infer_instance
-  . rintro ⟨M⟩ ⟨N⟩ hM hN
+  · rintro ⟨M⟩ ⟨N⟩ hM hN
     letI := CompatibleFieldOfModelACF M p
     haveI := isAlgClosed_of_model_ACF p M
     haveI := charP_of_model_ACF p M
@@ -186,8 +186,8 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     refine languageEquivEquivRingEquiv ?_
     apply Classical.choice
     refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
-    . rw [hM]; exact Order.lt_succ _
-    . rw [hM, hN]
+    · rw [hM]; exact Order.lt_succ _
+    · rw [hM, hN]
 
 theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence)
     (hφ : Set.Infinite { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }) :

@@ -916,13 +916,13 @@ theorem _root_.FirstOrder.Language.Formula.realize_allsᵢ
   simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
     castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   refine Equiv.forall_congr ?_ ?_
-  . exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+  · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
       fun _ => by simp [Function.comp],
       fun _ => by simp [Function.comp]⟩
-  . intro x
+  · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
-    . funext i
+    · funext i
       exact i.elim0
 
 @[simp]
@@ -943,13 +943,13 @@ theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
     castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   rw [← not_iff_not, not_exists, not_exists]
   refine Equiv.forall_congr ?_ ?_
-  . exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+  · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
       fun _ => by simp [Function.comp],
       fun _ => by simp [Function.comp]⟩
-  . intro x
+  · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
-    . funext i
+    · funext i
       exact i.elim0
 
 @[simp]

@@ -203,7 +203,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
     Theory.ACF p ⊨ᵇ genericPolyMapSurjectiveOfInjective mons := by
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjectiveOfInjective_of_prime hp mons
-  . rw [ACF0_realize_iff_infinite_ACF_prime_realize]
+  · rw [ACF0_realize_iff_infinite_ACF_prime_realize]
     convert Set.infinite_univ (α := Nat.Primes)
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
