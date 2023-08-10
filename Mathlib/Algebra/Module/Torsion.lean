@@ -61,6 +61,7 @@ import Mathlib.RingTheory.Finiteness
 Torsion, submodule, module, quotient
 -/
 
+open Span
 
 namespace Ideal
 
@@ -444,7 +445,7 @@ variable {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
 
 theorem iSup_torsionBy_eq_torsionBy_prod [DecidableEq ι] :
     ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i in S, q i) := by
-  rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
+  rw [← torsionBySet_span_singleton_eq, Submodule.span_singleton, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf]
   congr
@@ -498,7 +499,7 @@ its `q i`-torsion submodules.-/
 theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
     (hM : Module.IsTorsionBy R M <| ∏ i in S, q i) :
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
-  rw [← Module.isTorsionBySet_span_singleton_iff, Ideal.submodule_span_eq, ←
+  rw [← Module.isTorsionBySet_span_singleton_iff, Submodule.span_singleton, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf] at hM
   convert torsionBySet_isInternal
       (fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime (q i) _).mpr <| hq hi hj ij) hM
@@ -514,7 +515,7 @@ variable {I : Ideal R} (hM : IsTorsionBySet R M I)
 /-- can't be an instance because hM can't be inferred -/
 def IsTorsionBySet.hasSMul : SMul (R ⧸ I) M where
   smul b x :=
-    Quotient.liftOn' b (· • x) fun b₁ b₂ h =>
+    Quotient.liftOn' b (fun x₁ => x₁ • x) fun b₁ b₂ h =>
       show b₁ • x = b₂ • x from by
         have : (-b₁ + b₂) • x = 0 := @hM x ⟨_, QuotientAddGroup.leftRel_apply.mp h⟩
         rw [add_smul, neg_smul, neg_add_eq_zero] at this
@@ -807,7 +808,7 @@ namespace Ideal.Quotient
 open Submodule
 
 theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a ∈ R⁰) :
-    torsionBy R (R ⧸ R • a * b) a = R • mk (R • a * b) b := by
+    torsionBy R (R ⧸ R • (a * b)) a = R • mk (R • (a * b)) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]
   obtain ⟨x, rfl⟩ := mk_surjective x; constructor <;> intro h
   · rw [← mk_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero, Submodule.mem_span_singleton] at h

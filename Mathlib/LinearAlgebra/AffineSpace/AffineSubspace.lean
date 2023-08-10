@@ -1253,14 +1253,16 @@ theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P
 
 variable (k)
 
+open Span
+
 /-- The `vectorSpan` of two points is the span of their difference. -/
-theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k • p₁ -ᵥ p₂ := by
+theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k • (p₁ -ᵥ p₂) := by
   simp_rw [vectorSpan_eq_span_vsub_set_left k (mem_insert p₁ _), image_pair, vsub_self,
     Submodule.span_insert_zero]
 #align vector_span_pair vectorSpan_pair
 
 /-- The `vectorSpan` of two points is the span of their difference (reversed). -/
-theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k • p₂ -ᵥ p₁ := by
+theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k • (p₂ -ᵥ p₁) := by
   rw [pair_comm, vectorSpan_pair]
 #align vector_span_pair_rev vectorSpan_pair_rev
 
@@ -1395,7 +1397,7 @@ theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s
 results as adding the point to the set and taking the span. -/
 theorem affineSpan_insert_affineSpan (p : P) (ps : Set P) :
     affineSpan k (insert p (affineSpan k ps : Set P)) = affineSpan k (insert p ps) := by
-  rw [Set.insert_eq, Set.insert_eq, span_union, span_union, affineSpan_coe]
+  rw [Set.insert_eq, Set.insert_eq, AffineSubspace.span_union, span_union, affineSpan_coe]
 #align affine_span_insert_affine_span affineSpan_insert_affineSpan
 
 /-- If a point is in the affine span of a set, adding it to that set does not change the affine
@@ -1422,10 +1424,12 @@ namespace AffineSubspace
 variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
+open Span
+
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
 of any one difference between points in the two subspaces. -/
 theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1) (hp2 : p2 ∈ s2) :
-    (s1 ⊔ s2).direction = s1.direction ⊔ s2.direction ⊔ k • p2 -ᵥ p1 := by
+    (s1 ⊔ s2).direction = s1.direction ⊔ s2.direction ⊔ k • (p2 -ᵥ p1) := by
   refine' le_antisymm _ _
   · change (affineSpan k ((s1 : Set P) ∪ s2)).direction ≤ _
     rw [← mem_coe] at hp1

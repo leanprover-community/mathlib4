@@ -702,7 +702,7 @@ instance : Inhabited (NonUnitalSubalgebra R A) :=
 theorem mem_bot {x : A} : x ∈ (⊥ : NonUnitalSubalgebra R A) ↔ x = 0 :=
   show x ∈ Submodule.span R (NonUnitalSubsemiring.closure (∅ : Set A) : Set A) ↔ x = 0 by
     rw [NonUnitalSubsemiring.closure_empty, NonUnitalSubsemiring.coe_bot,
-      Submodule.span_zero_singleton, Submodule.mem_bot]
+      ←Submodule.span_singleton, Submodule.span_zero_singleton, Submodule.mem_bot]
 
 theorem toSubmodule_bot : (⊥ : NonUnitalSubalgebra R A).toSubmodule = ⊥ := by
   ext

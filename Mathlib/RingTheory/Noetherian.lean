@@ -305,6 +305,8 @@ theorem isNoetherian_iff_wellFounded :
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
 #align is_noetherian_iff_well_founded isNoetherian_iff_wellFounded
 
+open Span in
+
 theorem isNoetherian_iff_fg_wellFounded :
     IsNoetherian R M ↔
       WellFounded

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Jan-David Salchow. All rights reserved.
+?Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
@@ -252,6 +252,8 @@ end Seminormed
 
 section Normed
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+open Span
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
     continuous linear equivalence from `E₁` to the span of `x`.-/

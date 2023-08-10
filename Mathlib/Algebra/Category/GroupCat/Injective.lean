@@ -124,7 +124,7 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
             simp only [map_zero, add_zero]
           · intro n1 _
             simp only [map_zero, smul_zero]
-          · rw [Submodule.span_singleton_eq_bot.mpr rfl, Submodule.mem_bot] at hn
+          · rw [← Submodule.span_singleton, Submodule.span_singleton_eq_bot.mpr rfl, Submodule.mem_bot] at hn
             simp only [hn, map_zero]
             symm
             convert map_zero g

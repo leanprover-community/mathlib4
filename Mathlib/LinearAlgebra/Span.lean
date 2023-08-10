@@ -51,15 +51,16 @@ def span (s : Set M) : Submodule R M :=
   sInf { p | s ⊆ p }
 #align submodule.span Submodule.span
 
-@[reducible, inherit_doc span]
-def span_singleton (x : M) :=
-    span R (singleton x)
+@[inherit_doc span, reducible]
+abbrev span_singleton (x : M) := span R (singleton x)
 
 -- mathport name: «expr • »
 @[inherit_doc]
-scoped infix:72 " • " => Submodule.span_singleton
+scoped[Span] infix:72 " • " => Submodule.span_singleton
 
 end
+
+open Span
 
 variable {s t : Set M}
 
@@ -922,6 +923,7 @@ theorem map_eq_top_iff {f : F} (hf : range f = ⊤) {p : Submodule R M} :
 
 end AddCommGroup
 
+open Span
 section
 
 variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
@@ -1027,7 +1029,7 @@ end Field
 
 end LinearMap
 
-open LinearMap Submodule
+open LinearMap Span
 
 namespace LinearEquiv
 

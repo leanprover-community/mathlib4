@@ -77,7 +77,7 @@ variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieSubmodule
 
-open LieModule
+open LieModule Span
 
 variable {I : LieIdeal R L} {x : L} (hxI : (R • x) ⊔ I = ⊤)
 
@@ -191,6 +191,8 @@ theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
     LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L ↔ LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ :=
   ⟨e.surjective.isEngelian, e.symm.surjective.isEngelian⟩
 #align lie_equiv.is_engelian_iff LieEquiv.isEngelian_iff
+
+open Span in
 
 -- Porting note: changed statement from `∃ ∃ ..` to `∃ .. ∧ ..`
 theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}

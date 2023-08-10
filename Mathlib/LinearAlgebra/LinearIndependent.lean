@@ -883,6 +883,8 @@ theorem linearIndependent_iff_not_smul_mem_span :
       · simp [hl]⟩
 #align linear_independent_iff_not_smul_mem_span linearIndependent_iff_not_smul_mem_span
 
+open Span
+
 /-- See also `CompleteLattice.independent_iff_linearIndependent_of_ne_zero`. -/
 theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v) :
     CompleteLattice.Independent fun i => R • v i := by

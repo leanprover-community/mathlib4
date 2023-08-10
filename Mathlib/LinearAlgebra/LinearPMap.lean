@@ -49,7 +49,7 @@ variable {R : Type _} [Ring R] {E : Type _} [AddCommGroup E] [Module R E] {F : T
 
 namespace LinearPMap
 
-open Submodule
+open Submodule Span
 
 -- Porting note: A new definition underlying a coercion `↑`.
 @[coe]
@@ -429,7 +429,7 @@ instance isScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E �
 #align linear_pmap.is_scalar_tower LinearPMap.isScalarTower
 
 instance mulAction : MulAction M (E →ₗ.[R] F) where
-  smul := (· • ·)
+  smul := (fun x₁ x₂ => x₁ • x₂)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 #align linear_pmap.mul_action LinearPMap.mulAction

@@ -126,7 +126,7 @@ variable {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule
 
 instance instSMul' : SMul S (M ⧸ P) :=
   ⟨fun a =>
-    Quotient.map' ((· • ·) a) fun x y h =>
+    Quotient.map' (a • ·) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
 #align submodule.quotient.has_smul' Submodule.Quotient.instSMul'
 
@@ -353,10 +353,12 @@ theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (
 theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mkQ = f := by ext; rfl
 #align submodule.liftq_mkq Submodule.liftQ_mkQ
 
+open Span
+
 /-- Special case of `submodule.liftQ` when `p` is the span of `x`. In this case, the condition on
 `f` simply becomes vanishing at `x`.-/
-def liftQSpanSingleton (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) : (M ⧸ R ∙ x) →ₛₗ[τ₁₂] M₂ :=
-  (R ∙ x).liftQ f <| by rw [span_singleton_le_iff_mem, LinearMap.mem_ker, h]
+def liftQSpanSingleton (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) : (M ⧸ R • x) →ₛₗ[τ₁₂] M₂ :=
+  (R • x).liftQ f <| by rw [span_singleton_le_iff_mem, LinearMap.mem_ker, h]
 #align submodule.liftq_span_singleton Submodule.liftQSpanSingleton
 
 @[simp]

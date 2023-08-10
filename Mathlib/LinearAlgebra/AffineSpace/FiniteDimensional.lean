@@ -378,6 +378,8 @@ theorem collinear_singleton (p : P) : Collinear k ({p} : Set P) := by
 
 variable {k}
 
+open Span in
+
 /-- Given a point `p₀` in a set of points, that set is collinear if and
 only if the points can all be expressed as multiples of the same
 vector, added to `p₀`. -/

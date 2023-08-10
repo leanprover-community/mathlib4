@@ -33,6 +33,7 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 
 -/
 
+open Span
 
 variable {R : Type _} [CommRing R] (I J : Ideal R) (M : Type _) [AddCommGroup M] [Module R M]
 
