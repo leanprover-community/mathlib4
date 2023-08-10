@@ -18,7 +18,7 @@ open Filter ENNReal
 
 namespace ENNReal
 
-variable {α : Type _} {f : Filter α}
+variable {α : Type*} {f : Filter α}
 
 theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
     ∀ᶠ y in f, u y ≤ f.limsup u :=
@@ -44,8 +44,7 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
   have hg_mono : StrictMono g :=
     Monotone.strictMono_of_injective (fun _ _ _ => by rwa [mul_le_mul_left ha_zero ha_top]) hg_bij.1
   let g_iso := StrictMono.orderIsoOfSurjective g hg_mono hg_bij.2
-  refine' (OrderIso.limsup_apply g_iso _ _ _ _).symm
-  all_goals isBoundedDefault
+  exact (OrderIso.limsup_apply g_iso).symm
 #align ennreal.limsup_const_mul_of_ne_top ENNReal.limsup_const_mul_of_ne_top
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :

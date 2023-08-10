@@ -3,7 +3,7 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.ListM.Basic
+import Std.Data.MLList.Basic
 import Mathlib.Control.Basic
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
@@ -22,19 +22,19 @@ open Lean
   -- Note that `fix` fails if any invocation of `F` fails.
   -- This is different from previous behaviour, where it just terminated the lazy list.
   -- Hence we must use `.takeAsList 11` here rather than `.force`.
-  let x := ((ListM.fix F 10).takeAsList 11).run []
+  let x := ((MLList.fix F 10).takeAsList 11).run []
   guard $ x = some ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
-example : ((ListM.fix F 10).takeAsList 4).run [] = some ([10, 9, 8, 7], [8, 9, 10]) := by
+example : ((MLList.fix F 10).takeAsList 4).run [] = some ([10, 9, 8, 7], [8, 9, 10]) := by
   native_decide
 example :
-    (((ListM.fix F 10).map fun n => n*n).takeAsList 3).run [] =
+    (((MLList.fix F 10).map fun n => n*n).takeAsList 3).run [] =
       some ([100, 81, 64], [9, 10]) := by
   native_decide
 
-def l1 : ListM S Nat := ListM.ofList [0,1,2]
-def l2 : ListM S Nat := ListM.ofList [3,4,5]
-def ll : ListM S Nat := (ListM.ofList [l1, l2]).join
+def l1 : MLList S Nat := MLList.ofList [0,1,2]
+def l2 : MLList S Nat := MLList.ofList [3,4,5]
+def ll : MLList S Nat := (MLList.ofList [l1, l2]).join
 
 #eval show MetaM Unit from do
   let x := ll.force.run []
@@ -45,14 +45,14 @@ do guard (n % 2 = 0)
    pure (n / 2)
 
 #eval do
-  let x : ListM MetaM Nat := ListM.range
+  let x : MLList MetaM Nat := MLList.range
   let y := x.filterMapM fun n => try? <| half_or_fail n
   let z ← y.takeAsList 10
   guard $ z.length = 10
 
 #eval do
-  let R : ListM MetaM Nat := ListM.range
-  let S : ListM MetaM Nat := R.filterMapM fun n => try? do
+  let R : MLList MetaM Nat := MLList.range
+  let S : MLList MetaM Nat := R.filterMapM fun n => try? do
     guard (n % 5 = 0)
     pure n
   let n ← R.takeAsList 5
@@ -61,7 +61,7 @@ do guard (n % 2 = 0)
   guard $ m = 0
 
 #eval do
-  let R : ListM MetaM Nat := ListM.range
+  let R : MLList MetaM Nat := MLList.range
   let n ← R.firstM fun n => try? do
     guard (n = 5)
     pure n
