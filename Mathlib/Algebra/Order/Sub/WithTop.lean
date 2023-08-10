@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace WithTop
 
