@@ -33,7 +33,7 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 
 noncomputable section
 
-open FiniteDimensional Complex
+open FiniteDimensional Complex Span
 
 open scoped Real RealInnerProductSpace ComplexConjugate
 
@@ -877,7 +877,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
     refine' ⟨![m 0 + m 1 * r, m 1], _⟩
-    change (m 0 + m 1 * r) • x + m 1 • y = 0 ∧ (m 0 + m 1 * r ≠ 0 ∨ m 1 ≠ 0)
+    dsimp
     rw [smul_add, smul_smul, ← add_assoc, ← add_smul] at h
     refine' ⟨h, not_and_or.1 fun h0 => _⟩
     obtain ⟨h0, h1⟩ := h0
@@ -885,9 +885,9 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     rw [MulZeroClass.zero_mul, add_zero] at h0
     simp [h0] at hm
   · rcases h with ⟨m, h, hm⟩
-    change m 0 • x + m 1 • y = 0 at h
+    dsimp at h
     refine' ⟨![m 0 - m 1 * r, m 1], _⟩
-    change (m 0 - m 1 * r) • x + m 1 • (r • x + y) = 0 ∧ (m 0 - m 1 * r ≠ 0 ∨ m 1 ≠ 0)
+    dsimp
     rw [sub_smul, smul_add, smul_smul, ← add_assoc, sub_add_cancel]
     refine' ⟨h, not_and_or.1 fun h0 => _⟩
     obtain ⟨h0, h1⟩ := h0

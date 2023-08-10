@@ -39,7 +39,7 @@ and outputs a set of orthogonal vectors which have the same span.
 
 open scoped BigOperators
 
-open Finset Submodule FiniteDimensional
+open Finset Submodule FiniteDimensional Span
 
 variable (𝕜 : Type _) {E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 

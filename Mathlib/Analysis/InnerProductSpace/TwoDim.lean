@@ -203,6 +203,8 @@ theorem inner_rightAngleRotationAux₁_right (x y : E) :
   simp [o.areaForm_swap y x]
 #align orientation.inner_right_angle_rotation_aux₁_right Orientation.inner_rightAngleRotationAux₁_right
 
+open Span in
+
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
 def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
