@@ -299,6 +299,8 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
 
 /--
 Convex hull of `s` is equal to the set of all centers of masses of `Finset`s `t`, `z '' t ⊆ s`.
+For universe reasons, you shouldn't use this lemma to prove that a given center of mass belongs 
+to the convex hull. Use convexity of the convex hull instead.
 -/
 theorem convexHull_eq (s : Set E) : convexHull R s =
     { x : E | ∃ (ι : Type) (t : Finset ι) (w : ι → R) (z : ι → E) (_ : ∀ i ∈ t, 0 ≤ w i)
