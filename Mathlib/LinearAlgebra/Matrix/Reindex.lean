@@ -105,7 +105,7 @@ theorem reindexLinearEquiv_mul [Fintype n] [Fintype n'] (eₘ : m ≃ m') (eₙ 
 
 theorem mul_reindexLinearEquiv_one [Fintype n] [DecidableEq o] (e₁ : o ≃ n) (e₂ : o ≃ n')
     (M : Matrix m n A) :
-    M.mul (reindexLinearEquiv R A e₁ e₂ 1) =
+    M * (reindexLinearEquiv R A e₁ e₂ 1) =
       reindexLinearEquiv R A (Equiv.refl m) (e₁.symm.trans e₂) M :=
   haveI := Fintype.ofEquiv _ e₁.symm
   mul_submatrix_one _ _ _
