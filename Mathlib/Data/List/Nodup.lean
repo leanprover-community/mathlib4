@@ -350,7 +350,7 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
         exact n rfl⟩
 #align list.nodup.product List.Nodup.product
 
-theorem Nodup.sigma {σ : α → Type _} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
+theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
     (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
@@ -369,7 +369,7 @@ protected theorem Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup
   rw [concat_eq_append]; exact h'.append (nodup_singleton _) (disjoint_singleton.2 h)
 #align list.nodup.concat List.Nodup.concat
 
-theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
+protected theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
   if h' : a ∈ l then by rw [insert_of_mem h']; exact h
   else by rw [insert_of_not_mem h', nodup_cons]; constructor <;> assumption
 #align list.nodup.insert List.Nodup.insert

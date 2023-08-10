@@ -47,7 +47,7 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 -/
 
 
-variable {ι α β γ : Type _} {π : ι → Type _}
+variable {ι α β γ : Type*} {π : ι → Type*}
 
 namespace Set
 
@@ -508,7 +508,7 @@ theorem isWf_insert {a} : IsWf (insert a s) ↔ IsWf s := by
   simp only [← singleton_union, isWf_union, isWf_singleton, true_and_iff]
 #align set.is_wf_insert Set.isWf_insert
 
-theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
+protected theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
   isWf_insert.2 h
 #align set.is_wf.insert Set.IsWf.insert
 
@@ -537,7 +537,8 @@ theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s 
   simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and_iff]
 #align set.well_founded_on_insert Set.wellFoundedOn_insert
 
-theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) : WellFoundedOn (insert a s) r :=
+protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
+    WellFoundedOn (insert a s) r :=
   wellFoundedOn_insert.2 h
 #align set.well_founded_on.insert Set.WellFoundedOn.insert
 
@@ -822,7 +823,7 @@ This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well par
 Some generalizations would be possible based on this proof, to include cases where the target is
 partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
 `Set.IsPwo`. -/
-theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
+theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPwo := by
   cases nonempty_fintype ι
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),

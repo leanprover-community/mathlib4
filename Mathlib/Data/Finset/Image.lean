@@ -29,7 +29,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Multiset
 
@@ -536,7 +536,7 @@ theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : 
     (s ∆ t).image f = s.image f ∆ t.image f :=
   coe_injective <| by
     push_cast
-    exact Set.image_symm_diff hf _ _
+    exact Set.image_symmDiff hf _ _
 #align finset.image_symm_diff Finset.image_symmDiff
 
 @[simp]
@@ -603,8 +603,7 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
     Disjoint (s.image f) (t.image f) ↔ Disjoint s t := by
-  -- Porting note: was `convert`
-  rw [←disjoint_map ⟨_, hf⟩]
+  convert disjoint_map ⟨_, hf⟩ using 1
   simp [map_eq_image]
 #align finset.disjoint_image Finset.disjoint_image
 

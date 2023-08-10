@@ -29,7 +29,7 @@ us to access the numerators and denominators of a continued fraction.
 -/
 
 
-variable {α : Type _} {g : GeneralizedContinuedFraction α} {n : ℕ}
+variable {α : Type*} {g : GeneralizedContinuedFraction α} {n : ℕ}
 
 theorem terminatedAt_iff_s_terminatedAt : g.TerminatedAt n ↔ g.s.TerminatedAt n := by rfl
 #align generalized_continued_fraction.terminated_at_iff_s_terminated_at GeneralizedContinuedFraction.terminatedAt_iff_s_terminatedAt
@@ -84,7 +84,7 @@ continued fraction.
 -/
 
 
-variable {K : Type _} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
 
 theorem nth_cont_eq_succ_nth_cont_aux : g.continuants n = g.continuantsAux (n + 1) :=
   rfl

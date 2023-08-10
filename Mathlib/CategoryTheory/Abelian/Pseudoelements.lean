@@ -234,7 +234,7 @@ def pseudoZero {P : C} : P :=
 #align category_theory.abelian.pseudoelement.pseudo_zero CategoryTheory.Abelian.Pseudoelement.pseudoZero
 
 -- Porting note: in mathlib3, we couldn't make this an instance
--- as it would have fired on on `coe_sort`.
+-- as it would have fired on `coe_sort`.
 -- However now that coercions are treated differently, this is a structural instance triggered by
 -- the appearance of `Pseudoelement`.
 instance hasZero {P : C} : Zero P :=
@@ -476,7 +476,7 @@ section Module
 
 /-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
-theorem ModuleCat.eq_range_of_pseudoequal {R : Type _} [CommRing R] {G : ModuleCat R} {x y : Over G}
+theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom = LinearMap.range y.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
   refine' Submodule.ext fun a => ⟨fun ha => _, fun ha => _⟩

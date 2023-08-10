@@ -15,7 +15,7 @@ This file proves properties of 2×2 block matrices `[A B; C D]` that relate to t
 `D - C⬝A⁻¹⬝B`.
 
 Some of the results here generalize to 2×2 matrices in a category, rather than just a ring. A few
-results in this direction can be found in the the file `CateogryTheory.Preadditive.Biproducts`,
+results in this direction can be found in the file `CateogryTheory.Preadditive.Biproducts`,
 especially the declarations `CategoryTheory.Biprod.gaussian` and `CategoryTheory.Biprod.isoElim`.
 Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
@@ -35,7 +35,7 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 -/
 
 
-variable {l m n α : Type _}
+variable {l m n α : Type*}
 
 namespace Matrix
 
@@ -463,7 +463,7 @@ section IsROrC
 
 open scoped Matrix
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 

@@ -50,13 +50,13 @@ class IsFreeGroup (G : Type u) [Group G] where
   MulEquiv' : FreeGroup Generators ≃* G
 #align is_free_group IsFreeGroup
 
-instance (X : Type _) : IsFreeGroup (FreeGroup X) where
+instance (X : Type*) : IsFreeGroup (FreeGroup X) where
   Generators := X
   MulEquiv' := MulEquiv.refl _
 
 namespace IsFreeGroup
 
-variable (G : Type _) [Group G] [IsFreeGroup G]
+variable (G : Type*) [Group G] [IsFreeGroup G]
 
 /-- Any free group is isomorphic to "the" free group. -/
 def MulEquiv : FreeGroup (Generators G) ≃* G := IsFreeGroup.MulEquiv'
@@ -81,7 +81,7 @@ theorem of_eq_freeGroup_of {A : Type u} : @of (FreeGroup A) _ _ = FreeGroup.of :
   rfl
 #align is_free_group.of_eq_free_group_of IsFreeGroup.of_eq_freeGroup_of
 
-variable {H : Type _} [Group H]
+variable {H : Type*} [Group H]
 
 /-- The equivalence between functions on the generators and group homomorphisms from a free group
 given by those generators. -/
@@ -118,7 +118,7 @@ theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of
   lift.symm.injective (funext h)
 #align is_free_group.ext_hom IsFreeGroup.ext_hom
 
-/-- The universal property of a free group: A functions from the generators of `G` to another
+/-- The universal property of a free group: A function from the generators of `G` to another
 group extends in a unique way to a homomorphism from `G`.
 
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already

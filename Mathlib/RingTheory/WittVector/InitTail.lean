@@ -36,7 +36,7 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 -/
 
 
-variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type _} [CommRing R]
+variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type*} [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p

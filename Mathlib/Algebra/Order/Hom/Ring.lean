@@ -33,7 +33,7 @@ ordered ring homomorphism, order homomorphism
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- `OrderRingHom α β` is the type of monotone semiring homomorphisms from `α` to `β`.
 
@@ -41,7 +41,7 @@ When possible, instead of parametrizing results over `(f : OrderRingHom α β)`,
 you should parametrize over `(F : Type*) [OrderRingHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderRingHomClass`. -/
-structure OrderRingHom (α β : Type _) [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
+structure OrderRingHom (α β : Type*) [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
   [Preorder β] extends α →+* β where
   /-- The proposition that the function preserves the order. -/
   monotone' : Monotone toFun
@@ -66,7 +66,7 @@ When possible, instead of parametrizing results over `(f : OrderRingIso α β)`,
 you should parametrize over `(F : Type*) [OrderRingIsoClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderRingIsoClass`. -/
-structure OrderRingIso (α β : Type _) [Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β] extends
+structure OrderRingIso (α β : Type*) [Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β] extends
   α ≃+* β where
   /-- The proposition that the function preserves the order bijectively. -/
   map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
@@ -77,7 +77,7 @@ infixl:25 " ≃+*o " => OrderRingIso
 
 /-- `OrderRingHomClass F α β` states that `F` is a type of ordered semiring homomorphisms.
 You should extend this typeclass when you extend `OrderRingHom`. -/
-class OrderRingHomClass (F : Type _) (α β : outParam <| Type _) [NonAssocSemiring α] [Preorder α]
+class OrderRingHomClass (F : Type*) (α β : outParam <| Type*) [NonAssocSemiring α] [Preorder α]
   [NonAssocSemiring β] [Preorder β] extends RingHomClass F α β where
   /-- The proposition that the function preserves the order. -/
   monotone (f : F) : Monotone f
@@ -85,7 +85,7 @@ class OrderRingHomClass (F : Type _) (α β : outParam <| Type _) [NonAssocSemir
 
 /-- `OrderRingIsoClass F α β` states that `F` is a type of ordered semiring isomorphisms.
 You should extend this class when you extend `OrderRingIso`. -/
-class OrderRingIsoClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Add α] [LE α] [Mul β]
+class OrderRingIsoClass (F : Type*) (α β : outParam (Type*)) [Mul α] [Add α] [LE α] [Mul β]
   [Add β] [LE β] extends RingEquivClass F α β where
   /-- The proposition that the function preserves the order bijectively. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
@@ -281,20 +281,20 @@ theorem id_apply (a : α) : OrderRingHom.id α a = a :=
 #align order_ring_hom.id_apply OrderRingHom.id_apply
 
 @[simp]
-theorem coe_RingHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
+theorem coe_ringHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
   rfl
-#align order_ring_hom.coe_ring_hom_id OrderRingHom.coe_RingHom_id
+#align order_ring_hom.coe_ring_hom_id OrderRingHom.coe_ringHom_id
 
 @[simp]
-theorem coe_OrderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
+theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
   rfl
-#align order_ring_hom.coe_order_add_monoid_hom_id OrderRingHom.coe_OrderAddMonoidHom_id
+#align order_ring_hom.coe_order_add_monoid_hom_id OrderRingHom.coe_orderAddMonoidHom_id
 
 @[simp]
-theorem coe_OrderMonoidWithZeroHom_id :
+theorem coe_orderMonoidWithZeroHom_id :
     (OrderRingHom.id α : α →*₀o α) = OrderMonoidWithZeroHom.id α :=
   rfl
-#align order_ring_hom.coe_order_monoid_with_zero_hom_id OrderRingHom.coe_OrderMonoidWithZeroHom_id
+#align order_ring_hom.coe_order_monoid_with_zero_hom_id OrderRingHom.coe_orderMonoidWithZeroHom_id
 
 /-- Composition of two `OrderRingHom`s as an `OrderRingHom`. -/
 protected def comp (f : β →+*o γ) (g : α →+*o β) : α →+*o γ :=
