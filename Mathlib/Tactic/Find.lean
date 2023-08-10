@@ -179,7 +179,7 @@ structure Arguments where
   /-- Identifiers to search for -/
   idents : Array Name
   /-- Lemma name substrings to search for -/
-  name_pats : Array String
+  namePats : Array String
   /-- Term patterns to search for. The boolean indicates conclusion patterns. -/
   terms : Array (Bool × Expr)
 
@@ -196,14 +196,14 @@ def find (args : Arguments) (maxShown := 200) :
       return .error m!"Cannot search: No constants in search pattern."
 
     -- Prepare term patterns
-    let pats ← liftM $ args.terms.mapM fun (is_conclusion_pattern, t) =>
-      if is_conclusion_pattern
+    let pats ← liftM <| args.terms.mapM fun (isConclusionPattern, t) =>
+      if isConclusionPattern
       then matchConclusion t
       else matchAnywhere t
 
     -- Query the declaration cache
     let (m₁, m₂) ← findDeclsByConsts.get
-    let hits := NameSet.intersects $ needles.toArray.map $ fun needle =>
+    let hits := NameSet.intersects <| needles.toArray.map <| fun needle =>
       NameSet.union (m₁.findD needle {}) (m₂.findD needle {})
 
     -- Filter by name patterns
@@ -220,17 +220,17 @@ def find (args : Arguments) (maxShown := 200) :
     let hits4 := hits3.qsort Name.lt
 
     let summary ← IO.mkRef MessageData.nil
-    let add_line line := do summary.set $ (← summary.get) ++ line ++ Format.line
+    let addLine line := do summary.set <| (← summary.get) ++ line ++ Format.line
 
-    let needles_list := MessageData.andList (needles.toArray.map .ofName)
-    add_line $ m!"Found {hits.size} definitions mentioning {needles_list}."
-    unless (args.name_pats.isEmpty) do
-      let name_list := MessageData.andList <| args.name_pats.map fun s => m!"\"{s}\""
-      add_line $ m!"Of these, {hits2.size} have a name containing {name_list}."
+    let needlesList := MessageData.andList (needles.toArray.map .ofName)
+    addLine m!"Found {hits.size} definitions mentioning {needlesList}."
+    unless (args.namePats.isEmpty) do
+      let nameList := MessageData.andList <| args.namePats.map fun s => m!"\"{s}\""
+      addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
     unless (pats.isEmpty) do
-      add_line $ m!"Of these, {hits3.size} match your patterns."
+      addLine $ m!"Of these, {hits3.size} match your patterns."
     unless (hits4.size ≤ maxShown) do
-      add_line $ m!"Of these, the first {maxShown} are shown."
+      addLine $ m!"Of these, only the first {maxShown} are shown."
     return .ok (← summary.get, hits4.toList.take maxShown)
 
 /-!
@@ -256,13 +256,13 @@ syntax find_pattern := name_pattern <|> ident_pattern <|> conclusion_pattern <|>
 /-- Parses a list of `find_pattern` syntax into `Arguments` -/
 def parseFindPatterns (args : TSyntaxArray ``find_pattern) : TermElabM Arguments := do
   let mut idents := #[]
-  let mut name_pats := #[]
+  let mut namePats := #[]
   let mut terms := #[]
   for arg in args do
     match arg with
     | `(find_pattern| $ss:str) => do
       let str := Lean.TSyntax.getString ss
-      name_pats := name_pats.push str
+      namePats := namePats.push str
     | `(find_pattern| $i:ident) => do
       let n := Lean.TSyntax.getId i
       unless (← getEnv).contains n do
@@ -275,54 +275,62 @@ def parseFindPatterns (args : TSyntaxArray ``find_pattern) : TermElabM Arguments
       let t ← Lean.Elab.Term.elabTerm s none
       terms := terms.push (false, t)
     | _ => throwErrorAt arg "unexpected argument to #find"
-  pure {idents, name_pats, terms}
+  pure {idents, namePats, terms}
 
 open Command
 
 /--
-The `#find` command finds definitions and lemmas by various ways, which can be combined:
+The `#find` command finds definitions and lemmas in various ways. One can search by: the constants 
+involved in the type; a substring of the name; a subexpression of the type; or a subexpression 
+located in the return type or a hypothesis specifically. All of these search methods can be 
+combined in a single query.
 
 1. By constant:
    ```lean
-   #find Real.sin tsum
+   #find Real.sin
    ```
-   finds all lemmas that somehow mention the sine function and an infinite series sum.
+   finds all lemmas whose statement somehow mentions the sine function.
 
 2. By lemma name substring:
    ```lean
-   #find tsum "two"
+   #find "two"
    ```
-   finds all lemmas about `tsum` that have `"two"` as part of the lemma _name_.
+   finds all lemmas that have `"two"` as part of the lemma _name_.
 
 3. By subexpression:
    ```lean
-   #find tsum (_ * _ ^ _)
+   #find (_ * (_ ^ _))
    ```
-   finds all lemmas that mention `tsum` and where somewhere in the lemma statement there is a
-   product with a power as the second argument. The pattern can also be non-linear, as in
+   finds all lemmas whose statements somewhere include a product where the second argument is 
+   raised to some power. The pattern can also be non-linear, as in
    ```lean
    #find (Real.sqrt ?a * Real.sqrt ?a)
    ```
 
-4. By conclusion:
+4. By conclusion and/or hypothesis:
    ```lean
    #find ⊢ (tsum _ = _ * tsum _)
    ```
    finds all lemmas where the conclusion (the subexpression to the right of all `→` and `∀`) has the
-   given shape. If the pattern has hypotheses, then they are matched against the hypotheses of
-   the lemma in any order:
+   given shape. If the pattern has hypotheses, they are matched against the hypotheses of
+   the lemma in any order; for example,
    ```lean
    #find ⊢ (_ < _ → tsum _ < tsum _)
    ```
-   will find `tsum_lt_tsum` even though the hypotheses `f i < g i` is not the last.
+   will find `tsum_lt_tsum` even though the hypothesis `f i < g i` is not the last.
+5. In combination:
+   ```lean
+   #find Real.sin "two" tsum  (_ * _) (_ ^ _) ⊢ (_ < _ → _)
+   ```
+   will find all lemmas which mention the constants `Real.sin` and `tsum`, have `"two"` as a 
+   substring of the lemma name, include a product and a power somewhere in the type, *and* have a 
+   hypothesis of the form `_ < _`. 
 
-The command will show the list of results in the info view, where you can cover to see theirs types
-or click to go to their definition.
-
-If you pass more than one such search filter, it will list lemmas matching _all_ of them. At least
-some filter must mention a concrete name, because `#find` maintains an index of which lemmas
-mention which other constants. This is also why the _first_ use of `#find` will be somewhat slow
-(typically less than half a minute with all of `Mathlib` imported), but subsequent uses are faster.
+If you pass more than one such search filter, `#find` will only return lemmas which match _all_ of 
+them simultaneously. At least some filter must mention a concrete name, because `#find` maintains 
+an index of which lemmas mention which other constants. This is also why the _first_ use of `#find` 
+will be somewhat slow (typically less than half a minute with all of `Mathlib` imported), but 
+subsequent uses are faster.
 
 It may be useful to open a scratch file, `import Mathlib`, and use `#find` there, this way you will
 find lemmas that you have not yet imported, and the cache will stay up-to-date.
