@@ -24,7 +24,7 @@ variable (M₀ : Type _) [MonoidWithZero M₀]
 def nonZeroDivisorsLeft : Submonoid M₀ where
   carrier := {x | ∀ y, y * x = 0 → y = 0}
   one_mem' := by simp
-  mul_mem' := fun {x} {y} hx hy z hz ↦ hx _ $ hy _ ((mul_assoc z x y) ▸ hz)
+  mul_mem' {x} {y} hx hy := fun z hz ↦ hx _ <| hy _ (mul_assoc z x y ▸ hz)
 
 @[simp] lemma mem_nonZeroDivisorsLeft_iff {x : M₀} :
     x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, y * x = 0 → y = 0 :=
@@ -40,6 +40,10 @@ def nonZeroDivisorsRight : Submonoid M₀ where
 @[simp] lemma mem_nonZeroDivisorsRight_iff {x : M₀} :
     x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, x * y = 0 → y = 0 :=
   Iff.rfl
+
+lemma nonZeroDivisorsLeft_eq_right (M₀ : Type _) [CommMonoidWithZero M₀] :
+    nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
+  ext x; simp [mul_comm x]
 
 @[simp] lemma coe_nonZeroDivisorsLeft_eq [NoZeroDivisors M₀] [Nontrivial M₀] :
     nonZeroDivisorsLeft M₀ = {x : M₀ | x ≠ 0} := by
