@@ -130,6 +130,11 @@ theorem atTop_basis [Nonempty α] [SemilatticeSup α] : (@atTop α _).HasBasis (
   hasBasis_iInf_principal (directed_of_sup fun _ _ => Ici_subset_Ici.2)
 #align filter.at_top_basis Filter.atTop_basis
 
+theorem atTop_eq_generate_Ici [SemilatticeSup α] : atTop = generate (range (Ici (α := α))) := by
+  rcases isEmpty_or_nonempty α with hα|hα
+  · simp only [eq_iff_true_of_subsingleton]
+  · simp [(atTop_basis (α := α)).eq_generate, range]
+
 theorem atTop_basis' [SemilatticeSup α] (a : α) : (@atTop α _).HasBasis (fun x => a ≤ x) Ici :=
   ⟨fun _ =>
     (@atTop_basis α ⟨a⟩ _).mem_iff.trans
@@ -409,22 +414,19 @@ theorem tendsto_atBot_mono [Preorder β] {l : Filter α} {f g : α → β} (h : 
   @tendsto_atTop_mono _ βᵒᵈ _ _ _ _ h
 #align filter.tendsto_at_bot_mono Filter.tendsto_atBot_mono
 
-lemma atTop_eq_generate_of_forall_exists_le {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
+lemma atTop_eq_generate_of_forall_exists_le [LinearOrder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
     (atTop : Filter α) = generate (Ici '' s) := by
-  rcases isEmpty_or_nonempty α with hα|hα
-  · simp only [eq_iff_true_of_subsingleton]
-  · rw [(atTop_basis (α := α)).eq_generate]
-    apply le_antisymm
-    · rw [le_generate_iff]
-      rintro - ⟨y, -, rfl⟩
-      simp only [true_and, Filter.mem_sets]
-      exact mem_generate_of_mem ⟨y, rfl⟩
-    · rw [le_generate_iff]
-      rintro - ⟨x, -, -, rfl⟩
-      rcases hs x with ⟨y, ys, hy⟩
-      have A : Ici y ∈ generate (Ici '' s) := mem_generate_of_mem (mem_image_of_mem _ ys)
-      have B : Ici y ⊆ Ici x := Ici_subset_Ici.2 hy
-      exact sets_of_superset (generate (Ici '' s)) A B
+  rw [atTop_eq_generate_Ici]
+  apply le_antisymm
+  · rw [le_generate_iff]
+    rintro - ⟨y, -, rfl⟩
+    exact mem_generate_of_mem ⟨y, rfl⟩
+  · rw [le_generate_iff]
+    rintro - ⟨x, -, -, rfl⟩
+    rcases hs x with ⟨y, ys, hy⟩
+    have A : Ici y ∈ generate (Ici '' s) := mem_generate_of_mem (mem_image_of_mem _ ys)
+    have B : Ici y ⊆ Ici x := Ici_subset_Ici.2 hy
+    exact sets_of_superset (generate (Ici '' s)) A B
 
 end Filter
 
