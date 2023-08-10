@@ -489,11 +489,10 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
   induction' digits with hd tl
-  · unfold ofDigits
-    simp
-  refine' Eq.trans (add_mul_div_left hd _ hpos) _
-  rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self _ _, zero_add]
-  rfl
+  · simp [ofDigits]
+  · refine' Eq.trans (add_mul_div_left hd _ hpos) _
+    rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rfl
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
 -/
