@@ -86,19 +86,17 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-class LowerClosedTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+class ClosedIicTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
   isClosed_le' (a : α) : IsClosed { b : α | b ≤ a }
 
-export LowerClosedTopology (isClosed_le')
-#align is_closed_le' LowerClosedTopology.isClosed_le'
+export ClosedIicTopology (isClosed_le')
+#align is_closed_le' ClosedIicTopology.isClosed_le'
 
-class UpperClosedTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+class ClosedIciTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
   isClosed_ge' (a : α) : IsClosed { b : α | a ≤ b }
 
-export LowerClosedTopology (isClosed_le')
-#align is_closed_ge' UpperClosedTopology.isClosed_ge'
-
-export UpperClosedTopology (isClosed_ge')
+export ClosedIciTopology (isClosed_ge')
+#align is_closed_ge' ClosedIciTopology.isClosed_ge'
 
 /-- A topology on a set which is both a topological space and a preorder is _order-closed_ if the
 set of points `(x, y)` with `x ≤ y` is closed in the product space. We introduce this as a mixin.
@@ -117,11 +115,11 @@ theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
   hs
 #align dense.order_dual Dense.orderDual
 
-section LowerClosedTopology
+section ClosedIicTopology
 
-variable [TopologicalSpace α] [Preorder α] [t : LowerClosedTopology α]
+variable [TopologicalSpace α] [Preorder α] [t : ClosedIicTopology α]
 
-instance : UpperClosedTopology αᵒᵈ where
+instance : ClosedIciTopology αᵒᵈ where
   isClosed_ge' a := isClosed_le' (α := α) a
 
 theorem isClosed_Iic {a : α} : IsClosed (Iic a) :=
@@ -143,13 +141,13 @@ theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim
   le_of_tendsto lim (eventually_of_forall h)
 #align le_of_tendsto' le_of_tendsto'
 
-end LowerClosedTopology
+end ClosedIicTopology
 
-section UpperClosedTopology
+section ClosedIciTopology
 
-variable [TopologicalSpace α] [Preorder α] [t : UpperClosedTopology α]
+variable [TopologicalSpace α] [Preorder α] [t : ClosedIciTopology α]
 
-instance : LowerClosedTopology αᵒᵈ where
+instance : ClosedIicTopology αᵒᵈ where
   isClosed_le' a := isClosed_ge' (α := α) a
 
 theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
@@ -171,7 +169,7 @@ theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim
   ge_of_tendsto lim (eventually_of_forall h)
 #align ge_of_tendsto' ge_of_tendsto'
 
-end UpperClosedTopology
+end ClosedIciTopology
 
 section OrderClosedTopology
 
@@ -198,10 +196,10 @@ theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) 
   continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_le_prod
 #align is_closed_le isClosed_le
 
-instance : LowerClosedTopology α where
+instance : ClosedIicTopology α where
   isClosed_le' _ := isClosed_le continuous_id continuous_const
 
-instance : UpperClosedTopology α where
+instance : ClosedIciTopology α where
   isClosed_ge' _ := isClosed_le continuous_const continuous_id
 
 instance : OrderClosedTopology αᵒᵈ :=

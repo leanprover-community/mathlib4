@@ -273,7 +273,8 @@ instance instUpperTopologyDual [Preorder α] [TopologicalSpace α] [LowerTopolog
     UpperTopology (αᵒᵈ) where
   topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
 
-instance : UpperClosedTopology α :=
+/-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
+instance : ClosedIciTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 -- Porting note: The old `LowerTopology.isClosed_Ici` was removed, since one can now use
@@ -382,7 +383,8 @@ instance instLowerTopologyDual [Preorder α] [TopologicalSpace α] [UpperTopolog
     LowerTopology (αᵒᵈ) where
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
-instance : LowerClosedTopology α :=
+/-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
+instance : ClosedIicTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 /-- The lower closure of a finite set is closed in the upper topology. -/
