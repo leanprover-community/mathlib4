@@ -307,7 +307,7 @@ theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n
     (L.map (toMatrix ∘ reindexEquiv e)).prod = reindexAlgEquiv R e (L.map toMatrix).prod := by
   induction' L with t L IH
   · simp
-  · simp only [toMatrix_reindexEquiv, IH, Function.comp_apply, List.prod_cons, mul_eq_mul,
+  · simp only [toMatrix_reindexEquiv, IH, Function.comp_apply, List.prod_cons,
       reindexAlgEquiv_apply, List.map]
     exact (reindexAlgEquiv_mul _ _ _ _).symm
 #align matrix.transvection_struct.to_matrix_reindex_equiv_prod Matrix.TransvectionStruct.toMatrix_reindexEquiv_prod
@@ -394,7 +394,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       (listTransvecCol M).get ⟨n, hn'⟩ =
         transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) :=
       by simp [listTransvecCol]
-    simp only [Matrix.mul_assoc, A, Matrix.mul_eq_mul, List.prod_cons]
+    simp only [Matrix.mul_assoc, A, List.prod_cons]
     by_cases h : n' = i
     · have hni : n = i := by
         cases i
@@ -579,13 +579,13 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
     rw [Matrix.mul_assoc] at hLL'
     refine' ⟨L ++ [⟨inr unit, inl i, by simp, 1⟩], L', _⟩
     simp only [List.map_append, List.prod_append, Matrix.mul_one, toMatrix_mk, List.prod_cons,
-      List.prod_nil, mul_eq_mul, List.map, Matrix.mul_assoc (L.map toMatrix).prod]
+      List.prod_nil, List.map, Matrix.mul_assoc (L.map toMatrix).prod]
     exact hLL'
   · let M' := M * transvection (inl i) (inr unit) 1
     have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [hM]
     rcases exists_isTwoBlockDiagonal_of_ne_zero M' hM' with ⟨L, L', hLL'⟩
     refine' ⟨L, ⟨inl i, inr unit, by simp, 1⟩::L', _⟩
-    simp only [← Matrix.mul_assoc, toMatrix_mk, List.prod_cons, mul_eq_mul, List.map]
+    simp only [← Matrix.mul_assoc, toMatrix_mk, List.prod_cons, List.map]
     rw [Matrix.mul_assoc (L.map toMatrix).prod]
     exact hLL'
 #align matrix.pivot.exists_is_two_block_diagonal_list_transvec_mul_mul_list_transvec Matrix.Pivot.exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
@@ -719,10 +719,10 @@ theorem diagonal_transvection_induction (P : Matrix n n 𝕜 → Prop) (M : Matr
   · simp only [Matrix.one_mul, List.prod_nil, List.map]
     induction' L₂ with t L₂ IH generalizing E
     · simpa
-    · simp only [← Matrix.mul_assoc, List.prod_cons, mul_eq_mul, List.map]
+    · simp only [← Matrix.mul_assoc, List.prod_cons, List.map]
       apply IH
       exact hmul _ _ PE (htransvec _)
-  · simp only [Matrix.mul_assoc, List.prod_cons, mul_eq_mul, List.map] at IH ⊢
+  · simp only [Matrix.mul_assoc, List.prod_cons, List.map] at IH ⊢
     exact hmul _ _ (htransvec _) IH
 #align matrix.diagonal_transvection_induction Matrix.diagonal_transvection_induction
 

@@ -480,7 +480,7 @@ theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₃) (h : I
   have coe_v_inv : (↑v⁻¹ : Matrix n n R₃) = P⁻¹ᵀ := P.transpose_nonsing_inv.symm
   set x := Aᵀ * Pᵀ * J with x_def
   set y := J * P * A' with y_def
-  simp only [Matrix.IsAdjointPair, ← Matrix.mul_eq_mul]
+  simp only [Matrix.IsAdjointPair]
   calc (Aᵀ * (Pᵀ * J * P) = Pᵀ * J * P * A')
          ↔ (x * ↑u = ↑v * y) := ?_
        _ ↔ (↑v⁻¹ * x = y * ↑u⁻¹) := ?_

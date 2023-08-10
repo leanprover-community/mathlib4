@@ -213,7 +213,7 @@ instance : Group (symplecticGroup l R) :=
     mul_left_inv := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
-      rw [Matrix.mul_eq_mul, Matrix.neg_mul]
+      rw [Matrix.neg_mul]
       exact inv_left_mul_aux A.2 }
 
 end SymplecticGroup

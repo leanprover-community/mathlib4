@@ -73,7 +73,7 @@ theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P
       ← Finset.univ.map_affineCombination p w₁ hw₁, ← Finset.univ.map_affineCombination p w₂ hw₂,
       hweq]
   replace hweq' := congr_arg (fun w => A.vecMul w) hweq'
-  simpa only [Matrix.vecMul_vecMul, ← Matrix.mul_eq_mul, hA, Matrix.vecMul_one] using hweq'
+  simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 #align affine_basis.affine_independent_of_to_matrix_right_inv AffineBasis.affineIndependent_of_toMatrix_right_inv
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
@@ -134,7 +134,6 @@ theorem isUnit_toMatrix_iff [Nontrivial k] (p : ι → P) :
     IsUnit (b.toMatrix p) ↔ AffineIndependent k p ∧ affineSpan k (range p) = ⊤ := by
   constructor
   · rintro ⟨⟨B, A, hA, hA'⟩, rfl : B = b.toMatrix p⟩
-    rw [Matrix.mul_eq_mul] at hA hA'
     exact ⟨b.affineIndependent_of_toMatrix_right_inv p hA,
       b.affineSpan_eq_top_of_toMatrix_left_inv p hA'⟩
   · rintro ⟨h_tot, h_ind⟩

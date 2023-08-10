@@ -215,7 +215,7 @@ theorem det_mul_right_comm (M N P : Matrix m m R) : det (M * N * P) = det (M * P
 
 theorem det_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     det (↑M * N * ↑M⁻¹ : Matrix m m R) = det N := by
-  rw [det_mul_right_comm, ← mul_eq_mul, ← mul_eq_mul, Units.mul_inv, one_mul]
+  rw [det_mul_right_comm, Units.mul_inv, one_mul]
 #align matrix.det_units_conj Matrix.det_units_conj
 
 theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
