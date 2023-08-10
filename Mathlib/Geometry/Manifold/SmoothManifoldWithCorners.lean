@@ -756,7 +756,9 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
-  · simp [h]
+  · simp only [LocalHomeomorph.ofSet_apply, left_id, LocalHomeomorph.ofSet_toLocalEquiv,
+      LocalEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
+      LocalHomeomorph.ofSet_symm, LocalEquiv.ofSet_target, and_self]
     intro x hx
     refine mem_preimage.mpr ?_
     rw [← I.right_inv (interior_subset hx.right)] at hx
