@@ -2,16 +2,13 @@
 Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.hom.ring
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.order.hom.ring from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Ordered ring homomorphisms
@@ -41,7 +38,7 @@ variable {F α β γ δ : Type _}
 /-- `OrderRingHom α β` is the type of monotone semiring homomorphisms from `α` to `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingHom α β)`,
-you should parametrize over `(F : Type*) [OrderRingHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [OrderRingHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderRingHomClass`. -/
 structure OrderRingHom (α β : Type _) [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
@@ -110,7 +107,7 @@ instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass [NonA
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [LE α]
-  [Mul β] [Add β]  [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
+  [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
   { ‹OrderRingIsoClass F α β› with }
 #align order_ring_iso_class.to_order_iso_class OrderRingIsoClass.toOrderIsoClass
 
@@ -129,7 +126,7 @@ instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiri
 `OrderRingHom`. This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
-    [Preorder β] [OrderRingHomClass F α β]  (f : F) : α →+*o β :=
+    [Preorder β] [OrderRingHomClass F α β] (f : F) : α →+*o β :=
 { (f : α →+* β) with monotone' := monotone f}
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
@@ -284,20 +281,20 @@ theorem id_apply (a : α) : OrderRingHom.id α a = a :=
 #align order_ring_hom.id_apply OrderRingHom.id_apply
 
 @[simp]
-theorem coe_RingHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
+theorem coe_ringHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
   rfl
-#align order_ring_hom.coe_ring_hom_id OrderRingHom.coe_RingHom_id
+#align order_ring_hom.coe_ring_hom_id OrderRingHom.coe_ringHom_id
 
 @[simp]
-theorem coe_OrderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
+theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
   rfl
-#align order_ring_hom.coe_order_add_monoid_hom_id OrderRingHom.coe_OrderAddMonoidHom_id
+#align order_ring_hom.coe_order_add_monoid_hom_id OrderRingHom.coe_orderAddMonoidHom_id
 
 @[simp]
-theorem coe_OrderMonoidWithZeroHom_id :
+theorem coe_orderMonoidWithZeroHom_id :
     (OrderRingHom.id α : α →*₀o α) = OrderMonoidWithZeroHom.id α :=
   rfl
-#align order_ring_hom.coe_order_monoid_with_zero_hom_id OrderRingHom.coe_OrderMonoidWithZeroHom_id
+#align order_ring_hom.coe_order_monoid_with_zero_hom_id OrderRingHom.coe_orderMonoidWithZeroHom_id
 
 /-- Composition of two `OrderRingHom`s as an `OrderRingHom`. -/
 protected def comp (f : β →+*o γ) (g : α →+*o β) : α →+*o γ :=

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module linear_algebra.finsupp_vector_space
-! leanprover-community/mathlib commit 59628387770d82eb6f6dd7b7107308aa2509ec95
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.StdBasis
+
+#align_import linear_algebra.finsupp_vector_space from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -20,8 +17,6 @@ This file contains results on the `R`-module structure on functions of finite su
 
 
 noncomputable section
-
-open Classical
 
 open Set LinearMap Submodule
 
@@ -67,6 +62,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap Submodule
 
+open scoped Classical in
 /-- The basis on `ι →₀ M` with basis vectors `λ ⟨i, x⟩, single i (b i x)`. -/
 protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
   Basis.ofRepr
@@ -113,6 +109,7 @@ theorem coe_basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) :
     ⇑(Finsupp.basis b) = fun ix : Σi, φ i => single ix.1 (b ix.1 ix.2) :=
   funext fun ⟨i, x⟩ =>
     Basis.apply_eq_iff.mpr <| by
+      classical
       ext ⟨j, y⟩
       by_cases h : i = j
       · cases h

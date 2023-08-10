@@ -2,11 +2,6 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.hahn_series
-! leanprover-community/mathlib commit a484a7d0eade4e1268f4fb402859b6686037f965
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Algebra.BigOperators.Finprod
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Finsupp.Pwo
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Algebra.Order.Group.WithTop
+
+#align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
 /-!
 # Hahn Series
@@ -1415,8 +1412,9 @@ section AddCommMonoid
 
 variable [PartialOrder Γ] [AddCommMonoid R] {α : Type _}
 
-instance : CoeFun (SummableFamily Γ R α) fun _ => α → HahnSeries Γ R :=
-  ⟨toFun⟩
+instance : FunLike (SummableFamily Γ R α) α fun _ => HahnSeries Γ R where
+  coe := toFun
+  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 theorem isPwo_iUnion_support (s : SummableFamily Γ R α) : Set.IsPwo (⋃ a : α, (s a).support) :=
   s.isPwo_iUnion_support'
@@ -1427,13 +1425,13 @@ theorem finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
   s.finite_co_support' g
 #align hahn_series.summable_family.finite_co_support HahnSeries.SummableFamily.finite_co_support
 
-theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → HahnSeries Γ R) (⇑)
-  | ⟨f1, hU1, hf1⟩, ⟨f2, _, _⟩, h => by congr
+theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → HahnSeries Γ R) (⇑) :=
+  FunLike.coe_injective
 #align hahn_series.summable_family.coe_injective HahnSeries.SummableFamily.coe_injective
 
 @[ext]
 theorem ext {s t : SummableFamily Γ R α} (h : ∀ a : α, s a = t a) : s = t :=
-  coe_injective <| funext h
+  FunLike.ext s t h
 #align hahn_series.summable_family.ext HahnSeries.SummableFamily.ext
 
 instance : Add (SummableFamily Γ R α) :=

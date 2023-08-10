@@ -128,8 +128,7 @@ theorem mapAccumr₂_mapAccumr₂_left_right
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -141,8 +140,7 @@ theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -237,8 +235,8 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
     (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
   rw[Vector.map_eq_mapAccumr]
   apply mapAccumr_bisim_tail
-  use fun s _ => s ∈ S
-  exact ⟨h₀, @fun s q a h => ⟨closure a s h, out a s s₀ h h₀⟩⟩
+  use fun s _ => s ∈ S, h₀
+  exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
 
 protected theorem map₂_eq_mapAccumr₂ :
     map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
@@ -255,8 +253,8 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
     (mapAccumr₂ f xs ys s₀).snd = map₂ (f · · s₀ |>.snd) xs ys := by
   rw[Vector.map₂_eq_mapAccumr₂]
   apply mapAccumr₂_bisim_tail
-  use fun s _ => s ∈ S
-  exact ⟨h₀, @fun s q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩⟩
+  use fun s _ => s ∈ S, h₀
+  exact @fun s _q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩
 
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state

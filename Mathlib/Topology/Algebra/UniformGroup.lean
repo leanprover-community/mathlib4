@@ -2,18 +2,16 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.uniform_group
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.DiscreteSubset
 import Mathlib.Tactic.Abel
+
+#align_import topology.algebra.uniform_group from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Uniform structure on topological groups
@@ -220,8 +218,8 @@ variable [Group β]
 theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
     @UniformGroup β (sInf us) _ :=
   -- Porting note: {_} does not find `sInf us` instance, see `continuousSMul_sInf`
-  @UniformGroup.mk β (_) _  <|
-    uniformContinuous_sInf_rng fun u hu =>
+  @UniformGroup.mk β (_) _ <|
+    uniformContinuous_sInf_rng.mpr fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
 #align uniform_group_Inf uniformGroup_sInf
 #align uniform_add_group_Inf uniformAddGroup_sInf
@@ -559,7 +557,7 @@ commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for 
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def TopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
-  refl :=  (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
+  refl := (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
   symm :=
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
@@ -608,6 +606,18 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   exact (eq_of_div_eq_one this).symm
 #align subgroup.is_closed_of_discrete Subgroup.isClosed_of_discrete
 #align add_subgroup.is_closed_of_discrete AddSubgroup.isClosed_of_discrete
+
+@[to_additive]
+lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G) [DiscreteTopology H] :
+    Tendsto ((↑) : H → G) cofinite (cocompact _) :=
+  IsClosed.tendsto_coe_cofinite_of_discreteTopology inferInstance inferInstance
+
+@[to_additive]
+lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type _} [Group H] {f : H →* G}
+    (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
+    Tendsto f cofinite (cocompact _) := by
+  replace hf : Function.Injective f.rangeRestrict := by simpa
+  exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite
 
 @[to_additive]
 theorem TopologicalGroup.tendstoUniformly_iff {ι α : Type _} (F : ι → α → G) (f : α → G)

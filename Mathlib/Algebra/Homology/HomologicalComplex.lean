@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.homological_complex
-! leanprover-community/mathlib commit 88bca0ce5d22ebfd9e73e682e51d60ea13b48347
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.GradedObject
+
+#align_import algebra.homology.homological_complex from "leanprover-community/mathlib"@"88bca0ce5d22ebfd9e73e682e51d60ea13b48347"
 
 /-!
 # Homological complexes.
@@ -94,6 +91,58 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
   · rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext
+
+/-- The obvious isomorphism `K.X p ≅ K.X q` when `p = q`. -/
+def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
+  K.X p ≅ K.X q := eqToIso (by rw [h])
+
+@[simp]
+lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
+  K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₁₂ : p₁ = p₂) (h₂₃ : p₂ = p₃) :
+    (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₁₂.trans h₂₃)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₁₂ : p₁ = p₂) (h₃₂ : p₃ = p₂) :
+    (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₁₂.trans h₃₂.symm)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₂₁ : p₂ = p₁) (h₂₃ : p₂ = p₃) :
+    (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₂₁.symm.trans h₂₃)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₂₁ : p₂ = p₁) (h₃₂ : p₃ = p₂) :
+    (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₃₂.trans h₂₁).symm).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_d (K : HomologicalComplex V c) {p₁ p₂ : ι} (h : p₁ = p₂) (p₃ : ι) :
+    (K.XIsoOfEq h).hom ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_d (K : HomologicalComplex V c) {p₂ p₁ : ι} (h : p₂ = p₁) (p₃ : ι) :
+    (K.XIsoOfEq h).inv ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
+
+@[reassoc (attr := simp)]
+lemma d_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₂ = p₃) (p₁ : ι) :
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).hom = K.d p₁ p₃ := by subst h; simp
+
+@[reassoc (attr := simp)]
+lemma d_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₃ = p₂) (p₁ : ι) :
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).inv = K.d p₁ p₃ := by subst h; simp
 
 end HomologicalComplex
 
@@ -246,7 +295,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
 #align homological_complex.hom_f_injective HomologicalComplex.hom_f_injective
 
-instance (X Y : HomologicalComplex V c) : Zero (X ⟶  Y) :=
+instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun i => 0}⟩
 
 @[simp]

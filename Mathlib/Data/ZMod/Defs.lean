@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.zmod.defs
-! leanprover-community/mathlib commit 3a2b5524a138b5d0b818b858b516d4ac8a484b03
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
+
+#align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -76,12 +73,12 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
 /-- Commutative ring structure on `fin n`. -/
 instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
-    one_mul := Fin.one_mul
-    mul_one := Fin.mul_one,
+    one_mul := Fin.one_mul'
+    mul_one := Fin.mul_one',
     -- porting note: new, see
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
-    zero_mul := Fin.zero_mul
-    mul_zero := Fin.mul_zero }
+    zero_mul := Fin.zero_mul'
+    mul_zero := Fin.mul_zero' }
 #align fin.comm_ring Fin.instCommRing
 
 /-- Note this is more general than `fin.comm_ring` as it applies (vacuously) to `fin 0` too. -/

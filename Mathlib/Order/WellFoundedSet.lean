@@ -2,11 +2,6 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module order.well_founded_set
-! leanprover-community/mathlib commit 2c84c2c5496117349007d97104e7bbb471381592
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Lex
@@ -14,6 +9,8 @@ import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.TFAE
+
+#align_import order.well_founded_set from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
 /-!
 # Well-founded sets
@@ -511,7 +508,7 @@ theorem isWf_insert {a} : IsWf (insert a s) ↔ IsWf s := by
   simp only [← singleton_union, isWf_union, isWf_singleton, true_and_iff]
 #align set.is_wf_insert Set.isWf_insert
 
-theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
+protected theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
   isWf_insert.2 h
 #align set.is_wf.insert Set.IsWf.insert
 
@@ -540,7 +537,8 @@ theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s 
   simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and_iff]
 #align set.well_founded_on_insert Set.wellFoundedOn_insert
 
-theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) : WellFoundedOn (insert a s) r :=
+protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
+    WellFoundedOn (insert a s) r :=
   wellFoundedOn_insert.2 h
 #align set.well_founded_on.insert Set.WellFoundedOn.insert
 

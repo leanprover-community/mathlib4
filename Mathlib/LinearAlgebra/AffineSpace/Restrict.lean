@@ -2,13 +2,10 @@
 Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.restrict
-! leanprover-community/mathlib commit 09258fb7f75d741b7eda9fa18d5c869e2135d9f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+
+#align_import linear_algebra.affine_space.restrict from "leanprover-community/mathlib"@"09258fb7f75d741b7eda9fa18d5c869e2135d9f1"
 
 /-!
 # Affine map restrictions

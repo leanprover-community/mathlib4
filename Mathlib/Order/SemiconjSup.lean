@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module order.semiconj_Sup
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Order.Bounds.OrderIso
@@ -14,6 +9,8 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.RelIso.Group
 import Mathlib.Order.OrdContinuous
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
+
+#align_import order.semiconj_Sup from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # Semiconjugate by `sSup`

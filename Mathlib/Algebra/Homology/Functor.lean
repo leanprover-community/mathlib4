@@ -2,13 +2,10 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.homology.functor
-! leanprover-community/mathlib commit 8e25bb6c1645bb80670e13848b79a54aa45cb84f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
+
+#align_import algebra.homology.functor from "leanprover-community/mathlib"@"8e25bb6c1645bb80670e13848b79a54aa45cb84f"
 
 /-!
 # Complexes in functor categories

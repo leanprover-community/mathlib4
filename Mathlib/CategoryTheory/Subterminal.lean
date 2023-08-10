@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.subterminal
-! leanprover-community/mathlib commit bb103f356534a9a7d3596a672097e375290a4c3a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Subobject.MonoOver
+
+#align_import category_theory.subterminal from "leanprover-community/mathlib"@"bb103f356534a9a7d3596a672097e375290a4c3a"
 
 /-!
 # Subterminal objects
@@ -56,7 +53,7 @@ The converse of `isSubterminal_of_mono_isTerminal_from`.
 -/
 theorem IsSubterminal.mono_isTerminal_from (hA : IsSubterminal A) {T : C} (hT : IsTerminal T) :
     Mono (hT.from A) :=
-  { right_cancellation := fun _ _ _ => hA _ _  }
+  { right_cancellation := fun _ _ _ => hA _ _ }
 #align category_theory.is_subterminal.mono_is_terminal_from CategoryTheory.IsSubterminal.mono_isTerminal_from
 
 /-- If `A` is subterminal, the unique morphism from it to the terminal object is a monomorphism.

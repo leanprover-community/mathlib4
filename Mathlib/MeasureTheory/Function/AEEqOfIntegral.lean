@@ -2,16 +2,13 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.ae_eq_of_integral
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import measure_theory.function.ae_eq_of_integral from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-! # From equality of integrals to equality of functions
 
@@ -49,7 +46,7 @@ Generally useful lemmas which are not related to integrals:
 
 open MeasureTheory TopologicalSpace NormedSpace Filter
 
-open scoped ENNReal NNReal MeasureTheory
+open scoped ENNReal NNReal MeasureTheory Topology
 
 namespace MeasureTheory
 
@@ -543,6 +540,63 @@ theorem Integrable.ae_eq_of_forall_set_integral_eq (f g : α → E) (hf : Integr
     exact sub_eq_zero.mpr (hfg s hs hμs)
   exact Integrable.ae_eq_zero_of_forall_set_integral_eq_zero (hf.sub hg) hfg'
 #align measure_theory.integrable.ae_eq_of_forall_set_integral_eq MeasureTheory.Integrable.ae_eq_of_forall_set_integral_eq
+
+variable {β : Type _} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
+
+/-- If an integrable function has zero integral on all closed sets, then it is zero
+almost everwhere.-/
+lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero {μ : Measure β} {f : β → E}
+    (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
+    f =ᵐ[μ] 0 := by
+  suffices : ∀ s, MeasurableSet s → ∫ x in s, f x ∂μ = 0
+  · exact hf.ae_eq_zero_of_forall_set_integral_eq_zero (fun s hs _ ↦ this s hs)
+  have A : ∀ (t : Set β), MeasurableSet t → ∫ (x : β) in t, f x ∂μ = 0
+      → ∫ (x : β) in tᶜ, f x ∂μ = 0 := by
+    intro t t_meas ht
+    have I : ∫ x, f x ∂μ = 0 := by rw [← integral_univ]; exact h'f _ isClosed_univ
+    simpa [ht, I] using integral_add_compl t_meas hf
+  intro s hs
+  refine MeasurableSet.induction_on_open (fun U hU ↦ ?_) A (fun g g_disj g_meas hg ↦ ?_) hs
+  · rw [← compl_compl U]
+    exact A _ hU.measurableSet.compl (h'f _ hU.isClosed_compl)
+  · rw [integral_iUnion g_meas g_disj hf.integrableOn]
+    simp [hg]
+
+/-- If an integrable function has zero integral on all compact sets in a sigma-compact space, then
+it is zero almost everwhere. -/
+lemma ae_eq_zero_of_forall_set_integral_isCompact_eq_zero
+    [SigmaCompactSpace β] [T2Space β] {μ : Measure β} {f : β → E} (hf : Integrable f μ)
+    (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
+    f =ᵐ[μ] 0 := by
+  apply ae_eq_zero_of_forall_set_integral_isClosed_eq_zero hf (fun s hs ↦ ?_)
+  let t : ℕ → Set β := fun n ↦ compactCovering β n ∩ s
+  suffices H : Tendsto (fun n ↦ ∫ x in t n, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ))
+  · have A : ∀ n, ∫ x in t n, f x ∂μ = 0 :=
+      fun n ↦ h'f _ (IsCompact.inter_right (isCompact_compactCovering β n) hs)
+    simp_rw [A, tendsto_const_nhds_iff] at H
+    exact H.symm
+  have B : s = ⋃ n, t n := by rw [← Set.iUnion_inter, iUnion_compactCovering, Set.univ_inter]
+  rw [B]
+  apply tendsto_set_integral_of_monotone
+  · intros n
+    exact ((isCompact_compactCovering β n).inter_right hs).isClosed.measurableSet
+  · intros m n hmn
+    exact Set.inter_subset_inter_left _ (compactCovering_subset β hmn)
+  · exact hf.integrableOn
+
+/-- If a locally integrable function has zero integral on all compact sets in a sigma-compact space,
+then it is zero almost everwhere. -/
+lemma ae_eq_zero_of_forall_set_integral_isCompact_eq_zero'
+    [SigmaCompactSpace β] [T2Space β] {μ : Measure β} {f : β → E} (hf : LocallyIntegrable f μ)
+    (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
+    f =ᵐ[μ] 0 := by
+  rw [← Measure.restrict_univ (μ := μ), ← iUnion_compactCovering]
+  apply (ae_restrict_iUnion_iff _ _).2 (fun n ↦ ?_)
+  apply ae_eq_zero_of_forall_set_integral_isCompact_eq_zero
+  · exact hf.integrableOn_isCompact (isCompact_compactCovering β n)
+  · intro s hs
+    rw [Measure.restrict_restrict hs.measurableSet]
+    exact h'f _ (hs.inter (isCompact_compactCovering β n))
 
 end AeEqOfForallSetIntegralEq
 

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.finite_field
-! leanprover-community/mathlib commit b95b8c7a484a298228805c72c142f6b062eb0d70
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Data.Matrix.CharP
+
+#align_import linear_algebra.matrix.charpoly.finite_field from "leanprover-community/mathlib"@"b95b8c7a484a298228805c72c142f6b062eb0d70"
 
 /-!
 # Results on characteristic polynomials and traces over finite fields.

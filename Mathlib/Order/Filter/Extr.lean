@@ -2,14 +2,11 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.extr
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+#align_import order.filter.extr from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set
@@ -53,7 +50,7 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
   then it is an extremum of the same type for their sum;
 * `is**.neg` : if `x` is an extremum for `f`, then it is an extremum
   of the opposite type for `-f`;
-* `is**.sub` : if `x` is an a minimum for `f` and a maximum for `g`,
+* `is**.sub` : if `x` is a minimum for `f` and a maximum for `g`,
   then it is a minimum for `f - g` and a maximum for `g - f`;
 * `is**.max`, `is**.min`, `is**.sup`, `is**.inf` : similarly for `is**.add`
   for pointwise `max`, `min`, `sup`, `inf`, respectively.

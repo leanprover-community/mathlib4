@@ -2,16 +2,13 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.two_dim
-! leanprover-community/mathlib commit cd8fafa2fac98e1a67097e8a91ad9901cfde48af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Tactic.LinearCombination
+
+#align_import analysis.inner_product_space.two_dim from "leanprover-community/mathlib"@"cd8fafa2fac98e1a67097e8a91ad9901cfde48af"
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -77,9 +74,7 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
--- Porting note: See issue #2220
--- While not strictly necessary, this keeps the file closer to mathlib3 in a few places.
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type _} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=

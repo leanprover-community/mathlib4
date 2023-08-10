@@ -2,14 +2,11 @@
 Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module topology.homotopy.contractible
-! leanprover-community/mathlib commit 16728b3064a1751103e1dc2815ed8d00560e0d87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Homotopy.Equiv
+
+#align_import topology.homotopy.contractible from "leanprover-community/mathlib"@"16728b3064a1751103e1dc2815ed8d00560e0d87"
 
 /-!
 # Contractible spaces

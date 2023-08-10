@@ -2,17 +2,14 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
-
-! This file was ported from Lean 3 source module field_theory.finite.galois_field
-! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Galois
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
+
+#align_import field_theory.finite.galois_field from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Galois fields
@@ -152,7 +149,7 @@ theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
 #align galois_field.card GaloisField.card
 
 theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
-  have hp : 1 < p :=  h_prime.out.one_lt
+  have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
     exact (ZMod.card p).symm

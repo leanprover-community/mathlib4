@@ -339,7 +339,7 @@ partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
     matchFoldl lit x y smatcher sinit s
 
 /-- Create a `Term` that represents a matcher for `foldl` notation.
-Reminder: `( lit ","* =>  foldl (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldl (x y => scopedTerm) init )` -/
 partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
@@ -349,7 +349,7 @@ partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote x) $(quote y) $smatcher $sinit))
 
 /-- Create a `Term` that represents a matcher for `foldr` notation.
-Reminder: `( lit ","* =>  foldr (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldr (x y => scopedTerm) init )` -/
 partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables

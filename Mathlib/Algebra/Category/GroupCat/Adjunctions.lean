@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.category.Group.adjunctions
-! leanprover-community/mathlib commit ecef68622cf98f6d42c459e5b5a079aeecdd9842
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.GroupTheory.FreeAbelianGroup
+
+#align_import algebra.category.Group.adjunctions from "leanprover-community/mathlib"@"ecef68622cf98f6d42c459e5b5a079aeecdd9842"
 
 
 /-!

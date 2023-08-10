@@ -73,11 +73,13 @@ structure Congr!.Config where
   do congruence on a single argument at a time. This can be used in conjunction with the
   iteration limit to control exactly how many arguments are to be processed by congruence. -/
   maxArgs : Option Nat := none
-  /-- Whether or not `congr!` should generate equalities between types even if the types
-  do not look plausibly equal. We have a heuristic in the main congruence generator that types
+  /-- For type arguments that are implicit or have forward dependencies, whether or not `congr!`
+  should generate equalities even if the types do not look plausibly equal.
+
+  We have a heuristic in the main congruence generator that types
   `α` and `β` are *plausibly equal* according to the following algorithm:
 
-  - If the types are both propositions, they are plausibly equal (iffs are plausible).
+  - If the types are both propositions, they are plausibly equal (`Iff`s are plausible).
   - If the types are from different universes, they are not plausibly equal.
   - Suppose in whnf we have `α = f a₁ ... aₘ` and `β = g b₁ ... bₘ`. If `f` is not definitionally
     equal to `g` or `m ≠ n`, then `α` and `β` are not plausibly equal.
@@ -89,10 +91,10 @@ structure Congr!.Config where
   such as `Fin n = Fin m` or `Subtype p = Subtype q` (so long as these are subtypes of the
   same type).
 
-  The way this is implemented is that the congruence generator, when it is comparing arguments
-  in an equality of function applications, marks a function parameter to "fixed" if the provided
-  arguments are types that are not plausibly equal. The effect of this is that congruence succeeds
-  if those arguments are defeq at `transparency` transparency. -/
+  The way this is implemented is that when the congruence generator is comparing arguments when
+  looking at an equality of function applications, it marks a function parameter as "fixed" if the
+  provided arguments are types that are not plausibly equal. The effect of this is that congruence
+  succeeds only if those arguments are defeq at `transparency` transparency. -/
   typeEqs : Bool := false
   /-- As a last pass, perform eta expansion of both sides of an equality. For example,
   this transforms a bare `HAdd.hAdd` into `fun x y => x + y`. -/
@@ -364,7 +366,7 @@ where
     let pf ← instantiateMVars mvar
     return pf
 
-/-- Returns whether or not it's reasonable to consider an equality between types  `ty1` and `ty2`.
+/-- Returns whether or not it's reasonable to consider an equality between types `ty1` and `ty2`.
 The heuristic is the following:
 
 - If `ty1` and `ty2` are in `Prop`, then yes.
@@ -376,14 +378,15 @@ This helps keep congr from going too far and generating hypotheses like `ℝ = �
 
 To keep things from going out of control, there is a `maxDepth`. Additionally, if we do the check
 with `maxDepth = 0` then the heuristic answers "no". -/
-def Congr!.possiblyEqualTypes (ty1 ty2 : Expr) (maxDepth : Nat := 5) : MetaM Bool :=
+def Congr!.plausiblyEqualTypes (ty1 ty2 : Expr) (maxDepth : Nat := 5) : MetaM Bool :=
   match maxDepth with
   | 0 => return false
   | maxDepth + 1 => do
-    -- Props are possibly equal
+    -- Props are plausibly equal
     if (← isProp ty1) && (← isProp ty2) then
       return true
-    -- Types from different type universes are not possibly equal
+    -- Types from different type universes are not plausibly equal.
+    -- This is redundant, but it saves carrying out the remaining checks.
     unless ← withNewMCtxDepth <| isDefEq (← inferType ty1) (← inferType ty2) do
       return false
     -- Now put the types into whnf, check they have the same head, and then recurse on arguments
@@ -393,7 +396,7 @@ def Congr!.possiblyEqualTypes (ty1 ty2 : Expr) (maxDepth : Nat := 5) : MetaM Boo
       return false
     for arg1 in ty1.getAppArgs, arg2 in ty2.getAppArgs do
       if (← isType arg1) && (← isType arg2) then
-        unless ← possiblyEqualTypes arg1 arg2 maxDepth do
+        unless ← plausiblyEqualTypes arg1 arg2 maxDepth do
           return false
     return true
 
@@ -459,12 +462,17 @@ where
         return none
       let info ← getFunInfoNArgs f (numArgs + 1)
       let mut fixed : Array Bool := #[]
-      for larg in lhsArgs', rarg in rhsArgs' do
-        if not config.typeEqs &&
-            (← isType larg) && (← isType rarg) && not (← Congr!.possiblyEqualTypes larg rarg) then
-          fixed := fixed.push true
-        else
-          fixed := fixed.push (← withReducible <| withNewMCtxDepth <| isDefEq larg rarg)
+      for larg in lhsArgs', rarg in rhsArgs', pinfo in info.paramInfo do
+        if !config.typeEqs && (!pinfo.isExplicit || pinfo.hasFwdDeps) then
+          -- When `typeEqs = false` then for non-explicit arguments or
+          -- arguments with forward dependencies, we want type arguments
+          -- to be plausibly equal.
+          if ← isType larg then
+            -- ^ since `f` and `f'` have defeq types, this implies `isType rarg`.
+            unless ← Congr!.plausiblyEqualTypes larg rarg do
+              fixed := fixed.push true
+              continue
+        fixed := fixed.push (← withReducible <| withNewMCtxDepth <| isDefEq larg rarg)
       let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
                                     (fixedFun := funDefEq) (fixedParams := fixed)
       -- Now see if the congruence theorem actually applies in this situation by applying it!
@@ -487,18 +495,19 @@ where
       f := f.appFn!'
     let info ← getFunInfoNArgs f numArgs
     let mut fixed : Array Bool := #[]
-    if not config.typeEqs then
+    if !config.typeEqs then
       -- We need some strategy for fixed parameters to keep `forSide` from applying
       -- in cases where `Congr!.possiblyEqualTypes` suggested not to in the previous pass.
       for pinfo in info.paramInfo, arg in side.getAppArgs do
-        if pinfo.isProp || not (← isType arg) then
+        if pinfo.isProp || !(← isType arg) then
           fixed := fixed.push false
-        else if not pinfo.backDeps.isEmpty then
-          -- We can't immediately say such an equality is a bad idea, because the argument might
-          -- be something like `Fin n`.
-          -- Though, if the argument isn't explicit it probably would be surprising to generate
-          -- an equality.
-          fixed := fixed.push (pinfo.binderInfo != .default)
+        else if pinfo.isExplicit && !pinfo.hasFwdDeps then
+          -- It's fine generating equalities for explicit type arguments without forward
+          -- dependencies. Only allowing these is a little strict, because an argument
+          -- might be something like `Fin n`. We might consider being able to generate
+          -- congruence lemmas that only allow equalities where they can plausibly go,
+          -- but that would take looking at a whole application tree.
+          fixed := fixed.push false
         else
           fixed := fixed.push true
     let (congrThm, congrProof) ←
@@ -555,7 +564,7 @@ returns a list of new goals.
 
 Tries a congruence lemma associated to the LHS and then, if that failed, the RHS.
 -/
-def Lean.MVarId.userCongr? (config : Congr!.Config)  (mvarId : MVarId) :
+def Lean.MVarId.userCongr? (config : Congr!.Config) (mvarId : MVarId) :
     MetaM (Option (List MVarId)) :=
   mvarId.withContext do
     mvarId.checkNotAssigned `userCongr?

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.sub.with_top
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
+
+#align_import algebra.order.sub.with_top from "leanprover-community/mathlib"@"afdb4fa3b32d41106a4a09b371ce549ad7958abd"
 
 /-!
 # Lemma about subtraction in ordered monoids with a top element adjoined.

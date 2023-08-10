@@ -2,11 +2,6 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.equivs
-! leanprover-community/mathlib commit cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.Algebra.QuaternionBasis
@@ -14,6 +9,8 @@ import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
+
+#align_import linear_algebra.clifford_algebra.equivs from "leanprover-community/mathlib"@"cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e"
 
 /-!
 # Other constructions isomorphic to Clifford Algebras
@@ -57,7 +54,7 @@ and vice-versa:
 
 ## Dual numbers
 
-* `CliffordAlgebraDualNumber.equiv`: `R[ε]` is is equivalent as an `R`-algebra to a clifford
+* `CliffordAlgebraDualNumber.equiv`: `R[ε]` is equivalent as an `R`-algebra to a clifford
   algebra over `R` where `Q = 0`.
 
 -/
