@@ -60,7 +60,7 @@ theorem toMatrix_row_sum_one {ι' : Type _} (q : ι' → P) (i : ι') : ∑ j, b
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
 coordinates of `p` with respect `b` has a right inverse, then `p` is affine independent. -/
 theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P) {A : Matrix ι ι' k}
-    (hA : b.toMatrix p ⬝ A = 1) : AffineIndependent k p := by
+    (hA : b.toMatrix p * A = 1) : AffineIndependent k p := by
   rw [affineIndependent_iff_eq_of_fintype_affineCombination_eq]
   intro w₁ w₂ hw₁ hw₂ hweq
   have hweq' : (b.toMatrix p).vecMul w₁ = (b.toMatrix p).vecMul w₂ := by
@@ -79,7 +79,7 @@ theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
 coordinates of `p` with respect `b` has a left inverse, then `p` spans the entire space. -/
 theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (p : ι' → P)
-    {A : Matrix ι ι' k} (hA : A ⬝ b.toMatrix p = 1) : affineSpan k (range p) = ⊤ := by
+    {A : Matrix ι ι' k} (hA : A * b.toMatrix p = 1) : affineSpan k (range p) = ⊤ := by
   suffices ∀ i, b i ∈ affineSpan k (range p) by
     rw [eq_top_iff, ← b.tot, affineSpan_le]
     rintro q ⟨i, rfl⟩
@@ -90,14 +90,14 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (
       ∑ j, A i j = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
       _ = ∑ j, ∑ l, A i j * b.toMatrix p j l := by simp_rw [Finset.mul_sum]
       _ = ∑ l, ∑ j, A i j * b.toMatrix p j l := by rw [Finset.sum_comm]
-      _ = ∑ l, (A ⬝ b.toMatrix p) i l := rfl
+      _ = ∑ l, (A * b.toMatrix p) i l := rfl
       _ = 1 := by simp [hA, Matrix.one_apply, Finset.filter_eq]
   have hbi : b i = Finset.univ.affineCombination k p (A i) := by
     apply b.ext_elem
     intro j
     rw [b.coord_apply, Finset.univ.map_affineCombination _ _ hAi,
       Finset.univ.affineCombination_eq_linear_combination _ _ hAi]
-    change _ = (A ⬝ b.toMatrix p) i j
+    change _ = (A * b.toMatrix p) i j
     simp_rw [hA, Matrix.one_apply, @eq_comm _ i j]
   rw [hbi]
   exact affineCombination_mem_affineSpan hAi p
@@ -117,7 +117,7 @@ theorem toMatrix_vecMul_coords (x : P) : (b.toMatrix b₂).vecMul (b₂.coords x
 
 variable [DecidableEq ι]
 
-theorem toMatrix_mul_toMatrix : b.toMatrix b₂ ⬝ b₂.toMatrix b = 1 := by
+theorem toMatrix_mul_toMatrix : b.toMatrix b₂ * b₂.toMatrix b = 1 := by
   ext l m
   change (b₂.toMatrix b).vecMul (b.coords (b₂ l)) m = _
   rw [toMatrix_vecMul_coords, coords_apply, ← toMatrix_apply, toMatrix_self]

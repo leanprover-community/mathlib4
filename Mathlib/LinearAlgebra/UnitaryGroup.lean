@@ -108,7 +108,7 @@ theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
 #align matrix.unitary_group.ext Matrix.UnitaryGroup.ext
 
 @[simp]
-theorem star_mul_self (A : unitaryGroup n α) : star A.1 ⬝ A.1 = 1 :=
+theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 #align matrix.unitary_group.star_mul_self Matrix.UnitaryGroup.star_mul_self
 
@@ -122,10 +122,10 @@ variable (A B : unitaryGroup n α)
 @[simp] theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
 #align matrix.unitary_group.inv_apply Matrix.UnitaryGroup.inv_apply
 
-@[simp] theorem mul_val : ↑(A * B) = A.1 ⬝ B.1 := rfl
+@[simp] theorem mul_val : ↑(A * B) = A.1 * B.1 := rfl
 #align matrix.unitary_group.mul_val Matrix.UnitaryGroup.mul_val
 
-@[simp] theorem mul_apply : ⇑(A * B) = A.1 ⬝ B.1 := rfl
+@[simp] theorem mul_apply : ⇑(A * B) = A.1 * B.1 := rfl
 #align matrix.unitary_group.mul_apply Matrix.UnitaryGroup.mul_apply
 
 @[simp] theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
@@ -228,4 +228,3 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
 end OrthogonalGroup
 
 end Matrix
-

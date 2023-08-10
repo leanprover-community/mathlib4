@@ -85,8 +85,8 @@ variable [CommRing R]
 @[simp]
 theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.trace ⁅X, Y⁆ = 0 :=
   calc
-    _ = Matrix.trace (X ⬝ Y) - Matrix.trace (Y ⬝ X) := trace_sub _ _
-    _ = Matrix.trace (X ⬝ Y) - Matrix.trace (X ⬝ Y) :=
+    _ = Matrix.trace (X * Y) - Matrix.trace (Y * X) := trace_sub _ _
+    _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
       (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
 #align lie_algebra.matrix_trace_commutator_zero LieAlgebra.matrix_trace_commutator_zero
@@ -99,7 +99,7 @@ def sl [Fintype n] : LieSubalgebra R (Matrix n n R) :=
     lie_mem' := fun _ _ => LinearMap.mem_ker.2 <| matrix_trace_commutator_zero _ _ _ _ }
 #align lie_algebra.special_linear.sl LieAlgebra.SpecialLinear.sl
 
-theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val ⬝ B.val - B.val ⬝ A.val :=
+theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val - B.val * A.val :=
   rfl
 #align lie_algebra.special_linear.sl_bracket LieAlgebra.SpecialLinear.sl_bracket
 
@@ -128,7 +128,7 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   let A := Eb R i j hij
   let B := Eb R j i hij.symm
   intro c
-  have c' : A.val ⬝ B.val = B.val ⬝ A.val := by
+  have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
   simpa [stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
 #align lie_algebra.special_linear.sl_non_abelian LieAlgebra.SpecialLinear.sl_non_abelian
@@ -198,7 +198,7 @@ def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
 #align lie_algebra.orthogonal.invertible_Pso LieAlgebra.Orthogonal.invertiblePso
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
-    (Pso p q R i)ᵀ ⬝ indefiniteDiagonal p q R ⬝ Pso p q R i = 1 := by
+    (Pso p q R i)ᵀ * indefiniteDiagonal p q R * Pso p q R i = 1 := by
   ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
@@ -224,7 +224,7 @@ def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ⁅R⁆ so (Su
 
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (Sum p q) (Sum p q) R) =
-      (Pso p q R i)⁻¹ ⬝ (A : Matrix (Sum p q) (Sum p q) R) ⬝ Pso p q R i := by
+      (Pso p q R i)⁻¹ * (A : Matrix (Sum p q) (Sum p q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply,
     skewAdjointMatricesLieSubalgebraEquiv_apply]
 #align lie_algebra.orthogonal.so_indefinite_equiv_apply LieAlgebra.Orthogonal.soIndefiniteEquiv_apply
@@ -268,8 +268,8 @@ theorem s_as_blocks : S l R = Matrix.fromBlocks 1 0 0 (-1) := by
   rfl
 #align lie_algebra.orthogonal.S_as_blocks LieAlgebra.Orthogonal.s_as_blocks
 
-theorem jd_transform [Fintype l] : (PD l R)ᵀ ⬝ JD l R ⬝ PD l R = (2 : R) • S l R := by
-  have h : (PD l R)ᵀ ⬝ JD l R = Matrix.fromBlocks 1 1 1 (-1) := by
+theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S l R := by
+  have h : (PD l R)ᵀ * JD l R = Matrix.fromBlocks 1 1 1 (-1) := by
     simp [PD, JD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_multiply]
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
   congr
@@ -351,7 +351,7 @@ instance invertiblePB [Invertible (2 : R)] : Invertible (PB l R) :=
   invertibleOfRightInverse _ _ (pb_inv l R)
 #align lie_algebra.orthogonal.invertible_PB LieAlgebra.Orthogonal.invertiblePB
 
-theorem jb_transform : (PB l R)ᵀ ⬝ JB l R ⬝ PB l R = (2 : R) • Matrix.fromBlocks 1 0 0 (S l R) := by
+theorem jb_transform : (PB l R)ᵀ * JB l R * PB l R = (2 : R) • Matrix.fromBlocks 1 0 0 (S l R) := by
   simp [PB, JB, jd_transform, Matrix.fromBlocks_transpose, Matrix.fromBlocks_multiply,
     Matrix.fromBlocks_smul]
 #align lie_algebra.orthogonal.JB_transform LieAlgebra.Orthogonal.jb_transform

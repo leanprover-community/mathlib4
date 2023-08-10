@@ -990,7 +990,7 @@ variable {n : Type w} [Fintype n] [DecidableEq n]
 
 variable [CommRing R₁] [AddCommMonoid M] [Module R₁ M]
 
-/-- `M.toQuadraticForm'` is the map `fun x ↦ col x ⬝ M ⬝ row x` as a quadratic form. -/
+/-- `M.toQuadraticForm'` is the map `fun x ↦ col x * M * row x` as a quadratic form. -/
 def Matrix.toQuadraticForm' (M : Matrix n n R₁) : QuadraticForm R₁ (n → R₁) :=
   M.toBilin'.toQuadraticForm
 #align matrix.to_quadratic_form' Matrix.toQuadraticForm'
@@ -1029,7 +1029,7 @@ open Matrix
 
 @[simp]
 theorem toMatrix'_comp (Q : QuadraticForm R₁ (m → R₁)) (f : (n → R₁) →ₗ[R₁] m → R₁) :
-    (Q.comp f).toMatrix' = (LinearMap.toMatrix' f)ᵀ ⬝ Q.toMatrix' ⬝ (LinearMap.toMatrix' f) := by
+    (Q.comp f).toMatrix' = (LinearMap.toMatrix' f)ᵀ * Q.toMatrix' * (LinearMap.toMatrix' f) := by
   ext
   simp only [QuadraticForm.associated_comp, BilinForm.toMatrix'_comp, toMatrix']
 #align quadratic_form.to_matrix'_comp QuadraticForm.toMatrix'_comp

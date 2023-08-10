@@ -46,13 +46,13 @@ theorem inv_pow' (A : M) (n : ℕ) : A⁻¹ ^ n = (A ^ n)⁻¹ := by
 #align matrix.inv_pow' Matrix.inv_pow'
 
 theorem pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
-    A ^ (m - n) = A ^ m ⬝ (A ^ n)⁻¹ := by
+    A ^ (m - n) = A ^ m * (A ^ n)⁻¹ := by
   rw [← tsub_add_cancel_of_le h, pow_add, mul_eq_mul, Matrix.mul_assoc, mul_nonsing_inv,
     tsub_add_cancel_of_le h, Matrix.mul_one]
   simpa using ha.pow n
 #align matrix.pow_sub' Matrix.pow_sub'
 
-theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m ⬝ A ^ n = A ^ n ⬝ A⁻¹ ^ m := by
+theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ ^ m := by
   induction' n with n IH generalizing m
   · simp
   cases' m with m m
@@ -60,11 +60,11 @@ theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m ⬝ A ^ n = A ^ n ⬝ A�
   rcases nonsing_inv_cancel_or_zero A with (⟨h, h'⟩ | h)
   · simp only [Nat.succ_eq_add_one]
     calc
-       A⁻¹ ^ (m + 1) ⬝ A ^ (n + 1) = A⁻¹ ^ m ⬝ (A⁻¹ ⬝ A) ⬝ A ^ n := by
+       A⁻¹ ^ (m + 1) * A ^ (n + 1) = A⁻¹ ^ m * (A⁻¹ * A) * A ^ n := by
         simp only [pow_succ' A⁻¹, pow_succ A, mul_eq_mul, Matrix.mul_assoc]
-      _ = A ^ n ⬝ A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
-      _ = A ^ n ⬝ (A ⬝ A⁻¹) ⬝ A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
-      _ = A ^ (n + 1) ⬝ A⁻¹ ^ (m + 1) := by
+      _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
+      _ = A ^ n * (A * A⁻¹) * A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
+      _ = A ^ (n + 1) * A⁻¹ ^ (m + 1) := by
         simp only [pow_succ' A, pow_succ A⁻¹, mul_eq_mul, Matrix.mul_assoc]
   · simp [h]
 #align matrix.pow_inv_comm' Matrix.pow_inv_comm'
@@ -151,7 +151,7 @@ theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^
     calc
       A ^ (-(n + 1) + 1 : ℤ) = (A ^ n)⁻¹ := by
         rw [neg_add, neg_add_cancel_right, zpow_neg h, zpow_ofNat]
-      _ = (A ⬝ A ^ n)⁻¹ ⬝ A := by
+      _ = (A * A ^ n)⁻¹ * A := by
         rw [mul_inv_rev, Matrix.mul_assoc, nonsing_inv_mul _ h, Matrix.mul_one]
       _ = A ^ (-(n + 1 : ℤ)) * A := by
         rw [zpow_neg h, ← Int.ofNat_succ, zpow_ofNat, pow_succ, mul_eq_mul, mul_eq_mul]

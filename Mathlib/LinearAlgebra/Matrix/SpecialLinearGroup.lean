@@ -111,7 +111,7 @@ instance hasInv : Inv (SpecialLinearGroup n R) :=
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
-  ⟨fun A B => ⟨↑ₘA ⬝ ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+  ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 #align matrix.special_linear_group.has_mul Matrix.SpecialLinearGroup.hasMul
 
 instance hasOne : One (SpecialLinearGroup n R) :=
@@ -139,7 +139,7 @@ theorem coe_inv : ↑ₘA⁻¹ = adjugate A :=
 #align matrix.special_linear_group.coe_inv Matrix.SpecialLinearGroup.coe_inv
 
 @[simp]
-theorem coe_mul : ↑ₘ(A * B) = ↑ₘA ⬝ ↑ₘB :=
+theorem coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
   rfl
 #align matrix.special_linear_group.coe_mul Matrix.SpecialLinearGroup.coe_mul
 
