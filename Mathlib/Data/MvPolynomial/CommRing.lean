@@ -53,7 +53,7 @@ variable [CommRing R]
 
 variable {p q : MvPolynomial σ R}
 
-instance : CommRing (MvPolynomial σ R) :=
+instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
   AddMonoidAlgebra.commRing
 
 variable (σ a a')
