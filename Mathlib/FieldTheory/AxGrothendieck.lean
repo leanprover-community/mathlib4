@@ -217,7 +217,6 @@ theorem ax_grothendieck {ι K : Type _} [Field K] [Finite ι]
     [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
     Injective (fun v i => MvPolynomial.eval v (ps i)) →
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
-  letI := Classical.decEq K
   letI := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   haveI : CharP K p := ⟨ringChar.spec K⟩
