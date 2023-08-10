@@ -436,7 +436,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
                       b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                      a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [Matrix.mul, dotProduct, Fin.sum_univ_succ]
+  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ]
 #align matrix.mul_fin_two Matrix.mul_fin_two
 
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
@@ -450,7 +450,8 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
        a₂₁*b₁₁ + a₂₂*b₂₁ + a₂₃*b₃₁, a₂₁*b₁₂ + a₂₂*b₂₂ + a₂₃*b₃₂, a₂₁*b₁₃ + a₂₂*b₂₃ + a₂₃*b₃₃;
        a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [Matrix.mul, dotProduct, Fin.sum_univ_succ, ← add_assoc]
+  fin_cases i <;> fin_cases j
+    <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, ← add_assoc]
 #align matrix.mul_fin_three Matrix.mul_fin_three
 
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
