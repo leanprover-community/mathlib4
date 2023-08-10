@@ -84,7 +84,7 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
-  RingQuot.instAlgebraRingQuotInstSemiring _
+  RingQuot.instAlgebraRingQuot _
 
 -- verify there are no diamonds
 example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
@@ -98,13 +98,13 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
     SMulCommClass R S (CliffordAlgebra Q) :=
-  RingQuot.instSMulCommClassRingQuotInstSMulRingQuotInstSMulRingQuot _
+  RingQuot.instSMulCommClassRingQuot _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
     IsScalarTower R S (CliffordAlgebra Q) :=
-  RingQuot.instIsScalarTowerRingQuotInstSMulRingQuotInstSMulRingQuot _
+  RingQuot.instIsScalarTowerRingQuot _
 
 /-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/
