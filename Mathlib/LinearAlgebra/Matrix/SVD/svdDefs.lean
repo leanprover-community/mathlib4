@@ -259,12 +259,15 @@ lemma V_columns (A : Matrix (Fin M) (Fin N) 𝕂) :
 lemma reduced_spectral_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
     Aᴴ ⬝ A = A.svdV₁ ⬝ (A.svdμ.map (algebraMap ℝ 𝕂)) ⬝ A.svdV₁ᴴ := by
   let hAHA := isHermitian_transpose_mul_self A
-  -- "Brute force" (submatrix_mul_equiv) explicit rewrites: each one on its own line for
+  -- "Ugly" (submatrix_mul_equiv) explicit rewrites: each one on its own line for
   -- readability!!
   rw [← submatrix_id_id (Aᴴ⬝A), IsHermitian.spectral_theorem' hAHA,
     ← IsHermitian.conjTranspose_eigenvectorMatrix, Matrix.mul_assoc,
-    ← submatrix_mul_equiv hAHA.eigenvectorMatrix (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues) ⬝ (hAHA.eigenvectorMatrixᴴ)) _ (enz A).symm _,
-    ← submatrix_mul_equiv (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues)) (hAHA.eigenvectorMatrixᴴ) _ (enz A).symm _,
+    ← submatrix_mul_equiv
+      hAHA.eigenvectorMatrix (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues) ⬝
+      (hAHA.eigenvectorMatrixᴴ)) _ (enz A).symm _,
+    ← submatrix_mul_equiv (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues)) (hAHA.eigenvectorMatrixᴴ)
+    _ (enz A).symm _,
     ← @IsROrC.algebraMap_eq_ofReal 𝕂]
   simp_rw [Function.comp]
   rw [← diagonal_map, submatrix_map,
@@ -470,9 +473,9 @@ Note that UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv`
 theorem svd_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
     A = A.svdU ⬝ (fromBlocks (map A.svdσ (algebraMap ℝ 𝕂)) 0 0 0) ⬝ A.svdVᴴ := by
   apply_fun (fun x => x⬝(fromColumns A.svdV₁ A.svdV₂))
-  simp_rw [svdU, svdV, Matrix.mul_assoc, V_inv, Matrix.mul_one, fromColumns_mul_fromBlocks, mul_fromColumns,
-    mul_V₂_eq_zero, Matrix.mul_zero, add_zero, fromColumns_ext_iff, and_true, svdU₁,
-    Matrix.nonsing_inv_mul_cancel_right _ _ (IsUnit_det_svdσ_mapK _)]
+  simp_rw [svdU, svdV, Matrix.mul_assoc, V_inv, Matrix.mul_one, fromColumns_mul_fromBlocks,
+    mul_fromColumns, mul_V₂_eq_zero, Matrix.mul_zero, add_zero, fromColumns_ext_iff, and_true,
+    svdU₁, Matrix.nonsing_inv_mul_cancel_right _ _ (IsUnit_det_svdσ_mapK _)]
   exact (V_conjTranspose_mul_inj _)
 
 end Matrix
