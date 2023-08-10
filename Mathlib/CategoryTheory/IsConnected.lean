@@ -206,7 +206,7 @@ given a type family `Z : J → Sort*` and
 a rule for transporting in *both* directions along a morphism in `J`,
 we can transport an `x : Z j₀` to a point in `Z j` for any `j`.
 -/
-theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort _)
+theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort*)
     (h₁ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₁ → Z j₂) (h₂ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₂ → Z j₁)
     {j₀ : J} (x : Z j₀) (j : J) : Nonempty (Z j) :=
   (induct_on_objects { j | Nonempty (Z j) } ⟨x⟩

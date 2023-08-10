@@ -15,7 +15,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 -/
 
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -115,13 +115,13 @@ section Sup'
 
 variable [LinearOrder γ] [OrderClosedTopology γ]
 
-theorem sup'_apply {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
+theorem sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
     s.sup' H f b = s.sup' H fun a => f a b :=
   Finset.comp_sup'_eq_sup'_comp H (fun f : C(β, γ) => f b) fun _ _ => rfl
 #align continuous_map.sup'_apply ContinuousMap.sup'_apply
 
 @[simp, norm_cast]
-theorem sup'_coe {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
+theorem sup'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
     ((s.sup' H f : C(β, γ)) : β → γ) = s.sup' H fun a => (f a : β → γ) := by
   ext
   simp [sup'_apply]
@@ -133,13 +133,13 @@ section Inf'
 
 variable [LinearOrder γ] [OrderClosedTopology γ]
 
-theorem inf'_apply {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
+theorem inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
     s.inf' H f b = s.inf' H fun a => f a b :=
   @sup'_apply _ γᵒᵈ _ _ _ _ _ _ H f b
 #align continuous_map.inf'_apply ContinuousMap.inf'_apply
 
 @[simp, norm_cast]
-theorem inf'_coe {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
+theorem inf'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
     ((s.inf' H f : C(β, γ)) : β → γ) = s.inf' H fun a => (f a : β → γ) :=
   @sup'_coe _ γᵒᵈ _ _ _ _ _ _ H f
 #align continuous_map.inf'_coe ContinuousMap.inf'_coe

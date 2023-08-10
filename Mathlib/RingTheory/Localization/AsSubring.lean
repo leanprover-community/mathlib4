@@ -22,7 +22,7 @@ namespace Localization
 
 open nonZeroDivisors
 
-variable {A : Type _} (K : Type _) [CommRing A] (S : Submonoid A) (hS : S ≤ A⁰)
+variable {A : Type*} (K : Type*) [CommRing A] (S : Submonoid A) (hS : S ≤ A⁰)
 
 section CommRing
 
@@ -34,19 +34,19 @@ theorem map_isUnit_of_le (hS : S ≤ A⁰) (s : S) : IsUnit (algebraMap A K s) :
 
 /-- The canonical map from a localization of `A` at `S` to the fraction ring
   of `A`, given that `S ≤ A⁰`. -/
-noncomputable def mapToFractionRing (B : Type _) [CommRing B] [Algebra A B] [IsLocalization S B]
+noncomputable def mapToFractionRing (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) : B →ₐ[A] K :=
   { IsLocalization.lift (map_isUnit_of_le K S hS) with commutes' := fun a => by simp }
 #align localization.map_to_fraction_ring Localization.mapToFractionRing
 
 @[simp]
-theorem mapToFractionRing_apply {B : Type _} [CommRing B] [Algebra A B] [IsLocalization S B]
+theorem mapToFractionRing_apply {B : Type*} [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) (b : B) :
     mapToFractionRing K S B hS b = IsLocalization.lift (map_isUnit_of_le K S hS) b :=
   rfl
 #align localization.map_to_fraction_ring_apply Localization.mapToFractionRing_apply
 
-theorem mem_range_mapToFractionRing_iff (B : Type _) [CommRing B] [Algebra A B] [IsLocalization S B]
+theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) (x : K) :
     x ∈ (mapToFractionRing K S B hS).range ↔
       ∃ (a s : A) (hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ :=
@@ -60,7 +60,7 @@ theorem mem_range_mapToFractionRing_iff (B : Type _) [CommRing B] [Algebra A B] 
     apply IsLocalization.lift_mk'⟩
 #align localization.mem_range_map_to_fraction_ring_iff Localization.mem_range_mapToFractionRing_iff
 
-instance isLocalization_range_mapToFractionRing (B : Type _) [CommRing B] [Algebra A B]
+instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (hS : S ≤ A⁰) : IsLocalization S (mapToFractionRing K S B hS).range :=
   IsLocalization.isLocalization_of_algEquiv S <|
     show B ≃ₐ[A] _ from AlgEquiv.ofBijective (mapToFractionRing K S B hS).rangeRestrict (by
@@ -70,7 +70,7 @@ instance isLocalization_range_mapToFractionRing (B : Type _) [CommRing B] [Algeb
         fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)
 #align localization.is_localization_range_map_to_fraction_ring Localization.isLocalization_range_mapToFractionRing
 
-instance isFractionRing_range_mapToFractionRing (B : Type _) [CommRing B] [Algebra A B]
+instance isFractionRing_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (hS : S ≤ A⁰) : IsFractionRing (mapToFractionRing K S B hS).range K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 #align localization.is_fraction_ring_range_map_to_fraction_ring Localization.isFractionRing_range_mapToFractionRing
@@ -112,7 +112,7 @@ variable [Field K] [Algebra A K] [IsFractionRing A K]
 
 namespace subalgebra
 
-theorem mem_range_mapToFractionRing_iff_ofField (B : Type _) [CommRing B] [Algebra A B]
+theorem mem_range_mapToFractionRing_iff_ofField (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (x : K) :
     x ∈ (mapToFractionRing K S B hS).range ↔
       ∃ (a s : A) (_ : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ := by

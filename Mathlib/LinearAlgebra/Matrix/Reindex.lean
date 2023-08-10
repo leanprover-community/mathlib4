@@ -30,9 +30,9 @@ namespace Matrix
 
 open Equiv Matrix
 
-variable {l m n o : Type _} {l' m' n' o' : Type _} {m'' n'' : Type _}
+variable {l m n o : Type*} {l' m' n' o' : Type*} {m'' n'' : Type*}
 
-variable (R A : Type _)
+variable (R A : Type*)
 
 section AddCommMonoid
 

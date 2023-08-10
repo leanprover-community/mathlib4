@@ -44,7 +44,7 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Filter Set Function
 
@@ -113,7 +113,7 @@ theorem tendstoIxxClass_of_subset {l₁ l₂ : Filter α} {Ixx Ixx' : α → α 
   ⟨h'.1.smallSets_mono <| eventually_of_forall <| Prod.forall.2 h⟩
 #align filter.tendsto_Ixx_class_of_subset Filter.tendstoIxxClass_of_subset
 
-theorem HasBasis.tendstoIxxClass {ι : Type _} {p : ι → Prop} {s} {l : Filter α}
+theorem HasBasis.tendstoIxxClass {ι : Type*} {p : ι → Prop} {s} {l : Filter α}
     (hl : l.HasBasis p s) {Ixx : α → α → Set α}
     (H : ∀ i, p i → ∀ x ∈ s i, ∀ y ∈ s i, Ixx x y ⊆ s i) : TendstoIxxClass Ixx l l :=
   ⟨(hl.prod_self.tendsto_iff hl.smallSets).2 fun i hi => ⟨i, hi, fun _ h => H i hi _ h.1 _ h.2⟩⟩
