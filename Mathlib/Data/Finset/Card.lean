@@ -173,7 +173,7 @@ theorem card_attach : s.attach.card = s.card :=
 
 end Finset
 
-section ToListMultiset
+section ToMLListultiset
 
 variable [DecidableEq α] (m : Multiset α) (l : List α)
 
@@ -202,7 +202,7 @@ theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : l.toFinset.car
   Multiset.toFinset_card_of_nodup h
 #align list.to_finset_card_of_nodup List.toFinset_card_of_nodup
 
-end ToListMultiset
+end ToMLListultiset
 
 namespace Finset
 
