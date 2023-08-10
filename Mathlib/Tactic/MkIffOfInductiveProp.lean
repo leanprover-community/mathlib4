@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
 import Mathlib.Lean.Meta
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.LeftRight
 
 /-!

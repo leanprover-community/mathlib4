@@ -72,7 +72,7 @@ variable (α β : Type*) [LinearOrder α] [LinearOrder β]
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
     A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
     of pairs which should be identified. -/
-def PartialIso : Type* :=
+def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ (p) (_ : p ∈ f) (q) (_ : q ∈ f),
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }

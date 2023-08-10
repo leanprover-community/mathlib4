@@ -91,7 +91,7 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
 
 @[simp]
-theorem coe_of : (CompHaus.of X : Type*) = X :=
+theorem coe_of : (CompHaus.of X : Type _) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
@@ -234,7 +234,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
     apply continuous_stoneCechUnit
   right_inv := by
-    rintro ⟨f : (X : Type*) ⟶ Y, hf : Continuous f⟩
+    rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
     intro

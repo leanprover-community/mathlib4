@@ -242,7 +242,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   have xs_nonempty : xs.Nonempty := Set.nonempty_of_union_eq_top_of_nonempty _ _ nX xs_w
   -- Finally our candidate function is the infimum over `x ∈ xs` of the `h x`.
   -- This function is then globally less than `f z + ε`.
-  let k : (L : Type*) :=
+  let k : (L : Type _) :=
     ⟨xs.inf' xs_nonempty fun x => (h x : C(X, ℝ)),
       Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
   refine' ⟨k.1, _, k.2⟩
@@ -333,7 +333,7 @@ section IsROrC
 open IsROrC
 
 -- Redefine `X`, since for the next lemma it need not be compact
-variable {𝕜 : Type*} {X : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+variable {𝕜 : Type _} {X : Type*} [IsROrC 𝕜] [TopologicalSpace X]
 
 open ContinuousMap
 

@@ -98,7 +98,7 @@ variable (α)
 /-- The space of equivalence classes of almost everywhere strongly measurable functions, where two
     strongly measurable functions are equivalent if they agree almost everywhere, i.e.,
     they differ on a set of measure `0`.  -/
-def AEEqFun (μ : Measure α) : Type* :=
+def AEEqFun (μ : Measure α) : Type _ :=
   Quotient (μ.aeEqSetoid β)
 #align measure_theory.ae_eq_fun MeasureTheory.AEEqFun
 

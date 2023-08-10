@@ -101,7 +101,7 @@ def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : B
 variable (α)
 
 /-- The boolean algebra of Heyting regular elements. -/
-def Regular : Type* :=
+def Regular : Type _ :=
   { a : α // IsRegular a }
 #align heyting.regular Heyting.Regular
 

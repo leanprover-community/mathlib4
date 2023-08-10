@@ -164,7 +164,7 @@ noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G
 #align is_free_group.of_unique_lift IsFreeGroup.ofUniqueLift
 
 /-- Being a free group transports across group isomorphisms. -/
-def ofMulEquiv {H : Type*} [Group H] (h : G ≃* H) : IsFreeGroup H
+def ofMulEquiv {H : Type _} [Group H] (h : G ≃* H) : IsFreeGroup H
     where
   Generators := Generators G
   MulEquiv' := (MulEquiv G).trans h

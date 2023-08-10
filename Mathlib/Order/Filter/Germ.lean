@@ -76,7 +76,7 @@ def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
 #align filter.germ_setoid Filter.germSetoid
 
 /-- The space of germs of functions `α → β` at a filter `l`. -/
-def Germ (l : Filter α) (β : Type*) : Type* :=
+def Germ (l : Filter α) (β : Type*) : Type _ :=
   Quotient (germSetoid l β)
 #align filter.germ Filter.Germ
 
@@ -92,7 +92,7 @@ def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
   `Filter.Germ`. -/
 -- Porting note: removed @[protected]
-def Product (l : Filter α) (ε : α → Type*) : Type* :=
+def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 #align filter.product Filter.Product
 

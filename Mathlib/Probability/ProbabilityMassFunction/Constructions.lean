@@ -43,7 +43,7 @@ def map (f : α → β) (p : Pmf α) : Pmf β :=
 
 variable (f : α → β) (p : Pmf α) (b : β)
 
-theorem monad_map_eq_map {α β : Type*} (f : α → β) (p : Pmf α) : f <$> p = p.map f := rfl
+theorem monad_map_eq_map {α β : Type _} (f : α → β) (p : Pmf α) : f <$> p = p.map f := rfl
 #align pmf.monad_map_eq_map Pmf.monad_map_eq_map
 
 @[simp]
@@ -116,7 +116,7 @@ def seq (q : Pmf (α → β)) (p : Pmf α) : Pmf β :=
 
 variable (q : Pmf (α → β)) (p : Pmf α) (b : β)
 
-theorem monad_seq_eq_seq {α β : Type*} (q : Pmf (α → β)) (p : Pmf α) : q <*> p = q.seq p := rfl
+theorem monad_seq_eq_seq {α β : Type _} (q : Pmf (α → β)) (p : Pmf α) : q <*> p = q.seq p := rfl
 #align pmf.monad_seq_eq_seq Pmf.monad_seq_eq_seq
 
 @[simp]

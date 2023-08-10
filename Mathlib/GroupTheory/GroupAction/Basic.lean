@@ -342,7 +342,7 @@ variable (α β)
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
 @[to_additive (attr := reducible)
     "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
-def orbitRel.Quotient : Type* :=
+def orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel α β
 #align mul_action.orbit_rel.quotient MulAction.orbitRel.Quotient
 #align add_action.orbit_rel.quotient AddAction.orbitRel.Quotient

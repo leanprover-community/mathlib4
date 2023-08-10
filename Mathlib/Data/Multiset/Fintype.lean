@@ -42,14 +42,14 @@ variable {α : Type*} [DecidableEq α] {m : Multiset α}
 instance from inadvertently applying to other sigma types. One should not use this definition
 directly. -/
 -- Porting note: @[nolint has_nonempty_instance]
-def Multiset.ToType (m : Multiset α) : Type* :=
+def Multiset.ToType (m : Multiset α) : Type _ :=
   Σx : α, Fin (m.count x)
 #align multiset.to_type Multiset.ToType
 
 /-- Create a type that has the same number of elements as the multiset.
 Terms of this type are triples `⟨x, ⟨i, h⟩⟩` where `x : α`, `i : ℕ`, and `h : i < m.count x`.
 This way repeated elements of a multiset appear multiple times with different values of `i`. -/
-instance : CoeSort (Multiset α) (Type*) :=
+instance : CoeSort (Multiset α) (Type _) :=
   ⟨Multiset.ToType⟩
 
 -- Porting note: syntactic equality

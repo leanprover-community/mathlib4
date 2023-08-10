@@ -94,7 +94,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) �
 #align free_product.rel Monoid.CoprodI.Rel
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
-def Monoid.CoprodI : Type* := (conGen (Monoid.CoprodI.Rel M)).Quotient
+def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
 --Porting note: could not de derived
@@ -493,7 +493,7 @@ variable (M)
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
 --@[nolint has_nonempty_instance] Porting note: commented out
-inductive NeWord : ι → ι → Type*
+inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
 #align free_product.neword Monoid.CoprodI.NeWord
@@ -920,7 +920,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   -- Step two: Invoke the ping-pong lemma for free products
   show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
-  let H : ι → Type* := fun _i => FreeGroup Unit
+  let H : ι → Type _ := fun _i => FreeGroup Unit
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
   let X' : ι → Set α := fun i => X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'

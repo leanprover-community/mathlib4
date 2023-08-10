@@ -34,7 +34,7 @@ variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] 
 
 -- Porting note: instances that were derived automatically need to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
-def Cotangent : Type* := I ⧸ (I • ⊤ : Submodule R I)
+def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 #align ideal.cotangent Ideal.Cotangent
 
 instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
@@ -200,7 +200,7 @@ variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
 @[reducible]
-def CotangentSpace : Type* := (maximalIdeal R).Cotangent
+def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
 instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _

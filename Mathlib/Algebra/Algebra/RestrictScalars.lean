@@ -75,7 +75,7 @@ Note that this means we almost always want to state definitions and lemmas in th
 An example of when one might want to use `RestrictScalars` would be if one has a vector space
 over a field of characteristic zero and wishes to make use of the `ℚ`-algebra structure. -/
 @[nolint unusedArguments]
-def RestrictScalars (_R _S M : Type*) : Type* := M
+def RestrictScalars (_R _S M : Type*) : Type _ := M
 #align restrict_scalars RestrictScalars
 
 instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I

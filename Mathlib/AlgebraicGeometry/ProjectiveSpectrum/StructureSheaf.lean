@@ -188,7 +188,7 @@ end
 
 /-- The structure sheaf (valued in `Type`, not yet `CommRing`) is the subsheaf consisting of
 functions satisfying `isLocallyFraction`.-/
-def structureSheafInType : Sheaf (Type*) (ProjectiveSpectrum.top 𝒜) :=
+def structureSheafInType : Sheaf (Type _) (ProjectiveSpectrum.top 𝒜) :=
   subsheafToTypes (isLocallyFraction 𝒜)
 #align algebraic_geometry.projective_spectrum.structure_sheaf.structure_sheaf_in_Type AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structureSheafInType
 

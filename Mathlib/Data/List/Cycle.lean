@@ -444,7 +444,7 @@ open List
 /-- `Cycle α` is the quotient of `List α` by cyclic permutation.
 Duplicates are allowed.
 -/
-def Cycle (α : Type*) : Type* :=
+def Cycle (α : Type*) : Type _ :=
   Quotient (IsRotated.setoid α)
 #align cycle Cycle
 

@@ -112,7 +112,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 #align alg_hom.alg_hom_class AlgHom.algHomClass
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R α β : Type*} [CommSemiring R]
+def Simps.apply {R α β : Type _} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
 initialize_simps_projections AlgHom (toFun → apply)

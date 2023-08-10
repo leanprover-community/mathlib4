@@ -475,7 +475,7 @@ theorem linearIndependent_iUnion_of_directed {η : Type*} {s : η → Set M} (hs
 #align linear_independent_Union_of_directed linearIndependent_iUnion_of_directed
 
 theorem linearIndependent_sUnion_of_directed {s : Set (Set M)} (hs : DirectedOn (· ⊆ ·) s)
-    (h : ∀ a ∈ s, LinearIndependent R ((↑) : ((a : Set M) : Type*) → M)) :
+    (h : ∀ a ∈ s, LinearIndependent R ((↑) : ((a : Set M) : Type _) → M)) :
     LinearIndependent R (fun x => x : ⋃₀ s → M) := by
   rw [sUnion_eq_iUnion];
     exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
@@ -966,7 +966,7 @@ end repr
 theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndependent R v)
     (f : ι' ↪ ι) (hss : range v ⊆ span R (range (v ∘ f))) : Surjective f := by
   intro i
-  let repr : (span R (range (v ∘ f)) : Type*) → ι' →₀ R := (hv.comp f f.injective).repr
+  let repr : (span R (range (v ∘ f)) : Type _) → ι' →₀ R := (hv.comp f f.injective).repr
   let l := (repr ⟨v i, hss (mem_range_self i)⟩).mapDomain f
   have h_total_l : Finsupp.total ι M R v l = v i := by
     dsimp only []

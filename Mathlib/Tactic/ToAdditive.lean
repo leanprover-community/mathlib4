@@ -324,7 +324,7 @@ def additiveTest (findTranslation? : Name → Option Name)
   unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
-def _root_.List.swapFirstTwo {α : Type*} : List α → List α
+def _root_.List.swapFirstTwo {α : Type _} : List α → List α
   | []      => []
   | [x]     => [x]
   | x::y::l => y::x::l

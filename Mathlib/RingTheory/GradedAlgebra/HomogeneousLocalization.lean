@@ -293,7 +293,7 @@ kernel of `embedding 𝒜 x`. This is essentially the subring of `Aₓ` where th
 denominator share the same grading.
 -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
-def HomogeneousLocalization : Type* :=
+def HomogeneousLocalization : Type _ :=
   Quotient (Setoid.ker <| HomogeneousLocalization.NumDenSameDeg.embedding 𝒜 x)
 #align homogeneous_localization HomogeneousLocalization
 

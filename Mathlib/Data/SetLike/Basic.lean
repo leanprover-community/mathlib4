@@ -110,13 +110,13 @@ instance : CoeTC A (Set B) where coe := SetLike.coe
 instance (priority := 100) : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩
 
-instance (priority := 100) : CoeSort A (Type*) :=
+instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
 
 variable (p q : A)
 
 @[simp, norm_cast]
-theorem coe_sort_coe : ((p : Set B) : Type*) = p :=
+theorem coe_sort_coe : ((p : Set B) : Type _) = p :=
   rfl
 #align set_like.coe_sort_coe SetLike.coe_sort_coe
 

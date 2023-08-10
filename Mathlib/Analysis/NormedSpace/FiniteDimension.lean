@@ -201,7 +201,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
     ∃ g : α → E', LipschitzWith (lipschitzExtensionConstant E' * K) g ∧ EqOn f g s := by
   /- This result is already known for spaces `ι → ℝ`. We use a continuous linear equiv between
     `E'` and such a space to transfer the result to `E'`. -/
-  let ι : Type* := Basis.ofVectorSpaceIndex ℝ E'
+  let ι : Type _ := Basis.ofVectorSpaceIndex ℝ E'
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
   have LA : LipschitzWith ‖A.toContinuousLinearMap‖₊ A := by apply A.lipschitz
   have L : LipschitzOnWith (‖A.toContinuousLinearMap‖₊ * K) (A ∘ f) s :=

@@ -125,7 +125,7 @@ end IsCauSeq
 
 /-- `CauSeq β abv` is the type of `β`-valued Cauchy sequences, with respect to the absolute value
 function `abv`. -/
-def CauSeq {α : Type*} [LinearOrderedField α] (β : Type*) [Ring β] (abv : β → α) : Type* :=
+def CauSeq {α : Type*} [LinearOrderedField α] (β : Type*) [Ring β] (abv : β → α) : Type _ :=
   { f : ℕ → β // IsCauSeq abv f }
 #align cau_seq CauSeq
 

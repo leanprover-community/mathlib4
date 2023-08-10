@@ -111,7 +111,7 @@ theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, No
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
 space use `EuclideanSpace 𝕜 (Fin n)`. -/
 @[reducible, nolint unusedArguments]
-def EuclideanSpace (𝕜 : Type*) [IsROrC 𝕜] (n : Type*) [Fintype n] : Type* :=
+def EuclideanSpace (𝕜 : Type*) [IsROrC 𝕜] (n : Type*) [Fintype n] : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 #align euclidean_space EuclideanSpace
 

@@ -34,7 +34,7 @@ open BigOperators
 
 open Function
 
-variable {α β ι M N : Type*}
+variable {α β ι M N : Type _}
 
 namespace Set
 

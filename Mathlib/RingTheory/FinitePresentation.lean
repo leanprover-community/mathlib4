@@ -525,7 +525,7 @@ theorem of_finiteType [IsNoetherianRing A] {f : A →ₐ[R] B} : f.FiniteType �
 
 nonrec theorem of_comp_finiteType (f : A →ₐ[R] B) {g : B →ₐ[R] C}
     (h : (g.comp f).FinitePresentation) (h' : f.FiniteType) : g.FinitePresentation :=
-  h.of_comp_finiteType* h'
+  h.of_comp_finiteType _ h'
 #align alg_hom.finite_presentation.of_comp_finite_type AlgHom.FinitePresentation.of_comp_finiteType
 
 end FinitePresentation

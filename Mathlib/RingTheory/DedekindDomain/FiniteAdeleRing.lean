@@ -41,7 +41,7 @@ variable (R K : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] 
   [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
-def FiniteIntegralAdeles : Type* :=
+def FiniteIntegralAdeles : Type _ :=
   ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K
 -- deriving CommRing, TopologicalSpace, Inhabited
 #align dedekind_domain.finite_integral_adeles DedekindDomain.FiniteIntegralAdeles

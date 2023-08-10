@@ -154,7 +154,7 @@ end IsConj
 attribute [local instance] IsConj.setoid
 
 /-- The quotient type of conjugacy classes of a group. -/
-def ConjClasses (α : Type*) [Monoid α] : Type* :=
+def ConjClasses (α : Type*) [Monoid α] : Type _ :=
   Quotient (IsConj.setoid α)
 #align conj_classes ConjClasses
 

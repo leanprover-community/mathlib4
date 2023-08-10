@@ -81,7 +81,7 @@ variable (I M)
 
 /-- The Hausdorffification of a module with respect to an ideal. -/
 @[reducible]
-def Hausdorffification : Type* :=
+def Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 

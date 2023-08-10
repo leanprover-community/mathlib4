@@ -102,7 +102,7 @@ def drop (α : TypeVec.{u} (n + 1)) : TypeVec n := fun i => α i.fs
 #align typevec.drop TypeVec.drop
 
 /-- take the last value of a `(n+1)-length` vector -/
-def last (α : TypeVec.{u} (n + 1)) : Type* :=
+def last (α : TypeVec.{u} (n + 1)) : Type _ :=
   α Fin2.fz
 #align typevec.last TypeVec.last
 
@@ -272,7 +272,7 @@ theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun �
   funext fun x => by apply Fin2.elim0 x -- porting note: `by apply` is necessary?
 #align typevec.nil_fun_comp TypeVec.nilFun_comp
 
-theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type*} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
+theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type _} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (@id _ α ::: g₁ ∘ g₀) = (id ::: g₁) ⊚ (id ::: g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp_id TypeVec.appendFun_comp_id
@@ -392,7 +392,7 @@ def PredLast (α : TypeVec n) {β : Type*} (p : β → Prop) : ∀ ⦃i⦄, (α.
 
 /-- `RelLast α r x y` says that `p` the last elements of `x y : α.append1 β` are related by `r` and
 all the other elements are equal. -/
-def RelLast (α : TypeVec n) {β γ : Type*} (r : β → γ → Prop) :
+def RelLast (α : TypeVec n) {β γ : Type _} (r : β → γ → Prop) :
       ∀ ⦃i⦄, (α.append1 β) i → (α.append1 γ) i → Prop
   | Fin2.fs _ => Eq
   | Fin2.fz => r
@@ -403,7 +403,7 @@ section Liftp'
 open Nat
 
 /-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
-def «repeat» : ∀ (n : ℕ), Sort* → TypeVec n
+def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t
 #align typevec.repeat TypeVec.repeat
@@ -474,7 +474,7 @@ def RelLast' (α : TypeVec n) {β : Type*} (p : β → β → Prop) :
 
 /-- given `F : TypeVec.{u} (n+1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
 i.e. its first argument can be fed in separately from the rest of the vector of arguments -/
-def Curry (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n) : Type* :=
+def Curry (F : TypeVec.{u} (n + 1) → Type _) (α : Type u) (β : TypeVec.{u} n) : Type* :=
   F (β ::: α)
 #align typevec.curry TypeVec.Curry
 
@@ -490,7 +490,7 @@ def dropRepeat (α : Type*) : ∀ {n}, drop («repeat» (succ n) α) ⟹ «repea
 #align typevec.drop_repeat TypeVec.dropRepeat
 
 /-- projection for a repeat vector -/
-def ofRepeat {α : Sort*} : ∀ {n i}, «repeat» n α i → α
+def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
   | _, Fin2.fz   => fun (a : α) => a
   | _, Fin2.fs i => @ofRepeat _ _ i
 #align typevec.of_repeat TypeVec.ofRepeat

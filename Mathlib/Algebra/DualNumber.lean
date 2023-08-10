@@ -40,7 +40,7 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 variable {R : Type*}
 
 /-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
-abbrev DualNumber (R : Type*) : Type* :=
+abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 #align dual_number DualNumber
 

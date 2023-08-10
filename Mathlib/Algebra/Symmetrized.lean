@@ -34,7 +34,7 @@ open Function
 
 /-- The symmetrized algebra has the same underlying space as the original algebra.
 -/
-def SymAlg (α : Type*) : Type* :=
+def SymAlg (α : Type*) : Type _ :=
   α
 #align sym_alg SymAlg
 
