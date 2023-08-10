@@ -484,6 +484,35 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
   exact base_pow_length_digits_le' b m
 #align nat.base_pow_length_digits_le Nat.base_pow_length_digits_le
 
+/-- Interpreting as a base `p` number and dividing by `p` is the same as interpreting the tail.
+-/
+lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
+    (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
+  induction' digits with hd tl
+  · simp [ofDigits]
+  · refine' Eq.trans (add_mul_div_left hd _ hpos) _
+    rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rfl
+
+/-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
+-/
+lemma ofDigits_div_pow_eq_ofDigits_drop
+    (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
+    ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
+  induction' i with i hi
+  · simp
+  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
+      (List.drop i digits) <| fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
+      List.drop_drop, add_comm]
+
+/-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
+-/
+lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
+    n / p ^ i = ofDigits p ((p.digits n).drop i) := by
+  convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+    (fun l hl ↦ digits_lt_base h hl)
+  exact (ofDigits_digits p n).symm
+
 /-! ### Binary -/
 
 
