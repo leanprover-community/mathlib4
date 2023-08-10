@@ -253,16 +253,16 @@ section Semigroup
 variable [Semigroup G] [MeasurableMul G]
 
 /-- The image of a left invariant measure under scalar multiplication is left invariant. -/
+@[to_additive]
 theorem isMulLeftInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
     IsMulLeftInvariant (map (a • · : G → G) μ) :=
   (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
-    let smul_g := SMulCommClass.toMulActionHom G G a
-    have smul_inv := SMulInvariantMeasure_map μ smul_g (measurable_const_smul a)
-    smul_inv.measure_preimage_smul x hs
+    (SMulInvariantMeasure_map_smul μ a).measure_preimage_smul x hs
 
 /-- The image of a left invariant measure under right multiplication is left invariant. -/
+@[to_additive isMulLeftInvariant_radd]
 theorem isMulLeftInvariant_rmul [IsMulLeftInvariant μ] (g : G) :
     IsMulLeftInvariant (map (· * g) μ) :=
   isMulLeftInvariant_map_smul (MulOpposite.op g)
@@ -784,6 +784,7 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 
 /-- The image of a Haar measure under right multiplication is again
 a Haar measure. -/
+@[to_additive isHaarMeasure_radd]
 theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
     IsHaarMeasure (Measure.map (· * g) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_rmul g

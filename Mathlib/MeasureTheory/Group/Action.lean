@@ -106,21 +106,31 @@ end MeasurableSMul
 
 section SMulHomClass
 
-variable {M : Type u} {α : Type v} {β : Type w}
-  [MeasurableSpace M] [MeasurableSpace α] [MeasurableSpace β]
+universe uM uN uα uβ
+variable {M : Type uM} {N : Type uN}  {α : Type uα} {β : Type uβ}
+  [MeasurableSpace M] [MeasurableSpace N] [MeasurableSpace α] [MeasurableSpace β]
 
-theorem SMulInvariantMeasure_map {F : Type _} [SMul M α] [SMul M β] [SMulHomClass F M α β]
+@[to_additive]
+theorem SMulInvariantMeasure_map [SMul M α] [SMul M β]
     [MeasurableSMul M β]
-    (μ : Measure α) [SMulInvariantMeasure M α μ] (f : F) (hf: Measurable f) :
+    (μ : Measure α) [SMulInvariantMeasure M α μ] (f : α → β)
+    (hsmul : ∀ (m : M) a, f (m • a) = m • f a) (hf : Measurable f) :
     SMulInvariantMeasure M β (map f μ) where
   measure_preimage_smul m S hS := calc
     map f μ ((m • ·) ⁻¹' S)
     _ = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf <| hS.preimage (measurable_const_smul _)
-    _ = μ (((m • ·) ∘ f) ⁻¹' S) := by rw [preimage_comp]
-    _ = μ (((f) ∘ (m • ·)) ⁻¹' S) := by rw [SMulHomClass.comp_smul f]
-    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [preimage_comp]
+    _ = μ ((m • f ·) ⁻¹' S) := by rw [preimage_preimage]
+    _ = μ ((f <| m • ·) ⁻¹' S) := by simp_rw [hsmul]
+    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [←preimage_preimage]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
-    _ = (map f μ) S  := by rw [←map_apply hf hS]
+    _ = map f μ S  := (map_apply hf hS).symm
+
+@[to_additive]
+theorem SMulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
+    [MeasurableSMul M α] [MeasurableSMul N α]
+    (μ : Measure α) [SMulInvariantMeasure M α μ] (n : N) :
+    SMulInvariantMeasure M α (map (n • ·) μ) :=
+  SMulInvariantMeasure_map μ _ (smul_comm n) <| measurable_const_smul _
 
 end SMulHomClass
 
