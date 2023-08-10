@@ -569,4 +569,34 @@ theorem mulIndicator_of_not_mem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator
 
 end Indicator
 
+section Piecewise
+
+/-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
+    then if these two locally constant maps agree on the intersection, we get a piecewise defined
+    locally constant map on the whole space. -/
+def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
+    (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
+    [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z where
+  toFun i := if hi : i ∈ C₁ then f ⟨i, hi⟩ else g ⟨i, (Set.compl_subset_iff_union.mpr h) hi⟩
+  isLocallyConstant := by
+    let dZ : TopologicalSpace Z := ⊥
+    haveI : DiscreteTopology Z := discreteTopology_bot Z
+    obtain ⟨f, hf⟩ := f
+    obtain ⟨g, hg⟩ := g
+    rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
+    dsimp only [coe_mk]
+    rw [Set.union_eq_iUnion] at h
+    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
+    · cases i <;> [exact h₂; exact h₁]
+    · cases i <;> rw [continuousOn_iff_continuous_restrict]
+      · convert hg
+        ext x
+        simp only [cond_false, restrict_apply, Subtype.coe_eta, dite_eq_right_iff]
+        exact fun hx ↦ hfg x ⟨hx, x.prop⟩
+      · simp only [cond_true, restrict_dite, Subtype.coe_eta]
+        exact hf
+
+end Piecewise
+
 end LocallyConstant

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Pickle
-import Mathlib.Data.ListM.Heartbeats
+import Mathlib.Data.MLList.Heartbeats
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
@@ -135,11 +135,11 @@ This core function returns a monadic list, to allow the caller to decide how lon
 See also `rewrites` for a more convenient interface.
 -/
 -- We need to supply the current `MetavarContext` (which will be reused for each lemma application)
--- because `ListM.squash` executes lazily,
+-- because `MLList.squash` executes lazily,
 -- so there is no opportunity for `← getMCtx` to record the context at the call site.
 def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (ctx : MetavarContext) (goal : MVarId) (target : Expr) :
-    ListM MetaM RewriteResult := ListM.squash do
+    MLList MetaM RewriteResult := MLList.squash fun _ => do
   -- Get all lemmas which could match some subexpression
   let candidates := (← lemmas.1.getSubexpressionMatches target)
     ++ (← lemmas.2.getSubexpressionMatches target)
@@ -150,7 +150,7 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
   trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{candidates}"
 
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
-  let candidates := ListM.ofList candidates.toList
+  let candidates := MLList.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => withMCtx ctx do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
     let some result ← try? do goal.rewrite target (← mkConstWithFreshMVarLevels lem) symm
