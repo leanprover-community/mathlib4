@@ -513,7 +513,6 @@ theorem IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m
   convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
 #align matrix.is_hermitian.from_blocks₂₂ Matrix.IsHermitian.fromBlocks₂₂
 
-open scoped ComplexOrder in
 theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ ⬝ A⁻¹ ⬝ B).PosSemidef := by
@@ -533,7 +532,6 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
       apply h.2
 #align matrix.pos_semidef.from_blocks₁₁ Matrix.PosSemidef.fromBlocks₁₁
 
-open scoped ComplexOrder in
 theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
     (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (hD : D.PosDef) [Invertible D] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B ⬝ D⁻¹ ⬝ Bᴴ).PosSemidef := by
