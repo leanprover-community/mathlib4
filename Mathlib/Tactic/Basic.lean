@@ -31,17 +31,33 @@ syntax (name := lemma) declModifiers
     stx.setKind ``Parser.Command.theorem
   pure <| stx.setKind ``Parser.Command.declaration
 
-/-- The syntax `variable (X Y ... Z : Sort*)` creates a new distinct implicit universe variable
+/-- Gives a name based on `baseName` that's not already in the list. -/
+private partial def mkUnusedName (names : List Name) (baseName : Name) : Name :=
+  let rec loop (i : Nat) : Name :=
+    let w := Name.appendIndexAfter baseName i
+    if names.contains w then
+      loop (i + 1)
+    else
+      w
+  loop 1
+
+/-- The syntax `Sort*` elaborates to `Sort u` with a fresh universe level variable `u`.
+In particular, `variable (X Y ... Z : Sort*)` creates a new distinct universe level variable
 for each variable in the sequence. -/
 elab "Sort*" : term => do
-  let u ← Lean.Meta.mkFreshLevelMVar
-  Elab.Term.levelMVarToParam (.sort u)
+  let levels ← Term.getLevelNames
+  let u := mkUnusedName levels `u
+  Term.setLevelNames (levels.concat u)
+  Elab.Term.levelMVarToParam (.sort (.param u))
 
-/-- The syntax `variable (X Y ... Z : Type*)` creates a new distinct implicit universe variable
-`> 0` for each variable in the sequence. -/
+/-- The syntax `Sort*` elaborates to `Type u` with a fresh universe level variable `u`.
+In particular, `variable (X Y ... Z : Type*)` creates a new distinct universe level variable
+for each variable in the sequence. -/
 elab "Type*" : term => do
-  let u ← Lean.Meta.mkFreshLevelMVar
-  Elab.Term.levelMVarToParam (.sort (.succ u))
+  let levels ← Term.getLevelNames
+  let u := mkUnusedName levels `u
+  Term.setLevelNames (levels.concat u)
+  Elab.Term.levelMVarToParam (.sort (.succ (.param u)))
 
 /-- Given two arrays of `FVarId`s, one from an old local context and the other from a new local
 context, pushes `FVarAliasInfo`s into the info tree for corresponding pairs of `FVarId`s.
