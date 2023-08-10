@@ -8,6 +8,8 @@ import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Monoid.OrderDual
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -168,6 +170,11 @@ def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
   | 0, _ => nil
   | _ + 1, f => cons (f 0) (ofFn fun i ↦ f i.succ)
+
+/-- Create a vector from another with a provably equal length. -/
+protected def congr {n m : ℕ} (h : n = m) : Vector α n → Vector α m
+  | ⟨x, p⟩ => ⟨x, h ▸ p⟩
+
 #align vector.of_fn Vector.ofFn
 
 section Accum
@@ -197,6 +204,31 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
 
 end Accum
 
+/-! ### Shift Primitives-/
+section Shift
+
+/-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
+    `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
+  Vector.congr (by simp) <|
+    append (drop i v) (replicate (min n i) fill)
+
+/-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
+    `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
+  Vector.congr (by
+        by_cases h : i ≤ n
+        · have h₁ := Nat.sub_le n i
+          rw [min_eq_right h]
+          rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]
+        · have h₁ := le_of_not_ge h
+          rw [min_eq_left h₁, tsub_eq_zero_iff_le.mpr h₁, zero_min, Nat.add_zero]) <|
+    append (replicate (min n i) fill) (take (n - i) v)
+
+end Shift
+
+
+/-! ### Basic Theorems -/
 /-- Vector is determined by the underlying list. -/
 protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl

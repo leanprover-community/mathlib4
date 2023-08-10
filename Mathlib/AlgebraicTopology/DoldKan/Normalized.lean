@@ -37,7 +37,7 @@ namespace DoldKan
 
 universe v
 
-variable {A : Type _} [Category A] [Abelian A] {X : SimplicialObject A}
+variable {A : Type*} [Category A] [Abelian A] {X : SimplicialObject A}
 
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by

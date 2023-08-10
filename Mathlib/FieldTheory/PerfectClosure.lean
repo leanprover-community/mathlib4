@@ -57,7 +57,7 @@ variable {K p}
 
 /-- Lift a function `ℕ × K → L` to a function on `PerfectClosure K p`. -/
 -- Porting note: removed `@[elab_as_elim]` for "unexpected eliminator resulting type L"
-def liftOn {L : Type _} (x : PerfectClosure K p) (f : ℕ × K → L)
+def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
     (hf : ∀ x y, R K p x y → f x = f y) : L :=
   Quot.liftOn x f hf
 #align perfect_closure.lift_on PerfectClosure.liftOn

@@ -33,7 +33,7 @@ import Mathlib.Logic.Function.Conjugate
   and the codomain to `t`.
 -/
 
-variable {α β γ : Type _} {ι : Sort _} {π : α → Type _}
+variable {α β γ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv Equiv.Perm Function
 
@@ -237,7 +237,7 @@ theorem EqOn.comp_left (h : s.EqOn f₁ f₂) : s.EqOn (g ∘ f₁) (g ∘ f₂)
 #align set.eq_on.comp_left Set.EqOn.comp_left
 
 @[simp]
-theorem eqOn_range {ι : Sort _} {f : ι → α} {g₁ g₂ : α → β} :
+theorem eqOn_range {ι : Sort*} {f : ι → α} {g₁ g₂ : α → β} :
     EqOn g₁ g₂ (range f) ↔ g₁ ∘ f = g₂ ∘ f :=
   forall_range_iff.trans <| funext_iff.symm
 #align set.eq_on_range Set.eqOn_range
@@ -662,6 +662,10 @@ theorem injOn_of_injective (h : Injective f) (s : Set α) : InjOn f s := fun _ _
 
 alias injOn_of_injective ← _root_.Function.Injective.injOn
 #align function.injective.inj_on Function.Injective.injOn
+
+-- A specialization of `injOn_of_injective` for `Subtype.val`.
+theorem injOn_subtype_val {s : Set { x // p x }} : Set.InjOn Subtype.val s :=
+  Subtype.coe_injective.injOn s
 
 lemma injOn_id (s : Set α) : InjOn id s := injective_id.injOn _
 #align set.inj_on_id Set.injOn_id
@@ -1259,6 +1263,26 @@ theorem InjOn.invFunOn_image [Nonempty α] (h : InjOn f s₂) (ht : s₁ ⊆ s�
   h.leftInvOn_invFunOn.image_image' ht
 #align set.inj_on.inv_fun_on_image Set.InjOn.invFunOn_image
 
+theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
+    (h : s ⊆ (invFunOn f s) '' (f '' s)) : LeftInvOn (invFunOn f s) f s :=
+  fun x hx ↦ by
+    obtain ⟨-, ⟨x, hx', rfl⟩, rfl⟩ := h hx
+    rw [invFunOn_apply_eq (f := f) hx']
+
+theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
+    InjOn f s ↔ (invFunOn f s) '' (f '' s) = s :=
+  ⟨fun h ↦ h.invFunOn_image Subset.rfl, fun h ↦
+    (Function.LeftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
+
+theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
+    Set.InjOn (invFunOn f s) (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨x', hx', rfl⟩ he
+  rw [←invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
+
+theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
+    (invFunOn f s) '' (f '' s) ⊆ s := by
+  rintro _ ⟨_, ⟨x,hx,rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
+
 theorem SurjOn.rightInvOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     RightInvOn (invFunOn f s) f t := fun _y hy => invFunOn_eq <| h hy
 #align set.surj_on.right_inv_on_inv_fun_on Set.SurjOn.rightInvOn_invFunOn
@@ -1350,7 +1374,7 @@ end Monotone
 
 namespace Set
 
-variable {δ : α → Sort _} (s : Set α) (f g : ∀ i, δ i)
+variable {δ : α → Sort*} (s : Set α) (f g : ∀ i, δ i)
 
 @[simp]
 theorem piecewise_empty [∀ i : α, Decidable (i ∈ (∅ : Set α))] : piecewise ∅ f g = g := by
@@ -1413,18 +1437,18 @@ theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ :
   piecewise_eq_of_not_mem _ _ _
 #align set.piecewise_eq_on_compl Set.piecewise_eqOn_compl
 
-theorem piecewise_le {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
+theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g i) :
     s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
 #align set.piecewise_le Set.piecewise_le
 
-theorem le_piecewise {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
+theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ (i) (_ : i ∉ s), g i ≤ f₂ i) :
     g ≤ s.piecewise f₁ f₂ :=
   @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 #align set.le_piecewise Set.le_piecewise
 
-theorem piecewise_le_piecewise {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α}
+theorem piecewise_le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
     [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
     (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
@@ -1441,7 +1465,7 @@ theorem piecewise_compl [∀ i, Decidable (i ∈ sᶜ)] : sᶜ.piecewise f g = s
 #align set.piecewise_compl Set.piecewise_compl
 
 @[simp]
-theorem piecewise_range_comp {ι : Sort _} (f : ι → α) [∀ j, Decidable (j ∈ range f)]
+theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j ∈ range f)]
     (g₁ g₂ : α → β) : (range f).piecewise g₁ g₂ ∘ f = g₁ ∘ f :=
   (piecewise_eqOn ..).comp_eq
 #align set.piecewise_range_comp Set.piecewise_range_comp
@@ -1475,24 +1499,24 @@ theorem piecewise_preimage (f g : α → β) (t) : s.piecewise f g ⁻¹' t = s.
   ext fun x => by by_cases x ∈ s <;> simp [*, Set.ite]
 #align set.piecewise_preimage Set.piecewise_preimage
 
-theorem apply_piecewise {δ' : α → Sort _} (h : ∀ i, δ i → δ' i) {x : α} :
+theorem apply_piecewise {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) {x : α} :
     h x (s.piecewise f g x) = s.piecewise (fun x => h x (f x)) (fun x => h x (g x)) x := by
   by_cases hx : x ∈ s <;> simp [hx]
 #align set.apply_piecewise Set.apply_piecewise
 
-theorem apply_piecewise₂ {δ' δ'' : α → Sort _} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
+theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
     {x : α} :
     h x (s.piecewise f g x) (s.piecewise f' g' x) =
       s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x :=
   by by_cases hx : x ∈ s <;> simp [hx]
 #align set.apply_piecewise₂ Set.apply_piecewise₂
 
-theorem piecewise_op {δ' : α → Sort _} (h : ∀ i, δ i → δ' i) :
+theorem piecewise_op {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) :
     (s.piecewise (fun x => h x (f x)) fun x => h x (g x)) = fun x => h x (s.piecewise f g x) :=
   funext fun _ => (apply_piecewise _ _ _ _).symm
 #align set.piecewise_op Set.piecewise_op
 
-theorem piecewise_op₂ {δ' δ'' : α → Sort _} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i) :
+theorem piecewise_op₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i) :
     (s.piecewise (fun x => h x (f x) (f' x)) fun x => h x (g x) (g' x)) = fun x =>
       h x (s.piecewise f g x) (s.piecewise f' g' x) :=
   funext fun _ => (apply_piecewise₂ _ _ _ _ _ _).symm
@@ -1521,24 +1545,24 @@ theorem injective_piecewise_iff {f g : α → β} :
   rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_not_mem s f g hy]
 #align set.injective_piecewise_iff Set.injective_piecewise_iff
 
-theorem piecewise_mem_pi {δ : α → Type _} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
+theorem piecewise_mem_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
     (hg : g ∈ pi t t') : s.piecewise f g ∈ pi t t' := by
   intro i ht
   by_cases hs : i ∈ s <;> simp [hf i ht, hg i ht, hs]
 #align set.piecewise_mem_pi Set.piecewise_mem_pi
 
 @[simp]
-theorem pi_piecewise {ι : Type _} {α : ι → Type _} (s s' : Set ι) (t t' : ∀ i, Set (α i))
+theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s')] : pi s (s'.piecewise t t') = pi (s ∩ s') t ∩ pi (s \ s') t' :=
   pi_if _ _ _
 #align set.pi_piecewise Set.pi_piecewise
 
 -- porting note: new lemma
-theorem univ_pi_piecewise {ι : Type _} {α : ι → Type _} (s : Set ι) (t t' : ∀ i, Set (α i))
+theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]
 
-theorem univ_pi_piecewise_univ {ι : Type _} {α : ι → Type _} (s : Set ι) (t : ∀ i, Set (α i))
+theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp
 #align set.univ_pi_piecewise Set.univ_pi_piecewise_univ
 
@@ -1681,7 +1705,7 @@ theorem injOn_preimage (h : Semiconj f fa fb) {s : Set β} (hb : InjOn fb s)
 
 end Semiconj
 
-theorem update_comp_eq_of_not_mem_range' {α β : Sort _} {γ : β → Sort _} [DecidableEq β]
+theorem update_comp_eq_of_not_mem_range' {α β : Sort _} {γ : β → Sort*} [DecidableEq β]
     (g : ∀ b, γ b) {f : α → β} {i : β} (a : γ i) (h : i ∉ Set.range f) :
     (fun j => (Function.update g i a) (f j)) = fun j => g (f j) :=
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩

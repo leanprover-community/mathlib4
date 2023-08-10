@@ -62,7 +62,7 @@ sequentially closed, sequentially compact, sequential space
 
 open Set Function Filter TopologicalSpace Topology Uniformity
 
-variable {X Y : Type _}
+variable {X Y : Type*}
 
 /-! ### Sequential closures, sequential continuity, and sequential spaces. -/
 
@@ -118,7 +118,7 @@ protected theorem IsClosed.isSeqClosed {s : Set X} (hc : IsClosed s) : IsSeqClos
 /-- A topological space is called a *Fréchet-Urysohn space*, if the sequential closure of any set
 is equal to its closure. Since one of the inclusions is trivial, we require only the non-trivial one
 in the definition. -/
-class FrechetUrysohnSpace (X : Type _) [TopologicalSpace X] : Prop where
+class FrechetUrysohnSpace (X : Type*) [TopologicalSpace X] : Prop where
   closure_subset_seqClosure : ∀ s : Set X, closure s ⊆ seqClosure s
 #align frechet_urysohn_space FrechetUrysohnSpace
 
@@ -177,7 +177,7 @@ instance (priority := 100) TopologicalSpace.FirstCountableTopology.frechetUrysoh
 
 /-- A topological space is said to be a *sequential space* if any sequentially closed set in this
 space is closed. This condition is weaker than being a Fréchet-Urysohn space. -/
-class SequentialSpace (X : Type _) [TopologicalSpace X] : Prop where
+class SequentialSpace (X : Type*) [TopologicalSpace X] : Prop where
   isClosed_of_seq : ∀ s : Set X, IsSeqClosed s → IsClosed s
 #align sequential_space SequentialSpace
 
@@ -255,7 +255,7 @@ def IsSeqCompact (s : Set X) :=
 /-- A space `X` is sequentially compact if every sequence in `X` has a
 converging subsequence. -/
 @[mk_iff seqCompactSpace_iff]
-class SeqCompactSpace (X : Type _) [TopologicalSpace X] : Prop where
+class SeqCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
   seq_compact_univ : IsSeqCompact (univ : Set X)
 #align seq_compact_space SeqCompactSpace
 #align seq_compact_space_iff seqCompactSpace_iff
@@ -404,7 +404,7 @@ variable [PseudoMetricSpace X]
 
 open Metric
 
-nonrec theorem SeqCompact.lebesgue_number_lemma_of_metric {ι : Sort _} {c : ι → Set X} {s : Set X}
+nonrec theorem SeqCompact.lebesgue_number_lemma_of_metric {ι : Sort*} {c : ι → Set X} {s : Set X}
     (hs : IsSeqCompact s) (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) :
     ∃ δ > 0, ∀ a ∈ s, ∃ i, ball a δ ⊆ c i :=
   lebesgue_number_lemma_of_metric hs.isCompact hc₁ hc₂

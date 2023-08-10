@@ -40,7 +40,7 @@ Nakayama, Jacobson
 -/
 
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 open Ideal
 

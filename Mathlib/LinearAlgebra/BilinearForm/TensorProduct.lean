@@ -23,7 +23,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 
 universe u v w
 
-variable {ι : Type _} {R : Type _} {M₁ M₂ : Type _}
+variable {ι : Type*} {R : Type*} {M₁ M₂ : Type*}
 
 open TensorProduct
 
