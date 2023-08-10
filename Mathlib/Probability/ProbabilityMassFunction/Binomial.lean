@@ -14,7 +14,6 @@ This file defines the probability mass function of the binomial distribution, an
 it to be equal to `Pmf.bernoulli` for `n = 1`.
 -/
 
-noncomputable section
 
 namespace Pmf
 
@@ -30,16 +29,16 @@ def binomial (p : ENNReal) (h : p ≤ 1) (n : ℕ) : Pmf (Fin (n + 1)) :=
       rw [dif_pos hi]
     · simp [h])
 
-theorem binomial_apply : binomial p h n i =
-  p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ) := rfl
+theorem binomial_apply :
+    binomial p h n i = p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ) := rfl
 
 @[simp]
-theorem binomial_apply_0 : binomial p h n 0 = (1-p)^n :=
-  by simp [binomial_apply]
+theorem binomial_apply_0 : binomial p h n 0 = (1-p)^n := by
+  simp [binomial_apply]
 
 @[simp]
-theorem binomial_apply_n : binomial p h n n = p^n :=
-  by simp [binomial_apply, Nat.mod_eq_of_lt]
+theorem binomial_apply_n : binomial p h n n = p^n := by
+  simp [binomial_apply, Nat.mod_eq_of_lt]
 
 /-- The binomial distribution on one coin is the bernoully distribution. -/
 theorem binomial_one_eq_bernoulli :
