@@ -67,16 +67,18 @@ private lemma pairMap_of_snd_nmem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst
 
 private theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     pairMap σ t ∈ pairs σ k := by
-  rw [pairs, mem_filter, pairMap] at *
+  rw [pairs, mem_filter] at *
   simp only [mem_univ, true_and] at h
-  split_ifs with h1
-  · simp only [h1, implies_true, true_and, and_true] at h
+  rcases (em (t.snd ∈ t.fst)) with h1 | h1
+  · rw [pairMap_of_snd_mem_fst σ h1]
+    simp only [h1, implies_true, and_true] at h
     simp only [mem_univ, true_and, card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
     refine ⟨le_step h, ?_⟩
     by_contra h2
     rw [← h2] at h
     exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
-  · simp only [h1] at h
+  · rw [pairMap_of_snd_nmem_fst σ h1]
+    simp only [h1] at h
     simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
     exact (le_iff_eq_or_lt.mp h.left).resolve_left h.right
 
@@ -92,13 +94,14 @@ private theorem pairMap_involutive : (pairMap σ).Involutive := by
 
 private theorem weight_add_weight_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     weight σ R k t + weight σ R k (pairMap σ t) = 0 := by
-  rw [pairMap, weight, weight]
+  rw [weight, weight]
   rw [pairs, mem_filter] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1) := by
     rw [← neg_one_mul ((-1 : MvPolynomial σ R) ^ n), pow_add, pow_one, mul_comm]
-  split_ifs with h1
-  · simp only [card_erase_of_mem h1, ← prod_erase_mul t.fst (fun j ↦ (X j : MvPolynomial σ R)) h1,
-      mul_comm, mul_assoc (∏ a in erase t.fst t.snd, X a), ← mul_add]
+  rcases (em (t.snd ∈ t.fst)) with h1 | h1
+  · rw [pairMap_of_snd_mem_fst σ h1]
+    simp only [← prod_erase_mul t.fst (fun j ↦ (X j : MvPolynomial σ R)) h1,
+      mul_assoc (∏ a in erase t.fst t.snd, X a), card_erase_of_mem h1]
     nth_rewrite 1 [← pow_one (X t.snd)]
     simp only [← pow_add, add_comm]
     have h3 : card t.fst ≥ 1 := lt_iff_add_one_le.mp (card_pos.mpr ⟨t.snd, h1⟩)
@@ -106,7 +109,8 @@ private theorem weight_add_weight_pairMap (t : Finset σ × σ) (h : t ∈ pairs
       ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)), h2 (card t.fst - 1),
       Nat.sub_add_cancel h3]
     simp
-  · simp only [card_cons, prod_cons, mul_comm, mul_assoc (∏ a in t.fst, X a), ← mul_add]
+  · rw [pairMap_of_snd_nmem_fst σ h1]
+    simp only [mul_comm, mul_assoc (∏ a in t.fst, X a), card_cons, prod_cons]
     nth_rewrite 2 [← pow_one (X t.snd)]
     simp only [← pow_add,
       ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.right.left (mt h.right.right h1)), add_comm]
