@@ -296,7 +296,7 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
 
 @[simp] theorem isRegular_X : IsRegular (X : R[X]) := by
   suffices : IsLeftRegular (X : R[X])
-  · exact ⟨this, IsLeftRegular.right_of_commute (fun p ↦ commute_X p) this⟩
+  · exact ⟨this, this.right_of_commute commute_X⟩
   intro P Q (hPQ : X * P = X * Q)
   ext i
   rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
