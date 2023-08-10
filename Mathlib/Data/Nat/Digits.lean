@@ -10,6 +10,7 @@ import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Algebra.Parity
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 
@@ -515,6 +516,65 @@ lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
   convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
+
+open BigOperators
+
+theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits (digits : List ℕ)
+  (w₁ : ∀ (l : ℕ), l ∈ digits → l < p) (w₂ : ∀ (h : digits ≠ []), List.getLast digits h ≠ 0) :
+     (p - 1) * ∑ i in Finset.range (digits.length),
+     (ofDigits p digits) / p ^ i.succ = (ofDigits p digits) - (digits).sum := by
+  by_cases 2 ≤ p
+  · induction' digits with hd tl ih
+    · simp_all [ofDigits]
+    simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
+        digits_ofDigits p h (hd :: tl) w₁ w₂]
+    simp only [ofDigits]
+    rw [Finset.sum_range_succ]
+    simp only [List.drop, add_eq, add_zero, List.drop_length, Nat.cast_id]
+    have w₁' := fun l hl ↦ w₁ l <| List.mem_cons_of_mem hd hl
+    have w₂' :  ∀ (h : tl ≠ []), List.getLast tl h ≠ 0 :=
+      fun h ↦ (List.getLast_cons h) ▸  w₂ _
+    have ih := ih w₁' w₂'
+    simp only [self_div_pow_eq_ofDigits_drop _ _ h, digits_ofDigits p h (tl) w₁' w₂'] at ih
+    by_cases h' : tl = []
+    · simp [h', ofDigits]
+    · have h1tl : 1 ≤ tl.length :=  List.length_pos.mpr h'
+      simp only [← Finset.sum_range_add_sum_Ico _ <| h1tl]
+      have : 0 = ∑ x in Finset.Ico (List.length tl) (succ (List.length tl)),
+          ofDigits p (List.drop x tl) := by
+        simp only [ge_iff_le, Ico_succ_singleton, Finset.sum_singleton, List.drop_length, ofDigits]
+      rw [← add_zero (∑ x in Finset.Ico 1 (List.length tl), ofDigits p (List.drop x tl)), this,
+          Finset.sum_Ico_consecutive _  h1tl <| le_succ (tl.length),
+          ← Finset.sum_Ico_add _ 0 tl.length 1, Ico_zero_eq_range, mul_add, mul_add]
+      simp only [add_comm]
+      rw [ih]
+      simp only [Finset.range_one, Finset.sum_singleton, List.drop, add_le_add_iff_left, ofDigits]
+      simp only [mul_zero, zero_add, add_le_add_iff_left]
+      rw [← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
+      nth_rw 2 [← one_mul <| ofDigits p tl]
+      rw [← add_mul, one_eq_succ_zero, Nat.sub_add_cancel <| zero_lt_of_lt h, Nat.add_sub_add_left]
+  · by_cases hp : p = 0
+    · simp [hp, ofDigits]
+      cases digits
+      · simp
+      · simp [ofDigits]
+    · simp [eq_of_le_of_lt_succ (Nat.pos_of_ne_zero hp) <| Nat.not_le.mp h, ofDigits_one]
+
+theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits' (n : ℕ):
+     (p - 1) * ∑ i in Finset.range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
+  by_cases 2 ≤ p
+  · by_cases hn : n ≠ 0
+    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n)
+        (fun l a ↦ digits_lt_base h a) <| fun _ ↦ getLast_digit_ne_zero p hn
+      · refine' (digits_len p n h hn).symm
+      all_goals exact (ofDigits_digits p n).symm
+    · simp [not_not.mp hn]
+  · by_cases hp : p = 0
+    · simp [hp]
+      cases n
+      · simp
+      · simp
+    · simp [eq_of_le_of_lt_succ (Nat.pos_of_ne_zero hp) <| Nat.not_le.mp h]
 
 /-! ### Binary -/
 
