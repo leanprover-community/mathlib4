@@ -38,9 +38,9 @@ namespace Matrix
 
 open LinearMap
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
-variable {n : Type _} [Fintype n]
+variable {n : Type*} [Fintype n]
 
 section ToLinearEquiv'
 
@@ -111,7 +111,7 @@ open Matrix
 
 /-- This holds for all integral domains (see `Matrix.exists_mulVec_eq_zero_iff`),
 not just fields, but it's easier to prove it for the field of fractions first. -/
-theorem exists_mulVec_eq_zero_iff_aux {K : Type _} [DecidableEq n] [Field K] {M : Matrix n n K} :
+theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M : Matrix n n K} :
     (∃ (v : _) (_ : v ≠ 0), M.mulVec v = 0) ↔ M.det = 0 := by
   constructor
   · rintro ⟨v, hv, mul_eq⟩
@@ -132,7 +132,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type _} [DecidableEq n] [Field K] {M 
     exact Matrix.det_ne_zero_of_right_inverse this
 #align matrix.exists_mul_vec_eq_zero_iff_aux Matrix.exists_mulVec_eq_zero_iff_aux
 
-theorem exists_mulVec_eq_zero_iff' {A : Type _} (K : Type _) [DecidableEq n] [CommRing A]
+theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
     [Nontrivial A] [Field K] [Algebra A K] [IsFractionRing A K] {M : Matrix n n A} :
     (∃ (v : _) (_ : v ≠ 0), M.mulVec v = 0) ↔ M.det = 0 := by
   have : (∃ (v : _) (_ : v ≠ 0), mulVec ((algebraMap A K).mapMatrix M) v = 0) ↔ _ :=
@@ -167,17 +167,17 @@ theorem exists_mulVec_eq_zero_iff' {A : Type _} (K : Type _) [DecidableEq n] [Co
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 #align matrix.exists_mul_vec_eq_zero_iff' Matrix.exists_mulVec_eq_zero_iff'
 
-theorem exists_mulVec_eq_zero_iff {A : Type _} [DecidableEq n] [CommRing A] [IsDomain A]
+theorem exists_mulVec_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : (∃ (v : _) (_ : v ≠ 0), M.mulVec v = 0) ↔ M.det = 0 :=
   exists_mulVec_eq_zero_iff' (FractionRing A)
 #align matrix.exists_mul_vec_eq_zero_iff Matrix.exists_mulVec_eq_zero_iff
 
-theorem exists_vecMul_eq_zero_iff {A : Type _} [DecidableEq n] [CommRing A] [IsDomain A]
+theorem exists_vecMul_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : (∃ (v : _) (_ : v ≠ 0), M.vecMul v = 0) ↔ M.det = 0 := by
   simpa only [← M.det_transpose, ← mulVec_transpose] using exists_mulVec_eq_zero_iff
 #align matrix.exists_vec_mul_eq_zero_iff Matrix.exists_vecMul_eq_zero_iff
 
-theorem nondegenerate_iff_det_ne_zero {A : Type _} [DecidableEq n] [CommRing A] [IsDomain A]
+theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : Nondegenerate M ↔ M.det ≠ 0 := by
   refine' Iff.trans _ (not_iff_not.mpr exists_vecMul_eq_zero_iff)
   simp only [not_exists]

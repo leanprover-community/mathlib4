@@ -43,7 +43,7 @@ open CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C] (W : MorphismProperty C) {D : Type _} [Category D]
+variable {C : Type*} [Category C] (W : MorphismProperty C) {D : Type*} [Category D]
 
 namespace Localization
 

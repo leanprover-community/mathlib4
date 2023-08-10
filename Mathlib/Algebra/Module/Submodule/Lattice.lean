@@ -26,7 +26,7 @@ to unify the APIs where possible.
 -/
 
 
-variable {R S M : Type _}
+variable {R S M : Type*}
 
 section AddCommMonoid
 
@@ -288,25 +288,25 @@ theorem add_mem_sup {S T : Submodule R M} {s t : M} (hs : s ∈ S) (ht : t ∈ T
   add_mem (mem_sup_left hs) (mem_sup_right ht)
 #align submodule.add_mem_sup Submodule.add_mem_sup
 
-theorem sub_mem_sup {R' M' : Type _} [Ring R'] [AddCommGroup M'] [Module R' M']
+theorem sub_mem_sup {R' M' : Type*} [Ring R'] [AddCommGroup M'] [Module R' M']
     {S T : Submodule R' M'} {s t : M'} (hs : s ∈ S) (ht : t ∈ T) : s - t ∈ S ⊔ T := by
   rw [sub_eq_add_neg]
   exact add_mem_sup hs (neg_mem ht)
 #align submodule.sub_mem_sup Submodule.sub_mem_sup
 
-theorem mem_iSup_of_mem {ι : Sort _} {b : M} {p : ι → Submodule R M} (i : ι) (h : b ∈ p i) :
+theorem mem_iSup_of_mem {ι : Sort*} {b : M} {p : ι → Submodule R M} (i : ι) (h : b ∈ p i) :
     b ∈ ⨆ i, p i :=
   (le_iSup p i) h
 #align submodule.mem_supr_of_mem Submodule.mem_iSup_of_mem
 
 open BigOperators
 
-theorem sum_mem_iSup {ι : Type _} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
+theorem sum_mem_iSup {ι : Type*} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i, f i ∈ p i) : (∑ i, f i) ∈ ⨆ i, p i :=
   sum_mem fun i _ ↦ mem_iSup_of_mem i (h i)
 #align submodule.sum_mem_supr Submodule.sum_mem_iSup
 
-theorem sum_mem_biSup {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
+theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i ∈ s, f i ∈ p i) : (∑ i in s, f i) ∈ ⨆ i ∈ s, p i :=
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_biSup
