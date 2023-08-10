@@ -211,7 +211,7 @@ theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
 end
 
 @[to_additive]
-instance : Inf (OpenSubgroup G) :=
+instance instInfOpenSubgroup : Inf (OpenSubgroup G) :=
   ⟨fun U V => ⟨U ⊓ V, U.isOpen.inter V.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -239,11 +239,11 @@ theorem mem_inf {x} : x ∈ U ⊓ V ↔ x ∈ U ∧ x ∈ V :=
 #align open_add_subgroup.mem_inf OpenAddSubgroup.mem_inf
 
 @[to_additive]
-instance : PartialOrder (OpenSubgroup G) := inferInstance
+instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferInstance
 
 -- porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
-instance : SemilatticeInf (OpenSubgroup G) :=
+instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ => rfl with
     toInf := instInfOpenSubgroup
     toPartialOrder := instPartialOrderOpenSubgroup }

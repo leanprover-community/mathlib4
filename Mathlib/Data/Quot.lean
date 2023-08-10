@@ -221,10 +221,10 @@ variable {φ : Quotient sa → Quotient sb → Sort _}
 @[inherit_doc]
 notation:arg "⟦" a "⟧" => Quotient.mk _ a
 
-instance (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
+instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
 
-instance (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
+instance instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
   Quot.Subsingleton
 
 instance {α : Type _} [Setoid α] : IsEquiv α (· ≈ ·) where
@@ -511,7 +511,7 @@ protected theorem eq (a b : Trunc α) : a = b :=
   Trunc.induction_on₂ a b fun _ _ ↦ Quot.sound trivial
 #align trunc.eq Trunc.eq
 
-instance : Subsingleton (Trunc α) :=
+instance instSubsingletonTrunc : Subsingleton (Trunc α) :=
   ⟨Trunc.eq⟩
 
 /-- The `bind` operator for the `Trunc` monad. -/
