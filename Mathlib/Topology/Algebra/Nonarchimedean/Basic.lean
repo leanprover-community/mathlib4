@@ -32,39 +32,39 @@ open Pointwise
 
 /-- A topological additive group is nonarchimedean if every neighborhood of 0
   contains an open subgroup. -/
-class NonarchimedeanAddGroup (G : Type _) [AddGroup G] [TopologicalSpace G] extends
+class NonarchimedeanAddGroup (G : Type*) [AddGroup G] [TopologicalSpace G] extends
   TopologicalAddGroup G : Prop where
   is_nonarchimedean : ∀ U ∈ nhds (0 : G), ∃ V : OpenAddSubgroup G, (V : Set G) ⊆ U
 #align nonarchimedean_add_group NonarchimedeanAddGroup
 
 /-- A topological group is nonarchimedean if every neighborhood of 1 contains an open subgroup. -/
 @[to_additive]
-class NonarchimedeanGroup (G : Type _) [Group G] [TopologicalSpace G] extends TopologicalGroup G :
+class NonarchimedeanGroup (G : Type*) [Group G] [TopologicalSpace G] extends TopologicalGroup G :
   Prop where
   is_nonarchimedean : ∀ U ∈ nhds (1 : G), ∃ V : OpenSubgroup G, (V : Set G) ⊆ U
 #align nonarchimedean_group NonarchimedeanGroup
 
 /-- A topological ring is nonarchimedean if its underlying topological additive
   group is nonarchimedean. -/
-class NonarchimedeanRing (R : Type _) [Ring R] [TopologicalSpace R] extends TopologicalRing R :
+class NonarchimedeanRing (R : Type*) [Ring R] [TopologicalSpace R] extends TopologicalRing R :
   Prop where
   is_nonarchimedean : ∀ U ∈ nhds (0 : R), ∃ V : OpenAddSubgroup R, (V : Set R) ⊆ U
 #align nonarchimedean_ring NonarchimedeanRing
 
 -- see Note [lower instance priority]
 /-- Every nonarchimedean ring is naturally a nonarchimedean additive group. -/
-instance (priority := 100) NonarchimedeanRing.to_nonarchimedeanAddGroup (R : Type _) [Ring R]
+instance (priority := 100) NonarchimedeanRing.to_nonarchimedeanAddGroup (R : Type*) [Ring R]
     [TopologicalSpace R] [t : NonarchimedeanRing R] : NonarchimedeanAddGroup R :=
   { t with }
 #align nonarchimedean_ring.to_nonarchimedean_add_group NonarchimedeanRing.to_nonarchimedeanAddGroup
 
 namespace NonarchimedeanGroup
 
-variable {G : Type _} [Group G] [TopologicalSpace G] [NonarchimedeanGroup G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [NonarchimedeanGroup G]
 
-variable {H : Type _} [Group H] [TopologicalSpace H] [TopologicalGroup H]
+variable {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H]
 
-variable {K : Type _} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
+variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
 @[to_additive]
@@ -123,7 +123,7 @@ open NonarchimedeanRing
 
 open NonarchimedeanAddGroup
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 variable [Ring R] [TopologicalSpace R] [NonarchimedeanRing R]
 

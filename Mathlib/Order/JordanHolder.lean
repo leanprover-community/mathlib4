@@ -448,7 +448,7 @@ theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
 section FinLemmas
 
 -- TODO: move these to `VecNotation` and rename them to better describe their statement
-variable {α : Type _} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
+variable {α : Type*} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
 
 theorem append_castAdd_aux (i : Fin m) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b

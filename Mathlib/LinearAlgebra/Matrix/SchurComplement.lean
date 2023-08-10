@@ -35,7 +35,7 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 -/
 
 
-variable {l m n α : Type _}
+variable {l m n α : Type*}
 
 namespace Matrix
 
@@ -461,7 +461,7 @@ end CommRing
 
 section StarOrderedRing
 
-variable {𝕜 : Type _} [CommRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
