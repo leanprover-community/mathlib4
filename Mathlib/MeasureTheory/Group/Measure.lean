@@ -255,17 +255,11 @@ variable [Semigroup G] [MeasurableMul G]
 /-- The image of a left invariant measure under right multiplication is left invariant.
 -/
 theorem isMulLeftInvariant_rmul [IsMulLeftInvariant μ] (g : G) :
-    IsMulLeftInvariant (map (· * g) μ) := by
-      let rmul_g := SMulCommClass.toMulActionHom G G (MulOpposite.op g)
-      have rmul_g_eq : ↑rmul_g = (· * g)
-      · ext x
-        simp only [SMulCommClass.toMulActionHom_apply, MulOpposite.smul_eq_mul_unop,
-          MulOpposite.unop_op]
-      have smul_inv := SMulInvariantMeasure_map μ rmul_g (measurable_mul_const g)
-      rw [rmul_g_eq] at smul_inv
-      rw [←forall_measure_preimage_mul_iff]
-      intro h s hS
-      exact smul_inv.measure_preimage_smul h hS
+    IsMulLeftInvariant (map (· * g) μ) :=
+  (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
+    let rmul_g := SMulCommClass.toMulActionHom G G (MulOpposite.op g)
+    have smul_inv := SMulInvariantMeasure_map μ rmul_g (measurable_mul_const g)
+    smul_inv.measure_preimage_smul x hs
 
 end Semigroup
 
@@ -792,6 +786,7 @@ theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : 
     apply IsCompact.measure_lt_top _
     rwa [← Homeomorph.coe_mulRight g, Homeomorph.isCompact_preimage _]
   toIsOpenPosMeasure := (continuous_mul_right g).isOpenPosMeasure_map (mul_right_surjective g)
+
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
 nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
