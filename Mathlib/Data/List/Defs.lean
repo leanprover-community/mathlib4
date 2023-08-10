@@ -588,5 +588,4 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
 
-
 end List
