@@ -200,7 +200,6 @@ attribute [simp] CompatibleField.funMap_inv
 attribute [simp] CompatibleField.funMap_zero
 attribute [simp] CompatibleField.funMap_one
 
-set_option maxHeartbeats 1000000 in
 def compatibleFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     [Theory.field.Model K] : CompatibleField K :=
   letI : Add K := ⟨fun x y => funMap addFunction ![x, y]⟩
@@ -301,29 +300,6 @@ instance {K : Type _} [CompatibleField K] : Theory.field.Model K :=
       | oneMul => exact one_mul
       | invZero => exact inv_zero
       | leftDistrib => exact mul_add }
-
-@[simps]
-def languageHomEquivRingHom {K L : Type _} [CompatibleField K] [CompatibleField L] :
-    (K →+* L) ≃ (Language.field.Hom K L) :=
-  { toFun := fun f =>
-    { f with
-      map_fun' := fun {n} f => by
-        cases f <;> simp
-      map_rel' := fun {n} f => by cases f },
-    invFun := fun f =>
-      { f with
-        map_add' := by
-          intro x y
-          simpa using f.map_fun addFunction ![x, y]
-        map_mul' := by
-          intro x y
-          simpa using f.map_fun mulFunction ![x, y],
-        map_zero' := by
-          simpa using f.map_fun zeroFunction ![],
-        map_one' := by
-          simpa using f.map_fun oneFunction ![], }
-    left_inv := fun f => by ext; rfl
-    right_inv := fun f => by ext; rfl }
 
 def languageEquivEquivRingEquiv {K L : Type _} [CompatibleField K] [CompatibleField L] :
     (K ≃+* L) ≃ (Language.field.Equiv K L) :=
