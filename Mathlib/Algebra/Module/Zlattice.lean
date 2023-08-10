@@ -308,8 +308,8 @@ section Zlattice
 
 open Submodule
 
-variable (K : Type _) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
+variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] {L : AddSubgroup E} [DiscreteTopology L]
 variable (hs : span K (L : Set E) = ⊤)
 
