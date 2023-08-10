@@ -292,7 +292,8 @@ end
 
 section OrderDual
 
-instance (α : Type*) [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice αᵒᵈ :=
+instance instConditionallyCompleteLatticeOrderDual (α : Type*) [ConditionallyCompleteLattice α] :
+    ConditionallyCompleteLattice αᵒᵈ :=
   { instInfOrderDual α, instSupOrderDual α, OrderDual.lattice α with
     le_csSup := @ConditionallyCompleteLattice.csInf_le α _
     csSup_le := @ConditionallyCompleteLattice.le_csInf α _
@@ -300,7 +301,7 @@ instance (α : Type*) [ConditionallyCompleteLattice α] : ConditionallyCompleteL
     csInf_le := @ConditionallyCompleteLattice.le_csSup α _ }
 
 instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder αᵒᵈ :=
-  { instConditionallyCompleteLatticeOrderDual α, OrderDual.linearOrder α with }
+  { instConditionallyCompleteLatticeOrderDual α, OrderDual.instLinearOrder α with }
 
 end OrderDual
 

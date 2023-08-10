@@ -98,7 +98,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
-instance : Inv (hat K) :=
+instance instInvCompletion : Inv (hat K) :=
   ⟨fun x => if x = 0 then 0 else hatInv x⟩
 
 variable [TopologicalDivisionRing K]

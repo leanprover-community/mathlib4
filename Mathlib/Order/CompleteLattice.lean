@@ -407,7 +407,7 @@ instance completeLattice [CompleteLattice α] : CompleteLattice αᵒᵈ :=
     le_sInf := @CompleteLattice.sSup_le α _ }
 
 instance [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ :=
-  { OrderDual.completeLattice α, OrderDual.linearOrder α with }
+  { OrderDual.completeLattice α, OrderDual.instLinearOrder α with }
 
 end OrderDual
 

@@ -45,7 +45,7 @@ section LE
 
 variable [LE α]
 
-instance : LE (ι →₀ α) :=
+instance instLEFinsupp : LE (ι →₀ α) :=
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
 theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=

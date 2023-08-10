@@ -71,7 +71,7 @@ instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
   rcases h with ⟨_, hm⟩
   rw [← hm]
   exact @UniformSpace.firstCountableTopology X PseudoMetricSpace.toUniformSpace
-    EMetric.instIsCountablyGeneratedProdUniformityToUniformSpace
+    EMetric.instIsCountablyGeneratedUniformity
 #align topological_space.pseudo_metrizable_space.first_countable_topology TopologicalSpace.PseudoMetrizableSpace.firstCountableTopology
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :

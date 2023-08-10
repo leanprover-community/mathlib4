@@ -186,7 +186,8 @@ theorem ordConnected_univ : OrdConnected (univ : Set α) :=
 #align set.ord_connected_univ Set.ordConnected_univ
 
 /-- In a dense order `α`, the subtype from an `OrdConnected` set is also densely ordered. -/
-instance [DenselyOrdered α] {s : Set α} [hs : OrdConnected s] : DenselyOrdered s :=
+instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected s] :
+    DenselyOrdered s :=
   ⟨fun a b (h : (a : α) < b) =>
     let ⟨x, H⟩ := exists_between h
     ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩

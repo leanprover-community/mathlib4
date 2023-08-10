@@ -47,11 +47,6 @@ variable {α : Type v}
 
 open Matrix
 
--- Porting note: added. Porting TODO: remove after std4#112 is merged
-local instance [DecidableEq n] (j : n) (o : Option n) : Decidable (j ∈ o) :=
-  haveI : Decidable (o = some j) := inferInstance
-  this
-
 /-- `toMatrix` returns a matrix containing ones and zeros. `f.toMatrix i j` is `1` if
   `f i = some j` and `0` otherwise -/
 def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=

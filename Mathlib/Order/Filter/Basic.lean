@@ -463,7 +463,7 @@ section CompleteLattice
 /- We lift the complete lattice along the Galois connection `generate` / `sets`. Unfortunately,
   we want to have different definitional equalities for some lattice operations. So we define them
   upfront and change the lattice operations for the complete lattice instance. -/
-instance : CompleteLattice (Filter α) :=
+instance instCompleteLatticeFilter : CompleteLattice (Filter α) :=
   { @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice with
     le := (· ≤ ·)
     top := ⊤
@@ -769,7 +769,7 @@ theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
   ⟨fun h => ⟨fun hf => not_nonempty_empty (h ∅ <| hf.symm ▸ mem_bot)⟩, @nonempty_of_mem _ _⟩
 #align filter.forall_mem_nonempty_iff_ne_bot Filter.forall_mem_nonempty_iff_neBot
 
-instance [Nonempty α] : Nontrivial (Filter α) :=
+instance instNontrivialFilter [Nonempty α] : Nontrivial (Filter α) :=
   ⟨⟨⊤, ⊥, NeBot.ne <| forall_mem_nonempty_iff_neBot.1
     fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]⟩⟩
 

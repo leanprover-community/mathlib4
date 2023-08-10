@@ -598,7 +598,7 @@ namespace MulOpposite
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-instance : Algebra R Aᵐᵒᵖ where
+instance instAlgebraMulOpposite : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,

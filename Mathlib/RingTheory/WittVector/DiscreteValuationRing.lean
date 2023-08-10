@@ -30,7 +30,7 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace WittVector
 

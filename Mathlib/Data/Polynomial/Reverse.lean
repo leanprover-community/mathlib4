@@ -78,6 +78,8 @@ theorem revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
   if_pos H
 #align polynomial.rev_at_le Polynomial.revAt_le
 
+lemma revAt_eq_self_of_lt {N i : ℕ} (h : N < i) : revAt N i = i := by simp [revAt, Nat.not_le.mpr h]
+
 theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
     revAt (N + O) (n + o) = revAt N n + revAt O o := by
   rcases Nat.le.dest hn with ⟨n', rfl⟩

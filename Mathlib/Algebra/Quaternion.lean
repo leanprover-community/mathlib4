@@ -608,7 +608,7 @@ theorem smul_coe : x • (y : ℍ[R,c₁,c₂]) = ↑(x * y) := by rw [coe_mul, 
 #align quaternion_algebra.smul_coe QuaternionAlgebra.smul_coe
 
 /-- Quaternion conjugate. -/
-instance : Star ℍ[R,c₁,c₂] where star a := ⟨a.1, -a.2, -a.3, -a.4⟩
+instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂] where star a := ⟨a.1, -a.2, -a.3, -a.4⟩
 
 @[simp] theorem re_star : (star a).re = a.re := rfl
 #align quaternion_algebra.re_star QuaternionAlgebra.re_star

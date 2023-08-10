@@ -148,7 +148,7 @@ theorem default_eq (a : α) : default = a :=
 #align unique.default_eq Unique.default_eq
 
 -- see Note [lower instance priority]
-instance (priority := 100) : Subsingleton α :=
+instance (priority := 100) instSubsingleton : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
 
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=

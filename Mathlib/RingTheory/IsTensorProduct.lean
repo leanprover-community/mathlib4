@@ -124,11 +124,13 @@ theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m 
   rw [← h.equiv.right_inv m]
   generalize h.equiv.invFun m = y
   change C (TensorProduct.lift f y)
-  induction y using TensorProduct.induction_on
-  · rwa [map_zero]
-  · rw [TensorProduct.lift.tmul]
+  induction y using TensorProduct.induction_on with
+  | zero => rwa [map_zero]
+  | tmul _ _ =>
+    rw [TensorProduct.lift.tmul]
     apply htmul
-  · rw [map_add]
+  | add _ _ _ _ =>
+    rw [map_add]
     apply hadd <;> assumption
 #align is_tensor_product.induction_on IsTensorProduct.inductionOn
 

@@ -70,6 +70,8 @@ structure IsRegular (c : R) : Prop where
   right : IsRightRegular c
 #align is_regular IsRegular
 
+attribute [simp] IsRegular.left IsRegular.right
+
 attribute [to_additive] IsRegular
 
 @[to_additive]
@@ -265,6 +267,14 @@ theorem not_isRightRegular_zero [nR : Nontrivial R] : ¬IsRightRegular (0 : R) :
 /-- In a non-trivial ring, the element `0` is not regular -- with typeclasses. -/
 theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRegular.ne_zero h rfl
 #align not_is_regular_zero not_isRegular_zero
+
+@[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
+  nth_rw 1 [← mul_zero b]
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, mul_zero]⟩
+
+@[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
+  nth_rw 1 [← zero_mul b]
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, zero_mul]⟩
 
 end MulZeroClass
 

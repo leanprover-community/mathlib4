@@ -1666,7 +1666,7 @@ theorem Subtype.nndist_eq {p : α → Prop} (x y : Subtype p) : nndist x y = nnd
 namespace MulOpposite
 
 @[to_additive]
-instance : PseudoMetricSpace αᵐᵒᵖ :=
+instance instPseudoMetricSpaceMulOpposite : PseudoMetricSpace αᵐᵒᵖ :=
   PseudoMetricSpace.induced MulOpposite.unop ‹_›
 
 @[to_additive (attr := simp)]

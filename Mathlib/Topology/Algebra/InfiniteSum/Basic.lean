@@ -1272,6 +1272,10 @@ theorem Summable.tendsto_atTop_zero {f : ℕ → G} (hf : Summable f) : Tendsto 
   exact hf.tendsto_cofinite_zero
 #align summable.tendsto_at_top_zero Summable.tendsto_atTop_zero
 
+theorem Summable.countable_support [TopologicalSpace.FirstCountableTopology G] [T1Space G]
+    (hf : Summable f) : f.support.Countable := by
+  simpa only [sInter_sets_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_sInter_sets
+
 end TopologicalGroup
 
 section ConstSmul

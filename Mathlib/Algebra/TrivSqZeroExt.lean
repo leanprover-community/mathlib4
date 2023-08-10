@@ -183,37 +183,37 @@ instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   instInhabitedProd
 
 instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
-  Prod.instZeroSum
+  Prod.instZero
 
 instance add [Add R] [Add M] : Add (tsze R M) :=
-  Prod.instAddSum
+  Prod.instAdd
 
 instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
-  Prod.instSubSum
+  Prod.instSub
 
 instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
-  Prod.instNegSum
+  Prod.instNeg
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
-  Prod.instAddSemigroupSum
+  Prod.instAddSemigroup
 
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
-  Prod.instAddZeroClassSum
+  Prod.instAddZeroClass
 
 instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  Prod.instAddMonoidSum
+  Prod.instAddMonoid
 
 instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  Prod.instAddGroupSum
+  Prod.instAddGroup
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
-  Prod.instAddCommSemigroupSum
+  Prod.instAddCommSemigroup
 
 instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
-  Prod.instAddCommMonoidSum
+  Prod.instAddCommMonoid
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
-  Prod.instAddCommGroupSum
+  Prod.instAddCommGroup
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
   Prod.smul
@@ -239,7 +239,7 @@ instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
 
 instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
-  Prod.module
+  Prod.instModule
 
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=

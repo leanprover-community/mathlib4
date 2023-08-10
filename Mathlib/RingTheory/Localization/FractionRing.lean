@@ -292,7 +292,7 @@ def FractionRing :=
 namespace FractionRing
 
 instance unique [Subsingleton R] : Unique (FractionRing R) :=
-  Localization.instUniqueLocalizationToCommMonoid
+  Localization.instUniqueLocalization
 #align fraction_ring.unique FractionRing.unique
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) :=

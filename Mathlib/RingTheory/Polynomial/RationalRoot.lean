@@ -130,7 +130,7 @@ theorem integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun �
 #align unique_factorization_monoid.integer_of_integral UniqueFactorizationMonoid.integer_of_integral
 
 -- See library note [lower instance priority]
-instance (priority := 100) : IsIntegrallyClosed A :=
+instance (priority := 100) instIsIntegrallyClosed : IsIntegrallyClosed A :=
   ⟨fun {_} => integer_of_integral⟩
 #align unique_factorization_monoid.is_integrally_closed UniqueFactorizationMonoid.instIsIntegrallyClosed
 

@@ -32,8 +32,7 @@ for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over th
 number field, embeddings, places, infinite places
 -/
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped Classical
 
@@ -219,7 +218,7 @@ variable (K : Type*) [Field K]
 def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 #align number_field.infinite_place NumberField.InfinitePlace
 
-instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyElemRange _
+instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
 
 variable {K}
 
