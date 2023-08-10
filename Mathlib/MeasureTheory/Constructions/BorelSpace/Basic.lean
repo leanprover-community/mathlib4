@@ -1697,12 +1697,107 @@ theorem borel_eq_generateFrom_Ioo_rat :
   isTopologicalBasis_Ioo_rat.borel_eq_generateFrom
 #align real.borel_eq_generate_from_Ioo_rat Real.borel_eq_generateFrom_Ioo_rat
 
+theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)}) := by
+  let g : MeasurableSpace ℝ := .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)})
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Ioo_rat]
+    refine' generateFrom_le fun t => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨a, b, _, rfl⟩
+    rw [(Set.ext fun x => by
+          suffices x < ↑b → (↑a < x ↔ ∃ i : ℚ, a < i ∧ ↑i ≤ x) by simpa
+          refine' fun _ => ⟨fun h => _, fun ⟨i, hai, hix⟩ => (Rat.cast_lt.2 hai).trans_le hix⟩
+          rcases exists_rat_btwn h with ⟨c, ac, cx⟩
+          exact ⟨c, Rat.cast_lt.1 ac, cx.le⟩
+            : Ioo (a : ℝ) b = (⋃ c > a, (Iio (c : ℝ))ᶜ) ∩ Iio (b : ℝ))]
+    · have hg : ∀ q : ℚ, MeasurableSet[g] (Iio (q : ℝ)) := fun q =>
+        GenerateMeasurable.basic (Iio (q : ℝ)) (by simp)
+      refine' MeasurableSet.inter _ (hg _)
+      exact MeasurableSet.biUnion (to_countable _) fun c _ => (hg _).compl
+  · refine' MeasurableSpace.generateFrom_le fun _ => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨r, rfl⟩
+    exact @measurableSet_Iio _ _ (borel ℝ) _ _ _ _
+#align real.borel_eq_generate_from_Iio_rat Real.borel_eq_generateFrom_Iio_rat
+
+theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
+  let g : MeasurableSpace ℝ := .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)})
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Ioo_rat]
+    refine' generateFrom_le fun t => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨a, b, _, rfl⟩
+    have : Ioo (a : ℝ) b = Ioi (a : ℝ) ∩ (⋃ c < b, (Ioi (c : ℝ))ᶜ) := by
+      ext x
+      simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_Ioo, compl_Ioi,
+        mem_inter_iff, mem_Ioi, mem_iUnion, mem_Iic, exists_prop, and_congr_right_iff]
+      refine fun _ ↦ ⟨fun h ↦ ?_, fun ⟨i, hib, bxi⟩ ↦ bxi.trans_lt (Rat.cast_lt.2 hib)⟩
+      rcases exists_rat_btwn h with ⟨c, xc, cb⟩
+      exact ⟨c, Rat.cast_lt.1 cb, xc.le⟩
+    rw [this]
+    have hg : ∀ q : ℚ, MeasurableSet[g] (Ioi (q : ℝ)) := fun q =>
+      GenerateMeasurable.basic (Ioi (q : ℝ)) (by simp)
+    refine MeasurableSet.inter (hg _) ?_
+    exact MeasurableSet.biUnion (to_countable _) fun c _ => (hg _).compl
+  · refine' MeasurableSpace.generateFrom_le fun _ => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨r, rfl⟩
+    exact @measurableSet_Ioi _ _ (borel ℝ) _ _ _ _
+
+theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Ioi_rat]
+    refine generateFrom_le fun t ht => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at ht
+    obtain ⟨y, rfl⟩ := ht
+    rw [← compl_Iic]
+    refine MeasurableSet.compl (GenerateMeasurable.basic _ ?_)
+    simp only [iUnion_singleton_eq_range, mem_range, exists_apply_eq_apply]
+  · refine MeasurableSpace.generateFrom_le fun s hs => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at hs
+    obtain ⟨y, rfl⟩ := hs
+    exact measurableSet_Iic
+
+theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ici (a : ℝ)}) := by
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Iio_rat]
+    refine generateFrom_le fun t ht => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at ht
+    obtain ⟨y, rfl⟩ := ht
+    rw [← compl_Ici]
+    refine MeasurableSet.compl (GenerateMeasurable.basic _ ?_)
+    simp only [iUnion_singleton_eq_range, mem_range, exists_apply_eq_apply]
+  · refine MeasurableSpace.generateFrom_le fun s hs => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at hs
+    obtain ⟨y, rfl⟩ := hs
+    exact measurableSet_Ici
+
 theorem isPiSystem_Ioo_rat :
     @IsPiSystem ℝ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
   convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
   ext x
   simp [eq_comm]
 #align real.is_pi_system_Ioo_rat Real.isPiSystem_Ioo_rat
+
+theorem isPiSystem_Iio_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Iio (a : ℝ)}) := by
+  convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+
+theorem isPiSystem_Ioi_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
+  convert isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+
+theorem isPiSystem_Iic_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Iic (a : ℝ)}) := by
+  convert isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+
+theorem isPiSystem_Ici_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Ici (a : ℝ)}) := by
+  convert isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 /-- The intervals `(-(n + 1), (n + 1))` form a finite spanning sets in the set of open intervals
 with rational endpoints for a locally finite measure `μ` on `ℝ`. -/
@@ -1728,30 +1823,6 @@ theorem measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
     rintro _ ⟨a, b, -, rfl⟩
     apply h
 #align real.measure_ext_Ioo_rat Real.measure_ext_Ioo_rat
-
-theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)}) := by
-  let g : MeasurableSpace ℝ := .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)})
-  refine' le_antisymm _ _
-  · rw [borel_eq_generateFrom_Ioo_rat]
-    refine' generateFrom_le fun t => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨a, b, _, rfl⟩
-    rw [(Set.ext fun x => by
-          suffices x < ↑b → (↑a < x ↔ ∃ i : ℚ, a < i ∧ ↑i ≤ x) by simpa
-          refine' fun _ => ⟨fun h => _, fun ⟨i, hai, hix⟩ => (Rat.cast_lt.2 hai).trans_le hix⟩
-          rcases exists_rat_btwn h with ⟨c, ac, cx⟩
-          exact ⟨c, Rat.cast_lt.1 ac, cx.le⟩
-            : Ioo (a : ℝ) b = (⋃ c > a, (Iio (c : ℝ))ᶜ) ∩ Iio (b : ℝ))]
-    · have hg : ∀ q : ℚ, MeasurableSet[g] (Iio (q : ℝ)) := fun q =>
-        GenerateMeasurable.basic (Iio (q : ℝ)) (by simp)
-      refine' @MeasurableSet.inter _ g _ _ _ (hg _)
-      refine' @MeasurableSet.biUnion _ _ g _ _ (to_countable _) fun c _ => _
-      exact @MeasurableSet.compl _ _ g (hg _)
-  · refine' MeasurableSpace.generateFrom_le fun _ => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨r, rfl⟩
-    exact @measurableSet_Iio _ _ (borel ℝ) _ _ _ _
-#align real.borel_eq_generate_from_Iio_rat Real.borel_eq_generateFrom_Iio_rat
 
 end Real
 
