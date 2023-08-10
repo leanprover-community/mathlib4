@@ -356,12 +356,12 @@ theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible 
    fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
 #align matrix.mul_inv_eq_iff_eq_mul_of_invertible Matrix.mul_inv_eq_iff_eq_mul_of_invertible
 
-lemma Matrix.mul_left_injective_of_invertible
+lemma mul_left_injective_of_invertible
     {m: Type} [Fintype m] [DecidableEq m] (P : Matrix m m α) [Invertible P] :
     Function.Injective (fun (x : Matrix m n α) => P ⬝ x) :=
   fun _ _ h => by simpa only [inv_mul_cancel_left_of_invertible] using (congr_arg (P⁻¹ ⬝ ·) h)
 
-lemma Matrix.mul_right_injective_of_invertible
+lemma mul_right_injective_of_invertible
     {m: Type} [Fintype m] [DecidableEq m] (P : Matrix m m α) [Invertible P] :
     Function.Injective (fun (x : Matrix n m α) => x ⬝ P) :=
   fun a x hax => by simpa only [mul_inv_cancel_right_of_invertible] using (congr_arg (· ⬝ P⁻¹) hax)
