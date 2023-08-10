@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_power
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.DirectSum.Algebra
+
+#align_import linear_algebra.tensor_power from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Tensor power of a semimodule over a commutative semiring
@@ -106,17 +103,17 @@ variable (R M)
 
 /-- Cast between "equal" tensor powers. -/
 def cast {i j} (h : i = j) : (⨂[R]^i) M ≃ₗ[R] (⨂[R]^j) M :=
-  reindex R M (Fin.cast h).toEquiv
+  reindex R M (Fin.castIso h).toEquiv
 #align tensor_power.cast TensorPower.cast
 
 theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
-    cast R M h (tprod R a) = tprod R (a ∘ Fin.cast h.symm) :=
+    cast R M h (tprod R a) = tprod R (a ∘ Fin.castIso h.symm) :=
   reindex_tprod _ _
 #align tensor_power.cast_tprod TensorPower.cast_tprod
 
 @[simp]
 theorem cast_refl {i} (h : i = i) : cast R M h = LinearEquiv.refl _ _ :=
-  ((congr_arg fun f => reindex R M (RelIso.toEquiv f)) <| Fin.cast_refl h).trans reindex_refl
+  ((congr_arg fun f => reindex R M (RelIso.toEquiv f)) <| Fin.castIso_refl h).trans reindex_refl
 #align tensor_power.cast_refl TensorPower.cast_refl
 
 @[simp]
@@ -143,10 +140,10 @@ theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M
     (h2 : cast R M h a.snd = b.snd) : a = b := by
   refine' gradedMonoid_eq_of_reindex_cast h _
   rw [cast] at h2
-  rw [← Fin.cast_to_equiv, ← h2]
+  rw [← Fin.castIso_to_equiv, ← h2]
 #align tensor_power.graded_monoid_eq_of_cast TensorPower.gradedMonoid_eq_of_cast
 
--- named to match `Fin.cast_eq_cast`
+-- named to match `Fin.cast_eq_cast`, which is now `Fin.castIso_eq_cast`
 theorem cast_eq_cast {i j} (h : i = j) :
     ⇑(cast R M h) = _root_.cast (congrArg (fun i => (⨂[R]^i) M) h) := by
   subst h
@@ -210,13 +207,13 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   have rhs_eq : ∀ a b c, rhs a b c = a ₜ* (b ₜ* c) := fun _ _ _ => rfl
   suffices : lhs = rhs
   exact LinearMap.congr_fun (LinearMap.congr_fun (LinearMap.congr_fun this a) b) c
-  ext (a b c)
+  ext a b c
   -- clean up
   simp only [LinearMap.compMultilinearMap_apply, lhs_eq, rhs_eq, tprod_mul_tprod, cast_tprod]
   congr with j
   rw [Fin.append_assoc]
   refine' congr_arg (Fin.append a (Fin.append b c)) (Fin.ext _)
-  rw [Fin.coe_cast, Fin.coe_cast]
+  rw [Fin.coe_castIso, Fin.coe_castIso]
 #align tensor_power.mul_assoc TensorPower.mul_assoc
 
 -- for now we just use the default for the `gnpow` field as it's easier.

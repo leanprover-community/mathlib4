@@ -3,15 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Damiano Testa,
 Yuyang Zhao
-
-! This file was ported from Lean 3 source module algebra.order.monoid.lemmas
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.MinMax
+
+#align_import algebra.order.monoid.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
 /-!
 # Ordered monoids
@@ -1196,7 +1193,7 @@ theorem exists_square_le [CovariantClass α α (· * ·) (· < ·)] (a : α) : �
     rw [mul_one] at this
     exact le_of_lt this
   · use 1
-    push_neg  at h
+    push_neg at h
     rwa [mul_one]
 #align exists_square_le exists_square_le
 

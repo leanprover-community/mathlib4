@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.perm.sign
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Int.Order.Units
+
+#align_import group_theory.perm.sign from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sign of a permutation
@@ -50,9 +47,9 @@ def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
     fun {σ τ υ} hστ hτυ => by
     cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
     simp [hστ, hτυ] -- porting note: should close goals, but doesn't
-    . simp [hστ, hτυ]
-    . simp [hστ, hτυ]
-    . simp [hστ, hτυ]⟩
+    · simp [hστ, hτυ]
+    · simp [hστ, hτυ]
+    · simp [hστ, hτυ]⟩
 #align equiv.perm.mod_swap Equiv.Perm.modSwap
 
 noncomputable instance {α : Type _} [Fintype α] [DecidableEq α] (i j : α) :
@@ -184,8 +181,7 @@ theorem Disjoint.extendDomain {α : Type _} {p : β → Prop} [DecidablePred p] 
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
   intro b
   by_cases pb : p b
-  ·
-    refine' (h (f.symm ⟨b, pb⟩)).imp _ _ <;>
+  · refine' (h (f.symm ⟨b, pb⟩)).imp _ _ <;>
       · intro h
         rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
   · left
@@ -339,8 +335,8 @@ theorem signBijAux_inj {n : ℕ} {f : Perm (Fin n)} :
     have : ¬b₁ < b₂ := hb.le.not_lt
     split_ifs at h <;>
     simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq]
-    . exact absurd this (not_le.mpr ha)
-    . exact absurd this (not_le.mpr ha)
+    · exact absurd this (not_le.mpr ha)
+    · exact absurd this (not_le.mpr ha)
 #align equiv.perm.sign_bij_aux_inj Equiv.Perm.signBijAux_inj
 
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
@@ -377,18 +373,18 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
         simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
           if_neg (mem_finPairsLT.1 hab).not_le]
         split_ifs with h₁
-        . dsimp [finPairsLT] at hab
+        · dsimp [finPairsLT] at hab
           simp at hab
           exact absurd h₁ (not_le_of_gt hab)
-        . rfl
+        · rfl
       else by
         simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
           if_pos (mem_finPairsLT.1 hab).le]
         split_ifs with h₁ h₂ h₃
-        . rfl
-        . exact absurd h (not_le_of_gt h₁)
-        . rfl
-        . dsimp at *
+        · rfl
+        · exact absurd h (not_le_of_gt h₁)
+        · rfl
+        · dsimp at *
           dsimp [finPairsLT] at hab
           simp at *
           exact absurd h₃ (asymm_of LT.lt hab))
@@ -410,8 +406,8 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   · rw [dif_pos h]
     simp only [not_le_of_gt hab, mul_one, mul_ite, mul_neg, Perm.inv_apply_self, if_false]
     split_ifs with h₁ h₂ h₃ <;> dsimp at *
-    . exact absurd hab (not_lt_of_ge h₂)
-    . exact absurd hab (not_lt_of_ge h₃)
+    · exact absurd hab (not_lt_of_ge h₂)
+    · exact absurd hab (not_lt_of_ge h₃)
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) := by

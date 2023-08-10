@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
-
-! This file was ported from Lean 3 source module ring_theory.ore_localization.basic
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Tactic.NoncommRing
+
+#align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 
@@ -735,7 +732,7 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   induction' x using OreLocalization.ind with r₁ s₁
   induction' y using OreLocalization.ind with r₂ s₂
   induction' z using OreLocalization.ind with r₃ s₃
-  rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast  at ha
+  rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast at ha
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
   rw [← Subtype.coe_eq_of_eq_mk ha]
@@ -787,7 +784,7 @@ def universalHom : R[S⁻¹] →+* T :=
       congr 1
       rw [mul_assoc]
       congr 1
-      norm_cast  at h₃
+      norm_cast at h₃
       have h₃' := Subtype.coe_eq_of_eq_mk h₃
       rw [← Units.val_mul, ← mul_inv_rev, ← fS.map_mul, h₃']
       have hs₂r₃ : ↑s₂ * r₃ ∈ S := by

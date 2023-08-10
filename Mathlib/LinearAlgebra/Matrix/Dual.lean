@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.dual
-! leanprover-community/mathlib commit 738c19f572805cff525a93aa4ffbdf232df05aa8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.matrix.dual from "leanprover-community/mathlib"@"738c19f572805cff525a93aa4ffbdf232df05aa8"
 
 /-!
 # Dual space, linear maps and matrices.
@@ -35,7 +32,7 @@ variable {K V₁ V₂ ι₁ ι₂ : Type _} [Field K] [AddCommGroup V₁] [Modul
 theorem LinearMap.toMatrix_transpose (u : V₁ →ₗ[K] V₂) :
     LinearMap.toMatrix B₂.dualBasis B₁.dualBasis (Module.Dual.transpose (R := K) u) =
       (LinearMap.toMatrix B₁ B₂ u)ᵀ := by
-  ext (i j)
+  ext i j
   simp only [LinearMap.toMatrix_apply, Module.Dual.transpose_apply, B₁.dualBasis_repr,
     B₂.dualBasis_apply, Matrix.transpose_apply, LinearMap.comp_apply]
 #align linear_map.to_matrix_transpose LinearMap.toMatrix_transpose

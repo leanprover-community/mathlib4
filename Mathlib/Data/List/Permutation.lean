@@ -2,13 +2,10 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.permutation
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Join
+
+#align_import data.list.permutation from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Permutations of a list
@@ -93,12 +90,12 @@ theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β')
     map g' (permutationsAux2 t ts r ys f).2 =
       (permutationsAux2 (g t) (map g ts) (map g' r) (map g ys) f').2 := by
   induction' ys with ys_hd _ ys_ih generalizing f f'
-  . simp
-  . simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
+  · simp
+  · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
     rw [ys_ih, permutationsAux2_fst]
     refine' ⟨_, rfl⟩
-    . simp only [← map_cons, ← map_append]; apply H
-    . intro a; apply H
+    · simp only [← map_cons, ← map_append]; apply H
+    · intro a; apply H
 #align list.map_permutations_aux2' List.map_permutationsAux2'
 
 /-- The `f` argument to `permutationsAux2` when `r = []` can be eliminated. -/
@@ -144,12 +141,12 @@ theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
 #align list.permutations'_aux_eq_permutations_aux2 List.permutations'Aux_eq_permutationsAux2
 
 theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List α} :
-    l' ∈ (permutationsAux2 t ts [] ys (l ++ .)).2 ↔
+    l' ∈ (permutationsAux2 t ts [] ys (l ++ ·)).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l' = l ++ l₁ ++ t :: l₂ ++ ts := by
   induction' ys with y ys ih generalizing l
   · simp (config := { contextual := true })
   rw [permutationsAux2_snd_cons,
-    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ .) by funext _; simp, mem_cons, ih]
+    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by funext _; simp, mem_cons, ih]
   constructor
   · rintro (rfl | ⟨l₁, l₂, l0, rfl, rfl⟩)
     · exact ⟨[], y :: ys, by simp⟩
@@ -164,7 +161,7 @@ theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List
 theorem mem_permutationsAux2' {t : α} {ts : List α} {ys : List α} {l : List α} :
     l ∈ (permutationsAux2 t ts [] ys id).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l = l₁ ++ t :: l₂ ++ ts :=
-  by rw [show @id (List α) = ([] ++ .) by funext _; rfl]; apply mem_permutationsAux2
+  by rw [show @id (List α) = ([] ++ ·) by funext _; rfl]; apply mem_permutationsAux2
 #align list.mem_permutations_aux2' List.mem_permutationsAux2'
 
 theorem length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :

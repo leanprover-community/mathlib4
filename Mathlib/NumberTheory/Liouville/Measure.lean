@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module number_theory.liouville.measure
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.Liouville.LiouvilleWith
 import Mathlib.Analysis.PSeries
+
+#align_import number_theory.liouville.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Volume of the set of Liouville numbers
@@ -34,7 +31,7 @@ open scoped Filter BigOperators ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 theorem setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆

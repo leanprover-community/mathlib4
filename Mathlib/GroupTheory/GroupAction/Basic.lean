@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.basic
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.group_action.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
 /-!
 # Basic properties of group actions
@@ -280,6 +277,12 @@ def orbitRel : Setoid β where
 #align add_action.orbit_rel AddAction.orbitRel
 
 variable {α} {β}
+
+@[to_additive]
+theorem orbitRel_apply {x y : β} : (orbitRel α β).Rel x y ↔ x ∈ orbit α y :=
+  Iff.rfl
+#align mul_action.orbit_rel_apply MulAction.orbitRel_apply
+#align add_action.orbit_rel_apply AddAction.orbitRel_apply
 
 /-- When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `α`. -/

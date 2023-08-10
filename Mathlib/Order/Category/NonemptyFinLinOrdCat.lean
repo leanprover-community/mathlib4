@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.NonemptyFinLinOrd
-! leanprover-community/mathlib commit fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite
@@ -14,6 +9,8 @@ import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrdCat
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+
+#align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
 
 /-!
 # Nonempty finite linear orders
@@ -153,8 +150,8 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrdCat.of (ULift (Fin 1))
-  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _  _ => by rfl⟩
-  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _  _ => by rfl⟩
+  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
+  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
   have eq : g₁ ≫ f = g₂ ≫ f := by
     ext
@@ -225,7 +222,7 @@ instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
     · intro a b
       contrapose
       intro h
-      simp only [not_le] at h⊢
+      simp only [not_le] at h ⊢
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl

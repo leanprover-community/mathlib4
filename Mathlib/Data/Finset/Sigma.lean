@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module data.finset.sigma
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Set.Sigma
+
+#align_import data.finset.sigma from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Finite sets in a sigma type
@@ -175,14 +172,14 @@ theorem sigmaLift_nonempty :
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
-  . simp [h, forall_prop_of_true h]
-  . simp [h, forall_prop_of_false h]
+  · simp [h, forall_prop_of_true h]
+  · simp [h, forall_prop_of_false h]
 #align finset.sigma_lift_eq_empty Finset.sigmaLift_eq_empty
 
 theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σi, α i) (b : Σi, β i) :
     sigmaLift f a b ⊆ sigmaLift g a b := by
   rintro x hx
-  rw [mem_sigmaLift] at hx⊢
+  rw [mem_sigmaLift] at hx ⊢
   obtain ⟨ha, hb, hx⟩ := hx
   exact ⟨ha, hb, h hx⟩
 #align finset.sigma_lift_mono Finset.sigmaLift_mono

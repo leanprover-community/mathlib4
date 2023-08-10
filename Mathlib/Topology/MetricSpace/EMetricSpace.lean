@@ -2,17 +2,14 @@
 Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.emetric_space
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+
+#align_import topology.metric_space.emetric_space from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Extended metric spaces
@@ -517,8 +514,8 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetric
   uniformity_edist := by
     simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
       preimage_setOf_eq, comap_principal, edist_pi_def]
-    rw [iInf_comm]; congr ; funext ε
-    rw [iInf_comm]; congr ; funext εpos
+    rw [iInf_comm]; congr; funext ε
+    rw [iInf_comm]; congr; funext εpos
     simp [setOf_forall, εpos]
 #align pseudo_emetric_space_pi pseudoEMetricSpacePi
 
@@ -860,7 +857,7 @@ theorem secondCountable_of_sigmaCompact [SigmaCompactSpace α] : SecondCountable
 variable {α}
 
 theorem secondCountable_of_almost_dense_set
-    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ (⋃ x ∈ t, closedBall x ε) = univ) :
+    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
     SecondCountableTopology α := by
   suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
   have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε

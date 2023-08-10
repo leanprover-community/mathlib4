@@ -2,14 +2,11 @@
 Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module data.holor
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import data.holor from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Basic properties of holors
@@ -295,7 +292,7 @@ theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
         unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
   apply slice_eq _ _ _
-  ext (i hid)
+  ext i hid
   rw [← slice_sum]
   simp only [slice_unitVec_mul hid]
   rw [Finset.sum_eq_single (Subtype.mk i <| Finset.mem_range.2 hid)]

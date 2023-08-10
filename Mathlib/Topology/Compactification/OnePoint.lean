@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.alexandroff
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Option
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.alexandroff from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # The OnePoint Compactification
@@ -132,7 +129,7 @@ theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅
 #align alexandroff.range_coe_inter_infty OnePoint.range_coe_inter_infty
 
 @[simp]
-theorem compl_range_coe : range ((↑) : X → OnePoint X)ᶜ = {∞} :=
+theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
   compl_range_some X
 #align alexandroff.compl_range_coe OnePoint.compl_range_coe
 
@@ -187,7 +184,7 @@ that `(↑)` has dense range, so it is a dense embedding.
 variable [TopologicalSpace X]
 
 instance : TopologicalSpace (OnePoint X) where
-  IsOpen s := (∞ ∈ s → IsCompact ((((↑) : X → OnePoint X) ⁻¹' s)ᶜ)) ∧
+  IsOpen s := (∞ ∈ s → IsCompact (((↑) : X → OnePoint X) ⁻¹' s)ᶜ) ∧
     IsOpen (((↑) : X → OnePoint X) ⁻¹' s)
   isOpen_univ := by simp
   isOpen_inter s t := by
@@ -207,17 +204,17 @@ instance : TopologicalSpace (OnePoint X) where
 variable {s : Set (OnePoint X)} {t : Set X}
 
 theorem isOpen_def :
-    IsOpen s ↔ (∞ ∈ s → IsCompact (((↑) ⁻¹' s : Set X)ᶜ)) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
+    IsOpen s ↔ (∞ ∈ s → IsCompact ((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
   Iff.rfl
 #align alexandroff.is_open_def OnePoint.isOpen_def
 
 theorem isOpen_iff_of_mem' (h : ∞ ∈ s) :
-    IsOpen s ↔ IsCompact (((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) := by
+    IsOpen s ↔ IsCompact ((↑) ⁻¹' s : Set X)ᶜ ∧ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
 #align alexandroff.is_open_iff_of_mem' OnePoint.isOpen_iff_of_mem'
 
 theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
-    IsOpen s ↔ IsClosed (((↑) ⁻¹' s : Set X)ᶜ) ∧ IsCompact (((↑) ⁻¹' s : Set X)ᶜ) := by
+    IsOpen s ↔ IsClosed ((↑) ⁻¹' s : Set X)ᶜ ∧ IsCompact ((↑) ⁻¹' s : Set X)ᶜ := by
   simp only [isOpen_iff_of_mem' h, isClosed_compl_iff, and_comm]
 #align alexandroff.is_open_iff_of_mem OnePoint.isOpen_iff_of_mem
 
@@ -241,7 +238,7 @@ theorem isOpen_image_coe {s : Set X} : IsOpen ((↑) '' s : Set (OnePoint X)) �
 #align alexandroff.is_open_image_coe OnePoint.isOpen_image_coe
 
 theorem isOpen_compl_image_coe {s : Set X} :
-    IsOpen (((↑) '' s : Set (OnePoint X))ᶜ) ↔ IsClosed s ∧ IsCompact s := by
+    IsOpen ((↑) '' s : Set (OnePoint X))ᶜ ↔ IsClosed s ∧ IsCompact s := by
   rw [isOpen_iff_of_mem, ← preimage_compl, compl_compl, preimage_image_eq _ coe_injective]
   exact infty_not_mem_image_coe
 #align alexandroff.is_open_compl_image_coe OnePoint.isOpen_compl_image_coe
@@ -364,7 +361,7 @@ theorem tendsto_nhds_infty' {α : Type _} {f : OnePoint X → α} {l : Filter α
 
 theorem tendsto_nhds_infty {α : Type _} {f : OnePoint X → α} {l : Filter α} :
     Tendsto f (𝓝 ∞) l ↔
-      ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) (tᶜ) s :=
+      ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
     simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
       and_assoc, exists_prop]
@@ -377,7 +374,7 @@ theorem continuousAt_infty' {Y : Type _} [TopologicalSpace Y] {f : OnePoint X �
 
 theorem continuousAt_infty {Y : Type _} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔
-      ∀ s ∈ 𝓝 (f ∞), ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) (tᶜ) s :=
+      ∀ s ∈ 𝓝 (f ∞), ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   continuousAt_infty'.trans <| by simp only [hasBasis_coclosedCompact.tendsto_left_iff, and_assoc]
 #align alexandroff.continuous_at_infty OnePoint.continuousAt_infty
 
@@ -494,7 +491,7 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
 
 end OnePoint
 
-/-- A concrete counterexample shows that  `Continuous.homeoOfEquivCompactToT2`
+/-- A concrete counterexample shows that `Continuous.homeoOfEquivCompactToT2`
 cannot be generalized from `T2Space` to `T1Space`.
 
 Let `α = OnePoint ℕ` be the one-point compactification of `ℕ`, and let `β` be the same space

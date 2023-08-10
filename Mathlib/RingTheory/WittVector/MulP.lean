@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.mul_p
-! leanprover-community/mathlib commit 7abfbc92eec87190fba3ed3d5ec58e7c167e7144
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.IsPoly
+
+#align_import ring_theory.witt_vector.mul_p from "leanprover-community/mathlib"@"7abfbc92eec87190fba3ed3d5ec58e7c167e7144"
 
 /-!
 ## Multiplication by `n` in the ring of Witt vectors

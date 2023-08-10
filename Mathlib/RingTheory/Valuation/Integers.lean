@@ -2,13 +2,10 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.valuation.integers
-! leanprover-community/mathlib commit 7b7da89322fe46a16bf03eeb345b0acfc73fe10e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import ring_theory.valuation.integers from "leanprover-community/mathlib"@"7b7da89322fe46a16bf03eeb345b0acfc73fe10e"
 
 /-!
 # Ring of integers under a given valuation

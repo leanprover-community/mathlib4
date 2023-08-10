@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash
-
-! This file was ported from Lean 3 source module data.matrix.basis
-! leanprover-community/mathlib commit 320df450e9abeb5fc6417971e75acb6ae8bc3794
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
+
+#align_import data.matrix.basis from "leanprover-community/mathlib"@"320df450e9abeb5fc6417971e75acb6ae8bc3794"
 
 /-!
 # Matrices with a single non-zero element.
@@ -196,7 +193,7 @@ theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
 @[simp]
 theorem mul_same (k : n) (d : α) :
     stdBasisMatrix i j c ⬝ stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
-  ext (a b)
+  ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 #align matrix.std_basis_matrix.mul_same Matrix.StdBasisMatrix.mul_same
@@ -204,7 +201,7 @@ theorem mul_same (k : n) (d : α) :
 @[simp]
 theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
     stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 := by
-  ext (a b)
+  ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a
   -- Porting note: was `simp [h₁, h, h.symm]`

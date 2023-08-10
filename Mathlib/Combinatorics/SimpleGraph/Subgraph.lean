@@ -2,13 +2,10 @@
 Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.subgraph
-! leanprover-community/mathlib commit c6ef6387ede9983aee397d442974e61f89dfd87b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+
+#align_import combinatorics.simple_graph.subgraph from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
 /-!
 # Subgraphs of a simple graph
@@ -437,14 +434,17 @@ theorem verts_iSup {f : ι → G.Subgraph} : (⨆ i, f i).verts = ⋃ i, (f i).v
 theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by simp [iInf]
 #align simple_graph.subgraph.verts_infi SimpleGraph.Subgraph.verts_iInf
 
+theorem verts_spanningCoe_injective :
+    (fun G' : Subgraph G => (G'.verts, G'.spanningCoe)).Injective := by
+  intro G₁ G₂ h
+  rw [Prod.ext_iff] at h
+  exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2)
+
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
 instance distribLattice : DistribLattice G.Subgraph :=
   { show DistribLattice G.Subgraph from
-      Function.Injective.distribLattice (fun G' => (G'.verts, G'.spanningCoe))
-        (fun G₁ G₂ h => by
-          rw [Prod.ext_iff] at h
-          exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2))
+      verts_spanningCoe_injective.distribLattice _
         (fun _ _ => rfl) fun _ _ => rfl with
     le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w }
 
@@ -455,7 +455,7 @@ instance : BoundedOrder (Subgraph G) where
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 -- Note that subgraphs do not form a Boolean algebra, because of `verts`.
-instance : CompleteDistribLattice G.Subgraph :=
+instance : CompletelyDistribLattice G.Subgraph :=
   { Subgraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -476,18 +476,8 @@ instance : CompleteDistribLattice G.Subgraph :=
     le_sInf := fun s G' hG' =>
       ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
         ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
-    inf_sSup_le_iSup_inf := fun G' s => by
-      constructor
-      · intro v
-        simp
-      · intros a b
-        simp
-    iInf_sup_le_sup_sInf := fun G' s => by
-      constructor
-      · intro
-        simp [← forall_or_left]
-      · intros a b hab
-        simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp G'.adj_sub] using hab }
+    iInf_iSup_eq := fun f => Subgraph.ext _ _ (by simpa using iInf_iSup_eq)
+      (by ext; simp [Classical.skolem]) }
 
 @[simps]
 instance subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩

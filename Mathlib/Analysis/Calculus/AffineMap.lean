@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module analysis.calculus.affine_map
-! leanprover-community/mathlib commit 839b92fedff9981cf3fe1c1f623e04b0d127f57c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.ContinuousAffineMap
 import Mathlib.Analysis.Calculus.ContDiff
+
+#align_import analysis.calculus.affine_map from "leanprover-community/mathlib"@"839b92fedff9981cf3fe1c1f623e04b0d127f57c"
 
 /-!
 # Smooth affine maps

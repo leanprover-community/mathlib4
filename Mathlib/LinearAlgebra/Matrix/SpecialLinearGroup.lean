@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.special_linear_group
-! leanprover-community/mathlib commit f06058e64b7e8397234455038f3f8aec83aaba5a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.matrix.special_linear_group from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
 /-!
 # The Special Linear group $SL(n, R)$
@@ -309,7 +306,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
     (g : SL(2, R)) : P g := by
   obtain ⟨m, hm⟩ := g
   convert h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
-  ext (i j); fin_cases i <;> fin_cases j <;> rfl
+  ext i j; fin_cases i <;> fin_cases j <;> rfl
 #align matrix.special_linear_group.fin_two_induction Matrix.SpecialLinearGroup.fin_two_induction
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type _} [Field R] (g : SL(2, R))

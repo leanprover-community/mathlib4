@@ -2,13 +2,10 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module analysis.normed.group.hom
-! leanprover-community/mathlib commit 3c4225288b55380a90df078ebae0991080b12393
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+
+#align_import analysis.normed.group.hom from "leanprover-community/mathlib"@"3c4225288b55380a90df078ebae0991080b12393"
 
 /-!
 # Normed groups homomorphisms
@@ -243,7 +240,7 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _Cpos, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, mul_zero] at hC⊢
+  · rwa [h, mul_zero] at hC ⊢
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact
     (div_le_iff hlt).mp

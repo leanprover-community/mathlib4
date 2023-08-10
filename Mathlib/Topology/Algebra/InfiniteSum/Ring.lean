@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.ring
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
+
+#align_import topology.algebra.infinite_sum.ring from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Infinite sum in a ring
@@ -54,11 +51,11 @@ section tsum
 
 variable [T2Space α]
 
-theorem Summable.tsum_mul_left (a) (hf : Summable f) : (∑' i, a * f i) = a * ∑' i, f i :=
+theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑' i, f i :=
   (hf.hasSum.mul_left _).tsum_eq
 #align summable.tsum_mul_left Summable.tsum_mul_left
 
-theorem Summable.tsum_mul_right (a) (hf : Summable f) : (∑' i, f i * a) = (∑' i, f i) * a :=
+theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
   (hf.hasSum.mul_right _).tsum_eq
 #align summable.tsum_mul_right Summable.tsum_mul_right
 
@@ -113,21 +110,21 @@ theorem summable_div_const_iff (h : a ≠ 0) : (Summable fun i => f i / a) ↔ S
   simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
 #align summable_div_const_iff summable_div_const_iff
 
-theorem tsum_mul_left [T2Space α] : (∑' x, a * f x) = a * ∑' x, f x :=
+theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x :=
   if hf : Summable f then hf.tsum_mul_left a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
 #align tsum_mul_left tsum_mul_left
 
-theorem tsum_mul_right [T2Space α] : (∑' x, f x * a) = (∑' x, f x) * a :=
+theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a :=
   if hf : Summable f then hf.tsum_mul_right a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
 #align tsum_mul_right tsum_mul_right
 
-theorem tsum_div_const [T2Space α] : (∑' x, f x / a) = (∑' x, f x) / a := by
+theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 #align tsum_div_const tsum_div_const
 

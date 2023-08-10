@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.split_coequalizer
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+
+#align_import category_theory.limits.shapes.split_coequalizer from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # Split coequalizers
@@ -139,8 +136,8 @@ end
 variable (f g)
 
 /--
-The pair `f,g` is a split pair if there is a `h : Y ⟶ Z` so that `f, g, h` forms a split coequalizer
-in `C`.
+The pair `f,g` is a split pair if there is an `h : Y ⟶ Z` so that `f, g, h` forms a split
+coequalizer in `C`.
 -/
 class HasSplitCoequalizer : Prop where
   /-- There is some split coequalizer -/
@@ -148,7 +145,7 @@ class HasSplitCoequalizer : Prop where
 #align category_theory.has_split_coequalizer CategoryTheory.HasSplitCoequalizer
 
 /--
-The pair `f,g` is a `G`-split pair if there is a `h : G Y ⟶ Z` so that `G f, G g, h` forms a split
+The pair `f,g` is a `G`-split pair if there is an `h : G Y ⟶ Z` so that `G f, G g, h` forms a split
 coequalizer in `D`.
 -/
 abbrev Functor.IsSplitPair : Prop :=

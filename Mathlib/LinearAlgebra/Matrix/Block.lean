@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.block
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.Tactic.FinCases
+
+#align_import linear_algebra.matrix.block from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Block matrices and their determinant
@@ -169,7 +166,7 @@ theorem det_toBlock (M : Matrix m m R) (p : m → Prop) [DecidablePred p] :
           toBlock M (fun j => ¬p j) fun j => ¬p j).det := by
   rw [← Matrix.det_reindex_self (Equiv.sumCompl p).symm M]
   rw [det_apply', det_apply']
-  congr; ext σ; congr ; ext x
+  congr; ext σ; congr; ext x
   generalize hy : σ x = y
   cases x <;> cases y <;>
     simp only [Matrix.reindex_apply, toBlock_apply, Equiv.symm_symm, Equiv.sumCompl_apply_inr,
@@ -263,7 +260,7 @@ theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Inv
       1 :=
     by rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
   have h_zero : M.toBlock (fun i => ¬p i) p = 0 := by
-    ext (i j)
+    ext i j
     simpa using hM (lt_of_lt_of_le j.2 (le_of_not_lt i.2))
   simpa [h_zero] using h_sum
 #align matrix.block_triangular.to_block_inverse_mul_to_block_eq_one Matrix.BlockTriangular.toBlock_inverse_mul_toBlock_eq_one
@@ -295,7 +292,7 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
     rw [disjoint_iff_inf_le]
     exact fun i h => h.1 h.2
   have h_zero : M.toBlock q p = 0 := by
-    ext (i j)
+    ext i j
     simpa using hM (lt_of_lt_of_le j.2 <| le_of_not_lt i.2)
   have h_mul_eq_zero : M⁻¹.toBlock q p ⬝ M.toBlock p p = 0 := by simpa [h_zero] using h_sum
   haveI : Invertible (M.toBlock p p) := hM.invertibleToBlock k

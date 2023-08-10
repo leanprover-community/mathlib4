@@ -2,14 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.set
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
+
+#align_import logic.equiv.set from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
 /-!
 # Equivalences and sets
@@ -44,6 +41,7 @@ protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' 
   Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
 #align equiv.image_eq_preimage Equiv.image_eq_preimage
 
+@[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
   Set.ext_iff.mp (f.image_eq_preimage S) x
@@ -61,12 +59,14 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
   (f.symm.image_eq_preimage S).symm
 #align set.preimage_equiv_eq_image_symm Set.preimage_equiv_eq_image_symm
 
-/- Porting note: Removed `simp` attribute. LHS not in normal form -/
+-- Porting note: increased priority so this fires before `image_subset_iff`
+@[simp high]
 protected theorem subset_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 #align equiv.subset_image Equiv.subset_image
 
-/- Porting note: Removed `simp` attribute. LHS not in normal form  -/
+-- Porting note: increased priority so this fires before `image_subset_iff`
+@[simp high]
 protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     s ⊆ e.symm '' t ↔ e '' s ⊆ t :=
   calc
@@ -197,7 +197,6 @@ def image {α β : Type _} (e : α ≃ β) (s : Set α) :
 #align equiv.image_apply_coe Equiv.image_apply_coe
 
 namespace Set
-
 
 --Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
@@ -663,9 +662,10 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _}
   refine' forall_congr' fun i => _
   dsimp only [Subtype.coe_mk]
   -- Porting note: Two lines below were `by_cases hi <;> simp [hi]`
+  -- This regression is https://github.com/leanprover/lean4/issues/1926
   by_cases hi : p i
-  . simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
-  . simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
+  · simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
+  · simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
 -- See also `Equiv.sigmaFiberEquiv`.

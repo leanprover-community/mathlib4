@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta, Edward Ayers, Thomas Read. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers, Thomas Read
-
-! This file was ported from Lean 3 source module category_theory.closed.cartesian
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Closed.Monoidal
+
+#align_import category_theory.closed.cartesian from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Cartesian closed categories
@@ -354,12 +351,12 @@ def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
     CartesianClosed.uncurry
       (coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed.curry coprod.inr))
   hom_inv_id := by
-    apply coprod.hom_ext
+    ext
     rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
     rw [coprod.inr_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inr_desc, uncurry_curry]
   inv_hom_id := by
     rw [← uncurry_natural_right, ← eq_curry_iff]
-    apply coprod.hom_ext
+    ext
     rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
       comp_id]
     rw [coprod.inr_desc_assoc, ← curry_natural_right, coprod.inr_desc, ← curry_natural_left,

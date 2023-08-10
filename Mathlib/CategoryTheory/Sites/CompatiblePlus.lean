@@ -2,14 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.compatible_plus
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Sites.Plus
+
+#align_import category_theory.sites.compatible_plus from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -50,6 +47,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
     (by
       intro A B f
       -- porting note: this used to work with `ext`
+      -- See https://github.com/leanprover-community/mathlib4/issues/5229
       apply Multiequalizer.hom_ext
       dsimp
       simp only [Functor.mapCone_π_app, Multiequalizer.multifork_π_app_left, Iso.symm_hom,
@@ -148,6 +146,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
   simp only [← Category.assoc]
   congr 1
   -- porting note: this used to work with `ext`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
   dsimp
@@ -184,6 +183,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [← Category.assoc]
   congr 1
   -- porting note: this used to work with `ext`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
   dsimp
@@ -209,10 +209,11 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [← Category.assoc]
   congr 1
   -- porting note: this used to work with `ext`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   delta Cover.toMultiequalizer
   simp only [diagramCompIso_hom_ι, Category.assoc, ← F.map_comp]
-  simp only [unop_op, limit.lift_π,  Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
+  simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
     implies_true]
 #align category_theory.grothendieck_topology.whisker_right_to_plus_comp_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.whiskerRight_toPlus_comp_plusCompIso_hom
 

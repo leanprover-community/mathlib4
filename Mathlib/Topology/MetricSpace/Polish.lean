@@ -2,17 +2,14 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.polish
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import topology.metric_space.polish from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Polish spaces
@@ -245,7 +242,7 @@ boundary.
 
 Porting note: definitions and lemmas in this section now take `(s : Opens α)` instead of
 `{s : Set α} (hs : IsOpen s)` so that we can turn various definitions and lemmas into instances.
-Also, some lemmas used to assume `Set.Nonempty (sᶜ)` in Lean 3. In fact, this assumption is not
+Also, some lemmas used to assume `Set.Nonempty sᶜ` in Lean 3. In fact, this assumption is not
 needed, so it was dropped.
 -/
 
@@ -266,11 +263,11 @@ by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the secon
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
 -- Porting note: in mathlib3 this was only a local instance.
 instance instDist : Dist (CompleteCopy s) where
-  dist x y := dist x.1 y.1 + abs (1 / infDist x.1 (sᶜ) - 1 / infDist y.1 (sᶜ))
+  dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
 #align polish_space.has_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.instDistₓ
 
 theorem dist_eq (x y : CompleteCopy s) :
-    dist x y = dist x.1 y.1 + abs (1 / infDist x.1 (sᶜ) - 1 / infDist y.1 (sᶜ)) :=
+    dist x y = dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ) :=
   rfl
 #align polish_space.dist_complete_copy_eq TopologicalSpace.Opens.CompleteCopy.dist_eqₓ
 
@@ -295,9 +292,9 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
   · simp only [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]
   · simp only [dist_eq, dist_comm, abs_sub_comm]
   · calc
-      dist x z = dist x.1 z.1 + |1 / infDist x.1 (sᶜ) - 1 / infDist z.1 (sᶜ)| := rfl
-      _ ≤ dist x.1 y.1 + dist y.1 z.1 + (|1 / infDist x.1 (sᶜ) - 1 / infDist y.1 (sᶜ)| +
-            |1 / infDist y.1 (sᶜ) - 1 / infDist z.1 (sᶜ)|) :=
+      dist x z = dist x.1 z.1 + |1 / infDist x.1 sᶜ - 1 / infDist z.1 sᶜ| := rfl
+      _ ≤ dist x.1 y.1 + dist y.1 z.1 + (|1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ| +
+            |1 / infDist y.1 sᶜ - 1 / infDist z.1 sᶜ|) :=
         add_le_add (dist_triangle _ _ _) (dist_triangle (1 / infDist _ _) _ _)
       _ = dist x y + dist y z := add_add_add_comm ..
   · refine ⟨fun h x hx ↦ ?_, fun h ↦ isOpen_iff_mem_nhds.2 fun x hx ↦ ?_⟩
@@ -305,8 +302,8 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
       exact ⟨ε, ε0, fun y hy ↦ hε <| (dist_comm _ _).trans_lt <| (dist_val_le_dist _ _).trans_lt hy⟩
     · rcases h x hx with ⟨ε, ε0, hε⟩
       simp only [dist_eq, one_div] at hε
-      have : Tendsto (fun y : s ↦ dist x.1 y.1 + |(infDist x.1 (sᶜ))⁻¹ - (infDist y.1 (sᶜ))⁻¹|)
-        (𝓝 x) (𝓝 (dist x.1 x.1 + |(infDist x.1 (sᶜ))⁻¹ - (infDist x.1 (sᶜ))⁻¹|))
+      have : Tendsto (fun y : s ↦ dist x.1 y.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist y.1 sᶜ)⁻¹|)
+        (𝓝 x) (𝓝 (dist x.1 x.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist x.1 sᶜ)⁻¹|))
       · refine (tendsto_const_nhds.dist continuous_subtype_val.continuousAt).add
           (tendsto_const_nhds.sub <| ?_).abs
         refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtype_val.continuousAt
@@ -328,23 +325,23 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
   obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
-  obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).1 (sᶜ) < C
-  · refine ⟨(1 / 2) ^ 0 + 1 / infDist (u 0).1 (sᶜ), fun n ↦ ?_⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).1 sᶜ < C
+  · refine ⟨(1 / 2) ^ 0 + 1 / infDist (u 0).1 sᶜ, fun n ↦ ?_⟩
     rw [← sub_lt_iff_lt_add]
     calc
-      _ ≤ |1 / infDist (u n).1 (sᶜ) - 1 / infDist (u 0).1 (sᶜ)| := le_abs_self _
-      _ = |1 / infDist (u 0).1 (sᶜ) - 1 / infDist (u n).1 (sᶜ)| := abs_sub_comm _ _
+      _ ≤ |1 / infDist (u n).1 sᶜ - 1 / infDist (u 0).1 sᶜ| := le_abs_self _
+      _ = |1 / infDist (u 0).1 sᶜ - 1 / infDist (u n).1 sᶜ| := abs_sub_comm _ _
       _ ≤ dist (u 0) (u n) := le_add_of_nonneg_left dist_nonneg
       _ < (1 / 2) ^ 0 := hu 0 0 n le_rfl n.zero_le
   have Cpos : 0 < C := lt_of_le_of_lt (div_nonneg zero_le_one infDist_nonneg) (hC 0)
-  have Hmem : ∀ {y}, y ∈ s ↔ 0 < infDist y (sᶜ) := fun {y} ↦ by
+  have Hmem : ∀ {y}, y ∈ s ↔ 0 < infDist y sᶜ := fun {y} ↦ by
     rw [← s.isOpen.isClosed_compl.not_mem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
-  have I : ∀ n, 1 / C ≤ infDist (u n).1 (sᶜ) := fun n ↦ by
-    have : 0 < infDist (u n).1 (sᶜ) := Hmem.1 (u n).2
+  have I : ∀ n, 1 / C ≤ infDist (u n).1 sᶜ := fun n ↦ by
+    have : 0 < infDist (u n).1 sᶜ := Hmem.1 (u n).2
     rw [div_le_iff' Cpos]
     exact (div_le_iff this).1 (hC n).le
-  have I' : 1 / C ≤ infDist x (sᶜ) :=
-    have : Tendsto (fun n => infDist (u n).1 (sᶜ)) atTop (𝓝 (infDist x (sᶜ))) :=
+  have I' : 1 / C ≤ infDist x sᶜ :=
+    have : Tendsto (fun n => infDist (u n).1 sᶜ) atTop (𝓝 (infDist x sᶜ)) :=
       ((continuous_infDist_pt (sᶜ : Set α)).tendsto x).comp xlim
     ge_of_tendsto' this I
   exact absurd (Hmem.2 <| lt_of_lt_of_le (div_pos one_pos Cpos) I') xs
@@ -398,7 +395,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
 #align is_closed.is_clopenable IsClosed.isClopenable
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
-    IsClopenable (sᶜ) := by
+    IsClopenable sᶜ := by
   rcases hs with ⟨t, t_le, t_polish, h, h'⟩
   exact ⟨t, t_le, t_polish, @IsOpen.isClosed_compl α t s h', @IsClosed.isOpen_compl α t s h⟩
 #align polish_space.is_clopenable.compl PolishSpace.IsClopenable.compl

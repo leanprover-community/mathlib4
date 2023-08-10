@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.continuous_function.zero_at_infty
-! leanprover-community/mathlib commit ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
+
+#align_import topology.continuous_function.zero_at_infty from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
 
 /-!
 # Continuous functions vanishing at infinity
@@ -425,7 +422,7 @@ instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapC
     map_bounded := fun f => ZeroAtInftyContinuousMap.bounded f }
 
 /-- Construct a bounded continuous function from a continuous function vanishing at infinity. -/
-@[simps]
+@[simps!]
 def toBcf (f : C₀(α, β)) : α →ᵇ β :=
   ⟨f, map_bounded f⟩
 #align zero_at_infty_continuous_map.to_bcf ZeroAtInftyContinuousMap.toBcf

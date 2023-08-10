@@ -2,14 +2,11 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.dual_number
-! leanprover-community/mathlib commit eb0cb4511aaef0da2462207b67358a0e1fe1e2ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.Data.Matrix.Basic
+
+#align_import data.matrix.dual_number from "leanprover-community/mathlib"@"eb0cb4511aaef0da2462207b67358a0e1fe1e2ee"
 
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices

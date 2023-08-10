@@ -2,14 +2,11 @@
 Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich, Vincent Beffara
-
-! This file was ported from Lean 3 source module probability.integration
-! leanprover-community/mathlib commit 2f8347015b12b0864dfaf366ec4909eb70c78740
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.Probability.Independence.Basic
+
+#align_import probability.integration from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
 
 /-!
 # Integration in Probability Theory
@@ -60,6 +57,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
       lintegral_indicator _ (hMf _ h_meas_s'), lintegral_indicator _ h_meas_T]
     simp only [measurable_const, lintegral_const, univ_inter, lintegral_const_mul,
       MeasurableSet.univ, Measure.restrict_apply]
+    rw [IndepSets_iff] at h_ind
     rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (Set.mem_singleton _)]
   · intro f' g _ h_meas_f' _ h_ind_f' h_ind_g
     have h_measM_f' : Measurable f' := h_meas_f'.mono hMf le_rfl
@@ -84,7 +82,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
     {Mf Mg mΩ : MeasurableSpace Ω} {μ : Measure Ω} (hMf : Mf ≤ mΩ) (hMg : Mg ≤ mΩ)
     (h_ind : Indep Mf Mg μ) (h_meas_f : Measurable[Mf] f) (h_meas_g : Measurable[Mg] g) :
-    (∫⁻ ω, f ω * g ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by
+    ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by
   revert g
   have h_measM_f : Measurable f := h_meas_f.mono hMf le_rfl
   apply @Measurable.ennreal_induction _ Mg
@@ -132,7 +130,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeas
 
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
-    (∫⁻ ω, f ω * g ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
+    ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
 #align probability_theory.lintegral_mul_eq_lintegral_mul_lintegral_of_indep_fun'' ProbabilityTheory.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun''
 
@@ -148,7 +146,7 @@ theorem IndepFun.integrable_mul {β : Type _} [MeasurableSpace β] {X Y : Ω →
     hXY'.comp measurable_coe_nnreal_ennreal measurable_coe_nnreal_ennreal
   have hnX : AEMeasurable nX μ := hX.1.aemeasurable.nnnorm.coe_nnreal_ennreal
   have hnY : AEMeasurable nY μ := hY.1.aemeasurable.nnnorm.coe_nnreal_ennreal
-  have hmul : (∫⁻ a, nX a * nY a ∂μ) = (∫⁻ a, nX a ∂μ) * ∫⁻ a, nY a ∂μ :=
+  have hmul : ∫⁻ a, nX a * nY a ∂μ = (∫⁻ a, nX a ∂μ) * ∫⁻ a, nY a ∂μ :=
     lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' hnX hnY hXY''
   refine' ⟨hX.1.mul hY.1, _⟩
   simp_rw [HasFiniteIntegral, Pi.mul_apply, nnnorm_mul, ENNReal.coe_mul, hmul]
@@ -310,6 +308,7 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type _} {m
       Integrable (φ ∘ f) μ → Integrable (ψ ∘ g) μ →
         integral μ (φ ∘ f * ψ ∘ g) = integral μ (φ ∘ f) * integral μ (ψ ∘ g) := by
   refine' ⟨fun hfg _ _ hφ hψ => IndepFun.integral_mul_of_integrable (hfg.comp hφ hψ), _⟩
+  rw [IndepFun_iff]
   rintro h _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   specialize
     h (measurable_one.indicator hA) (measurable_one.indicator hB)

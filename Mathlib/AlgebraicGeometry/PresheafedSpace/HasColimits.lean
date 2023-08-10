@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.presheafed_space.has_colimits
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PresheafedSpace
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Sheaves.Limits
+
+#align_import algebraic_geometry.presheafed_space.has_colimits from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # `PresheafedSpace C` has colimits.
@@ -116,7 +113,7 @@ variable [HasColimitsOfShape J TopCat.{v}]
 
 /-- Given a diagram of presheafed spaces,
 we can push all the presheaves forward to the colimit `X` of the underlying topological spaces,
-obtaining a diagram in `(presheaf C X)ᵒᵖ`.
+obtaining a diagram in `(Presheaf C X)ᵒᵖ`.
 -/
 @[simps]
 def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
@@ -167,8 +164,8 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       (op ((Opens.map (F.map g).base).obj ((Opens.map (colimit.ι (F ⋙ forget C) j₃)).obj U.unop)))
       (op ((Opens.map (colimit.ι (F ⋙ PresheafedSpace.forget C) j₂)).obj (unop U)))
       _]
-    -- Now we show the open sets are equal.
     swap
+    -- Now we show the open sets are equal.
     · apply unop_injective
       rw [← Opens.map_comp_obj]
       congr
@@ -180,7 +177,7 @@ set_option linter.uppercaseLean3 false in
 
 variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)]
 
-/-- Auxiliary definition for `PresheafedSpace.has_colimits`.
+/-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
 def colimit (F : J ⥤ PresheafedSpace.{_, _, v} C) : PresheafedSpace C where
   carrier := Limits.colimit (F ⋙ PresheafedSpace.forget C)
@@ -202,7 +199,7 @@ theorem colimit_presheaf (F : J ⥤ PresheafedSpace.{_, _, v} C) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_presheaf AlgebraicGeometry.PresheafedSpace.colimit_presheaf
 
-/-- Auxiliary definition for `PresheafedSpace.has_colimits`.
+/-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
 @[simps]
 def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
@@ -212,23 +209,20 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         { base := colimit.ι (F ⋙ PresheafedSpace.forget C) j
           c := limit.π _ (op j) }
       naturality := fun {j j'} f => by
-        fapply PresheafedSpace.ext
+        ext1
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
-        · refine NatTrans.ext _ _ (funext fun U => ?_)
-          induction U with
-          | h U =>
-            rcases U with ⟨U, hU⟩
-            dsimp
-            rw [PresheafedSpace.id_c_app, map_id]
-            erw [id_comp]
-            rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app, eqToHom_app,
-              ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
-              NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
-            dsimp
-            rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, id.def, eqToHom_op,
-              Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ←assoc]
-            congr 1 }
+        · ext ⟨U, hU⟩
+          dsimp
+          rw [PresheafedSpace.id_c_app, map_id]
+          erw [id_comp]
+          rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app, eqToHom_app,
+            ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
+            NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
+          dsimp
+          rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, id.def, eqToHom_op,
+            Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ←assoc]
+          congr 1 }
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone AlgebraicGeometry.PresheafedSpace.colimitCocone
 
@@ -236,7 +230,7 @@ variable [HasLimitsOfShape Jᵒᵖ C]
 
 namespace ColimitCoconeIsColimit
 
-/-- Auxiliary definition for `PresheafedSpace.colimit_cocone_is_colimit`.
+/-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit`.
 -/
 def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens s.pt.carrier)ᵒᵖ) :
     s.pt.presheaf.obj U ⟶
@@ -293,7 +287,7 @@ theorem desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone_is_colimit.desc_c_naturality AlgebraicGeometry.PresheafedSpace.ColimitCoconeIsColimit.desc_c_naturality
 
-/-- Auxiliary definition for `PresheafedSpace.colimit_cocone_is_colimit`.
+/-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit`.
 -/
 def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ s.pt where
   base := colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s)
@@ -305,11 +299,10 @@ set_option linter.uppercaseLean3 false in
 
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
-  fapply PresheafedSpace.ext
+  ext U
   · simp [desc]
   · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
-    refine NatTrans.ext _ _ (funext fun U => ?_)
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
     simp only [eqToHom_app, op_obj, Opens.map_comp_obj, eqToHom_map, Functor.leftOp, assoc]
@@ -322,7 +315,7 @@ end ColimitCoconeIsColimit
 
 open ColimitCoconeIsColimit
 
-/-- Auxiliary definition for `PresheafedSpace.has_colimits`.
+/-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
 def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     IsColimit (colimitCocone F) where
@@ -333,14 +326,11 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     have t :
       m.base =
         colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) := by
-      apply CategoryTheory.Limits.colimit.hom_ext
-      intro j
-      apply ContinuousMap.ext
-      intro x
+      dsimp
+      ext j
       rw [colimit.ι_desc, mapCocone_ι_app, ← w j]
       simp
-    fapply PresheafedSpace.ext
-    -- could `ext` please not reorder goals?
+    ext : 1
     · exact t
     · refine NatTrans.ext _ _ (funext fun U => limit_obj_ext fun j => ?_)
       dsimp only [colimitCocone_pt, colimit_carrier, leftOp_obj, pushforwardDiagramToColimit_obj,
@@ -357,8 +347,8 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone_is_colimit AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit
 
-instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C)
-  where has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
+instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
+  has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
   ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F) <| by
@@ -370,14 +360,14 @@ instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
 
 /-- When `C` has limits, the category of presheaved spaces with values in `C` itself has colimits.
 -/
-instance [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
+instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
   ⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
 
 /-- The underlying topological space of a colimit of presheaved spaces is
 the colimit of the underlying topological spaces.
 -/
-instance forgetPreservesColimits [HasLimits C] : PreservesColimits (PresheafedSpace.forget C)
-    where preservesColimitsOfShape {J 𝒥} :=
+instance forgetPreservesColimits [HasLimits C] : PreservesColimits (PresheafedSpace.forget C) where
+  preservesColimitsOfShape {J 𝒥} :=
     { preservesColimit := fun {F} =>
         preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
           (by apply IsColimit.ofIsoColimit (colimit.isColimit _)

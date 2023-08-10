@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.tagged
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
+
+#align_import analysis.box_integral.partition.tagged from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Tagged partitions
@@ -241,7 +238,7 @@ theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : �
     (π.boxes.filter fun J => π.tag J = x).card ≤
         (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card := by
       refine' Finset.card_le_of_subset fun J hJ => _
-      rw [Finset.mem_filter] at hJ⊢; rcases hJ with ⟨hJ, rfl⟩
+      rw [Finset.mem_filter] at hJ ⊢; rcases hJ with ⟨hJ, rfl⟩
       exact ⟨hJ, h J hJ⟩
     _ ≤ 2 ^ Fintype.card ι := π.toPrepartition.card_filter_mem_Icc_le x
 set_option linter.uppercaseLean3 false in

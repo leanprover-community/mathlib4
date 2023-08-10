@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
-
-! This file was ported from Lean 3 source module analysis.complex.conformal
-! leanprover-community/mathlib commit 468b141b14016d54b479eb7a0fff1e360b7e3cf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+
+#align_import analysis.complex.conformal from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
 
 /-!
 # Conformal maps between complex vector spaces
@@ -120,7 +117,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
         ext1
         simp only [hmap, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
           conjCle_apply, starRingEnd_self_apply]
-      rw [minor₁] at h₂⊢
+      rw [minor₁] at h₂ ⊢
       refine' isConformalMap_complex_linear_conj _
       contrapose! h₂ with w
       simp only [w, restrictScalars_zero, zero_comp]

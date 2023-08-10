@@ -2,11 +2,6 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module topology.locally_constant.basic
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Connected
@@ -14,6 +9,8 @@ import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.TFAE
+
+#align_import topology.locally_constant.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Locally constant functions
@@ -76,7 +73,7 @@ theorem isOpen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsOpen {
 #align is_locally_constant.is_open_fiber IsLocallyConstant.isOpen_fiber
 
 theorem isClosed_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClosed { x | f x = y } :=
-  ⟨hf ({y}ᶜ)⟩
+  ⟨hf {y}ᶜ⟩
 #align is_locally_constant.is_closed_fiber IsLocallyConstant.isClosed_fiber
 
 theorem isClopen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClopen { x | f x = y } :=
@@ -157,7 +154,7 @@ theorem apply_eq_of_isPreconnected {f : X → Y} (hf : IsLocallyConstant f) {s :
   let U := f ⁻¹' {f y}
   suffices : x ∉ Uᶜ; exact Classical.not_not.1 this
   intro hxV
-  specialize hs U (Uᶜ) (hf {f y}) (hf ({f y}ᶜ)) _ ⟨y, ⟨hy, rfl⟩⟩ ⟨x, ⟨hx, hxV⟩⟩
+  specialize hs U Uᶜ (hf {f y}) (hf {f y}ᶜ) _ ⟨y, ⟨hy, rfl⟩⟩ ⟨x, ⟨hx, hxV⟩⟩
   · simp only [union_compl_self, subset_univ]
   · simp only [inter_empty, Set.not_nonempty_empty, inter_compl_self] at hs
 #align is_locally_constant.apply_eq_of_is_preconnected IsLocallyConstant.apply_eq_of_isPreconnected
@@ -228,12 +225,17 @@ theorem of_constant_on_connected_components [LocallyConnectedSpace X] {f : X →
     ⟨connectedComponent x, isOpen_connectedComponent, mem_connectedComponent, h x⟩
 #align is_locally_constant.of_constant_on_connected_components IsLocallyConstant.of_constant_on_connected_components
 
+theorem of_constant_on_connected_clopens [LocallyConnectedSpace X] {f : X → Y}
+    (h : ∀ U : Set X, IsConnected U → IsClopen U → ∀ x ∈ U, ∀ y ∈ U, f y = f x) :
+    IsLocallyConstant f :=
+  of_constant_on_connected_components fun x =>
+    h (connectedComponent x) isConnected_connectedComponent isClopen_connectedComponent x
+      mem_connectedComponent
+
 theorem of_constant_on_preconnected_clopens [LocallyConnectedSpace X] {f : X → Y}
     (h : ∀ U : Set X, IsPreconnected U → IsClopen U → ∀ x ∈ U, ∀ y ∈ U, f y = f x) :
     IsLocallyConstant f :=
-  of_constant_on_connected_components fun x =>
-    h (connectedComponent x) isPreconnected_connectedComponent isClopen_connectedComponent x
-      mem_connectedComponent
+  of_constant_on_connected_clopens fun U hU ↦ h U hU.isPreconnected
 #align is_locally_constant.of_constant_on_preconnected_clopens IsLocallyConstant.of_constant_on_preconnected_clopens
 
 end IsLocallyConstant
@@ -566,5 +568,35 @@ theorem mulIndicator_of_not_mem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator
 #align locally_constant.indicator_of_not_mem LocallyConstant.indicator_of_not_mem
 
 end Indicator
+
+section Piecewise
+
+/-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
+    then if these two locally constant maps agree on the intersection, we get a piecewise defined
+    locally constant map on the whole space. -/
+def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
+    (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
+    [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z where
+  toFun i := if hi : i ∈ C₁ then f ⟨i, hi⟩ else g ⟨i, (Set.compl_subset_iff_union.mpr h) hi⟩
+  isLocallyConstant := by
+    let dZ : TopologicalSpace Z := ⊥
+    haveI : DiscreteTopology Z := discreteTopology_bot Z
+    obtain ⟨f, hf⟩ := f
+    obtain ⟨g, hg⟩ := g
+    rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
+    dsimp only [coe_mk]
+    rw [Set.union_eq_iUnion] at h
+    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
+    · cases i <;> [exact h₂; exact h₁]
+    · cases i <;> rw [continuousOn_iff_continuous_restrict]
+      · convert hg
+        ext x
+        simp only [cond_false, restrict_apply, Subtype.coe_eta, dite_eq_right_iff]
+        exact fun hx ↦ hfg x ⟨hx, x.prop⟩
+      · simp only [cond_true, restrict_dite, Subtype.coe_eta]
+        exact hf
+
+end Piecewise
 
 end LocallyConstant

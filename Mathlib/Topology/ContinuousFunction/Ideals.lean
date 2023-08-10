@@ -2,11 +2,6 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.continuous_function.ideals
-! leanprover-community/mathlib commit c2258f7bf086b17eac0929d635403780c39e239f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.Compact
@@ -14,6 +9,8 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Topology.Algebra.Module.CharacterSpace
+
+#align_import topology.continuous_function.ideals from "leanprover-community/mathlib"@"c2258f7bf086b17eac0929d635403780c39e239f"
 
 /-!
 # Ideals of continuous functions
@@ -96,11 +93,11 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
-theorem idealOfSet_closed [LocallyCompactSpace X] [T2Space R] (s : Set X) :
+theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
   exact isClosed_iInter fun x => isClosed_iInter fun _ =>
-    isClosed_eq (continuous_eval_const' x) continuous_const
+    isClosed_eq (continuous_eval_const x) continuous_const
 #align continuous_map.ideal_of_set_closed ContinuousMap.idealOfSet_closed
 
 variable {R}
@@ -215,7 +212,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
-  have htI : Disjoint t (setOfIdeal Iᶜ) := by
+  have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine' Set.subset_compl_iff_disjoint_left.mp fun x hx => _
     simpa only [Set.mem_setOf, Set.mem_compl_iff, not_le] using
       (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
@@ -263,7 +260,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     · refine' ⟨0, _, fun x hx => False.elim hx⟩
       convert I.zero_mem
       ext
-      simp only [comp_apply, zero_apply, coe_mk, map_zero]
+      simp only [comp_apply, zero_apply, ContinuousMap.coe_coe, map_zero]
     · rintro s₁ s₂ hs ⟨g, hI, hgt⟩; exact ⟨g, hI, fun x hx => hgt x (hs hx)⟩
     · rintro s₁ s₂ ⟨g₁, hI₁, hgt₁⟩ ⟨g₂, hI₂, hgt₂⟩
       refine' ⟨g₁ + g₂, _, fun x hx => _⟩
@@ -286,7 +283,8 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
-      simp only [comp_apply, coe_mk, algebraMapClm_toFun, map_pow, mul_apply, star_apply, star_def]
+      simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapClm_toFun, map_pow,
+        mul_apply, star_apply, star_def]
       simp only [normSq_eq_def', IsROrC.conj_mul, ofReal_pow]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
@@ -302,7 +300,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   refine' ⟨g * g', _, hg, hgc.mono hgc'⟩
   convert I.mul_mem_left ((algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
-  simp only [algebraMapClm_coe, comp_apply, mul_apply, coe_mk, map_mul]
+  simp only [algebraMapClm_coe, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 #align continuous_map.ideal_of_set_of_ideal_eq_closure ContinuousMap.idealOfSet_ofIdeal_eq_closure
 
 theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
@@ -383,7 +381,7 @@ theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] 
 #align continuous_map.set_of_ideal_eq_compl_singleton ContinuousMap.setOfIdeal_eq_compl_singleton
 
 theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :
-    I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 ({x}ᶜ) = I := by
+    I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 {x}ᶜ = I := by
   refine'
     ⟨_, fun h =>
       let ⟨x, hx⟩ := h
@@ -421,7 +419,7 @@ def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
     ⟨{  toFun := fun f => f x
         map_add' := fun f g => rfl
         map_smul' := fun z f => rfl
-        cont := continuous_eval_const' x }, by
+        cont := continuous_eval_const x }, by
         rw [CharacterSpace.eq_set_map_one_map_mul]; exact ⟨rfl, fun f g => rfl⟩⟩
   continuous_toFun := Continuous.subtype_mk (continuous_of_continuous_eval map_continuous) _
 #align weak_dual.character_space.continuous_map_eval WeakDual.CharacterSpace.continuousMapEval

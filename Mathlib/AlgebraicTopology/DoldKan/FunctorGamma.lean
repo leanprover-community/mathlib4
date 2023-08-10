@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.functor_gamma
-! leanprover-community/mathlib commit 5b8284148e8149728f4b90624888d98c36284454
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
+
+#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"5b8284148e8149728f4b90624888d98c36284454"
 
 /-!
 
@@ -58,7 +55,7 @@ theorem iff {j : ℕ} {i : Fin (j + 2)} : Isδ₀ (SimplexCategory.δ i) ↔ i =
     by_contra h
     exact h₂ (Fin.succAbove_ne_zero_zero h)
   · rintro rfl
-    exact ⟨rfl, by dsimp ; exact Fin.succ_ne_zero (0 : Fin (j + 1))⟩
+    exact ⟨rfl, by dsimp; exact Fin.succ_ne_zero (0 : Fin (j + 1))⟩
 #align algebraic_topology.dold_kan.is_δ₀.iff AlgebraicTopology.DoldKan.Isδ₀.iff
 
 theorem eq_δ₀ {n : ℕ} {i : ([n] : SimplexCategory) ⟶ [n + 1]} [Mono i] (hi : Isδ₀ i) :

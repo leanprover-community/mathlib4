@@ -2,14 +2,11 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.zmod.algebra
-! leanprover-community/mathlib commit 972aa4234fa56ce119d19506045158a9d76881fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Algebra.Basic
+
+#align_import data.zmod.algebra from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`
@@ -27,7 +24,9 @@ section
 
 variable {n : ℕ} (m : ℕ) [CharP R m]
 
-/-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n` -/
+/-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n`.
+See note [reducible non-instances]. -/
+@[reducible]
 def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
   { ZMod.castHom h R with
     smul := fun a r => a * r
@@ -42,7 +41,12 @@ def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
 
 end
 
-instance (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
+/-- The `zmod p`-algebra structure on a ring of characteristic `p`. This is not an
+instance since it creates a diamond with `algebra.id`.
+See note [reducible non-instances]. -/
+@[reducible]
+def algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
+#align zmod.algebra ZMod.algebra
 
 end ZMod

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
-
-! This file was ported from Lean 3 source module topology.category.Profinite.as_limit
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.DiscreteQuotient
+
+#align_import topology.category.Profinite.as_limit from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
 /-!
 # Profinite sets as limits of finite sets.
@@ -72,7 +69,7 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit X.diagram).lift X.asL
     (by
       refine' ⟨fun a b h => _, fun a => _⟩
       · refine' DiscreteQuotient.eq_of_forall_proj_eq fun S => _
-        apply_fun fun f : (limitCone X.diagram).pt => f.val S  at h
+        apply_fun fun f : (limitCone X.diagram).pt => f.val S at h
         exact h
       · obtain ⟨b, hb⟩ :=
           DiscreteQuotient.exists_of_compat (fun S => a.val S) fun _ _ h => a.prop (homOfLE h)

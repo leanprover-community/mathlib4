@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.basic
-! leanprover-community/mathlib commit 84dc0bd6619acaea625086d6f53cb35cdd554219
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Analysis.BoxIntegral.Box.Basic
+
+#align_import analysis.box_integral.partition.basic from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
@@ -425,7 +422,7 @@ theorem iUnion_ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) :
     (ofWithBot boxes le_of_mem pairwise_disjoint).iUnion = ⋃ J ∈ boxes, ↑J := by
-  suffices (⋃ (J : Box ι) (_ : ↑J ∈ boxes), ↑J) = ⋃ J ∈ boxes, (J : Set (ι → ℝ)) by
+  suffices ⋃ (J : Box ι) (_ : ↑J ∈ boxes), ↑J = ⋃ J ∈ boxes, (J : Set (ι → ℝ)) by
     simpa [ofWithBot, Prepartition.iUnion]
   simp only [← Box.biUnion_coe_eq_coe, @iUnion_comm _ _ (Box ι), @iUnion_comm _ _ (@Eq _ _ _),
     iUnion_iUnion_eq_right]
@@ -661,7 +658,7 @@ theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
 @[simp]
 theorem sum_disj_union_boxes {M : Type _} [AddCommMonoid M] (h : Disjoint π₁.iUnion π₂.iUnion)
     (f : Box ι → M) :
-    (∑ J in π₁.boxes ∪ π₂.boxes, f J) = (∑ J in π₁.boxes, f J) + ∑ J in π₂.boxes, f J :=
+    ∑ J in π₁.boxes ∪ π₂.boxes, f J = (∑ J in π₁.boxes, f J) + ∑ J in π₂.boxes, f J :=
   sum_union <| disjoint_boxes_of_disjoint_iUnion h
 #align box_integral.prepartition.sum_disj_union_boxes BoxIntegral.Prepartition.sum_disj_union_boxes
 

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module linear_algebra.orientation
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Determinant
+
+#align_import linear_algebra.orientation from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Orientations of modules
@@ -344,7 +341,7 @@ theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fin
   letI := Classical.decEq ι
   -- Porting note: this needs to be made explicit for the simp below
   have orientation_neg_neg :
-    ∀ f : Basis ι R M,  - -Basis.orientation f = Basis.orientation f := by simp
+    ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by simp
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
     rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂, orientation_neg_neg]
 #align orientation.eq_or_eq_neg Orientation.eq_or_eq_neg

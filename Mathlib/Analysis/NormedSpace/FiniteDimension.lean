@@ -2,11 +2,6 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.normed_space.finite_dimension
-! leanprover-community/mathlib commit 9425b6f8220e53b059f5a4904786c3c4b50fc057
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.NormedSpace.AddTorsor
@@ -16,6 +11,8 @@ import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
+
+#align_import analysis.normed_space.finite_dimension from "leanprover-community/mathlib"@"9425b6f8220e53b059f5a4904786c3c4b50fc057"
 
 /-!
 # Finite dimensional normed spaces over complete fields
@@ -235,14 +232,14 @@ theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →
 protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     (hf : LinearIndependent 𝕜 f) : ∀ᶠ g in 𝓝 f, LinearIndependent 𝕜 g := by
   cases nonempty_fintype ι
-  simp only [Fintype.linearIndependent_iff'] at hf⊢
+  simp only [Fintype.linearIndependent_iff'] at hf ⊢
   rcases LinearMap.exists_antilipschitzWith _ hf with ⟨K, K0, hK⟩
   have : Tendsto (fun g : ι → E => ∑ i, ‖g i - f i‖) (𝓝 f) (𝓝 <| ∑ i, ‖f i - f i‖) :=
     tendsto_finset_sum _ fun i _ =>
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
   refine' (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => _
-  replace hg : (∑ i, ‖g i - f i‖₊) < K⁻¹
+  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹
   · rw [← NNReal.coe_lt_coe]
     push_cast
     exact hg
@@ -285,7 +282,7 @@ theorem Basis.op_nnnorm_le {ι : Type _} [Fintype ι] (v : Basis ι 𝕜 E) {u :
       _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M := by
         gcongr
         calc
-          (∑ i, ‖v.equivFun e i‖₊) ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
+          ∑ i, ‖v.equivFun e i‖₊ ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
           _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_of_le_right (φ.le_op_nnnorm e) _
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.op_nnnorm_le
@@ -329,7 +326,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
   obtain
     ⟨C : ℝ, C_pos : 0 < C, hC :
       ∀ {φ : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖φ (v i)‖ ≤ M) → ‖φ‖ ≤ C * M⟩ :=
-    v.exists_op_norm_le
+    v.exists_op_norm_le (E := E) (F := F)
   have h_2C : 0 < 2 * C := mul_pos zero_lt_two C_pos
   have hε2C : 0 < ε / (2 * C) := div_pos ε_pos h_2C
   have : ∀ φ : E →L[𝕜] F, ∃ n : Fin d → ℕ, ‖φ - (v.constrL <| u ∘ n)‖ ≤ ε / 2 := by
@@ -621,7 +618,7 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
 `IsCompact.exists_mem_frontier_infDist_compl_eq_dist`. -/
 theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {x : E} {s : Set E} (hx : x ∈ s) (hs : s ≠ univ) :
-    ∃ y ∈ frontier s, Metric.infDist x (sᶜ) = dist x y := by
+    ∃ y ∈ frontier s, Metric.infDist x sᶜ = dist x y := by
   rcases Metric.exists_mem_closure_infDist_eq_dist (nonempty_compl.2 hs) x with ⟨y, hys, hyd⟩
   rw [closure_compl] at hys
   refine'
@@ -638,7 +635,7 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGro
 nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type _}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] {x : E} {K : Set E} (hK : IsCompact K)
     (hx : x ∈ K) :
-    ∃ y ∈ frontier K, Metric.infDist x (Kᶜ) = dist x y := by
+    ∃ y ∈ frontier K, Metric.infDist x Kᶜ = dist x y := by
   obtain hx' | hx' : x ∈ interior K ∪ frontier K := by
     rw [← closure_eq_interior_union_frontier]
     exact subset_closure hx

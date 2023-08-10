@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.discrete_category
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
+
+#align_import category_theory.discrete_category from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Discrete categories
@@ -47,7 +44,7 @@ universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 /-- A wrapper for promoting any type to a category,
 with the only morphisms being equalities.
 -/
-@[ext]
+@[ext, aesop safe cases (rule_sets [CategoryTheory])]
 structure Discrete (α : Type u₁) where
   /-- A wrapper for promoting any type to a category,
   with the only morphisms being equalities. -/

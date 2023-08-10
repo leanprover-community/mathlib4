@@ -2,15 +2,13 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module ring_theory.nilpotent
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.GeomSum
+
+#align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # Nilpotent elements
@@ -27,6 +25,8 @@ import Mathlib.RingTheory.Ideal.Operations
 -/
 
 universe u v
+
+open BigOperators
 
 variable {R S : Type u} {x y : R}
 
@@ -63,6 +63,23 @@ theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type 
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
+
+theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
+  obtain ⟨n, hn⟩ := hnil
+  refine' ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, _, _⟩, rfl⟩
+  · rw [mul_neg, mul_geom_sum, hn]
+    simp
+  · rw [neg_mul, geom_sum_mul, hn]
+    simp
+
+theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilpotent r)
+  (hru : Commute r (↑u⁻¹ : R)) : IsUnit (u + r) := by
+  rw [← Units.isUnit_mul_units _ u⁻¹, add_mul, Units.mul_inv, ← IsUnit.neg_iff, add_comm, neg_add,
+    ← sub_eq_add_neg]
+  obtain ⟨n, hn⟩ := hnil
+  refine' IsNilpotent.sub_one_isUnit ⟨n, _⟩
+  rw [neg_pow, hru.mul_pow, hn]
+  simp
 
 /-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
 @[mk_iff isReduced_iff]
@@ -224,14 +241,14 @@ variable (R) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 @[simp]
 theorem isNilpotent_mulLeft_iff (a : A) : IsNilpotent (mulLeft R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn⊢ <;>
+      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_left_iff LinearMap.isNilpotent_mulLeft_iff
 
 @[simp]
 theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn⊢ <;>
+      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_right_iff LinearMap.isNilpotent_mulRight_iff
 

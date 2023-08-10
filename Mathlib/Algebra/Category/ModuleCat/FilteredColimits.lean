@@ -2,14 +2,11 @@
 Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
-
-! This file was ported from Lean 3 source module algebra.category.Module.filtered_colimits
-! leanprover-community/mathlib commit 806bbb0132ba63b93d5edbe4789ea226f8329979
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 import Mathlib.Algebra.Category.ModuleCat.Basic
+
+#align_import algebra.category.Module.filtered_colimits from "leanprover-community/mathlib"@"806bbb0132ba63b93d5edbe4789ea226f8329979"
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -18,10 +15,10 @@ Forgetful functors from algebraic categories usually don't preserve colimits. Ho
 to preserve _filtered_ colimits.
 
 In this file, we start with a ring `R`, a small filtered category `J` and a functor
-`F : J ⥤ Module R`. We show that the colimit of `F ⋙ forget₂ (Module R) AddCommGroup`
-(in `AddCommGroup`) carries the structure of an `R`-module, thereby showing that the forgetful
-functor `forget₂ (Module R) AddCommGroup` preserves filtered colimits. In particular, this implies
-that `forget (Module R)` preserves filtered colimits.
+`F : J ⥤ ModuleCat R`. We show that the colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGroupCat`
+(in `AddCommGroupCat`) carries the structure of an `R`-module, thereby showing that the forgetful
+functor `forget₂ (ModuleCat R) AddCommGroupCat` preserves filtered colimits. In particular, this
+implies that `forget (ModuleCat R)` preserves filtered colimits.
 
 -/
 
@@ -34,8 +31,7 @@ open scoped Classical
 
 open CategoryTheory CategoryTheory.Limits
 
--- avoid name collision with `_root_.max`.
-open CategoryTheory.IsFiltered renaming max → max'
+open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
 open AddMonCat.FilteredColimits (colimit_zero_eq colimit_add_mk_eq)
 
@@ -47,7 +43,7 @@ variable {R : Type u} [Ring R] {J : Type v} [SmallCategory J] [IsFiltered J]
 
 variable (F : J ⥤ ModuleCatMax.{v, u, u} R)
 
-/-- The colimit of `F ⋙ forget₂ (Module R) AddCommGroup` in the category `AddCommGroup`.
+/-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGroupCat` in the category `AddCommGroupCat`.
 In the following, we will show that this has the structure of an `R`-module.
 -/
 abbrev M : AddCommGroupCat :=
@@ -69,28 +65,28 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.M.mk_eq ModuleCat.FilteredColimits.M.mk_eq
 
 /-- The "unlifted" version of scalar multiplication in the colimit. -/
-def colimitSmulAux (r : R) (x : Σ j, F.obj j) : M F :=
+def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
   M.mk F ⟨x.1, r • x.2⟩
 set_option linter.uppercaseLean3 false in
-#align Module.filtered_colimits.colimit_smul_aux ModuleCat.FilteredColimits.colimitSmulAux
+#align Module.filtered_colimits.colimit_smul_aux ModuleCat.FilteredColimits.colimitSMulAux
 
-theorem colimitSmulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
+theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget (ModuleCat R)) x y) :
-    colimitSmulAux F r x = colimitSmulAux F r y := by
+    colimitSMulAux F r x = colimitSMulAux F r y := by
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
   simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
   simp [hfg]
 set_option linter.uppercaseLean3 false in
-#align Module.filtered_colimits.colimit_smul_aux_eq_of_rel ModuleCat.FilteredColimits.colimitSmulAux_eq_of_rel
+#align Module.filtered_colimits.colimit_smul_aux_eq_of_rel ModuleCat.FilteredColimits.colimitSMulAux_eq_of_rel
 
-/-- Scalar multiplication in the colimit. See also `colimitSmulAux`. -/
+/-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
 instance colimitHasSmul : SMul R (M F) where
   smul r x := by
-    refine' Quot.lift (colimitSmulAux F r) _ x
+    refine' Quot.lift (colimitSMulAux F r) _ x
     intro x y h
-    apply colimitSmulAux_eq_of_rel
+    apply colimitSMulAux_eq_of_rel
     apply Types.FilteredColimit.rel_of_quot_rel
     exact h
 set_option linter.uppercaseLean3 false in
@@ -190,7 +186,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_desc ModuleCat.FilteredColimits.colimitDesc
 
-/-- The proposed colimit cocone is a colimit in `Module R`. -/
+/-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j :=

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.bitvec.basic
-! leanprover-community/mathlib commit 008af8bb14b3ebef7e04ec3b0d63b947dee4d26a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Fin.Basic
 import Mathlib.Tactic.NormNum
+
+#align_import data.bitvec.basic from "leanprover-community/mathlib"@"008af8bb14b3ebef7e04ec3b0d63b947dee4d26a"
 
 /-!
 # Basic Theorems About Bitvectors
@@ -133,7 +130,7 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
   dsimp [Bitvec.toNat, bitsToNat]
   rw [← List.length_reverse] at h
   rw [← List.reverse_reverse xs, List.foldl_reverse]
-  generalize xs.reverse = ys at h⊢; clear xs
+  generalize xs.reverse = ys at h ⊢; clear xs
   induction' ys with ys_head ys_tail ys_ih generalizing n
   · cases h
     simp [Bitvec.ofNat]

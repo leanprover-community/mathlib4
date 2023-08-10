@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.ordinal.cantor_normal_form
-! leanprover-community/mathlib commit 991ff3b5269848f6dd942ae8e9dd3c946035dc8b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
+
+#align_import set_theory.ordinal.cantor_normal_form from "leanprover-community/mathlib"@"991ff3b5269848f6dd942ae8e9dd3c946035dc8b"
 
 /-!
 # Cantor Normal Form

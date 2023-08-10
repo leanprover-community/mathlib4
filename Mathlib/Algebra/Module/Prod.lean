@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.module.prod
-! leanprover-community/mathlib commit a437a2499163d85d670479f69f625f461cc5fef9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.GroupAction.Prod
+
+#align_import algebra.module.prod from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"
 
 /-!
 # Prod instances for module and multiplicative actions

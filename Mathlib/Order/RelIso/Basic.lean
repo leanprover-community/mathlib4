@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.rel_iso.basic
-! leanprover-community/mathlib commit f29120f82f6e24a6f6579896dfa2de6769fec962
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
+
+#align_import order.rel_iso.basic from "leanprover-community/mathlib"@"f29120f82f6e24a6f6579896dfa2de6769fec962"
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
@@ -256,7 +253,7 @@ def Simps.apply (h : r ↪r s) : α → β :=
 initialize_simps_projections RelEmbedding (toFun → apply)
 
 @[simp]
-theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
+theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 #align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
 
@@ -331,7 +328,7 @@ def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
 #align rel_embedding.preimage RelEmbedding.preimage
 
 theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
-  ext (a b)
+  ext a b
   exact f.map_rel_iff.symm
 #align rel_embedding.eq_preimage RelEmbedding.eq_preimage
 
@@ -843,7 +840,7 @@ lexicographic orders on the sum.
 def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
-    cases' e₁ with f hf ; cases' e₂ with g hg ; cases a <;> cases b <;> simp [hf, hg]⟩
+    cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
 #align rel_iso.sum_lex_congr RelIso.sumLexCongr
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the

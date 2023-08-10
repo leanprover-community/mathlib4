@@ -2,15 +2,12 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.basic
-! leanprover-community/mathlib commit 06a655b5fcfbda03502f9158bbf6c0f1400886f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.List
 import Mathlib.Data.List.Perm
 import Mathlib.Init.Quot -- Porting note: added import
+
+#align_import data.multiset.basic from "leanprover-community/mathlib"@"06a655b5fcfbda03502f9158bbf6c0f1400886f9"
 
 /-!
 # Multisets
@@ -1468,7 +1465,7 @@ nonrec def pmap {p : α → Prop} (f : ∀ a, p a → β) (s : Multiset α) : (�
       have H₁ : ∀ a ∈ l₁, p a := fun a h => H₂ a (pp.subset h)
       have : ∀ {s₂ e H}, @Eq.ndrec (Multiset α) l₁ (fun s => (∀ a ∈ s, p a) → Multiset β)
           (fun _ => ↑(pmap f l₁ H₁)) s₂ e H = ↑(pmap f l₁ H₁) := by
-        intro s₂ e _ ; subst e; rfl
+        intro s₂ e _; subst e; rfl
       this.trans <| Quot.sound <| pp.pmap f
 #align multiset.pmap Multiset.pmap
 

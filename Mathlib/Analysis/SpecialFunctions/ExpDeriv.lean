@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.exp_deriv
-! leanprover-community/mathlib commit 6a5c85000ab93fe5dcfdf620676f614ba8e18c26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.RealDeriv
+
+#align_import analysis.special_functions.exp_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
 
 /-!
 # Complex and real exponential
@@ -55,7 +52,7 @@ theorem deriv_exp : deriv exp = exp :=
 #align complex.deriv_exp Complex.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
+theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
@@ -205,7 +202,7 @@ theorem deriv_exp : deriv exp = exp :=
 #align real.deriv_exp Real.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
+theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align real.iter_deriv_exp Real.iter_deriv_exp

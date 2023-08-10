@@ -2,14 +2,11 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.filter_basis
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Bases
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.filter_basis from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Group and ring filter bases
@@ -192,7 +189,7 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
     rcases GroupFilterBasis.mul V_in with ⟨W, W_in, hW⟩
     use (fun y ↦ x * y) '' W, image_mem_map (FilterBasis.mem_filter_of_mem _ W_in)
     constructor
-    · rw [image_subset_iff] at H⊢
+    · rw [image_subset_iff] at H ⊢
       exact ((B.prod_subset_self W_in).trans hW).trans H
     · rintro y ⟨t, tW, rfl⟩
       rw [(B.hasBasis _).mem_iff]

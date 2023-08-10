@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.adj_matrix
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+
+#align_import combinatorics.simple_graph.adj_matrix from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Adjacency Matrices
@@ -136,7 +133,7 @@ theorem compl [Zero α] [One α] (h : IsAdjMatrix A) : IsAdjMatrix A.compl :=
 
 theorem toGraph_compl_eq [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) :
     h.compl.toGraph = h.toGraphᶜ := by
-  ext (v w)
+  ext v w
   cases' h.zero_or_one v w with h h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
 #align matrix.is_adj_matrix.to_graph_compl_eq Matrix.IsAdjMatrix.toGraph_compl_eq
 
@@ -293,7 +290,7 @@ variable {A : Matrix V V α} (h : IsAdjMatrix A)
 /-- If `A` is qualified as an adjacency matrix,
     then the adjacency matrix of the graph induced by `A` is itself. -/
 theorem adjMatrix_toGraph_eq [DecidableEq α] : h.toGraph.adjMatrix α = A := by
-  ext (i j)
+  ext i j
   obtain h' | h' := h.zero_or_one i j <;> simp [h']
 #align matrix.is_adj_matrix.adj_matrix_to_graph_eq Matrix.IsAdjMatrix.adjMatrix_toGraph_eq
 

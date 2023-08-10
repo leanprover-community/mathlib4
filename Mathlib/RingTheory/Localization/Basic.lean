@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.basic
-! leanprover-community/mathlib commit b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Ring.Equiv
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.Tactic.Ring
+
+#align_import ring_theory.localization.basic from "leanprover-community/mathlib"@"b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec"
 
 /-!
 # Localizations of commutative rings
@@ -427,6 +424,17 @@ theorem mk'_mul_mk'_eq_one' (x : R) (y : M) (h : x ∈ M) : mk' S x y * mk' S (y
   mk'_mul_mk'_eq_one ⟨x, h⟩ _
 #align is_localization.mk'_mul_mk'_eq_one' IsLocalization.mk'_mul_mk'_eq_one'
 
+theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m  := by
+  nth_rw 2 [← one_mul m]
+  rw [mk'_mul, mk'_one, Algebra.smul_def]
+
+@[simp] theorem smul_mk'_one (x : R) (m : M) : x • mk' S 1 m = mk' S x m := by
+  rw [smul_mk', mul_one]
+
+@[simp] lemma smul_mk'_self {m : M} {r : R} :
+    (m : R) • mk' S r m = algebraMap R S r := by
+  rw [smul_mk', mk'_mul_cancel_left]
+
 section
 
 variable (M)
@@ -789,7 +797,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M y
     refine' ⟨⟨h x, _, _, s.prop, rfl⟩, _⟩
-    dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e⊢
+    dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e ⊢
     convert e <;> exact h.symm_apply_apply _
   · intro x y
     rw [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, RingHom.comp_apply,
@@ -864,7 +872,7 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
     @fun a a' b b' c c' d d' h1 h2 =>
     mk_eq_mk_iff.2
       (by
-        rw [r_eq_r'] at h1 h2⊢
+        rw [r_eq_r'] at h1 h2 ⊢
         cases' h1 with t₅ ht₅
         cases' h2 with t₆ ht₆
         use t₅ * t₆
@@ -899,7 +907,7 @@ local macro "localization_tac" : tactic =>
      simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]
      refine mk_eq_mk_iff.mpr (r_of_eq ?_)
      simp only [Submonoid.coe_mul]
-     ring  })
+     ring })
 
 instance : CommSemiring (Localization M) :=
   { (show CommMonoidWithZero (Localization M) by infer_instance) with
@@ -980,7 +988,7 @@ instance {S : Type _} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S
           intros
           simp only [Localization.smul_mk, add_smul, add_mk_self] }
 
-instance {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M)
+instance algebra {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M)
     where
   toRingHom :=
     RingHom.comp
@@ -1100,7 +1108,7 @@ protected irreducible_def neg (z : Localization M) : Localization M :=
   Localization.liftOn z (fun a b => mk (-a) b) @fun a b c d h =>
     mk_eq_mk_iff.2
       (by
-        rw [r_eq_r'] at h⊢
+        rw [r_eq_r'] at h ⊢
         cases' h with t ht
         use t
         rw [mul_neg, mul_neg, ht]
@@ -1255,7 +1263,7 @@ theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocali
 
 variable {A}
 
-/-- The localization at of an integral domain to a set of non-zero elements is an integral domain.
+/-- The localization of an integral domain to a set of non-zero elements is an integral domain.
 See note [reducible non-instances]. -/
 @[reducible]
 theorem isDomain_localization {M : Submonoid A} (hM : M ≤ nonZeroDivisors A) :

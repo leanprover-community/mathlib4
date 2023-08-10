@@ -2,15 +2,12 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module data.set.pointwise.iterate
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Dynamics.FixedPoints.Basic
+
+#align_import data.set.pointwise.iterate from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Results about pointwise operations on sets with iteration.
@@ -39,10 +36,10 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type _} [CommGroup G] {n : �
     replace hg : g⁻¹ ^ n ^ j = 1
     · rw [inv_zpow, hg, inv_one]
     simpa only [le_eq_subset, set_smul_subset_set_smul_iff] using this hg
-  rw [(IsFixedPt.preimage_iterate hs j : zpowGroupHom n^[j] ⁻¹' s = s).symm]
+  rw [(IsFixedPt.preimage_iterate hs j : (zpowGroupHom n)^[j] ⁻¹' s = s).symm]
   rintro g' hg' - ⟨y, hy, rfl⟩
-  change (zpowGroupHom n^[j]) (g' * y) ∈ s
-  replace hg' : (zpowGroupHom n^[j]) g' = 1
+  change (zpowGroupHom n)^[j] (g' * y) ∈ s
+  replace hg' : (zpowGroupHom n)^[j] g' = 1
   · simpa [zpowGroupHom]
   rwa [MonoidHom.iterate_map_mul, hg', one_mul]
 #align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self

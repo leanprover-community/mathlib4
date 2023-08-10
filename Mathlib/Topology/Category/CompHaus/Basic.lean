@@ -2,17 +2,14 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta
-
-! This file was ported from Lean 3 source module topology.category.CompHaus.basic
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+
+#align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # The category of Compact Hausdorff Spaces
@@ -142,6 +139,41 @@ noncomputable def isoOfBijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Funct
 set_option linter.uppercaseLean3 false in
 #align CompHaus.iso_of_bijective CompHaus.isoOfBijective
 
+/-- Construct an isomorphism from a homeomorphism. -/
+@[simps hom inv]
+def isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y where
+  hom := ⟨f, f.continuous⟩
+  inv := ⟨f.symm, f.symm.continuous⟩
+  hom_inv_id := by
+    ext x
+    exact f.symm_apply_apply x
+  inv_hom_id := by
+    ext x
+    exact f.apply_symm_apply x
+
+/-- Construct a homeomorphism from an isomorphism. -/
+@[simps]
+def homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y where
+  toFun := f.hom
+  invFun := f.inv
+  left_inv x := by simp
+  right_inv x := by simp
+  continuous_toFun := f.hom.continuous
+  continuous_invFun := f.inv.continuous
+
+/-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
+of topological spaces. -/
+@[simps]
+def isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
+  toFun := homeoOfIso
+  invFun := isoOfHomeo
+  left_inv f := by
+    ext
+    rfl
+  right_inv f := by
+    ext
+    rfl
+
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
@@ -167,7 +199,7 @@ instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
 instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
-  ⟨by intro A B f hf ; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+  ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
 
@@ -351,7 +383,7 @@ theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Funct
       ext
       exact h
     rw [cancel_mono] at this
-    apply_fun fun e => e PUnit.unit  at this
+    apply_fun fun e => e PUnit.unit at this
     exact this
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget CompHaus).mono_of_mono_map

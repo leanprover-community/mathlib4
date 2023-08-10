@@ -2,13 +2,10 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.measurable_integral
-! leanprover-community/mathlib commit 28b2a92f2996d28e580450863c130955de0ed398
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Kernel.Basic
+
+#align_import probability.kernel.measurable_integral from "leanprover-community/mathlib"@"28b2a92f2996d28e580450863c130955de0ed398"
 
 /-!
 # Measurability of the integral against a kernel
@@ -151,7 +148,7 @@ measurable. -/
 theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun a => ∫⁻ b, f a b ∂κ a := by
   let F : ℕ → SimpleFunc (α × β) ℝ≥0∞ := SimpleFunc.eapprox (uncurry f)
-  have h : ∀ a, (⨆ n, F n a) = uncurry f a := SimpleFunc.iSup_eapprox_apply (uncurry f) hf
+  have h : ∀ a, ⨆ n, F n a = uncurry f a := SimpleFunc.iSup_eapprox_apply (uncurry f) hf
   simp only [Prod.forall, uncurry_apply_pair] at h
   simp_rw [← h]
   have : ∀ a, (∫⁻ b, ⨆ n, F n (a, b) ∂κ a) = ⨆ n, ∫⁻ b, F n (a, b) ∂κ a := by

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudriashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.hull
-! leanprover-community/mathlib commit a50170a88a47570ed186b809ca754110590f9476
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Order.Closure
+
+#align_import analysis.convex.hull from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 
 /-!
 # Convex hull
@@ -132,10 +129,15 @@ theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
 #align convex_hull_singleton convexHull_singleton
 
 @[simp]
+theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
+  convexHull_singleton 0
+#align convex_hull_zero convexHull_zero
+
+@[simp]
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
-  rw [insert_subset, singleton_subset_iff]
+  rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 #align convex_hull_pair convexHull_pair
 

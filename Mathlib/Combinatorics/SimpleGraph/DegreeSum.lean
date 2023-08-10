@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.degree_sum
-! leanprover-community/mathlib commit 90659cbe25e59ec302e2fb92b00e9732160cc620
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Parity
+
+#align_import combinatorics.simple_graph.degree_sum from "leanprover-community/mathlib"@"90659cbe25e59ec302e2fb92b00e9732160cc620"
 
 /-!
 # Degree-sum formula and handshaking lemma
@@ -112,7 +109,7 @@ theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * G.edgeFinset.c
 
 /-- The degree-sum formula.  This is also known as the handshaking lemma, which might
 more specifically refer to `SimpleGraph.even_card_odd_degree_vertices`. -/
-theorem sum_degrees_eq_twice_card_edges : (∑ v, G.degree v) = 2 * G.edgeFinset.card :=
+theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.card :=
   G.dart_card_eq_sum_degrees.symm.trans G.dart_card_eq_twice_card_edges
 #align simple_graph.sum_degrees_eq_twice_card_edges SimpleGraph.sum_degrees_eq_twice_card_edges
 

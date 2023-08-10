@@ -2,15 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.modeq
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.GCongr.Core
+
+#align_import data.nat.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
 /-!
 # Congruences modulo a natural number
@@ -114,6 +112,7 @@ protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [M
   unfold ModEq at *; rw [mul_mod_mul_left, mul_mod_mul_left, h]
 #align nat.modeq.mul_left' Nat.ModEq.mul_left'
 
+@[gcongr]
 protected theorem mul_left (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD n] :=
   (h.mul_left' _).of_dvd (dvd_mul_left _ _)
 #align nat.modeq.mul_left Nat.ModEq.mul_left
@@ -122,14 +121,17 @@ protected theorem mul_right' (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [
   rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left' c
 #align nat.modeq.mul_right' Nat.ModEq.mul_right'
 
+@[gcongr]
 protected theorem mul_right (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n] := by
   rw [mul_comm a, mul_comm b]; exact h.mul_left c
 #align nat.modeq.mul_right Nat.ModEq.mul_right
 
+@[gcongr]
 protected theorem mul (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a * c ≡ b * d [MOD n] :=
   (h₂.mul_left _).trans (h₁.mul_right _)
 #align nat.modeq.mul Nat.ModEq.mul
 
+@[gcongr]
 protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] := by
   induction m with
   | zero => rfl
@@ -138,15 +140,18 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
     exact hd.mul h
 #align nat.modeq.pow Nat.ModEq.pow
 
+@[gcongr]
 protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] := by
   rw [modEq_iff_dvd, Int.ofNat_add, Int.ofNat_add, add_sub_add_comm]
   exact dvd_add h₁.dvd h₂.dvd
 #align nat.modeq.add Nat.ModEq.add
 
+@[gcongr]
 protected theorem add_left (c : ℕ) (h : a ≡ b [MOD n]) : c + a ≡ c + b [MOD n] :=
   ModEq.rfl.add h
 #align nat.modeq.add_left Nat.ModEq.add_left
 
+@[gcongr]
 protected theorem add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [MOD n] :=
   h.add ModEq.rfl
 #align nat.modeq.add_right Nat.ModEq.add_right
@@ -285,8 +290,7 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
   show Int.gcd (m / d) (c / d) = 1
-  ·
-    simp only [← Int.coe_nat_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+  · simp only [← Int.coe_nat_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 

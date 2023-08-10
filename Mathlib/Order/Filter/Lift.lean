@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.filter.lift
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+#align_import order.filter.lift from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Lift filters along filter and set functions
@@ -203,7 +200,7 @@ theorem lift_iInf_le {f : ι → Filter α} {g : Set α → Filter β} :
 theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (iInf f).lift g = ⨅ i, (f i).lift g := by
   refine' lift_iInf_le.antisymm fun s => _
-  have H : ∀ t ∈ iInf f, (⨅ i, (f i).lift g) ≤ g t := by
+  have H : ∀ t ∈ iInf f, ⨅ i, (f i).lift g ≤ g t := by
     intro t ht
     refine' iInf_sets_induct ht _ fun hs ht => _
     · inhabit ι

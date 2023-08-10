@@ -2,13 +2,10 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.language_map
-! leanprover-community/mathlib commit b3951c65c6e797ff162ae8b69eab0063bcfb3d73
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Basic
+
+#align_import model_theory.language_map from "leanprover-community/mathlib"@"b3951c65c6e797ff162ae8b69eab0063bcfb3d73"
 
 /-!
 # Language Maps
@@ -149,24 +146,24 @@ def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
   ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 #align first_order.language.Lhom.comp FirstOrder.Language.LHom.comp
 
---Porting note: added ' to avoid clash with function composition
+-- Porting note: added ᴸ to avoid clash with function composition
 @[inherit_doc]
-local infixl:60 " ∘' " => LHom.comp
+local infixl:60 " ∘ᴸ " => LHom.comp
 
 @[simp]
-theorem id_comp (F : L →ᴸ L') : LHom.id L' ∘' F = F := by
+theorem id_comp (F : L →ᴸ L') : LHom.id L' ∘ᴸ F = F := by
   cases F
   rfl
 #align first_order.language.Lhom.id_comp FirstOrder.Language.LHom.id_comp
 
 @[simp]
-theorem comp_id (F : L →ᴸ L') : F ∘' LHom.id L = F := by
+theorem comp_id (F : L →ᴸ L') : F ∘ᴸ LHom.id L = F := by
   cases F
   rfl
 #align first_order.language.Lhom.comp_id FirstOrder.Language.LHom.comp_id
 
 theorem comp_assoc {L3 : Language} (F : L'' →ᴸ L3) (G : L' →ᴸ L'') (H : L →ᴸ L') :
-    F ∘' G ∘' H = F ∘' (G ∘' H) :=
+    F ∘ᴸ G ∘ᴸ H = F ∘ᴸ (G ∘ᴸ H) :=
   rfl
 #align first_order.language.Lhom.comp_assoc FirstOrder.Language.LHom.comp_assoc
 
@@ -181,11 +178,11 @@ protected def sumElim : L.sum L'' →ᴸ L' where
   onRelation _n := Sum.elim (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
 #align first_order.language.Lhom.sum_elim FirstOrder.Language.LHom.sumElim
 
-theorem sumElim_comp_inl (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘' LHom.sumInl = ϕ :=
+theorem sumElim_comp_inl (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘ᴸ LHom.sumInl = ϕ :=
   LHom.funext (funext fun _ => rfl) (funext fun _ => rfl)
 #align first_order.language.Lhom.sum_elim_comp_inl FirstOrder.Language.LHom.sumElim_comp_inl
 
-theorem sumElim_comp_inr (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘' LHom.sumInr = ψ :=
+theorem sumElim_comp_inr (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘ᴸ LHom.sumInr = ψ :=
   LHom.funext (funext fun _ => rfl) (funext fun _ => rfl)
 #align first_order.language.Lhom.sum_elim_comp_inr FirstOrder.Language.LHom.sumElim_comp_inr
 
@@ -194,7 +191,7 @@ theorem sumElim_inl_inr : LHom.sumInl.sumElim LHom.sumInr = LHom.id (L.sum L') :
 #align first_order.language.Lhom.sum_elim_inl_inr FirstOrder.Language.LHom.sumElim_inl_inr
 
 theorem comp_sumElim {L3 : Language} (θ : L' →ᴸ L3) :
-    θ ∘' ϕ.sumElim ψ = (θ ∘' ϕ).sumElim (θ ∘' ψ) :=
+    θ ∘ᴸ ϕ.sumElim ψ = (θ ∘ᴸ ϕ).sumElim (θ ∘ᴸ ψ) :=
   LHom.funext (funext fun _n => Sum.comp_elim _ _ _) (funext fun _n => Sum.comp_elim _ _ _)
 #align first_order.language.Lhom.comp_sum_elim FirstOrder.Language.LHom.comp_sumElim
 
@@ -212,12 +209,12 @@ def sumMap : L.sum L₁ →ᴸ L'.sum L₂ where
 #align first_order.language.Lhom.sum_map FirstOrder.Language.LHom.sumMap
 
 @[simp]
-theorem sumMap_comp_inl : ϕ.sumMap ψ ∘' LHom.sumInl = LHom.sumInl ∘' ϕ :=
+theorem sumMap_comp_inl : ϕ.sumMap ψ ∘ᴸ LHom.sumInl = LHom.sumInl ∘ᴸ ϕ :=
   LHom.funext (funext fun _ => rfl) (funext fun _ => rfl)
 #align first_order.language.Lhom.sum_map_comp_inl FirstOrder.Language.LHom.sumMap_comp_inl
 
 @[simp]
-theorem sumMap_comp_inr : ϕ.sumMap ψ ∘' LHom.sumInr = LHom.sumInr ∘' ψ :=
+theorem sumMap_comp_inr : ϕ.sumMap ψ ∘ᴸ LHom.sumInr = LHom.sumInr ∘ᴸ ψ :=
   LHom.funext (funext fun _ => rfl) (funext fun _ => rfl)
 #align first_order.language.Lhom.sum_map_comp_inr FirstOrder.Language.LHom.sumMap_comp_inr
 
@@ -413,7 +410,7 @@ instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α
     fun _ => (inferInstanceAs (IsEmpty PEmpty))
 #align first_order.language.is_empty_functions_constants_on_succ FirstOrder.Language.isEmpty_functions_constantsOn_succ
 
-theorem card_constantsOn : (constantsOn α).card = (#α) := by simp
+theorem card_constantsOn : (constantsOn α).card = #α := by simp
 #align first_order.language.card_constants_on FirstOrder.Language.card_constantsOn
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
@@ -459,7 +456,7 @@ scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
 
 @[simp]
 theorem card_withConstants :
-    L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} (#α) := by
+    L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} #α := by
   rw [withConstants, card_sum, card_constantsOn]
 #align first_order.language.card_with_constants FirstOrder.Language.card_withConstants
 

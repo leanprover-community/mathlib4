@@ -2,14 +2,11 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.sphere.basic
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.StrictConvexBetween
 import Mathlib.Geometry.Euclidean.Basic
+
+#align_import geometry.euclidean.sphere.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Spheres
@@ -281,7 +278,7 @@ theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical
     (h₁ : p₁ ∈ s) (h₂ : p₂ ∈ s) (h₃ : p₃ ∈ s) (h₁₂ : p₁ ≠ p₂) (h₁₃ : p₁ ≠ p₃) (h₂₃ : p₂ ≠ p₃) :
     AffineIndependent ℝ ![p₁, p₂, p₃] := by
   refine' hs.affineIndependent _ _
-  · simp [h₁, h₂, h₃, Set.insert_subset]
+  · simp [h₁, h₂, h₃, Set.insert_subset_iff]
   · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
     simp [h₁₂, h₁₃, h₂₃, Function.Injective]
 #align euclidean_geometry.cospherical.affine_independent_of_mem_of_ne EuclideanGeometry.Cospherical.affineIndependent_of_mem_of_ne

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.sheafed_space
-! leanprover-community/mathlib commit f384f5d1a4e39f36817b8d22afff7b52af8121d1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PresheafedSpace.HasColimits
 import Mathlib.Topology.Sheaves.Functors
+
+#align_import algebraic_geometry.sheafed_space from "leanprover-community/mathlib"@"f384f5d1a4e39f36817b8d22afff7b52af8121d1"
 
 /-!
 # Sheafed spaces
@@ -51,6 +48,9 @@ instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
+instance coeSort : CoeSort (SheafedSpace C) (Type _) where
+  coe := fun X => X.1
+
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
@@ -90,7 +90,15 @@ instance : Category (SheafedSpace C) :=
   show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
+-- Porting note: adding an ext lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
+    (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
+  PresheafedSpace.ext α β w h
+
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
+@[simps! obj map]
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in

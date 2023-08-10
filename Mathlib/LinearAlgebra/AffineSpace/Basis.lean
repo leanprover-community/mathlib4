@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.basis
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.Basis
+
+#align_import linear_algebra.affine_space.basis from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Affine bases and barycentric coordinates
@@ -203,7 +200,7 @@ theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s
 #align affine_basis.coord_apply_combination_of_not_mem AffineBasis.coord_apply_combination_of_not_mem
 
 @[simp]
-theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : (∑ i, b.coord i q) = 1 := by
+theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
@@ -228,7 +225,7 @@ theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
 affine space is a module so we can talk about linear combinations. -/
 @[simp]
 theorem linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (v : V) :
-    (∑ i, b.coord i v • b i) = v := by
+    ∑ i, b.coord i v • b i = v := by
   have hb := b.affineCombination_coord_eq_self v
   rwa [Finset.univ.affineCombination_eq_linear_combination _ _ (b.sum_coord_apply_eq_one v)] at hb
 #align affine_basis.linear_combination_coord_eq_self AffineBasis.linear_combination_coord_eq_self

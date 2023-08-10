@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.FinPartOrd
-! leanprover-community/mathlib commit 937b1c59c58710ef8ed91f8727ef402d49d621a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Order.Category.PartOrdCat
+
+#align_import order.category.FinPartOrd from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
 /-!
 # The category of finite partial orders

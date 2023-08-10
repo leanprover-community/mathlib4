@@ -2,15 +2,12 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.quotient
-! leanprover-community/mathlib commit 4f840b8d28320b20c87db17b3a6eef3d325fca87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Div
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.polynomial.quotient from "leanprover-community/mathlib"@"4f840b8d28320b20c87db17b3a6eef3d325fca87"
 
 /-!
 # Quotients of polynomial rings
@@ -65,6 +62,14 @@ noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
         Ideal.quotientEquivAlgOfEq R <| by
           simp only [Ideal.map_span, Set.image_singleton]; congr 2; exact eval_C
 #align polynomial.quotient_span_C_X_sub_C_alg_equiv Polynomial.quotientSpanCXSubCAlgEquiv
+
+set_option maxHeartbeats 250000 in
+/-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
+induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
+noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
+    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _
+      (Ideal.Quotient.algebra R) _ :=
+((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
 
 end Polynomial
 
@@ -129,7 +134,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
     · -- Porting note: was `simp_intro p q hp hq`
       intros p q hp hq
       simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, map_add, Quotient.lift_mk,
-        coe_eval₂RingHom] at hp hq⊢
+        coe_eval₂RingHom] at hp hq ⊢
       rw [hp, hq]
     · intro n a
       simp only [← smul_X_eq_monomial, ← C_mul' a (X ^ n), Quotient.lift_mk,

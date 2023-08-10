@@ -2,15 +2,12 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.vitali
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Covering.VitaliFamily
+
+#align_import measure_theory.covering.vitali from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Vitali covering theorems
@@ -128,7 +125,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   -- we claim that `u ∪ {a'}` still belongs to `T`, contradicting the maximality of `u`.
   refine' ⟨insert a' u, ⟨_, _, _⟩, subset_insert _ _, (ne_insert_of_not_mem _ a'_ne_u).symm⟩
   · -- check that `u ∪ {a'}` is made of elements of `t`.
-    rw [insert_subset]
+    rw [insert_subset_iff]
     exact ⟨a'A.1, uT.1⟩
   · -- Check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
     -- intersect `u`.
@@ -332,7 +329,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   have M : (s \ ⋃ a ∈ u, B a) ∩
       ball x (R x) ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) := by
     intro z hz
-    set k := ⋃ (a : v) (ha : a ∈ w), B a
+    set k := ⋃ (a : v) (_ : a ∈ w), B a
     have k_closed : IsClosed k := isClosed_biUnion w.finite_toSet fun i _ => h't _ (ut (vu i.2))
     have z_notmem_k : z ∉ k := by
       simp only [not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich
-
-! This file was ported from Lean 3 source module measure_theory.measure.sub
-! leanprover-community/mathlib commit 562bbf524c595c153470e53d36c57b6f891cc480
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.measure.sub from "leanprover-community/mathlib"@"562bbf524c595c153470e53d36c57b6f891cc480"
 
 /-!
 # Subtraction of measures
@@ -114,7 +111,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     intro ν' h_ν'_in
     rw [mem_setOf_eq] at h_ν'_in
     refine' ⟨ν'.restrict s, _, restrict_le_self⟩
-    refine' ⟨ν' + (⊤ : Measure α).restrict (sᶜ), _, _⟩
+    refine' ⟨ν' + (⊤ : Measure α).restrict sᶜ, _, _⟩
     · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
       repeat' rw [← measure_inter_add_diff t h_meas_s]

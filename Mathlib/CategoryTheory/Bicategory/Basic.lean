@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.basic
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Iso
+
+#align_import category_theory.bicategory.basic from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Bicategories
@@ -89,7 +86,7 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
         (associator f g h).hom ≫ whiskerLeft f (whiskerLeft g η) ≫ (associator f g h').inv := by
     aesop_cat
   -- axioms for right whiskering:
-  id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c),  whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
+  id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
     aesop_cat
   comp_whiskerRight :
     ∀ {a b c} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) (i : b ⟶ c),

@@ -2,11 +2,6 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module topology.instances.add_circle
-! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Totient
 import Mathlib.Algebra.Ring.AddAut
@@ -15,6 +10,9 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.PathConnected
+
+#align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
 /-!
 # The additive circle
@@ -69,7 +67,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   intro s h
   rw [Filter.mem_map, mem_nhdsWithin_iff_exists_mem_nhds_inter]
   haveI : Nontrivial 𝕜 := ⟨⟨0, p, hp.ne⟩⟩
-  simp_rw [mem_nhds_iff_exists_Ioo_subset] at h⊢
+  simp_rw [mem_nhds_iff_exists_Ioo_subset] at h ⊢
   obtain ⟨l, u, hxI, hIs⟩ := h
   let d := toIcoDiv hp a x • p
   have hd := toIcoMod_mem_Ico hp a x
@@ -239,7 +237,7 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
     (x : AddCircle p) = y ↔ x = y := by
   refine' ⟨fun h => _, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
-  apply_fun equivIco p a  at h
+  apply_fun equivIco p a at h
   rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
   exact h
 #align add_circle.coe_eq_coe_iff_of_mem_Ico AddCircle.coe_eq_coe_iff_of_mem_Ico
@@ -403,7 +401,7 @@ theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
   induction m
-  · simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.natAbs_ofNat] at h⊢
+  · simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.natAbs_ofNat] at h ⊢
     exact addOrderOf_div_of_gcd_eq_one hn h
   · simp only [Int.cast_negSucc, neg_div, neg_mul, coe_neg, addOrderOf_neg]
     exact addOrderOf_div_of_gcd_eq_one hn h
@@ -507,6 +505,9 @@ end FiniteOrderPoints
 end LinearOrderedField
 
 variable (p : ℝ)
+
+instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
+  (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by

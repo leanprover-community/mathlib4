@@ -2,16 +2,13 @@
 Copyright (c) 2019 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.angle
-! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.Normed.Group.AddCircle
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Topology.Instances.Sign
+
+#align_import analysis.special_functions.trigonometric.angle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
 /-!
 # The type of angles
@@ -296,7 +293,7 @@ theorem cos_sin_inj {θ ψ : ℝ} (Hcos : cos θ = cos ψ) (Hsin : sin θ = sin 
   obtain ⟨n, hn⟩ : ∃ n, n • _ = _ := QuotientAddGroup.leftRel_apply.mp (Quotient.exact' hc)
   rw [← neg_one_mul, add_zero, ← sub_eq_zero, zsmul_eq_mul, ← mul_assoc, ← sub_mul, mul_eq_zero,
     eq_false (ne_of_gt pi_pos), or_false_iff, sub_neg_eq_add, ← Int.cast_zero, ← Int.cast_one,
-    ← Int.int_cast_ofNat,  ← Int.cast_mul, ← Int.cast_add, Int.cast_inj] at hn
+    ← Int.int_cast_ofNat, ← Int.cast_mul, ← Int.cast_add, Int.cast_inj] at hn
   have : (n * 2 + 1) % (2 : ℤ) = 0 % (2 : ℤ) := congr_arg (· % (2 : ℤ)) hn
   rw [add_comm, Int.add_mul_emod_self] at this
   exact absurd this one_ne_zero
@@ -929,11 +926,11 @@ theorem sign_toReal {θ : Angle} (h : θ ≠ π) : SignType.sign θ.toReal = θ.
         (sin_pos_of_pos_of_lt_pi ht ((toReal_le_pi θ).lt_of_ne (toReal_eq_pi_iff.not.2 h)))]
 #align real.angle.sign_to_real Real.Angle.sign_toReal
 
-theorem coe_abs_toReal_of_sign_nonneg {θ : Angle} (h : 0 ≤ θ.sign) : ↑(|θ.toReal|) = θ := by
+theorem coe_abs_toReal_of_sign_nonneg {θ : Angle} (h : 0 ≤ θ.sign) : ↑|θ.toReal| = θ := by
   rw [abs_eq_self.2 (toReal_nonneg_iff_sign_nonneg.2 h), coe_toReal]
 #align real.angle.coe_abs_to_real_of_sign_nonneg Real.Angle.coe_abs_toReal_of_sign_nonneg
 
-theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -↑(|θ.toReal|) = θ := by
+theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -↑|θ.toReal| = θ := by
   rw [SignType.nonpos_iff] at h
   rcases h with (h | h)
   · rw [abs_of_neg (toReal_neg_iff_sign_neg.2 h), coe_neg, neg_neg, coe_toReal]

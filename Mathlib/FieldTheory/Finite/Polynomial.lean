@@ -2,17 +2,14 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.finite.polynomial
-! leanprover-community/mathlib commit 5aa3c1de9f3c642eac76e11071c852766f220fd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+
+#align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
 
 /-!
 ## Polynomials over finite fields
@@ -212,16 +209,16 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
         Module.rank K (↥{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } →₀ K) :=
       LinearEquiv.rank_eq
         (Finsupp.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
-    _ = (#{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 }) := by rw [rank_finsupp_self']
-    _ = (#{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K }) := by
+    _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
+    _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
       refine' Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => _⟩
       refine' forall_congr' fun n => le_tsub_iff_right _
       exact Fintype.card_pos_iff.2 ⟨0⟩
-    _ = (#σ → { n // n < Fintype.card K }) :=
+    _ = #(σ → { n // n < Fintype.card K }) :=
       (@Equiv.subtypePiEquivPi σ (fun _ => ℕ) fun s n => n < Fintype.card K).cardinal_eq
-    _ = (#σ → Fin (Fintype.card K)) :=
+    _ = #(σ → Fin (Fintype.card K)) :=
       (Equiv.arrowCongr (Equiv.refl σ) Fin.equivSubtype.symm).cardinal_eq
-    _ = (#σ → K) := (Equiv.arrowCongr (Equiv.refl σ) (Fintype.equivFin K).symm).cardinal_eq
+    _ = #(σ → K) := (Equiv.arrowCongr (Equiv.refl σ) (Fintype.equivFin K).symm).cardinal_eq
     _ = Fintype.card (σ → K) := Cardinal.mk_fintype _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.rank_R MvPolynomial.rank_R

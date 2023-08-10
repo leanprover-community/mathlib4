@@ -2,11 +2,6 @@
 Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.perm.cycle.type
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Combinatorics.Partition
@@ -14,6 +9,8 @@ import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.NormNum.GCD
+
+#align_import group_theory.perm.cycle.type from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
 /-!
 # Cycle Types
@@ -507,7 +504,7 @@ theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
   have hσ3 : (σ : Perm α).support = ⊤ :=
     Finset.eq_univ_of_card (σ : Perm α).support (hσ2.orderOf.symm.trans hσ1)
   have hσ4 : Subgroup.closure {↑σ, τ} = ⊤ := closure_prime_cycle_swap h0 hσ2 hσ3 h3
-  rw [eq_top_iff, ← hσ4, Subgroup.closure_le, Set.insert_subset, Set.singleton_subset_iff]
+  rw [eq_top_iff, ← hσ4, Subgroup.closure_le, Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨Subtype.mem σ, h2⟩
 #align equiv.perm.subgroup_eq_top_of_swap_mem Equiv.Perm.subgroup_eq_top_of_swap_mem
 

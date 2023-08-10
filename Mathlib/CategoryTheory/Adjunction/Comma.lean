@@ -2,15 +2,12 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.adjunction.comma
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.StructuredArrow
+
+#align_import category_theory.adjunction.comma from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # Properties of comma categories relating to adjunctions
@@ -52,9 +49,7 @@ def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
   left_inv g := by
     let B' : StructuredArrow A G := StructuredArrow.mk ((⊥_ StructuredArrow A G).hom ≫ G.map g)
     let g' : ⊥_ StructuredArrow A G ⟶ B' := StructuredArrow.homMk g rfl
-    have : initial.to _ = g' := by
-      apply colimit.hom_ext
-      rintro ⟨⟨⟩⟩
+    have : initial.to _ = g' := by aesop_cat
     change CommaMorphism.right (initial.to B') = _
     rw [this]
     rfl
@@ -106,9 +101,7 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     let B' : CostructuredArrow G A :=
       CostructuredArrow.mk (G.map g ≫ (⊤_ CostructuredArrow G A).hom)
     let g' : B' ⟶ ⊤_ CostructuredArrow G A := CostructuredArrow.homMk g rfl
-    have : terminal.from _ = g' := by
-      apply limit.hom_ext
-      rintro ⟨⟨⟩⟩
+    have : terminal.from _ = g' := by aesop_cat
     change CommaMorphism.left (terminal.from B') = _
     rw [this]
     rfl
@@ -144,8 +137,6 @@ end OfTerminals
 section
 
 variable {F : C ⥤ D}
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/

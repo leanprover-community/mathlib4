@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Over
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+
+#align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of (commutative) (additive) groups has all limits
@@ -67,7 +64,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
-instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
+noncomputable instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
     Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
   change Group (sectionsSubgroup.{v, u} F)
   infer_instance
@@ -419,7 +416,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, FunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
-        simpa using (AddSubgroup.coe_zero _).symm
+        simp [(AddSubgroup.coe_zero _).symm]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         change _ = _ + _
@@ -431,6 +428,8 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
   hom_inv_id := by
+    -- Porting note: it would be nice to do the next two steps by a single `ext`,
+    -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
     refine equalizer.hom_ext ?_
     ext x
     dsimp
@@ -451,7 +450,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
-    (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext ; rfl
+    (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_hom_comp_subtype AddCommGroupCat.kernelIsoKer_hom_comp_subtype
 

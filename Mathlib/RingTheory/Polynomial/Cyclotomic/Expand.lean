@@ -2,13 +2,10 @@
 Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.cyclotomic.expand
-! leanprover-community/mathlib commit 5bfbcca0a7ffdd21cf1682e59106d6c942434a32
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+
+#align_import ring_theory.polynomial.cyclotomic.expand from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Cyclotomic polynomials and `expand`.
@@ -125,6 +122,7 @@ section CharP
 `cyclotomic (n * p) R = (cyclotomic n R) ^ (p - 1)`. -/
 theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type _) {p n : ℕ} [hp : Fact (Nat.Prime p)]
     [Ring R] [CharP R p] (hn : ¬p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ (p - 1) := by
+  letI : Algebra (ZMod p) R := ZMod.algebra _ _
   suffices cyclotomic (n * p) (ZMod p) = cyclotomic n (ZMod p) ^ (p - 1) by
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
@@ -139,6 +137,7 @@ theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type _) {p n : ℕ} [hp : Fa
 `cyclotomic (n * p) R = (cyclotomic n R) ^ p`. -/
 theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type _) {p n : ℕ} [hp : Fact (Nat.Prime p)] [Ring R]
     [CharP R p] (hn : p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ p := by
+  letI : Algebra (ZMod p) R := ZMod.algebra _ _
   suffices cyclotomic (n * p) (ZMod p) = cyclotomic n (ZMod p) ^ p by
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]

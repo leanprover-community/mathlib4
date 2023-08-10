@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.ultrafilter
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.ZornAtoms
+
+#align_import order.filter.ultrafilter from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Ultrafilters
@@ -444,7 +441,7 @@ theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : U
 
 /-- A filter equals the intersection of all the ultrafilters which contain it. -/
 theorem iSup_ultrafilter_le_eq (f : Filter α) :
-    (⨆ (g : Ultrafilter α) (_ : g ≤ f), (g : Filter α)) = f :=
+    ⨆ (g : Ultrafilter α) (_ : g ≤ f), (g : Filter α) = f :=
   eq_of_forall_ge_iff fun f' => by simp only [iSup_le_iff, ← le_iff_ultrafilter]
 #align filter.supr_ultrafilter_le_eq Filter.iSup_ultrafilter_le_eq
 
@@ -502,7 +499,7 @@ theorem compl_mem_hyperfilter_of_finite {s : Set α} (hf : Set.Finite s) : sᶜ 
 alias compl_mem_hyperfilter_of_finite ← _root_.Set.Finite.compl_mem_hyperfilter
 #align set.finite.compl_mem_hyperfilter Set.Finite.compl_mem_hyperfilter
 
-theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite (sᶜ)) : s ∈ hyperfilter α :=
+theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite sᶜ) : s ∈ hyperfilter α :=
   compl_compl s ▸ hf.compl_mem_hyperfilter
 #align filter.mem_hyperfilter_of_finite_compl Filter.mem_hyperfilter_of_finite_compl
 

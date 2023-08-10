@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.function.simple_func
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Support
+
+#align_import measure_theory.function.simple_func from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Simple functions
@@ -252,8 +249,8 @@ theorem piecewise_apply {s : Set α} (hs : MeasurableSet s) (f g : α →ₛ β)
 #align measure_theory.simple_func.piecewise_apply MeasureTheory.SimpleFunc.piecewise_apply
 
 @[simp]
-theorem piecewise_compl {s : Set α} (hs : MeasurableSet (sᶜ)) (f g : α →ₛ β) :
-    piecewise (sᶜ) hs f g = piecewise s hs.of_compl g f :=
+theorem piecewise_compl {s : Set α} (hs : MeasurableSet sᶜ) (f g : α →ₛ β) :
+    piecewise sᶜ hs f g = piecewise s hs.of_compl g f :=
   coe_injective <| by simp [hs]; convert Set.piecewise_compl s f g
 #align measure_theory.simple_func.piecewise_compl MeasureTheory.SimpleFunc.piecewise_compl
 
@@ -858,7 +855,7 @@ end
 
 theorem iSup_approx_apply [TopologicalSpace β] [CompleteLattice β] [OrderClosedTopology β] [Zero β]
     [MeasurableSpace β] [OpensMeasurableSpace β] (i : ℕ → β) (f : α → β) (a : α) (hf : Measurable f)
-    (h_zero : (0 : β) = ⊥) : (⨆ n, (approx i f n : α →ₛ β) a) = ⨆ (k) (_ : i k ≤ f a), i k := by
+    (h_zero : (0 : β) = ⊥) : ⨆ n, (approx i f n : α →ₛ β) a = ⨆ (k) (_ : i k ≤ f a), i k := by
   refine' le_antisymm (iSup_le fun n => _) (iSup_le fun k => iSup_le fun hk => _)
   · rw [approx_apply a hf, h_zero]
     refine' Finset.sup_le fun k _ => _
@@ -910,7 +907,7 @@ theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
 #align measure_theory.simple_func.monotone_eapprox MeasureTheory.SimpleFunc.monotone_eapprox
 
 theorem iSup_eapprox_apply (f : α → ℝ≥0∞) (hf : Measurable f) (a : α) :
-    (⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a) = f a := by
+    ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
   rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
   refine' le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt _)
   intro h

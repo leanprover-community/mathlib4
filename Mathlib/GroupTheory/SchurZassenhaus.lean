@@ -2,14 +2,11 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.schur_zassenhaus
-! leanprover-community/mathlib commit d57133e49cf06508700ef69030cd099917e0f0de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Sylow
 import Mathlib.GroupTheory.Transfer
+
+#align_import group_theory.schur_zassenhaus from "leanprover-community/mathlib"@"d57133e49cf06508700ef69030cd099917e0f0de"
 
 /-!
 # The Schur-Zassenhaus Theorem
@@ -21,7 +18,7 @@ In this file we prove the Schur-Zassenhaus theorem.
 - `exists_right_complement'_of_coprime` : The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (right) complement of `H`.
-- `exists_left_complement'_of_coprime`  The **Schur-Zassenhaus** theorem:
+- `exists_left_complement'_of_coprime` : The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
@@ -286,8 +283,7 @@ private theorem exists_right_complement'_of_coprime_aux' [Fintype G] (hG : Finty
 theorem exists_right_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H :=
   exists_right_complement'_of_coprime_aux' rfl hN
-#align subgroup.exists_right_complement'_of_coprime_of_fintype
-  Subgroup.exists_right_complement'_of_coprime_of_fintype
+#align subgroup.exists_right_complement'_of_coprime_of_fintype Subgroup.exists_right_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
   If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
@@ -318,8 +314,7 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
 theorem exists_left_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' H N :=
   Exists.imp (fun _ => IsComplement'.symm) (exists_right_complement'_of_coprime_of_fintype hN)
-#align subgroup.exists_left_complement'_of_coprime_of_fintype
-  Subgroup.exists_left_complement'_of_coprime_of_fintype
+#align subgroup.exists_left_complement'_of_coprime_of_fintype Subgroup.exists_left_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
   If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a

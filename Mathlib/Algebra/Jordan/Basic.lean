@@ -2,13 +2,10 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module algebra.jordan.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.OfAssociative
+
+#align_import algebra.jordan.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Jordan rings
@@ -80,7 +77,7 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 variable (A : Type _)
 
 /-- A (non-commutative) Jordan multiplication. -/
-class IsJordan [Mul A] where
+class IsJordan [Mul A] : Prop where
   lmul_comm_rmul : ∀ a b : A, a * b * a = a * (b * a)
   lmul_lmul_comm_lmul : ∀ a b : A, a * a * (a * b) = a * (a * a * b)
   lmul_lmul_comm_rmul : ∀ a b : A, a * a * (b * a) = a * a * b * a
@@ -89,7 +86,7 @@ class IsJordan [Mul A] where
 #align is_jordan IsJordan
 
 /-- A commutative Jordan multipication -/
-class IsCommJordan [Mul A] where
+class IsCommJordan [Mul A] : Prop where
   mul_comm : ∀ a b : A, a * b = b * a
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
 #align is_comm_jordan IsCommJordan

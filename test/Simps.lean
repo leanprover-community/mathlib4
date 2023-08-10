@@ -327,7 +327,7 @@ run_cmd liftTermElabM <| do
   let env ← getEnv
   guard <| env.find? `specify.specify1_fst |>.isSome
   guard <| env.find? `specify.specify2_snd |>.isSome
-  guard <| env.find? `specify.specify3_snd_fst  |>.isSome
+  guard <| env.find? `specify.specify3_snd_fst |>.isSome
   guard <| env.find? `specify.specify4_snd_snd |>.isSome
   guard <| env.find? `specify.specify4_snd |>.isSome
   guard <| env.find? `specify.specify5_fst |>.isSome
@@ -1174,13 +1174,13 @@ initialize_simps_projections MyGroup
 /-! Test that the automatic projection module doesn't throw an error if we have a projection name
 unrelated to one of the classes. -/
 
-class MyGOne {ι} [Zero ι] (A : ι → Type _)  where
+class MyGOne {ι} [Zero ι] (A : ι → Type _) where
   /-- The term `one` of grade 0 -/
   one : A 0
 
 initialize_simps_projections MyGOne
 
-class Artificial (n : Nat)  where
+class Artificial (n : Nat) where
   /-- The term `one` of grade 0 -/
   one : Nat
 

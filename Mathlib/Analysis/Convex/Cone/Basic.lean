@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.convex.cone.basic
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.LinearPMap
+
+#align_import analysis.convex.cone.basic from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Convex cones
@@ -771,7 +768,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
       rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
         smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
     · subst r
-      simp only [zero_smul, add_zero] at hzs⊢
+      simp only [zero_smul, add_zero] at hzs ⊢
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by

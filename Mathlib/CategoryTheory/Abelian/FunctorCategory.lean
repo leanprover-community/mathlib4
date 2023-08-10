@@ -2,16 +2,13 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.functor_category
-! leanprover-community/mathlib commit 8abfb3ba5e211d8376b855dab5d67f9eba9e0774
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+
+#align_import category_theory.abelian.functor_category from "leanprover-community/mathlib"@"8abfb3ba5e211d8376b855dab5d67f9eba9e0774"
 
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
@@ -68,8 +65,7 @@ def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
 theorem coimageImageComparison_app :
     coimageImageComparison (α.app X) =
       (coimageObjIso α X).inv ≫ (coimageImageComparison α).app X ≫ (imageObjIso α X).hom := by
-  apply coequalizer.hom_ext
-  apply equalizer.hom_ext
+  ext
   dsimp
   dsimp [imageObjIso, coimageObjIso, cokernel.map]
   simp only [coimage_image_factorisation, PreservesKernel.iso_hom, Category.assoc,

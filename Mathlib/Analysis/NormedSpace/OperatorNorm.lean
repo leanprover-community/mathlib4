@@ -2,17 +2,15 @@
 Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
-
-! This file was ported from Lean 3 source module analysis.normed_space.operator_norm
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
+
+#align_import analysis.normed_space.operator_norm from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
 /-!
 # Operator norm on the space of continuous linear maps
@@ -51,13 +49,8 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
     (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
-  refine' le_antisymm (le_of_forall_pos_le_add fun ε hε => _) (norm_nonneg (f x))
-  rcases NormedAddCommGroup.tendsto_nhds_nhds.1 (hf.tendsto 0) ε hε with ⟨δ, δ_pos, hδ⟩
-  replace hδ := hδ x
-  rw [sub_zero, hx] at hδ
-  replace hδ := le_of_lt (hδ δ_pos)
-  rw [map_zero, sub_zero] at hδ
-  rwa [zero_add]
+  rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
+  exact hx.map hf
 #align norm_image_of_norm_zero norm_image_of_norm_zero
 
 section
@@ -67,10 +60,9 @@ variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃]
 theorem SemilinearMapClass.bound_of_shell_semi_normed [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕)
     {ε C : ℝ} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
     (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) {x : E} (hx : ‖x‖ ≠ 0) :
-    ‖f x‖ ≤ C * ‖x‖ := by
-  rcases rescale_to_shell_semi_normed hc ε_pos hx with ⟨δ, hδ, δxle, leδx, _⟩
-  simpa only [map_smulₛₗ, norm_smul, mul_left_comm C, mul_le_mul_left (norm_pos_iff.2 hδ),
-    RingHomIsometric.is_iso] using hf (δ • x) leδx δxle
+    ‖f x‖ ≤ C * ‖x‖ :=
+  (normSeminorm 𝕜 E).bound_of_shell ((normSeminorm 𝕜₂ F).comp ⟨⟨f, map_add f⟩, map_smulₛₗ f⟩)
+    ε_pos hc hf hx
 #align semilinear_map_class.bound_of_shell_semi_normed SemilinearMapClass.bound_of_shell_semi_normed
 
 /-- A continuous linear map between seminormed spaces is bounded when the field is nontrivially
@@ -78,18 +70,9 @@ normed. The continuity ensures boundedness on a ball of some radius `ε`. The no
 norm is then used to rescale any element into an element of norm in `[ε/C, ε]`, whose image has a
 controlled norm. The norm control for the original element follows by rescaling. -/
 theorem SemilinearMapClass.bound_of_continuous [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕)
-    (hf : Continuous f) : ∃ C, 0 < C ∧ ∀ x : E, ‖f x‖ ≤ C * ‖x‖ := by
-  rcases NormedAddCommGroup.tendsto_nhds_nhds.1 (hf.tendsto 0) 1 zero_lt_one with ⟨ε, ε_pos, hε⟩
-  simp only [sub_zero, map_zero] at hε
-  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have : 0 < ‖c‖ / ε := div_pos (zero_lt_one.trans hc) ε_pos
-  refine' ⟨‖c‖ / ε, this, fun x => _⟩
-  by_cases hx : ‖x‖ = 0
-  · rw [hx, MulZeroClass.mul_zero]
-    exact le_of_eq (norm_image_of_norm_zero f hf hx)
-  refine' SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc (fun x hle hlt => _) hx
-  refine' (hε _ hlt).le.trans _
-  rwa [← div_le_iff' this, one_div_div]
+    (hf : Continuous f) : ∃ C, 0 < C ∧ ∀ x : E, ‖f x‖ ≤ C * ‖x‖ :=
+  let φ : E →ₛₗ[σ₁₂] F := ⟨⟨f, map_add f⟩, map_smulₛₗ f⟩
+  ((normSeminorm 𝕜₂ F).comp φ).bound_of_continuous_normedSpace (continuous_norm.comp hf)
 #align semilinear_map_class.bound_of_continuous SemilinearMapClass.bound_of_continuous
 
 end
@@ -201,7 +184,7 @@ theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, MulZeroClass.mul_zero] at hC⊢
+  · rwa [h, MulZeroClass.mul_zero] at hC ⊢
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact (div_le_iff hlt).mp
     (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
@@ -211,13 +194,21 @@ theorem dist_le_op_norm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := b
   simp_rw [dist_eq_norm, ← map_sub, f.le_op_norm]
 #align continuous_linear_map.dist_le_op_norm ContinuousLinearMap.dist_le_op_norm
 
+theorem le_of_op_norm_le_of_le {x} {a b : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) :
+    ‖f x‖ ≤ a * b :=
+  (f.le_op_norm x).trans <| by gcongr; exact (op_norm_nonneg f).trans hf
+
 theorem le_op_norm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
-  le_trans (f.le_op_norm x) (mul_le_mul_of_nonneg_left h f.op_norm_nonneg)
+  f.le_of_op_norm_le_of_le le_rfl h
 #align continuous_linear_map.le_op_norm_of_le ContinuousLinearMap.le_op_norm_of_le
 
 theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c * ‖x‖ :=
-  (f.le_op_norm x).trans (mul_le_mul_of_nonneg_right h (norm_nonneg x))
+  f.le_of_op_norm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_op_norm_le
+
+theorem op_norm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ} (hMp : 0 ≤ M) :
+    ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
+  ⟨f.le_of_op_norm_le, op_norm_le_bound f hMp⟩
 
 theorem ratio_le_op_norm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_nonneg_of_le_mul (norm_nonneg _) f.op_norm_nonneg (le_op_norm _ _)
@@ -352,7 +343,7 @@ protected theorem tmp_closedBall_div_subset {a b : ℝ} (ha : 0 < a) (hb : 0 < b
     closedBall (0 : E →SL[σ₁₂] F) (a / b) ⊆
       { f | ∀ x ∈ closedBall (0 : E) b, f x ∈ closedBall (0 : F) a } := by
   intro f hf x hx
-  rw [mem_closedBall_zero_iff] at hf hx⊢
+  rw [mem_closedBall_zero_iff] at hf hx ⊢
   calc
     ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
     _ ≤ a / b * b := by gcongr
@@ -610,6 +601,12 @@ theorem le_op_norm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL
     ‖f x y‖ ≤ ‖f‖ * ‖x‖ * ‖y‖ :=
   (f x).le_of_op_norm_le (f.le_op_norm x) y
 #align continuous_linear_map.le_op_norm₂ ContinuousLinearMap.le_op_norm₂
+
+-- porting note: new theorem
+theorem le_of_op_norm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
+    {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c)  :
+    ‖f x y‖ ≤ a * b * c :=
+  (f x).le_of_op_norm_le_of_le (f.le_of_op_norm_le_of_le hf hx) hy
 
 end
 
@@ -1195,7 +1192,7 @@ variable [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 �
 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : 𝕜' →L[𝕜] E →L[𝕜] E :=
-  ((Algebra.lsmul 𝕜 E).toLinearMap : 𝕜' →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
+  ((Algebra.lsmul 𝕜 𝕜 E).toLinearMap : 𝕜' →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
     simpa only [one_mul] using norm_smul_le c x
 #align continuous_linear_map.lsmul ContinuousLinearMap.lsmul
 
@@ -1698,8 +1695,8 @@ def extend : Fₗ →SL[σ₁₂] F :=
         exact f.map_add _ _
     map_smul' := fun k => by
       refine' fun b => h_dense.induction_on b _ _
-      · exact
-          isClosed_eq (cont.comp (continuous_const_smul _)) ((continuous_const_smul _).comp cont)
+      · exact isClosed_eq (cont.comp (continuous_const_smul _))
+          ((continuous_const_smul _).comp cont)
       · intro x
         rw [← map_smul]
         simp only [eq]
@@ -1729,40 +1726,26 @@ section
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
-set_option quotPrecheck false in
--- Porting note: this should be `local notation`, not `scoped notation`,
--- as we don't want it beyond the next declaration, but that causes errors.
-/-- Convenient notation for `op_norm_extend_le`. -/
-scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
-
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
-theorem op_norm_extend_le : ‖ψ‖ ≤ N * ‖f‖ := by
-  have uni : UniformInducing e := (uniformEmbedding_of_bound _ h_e).toUniformInducing
-  have eq : ∀ x, ψ (e x) = f x := uniformly_extend_of_ind uni h_dense f.uniformContinuous
-  by_cases N0 : 0 ≤ N
-  · refine' op_norm_le_bound ψ _ (isClosed_property h_dense (isClosed_le _ _) _)
-    · exact mul_nonneg N0 (norm_nonneg _)
-    · exact continuous_norm.comp (cont ψ)
-    · exact continuous_const.mul continuous_norm
-    · intro x
-      rw [eq]
-      calc
-        ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-        _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
-        _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
-  · have he : ∀ x : E, x = 0 := by
-      intro x
-      have N0 : N ≤ 0 := le_of_lt (lt_of_not_ge N0)
-      rw [← norm_le_zero_iff]
-      exact le_trans (h_e x) (mul_nonpos_of_nonpos_of_nonneg N0 (norm_nonneg _))
-    have hf : f = 0 := by
-      ext x
-      simp only [he x, zero_apply, map_zero]
-    have hψ : ψ = 0 := by
-      rw [hf]
-      apply extend_zero
-    rw [hψ, hf, norm_zero, norm_zero, MulZeroClass.mul_zero]
+theorem op_norm_extend_le :
+    ‖f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing‖ ≤ N * ‖f‖ := by
+  -- Add `op_norm_le_of_dense`?
+  refine op_norm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ ?_) fun x ↦ ?_)
+  · cases le_total 0 N with
+    | inl hN => exact mul_nonneg hN (norm_nonneg _)
+    | inr hN =>
+      have : Unique E := ⟨⟨0⟩, fun x ↦ norm_le_zero_iff.mp <|
+        (h_e x).trans (mul_nonpos_of_nonpos_of_nonneg hN (norm_nonneg _))⟩
+      obtain rfl : f = 0 := Subsingleton.elim ..
+      simp
+  · exact (cont _).norm
+  · exact continuous_const.mul continuous_norm
+  · rw [extend_eq]
+    calc
+      ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
+      _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
+      _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 #align continuous_linear_map.op_norm_extend_le ContinuousLinearMap.op_norm_extend_le
 
 end
@@ -2003,3 +1986,64 @@ if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`
 def IsCoercive [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 #align is_coercive IsCoercive
+
+section Equicontinuous
+
+variable {ι : Type _} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+  [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
+
+/-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
+between normed spaces. See also `WithSeminorms.equicontinuous_TFAE` for similar characterizations
+between spaces satisfying `WithSeminorms`. -/
+protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
+    [ EquicontinuousAt ((↑) ∘ f) 0,
+      Equicontinuous ((↑) ∘ f),
+      UniformEquicontinuous ((↑) ∘ f),
+      ∃ C, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
+      ∃ C ≥ 0, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
+      ∃ C, ∀ i, ‖f i‖ ≤ C,
+      ∃ C ≥ 0, ∀ i, ‖f i‖ ≤ C,
+      BddAbove (Set.range (‖f ·‖)),
+      (⨆ i, (‖f i‖₊ : ENNReal)) < ⊤ ] := by
+  -- `1 ↔ 2 ↔ 3` follows from `uniformEquicontinuous_of_equicontinuousAt_zero`
+  tfae_have 1 → 3
+  · exact uniformEquicontinuous_of_equicontinuousAt_zero f
+  tfae_have 3 → 2
+  · exact UniformEquicontinuous.equicontinuous
+  tfae_have 2 → 1
+  · exact fun H ↦ H 0
+  -- `4 ↔ 5 ↔ 6 ↔ 7 ↔ 8 ↔ 9` is morally trivial, we just have to use a lot of rewriting
+  -- and `congr` lemmas
+  tfae_have 4 ↔ 5
+  · rw [exists_ge_and_iff_exists]
+    exact fun C₁ C₂ hC ↦ forall₂_imp fun i x ↦ le_trans' <| by gcongr
+  tfae_have 5 ↔ 7
+  · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
+    rw [ContinuousLinearMap.op_norm_le_iff hC]
+  tfae_have 7 ↔ 8
+  · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
+  tfae_have 6 ↔ 8
+  · simp_rw [bddAbove_def, Set.forall_range_iff]
+  tfae_have 8 ↔ 9
+  · rw [ENNReal.iSup_coe_lt_top (fun i ↦ ‖f i‖₊), ← NNReal.bddAbove_coe, ← Set.range_comp]
+    rfl
+  -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
+  -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns
+  -- equicontinuity into existence of some continuous seminorm and
+  -- `Seminorm.bound_of_continuous_normedSpace` which characterize such seminorms.
+  tfae_have 3 ↔ 4
+  · refine ((norm_withSeminorms 𝕜₂ F).uniformEquicontinuous_iff_exists_continuous_seminorm _).trans
+      ?_
+    rw [forall_const]
+    constructor
+    · intro ⟨p, hp, hpf⟩
+      rcases p.bound_of_continuous_normedSpace hp with ⟨C, -, hC⟩
+      exact ⟨C, fun i x ↦ (hpf i x).trans (hC x)⟩
+    · intro ⟨C, hC⟩
+      refine ⟨C.toNNReal • normSeminorm 𝕜 E,
+        ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
+      refine (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
+  tfae_finish
+
+end Equicontinuous

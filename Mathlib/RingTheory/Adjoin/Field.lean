@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.adjoin.field
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.AdjoinRoot
+
+#align_import ring_theory.adjoin.field from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Adjoining elements to a field
@@ -59,8 +56,8 @@ def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type _} [CommRing R] [Al
 
 open Finset
 
-set_option maxHeartbeats 950000 in
-set_option synthInstance.maxHeartbeats 140000 in
+set_option maxHeartbeats 500000 in
+set_option synthInstance.maxHeartbeats 120000 in
 /-- If `K` and `L` are field extensions of `F` and we have `s : Finset K` such that
 the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s` embeds in `L`. -/
 theorem lift_of_splits {F K L : Type _} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]

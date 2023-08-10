@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
-
-! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Algebra.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Tactic.Continuity
+
+#align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
 /-!
 # Basic theory of topological spaces.
@@ -46,8 +43,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 
 ## References
 
-*  [N. Bourbaki, *General Topology*][bourbaki1966]
-*  [I. M. James, *Topologies and Uniformities*][james1999]
+* [N. Bourbaki, *General Topology*][bourbaki1966]
+* [I. M. James, *Topologies and Uniformities*][james1999]
 
 ## Tags
 
@@ -87,7 +84,7 @@ def TopologicalSpace.ofClosed {α : Type u} (T : Set (Set α)) (empty_mem : ∅ 
     (union_mem : ∀ A, A ∈ T → ∀ B, B ∈ T → A ∪ B ∈ T) : TopologicalSpace α where
   IsOpen X := Xᶜ ∈ T
   isOpen_univ := by simp [empty_mem]
-  isOpen_inter s t hs ht := by simpa only [compl_inter] using union_mem (sᶜ) hs (tᶜ) ht
+  isOpen_inter s t hs ht := by simpa only [compl_inter] using union_mem sᶜ hs tᶜ ht
   isOpen_sUnion s hs := by
     simp only [Set.compl_sUnion]
     exact sInter_mem (compl '' s) fun z ⟨y, hy, hz⟩ => hz ▸ hs y hy
@@ -191,14 +188,14 @@ theorem IsOpen.and : IsOpen { a | p₁ a } → IsOpen { a | p₂ a } → IsOpen 
 /-- A set is closed if its complement is open -/
 class IsClosed (s : Set α) : Prop where
   /-- The complement of a closed set is an open set. -/
-  isOpen_compl : IsOpen (sᶜ)
+  isOpen_compl : IsOpen sᶜ
 #align is_closed IsClosed
 
 set_option quotPrecheck false in
 /-- Notation for `IsClosed` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
-@[simp] theorem isOpen_compl_iff {s : Set α} : IsOpen (sᶜ) ↔ IsClosed s :=
+@[simp] theorem isOpen_compl_iff {s : Set α} : IsOpen sᶜ ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
 #align is_open_compl_iff isOpen_compl_iff
 
@@ -229,7 +226,7 @@ theorem isClosed_biInter {s : Set β} {f : β → Set α} (h : ∀ i ∈ s, IsCl
 #align is_closed_bInter isClosed_biInter
 
 @[simp]
-theorem isClosed_compl_iff {s : Set α} : IsClosed (sᶜ) ↔ IsOpen s := by
+theorem isClosed_compl_iff {s : Set α} : IsClosed sᶜ ↔ IsOpen s := by
   rw [← isOpen_compl_iff, compl_compl]
 #align is_closed_compl_iff isClosed_compl_iff
 
@@ -411,6 +408,10 @@ def closure (s : Set α) : Set α :=
   ⋂₀ { t | IsClosed t ∧ s ⊆ t }
 #align closure closure
 
+set_option quotPrecheck false in
+/-- Notation for `closure` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
+
 @[simp]
 theorem isClosed_closure {s : Set α} : IsClosed (closure s) :=
   isClosed_sInter fun _ => And.left
@@ -542,18 +543,18 @@ theorem interior_subset_closure {s : Set α} : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
 #align interior_subset_closure interior_subset_closure
 
-theorem closure_eq_compl_interior_compl {s : Set α} : closure s = interior (sᶜ)ᶜ := by
+theorem closure_eq_compl_interior_compl {s : Set α} : closure s = (interior sᶜ)ᶜ := by
   rw [interior, closure, compl_sUnion, compl_image_set_of]
   simp only [compl_subset_compl, isOpen_compl_iff]
 #align closure_eq_compl_interior_compl closure_eq_compl_interior_compl
 
 @[simp]
-theorem interior_compl {s : Set α} : interior (sᶜ) = closure sᶜ := by
+theorem interior_compl {s : Set α} : interior sᶜ = (closure s)ᶜ := by
   simp [closure_eq_compl_interior_compl]
 #align interior_compl interior_compl
 
 @[simp]
-theorem closure_compl {s : Set α} : closure (sᶜ) = interior sᶜ := by
+theorem closure_compl {s : Set α} : closure sᶜ = (interior s)ᶜ := by
   simp [closure_eq_compl_interior_compl]
 #align closure_compl closure_compl
 
@@ -608,11 +609,11 @@ theorem dense_iff_closure_eq {s : Set α} : Dense s ↔ closure s = univ :=
 alias dense_iff_closure_eq ↔ Dense.closure_eq _
 #align dense.closure_eq Dense.closure_eq
 
-theorem interior_eq_empty_iff_dense_compl {s : Set α} : interior s = ∅ ↔ Dense (sᶜ) := by
+theorem interior_eq_empty_iff_dense_compl {s : Set α} : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]
 #align interior_eq_empty_iff_dense_compl interior_eq_empty_iff_dense_compl
 
-theorem Dense.interior_compl {s : Set α} (h : Dense s) : interior (sᶜ) = ∅ :=
+theorem Dense.interior_compl {s : Set α} (h : Dense s) : interior sᶜ = ∅ :=
   interior_eq_empty_iff_dense_compl.2 <| by rwa [compl_compl]
 #align dense.interior_compl Dense.interior_compl
 
@@ -707,7 +708,7 @@ theorem self_diff_frontier (s : Set α) : s \ frontier s = interior s := by
     inter_eq_self_of_subset_right interior_subset, empty_union]
 #align self_diff_frontier self_diff_frontier
 
-theorem frontier_eq_closure_inter_closure {s : Set α} : frontier s = closure s ∩ closure (sᶜ) := by
+theorem frontier_eq_closure_inter_closure {s : Set α} : frontier s = closure s ∩ closure sᶜ := by
   rw [closure_compl, frontier, diff_eq]
 #align frontier_eq_closure_inter_closure frontier_eq_closure_inter_closure
 
@@ -729,7 +730,7 @@ theorem frontier_interior_subset {s : Set α} : frontier (interior s) ⊆ fronti
 
 /-- The complement of a set has the same frontier as the original set. -/
 @[simp]
-theorem frontier_compl (s : Set α) : frontier (sᶜ) = frontier s := by
+theorem frontier_compl (s : Set α) : frontier sᶜ = frontier s := by
   simp only [frontier_eq_closure_inter_closure, compl_compl, inter_comm]
 #align frontier_compl frontier_compl
 
@@ -749,8 +750,8 @@ theorem frontier_inter_subset (s t : Set α) :
 #align frontier_inter_subset frontier_inter_subset
 
 theorem frontier_union_subset (s t : Set α) :
-    frontier (s ∪ t) ⊆ frontier s ∩ closure (tᶜ) ∪ closure (sᶜ) ∩ frontier t := by
-  simpa only [frontier_compl, ← compl_union] using frontier_inter_subset (sᶜ) (tᶜ)
+    frontier (s ∪ t) ⊆ frontier s ∩ closure tᶜ ∪ closure sᶜ ∩ frontier t := by
+  simpa only [frontier_compl, ← compl_union] using frontier_inter_subset sᶜ tᶜ
 #align frontier_union_subset frontier_union_subset
 
 theorem IsClosed.frontier_eq {s : Set α} (hs : IsClosed s) : frontier s = s \ interior s := by
@@ -798,12 +799,12 @@ theorem Disjoint.frontier_right (hs : IsOpen s) (hd : Disjoint s t) : Disjoint s
 #align disjoint.frontier_right Disjoint.frontier_right
 
 theorem frontier_eq_inter_compl_interior {s : Set α} :
-    frontier s = interior sᶜ ∩ interior (sᶜ)ᶜ := by
+    frontier s = (interior s)ᶜ ∩ (interior sᶜ)ᶜ := by
   rw [← frontier_compl, ← closure_compl]; rfl
 #align frontier_eq_inter_compl_interior frontier_eq_inter_compl_interior
 
 theorem compl_frontier_eq_union_interior {s : Set α} :
-    frontier sᶜ = interior s ∪ interior (sᶜ) := by
+    (frontier s)ᶜ = interior s ∪ interior sᶜ := by
   rw [frontier_eq_inter_compl_interior]
   simp only [compl_inter, compl_compl]
 #align compl_frontier_eq_union_interior compl_frontier_eq_union_interior
@@ -835,7 +836,7 @@ scoped[Topology] notation "𝓝" => nhds
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x ({x}ᶜ)
+scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x {x}ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
 scoped[Topology] notation "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
@@ -1065,6 +1066,10 @@ instance nhds_neBot {a : α} : NeBot (𝓝 a) :=
   neBot_of_le (pure_le_nhds a)
 #align nhds_ne_bot nhds_neBot
 
+theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in l, f x = a) :
+    Tendsto f l (𝓝 a) :=
+  tendsto_const_nhds.congr' (.symm h)
+
 /-!
 ### Cluster points
 
@@ -1169,7 +1174,7 @@ def AccPt (x : α) (F : Filter α) : Prop :=
   NeBot (𝓝[≠] x ⊓ F)
 #align acc_pt AccPt
 
-theorem acc_iff_cluster (x : α) (F : Filter α) : AccPt x F ↔ ClusterPt x (𝓟 ({x}ᶜ) ⊓ F) := by
+theorem acc_iff_cluster (x : α) (F : Filter α) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
 
@@ -1311,7 +1316,7 @@ theorem dense_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : S
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
 -- porting note: was a `@[simp]` lemma but `simp` can prove it
-theorem closure_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : closure ({x}ᶜ) = (univ : Set α) :=
+theorem closure_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set α) :=
   (dense_compl_singleton x).closure_eq
 #align closure_compl_singleton closure_compl_singleton
 
@@ -1354,6 +1359,26 @@ theorem mem_closure_iff_nhds_basis {a : α} {p : ι → Prop} {s : ι → Set α
   (mem_closure_iff_nhds_basis' h).trans <| by
     simp only [Set.Nonempty, mem_inter_iff, exists_prop, and_comm]
 #align mem_closure_iff_nhds_basis mem_closure_iff_nhds_basis
+
+theorem clusterPt_iff_forall_mem_closure {F : Filter α} {a : α} :
+    ClusterPt a F ↔ ∀ s ∈ F, a ∈ closure s := by
+  simp_rw [ClusterPt, inf_neBot_iff, mem_closure_iff_nhds]
+  rw [forall₂_swap]
+
+theorem clusterPt_iff_lift'_closure {F : Filter α} {a : α} :
+    ClusterPt a F ↔ pure a ≤ (F.lift' closure) := by
+  simp_rw [clusterPt_iff_forall_mem_closure,
+    (hasBasis_pure _).le_basis_iff F.basis_sets.lift'_closure, id, singleton_subset_iff, true_and,
+    exists_const]
+
+theorem clusterPt_iff_lift'_closure' {F : Filter α} {a : α} :
+    ClusterPt a F ↔ (F.lift' closure ⊓ pure a).NeBot := by
+  rw [clusterPt_iff_lift'_closure, ← Ultrafilter.coe_pure, inf_comm, Ultrafilter.inf_neBot_iff]
+
+@[simp]
+theorem clusterPt_lift'_closure_iff {F : Filter α} {a : α} :
+    ClusterPt a (F.lift' closure) ↔ ClusterPt a F := by
+  simp [clusterPt_iff_lift'_closure, lift'_lift'_assoc (monotone_closure α) (monotone_closure α)]
 
 /-- `x` belongs to the closure of `s` if and only if some ultrafilter
   supported on `s` converges to `x`. -/
@@ -1433,8 +1458,8 @@ theorem Dense.inter_nhds_nonempty {s t : Set α} (hs : Dense s) {x : α} (ht : t
 
 theorem closure_diff {s t : Set α} : closure s \ closure t ⊆ closure (s \ t) :=
   calc
-    closure s \ closure t = closure tᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
-    _ ⊆ closure (closure tᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
+    closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
+    _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
     _ = closure (s \ closure t) := by simp only [diff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
 #align closure_diff closure_diff
@@ -1469,7 +1494,7 @@ Then `f` tends to `a` along `l` restricted to `s` if and only if it tends to `a`
 theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : β → α} {l : Filter β} {s : Set β} {a : α}
     (h : ∀ (x) (_ : x ∉ s), f x = a) : Tendsto f (l ⊓ 𝓟 s) (𝓝 a) ↔ Tendsto f l (𝓝 a) := by
   rw [tendsto_iff_comap, tendsto_iff_comap]
-  replace h : 𝓟 (sᶜ) ≤ comap f (𝓝 a)
+  replace h : 𝓟 sᶜ ≤ comap f (𝓝 a)
   · rintro U ⟨t, ht, htU⟩ x hx
     have : f x ∈ t := (h x hx).symm ▸ mem_of_mem_nhds ht
     exact htU this
@@ -1484,8 +1509,8 @@ theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : β → α} {l : Filter 
 ### Limits of filters in topological spaces
 
 In this section we define functions that return a limit of a filter (or of a function along a
-filter), if it exists, and a random point otherwise. This functions are rarely used in Mathlib, most
-of the theorems are written using `Filter.Tendsto`. One of the reasons is that
+filter), if it exists, and a random point otherwise. These functions are rarely used in Mathlib,
+most of the theorems are written using `Filter.Tendsto`. One of the reasons is that
 `Filter.limUnder f g = a` is not equivalent to `Filter.Tendsto g f (𝓝 a)` unless the codomain is a
 Hausdorff space and `g` has a limit along `f`.
 -/
@@ -1643,7 +1668,7 @@ theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf 
 theorem Continuous.comp' {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
-theorem Continuous.iterate {f : α → α} (h : Continuous f) (n : ℕ) : Continuous (f^[n]) :=
+theorem Continuous.iterate {f : α → α} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
 #align continuous.iterate Continuous.iterate
 
@@ -1702,7 +1727,7 @@ theorem continuousAt_id {x : α} : ContinuousAt id x :=
 #align continuous_at_id continuousAt_id
 
 theorem ContinuousAt.iterate {f : α → α} {x : α} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
-    ContinuousAt (f^[n]) x :=
+    ContinuousAt f^[n] x :=
   Nat.recOn n continuousAt_id fun n ihn =>
     show ContinuousAt (f^[n] ∘ f) x from ContinuousAt.comp (hx.symm ▸ ihn) hf
 #align continuous_at.iterate ContinuousAt.iterate
@@ -1751,6 +1776,7 @@ protected theorem Set.MapsTo.closure {s : Set α} {t : Set β} {f : α → β} (
   exact fun x hx => hx.map hc.continuousAt (tendsto_principal_principal.2 h)
 #align set.maps_to.closure Set.MapsTo.closure
 
+/-- See also `IsClosedMap.closure_image_eq_of_continuous`. -/
 theorem image_closure_subset_closure_image {f : α → β} {s : Set α} (h : Continuous f) :
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset

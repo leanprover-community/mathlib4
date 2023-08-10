@@ -2,17 +2,14 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.euclidean_domain.basic
-! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Basic
+
+#align_import algebra.euclidean_domain.basic from "leanprover-community/mathlib"@"bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6"
 
 /-!
 # Lemmas about Euclidean domains
@@ -221,7 +218,7 @@ theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
   | H1 _ _ h IH =>
     rw [xgcdAux_rec h]
     refine' IH _ p
-    unfold P at p p'⊢
+    unfold P at p p' ⊢
     dsimp
     rw [mul_sub, mul_sub, add_sub, sub_add_eq_add_sub, ← p', sub_sub, mul_comm _ s, ← mul_assoc,
       mul_comm _ t, ← mul_assoc, ← add_mul, ← p, mod_eq_sub_mul_div]
@@ -282,7 +279,7 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
   suffices x * y ∣ z * gcd x y by
     cases' this with p hp
     use p
-    generalize gcd x y = g at hxy hs hp⊢
+    generalize gcd x y = g at hxy hs hp ⊢
     subst hs
     rw [mul_left_comm, mul_div_cancel_left _ hxy, ← mul_left_inj' hxy, hp]
     rw [← mul_assoc]
@@ -320,7 +317,7 @@ theorem lcm_eq_zero_iff {x y : R} : lcm x y = 0 ↔ x = 0 ∨ y = 0 := by
     · rw [EuclideanDomain.gcd_eq_zero_iff] at hgxy
       exact hgxy.2
     · rcases gcd_dvd x y with ⟨⟨r, hr⟩, ⟨s, hs⟩⟩
-      generalize gcd x y = g at hr hs hy hgxy⊢
+      generalize gcd x y = g at hr hs hy hgxy ⊢
       subst hs
       rw [mul_div_cancel_left _ hgxy] at hy
       rw [hy, mul_zero]
@@ -336,7 +333,7 @@ theorem gcd_mul_lcm (x y : R) : gcd x y * lcm x y = x * y := by
     rw [EuclideanDomain.gcd_eq_zero_iff] at h
     rw [h.1, zero_mul]
   rcases gcd_dvd x y with ⟨⟨r, hr⟩, ⟨s, hs⟩⟩
-  generalize gcd x y = g at h hr⊢; subst hr
+  generalize gcd x y = g at h hr ⊢; subst hr
   rw [mul_assoc, mul_div_cancel_left _ h]
 #align euclidean_domain.gcd_mul_lcm EuclideanDomain.gcd_mul_lcm
 

@@ -2,15 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.order.ring.abs
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Order.Group.Abs
+
+#align_import algebra.order.ring.abs from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # Absolute values in linear ordered rings.
@@ -45,7 +42,7 @@ def absHom : α →*₀ α :=
   { toFun := abs
     map_zero' := abs_zero
     map_one' := abs_one
-    map_mul' :=  abs_mul }
+    map_mul' := abs_mul }
 #align abs_hom absHom
 
 @[simp]

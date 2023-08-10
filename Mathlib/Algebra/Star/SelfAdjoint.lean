@@ -2,15 +2,12 @@
 Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.star.self_adjoint
-! leanprover-community/mathlib commit a6ece35404f60597c651689c1b46ead86de5ac1b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Init.Data.Subtype.Basic
+
+#align_import algebra.star.self_adjoint from "leanprover-community/mathlib"@"a6ece35404f60597c651689c1b46ead86de5ac1b"
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
@@ -99,6 +96,12 @@ theorem starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S] {x
     (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 #align is_self_adjoint.star_hom_apply IsSelfAdjoint.starHom_apply
+
+/- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
+instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
+theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S]
+    [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
+  (IsSelfAdjoint.all x).starHom_apply f
 
 section AddMonoid
 
@@ -313,6 +316,10 @@ instance : Inhabited (selfAdjoint R) :=
   ⟨0⟩
 
 end AddGroup
+
+instance isStarNormal [NonUnitalRing R] [StarRing R] (x : selfAdjoint R) :
+    IsStarNormal (x : R) :=
+  x.prop.isStarNormal
 
 section Ring
 

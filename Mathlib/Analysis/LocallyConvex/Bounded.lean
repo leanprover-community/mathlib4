@@ -2,11 +2,6 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.locally_convex.bounded
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.Cauchy
+
+#align_import analysis.locally_convex.bounded from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Von Neumann Boundedness
@@ -170,7 +167,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
     filter_upwards [hε]with n hn
     rw [Absorbs] at hVS
-    push_neg  at hVS
+    push_neg at hVS
     rcases hVS _ (norm_pos_iff.mpr <| inv_ne_zero hn) with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
     refine' ⟨⟨x, hxS⟩, fun hnx => _⟩

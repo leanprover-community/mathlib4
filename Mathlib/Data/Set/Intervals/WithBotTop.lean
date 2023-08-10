@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.with_bot_top
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
+
+#align_import data.set.intervals.with_bot_top from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Intervals in `WithTop α` and `WithBot α`

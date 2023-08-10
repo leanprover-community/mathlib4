@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module topology.continuous_function.basic
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.continuous_function.basic from "leanprover-community/mathlib"@"55d771df074d0dd020139ee1cd4b95521422df9f"
 
 /-!
 # Continuous bundled maps
@@ -68,10 +65,10 @@ theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinA
   (map_continuous f).continuousWithinAt
 #align map_continuous_within_at map_continuousWithinAt
 
-instance : CoeTC F C(α, β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f }⟩
+/-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
+@[coe] def toContinuousMap (f : F) : C(α, β) := ⟨f, map_continuous f⟩
+
+instance : CoeTC F C(α, β) := ⟨toContinuousMap⟩
 
 end ContinuousMapClass
 
@@ -88,7 +85,6 @@ instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
   coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
 
-
 /- Porting note: Probably not needed anymore
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
@@ -99,6 +95,8 @@ instance : CoeFun C(α, β) fun _ => α → β :=
 theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
+
+instance : CanLift (α → β) C(α, β) FunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 /-- See note [custom simps projection]. -/
 def Simps.apply (f : C(α, β)) : α → β := f
@@ -325,6 +323,12 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 
+/-- `Sigma.mk i` as a bundled continuous map. -/
+@[simps apply]
+def sigmaMk {ι : Type _} {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] (i : ι) :
+    C(Y i, Σ i, Y i) where
+  toFun := Sigma.mk i
+
 section Pi
 
 variable {I A : Type _} {X Y : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
@@ -378,6 +382,11 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
   rfl
 #align continuous_map.restrict_apply_mk ContinuousMap.restrict_apply_mk
 
+theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
+    Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
+  FunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
+    congr_arg FunLike.coe h
+
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]
 def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
@@ -396,8 +405,8 @@ variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
 construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover : C(α, β) :=
-  haveI H : (⋃ i, S i) = Set.univ :=
-    Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
+  haveI H : ⋃ i, S i = Set.univ :=
+    Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
     simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous

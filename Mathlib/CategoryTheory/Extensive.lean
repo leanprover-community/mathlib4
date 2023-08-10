@@ -2,17 +2,14 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.extensive
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+
+#align_import category_theory.extensive from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 
@@ -301,7 +298,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
     FinitaryExtensive C ↔ IsVanKampenColimit c₀ := by
   refine' ⟨fun H => H.2 c₀ hc₀, fun H => _⟩
   constructor
-  simp_rw [BinaryCofan.isVanKampen_iff] at H⊢
+  simp_rw [BinaryCofan.isVanKampen_iff] at H ⊢
   intro X Y c hc X' Y' c' αX αY f hX hY
   obtain ⟨d, hd, hd'⟩ :=
     Limits.BinaryCofan.IsColimit.desc' hc (HT.from _ ≫ c₀.inl) (HT.from _ ≫ c₀.inr)
@@ -326,7 +323,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
         cases' h : s.fst x with val val
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
             exists_unique_eq']
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαY val : _).symm
       delta ExistsUnique at this
       choose l hl hl' using this
@@ -337,7 +334,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
         cases' h : s.fst x with val val
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val : _).symm
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
             exists_unique_eq']
@@ -442,8 +439,8 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     ext ⟨⟨x, ⟨⟩⟩, (hx : f x = Sum.inl PUnit.unit)⟩
     change dite _ _ _ = _
     split_ifs with h
-    . rfl
-    . cases (h hx) -- Porting note : in Lean3 it is `rfl`
+    · rfl
+    · cases (h hx) -- Porting note : in Lean3 it is `rfl`
   · intro s
     ext ⟨⟨x, ⟨⟩⟩, hx⟩
     change dite _ _ _ = _
@@ -474,7 +471,7 @@ instance : FinitaryExtensive TopCat.{u} := by
         intro x
         cases' h : s.fst x with val val
         · exact ⟨val, rfl, fun y h => Sum.inl_injective h.symm⟩
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαY val : _).symm
       delta ExistsUnique at this
@@ -490,7 +487,7 @@ instance : FinitaryExtensive TopCat.{u} := by
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
         cases' h : s.fst x with val val
-        · apply_fun f  at h
+        · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαX val : _).symm
         · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩

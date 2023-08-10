@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.laurent_series
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.RingTheory.Localization.FractionRing
+
+#align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Laurent Series
@@ -128,7 +125,7 @@ theorem coe_algebraMap [CommSemiring R] :
 #align laurent_series.coe_algebra_map LaurentSeries.coe_algebraMap
 
 /-- The localization map from power series to Laurent series. -/
-@[simps!]
+@[simps (config := { rhsMd := .all, simpRhs := true })]
 instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.semicontinuous
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.Instances.ENNReal
+
+#align_import topology.semicontinuous from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Semicontinuous maps
@@ -68,7 +65,7 @@ variable {α : Type _} [TopologicalSpace α] {β : Type _} [Preorder β] {f g : 
 
 
 /-- A real function `f` is lower semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
-`x'` close enough to `x` in  `s`, then `f x'` is at least `f x - ε`. We formulate this in a general
+`x'` close enough to `x` in `s`, then `f x'` is at least `f x - ε`. We formulate this in a general
 preordered space, using an arbitrary `y < f x` instead of `f x - ε`. -/
 def LowerSemicontinuousWithinAt (f : α → β) (s : Set α) (x : α) :=
   ∀ y < f x, ∀ᶠ x' in 𝓝[s] x, y < f x'
@@ -96,7 +93,7 @@ def LowerSemicontinuous (f : α → β) :=
 #align lower_semicontinuous LowerSemicontinuous
 
 /-- A real function `f` is upper semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
-`x'` close enough to `x` in  `s`, then `f x'` is at most `f x + ε`. We formulate this in a general
+`x'` close enough to `x` in `s`, then `f x'` is at most `f x + ε`. We formulate this in a general
 preordered space, using an arbitrary `y > f x` instead of `f x + ε`. -/
 def UpperSemicontinuousWithinAt (f : α → β) (s : Set α) (x : α) :=
   ∀ y, f x < y → ∀ᶠ x' in 𝓝[s] x, f x' < y
@@ -327,7 +324,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : LowerSemicontinuousAt f x) (gmon : Monotone g) : LowerSemicontinuousAt (g ∘ f) x := by
-  simp only [← lowerSemicontinuousWithinAt_univ_iff] at hf⊢
+  simp only [← lowerSemicontinuousWithinAt_univ_iff] at hf ⊢
   exact hg.comp_lowerSemicontinuousWithinAt hf gmon
 #align continuous_at.comp_lower_semicontinuous_at ContinuousAt.comp_lowerSemicontinuousAt
 

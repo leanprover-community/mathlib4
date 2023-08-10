@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.finset.pimage
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.PFun
 import Mathlib.Data.Part
+
+#align_import data.finset.pimage from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Image of a `Finset α` under a partially defined function
@@ -28,7 +25,7 @@ variable {α β : Type _}
 
 namespace Part
 
-/-- Convert a `o : Part α` with decidable `Part.Dom o` to `Finset α`. -/
+/-- Convert an `o : Part α` with decidable `Part.Dom o` to `Finset α`. -/
 def toFinset (o : Part α) [Decidable o.Dom] : Finset α :=
   o.toOption.toFinset
 #align part.to_finset Part.toFinset

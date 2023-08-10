@@ -2,14 +2,11 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.strong_rank_condition
-! leanprover-community/mathlib commit f37e88f3ec14ee5eab18a9330ace717740e9c92c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.InvariantBasisNumber
+
+#align_import linear_algebra.free_module.strong_rank_condition from "leanprover-community/mathlib"@"f37e88f3ec14ee5eab18a9330ace717740e9c92c"
 
 /-!
 
@@ -52,8 +49,9 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
   -- letI : Module.Finite R (Fin n.succ → R) := Module.Finite.pi
   -- letI : Module.Free R (Fin n.succ → R) := Module.Free.pi _ _
   let g : (Fin (n + 1) → R) →ₗ[R] Fin (n + 1) → R := (ExtendByZero.linearMap R castSucc).comp f
-  have hg : Injective g := (extend_injective (RelEmbedding.injective castSucc) _).comp hf
-  have hnex : ¬∃ i : Fin n, castSucc i = last n := fun ⟨i, hi⟩ => ne_of_lt (castSucc_lt_last i) hi
+  have hg : Injective g := (extend_injective Fin.strictMono_castSucc.injective _).comp hf
+  have hnex : ¬∃ i : Fin n, castSucc i = last n :=
+    fun ⟨i, hi⟩ => ne_of_lt (castSucc_lt_last i) hi
   let a₀ := (minpoly R g).coeff 0
   have : a₀ ≠ 0 := minpoly_coeff_zero_of_injective hg
   have : a₀ = 0 := by

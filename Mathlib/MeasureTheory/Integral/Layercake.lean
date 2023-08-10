@@ -2,14 +2,11 @@
 Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
-
-! This file was ported from Lean 3 source module measure_theory.integral.layercake
-! leanprover-community/mathlib commit 08a4542bec7242a5c60f179e4e49de8c0d677b1b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+
+#align_import measure_theory.integral.layercake from "leanprover-community/mathlib"@"08a4542bec7242a5c60f179e4e49de8c0d677b1b"
 
 /-!
 # The layer cake formula / Cavalieri's principle / tail probability formula
@@ -111,14 +108,12 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
           (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f x) := by
       funext a
       by_cases s ∈ Ioc (0 : ℝ) (f a)
-      ·
-        simp only [h, show s ∈ Ioi (0 : ℝ) from h.1, show f a ∈ Ici s from h.2, indicator_of_mem,
+      · simp only [h, show s ∈ Ioi (0 : ℝ) from h.1, show f a ∈ Ici s from h.2, indicator_of_mem,
           mul_one]
       · have h_copy := h
         simp only [mem_Ioc, not_and, not_le] at h
         by_cases h' : 0 < s
-        ·
-          simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
+        · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
             MulZeroClass.mul_zero]
         · have : s ∉ Ioi (0 : ℝ) := h'
           simp only [this, h', indicator_of_not_mem, not_false_iff, MulZeroClass.mul_zero,
@@ -217,7 +212,7 @@ instead. -/
 theorem lintegral_eq_lintegral_meas_le (μ : Measure α) [SigmaFinite μ] (f_nn : 0 ≤ f)
     (f_mble : Measurable f) :
     (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) = ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} := by
-  set cst := fun t : ℝ => (1 : ℝ)
+  set cst := fun _ : ℝ => (1 : ℝ)
   have cst_intble : ∀ t > 0, IntervalIntegrable cst volume 0 t := fun _ _ =>
     intervalIntegrable_const
   have key :=

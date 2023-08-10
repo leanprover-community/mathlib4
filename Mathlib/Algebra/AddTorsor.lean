@@ -2,13 +2,10 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.add_torsor
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
+
+#align_import algebra.add_torsor from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Torsors of additive group actions
@@ -283,7 +280,7 @@ namespace Prod
 
 variable {G : Type _} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
-instance : AddTorsor (G × G') (P × P') where
+instance instAddTorsor : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
@@ -447,6 +444,22 @@ def pointReflection (x : P) : Perm P :=
 theorem pointReflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x :=
   rfl
 #align equiv.point_reflection_apply Equiv.pointReflection_apply
+
+@[simp]
+theorem pointReflection_vsub_left (x y : P) : pointReflection x y -ᵥ x = x -ᵥ y :=
+  vadd_vsub ..
+
+@[simp]
+theorem left_vsub_pointReflection (x y : P) : x -ᵥ pointReflection x y = y -ᵥ x :=
+  neg_injective <| by simp
+
+@[simp]
+theorem pointReflection_vsub_right (x y : P) : pointReflection x y -ᵥ y = 2 • (x -ᵥ y) := by
+  simp [pointReflection, two_nsmul, vadd_vsub_assoc]
+
+@[simp]
+theorem right_vsub_pointReflection (x y : P) : y -ᵥ pointReflection x y = 2 • (y -ᵥ x) :=
+  neg_injective <| by simp [← neg_nsmul]
 
 @[simp]
 theorem pointReflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=

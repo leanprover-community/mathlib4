@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.subobject.lattice
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.WellPowered
+
+#align_import category_theory.subobject.lattice from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # The lattice of subobjects
@@ -205,7 +202,7 @@ def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f
   intro k₁ k₂
   refine' homMk _ _
   apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  . apply coprod.hom_ext
+  · ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
@@ -438,8 +435,8 @@ theorem finset_inf_factors {I : Type _} {A B : C} {s : Finset I} {P : I → Subo
     (s.inf P).Factors f ↔ ∀ i ∈ s, (P i).Factors f := by
   classical
   induction' s using Finset.induction_on with _ _ _ ih
-  . simp [top_factors]
-  . simp [ih]
+  · simp [top_factors]
+  · simp [ih]
 #align category_theory.subobject.finset_inf_factors CategoryTheory.Subobject.finset_inf_factors
 
 -- `i` is explicit here because often we'd like to defer a proof of `m`
@@ -448,8 +445,8 @@ theorem finset_inf_arrow_factors {I : Type _} {B : C} (s : Finset I) (P : I → 
   classical
   revert i m
   induction' s using Finset.induction_on with _ _ _ ih
-  . rintro _ ⟨⟩
-  . intro _ m
+  · rintro _ ⟨⟩
+  · intro _ m
     rw [Finset.inf_insert]
     simp only [Finset.mem_insert] at m
     rcases m with (rfl | m)
@@ -475,8 +472,8 @@ theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
     (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
   apply le_antisymm
-  . refine' le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
-  . apply leOfHom
+  · refine' le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
+  · apply leOfHom
     exact prod.lift (inf_le_left _ _).hom (inf_le_right _ _).hom
 #align category_theory.subobject.prod_eq_inf CategoryTheory.Subobject.prod_eq_inf
 
@@ -639,7 +636,7 @@ def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
 
 theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ f := by
   fapply le_of_comm
-  . exact (underlyingIso _).hom ≫
+  · exact (underlyingIso _).hom ≫
       Limits.limit.π (wideCospan s)
         (some ⟨equivShrink (Subobject A) f,
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
@@ -651,7 +648,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     aesop_cat
 #align category_theory.subobject.Inf_le CategoryTheory.Subobject.sInf_le
 
-theorem le_sInf  {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
+theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
   fapply le_of_comm
   · exact Limits.limit.lift _ (leInfCone s f k) ≫ (underlyingIso _).inv
@@ -703,15 +700,15 @@ theorem symm_apply_mem_iff_mem_image {α β : Type _} (e : α ≃ β) (s : Set �
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
-  . refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
+  · refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
     · refine' Sigma.desc _
       rintro ⟨g, m⟩
       refine' underlying.map (homOfLE (k _ _))
-      simpa [symm_apply_mem_iff_mem_image] using m
+      simpa using m
     · ext
       dsimp [smallCoproductDesc]
       simp
-  . dsimp [sSup]
+  · dsimp [sSup]
     rw [assoc, image.lift_fac, underlyingIso_hom_comp_eq_mk]
 #align category_theory.subobject.Sup_le CategoryTheory.Subobject.sSup_le
 
@@ -763,10 +760,10 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
   map_rel_iff' {W Z} := by
     dsimp
     constructor
-    . intro h
+    · intro h
       exact le_of_comm (((underlyingIso _).inv ≫ ofLE _ _ (Subtype.mk_le_mk.mp h) ≫
         (underlyingIso _).hom)) (by aesop_cat)
-    . intro h
+    · intro h
       exact Subtype.mk_le_mk.mpr (le_of_comm
         ((underlyingIso _).hom ≫ ofLE _ _ h ≫ (underlyingIso _).inv) (by simp))
 #align category_theory.subobject.subobject_order_iso CategoryTheory.Subobject.subobjectOrderIso

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
-
-! This file was ported from Lean 3 source module order.prime_ideal
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Order.PFilter
+
+#align_import order.prime_ideal from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Prime ideals
@@ -94,7 +91,7 @@ end PrimePair
 -/
 @[mk_iff]
 class IsPrime [Preorder P] (I : Ideal P) extends IsProper I : Prop where
-  compl_filter : IsPFilter ((I : Set P)ᶜ)
+  compl_filter : IsPFilter (I : Set P)ᶜ
 #align order.ideal.is_prime Order.Ideal.IsPrime
 
 section Preorder
@@ -220,7 +217,7 @@ variable [Preorder P]
 -/
 @[mk_iff]
 class IsPrime (F : PFilter P) : Prop where
-  compl_ideal : IsIdeal ((F : Set P)ᶜ)
+  compl_ideal : IsIdeal (F : Set P)ᶜ
 #align order.pfilter.is_prime Order.PFilter.IsPrime
 
 /-- Create an element of type `Order.Ideal.PrimePair` from a filter satisfying the predicate

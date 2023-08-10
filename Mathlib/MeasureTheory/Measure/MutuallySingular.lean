@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.mutually_singular
-! leanprover-community/mathlib commit 70a4f2197832bceab57d7f41379b2592d1110570
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.measure.mutually_singular from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
 
 /-! # Mutually singular measures
 
@@ -40,7 +37,7 @@ variable {α : Type _} {m0 : MeasurableSpace α} {μ μ₁ μ₂ ν ν₁ ν₂ 
 /-- Two measures `μ`, `ν` are said to be mutually singular if there exists a measurable set `s`
 such that `μ s = 0` and `ν sᶜ = 0`. -/
 def MutuallySingular {_ : MeasurableSpace α} (μ ν : Measure α) : Prop :=
-  ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν (sᶜ) = 0
+  ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν sᶜ = 0
 #align measure_theory.measure.mutually_singular MeasureTheory.Measure.MutuallySingular
 
 -- mathport name: measure.mutually_singular

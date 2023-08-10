@@ -2,13 +2,10 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module algebra.abs
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
+
+#align_import algebra.abs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!
 # Absolute value
 
@@ -63,10 +60,20 @@ class NegPart (α : Type _) where
 #align has_neg_part NegPart
 
 @[inherit_doc Abs.abs]
-macro atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
+macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
+
+/-- Unexpander for the notation `|a|` for `abs a`.
+Tries to add discretionary parentheses in unparseable cases. -/
+@[app_unexpander Abs.abs]
+def Abs.abs.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $a) =>
+    match a with
+    | `(|$_|) | `(-$_) => `(|($a)|)
+    | _ => `(|$a|)
+  | _ => throw ()
 
 @[inherit_doc]
-postfix:1000 "⁺" => PosPart.pos
+postfix:max "⁺" => PosPart.pos
 
 @[inherit_doc]
-postfix:1000 "⁻" => NegPart.neg
+postfix:max "⁻" => NegPart.neg

@@ -81,7 +81,7 @@ syntax (name := tfaeFinish) "tfae_finish" : tactic
 /-- Extract a list of `Prop` expressions from an expression of the form `TFAE [P₁, P₂, ...]` as
 long as `[P₁, P₂, ...]` is an explicit list. -/
 partial def getTFAEList (t : Expr) : MetaM (Q(List Prop) × List Q(Prop)) := do
-  let .app tfae (l : Q(List Prop)) ← whnfR t
+  let .app tfae (l : Q(List Prop)) ← whnfR <|← instantiateMVars t
     | throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   unless (← withNewMCtxDepth <| isDefEq tfae q(TFAE)) do
     throwError "goal must be of the form TFAE [P₁, P₂, ...]"
@@ -200,21 +200,22 @@ def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : MetaM 
 elab_rules : tactic
 | `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num) => do
   let goal ← getMainGoal
-  let (_, tfaeList) ← getTFAEList (← goal.getType)
-  let l₀ := tfaeList.length
-  let i' ← elabIndex i l₀
-  let j' ← elabIndex j l₀
-  let Pi := tfaeList.get! (i'-1)
-  let Pj := tfaeList.get! (j'-1)
-  let type ← mkImplType Pi arr Pj
-  let (goal1, goal2) ← tfaeHaveCore goal h i j arr type
-  replaceMainGoal [goal1, goal2]
+  goal.withContext do
+    let (_, tfaeList) ← getTFAEList (← goal.getType)
+    let l₀ := tfaeList.length
+    let i' ← elabIndex i l₀
+    let j' ← elabIndex j l₀
+    let Pi := tfaeList.get! (i'-1)
+    let Pj := tfaeList.get! (j'-1)
+    let type ← mkImplType Pi arr Pj
+    let (goal1, goal2) ← tfaeHaveCore goal h i j arr type
+    replaceMainGoal [goal1, goal2]
 
 elab_rules : tactic
 | `(tactic| tfae_finish) => do
   let goal ← getMainGoal
-  let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
   goal.withContext do
+    let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
     closeMainGoal <|← AtomM.run .reducible do
       let is ← tfaeList.mapM AtomM.addAtom
       let mut hyps := #[]

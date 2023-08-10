@@ -2,13 +2,10 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.induced_topology
-! leanprover-community/mathlib commit ba43124c37cfe0009bbfc57505f9503ae0e8c1af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.DenseSubsite
+
+#align_import category_theory.sites.induced_topology from "leanprover-community/mathlib"@"ba43124c37cfe0009bbfc57505f9503ae0e8c1af"
 
 /-!
 # Induced Topology
@@ -134,8 +131,7 @@ variable (J)
 theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
   intro Y T
   convert T.property
-  ext Z
-  intro f
+  ext Z f
   constructor
   · rintro ⟨_, _, g', hg, rfl⟩
     exact T.val.downward_closed hg g'

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.banach_steinhaus
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Topology.MetricSpace.Baire
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import analysis.normed_space.banach_steinhaus from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The Banach-Steinhaus theorem: Uniform Boundedness Principle
@@ -43,7 +40,7 @@ theorem banach_steinhaus {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ�
   have hc : ∀ n : ℕ, IsClosed (e n) := fun i =>
     isClosed_iInter fun i => isClosed_le (Continuous.norm (g i).cont) continuous_const
   -- the union is the entire space; this is where we use `h`
-  have hU : (⋃ n : ℕ, e n) = univ := by
+  have hU : ⋃ n : ℕ, e n = univ := by
     refine' eq_univ_of_forall fun x => _
     cases' h x with C hC
     obtain ⟨m, hm⟩ := exists_nat_ge C
@@ -81,7 +78,7 @@ open ENNReal
 /-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖⬝‖₊ : ℝ≥0∞`
 for convenience. -/
 theorem banach_steinhaus_iSup_nnnorm {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
-    (h : ∀ x, (⨆ i, ↑‖g i x‖₊) < ∞) : (⨆ i, ↑‖g i‖₊) < ∞ := by
+    (h : ∀ x, ⨆ i, ↑‖g i x‖₊ < ∞) : ⨆ i, ↑‖g i‖₊ < ∞ := by
   have h' : ∀ x : E, ∃ C : ℝ, ∀ i : ι, ‖g i x‖ ≤ C := by
     intro x
     rcases lt_iff_exists_coe.mp (h x) with ⟨p, hp₁, _⟩

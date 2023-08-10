@@ -2,11 +2,6 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Moritz Doll
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.sesquilinear_form
-! leanprover-community/mathlib commit 84582d2872fb47c0c17eec7382dc097c9ec7137a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.Matrix.Basis
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.SesquilinearForm
+
+#align_import linear_algebra.matrix.sesquilinear_form from "leanprover-community/mathlib"@"84582d2872fb47c0c17eec7382dc097c9ec7137a"
 
 /-!
 # Sesquilinear form
@@ -136,7 +133,7 @@ theorem Matrix.toMatrix₂Aux_toLinearMap₂'Aux (f : Matrix n m R) :
     LinearMap.toMatrix₂Aux (fun i => LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
         (fun j => LinearMap.stdBasis R₂ (fun _ => R₂) j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
       f := by
-  ext (i j)
+  ext i j
   simp_rw [LinearMap.toMatrix₂Aux_apply, Matrix.toLinearMap₂'Aux_stdBasis]
 #align matrix.to_matrix₂_aux_to_linear_map₂'_aux Matrix.toMatrix₂Aux_toLinearMap₂'Aux
 
@@ -286,7 +283,7 @@ variable [DecidableEq n'] [DecidableEq m']
 theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (l : (n' → R) →ₗ[R] n → R)
     (r : (m' → R) →ₗ[R] m → R) :
     toMatrix₂' (B.compl₁₂ l r) = (toMatrix' l)ᵀ ⬝ toMatrix₂' B ⬝ toMatrix' r := by
-  ext (i j)
+  ext i j
   simp only [LinearMap.toMatrix₂'_apply, LinearMap.compl₁₂_apply, transpose_apply, Matrix.mul_apply,
     LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
   rw [sum_comm]
@@ -446,7 +443,7 @@ theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) 
     (r : M₂' →ₗ[R] M₂) :
     LinearMap.toMatrix₂ b₁' b₂' (B.compl₁₂ l r) =
       (toMatrix b₁' b₁ l)ᵀ ⬝ LinearMap.toMatrix₂ b₁ b₂ B ⬝ toMatrix b₂' b₂ r := by
-  ext (i j)
+  ext i j
   simp only [LinearMap.toMatrix₂_apply, compl₁₂_apply, transpose_apply, Matrix.mul_apply,
     LinearMap.toMatrix_apply, LinearEquiv.coe_mk, sum_mul]
   rw [sum_comm]

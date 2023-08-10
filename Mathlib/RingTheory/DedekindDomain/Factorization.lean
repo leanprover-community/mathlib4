@@ -2,13 +2,10 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.factorization
-! leanprover-community/mathlib commit 2f588be38bb5bec02f218ba14f82fc82eb663f87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
+
+#align_import ring_theory.dedekind_domain.factorization from "leanprover-community/mathlib"@"2f588be38bb5bec02f218ba14f82fc82eb663f87"
 
 /-!
 # Factorization of ideals of Dedekind domains
@@ -114,10 +111,10 @@ theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
   have h_ne_zero : v.maxPowDividing I ≠ 0 := pow_ne_zero _ v.ne_bot
   rw [← mul_finprod_cond_ne v hf, pow_add, pow_one, finprod_cond_ne _ _ hf]
   intro h_contr
-  have hv_prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.IsPrime
+  have hv_prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
   obtain ⟨w, hw, hvw'⟩ :=
     Prime.exists_mem_finset_dvd hv_prime ((mul_dvd_mul_iff_left h_ne_zero).mp h_contr)
-  have hw_prime : Prime w.asIdeal := Ideal.prime_of_isPrime w.ne_bot w.IsPrime
+  have hw_prime : Prime w.asIdeal := Ideal.prime_of_isPrime w.ne_bot w.isPrime
   have hvw := Prime.dvd_of_dvd_pow hv_prime hvw'
   rw [Prime.dvd_prime_iff_associated hv_prime hw_prime, associated_iff_eq] at hvw
   exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext w v (Eq.symm hvw))
@@ -155,7 +152,7 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
-    (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) = I := by
+    ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
   apply Associates.eq_of_eq_counts
   · apply Associates.finprod_ne_zero I

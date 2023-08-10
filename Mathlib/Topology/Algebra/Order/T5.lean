@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.t5
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
 import Mathlib.Data.Set.Intervals.OrdConnectedComponent
+
+#align_import topology.algebra.order.t5 from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Linear order is a completely normal Hausdorff topological space
@@ -44,7 +41,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
   · exact mem_of_superset hmem' (disjoint_left.1 H)
   · simp only [Set.disjoint_left, not_forall, Classical.not_not] at H
     rcases H with ⟨c, ⟨hac, hcb⟩, hc⟩
-    have hsub' : Icc a b ⊆ ordConnectedComponent (tᶜ) a :=
+    have hsub' : Icc a b ⊆ ordConnectedComponent tᶜ a :=
       subset_ordConnectedComponent (left_mem_Icc.2 hab) hsub
     have hd : Disjoint s (ordConnectedSection (ordSeparatingSet s t)) :=
       disjoint_left_ordSeparatingSet.mono_right ordConnectedSection_subset

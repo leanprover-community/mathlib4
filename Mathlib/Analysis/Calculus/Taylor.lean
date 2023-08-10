@@ -2,15 +2,13 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.calculus.taylor
-! leanprover-community/mathlib commit 3a69562db5a458db8322b190ec8d9a8bbd8a5b14
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Data.Polynomial.Module
+
+#align_import analysis.calculus.taylor from "leanprover-community/mathlib"@"3a69562db5a458db8322b190ec8d9a8bbd8a5b14"
 
 /-!
 # Taylor's theorem
@@ -237,7 +235,7 @@ theorem has_deriv_within_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (
 
 We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
 `n+1`-times differentiable on the open set `Ioo x₀ x`, and `g` is a differentiable function on
-`Ioo x₀ x` and continuous on `Icc x₀ x`. Then there exists a `x' ∈ Ioo x₀ x` such that
+`Ioo x₀ x` and continuous on `Icc x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such that
 $$f(x) - (P_n f)(x₀, x) = \frac{(x - x')^n}{n!} \frac{g(x) - g(x₀)}{g' x'},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$. -/
 theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
@@ -265,8 +263,8 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
 /-- **Taylor's theorem** with the Lagrange form of the remainder.
 
 We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
-`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists a `x' ∈ Ioo x₀ x` such that
-$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
+`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
@@ -306,8 +304,8 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
 /-- **Taylor's theorem** with the Cauchy form of the remainder.
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc x₀ x` and
-`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists a `x' ∈ Ioo x₀ x` such that
-$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
+`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)

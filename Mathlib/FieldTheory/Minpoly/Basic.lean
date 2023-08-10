@@ -2,13 +2,10 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.minpoly.basic
-! leanprover-community/mathlib commit df0098f0db291900600f32070f6abb3e178be2ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.IntegralClosure
+
+#align_import field_theory.minpoly.basic from "leanprover-community/mathlib"@"df0098f0db291900600f32070f6abb3e178be2ba"
 
 /-!
 # Minimal polynomials
@@ -152,7 +149,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
     have hr0 : r ≠ 0 := by
       rintro rfl
       exact ne_zero hx (MulZeroClass.mul_zero p ▸ hr)
-    apply_fun natDegree  at hr
+    apply_fun natDegree at hr
     rw [hm.natDegree_mul' hr0] at hr
     apply Nat.le_of_add_le_add_left
     rw [add_zero]
@@ -209,7 +206,7 @@ theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMa
   simp_rw [or_iff_not_imp_left]
   intro q hl h0
   rw [← natDegree_lt_natDegree_iff h0, natDegree_X_sub_C, Nat.lt_one_iff] at hl
-  rw [eq_C_of_natDegree_eq_zero hl] at h0⊢
+  rw [eq_C_of_natDegree_eq_zero hl] at h0 ⊢
   rwa [aeval_C, map_ne_zero_iff _ hf, ← C_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align minpoly.eq_X_sub_C_of_algebra_map_inj minpoly.eq_X_sub_C_of_algebraMap_inj

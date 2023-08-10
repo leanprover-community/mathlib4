@@ -42,7 +42,7 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) : x ^ 2 * a + c ≤ x ^ 
   rel [h1, h2]
 
 -- not solved by `nlinarith` because of the cube and the absolute value
-example {a b c x  y : ℤ} (hb : b ≥ 4) (hxy : x ≤ y) :
+example {a b c x y : ℤ} (hb : b ≥ 4) (hxy : x ≤ y) :
     c + (3 * |a| ^ 3 * b + b * 7 + 14) * x ≤ c + (3 * |a| ^ 3 * b + b * 7 + 14) * y := by
   gcongr
 
@@ -87,7 +87,7 @@ example (a b c d : ℕ) (h1 : a ≤ b) (h2 : c ≤ d) : a * c ≤ b * d := by gc
 example {a b : ℚ} (h : 0 ≤ a ^ 6) : 0 + b ≤ a ^ 6 + b := by gcongr
 
 -- another priority test
-example {k m n : ℤ}  (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by gcongr
+example {k m n : ℤ} (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by gcongr
 
 -- test of behaviour when no lemmas are applicable
 example (n k : ℕ) (H : n ^ k + 1 ≤ k ^ n + 1) : n ^ k ≤ k ^ n := by
@@ -106,6 +106,13 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x *
     (rel [h1])
   have : 0 ≤ x := by linarith
   rel [h1, h2]
+
+-- test for a missing `withContext`
+example {x y : ℚ} {n : ℕ} (hx : 0 ≤ x) (hn : 0 < n) : y ≤ x := by
+  have h : x < y := sorry
+  have : x ^ n < y ^ n
+  · rel [h] -- before bugfix: complained "unknown identifier 'h'"
+  sorry
 
 /-! ## Non-finishing examples -/
 

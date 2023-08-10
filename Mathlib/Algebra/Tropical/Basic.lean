@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module algebra.tropical.basic
-! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Order.Monoid.MinMax
+
+#align_import algebra.tropical.basic from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
 /-!
 
@@ -159,7 +156,7 @@ theorem surjective_untrop : Function.Surjective (untrop : Tropical R → R) :=
 instance [Inhabited R] : Inhabited (Tropical R) :=
   ⟨trop default⟩
 
-/-- Recursing on a `x' : Tropical R` is the same as recursing on an `x : R` reinterpreted
+/-- Recursing on an `x' : Tropical R` is the same as recursing on an `x : R` reinterpreted
 as a term of `Tropical R` via `trop x`. -/
 @[simp]
 def tropRec {F : Tropical R → Sort v} (h : ∀ X, F (trop X)) : ∀ X, F X := fun X => h (untrop X)

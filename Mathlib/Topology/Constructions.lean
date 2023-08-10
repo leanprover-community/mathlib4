@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Maps
 import Mathlib.Order.Filter.Pi
+
+#align_import topology.constructions from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -268,7 +265,7 @@ def of : α ≃ CofiniteTopology α :=
 instance [Inhabited α] : Inhabited (CofiniteTopology α) where default := of default
 
 instance : TopologicalSpace (CofiniteTopology α) where
-  IsOpen s := s.Nonempty → Set.Finite (sᶜ)
+  IsOpen s := s.Nonempty → Set.Finite sᶜ
   isOpen_univ := by simp
   isOpen_inter s t := by
     rintro hs ht ⟨x, hxs, hxt⟩
@@ -628,7 +625,7 @@ theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t
     (le_inf
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun u hu =>
-          have : (⋃ v ∈ t, u ×ˢ v) = Prod.fst ⁻¹' u := by
+          have : ⋃ v ∈ t, u ×ˢ v = Prod.fst ⁻¹' u := by
             simp_rw [← prod_iUnion, ← sUnion_eq_biUnion, ht, prod_univ]
           show G.IsOpen (Prod.fst ⁻¹' u) by
             rw [← this]
@@ -637,7 +634,7 @@ theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t
                 isOpen_iUnion fun hv => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩)
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun v hv =>
-          have : (⋃ u ∈ s, u ×ˢ v) = Prod.snd ⁻¹' v := by
+          have : ⋃ u ∈ s, u ×ˢ v = Prod.snd ⁻¹' v := by
             simp_rw [← iUnion_prod_const, ← sUnion_eq_biUnion, hs, univ_prod]
           show G.IsOpen (Prod.snd ⁻¹' v) by
             rw [← this]
@@ -1033,6 +1030,17 @@ theorem IsOpenMap.restrict {f : α → β} (hf : IsOpenMap f) {s : Set α} (hs :
   hf.comp hs.isOpenMap_subtype_val
 #align is_open_map.restrict IsOpenMap.restrict
 
+lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Set β) :
+    IsClosedMap (T.restrictPreimage f) := by
+  rw [isClosedMap_iff_clusterPt] at hcl ⊢
+  intro A ⟨y, hyT⟩ hy
+  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
+      map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
+  rcases hcl _ y hy with ⟨x, hxy, hx⟩
+  have hxT : f x ∈ T := hxy ▸ hyT
+  refine ⟨⟨x, hxT⟩, Subtype.ext hxy, ?_⟩
+  rwa [← inducing_subtype_val.mapClusterPt_iff, MapClusterPt, map_principal]
+
 nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set α} (hs : IsClosed s) :
     ClosedEmbedding ((↑) : s → α) :=
   closedEmbedding_subtype_val hs
@@ -1401,7 +1409,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π 
     letI := generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
     refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
     choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
-    refine ⟨pi i t ∩ pi (↑iᶜ : Set ι) c, inter_subset_left _ _, ?_, ⟨hf, fun a _ => hfc a⟩⟩
+    refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left _ _, ?_, ⟨hf, fun a _ => hfc a⟩⟩
     rw [← univ_pi_piecewise]
     refine GenerateOpen.basic _ ⟨_, fun a => ?_, rfl⟩
     by_cases a ∈ i <;> simp [*]
@@ -1533,6 +1541,22 @@ theorem continuous_sigma {f : Sigma σ → α} (hf : ∀ i, Continuous fun a => 
   continuous_sigma_iff.2 hf
 #align continuous_sigma continuous_sigma
 
+/-- A map defined on a sigma type (a.k.a. the disjoint union of an indexed family of topological
+spaces) is inducing iff its restriction to each component is inducing and each the image of each
+component under `f` can be separated from the images of all other components by an open set. -/
+theorem inducing_sigma {f : Sigma σ → α} :
+    Inducing f ↔ (∀ i, Inducing (f ∘ Sigma.mk i)) ∧
+      (∀ i, ∃ U, IsOpen U ∧ ∀ x, f x ∈ U ↔ x.1 = i) := by
+  refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
+  · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
+    refine ⟨U, hUo, ?_⟩
+    simpa [Set.ext_iff] using hU
+  · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
+    rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
+    rcases h₂ i with ⟨U, hUo, hU⟩
+    filter_upwards [preimage_mem_comap <| hUo.mem_nhds <| (hU _).2 rfl] with y hy
+    simpa [hU] using hy
+
 @[simp 1100]
 theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     Continuous (Sigma.map f₁ f₂) ↔ ∀ i, Continuous (f₂ i) :=
@@ -1599,3 +1623,21 @@ instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift �
   embedding_uLift_down.discreteTopology
 
 end ULift
+
+section Monad
+
+variable [TopologicalSpace α] {β : Set α} {γ : Set β}
+
+theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
+  rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsOpen.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
+  rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsClosed.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+end Monad

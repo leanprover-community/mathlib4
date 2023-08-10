@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
+
+#align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -243,6 +240,18 @@ theorem not_gt (h : x = y) : ¬y < x :=
 #align eq.not_gt Eq.not_gt
 
 end Eq
+
+
+section
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+
+-- Making this a @[simp] lemma causes confluences problems downstream.
+lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
+
+end
 
 namespace LE.le
 
@@ -624,7 +633,7 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
   | { le := A_le, lt := A_lt,
       decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
-      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,  .. },
+      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
     { le := B_le, lt := B_lt,
       decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
@@ -727,8 +736,7 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.linearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
-
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
 theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
@@ -757,32 +765,32 @@ class HasCompl (α : Type _) where
 export HasCompl (compl)
 
 @[inherit_doc]
-postfix:999 "ᶜ" => compl
+postfix:1024 "ᶜ" => compl
 
 instance Prop.hasCompl : HasCompl Prop :=
   ⟨Not⟩
 #align Prop.has_compl Prop.hasCompl
 
 instance Pi.hasCompl {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] : HasCompl (∀ i, α i) :=
-  ⟨fun x i ↦ x iᶜ⟩
+  ⟨fun x i ↦ (x i)ᶜ⟩
 #align pi.has_compl Pi.hasCompl
 
 theorem Pi.compl_def {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) :
-    xᶜ = fun i ↦ x iᶜ :=
+    xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 #align pi.compl_def Pi.compl_def
 
 @[simp]
 theorem Pi.compl_apply {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) (i : ι) :
-    (xᶜ) i = x iᶜ :=
+    xᶜ i = (x i)ᶜ :=
   rfl
 #align pi.compl_apply Pi.compl_apply
 
-instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α (rᶜ) :=
+instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
   ⟨@irrefl α r _⟩
 #align is_irrefl.compl IsIrrefl.compl
 
-instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α (rᶜ) :=
+instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 #align is_refl.compl IsRefl.compl
 
@@ -816,7 +824,7 @@ instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π 
 
 section Pi
 
-/-- A function `a` is strongly less than a function `b`  if `a i < b i` for all `i`. -/
+/-- A function `a` is strongly less than a function `b` if `a i < b i` for all `i`. -/
 def StrongLT [∀ i, LT (π i)] (a b : ∀ i, π i) : Prop :=
   ∀ i, a i < b i
 #align strong_lt StrongLT
@@ -1352,7 +1360,6 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
--- Porting note: no `refine_struct` at time of port
 instance linearOrder: LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
@@ -1367,11 +1374,11 @@ instance linearOrder: LinearOrder PUnit where
   le_antisymm := by intros; rfl
   lt_iff_le_not_le := by simp only [not_true, and_false, forall_const]
 
-theorem max_eq : max a b = star :=
+theorem max_eq : max a b = unit :=
   rfl
 #align punit.max_eq PUnit.max_eq
 
-theorem min_eq : min a b = star :=
+theorem min_eq : min a b = unit :=
   rfl
 #align punit.min_eq PUnit.min_eq
 

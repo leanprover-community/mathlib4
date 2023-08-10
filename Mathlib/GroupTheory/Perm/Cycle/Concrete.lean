@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module group_theory.perm.cycle.concrete
-! leanprover-community/mathlib commit 00638177efd1b2534fc5269363ebf42a7871df9a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Cycle
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.List
+
+#align_import group_theory.perm.cycle.concrete from "leanprover-community/mathlib"@"00638177efd1b2534fc5269363ebf42a7871df9a"
 
 /-!
 
@@ -441,7 +438,7 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     obtain ⟨x, -, -, hx, -⟩ := id ht
     have hl : 2 ≤ s.length := by simpa using Cycle.length_nontrivial ht
     simp only [Cycle.mk_eq_coe, Cycle.nodup_coe_iff, Cycle.mem_coe_iff, Subtype.coe_mk,
-      Cycle.formPerm_coe] at hn hx⊢
+      Cycle.formPerm_coe] at hn hx ⊢
     apply Subtype.ext
     dsimp
     rw [toCycle_eq_toList _ _ x]

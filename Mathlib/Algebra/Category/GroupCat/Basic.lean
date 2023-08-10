@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.category.Group.basic
-! leanprover-community/mathlib commit 524793de15bc4c52ee32d254e7d7867c7176b3af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Endomorphism
+
+#align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
@@ -76,6 +73,9 @@ lemma coe_id {X : GroupCat} : (𝟙 X : X → X) = id := rfl
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[to_additive]
+lemma comp_def {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
 -- porting note: added
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
@@ -223,6 +223,9 @@ lemma coe_id {X : CommGroupCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
+@[to_additive]
+lemma comp_def {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
+
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommGroupCat} (f : X ⟶ Y) :
@@ -363,9 +366,7 @@ set_option linter.uppercaseLean3 false in
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
-  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by
-    apply int_hom_ext
-    simpa using h
+  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 set_option linter.uppercaseLean3 false in

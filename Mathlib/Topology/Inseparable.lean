@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.inseparable
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
+
+#align_import topology.inseparable from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Inseparable points in a topological space
@@ -83,7 +80,7 @@ theorem specializes_TFAE (x y : X) :
   tfae_have 2 → 3
   · exact fun h s hso hy => h (hso.mem_nhds hy)
   tfae_have 3 → 4
-  · exact fun h s hsc hx => of_not_not fun hy => h (sᶜ) hsc.isOpen_compl hy hx
+  · exact fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
   tfae_have 4 → 5
   · exact fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
   tfae_have 6 ↔ 5
@@ -111,6 +108,9 @@ alias specializes_iff_nhds ↔ Specializes.nhds_le_nhds _
 
 alias specializes_iff_pure ↔ Specializes.pure_le_nhds _
 #align specializes.pure_le_nhds Specializes.pure_le_nhds
+
+theorem sInter_nhds_sets_eq_specializes : ⋂₀ (𝓝 x).sets = {y | y ⤳ x} :=
+  Set.ext fun _ ↦ specializes_iff_pure.symm
 
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
   (specializes_TFAE x y).out 0 2

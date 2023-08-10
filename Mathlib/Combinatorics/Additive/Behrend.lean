@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.additive.behrend
-! leanprover-community/mathlib commit 4fa54b337f7d52805480306db1b1439c741848c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.SalemSpencer
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Data.Complex.ExponentialBounds
+
+#align_import combinatorics.additive.behrend from "leanprover-community/mathlib"@"4fa54b337f7d52805480306db1b1439c741848c8"
 
 /-!
 # Behrend's bound on Roth numbers
@@ -88,7 +85,7 @@ theorem box_zero : box (n + 1) 0 = ∅ := by simp [box]
 /-- The intersection of the sphere of radius `sqrt k` with the integer points in the positive
 quadrant. -/
 def sphere (n d k : ℕ) : Finset (Fin n → ℕ) :=
-  (box n d).filter fun x => (∑ i, x i ^ 2) = k
+  (box n d).filter fun x => ∑ i, x i ^ 2 = k
 #align behrend.sphere Behrend.sphere
 
 theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, Function.funext_iff]
@@ -196,7 +193,7 @@ theorem addSalemSpencer_image_sphere :
   exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
 #align behrend.add_salem_spencer_image_sphere Behrend.addSalemSpencer_image_sphere
 
-theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : (∑ i : Fin n, x i ^ 2) ≤ n * (d - 1) ^ 2 := by
+theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
   rw [mem_box] at hx
   have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i =>
     Nat.pow_le_pow_of_le_left (Nat.le_pred_of_lt (hx i)) _
@@ -266,7 +263,7 @@ theorem exists_large_sphere (n d : ℕ) : ∃ k, (d ^ n / ↑(n * d ^ 2) : ℝ) 
     cast_one, mul_one, sub_add, sub_sub_self]
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
-  rw [← one_eq_succ_zero, _root_.le_sub_iff_add_le]
+  rw [_root_.le_sub_iff_add_le]
   norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere

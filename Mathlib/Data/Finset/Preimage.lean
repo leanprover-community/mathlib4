@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finset.preimage
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import data.finset.preimage from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 # Preimage of a `Finset` under an injective map.
@@ -75,7 +72,7 @@ theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
 @[simp, nolint simpNF] -- Porting note: linter complains that LHS doesn't simplify
 theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {f : α → β}
     (s : Finset β) (hf : Function.Injective f) :
-    preimage (sᶜ) f (hf.injOn _) = preimage s f (hf.injOn _)ᶜ :=
+    preimage sᶜ f (hf.injOn _) = (preimage s f (hf.injOn _))ᶜ :=
   Finset.coe_injective (by simp)
 #align finset.preimage_compl Finset.preimage_compl
 

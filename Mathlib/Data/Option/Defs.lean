@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.option.defs
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Algebra.Classes
+
+#align_import data.option.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Extra definitions on `Option`
@@ -69,6 +66,13 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
 @[simp]
 theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
+
+-- porting note: this lemma was introduced because it is necessary
+-- in `CategoryTheory.Category.PartialFun`
+lemma elim'_eq_elim {α β : Type _} (b : β) (f : α → β) (a : Option α) :
+    Option.elim' b f a = Option.elim a b f := by
+  cases a <;> rfl
+
 
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 #align option.mem_some_iff Option.mem_some_iff
