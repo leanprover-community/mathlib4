@@ -219,7 +219,6 @@ theorem ax_grothendieck {ι K : Type _} [Field K] [Finite ι]
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
   letI := Classical.decEq K
   letI := Fintype.ofFinite ι
-  letI := Classical.decEq ι
   let p : ℕ := ringChar K
   haveI : CharP K p := ⟨ringChar.spec K⟩
   letI := compatibleFieldOfField K
@@ -228,4 +227,4 @@ theorem ax_grothendieck {ι K : Type _} [Field K] [Finite ι]
   rw [← (Language.ACF_isComplete_of_prime_or_zero
     (CharP.char_is_prime_or_zero K p)).realize_sentence_iff _ K,
     realize_genericPolyMapSurjectiveOfInjective] at this
-  exact this ⟨ps, by simp⟩
+  exact this ⟨ps, fun i => Finset.Subset.refl _⟩
