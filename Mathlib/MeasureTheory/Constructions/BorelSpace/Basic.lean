@@ -1721,28 +1721,25 @@ theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
 #align real.borel_eq_generate_from_Iio_rat Real.borel_eq_generateFrom_Iio_rat
 
 theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
-  let g : MeasurableSpace ℝ := .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)})
   refine' le_antisymm _ _
-  · rw [borel_eq_generateFrom_Ioo_rat]
+  · rw [borel_eq_generateFrom_Iio_rat]
     refine' generateFrom_le fun t => _
     simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨a, b, _, rfl⟩
-    have : Ioo (a : ℝ) b = Ioi (a : ℝ) ∩ (⋃ c < b, (Ioi (c : ℝ))ᶜ) := by
+    rintro ⟨b, _, rfl⟩
+    have : Iio (b : ℝ) = ⋃ c < b, (Ioi (c : ℝ))ᶜ := by
       ext x
-      simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_Ioo, compl_Ioi,
-        mem_inter_iff, mem_Ioi, mem_iUnion, mem_Iic, exists_prop, and_congr_right_iff]
-      refine fun _ ↦ ⟨fun h ↦ ?_, fun ⟨i, hib, bxi⟩ ↦ bxi.trans_lt (Rat.cast_lt.2 hib)⟩
+      simp only [mem_Iio, compl_Ioi, mem_iUnion, mem_Iic, exists_prop]
+      refine ⟨fun h ↦ ?_, fun ⟨i, hib, bxi⟩ ↦ bxi.trans_lt (Rat.cast_lt.2 hib)⟩
       rcases exists_rat_btwn h with ⟨c, xc, cb⟩
       exact ⟨c, Rat.cast_lt.1 cb, xc.le⟩
     rw [this]
-    have hg : ∀ q : ℚ, MeasurableSet[g] (Ioi (q : ℝ)) := fun q =>
-      GenerateMeasurable.basic (Ioi (q : ℝ)) (by simp)
-    refine MeasurableSet.inter (hg _) ?_
+    have hg : ∀ q : ℚ, MeasurableSet[.generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)})] (Ioi (q : ℝ)) :=
+      fun q => GenerateMeasurable.basic (Ioi (q : ℝ)) (by simp)
     exact MeasurableSet.biUnion (to_countable _) fun c _ => (hg _).compl
   · refine' MeasurableSpace.generateFrom_le fun _ => _
     simp only [mem_iUnion, mem_singleton_iff]
     rintro ⟨r, rfl⟩
-    exact @measurableSet_Ioi _ _ (borel ℝ) _ _ _ _
+    exact measurableSet_Ioi
 
 theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
   refine' le_antisymm _ _
