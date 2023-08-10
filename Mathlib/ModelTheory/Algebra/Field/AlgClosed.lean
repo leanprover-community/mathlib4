@@ -6,7 +6,6 @@ Authors: Chris Hughes
 
 import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Algebra.Field.FreeCommRing
-import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IsAlgClosed.Classification
