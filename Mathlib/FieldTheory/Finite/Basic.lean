@@ -183,14 +183,12 @@ theorem cast_subgroup_of_units_card_ne_zero [DecidableEq K]
   have p_dvd_card_K_units : p ∣ Fintype.card Kˣ := dvd_trans p_dvd_card_G hl
   -- On the other hand, p divides the cardinality of the whole field, which is one greater.
   have p_dvd_card_K_units_add_one : p ∣ Fintype.card Kˣ + 1 := by
-    rw [<-@Fintype.card_eq_card_units_add_one K _ _ _]
-    rw [hnp]
-    simp only [Nat.isUnit_iff]
+    rw [<-@Fintype.card_eq_card_units_add_one K _ _ _, hnp]
     apply dvd_pow_self
     simp only [ne_eq, PNat.ne_zero, not_false_eq_true]
   -- This contradicts the fact that p is prime.
   rw [Nat.dvd_add_right p_dvd_card_K_units] at p_dvd_card_K_units_add_one
-  simp only [Nat.isUnit_iff, Nat.dvd_one] at p_dvd_card_K_units_add_one
+  simp only [Nat.dvd_one] at p_dvd_card_K_units_add_one
   rw [p_dvd_card_K_units_add_one] at hp
   simp at hp
 
