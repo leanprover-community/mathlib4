@@ -48,7 +48,7 @@ structure Cost (α β : Type _) (δ : Type _) where
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
-@[simps?]
+@[simps]
 def defaultCost [DecidableEq α] : Cost α α ℕ where
   delete _ := 1
   insert _ := 1
