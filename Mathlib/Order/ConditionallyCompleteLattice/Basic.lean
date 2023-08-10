@@ -863,6 +863,17 @@ theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
   @ciSup_pos αᵒᵈ _ _ _ hp
 #align cinfi_pos ciInf_pos
 
+lemma ciSup_neg {α : Type _} [ConditionallyCompleteLattice α] {p : Prop} {f : p → α} (hp : ¬ p) :
+    ⨆ (h : p), f h = sSup (∅ : Set α) := by
+  rw [iSup]
+  congr
+  rw [range_eq_empty_iff]
+  exact { false := hp }
+
+lemma ciInf_neg {α : Type _} [ConditionallyCompleteLattice α] {p : Prop} {f : p → α} (hp : ¬ p) :
+    ⨅ (h : p), f h = sInf (∅ : Set α) :=
+  @ciSup_neg αᵒᵈ _ _ _ hp
+
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/

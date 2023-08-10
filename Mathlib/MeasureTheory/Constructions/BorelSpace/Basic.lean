@@ -1342,57 +1342,17 @@ theorem Measurable.iSup_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLat
 #align measurable.supr_Prop Measurable.iSup_Prop
 
 @[measurability]
-theorem Measurable.iInf_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α] (p : Prop) {f : δ → α}
-    (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b :=
+theorem Measurable.iInf_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α]
+    (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b :=
   _root_.by_cases (fun h : p => by convert hf; funext; exact ciInf_pos h) fun h : ¬p => by
     convert measurable_const using 1; funext; exact ciInf_neg h
 #align measurable.infi_Prop Measurable.iInf_Prop
-
-
 
 section CompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
 open Filter
-
-lemma isCountablyGenerated_atTop : IsCountablyGenerated (atTop : Filter α) := by
-  by_cases h : ∃ (x : α), IsTop x
-  · rcases h with ⟨x, hx⟩
-    rw [atTop_eq_pure_of_isTop hx]
-    exact isCountablyGenerated_pure x
-  · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
-    have : Countable b := by exact Iff.mpr countable_coe_iff b_count
-    have A : ∀ (s : b), ∃ (x : α), x ∈ (s : Set α) := by
-      intro s
-      have : (s : Set α) ≠ ∅ := by
-        intro H
-        apply b_ne
-        convert s.2
-        exact H.symm
-      exact Iff.mp nmem_singleton_empty this
-    choose a ha using A
-    have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
-      apply atTop_eq_generate_of_forall_exists_le
-      intro x
-      simp only [IsTop, not_exists, not_forall, not_le] at h
-      rcases h x with ⟨y, hy⟩
-      obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
-        hb.exists_subset_of_mem_open hy isOpen_Ioi
-      refine ⟨a ⟨s, sb⟩, mem_range_self _, ?_⟩
-      apply le_of_lt (hs _)
-      exact ha _
-    rw [this]
-    exact ⟨_, (countable_range _).image _, rfl⟩
-
-
-
-
-
-
-
-#exit
-
 
 @[measurability]
 theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
@@ -1408,11 +1368,6 @@ theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, 
       have : IsCountablyGenerated (atTop : Filter α) := by
         exact?
       have Z := exists_seq_tendsto (atTop : Filter α)
-
-
-
---  Measurable.isLUB hf fun _ => isLUB_iSup
-#align measurable_supr measurable_iSup
 
 #exit
 
