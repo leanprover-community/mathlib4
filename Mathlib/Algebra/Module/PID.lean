@@ -140,8 +140,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
       quotTorsionOfEquivSpanSingleton_apply_mk] at ha
     rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
-    · rw [Submodule.span_singleton]
-      symm
+    · symm
       convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
