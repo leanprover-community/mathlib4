@@ -103,7 +103,7 @@ end DirectSum
 
 /-- The projection maps of a graded ring -/
 def GradedRing.proj (i : ι) : A →+ A :=
-  (AddSubmonoidClass.Subtype (𝒜 i)).comp <|
+  (AddSubmonoidClass.subtype (𝒜 i)).comp <|
     (DFinsupp.evalAddMonoidHom i).comp <|
       RingHom.toAddMonoidHom <| RingEquiv.toRingHom <| DirectSum.decomposeRingEquiv 𝒜
 #align graded_ring.proj GradedRing.proj

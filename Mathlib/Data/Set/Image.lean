@@ -103,6 +103,10 @@ theorem preimage_diff (f : α → β) (s t : Set β) : f ⁻¹' (s \ t) = f ⁻�
 #align set.preimage_diff Set.preimage_diff
 
 @[simp]
+lemma preimage_symmDiff {f : α → β} (s t : Set β) : f ⁻¹' (s ∆ t) = (f ⁻¹' s) ∆ (f ⁻¹' t) :=
+  rfl
+
+@[simp]
 theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
     f ⁻¹' s.ite t₁ t₂ = (f ⁻¹' s).ite (f ⁻¹' t₁) (f ⁻¹' t₂) :=
   rfl
@@ -432,10 +436,10 @@ theorem subset_image_diff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f
   exact image_subset f (subset_union_right t s)
 #align set.subset_image_diff Set.subset_image_diff
 
-theorem subset_image_symm_diff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
+theorem subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
   (union_subset_union (subset_image_diff _ _ _) <| subset_image_diff _ _ _).trans
     (superset_of_eq (image_union _ _ _))
-#align set.subset_image_symm_diff Set.subset_image_symm_diff
+#align set.subset_image_symm_diff Set.subset_image_symmDiff
 
 theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
@@ -443,9 +447,9 @@ theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \
     (subset_image_diff f s t)
 #align set.image_diff Set.image_diff
 
-theorem image_symm_diff (hf : Injective f) (s t : Set α) : f '' s ∆ t = (f '' s) ∆ (f '' t) := by
+theorem image_symmDiff (hf : Injective f) (s t : Set α) : f '' s ∆ t = (f '' s) ∆ (f '' t) := by
   simp_rw [Set.symmDiff_def, image_union, image_diff hf]
-#align set.image_symm_diff Set.image_symm_diff
+#align set.image_symm_diff Set.image_symmDiff
 
 theorem Nonempty.image (f : α → β) {s : Set α} : s.Nonempty → (f '' s).Nonempty
   | ⟨x, hx⟩ => ⟨f x, mem_image_of_mem f hx⟩
@@ -484,16 +488,19 @@ theorem subset_preimage_image (f : α → β) (s : Set α) : s ⊆ f ⁻¹' (f '
   mem_image_of_mem f
 #align set.subset_preimage_image Set.subset_preimage_image
 
+@[simp]
 theorem preimage_image_eq {f : α → β} (s : Set α) (h : Injective f) : f ⁻¹' (f '' s) = s :=
   Subset.antisymm (fun _ ⟨_, hy, e⟩ => h e ▸ hy) (subset_preimage_image f s)
 #align set.preimage_image_eq Set.preimage_image_eq
 
+@[simp]
 theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f '' (f ⁻¹' s) = s :=
   Subset.antisymm (image_preimage_subset f s) fun x hx =>
     let ⟨y, e⟩ := h x
     ⟨y, (e.symm ▸ hx : f y ∈ s), e⟩
 #align set.image_preimage_eq Set.image_preimage_eq
 
+@[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
   Iff.intro
     fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, eq]
@@ -756,7 +763,7 @@ theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
   range_eq_empty_iff.2 ‹_›
 #align set.range_eq_empty Set.range_eq_empty
 
-instance [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
+instance instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
   (range_nonempty f).to_subtype
 
 @[simp]
@@ -1314,6 +1321,7 @@ theorem Surjective.image_surjective (hf : Surjective f) : Surjective (image f) :
   rw [hf.image_preimage]
 #align function.surjective.image_surjective Function.Surjective.image_surjective
 
+@[simp]
 theorem Surjective.nonempty_preimage (hf : Surjective f) {s : Set β} :
     (f ⁻¹' s).Nonempty ↔ s.Nonempty := by rw [← nonempty_image_iff, hf.image_preimage]
 #align function.surjective.nonempty_preimage Function.Surjective.nonempty_preimage
@@ -1604,6 +1612,7 @@ theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t
     disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
 #align disjoint.of_image Disjoint.of_image
 
+@[simp]
 theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_image, disjoint_image_of_injective hf⟩
 #align set.disjoint_image_iff Set.disjoint_image_iff
@@ -1614,6 +1623,7 @@ theorem _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
     image_empty]
 #align disjoint.of_preimage Disjoint.of_preimage
 
+@[simp]
 theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_preimage hf, Disjoint.preimage _⟩

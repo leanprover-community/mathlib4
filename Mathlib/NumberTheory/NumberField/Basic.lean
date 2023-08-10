@@ -80,13 +80,8 @@ theorem isIntegral_of_mem_ringOfIntegers {K : Type _} [Field K] {x : K} (hx : x 
     Polynomial.aeval_def, Subtype.coe_mk, hP]
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.isIntegral_of_mem_ringOfIntegers
 
-/-- Given an algebra between two fields, create an algebra between their two rings of integers.
-
-For now, this is not an instance by default as it creates an equal-but-not-defeq diamond with
-`Algebra.id` when `K = L`. This is caused by `x = ⟨x, x.prop⟩` not being defeq on subtypes. This
-will likely change in Lean 4. -/
--- Porting note: check if this can be an instance now
-def ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
+/-- Given an algebra between two fields, create an algebra between their two rings of integers. -/
+instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap K L k, IsIntegral.algebraMap k.2⟩
       map_zero' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]
@@ -95,7 +90,10 @@ def ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
         Subtype.ext <| by simp only [map_add, Subalgebra.coe_add, Subtype.coe_mk]
       map_mul' := fun x y =>
         Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
-#align number_field.ring_of_integers_algebra NumberField.ringOfIntegersAlgebra
+#align number_field.ring_of_integers_algebra NumberField.inst_ringOfIntegersAlgebra
+
+-- no diamond
+example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
 
@@ -167,6 +165,11 @@ theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     integralBasis K i = algebraMap (𝓞 K) K (RingOfIntegers.basis K i) :=
   Basis.localizationLocalization_apply ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K) i
 #align number_field.integral_basis_apply NumberField.integralBasis_apply
+
+theorem mem_span_integralBasis {x : K} :
+    x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ 𝓞 K := by
+  rw [integralBasis, Basis.localizationLocalization_span, Subalgebra.range_isScalarTower_toAlgHom,
+    Subalgebra.mem_toSubmodule]
 
 theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)

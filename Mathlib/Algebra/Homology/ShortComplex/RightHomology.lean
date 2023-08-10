@@ -17,7 +17,7 @@ that `f ≫ g = 0`, we define `h : S.RightHomologyData` to be the datum of morph
 to the kernel of the induced map `g' : Q ⟶ X₃`.
 
 When such a `S.RightHomologyData` exists, we shall say that `[S.HasRightHomology]`
-and (TODO) we define `S.rightHomology` to be the `H` field of a chosen right homology data.
+and we define `S.rightHomology` to be the `H` field of a chosen right homology data.
 Similarly, we define `S.opcycles` to be the `Q` field.
 
 In `Homology.lean`, when `S` has two compatible left and right homology data
@@ -720,6 +720,401 @@ lemma opcyclesMap_comp [HasRightHomology S₁] [HasRightHomology S₂] [HasRight
   opcyclesMap'_comp _ _ _ _ _
 
 attribute [simp] rightHomologyMap_comp opcyclesMap_comp
+
+/-- An isomorphism of short complexes `S₁ ≅ S₂` induces an isomorphism on the `H` fields
+of right homology data of `S₁` and `S₂`. -/
+@[simps]
+def rightHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.RightHomologyData)
+    (h₂ : S₂.RightHomologyData) : h₁.H ≅ h₂.H where
+  hom := rightHomologyMap' e.hom h₁ h₂
+  inv := rightHomologyMap' e.inv h₂ h₁
+  hom_inv_id := by rw [← rightHomologyMap'_comp, e.hom_inv_id, rightHomologyMap'_id]
+  inv_hom_id := by rw [← rightHomologyMap'_comp, e.inv_hom_id, rightHomologyMap'_id]
+
+instance isIso_rightHomologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+    (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    IsIso (rightHomologyMap' φ h₁ h₂) :=
+  (inferInstance : IsIso (rightHomologyMapIso' (asIso φ) h₁ h₂).hom)
+
+/-- An isomorphism of short complexes `S₁ ≅ S₂` induces an isomorphism on the `Q` fields
+of right homology data of `S₁` and `S₂`. -/
+@[simps]
+def opcyclesMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.RightHomologyData)
+    (h₂ : S₂.RightHomologyData) : h₁.Q ≅ h₂.Q where
+  hom := opcyclesMap' e.hom h₁ h₂
+  inv := opcyclesMap' e.inv h₂ h₁
+  hom_inv_id := by rw [← opcyclesMap'_comp, e.hom_inv_id, opcyclesMap'_id]
+  inv_hom_id := by rw [← opcyclesMap'_comp, e.inv_hom_id, opcyclesMap'_id]
+
+instance isIso_opcyclesMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+    (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    IsIso (opcyclesMap' φ h₁ h₂) :=
+  (inferInstance : IsIso (opcyclesMapIso' (asIso φ) h₁ h₂).hom)
+
+/-- The isomorphism `S₁.rightHomology ≅ S₂.rightHomology` induced by an isomorphism of
+short complexes `S₁ ≅ S₂`. -/
+@[simps]
+noncomputable def rightHomologyMapIso (e : S₁ ≅ S₂) [S₁.HasRightHomology]
+    [S₂.HasRightHomology] : S₁.rightHomology ≅ S₂.rightHomology where
+  hom := rightHomologyMap e.hom
+  inv := rightHomologyMap e.inv
+  hom_inv_id := by rw [← rightHomologyMap_comp, e.hom_inv_id, rightHomologyMap_id]
+  inv_hom_id := by rw [← rightHomologyMap_comp, e.inv_hom_id, rightHomologyMap_id]
+
+instance isIso_rightHomologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasRightHomology]
+    [S₂.HasRightHomology] :
+    IsIso (rightHomologyMap φ) :=
+  (inferInstance : IsIso (rightHomologyMapIso (asIso φ)).hom)
+
+/-- The isomorphism `S₁.opcycles ≅ S₂.opcycles` induced by an isomorphism
+of short complexes `S₁ ≅ S₂`. -/
+@[simps]
+noncomputable def opcyclesMapIso (e : S₁ ≅ S₂) [S₁.HasRightHomology]
+    [S₂.HasRightHomology] : S₁.opcycles ≅ S₂.opcycles where
+  hom := opcyclesMap e.hom
+  inv := opcyclesMap e.inv
+  hom_inv_id := by rw [← opcyclesMap_comp, e.hom_inv_id, opcyclesMap_id]
+  inv_hom_id := by rw [← opcyclesMap_comp, e.inv_hom_id, opcyclesMap_id]
+
+instance isIso_opcyclesMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasRightHomology]
+    [S₂.HasRightHomology] : IsIso (opcyclesMap φ) :=
+  (inferInstance : IsIso (opcyclesMapIso (asIso φ)).hom)
+
+variable {S}
+
+namespace RightHomologyData
+
+variable (h : S.RightHomologyData) [S.HasRightHomology]
+
+/-- The isomorphism `S.rightHomology ≅ h.H` induced by a right homology data `h` for a
+short complex `S`. -/
+noncomputable def rightHomologyIso : S.rightHomology ≅ h.H :=
+  rightHomologyMapIso' (Iso.refl _) _ _
+
+/-- The isomorphism `S.opcycles ≅ h.Q` induced by a right homology data `h` for a
+short complex `S`. -/
+noncomputable def opcyclesIso : S.opcycles ≅ h.Q :=
+  opcyclesMapIso' (Iso.refl _) _ _
+
+@[reassoc (attr := simp)]
+lemma p_comp_opcyclesIso_inv : h.p ≫ h.opcyclesIso.inv = S.pOpcycles := by
+  dsimp [pOpcycles, RightHomologyData.opcyclesIso]
+  simp only [p_opcyclesMap', id_τ₂, id_comp]
+
+@[reassoc (attr := simp)]
+lemma pOpcycles_comp_opcyclesIso_hom : S.pOpcycles ≫ h.opcyclesIso.hom = h.p := by
+  simp only [← h.p_comp_opcyclesIso_inv, assoc, Iso.inv_hom_id, comp_id]
+
+@[reassoc (attr := simp)]
+lemma rightHomologyIso_inv_comp_rightHomologyι :
+    h.rightHomologyIso.inv ≫ S.rightHomologyι = h.ι ≫ h.opcyclesIso.inv := by
+  dsimp only [rightHomologyι, rightHomologyIso, opcyclesIso, rightHomologyMapIso',
+    opcyclesMapIso', Iso.refl]
+  rw [rightHomologyι_naturality']
+
+@[reassoc (attr := simp)]
+lemma rightHomologyIso_hom_comp_ι :
+    h.rightHomologyIso.hom ≫ h.ι = S.rightHomologyι ≫ h.opcyclesIso.hom := by
+  simp only [← cancel_mono h.opcyclesIso.inv, ← cancel_epi h.rightHomologyIso.inv,
+    assoc, Iso.inv_hom_id_assoc, Iso.hom_inv_id, comp_id, rightHomologyIso_inv_comp_rightHomologyι]
+
+end RightHomologyData
+
+namespace RightHomologyMapData
+
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+  (γ : RightHomologyMapData φ h₁ h₂)
+
+lemma rightHomologyMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    rightHomologyMap φ = h₁.rightHomologyIso.hom ≫ γ.φH ≫ h₂.rightHomologyIso.inv := by
+  dsimp [RightHomologyData.rightHomologyIso, rightHomologyMapIso']
+  rw [← γ.rightHomologyMap'_eq, ← rightHomologyMap'_comp,
+    ← rightHomologyMap'_comp, id_comp, comp_id]
+  rfl
+
+lemma opcyclesMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    opcyclesMap φ = h₁.opcyclesIso.hom ≫ γ.φQ ≫ h₂.opcyclesIso.inv := by
+  dsimp [RightHomologyData.opcyclesIso, cyclesMapIso']
+  rw [← γ.opcyclesMap'_eq, ← opcyclesMap'_comp, ← opcyclesMap'_comp, id_comp, comp_id]
+  rfl
+
+lemma rightHomologyMap_comm [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    rightHomologyMap φ ≫ h₂.rightHomologyIso.hom = h₁.rightHomologyIso.hom ≫ γ.φH := by
+  simp only [γ.rightHomologyMap_eq, assoc, Iso.inv_hom_id, comp_id]
+
+lemma opcyclesMap_comm [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    opcyclesMap φ ≫ h₂.opcyclesIso.hom = h₁.opcyclesIso.hom ≫ γ.φQ := by
+  simp only [γ.opcyclesMap_eq, assoc, Iso.inv_hom_id, comp_id]
+
+end RightHomologyMapData
+
+section
+
+variable (C)
+variable [HasKernels C] [HasCokernels C]
+
+/-- The right homology functor `ShortComplex C ⥤ C`, where the right homology of a
+short complex `S` is understood as a kernel of the obvious map `S.fromOpcycles : S.opcycles ⟶ S.X₃`
+where `S.opcycles` is a cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
+@[simps]
+noncomputable def rightHomologyFunctor : ShortComplex C ⥤ C where
+  obj S := S.rightHomology
+  map := rightHomologyMap
+
+/-- The opcycles functor `ShortComplex C ⥤ C` which sends a short complex `S` to `S.opcycles`
+which is a cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
+@[simps]
+noncomputable def opcyclesFunctor :
+    ShortComplex C ⥤ C where
+  obj S := S.opcycles
+  map := opcyclesMap
+
+/-- The natural transformation `S.rightHomology ⟶ S.opcycles` for all short complexes `S`. -/
+@[simps]
+noncomputable def rightHomologyιNatTrans :
+    rightHomologyFunctor C ⟶ opcyclesFunctor C where
+  app S := rightHomologyι S
+  naturality := fun _ _ φ => rightHomologyι_naturality φ
+
+/-- The natural transformation `S.X₂ ⟶ S.opcycles` for all short complexes `S`. -/
+@[simps]
+noncomputable def pOpcyclesNatTrans :
+    ShortComplex.π₂ ⟶ opcyclesFunctor C where
+  app S := S.pOpcycles
+
+/-- The natural transformation `S.opcycles ⟶ S.X₃` for all short complexes `S`. -/
+@[simps]
+noncomputable def fromOpcyclesNatTrans :
+    opcyclesFunctor C ⟶ π₃ where
+  app S := S.fromOpcycles
+  naturality := fun _ _  φ => fromOpcycles_naturality φ
+
+end
+
+/-- A left homology map data for a morphism of short complexes induces
+a right homology map data in the opposite category. -/
+@[simps]
+def LeftHomologyMapData.op {S₁ S₂ : ShortComplex C} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+    (ψ : LeftHomologyMapData φ h₁ h₂) : RightHomologyMapData (opMap φ) h₂.op h₁.op where
+  φQ := ψ.φK.op
+  φH := ψ.φH.op
+  commp := Quiver.Hom.unop_inj (by simp)
+  commg' := Quiver.Hom.unop_inj (by simp)
+  commι := Quiver.Hom.unop_inj (by simp)
+
+/-- A left homology map data for a morphism of short complexes in the opposite category
+induces a right homology map data in the original category. -/
+@[simps]
+def LeftHomologyMapData.unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+    (ψ : LeftHomologyMapData φ h₁ h₂) : RightHomologyMapData (unopMap φ) h₂.unop h₁.unop where
+  φQ := ψ.φK.unop
+  φH := ψ.φH.unop
+  commp := Quiver.Hom.op_inj (by simp)
+  commg' := Quiver.Hom.op_inj (by simp)
+  commι := Quiver.Hom.op_inj (by simp)
+
+/-- A right homology map data for a morphism of short complexes induces
+a left homology map data in the opposite category. -/
+@[simps]
+def RightHomologyMapData.op {S₁ S₂ : ShortComplex C} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+    (ψ : RightHomologyMapData φ h₁ h₂) : LeftHomologyMapData (opMap φ) h₂.op h₁.op where
+  φK := ψ.φQ.op
+  φH := ψ.φH.op
+  commi := Quiver.Hom.unop_inj (by simp)
+  commf' := Quiver.Hom.unop_inj (by simp)
+  commπ := Quiver.Hom.unop_inj (by simp)
+
+/-- A right homology map data for a morphism of short complexes in the opposite category
+induces a left homology map data in the original category. -/
+@[simps]
+def RightHomologyMapData.unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+    (ψ : RightHomologyMapData φ h₁ h₂) : LeftHomologyMapData (unopMap φ) h₂.unop h₁.unop where
+  φK := ψ.φQ.unop
+  φH := ψ.φH.unop
+  commi := Quiver.Hom.op_inj (by simp)
+  commf' := Quiver.Hom.op_inj (by simp)
+  commπ := Quiver.Hom.op_inj (by simp)
+
+variable (S)
+
+/-- The right homology in the opposite category of the opposite of a short complex identifies
+to the left homology of this short complex. -/
+noncomputable def rightHomologyOpIso [S.HasLeftHomology] :
+    S.op.rightHomology ≅ Opposite.op S.leftHomology :=
+  S.leftHomologyData.op.rightHomologyIso
+
+/-- The left homology in the opposite category of the opposite of a short complex identifies
+to the right homology of this short complex. -/
+noncomputable def leftHomologyOpIso [S.HasRightHomology] :
+    S.op.leftHomology ≅ Opposite.op S.rightHomology :=
+  S.rightHomologyData.op.leftHomologyIso
+
+/-- The opcycles in the opposite category of the opposite of a short complex identifies
+to the cycles of this short complex. -/
+noncomputable def opcyclesOpIso [S.HasLeftHomology] :
+    S.op.opcycles ≅ Opposite.op S.cycles :=
+  S.leftHomologyData.op.opcyclesIso
+
+/-- The cycles in the opposite category of the opposite of a short complex identifies
+to the opcycles of this short complex. -/
+noncomputable def cyclesOpIso [S.HasRightHomology] :
+    S.op.cycles ≅ Opposite.op S.opcycles :=
+  S.rightHomologyData.op.cyclesIso
+
+@[simp]
+lemma leftHomologyMap'_op
+    (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    (leftHomologyMap' φ h₁ h₂).op = rightHomologyMap' (opMap φ) h₂.op h₁.op := by
+  let γ : LeftHomologyMapData φ h₁ h₂ := leftHomologyMapData φ h₁ h₂
+  simp only [γ.leftHomologyMap'_eq, γ.op.rightHomologyMap'_eq,
+    LeftHomologyMapData.op_φH]
+
+lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    (leftHomologyMap φ).op = S₂.rightHomologyOpIso.inv ≫ rightHomologyMap (opMap φ) ≫
+      S₁.rightHomologyOpIso.hom := by
+  dsimp [rightHomologyOpIso, RightHomologyData.rightHomologyIso, rightHomologyMap,
+    leftHomologyMap]
+  simp only [← rightHomologyMap'_comp, comp_id, id_comp, leftHomologyMap'_op]
+
+@[simp]
+lemma rightHomologyMap'_op
+    (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    (rightHomologyMap' φ h₁ h₂).op = leftHomologyMap' (opMap φ) h₂.op h₁.op := by
+  let γ : RightHomologyMapData φ h₁ h₂ := rightHomologyMapData φ h₁ h₂
+  simp only [γ.rightHomologyMap'_eq, γ.op.leftHomologyMap'_eq,
+    RightHomologyMapData.op_φH]
+
+lemma rightHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    (rightHomologyMap φ).op = S₂.leftHomologyOpIso.inv ≫ leftHomologyMap (opMap φ) ≫
+      S₁.leftHomologyOpIso.hom := by
+  dsimp [leftHomologyOpIso, LeftHomologyData.leftHomologyIso, leftHomologyMap,
+    rightHomologyMap]
+  simp only [← leftHomologyMap'_comp, comp_id, id_comp, rightHomologyMap'_op]
+
+namespace RightHomologyData
+
+section
+
+variable (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃]
+
+/-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
+and `φ.τ₃` is mono, then a right homology data for `S₁` induces a right homology data for `S₂` with
+the same `Q` and `H` fields. This is obtained by dualising `LeftHomologyData.ofEpiOfIsIsoOfMono'`.
+The inverse construction is `ofEpiOfIsIsoOfMono'`.  -/
+noncomputable def ofEpiOfIsIsoOfMono : RightHomologyData S₂ := by
+  haveI : Epi (opMap φ).τ₁ := by dsimp; infer_instance
+  haveI : IsIso (opMap φ).τ₂ := by dsimp; infer_instance
+  haveI : Mono (opMap φ).τ₃ := by dsimp; infer_instance
+  exact (LeftHomologyData.ofEpiOfIsIsoOfMono' (opMap φ) h.op).unop
+
+@[simp] lemma ofEpiOfIsIsoOfMono_Q : (ofEpiOfIsIsoOfMono φ h).Q = h.Q := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono_H : (ofEpiOfIsIsoOfMono φ h).H = h.H := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono_p : (ofEpiOfIsIsoOfMono φ h).p = inv φ.τ₂ ≫ h.p := by
+  simp [ofEpiOfIsIsoOfMono, opMap]
+
+@[simp] lemma ofEpiOfIsIsoOfMono_ι : (ofEpiOfIsIsoOfMono φ h).ι = h.ι := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono_g' : (ofEpiOfIsIsoOfMono φ h).g' = h.g' ≫ φ.τ₃ := by
+  simp [ofEpiOfIsIsoOfMono, opMap]
+
+end
+
+section
+
+variable (φ : S₁ ⟶ S₂) (h : RightHomologyData S₂) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃]
+
+/-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
+and `φ.τ₃` is mono, then a right homology data for `S₂` induces a right homology data for `S₁` with
+the same `Q` and `H` fields. This is obtained by dualising `LeftHomologyData.ofEpiOfIsIsoOfMono`.
+The inverse construction is `ofEpiOfIsIsoOfMono`.  -/
+noncomputable def ofEpiOfIsIsoOfMono' : RightHomologyData S₁ := by
+  haveI : Epi (opMap φ).τ₁ := by dsimp; infer_instance
+  haveI : IsIso (opMap φ).τ₂ := by dsimp; infer_instance
+  haveI : Mono (opMap φ).τ₃ := by dsimp; infer_instance
+  exact (LeftHomologyData.ofEpiOfIsIsoOfMono (opMap φ) h.op).unop
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_Q : (ofEpiOfIsIsoOfMono' φ h).Q = h.Q := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_H : (ofEpiOfIsIsoOfMono' φ h).H = h.H := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_p : (ofEpiOfIsIsoOfMono' φ h).p = φ.τ₂ ≫ h.p := by
+  simp [ofEpiOfIsIsoOfMono', opMap]
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_ι : (ofEpiOfIsIsoOfMono' φ h).ι = h.ι := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_g'_τ₃ : (ofEpiOfIsIsoOfMono' φ h).g' ≫ φ.τ₃ = h.g' := by
+  rw [← cancel_epi (ofEpiOfIsIsoOfMono' φ h).p, p_g'_assoc, ofEpiOfIsIsoOfMono'_p,
+    assoc, p_g', φ.comm₂₃]
+
+end
+
+/-- If `e : S₁ ≅ S₂` is an isomorphism of short complexes and `h₁ : RightomologyData S₁`,
+this is the right homology data for `S₂` deduced from the isomorphism. -/
+noncomputable def ofIso (e : S₁ ≅ S₂) (h₁ : RightHomologyData S₁) : RightHomologyData S₂ :=
+  h₁.ofEpiOfIsIsoOfMono e.hom
+
+end RightHomologyData
+
+lemma hasRightHomology_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [HasRightHomology S₁]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasRightHomology S₂ :=
+  HasRightHomology.mk' (RightHomologyData.ofEpiOfIsIsoOfMono φ S₁.rightHomologyData)
+
+lemma hasRightHomology_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [HasRightHomology S₂]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasRightHomology S₁ :=
+HasRightHomology.mk' (RightHomologyData.ofEpiOfIsIsoOfMono' φ S₂.rightHomologyData)
+
+lemma hasRightHomology_of_iso {S₁ S₂ : ShortComplex C}
+    (e : S₁ ≅ S₂) [HasRightHomology S₁] : HasRightHomology S₂ :=
+  hasRightHomology_of_epi_of_isIso_of_mono e.hom
+
+namespace RightHomologyMapData
+
+/-- This right homology map data expresses compatibilities of the right homology data
+constructed by `RightHomologyData.ofEpiOfIsIsoOfMono` -/
+@[simps]
+def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    RightHomologyMapData φ h (RightHomologyData.ofEpiOfIsIsoOfMono φ h) where
+  φQ := 𝟙 _
+  φH := 𝟙 _
+
+/-- This right homology map data expresses compatibilities of the right homology data
+constructed by `RightHomologyData.ofEpiOfIsIsoOfMono'` -/
+@[simps]
+noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : RightHomologyData S₂)
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    RightHomologyMapData φ (RightHomologyData.ofEpiOfIsIsoOfMono' φ h) h where
+  φQ := 𝟙 _
+  φH := 𝟙 _
+
+end RightHomologyMapData
+
+instance (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData)
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (rightHomologyMap' φ h₁ h₂) := by
+  let h₂' := RightHomologyData.ofEpiOfIsIsoOfMono φ h₁
+  haveI : IsIso (rightHomologyMap' φ h₁ h₂') := by
+    rw [(RightHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).rightHomologyMap'_eq]
+    dsimp
+    infer_instance
+  have eq := rightHomologyMap'_comp φ (𝟙 S₂) h₁ h₂' h₂
+  rw [comp_id] at eq
+  rw [eq]
+  infer_instance
+
+/-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
+and `φ.τ₃` is mono, then the induced morphism on right homology is an isomorphism. -/
+instance (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (rightHomologyMap φ) := by
+  dsimp only [rightHomologyMap]
+  infer_instance
 
 end ShortComplex
 

@@ -163,7 +163,8 @@ theorem frontier_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
 #align frontier_sphere frontier_sphere
 
-instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
+instance NormedSpace.discreteTopology_zmultiples
+    {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   rcases eq_or_ne e 0 with (rfl | he)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
@@ -185,7 +186,7 @@ instance ULift.normedSpace : NormedSpace α (ULift E) :=
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
 instance Prod.normedSpace : NormedSpace α (E × F) :=
-  { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.module with
+  { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
       simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
         mul_max_of_nonneg, norm_nonneg, le_rfl] }
@@ -482,7 +483,7 @@ variable {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance MulOpposite.normedAlgebra {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.normedSpace, MulOpposite.instAlgebraMulOppositeSemiring with }
+  { MulOpposite.normedSpace, MulOpposite.instAlgebraMulOpposite with }
 #align mul_opposite.normed_algebra MulOpposite.normedAlgebra
 
 end NormedAlgebra

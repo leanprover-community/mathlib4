@@ -119,12 +119,14 @@ notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit
 @[elab_as_elim]
-protected theorem induction_on {C : M ⊗[R] N → Prop} (z : M ⊗[R] N) (C0 : C 0)
-    (C1 : ∀ x y, C <| x ⊗ₜ[R] y) (Cp : ∀ x y, C x → C y → C (x + y)) : C z :=
+protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
+    (zero : motive 0)
+    (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
   AddCon.induction_on z fun x =>
-    FreeAddMonoid.recOn x C0 fun ⟨m, n⟩ y ih => by
+    FreeAddMonoid.recOn x zero fun ⟨m, n⟩ y ih => by
       rw [AddCon.coe_add]
-      exact Cp _ _ (C1 ..) ih
+      exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
 variable (M)
@@ -430,6 +432,19 @@ theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := 
   rw [← top_le_iff, ← span_tmul_eq_top, Submodule.map₂_eq_span_image2]
   exact Submodule.span_mono fun _ ⟨m, n, h⟩ => ⟨m, n, trivial, trivial, h⟩
 #align tensor_product.map₂_mk_top_top_eq_top TensorProduct.map₂_mk_top_top_eq_top
+
+theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
+    (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) :
+    ∃ m n, x = m ⊗ₜ n := by
+  induction x using TensorProduct.induction_on with
+  | zero =>
+    use 0, 0
+    rw [TensorProduct.zero_tmul]
+  | tmul m n => use m, n
+  | add x y h₁ h₂ =>
+    obtain ⟨m₁, n₁, rfl⟩ := h₁
+    obtain ⟨m₂, n₂, rfl⟩ := h₂
+    apply h
 
 end Module
 
