@@ -569,7 +569,7 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
   | [] => by rw [List.reverse_nil, List.map_nil, List.prod_nil, inv_one]
   | A::Xs => by
     rw [List.reverse_cons', List.map_concat, List.prod_concat, List.prod_cons,
-      Matrix.mul_eq_mul, mul_inv_rev, list_prod_inv_reverse Xs]
+      mul_inv_rev, list_prod_inv_reverse Xs]
 #align matrix.list_prod_inv_reverse Matrix.list_prod_inv_reverse
 
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
