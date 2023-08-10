@@ -22,7 +22,7 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Real Set MeasureTheory
 

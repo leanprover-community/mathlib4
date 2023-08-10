@@ -708,7 +708,7 @@ theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x �
   · simp only [Algebra.TensorProduct.includeLeftRingHom_apply, Algebra.TensorProduct.tmul_pow,
       one_pow]
     convert (MulZeroClass.mul_zero (M₀ := A ⊗[R] B) _).symm
-    erw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeft_comp_algebraMap,
+    erw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap,
       ← Polynomial.eval₂_map]
     convert Polynomial.eval₂_at_apply
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).toRingHom y
