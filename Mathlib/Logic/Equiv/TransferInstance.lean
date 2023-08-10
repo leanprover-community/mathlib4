@@ -104,11 +104,11 @@ theorem inv_def [Inv β] (x : α) :
 
 /-- Transfer `SMul` across an `Equiv` -/
 @[reducible]
-protected def smul (R : Type _) [SMul R β] : SMul R α :=
+protected def smul (R : Type*) [SMul R β] : SMul R α :=
   ⟨fun r x => e.symm (r • e x)⟩
 #align equiv.has_smul Equiv.smul
 
-theorem smul_def {R : Type _} [SMul R β] (r : R) (x : α) :
+theorem smul_def {R : Type*} [SMul R β] (r : R) (x : α) :
     letI := e.smul R
     r • x = e.symm (r • e x) :=
   rfl
@@ -116,11 +116,11 @@ theorem smul_def {R : Type _} [SMul R β] (r : R) (x : α) :
 
 /-- Transfer `Pow` across an `Equiv` -/
 @[reducible, to_additive existing smul]
-protected def pow (N : Type _) [Pow β N] : Pow α N :=
+protected def pow (N : Type*) [Pow β N] : Pow α N :=
   ⟨fun x n => e.symm (e x ^ n)⟩
 #align equiv.has_pow Equiv.pow
 
-theorem pow_def {N : Type _} [Pow β N] (n : N) (x : α) :
+theorem pow_def {N : Type*} [Pow β N] (n : N) (x : α) :
     letI := e.pow N
     x ^ n = e.symm (e x ^ n) :=
   rfl
@@ -474,7 +474,7 @@ protected def field [Field β] : Field α := by
 
 section R
 
-variable (R : Type _)
+variable (R : Type*)
 
 section
 
