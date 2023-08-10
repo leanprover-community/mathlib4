@@ -70,6 +70,7 @@ theorem psum_zero : psum σ R 0 = Fintype.card σ := by
 theorem psum_one : psum σ R 1 = ∑ i, X i := by
   simp only [psum, _root_.pow_one]
 
+@[simp]
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
   simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
 
