@@ -370,12 +370,12 @@ theorem models_iff_finset_models {φ : L.Sentence} :
   push_neg
   letI := Classical.decEq (Sentence L)
   constructor
-  . intro h T0 hT0
+  · intro h T0 hT0
     simpa using h (T0 ∪ {Formula.not φ})
       (by
         simp only [Finset.coe_union, Finset.coe_singleton]
         exact Set.union_subset_union hT0 (Set.Subset.refl _))
-  . intro h T0 hT0
+  · intro h T0 hT0
     exact IsSatisfiable.mono (h (T0.erase (Formula.not φ))
       (by simpa using hT0)) (by simp)
 
