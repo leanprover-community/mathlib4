@@ -831,6 +831,7 @@ import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Generator
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.Injective
