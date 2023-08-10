@@ -20,7 +20,7 @@ open Filter
 
 open Topology Filter
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- In a separated space, a complete set is closed. -/
 theorem IsComplete.isClosed [UniformSpace α] [SeparatedSpace α] {s : Set α} (h : IsComplete s) :
@@ -36,9 +36,9 @@ namespace DenseInducing
 
 open Filter
 
-variable [TopologicalSpace α] {β : Type _} [TopologicalSpace β]
+variable [TopologicalSpace α] {β : Type*} [TopologicalSpace β]
 
-variable {γ : Type _} [UniformSpace γ] [CompleteSpace γ] [SeparatedSpace γ]
+variable {γ : Type*} [UniformSpace γ] [CompleteSpace γ] [SeparatedSpace γ]
 
 theorem continuous_extend_of_cauchy {e : α → β} {f : α → γ} (de : DenseInducing e)
     (h : ∀ b : β, Cauchy (map f (comap e <| 𝓝 b))) : Continuous (de.extend f) :=

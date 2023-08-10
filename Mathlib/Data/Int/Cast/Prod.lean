@@ -15,7 +15,7 @@ import Mathlib.Data.Nat.Cast.Prod
 
 namespace Prod
 
-variable {α β : Type _} [AddGroupWithOne α] [AddGroupWithOne β]
+variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 
 instance : AddGroupWithOne (α × β) :=
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with

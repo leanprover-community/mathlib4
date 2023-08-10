@@ -13,7 +13,7 @@ import Mathlib.Algebra.Ring.Defs
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Left `Mul` by a `k : α` over `[Ring α]` is injective, if `k` is not a zero divisor.
 The typeclass that restricts all terms of `α` to have this property is `NoZeroDivisors`. -/

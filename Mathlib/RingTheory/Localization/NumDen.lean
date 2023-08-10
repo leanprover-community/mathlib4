@@ -22,9 +22,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsFractionRing
 
@@ -32,9 +32,9 @@ open IsLocalization
 
 section NumDen
 
-variable (A : Type _) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
+variable (A : Type*) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
 
-variable {K : Type _} [Field K] [Algebra A K] [IsFractionRing A K]
+variable {K : Type*} [Field K] [Algebra A K] [IsFractionRing A K]
 
 theorem exists_reduced_fraction (x : K) :
     ∃ (a : A) (b : nonZeroDivisors A), (∀ {d}, d ∣ a → d ∣ b → IsUnit d) ∧ mk' K a b = x := by

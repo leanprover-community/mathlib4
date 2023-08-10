@@ -70,7 +70,7 @@ open NNReal ENNReal BigOperators Topology MeasureTheory
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-variable {α E F G : Type _} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
 namespace MeasureTheory
@@ -83,19 +83,19 @@ The space of equivalence classes of measurable functions for which `snorm f p μ
 
 
 @[simp]
-theorem snorm_aeeqFun {α E : Type _} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+theorem snorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
     {p : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) :
     snorm (AEEqFun.mk f hf) p μ = snorm f p μ :=
   snorm_congr_ae (AEEqFun.coeFn_mk _ _)
 #align measure_theory.snorm_ae_eq_fun MeasureTheory.snorm_aeeqFun
 
-theorem Memℒp.snorm_mk_lt_top {α E : Type _} [MeasurableSpace α] {μ : Measure α}
+theorem Memℒp.snorm_mk_lt_top {α E : Type*} [MeasurableSpace α] {μ : Measure α}
     [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : Memℒp f p μ) :
     snorm (AEEqFun.mk f hfp.1) p μ < ∞ := by simp [hfp.2]
 #align measure_theory.mem_ℒp.snorm_mk_lt_top MeasureTheory.Memℒp.snorm_mk_lt_top
 
 /-- Lp space -/
-def Lp {α} (E : Type _) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ≥0∞)
+def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ≥0∞)
     (μ : Measure α := by volume_tac) : AddSubgroup (α →ₘ[μ] E) where
   carrier := { f | snorm f p μ < ∞ }
   zero_mem' := by simp [snorm_congr_ae AEEqFun.coeFn_zero, snorm_zero]
@@ -461,7 +461,7 @@ example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm
 
 section BoundedSMul
 
-variable {𝕜 𝕜' : Type _}
+variable {𝕜 𝕜' : Type*}
 
 variable [NormedRing 𝕜] [NormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
 
@@ -521,7 +521,7 @@ end BoundedSMul
 
 section NormedSpace
 
-variable {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
 set_option synthInstance.maxHeartbeats 30000 in
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
@@ -534,7 +534,7 @@ end Lp
 
 namespace Memℒp
 
-variable {𝕜 : Type _} [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem toLp_const_smul {f : α → E} (c : 𝕜) (hf : Memℒp f p μ) :
     (hf.const_smul c).toLp (c • f) = c • hf.toLp f :=
@@ -581,7 +581,7 @@ theorem snormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) 
 
 variable (hs)
 
-theorem snorm_indicator_le {E : Type _} [NormedAddCommGroup E] (f : α → E) :
+theorem snorm_indicator_le {E : Type*} [NormedAddCommGroup E] (f : α → E) :
     snorm (s.indicator f) p μ ≤ snorm f p μ := by
   refine' snorm_mono_ae (eventually_of_forall fun x => _)
   suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ by exact NNReal.coe_mono this
@@ -853,19 +853,19 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * (μ Set.univ).toR
   exact norm_indicatorConstLp_le
 
 /-- `MeasureTheory.Lp.const` as a `LinearMap`. -/
-@[simps] protected def Lp.constₗ (𝕜 : Type _) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] :
+@[simps] protected def Lp.constₗ (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] :
     E →ₗ[𝕜] Lp E p μ where
   toFun := Lp.const p μ
   map_add' := map_add _
   map_smul' _ _ := rfl
 
 @[simps! apply]
-protected def Lp.constL (𝕜 : Type _) [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
+protected def Lp.constL (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
     E →L[𝕜] Lp E p μ :=
   (Lp.constₗ p μ 𝕜).mkContinuous ((μ Set.univ).toReal ^ (1 / p.toReal)) <| fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
 
-theorem Lp.norm_constL_le (𝕜 : Type _) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem Lp.norm_constL_le (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [Fact (1 ≤ p)] :
     ‖(Lp.constL p μ 𝕜 : E →L[𝕜] Lp E p μ)‖ ≤ (μ Set.univ).toReal ^ (1 / p.toReal) :=
   LinearMap.mkContinuous_norm_le _ (by positivity) _
@@ -908,7 +908,7 @@ theorem Memℒp.norm_rpow {f : α → E} (hf : Memℒp f p μ) (hp_ne_zero : p �
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 #align measure_theory.mem_ℒp.norm_rpow MeasureTheory.Memℒp.norm_rpow
 
-theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type _} [MeasurableSpace β]
+theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type*} [MeasurableSpace β]
     {μb : MeasureTheory.Measure β} {g : β →ₘ[μb] E} (hg : g ∈ Lp E p μb) {f : α → β}
     (hf : MeasurePreserving f μ μb) :
     g.compMeasurePreserving f hf ∈ Lp E p μ := by
@@ -919,7 +919,7 @@ namespace Lp
 
 /-! ### Composition with a measure preserving function -/
 
-variable {β : Type _} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f : α → β}
+variable {β : Type*} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f : α → β}
 
 /-- Composition of an `L^p` function with a measure preserving function is an `L^p` function. -/
 def compMeasurePreserving (f : α → β) (hf : MeasurePreserving f μ μb) :
@@ -942,7 +942,7 @@ theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ
     ‖compMeasurePreserving f hf g‖ = ‖g‖ :=
   congr_arg ENNReal.toReal <| g.1.snorm_compMeasurePreserving hf
 
-variable (𝕜 : Type _) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 /-- `MeasureTheory.Lp.compMeasurePreserving` as a linear map. -/
 @[simps]
@@ -1061,7 +1061,7 @@ end LipschitzWith
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 /-- Composing `f : Lp ` with `L : E →L[𝕜] F`. -/
 def compLp (L : E →L[𝕜] F) (f : Lp E p μ) : Lp F p μ :=
@@ -1086,7 +1086,7 @@ theorem comp_memℒp' (L : E →L[𝕜] F) {f : α → E} (hf : Memℒp f p μ) 
 
 section IsROrC
 
-variable {K : Type _} [IsROrC K]
+variable {K : Type*} [IsROrC K]
 
 theorem _root_.MeasureTheory.Memℒp.ofReal {f : α → ℝ} (hf : Memℒp f p μ) :
     Memℒp (fun x => (f x : K)) p μ :=
@@ -1760,7 +1760,7 @@ theorem range_toLpHom [Fact (1 ≤ p)] :
       (by rintro - ⟨f, rfl⟩; exact mem_Lp f : _ ≤ Lp E p μ)
 #align bounded_continuous_function.range_to_Lp_hom BoundedContinuousFunction.range_toLpHom
 
-variable (𝕜 : Type _) [Fact (1 ≤ p)]
+variable (𝕜 : Type*) [Fact (1 ≤ p)]
 
 /-- The bounded linear map of considering a bounded continuous function on a finite-measure space
 as an element of `Lp`. -/
@@ -1810,7 +1810,7 @@ namespace ContinuousMap
 
 variable [CompactSpace α] [IsFiniteMeasure μ]
 
-variable (𝕜 : Type _) (p μ) [Fact (1 ≤ p)]
+variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
 
 /-- The bounded linear map of considering a continuous function on a compact finite-measure
 space `α` as an element of `Lp`.  By definition, the norm on `C(α, E)` is the sup-norm, transferred
@@ -1872,7 +1872,7 @@ variable {μ}
 
 /-- If a sum of continuous functions `g n` is convergent, and the same sum converges in `Lᵖ` to `h`,
 then in fact `g n` converges uniformly to `h`.  -/
-theorem hasSum_of_hasSum_Lp {β : Type _} [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E]
+theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E]
     {g : β → C(α, E)} {f : C(α, E)} (hg : Summable g)
     (hg2 : HasSum (toLp (E := E) p μ 𝕜 ∘ g) (toLp (E := E) p μ 𝕜 f)) : HasSum g f := by
   convert Summable.hasSum hg
