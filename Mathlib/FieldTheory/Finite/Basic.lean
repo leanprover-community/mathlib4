@@ -227,6 +227,159 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
+lemma exists_non_one_iff_not_bot {G' : Type*} [Group G']
+    {G : Subgroup G'} :  G ≠ ⊥ ↔ ∃ a : ↥G, a ≠ 1 := by
+  have := Subgroup.bot_or_exists_ne_one G
+  rcases this with h | ⟨x, hx, hx'⟩
+  · rw [h]
+    simp only [ne_eq, not_true, eq_iff_true_of_subsingleton, exists_false]
+  · simp only [ne_eq, Subtype.exists, Subgroup.mk_eq_one_iff, exists_prop]
+    apply Iff.intro
+    · intro _
+      apply Exists.intro
+      apply And.intro
+      exact hx
+      simp_all only [not_false_eq_true]
+    · intro _
+      intro a
+      simp_all only [Subgroup.mem_bot]
+
+theorem sum_subgroup_units_zero_of_ne_bot
+    {G : Subgroup (Units K)} [Fintype G] (hg : G ≠ ⊥) : ∑ x : G, (x.val : K) = 0 := by
+  rw [exists_non_one_iff_not_bot] at hg
+  rcases hg with ⟨a, ha⟩
+  -- The action of a on G is injective
+  have hinj := mul_right_injective a
+  -- ... and leaves G unchanged
+  have h_unchanged :
+    Finset.map
+        { toFun := fun x : ↥G => a * x
+          inj' := hinj } Finset.univ =
+      Finset.univ :=
+    by simp
+  -- Therefore the sum of x over a G is the sum of a x over G
+  have h_sum_map :=
+    Finset.sum_map (@Finset.univ (↥G) _) ⟨fun x : ↥G => (a : ↥G) * (x : ↥G), hinj⟩ fun x : ↥G =>
+      (x.val : K)
+  -- ... and the former is the sum of x over G.
+  rw [h_unchanged] at h_sum_map
+  rw [Function.Embedding.coeFn_mk] at h_sum_map
+  simp only [Subgroup.coe_mul, Finset.sum_congr, Units.val_mul] at h_sum_map
+  simp only [Finset.sum_congr]
+  -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
+  rw [← Finset.mul_sum] at h_sum_map
+  -- thus one of (a - 1) or ∑ G, x is zero
+  have hzero : (a.val.val - 1 : K) * ∑ x : ↥G, x.val.val = 0 := by
+    rw [sub_mul]
+    rw [← h_sum_map]
+    simp
+  rw [mul_eq_zero] at hzero
+  cases hzero
+  · -- If the former, we reach contradiction from a ≠ 1
+    exfalso
+    apply ha
+    ext
+    rw [<-sub_eq_zero]
+    assumption
+  · -- If the latter, we are done
+    assumption
+
+theorem sum_subgroup_units
+    {G : Subgroup (Units K)} [Fintype G] [Decidable (G = ⊥)] :
+    ∑ x : G, (x.val : K) = if G = ⊥ then 1 else 0 := by
+  by_cases G_bot : G = ⊥
+  · subst G_bot
+    simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
+    Nat.cast_zero]
+    rw [eq_comm]
+    simp only [ite_eq_left_iff, zero_ne_one]
+    simp only [univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
+  · simp [G_bot]
+    apply sum_subgroup_units_zero_of_ne_bot
+    exact G_bot
+
+theorem subgroup_zpowers_card {G : Type} [Group G] [Fintype G] (a : G) (k : ℕ) (k_pos : 0 < k)
+    (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k :=
+  by
+  rw [← orderOf_eq_card_zpowers]
+  apply orderOf_le_of_pow_eq_one
+  assumption
+  assumption
+
+theorem Field.sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
+    [DecidableEq F] {G : Subgroup (Units F)} [Fintype G] {k : ℕ} (k_pos : 0 < k)
+    (k_lt_card_G : k < Fintype.card G) : ∑ x : G, (x.val : F) ^ k = 0 :=
+  by
+  have ha : ∃ a : ↥G, a ^ k ≠ 1 := by
+    -- Need cyclicity of G
+    have G_cyclic :
+      IsCyclic G := --is_cyclic_of_subgroup_is_domain ((λ (x : ↥G), (x : F)) : _) _,
+        Subgroup.isCyclic G
+    rcases G_cyclic with ⟨a, ha⟩
+    use a
+    by_contra
+    have ord : Fintype.card (Subgroup.zpowers a) ≤ k :=
+      by
+      clear ha k_lt_card_G
+      apply subgroup_zpowers_card
+      assumption
+      assumption
+    have bar : Fintype.card G = Fintype.card (Subgroup.zpowers a) := by
+      clear ord
+      rw [eq_comm]
+      rw [Subgroup.card_eq_iff_eq_top]
+      ext
+      constructor
+      simp
+      simp
+      apply ha
+    linarith
+  rcases ha with ⟨a, ha⟩
+  rw [Finset.sum_eq_multiset_sum]
+  -- try multiplying a^k
+  have h_multset_map :
+    Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val =
+      Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val :=
+    by
+    simp_rw [← mul_pow]
+    have as_comp :
+      (fun x : ↥G => ((x.val : F) * (a.val : F)) ^ k) = (fun x : ↥G => (x.val : F) ^ k) ∘ fun x : ↥G => x * a := by
+      funext x
+      simp
+    rw [as_comp]
+    rw [← Multiset.map_map]
+    congr
+    ext a_1
+    simp
+    have ha_1 : a_1 = (fun x : ↥G => x * a) (a_1 * a⁻¹)
+    simp
+    rw [ha_1]
+    rw [Multiset.count_map_eq_count' (fun x => x * a) _ _]
+    simp
+    -- exact Classical.decEq G
+    exact mul_left_injective a
+  have h_multset_map_sum :
+    (Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val).sum =
+      (Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val).sum
+  rw [h_multset_map]
+  rw [Multiset.sum_map_mul_right] at h_multset_map_sum
+  have hzero : ((a.val : F) ^ k - 1 : F) * (Multiset.map (fun i : G => (i.val : F) ^ k) Finset.univ.val).sum = 0 := by
+    rw [sub_mul, mul_comm]
+    rw [← h_multset_map_sum]
+    simp
+  rw [mul_eq_zero] at hzero
+  cases hzero
+  · -- If the former, we reach contradiction from a ≠ 1
+    exfalso
+    apply ha
+    ext
+    rw [<-sub_eq_zero]
+    aesop
+  · -- If the latter, we are done
+    assumption
+
+
+
 /-- The sum of `x ^ i` as `x` ranges over a finite field of cardinality `q`
 is equal to `0` if `i < q - 1`. -/
 theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0 := by
