@@ -287,7 +287,7 @@ theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
   rw [self_trans_symm, ofSet_eq_refl, Set.eq_univ_iff_forall]; rfl
 #align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_isSome
 
-instance : Bot (α ≃. β) :=
+instance instBotPEquiv : Bot (α ≃. β) :=
   ⟨{  toFun := fun _ => none
       invFun := fun _ => none
       inv := by simp }⟩
@@ -411,7 +411,7 @@ end Single
 
 section Order
 
-instance : PartialOrder (α ≃. β) where
+instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
   le f g := ∀ (a : α) (b : β), b ∈ f a → b ∈ g a
   le_refl _ _ _ := id
   le_trans f g h fg gh a b := gh a b ∘ fg a b

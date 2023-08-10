@@ -74,7 +74,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Module R M] [Module A M]
     [IsScalarTower R A M] :
     Algebra R (TensorAlgebra A M) :=
-  RingQuot.instAlgebraRingQuotInstSemiring _
+  RingQuot.instAlgebraRingQuot _
 
 -- verify there is no diamond
 example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
@@ -83,13 +83,13 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemi
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
     SMulCommClass R S (TensorAlgebra A M) :=
-  RingQuot.instSMulCommClassRingQuotInstSMulRingQuotInstSMulRingQuot _
+  RingQuot.instSMulCommClassRingQuot _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
-  RingQuot.instIsScalarTowerRingQuotInstSMulRingQuotInstSMulRingQuot _
+  RingQuot.instIsScalarTowerRingQuot _
 
 namespace TensorAlgebra
 
