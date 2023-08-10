@@ -23,7 +23,7 @@ open Filter UniformSpace
 
 universe u
 
-variable {ι : Type _} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
+variable {ι : Type*} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
 
 
 instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
@@ -39,7 +39,7 @@ theorem Pi.uniformity :
 
 variable {α}
 
-theorem uniformContinuous_pi {β : Type _} [UniformSpace β] {f : β → ∀ i, α i} :
+theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
   -- porting note: required `Function.comp` to close
   simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp]
