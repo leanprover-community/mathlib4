@@ -301,7 +301,7 @@ theorem zpow_sub {A : M} (ha : IsUnit A.det) (z1 z2 : ℤ) : A ^ (z1 - z2) = A ^
 #align matrix.zpow_sub Matrix.zpow_sub
 
 theorem Commute.mul_zpow {A B : M} (h : Commute A B) : ∀ i : ℤ, (A * B) ^ i = A ^ i * B ^ i
-  | (n : ℕ) => by simp [h.mul_pow n, -mul_eq_mul]
+  | (n : ℕ) => by simp [h.mul_pow n]
   | -[n+1] => by
     rw [zpow_negSucc, zpow_negSucc, zpow_negSucc, ← mul_inv_rev,
       h.mul_pow n.succ, (h.pow_pow _ _).eq]
