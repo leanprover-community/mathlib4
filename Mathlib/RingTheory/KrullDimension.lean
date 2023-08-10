@@ -15,7 +15,7 @@ If `R ⟶ S` is a surjective ring homomorphism, then `ringKrullDim S ≤ ringKru
 -/
 theorem le_of_surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
   (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R := by
-{ refine' krullDim.krullDim_le_of_strictMono (PrimeSpectrum.comap f)
+{ refine' krullDim.le_of_strictMono (PrimeSpectrum.comap f)
     (Monotone.strictMono_of_injective ?_ (PrimeSpectrum.comap_injective_of_surjective f hf))
   · intro a b hab
     change ((PrimeSpectrum.comap f) a).asIdeal ≤ ((PrimeSpectrum.comap f) b).asIdeal
