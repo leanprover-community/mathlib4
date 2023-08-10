@@ -62,7 +62,7 @@ namespace Profinite
 /-- Construct a term of `Profinite` from a type endowed with the structure of a
 compact, Hausdorff and totally disconnected topological space.
 -/
-def of (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 #align Profinite.of Profinite.of
@@ -82,7 +82,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type _) :=
+instance : CoeSort Profinite (Type*) :=
   ⟨fun X => X.toCompHaus⟩
 
 -- Porting note: This lemma was not needed in mathlib3
@@ -120,7 +120,7 @@ instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
 
 -- Porting note: removed, as it is a syntactic tautology.
 -- @[simp]
--- theorem coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type _) = (X : Type _) :=
+-- theorem coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type*) = (X : Type*) :=
 --   rfl
 -- #align Profinite.coe_to_CompHaus Profinite.coe_toCompHaus
 
@@ -247,7 +247,7 @@ end DiscreteTopology
 end Profinite
 
 namespace Profinite
--- set_option pp.universes true
+
 -- TODO the following construction of limits could be generalised
 -- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of

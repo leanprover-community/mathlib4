@@ -40,7 +40,7 @@ e.g., when `α` is a finite field. See `quadraticCharFun_mul`.
 We will later define `quadraticChar` to be a multiplicative character
 of type `MulChar F ℤ`, when the domain is a finite field `F`.
 -/
-def quadraticCharFun (α : Type _) [MonoidWithZero α] [DecidableEq α]
+def quadraticCharFun (α : Type*) [MonoidWithZero α] [DecidableEq α]
     [DecidablePred (IsSquare : α → Prop)] (a : α) : ℤ :=
   if a = 0 then 0 else if IsSquare a then 1 else -1
 #align quadratic_char_fun quadraticCharFun
@@ -60,7 +60,7 @@ section quadraticChar
 
 open MulChar
 
-variable {F : Type _} [Field F] [Fintype F] [DecidableEq F]
+variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
 /-- Some basic API lemmas -/
 theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 0 := by
@@ -297,7 +297,7 @@ section SpecialValues
 
 open ZMod MulChar
 
-variable {F : Type _} [Field F] [Fintype F]
+variable {F : Type*} [Field F] [Fintype F]
 
 /-- The value of the quadratic character at `-1` -/
 theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :

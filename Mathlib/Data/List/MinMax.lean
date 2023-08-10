@@ -25,7 +25,7 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 
 namespace List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section ArgAux
 

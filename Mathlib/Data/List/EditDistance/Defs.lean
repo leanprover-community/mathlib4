@@ -48,15 +48,13 @@ structure Cost (α β : Type _) (δ : Type _) where
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
-def defaultCost [DecidableEq α] : Cost α α ℕ :=
-  ⟨fun _ => 1, fun _ => 1, fun a b => if a = b then 0 else 1⟩
+@[simps?]
+def defaultCost [DecidableEq α] : Cost α α ℕ where
+  delete _ := 1
+  insert _ := 1
+  substitute a b := if a = b then 0 else 1
 
 instance [DecidableEq α] : Inhabited (Cost α α ℕ) := ⟨defaultCost⟩
-
-@[simp] lemma defaultCost_delete [DecidableEq α] (a : α) : defaultCost.delete a = 1 := rfl
-@[simp] lemma defaultCost_insert [DecidableEq α] (a : α) : defaultCost.insert a = 1 := rfl
-@[simp] lemma defaultCost_substitute [DecidableEq α] (a b : α) :
-    defaultCost.substitute a b = if a = b then 0 else 1 := rfl
 
 variable (C : Cost α β δ)
 
@@ -73,7 +71,7 @@ and it is convenient for the recursive calls that we bundle this list
 with a proof that it is non-empty.
 -/
 def impl
-    (xs : List α) (y : β) (d : Σ' (r : List δ), 0 < r.length) : Σ' (r : List δ), 0 < r.length :=
+    (xs : List α) (y : β) (d : {r : List δ // 0 < r.length}) : {r : List δ // 0 < r.length} :=
   let ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
     (init := ⟨[C.insert y + ds.getLast (List.length_pos.mp w)], by simp⟩)
@@ -85,7 +83,7 @@ variable (x : α) (xs : List α) (y : β) (d : δ) (ds : List δ) (w : 0 < (d ::
 
 -- Note this lemma has an unspecified proof `w'` on the right-hand-side,
 -- which will become an extra goal when rewriting.
-theorem impl_cons (w') :
+theorem impl_cons (w' : 0 < List.length ds) :
     impl C (x :: xs) y ⟨d :: ds, w⟩ =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       ⟨min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :: r, by simp⟩ :=
@@ -93,13 +91,13 @@ theorem impl_cons (w') :
 
 -- Note this lemma has two unspecified proofs: `h` appears on the left-hand-side
 -- and should be found by matching, but `w'` will become an extra goal when rewriting.
-theorem impl_cons_fst_zero (h) (w') :
+theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
     (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :=
   match ds, w' with | _ :: _, _ => rfl
 
-theorem impl_length (d : Σ' (r : List δ), 0 < r.length) (w : d.1.length = xs.length + 1) :
+theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.length + 1) :
     (impl C xs y d).1.length = xs.length + 1 := by
   induction xs generalizing d
   · case nil =>
@@ -132,7 +130,7 @@ Note that if the cost functions do not satisfy the inequalities
 then the edit distances calculated here may not agree with the general
 geodesic distance on the edit graph.
 -/
-def suffixLevenshtein (xs : List α) (ys : List β) : Σ' (r : List δ), 0 < r.length :=
+def suffixLevenshtein (xs : List α) (ys : List β) : {r : List δ // 0 < r.length} :=
   ys.foldr
     (impl C xs)
     (xs.foldr (init := ⟨[0], by simp⟩) (fun a ⟨r, w⟩ => ⟨(C.delete a + r[0]) :: r, by simp⟩))
@@ -197,7 +195,7 @@ theorem suffixLevenshtein_cons₂ (xs : List α) (y ys) :
     suffixLevenshtein C xs (y :: ys) = (impl C xs) y (suffixLevenshtein C xs ys) :=
   rfl
 
-theorem suffixLevenshtein_cons₁_aux {x y : Σ' (r : List β), 0 < r.length}
+theorem suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
     (w₀ : x.1[0]'x.2 = y.1[0]'y.2) (w : x.1.tail = y.1.tail) : x = y := by
   match x, y with
   | ⟨hx :: tx, _⟩, ⟨hy :: ty, _⟩ => simp_all

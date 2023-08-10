@@ -49,9 +49,9 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 
-variable {𝕜 : Type _} [IsROrC 𝕜] [dec_𝕜 : DecidableEq 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜] [dec_𝕜 : DecidableEq 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
@@ -279,8 +279,7 @@ end LinearMap
 
 section Nonneg
 
--- porting note: lean4#2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 @[simp]
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
