@@ -6,7 +6,9 @@ Authors: Fangming Li, Jujian Zhang
 
 import Mathlib.Order.KrullDimension
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Topology.KrullDimension
 
 /-!
 # Krull dimension of a (commutative) ring
@@ -28,6 +30,31 @@ noncomputable def ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop ℕ)
   krullDim (PrimeSpectrum R)
 
 namespace ringKrullDim
+
+lemma eq_topologicalKrullDim (R : Type _) [CommRing R] :
+  ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) := by
+refine' Eq.symm $ krullDim.eq_OrderDual.trans $ krullDim.eq_of_OrderIso $ OrderIso.symm {
+  toFun := OrderDual.toDual ∘ λ p ↦ ⟨PrimeSpectrum.zeroLocus p.asIdeal,
+    PrimeSpectrum.isClosed_zeroLocus p.asIdeal, (PrimeSpectrum.isIrreducible_zeroLocus_iff _).mpr
+      $ by simpa only [p.IsPrime.radical] using p.IsPrime⟩
+  invFun := (λ s ↦ ⟨PrimeSpectrum.vanishingIdeal s.1,
+    PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime.mp s.2.2⟩ :
+      {s : Set (PrimeSpectrum R) | IsClosed s ∧ IsIrreducible s} → PrimeSpectrum R) ∘
+        OrderDual.ofDual
+  left_inv := λ p ↦ by
+    ext1
+    dsimp
+    rw [PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, p.IsPrime.radical]
+  right_inv := λ s ↦ by
+    dsimp [OrderDual.toDual, OrderDual.ofDual, Equiv.coe_refl, id, Subtype.coe_mk,
+      Function.comp_apply]
+    simp only [PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, show
+      closure (Subtype.val s) = Subtype.val s by exact s.2.1.closure_eq]
+    exact rfl
+  map_rel_iff' := by
+    intro p q
+    simp [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual, Subtype.mk_le_mk,
+      PrimeSpectrum.zeroLocus_subset_zeroLocus_iff, q.IsPrime.radical] }
 
 /--
 If `R ⟶ S` is a surjective ring homomorphism, then `ringKrullDim S ≤ ringKrullDim R`.
@@ -278,11 +305,11 @@ def _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv :
 
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrimeEquiv_IsMonotone :
   Monotone (PrimeSpectrum.IicToLocalizationAtPrimeEquiv I) := by
-{ exact PrimeSpectrum.IicToLocalizationAtPrime_IsMonotone I }
+{ exact PrimeSpectrum.IicToLocalizationAtPrime_isMonotone I }
 
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_IsMonotone :
   Monotone (PrimeSpectrum.LocalizationAtPrimeToIicEquiv I) := by
-{ exact PrimeSpectrum.LocalizationAtPrimeToIic_IsMonotone I }
+{ exact PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone I }
 
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_is_symm :
   PrimeSpectrum.LocalizationAtPrimeToIicEquiv I =
