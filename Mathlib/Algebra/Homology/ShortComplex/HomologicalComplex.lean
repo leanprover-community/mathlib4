@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.HomotopyCategory
-
+import Mathlib.Tactic.Linarith
 /-!
 # The short complexes attached to homological complexes
 
@@ -21,7 +21,7 @@ abbreviated as `K.sc i`.
 
 -/
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits ZeroObject
 
 namespace HomologicalComplex
 
@@ -91,6 +91,11 @@ lemma iCycles_d (j : ι) : K.iCycles i ≫ K.d i j = 0 := by
     exact (K.sc i).iCycles_g
   . rw [K.shape _ _ hij, comp_zero]
 
+noncomputable def cyclesIsKernel (i j : ι) (hij : c.Rel i j) [K.HasHomology i]:
+    IsLimit (KernelFork.ofι (K.iCycles i) (K.iCycles_d i j)) := by
+  obtain rfl := c.next_eq' hij
+  exact (K.sc i).cyclesIsKernel
+
 @[reassoc (attr := simp)]
 lemma toCycles_i (i j : ι) [K.HasHomology j] :
     K.toCycles i j ≫ K.iCycles j = K.d i j :=
@@ -125,7 +130,7 @@ lemma liftCycles_homologyπ_eq_zero_of_boundary {A : C} (k : A ⟶ K.X i) (j : �
     rw [this, zero_comp]
 
 @[reassoc (attr := simp)]
-lemma toCycles_comp_homologyπ (i j : ι) [K.HasHomology j]:
+lemma toCycles_comp_homologyπ (i j : ι) [K.HasHomology j] :
     K.toCycles i j ≫ K.homologyπ j = 0 :=
   K.liftCycles_homologyπ_eq_zero_of_boundary (K.d i j) (c.next j) rfl (𝟙 _) (by simp)
 
@@ -170,6 +175,11 @@ lemma d_pOpcycles (X : HomologicalComplex C c) (i j : ι) [X.HasHomology j] : X.
   . obtain rfl := c.prev_eq' hij
     exact (X.sc j).f_pOpcycles
   . rw [X.shape _ _ hij, zero_comp]
+
+noncomputable def opcyclesIsCokernel (i j : ι) (hij : c.Rel i j) [K.HasHomology j]:
+    IsColimit (CokernelCofork.ofπ (K.pOpcycles j) (K.d_pOpcycles i j)) := by
+  obtain rfl := c.prev_eq' hij
+  exact (K.sc j).opcyclesIsCokernel
 
 @[reassoc (attr := simp)]
 lemma p_fromOpcycles (i j : ι) [K.HasHomology i] :
@@ -492,13 +502,28 @@ lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
   rintro X Y _ ⟨e, rfl⟩ i
   exact IsIso.of_iso (e.toHomologyIso i)
 
+end HomologicalComplex
+
+end
+
+section
+
+variable {C : Type _} [Category C] [HasZeroMorphisms C]
+
+namespace HomologicalComplex
+
+variable {ι : Type _} {c : ComplexShape ι}
+  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+
 section single
 
-variable {C}
-variable [HasZeroObject C] [DecidableEq ι]
+variable [HasZeroObject C] [DecidableEq ι] (c i)
 
-instance (A : C) : ((single C c i).obj A).HasHomology i :=
+instance (A : C) (j : ι): ((single C c i).obj A).HasHomology j :=
   ⟨⟨ShortComplex.HomologyData.ofZeros _ rfl rfl⟩⟩
+
+instance (A : C) (j : ι) : ((single C c i).obj A).HasHomology j :=
+  inferInstance
 
 noncomputable def singleHomologyIso (A : C) : ((single C c i).obj A).homology i ≅ A :=
   (ShortComplex.HomologyData.ofZeros (sc ((single C c i).obj A) i) rfl rfl).left.homologyIso ≪≫
@@ -519,14 +544,138 @@ noncomputable def singleCompHomologyFunctorIso [CategoryWithHomology C] :
     single C c i ⋙ homologyFunctor C c i ≅ 𝟭 C :=
   NatIso.ofComponents (singleHomologyIso c i) (by aesop_cat)
 
+lemma single_exactAt (A : C) (i j : ι) (hij : j ≠ i) :
+    ((single C c i).obj A).ExactAt j := by
+  rw [exactAt_iff, (ShortComplex.LeftHomologyData.ofZeros
+    (sc ((single C c i).obj A) j) rfl rfl).exact_iff]
+  dsimp
+  rw [if_neg hij]
+  exact Limits.isZero_zero C
+
 end single
 
 end HomologicalComplex
 
+namespace ChainComplex
+
+section
+
+variable [HasZeroObject C]
+
+instance (X : C) (j : ℕ) :
+    ((single₀ C).obj X).HasHomology j :=
+  ShortComplex.hasHomology_of_zeros _ _ _
+
+lemma single₀_exactAt (X : C) (j : ℕ) :
+    ((single₀ C).obj X).ExactAt j.succ := by
+  rw [HomologicalComplex.exactAt_iff, (ShortComplex.LeftHomologyData.ofZeros
+    (((single₀ C).obj X).sc j.succ) rfl rfl).exact_iff]
+  dsimp
+  exact Limits.isZero_zero C
+
+end
+
+@[simp]
+lemma d_zero_eq_zero (K : ChainComplex C ℕ) (i : ℕ) : K.d 0 i = 0 :=
+  K.shape _ _ (by dsimp; linarith)
+
+instance isIso_homologyι₀ (K : ChainComplex C ℕ) [K.HasHomology 0] :
+    IsIso (K.homologyι 0) :=
+  ShortComplex.isIso_homologyι _ (by aesop_cat)
+
+@[simps! hom]
+noncomputable def isoHomologyι₀ (K : ChainComplex C ℕ) [K.HasHomology 0] :
+    K.homology 0 ≅ K.opcycles 0 :=
+  asIso (K.homologyι 0)
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι₀_hom_inv_id (K : ChainComplex C ℕ) [K.HasHomology 0] :
+    K.homologyι 0 ≫ K.isoHomologyι₀.inv = 𝟙 _ := K.isoHomologyι₀.hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι₀_inv_hom_id (K : ChainComplex C ℕ) [K.HasHomology 0] :
+    K.isoHomologyι₀.inv ≫ K.homologyι 0 = 𝟙 _ := K.isoHomologyι₀.inv_hom_id
+
+end ChainComplex
+
+namespace CochainComplex
+
+section
+
+variable [HasZeroObject C]
+
+instance single₀_obj_hasHomology (X : C) (j : ℕ) :
+    ((single₀ C).obj X).HasHomology j :=
+  ShortComplex.hasHomology_of_zeros _ _ _
+
+lemma single₀_exactAt (X : C) (j : ℕ) :
+    ((single₀ C).obj X).ExactAt j.succ := by
+  rw [HomologicalComplex.exactAt_iff, (ShortComplex.LeftHomologyData.ofZeros
+    (((single₀ C).obj X).sc j.succ) rfl rfl).exact_iff]
+  dsimp
+  exact Limits.isZero_zero C
+
+noncomputable def homologyDataSingle₀Obj (X : C) : (((single₀ C).obj X).sc 0).HomologyData :=
+  ShortComplex.HomologyData.ofZeros _ rfl rfl
+
+noncomputable def single₀Homology₀Iso (X : C) : ((single₀ C).obj X).homology 0 ≅ X :=
+  (homologyDataSingle₀Obj X).left.homologyIso
+
+noncomputable def single₀Cycles₀Iso (X : C) : ((single₀ C).obj X).cycles 0 ≅ X :=
+  (homologyDataSingle₀Obj X).left.cyclesIso
+
+@[reassoc (attr := simp)]
+lemma single₀Cycles₀Iso_inv_comp_iCycles (X : C) :
+  (single₀Cycles₀Iso X).inv ≫ ((single₀ C).obj X).iCycles 0 = 𝟙 _ :=
+  (homologyDataSingle₀Obj X).left.cyclesIso_inv_comp_iCycles
+
+@[reassoc (attr := simp)]
+lemma single₀_homologyπ_comp_single₀Homology₀Iso_hom (X : C) :
+    ((single₀ C).obj X).homologyπ 0 ≫ (single₀Homology₀Iso X).hom =
+      (single₀Cycles₀Iso X).hom :=
+    ((homologyDataSingle₀Obj X).left.homologyπ_comp_homologyIso_hom).trans (comp_id _)
+
+end
+
+@[simp]
+lemma d_zero_eq_zero (K : CochainComplex C ℕ) (i : ℕ) : K.d i 0 = 0 :=
+  K.shape _ _ (by dsimp; linarith)
+
+instance isIso_homologyπ₀ (K : CochainComplex C ℕ) [K.HasHomology 0] :
+    IsIso (K.homologyπ 0) :=
+  ShortComplex.isIso_homologyπ _ (by aesop_cat)
+
+@[simps! hom]
+noncomputable def isoHomologyπ₀ (K : CochainComplex C ℕ) [K.HasHomology 0] :
+    K.cycles 0 ≅ K.homology 0 :=
+  asIso (K.homologyπ 0)
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ₀_hom_inv_id (K : CochainComplex C ℕ) [K.HasHomology 0] :
+    K.homologyπ 0 ≫ K.isoHomologyπ₀.inv = 𝟙 _ := K.isoHomologyπ₀.hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ₀_inv_hom_id (K : CochainComplex C ℕ) [K.HasHomology 0] :
+    K.isoHomologyπ₀.inv ≫ K.homologyπ 0 = 𝟙 _ := K.isoHomologyπ₀.inv_hom_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ₀_inv_naturality {K L : CochainComplex C ℕ} (φ : K ⟶ L)
+    [K.HasHomology 0] [L.HasHomology 0] :
+    HomologicalComplex.homologyMap φ 0 ≫ L.isoHomologyπ₀.inv =
+      K.isoHomologyπ₀.inv ≫ HomologicalComplex.cyclesMap φ 0 := by
+  simp only [← cancel_mono (L.homologyπ 0), ← cancel_epi (K.homologyπ 0),
+    assoc, isoHomologyπ₀_inv_hom_id, comp_id, HomologicalComplex.homologyπ_naturality,
+    isoHomologyπ₀_hom_inv_id_assoc]
+
+end CochainComplex
+
+end
+
+
 namespace HomotopyCategory
 
-variable (C) (c)
-variable [CategoryWithHomology C]
+variable (C : Type _) [Category C] [Preadditive C] {ι : Type _} (c : ComplexShape ι)
+  [DecidableRel c.Rel] [CategoryWithHomology C]
 
 noncomputable def homologyFunctor (i : ι) : HomotopyCategory C c ⥤ C :=
   CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor C c i) (by

@@ -180,6 +180,25 @@ lemma quasiIso_unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} [S₁.HasHomology] [S�
   change QuasiIso φ
   infer_instance
 
+lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
+    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) [S₁.HasHomology] [S₂.HasHomology] :
+    QuasiIso φ ↔ IsIso (S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp])) := by
+  let H : LeftHomologyMapData φ (LeftHomologyData.ofZeros S₁ hf₁ hg₁)
+    (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ _ S₂.cyclesIsKernel) :=
+    { φK := S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp])
+      φH := S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp]) }
+  exact H.quasiIso_iff
+
+lemma quasiIso_iff_isIso_descOpcycles (φ : S₁ ⟶ S₂)
+    (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) [S₁.HasHomology] [S₂.HasHomology] :
+    QuasiIso φ ↔ IsIso (S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])) := by
+  let H : RightHomologyMapData φ
+    (RightHomologyData.ofIsColimitCokernelCofork S₁ hg₁ _ S₁.opcyclesIsCokernel)
+    (RightHomologyData.ofZeros S₂ hf₂ hg₂) :=
+    { φQ := S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])
+      φH := S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero]) }
+  exact H.quasiIso_iff
+
 end ShortComplex
 
 end CategoryTheory
