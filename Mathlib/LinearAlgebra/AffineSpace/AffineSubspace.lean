@@ -1397,7 +1397,7 @@ theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s
 results as adding the point to the set and taking the span. -/
 theorem affineSpan_insert_affineSpan (p : P) (ps : Set P) :
     affineSpan k (insert p (affineSpan k ps : Set P)) = affineSpan k (insert p ps) := by
-  rw [Set.insert_eq, Set.insert_eq, AffineSubspace.span_union, span_union, affineSpan_coe]
+  rw [Set.insert_eq, Set.insert_eq, span_union, span_union, affineSpan_coe]
 #align affine_span_insert_affine_span affineSpan_insert_affineSpan
 
 /-- If a point is in the affine span of a set, adding it to that set does not change the affine

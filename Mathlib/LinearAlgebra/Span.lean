@@ -74,16 +74,6 @@ end
 
 open Span
 
-section test
-
-variable (I : Submodule R M)
-
-variable [CommRing M] (r : R)
-
-
-
-end test
-
 variable {s t : Set M}
 
 theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p :=
