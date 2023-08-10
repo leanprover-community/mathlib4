@@ -118,22 +118,18 @@ theorem eq_of_degrees_lt_of_eval_index_eq (hvs : Set.InjOn v s) (degree_f_lt : f
   exact Submodule.sub_mem _ degree_f_lt degree_g_lt
 #align polynomial.eq_of_degrees_lt_of_eval_index_eq Polynomial.eq_of_degrees_lt_of_eval_index_eq
 
-theorem eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq [DecidableEq R] (hvs : Set.InjOn v s)
+theorem eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq (hvs : Set.InjOn v s)
     (degree_f_le : f.degree ≤ s.card) (degree_f_eq_degree_g : f.degree = g.degree)
     (leadingCoeffs_eq : f.leadingCoeff = g.leadingCoeff)
     (eval_fg : ∀ i ∈ s, f.eval (v i) = g.eval (v i)) : f = g := by
-  apply eq_of_degrees_le_of_leadingCoeff_eq_of_eval_finset_eq (s.image v)
-  · convert degree_f_le
-    rw [card_image_iff]
-    exact hvs
-  exact degree_f_eq_degree_g
-  exact leadingCoeffs_eq
-  intro x x_mem
-  simp at x_mem
-  rcases x_mem with ⟨x', hx', hx''⟩
-  rw [← hx'']
-  apply eval_fg
-  exact hx'
+  by_cases f_zero : f = 0
+  · simp only [f_zero] at *
+    apply Eq.symm
+    rw [eq_comm] at leadingCoeffs_eq
+    exact Iff.mp degree_eq_bot (id (Eq.symm degree_f_eq_degree_g))
+  · apply eq_of_degree_sub_lt_of_eval_index_eq (v := v) s hvs
+      (lt_of_lt_of_le (degree_sub_lt degree_f_eq_degree_g f_zero leadingCoeffs_eq) degree_f_le)
+      eval_fg
 
 end Indexed
 
@@ -694,7 +690,7 @@ theorem leadingCoeff_sub_of_degree_eq [Ring R] (p q : R[X]) (h : degree p = degr
 /--
 The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1
 -/
-theorem nodal_subgroup_eq_X_pow_card_sub_one [DecidableEq F] (G : Subgroup (Units F)) [Fintype G] :
+theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup (Units F)) [Fintype G] :
   nodal G.carrier.toFinset (fun (x : Fˣ) => (x : F)) = X ^ (Fintype.card G) - C 1 := by
   apply eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq
     (v := (fun (x : Fˣ) => (x : F))) (G.carrier.toFinset)
@@ -702,11 +698,11 @@ theorem nodal_subgroup_eq_X_pow_card_sub_one [DecidableEq F] (G : Subgroup (Unit
     exact Units.ext
   · simp only [degree_nodal, Set.toFinset_card, le_refl]
   · rw [degree_sub_eq_left_of_degree_lt]
-    simp only [degree_nodal, Set.toFinset_card, degree_pow, degree_X, nsmul_eq_mul, mul_one,
+    · simp only [degree_nodal, Set.toFinset_card, degree_pow, degree_X, nsmul_eq_mul, mul_one,
       Nat.cast_inj]
-    exact rfl
-    simp only [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
-    exact Fintype.card_pos
+      exact rfl
+    · simp only [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
+      exact Fintype.card_pos
   · rw [map_one]
     rw [nodal_monic]
     rw [leadingCoeff_sub_of_degree_lt]
