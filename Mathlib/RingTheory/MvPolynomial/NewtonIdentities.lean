@@ -225,7 +225,7 @@ private theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
 private theorem esymm_mul_psum_summand_to_weight (k i : ℕ) :
     ∑ A in powersetLen i univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ i * esymm σ R i * psum σ R (k - i) := by
-  simp only [esymm, psum, weight, ← mul_assoc, mul_sum]
+  simp only [esymm, psum_def, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
   refine sum_congr rfl ?_
   intro x _
