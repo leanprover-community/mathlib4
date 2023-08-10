@@ -31,7 +31,7 @@ quasiconcavity, and monotonicity implies quasilinearity.
 
 open Function OrderDual Set
 
-variable {𝕜 E F β : Type _}
+variable {𝕜 E F β : Type*}
 
 section OrderedSemiring
 

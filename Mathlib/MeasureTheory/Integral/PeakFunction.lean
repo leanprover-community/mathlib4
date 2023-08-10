@@ -31,7 +31,7 @@ Note that there are related results about convolution with respect to peak funct
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
@@ -39,13 +39,13 @@ open scoped Topology ENNReal
 
 /-- This lemma exists for finsets, but not for sets currently. porting note: move to
 data.set.basic after the port. -/
-theorem Set.disjoint_sdiff_inter {α : Type _} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
+theorem Set.disjoint_sdiff_inter {α : Type*} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
 #align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
 
 open Set
 
-variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
+variable {α E ι : Type*} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
   [BorelSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E} {l : Filter ι} {x₀ : α}
   {s : Set α} {φ : ι → α → ℝ}
 

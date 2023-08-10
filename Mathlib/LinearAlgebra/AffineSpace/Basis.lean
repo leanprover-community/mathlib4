@@ -55,7 +55,7 @@ structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type
   protected tot' : affineSpan k (range toFun) = ⊤
 #align affine_basis AffineBasis
 
-variable {ι ι' k V P : Type _} [AddCommGroup V] [AffineSpace V P]
+variable {ι ι' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
 
 namespace AffineBasis
 

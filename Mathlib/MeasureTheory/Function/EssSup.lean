@@ -33,7 +33,7 @@ open MeasureTheory Filter Set TopologicalSpace
 
 open ENNReal MeasureTheory NNReal
 
-variable {α β : Type _} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 section ConditionallyCompleteLattice
 
@@ -194,7 +194,7 @@ theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν �
   all_goals isBoundedDefault
 #align ess_sup_mono_measure essSup_mono_measure
 
-theorem essSup_mono_measure' {α : Type _} {β : Type _} {_ : MeasurableSpace α}
+theorem essSup_mono_measure' {α : Type*} {β : Type*} {_ : MeasurableSpace α}
     {μ ν : MeasureTheory.Measure α} [CompleteLattice β] {f : α → β} (hμν : ν ≤ μ) :
     essSup f ν ≤ essSup f μ :=
   essSup_mono_measure (Measure.absolutelyContinuous_of_le hμν)
@@ -216,7 +216,7 @@ theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
 
 section TopologicalSpace
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
 
 theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
     essSup (g ∘ f) μ ≤ essSup g (Measure.map f μ) := by

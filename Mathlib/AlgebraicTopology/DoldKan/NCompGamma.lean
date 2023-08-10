@@ -31,7 +31,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
@@ -184,6 +184,12 @@ lemma compatibility_Γ₂N₁_Γ₂N₂_hom_app (X : SimplicialObject C) :
 
 -- Porting note: added to speed up elaboration
 attribute [irreducible] compatibility_Γ₂N₁_Γ₂N₂
+
+lemma compatibility_Γ₂N₁_Γ₂N₂_inv_app (X : SimplicialObject C) :
+    compatibility_Γ₂N₁_Γ₂N₂.inv.app X =
+      eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
+  rw [← cancel_mono (compatibility_Γ₂N₁_Γ₂N₂.hom.app X), Iso.inv_hom_id_app,
+    compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_trans, eqToHom_refl]
 
 namespace Γ₂N₂
 
