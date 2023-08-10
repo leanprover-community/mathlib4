@@ -152,7 +152,8 @@ def finsetBiproductNatTrans (η : X ⟶ Y) :
     simp only [Category.assoc, biproduct.map_π, biproduct.ι_desc_assoc,
       ne_eq, biproduct.ι_π_assoc, biproduct.map_desc, biproduct.ι_π]
     split_ifs with h
-    · subst h ; simp
+    · subst h
+      simp
     · simp
 
 variable (α C)
@@ -177,12 +178,11 @@ def coproductFunctorIso [HasCoproducts C] [HasColimitsOfShape (Finset α) C] :
   NatIso.ofComponents
     (fun F =>
       HasColimit.isoOfNatIso (Discrete.natIsoFunctor (F := F)) ≪≫
-      coproductIsoColimitFinsetBiproductDiagram (F.obj ⟨·⟩) ) <|
-    by
-      intro x y f
-      dsimp
-      ext ⟨⟩
-      simp [Function.comp]
+      coproductIsoColimitFinsetBiproductDiagram (F.obj ⟨·⟩) ) <| by
+        intro x y f
+        dsimp
+        ext ⟨⟩
+        simp [Function.comp]
 
 /--
 IMPLEMENTATION: A single component of `discreteDiagramToFinsetBiproductDiagram`.
@@ -205,7 +205,7 @@ instance (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] (K : J ⥤ Discr
       let hS' : IsLimit S' := isLimitOfPreserves _ hS
       hS'.lift ⟨_, fun j => E.π.app _ ≫
         biproduct.π (fun a : A => (K.obj j).obj ⟨a⟩) ⟨a, ha⟩,
-          by intro i j f ; simp [← E.w f]⟩
+          by intro i j f; simp [← E.w f]⟩
     fac := by
       intro E j
       dsimp
