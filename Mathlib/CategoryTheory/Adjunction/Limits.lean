@@ -103,7 +103,7 @@ def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
 #align category_theory.adjunction.left_adjoint_preserves_colimits CategoryTheory.Adjunction.leftAdjointPreservesColimits
 
 noncomputable
-instance (priority := 100) colimPreservesColimits [HasColimitsOfShape J C] :
+instance colimPreservesColimits [HasColimitsOfShape J C] :
     PreservesColimits (colim (J := J) (C := C)) :=
   colimConstAdj.leftAdjointPreservesColimits
 
@@ -222,7 +222,7 @@ def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
 #align category_theory.adjunction.right_adjoint_preserves_limits CategoryTheory.Adjunction.rightAdjointPreservesLimits
 
 noncomputable
-instance (priority := 100) limPreservesLimits [HasLimitsOfShape J C] :
+instance limPreservesLimits [HasLimitsOfShape J C] :
     PreservesLimits (lim (J := J) (C := C)) :=
   constLimAdj.rightAdjointPreservesLimits
 
