@@ -343,8 +343,8 @@ theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u 
 
 /-- Filters are automatically bounded or cobounded in complete lattices. To use the same statements
 in complete and conditionally complete lattices but let automation fill automatically the
-boundedness proofs in complete lattices, we use the tactic `isBounded_default` in the statements,
-in the form `(hf : f.IsBounded (≥) . isBoundedDefault)`. -/
+boundedness proofs in complete lattices, we use the tactic `isBoundedDefault` in the statements,
+in the form `(hf : f.IsBounded (≥) := by isBoundedDefault)`. -/
 
 macro "isBoundedDefault" : tactic =>
   `(tactic| first
@@ -787,7 +787,7 @@ theorem blimsup_eq_iInf_biSup_of_nat {p : ℕ → Prop} {u : ℕ → α} :
 /-- In a complete lattice, the liminf of a function is the infimum over sets `s` in the filter
 of the supremum of the function over `s` -/
 theorem liminf_eq_iSup_iInf {f : Filter β} {u : β → α} : liminf u f = ⨆ s ∈ f, ⨅ a ∈ s, u a :=
-  @limsup_eq_iInf_iSup αᵒᵈ β _ _ _
+  limsup_eq_iInf_iSup (α := αᵒᵈ)
 #align filter.liminf_eq_supr_infi Filter.liminf_eq_iSup_iInf
 
 theorem liminf_eq_iSup_iInf_of_nat {u : ℕ → α} : liminf u atTop = ⨆ n : ℕ, ⨅ i ≥ n, u i :=
@@ -800,7 +800,7 @@ theorem liminf_eq_iSup_iInf_of_nat' {u : ℕ → α} : liminf u atTop = ⨆ n : 
 
 theorem HasBasis.liminf_eq_iSup_iInf {p : ι → Prop} {s : ι → Set β} {f : Filter β} {u : β → α}
     (h : f.HasBasis p s) : liminf u f = ⨆ (i) (_ : p i), ⨅ a ∈ s i, u a :=
-  @HasBasis.limsup_eq_iInf_iSup αᵒᵈ _ _ _ _ _ _ _ h
+  HasBasis.limsup_eq_iInf_iSup (α := αᵒᵈ) h
 #align filter.has_basis.liminf_eq_supr_infi Filter.HasBasis.liminf_eq_iSup_iInf
 
 theorem bliminf_eq_iSup_biInf {f : Filter β} {p : β → Prop} {u : β → α} :
@@ -862,7 +862,7 @@ theorem liminf_le_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
 
 theorem le_limsup_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α} {u : α → β} {x : β}
     (h : ∃ᶠ a in f, x ≤ u a) : x ≤ limsup u f :=
-  @liminf_le_of_frequently_le' _ βᵒᵈ _ _ _ _ h
+  liminf_le_of_frequently_le' (β := βᵒᵈ) h
 #align filter.le_limsup_of_frequently_le' Filter.le_limsup_of_frequently_le'
 
 /-- If `f : α → α` is a morphism of complete lattices, then the limsup of its iterates of any

@@ -116,10 +116,10 @@ def SemilatticeSup.mk' {α : Type _} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b 
     rwa [sup_assoc, hbc]
 #align semilattice_sup.mk' SemilatticeSup.mk'
 
-instance (α : Type _) [Inf α] : Sup αᵒᵈ :=
+instance instSupOrderDual (α : Type _) [Inf α] : Sup αᵒᵈ :=
   ⟨((· ⊓ ·) : α → α → α)⟩
 
-instance (α : Type _) [Sup α] : Inf αᵒᵈ :=
+instance instInfOrderDual (α : Type _) [Sup α] : Inf αᵒᵈ :=
   ⟨((· ⊔ ·) : α → α → α)⟩
 
 section SemilatticeSup
