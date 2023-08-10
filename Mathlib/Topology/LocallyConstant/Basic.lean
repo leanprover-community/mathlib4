@@ -477,13 +477,17 @@ noncomputable def comap (f : X → Y) : LocallyConstant Y Z → LocallyConstant 
 
 @[simp]
 theorem coe_comap (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous f) :
-    ⇑(comap f g) = g ∘ f := by
+    (comap f g) = g ∘ f := by
   rw [comap, dif_pos hf]
   rfl
 #align locally_constant.coe_comap LocallyConstant.coe_comap
 
+theorem coe_comap_apply (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous f) (x : X) :
+    comap f g x = g (f x) := by
+  simp only [hf, coe_comap, Function.comp_apply]
+
 @[simp]
-theorem comap_id : @comap X X Z _ _ id = id := by
+theorem comap_id : comap (@id X) = @id (LocallyConstant X Z) := by
   ext
   simp only [continuous_id, id.def, Function.comp.right_id, coe_comap]
 #align locally_constant.comap_id LocallyConstant.comap_id
@@ -495,14 +499,27 @@ theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Contin
   simp only [hf, hg, hg.comp hf, coe_comap]; rfl
 #align locally_constant.comap_comp LocallyConstant.comap_comp
 
+theorem comap_comap [TopologicalSpace Z] (f : X → Y) (g : Y → Z)
+    (hf : Continuous f) (hg : Continuous g) (x : LocallyConstant Z α) :
+    comap f (comap g x) = comap (g ∘ f) x := by
+  rw [← comap_comp f g hf hg]; rfl
+
 theorem comap_const (f : X → Y) (y : Y) (h : ∀ x, f x = y) :
-    (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g =>
-      ⟨fun _ => g y, IsLocallyConstant.const _⟩ := by
+    (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g => const X (g y) := by
   ext; rw [coe_comap]
-  · simp only [h, coe_mk, Function.comp_apply]
+  · simp only [Function.comp_apply, h, coe_const, Function.const_apply]
   · rw [show f = fun _ => y by ext; apply h]
     exact continuous_const
 #align locally_constant.comap_const LocallyConstant.comap_const
+
+lemma comap_injective (f : X → Y) (hf: Continuous f) (hfs : f.Surjective) :
+    (comap (Z := Z) f).Injective := by
+  intro a b h
+  rw [LocallyConstant.ext_iff] at h
+  ext y
+  obtain ⟨x, hx⟩ := hfs y
+  specialize h x
+  rwa [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf, hx] at h
 
 end Comap
 
@@ -568,6 +585,25 @@ theorem mulIndicator_of_not_mem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator
 #align locally_constant.indicator_of_not_mem LocallyConstant.indicator_of_not_mem
 
 end Indicator
+
+section Equiv
+
+/-- The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
+    homeomorphism `X ≃ₜ Y` -/
+noncomputable
+def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ LocallyConstant Y Z where
+  toFun := comap e.invFun
+  invFun := comap e.toFun
+  left_inv := by
+    intro x
+    rw [comap_comap _ _ e.continuous_toFun e.continuous_invFun x]
+    simp
+  right_inv := by
+    intro x
+    rw [comap_comap _ _ e.continuous_invFun e.continuous_toFun]
+    simp
+
+end Equiv
 
 section Piecewise
 
