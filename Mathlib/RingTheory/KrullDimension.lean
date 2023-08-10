@@ -278,11 +278,11 @@ def _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv :
 
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrimeEquiv_IsMonotone :
   Monotone (PrimeSpectrum.IicToLocalizationAtPrimeEquiv I) := by
-{ exact PrimeSpectrum.IicToLocalizationAtPrime_IsMonotone I }
+{ exact PrimeSpectrum.IicToLocalizationAtPrime_isMonotone I }
 
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_IsMonotone :
   Monotone (PrimeSpectrum.LocalizationAtPrimeToIicEquiv I) := by
-{ exact PrimeSpectrum.LocalizationAtPrimeToIic_IsMonotone I }
+{ exact PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone I }
 
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_is_symm :
   PrimeSpectrum.LocalizationAtPrimeToIicEquiv I =
