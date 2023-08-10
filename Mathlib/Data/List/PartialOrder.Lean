@@ -18,7 +18,7 @@ variable {α : Type _} [PartialOrder α]
 
 namespace List
 
-lemma le_of_chain'_le [PartialOrder α]
+lemma le_of_chain'_le
     (x : α) (l : List α) (l_chain : (x :: l).Chain' (. ≤ .)) (y : α) (hy : y ∈ (x :: l)) :
     x ≤ y := by
   rw [List.mem_cons] at hy
@@ -32,7 +32,7 @@ lemma le_of_chain'_le [PartialOrder α]
     show l.get n = (x :: l).get n.succ from rfl]
   exact s'.rel_get_of_le (Nat.zero_le _ : (⟨0, _⟩ : Fin (x :: l).length) ≤ n.succ)
 
-lemma le_getLast_of_chain'_le [PartialOrder α]
+lemma le_getLast_of_chain'_le
     (x : α) (l : List α) (l_chain : (x :: l).Chain' (. ≤ .)) (y : α) (hy : y ∈ (x :: l)) :
     y ≤ List.getLast (x :: l) (List.cons_ne_nil _ _)  := by
   have s' : (x :: l).Sorted (. ≤ .)
@@ -67,5 +67,40 @@ match l, l_chain with
       rwa [← h, List.mem_dedup] at mem1)
   rw [h, _root_.le_antisymm h1 h2]
   rfl
+
+lemma dedup_head!_of_chain_wcovby [DecidableEq α] [Inhabited α]
+    (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.head! = l.head! :=
+  by rwa [List.head!_eq_head?, List.head!_eq_head?, List.dedup_head?_of_chain_wcovby]
+
+lemma dedup_chain'_wcovby_of_chain'_wcovby [DecidableEq α]
+    (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.Chain' (. ⩿ .) := by
+  induction l with
+  | nil => simp only [dedup_nil, chain'_nil]
+  | cons x l ih => ?_
+  rw [List.chain'_cons'] at l_chain
+  by_cases hx : x ∈ l
+  · rw [List.dedup_cons_of_mem hx]
+    exact ih l_chain.2
+  · rw [List.dedup_cons_of_not_mem hx, List.chain'_cons']
+    refine ⟨?_, ih l_chain.2⟩
+    rintro y (hy : _ = _)
+    exact l_chain.1 y (Eq.trans (l.dedup_head?_of_chain_wcovby l_chain.2).symm hy)
+
+lemma dedup_chain'_covby_of_chain'_wcovby [DecidableEq α]
+    (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.Chain' (. ⋖ .) := by
+  have c := dedup_chain'_wcovby_of_chain'_wcovby l l_chain
+  rw [chain'_iff_get] at c ⊢
+  simp_rw [wcovby_iff_covby_or_eq] at c
+  intros i hi
+  refine (c i hi).resolve_right (fun h => ?_)
+  simpa only [Fin.mk.injEq, self_eq_add_right] using List.nodup_iff_injective_get.mp l.nodup_dedup h
+
+lemma chain'_covby_of_chain'_wcovby_of_nodup
+  (l : List α) (l_chain : l.Chain' (. ⩿ .)) (l_nodup : l.Nodup) :
+    List.Chain' (. ⋖ .) l := by
+  classical
+  rw [← List.dedup_eq_self] at l_nodup
+  rw [← l_nodup]
+  exact dedup_chain'_covby_of_chain'_wcovby _ l_chain
 
 end List
