@@ -1,6 +1,25 @@
+/-
+Copyright (c) 2023 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Fangming Li, Jujian Zhang
+-/
+
 import Mathlib.Order.KrullDimension
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Algebra.Module.LocalizedModule
+
+/-!
+# Krull dimension of a (commutative) ring
+
+The ring theoretic krull dimension is the order theoretic krull dimension applied to its prime
+spectrum. Unfolding this definition, it is the length of longest series of prime ideals ordered by
+inclusion.
+
+## Results
+- `ringKrullDim.eq_of_ringEquiv` : isomorphic rings have equal krull dimension
+- `primeIdealHeight_eq_ringKrullDim_of_Localization` : the height of a prime ideal `𝔭` is equal to
+  krull dimension of `R_𝔭`
+-/
 
 /--
 The ring theoretic Krull dimension is the Krull dimension of prime spectrum ordered by inclusion.
@@ -160,7 +179,7 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse :
   Function.LeftInverse (PrimeSpectrum.LocalizationAtPrimeToIic I)
     (PrimeSpectrum.IicToLocalizationAtPrime I) := by
 { intro J; ext x; constructor
-  . intro hx
+  · intro hx
     change Localization.mk x 1 ∈ _root_.Ideal.localization' J.val.asIdeal I.asIdeal.primeCompl at hx
     rw [Ideal.mem_localization'_iff] at hx
     rcases hx with ⟨a, b, hab⟩
@@ -170,7 +189,7 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse :
     exact (or_iff_not_imp_left.1 (Ideal.IsPrime.mem_or_mem J.val.2 (@Set.mem_of_eq_of_mem R
       (↑c * ↑b * x) (↑c * ↑a) J.val.asIdeal hc (Ideal.mul_mem_left J.val.asIdeal ↑c a.2))))
         (λ hi ↦ (Submonoid.mul_mem I.asIdeal.primeCompl c.2 b.2) (J.2 hi))
-  . intro hx
+  · intro hx
     change Localization.mk x 1 ∈ _root_.Ideal.localization' J.val.asIdeal I.asIdeal.primeCompl
     exact ⟨⟨x, hx⟩, ⟨1, rfl⟩⟩ }
 
@@ -182,17 +201,17 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse :
   Function.RightInverse (PrimeSpectrum.LocalizationAtPrimeToIic I)
     (PrimeSpectrum.IicToLocalizationAtPrime I) := by
 { intro J; ext x; constructor
-  . intro hx
+  · intro hx
     simp_rw [PrimeSpectrum.IicToLocalizationAtPrime, PrimeSpectrum.LocalizationAtPrimeToIic,
       Ideal.mem_comap, Ideal.mem_localization'_iff] at hx
     rcases hx with ⟨⟨a, ha⟩, ⟨b, hab⟩⟩
     dsimp at ha hab
     rw [←one_mul a, ←mul_one b, ←Localization.mk_mul] at hab; rw [hab]
     exact Ideal.mul_mem_left J.asIdeal (Localization.mk 1 b) ha
-  . refine Localization.induction_on x ?_
-    . rintro ⟨a, b⟩ hab
+  · refine Localization.induction_on x ?_
+    · rintro ⟨a, b⟩ hab
       refine' ⟨⟨a, ?_⟩, b, rfl⟩
-      . change Localization.mk a 1 ∈ J.asIdeal
+      · change Localization.mk a 1 ∈ J.asIdeal
         rw [←show (Localization.mk (b : R) 1) * (Localization.mk a b) = Localization.mk a 1 by
           rw [Localization.mk_mul, mul_comm, ←Localization.mk_mul, Localization.mk_self, mul_one]]
         exact Ideal.mul_mem_left J.asIdeal (Localization.mk b 1) hab }
@@ -223,7 +242,7 @@ exact ⟨PrimeSpectrum.IicToLocalizationAtPrime I,
 The canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`
 is monotone.
 -/
-lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime_IsMonotone :
+lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime_isMonotone :
   Monotone (PrimeSpectrum.IicToLocalizationAtPrime I) := by
 { intro J1 J2 H x hx; rcases hx with ⟨a, ⟨b, hab⟩⟩; exact ⟨⟨a, H a.2⟩, ⟨b, hab⟩⟩ }
 
@@ -231,7 +250,7 @@ lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime_IsMonotone :
 The canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I`
 is monotone.
 -/
-lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsMonotone :
+lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone :
   Monotone (PrimeSpectrum.LocalizationAtPrimeToIic I) := by
 { intro J1 J2 H x hx; exact H hx }
 
