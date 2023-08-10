@@ -27,8 +27,6 @@ basic facts about them.
 
 ## Implementation Details
 
-Recall that in any category with finite colimits and coproducts has all colimits,
-so we use `HasColimits` for the `AB3` axiom.
 For `AB4` and `AB5`, we only assume left exactness as right exactness is automatic.
 
 ## Projects
@@ -41,15 +39,13 @@ namespace CategoryTheory
 
 open Limits Classical
 
-universe v u
+universe v v' u u'
 
 variable (C : Type u) [Category.{v} C]
 
--- TODO: Move this.
 noncomputable
-instance (J : Type v) [SmallCategory J] [HasColimitsOfShape J C] :
+example (J : Type u') [Category.{v'} J] [HasColimitsOfShape J C] :
     PreservesFiniteColimits (colim (J := J) (C := C)) :=
-  letI := colimConstAdj (J := J) (C := C) |>.leftAdjointPreservesColimits
   inferInstance
 
 /--
@@ -194,7 +190,6 @@ def discreteDiagramToBiproduct (A : Finset α) :
   obj F := ⨁ fun a : A => F.obj ⟨a⟩
   map η := biproduct.map fun _ => η.app _
 
-universe v' u'
 noncomputable
 instance (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] (K : J ⥤ Discrete α ⥤ C) :
     PreservesLimit K (discreteDiagramToBiproduct C α A) where
