@@ -107,7 +107,6 @@ theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
   (UnitaryGroup.ext_iff A B).mpr
 #align matrix.unitary_group.ext Matrix.UnitaryGroup.ext
 
-@[simp]
 theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 #align matrix.unitary_group.star_mul_self Matrix.UnitaryGroup.star_mul_self

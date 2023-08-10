@@ -492,11 +492,7 @@ theorem LinearMap.toMatrixAlgEquiv'_id :
   LinearMap.toMatrix'_id
 #align linear_map.to_matrix_alg_equiv'_id LinearMap.toMatrixAlgEquiv'_id
 
-@[simp]
-theorem Matrix.toLinAlgEquiv'_mul (M N : Matrix n n R) :
-    Matrix.toLinAlgEquiv' (M * N) = (Matrix.toLinAlgEquiv' M).comp (Matrix.toLinAlgEquiv' N) :=
-  Matrix.toLin'_mul _ _
-#align matrix.to_lin_alg_equiv'_mul Matrix.toLinAlgEquiv'_mul
+#align matrix.to_lin_alg_equiv'_mul map_mulₓ
 
 theorem LinearMap.toMatrixAlgEquiv'_comp (f g : (n → R) →ₗ[R] n → R) :
     LinearMap.toMatrixAlgEquiv' (f.comp g) =
