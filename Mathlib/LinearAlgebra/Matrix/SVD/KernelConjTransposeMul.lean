@@ -23,7 +23,8 @@ lemma conjTranspose_mul_self_eq_zero_iff (A: Matrix m n 𝕂):
   specialize h j j
   rw [IsROrC.ext_iff] at h
   simp only [mul_apply, Matrix.zero_apply, map_zero, conjTranspose_apply, IsROrC.star_def,
-    IsROrC.conj_mul, map_sum, IsROrC.ofReal_im, Finset.sum_const_zero, and_true, IsROrC.ofReal_re] at h
+    IsROrC.conj_mul, map_sum, IsROrC.ofReal_im, Finset.sum_const_zero, and_true,
+    IsROrC.ofReal_re] at h
   apply IsROrC.normSq_eq_zero.1
   apply (Finset.sum_eq_zero_iff_of_nonneg (?_)).1 h
   exact Finset.mem_univ _
