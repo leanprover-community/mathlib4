@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Lean.Elab.Tactic.ElabTerm
-import Std.Tactic.TryThis
-
+import Mathlib.Tactic.Basic
 /-!
 
 # Tactic `change? _`
@@ -25,17 +23,17 @@ example : (fun x : Nat => x) 0 = 1 := by
   change? 0 = _  -- `change 0 = 1`
 ```
 -/
-syntax "change?" (ppSpace colGt term)? : tactic
+syntax (name := change?) "change?" (ppSpace colGt term)? : tactic
 
 open Lean Meta Elab.Tactic Std.Tactic.TryThis in
-elab_rules : tactic
-| `(tactic| change?%$tk $[$h]?) => do
-  let expr := ← match h with
+@[inherit_doc change?, tactic change?] def elabChange? : Tactic := fun stx => do
+  let sop := stx[1].getOptional?
+  let expr := ← match sop with
     | none => getMainTarget
     | some ex => do
       let ex := ← elabTerm ex none
       let defeq? := ← isDefEq ex (← getMainTarget)
       if ! defeq? then throwError "The given term is not DefEq to the goal"
       instantiateMVars ex
-  let stx := ← delabToRefinableSyntax expr
-  addSuggestion tk (← `(tactic| change $stx))
+  let dstx := ← delabToRefinableSyntax expr
+  addSuggestion stx (← `(tactic| change $dstx))
