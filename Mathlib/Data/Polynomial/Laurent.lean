@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.MonoidAlgebra.Star
 
 #align_import data.polynomial.laurent from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -165,6 +166,9 @@ def T (n : ℤ) : R[T;T⁻¹] :=
   Finsupp.single n 1
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T LaurentPolynomial.T
+
+@[simp] lemma T_apply {m n : ℤ} : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
+  Finsupp.single_apply
 
 @[simp]
 theorem T_zero : (T 0 : R[T;T⁻¹]) = 1 :=
@@ -609,5 +613,20 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
 end CommSemiring
+
+section StarRing
+
+variable [Semiring R] [StarRing R]
+
+instance instStarRing : StarRing R[T;T⁻¹] := AddMonoidAlgebra.instStarRing
+
+/-- The substitution `T ↦ T⁻¹` can be obtained from the star structure. -/
+@[simp] lemma star_T {n : ℤ} : star (T n : R[T;T⁻¹]) = T (-n) := by
+  ext; simp [AddMonoidAlgebra.star_apply, T_apply, neg_eq_iff_eq_neg, apply_ite star]
+
+instance instStarRingOfComm {R : Type _} [CommSemiring R] : StarRing R[T;T⁻¹] :=
+  letI : StarRing R := starRingOfComm; AddMonoidAlgebra.instStarRing
+
+end StarRing
 
 end LaurentPolynomial
