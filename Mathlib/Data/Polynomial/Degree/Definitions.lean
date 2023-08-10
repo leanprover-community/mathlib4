@@ -1077,7 +1077,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
       exact coeff_mul_degree_add_degree _ _
 #align polynomial.coeff_pow_mul_nat_degree Polynomial.coeff_pow_mul_natDegree
 
-theorem coeff_mul_add_of_le_natDegree_of_eq {df dg : ℕ} {g : R[X]}
+theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {g : R[X]}
     (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
     (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
   rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]

@@ -172,9 +172,6 @@ theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤
     exact natDegree_lt_coeff_mul (add_lt_add hm hn)
 #align polynomial.coeff_mul_of_nat_degree_le Polynomial.coeff_mul_of_natDegree_le
 
--- post-porting note: the signature of this theorem changed.  it was
--- theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
---     (p ^ m).coeff (n * m) = p.coeff n ^ m :=
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     (p ^ m).coeff (m * n) = p.coeff n ^ m := by
   induction' m with m hm
