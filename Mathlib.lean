@@ -3265,6 +3265,7 @@ import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.IsLocallyHomeomorph
+import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.LocalExtr
