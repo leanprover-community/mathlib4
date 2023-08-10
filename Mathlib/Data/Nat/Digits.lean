@@ -509,9 +509,9 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 -/
 lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
-convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+  convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
-exact (ofDigits_digits p n).symm
+  exact (ofDigits_digits p n).symm
 
 /-! ### Binary -/
 
