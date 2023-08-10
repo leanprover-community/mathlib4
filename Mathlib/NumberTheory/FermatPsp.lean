@@ -319,15 +319,13 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   rw [Nat.mul_sub_left_distrib, mul_one, pow_mul]
   conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by linarith)]
   rw [pow_succ (b ^ 2)]
-  suffices h : p * b ^ 2 < b ^ 2 * (b ^ 2) ^ (p - 1)
+  suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2
   · apply gt_of_ge_of_gt
     · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)
     · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right (show 0 < b ^ 2 by nlinarith)
-      rw [mul_comm]
       exact tsub_lt_tsub_right_of_le this h
   suffices h : p < (b ^ 2) ^ (p - 1)
-  · rw [mul_comm (b ^ 2)]
-    have : 4 ≤ b ^ 2 := by nlinarith
+  · have : 4 ≤ b ^ 2 := by nlinarith
     have : 0 < b ^ 2 := by linarith
     exact mul_lt_mul_of_pos_right h this
   rw [← pow_mul, Nat.mul_sub_left_distrib, mul_one]
