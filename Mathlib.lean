@@ -2432,6 +2432,12 @@ import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.Tactic
+import Mathlib.ModelTheory.Algebra.Field.AlgClosed
+import Mathlib.ModelTheory.Algebra.Field.Basic
+import Mathlib.ModelTheory.Algebra.Field.CharP
+import Mathlib.ModelTheory.Algebra.Field.FreeCommRing
+import Mathlib.ModelTheory.Algebra.Ring.Basic
+import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Definability
