@@ -55,14 +55,14 @@ private def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ card t.fst * ((∏ a in t.fst, X a) * X t.snd ^ (k - card t.fst))
 
 private def pairMap (t : Finset σ × σ) : Finset σ × σ :=
-  if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (cons t.snd t.fst h, t.snd)
+  if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (t.fst.cons t.snd h, t.snd)
 
 private lemma pairMap_of_snd_mem_fst {t : Finset σ × σ} (h : t.snd ∈ t.fst) :
     pairMap σ t = (t.fst.erase t.snd, t.snd) := by
   simp [pairMap, h]
 
 private lemma pairMap_of_snd_nmem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst) :
-    pairMap σ t = (cons t.snd t.fst h, t.snd) := by
+    pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
 private theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) :
