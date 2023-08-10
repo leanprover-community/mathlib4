@@ -294,10 +294,13 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
     exact affineCombination_mem_convexHull hw₀ hw₁
 #align convex_hull_range_eq_exists_affine_combination convexHull_range_eq_exists_affineCombination
 
-/-- Convex hull of `s` is equal to the set of all centers of masses of `Finset`s `t`, `z '' t ⊆ s`.
-This version allows finsets in any type in any universe. -/
+/--
+Convex hull of `s` is equal to the set of all centers of masses of `Finset`s `t`, `z '' t ⊆ s`.
+For universe reasons, you shouldn't use this lemma to prove that a given center of mass belongs 
+to the convex hull. Use convexity of the convex hull instead.
+-/
 theorem convexHull_eq (s : Set E) : convexHull R s =
-    { x : E | ∃ (ι : Type u') (t : Finset ι) (w : ι → R) (z : ι → E) (_ : ∀ i ∈ t, 0 ≤ w i)
+    { x : E | ∃ (ι : Type) (t : Finset ι) (w : ι → R) (z : ι → E) (_ : ∀ i ∈ t, 0 ≤ w i)
     (_ : ∑ i in t, w i = 1) (_ : ∀ i ∈ t, z i ∈ s), t.centerMass w z = x } := by
   refine' Subset.antisymm (convexHull_min _ _) _
   · intro x hx
@@ -359,8 +362,7 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
     convexHull R s = ⋃ (t : Finset E) (w : ↑t ⊆ s), convexHull R ↑t := by
   refine' Subset.antisymm _ _
   · rw [_root_.convexHull_eq]
-    -- Porting note: We have to specify the universe of `ι`
-    rintro x ⟨ι : Type u_1, t, w, z, hw₀, hw₁, hz, rfl⟩
+    rintro x ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
     simp only [mem_iUnion]
     refine' ⟨t.image z, _, _⟩
     · rw [coe_image, Set.image_subset_iff]
@@ -374,9 +376,8 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
     (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) := by
   rw [_root_.convexHull_eq] at hx hy ⊢
-  -- Porting note: We have to specify the universe of `ι` and `κ`
-  obtain ⟨ι : Type u_1, a, w, S, hw, hw', hS, hSp⟩ := hx
-  obtain ⟨κ : Type u_1, b, v, T, hv, hv', hT, hTp⟩ := hy
+  obtain ⟨ι, a, w, S, hw, hw', hS, hSp⟩ := hx
+  obtain ⟨κ, b, v, T, hv, hv', hT, hTp⟩ := hy
   have h_sum : ∑ i : ι × κ in a ×ˢ b, w i.fst * v i.snd = 1 := by
     rw [Finset.sum_product, ← hw']
     congr
