@@ -121,7 +121,7 @@ theorem MeasureTheory.IsFundamentalDomain.isMulLeftInvariant_map [Subgroup.Norma
   to the quotient group `G ⧸ Γ` of the restriction of `μ` to `𝓕` is a multiple of Haar measure on
   `G ⧸ Γ`."]
 theorem MeasureTheory.IsFundamentalDomain.map_restrict_quotient  [T2Space (G ⧸ Γ)]
-    [SecondCountableTopology (G ⧸ Γ)] (K : PositiveCompacts (G ⧸ Γ))[Subgroup.Normal Γ]
+    [SecondCountableTopology (G ⧸ Γ)] (K : PositiveCompacts (G ⧸ Γ)) [Subgroup.Normal Γ]
     [MeasureTheory.Measure.IsHaarMeasure μ] [μ.IsMulRightInvariant] (h𝓕_finite : μ 𝓕 < ⊤) :
     Measure.map (QuotientGroup.mk' Γ) (μ.restrict 𝓕) =
       μ (𝓕 ∩ QuotientGroup.mk' Γ ⁻¹' K) • MeasureTheory.Measure.haarMeasure K := by
