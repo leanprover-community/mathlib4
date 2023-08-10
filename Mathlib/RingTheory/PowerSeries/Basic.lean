@@ -1475,22 +1475,8 @@ theorem coeff_mul (n : ℕ) (φ ψ : PowerSeries R) :
     coeff R n (φ * ψ) = ∑ p in Finset.Nat.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
-  symm
-  apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
-  · rintro ⟨i, j⟩ hij
-    rw [Finset.Nat.mem_antidiagonal] at hij
-    rw [Finsupp.mem_antidiagonal, ← Finsupp.single_add, hij]
-  · rintro ⟨i, j⟩ _hij
-    rfl
-  · rintro ⟨i, j⟩ ⟨k, l⟩ _hij _hkl
-    simpa only [Prod.mk.inj_iff, Finsupp.unique_single_eq_iff] using id
-  · rintro ⟨f, g⟩ hfg
-    refine' ⟨(f (), g ()), _, _⟩
-    · rw [Finsupp.mem_antidiagonal] at hfg
-      rw [Finset.Nat.mem_antidiagonal, ← Finsupp.add_apply, hfg, Finsupp.single_eq_same]
-    · rw [Prod.mk.inj_iff]
-      dsimp
-      exact ⟨Finsupp.unique_single f, Finsupp.unique_single g⟩
+  rw [Finsupp.antidiagonal_single, Finset.sum_map]
+  rfl
 #align power_series.coeff_mul PowerSeries.coeff_mul
 
 @[simp]

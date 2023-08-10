@@ -111,12 +111,12 @@ theorem rTensor.Surjective (hg : Function.Surjective g) :
   Function.Surjective (rTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
-  | C0 => use 0; rw [map_zero]
-  | C1 p q =>
+  | zero => use 0; rw [map_zero]
+  | tmul p q =>
       obtain ⟨n, rfl⟩ := hg p
       use n ⊗ₜ[R] q
       simp only [rTensor_tmul]
-  | Cp x y hx hy =>
+  | add x y hx hy =>
       obtain ⟨x, rfl⟩ := hx
       obtain ⟨y, rfl⟩ := hy
       use x + y
@@ -126,12 +126,12 @@ theorem lTensor.Surjective (hg : Function.Surjective g) :
   Function.Surjective (lTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
-  | C0 => use 0; rw [map_zero]
-  | C1 q p =>
+  | zero => use 0; rw [map_zero]
+  | tmul q p =>
       obtain ⟨n, rfl⟩ := hg p
       use q ⊗ₜ[R] n
       simp only [lTensor_tmul]
-  | Cp x y hx hy =>
+  | add x y hx hy =>
       obtain ⟨x, rfl⟩ := hx
       obtain ⟨y, rfl⟩ := hy
       use x + y
