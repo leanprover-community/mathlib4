@@ -82,7 +82,7 @@ section Triangular
 /-- An upper-block-triangular matrix is invertible if its diagonal is. -/
 def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     [Invertible A] [Invertible D] : Invertible (fromBlocks A B 0 D) :=
-  invertibleOfLeftInverse _ (fromBlocks (⅟ A) (-⅟ A * B * ⅟ D) 0 (⅟ D)) <| by
+  invertibleOfLeftInverse _ (fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D)) <| by
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
       Matrix.neg_mul, Matrix.invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_right_neg,
       fromBlocks_one]
@@ -92,7 +92,7 @@ def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : 
 def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] : Invertible (fromBlocks A 0 C D) :=
   invertibleOfLeftInverse _
-      (fromBlocks (⅟ A) 0 (-⅟ D * C * ⅟ A)
+      (fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A))
         (⅟ D)) <| by -- a symmetry argument is more work than just copying the proof
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
       Matrix.neg_mul, Matrix.invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_left_neg,
@@ -101,14 +101,14 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
 
 theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A B 0 D)] :
-    ⅟ (fromBlocks A B 0 D) = fromBlocks (⅟ A) (-⅟ A * B * ⅟ D) 0 (⅟ D) := by
+    ⅟ (fromBlocks A B 0 D) = fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D) := by
   letI := fromBlocksZero₂₁Invertible A B D
   convert (rfl : ⅟ (fromBlocks A B 0 D) = _)
 #align matrix.inv_of_from_blocks_zero₂₁_eq Matrix.invOf_fromBlocks_zero₂₁_eq
 
 theorem invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A 0 C D)] :
-    ⅟ (fromBlocks A 0 C D) = fromBlocks (⅟ A) 0 (-⅟ D * C * ⅟ A) (⅟ D) := by
+    ⅟ (fromBlocks A 0 C D) = fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A)) (⅟ D) := by
   letI := fromBlocksZero₁₂Invertible A C D
   convert (rfl : ⅟ (fromBlocks A 0 C D) = _)
 #align matrix.inv_of_from_blocks_zero₁₂_eq Matrix.invOf_fromBlocks_zero₁₂_eq
@@ -203,7 +203,7 @@ theorem isUnit_fromBlocks_zero₁₂ {A : Matrix m m α} {C : Matrix n m α} {D 
 diagonal are invertible, or both are not. -/
 theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     (hAD : IsUnit A ↔ IsUnit D) :
-    (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-A⁻¹ * B * D⁻¹) 0 D⁻¹ := by
+    (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹ := by
   by_cases hA : IsUnit A
   · have hD := hAD.mp hA
     cases hA.nonempty_invertible
@@ -221,7 +221,7 @@ theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix 
 diagonal are invertible, or both are not. -/
 theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     (hAD : IsUnit A ↔ IsUnit D) :
-    (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-D⁻¹ * C * A⁻¹) D⁻¹ := by
+    (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹ := by
   by_cases hA : IsUnit A
   · have hD := hAD.mp hA
     cases hA.nonempty_invertible
@@ -253,8 +253,8 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
   -- factor `fromBlocks` via `fromBlocks_eq_of_invertible₂₂`, and state the inverse we expect
   refine'
     Invertible.copy' _ _
-      (fromBlocks (⅟ (A - B * ⅟ D * C)) (-⅟ (A - B * ⅟ D * C) * B * ⅟ D)
-        (-⅟ D * C * ⅟ (A - B * ⅟ D * C)) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+      (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+        (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
       (fromBlocks_eq_of_invertible₂₂ _ _ _ _) _
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
@@ -266,9 +266,9 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
   · -- unfold the `Invertible` instances to get the raw factors
     show
       _ =
-        fromBlocks 1 0 (-1 * (⅟ D * C) * 1) 1 *
-          (fromBlocks (⅟ (A - B * ⅟ D * C)) (-⅟ (A - B * ⅟ D * C) * 0 * ⅟ D) 0 (⅟ D) *
-            fromBlocks 1 (-1 * (B * ⅟ D) * 1) 0 1)
+        fromBlocks 1 0 (-(1 * (⅟ D * C) * 1)) 1 *
+          (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * 0 * ⅟ D)) 0 (⅟ D) *
+            fromBlocks 1 (-(1 * (B * ⅟ D) * 1)) 0 1)
     -- combine into a single block matrix
     simp only [fromBlocks_multiply, invOf_one, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
       Matrix.mul_zero, add_zero, zero_add, neg_zero, Matrix.mul_neg, Matrix.neg_mul, neg_neg, ←
@@ -286,8 +286,8 @@ def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     submatrixEquivInvertible (fromBlocks D C B A) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
   exact
     iDCBA.copy' _
-      (fromBlocks (⅟ A + ⅟ A * B * ⅟ (D - C * ⅟ A * B) * C * ⅟ A) (-⅟ A * B * ⅟ (D - C * ⅟ A * B))
-        (-⅟ (D - C * ⅟ A * B) * C * ⅟ A) (⅟ (D - C * ⅟ A * B)))
+      (fromBlocks (⅟ A + ⅟ A * B * ⅟ (D - C * ⅟ A * B) * C * ⅟ A) (-(⅟ A * B * ⅟ (D - C * ⅟ A * B)))
+        (-(⅟ (D - C * ⅟ A * B) * C * ⅟ A)) (⅟ (D - C * ⅟ A * B)))
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
 #align matrix.from_blocks₁₁_invertible Matrix.fromBlocks₁₁Invertible
@@ -296,8 +296,8 @@ theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟ D * C)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
-      fromBlocks (⅟ (A - B * ⅟ D * C)) (-⅟ (A - B * ⅟ D * C) * B * ⅟ D)
-        (-⅟ D * C * ⅟ (A - B * ⅟ D * C)) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D) := by
+      fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+        (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D) := by
   letI := fromBlocks₂₂Invertible A B C D
   convert (rfl : ⅟ (fromBlocks A B C D) = _)
 #align matrix.inv_of_from_blocks₂₂_eq Matrix.invOf_fromBlocks₂₂_eq
@@ -306,8 +306,8 @@ theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟ A * B)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
-      fromBlocks (⅟ A + ⅟ A * B * ⅟ (D - C * ⅟ A * B) * C * ⅟ A) (-⅟ A * B * ⅟ (D - C * ⅟ A * B))
-        (-⅟ (D - C * ⅟ A * B) * C * ⅟ A) (⅟ (D - C * ⅟ A * B)) := by
+      fromBlocks (⅟ A + ⅟ A * B * ⅟ (D - C * ⅟ A * B) * C * ⅟ A) (-(⅟ A * B * ⅟ (D - C * ⅟ A * B)))
+        (-(⅟ (D - C * ⅟ A * B) * C * ⅟ A)) (⅟ (D - C * ⅟ A * B)) := by
   letI := fromBlocks₁₁Invertible A B C D
   convert (rfl : ⅟ (fromBlocks A B C D) = _)
 #align matrix.inv_of_from_blocks₁₁_eq Matrix.invOf_fromBlocks₁₁_eq

@@ -909,6 +909,9 @@ open Matrix
 /-- `M * N` is the usual product of matrices `M` and `N`, i.e. we have that
 `(M * N) i k` is the dot product of the `i`-th row of `M` by the `k`-th column of `N`.
 This is currently only defined when `m` is finite. -/
+-- We want to be lower priority than `instHMul`, but without this we can't have operands with
+-- implicit dimensions.
+@[default_instance 100]
 instance [Fintype m] [Mul α] [AddCommMonoid α] :
     HMul (Matrix l m α) (Matrix m n α) (Matrix l n α) where
   hMul M N := fun i k => (fun j => M i j) ⬝ᵥ fun j => N j k
@@ -1034,7 +1037,7 @@ theorem diagonal_mul_diagonal' [Fintype n] [DecidableEq n] (d₁ d₂ : n → α
 #align matrix.diagonal_mul_diagonal' Matrix.diagonal_mul_diagonal'
 
 theorem smul_eq_diagonal_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) (a : α) :
-    a • M = (diagonal fun _ : m => a) * M := by
+    a • M = (diagonal fun _ => a) * M := by
   ext
   simp
 #align matrix.smul_eq_diagonal_mul Matrix.smul_eq_diagonal_mul
@@ -1271,7 +1274,7 @@ section CommSemiring
 variable [CommSemiring α] [Fintype n]
 
 theorem smul_eq_mul_diagonal [DecidableEq n] (M : Matrix m n α) (a : α) :
-    a • M = M * diagonal fun _ : n => a := by
+    a • M = M * diagonal fun _ => a := by
   ext
   simp [mul_comm]
 #align matrix.smul_eq_mul_diagonal Matrix.smul_eq_mul_diagonal
