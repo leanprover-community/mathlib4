@@ -44,6 +44,162 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Filter
 
 namespace MeasureTheory
 
+section FundamentalDomain
+
+/-- A set `s` is a *fundamental domain* for an additive action of an additive group `G` on a
+topological space `α` if the interiors of the sets `g +ᵥ s`, `g : G`, are pairwise disjoint, and
+their closures cover the whole space. -/
+structure IsAddFundamentalDomain (G : Type _) {α : Type _} [Zero G] [VAdd G α] [TopologicalSpace α]
+    (s : Set α) : Prop where
+  protected covers : (⋃ g : G, closure (g +ᵥ s)) = univ
+  protected disjoint : ∀ g₁ g₂ : G, g₁ ≠ g₂ → Disjoint (interior (g₁ +ᵥ s)) (interior (g₂ +ᵥ s))
+
+/-- A set `s` is a *fundamental domain* for an action of a group `G` on a topological
+space `α` if the interiors of the sets `g • s`, `g : G`, are pairwise disjoint, and their closures
+cover the whole space. -/
+@[to_additive IsAddFundamentalDomain]
+structure IsFundamentalDomain (G : Type _) {α : Type _} [One G] [SMul G α] [TopologicalSpace α]
+    (s : Set α) : Prop where
+  protected covers : (⋃ g : G, closure (g • s)) = univ
+  protected disjoint : ∀ g₁ g₂ : G, g₁ ≠ g₂ → Disjoint (interior (g₁ • s)) (interior (g₂ • s))
+
+end FundamentalDomain
+
+section DirichletDomain
+
+variable (G : Type _) [Group G] [Countable G] {α : Type _} [MetricSpace α] [MulAction G α]
+
+def DirichletSet (x : α) (g : G) : Set α := { y : α | dist x y ≤ dist (g • x) y }
+
+def DirichletPolyhedron (x : α) : Set α := ⋂ g : G, DirichletSet G x g
+
+variable [IsometricSMul G α]
+
+lemma bubDirichletSet_iff (x y : α) (g h : G) :
+    dist x y ≤ dist (g • x) y ↔ dist (h • x) (h • y) ≤ dist ((h * g) • x) (h • y) := by
+  simp only [dist_smul]
+  suffices hh : dist ((h * g) • x) (h • y) = dist (g • x) y
+  · rw [hh]
+  · rw [mul_smul, dist_smul]
+
+example (y : α) (P : α → Prop) (h : G) :
+h • {y | P y} = {y | P (h • y)} := by
+  ext y
+
+
+#exit
+
+lemma bubDirichletSet (x : α) (g h : G) :
+    h • DirichletSet G x g = DirichletSet G (h • x) (h * g * h⁻¹) := by
+  ext y
+  simp only [DirichletSet, mem_setOf_eq]
+  constructor
+  · sorry
+  · intro hh
+    simp only
+--  rw [(by simp [mul_smul] : ((h * g * h⁻¹) • h • x) = ((h * g) • x)), ← bubDirichletSet_iff G x y g h]
+
+
+
+lemma isClosed_DirichletSet (x : α) (g : G) : IsClosed (DirichletSet G x g) := by
+  apply isClosed_le
+  · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
+  · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
+
+lemma closure_DirichletSet (x : α) (g : G) : closure (DirichletSet G x g) = DirichletSet G x g :=
+  closure_eq_iff_isClosed.mpr (isClosed_DirichletSet G x g)
+
+
+
+
+#exit
+
+
+
+
+theorem DirichletPolyhedron_eq_Inter (x : α) :
+  DirichletPolyhedron G x = ⋂ g : G, { y : α | dist x y ≤ dist (g • x) y } := by
+    ext y
+    simp only [DirichletPolyhedron, mem_setOf_eq, mem_iInter]
+
+
+theorem IsFundamentalDomain_of_DirichletPolyhedron [IsometricSMul G α]
+    [i₁ : ProperlyDiscontinuousSMul G α] (x : α) (hx : ∀ g : G, g • x ≠ x) :
+    IsFundamentalDomain G (DirichletPolyhedron G x) where
+      covers := by
+        ext y
+        simp only [mem_iUnion, mem_univ, iff_true]
+        simp only [mem_Union, mem_closure_iff_nhds_within_ne_bot, mem_set_of_eq]
+        rw [← exists_ne]
+        exact hx
+      disjoint := _
+
+
+#exit
+    IsFundamentalDomain G (DirichletPolyhedron G x) μ where
+  nullMeasurableSet := by
+    apply MeasurableSet.nullMeasurableSet
+    dsimp [NullMeasurableSet]
+    rw [DirichletPolyhedron_eq_Inter]
+    apply MeasurableSet.iInter
+    intro g
+    apply @IsClosed.measurableSet α ({y | dist x y ≤ dist (g • x) y}) _ _ _
+    rw [← isOpen_compl_iff]
+    suffices h : IsOpen {y : α | dist (g • x) y < dist x y}
+    · convert h using 1
+      ext y
+      simp only [mem_compl_iff, mem_setOf_eq, not_le]
+    · apply isOpen_lt
+      · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
+      · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
+  ae_covers := by
+    filter_upwards
+    set s := DirichletPolyhedron G x
+    intro y
+    let t := Metric.closedBall y (dist x y)
+    have comp_t : IsCompact t := isCompact_closedBall y (dist x y)
+    have fin_orbit := i₁.finite_disjoint_inter_image comp_t comp_t
+    set Γ := {γ : G | (fun x ↦ γ • x) '' t ∩ t ≠ ∅}
+    have nonempty_Γ : Set.Nonempty Γ := by
+      use 1
+      simp only [image_smul, Metric.smul_closedBall, ne_eq, mem_setOf_eq, one_smul, inter_self,
+        Metric.closedBall_eq_empty, not_lt]
+      exact dist_nonneg
+    obtain ⟨g, -, hg⟩ :=
+      @Set.exists_min_image G ℝ _ Γ (fun γ ↦ dist x (γ • y)) fin_orbit nonempty_Γ
+    use g
+    simp only [DirichletPolyhedron, mem_setOf_eq]
+    intro γ
+    have dist_eq : dist (γ • x) (g • y) = dist x ((γ⁻¹ * g) • y) := by
+      convert @dist_smul G α _ _ _ γ x ((γ⁻¹ * g) • y) using 2
+      rw [← mul_smul]
+      simp
+    have := hg (γ⁻¹ * g)
+    by_cases hγ : (γ⁻¹ * g) ∈ Γ
+    · have := this hγ
+      convert this using 1
+    · simp only [image_smul, Metric.smul_closedBall, ne_eq, mem_setOf_eq, not_not] at hγ
+      rw [dist_eq]
+      sorry
+
+    -- have : (⋃ g : G, (fun y ↦ g • y) '' s) = univ := by
+    --   ext z
+    --   simp only [image_smul, mem_iUnion, mem_univ, iff_true]
+
+
+  aedisjoint := by
+    set s := DirichletPolyhedron G x
+    intro g₁ g₂ h
+    change μ (( (fun y ↦ g₁ • y) '' s) ∩  (fun y ↦ g₂ • y) '' s) = 0
+
+    sorry
+
+
+end DirichletDomain
+
+
+section AEFundamentalDomain
+
 /-- A measurable set `s` is an *ae-fundamental domain* for an additive action of an additive
 group `G` on a measurable space `α` with respect to a measure `α` if the sets `g +ᵥ s`, `g : G`,
 are pairwise a.e. disjoint and cover the whole space. -/
@@ -200,8 +356,8 @@ theorem lintegral_eq_tsum_of_ac (h : IsAEFundamentalDomain G s μ) (hν : ν ≪
   rw [← lintegral_sum_measure, h.sum_restrict_of_ac hν]
 
 @[to_additive]
-theorem sum_restrict (h : IsAEFundamentalDomain G s μ) : (sum fun g : G => μ.restrict (g • s)) = μ :=
-  h.sum_restrict_of_ac (refl _)
+theorem sum_restrict (h : IsAEFundamentalDomain G s μ) :
+    (sum fun g : G => μ.restrict (g • s)) = μ := h.sum_restrict_of_ac (refl _)
 
 @[to_additive]
 theorem lintegral_eq_tsum (h : IsAEFundamentalDomain G s μ) (f : α → ℝ≥0∞) :
@@ -273,8 +429,8 @@ theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsAEFundamentalD
     Finset.card_univ]
 
 @[to_additive]
-protected theorem set_lintegral_eq (hs : IsAEFundamentalDomain G s μ) (ht : IsAEFundamentalDomain G t μ)
-    (f : α → ℝ≥0∞) (hf : ∀ (g : G) (x), f (g • x) = f x) :
+protected theorem set_lintegral_eq (hs : IsAEFundamentalDomain G s μ)
+    (ht : IsAEFundamentalDomain G t μ) (f : α → ℝ≥0∞) (hf : ∀ (g : G) (x), f (g • x) = f x) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ :=
   calc
     ∫⁻ x in s, f x ∂μ = ∑' g : G, ∫⁻ x in s ∩ g • t, f x ∂μ := ht.set_lintegral_eq_tsum _ _
@@ -282,8 +438,9 @@ protected theorem set_lintegral_eq (hs : IsAEFundamentalDomain G s μ) (ht : IsA
     _ = ∫⁻ x in t, f x ∂μ := (hs.set_lintegral_eq_tsum' _ _).symm
 
 @[to_additive]
-theorem measure_set_eq (hs : IsAEFundamentalDomain G s μ) (ht : IsAEFundamentalDomain G t μ) {A : Set α}
-    (hA₀ : MeasurableSet A) (hA : ∀ g : G, (fun x => g • x) ⁻¹' A = A) : μ (A ∩ s) = μ (A ∩ t) := by
+theorem measure_set_eq (hs : IsAEFundamentalDomain G s μ) (ht : IsAEFundamentalDomain G t μ)
+    {A : Set α} (hA₀ : MeasurableSet A) (hA : ∀ g : G, (fun x => g • x) ⁻¹' A = A) :
+    μ (A ∩ s) = μ (A ∩ t) := by
   have : ∫⁻ x in s, A.indicator 1 x ∂μ = ∫⁻ x in t, A.indicator 1 x ∂μ := by
     refine hs.set_lintegral_eq ht (Set.indicator A fun _ => 1) fun g x ↦ ?_
     convert (Set.indicator_comp_right (g • · : α → α) (g := fun _ ↦ (1 : ℝ≥0∞))).symm
@@ -376,11 +533,13 @@ theorem set_integral_eq_tsum' (h : IsAEFundamentalDomain G s μ) {f : α → E} 
     _ = ∑' g : G, ∫ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp only [smul_set_inter, inv_smul_smul]
     _ = ∑' g : G, ∫ x in g • t ∩ s, f (g⁻¹ • x) ∂μ :=
       tsum_congr fun g =>
-        (measurePreserving_smul g⁻¹ μ).set_integral_image_emb (measurableEmbedding_const_smul _) _ _
+        (measurePreserving_smul g⁻¹ μ).set_integral_image_emb
+        (measurableEmbedding_const_smul _) _ _
 
 @[to_additive]
-protected theorem set_integral_eq (hs : IsAEFundamentalDomain G s μ) (ht : IsAEFundamentalDomain G t μ)
-    {f : α → E} (hf : ∀ (g : G) (x), f (g • x) = f x) : ∫ x in s, f x ∂μ = ∫ x in t, f x ∂μ := by
+protected theorem set_integral_eq (hs : IsAEFundamentalDomain G s μ)
+    (ht : IsAEFundamentalDomain G t μ) {f : α → E} (hf :
+    ∀ (g : G) (x), f (g • x) = f x) : ∫ x in s, f x ∂μ = ∫ x in t, f x ∂μ := by
   by_cases hfs : IntegrableOn f s μ
   · have hft : IntegrableOn f t μ := by rwa [ht.integrableOn_iff hs hf]
     calc
@@ -390,9 +549,9 @@ protected theorem set_integral_eq (hs : IsAEFundamentalDomain G s μ) (ht : IsAE
   · rw [integral_undef hfs, integral_undef]
     rwa [hs.integrableOn_iff ht hf] at hfs
 
-/-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
-`s`, then every null-measurable set `t` such that the sets `g • t ∩ s` are pairwise a.e.-disjoint
-has measure at most `μ s`. -/
+/-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental
+domain `s`, then every null-measurable set `t` such that the sets `g • t ∩ s` are pairwise
+a.e.-disjoint has measure at most `μ s`. -/
 @[to_additive "If the additive action of a countable group `G` admits an invariant measure `μ` with
   a fundamental domain `s`, then every null-measurable set `t` such that the sets `g +ᵥ t ∩ s` are
   pairwise a.e.-disjoint has measure at most `μ s`."]
@@ -405,8 +564,8 @@ theorem measure_le_of_pairwise_disjoint (hs : IsAEFundamentalDomain G s μ)
       (ht.smul _).inter hs.nullMeasurableSet
     _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right _ _)
 
-/-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
-`s`, then every null-measurable set `t` of measure strictly greater than `μ s` contains two
+/-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental
+domain `s`, then every null-measurable set `t` of measure strictly greater than `μ s` contains two
 points `x y` such that `g • x = y` for some `g ≠ 1`. -/
 @[to_additive "If the additive action of a countable group `G` admits an invariant measure `μ` with
   a fundamental domain `s`, then every null-measurable set `t` of measure strictly greater than
@@ -442,6 +601,8 @@ theorem essSup_measure_restrict (hs : IsAEFundamentalDomain G s μ) {f : α → 
   simp only [mem_setOf_eq, hf γ⁻¹ x]
 
 end IsAEFundamentalDomain
+
+end AEFundamentalDomain
 
 /-! ### Interior/frontier of a fundamental domain -/
 
@@ -579,8 +740,8 @@ protected theorem fundamentalInterior : IsAEFundamentalDomain G (fundamentalInte
     refine' eq_bot_mono (μ.mono <| compl_subset_compl.2 this) _
     simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero, himp_eq, sup_eq_union,
       @iUnion_smul_eq_setOf_exists _ _ _ _ s]
-    exact measure_union_null
-      (measure_iUnion_null fun _ => measure_smul_null hs.measure_fundamentalFrontier _) hs.ae_covers
+    exact measure_union_null (measure_iUnion_null fun _ => measure_smul_null
+      hs.measure_fundamentalFrontier _) hs.ae_covers
   aedisjoint := (pairwise_disjoint_fundamentalInterior _ _).mono fun _ _ => Disjoint.aedisjoint
 
 end IsAEFundamentalDomain
