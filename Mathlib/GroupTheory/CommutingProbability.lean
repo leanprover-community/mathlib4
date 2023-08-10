@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Data.Set.Ncard
+import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
