@@ -20,7 +20,7 @@ of matrices and some applications
 
 open BigOperators
 
-variable {K n : Type _} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
+variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
 
 theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin' A) μ) :
       ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j in Finset.univ.erase k, ‖A k j‖) := by
