@@ -252,14 +252,20 @@ section Semigroup
 
 variable [Semigroup G] [MeasurableMul G]
 
-/-- The image of a left invariant measure under right multiplication is left invariant.
--/
+/-- The image of a left invariant measure under scalar multiplication is left invariant. -/
+theorem isMulLeftInvariant_map_smul
+    {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
+    [IsMulLeftInvariant μ] (a : α) :
+    IsMulLeftInvariant (map (a • · : G → G) μ) :=
+  (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
+    let smul_g := SMulCommClass.toMulActionHom G G a
+    have smul_inv := SMulInvariantMeasure_map μ smul_g (measurable_const_smul a)
+    smul_inv.measure_preimage_smul x hs
+
+/-- The image of a left invariant measure under right multiplication is left invariant. -/
 theorem isMulLeftInvariant_rmul [IsMulLeftInvariant μ] (g : G) :
     IsMulLeftInvariant (map (· * g) μ) :=
-  (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
-    let rmul_g := SMulCommClass.toMulActionHom G G (MulOpposite.op g)
-    have smul_inv := SMulInvariantMeasure_map μ rmul_g (measurable_mul_const g)
-    smul_inv.measure_preimage_smul x hs
+  isMulLeftInvariant_map_smul (MulOpposite.op g)
 
 end Semigroup
 
