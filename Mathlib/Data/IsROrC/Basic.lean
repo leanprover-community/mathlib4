@@ -846,6 +846,18 @@ theorem lt_iff_re_im {z w : K} : z < w ↔ re z < re w ∧ im z = im w := by
   · rintro ⟨⟨hr, hrn⟩, hi⟩
     exact ⟨⟨hr, hi⟩, ne_of_apply_ne _ hrn⟩
 
+theorem nonneg_iff {z : K} : 0 ≤ z ↔ 0 ≤ re z ∧ im z = 0 := by
+  simpa only [map_zero, eq_comm] using le_iff_re_im (z := 0) (w := z)
+
+theorem pos_iff {z : K} : 0 < z ↔ 0 < re z ∧ im z = 0 := by
+  simpa only [map_zero, eq_comm] using lt_iff_re_im (z := 0) (w := z)
+
+theorem nonpos_iff {z : K} : z ≤ 0 ↔ re z ≤ 0 ∧ im z = 0 := by
+  simpa only [map_zero, eq_comm] using le_iff_re_im (z := z) (w := 0)
+
+theorem neg_iff {z : K} : z < 0 ↔ re z < 0 ∧ im z = 0 := by
+  simpa only [map_zero, eq_comm] using lt_iff_re_im (z := z) (w := 0)
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
