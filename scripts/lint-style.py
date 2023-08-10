@@ -151,7 +151,7 @@ def set_option_check(lines, path):
 def windows_line_endings_check(lines, path):
     errors = []
     for line_nr, line in enumerate(lines, 1):
-        if b"\r\n" in line:
+        if "\r\n" in line:
             errors += [(ERR_WIN, line_nr, path)]
     return errors
 
@@ -307,11 +307,11 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
 
 def lint(path):
-    with path.open("rb") as f:
+    with path.open(encoding="utf-8", newline="") as f:
         lines = f.readlines()
         errs = windows_line_endings_check(lines, path)
         format_errors(errs)
-        lines = [line.decode("utf-8").rstrip() + "\n" for line in lines]
+        lines = [line.rstrip() + "\n" for line in lines]
 
         errs = long_lines_check(lines, path)
         format_errors(errs)
