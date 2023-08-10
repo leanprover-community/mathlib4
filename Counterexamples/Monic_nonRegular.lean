@@ -79,7 +79,7 @@ theorem mul_example : (X + C 2 : N[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
 
 /-- The main example: multiplication by the polynomial `X + 2` is not injective,
 yet the polynomial is monic. -/
-example : Monic (X + C 2 : N[X]) ∧ ¬ IsLeftRegular (X + C 2 : N[X]) := by
+theorem Monic_and_nonLeftRegular : Monic (X + C 2 : N[X]) ∧ ¬ IsLeftRegular (X + C 2 : N[X]) := by
   constructor
   · unfold Monic leadingCoeff
     nontriviality
