@@ -1217,7 +1217,7 @@ open Span
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
     (K • x) ⊓ B.orthogonal (K • x) = ⊥ := by
-  rw [Submodule.span_singleton, ← Finset.coe_singleton]
+  rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h => _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   have := h.2 x ?_

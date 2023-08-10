@@ -18,8 +18,9 @@ import Mathlib.Tactic.Ring
 
 ## Notations
 
-* We introduce the notation `R • v` for the span of a singleton, `Submodule.span R {v}`.  This is
-  `\.`, not the same as the scalar multiplication `•`/`\bub`.
+* We introduce the notation `R • v` for the span of a singleton, `Submodule.span R {v}`.
+  Note that this notation is the same as the scalar multiplication, i.e. `\bub`.
+  The notation `R • v := span R {v}` is scoped and can be used with `open Span`.
 
 -/
 
@@ -46,17 +47,19 @@ section
 
 variable (R)
 
-/-- The span of a set `s ⊆ M` is the smallest submodule of M that contains `s`. -/
+/-- The span of a set `s ⊆ M` is the smallest submodule of M that contains `s`.
+
+The span of a singleton, `span R {x}`, can be denoted as `R • x` which is
+a scoped notation in `open Span`. -/
 def span (s : Set M) : Submodule R M :=
   sInf { p | s ⊆ p }
 #align submodule.span Submodule.span
 
-@[inherit_doc span, reducible]
-abbrev span_singleton (x : M) := span R (singleton x)
-
--- mathport name: «expr • »
+-- -- Note that the dot in the mathport name is a different one than
+-- -- the one in the notation, due to a refactor after porting.
+-- mathport name: «expr ∙ »
 @[inherit_doc]
-scoped[Span] infix:72 " • " => Submodule.span_singleton
+scoped[Span] notation:72 R:73 " • " x:73 => Submodule.span R (singleton x)
 
 end
 

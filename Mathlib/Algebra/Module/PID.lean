@@ -75,7 +75,7 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
           (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
   convert isInternal_prime_power_torsion hM
   ext p : 1
-  rw [← torsionBySet_span_singleton_eq, Submodule.span_singleton, Ideal.submodule_span_eq,
+  rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq,
     ← Ideal.span_singleton_pow, Ideal.span_singleton_generator]
 #align submodule.is_internal_prime_power_torsion_of_pid Submodule.isInternal_prime_power_torsion_of_pid
 

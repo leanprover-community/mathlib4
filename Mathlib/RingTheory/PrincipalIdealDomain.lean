@@ -121,7 +121,7 @@ theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
 
 theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
     S = ⊥ ↔ generator S = 0 := by
-  rw [← @span_singleton_eq_bot R M, span_singleton, span_singleton_generator]
+  rw [← @span_singleton_eq_bot R M, span_singleton_generator]
 #align submodule.is_principal.eq_bot_iff_generator_eq_zero Submodule.IsPrincipal.eq_bot_iff_generator_eq_zero
 
 end Ring

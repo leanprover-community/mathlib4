@@ -229,7 +229,7 @@ theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP 
       exact LinearMap.ker_toSpanSingleton K(p, k) V hx
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
-      rw [← Submodule.span_singleton, LinearMap.span_singleton_eq_range]
+      rw [LinearMap.span_singleton_eq_range]
   -- Porting note: `refine'` below gets confused when this is inlined.
   let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
   refine' ⟨⟨E, _⟩⟩
