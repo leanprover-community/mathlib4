@@ -18,7 +18,7 @@ with all a.e. equalities replaced with equalities in the quotient space.
 
 open Function Set Filter MeasureTheory Topology TopologicalSpace
 
-variable {α X : Type _} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
+variable {α X : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 
 /-- Let `f : α → α` be a (quasi)ergodic map. Let `g : α → X` is a null-measurable function
 from `α` to a nonempty space with a countable family of measurable sets
