@@ -270,19 +270,17 @@ theorem sum_subgroup_units_zero_of_ne_bot
   rw [← Finset.mul_sum] at h_sum_map
   -- thus one of (a - 1) or ∑ G, x is zero
   have hzero : (a.val.val - 1 : K) * ∑ x : ↥G, x.val.val = 0 := by
-    rw [sub_mul]
-    rw [← h_sum_map]
-    simp
+    rw [sub_mul, ← h_sum_map, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
-  cases hzero
+  rcases hzero with h | h
   · -- If the former, we reach contradiction from a ≠ 1
     exfalso
     apply ha
     ext
     rw [<-sub_eq_zero]
-    assumption
+    exact h
   · -- If the latter, we are done
-    assumption
+    exact h
 
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 theorem sum_subgroup_units
@@ -299,42 +297,16 @@ theorem sum_subgroup_units
     apply sum_subgroup_units_zero_of_ne_bot
     exact G_bot
 
-theorem subgroup_zpowers_card {G : Type} [Group G] [Fintype G] (a : G) (k : ℕ) (k_pos : 0 < k)
-    (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
-  rw [← orderOf_eq_card_zpowers]
-  apply orderOf_le_of_pow_eq_one
-  assumption
-  assumption
 
-theorem sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
+
+-- #find_home exists_pow_ne_one_of_cyclic
+
+-- TODO tidy
+theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     [DecidableEq F] {G : Subgroup (Units F)} [Fintype G] {k : ℕ} (k_pos : 0 < k)
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, (x.val : F) ^ k = 0 := by
-  have ha : ∃ a : ↥G, a ^ k ≠ 1 := by
-    -- Need cyclicity of G
-    have G_cyclic :
-      IsCyclic G := --is_cyclic_of_subgroup_is_domain ((λ (x : ↥G), (x : F)) : _) _,
-        Subgroup.isCyclic G
-    rcases G_cyclic with ⟨a, ha⟩
-    use a
-    by_contra
-    have ord : Fintype.card (Subgroup.zpowers a) ≤ k := by
-      clear ha k_lt_card_G
-      apply subgroup_zpowers_card
-      assumption
-      assumption
-    have bar : Fintype.card G = Fintype.card (Subgroup.zpowers a) := by
-      clear ord
-      rw [eq_comm]
-      rw [Subgroup.card_eq_iff_eq_top]
-      ext
-      constructor
-      simp
-      simp
-      apply ha
-    linarith
-  rcases ha with ⟨a, ha⟩
+  rcases (exists_pow_ne_one_of_cyclic k_pos k_lt_card_G) with ⟨a, ha⟩
   rw [Finset.sum_eq_multiset_sum]
-  -- try multiplying a^k
   have h_multset_map :
     Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val =
       Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val := by
@@ -343,18 +315,16 @@ theorem sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
       (fun x : ↥G => ((x.val : F) * (a.val : F)) ^ k)
         = (fun x : ↥G => (x.val : F) ^ k) ∘ fun x : ↥G => x * a := by
       funext x
-      simp
-    rw [as_comp]
-    rw [← Multiset.map_map]
+      simp only [Function.comp_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul]
+    rw [as_comp, ← Multiset.map_map]
     congr
     ext a_1
-    simp
-    have ha_1 : a_1 = (fun x : ↥G => x * a) (a_1 * a⁻¹)
-    simp
-    rw [ha_1]
-    rw [Multiset.count_map_eq_count' (fun x => x * a) _ _]
-    simp
-    -- exact Classical.decEq G
+    simp only [mem_val, mem_univ, not_true, Multiset.count_univ, Multiset.mem_map, true_and,
+      Subtype.exists, not_exists]
+    have ha_1 : a_1 = (fun x : ↥G => x * a) (a_1 * a⁻¹) := by
+      simp only [inv_mul_cancel_right]
+    rw [ha_1, Multiset.count_map_eq_count' (fun x => x * a) _ _]
+    simp only [mem_val, mem_univ, not_true, Multiset.count_univ]
     exact mul_left_injective a
   have h_multset_map_sum :
     (Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val).sum =
@@ -363,19 +333,16 @@ theorem sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
   rw [Multiset.sum_map_mul_right] at h_multset_map_sum
   have hzero : ((a.val : F) ^ k - 1 : F)
                   * (Multiset.map (fun i : G => (i.val : F) ^ k) Finset.univ.val).sum = 0 := by
-    rw [sub_mul, mul_comm]
-    rw [← h_multset_map_sum]
-    simp
+    rw [sub_mul, mul_comm, ← h_multset_map_sum, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
-  cases hzero
-  · -- If the former, we reach contradiction from a ≠ 1
-    exfalso
+  rcases hzero with h | h
+  · exfalso
     apply ha
     ext
     rw [<-sub_eq_zero]
-    aesop
-  · -- If the latter, we are done
-    assumption
+    simp_all only [ne_eq, SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
+      Units.val_one]
+  · exact h
 
 
 
