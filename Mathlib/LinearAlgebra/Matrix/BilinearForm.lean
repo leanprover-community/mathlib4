@@ -488,7 +488,7 @@ theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₃) (h : I
   · simp only [mul_assoc, x_def, y_def, coe_u, coe_v]
   · rw [Units.eq_mul_inv_iff_mul_eq, mul_assoc ↑v⁻¹ x, Units.inv_mul_eq_iff_eq_mul]
   · rw [x_def, y_def, coe_u_inv, coe_v_inv]
-    simp only [Matrix.mul_eq_mul, Matrix.mul_assoc, Matrix.transpose_mul]
+    simp only [Matrix.mul_assoc, Matrix.transpose_mul]
 #align matrix.is_adjoint_pair_equiv' Matrix.isAdjointPair_equiv'
 
 variable [DecidableEq n]
