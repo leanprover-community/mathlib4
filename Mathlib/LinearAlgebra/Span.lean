@@ -51,12 +51,13 @@ def span (s : Set M) : Submodule R M :=
   sInf { p | s ⊆ p }
 #align submodule.span Submodule.span
 
-@[reducible]
+@[reducible, inherit_doc span]
 def span_singleton (x : M) :=
     span R (singleton x)
 
 -- mathport name: «expr • »
-infix:72 " • " => span_singleton
+@[inherit_doc]
+scoped infix:72 " • " => Submodule.span_singleton
 
 end
 
@@ -1026,7 +1027,7 @@ end Field
 
 end LinearMap
 
-open LinearMap
+open LinearMap Submodule
 
 namespace LinearEquiv
 
