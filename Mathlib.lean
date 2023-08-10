@@ -64,6 +64,7 @@ import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+import Mathlib.Algebra.Category.ModuleCat.Free
 import Mathlib.Algebra.Category.ModuleCat.Images
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -159,6 +160,7 @@ import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Pi
@@ -818,6 +820,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.Analysis.SpecificLimits.IsROrC
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
@@ -1043,6 +1046,7 @@ import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.Yoneda
+import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.Opposite
@@ -1317,6 +1321,7 @@ import Mathlib.Data.Complex.Determinant
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.ExponentialBounds
 import Mathlib.Data.Complex.Module
+import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
@@ -1507,12 +1512,11 @@ import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
-import Mathlib.Data.ListM.Basic
-import Mathlib.Data.ListM.BestFirst
-import Mathlib.Data.ListM.DepthFirst
-import Mathlib.Data.ListM.Heartbeats
-import Mathlib.Data.ListM.IO
-import Mathlib.Data.ListM.Split
+import Mathlib.Data.MLList.BestFirst
+import Mathlib.Data.MLList.DepthFirst
+import Mathlib.Data.MLList.Heartbeats
+import Mathlib.Data.MLList.IO
+import Mathlib.Data.MLList.Split
 import Mathlib.Data.Matrix.Auto
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
@@ -2088,6 +2092,7 @@ import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
 import Mathlib.Lean.CoreM
+import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
@@ -3033,6 +3038,7 @@ import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.Observe
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
@@ -3219,6 +3225,7 @@ import Mathlib.Topology.CountableSeparatingOn
 import Mathlib.Topology.Covering
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
+import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
