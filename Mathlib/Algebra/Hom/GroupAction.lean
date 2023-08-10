@@ -96,31 +96,26 @@ instance : SMulHomClass (X →[M'] Y) M' X Y where
   coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
 
-namespace SMulHomClass
+initialize_simps_projections MulActionHom (toFun → apply)
 
-variable {M X Y} [SMul M X] [SMul M Y] [SMulHomClass F M X Y]
+namespace MulActionHom
 
-theorem comp_smul (f : F) (m : M) : f ∘ (m • ·) = (m • ·) ∘ f :=
-  funext <| map_smul f m
+variable {M M' X Y}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def toMulActionHom (f : F) : X →[M] Y where
-  toFun := FunLike.coe f
-  map_smul' := map_smul f
+def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) :
+    X →[M] Y where
+   toFun := FunLike.coe f
+   map_smul' := map_smul f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance : CoeTC F (X →[M] Y) := ⟨SMulHomClass.toMulActionHom⟩
-
-end SMulHomClass
-
-namespace MulActionHom
-
-variable {M M' X Y}
+instance [SMul M X] [SMul M Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
+  ⟨SMulHomClass.toMulActionHom⟩
 
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
   map_smul f m x
@@ -193,20 +188,13 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
 
 end MulActionHom
 
-namespace SMulCommClass
-
-variable {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
-
 /-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
 homomorphism. -/
 @[simps]
-def toMulActionHom (c : M) : α →[N] α where
+def SMulCommClass.toMulActionHom {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
+    (c : M) : α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
-
-theorem toMulActionHom_coe (c : M) : ⇑(toMulActionHom N α c) = (c • ·) := rfl
-
-end SMulCommClass
 
 /-- Equivariant additive monoid homomorphisms. -/
 structure DistribMulActionHom extends A →[M] B, A →+ B
