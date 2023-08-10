@@ -147,7 +147,7 @@ theorem MeasureTheory.IsFundamentalDomain.map_restrict_quotient  [T2Space (G ⧸
   fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is measure-preserving between appropriate
   multiples of Haar measure on `G` and `G ⧸ Γ`."]
 theorem MeasurePreservingQuotientGroup.mk' [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)]
-    (K : PositiveCompacts (G ⧸ Γ))[Subgroup.Normal Γ] [MeasureTheory.Measure.IsHaarMeasure μ]
+    (K : PositiveCompacts (G ⧸ Γ)) [Subgroup.Normal Γ] [μ.IsHaarMeasure]
     [μ.IsMulRightInvariant] (h𝓕_finite : μ 𝓕 < ⊤) (c : ℝ≥0)
     (h : μ (𝓕 ∩ QuotientGroup.mk' Γ ⁻¹' K) = c) :
     MeasurePreserving (QuotientGroup.mk' Γ) (μ.restrict 𝓕)
