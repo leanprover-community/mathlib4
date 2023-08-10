@@ -41,15 +41,6 @@ open BigOperators MvPolynomial
 
 noncomputable section
 
-namespace Multiset
-
-variable {R : Type _} [CommSemiring R]
-
-/-- The degree-`n` power sum evaluated at the elements of `s` -/
-def psum (s : Multiset R) (n : ℕ) : R := (s.map (· ^ n : R → R)).sum
-
-end Multiset
-
 namespace MvPolynomial
 
 section PowerSum
@@ -60,6 +51,8 @@ variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
 
 /-- The degree-`n` power sum -/
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
+
+lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
 @[simp]
 theorem psum_zero : psum σ R 0 = Fintype.card σ := by
@@ -99,7 +92,15 @@ private def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
 private def pairMap (t : Finset σ × σ) : Finset σ × σ :=
   if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (cons t.snd t.fst h, t.snd)
 
-private theorem pair_map_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) :
+private lemma pairMap_of_snd_mem_fst {t : Finset σ × σ} (h : t.snd ∈ t.fst) :
+    pairMap σ t = (t.fst.erase t.snd, t.snd) := by
+  simp [pairMap, h]
+
+private lemma pairMap_of_snd_nmem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst) :
+    pairMap σ t = (cons t.snd t.fst h, t.snd) := by
+  simp [pairMap, h]
+
+private theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     pairMap σ t ∈ pairs σ k := by
   rw [pairs, mem_filter, pairMap] at *
   simp only [mem_univ, true_and] at h
@@ -114,7 +115,8 @@ private theorem pair_map_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) 
     simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
     exact (le_iff_eq_or_lt.mp h.left).resolve_left h.right
 
-@[simp] private theorem pair_map_involutive : (pairMap σ).Involutive := by
+@[simp]
+private theorem pairMap_involutive : (pairMap σ).Involutive := by
   intro t
   rw [pairMap, pairMap]
   split_ifs with h1 h2 h3
@@ -123,7 +125,7 @@ private theorem pair_map_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) 
   · simp_all
   · simp at h3
 
-private theorem weight_compose_pair_map (t : Finset σ × σ) (h : t ∈ pairs σ k) :
+private theorem weight_compose_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     weight σ R k t + weight σ R k (pairMap σ t) = 0 := by
   rw [pairMap, weight, weight]
   rw [pairs, mem_filter] at h
@@ -146,21 +148,19 @@ private theorem weight_compose_pair_map (t : Finset σ × σ) (h : t ∈ pairs �
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ card t.fst), h2]
     simp
 
-private theorem weight_zero_for_fixed_by_pair_map (t : Finset σ × σ) (h : t ∈ pairs σ k)
+private theorem weight_eq_zero_of_pairMapEqSelf (t : Finset σ × σ) (h : t ∈ pairs σ k)
     (h2 : pairMap σ t = t) : weight σ R k t = 0 := by
-  have h3 := weight_compose_pair_map σ R t h
+  have h3 := weight_compose_pairMap σ R t h
   rw [h2, ← two_mul, _root_.mul_eq_zero] at h3
   exact h3.resolve_left two_ne_zero
 
-private theorem weight_zero_for_fixed_by_pair_map' (t : Finset σ × σ) (h : t ∈ pairs σ k)
-    (h1 : weight σ R k t ≠ 0) : pairMap σ t ≠ t := mt (weight_zero_for_fixed_by_pair_map σ R t h) h1
-
 private theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
-  sum_involution (fun t _ ↦ pairMap σ t) (weight_compose_pair_map σ R)
-    (weight_zero_for_fixed_by_pair_map' σ R) (pair_map_mem_pairs σ)
-    (fun t _ ↦ pair_map_involutive σ t)
+  sum_involution (fun t _ ↦ pairMap σ t) (weight_compose_pairMap σ R)
+    (fun t h ↦ mt $ weight_eq_zero_of_pairMapEqSelf σ R t h) (pairMap_mem_pairs σ)
+    (fun t _ ↦ pairMap_involutive σ t)
 
-private theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
+private theorem sum_filter_pairs_eq_sum_powersetLen_sum (k : ℕ)
+    (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
   apply sum_finset_product
@@ -173,7 +173,7 @@ private theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R
   have cardpk := mem_powerset_len_univ_iff.mp hpr.left
   exact ⟨le_of_eq cardpk, cardpk⟩
 
-private theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k)
+private theorem sum_filter_pairs_eq_sum_powersetLen_mem_range_sum (k i : ℕ) (hi : i ∈ range k)
     (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
     ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
@@ -190,10 +190,12 @@ private theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k)
   rw [← cardpk, mem_powerset_len_univ_iff.mp hpr] at hi
   exact ((lt_irrefl _) hi).elim
 
-private theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
+private theorem sum_filter_pairs_eq_sum_range_powersetLen_sum (k : ℕ)
+    (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
     ∑ i in range k, ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
-  have equiv_i (i : ℕ) (hi : i ∈ range k) := sum_equiv_i_lt_k σ R k i hi f
+  have equiv_i (i : ℕ) (hi : i ∈ range k) :=
+    sum_filter_pairs_eq_sum_powersetLen_mem_range_sum σ R k i hi f
   simp only [← sum_congr rfl equiv_i]
   have pdisj : Set.PairwiseDisjoint (range k)
       (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
@@ -221,13 +223,16 @@ private theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial �
       simp_all [mem_filter]
   simp only [← hdisj, disj_equiv]
 
-private theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
+private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
+    Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
   rw [disjoint_filter]
   exact fun _ _ h1 h2 ↦ lt_irrefl _ (h2.symm.subst h1)
 
-private theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
-    (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
+private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
+    disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
+    (filter (fun t ↦ card t.fst = k) (pairs σ k)) (disjoint_filter_pairs_lt_filter_pairs_eq σ k) =
+    pairs σ k := by
   simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
   intro a
   rw [← filter_or, mem_filter]
@@ -244,7 +249,7 @@ private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ pow
 
 private theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
-  rw [esymm, sum_equiv_k σ R k (fun t ↦ weight σ R k t),
+  rw [esymm, sum_filter_pairs_eq_sum_powersetLen_sum σ R k (fun t ↦ weight σ R k t),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
     ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 
@@ -263,15 +268,17 @@ private theorem esymm_mul_psum_summand_to_weight (k i : ℕ) :
 private theorem esymm_mul_psum_to_weight (k : ℕ) :
     ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) =
     ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
-  rw [← sum_congr rfl (fun i _ ↦ esymm_mul_psum_summand_to_weight σ R k i), sum_equiv_lt_k σ R k]
+  rw [← sum_congr rfl (fun i _ ↦ esymm_mul_psum_summand_to_weight σ R k i),
+    sum_filter_pairs_eq_sum_range_powersetLen_sum σ R k]
 
 /-- **Newton's identities** give a recurrence relation for the kth elementary symmetric polynomial
 in terms of lower degree elementary symmetric polynomials and power sums. -/
 theorem esymm_recurrence (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
     ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0 := by
   rw [esymm_to_weight σ R k, esymm_mul_psum_to_weight σ R k, ← mul_assoc, ← pow_add,
-    Even.neg_one_pow ⟨k, rfl⟩, one_mul, add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k),
-    lt_k_disjunion_k σ k, weight_sum σ R k]
+    Even.neg_one_pow ⟨k, rfl⟩, one_mul, add_comm,
+    ← sum_disjUnion (disjoint_filter_pairs_lt_filter_pairs_eq σ k),
+    disjUnion_filter_pairs_eq_pairs σ k, weight_sum σ R k]
 
 /-- A version of Newton's identities which may be more useful in the case that we know the values of
 the elementary symmetric polynomials and would like to calculate the values of the power sums. -/
@@ -301,7 +308,7 @@ theorem psum_recurrence (k : ℕ) (h : k > 0) : psum σ R k = (-1) ^ (k + 1) * (
   simp only [_root_.pow_zero, esymm_zero, one_mul, add_sub_cancel', add_sub_cancel, zero_sub]
     at sub_both_sides
   rw [← neg_mul, ← neg_one_mul] at sub_both_sides
-  nth_rewrite 1 [← pow_one (-1 : MvPolynomial σ R)] at sub_both_sides
+  nth_rw 1 [← pow_one (-1 : MvPolynomial σ R)] at sub_both_sides
   rw [← pow_add, add_comm] at sub_both_sides
   exact sub_both_sides
 
