@@ -361,7 +361,7 @@ theorem weightedVSub_const_smul (w : ι → k) (p : ι → P) (c : k) :
   s.weightedVSubOfPoint_const_smul _ _ _ _
 #align finset.weighted_vsub_const_smul Finset.weightedVSub_const_smul
 
-instance : AffineSpace (ι → k) (ι → k) := Pi.instAddTorsorForAllForAllAddGroup
+instance : AffineSpace (ι → k) (ι → k) := Pi.instAddTorsor
 
 variable (k)
 

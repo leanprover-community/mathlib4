@@ -628,7 +628,7 @@ theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := b
   simpa using @Set.isEmpty_coe_sort α s
 #align finset.is_empty_coe_sort Finset.isEmpty_coe_sort
 
-instance : IsEmpty (∅ : Finset α) :=
+instance instIsEmpty : IsEmpty (∅ : Finset α) :=
   isEmpty_coe_sort.2 rfl
 
 /-- A `Finset` for an empty type is empty. -/
