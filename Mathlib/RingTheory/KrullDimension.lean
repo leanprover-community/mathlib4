@@ -1,4 +1,6 @@
 import Mathlib.Order.KrullDimension
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.Algebra.Module.LocalizedModule
 
 /--
 The ring theoretic Krull dimension is the Krull dimension of prime spectrum ordered by inclusion.
@@ -23,14 +25,14 @@ theorem le_of_surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
 /--
 If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`.
 -/
-theorem le_of_Quot (R : Type _) [CommRing R] (I : PrimeSpectrum R) :
+theorem le_of_quot (R : Type _) [CommRing R] (I : PrimeSpectrum R) :
   ringKrullDim (R ⧸ I.asIdeal) ≤ ringKrullDim R :=
 le_of_surj _ _ (Ideal.Quotient.mk I.asIdeal) Ideal.Quotient.mk_surjective
 
 /--
 If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`.
 -/
-theorem eq_of_RingEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S) :
+theorem eq_of_ringEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S) :
   ringKrullDim R = ringKrullDim S :=
 le_antisymm (le_of_surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
   (le_of_surj R S e (EquivLike.surjective e))
@@ -283,7 +285,7 @@ The height of `I` is equal to the Krull dimension of `localization.at_prime I.as
 -/
 theorem primeIdealHeight_eq_ringKrullDim_of_Localization :
   height (PrimeSpectrum R) I = ringKrullDim (Localization.AtPrime I.asIdeal) :=
-krullDim.krullDim_eq_of_OrderIso (PrimeSpectrum.IicToLocalizationAtPrime_OrderIso I)
+krullDim.eq_of_OrderIso (PrimeSpectrum.IicToLocalizationAtPrime_OrderIso I)
 
 end aboutHeightAndLocalization
 

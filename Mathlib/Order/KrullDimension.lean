@@ -4,15 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 
-import Mathlib.Order.RelSeries
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.WithBot
-import Mathlib.Data.Fin.Basic
-import Mathlib.Tactic.Linarith
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Data.Nat.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.RelSeries
+import Mathlib.Order.RelIso.Basic
 
 /-!
 # Krull dimension of a preordered set
@@ -75,6 +70,10 @@ lemma le_of_map (f : α → β) (map : ∀ (x y : α), r x y → s (f x) (f y)) 
     krullDimOfRel r ≤ krullDimOfRel s :=
   iSup_le $ fun p => le_sSup ⟨p.map _ f map, rfl⟩
 
+lemma eq_of_relIso (f : r ≃r s) : krullDimOfRel r = krullDimOfRel s :=
+  le_antisymm (le_of_map f fun _ _ h => f.2.mpr h) $ le_of_map f.symm fun _ _ h => f.2.mp $ by
+    convert h <;> exact f.toEquiv.eq_symm_apply.mp rfl
+
 variable (r)
 lemma eq_top_of_noTopOrder [Nonempty α] [NoTopOrder (RelSeries r)] :
   krullDimOfRel r = ⊤ :=
@@ -110,14 +109,7 @@ variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
 
-/--
-A function `f : α → β` is said to be strictly comonotonic (dual to strictly monotonic)
-if and only if `a < b` is implied by `f a < f b` for all `a, b : β`.
--/
-def strictComono (f : α → β) : Prop := ∀ ⦃a b⦄, f a < f b → a < b
-
-lemma krull_dim_eq_bot_of_is_empty [IsEmpty α] : krullDim α = ⊥ :=
-  WithBot.ciSup_empty _
+lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
 
 lemma eq_top_of_noTopOrder [Nonempty α] [NoTopOrder (LTSeries α)] :
   krullDim α = ⊤ := krullDimOfRel.eq_top_of_noTopOrder _
@@ -142,14 +134,13 @@ lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim �
 lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   krullDimOfRel.le_of_map f hf
 
-lemma krullDim_le_of_strictComono_and_surj
-  (f : α → β) (hf : strictComono f) (hf' : Function.Surjective f) :
+lemma le_of_strictComono_and_surj
+  (f : α → β) (hf : StrictComono f) (hf' : Function.Surjective f) :
     krullDim β ≤ krullDim α :=
 iSup_le $ λ p ↦ le_sSup ⟨p.comap _ hf hf', rfl⟩
 
-lemma krullDim_eq_of_OrderIso (f : α ≃o β) : krullDim α = krullDim β :=
-  le_antisymm (krullDim_le_of_strictMono f f.strictMono) $ krullDim_le_of_strictComono_and_surj
-    f (λ _ _ h ↦ Iff.mp (map_lt_map_iff f) h) f.surjective
+lemma eq_of_OrderIso (f : α ≃o β) : krullDim α = krullDim β := krullDimOfRel.eq_of_relIso
+  ⟨f, fun {_ _} => f.lt_iff_lt⟩
 
 lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), height α a := by
 { refine' le_antisymm (iSup_le $ λ i ↦ le_iSup_of_le (i ⟨i.length, lt_add_one _⟩)
