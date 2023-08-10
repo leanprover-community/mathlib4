@@ -155,18 +155,18 @@ protected def addEquiv : Unitization 𝕜 A ≃+ 𝕜 × A :=
 variable {𝕜 A}
 
 theorem lipschitzWith_addEquiv :
-    LipschitzWith (2 : ℝ).toNNReal (Unitization.addEquiv 𝕜 A) := by
+    LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
+  rw [← Real.toNNReal_ofNat]
   refine' AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => _
   rw [norm_eq_sup, Prod.norm_def]
   refine' max_le _ _
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
-  · change ‖x.snd‖ ≤ _
-    nontriviality A
+  · nontriviality A
     rw [two_mul]
     calc
       ‖x.snd‖ = ‖mul 𝕜 A x.snd‖ :=
-        ((AddMonoidHomClass.isometry_iff_norm (mul 𝕜 A)).mp (isometry_mul 𝕜 A) _).symm
+        .symm <| (isometry_mul 𝕜 A).norm_map_of_map_zero (map_zero _) _
       _ ≤ ‖algebraMap 𝕜 _ x.fst + mul 𝕜 A x.snd‖ + ‖x.fst‖ := by
         simpa only [add_comm _ (mul 𝕜 A x.snd), norm_algebraMap'] using
           norm_le_add_norm_add (mul 𝕜 A x.snd) (algebraMap 𝕜 _ x.fst)
