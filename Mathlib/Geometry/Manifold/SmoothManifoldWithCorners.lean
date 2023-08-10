@@ -660,7 +660,7 @@ as the maps that are analytic and map interior to interior when read in `E` thro
 explicitly define that they are `C^∞` on the whole domain, since we are only requiring
 analyticity on the interior of the domain. -/
 def analyticGroupoid : StructureGroupoid H :=
-  (contDiffGroupoid ∞ I) ∩ Pregroupoid.groupoid
+  (contDiffGroupoid ∞ I) ⊓ Pregroupoid.groupoid
     { property := fun f s => AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
         (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
       comp := fun {f g u v} hf hg _ _ _ => by
