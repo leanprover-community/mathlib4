@@ -131,7 +131,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
     -- In other words, `p (x + y) ≤ n` for `y` sufficiently close to `0`.
     rw [mem_interior_iff_mem_nhds, ← map_add_left_nhds_zero] at hxn
     -- Hence, for `y` sufficiently close to `0`, we have
-    -- `p y = p(x + y - x) ≤ p (x + y) + p x ≤ 2*n`
+    -- `p y = p (x + y - x) ≤ p (x + y) + p x ≤ 2*n`
     filter_upwards [hxn] with y hy
     calc p y = p (x + y - x) := by rw [add_sub_cancel']
       _ ≤ p (x + y) + p x := map_sub_le_add _ _ _
