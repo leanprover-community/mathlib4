@@ -207,7 +207,7 @@ def find (args : Arguments) (maxShown := 200) :
       NameSet.union (m₁.findD needle {}) (m₂.findD needle {})
 
     -- Filter by name patterns
-    let hits2 := hits.toArray.filter fun n => args.name_pats.all fun p =>
+    let hits2 := hits.toArray.filter fun n => args.namePats.all fun p =>
       p.isInfixOf n.toString
 
     -- Filter by term patterns
