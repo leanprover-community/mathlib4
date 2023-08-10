@@ -244,6 +244,7 @@ lemma exists_non_one_iff_not_bot {G' : Type*} [Group G']
       intro a
       simp_all only [Subgroup.mem_bot]
 
+/-- The sum of a nontrivial subgroup of the units of a field is zero. -/
 theorem sum_subgroup_units_zero_of_ne_bot
     {G : Subgroup (Units K)} [Fintype G] (hg : G ≠ ⊥) : ∑ x : G, (x.val : K) = 0 := by
   rw [exists_non_one_iff_not_bot] at hg
@@ -307,7 +308,7 @@ theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, (x.val : F) ^ k = 0 := by
   rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
   rw [Finset.sum_eq_multiset_sum]
-  have h_multset_map :
+  have h_multiset_map :
     Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val =
       Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val := by
     simp_rw [← mul_pow]
@@ -326,14 +327,14 @@ theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     rw [ha_1, Multiset.count_map_eq_count' (fun x => x * a) _ _]
     simp only [mem_val, mem_univ, not_true, Multiset.count_univ]
     exact mul_left_injective a
-  have h_multset_map_sum :
+  have h_multiset_map_sum :
     (Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val).sum =
       (Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val).sum
-  rw [h_multset_map]
-  rw [Multiset.sum_map_mul_right] at h_multset_map_sum
+  rw [h_multiset_map]
+  rw [Multiset.sum_map_mul_right] at h_multiset_map_sum
   have hzero : ((a.val : F) ^ k - 1 : F)
                   * (Multiset.map (fun i : G => (i.val : F) ^ k) Finset.univ.val).sum = 0 := by
-    rw [sub_mul, mul_comm, ← h_multset_map_sum, one_mul, sub_self]
+    rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
   rcases hzero with h | h
   · exfalso
