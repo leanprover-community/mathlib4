@@ -81,8 +81,7 @@ def genericPolyMap {ι : Type _} (monoms : ι → Finset (ι →₀ ℕ)) :
       Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inr j)^ n))
 
 noncomputable def mvPolynomialSupportLEEquiv (ι : Type u)
-    [Fintype ι] [DecidableEq ι]
-    (R : Type _) [CommRing R] [DecidableEq R]
+    [DecidableEq ι] (R : Type _) [CommRing R] [DecidableEq R]
     (monoms : ι → Finset (ι →₀ ℕ)) :
     ({ p : ι → MvPolynomial ι R // ∀ i, (p i).support ⊆ monoms i }) ≃
       ((Σ i, monoms i) → R) :=
@@ -102,7 +101,7 @@ noncomputable def mvPolynomialSupportLEEquiv (ι : Type u)
     right_inv := fun p => by ext; simp [coeff] }
 
 @[simp]
-theorem lift_genericPolyMap {R : Type _} [CommRing R] [Fintype ι]
+theorem lift_genericPolyMap {R : Type _} [CommRing R]
     [DecidableEq ι] [DecidableEq R] (mons : ι → Finset (ι →₀ ℕ))
     (f :  (i : ι) × { x // x ∈ mons i } ⊕ ι → R) (i : ι) :
     FreeCommRing.lift (R := R) f (genericPolyMap mons i) =
@@ -121,10 +120,7 @@ theorem lift_genericPolyMap {R : Type _} [CommRing R] [Fintype ι]
     exists_prop, true_and, dite_eq_ite, ite_true, ite_not]
   split_ifs with h0
   · simp_all
-  · congr 1
-    apply Eq.symm
-    refine Finset.prod_subset (Finset.subset_univ _) ?_
-    simp (config := {contextual := true})
+  · simp [Finsupp.prod, map_prod]
 
 noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
     (mons : ι → Finset (ι →₀ ℕ)) : Language.field.Sentence :=
