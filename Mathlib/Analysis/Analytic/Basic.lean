@@ -592,9 +592,13 @@ theorem AnalyticOn.mono {s t : Set E} (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t)
   fun z hz => hf z (hst hz)
 #align analytic_on.mono AnalyticOn.mono
 
-theorem AnalyticOn.congr {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : ∀ z ∈ s, f =ᶠ[𝓝 z] g) :
+theorem AnalyticOn.congr' {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : ∀ z ∈ s, f =ᶠ[𝓝 z] g) :
     AnalyticOn 𝕜 g s :=
   fun z hz => (hf z hz).congr (hg z hz)
+
+theorem AnalyticOn.congr {s : Set E} (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s)
+    (hg : ∀ z ∈ s, f z = g z) : AnalyticOn 𝕜 g s :=
+  hf.congr' (fun _ hz ↦ eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
 
 theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=

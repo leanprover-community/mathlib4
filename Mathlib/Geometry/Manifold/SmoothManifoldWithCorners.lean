@@ -703,11 +703,9 @@ def analyticGroupoid : StructureGroupoid H :=
       id_mem := by
         apply And.intro
         · simp only [preimage_univ, univ_inter]
-          refine AnalyticOn.congr
-            (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x) ?_
-          exact fun z hz => eventuallyEq_iff_exists_mem.mpr ⟨interior (range I),
-            ⟨isOpen_interior.mem_nhds_iff.mpr hz,
-            fun x hx => (I.right_inv (interior_subset hx)).symm⟩⟩
+          exact AnalyticOn.congr isOpen_interior
+            (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
+            (fun z hz => (I.right_inv (interior_subset hz)).symm)
         · intro x hx
           simp only [left_id, comp_apply, preimage_univ, univ_inter, mem_image] at hx
           rcases hx with ⟨y, hy⟩
@@ -732,14 +730,11 @@ def analyticGroupoid : StructureGroupoid H :=
       congr := fun {f g u} hu fg hf => by
         simp only [] at hf ⊢
         apply And.intro
-        · apply AnalyticOn.congr hf.left
+        · refine AnalyticOn.congr (IsOpen.inter (hu.preimage I.continuous_symm) isOpen_interior)
+            hf.left ?_
           intro z hz
-          refine Iff.mpr eventuallyEq_iff_exists_mem ?_
-          use u.preimage I.symm
-          refine ⟨(hu.preimage I.continuous_symm).mem_nhds hz.left,
-            (EqOn.comp_left (eqOn_comp_right_iff.mpr ?_)).symm⟩
-          simp only [EqOn, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-          exact fun x => fg (I.symm x)
+          simp only [comp_apply]
+          rw [fg (I.symm z) hz.left]
         · intro x hx
           apply hf.right
           rw [mem_image] at hx ⊢
@@ -765,10 +760,9 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
     exact hx.right
   apply And.intro
   · have : AnalyticOn 𝕜 (1 : E →L[𝕜] E) (univ : Set E) := (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
-    refine (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr ?_
-    exact fun z hz => eventuallyEq_iff_exists_mem.mpr ⟨interior (range I),
-      ⟨isOpen_interior.mem_nhds_iff.mpr hz.right,
-      fun x hx => (I.right_inv (interior_subset hx)).symm⟩⟩
+    exact (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr
+      (IsOpen.inter (hs.preimage I.continuous_symm) isOpen_interior)
+      fun z hz => (I.right_inv (interior_subset hz.right)).symm
   · intro x hx
     simp only [comp_apply, mem_image] at hx
     rcases hx with ⟨y, hy⟩

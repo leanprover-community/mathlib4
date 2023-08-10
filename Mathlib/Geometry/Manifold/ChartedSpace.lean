@@ -222,8 +222,7 @@ instance : InfSet (StructureGroupoid H) :=
       refine i.locality' e ?_
       intro x hex
       rcases he x hex with ⟨s, hs⟩
-      use s
-      exact ⟨hs.left, ⟨hs.right.left, hs.right.right i hi⟩⟩)
+      exact ⟨s, ⟨hs.left, ⟨hs.right.left, hs.right.right i hi⟩⟩⟩)
     (eq_on_source' := by
       simp only [mem_iInter]
       intro e e' he he'e
