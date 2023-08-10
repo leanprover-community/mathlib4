@@ -47,7 +47,7 @@ open Affine
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
-structure AffineMap (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
+structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*) [Ring k]
   [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
   [AffineSpace V2 P2] where
   toFun : P1 → P2
@@ -59,7 +59,7 @@ structure AffineMap (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 :
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
-instance AffineMap.funLike (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _)
+instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 fun _ => P2
     where
@@ -71,7 +71,7 @@ instance AffineMap.funLike (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _
     erw [← f_add, h, ← g_add]
 #align affine_map.fun_like AffineMap.funLike
 
-instance AffineMap.hasCoeToFun (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _)
+instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
   FunLike.hasCoeToFun
@@ -79,7 +79,7 @@ instance AffineMap.hasCoeToFun (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Ty
 
 namespace LinearMap
 
-variable {k : Type _} {V₁ : Type _} {V₂ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
+variable {k : Type*} {V₁ : Type*} {V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddCommGroup V₂] [Module k V₂] (f : V₁ →ₗ[k] V₂)
 
 /-- Reinterpret a linear map as an affine map. -/
@@ -103,8 +103,8 @@ end LinearMap
 
 namespace AffineMap
 
-variable {k : Type _} {V1 : Type _} {P1 : Type _} {V2 : Type _} {P2 : Type _} {V3 : Type _}
-  {P3 : Type _} {V4 : Type _} {P4 : Type _} [Ring k] [AddCommGroup V1] [Module k V1]
+variable {k : Type*} {V1 : Type*} {P1 : Type*} {V2 : Type*} {P2 : Type*} {V3 : Type*}
+  {P3 : Type*} {V4 : Type*} {P4 : Type*} [Ring k] [AddCommGroup V1] [Module k V1]
   [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2] [AffineSpace V2 P2] [AddCommGroup V3]
   [Module k V3] [AffineSpace V3 P3] [AddCommGroup V4] [Module k V4] [AffineSpace V4 P4]
 
@@ -223,7 +223,7 @@ theorem mk'_linear (f : P1 → P2) (f' : V1 →ₗ[k] V2) (p h) : (mk' f f' p h)
 
 section SMul
 
-variable {R : Type _} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
+variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
   -- porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
@@ -674,7 +674,7 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ =>
   simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
 #align affine_map.decomp' AffineMap.decomp'
 
-theorem image_uIcc {k : Type _} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
+theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
     ext x
@@ -687,7 +687,7 @@ theorem image_uIcc {k : Type _} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b 
 
 section
 
-variable {ι : Type _} {V : ∀ _ : ι, Type _} {P : ∀ _ : ι, Type _} [∀ i, AddCommGroup (V i)]
+variable {ι : Type*} {V : ∀ _ : ι, Type*} {P : ∀ _ : ι, Type*} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
 /-- Evaluation at a point as an affine map. -/
@@ -718,7 +718,7 @@ end AffineMap
 
 namespace AffineMap
 
-variable {R k V1 P1 V2 : Type _}
+variable {R k V1 P1 V2 : Type*}
 
 section Ring
 
@@ -860,7 +860,7 @@ end AffineMap
 
 section
 
-variable {𝕜 E F : Type _} [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable {𝕜 E F : Type*} [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- Applying an affine map to an affine combination of two points yields an affine combination of
 the images. -/

@@ -175,7 +175,7 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
 -- Porting note: @[nolint instance_priority]
-instance (priority := 999) of_ring_hom {R A B : Type _} [CommSemiring R] [CommSemiring A]
+instance (priority := 999) of_ring_hom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
   letI := (f : A →+* B).toAlgebra
@@ -352,14 +352,14 @@ theorem span_algebraMap_image (a : Set R) :
   (Submodule.span_image <| Algebra.linearMap R S).trans rfl
 #align submodule.span_algebra_map_image Submodule.span_algebraMap_image
 
-theorem span_algebraMap_image_of_tower {S T : Type _} [CommSemiring S] [Semiring T] [Module R S]
+theorem span_algebraMap_image_of_tower {S T : Type*} [CommSemiring S] [Semiring T] [Module R S]
     [IsScalarTower R S S] [Algebra R T] [Algebra S T] [IsScalarTower R S T] (a : Set S) :
     Submodule.span R (algebraMap S T '' a) =
       (Submodule.span R a).map ((Algebra.linearMap S T).restrictScalars R) :=
   (Submodule.span_image <| (Algebra.linearMap S T).restrictScalars R).trans rfl
 #align submodule.span_algebra_map_image_of_tower Submodule.span_algebraMap_image_of_tower
 
-theorem map_mem_span_algebraMap_image {S T : Type _} [CommSemiring S] [Semiring T] [Algebra R S]
+theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] (x : S) (a : Set S)
     (hx : x ∈ Submodule.span R a) : algebraMap S T x ∈ Submodule.span R (algebraMap S T '' a) := by
   rw [span_algebraMap_image_of_tower, mem_map]

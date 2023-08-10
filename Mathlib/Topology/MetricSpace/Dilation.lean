@@ -58,7 +58,7 @@ open scoped Topology ENNReal NNReal Classical
 
 section Defs
 
-variable (α : Type _) (β : Type _) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+variable (α : Type*) (β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 /-- A dilation is a map that uniformly scales the edistance between any two points. -/
 structure Dilation where
@@ -70,7 +70,7 @@ infixl:25 " →ᵈ " => Dilation
 
 /-- `DilationClass F α β r` states that `F` is a type of `r`-dilations.
 You should extend this typeclass when you extend `Dilation`. -/
-class DilationClass (F : Type _) (α β : outParam <| Type _) [PseudoEMetricSpace α]
+class DilationClass (F : Type*) (α β : outParam <| Type*) [PseudoEMetricSpace α]
     [PseudoEMetricSpace β] extends FunLike F α fun _ => β where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y
 #align dilation_class DilationClass
@@ -79,7 +79,7 @@ end Defs
 
 namespace Dilation
 
-variable {α : Type _} {β : Type _} {γ : Type _} {F : Type _} {G : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*} {G : Type*}
 
 section Setup
 
@@ -175,13 +175,13 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
 #align dilation.edist_eq Dilation.edist_eq
 
 @[simp]
-theorem nndist_eq {α β F : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] [DilationClass F α β]
+theorem nndist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [DilationClass F α β]
     (f : F) (x y : α) : nndist (f x) (f y) = ratio f * nndist x y := by
   simp only [← ENNReal.coe_eq_coe, ← edist_nndist, ENNReal.coe_mul, edist_eq]
 #align dilation.nndist_eq Dilation.nndist_eq
 
 @[simp]
-theorem dist_eq {α β F : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] [DilationClass F α β]
+theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [DilationClass F α β]
     (f : F) (x y : α) : dist (f x) (f y) = ratio f * dist x y := by
   simp only [dist_nndist, nndist_eq, NNReal.coe_mul]
 #align dilation.dist_eq Dilation.dist_eq
@@ -195,7 +195,7 @@ theorem ratio_unique [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (h
 
 /-- The `ratio` is equal to the distance ratio for any two points
 with nonzero finite distance; `nndist` version -/
-theorem ratio_unique_of_nndist_ne_zero {α β F : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β]
+theorem ratio_unique_of_nndist_ne_zero {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (hxy : nndist x y ≠ 0)
     (hr : nndist (f x) (f y) = r * nndist x y) : r = ratio f :=
   ratio_unique (by rwa [edist_nndist, ENNReal.coe_ne_zero]) (edist_ne_top x y)
@@ -204,7 +204,7 @@ theorem ratio_unique_of_nndist_ne_zero {α β F : Type _} [PseudoMetricSpace α]
 
 /-- The `ratio` is equal to the distance ratio for any two points
 with nonzero finite distance; `dist` version -/
-theorem ratio_unique_of_dist_ne_zero {α β} {F : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β]
+theorem ratio_unique_of_dist_ne_zero {α β} {F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (hxy : dist x y ≠ 0)
     (hr : dist (f x) (f y) = r * dist x y) : r = ratio f :=
   ratio_unique_of_nndist_ne_zero (NNReal.coe_ne_zero.1 hxy) <|
@@ -273,7 +273,7 @@ theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun 
 #align dilation.antilipschitz Dilation.antilipschitz
 
 /-- A dilation from an emetric space is injective -/
-protected theorem injective {α : Type _} [EMetricSpace α] [DilationClass F α β] (f : F) :
+protected theorem injective {α : Type*} [EMetricSpace α] [DilationClass F α β] (f : F) :
     Injective f :=
   (antilipschitz f).injective
 #align dilation.injective Dilation.injective
@@ -308,7 +308,7 @@ def comp (g : β →ᵈ γ) (f : α →ᵈ β) : α →ᵈ γ where
     fun x y => by simp_rw [Function.comp, edist_eq, ENNReal.coe_mul, mul_assoc]⟩
 #align dilation.comp Dilation.comp
 
-theorem comp_assoc {δ : Type _} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β →ᵈ γ)
+theorem comp_assoc {δ : Type*} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β →ᵈ γ)
     (h : γ →ᵈ δ) : (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align dilation.comp_assoc Dilation.comp_assoc
@@ -404,7 +404,7 @@ protected theorem uniformInducing : UniformInducing (f : α → β) :=
   (antilipschitz f).uniformInducing (lipschitz f).uniformContinuous
 #align dilation.uniform_inducing Dilation.uniformInducing
 
-theorem tendsto_nhds_iff {ι : Type _} {g : ι → α} {a : Filter ι} {b : α} :
+theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
   (Dilation.uniformInducing f).inducing.tendsto_nhds_iff
 #align dilation.tendsto_nhds_iff Dilation.tendsto_nhds_iff

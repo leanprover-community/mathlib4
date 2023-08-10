@@ -14,7 +14,7 @@ import Mathlib.Logic.Basic
 
 open Function
 
-variable {α β γ δ : Sort _}
+variable {α β γ δ : Sort*}
 
 namespace PProd
 
