@@ -605,7 +605,7 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
         exact ⟨1, rfl⟩
       · rintro ⟨⟨h, hX⟩, h⟩
         rcases Submonoid.mem_closure_singleton.mp hX with ⟨n, rfl⟩
-        exact mul_X_pow_injective n h }
+        exact (isRegular_X_pow n).left h }
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
 end CommSemiring
