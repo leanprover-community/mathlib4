@@ -305,7 +305,7 @@ theorem sum_subgroup_units
 theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     [DecidableEq F] {G : Subgroup (Units F)} [Fintype G] {k : ℕ} (k_pos : 0 < k)
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, (x.val : F) ^ k = 0 := by
-  rcases (exists_pow_ne_one_of_cyclic k_pos k_lt_card_G) with ⟨a, ha⟩
+  rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
   rw [Finset.sum_eq_multiset_sum]
   have h_multset_map :
     Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val =
