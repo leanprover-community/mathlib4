@@ -12,7 +12,7 @@ import Mathlib.Data.Sym.Basic
 # `Vector α n` and `Sym α n` are fintypes when `α` is.
 -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (Vector α n) :=
   Fintype.ofEquiv _ (Equiv.vectorEquivFin _ _).symm

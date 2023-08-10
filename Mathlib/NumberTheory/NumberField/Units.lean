@@ -40,7 +40,7 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
 
 end Rat
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 section IsUnit
 
@@ -111,6 +111,7 @@ instance [NumberField K] : Fintype (torsion K) := by
   · rw [← h_ua]
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
+set_option synthInstance.maxHeartbeats 30000 in
 /-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 

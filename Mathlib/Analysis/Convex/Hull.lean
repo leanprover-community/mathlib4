@@ -26,7 +26,7 @@ open Set
 
 open Pointwise
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 section convexHull
 

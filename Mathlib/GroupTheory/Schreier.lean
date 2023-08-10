@@ -32,7 +32,7 @@ namespace Subgroup
 
 open MemRightTransversals
 
-variable {G : Type _} [Group G] {H : Subgroup G} {R S : Set G}
+variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
 theorem closure_mul_image_mul_eq_top
     (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (1 : G) ∈ R) (hS : closure S = ⊤) :

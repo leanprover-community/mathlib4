@@ -21,7 +21,7 @@ open Metric Set
 
 open Pointwise Topology
 
-variable {𝕜 E : Type _}
+variable {𝕜 E : Type*}
 
 section SMulZeroClass
 
