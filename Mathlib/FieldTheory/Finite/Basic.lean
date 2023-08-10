@@ -227,14 +227,14 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
-lemma exists_non_one_iff_not_bot {G' : Type*} [Group G']
+lemma exists_ne_one_iff_not_bot {G' : Type*} [Group G']
     {G : Subgroup G'} :  G ≠ ⊥ ↔ ∃ a : ↥G, a ≠ 1 := by
   have := Subgroup.bot_or_exists_ne_one G
   rcases this with h | ⟨x, hx, hx'⟩
   · rw [h]
     simp only [ne_eq, not_true, eq_iff_true_of_subsingleton, exists_false]
   · simp only [ne_eq, Subtype.exists, Subgroup.mk_eq_one_iff, exists_prop]
-    apply Iff.intro
+    constructor
     · intro _
       apply Exists.intro
       apply And.intro
@@ -247,7 +247,7 @@ lemma exists_non_one_iff_not_bot {G' : Type*} [Group G']
 /-- The sum of a nontrivial subgroup of the units of a field is zero. -/
 theorem sum_subgroup_units_zero_of_ne_bot
     {G : Subgroup (Units K)} [Fintype G] (hg : G ≠ ⊥) : ∑ x : G, (x.val : K) = 0 := by
-  rw [exists_non_one_iff_not_bot] at hg
+  rw [exists_ne_one_iff_not_bot] at hg
   rcases hg with ⟨a, ha⟩
   -- The action of a on G is injective
   have hinj := mul_right_injective a
@@ -263,12 +263,9 @@ theorem sum_subgroup_units_zero_of_ne_bot
     Finset.sum_map (@Finset.univ (↥G) _) ⟨fun x : ↥G => (a : ↥G) * (x : ↥G), hinj⟩ fun x : ↥G =>
       (x.val : K)
   -- ... and the former is the sum of x over G.
-  rw [h_unchanged] at h_sum_map
-  rw [Function.Embedding.coeFn_mk] at h_sum_map
-  simp only [Subgroup.coe_mul, Finset.sum_congr, Units.val_mul] at h_sum_map
-  simp only [Finset.sum_congr]
   -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
-  rw [← Finset.mul_sum] at h_sum_map
+  rw [h_unchanged, Function.Embedding.coeFn_mk] at h_sum_map
+  simp_rw [Subgroup.coe_mul, Units.val_mul, ← Finset.mul_sum] at h_sum_map
   -- thus one of (a - 1) or ∑ G, x is zero
   have hzero : (a.val.val - 1 : K) * ∑ x : ↥G, x.val.val = 0 := by
     rw [sub_mul, ← h_sum_map, one_mul, sub_self]
