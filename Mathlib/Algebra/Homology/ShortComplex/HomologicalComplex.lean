@@ -667,6 +667,28 @@ lemma isoHomologyπ₀_inv_naturality {K L : CochainComplex C ℕ} (φ : K ⟶ L
     assoc, isoHomologyπ₀_inv_hom_id, comp_id, HomologicalComplex.homologyπ_naturality,
     isoHomologyπ₀_hom_inv_id_assoc]
 
+section Abelian
+
+variable {A : Type _} [Category A] [Abelian A]
+
+lemma isIso_liftCycles_iff (K : CochainComplex A ℕ) {X : A} (φ : X ⟶ K.X 0)
+    [K.HasHomology 0] (hφ : φ ≫ K.d 0 1 = 0) :
+    IsIso (K.liftCycles φ 1 (by simp) hφ) ↔
+      Mono φ ∧ (ShortComplex.mk _ _ hφ).Exact := by
+  suffices ∀ (i : ℕ) (hx : (ComplexShape.up ℕ).next 0 = i)
+    (hφ : φ ≫ K.d 0 i = 0), IsIso (K.liftCycles φ i hx hφ) ↔
+      Mono φ ∧ (ShortComplex.mk _ _ hφ).Exact from this 1 (by simp) hφ
+  rintro _ rfl hφ
+  let α : ShortComplex.mk (0 : X ⟶ X) (0 : X ⟶ X) (by simp) ⟶
+    K.sc 0 :=
+      { τ₁ := 0
+        τ₂ := φ
+        τ₃ := 0 }
+  exact (ShortComplex.quasiIso_iff_isIso_liftCycles α rfl rfl (by simp)).symm.trans
+    (ShortComplex.quasiIso_iff_of_zeros α rfl rfl (by simp))
+
+end Abelian
+
 end CochainComplex
 
 end

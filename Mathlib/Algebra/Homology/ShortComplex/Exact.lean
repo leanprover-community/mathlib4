@@ -648,6 +648,12 @@ noncomputable def fIsKernel [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) :=
   exact IsLimit.ofIsoLimit S.cyclesIsKernel
     (Iso.symm (Fork.ext (asIso S.toCycles) (by simp)))
 
+lemma map_of_mono_of_preservesKernel (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Mono S.f)
+    (_ : PreservesLimit (parallelPair S.g 0) F) :
+    (S.map F).Exact :=
+  exact_of_f_is_kernel _ (KernelFork.mapIsLimit _ hS.fIsKernel F)
+
 noncomputable def gIsCokernel [Epi S.g] : IsColimit (CokernelCofork.ofπ S.g S.zero) := by
   have := hS.hasHomology
   have := hS.isIso_fromOpcycles

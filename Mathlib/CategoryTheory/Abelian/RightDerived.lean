@@ -302,7 +302,25 @@ section
 variable (F : C ⥤ D) [F.Additive]
 
 instance [PreservesFiniteLimits F] {X : C} (P : InjectiveResolution X) :
-    IsIso (P.toRightDerivedZero' F) := sorry
+    IsIso (P.toRightDerivedZero' F) := by
+  dsimp [InjectiveResolution.toRightDerivedZero']
+  refine @IsIso.comp_isIso  _ _ _ _ _ _ _ ?_ inferInstance
+  rw [CochainComplex.isIso_liftCycles_iff]
+  constructor
+  · infer_instance
+  · let S : ShortComplex C := ShortComplex.mk (P.ι.f 0) (P.cocomplex.d 0 1) (by simp)
+    -- this exactness property should be moved to Abelian/InjectiveResolution.lean
+    have hS : S.Exact := by
+      have : QuasiIsoAt P.ι 0 := inferInstance
+      rw [CochainComplex.quasiIsoAt₀_iff,
+        ShortComplex.quasiIso_iff_of_zeros] at this
+      rotate_left
+      . rfl
+      . rfl
+      . simp
+      exact this.2
+    exact hS.map_of_mono_of_preservesKernel F
+      (by dsimp; infer_instance) inferInstance
 
 instance [PreservesFiniteLimits F] : IsIso F.toRightDerivedZero := by
   have : ∀ X, IsIso (F.toRightDerivedZero.app X) := fun X => by
