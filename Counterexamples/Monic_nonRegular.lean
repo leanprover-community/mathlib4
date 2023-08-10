@@ -14,7 +14,7 @@ This counterexample shows that the hypothesis `Ring R` cannot be changed to `Sem
 
 The example is very simple.
 
-The coefficient Semiring is the Semiring `N` of the natural numbers `{0, 1, 2, 3}` where the
+The coefficient Semiring is the Semiring `N₃` of the natural numbers `{0, 1, 2, 3}` where the
 standard addition and standard multiplication are truncated at `3`.
 
 The products `(X + 2) * (X + 2)` and `(X + 2) * (X + 3)` are equal to
@@ -27,34 +27,34 @@ open Polynomial
 
 namespace Counterexample.NonRegular
 
-/-- `N` is going to be a `Commsemiring` where addition and multiplication are truncated at `3`. -/
-inductive N
+/-- `N₃` is going to be a `Commsemiring` where addition and multiplication are truncated at `3`. -/
+inductive N₃
   | zero
   | one
   | two
   | more
 
-namespace N
+namespace N₃
 
-instance : Zero N := ⟨zero⟩
-instance : One N := ⟨one⟩
+instance : Zero N₃ := ⟨zero⟩
+instance : One N₃ := ⟨one⟩
 
-/-- Truncated addition on `N`. -/
-def add : N → N → N
+/-- Truncated addition on `N₃`. -/
+def add : N₃ → N₃ → N₃
   | 0, x => x
   | x, 0 => x
   | 1, 1 => two
   | _, _ => more
 
-/-- Truncated multiplication on `N`. -/
-def mul : N → N → N
+/-- Truncated multiplication on `N₃`. -/
+def mul : N₃ → N₃ → N₃
   | 1, x => x
   | x, 1 => x
   | 0, _ => 0
   | _, 0 => 0
   | _, _ => more
 
-instance : CommSemiring N :=
+instance : CommSemiring N₃ :=
 { add := add
   add_assoc := by rintro ⟨⟩ <;> rintro ⟨⟩ <;> rintro ⟨⟩ <;> rfl
   zero_add  := by rintro ⟨⟩ <;> rfl
@@ -70,7 +70,7 @@ instance : CommSemiring N :=
   one_mul := by rintro ⟨⟩ <;> rfl
   mul_one := by rintro ⟨⟩ <;> rfl }
 
-theorem mul_example : (X + C 2 : N[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
+theorem mul_example : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
   simp only [mul_add, add_mul, X_mul, add_assoc]
   apply congr_arg
   rw [← add_assoc, ← add_mul, ← C_add, ← C_mul, ← C_mul]
@@ -79,7 +79,7 @@ theorem mul_example : (X + C 2 : N[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
 
 /-- The main example: multiplication by the polynomial `X + 2` is not injective,
 yet the polynomial is monic. -/
-theorem Monic_and_nonLeftRegular : Monic (X + C 2 : N[X]) ∧ ¬ IsLeftRegular (X + C 2 : N[X]) := by
+theorem Monic_and_nonLeftRegular : Monic (X + C 2 : N₃[X]) ∧ ¬ IsLeftRegular (X + C 2 : N₃[X]) := by
   constructor
   · unfold Monic leadingCoeff
     nontriviality
@@ -93,6 +93,6 @@ theorem Monic_and_nonLeftRegular : Monic (X + C 2 : N[X]) ∧ ¬ IsLeftRegular (
     simp only [coeff_add, coeff_X_zero, zero_add, coeff_C, ite_true] at H
     cases H
 
-end N
+end N₃
 
 end Counterexample.NonRegular
