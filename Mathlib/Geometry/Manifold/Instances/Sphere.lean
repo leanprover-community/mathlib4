@@ -68,7 +68,7 @@ variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
 
-open Metric FiniteDimensional Function
+open Metric FiniteDimensional Function Span
 
 open scoped Manifold
 
@@ -166,7 +166,7 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     HasFDerivAt (stereoInvFunAux v ∘ ((↑) : (ℝ • v)ᗮ → E)) (ℝ • v)ᗮ.subtypeL 0 := by
   have : HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) ((ℝ • v)ᗮ.subtypeL 0) :=
     hasFDerivAt_stereoInvFunAux v
-  convert this.comp (0 : (ℝ • v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
+  convert this.comp 0 (by apply ContinuousLinearMap.hasFDerivAt)
 #align has_fderiv_at_stereo_inv_fun_aux_comp_coe hasFDerivAt_stereoInvFunAux_comp_coe
 
 theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
@@ -219,7 +219,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   set a : ℝ := innerSL _ v x
   set y := orthogonalProjection (ℝ • v)ᗮ x
   have split : ↑x = a • v + ↑y := by
-    convert (orthogonalProjection_add_orthogonalProjection_orthogonal (ℝ • v) x).symm
+    -- TODO: The new notation `ℝ • v` seems not compatible with `convert`
+    have := (orthogonalProjection_add_orthogonalProjection_orthogonal (ℝ • v) x).symm
+    convert this
     exact (orthogonalProjection_unit_singleton ℝ hv x).symm
   have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
@@ -285,7 +287,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ • v)ᗮ) : stereoToFun v
     have : (4 : ℝ) + 4 ≠ 0 := by nlinarith
     field_simp
     ring
-  convert congr_arg (· • w) this
+  convert congr_arg (fun x₁ => x₁ • w) this
   · have h₁ : orthogonalProjection (ℝ • v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
     -- Porting note: was innerSL _ and now just inner
@@ -551,9 +553,10 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     simp
   convert congrArg LinearMap.range (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   symm
-  convert
+  have :=
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ • (↑(-v) : E))ᗮ).range_comp
-      (ℝ • (↑(-v) : E))ᗮ.subtype using 1
+      (ℝ • (↑(-v) : E))ᗮ.subtype
+  convert this using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
   -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`

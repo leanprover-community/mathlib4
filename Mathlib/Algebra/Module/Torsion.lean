@@ -499,8 +499,8 @@ its `q i`-torsion submodules.-/
 theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
     (hM : Module.IsTorsionBy R M <| ∏ i in S, q i) :
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
-  rw [← Module.isTorsionBySet_span_singleton_iff, Submodule.span_singleton, Ideal.submodule_span_eq, ←
-    Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf] at hM
+  rw [← Module.isTorsionBySet_span_singleton_iff, Submodule.span_singleton, Ideal.submodule_span_eq,
+    ← Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf] at hM
   convert torsionBySet_isInternal
       (fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime (q i) _).mpr <| hq hi hj ij) hM
   exact (torsionBySet_span_singleton_eq _ (R := R) (M := M)).symm

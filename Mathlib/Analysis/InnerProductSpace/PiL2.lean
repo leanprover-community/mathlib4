@@ -875,6 +875,8 @@ end SubordinateOrthonormalBasis
 
 end FiniteDimensional
 
+open Span in
+
 /-- Given a natural number `n` one less than the `finrank` of a finite-dimensional inner product
 space, there exists an isometry from the orthogonal complement of a nonzero singleton to
 `EuclideanSpace 𝕜 (Fin n)`. -/

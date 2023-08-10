@@ -75,8 +75,8 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
           (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
   convert isInternal_prime_power_torsion hM
   ext p : 1
-  rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
-    Ideal.span_singleton_generator]
+  rw [← torsionBySet_span_singleton_eq, Submodule.span_singleton, Ideal.submodule_span_eq,
+    ← Ideal.span_singleton_pow, Ideal.span_singleton_generator]
 #align submodule.is_internal_prime_power_torsion_of_pid Submodule.isInternal_prime_power_torsion_of_pid
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
@@ -101,7 +101,7 @@ variable {p : R} (hp : Irreducible p) (hM : Module.IsTorsion' M (Submonoid.power
 
 variable [dec : ∀ x : M, Decidable (x = 0)]
 
-open Ideal Submodule.IsPrincipal
+open Ideal Submodule.IsPrincipal Span
 
 theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     torsionOf R M x = span {p ^ pOrder hM x} := by
@@ -119,16 +119,18 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
       this.choose_spec
 #align ideal.torsion_of_eq_span_pow_p_order Ideal.torsionOf_eq_span_pow_pOrder
 
+open Span
+
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R • y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
   -- Porting note: needed to make `smul_smul` work below.
   letI : MulAction R M := MulActionWithZero.toMulAction
   by_cases hk : k ≤ pOrder hM y
   · let f :=
-      ((R • p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ ?_).trans
+      ((R • (p ^ (pOrder hM y - k) * p ^ k)).quotEquivOfEq _ ?_).trans
         (quotTorsionOfEquivSpanSingleton R M y)
     have : f.symm ⟨p ^ k • x, h⟩ ∈
-        R • Ideal.Quotient.mk (R • p ^ (pOrder hM y - k) * p ^ k) (p ^ k) := by
+        R • Ideal.Quotient.mk (R • (p ^ (pOrder hM y - k) * p ^ k)) (p ^ k) := by
       rw [← Quotient.torsionBy_eq_span_singleton, mem_torsionBy_iff, ← f.symm.map_smul]
       convert f.symm.map_zero; ext
       rw [coe_smul_of_tower, coe_mk, coe_zero, smul_smul, ← pow_add, Nat.sub_add_cancel hk, @hM' x]
@@ -138,7 +140,9 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
       quotTorsionOfEquivSpanSingleton_apply_mk] at ha
     rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
-    · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
+    · rw [Submodule.span_singleton]
+      symm
+      convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
     rw [zero_smul, smul_zero, ← Nat.sub_add_cancel (le_of_not_le hk), pow_add, mul_smul, hM',
@@ -153,7 +157,8 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
   have f1 := mk_surjective (R • z) (f 1)
   have : p ^ k • f1.choose ∈ R • z := by
     rw [← Quotient.mk_eq_zero, mk_smul, f1.choose_spec, ← f.map_smul]
-    convert f.map_zero; change _ • Submodule.Quotient.mk _ = _
+    convert f.map_zero
+    change p ^ k • Submodule.Quotient.mk (1 : R) = 0
     rw [← mk_smul, Quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
@@ -231,6 +236,8 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
 #align module.torsion_by_prime_power_decomposition Module.torsion_by_prime_power_decomposition
 
 end PTorsion
+
+open Span
 
 /-- A finitely generated torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R • (p i ^ e i)` where the `p i ^ e i` are prime powers.-/

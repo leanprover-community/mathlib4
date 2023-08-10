@@ -1212,10 +1212,12 @@ theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogon
   fun n hn _ hm => b _ _ (hm n hn)
 #align bilin_form.le_orthogonal_orthogonal BilinForm.le_orthogonal_orthogonal
 
+open Span
+
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
     (K • x) ⊓ B.orthogonal (K • x) = ⊥ := by
-  rw [← Finset.coe_singleton]
+  rw [Submodule.span_singleton, ← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h => _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   have := h.2 x ?_
@@ -1518,6 +1520,7 @@ lemma below since the below lemma does not require `V` to be finite dimensional.
 `BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal` does not require `B` to be nondegenerate
 on the whole space. -/
 
+open Span in
 
 /-- The restriction of a reflexive, non-degenerate bilinear form on the orthogonal complement of
 the span of a singleton is also non-degenerate. -/

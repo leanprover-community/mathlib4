@@ -62,6 +62,8 @@ theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := 
 
 variable {K}
 
+open Span
+
 /-- A vector in `K` is orthogonal to one in `Kᗮ`. -/
 theorem inner_right_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪u, v⟫ = 0 :=
   (K.mem_orthogonal v).1 hv u hu
