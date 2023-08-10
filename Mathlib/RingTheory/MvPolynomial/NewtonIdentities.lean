@@ -90,7 +90,7 @@ private theorem pairMap_involutive : (pairMap σ).Involutive := by
   · simp_all
   · simp at h3
 
-private theorem weight_compose_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
+private theorem weight_add_weight_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     weight σ R k t + weight σ R k (pairMap σ t) = 0 := by
   rw [pairMap, weight, weight]
   rw [pairs, mem_filter] at h
@@ -115,12 +115,12 @@ private theorem weight_compose_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ
 
 private theorem weight_eq_zero_of_pairMapEqSelf (t : Finset σ × σ) (h : t ∈ pairs σ k)
     (h2 : pairMap σ t = t) : weight σ R k t = 0 := by
-  have h3 := weight_compose_pairMap σ R t h
+  have h3 := weight_add_weight_pairMap σ R t h
   rw [h2, ← two_mul, _root_.mul_eq_zero] at h3
   exact h3.resolve_left two_ne_zero
 
 private theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
-  sum_involution (fun t _ ↦ pairMap σ t) (weight_compose_pairMap σ R)
+  sum_involution (fun t _ ↦ pairMap σ t) (weight_add_weight_pairMap σ R)
     (fun t h ↦ mt $ weight_eq_zero_of_pairMapEqSelf σ R t h) (pairMap_mem_pairs σ)
     (fun t _ ↦ pairMap_involutive σ t)
 
