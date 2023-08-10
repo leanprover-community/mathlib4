@@ -5,7 +5,6 @@ Authors: Mohanad Ahmed
 -/
 
 import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 import Mathlib.Data.Matrix.Rank
 
 /-! # Reindexing using Non-zero/Zero Partition Eigenvalues of AAᴴ and AᴴA
@@ -25,6 +24,8 @@ variable {M N: ℕ}
 open Matrix BigOperators
 
 namespace Matrix
+
+open scoped ComplexOrder
 
 lemma rank_eq_card_pos_eigs_conj_transpose_mul_self (A: Matrix (Fin M) (Fin N) 𝕂) :
     A.rank = Fintype.card {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} := by
