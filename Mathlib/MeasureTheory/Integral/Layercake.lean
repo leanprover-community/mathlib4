@@ -154,8 +154,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
   rw [aux₂]
   have mble := measurableSet_region_between_oc measurable_zero f_mble MeasurableSet.univ
   simp_rw [mem_univ, Pi.zero_apply, true_and_iff] at mble
-  exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator
-    mble.nullMeasurableSet
+  exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator mble
 #align measure_theory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
