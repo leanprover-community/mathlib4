@@ -42,5 +42,5 @@ theorem binomial_apply_n : binomial p h n n = p^n := by
 
 /-- The binomial distribution on one coin is the bernoully distribution. -/
 theorem binomial_one_eq_bernoulli :
-  binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
-    ext i; fin_cases i <;> simp [tsum_bool, binomial_apply]
+    binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
+  ext i; fin_cases i <;> simp [tsum_bool, binomial_apply]
