@@ -49,7 +49,7 @@ open scoped BigOperators ENNReal NNReal Topology
 
 namespace Real
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
 /-- The volume on the real line (as a particular case of the volume on a finite-dimensional
 inner product space) coincides with the Stieltjes measure coming from the identity function. -/
@@ -382,8 +382,8 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     Fubini. Along this coordinate (and when all the other coordinates are fixed), it acts like a
     translation, and therefore preserves Lebesgue. -/
   let p : ι → Prop := fun i => i ≠ t.i
-  let α : Type _ := { x // p x }
-  let β : Type _ := { x // ¬p x }
+  let α : Type* := { x // p x }
+  let β : Type* := { x // ¬p x }
   let g : (α → ℝ) → (β → ℝ) → β → ℝ := fun a b => (fun _ => t.c * a ⟨t.j, t.hij.symm⟩) + b
   let F : (α → ℝ) × (β → ℝ) → (α → ℝ) × (β → ℝ) := fun p => (id p.1, g p.1 p.2)
   let e : (ι → ℝ) ≃ᵐ (α → ℝ) × (β → ℝ) := MeasurableEquiv.piEquivPiSubtypeProd (fun _ : ι => ℝ) p
@@ -460,7 +460,7 @@ end Real
 
 section regionBetween
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The region between two real-valued functions on an arbitrary set. -/
 def regionBetween (f g : α → ℝ) (s : Set α) : Set (α × ℝ) :=

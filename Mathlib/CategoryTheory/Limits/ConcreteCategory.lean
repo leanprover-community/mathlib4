@@ -156,7 +156,7 @@ end Limits
 section Colimits
 
 -- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type _} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
+theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
   ext x
@@ -304,7 +304,7 @@ open WidePushout
 
 open WidePushoutShape
 
-theorem Concrete.widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j : α, B ⟶ X j)
+theorem Concrete.widePushout_exists_rep {B : C} {α : Type*} {X : α → C} (f : ∀ j : α, B ⟶ X j)
     [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
     (x : ↑(widePushout B X f)) : (∃ y : B, head f y = x) ∨ ∃ (i : α) (y : X i), ι f i y = x := by
   obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
@@ -316,7 +316,7 @@ theorem Concrete.widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f 
     rfl
 #align category_theory.limits.concrete.wide_pushout_exists_rep CategoryTheory.Limits.Concrete.widePushout_exists_rep
 
-theorem Concrete.widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
+theorem Concrete.widePushout_exists_rep' {B : C} {α : Type*} [Nonempty α] {X : α → C}
     (f : ∀ j : α, B ⟶ X j) [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
     (x : ↑(widePushout B X f)) : ∃ (i : α) (y : X i), ι f i y = x := by
   rcases Concrete.widePushout_exists_rep f x with (⟨y, rfl⟩ | ⟨i, y, rfl⟩)

@@ -36,7 +36,7 @@ open Finset
 
 universe u v w
 
-variable {R : Type u} {S : Type _}
+variable {R : Type u} {S : Type*}
 
 namespace Polynomial
 
@@ -672,7 +672,7 @@ theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.
 /-- If `I` is an ideal, and `pᵢ` is a finite family of polynomials each satisfying
 `∀ k, (pᵢ)ₖ ∈ Iⁿⁱ⁻ᵏ` for some `nᵢ`, then `p = ∏ pᵢ` also satisfies `∀ k, pₖ ∈ Iⁿ⁻ᵏ` with `n = ∑ nᵢ`.
 -/
-theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type _} (s : Finset ι) (f : ι → R[X])
+theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset ι) (f : ι → R[X])
     (I : Ideal R) (n : ι → ℕ) (h : ∀ i ∈ s, ∀ (k), (f i).coeff k ∈ I ^ (n i - k)) (k : ℕ) :
     (s.prod f).coeff k ∈ I ^ (s.sum n - k) := by
   classical
@@ -901,7 +901,7 @@ end Prime
 
 namespace Polynomial
 
-instance (priority := 100) {R : Type _} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
+instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
     where
   wellFounded_dvdNotUnit := by
     classical
@@ -1189,7 +1189,7 @@ instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
 -- instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
 --     IsDomain (MvPolynomial σ R)[X] := inferInstance
 
-theorem map_mvPolynomial_eq_eval₂ {S : Type _} [CommRing S] [Finite σ] (ϕ : MvPolynomial σ R →+* S)
+theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommRing S] [Finite σ] (ϕ : MvPolynomial σ R →+* S)
     (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ

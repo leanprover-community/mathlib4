@@ -21,7 +21,7 @@ section Equiv
 variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 @[simp]
-theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
+theorem Equiv.asEmbedding_range {α β : Sort*} {p : β → Prop} (e : α ≃ Subtype p) :
     Set.range e.asEmbedding = setOf p :=
   Set.ext fun x ↦ ⟨fun ⟨y, h⟩ ↦ h ▸ Subtype.coe_prop (e y), fun hs ↦ ⟨e.symm ⟨x, hs⟩, by simp⟩⟩
 #align equiv.as_embedding_range Equiv.asEmbedding_range
@@ -97,7 +97,7 @@ end Set
 
 section Subtype
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` is equivalent to a sum of
 subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, when

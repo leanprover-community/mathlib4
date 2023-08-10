@@ -30,11 +30,11 @@ with respect to an ideal `I`:
 
 open Submodule
 
-variable {R : Type _} [CommRing R] (I : Ideal R)
+variable {R : Type*} [CommRing R] (I : Ideal R)
 
-variable (M : Type _) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddCommGroup M] [Module R M]
 
-variable {N : Type _} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddCommGroup N] [Module R N]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
 class IsHausdorff : Prop where
@@ -81,7 +81,7 @@ variable (I M)
 
 /-- The Hausdorffification of a module with respect to an ideal. -/
 @[reducible]
-def Hausdorffification : Type _ :=
+def Hausdorffification : Type* :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 

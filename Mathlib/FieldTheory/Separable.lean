@@ -94,12 +94,12 @@ theorem Separable.of_dvd {f g : R[X]} (hf : f.Separable) (hfg : g ∣ f) : g.Sep
   exact Separable.of_mul_left hf
 #align polynomial.separable.of_dvd Polynomial.Separable.of_dvd
 
-theorem separable_gcd_left {F : Type _} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
+theorem separable_gcd_left {F : Type*} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hf (EuclideanDomain.gcd_dvd_left f g)
 #align polynomial.separable_gcd_left Polynomial.separable_gcd_left
 
-theorem separable_gcd_right {F : Type _} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
+theorem separable_gcd_right {F : Type*} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hg (EuclideanDomain.gcd_dvd_right f g)
 #align polynomial.separable_gcd_right Polynomial.separable_gcd_right
@@ -180,7 +180,7 @@ theorem Separable.mul {f g : R[X]} (hf : f.Separable) (hg : g.Separable) (h : Is
     ((hf.mul_right h).add_mul_left_right _).mul_left ((h.symm.mul_right hg).mul_add_right_right _)
 #align polynomial.separable.mul Polynomial.Separable.mul
 
-theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
+theorem separable_prod' {ι : Sort*} {f : ι → R[X]} {s : Finset ι} :
     (∀ x ∈ s, ∀ y ∈ s, x ≠ y → IsCoprime (f x) (f y)) →
       (∀ x ∈ s, (f x).Separable) → (∏ x in s, f x).Separable :=
   Finset.induction_on s (fun _ _ => separable_one) fun a s has ih h1 h2 => by
@@ -190,12 +190,12 @@ theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
         (IsCoprime.prod_right fun i his => h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
 #align polynomial.separable_prod' Polynomial.separable_prod'
 
-theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
+theorem separable_prod {ι : Sort*} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
     (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable :=
   separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x
 #align polynomial.separable_prod Polynomial.separable_prod
 
-theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R} {s : Finset ι}
+theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort*} {f : ι → R} {s : Finset ι}
     (hfs : (∏ i in s, (X - C (f i))).Separable) {x y : ι} (hx : x ∈ s) (hy : y ∈ s)
     (hfxy : f x = f y) : x = y := by
   by_contra hxy
@@ -206,7 +206,7 @@ theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable.inj_of_prod_X_sub_C Polynomial.Separable.inj_of_prod_X_sub_C
 
-theorem Separable.injective_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} [Fintype ι] {f : ι → R}
+theorem Separable.injective_of_prod_X_sub_C [Nontrivial R] {ι : Sort*} [Fintype ι] {f : ι → R}
     (hfs : (∏ i, (X - C (f i))).Separable) : Function.Injective f := fun _x _y hfxy =>
   hfs.inj_of_prod_X_sub_C (mem_univ _) (mem_univ _) hfxy
 set_option linter.uppercaseLean3 false in
@@ -288,7 +288,7 @@ theorem separable_map (f : F →+* K) {p : F[X]} :
   simp_rw [separable_def, derivative_map, isCoprime_map]
 #align polynomial.separable_map Polynomial.separable_map
 
-theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
+theorem separable_prod_X_sub_C_iff' {ι : Sort*} {f : ι → F} {s : Finset ι} :
     (∏ i in s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
   ⟨fun hfs x hx y hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
     rw [← prod_attach]
@@ -301,7 +301,7 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable_prod_X_sub_C_iff' Polynomial.separable_prod_X_sub_C_iff'
 
-theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
+theorem separable_prod_X_sub_C_iff {ι : Sort*} [Fintype ι] {f : ι → F} :
     (∏ i, (X - C (f i))).Separable ↔ Function.Injective f :=
   separable_prod_X_sub_C_iff'.trans <| by simp_rw [mem_univ, true_imp_iff, Function.Injective]
 set_option linter.uppercaseLean3 false in
@@ -479,7 +479,7 @@ open Polynomial
 
 section CommRing
 
-variable (F K : Type _) [CommRing F] [Ring K] [Algebra F K]
+variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
@@ -497,7 +497,7 @@ class IsSeparable : Prop where
   separable' (x : K) : (minpoly F x).Separable
 #align is_separable IsSeparable
 
-variable (F : Type _) {K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable (F : Type*) {K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x :=
   IsSeparable.isIntegral'
@@ -507,7 +507,7 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-variable {F K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable {F K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
   ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
@@ -516,7 +516,7 @@ theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (min
 
 end CommRing
 
-instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
+instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
   ⟨fun x => isIntegral_algebraMap,
    fun x => by
     rw [minpoly.eq_X_sub_C']
@@ -525,7 +525,7 @@ instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
 
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field K] [Algebra F K]
+instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
   have : ∀ x : K, IsIntegral F x := fun _x => Algebra.isIntegral_of_finite _ _ _
   ⟨this, fun x => (minpoly.irreducible (this x)).separable⟩
@@ -533,7 +533,7 @@ instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field
 
 section IsSeparableTower
 
-variable (F K E : Type _) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
+variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
@@ -555,7 +555,7 @@ theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable
 
 variable {E}
 
-theorem IsSeparable.of_algHom (E' : Type _) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
+theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
     [IsSeparable F E'] : IsSeparable F E := by
   letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
@@ -566,9 +566,9 @@ end IsSeparableTower
 
 section CardAlgHom
 
-variable {R S T : Type _} [CommRing S]
+variable {R S T : Type*} [CommRing S]
 
-variable {K L F : Type _} [Field K] [Field L] [Field F]
+variable {K L F : Type*} [Field K] [Field L] [Field F]
 
 variable [Algebra K S] [Algebra K L]
 

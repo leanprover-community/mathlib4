@@ -50,7 +50,7 @@ section
 variable [Monoid G]
 
 instance : CoeSort (Rep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+  ConcreteCategory.hasCoeToSort*
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
@@ -552,7 +552,7 @@ example : MonoidalLinear k (Rep k G) := by infer_instance
 noncomputable section
 
 /-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
-theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (V W : Type _)
+theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
     (r : MonoidAlgebra k G) (x : V) :

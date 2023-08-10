@@ -20,7 +20,7 @@ namespace Quiver
 
 universe v v₁ v₂ u u₁ u₂
 
-variable {V : Type _} [Quiver V] {W : Type _} (σ : V → W)
+variable {V : Type*} [Quiver V] {W : Type*} (σ : V → W)
 
 /-- The `Quiver` instance obtained by pushing arrows of `V` along the map `σ : V → W` -/
 @[nolint unusedArguments]
@@ -52,7 +52,7 @@ theorem of_obj : (of σ).obj = σ :=
   rfl
 #align quiver.push.of_obj Quiver.Push.of_obj
 
-variable {W' : Type _} [Quiver W'] (φ : V ⥤q W') (τ : W → W') (h : ∀ x, φ.obj x = τ (σ x))
+variable {W' : Type*} [Quiver W'] (φ : V ⥤q W') (τ : W → W') (h : ∀ x, φ.obj x = τ (σ x))
 
 /-- Given a function `τ : W → W'` and a prefunctor `φ : V ⥤q W'`, one can extend `τ` to be
 a prefunctor `W ⥤q W'` if `τ` and `σ` factorize `φ` at the level of objects, where `W` is given
@@ -82,7 +82,7 @@ theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
     iterate 2 apply (cast_heq _ _).trans
     apply HEq.symm
     apply (eqRec_heq _ _).trans
-    have : ∀ {α γ} {β : α → γ → Sort _} {a a'} (p : a = a') g (b : β a g), HEq (p ▸ b) b := by
+    have : ∀ {α γ} {β : α → γ → Sort*} {a a'} (p : a = a') g (b : β a g), HEq (p ▸ b) b := by
       intros
       subst_vars
       rfl

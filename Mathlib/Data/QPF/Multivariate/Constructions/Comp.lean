@@ -22,12 +22,12 @@ namespace MvQPF
 
 open MvFunctor
 
-variable {n m : ℕ} (F : TypeVec.{u} n → Type _) [fF : MvFunctor F] [q : MvQPF F]
+variable {n m : ℕ} (F : TypeVec.{u} n → Type*) [fF : MvFunctor F] [q : MvQPF F]
   (G : Fin2 n → TypeVec.{u} m → Type u) [fG : ∀ i, MvFunctor <| G i] [q' : ∀ i, MvQPF <| G i]
 
 /-- Composition of an `n`-ary functor with `n` `m`-ary
 functors gives us one `m`-ary functor -/
-def Comp (v : TypeVec.{u} m) : Type _ :=
+def Comp (v : TypeVec.{u} m) : Type* :=
   F fun i : Fin2 n ↦ G i v
 #align mvqpf.comp MvQPF.Comp
 

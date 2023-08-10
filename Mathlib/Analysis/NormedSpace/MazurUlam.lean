@@ -29,7 +29,7 @@ isometry, affine map, linear map
 -/
 
 
-variable {E PE F PF : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
+variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
   [NormedAddTorsor E PE] [NormedAddCommGroup F] [NormedSpace ℝ F] [MetricSpace PF]
   [NormedAddTorsor F PF]
 

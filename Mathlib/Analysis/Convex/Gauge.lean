@@ -44,7 +44,7 @@ open scoped Pointwise Topology NNReal
 
 noncomputable section
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 section AddCommGroup
 
@@ -257,7 +257,7 @@ theorem one_le_gauge_of_not_mem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs �
 
 section LinearOrderedField
 
-variable {α : Type _} [LinearOrderedField α] [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
+variable {α : Type*} [LinearOrderedField α] [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
 
 theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}
     (ha : 0 ≤ a) (x : E) : gauge s (a • x) = a • gauge s x := by

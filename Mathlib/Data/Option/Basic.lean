@@ -34,7 +34,7 @@ along with a term `a : α` if the value is `True`.
 
 namespace Option
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
@@ -63,7 +63,7 @@ theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → 
   fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
-theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
+theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
 #align option.some_injective Option.some_injective
 
 /-- `Option.map f` is injective if `f` is injective. -/
@@ -101,7 +101,7 @@ theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+theorem bind_eq_bind {α β : Type*} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
 #align option.bind_eq_bind Option.bind_eq_bind
 
@@ -394,7 +394,7 @@ section
 
 open Classical
 
-theorem choice_eq_none (α : Type _) [IsEmpty α] : choice α = none :=
+theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
   dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)
 #align option.choice_eq_none Option.choice_eq_none
 

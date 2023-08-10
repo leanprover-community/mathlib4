@@ -165,7 +165,7 @@ section Extension
   already know it must be unique because `α → Ultrafilter α` is a
   dense embedding and `γ` is Hausdorff. For existence, we will invoke
   `DenseInducing.continuous_extend`. -/
-variable {γ : Type _} [TopologicalSpace γ]
+variable {γ : Type*} [TopologicalSpace γ]
 
 /-- The extension of a function `α → γ` to a function `Ultrafilter α → γ`.
   When `γ` is a compact Hausdorff space it will be continuous. -/

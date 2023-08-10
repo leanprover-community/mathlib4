@@ -71,7 +71,7 @@ theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
-def lsum {R A M : Type _} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
+def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
     (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M
     where
   toFun p := p.sum fun n r => f n r
@@ -101,7 +101,7 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
 #align polynomial.lcoeff_apply Polynomial.lcoeff_apply
 
 @[simp]
-theorem finset_sum_coeff {ι : Type _} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
+theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
     coeff (∑ b in s, f b) n = ∑ b in s, coeff (f b) n :=
   (lcoeff R n).map_sum
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
@@ -316,11 +316,11 @@ theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
 #align polynomial.coeff_X_add_C_pow Polynomial.coeff_X_add_C_pow
 
-theorem coeff_X_add_one_pow (R : Type _) [Semiring R] (n k : ℕ) :
+theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((X + 1) ^ n).coeff k = (n.choose k : R) := by rw [← C_1, coeff_X_add_C_pow, one_pow, one_mul]
 #align polynomial.coeff_X_add_one_pow Polynomial.coeff_X_add_one_pow
 
-theorem coeff_one_add_X_pow (R : Type _) [Semiring R] (n k : ℕ) :
+theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 #align polynomial.coeff_one_add_X_pow Polynomial.coeff_one_add_X_pow
 
@@ -359,7 +359,7 @@ theorem coeff_bit1_mul (P Q : R[X]) (n : ℕ) :
 theorem smul_eq_C_mul (a : R) : a • p = C a * p := by simp [ext_iff]
 #align polynomial.smul_eq_C_mul Polynomial.smul_eq_C_mul
 
-theorem update_eq_add_sub_coeff {R : Type _} [Ring R] (p : R[X]) (n : ℕ) (a : R) :
+theorem update_eq_add_sub_coeff {R : Type*} [Ring R] (p : R[X]) (n : ℕ) (a : R) :
     p.update n a = p + Polynomial.C (a - p.coeff n) * Polynomial.X ^ n := by
   ext
   rw [coeff_update_apply, coeff_add, coeff_C_mul_X_pow]
@@ -370,12 +370,12 @@ end Coeff
 
 section cast
 
-theorem nat_cast_coeff_zero {n : ℕ} {R : Type _} [Semiring R] : (n : R[X]).coeff 0 = n := by
+theorem nat_cast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
   simp only [coeff_nat_cast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.nat_cast_coeff_zero
 
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
-theorem nat_cast_inj {m n : ℕ} {R : Type _} [Semiring R] [CharZero R] :
+theorem nat_cast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
@@ -386,12 +386,12 @@ theorem nat_cast_inj {m n : ℕ} {R : Type _} [Semiring R] [CharZero R] :
 #align polynomial.nat_cast_inj Polynomial.nat_cast_inj
 
 @[simp]
-theorem int_cast_coeff_zero {i : ℤ} {R : Type _} [Ring R] : (i : R[X]).coeff 0 = i := by
+theorem int_cast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
 #align polynomial.int_cast_coeff_zero Polynomial.int_cast_coeff_zero
 
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
-theorem int_cast_inj {m n : ℤ} {R : Type _} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
+theorem int_cast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
     apply_fun fun p => p.coeff 0 at h

@@ -236,7 +236,7 @@ theorem ι_isoCarrier_inv (i : D.J) :
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
 See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
-def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
+def Rel (a b : Σ i, ((D.U i).carrier : Type*)) : Prop :=
   a = b ∨
     ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).1.base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).1.base x = b.2
 #align algebraic_geometry.Scheme.glue_data.rel AlgebraicGeometry.Scheme.GlueData.Rel

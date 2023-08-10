@@ -35,7 +35,7 @@ absolute
 /--
 Absolute value is a unary operator with properties similar to the absolute value of a real number.
 -/
-class Abs (α : Type _) where
+class Abs (α : Type*) where
   /-- The absolute value function. -/
   abs : α → α
 
@@ -45,7 +45,7 @@ export Abs (abs)
 
 /-- The positive part of an element admitting a decomposition into positive and negative parts.
 -/
-class PosPart (α : Type _) where
+class PosPart (α : Type*) where
   /-- The positive part function. -/
   pos : α → α
 
@@ -53,7 +53,7 @@ class PosPart (α : Type _) where
 
 /-- The negative part of an element admitting a decomposition into positive and negative parts.
 -/
-class NegPart (α : Type _) where
+class NegPart (α : Type*) where
   /-- The negative part function. -/
   neg : α → α
 

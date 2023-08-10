@@ -29,7 +29,7 @@ Define all other graph products!
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace SimpleGraph
 

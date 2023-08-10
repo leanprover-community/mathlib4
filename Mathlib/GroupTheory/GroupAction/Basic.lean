@@ -342,7 +342,7 @@ variable (α β)
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
 @[to_additive (attr := reducible)
     "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
-def orbitRel.Quotient : Type _ :=
+def orbitRel.Quotient : Type* :=
   _root_.Quotient <| orbitRel α β
 #align mul_action.orbit_rel.quotient MulAction.orbitRel.Quotient
 #align add_action.orbit_rel.quotient AddAction.orbitRel.Quotient
@@ -466,7 +466,7 @@ end AddAction
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type _} [Monoid M] [NonUnitalNonAssocRing R]
+theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
     [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]

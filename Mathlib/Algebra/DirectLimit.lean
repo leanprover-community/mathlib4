@@ -274,7 +274,7 @@ namespace AddCommGroup
 variable [∀ i, AddCommGroup (G i)]
 
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
-def DirectLimit (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
+def DirectLimit (f : ∀ i j, i ≤ j → G i →+ G j) : Type* :=
   @Module.DirectLimit ℤ _ ι _ _ G _ _ fun i j hij => (f i j hij).toIntLinearMap
 #align add_comm_group.direct_limit AddCommGroup.DirectLimit
 

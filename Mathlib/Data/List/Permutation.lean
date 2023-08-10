@@ -47,7 +47,7 @@ Show that `l.Nodup → l.permutations.Nodup`. See `Data.Fintype.List`.
 
 open Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 

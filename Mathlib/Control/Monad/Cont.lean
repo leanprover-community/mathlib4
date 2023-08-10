@@ -126,12 +126,12 @@ def ExceptT.mkLabel {α β ε} : Label (Except.{u, u} ε α) m β → Label α (
   | ⟨f⟩ => ⟨fun a => monadLift <| f (Except.ok a)⟩
 #align except_t.mk_label ExceptTₓ.mkLabel
 
-theorem ExceptT.goto_mkLabel {α β ε : Type _} (x : Label (Except.{u, u} ε α) m β) (i : α) :
+theorem ExceptT.goto_mkLabel {α β ε : Type*} (x : Label (Except.{u, u} ε α) m β) (i : α) :
     goto (ExceptT.mkLabel x) i = ExceptT.mk (Except.ok <$> goto x (Except.ok i)) := by
   cases x; rfl
 #align except_t.goto_mk_label ExceptTₓ.goto_mkLabel
 
-nonrec def ExceptT.callCC {ε} [MonadCont m] {α β : Type _}
+nonrec def ExceptT.callCC {ε} [MonadCont m] {α β : Type*}
     (f : Label α (ExceptT ε m) β → ExceptT ε m α) : ExceptT ε m α :=
   ExceptT.mk (callCC fun x : Label _ m β => ExceptT.run <| f (ExceptT.mkLabel x))
 #align except_t.call_cc ExceptTₓ.callCC
@@ -155,12 +155,12 @@ def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m
   | ⟨f⟩ => ⟨fun a => monadLift <| f (some a)⟩
 #align option_t.mk_label OptionTₓ.mkLabel
 
-theorem OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
+theorem OptionT.goto_mkLabel {α β : Type*} (x : Label (Option.{u} α) m β) (i : α) :
     goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
   rfl
 #align option_t.goto_mk_label OptionTₓ.goto_mkLabel
 
-nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
+nonrec def OptionT.callCC [MonadCont m] {α β : Type*} (f : Label α (OptionT m) β → OptionT m α) :
     OptionT m α :=
   OptionT.mk (callCC fun x : Label _ m β => OptionT.run <| f (OptionT.mkLabel x) : m (Option α))
 #align option_t.call_cc OptionTₓ.callCC
@@ -191,18 +191,18 @@ def WriterT.mkLabel' {α β ω} [Monoid ω] : Label (α × ω) m β → Label α
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 1)⟩
 #align writer_t.mk_label WriterTₓ.mkLabel'
 
-theorem WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label (α × ω) m β) (i : α) :
+theorem WriterT.goto_mkLabel {α β ω : Type*} [EmptyCollection ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel x) i = monadLift (goto x (i, ∅)) := by cases x; rfl
 
-theorem WriterT.goto_mkLabel' {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
+theorem WriterT.goto_mkLabel' {α β ω : Type*} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel' x) i = monadLift (goto x (i, 1)) := by cases x; rfl
 #align writer_t.goto_mk_label WriterTₓ.goto_mkLabel'
 
-nonrec def WriterT.callCC [MonadCont m] {α β ω : Type _} [EmptyCollection ω]
+nonrec def WriterT.callCC [MonadCont m] {α β ω : Type*} [EmptyCollection ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <| callCC (WriterT.run ∘ f ∘ WriterT.mkLabel : Label (α × ω) m β → m (α × ω))
 
-def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
+def WriterT.callCC' [MonadCont m] {α β ω : Type*} [Monoid ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <|
     MonadCont.callCC (WriterT.run ∘ f ∘ WriterT.mkLabel' : Label (α × ω) m β → m (α × ω))
@@ -222,7 +222,7 @@ theorem StateT.goto_mkLabel {α β σ : Type u} (x : Label (α × σ) m (β × �
     goto (StateT.mkLabel x) i = StateT.mk (fun s => goto x (i, s)) := by cases x; rfl
 #align state_t.goto_mk_label StateTₓ.goto_mkLabel
 
-nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type _}
+nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type*}
     (f : Label α (StateT σ m) β → StateT σ m α) : StateT σ m α :=
   StateT.mk (fun r => callCC fun f' => (f <| StateT.mkLabel f').run r)
 #align state_t.call_cc StateTₓ.callCC
@@ -250,7 +250,7 @@ theorem ReaderT.goto_mkLabel {α ρ β} (x : Label α m β) (i : α) :
     goto (ReaderT.mkLabel ρ x) i = monadLift (goto x i) := by cases x; rfl
 #align reader_t.goto_mk_label ReaderTₓ.goto_mkLabel
 
-nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
+nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type*}
     (f : Label α (ReaderT ε m) β → ReaderT ε m α) : ReaderT ε m α :=
   ReaderT.mk (fun r => callCC fun f' => (f <| ReaderT.mkLabel _ f').run r)
 #align reader_t.call_cc ReaderTₓ.callCC

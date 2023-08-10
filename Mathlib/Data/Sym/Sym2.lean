@@ -54,7 +54,7 @@ open Finset Function Sym
 
 universe u
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Sym2
 
@@ -125,13 +125,13 @@ protected theorem inductionOn₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α
 #align sym2.induction_on₂ Sym2.inductionOn₂
 
 -- porting note: `exists` seems to be an invalid identifier
-protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
+protected theorem «exists» {α : Sort*} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f ⟦(x, y)⟧ :=
   (surjective_quotient_mk _).exists.trans Prod.exists
 #align sym2.exists Sym2.exists
 
 -- porting note: `forall` seems to be an invalid identifier
-protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
+protected theorem «forall» {α : Sort*} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f ⟦(x, y)⟧ :=
   (surjective_quotient_mk _).forall.trans Prod.forall
 #align sym2.forall Sym2.forall
@@ -615,7 +615,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
 
 /-- The symmetric square is equivalent to the second symmetric power.
 -/
-def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
+def equivSym (α : Type*) : Sym2 α ≃ Sym α 2 :=
   Equiv.trans sym2EquivSym' symEquivSym'.symm
 #align sym2.equiv_sym Sym2.equivSym
 
@@ -623,7 +623,7 @@ def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
 two. (This is currently a synonym for `equivSym`, but it's provided
 in case the definition for `Sym` changes.)
 -/
-def equivMultiset (α : Type _) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
+def equivMultiset (α : Type*) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
   equivSym α
 #align sym2.equiv_multiset Sym2.equivMultiset
 
@@ -646,10 +646,10 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance instRelDecidable (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
+instance instRelDecidable (α : Type*) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
 -- Porting note: add this other version needed for Data.Finset.Sym
-instance instRelDecidable' (α : Type _) [DecidableEq α] :
+instance instRelDecidable' (α : Type*) [DecidableEq α] :
   DecidableRel (· ≈ · : α × α → α × α → Prop) := instRelDecidable _
 
 -- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`
