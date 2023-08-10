@@ -1692,31 +1692,22 @@ end
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
 def restrictSupportEquiv (s : Set α) (M : Type _) [AddCommMonoid M] :
-    { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M)
-    where
+    { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
   toFun f := subtypeDomain (fun x => x ∈ s) f.1
   invFun f :=
-    ⟨f.mapDomain Subtype.val, by
-      classical
-        refine' Set.Subset.trans (Finset.coe_subset.2 mapDomain_support) _
-        rw [Finset.coe_image, Set.image_subset_iff]
-        exact fun x _ => x.2⟩
+    ⟨f.embDomain <| Embedding.subtype _, by
+      rw [support_embDomain, Finset.coe_map, Set.image_subset_iff]
+      exact fun x _ => x.2⟩
   left_inv := by
     rintro ⟨f, hf⟩
-    apply Subtype.eq
     ext a
-    dsimp only
-    refine' by_cases (fun h : a ∈ Set.range (Subtype.val : s → α) => _) fun h => _
-    · rcases h with ⟨x, rfl⟩
-      rw [mapDomain_apply Subtype.val_injective, subtypeDomain_apply]
-    · convert mapDomain_notin_range (subtypeDomain (fun x => x ∈ s) f) _ h
-      rw [← not_mem_support_iff]
-      refine' mt _ h
-      exact fun ha => ⟨⟨a, hf ha⟩, rfl⟩
-  right_inv f := by
-    ext ⟨a, ha⟩
-    dsimp only
-    rw [subtypeDomain_apply, mapDomain_apply Subtype.val_injective]
+    by_cases h : a ∈ s
+    · lift a to s using h
+      exact embDomain_apply _ _ _
+    rw [embDomain_notin_range, eq_comm, ←Finsupp.not_mem_support_iff]
+    · exact fun hs => h <| hf hs
+    · simp [h]
+  right_inv f := ext <| embDomain_apply _ f
 #align finsupp.restrict_support_equiv Finsupp.restrictSupportEquiv
 
 /-- Given `AddCommMonoid M` and `e : α ≃ β`, `domCongr e` is the corresponding `Equiv` between
