@@ -25,7 +25,7 @@ It follows that multiplication by `(X + 2)` is not injective.
 -/
 open Polynomial
 
-namespace nonRegular
+namespace Counterexample.NonRegular
 
 /-- `N` is going to be a `Commsemiring` where addition and multiplication are truncated at `3`. -/
 inductive N
@@ -95,4 +95,4 @@ theorem Monic_and_nonLeftRegular : Monic (X + C 2 : N[X]) ∧ ¬ IsLeftRegular (
 
 end N
 
-end nonRegular
+end Counterexample.NonRegular
