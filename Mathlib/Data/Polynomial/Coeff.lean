@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.Regular.Pow
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
@@ -179,12 +180,12 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
   exact AddMonoidAlgebra.mul_single_zero_apply p a n
 #align polynomial.coeff_mul_C Polynomial.coeff_mul_C
 
+@[simp]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
   simp only [one_mul, RingHom.map_one, ← coeff_C_mul_X_pow]
 #align polynomial.coeff_X_pow Polynomial.coeff_X_pow
 
-@[simp]
-theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp [coeff_X_pow]
+theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp
 #align polynomial.coeff_X_pow_self Polynomial.coeff_X_pow_self
 
 section Fewnomials
@@ -293,16 +294,15 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
-theorem mul_X_pow_injective (n : ℕ) : Function.Injective fun P : R[X] => X ^ n * P := by
-  intro P Q hPQ
-  simp only at hPQ
+@[simp] theorem isRegular_X : IsRegular (X : R[X]) := by
+  suffices : IsLeftRegular (X : R[X])
+  · exact ⟨this, this.right_of_commute commute_X⟩
+  intro P Q (hPQ : X * P = X * Q)
   ext i
-  rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
-#align polynomial.mul_X_pow_injective Polynomial.mul_X_pow_injective
+  rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
 
-theorem mul_X_injective : Function.Injective fun P : R[X] => X * P :=
-  pow_one (X : R[X]) ▸ mul_X_pow_injective 1
-#align polynomial.mul_X_injective Polynomial.mul_X_injective
+-- TODO Unify this with `Polynomial.Monic.isRegular`
+theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow n
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by

@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.GroupTheory.Submonoid.ZeroDivisors
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
 
@@ -43,7 +44,7 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
   ⟨n, e⟩
 #align is_nilpotent.mk IsNilpotent.mk
 
-theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
+@[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
 
@@ -172,16 +173,42 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
   · rw [pow_eq_zero_of_le hj hm, MulZeroClass.mul_zero]
 #align commute.is_nilpotent_add Commute.isNilpotent_add
 
+protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
+    (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
+    IsNilpotent (∑ i in s, f i) := by
+  classical
+  induction' s using Finset.induction with j s hj ih; simp
+  rw [Finset.sum_insert hj]
+  apply Commute.isNilpotent_add
+  · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))
+  · apply hnp; simp
+  · exact ih (fun i hi ↦ hnp i (by simp [hi]))
+      (fun i j hi hj ↦ h_comm i j (by simp [hi]) (by simp [hj]))
+
 theorem isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [h_comm.mul_pow, hn, MulZeroClass.zero_mul]
 #align commute.is_nilpotent_mul_left Commute.isNilpotent_mul_left
 
+protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :
+    IsNilpotent (x * y) ↔ IsNilpotent x := by
+  refine' ⟨_, h_comm.isNilpotent_mul_left⟩
+  rintro ⟨k, hk⟩
+  rw [mul_pow h_comm] at hk
+  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
+
 theorem isNilpotent_mul_right (h : IsNilpotent y) : IsNilpotent (x * y) := by
   rw [h_comm.eq]
   exact h_comm.symm.isNilpotent_mul_left h
 #align commute.is_nilpotent_mul_right Commute.isNilpotent_mul_right
+
+protected lemma isNilpotent_mul_right_iff (hx : x ∈ nonZeroDivisorsRight R) :
+    IsNilpotent (x * y) ↔ IsNilpotent y := by
+  refine' ⟨_, h_comm.isNilpotent_mul_right⟩
+  rintro ⟨k, hk⟩
+  rw [mul_pow h_comm] at hk
+  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
 
 end Semiring
 
@@ -202,7 +229,12 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [CommSemiring R] {x y : R}
+
+lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
+    (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
+    IsNilpotent (∑ i in s, f i) :=
+  Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/
 def nilradical (R : Type _) [CommSemiring R] : Ideal R :=
