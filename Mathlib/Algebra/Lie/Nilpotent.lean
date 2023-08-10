@@ -194,6 +194,10 @@ class IsNilpotent : Prop where
   nilpotent : ∃ k, lowerCentralSeries R L M k = ⊥
 #align lie_module.is_nilpotent LieModule.IsNilpotent
 
+theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent R L M] :
+    ∃ k, lowerCentralSeries R L M k = ⊥ :=
+  IsNilpotent.nilpotent
+
 /-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 theorem isNilpotent_iff : IsNilpotent R L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ :=
   ⟨fun h => h.nilpotent, fun h => ⟨h⟩⟩
@@ -232,7 +236,7 @@ theorem isNilpotent_toEndomorphism_of_isNilpotent [IsNilpotent R L M] (x : L) :
 
 theorem isNilpotent_toEndomorphism_of_isNilpotent₂ [IsNilpotent R L M] (x y : L) :
     _root_.IsNilpotent (toEndomorphism R L M x ∘ₗ toEndomorphism R L M y) := by
-  obtain ⟨k, hM⟩ := (inferInstance : IsNilpotent R L M)
+  obtain ⟨k, hM⟩ := exists_lowerCentralSeries_eq_bot_of_isNilpotent R L M
   replace hM : lowerCentralSeries R L M (2 * k) = ⊥ := by
     rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by linarith)
   use k
