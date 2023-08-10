@@ -57,20 +57,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
       norm_cast
 #align infi_Ioi_eq_infi_rat_gt iInf_Ioi_eq_iInf_rat_gt
 
--- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_of_tendsto {α β : Type _} [LinearOrder α] [TopologicalSpace β]
-    [TopologicalSpace α] [OrderTopology α] [T2Space β] {f : α → β} {a : α} {y : β}
-    (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) : Function.rightLim f a = y :=
-  @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
-#align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
 
--- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_sInf {α β : Type _} [LinearOrder α] [TopologicalSpace β]
-    [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} (hf : Monotone f) {x : α}
-    [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
-    Function.rightLim f x = sInf (f '' Ioi x) :=
-  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
-#align right_lim_eq_Inf rightLim_eq_sInf
 
 -- todo after the port: move to order/filter/at_top_bot
 theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α] [Nonempty α]
