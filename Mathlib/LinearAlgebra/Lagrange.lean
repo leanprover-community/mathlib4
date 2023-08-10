@@ -689,6 +689,8 @@ theorem leadingCoeff_sub_of_degree_eq [Ring R] (p q : R[X]) (h : degree p = degr
   · rw [leadingCoeff_neg, <-sub_eq_add_neg]
     exact hlc
 
+
+-- TODO is decidable eq necessary?
 /--
 The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1
 -/
@@ -705,12 +707,21 @@ theorem nodal_subgroup_eq_X_pow_card_sub_one [DecidableEq F] (G : Subgroup (Unit
     exact rfl
     simp only [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
     exact Fintype.card_pos
-  · simp only [map_one]
+  · rw [map_one]
     rw [nodal_monic]
     rw [leadingCoeff_sub_of_degree_lt]
     rw [monic_X_pow]
-    simp only [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
+    rw [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
     exact Fintype.card_pos
+  · intros i hi
+    rw [eval_nodal_at_node hi]
+    simp at hi
+    -- TODO I'm sure there's a better way
+    have exists_g : ∃ g : G, g.val = i := by
+      exact CanLift.prf i hi
+    rcases exists_g with ⟨g, g_eq⟩
+    rw [<-g_eq]
+    rw [map_one, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val, ← Subgroup.coe_pow G, pow_card_eq_one, Subgroup.coe_one, Units.val_one, sub_self]
 
 end Nodal
 
