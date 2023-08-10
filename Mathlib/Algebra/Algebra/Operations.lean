@@ -105,7 +105,7 @@ theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
   SetLike.ext fun _ => mem_one.trans SubMulAction.mem_one'.symm
 #align submodule.to_sub_mul_action_one Submodule.toSubMulAction_one
 
-theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 := by
+theorem one_eq_span : (1 : Submodule R A) = R • 1 := by
   apply Submodule.ext
   intro a
   simp only [mem_one, mem_span_singleton, Algebra.smul_def, mul_one]

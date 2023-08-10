@@ -79,7 +79,7 @@ namespace LieSubmodule
 
 open LieModule
 
-variable {I : LieIdeal R L} {x : L} (hxI : (R ∙ x) ⊔ I = ⊤)
+variable {I : LieIdeal R L} {x : L} (hxI : (R • x) ⊔ I = ⊤)
 
 theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
   have hy : y ∈ (⊤ : Submodule R L) := Submodule.mem_top
@@ -198,7 +198,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
     ∃ (K' : LieSubalgebra R L), LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K' ∧ K < K' := by
   obtain ⟨x, hx₁, hx₂⟩ := SetLike.exists_of_lt hK₂
   let K' : LieSubalgebra R L :=
-    { (R ∙ x) ⊔ (K : Submodule R L) with
+    { (R • x) ⊔ (K : Submodule R L) with
       lie_mem' := fun {y z} => LieSubalgebra.lie_mem_sup_of_mem_normalizer hx₁ }
   have hxK' : x ∈ K' := Submodule.mem_sup_left (Submodule.subset_span (Set.mem_singleton _))
   have hKK' : K ≤ K' := (LieSubalgebra.coe_submodule_le_coe_submodule K K').mp le_sup_right
@@ -209,7 +209,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   intro M _i1 _i2 _i3 _i4 h
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
-  have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
+  have hI₂ : (R • (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
     rw [← LieIdeal.coe_to_lieSubalgebra_to_submodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
     simp

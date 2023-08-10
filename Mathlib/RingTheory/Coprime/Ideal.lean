@@ -26,7 +26,7 @@ of ideals still generate the whole ring.
 
 For example with three ideals : `I ⊔ J = I ⊔ K = J ⊔ K = ⊤ ↔ (I ⊓ J) ⊔ (I ⊓ K) ⊔ (J ⊓ K) = ⊤`.
 
-When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
+When ideals are all of the form `I i = R • s i`, this is equivalent to the
 `exists_sum_eq_one_iff_pairwise_coprime` lemma.-/
 theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
     (⨆ i ∈ t, ⨅ (j) (_ : j ∈ t) (_ : j ≠ i), I j) = ⊤ ↔

@@ -70,7 +70,7 @@ theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
 
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :
-    (perpBisector p₁ p₂).direction = (ℝ ∙ (p₂ -ᵥ p₁))ᗮ := by
+    (perpBisector p₁ p₂).direction = (ℝ • (p₂ -ᵥ p₁))ᗮ := by
   erw [perpBisector, comap_symm, map_direction, Submodule.map_id,
     Submodule.toAffineSubspace_direction]
   ext x

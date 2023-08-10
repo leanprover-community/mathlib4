@@ -357,7 +357,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] K) (x : V₁)
-    (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
+    (hx : ¬B.IsOrtho x x) : (K₁ • x) ⊓ Submodule.orthogonalBilin (K₁ • x) B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h ↦ _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
@@ -373,7 +373,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] K} (x : V) :
-    Submodule.orthogonalBilin (K ∙ x) B = LinearMap.ker (B x) := by
+    Submodule.orthogonalBilin (K • x) B = LinearMap.ker (B x) := by
   ext y
   simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
@@ -385,7 +385,7 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
 
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊔ @Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _ (K ∙ x) B = ⊤ := by
+    (K • x) ⊔ @Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _ (K • x) B = ⊤ := by
   rw [orthogonal_span_singleton_eq_to_lin_ker]
   exact (B x).span_singleton_sup_ker_eq_top hx
 #align linear_map.span_singleton_sup_orthogonal_eq_top LinearMap.span_singleton_sup_orthogonal_eq_top
@@ -394,7 +394,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    IsCompl (K ∙ x) (@Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _ (K ∙ x) B) :=
+    IsCompl (K • x) (@Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _ (K • x) B) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
     codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 #align linear_map.is_compl_span_singleton_orthogonal LinearMap.isCompl_span_singleton_orthogonal

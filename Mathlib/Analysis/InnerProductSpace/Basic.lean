@@ -1587,7 +1587,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
     List.TFAE [‖⟪x, y⟫‖ = ‖x‖ * ‖y‖,
       x = 0 ∨ y = (⟪x, y⟫ / ⟪x, x⟫) • x,
       x = 0 ∨ ∃ r : 𝕜, y = r • x,
-      x = 0 ∨ y ∈ 𝕜 ∙ x] := by
+      x = 0 ∨ y ∈ 𝕜 • x] := by
   tfae_have 1 → 2
   · refine' fun h => or_iff_not_imp_left.2 fun hx₀ => _
     have : ‖x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_ne_zero_iff.2 hx₀)

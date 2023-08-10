@@ -59,7 +59,7 @@ protected nonrec theorem ContDiff.inversion (hc : ContDiff ℝ n c) (hR : ContDi
 protected theorem DifferentiableWithinAt.inversion (hc : DifferentiableWithinAt ℝ c s a)
     (hR : DifferentiableWithinAt ℝ R s a) (hx : DifferentiableWithinAt ℝ x s a) (hne : x a ≠ c a) :
     DifferentiableWithinAt ℝ (fun a ↦ inversion (c a) (R a) (x a)) s a :=
-  -- TODO: Use `.div` #5870 
+  -- TODO: Use `.div` #5870
   (((hR.mul <| (hx.dist ℝ hc hne).inv (dist_ne_zero.2 hne)).pow _).smul (hx.sub hc)).add hc
 
 protected theorem DifferentiableOn.inversion (hc : DifferentiableOn ℝ c s)
@@ -87,7 +87,7 @@ variable {a b c d x y z : F} {r R : ℝ}
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
-      ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
+      ((R / dist x c) ^ 2 • (reflection (ℝ • (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
   have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x)
   · simp_rw [inversion, dist_eq_norm, div_pow, div_eq_mul_inv]
@@ -96,7 +96,7 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
       (R ^ 2)
     exact (B.smul A).add_const c
   refine this.congr_fderiv (LinearMap.ext_on_codisjoint
-    (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
+    (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ • x)).codisjoint
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹
     · rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']

@@ -115,11 +115,11 @@ theorem mk_apply (p : Submodule R E) (f : p →ₗ[R] F) (x : p) : mk p f x = f 
   rfl
 #align linear_pmap.mk_apply LinearPMap.mk_apply
 
-/-- The unique `LinearPMap` on `R ∙ x` that sends `x` to `y`. This version works for modules
+/-- The unique `LinearPMap` on `R • x` that sends `x` to `y`. This version works for modules
 over rings, and requires a proof of `∀ c, c • x = 0 → c • y = 0`. -/
 noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) :
     E →ₗ.[R] F where
-  domain := R ∙ x
+  domain := R • x
   toFun :=
     have H : ∀ c₁ c₂ : R, c₁ • x = c₂ • x → c₁ • y = c₂ • y := by
       intro c₁ c₂ h
@@ -133,20 +133,20 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
         rw [← add_smul]
         apply H
         simp only [add_smul, sub_smul,
-          fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
+          fun w : R • x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_add
       map_smul' := fun c z => by
         dsimp only []
         rw [smul_smul]
         apply H
         simp only [mul_smul,
-          fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
+          fun w : R • x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_smul }
 #align linear_pmap.mk_span_singleton' LinearPMap.mkSpanSingleton'
 
 @[simp]
 theorem domain_mkSpanSingleton (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) :
-    (mkSpanSingleton' x y H).domain = R ∙ x :=
+    (mkSpanSingleton' x y H).domain = R • x :=
   rfl
 #align linear_pmap.domain_mk_span_singleton LinearPMap.domain_mkSpanSingleton
 
@@ -529,7 +529,7 @@ section
 
 variable {K : Type _} [DivisionRing K] [Module K E] [Module K F]
 
-/-- Extend a `LinearPMap` to `f.domain ⊔ K ∙ x`. -/
+/-- Extend a `LinearPMap` to `f.domain ⊔ K • x`. -/
 noncomputable def supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) :
     E →ₗ.[K] F :=
   -- Porting note: `simpa [..]` → `simp [..]; exact ..`
@@ -539,7 +539,7 @@ noncomputable def supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x 
 
 @[simp]
 theorem domain_supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) :
-    (f.supSpanSingleton x y hx).domain = f.domain ⊔ K ∙ x :=
+    (f.supSpanSingleton x y hx).domain = f.domain ⊔ K • x :=
   rfl
 #align linear_pmap.domain_sup_span_singleton LinearPMap.domain_supSpanSingleton
 

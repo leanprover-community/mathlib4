@@ -172,7 +172,7 @@ theorem fg_span {s : Set M} (hs : s.Finite) : FG (span R s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
 #align submodule.fg_span Submodule.fg_span
 
-theorem fg_span_singleton (x : M) : FG (R ∙ x) :=
+theorem fg_span_singleton (x : M) : FG (R • x) :=
   fg_span (finite_singleton x)
 #align submodule.fg_span_singleton Submodule.fg_span_singleton
 

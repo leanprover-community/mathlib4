@@ -216,7 +216,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         refine' le_of_mul_le_mul_right _ h
         rw [← real_inner_self_eq_norm_mul_norm, o.inner_rightAngleRotationAux₁_left]
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
-      · let K : Submodule ℝ E := ℝ ∙ x
+      · let K : Submodule ℝ E := ℝ • x
         have : Nontrivial Kᗮ := by
           apply @FiniteDimensional.nontrivial_of_finrank_pos ℝ
           have : finrank ℝ K ≤ Finset.card {x} := by

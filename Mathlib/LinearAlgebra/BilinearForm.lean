@@ -1214,7 +1214,7 @@ theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogon
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊓ B.orthogonal (K ∙ x) = ⊥ := by
+    (K • x) ⊓ B.orthogonal (K • x) = ⊥ := by
   rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h => _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
@@ -1231,7 +1231,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
-    B.orthogonal (K ∙ x) = LinearMap.ker (BilinForm.toLin B x) := by
+    B.orthogonal (K • x) = LinearMap.ker (BilinForm.toLin B x) := by
   ext y
   simp_rw [mem_orthogonal_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
@@ -1242,7 +1242,7 @@ theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
 #align bilin_form.orthogonal_span_singleton_eq_to_lin_ker BilinForm.orthogonal_span_singleton_eq_toLin_ker
 
 theorem span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊔ B.orthogonal (K ∙ x) = ⊤ := by
+    (K • x) ⊔ B.orthogonal (K • x) = ⊤ := by
   rw [orthogonal_span_singleton_eq_toLin_ker]
   exact LinearMap.span_singleton_sup_ker_eq_top _ hx
 #align bilin_form.span_singleton_sup_orthogonal_eq_top BilinForm.span_singleton_sup_orthogonal_eq_top
@@ -1250,7 +1250,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : �
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
-    IsCompl (K ∙ x) (B.orthogonal <| K ∙ x) :=
+    IsCompl (K • x) (B.orthogonal <| K • x) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot hx
     codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 #align bilin_form.is_compl_span_singleton_orthogonal BilinForm.isCompl_span_singleton_orthogonal
@@ -1523,9 +1523,9 @@ on the whole space. -/
 the span of a singleton is also non-degenerate. -/
 theorem restrictOrthogonalSpanSingletonNondegenerate (B : BilinForm K V) (b₁ : B.Nondegenerate)
     (b₂ : B.IsRefl) {x : V} (hx : ¬B.IsOrtho x x) :
-    Nondegenerate <| B.restrict <| B.orthogonal (K ∙ x) := by
+    Nondegenerate <| B.restrict <| B.orthogonal (K • x) := by
   refine' fun m hm => Submodule.coe_eq_zero.1 (b₁ m.1 fun n => _)
-  have : n ∈ (K ∙ x) ⊔ B.orthogonal (K ∙ x) :=
+  have : n ∈ (K • x) ⊔ B.orthogonal (K • x) :=
     (span_singleton_sup_orthogonal_eq_top hx).symm ▸ Submodule.mem_top
   rcases Submodule.mem_sup.1 this with ⟨y, hy, z, hz, rfl⟩
   specialize hm ⟨z, hz⟩

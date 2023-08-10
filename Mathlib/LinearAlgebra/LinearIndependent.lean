@@ -885,7 +885,7 @@ theorem linearIndependent_iff_not_smul_mem_span :
 
 /-- See also `CompleteLattice.independent_iff_linearIndependent_of_ne_zero`. -/
 theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v) :
-    CompleteLattice.Independent fun i => R ∙ v i := by
+    CompleteLattice.Independent fun i => R • v i := by
   refine' CompleteLattice.independent_def.mp fun i => _
   rw [disjoint_iff_inf_le]
   intro m hm
