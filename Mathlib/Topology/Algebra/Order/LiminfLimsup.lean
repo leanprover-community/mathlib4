@@ -597,53 +597,39 @@ lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
   exact fun _ _ h ↦ add_le_add_right h c
 
 /-- `limsup (c - xᵢ) = c - liminf xᵢ`. -/
-lemma limsup_const_sub (F : Filter ι) [NeBot F] [AddGroup R] [ContinuousSub R]
-    [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y]
-    [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+lemma limsup_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
+    [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
   convert (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x) ?_
             (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ sub_le_sub_left h c
-
-/-
-Since we are currently assuming `AddGroup R`, the next one is actually a special case
-of `limsup_add_const`. But it can be convenient in its own right, and it should be
-generalized to something better than an `AddGroup R` (when `sub_le_sub_right` is generalized).
--/
+  exact fun _ _ h ↦ tsub_le_tsub_left h c
 
 /-- `limsup (xᵢ - c) = (limsup xᵢ) - c`. -/
-lemma limsup_sub_const (F : Filter ι) [NeBot F] [AddGroup R] [ContinuousSub R]
-    [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+lemma limsup_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
+    [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
   convert (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c) ?_
             (continuous_sub_right c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ sub_le_sub_right h c
+  exact fun _ _ h ↦ tsub_le_tsub_right h c
 
 /-- `liminf (c - xᵢ) = c - limsup xᵢ`. -/
-lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddGroup R] [ContinuousSub R]
-    [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y]
-    [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
+    [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F := by
   convert (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x) ?_
             (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ sub_le_sub_left h c
-
-/-
-Since we are currently assuming `AddGroup R`, the next one is actually a special case
-of `liminf_add_const`. But it can be convenient in its own right, and it should be
-generalized to something better than an `AddGroup R` (when `sub_le_sub_right` is generalized).
--/
+  exact fun _ _ h ↦ tsub_le_tsub_left h c
 
 /-- `liminf (xᵢ - c) = (liminf xᵢ) - c`. -/
-lemma liminf_sub_const (F : Filter ι) [NeBot F] [AddGroup R] [ContinuousSub R]
-    [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+lemma liminf_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
+    [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ f i - c) F = Filter.liminf f F - c := by
   convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c) ?_
             (continuous_sub_right c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ sub_le_sub_right h c
+  exact fun _ _ h ↦ tsub_le_tsub_right h c
 
 end LiminfLimsupAddSub -- section
