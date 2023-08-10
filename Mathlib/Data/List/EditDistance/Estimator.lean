@@ -42,7 +42,7 @@ structure LevenshteinEstimator' : Type _ where
   pre_rev : List β
   suff : List β
   split : pre_rev.reverse ++ suff = ys
-  distances : Σ' (r : List δ), 0 < r.length
+  distances : {r : List δ // 0 < r.length}
   distances_eq : distances = suffixLevenshtein C xs suff
   bound : δ × ℕ
   bound_eq : bound = match pre_rev with
