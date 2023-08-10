@@ -214,8 +214,8 @@ end FirstOrder
 open Function FirstOrder Language
 
 theorem ax_grothendieck {ι K : Type _} [Field K] [Finite ι]
-    [IsAlgClosed K] (ps : ι → MvPolynomial ι K)
-    (hinj : Injective fun v i => MvPolynomial.eval v (ps i)) :
+    [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
+    Injective (fun v i => MvPolynomial.eval v (ps i)) →
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
   letI := Classical.decEq K
   letI := Fintype.ofFinite ι
@@ -228,4 +228,4 @@ theorem ax_grothendieck {ι K : Type _} [Field K] [Finite ι]
   rw [← (Language.ACF_isComplete_of_prime_or_zero
     (CharP.char_is_prime_or_zero K p)).realize_sentence_iff _ K,
     realize_genericPolyMapSurjectiveOfInjective] at this
-  exact this ⟨ps, by simp⟩ hinj
+  exact this ⟨ps, by simp⟩
