@@ -65,7 +65,6 @@ instance [HasCoproducts C] [AB4 C] (α : Type v) :
 A category `C` which has filtered colimits is said to have `AB5` provided that
 filtered colimits are exact.
 -/
--- TODO: Define `HasFilteredColimits C`.
 class AB5 [HasFilteredColimits C] where
   preservesFiniteLimits (J : Type v) [SmallCategory J] [IsFiltered J] :
     PreservesFiniteLimits (colim (J := J) (C := C))
