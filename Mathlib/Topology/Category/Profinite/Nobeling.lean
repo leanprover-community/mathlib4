@@ -81,30 +81,6 @@ namespace LocallyConstant
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {Z : Type _}
 
-def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
-    (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
-    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
-    [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z where
-  toFun i := if hi : i ∈ C₁ then f ⟨i, hi⟩ else g ⟨i, (Set.compl_subset_iff_union.mpr h) hi⟩
-  isLocallyConstant := by
-    let dZ : TopologicalSpace Z := ⊥
-    haveI : DiscreteTopology Z := discreteTopology_bot Z
-    obtain ⟨f, hf⟩ := f
-    obtain ⟨g, hg⟩ := g
-    rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
-    dsimp
-    rw [Set.union_eq_iUnion] at h
-    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
-    · cases i; exact h₂; exact h₁
-    · cases i
-      <;> rw [continuousOn_iff_continuous_restrict]
-      · convert hg
-        ext x
-        simp only [cond_false, Set.restrict_apply, Subtype.coe_eta, dite_eq_right_iff]
-        exact fun hx ↦ hfg x ⟨hx, x.prop⟩
-      · simp only [cond_true, Set.restrict_dite, Subtype.coe_eta]
-        exact hf
-
 theorem comap_comp_apply {α : Type _} [TopologicalSpace Z] (f : X → Y) (g : Y → Z)
     (hf : Continuous f) (hg : Continuous g) (x : LocallyConstant Z α) :
     comap f (comap g x) = comap (g ∘ f) x := by
