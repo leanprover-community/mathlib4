@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module algebra.quandle
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Ring
+
+#align_import algebra.quandle from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 /-!
 # Racks and Quandles
 
@@ -361,14 +358,12 @@ namespace ShelfHom
 
 variable {S₁ : Type _} {S₂ : Type _} {S₃ : Type _} [Shelf S₁] [Shelf S₂] [Shelf S₃]
 
-instance : CoeFun (S₁ →◃ S₂) fun _ => S₁ → S₂ :=
-  ⟨ShelfHom.toFun⟩
+instance : FunLike (S₁ →◃ S₂) S₁ fun _ => S₂ where
+  coe := toFun
+  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
--- Porting Note: Syntactically equal in Lean4
--- @[simp]
--- theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f :=
---   rfl
-#noalign shelf_hom.to_fun_eq_coe
+@[simp] theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f := rfl
+#align shelf_hom.to_fun_eq_coe ShelfHom.toFun_eq_coe
 
 @[simp]
 theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y :=
@@ -663,9 +658,9 @@ instance PreEnvelGroup.setoid (R : Type _) [Rack R] : Setoid (PreEnvelGroup R)
   r := PreEnvelGroupRel R
   iseqv := by
     constructor
-    apply PreEnvelGroupRel.refl
-    apply PreEnvelGroupRel.symm
-    apply PreEnvelGroupRel.trans
+    · apply PreEnvelGroupRel.refl
+    · apply PreEnvelGroupRel.symm
+    · apply PreEnvelGroupRel.trans
 #align rack.pre_envel_group.setoid Rack.PreEnvelGroup.setoid
 /-- The universal enveloping group for the rack R.
 -/

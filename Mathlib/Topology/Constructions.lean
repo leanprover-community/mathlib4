@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Maps
 import Mathlib.Order.Filter.Pi
+
+#align_import topology.constructions from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -46,22 +43,27 @@ variable {α : Type u} {β : Type v} {γ δ ε ζ : Type _}
 
 section Constructions
 
-instance {p : α → Prop} [t : TopologicalSpace α] : TopologicalSpace (Subtype p) :=
+instance instTopologicalSpaceSubtype {p : α → Prop} [t : TopologicalSpace α] :
+    TopologicalSpace (Subtype p) :=
   induced (↑) t
 
 instance {r : α → α → Prop} [t : TopologicalSpace α] : TopologicalSpace (Quot r) :=
   coinduced (Quot.mk r) t
 
-instance {s : Setoid α} [t : TopologicalSpace α] : TopologicalSpace (Quotient s) :=
+instance instTopologicalSpaceQuotient {s : Setoid α} [t : TopologicalSpace α] :
+    TopologicalSpace (Quotient s) :=
   coinduced Quotient.mk' t
 
-instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α × β) :=
+instance instTopologicalSpaceProd [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] :
+    TopologicalSpace (α × β) :=
   induced Prod.fst t₁ ⊓ induced Prod.snd t₂
 
-instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α ⊕ β) :=
+instance instTopologicalSpaceSum [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] :
+    TopologicalSpace (α ⊕ β) :=
   coinduced Sum.inl t₁ ⊔ coinduced Sum.inr t₂
 
-instance {β : α → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] : TopologicalSpace (Sigma β) :=
+instance instTopologicalSpaceSigma {β : α → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] :
+    TopologicalSpace (Sigma β) :=
   ⨆ a, coinduced (Sigma.mk a) (t₂ a)
 
 instance Pi.topologicalSpace {β : α → Type v} [t₂ : (a : α) → TopologicalSpace (β a)] :
@@ -1033,6 +1035,17 @@ theorem IsOpenMap.restrict {f : α → β} (hf : IsOpenMap f) {s : Set α} (hs :
   hf.comp hs.isOpenMap_subtype_val
 #align is_open_map.restrict IsOpenMap.restrict
 
+lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Set β) :
+    IsClosedMap (T.restrictPreimage f) := by
+  rw [isClosedMap_iff_clusterPt] at hcl ⊢
+  intro A ⟨y, hyT⟩ hy
+  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
+      map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
+  rcases hcl _ y hy with ⟨x, hxy, hx⟩
+  have hxT : f x ∈ T := hxy ▸ hyT
+  refine ⟨⟨x, hxT⟩, Subtype.ext hxy, ?_⟩
+  rwa [← inducing_subtype_val.mapClusterPt_iff, MapClusterPt, map_principal]
+
 nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set α} (hs : IsClosed s) :
     ClosedEmbedding ((↑) : s → α) :=
   closedEmbedding_subtype_val hs
@@ -1533,6 +1546,22 @@ theorem continuous_sigma {f : Sigma σ → α} (hf : ∀ i, Continuous fun a => 
   continuous_sigma_iff.2 hf
 #align continuous_sigma continuous_sigma
 
+/-- A map defined on a sigma type (a.k.a. the disjoint union of an indexed family of topological
+spaces) is inducing iff its restriction to each component is inducing and each the image of each
+component under `f` can be separated from the images of all other components by an open set. -/
+theorem inducing_sigma {f : Sigma σ → α} :
+    Inducing f ↔ (∀ i, Inducing (f ∘ Sigma.mk i)) ∧
+      (∀ i, ∃ U, IsOpen U ∧ ∀ x, f x ∈ U ↔ x.1 = i) := by
+  refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
+  · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
+    refine ⟨U, hUo, ?_⟩
+    simpa [Set.ext_iff] using hU
+  · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
+    rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
+    rcases h₂ i with ⟨U, hUo, hU⟩
+    filter_upwards [preimage_mem_comap <| hUo.mem_nhds <| (hU _).2 rfl] with y hy
+    simpa [hU] using hy
+
 @[simp 1100]
 theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     Continuous (Sigma.map f₁ f₂) ↔ ∀ i, Continuous (f₂ i) :=
@@ -1599,3 +1628,21 @@ instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift �
   embedding_uLift_down.discreteTopology
 
 end ULift
+
+section Monad
+
+variable [TopologicalSpace α] {β : Set α} {γ : Set β}
+
+theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
+  rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsOpen.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
+  rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsClosed.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+end Monad

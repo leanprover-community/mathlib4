@@ -2,16 +2,13 @@
 Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module group_theory.commutator
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Data.Bracket
 import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Tactic.Group
+
+#align_import group_theory.commutator from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # Commutators of Subgroups
@@ -98,7 +95,7 @@ theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁,
   commutator_le.mpr fun _g₁ hg₁ _g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
 #align subgroup.commutator_mono Subgroup.commutator_mono
 
-theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ H₂.centralizer := by
+theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
   rw [eq_bot_iff, commutator_le]
   refine'
     forall_congr' fun p => forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => _

@@ -2,13 +2,10 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.finset.card
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
+
+#align_import data.finset.card from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Cardinality of a finite set
@@ -176,7 +173,7 @@ theorem card_attach : s.attach.card = s.card :=
 
 end Finset
 
-section ToListMultiset
+section ToMLListultiset
 
 variable [DecidableEq α] (m : Multiset α) (l : List α)
 
@@ -205,7 +202,7 @@ theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : l.toFinset.car
   Multiset.toFinset_card_of_nodup h
 #align list.to_finset_card_of_nodup List.toFinset_card_of_nodup
 
-end ToListMultiset
+end ToMLListultiset
 
 namespace Finset
 

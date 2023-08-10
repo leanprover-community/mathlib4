@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.truncated
-! leanprover-community/mathlib commit acbe099ced8be9c9754d62860110295cde0d7181
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.InitTail
+
+#align_import ring_theory.witt_vector.truncated from "leanprover-community/mathlib"@"acbe099ced8be9c9754d62860110295cde0d7181"
 
 /-!
 
@@ -471,7 +468,7 @@ theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s :
   ext i
   simp only [liftFun, TruncatedWittVector.coeff_mk, WittVector.truncate_mk']
   rw [← f_compat (i + 1) n i.is_lt, RingHom.comp_apply, TruncatedWittVector.coeff_truncate]
-  congr with _
+  congr 1 with _
 #align witt_vector.truncate_lift_fun WittVector.truncate_liftFun
 
 variable (f)

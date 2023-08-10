@@ -237,7 +237,7 @@ def toMultilinearAddHom : M [Λ^ι]→L[R] N →+ ContinuousMultilinearMap R (fu
 
 end ContinuousAdd
 
-/-- If `f` is a continuous alternating map, then `f.to_continuous_linear_map m i` is the continuous
+/-- If `f` is a continuous alternating map, then `f.toContinuousLinearMap m i` is the continuous
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/
 @[simps! apply]
@@ -361,28 +361,28 @@ def piEquiv {ι' : Type _} {N : ι' → Type _} [∀ i, AddCommMonoid (N i)] [�
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
-additivity of a alternating map along the first variable. -/
+additivity of an alternating map along the first variable. -/
 theorem cons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
     f (Fin.cons (x + y) m) = f (Fin.cons x m) + f (Fin.cons y m) :=
   f.toMultilinearMap.cons_add m x y
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
-additivity of a alternating map along the first variable. -/
+additivity of an alternating map along the first variable. -/
 theorem vecCons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
     f (vecCons (x + y) m) = f (vecCons x m) + f (vecCons y m) :=
   f.toMultilinearMap.cons_add m x y
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
-multiplicativity of a alternating map along the first variable. -/
+multiplicativity of an alternating map along the first variable. -/
 theorem cons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
     (x : M) : f (Fin.cons (c • x) m) = c • f (Fin.cons x m) :=
   f.toMultilinearMap.cons_smul m c x
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
-multiplicativity of a alternating map along the first variable. -/
+multiplicativity of an alternating map along the first variable. -/
 theorem vecCons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
     (x : M) : f (vecCons (c • x) m) = c • f (vecCons x m) :=
   f.toMultilinearMap.cons_smul m c x
@@ -392,7 +392,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ι → M) (t : Finset ι) :
   f.toMultilinearMap.map_piecewise_add _ _ _
 
 /-- Additivity of a continuous alternating map along all coordinates at the same time,
-writing `f (m + m')` as the sum  of `f (s.piecewise m m')` over all sets `s`. -/
+writing `f (m + m')` as the sum of `f (s.piecewise m m')` over all sets `s`. -/
 theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
     f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
   f.toMultilinearMap.map_add_univ _ _
@@ -524,7 +524,7 @@ instance : Module R (M [Λ^ι]→L[A] N) :=
   Function.Injective.module _ toMultilinearAddHom toContinuousMultilinearMap_injective fun _ _ =>
     rfl
 
-/-- Linear map version of the map `to_multilinear_map` associating to a continuous alternating map
+/-- Linear map version of the map `toMultilinearMap` associating to a continuous alternating map
 the corresponding multilinear map. -/
 @[simps]
 def toContinuousMultilinearMapLinear :
@@ -551,7 +551,7 @@ variable {R A M N ι : Type _} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
   (f : M [Λ^ι]→L[R] R) (z : N)
 
-/-- Given a continuous `R`-alternating map `f` taking values in `R`, `f.smul_right z` is the
+/-- Given a continuous `R`-alternating map `f` taking values in `R`, `f.smulRight z` is the
 continuous alternating map sending `m` to `f m • z`. -/
 @[simps! toContinuousMultilinearMap apply]
 def smulRight : M [Λ^ι]→L[R] N :=

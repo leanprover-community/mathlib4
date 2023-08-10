@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.order.archimedean
-! leanprover-community/mathlib commit 6f413f3f7330b94c92a5a27488fdc74e6d483a78
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
 import Mathlib.Algebra.Order.Field.Power
+
+#align_import algebra.order.archimedean from "leanprover-community/mathlib"@"6f413f3f7330b94c92a5a27488fdc74e6d483a78"
 
 /-!
 # Archimedean groups and fields.
@@ -49,6 +46,11 @@ instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archi
     let ⟨n, hn⟩ := Archimedean.arch (-ofDual x) (neg_pos.2 hy)
     ⟨n, by rwa [neg_nsmul, neg_le_neg_iff] at hn⟩⟩
 #align order_dual.archimedean OrderDual.archimedean
+
+theorem exists_lt_nsmul [OrderedAddCommMonoid M] [Archimedean M]
+    [CovariantClass M M (· + ·) (· < ·)] {a : M} (ha : 0 < a) (b : M) :
+    ∃ n : ℕ, b < n • a :=
+  let ⟨k, hk⟩ := Archimedean.arch b ha; ⟨k + 1, hk.trans_lt <| nsmul_lt_nsmul ha k.lt_succ_self⟩
 
 section LinearOrderedAddCommGroup
 
@@ -113,20 +115,18 @@ theorem existsUnique_sub_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
 end LinearOrderedAddCommGroup
 
 theorem exists_nat_gt [StrictOrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x < n :=
-  let ⟨n, h⟩ := Archimedean.arch x zero_lt_one
-  ⟨n + 1, lt_of_le_of_lt (by rwa [← nsmul_one]) (Nat.cast_lt.2 (Nat.lt_succ_self _))⟩
+  (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]
 #align exists_nat_gt exists_nat_gt
 
-theorem exists_nat_ge [StrictOrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x ≤ n := by
+theorem exists_nat_ge [OrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x ≤ n := by
   nontriviality α
-  exact (exists_nat_gt x).imp fun n => le_of_lt
+  exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
 #align exists_nat_ge exists_nat_ge
 
 theorem add_one_pow_unbounded_of_pos [StrictOrderedSemiring α] [Archimedean α] (x : α) {y : α}
     (hy : 0 < y) : ∃ n : ℕ, x < (y + 1) ^ n :=
   have : 0 ≤ 1 + y := add_nonneg zero_le_one hy.le
-  let ⟨n, h⟩ := Archimedean.arch x hy
-  ⟨n,
+  (Archimedean.arch x hy).imp fun n h ↦
     calc
       x ≤ n • y := h
       _ = n * y := nsmul_eq_mul _ _
@@ -135,7 +135,6 @@ theorem add_one_pow_unbounded_of_pos [StrictOrderedSemiring α] [Archimedean α]
         one_add_mul_le_pow' (mul_nonneg hy.le hy.le) (mul_nonneg this this)
           (add_nonneg zero_le_two hy.le) _
       _ = (y + 1) ^ n := by rw [add_comm]
-      ⟩
 #align add_one_pow_unbounded_of_pos add_one_pow_unbounded_of_pos
 
 section StrictOrderedRing

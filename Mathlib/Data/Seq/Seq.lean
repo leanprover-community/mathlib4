@@ -2,17 +2,14 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.seq.seq
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.LazyList
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Stream.Init
 import Mathlib.Data.Seq.Computation
+
+#align_import data.seq.seq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Possibly infinite lists
@@ -724,7 +721,7 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
   apply
     eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (append s t) ∧ s2 = append (map f s) (map f t)) _
       ⟨s, t, rfl, rfl⟩
-  intro s1 s2 h;
+  intro s1 s2 h
   exact
     match s1, s2, h with
     | _, _, ⟨s, t, rfl, rfl⟩ => by

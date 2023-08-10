@@ -2,13 +2,10 @@
 Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.additive.e_transform
-! leanprover-community/mathlib commit 207c92594599a06e7c134f8d00a030a83e6c7259
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Pointwise
+
+#align_import combinatorics.additive.e_transform from "leanprover-community/mathlib"@"207c92594599a06e7c134f8d00a030a83e6c7259"
 
 /-!
 # e-transforms

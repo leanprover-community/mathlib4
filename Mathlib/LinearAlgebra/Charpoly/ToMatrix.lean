@@ -2,14 +2,11 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.charpoly.to_matrix
-! leanprover-community/mathlib commit baab5d3091555838751562e6caad33c844bea15e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
+
+#align_import linear_algebra.charpoly.to_matrix from "leanprover-community/mathlib"@"baab5d3091555838751562e6caad33c844bea15e"
 
 /-!
 
@@ -29,7 +26,7 @@ variable {R : Type u} {M : Type v} [CommRing R] [Nontrivial R]
 
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
-open Classical Matrix
+open Matrix
 
 noncomputable section
 
@@ -41,7 +38,7 @@ section Basic
 
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
-theorem charpoly_toMatrix {ι : Type w} [Fintype ι] (b : Basis ι R M) :
+theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
     (toMatrix b b f).charpoly = f.charpoly := by
   let A := toMatrix b b f
   let b' := chooseBasis R M

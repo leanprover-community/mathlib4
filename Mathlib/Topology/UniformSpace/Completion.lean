@@ -2,13 +2,10 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.uniform_space.completion
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.AbstractCompletion
+
+#align_import topology.uniform_space.completion from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Hausdorff completions of uniform spaces
@@ -368,7 +365,7 @@ def Completion :=
 namespace Completion
 
 instance inhabited [Inhabited α] : Inhabited (Completion α) :=
-  Quotient.instInhabitedQuotient (separationSetoid (CauchyFilter α))
+  inferInstanceAs <| Inhabited (Quotient _)
 
 instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace

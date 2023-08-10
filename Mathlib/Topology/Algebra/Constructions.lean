@@ -2,13 +2,10 @@
 Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module topology.algebra.constructions
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.algebra.constructions from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
 /-!
 # Topological space structure on the opposite monoid and on the units group
@@ -32,7 +29,7 @@ namespace MulOpposite
 /-- Put the same topological space structure on the opposite monoid as on the original space. -/
 @[to_additive "Put the same topological space structure on the opposite monoid as on the original
 space."]
-instance [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
+instance instTopologicalSpaceMulOpposite [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
   TopologicalSpace.induced (unop : Mᵐᵒᵖ → M) ‹_›
 
 variable [TopologicalSpace M]
@@ -97,7 +94,7 @@ variable [TopologicalSpace M] [Monoid M] [TopologicalSpace X]
 /-- The units of a monoid are equipped with a topology, via the embedding into `M × M`. -/
 @[to_additive "The additive units of a monoid are equipped with a topology, via the embedding into
 `M × M`."]
-instance : TopologicalSpace Mˣ :=
+instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
   TopologicalSpace.induced (embedProduct M) inferInstance
 
 @[to_additive]

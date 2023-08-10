@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.star_alg_hom
-! leanprover-community/mathlib commit 35882ddc66524b6980532a123a4ad4166db34c81
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Star.Prod
+
+#align_import algebra.star.star_alg_hom from "leanprover-community/mathlib"@"35882ddc66524b6980532a123a4ad4166db34c81"
 
 /-!
 # Morphisms of star algebras
@@ -746,7 +743,7 @@ instance (priority := 100) {F R A B : Type _} [Monoid R] [NonUnitalNonAssocSemir
     map_zero := map_zero }
 
 -- See note [lower instance priority]
-instance (priority := 100) (F R A B : Type _) [CommSemiring R] [Semiring A]
+instance (priority := 100) instStarAlgHomClass (F R A B : Type _) [CommSemiring R] [Semiring A]
     [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
     [hF : StarAlgEquivClass F R A B] : StarAlgHomClass F R A B :=
   { hF with

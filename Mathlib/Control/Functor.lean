@@ -2,15 +2,12 @@
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.functor
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
 import Std.Tactic.Lint
+
+#align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Functors
@@ -267,8 +264,8 @@ protected theorem run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp 
   rfl
 #align functor.comp.run_seq Functor.Comp.run_seq
 
-instance : Applicative (Comp F G) :=
-  { instPureComp with map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
+instance instApplicativeComp : Applicative (Comp F G) :=
+  { map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
 
 end Comp
 

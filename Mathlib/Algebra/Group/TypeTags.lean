@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.group.type_tags
-! leanprover-community/mathlib commit 2e0975f6a25dd3fbfb9e41556a77f075f6269748
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Finite.Defs
+
+#align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
@@ -134,11 +131,11 @@ instance [h: Infinite α] : Infinite (Additive α) := h
 
 instance [h: Infinite α] : Infinite (Multiplicative α) := h
 
-instance [Nontrivial α] : Nontrivial (Additive α) :=
+instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
 #align additive.nontrivial instNontrivialAdditive
 
-instance [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance instNontrivialMultiplicative [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
 #align multiplicative.nontrivial instNontrivialMultiplicative
 

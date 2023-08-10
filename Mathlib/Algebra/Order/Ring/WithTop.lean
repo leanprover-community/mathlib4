@@ -2,16 +2,13 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.order.ring.with_top
-! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Std.Data.Option.Lemmas
+
+#align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
 The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
@@ -30,7 +27,7 @@ section Mul
 
 variable [Zero α] [Mul α]
 
-instance : MulZeroClass (WithTop α) where
+instance instMulZeroClassWithTop : MulZeroClass (WithTop α) where
   zero := 0
   mul m n := if m = 0 ∨ n = 0 then 0 else Option.map₂ (· * ·) m n
   zero_mul _ := if_pos <| Or.inl rfl
@@ -119,7 +116,8 @@ theorem untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.u
 end MulZeroClass
 
 /-- `Nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
-instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
+instance instMulZeroOneClassWithTop [MulZeroOneClass α] [Nontrivial α] :
+    MulZeroOneClass (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
     mul := (· * ·)
     one := 1, zero := 0
@@ -155,7 +153,8 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClas
         simp only [map_coe, ← coe_mul, map_mul] }
 #align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
-instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
+instance instSemigroupWithZeroWithTop [SemigroupWithZero α] [NoZeroDivisors α] :
+    SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
     mul := (· * ·)
     zero := 0

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.order.basic
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed.order.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Ordered normed spaces
@@ -104,7 +101,7 @@ instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGro
 @[to_additive]
 instance OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :
     NormedLinearOrderedGroup αᵒᵈ :=
-  { OrderDual.normedOrderedGroup, OrderDual.linearOrder _ with }
+  { OrderDual.normedOrderedGroup, OrderDual.instLinearOrder _ with }
 
 instance Additive.normedOrderedAddGroup [NormedOrderedGroup α] :
     NormedOrderedAddGroup (Additive α) :=

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.concept
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
+
+#align_import order.concept from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 
 /-!
 # Formal concept analysis
@@ -210,7 +207,7 @@ theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ =>
 theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
 #align concept.snd_injective Concept.snd_injective
 
-instance : Sup (Concept α β r) :=
+instance instSupConcept : Sup (Concept α β r) :=
   ⟨fun c d =>
     { fst := extentClosure r (c.snd ∩ d.snd)
       snd := c.snd ∩ d.snd
@@ -219,7 +216,7 @@ instance : Sup (Concept α β r) :=
           intentClosure_extentClosure_intentClosure]
       closure_snd := rfl }⟩
 
-instance : Inf (Concept α β r) :=
+instance instInfConcept : Inf (Concept α β r) :=
   ⟨fun c d =>
     { fst := c.fst ∩ d.fst
       snd := intentClosure r (c.fst ∩ d.fst)
@@ -228,7 +225,7 @@ instance : Inf (Concept α β r) :=
         rw [← c.closure_snd, ← d.closure_snd, ← extentClosure_union,
           extentClosure_intentClosure_extentClosure] }⟩
 
-instance : SemilatticeInf (Concept α β r) :=
+instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
   (fst_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
@@ -263,7 +260,7 @@ theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → S
   snd_ssubset_snd_iff.2
 #align concept.strict_anti_snd Concept.strictAnti_snd
 
-instance : Lattice (Concept α β r) :=
+instance instLatticeConcept : Lattice (Concept α β r) :=
   { Concept.instSemilatticeInfConcept with
     sup := (· ⊔ ·)
     le_sup_left := fun c d => snd_subset_snd_iff.1 <| inter_subset_left _ _
@@ -272,7 +269,7 @@ instance : Lattice (Concept α β r) :=
       simp_rw [← snd_subset_snd_iff]
       exact subset_inter }
 
-instance : BoundedOrder (Concept α β r) where
+instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
   top := ⟨⟨univ, intentClosure r univ⟩, rfl, eq_univ_of_forall fun _ _ hb => hb trivial⟩
   le_top _ := subset_univ _
   bot := ⟨⟨extentClosure r univ, univ⟩, eq_univ_of_forall fun _ _ ha => ha trivial, rfl⟩
@@ -298,7 +295,7 @@ instance : InfSet (Concept α β r) :=
 
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
-    Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
+    Concept.instBoundedOrderConcept with
     sup := Concept.instSupConcept.sup
     le_sSup := fun _ _ hc => snd_subset_snd_iff.1 <| biInter_subset_of_mem hc
     sSup_le := fun _ _ hc =>

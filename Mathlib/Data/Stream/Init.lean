@@ -2,17 +2,14 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.stream.init
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Tactic.Ext
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.List.Basic
+
+#align_import data.stream.init from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
@@ -318,7 +315,7 @@ theorem nth_of_bisim (bisim : IsBisimulation R) :
 #align stream.nth_of_bisim Stream'.nth_of_bisim
 
 -- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun  r =>
+theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun r =>
   Stream'.ext fun n => And.left (nth_of_bisim R bisim n r)
 #align stream.eq_of_bisim Stream'.eq_of_bisim
 
@@ -328,7 +325,7 @@ theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
     (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor; exact h₁; rw [← h₂, ← h₃];
+      constructor; exact h₁; rw [← h₂, ← h₃]
       (repeat' constructor) <;> assumption)
     (And.intro hh (And.intro ht₁ ht₂))
 #align stream.bisim_simple Stream'.bisim_simple
@@ -467,13 +464,13 @@ theorem head_even (s : Stream' α) : head (even s) = head s :=
 #align stream.head_even Stream'.head_even
 
 theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
-  unfold even;
-  rw [corec_eq];
+  unfold even
+  rw [corec_eq]
   rfl
 #align stream.tail_even Stream'.tail_even
 
 theorem even_cons_cons (a₁ a₂ : α) (s : Stream' α) : even (a₁::a₂::s) = a₁::even s := by
-  unfold even;
+  unfold even
   rw [corec_eq]; rfl
 #align stream.even_cons_cons Stream'.even_cons_cons
 
@@ -685,13 +682,13 @@ theorem tails_eq_iterate (s : Stream' α) : tails s = iterate tail (tail s) :=
 
 theorem inits_core_eq (l : List α) (s : Stream' α) :
     initsCore l s = l::initsCore (l ++ [head s]) (tail s) := by
-    unfold initsCore corecOn;
+    unfold initsCore corecOn
     rw [corec_eq]
 #align stream.inits_core_eq Stream'.inits_core_eq
 
 theorem tail_inits (s : Stream' α) :
     tail (inits s) = initsCore [head s, head (tail s)] (tail (tail s)) := by
-    unfold inits;
+    unfold inits
     rw [inits_core_eq]; rfl
 #align stream.tail_inits Stream'.tail_inits
 

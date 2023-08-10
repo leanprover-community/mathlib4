@@ -2,18 +2,15 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.stone_separation
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Join
+
+#align_import analysis.convex.stone_separation from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Stone's separation theorem
 
-This file prove Stone's separation theorem. This tells us that any two disjoint convex sets can be
+This file proves Stone's separation theorem. This tells us that any two disjoint convex sets can be
 separated by a convex set whose complement is also convex.
 
 In locally convex real topological vector spaces, the Hahn-Banach separation theorems provide
@@ -90,7 +87,7 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
     zorn_subset_nonempty S
       (fun c hcS hc ⟨_, _⟩ =>
         ⟨⋃₀ c,
-          ⟨hc.directedOn.convex_sUnion  fun s hs => (hcS hs).1,
+          ⟨hc.directedOn.convex_sUnion fun s hs => (hcS hs).1,
             disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
           fun s => subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩

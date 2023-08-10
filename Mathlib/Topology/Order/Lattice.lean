@@ -2,14 +2,11 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module topology.order.lattice
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Constructions
+
+#align_import topology.order.lattice from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Topological lattices
@@ -65,8 +62,8 @@ instance (priority := 100) OrderDual.continuousInf (L : Type _) [TopologicalSpac
 /-- Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.
 Then `L` is said to be a *topological lattice*.
 -/
-class TopologicalLattice (L : Type _) [TopologicalSpace L] [Lattice L] extends ContinuousInf L,
-  ContinuousSup L
+class TopologicalLattice (L : Type _) [TopologicalSpace L] [Lattice L]
+  extends ContinuousInf L, ContinuousSup L : Prop
 #align topological_lattice TopologicalLattice
 
 -- see Note [lower instance priority]

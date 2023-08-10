@@ -2,17 +2,14 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.algebra.unitization
-! leanprover-community/mathlib commit 8f66240cab125b938b327d3850169d490cfbcdd8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Module
+
+#align_import algebra.algebra.unitization from "leanprover-community/mathlib"@"8f66240cab125b938b327d3850169d490cfbcdd8"
 
 /-!
 # Unitization of a non-unital algebra
@@ -155,35 +152,35 @@ instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A)
   instInhabitedProd
 
 instance instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
-  Prod.instZeroSum
+  Prod.instZero
 
 instance instAdd [Add R] [Add A] : Add (Unitization R A) :=
-  Prod.instAddSum
+  Prod.instAdd
 
 instance instNeg [Neg R] [Neg A] : Neg (Unitization R A) :=
-  Prod.instNegSum
+  Prod.instNeg
 
 instance instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
-  Prod.instAddSemigroupSum
+  Prod.instAddSemigroup
 
 instance instAddZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
-  Prod.instAddZeroClassSum
+  Prod.instAddZeroClass
 
 instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
-  Prod.instAddMonoidSum
+  Prod.instAddMonoid
 
 instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
-  Prod.instAddGroupSum
+  Prod.instAddGroup
 
 instance instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
     AddCommSemigroup (Unitization R A) :=
-  Prod.instAddCommSemigroupSum
+  Prod.instAddCommSemigroup
 
 instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
-  Prod.instAddCommMonoidSum
+  Prod.instAddCommMonoid
 
 instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
-  Prod.instAddCommGroupSum
+  Prod.instAddCommGroup
 
 instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
   Prod.smul
@@ -209,7 +206,7 @@ instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMul
 
 instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
     Module S (Unitization R A) :=
-  Prod.module
+  Prod.instModule
 
 @[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=

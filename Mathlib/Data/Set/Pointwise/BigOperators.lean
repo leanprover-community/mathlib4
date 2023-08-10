@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.set.pointwise.big_operators
-! leanprover-community/mathlib commit fa2cb8a9e2b987db233e4e6eb47645feafba8861
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import data.set.pointwise.big_operators from "leanprover-community/mathlib"@"fa2cb8a9e2b987db233e4e6eb47645feafba8861"
 
 /-!
 # Results about pointwise operations on sets and big operators.
