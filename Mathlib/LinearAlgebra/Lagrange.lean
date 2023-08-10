@@ -67,6 +67,23 @@ theorem eq_of_degrees_lt_of_eval_finset_eq (degree_f_lt : f.degree < s.card)
   rw [← mem_degreeLT]; exact Submodule.sub_mem _ degree_f_lt degree_g_lt
 #align polynomial.eq_of_degrees_lt_of_eval_finset_eq Polynomial.eq_of_degrees_lt_of_eval_finset_eq
 
+/--
+Two polynomials, with the same degree and leading coefficient, which have the same evaluation
+on a set of distinct values with cardinality equal to the degree, are equal.
+-/
+theorem eq_of_degrees_le_of_leadingCoeff_eq_of_eval_finset_eq (degree_f_le : f.degree ≤ s.card)
+    (degree_f_eq_degree_g : f.degree = g.degree)
+    (leadingCoeffs_eq : f.leadingCoeff = g.leadingCoeff) (eval_fg : ∀ x ∈ s, f.eval x = g.eval x) :
+    f = g := by
+  by_cases f_zero : f = 0
+  · simp only [f_zero] at *
+    apply Eq.symm
+    rw [eq_comm] at leadingCoeffs_eq
+    exact Iff.mp degree_eq_bot (id (Eq.symm degree_f_eq_degree_g))
+  · exact eq_of_degree_sub_lt_of_eval_finset_eq s
+      (lt_of_lt_of_le (degree_sub_lt degree_f_eq_degree_g f_zero leadingCoeffs_eq) degree_f_le)
+      eval_fg
+
 end Finset
 
 section Indexed
@@ -100,6 +117,23 @@ theorem eq_of_degrees_lt_of_eval_index_eq (hvs : Set.InjOn v s) (degree_f_lt : f
   rw [← mem_degreeLT] at degree_f_lt degree_g_lt ⊢
   exact Submodule.sub_mem _ degree_f_lt degree_g_lt
 #align polynomial.eq_of_degrees_lt_of_eval_index_eq Polynomial.eq_of_degrees_lt_of_eval_index_eq
+
+theorem eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq [DecidableEq R] (hvs : Set.InjOn v s)
+    (degree_f_le : f.degree ≤ s.card) (degree_f_eq_degree_g : f.degree = g.degree)
+    (leadingCoeffs_eq : f.leadingCoeff = g.leadingCoeff)
+    (eval_fg : ∀ i ∈ s, f.eval (v i) = g.eval (v i)) : f = g := by
+  apply eq_of_degrees_le_of_leadingCoeff_eq_of_eval_finset_eq (s.image v)
+  · convert degree_f_le
+    rw [card_image_iff]
+    exact hvs
+  exact degree_f_eq_degree_g
+  exact leadingCoeffs_eq
+  intro x x_mem
+  simp at x_mem
+  rcases x_mem with ⟨x', hx', hx''⟩
+  rw [← hx'']
+  apply eval_fg
+  exact hx'
 
 end Indexed
 
@@ -494,9 +528,15 @@ theorem nodal_empty : nodal ∅ v = 1 := by
   rfl
 #align lagrange.nodal_empty Lagrange.nodal_empty
 
+@[simp]
 theorem degree_nodal : (nodal s v).degree = s.card := by
   simp_rw [nodal, degree_prod, degree_X_sub_C, sum_const, Nat.smul_one_eq_coe]
 #align lagrange.degree_nodal Lagrange.degree_nodal
+
+theorem nodal_monic : (nodal s v).Monic := by
+  apply Polynomial.monic_prod_of_monic
+  intros i _
+  exact monic_X_sub_C (v i)
 
 theorem eval_nodal {x : F} : (nodal s v).eval x = ∏ i in s, (x - v i) := by
   simp_rw [nodal, eval_prod, eval_sub, eval_X, eval_C]
@@ -619,6 +659,58 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
     eval_interpolate_not_at_node r hx, eval_interpolate_not_at_node 1 hx]
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
 #align lagrange.eval_interpolate_not_at_node' Lagrange.eval_interpolate_not_at_node'
+
+def vanishingPolynomial (G : Subgroup (Units F)) [Fintype G] : Polynomial F :=
+  Polynomial.monomial (Fintype.card G) 1 - Polynomial.C 1
+
+
+-- TODO find_home
+
+theorem leadingCoeff_add_of_degree_lt_left [Semiring R] (p q : R[X]) (h : degree q < degree p) :
+    leadingCoeff (p + q) = leadingCoeff p := by
+  rw [add_comm]
+  apply leadingCoeff_add_of_degree_lt
+  exact h
+
+#find_home leadingCoeff_add_of_degree_lt_left
+
+theorem leadingCoeff_sub_of_degree_lt [Ring R] (p q : R[X])
+    (h : Polynomial.degree q < Polynomial.degree p) : (p - q).leadingCoeff = p.leadingCoeff := by
+  rw [sub_eq_add_neg]
+  apply leadingCoeff_add_of_degree_lt_left
+  rw [degree_neg]
+  exact h
+
+theorem leadingCoeff_sub_of_degree_eq [Ring R] (p q : R[X]) (h : degree p = degree q)
+    (hlc : leadingCoeff p - leadingCoeff q ≠ 0) :
+    leadingCoeff (p - q) = leadingCoeff p - leadingCoeff q := by
+  rw [sub_eq_add_neg, leadingCoeff_add_of_degree_eq, leadingCoeff_neg, sub_eq_add_neg]
+  · rw [h, degree_neg]
+  · rw [leadingCoeff_neg, <-sub_eq_add_neg]
+    exact hlc
+
+/--
+The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1
+-/
+theorem nodal_subgroup_eq_X_pow_card_sub_one [DecidableEq F] (G : Subgroup (Units F)) [Fintype G] :
+  nodal G.carrier.toFinset (fun (x : Fˣ) => (x : F)) = X ^ (Fintype.card G) - C 1 := by
+  apply eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq
+    (v := (fun (x : Fˣ) => (x : F))) (G.carrier.toFinset)
+  · apply Set.injOn_of_injective
+    exact Units.ext
+  · simp only [degree_nodal, Set.toFinset_card, le_refl]
+  · rw [degree_sub_eq_left_of_degree_lt]
+    simp only [degree_nodal, Set.toFinset_card, degree_pow, degree_X, nsmul_eq_mul, mul_one,
+      Nat.cast_inj]
+    exact rfl
+    simp only [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
+    exact Fintype.card_pos
+  · simp only [map_one]
+    rw [nodal_monic]
+    rw [leadingCoeff_sub_of_degree_lt]
+    rw [monic_X_pow]
+    simp only [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
+    exact Fintype.card_pos
 
 end Nodal
 
