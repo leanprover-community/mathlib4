@@ -20,15 +20,8 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 
 ## Main declarations
 
-* `MvPolynomial.psum`: The degree-`n` power sum evaluated at the elements of `s`.
-
 * `MvPolynomial.NewtonIdentities.esymm_recurrence`: a recurrence relation for the kth elementary
   symmetric polynomial in terms of lower degree elementary symmetric polynomials and power sums.
-
-## Notation
-
-+ `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
-  `(X i)^n` over `i ∈ σ`.
 
 ## References
 
@@ -42,34 +35,6 @@ open BigOperators MvPolynomial
 noncomputable section
 
 namespace MvPolynomial
-
-section PowerSum
-
-open Finset
-
-variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
-
-/-- The degree-`n` power sum -/
-def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
-
-lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
-
-@[simp]
-theorem psum_zero : psum σ R 0 = Fintype.card σ := by
-  simp only [psum, _root_.pow_zero, ← cast_card]
-  exact rfl
-
-@[simp]
-theorem psum_one : psum σ R 1 = ∑ i, X i := by
-  simp only [psum, _root_.pow_one]
-
-@[simp]
-theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
-  simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
-
-theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n
-
-end PowerSum
 
 namespace NewtonIdentities
 
