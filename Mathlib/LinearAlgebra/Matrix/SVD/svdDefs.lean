@@ -113,11 +113,6 @@ lemma U_columns' (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [svdU₂, svdU₁']
   simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, fromColumns_toColumns]
 
-lemma eigenvector_matrix_inv_mul_self [Fintype n] [DecidableEq n] {Z: Matrix n n 𝕂}
-    (hZ : IsHermitian Z) :
-    hZ.eigenvectorMatrixInv ⬝ hZ.eigenvectorMatrix = 1 :=
-  Matrix.mul_eq_one_comm.1 hZ.eigenvectorMatrix_mul_inv
-
 lemma V_conjTranspose_mul_V (A : Matrix (Fin M) (Fin N) 𝕂) :
     (A.svdV₁ᴴ ⬝ A.svdV₁ = 1 ∧ A.svdV₂ᴴ ⬝ A.svdV₂ = 1) ∧
     (A.svdV₂ᴴ ⬝ A.svdV₁ = 0 ∧ A.svdV₁ᴴ ⬝ A.svdV₂ = 0) := by
@@ -264,15 +259,13 @@ lemma V_columns (A : Matrix (Fin M) (Fin N) 𝕂) :
 lemma reduced_spectral_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
     Aᴴ ⬝ A = A.svdV₁ ⬝ (A.svdμ.map (algebraMap ℝ 𝕂)) ⬝ A.svdV₁ᴴ := by
   let hAHA := isHermitian_transpose_mul_self A
+  -- "Brute force" (submatrix_mul_equiv) explicit rewrites: each one on its own line for
+  -- readability!!
   rw [← submatrix_id_id (Aᴴ⬝A), IsHermitian.spectral_theorem' hAHA,
-    ← IsHermitian.conjTranspose_eigenvectorMatrix]
-  rw [Matrix.mul_assoc, ← submatrix_mul_equiv
-    hAHA.eigenvectorMatrix
-    (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues) ⬝ (hAHA.eigenvectorMatrixᴴ)) _ (enz A).symm _]
-  rw [← submatrix_mul_equiv
-    (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues))
-    (hAHA.eigenvectorMatrixᴴ) _ (enz A).symm _]
-  rw [← @IsROrC.algebraMap_eq_ofReal 𝕂]
+    ← IsHermitian.conjTranspose_eigenvectorMatrix, Matrix.mul_assoc,
+    ← submatrix_mul_equiv hAHA.eigenvectorMatrix (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues) ⬝ (hAHA.eigenvectorMatrixᴴ)) _ (enz A).symm _,
+    ← submatrix_mul_equiv (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues)) (hAHA.eigenvectorMatrixᴴ) _ (enz A).symm _,
+    ← @IsROrC.algebraMap_eq_ofReal 𝕂]
   simp_rw [Function.comp]
   rw [← diagonal_map, submatrix_map,
     ← reindex_apply, ← Equiv.coe_refl, ← Equiv.refl_symm, ← reindex_apply,
@@ -305,27 +298,17 @@ lemma reduced_spectral_theorem' (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [Matrix.mul_assoc]
   rw [map_zero]
 
--- lemma sing_vals_ne_zero_pos {m n: Type}
---   [Fintype m][Fintype n][DecidableEq n]
---   (A : Matrix m n 𝕂)
---   (z: {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0 }) :
---     0 < Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues z) := by
---   rw [Real.sqrt_pos]
---   apply lt_of_le_of_ne
---   apply Matrix.PosSemidef.eigenvalues_nonneg (posSemidef_conjTranspose_mul_self _)
---   exact z.prop.symm
-
 lemma eig_vals_ne_zero_pos {m n: Type} [Fintype m] [Fintype n] [DecidableEq n]
     (A : Matrix m n 𝕂) (z: {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0 }) :
     0 < ((isHermitian_transpose_mul_self A).eigenvalues z) :=
   lt_of_le_of_ne
-    (Matrix.PosSemidef.eigenvalues_nonneg (posSemidef_conjTranspose_mul_self _) _) -- 0 ≤
-    (z.prop.symm) -- 0 ≠
+    (Matrix.PosSemidef.eigenvalues_nonneg (posSemidef_conjTranspose_mul_self _) _) -- 0 ≤ _
+    (z.prop.symm) -- 0 ≠ _
 
 lemma svdσ_inv (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdσ⁻¹ =
-  (reindex (er A) (er A))
-  (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
-      1 / Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues i))) := by
+    (reindex (er A) (er A))
+      (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
+        1 / Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues i))) := by
   rw [inv_eq_right_inv]
   rw [svdσ]
   simp only [ne_eq, reindex_apply, submatrix_diagonal_equiv, diagonal_mul_diagonal,
@@ -337,7 +320,7 @@ lemma svdσ_inv (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdσ⁻¹ =
   apply (Real.sqrt_pos.2 (eig_vals_ne_zero_pos _ _))
 
 lemma σ_inv_μ_σ_inv_eq_one (A : Matrix (Fin M) (Fin N) 𝕂) :
-    (A.svdσ⁻¹)ᴴ⬝A.svdμ⬝A.svdσ⁻¹ = 1 := by
+    (A.svdσ⁻¹)ᴴ ⬝ A.svdμ ⬝ A.svdσ⁻¹ = 1 := by
   rw [svdσ_inv, svdμ]
   simp only [ne_eq, one_div, reindex_apply, submatrix_diagonal_equiv, diagonal_conjTranspose,
     star_trivial, diagonal_mul_diagonal, Function.comp_apply]
@@ -345,8 +328,6 @@ lemma σ_inv_μ_σ_inv_eq_one (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [diagonal_eq_diagonal_iff]
   intro i
   rw [mul_comm, ← mul_assoc, ← mul_inv, Real.mul_self_sqrt]
-  -- Why does ? rw [inv_mul_self] not work
-  -- rw [inv_mul_self]
   rw [inv_mul_cancel]
   apply ne_of_gt (eig_vals_ne_zero_pos A _)
   apply le_of_lt (eig_vals_ne_zero_pos A _)
@@ -364,8 +345,8 @@ lemma IsUnit_det_svdσ (A : Matrix (Fin M) (Fin N) 𝕂) : IsUnit (A.svdσ.det) 
 lemma IsUnit_det_svdσ_mapK (A : Matrix (Fin M) (Fin N) 𝕂) :
     IsUnit (det (map A.svdσ (algebraMap ℝ 𝕂))) := by
   unfold svdσ
-  simp only [ne_eq, reindex_apply, submatrix_diagonal_equiv, map_zero,
-    diagonal_map, Function.comp_apply, det_diagonal]
+  simp only [ne_eq, reindex_apply, submatrix_diagonal_equiv, map_zero, diagonal_map,
+    Function.comp_apply, det_diagonal]
   rw [isUnit_iff_ne_zero]
   rw [Finset.prod_ne_zero_iff]
   intro i
@@ -399,7 +380,7 @@ lemma U₂_conjTranspose_mul_U₂ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdU₂�
   funext i j
   simp_rw [Matrix.mul_apply, conjTranspose_apply, of_apply,
     ← conjTranspose_apply, IsHermitian.conjTranspose_eigenvectorMatrix,
-    ← Matrix.mul_apply, eigenvector_matrix_inv_mul_self]
+    ← Matrix.mul_apply, Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _)]
   by_cases hij: i = j
   simp_rw [hij]
   simp only [one_apply_eq]
@@ -413,7 +394,7 @@ lemma U₁'_conjTranspose_mul_U₂ (A : Matrix (Fin M) (Fin N) 𝕂) :
   simp_rw [svdU₁', svdU₂, toColumns₁, toColumns₂, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
     submatrix_apply, id_eq, Matrix.mul, dotProduct, conjTranspose_apply, of_apply,
     ← conjTranspose_apply, IsHermitian.conjTranspose_eigenvectorMatrix, ← mul_apply,
-    eigenvector_matrix_inv_mul_self]
+    Matrix.mul_eq_one_comm.1 (IsHermitian.eigenvectorMatrix_mul_inv _)]
   funext i j
   simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true, one_apply_ne, zero_apply]
 
@@ -483,20 +464,15 @@ into three matrices:
   S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
   V: an N × N matrix containing the right eigenvectors of the matrix
 
-Further UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv` and `V_inv` together with
+Note that UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv` and `V_inv` together with
 `fromColumns_mul_fromRows_eq_one_comm` and `conjTranspose_fromColumns_eq_fromRows_conjTranspose` -/
 
 theorem svd_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
     A = A.svdU ⬝ (fromBlocks (map A.svdσ (algebraMap ℝ 𝕂)) 0 0 0) ⬝ A.svdVᴴ := by
   apply_fun (fun x => x⬝(fromColumns A.svdV₁ A.svdV₂))
-  unfold svdU svdV
-  dsimp
-  rw [Matrix.mul_assoc, V_inv, Matrix.mul_one, fromColumns_mul_fromBlocks, mul_fromColumns,
-    mul_V₂_eq_zero]
-  simp only [Matrix.mul_zero, add_zero]
-  rw [fromColumns_ext_iff, eq_self, and_true, svdU₁, Matrix.mul_assoc,
-    nonsing_inv_mul, Matrix.mul_one]
-  exact (IsUnit_det_svdσ_mapK _)
+  simp_rw [svdU, svdV, Matrix.mul_assoc, V_inv, Matrix.mul_one, fromColumns_mul_fromBlocks, mul_fromColumns,
+    mul_V₂_eq_zero, Matrix.mul_zero, add_zero, fromColumns_ext_iff, and_true, svdU₁,
+    Matrix.nonsing_inv_mul_cancel_right _ _ (IsUnit_det_svdσ_mapK _)]
   exact (V_conjTranspose_mul_inj _)
 
 end Matrix
