@@ -204,6 +204,7 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact (orderOf_sr 0).symm
 #align dihedral_group.exponent DihedralGroup.exponent
 
+/-- If n is odd, then the Dihedral group of order 2n has n*(n+3) pairs of commuting elements. -/
 def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
   let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn.not_two_dvd_nat)
@@ -220,10 +221,10 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
       | Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
     left_inv := by
       rintro ⟨⟨i | i, j | j⟩, h⟩
-      . rfl
-      . simpa [sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)] using h.eq
-      . simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)] using h.eq
-      . replace h := r.inj h
+      · rfl
+      · simpa [sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)] using h.eq
+      · simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)] using h.eq
+      · replace h := r.inj h
         rw [←neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h
         rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, ←two_mul]
         apply u.inv_mul_cancel_left
