@@ -546,7 +546,8 @@ theorem one_kroneckerTMul_one [DecidableEq m] [DecidableEq n] :
 #align matrix.one_kronecker_tmul_one Matrix.one_kroneckerTMul_one
 
 theorem mul_kroneckerTMul_mul [Fintype m] [Fintype m'] (A : Matrix l m α) (B : Matrix m n α)
-    (A' : Matrix l' m' β) (B' : Matrix m' n' β) : (A * B) ⊗ₖₜ[R] (A' * B') = A ⊗ₖₜ A' * B ⊗ₖₜ B' :=
+    (A' : Matrix l' m' β) (B' : Matrix m' n' β) :
+    (A * B) ⊗ₖₜ[R] (A' * B') = A ⊗ₖₜ[R] A' * B ⊗ₖₜ[R] B' :=
   kroneckerMapBilinear_mul_mul (TensorProduct.mk R α β) tmul_mul_tmul A B A' B'
 #align matrix.mul_kronecker_tmul_mul Matrix.mul_kroneckerTMul_mul
 

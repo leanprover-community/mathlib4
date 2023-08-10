@@ -84,7 +84,7 @@ variable [Fintype l]
 def symplecticGroup : Submonoid (Matrix (Sum l l) (Sum l l) R) where
   carrier := { A | A * J l R * Aᵀ = J l R }
   mul_mem' {a b} ha hb := by
-    simp only [mul_eq_mul, Set.mem_setOf_eq, transpose_mul] at *
+    simp only [Set.mem_setOf_eq, transpose_mul] at *
     rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
     exact ha
   one_mem' := by simp
@@ -163,7 +163,7 @@ theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGrou
       rw [J_inv]
       simp
     _ = (-Aᵀ) * (A * J l R * Aᵀ)⁻¹ * A := by rw [hA]
-    _ = (-Aᵀ * (Aᵀ⁻¹ * (J l R)⁻¹)) * A⁻¹ * A := by
+    _ = -(Aᵀ * (Aᵀ⁻¹ * (J l R)⁻¹)) * A⁻¹ * A := by
       simp only [Matrix.mul_inv_rev, Matrix.mul_assoc, Matrix.neg_mul]
     _ = -(J l R)⁻¹ := by
       rw [mul_nonsing_inv_cancel_left _ _ huAT, nonsing_inv_mul_cancel_right _ _ huA]
@@ -186,14 +186,14 @@ instance hasInv : Inv (symplecticGroup l R) where
 theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 #align symplectic_group.coe_inv SymplecticGroup.coe_inv
 
-theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -J l R * Aᵀ * J l R * A = 1 :=
+theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
   calc
-    -J l R * Aᵀ * J l R * A = (-J l R) * (Aᵀ * J l R * A) := by
+    -(J l R * Aᵀ * J l R * A) = (-J l R) * (Aᵀ * J l R * A) := by
       simp only [Matrix.mul_assoc, Matrix.neg_mul]
     _ = (-J l R) * J l R := by
       rw [mem_iff'] at hA
       rw [hA]
-    _ = (-1 : R) • J l R * J l R := by simp only [Matrix.neg_mul, neg_smul, one_smul]
+    _ = (-1 : R) • (J l R * J l R) := by simp only [Matrix.neg_mul, neg_smul, one_smul]
     _ = (-1 : R) • (-1 : Matrix _ _ _) := by rw [J_squared]
     _ = 1 := by simp only [neg_smul_neg, one_smul]
 #align symplectic_group.inv_left_mul_aux SymplecticGroup.inv_left_mul_aux
@@ -213,7 +213,6 @@ instance : Group (symplecticGroup l R) :=
     mul_left_inv := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
-      rw [Matrix.neg_mul]
       exact inv_left_mul_aux A.2 }
 
 end SymplecticGroup
