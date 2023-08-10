@@ -703,12 +703,10 @@ theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup (Units F)) [Fintype G
       exact rfl
     · simp only [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
       exact Fintype.card_pos
-  · rw [map_one]
-    rw [nodal_monic]
-    rw [leadingCoeff_sub_of_degree_lt]
-    rw [monic_X_pow]
-    rw [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
-    exact Fintype.card_pos
+  · rw [map_one, nodal_monic, leadingCoeff_sub_of_degree_lt]
+    · rw [monic_X_pow]
+    · rw [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
+      exact Fintype.card_pos
   · intros i hi
     rw [eval_nodal_at_node hi]
     simp at hi
