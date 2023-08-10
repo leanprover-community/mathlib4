@@ -88,6 +88,11 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [
 private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
 
+@[simp]
+private lemma mem_pairs (k : ℕ) (t : Finset σ × σ) :
+    t ∈ pairs σ k ↔ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst) := by
+  simp [pairs]
+
 private def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ card t.fst * ((∏ a in t.fst, X a) * X t.snd ^ (k - card t.fst))
 
