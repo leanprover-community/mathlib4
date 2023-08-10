@@ -28,7 +28,7 @@ variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 
 section finsuppLequivDirectSum
 
-variable (R M) (ι : Type _) [DecidableEq ι]
+variable (R M) (ι : Type*) [DecidableEq ι]
 
 /-- The finitely supported functions `ι →₀ M` are in linear equivalence with the direct sum of
 copies of M indexed by ι. -/
