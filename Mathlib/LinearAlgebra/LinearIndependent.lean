@@ -244,7 +244,6 @@ theorem Submodule.ker_range_disjoint {f : M →ₗ[R] M'} (hi : v.Injective)
     have : c (v y) = 0
     · apply hv (c ∘ v) hm y
       simp only [Finset.mem_preimage, Function.comp_apply]
-      dsimp at hy
       rwa [hy]
     rw [this]
     simp only [zero_smul]
