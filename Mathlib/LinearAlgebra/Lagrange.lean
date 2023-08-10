@@ -687,7 +687,8 @@ theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup (Units F)) [Fintype G
       exact CanLift.prf i hi
     rcases exists_g with ⟨g, g_eq⟩
     rw [<-g_eq]
-    rw [map_one, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val, ← Subgroup.coe_pow G, pow_card_eq_one, Subgroup.coe_one, Units.val_one, sub_self]
+    rw [map_one, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val,
+      ← Subgroup.coe_pow G, pow_card_eq_one, Subgroup.coe_one, Units.val_one, sub_self]
 
 end Nodal
 
