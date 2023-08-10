@@ -261,6 +261,12 @@ def QuotientEquiv [Fintype ι] :
 theorem quotientEquiv_apply_mk [Fintype ι] (x : E) :
     QuotientEquiv b (Submodule.Quotient.mk x) = fract_restrict b x := rfl
 
+@[simp]
+theorem quotientEquiv.symm_apply [Fintype ι] (x : fundamentalDomain b) :
+    (QuotientEquiv b).symm x = Submodule.Quotient.mk ↑x := by
+  rw [Equiv.symm_apply_eq, quotientEquiv_apply_mk b ↑x, Subtype.ext_iff, fract_restrict_apply]
+  exact (fract_eq_self.mpr x.prop).symm
+
 end NormedLatticeField
 
 section Real
