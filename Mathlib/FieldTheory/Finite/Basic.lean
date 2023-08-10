@@ -177,11 +177,11 @@ theorem cast_subgroup_of_units_card_ne_zero [DecidableEq K]
   have p_dvd_card_G : p ∣ Fintype.card G := by
     rw [←(charP_iff K p).mp char_p]
     exact H
-  -- The cardinality of the subgroup divides the multiplicative group cardinality
+  -- The cardinality of the subgroup divides the units cardinality
   have hl := Subgroup.card_subgroup_dvd_card G
-  -- ... and p therefore divides the group cardinality.
+  -- ... and p therefore divides the units cardinality.
   have p_dvd_card_K_units : p ∣ Fintype.card Kˣ := dvd_trans p_dvd_card_G hl
-  -- On the other hand, p divides the cardinality of the field, which is one greater.
+  -- On the other hand, p divides the cardinality of the whole field, which is one greater.
   have p_dvd_card_K_units_add_one : p ∣ Fintype.card Kˣ + 1 := by
     rw [<-@Fintype.card_eq_card_units_add_one K _ _ _]
     rw [hnp]
