@@ -154,20 +154,21 @@ theorem NonUnitalSubalgebra.unitization_injective (h1 : (1 : A) ∉ s) :
 
 /-- If a `NonUnitalSubalgebra` over a field does not contain `1`, then its unitization is
 isomorphic to its `Algebra.adjoin`. -/
-@[simps!]
+@[simps! apply_coe]
 noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
-    Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) := by
+    Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) :=
   let algHom : Unitization R s →ₐ[R] Algebra.adjoin R (s : Set A) :=
     ((NonUnitalSubalgebra.unitization s).codRestrict _
-      fun x ↦ NonUnitalSubalgebra.unitization_range s ▸ ⟨x, rfl⟩)
-  refine AlgEquiv.ofBijective algHom ⟨?_, fun x ↦ ?_⟩
-  · have := AlgHomClass.unitization_injective s h1
-      ((Subalgebra.val _).comp <| algHom) fun _ ↦ by simp
-    simp only [AlgHom.coe_comp, Subalgebra.coe_val] at this
-    exact this.of_comp
-  · obtain (⟨a, ha⟩ : (x : A) ∈ (NonUnitalSubalgebra.unitization s).range) :=
-      (NonUnitalSubalgebra.unitization_range s).symm ▸ x.property
-    exact ⟨a, Subtype.ext ha⟩
+      fun x ↦ (NonUnitalSubalgebra.unitization_range s).le <| AlgHom.mem_range_self _ x)
+  AlgEquiv.ofBijective algHom <| by
+    refine ⟨?_, fun x ↦ ?_⟩
+    · have := AlgHomClass.unitization_injective s h1
+        ((Subalgebra.val _).comp <| algHom) fun _ ↦ by simp
+      simp only [AlgHom.coe_comp, Subalgebra.coe_val] at this
+      exact this.of_comp
+    · obtain (⟨a, ha⟩ : (x : A) ∈ (NonUnitalSubalgebra.unitization s).range) :=
+        (NonUnitalSubalgebra.unitization_range s).ge x.property
+      exact ⟨a, Subtype.ext ha⟩
 
 end Generic
 
@@ -353,20 +354,21 @@ theorem NonUnitalStarSubalgebra.unitization_injective (h1 : (1 : A) ∉ S) :
 
 /-- If a `NonUnitalStarSubalgebra` over a field does not contain `1`, then its unitization is
 isomorphic to its `StarSubalgebra.adjoin`. -/
-@[simps!]
+@[simps! apply_coe]
 noncomputable def NonUnitalStarSubalgebra.unitizationStarAlgEquiv (h1 : (1 : A) ∉ S) :
-    Unitization R S ≃⋆ₐ[R] StarSubalgebra.adjoin R (S : Set A) := by
+    Unitization R S ≃⋆ₐ[R] StarSubalgebra.adjoin R (S : Set A) :=
   let starAlgHom : Unitization R S →⋆ₐ[R] StarSubalgebra.adjoin R (S : Set A) :=
     (S.unitization.codRestrict _
-      fun x ↦ S.unitization_range ▸ ⟨x, rfl⟩)
-  refine StarAlgEquiv.ofBijective starAlgHom ⟨?_, fun x ↦ ?_⟩
-  · have h_eq : S.unitization = (StarSubalgebra.subtype _).comp starAlgHom := rfl
-    have this := S.unitization_injective h1
-    rw [h_eq, StarAlgHom.coe_comp] at this
-    exact this.of_comp
-  · obtain (⟨a, ha⟩ : (x : A) ∈ S.unitization.range) :=
-      S.unitization_range.symm ▸ x.property
-    exact ⟨a, Subtype.ext ha⟩
+      fun x ↦ S.unitization_range.le <| Set.mem_range_self x)
+  StarAlgEquiv.ofBijective starAlgHom <| by
+    refine ⟨?_, fun x ↦ ?_⟩
+    · have h_eq : S.unitization = (StarSubalgebra.subtype _).comp starAlgHom := rfl
+      have this := S.unitization_injective h1
+      rw [h_eq, StarAlgHom.coe_comp] at this
+      exact this.of_comp
+    · obtain (⟨a, ha⟩ : (x : A) ∈ S.unitization.range) :=
+        S.unitization_range.ge x.property
+      exact ⟨a, Subtype.ext ha⟩
 
 end Field
 
