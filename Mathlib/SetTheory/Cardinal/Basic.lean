@@ -1398,16 +1398,6 @@ theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n)
   exact n.lt_succ_self
 #align cardinal.card_le_of Cardinal.card_le_of
 
-theorem card_le_of_forall_finset_subset_le {α : Type u} {n : ℕ} {t : Set α}
-    (H : ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n) : #t ≤ n := by
-  apply card_le_of (fun s ↦ ?_)
-  let u : Finset α := s.image Subtype.val
-  have : u.card = s.card :=
-    Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
-  rw [← this]
-  apply H
-  simp only [Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
-
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < (b^a) := by
   rw [← succ_le_iff, (by norm_cast : succ (1 : Cardinal) = 2)] at hb
   exact (cantor a).trans_le (power_le_power_right hb)
@@ -2224,6 +2214,17 @@ theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α :=
 theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
   ⟨Set.embeddingOfSubset s t h⟩
 #align cardinal.mk_le_mk_of_subset Cardinal.mk_le_mk_of_subset
+
+theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set α} :
+    #t ≤ n ↔ ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n := by
+  refine ⟨fun H s hs ↦ by simpa using (mk_le_mk_of_subset hs).trans H, fun H ↦ ?_⟩
+  apply card_le_of (fun s ↦ ?_)
+  let u : Finset α := s.image Subtype.val
+  have : u.card = s.card :=
+    Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
+  rw [← this]
+  apply H
+  simp only [Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=
