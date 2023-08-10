@@ -93,7 +93,7 @@ theorem not_isLeftRegular_X_add_two : ¬ IsLeftRegular (X + C 2 : N₃[X]) := by
   simp only [coeff_add, coeff_X_zero, zero_add, coeff_C, ite_true] at H
   cases H
 
-/-- The statement of the counterexample: not all monic polynomials over semiring are regular. -/
+/-- The statement of the counterexample: not all monic polynomials over semirings are regular. -/
 theorem not_monic_implies_isLeftRegular :
     ¬∀ {R : Type} [Semiring R] (p : R[X]), Monic p → IsLeftRegular p :=
   fun h => not_isLeftRegular_X_add_two (h _ monic_X_add_two)
