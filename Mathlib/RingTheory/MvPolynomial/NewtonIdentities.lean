@@ -115,9 +115,9 @@ private theorem weight_add_weight_pairMap (t : Finset σ × σ) (h : t ∈ pairs
 
 private theorem weight_eq_zero_of_pairMapEqSelf (t : Finset σ × σ) (h : t ∈ pairs σ k)
     (h2 : pairMap σ t = t) : weight σ R k t = 0 := by
-  have h3 := weight_add_weight_pairMap σ R t h
-  rw [h2, ← two_mul, _root_.mul_eq_zero] at h3
-  exact h3.resolve_left two_ne_zero
+  rw [← eq_neg_self_iff, ← add_eq_zero_iff_eq_neg]
+  nth_rw 2 [← h2]
+  exact weight_add_weight_pairMap σ R t h
 
 private theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
   sum_involution (fun t _ ↦ pairMap σ t) (weight_add_weight_pairMap σ R)
