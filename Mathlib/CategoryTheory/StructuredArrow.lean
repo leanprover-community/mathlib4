@@ -49,7 +49,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 #align category_theory.structured_arrow.proj CategoryTheory.StructuredArrow.proj
 
-variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
+variable {S S' S'' : D} {Y Y' : C} {T T' : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
@@ -149,6 +149,9 @@ instance proj_faithful : Faithful (proj S T) where
   map_injective {_ _} := ext
 #align category_theory.structured_arrow.proj_faithful CategoryTheory.StructuredArrow.proj_faithful
 
+instance : LocallySmall.{v₁} (StructuredArrow S T) where
+  hom_small _ _ := small_of_injective ext
+
 /-- The converse of this is true with additional assumptions, see `mono_iff_mono_right`. -/
 theorem mono_of_mono_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Mono f.right] : Mono f :=
   (proj S T).mono_of_mono_map h
@@ -215,6 +218,17 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
   rw [eq_mk h]
   simp
 #align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp
+
+/-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
+@[simp]
+def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
+  Comma.mapLeftIso _ ((Functor.const _).mapIso i)
+
+/-- A natural isomorphism `T ≅ T'` induces an equivalence
+    `StructuredArrow S T ≌ StructuredArrow S T'`.-/
+@[simp]
+def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
+  Comma.mapRightIso _ i
 
 instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
@@ -309,7 +323,7 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
   Comma.fst _ _
 #align category_theory.costructured_arrow.proj CategoryTheory.CostructuredArrow.proj
 
-variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
+variable {T T' T'' : D} {Y Y' : C} {S S' : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
@@ -401,6 +415,9 @@ theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left
 instance proj_faithful : Faithful (proj S T) where map_injective {_ _} := ext
 #align category_theory.costructured_arrow.proj_faithful CategoryTheory.CostructuredArrow.proj_faithful
 
+instance : LocallySmall.{v₁} (CostructuredArrow S T) where
+  hom_small _ _ := small_of_injective ext
+
 theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
   (proj S T).mono_of_mono_map h
 #align category_theory.costructured_arrow.mono_of_mono_left CategoryTheory.CostructuredArrow.mono_of_mono_left
@@ -467,6 +484,18 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
   rw [eq_mk h]
   simp
 #align category_theory.costructured_arrow.map_comp CategoryTheory.CostructuredArrow.map_comp
+
+/-- An isomorphism `T ≅ T'` induces an equivalence
+    `CostructuredArrow S T ≌ CostructuredArrow S T'`. -/
+@[simp]
+def mapIso (i : T ≅ T') : CostructuredArrow S T ≌ CostructuredArrow S T' :=
+  Comma.mapRightIso _ ((Functor.const _).mapIso i)
+
+/-- A natural isomorphism `S ≅ S'` induces an equivalence
+    `CostrucutredArrow S T ≌ CostructuredArrow S' T`. -/
+@[simp]
+def mapNatIso (i : S ≅ S') : CostructuredArrow S T ≌ CostructuredArrow S' T :=
+  Comma.mapLeftIso _ i
 
 instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=

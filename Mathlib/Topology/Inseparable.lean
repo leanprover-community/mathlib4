@@ -39,7 +39,7 @@ topological space, separation setoid
 
 open Set Filter Function Topology List
 
-variable {X Y Z α ι : Type _} {π : ι → Type _} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f : X → Y}
 
 /-!
@@ -108,6 +108,9 @@ alias specializes_iff_nhds ↔ Specializes.nhds_le_nhds _
 
 alias specializes_iff_pure ↔ Specializes.pure_le_nhds _
 #align specializes.pure_le_nhds Specializes.pure_le_nhds
+
+theorem sInter_nhds_sets_eq_specializes : ⋂₀ (𝓝 x).sets = {y | y ⤳ x} :=
+  Set.ext fun _ ↦ specializes_iff_pure.symm
 
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
   (specializes_TFAE x y).out 0 2
