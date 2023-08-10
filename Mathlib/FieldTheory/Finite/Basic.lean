@@ -284,6 +284,7 @@ theorem sum_subgroup_units_zero_of_ne_bot
   · -- If the latter, we are done
     assumption
 
+/-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 theorem sum_subgroup_units
     {G : Subgroup (Units K)} [Fintype G] [Decidable (G = ⊥)] :
     ∑ x : G, (x.val : K) = if G = ⊥ then 1 else 0 := by
@@ -299,17 +300,15 @@ theorem sum_subgroup_units
     exact G_bot
 
 theorem subgroup_zpowers_card {G : Type} [Group G] [Fintype G] (a : G) (k : ℕ) (k_pos : 0 < k)
-    (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k :=
-  by
+    (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
   rw [← orderOf_eq_card_zpowers]
   apply orderOf_le_of_pow_eq_one
   assumption
   assumption
 
-theorem Field.sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
+theorem sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     [DecidableEq F] {G : Subgroup (Units F)} [Fintype G] {k : ℕ} (k_pos : 0 < k)
-    (k_lt_card_G : k < Fintype.card G) : ∑ x : G, (x.val : F) ^ k = 0 :=
-  by
+    (k_lt_card_G : k < Fintype.card G) : ∑ x : G, (x.val : F) ^ k = 0 := by
   have ha : ∃ a : ↥G, a ^ k ≠ 1 := by
     -- Need cyclicity of G
     have G_cyclic :
@@ -318,8 +317,7 @@ theorem Field.sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fint
     rcases G_cyclic with ⟨a, ha⟩
     use a
     by_contra
-    have ord : Fintype.card (Subgroup.zpowers a) ≤ k :=
-      by
+    have ord : Fintype.card (Subgroup.zpowers a) ≤ k := by
       clear ha k_lt_card_G
       apply subgroup_zpowers_card
       assumption
@@ -339,11 +337,11 @@ theorem Field.sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fint
   -- try multiplying a^k
   have h_multset_map :
     Multiset.map (fun x : G => (x.val : F) ^ k) Finset.univ.val =
-      Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val :=
-    by
+      Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val := by
     simp_rw [← mul_pow]
     have as_comp :
-      (fun x : ↥G => ((x.val : F) * (a.val : F)) ^ k) = (fun x : ↥G => (x.val : F) ^ k) ∘ fun x : ↥G => x * a := by
+      (fun x : ↥G => ((x.val : F) * (a.val : F)) ^ k)
+        = (fun x : ↥G => (x.val : F) ^ k) ∘ fun x : ↥G => x * a := by
       funext x
       simp
     rw [as_comp]
@@ -363,7 +361,8 @@ theorem Field.sum_multiplicative_subgroup_pow_eq_zero {F : Type} [Field F] [Fint
       (Multiset.map (fun x : G => (x.val : F) ^ k * (a.val : F) ^ k) Finset.univ.val).sum
   rw [h_multset_map]
   rw [Multiset.sum_map_mul_right] at h_multset_map_sum
-  have hzero : ((a.val : F) ^ k - 1 : F) * (Multiset.map (fun i : G => (i.val : F) ^ k) Finset.univ.val).sum = 0 := by
+  have hzero : ((a.val : F) ^ k - 1 : F)
+                  * (Multiset.map (fun i : G => (i.val : F) ^ k) Finset.univ.val).sum = 0 := by
     rw [sub_mul, mul_comm]
     rw [← h_multset_map_sum]
     simp
