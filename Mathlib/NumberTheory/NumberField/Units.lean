@@ -3,6 +3,7 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Ideal.Norm
@@ -420,8 +421,8 @@ theorem unit_lattice_span_eq_top :
   refine le_antisymm (le_top) ?_
   -- The standard basis
   let B := Pi.basisFun ℝ {w : InfinitePlace K // w ≠ w₀}
-  -- The family of units constructed above
-  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } => log_embedding K ((exists_unit K w).choose)
+  -- The image by log_embedding of the family of units constructed above
+  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } => log_embedding K (exists_unit K w).choose
   -- To prove the result, it is enough to prove that the family `v` is linearly independent
   suffices B.det v ≠ 0 by
     rw [← isUnit_iff_ne_zero, ← is_basis_iff_det] at this
@@ -430,16 +431,19 @@ theorem unit_lattice_span_eq_top :
       ⟨(exists_unit K w).choose, trivial, by rw [← hw]⟩)
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
-  refine Matrix.det_ne_zero_of_neg (fun i j hij => ?_) (fun j => ?_)
-  · rw [Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
-    refine mul_neg_of_pos_of_neg ?_ ((exists_unit K j).choose_spec i ?_)
+  refine det_ne_zero_of_sum_col_lt_diag (fun w => ?_)
+  simp_rw [Real.norm_eq_abs, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
+  rw [← sub_pos, Finset.sum_congr rfl (fun x hx => abs_of_neg ?_), Finset.sum_neg_distrib,
+    sub_neg_eq_add, Finset.sum_erase_eq_sub (Finset.mem_univ _), ← add_comm_sub]
+  refine add_pos_of_nonneg_of_pos ?_ ?_
+  · rw [sub_nonneg]
+    exact le_abs_self _
+  · rw [log_embedding_sum_component (exists_unit K w).choose]
+    refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
+    rw [mult]; split_ifs <;> norm_num
+  · refine mul_neg_of_pos_of_neg ?_ ((exists_unit K w).choose_spec x ?_)
     · rw [mult]; split_ifs <;> norm_num
-    · exact Subtype.ext_iff_val.not.mp hij
-  · simp_rw [Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply,
-      log_embedding_sum_component]
-    refine mul_pos_of_neg_of_neg ?_ ?_
-    · rw [mult]; split_ifs <;> norm_num
-    · exact (exists_unit K j).choose_spec _ j.prop.symm
+    · exact Subtype.ext_iff_val.not.mp (Finset.ne_of_mem_erase hx)
 
 end span_top
 
