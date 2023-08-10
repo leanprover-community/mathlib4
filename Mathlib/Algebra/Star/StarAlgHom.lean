@@ -743,7 +743,7 @@ instance (priority := 100) {F R A B : Type _} [Monoid R] [NonUnitalNonAssocSemir
     map_zero := map_zero }
 
 -- See note [lower instance priority]
-instance (priority := 100) (F R A B : Type _) [CommSemiring R] [Semiring A]
+instance (priority := 100) instStarAlgHomClass (F R A B : Type _) [CommSemiring R] [Semiring A]
     [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
     [hF : StarAlgEquivClass F R A B] : StarAlgHomClass F R A B :=
   { hF with

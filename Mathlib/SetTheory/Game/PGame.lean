@@ -249,7 +249,7 @@ def Subsequent : PGame → PGame → Prop :=
 #align pgame.subsequent PGame.Subsequent
 
 instance : IsTrans _ Subsequent :=
-  Relation.instIsTransTransGen
+  inferInstanceAs <| IsTrans _ (TransGen _)
 
 @[trans]
 theorem Subsequent.trans {x y z} : Subsequent x y → Subsequent y z → Subsequent x z :=
@@ -354,7 +354,7 @@ instance : Inhabited PGame :=
   ⟨0⟩
 
 /-- The pre-game `One` is defined by `1 = { 0 | }`. -/
-instance : One PGame :=
+instance instOnePGame : One PGame :=
   ⟨⟨PUnit, PEmpty, fun _ => 0, PEmpty.elim⟩⟩
 
 @[simp]
