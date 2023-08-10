@@ -175,7 +175,7 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
 
 protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
-    IsNilpotent (s.sum f) := by
+    IsNilpotent (∑ i in s, f i) := by
   classical
   induction' s using Finset.induction with j s hj ih; simp
   rw [Finset.sum_insert hj]
@@ -233,7 +233,7 @@ variable [CommSemiring R] {x y : R}
 
 lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
-    IsNilpotent (s.sum f) :=
+    IsNilpotent (∑ i in s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/

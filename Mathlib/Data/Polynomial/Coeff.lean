@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.Regular.pow
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
@@ -293,16 +294,15 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
--- TODO Unify this with `Polynomial.Monic.isRegular`
-theorem isRegular_X_pow (n : ℕ) : IsRegular ((X : R[X]) ^ n) := by
-  suffices : IsLeftRegular ((X : R[X]) ^ n)
-  · exact ⟨this, IsLeftRegular.right_of_commute (fun p ↦ commute_X_pow p n) this⟩
-  intro P Q hPQ
-  simp only at hPQ
+@[simp] theorem isRegular_X : IsRegular (X : R[X]) := by
+  suffices : IsLeftRegular (X : R[X])
+  · exact ⟨this, IsLeftRegular.right_of_commute (fun p ↦ commute_X p) this⟩
+  intro P Q (hPQ : X * P = X * Q)
   ext i
-  rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
+  rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
 
-@[simp] theorem isRegular_X : IsRegular (X : R[X]) := by simpa using isRegular_X_pow 1
+-- TODO Unify this with `Polynomial.Monic.isRegular`
+theorem isRegular_X_pow (n : ℕ) : IsRegular ((X ^ n : R[X])) := isRegular_X.pow n
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
