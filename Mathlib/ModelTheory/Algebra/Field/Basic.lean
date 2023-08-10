@@ -98,8 +98,8 @@ instance : Fintype Language.field.Symbols :=
     intro x
     dsimp [Language.Symbols]
     rcases x with ⟨_, f⟩ | ⟨_, f⟩
-    . cases f <;> decide
-    . cases f ⟩
+    · cases f <;> decide
+    · cases f ⟩
 
 @[simp]
 theorem card_field : card Language.field = 6 := by

@@ -28,9 +28,9 @@ theorem model_hasChar_of_charP {K : Type _} [CompatibleField K] {p : ℕ} [CharP
     (Theory.hasChar p).Model K := by
   rw [Theory.hasChar]
   refine Theory.model_union_iff.2 ⟨?_, ?_⟩
-  . simp [eqZero, Sentence.Realize, zero_def,
+  · simp [eqZero, Sentence.Realize, zero_def,
       constantMap, Structure.funMap]
-  . simp only [Nat.isUnit_iff, Theory.model_iff, Set.mem_iUnion,
+  · simp only [Nat.isUnit_iff, Theory.model_iff, Set.mem_iUnion,
       Set.mem_singleton_iff, exists_prop,
       forall_exists_index, and_imp]
     rintro φ n hnp rfl
@@ -44,7 +44,7 @@ theorem charP_of_model_hasChar {K : Type _} [CompatibleField K]
   rw [charP_iff]
   intro x
   constructor
-  . intro hx
+  · intro hx
     have h : K ⊨ (⋃ (n : ℕ) (_ : ¬ p ∣ n), {∼ (eqZero n)}) :=
       Theory.Model.mono h (Set.subset_union_right _ _)
     simp only [Nat.isUnit_iff, Theory.model_iff, Set.mem_iUnion,
@@ -55,7 +55,7 @@ theorem charP_of_model_hasChar {K : Type _} [CompatibleField K]
     simp only [eqZero, Formula.realize_not, Formula.realize_equal, realize_termOfFreeCommRing,
       map_natCast, Term.realize, CompatibleField.funMap_zero] at this
     exact this hx
-  . rintro ⟨y, rfl⟩
+  · rintro ⟨y, rfl⟩
     have h : K ⊨ {eqZero p} :=
       Theory.Model.mono h (Set.subset_union_left _ _)
     simp only [eqZero, Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize, forall_eq,
