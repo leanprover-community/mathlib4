@@ -116,11 +116,10 @@ theorem lift_genericPolyMap {R : Type _} [CommRing R]
   conv_rhs => rw [← Finset.sum_attach]
   refine Finset.sum_congr rfl ?_
   intros m _
-  simp only [map_pow, lift_of, Subtype.coe_eta, Finset.coe_mem,
-    exists_prop, true_and, dite_eq_ite, ite_true, ite_not]
-  split_ifs with h0
-  · simp_all
-  · simp [Finsupp.prod, map_prod]
+  simp [map_pow, lift_of, Subtype.coe_eta, Finset.coe_mem,
+    exists_prop, true_and, dite_eq_ite, ite_true, ite_not,
+    Finsupp.prod, map_prod]
+  split_ifs with h0 <;> simp_all
 
 noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
     (mons : ι → Finset (ι →₀ ℕ)) : Language.field.Sentence :=
