@@ -124,7 +124,7 @@ This is the condition `h`.
 Finally, the last ball is chosen after all the other ones, meaning that `h` can be strengthened
 by keeping only one side of the alternative in `hlast`.
 -/
-structure Besicovitch.SatelliteConfig (α : Type _) [MetricSpace α] (N : ℕ) (τ : ℝ) where
+structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (τ : ℝ) where
   c : Fin N.succ → α
   r : Fin N.succ → ℝ
   rpos : ∀ i, 0 < r i
@@ -143,13 +143,13 @@ structure Besicovitch.SatelliteConfig (α : Type _) [MetricSpace α] (N : ℕ) (
 there are no satellite configuration of parameter `τ` with `N+1` points. This is the condition that
 guarantees that the measurable Besicovitch covering theorem holds. It is satisfied by
 finite-dimensional real vector spaces. -/
-class HasBesicovitchCovering (α : Type _) [MetricSpace α] : Prop where
+class HasBesicovitchCovering (α : Type*) [MetricSpace α] : Prop where
   no_satelliteConfig : ∃ (N : ℕ) (τ : ℝ), 1 < τ ∧ IsEmpty (Besicovitch.SatelliteConfig α N τ)
 #align has_besicovitch_covering HasBesicovitchCovering
 #align has_besicovitch_covering.no_satellite_config HasBesicovitchCovering.no_satelliteConfig
 
 /-- There is always a satellite configuration with a single point. -/
-instance Besicovitch.SatelliteConfig.instInhabited {α : Type _} {τ : ℝ}
+instance Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
     [Inhabited α] [MetricSpace α] : Inhabited (Besicovitch.SatelliteConfig α 0 τ) :=
   ⟨{  c := default
       r := fun _ => 1
@@ -165,7 +165,7 @@ namespace Besicovitch
 
 namespace SatelliteConfig
 
-variable {α : Type _} [MetricSpace α] {N : ℕ} {τ : ℝ} (a : SatelliteConfig α N τ)
+variable {α : Type*} [MetricSpace α] {N : ℕ} {τ : ℝ} (a : SatelliteConfig α N τ)
 
 theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (last N) := by
   rcases lt_or_le i (last N) with (H | H)
@@ -189,7 +189,7 @@ end SatelliteConfig
 
 
 /-- A ball package is a family of balls in a metric space with positive bounded radii. -/
-structure BallPackage (β : Type _) (α : Type _) where
+structure BallPackage (β : Type*) (α : Type*) where
   c : β → α
   r : β → ℝ
   rpos : ∀ b, 0 < r b
@@ -203,7 +203,7 @@ structure BallPackage (β : Type _) (α : Type _) where
 #align besicovitch.ball_package.r_le Besicovitch.BallPackage.r_le
 
 /-- The ball package made of unit balls. -/
-def unitBallPackage (α : Type _) : BallPackage α α where
+def unitBallPackage (α : Type*) : BallPackage α α where
   c := id
   r _ := 1
   rpos _ := zero_lt_one
@@ -211,7 +211,7 @@ def unitBallPackage (α : Type _) : BallPackage α α where
   r_le _ := le_rfl
 #align besicovitch.unit_ball_package Besicovitch.unitBallPackage
 
-instance BallPackage.instInhabited (α : Type _) : Inhabited (BallPackage α α) :=
+instance BallPackage.instInhabited (α : Type*) : Inhabited (BallPackage α α) :=
   ⟨unitBallPackage α⟩
 #align besicovitch.ball_package.inhabited Besicovitch.BallPackage.instInhabited
 
@@ -219,20 +219,20 @@ instance BallPackage.instInhabited (α : Type _) : Inhabited (BallPackage α α)
 together with enough data to proceed with the Besicovitch greedy algorithm. We register this in
 a single structure to make sure that all our constructions in this algorithm only depend on
 one variable. -/
-structure TauPackage (β : Type _) (α : Type _) extends BallPackage β α where
+structure TauPackage (β : Type*) (α : Type*) extends BallPackage β α where
   τ : ℝ
   one_lt_tau : 1 < τ
 #align besicovitch.tau_package Besicovitch.TauPackage
 #align besicovitch.tau_package.τ Besicovitch.TauPackage.τ
 #align besicovitch.tau_package.one_lt_tau Besicovitch.TauPackage.one_lt_tau
 
-instance TauPackage.instInhabited (α : Type _) : Inhabited (TauPackage α α) :=
+instance TauPackage.instInhabited (α : Type*) : Inhabited (TauPackage α α) :=
   ⟨{ unitBallPackage α with
       τ := 2
       one_lt_tau := one_lt_two }⟩
 #align besicovitch.tau_package.inhabited Besicovitch.TauPackage.instInhabited
 
-variable {α : Type _} [MetricSpace α] {β : Type u}
+variable {α : Type*} [MetricSpace α] {β : Type u}
 
 namespace TauPackage
 
@@ -1154,7 +1154,7 @@ variable [MetricSpace β] [MeasurableSpace β] [BorelSpace β] [SecondCountableT
   [HasBesicovitchCovering β]
 
 /-- In a space with the Besicovitch covering property, the ratio of the measure of balls converges
-almost surely to to the Radon-Nikodym derivative. -/
+almost surely to the Radon-Nikodym derivative. -/
 theorem ae_tendsto_rnDeriv (ρ μ : Measure β) [IsLocallyFiniteMeasure μ] [IsLocallyFiniteMeasure ρ] :
     ∀ᵐ x ∂μ,
       Tendsto (fun r => ρ (closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 (ρ.rnDeriv μ x)) := by

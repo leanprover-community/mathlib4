@@ -14,7 +14,7 @@ import Mathlib.Data.QPF.Multivariate.Basic
 # The final co-algebra of a multivariate qpf is again a qpf.
 
 For a `(n+1)`-ary QPF `F (α₀,..,αₙ)`, we take the least fixed point of `F` with
-regards to its last argument `αₙ`. The result is a `n`-ary functor: `Fix F (α₀,..,αₙ₋₁)`.
+regards to its last argument `αₙ`. The result is an `n`-ary functor: `Fix F (α₀,..,αₙ₋₁)`.
 Making `Fix F` into a functor allows us to take the fixed point, compose with other functors
 and take a fixed point again.
 
@@ -312,7 +312,7 @@ theorem Cofix.bisim₂ {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
 /-- Bisimulation principle the values `⟨a,f⟩` of the polynomial functor representing
 `Cofix F α` as well as an invariant `Q : β → Prop` and a state `β` generating the
 left-hand side and right-hand side of the equality through functions `u v : β → Cofix F α` -/
-theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β → Cofix F α)
+theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β → Cofix F α)
     (h : ∀ x, Q x → ∃ a f' f₀ f₁,
       Cofix.dest (u x) = q.abs ⟨a, q.P.appendContents f' f₀⟩ ∧
         Cofix.dest (v x) = q.abs ⟨a, q.P.appendContents f' f₁⟩ ∧

@@ -27,7 +27,7 @@ noetherian local domain `(R, m, k)`:
 -/
 
 
-variable (R : Type _) [CommRing R] (K : Type _) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped DiscreteValuation
 
@@ -119,7 +119,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
   have hb₄ : b ≠ 0 := by rintro rfl; apply hb₂; exact zero_mem _
   let K := FractionRing R
   let x : K := algebraMap R K b / algebraMap R K a
-  let M := Submodule.map (Algebra.ofId R K).toLinearMap (maximalIdeal R)
+  let M := Submodule.map (Algebra.linearMap R K) (maximalIdeal R)
   have ha₃ : algebraMap R K a ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr ha₂
   by_cases hx : ∀ y ∈ M, x * y ∈ M
   · have := isIntegral_of_smul_mem_submodule M ?_ ?_ x hx
@@ -131,7 +131,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
-        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.ofId R K).toLinearMap = ⊤ := by
+        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
       by_contra h; apply hx
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm

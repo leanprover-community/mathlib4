@@ -26,7 +26,7 @@ open Filter
 
 open Filter Set
 
-variable {α β : Type _} {ι : Sort _}
+variable {α β : Type*} {ι : Sort*}
 
 namespace Filter
 
@@ -66,11 +66,11 @@ theorem eventually_smallSets {p : Set α → Prop} :
   exact monotone_powerset
 #align filter.eventually_small_sets Filter.eventually_smallSets
 
-theorem eventually_small_sets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
+theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
     (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, p s :=
   eventually_smallSets.trans <|
     exists_congr fun s => Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
-#align filter.eventually_small_sets' Filter.eventually_small_sets'
+#align filter.eventually_small_sets' Filter.eventually_smallSets'
 
 theorem frequently_smallSets {p : Set α → Prop} :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, ∃ s, s ⊆ t ∧ p s :=
@@ -153,7 +153,7 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
     (∀ᶠ s in l.smallSets, ∀ᶠ x in l', x ∈ s → p x) ↔ ∀ᶠ x in l ⊓ l', p x :=
   calc
     _ ↔ ∃ s ∈ l, ∀ᶠ x in l', x ∈ s → p x :=
-      eventually_small_sets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
+      eventually_smallSets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
 #align filter.eventually_small_sets_eventually Filter.eventually_smallSets_eventually

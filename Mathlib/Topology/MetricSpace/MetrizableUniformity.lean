@@ -48,7 +48,7 @@ open Set Function Metric List Filter
 
 open NNReal Filter Uniformity
 
-variable {X : Type _}
+variable {X : Type*}
 
 namespace PseudoMetricSpace
 
@@ -166,7 +166,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
     rw [get_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
-    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le _ _ M.succ_pos hMl
+    have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine' (ihn _ hlen_lt _ y _ hlen).trans _
     rw [cons_get_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
@@ -183,7 +183,7 @@ end PseudoMetricSpace
 /-- If `X` is a uniform space with countably generated uniformity filter, there exists a
 `PseudoMetricSpace` structure compatible with the `UniformSpace` structure. Use
 `UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead. -/
-protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace X]
+protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : ∃ I : PseudoMetricSpace X, I.toUniformSpace = ‹_› := by
   classical
   /- Choose a fast decreasing antitone basis `U : ℕ → set (X × X)` of the uniformity filter `𝓤 X`.
@@ -254,14 +254,14 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
 #align uniform_space.metrizable_uniformity UniformSpace.metrizable_uniformity
 
 /-- A `PseudoMetricSpace` instance compatible with a given `UniformSpace` structure. -/
-protected noncomputable def UniformSpace.pseudoMetricSpace (X : Type _) [UniformSpace X]
+protected noncomputable def UniformSpace.pseudoMetricSpace (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : PseudoMetricSpace X :=
   (UniformSpace.metrizable_uniformity X).choose.replaceUniformity <|
     congr_arg _ (UniformSpace.metrizable_uniformity X).choose_spec.symm
 #align uniform_space.pseudo_metric_space UniformSpace.pseudoMetricSpace
 
 /-- A `MetricSpace` instance compatible with a given `UniformSpace` structure. -/
-protected noncomputable def UniformSpace.metricSpace (X : Type _) [UniformSpace X]
+protected noncomputable def UniformSpace.metricSpace (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] [T0Space X] : MetricSpace X :=
   @MetricSpace.ofT0PseudoMetricSpace X (UniformSpace.pseudoMetricSpace X) _
 #align uniform_space.metric_space UniformSpace.metricSpace

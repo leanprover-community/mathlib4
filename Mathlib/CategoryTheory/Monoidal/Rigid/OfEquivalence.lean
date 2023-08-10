@@ -18,7 +18,7 @@ namespace CategoryTheory
 
 open MonoidalCategory
 
-variable {C D : Type _} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
+variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
 
 variable (F : MonoidalFunctor C D)
 

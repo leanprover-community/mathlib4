@@ -16,7 +16,7 @@ import Mathlib.Tactic.FieldSimp
 
 Transvections are matrices of the form `1 + StdBasisMatrix i j c`, where `StdBasisMatrix i j c`
 is the basic matrix with a `c` at position `(i, j)`. Multiplying by such a transvection on the left
-(resp. on the right) amounts to adding `c` times the `j`-th row to to the `i`-th row
+(resp. on the right) amounts to adding `c` times the `j`-th row to the `i`-th row
 (resp `c` times the `i`-th column to the `j`-th column). Therefore, they are useful to present
 algorithms operating on rows and columns.
 
@@ -67,7 +67,7 @@ namespace Matrix
 
 open Matrix
 
-variable (n p : Type _) (R : Type u₂) {𝕜 : Type _} [Field 𝕜]
+variable (n p : Type*) (R : Type u₂) {𝕜 : Type*} [Field 𝕜]
 
 variable [DecidableEq n] [DecidableEq p]
 
