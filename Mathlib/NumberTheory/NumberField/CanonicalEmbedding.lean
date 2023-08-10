@@ -26,7 +26,7 @@ radius is finite.
 number field, infinite places
 -/
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 

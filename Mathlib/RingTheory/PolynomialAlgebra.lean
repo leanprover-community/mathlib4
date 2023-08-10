@@ -37,7 +37,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 
 noncomputable section
 
-variable (R A : Type _)
+variable (R A : Type*)
 
 variable [CommSemiring R]
 
@@ -144,8 +144,7 @@ theorem invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := b
 #align poly_equiv_tensor.inv_fun_add PolyEquivTensor.invFun_add
 
 theorem invFun_monomial (n : ℕ) (a : A) :
-    invFun R A (monomial n a) =
-      includeLeft (R := R) (A := A) (B := R[X]) a * (1 : A) ⊗ₜ[R] (X : R[X]) ^ n :=
+    invFun R A (monomial n a) = (a ⊗ₜ[R] 1) * 1 ⊗ₜ[R] X ^ n :=
   eval₂_monomial _ _
 #align poly_equiv_tensor.inv_fun_monomial PolyEquivTensor.invFun_monomial
 
@@ -170,7 +169,7 @@ theorem right_inv (x : A[X]) : (toFunAlgHom R A) (invFun R A x) = x := by
   · intro p q hp hq
     simp only [invFun_add, AlgHom.map_add, hp, hq]
   · intro n a
-    rw [invFun_monomial, Algebra.TensorProduct.includeLeft_apply, Algebra.TensorProduct.tmul_pow,
+    rw [invFun_monomial, Algebra.TensorProduct.tmul_pow,
         one_pow, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, toFunAlgHom_apply_tmul,
         X_pow_eq_monomial, sum_monomial_index] <;>
       simp

@@ -24,7 +24,7 @@ This file defines pairwise relations.
 
 open Set Function
 
-variable {α β γ ι ι' : Type _} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
 
 section Pairwise
 

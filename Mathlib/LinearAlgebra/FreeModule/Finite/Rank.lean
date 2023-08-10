@@ -126,7 +126,7 @@ theorem finrank_pi_fintype {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i
 
 /-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices is
   `(Fintype.card m) * (Fintype.card n)`. -/
-theorem finrank_matrix (m n : Type _) [Fintype m] [Fintype n] :
+theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
     finrank R (Matrix m n R) = card m * card n := by simp [finrank]
 #align finite_dimensional.finrank_matrix FiniteDimensional.finrank_matrix
 

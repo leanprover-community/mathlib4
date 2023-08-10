@@ -30,10 +30,10 @@ be satisfied by itself and all stricter types.
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of continuous monotone maps from `α` to `β`, aka Priestley homomorphisms. -/
-structure ContinuousOrderHom (α β : Type _) [Preorder α] [Preorder β] [TopologicalSpace α]
+structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [TopologicalSpace α]
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 #align continuous_order_hom ContinuousOrderHom
@@ -47,7 +47,7 @@ section
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
-class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] extends
     ContinuousMapClass F α β where
   map_monotone (f : F) : Monotone f

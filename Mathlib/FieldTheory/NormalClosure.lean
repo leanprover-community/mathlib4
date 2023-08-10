@@ -18,14 +18,12 @@ contains the image of every `F`-algebra embedding `K →ₐ[F] L`.
 
 open BigOperators IntermediateField IsScalarTower Polynomial
 
-variable (F K L : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L] [Algebra K L]
+variable (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L] [Algebra K L]
   [IsScalarTower F K L]
 
 /-- The normal closure of `K` in `L`. -/
 noncomputable def normalClosure : IntermediateField K L :=
-  { (⨆ f : K →ₐ[F] L, f.fieldRange).toSubfield with
-    -- Porting note: could not inherit neg_mem
-    neg_mem' := fun _ hx => Subfield.neg_mem (⨆ f : K →ₐ[F] L, f.fieldRange).toSubfield hx
+  { (⨆ f : K →ₐ[F] L, f.fieldRange) with
     algebraMap_mem' := fun r =>
       le_iSup (fun f : K →ₐ[F] L => f.fieldRange) (IsScalarTower.toAlgHom F K L) ⟨r, rfl⟩ }
 #align normal_closure normalClosure
