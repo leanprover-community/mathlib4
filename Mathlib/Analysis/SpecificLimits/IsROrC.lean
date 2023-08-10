@@ -13,7 +13,7 @@ import Mathlib.Analysis.Complex.ReImTopology
 
 open Set Algebra Filter
 
-variable (𝕜 : Type*) [IsROrC 𝕜]
+variable (𝕜 : Type _) [IsROrC 𝕜]
 
 theorem IsROrC.tendsto_inverse_atTop_nhds_0_nat : 
     Tendsto (fun n : ℕ => (n : 𝕜)⁻¹) atTop (nhds 0) := by
