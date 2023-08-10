@@ -41,7 +41,7 @@ namespace SemiRingCat
 
 /-- `RingHom` doesn't actually assume associativity. This alias is needed to make the category
 theory machinery work. We use the same trick in `MonCat.AssocMonoidHom`. -/
-abbrev AssocRingHom (M N : Type _) [Semiring M] [Semiring N] :=
+abbrev AssocRingHom (M N : Type*) [Semiring M] [Semiring N] :=
   RingHom M N
 set_option linter.uppercaseLean3 false in
 #align SemiRing.assoc_ring_hom SemiRingCat.AssocRingHom
@@ -63,7 +63,7 @@ instance : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
   infer_instance
 
-instance : CoeSort SemiRingCat (Type _) where
+instance : CoeSort SemiRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
@@ -181,7 +181,7 @@ instance : ConcreteCategory RingCat := by
   dsimp [RingCat]
   infer_instance
 
-instance : CoeSort RingCat (Type _) where
+instance : CoeSort RingCat (Type*) where
   coe X := X.α
 
 instance (X : RingCat) : Ring X := X.str
@@ -282,7 +282,7 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type _) where
+instance : CoeSort CommSemiRingCat (Type*) where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
@@ -401,7 +401,7 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type _) where
+instance : CoeSort CommRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same

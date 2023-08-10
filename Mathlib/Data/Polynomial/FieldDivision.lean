@@ -381,7 +381,7 @@ theorem rootSet_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n 
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_X_pow Polynomial.rootSet_X_pow
 
-theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type _} (f : ι → R[X])
+theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   simp only [rootSet, ← Finset.mem_coe]
   rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_biUnion]
@@ -498,7 +498,7 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
 
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero
 into multiple decls because the original proof was timing out -/
-theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type _} [Field K] (f : K[X]) (a : K) :
+theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Field K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
@@ -506,7 +506,7 @@ theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type _} [Field K] (f : K[X
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero
 because the original proof was timing out -/
 theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
-    {K : Type _} [Field K] (f : K[X]) (a : K) :
+    {K : Type*} [Field K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   rw [modByMonic_X_sub_C_eq_C_eval] at key
@@ -517,7 +517,7 @@ theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
 
 /- Porting note: factored out another have statement from
 isCoprime_of_is_root_of_eval_derivative_ne_zero because the original proof was timing out -/
-theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type _} [Field K] (f : K[X]) {a : K}
+theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
   have key := divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative f a
   have ⟨u,hu⟩ := hf
@@ -527,7 +527,7 @@ theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type _} [Field K] 
 /-- If `f` is a polynomial over a field, and `a : K` satisfies `f' a ≠ 0`,
 then `f / (X - a)` is coprime with `X - a`.
 Note that we do not assume `f a = 0`, because `f / (X - a) = (f - f a) / (X - a)`. -/
-theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type _} [Field K] (f : K[X]) (a : K)
+theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f : K[X]) (a : K)
     (hf' : f.derivative.eval a ≠ 0) : IsCoprime (X - C a : K[X]) (f /ₘ (X - C a)) := by
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))

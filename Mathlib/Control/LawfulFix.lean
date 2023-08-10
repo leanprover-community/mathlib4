@@ -26,7 +26,7 @@ universe u v
 
 open Classical
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 open OmegaCompletePartialOrder
 
@@ -37,7 +37,7 @@ functions `f`, such as the function that is defined iff its argument is not, fam
 halting problem. Instead, this requirement is limited to only functions that are `Continuous` in the
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
-class LawfulFix (α : Type _) [OmegaCompletePartialOrder α] extends Fix α where
+class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α →o α}, Continuous f → Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
 
@@ -131,7 +131,7 @@ end Fix
 
 open Fix
 
-variable {α : Type _}
+variable {α : Type*}
 
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
@@ -219,7 +219,7 @@ instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq⟩
 #align pi.lawful_fix Pi.lawfulFix
 
-variable {γ : ∀ a : α, β a → Type _}
+variable {γ : ∀ a : α, β a → Type*}
 
 section Monotone
 
