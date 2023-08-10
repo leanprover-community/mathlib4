@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Tactic.DeriveToExpr
+import Mathlib.Util.WhatsNew
 
 /-! # `ToExpr` instances for Mathlib
 
@@ -37,10 +38,7 @@ attribute [-instance] Lean.instToExprProd
 
 deriving instance ToExpr for Prod
 
-open System in
-instance : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
+deriving instance ToExpr for System.FilePath
 
 end Lean
 end override
