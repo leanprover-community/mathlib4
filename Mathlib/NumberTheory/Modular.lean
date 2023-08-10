@@ -386,7 +386,6 @@ theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
     nlinarith
   convert this
   simp only [SpecialLinearGroup.im_smul_eq_div_normSq]
-  -- field_simp [normSq_denom_ne_zero, normSq_ne_zero, S, denom]
   simp [denom, coe_S]
 #align modular_group.im_lt_im_S_smul ModularGroup.im_lt_im_S_smul
 
