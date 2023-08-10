@@ -1761,7 +1761,6 @@ theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
   trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
     simp_rw [← @iSup_plift_down _ ι]
     ext1 s
-    haveI : Countable (Option <| PLift ι) := by exact instCountableOption
     obtain ⟨t, _, _, hμt⟩ :=
       exists_measurable_superset_forall_eq_trim
         (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s

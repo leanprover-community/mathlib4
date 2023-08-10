@@ -272,7 +272,7 @@ theorem edist_mem_uniformity {ε : ℝ≥0∞} (ε0 : 0 < ε) : { p : α × α |
 
 namespace EMetric
 
-instance (priority := 900) : IsCountablyGenerated (𝓤 α) :=
+instance (priority := 900) instIsCountablyGeneratedUniformity : IsCountablyGenerated (𝓤 α) :=
   isCountablyGenerated_of_seq ⟨_, uniformity_basis_edist_inv_nat.eq_iInf⟩
 
 -- porting note: changed explicit/implicit

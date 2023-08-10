@@ -365,7 +365,7 @@ def Completion :=
 namespace Completion
 
 instance inhabited [Inhabited α] : Inhabited (Completion α) :=
-  Quotient.instInhabitedQuotient (separationSetoid (CauchyFilter α))
+  inferInstanceAs <| Inhabited (Quotient _)
 
 instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
