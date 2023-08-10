@@ -37,6 +37,11 @@ attribute [-instance] Lean.instToExprProd
 
 deriving instance ToExpr for Prod
 
+open System in
+instance : ToExpr FilePath where
+  toTypeExpr := mkConst ``FilePath
+  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
+
 end Lean
 end override
 
