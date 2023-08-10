@@ -43,6 +43,7 @@ universe v v' u u'
 
 variable (C : Type u) [Category.{v} C]
 
+--Right exactness for arbitrary shapes.
 noncomputable
 example (J : Type u') [Category.{v'} J] [HasColimitsOfShape J C] :
     PreservesFiniteColimits (colim (J := J) (C := C)) :=
@@ -65,11 +66,11 @@ A category `C` which has filtered colimits is said to have `AB5` provided that
 filtered colimits are exact.
 -/
 -- TODO: Define `HasFilteredColimits C`.
-class AB5 [HasFilteredColimitsOfSize.{v} C] where
+class AB5 [HasFilteredColimits C] where
   preservesFiniteLimits (J : Type v) [SmallCategory J] [IsFiltered J] :
     PreservesFiniteLimits (colim (J := J) (C := C))
 
-instance [HasFilteredColimitsOfSize.{v} C] [AB5 C]
+instance [HasFilteredColimits C] [AB5 C]
     (J : Type v) [SmallCategory J] [IsFiltered J] :
     PreservesFiniteLimits (colim (J := J) (C := C)) :=
   AB5.preservesFiniteLimits _
