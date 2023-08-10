@@ -167,6 +167,16 @@ theorem lsum_single {ι R : Type _} [Fintype ι] [DecidableEq ι] [CommRing R] {
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
 #align linear_map.lsum_single LinearMap.lsum_single
 
+@[simp]
+theorem lsum_apply_single (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι]
+    [Semiring S] [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M)
+      (i : ι) (x : φ i) : LinearMap.lsum R φ S f (Pi.single i x) = f i x := by
+  simp only [lsum_apply, coeFn_sum, coe_comp, coe_proj, eval, Finset.sum_apply,
+    Function.comp_apply, ne_eq]
+  rw [Finset.sum_eq_single_of_mem _ (Finset.mem_univ i)]
+  · simp
+  · simp (config := {contextual := true}) [Pi.single, Function.update]
+
 variable {R φ}
 
 section Ext
