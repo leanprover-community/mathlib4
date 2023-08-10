@@ -22,7 +22,7 @@ import Mathlib.Algebra.Ring.Opposite
 -/
 
 
-variable {R S A B : Type _}
+variable {R S A B : Type*}
 
 open MulOpposite
 
