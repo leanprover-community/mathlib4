@@ -227,21 +227,32 @@ namespace Int
 
 open Metric
 
+/-- This is a special case of `NormedSpace.discreteTopology_zmultiples`. It exists only to simplify
+dependencies. -/
+instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
+  rcases eq_or_ne a 0 with (rfl | ha)
+  · rw [AddSubgroup.zmultiples_zero_eq_bot]
+    exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
+  rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+  refine' ⟨ball 0 |a|, isOpen_ball, _⟩
+  ext ⟨x, hx⟩
+  obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
+  simp [ha, Real.dist_eq, abs_mul, (by norm_cast : |(k : ℝ)| < 1 ↔ |k| < 1)]
+
 /-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
 theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact ℝ) := by
-  refine' tendsto_cocompact_of_tendsto_dist_comp_atTop (0 : ℝ) _
-  simp only [Filter.tendsto_atTop, eventually_cofinite, not_le, ← mem_ball]
-  change ∀ r : ℝ, (Int.cast ⁻¹' ball (0 : ℝ) r).Finite
-  simp [Real.ball_eq_Ioo, Set.finite_Ioo]
+  apply (castAddHom ℝ).tendsto_coe_cofinite_of_discrete cast_injective
+  rw [range_castAddHom]
+  infer_instance
 #align int.tendsto_coe_cofinite Int.tendsto_coe_cofinite
 
 /-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
-  convert (tendsto_cocompact_mul_right₀ ha).comp Int.tendsto_coe_cofinite
-  ext n
-  simp
+  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete $ smul_left_injective ℤ ha
+  rw [AddSubgroup.range_zmultiplesHom]
+  infer_instance
 #align int.tendsto_zmultiples_hom_cofinite Int.tendsto_zmultiplesHom_cofinite
 
 end Int
@@ -251,14 +262,8 @@ namespace AddSubgroup
 /-- The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite. -/
 theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
-    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) := by
-  rcases eq_or_ne a 0 with rfl | ha
-  · rw [zmultiples_zero_eq_bot, cofinite_eq_bot]; exact tendsto_bot
-  · calc cofinite.map (zmultiples a).subtype
-      ≤ .map (zmultiples a).subtype (.map (rangeFactorization (· • a)) (@cofinite ℤ)) :=
-        Filter.map_mono surjective_onto_range.le_map_cofinite
-    _ = (@cofinite ℤ).map (zmultiplesHom ℝ a) := Filter.map_map
-    _ ≤ cocompact ℝ := Int.tendsto_zmultiplesHom_cofinite ha
+    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) :=
+  (zmultiples a).tendsto_coe_cofinite_of_discrete
 #align add_subgroup.tendsto_zmultiples_subtype_cofinite AddSubgroup.tendsto_zmultiples_subtype_cofinite
 
 end AddSubgroup

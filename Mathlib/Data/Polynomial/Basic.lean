@@ -59,7 +59,7 @@ noncomputable section
 
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
-structure Polynomial (R : Type _) [Semiring R] where ofFinsupp ::
+structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
   toFinsupp : AddMonoidAlgebra R ℕ
 #align polynomial Polynomial
 #align polynomial.of_finsupp Polynomial.ofFinsupp
@@ -141,7 +141,7 @@ instance mul' : Mul R[X] :=
   ⟨mul⟩
 #align polynomial.has_mul Polynomial.mul'
 
-instance smulZeroClass {S : Type _} [SMulZeroClass S R] : SMulZeroClass S R[X] where
+instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
 #align polynomial.smul_zero_class Polynomial.smulZeroClass
@@ -182,7 +182,7 @@ theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ :=
 #align polynomial.of_finsupp_mul Polynomial.ofFinsupp_mul
 
 @[simp]
-theorem ofFinsupp_smul {S : Type _} [SMulZeroClass S R] (a : S) (b) :
+theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
     (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
   rfl
 #align polynomial.of_finsupp_smul Polynomial.ofFinsupp_smul
@@ -233,7 +233,7 @@ theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsu
 #align polynomial.to_finsupp_mul Polynomial.toFinsupp_mul
 
 @[simp]
-theorem toFinsupp_smul {S : Type _} [SMulZeroClass S R] (a : S) (b : R[X]) :
+theorem toFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b : R[X]) :
     (a • b).toFinsupp = a • b.toFinsupp :=
   rfl
 #align polynomial.to_finsupp_smul Polynomial.toFinsupp_smul
@@ -244,7 +244,7 @@ theorem toFinsupp_pow (a : R[X]) (n : ℕ) : (a ^ n).toFinsupp = a.toFinsupp ^ n
   rw [← ofFinsupp_pow]
 #align polynomial.to_finsupp_pow Polynomial.toFinsupp_pow
 
-theorem _root_.IsSMulRegular.polynomial {S : Type _} [Monoid S] [DistribMulAction S R] {a : S}
+theorem _root_.IsSMulRegular.polynomial {S : Type*} [Monoid S] [DistribMulAction S R] {a : S}
     (ha : IsSMulRegular R a) : IsSMulRegular R[X] a
   | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (Polynomial.ofFinsupp.inj h)
 #align is_smul_regular.polynomial IsSMulRegular.polynomial
@@ -329,7 +329,7 @@ instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMul
     simp_rw [← ofFinsupp_smul, smul_assoc]⟩
 #align polynomial.is_scalar_tower Polynomial.isScalarTower
 
-instance isScalarTower_right {α K : Type _} [Semiring K] [DistribSMul α K] [IsScalarTower α K K] :
+instance isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsScalarTower α K K] :
     IsScalarTower α K[X] K[X] :=
   ⟨by
     rintro _ ⟨⟩ ⟨⟩;
@@ -367,14 +367,17 @@ def toFinsuppIso : R[X] ≃+* AddMonoidAlgebra R ℕ where
 #align polynomial.to_finsupp_iso_apply Polynomial.toFinsuppIso_apply
 #align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
+instance [DecidableEq R] : DecidableEq (R[X]) :=
+  @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.decidableEq)
+
 end AddMonoidAlgebra
 
-theorem ofFinsupp_sum {ι : Type _} (s : Finset ι) (f : ι → AddMonoidAlgebra R ℕ) :
+theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → AddMonoidAlgebra R ℕ) :
     (⟨∑ i in s, f i⟩ : R[X]) = ∑ i in s, ⟨f i⟩ :=
   map_sum (toFinsuppIso R).symm f s
 #align polynomial.of_finsupp_sum Polynomial.ofFinsupp_sum
 
-theorem toFinsupp_sum {ι : Type _} (s : Finset ι) (f : ι → R[X]) :
+theorem toFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[X]) :
     (∑ i in s, f i : R[X]).toFinsupp = ∑ i in s, (f i).toFinsupp :=
   map_sum (toFinsuppIso R) f s
 #align polynomial.to_finsupp_sum Polynomial.toFinsupp_sum
@@ -391,6 +394,8 @@ def support : R[X] → Finset ℕ
 @[simp]
 theorem support_ofFinsupp (p) : support (⟨p⟩ : R[X]) = p.support := by rw [support]
 #align polynomial.support_of_finsupp Polynomial.support_ofFinsupp
+
+theorem support_toFinsupp (p : R[X]) : p.toFinsupp.support = p.support := by rw [support]
 
 @[simp]
 theorem support_zero : (0 : R[X]).support = ∅ :=
@@ -727,6 +732,13 @@ theorem coeff_C_zero : coeff (C a) 0 = a :=
 theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
 #align polynomial.coeff_C_ne_zero Polynomial.coeff_C_ne_zero
 
+@[simp]
+lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
+
+@[simp]
+theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
+  simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
+
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by
@@ -803,7 +815,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 #align polynomial.add_submonoid_closure_set_of_eq_monomial Polynomial.addSubmonoid_closure_setOf_eq_monomial
 
-theorem addHom_ext {M : Type _} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
@@ -811,13 +823,13 @@ theorem addHom_ext {M : Type _} [AddMonoid M] {f g : R[X] →+ M}
 #align polynomial.add_hom_ext Polynomial.addHom_ext
 
 @[ext high]
-theorem addHom_ext' {M : Type _} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
   addHom_ext fun n => FunLike.congr_fun (h n)
 #align polynomial.add_hom_ext' Polynomial.addHom_ext'
 
 @[ext high]
-theorem lhom_ext' {M : Type _} [AddCommMonoid M] [Module R M] {f g : R[X] →ₗ[R] M}
+theorem lhom_ext' {M : Type*} [AddCommMonoid M] [Module R M] {f g : R[X] →ₗ[R] M}
     (h : ∀ n, f.comp (monomial n) = g.comp (monomial n)) : f = g :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext fun n => LinearMap.congr_fun (h n)
 #align polynomial.lhom_ext' Polynomial.lhom_ext'
@@ -927,16 +939,16 @@ theorem nat_cast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
 #align polynomial.nat_cast_mul Polynomial.nat_cast_mul
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
-def sum {S : Type _} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
+def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
   ∑ n in p.support, f n (p.coeff n)
 #align polynomial.sum Polynomial.sum
 
-theorem sum_def {S : Type _} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
+theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
     p.sum f = ∑ n in p.support, f n (p.coeff n) :=
   rfl
 #align polynomial.sum_def Polynomial.sum_def
 
-theorem sum_eq_of_subset {S : Type _} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S)
+theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (s : Finset ℕ) (hs : p.support ⊆ s) :
     p.sum f = ∑ n in s, f n (p.coeff n) := by
   refine Finset.sum_subset hs fun n _hn h'n => ?_
@@ -954,12 +966,12 @@ theorem mul_eq_sum_sum :
 #align polynomial.mul_eq_sum_sum Polynomial.mul_eq_sum_sum
 
 @[simp]
-theorem sum_zero_index {S : Type _} [AddCommMonoid S] (f : ℕ → R → S) : (0 : R[X]).sum f = 0 := by
+theorem sum_zero_index {S : Type*} [AddCommMonoid S] (f : ℕ → R → S) : (0 : R[X]).sum f = 0 := by
   simp [sum]
 #align polynomial.sum_zero_index Polynomial.sum_zero_index
 
 @[simp]
-theorem sum_monomial_index {S : Type _} [AddCommMonoid S] (n : ℕ) (a : R) (f : ℕ → R → S)
+theorem sum_monomial_index {S : Type*} [AddCommMonoid S] (n : ℕ) (a : R) (f : ℕ → R → S)
     (hf : f n 0 = 0) : (monomial n a : R[X]).sum f = f n a := by
   by_cases h : a = 0
   · simp [h, hf]
@@ -974,12 +986,12 @@ theorem sum_C_index {a} {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 
 
 -- the assumption `hf` is only necessary when the ring is trivial
 @[simp]
-theorem sum_X_index {S : Type _} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 1 0 = 0) :
+theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 1 0 = 0) :
     (X : R[X]).sum f = f 1 1 :=
   sum_monomial_index 1 1 f hf
 #align polynomial.sum_X_index Polynomial.sum_X_index
 
-theorem sum_add_index {S : Type _} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
+theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
     (p + q).sum f = p.sum f + q.sum f := by
   rcases p with ⟨⟩; rcases q with ⟨⟩
@@ -987,16 +999,16 @@ theorem sum_add_index {S : Type _} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R
   exact Finsupp.sum_add_index' hf h_add
 #align polynomial.sum_add_index Polynomial.sum_add_index
 
-theorem sum_add' {S : Type _} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
+theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
 #align polynomial.sum_add' Polynomial.sum_add'
 
-theorem sum_add {S : Type _} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
+theorem sum_add {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     (p.sum fun n x => f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 #align polynomial.sum_add Polynomial.sum_add
 
-theorem sum_smul_index {S : Type _} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
+theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) := by
   rcases p with ⟨⟩
   simpa [sum, support, coeff] using Finsupp.sum_smul_index hf

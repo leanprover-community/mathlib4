@@ -350,7 +350,7 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
         exact n rfl⟩
 #align list.nodup.product List.Nodup.product
 
-theorem Nodup.sigma {σ : α → Type _} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
+theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
     (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,

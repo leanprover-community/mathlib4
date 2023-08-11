@@ -44,7 +44,7 @@ open Classical Polynomial
 
 section CommSemiring
 
-variable {F : Type _} [CommSemiring F] (q : ℕ)
+variable {F : Type*} [CommSemiring F] (q : ℕ)
 
 /-- A separable contraction of a polynomial `f` is a separable polynomial `g` such that
 `g(x^(q^m)) = f(x)` for some `m : ℕ`.-/
@@ -98,7 +98,7 @@ end CommSemiring
 
 section Field
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 

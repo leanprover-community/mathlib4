@@ -3,7 +3,10 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.GroupTheory.Torsion
+import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -13,7 +16,8 @@ We prove results about the group `(𝓞 K)ˣ` of units of the ring of integers `
 field `K`.
 
 ## Main results
-* `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`
+* `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
+* `mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
 
 ## Tags
 number field, units
@@ -36,18 +40,109 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
 
 end Rat
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 section IsUnit
 
-attribute [local instance] NumberField.ringOfIntegersAlgebra
-
 variable {K}
 
-theorem isUnit_iff_norm [NumberField K] (x : 𝓞 K) :
+theorem isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 #align is_unit_iff_norm isUnit_iff_norm
 
 end IsUnit
+
+namespace NumberField.Units
+
+section coe
+
+theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
+  fun _ _ h => by rwa [SetLike.coe_eq_coe, Units.eq_iff] at h
+
+variable {K}
+
+theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
+
+theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
+  rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
+
+theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
+  change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
+  exact map_zpow _ x n
+
+theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
+
+theorem coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
+
+theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
+  Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
+
+end coe
+
+open NumberField.InfinitePlace
+
+section torsion
+
+/-- The torsion subgroup of the group of units. -/
+def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
+
+theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
+    x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
+  rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+  refine ⟨fun ⟨n, h_pos, h_eq⟩ φ => ?_, fun h => ?_⟩
+  · refine norm_map_one_of_pow_eq_one φ.toMonoidHom (k := ⟨n, h_pos⟩) ?_
+    rw [PNat.mk_coe, ← coe_pow, h_eq, coe_one]
+  · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
+    exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
+
+/-- Shortcut instance because Lean tends to time out before finding the general instance. -/
+instance : Nonempty (torsion K) := One.nonempty
+
+/-- The torsion subgroup is finite. -/
+instance [NumberField K] : Fintype (torsion K) := by
+  refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
+  refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
+  refine (Embeddings.finite_of_norm_le K ℂ 1).subset
+    (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
+  · rw [← h_ua]
+    exact u.val.prop
+  · rw [← h_ua]
+    exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
+
+set_option synthInstance.maxHeartbeats 30000 in
+/-- The torsion subgroup is cylic. -/
+instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
+
+/-- The order of the torsion subgroup as positive integer. -/
+def torsion_order [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
+
+/-- If `k` does not divide `torsion_order` then there are no nontrivial roots of unity of
+  order dividing `k`. -/
+theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsion_order K)) :
+    ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
+  rw [mem_rootsOfUnity]
+  refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
+  refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc ?_ ?_)
+  · exact orderOf_dvd_of_pow_eq_one h
+  · have hζ : ζ ∈ torsion K := by
+      rw [torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+      exact ⟨k, k.prop, h⟩
+    rw [orderOf_submonoid (⟨ζ, hζ⟩ : torsion K)]
+    exact orderOf_dvd_card_univ
+
+/-- The group of roots of unity of order dividing `torsion_order` is equal to the torsion
+group. -/
+theorem rootsOfUnity_eq_torsion [NumberField K] :
+    rootsOfUnity (torsion_order K) (𝓞 K) = torsion K := by
+  ext ζ
+  rw [torsion, mem_rootsOfUnity]
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+    exact ⟨↑(torsion_order K), (torsion_order K).prop, h⟩
+  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ ⟨ζ, h⟩ _)
+
+end torsion
+
+end NumberField.Units
