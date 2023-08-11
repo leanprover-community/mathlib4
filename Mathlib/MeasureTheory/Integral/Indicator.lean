@@ -64,33 +64,18 @@ lemma measurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [Zero β]
 -- Gives: `Mathlib.MeasureTheory.Integral.Indicator`, i.e., this file itself...
 -- But why? Could be in `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`!
 
+#check aemeasurable_indicator_iff₀
+
 /-- A characterization of the a.e.-measurability of the indicator function which takes a constant
 value `b` on a set `A` and `0` elsewhere. -/
-lemma aeMeasurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [DecidableEq β]
+lemma aemeasurable_indicator_const_iff₀ [MeasurableSpace α] (A : Set α) [DecidableEq β]
   [Zero β] [MeasurableSpace β] [MeasurableSingletonClass β] (μ : Measure α) (b : β) [NeZero b] :
     AEMeasurable (A.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet A μ := by
   constructor <;> intro h
-  · obtain ⟨f, ⟨f_mble, f_eq⟩⟩ := h
-    have A_eq := indicator_const_preimage_eq_union A {0}ᶜ b
-    simp only [preimage_compl, mem_compl_iff, mem_singleton_iff, ‹NeZero b›.ne, not_false_eq_true,
-               ite_true, not_true, ite_false, union_empty] at A_eq
-    rw [←A_eq]
-    apply NullMeasurableSet.congr (s := (f ⁻¹' {(0 : β)})ᶜ)
-                                  (t := ((indicator A fun _ ↦ b) ⁻¹' {(0 : β)})ᶜ)
-    · apply NullMeasurableSet.compl
-      apply MeasurableSet.nullMeasurableSet
-      measurability
-    · exact EventuallyEq.compl (EventuallyEq.preimage (id (EventuallyEq.symm f_eq)) {0})
-  · obtain ⟨A', ⟨mble_A', eq_A'⟩⟩ := h
-    refine AEMeasurable.congr (f := A'.indicator (fun _ ↦ b)) (g := A.indicator (fun _ ↦ b)) ?_ ?_
-    · apply Measurable.aemeasurable
-      apply measurable_const.indicator
-      exact mble_A'
-    · filter_upwards [eq_A'] with a ha
-      have same : a ∈ A ↔ a ∈ A' := Iff.of_eq ha
-      by_cases haA : a ∈ A
-      · simp [haA, same.mp haA]
-      · simp [haA, (not_iff_not.mpr same).mp haA]
+  · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
+    rw [indicator_const_preimage_eq_union A {0}ᶜ b]
+    simp [NeZero.ne b]
+  · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
 
 end IndicatorConstMeasurable
 
@@ -122,7 +107,7 @@ lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] (μ : Measure α)
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
       L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
     NullMeasurableSet A μ := by
-  simp_rw [← aeMeasurable_indicator_const_iff _ μ (1 : ℝ≥0∞)] at As_mble ⊢
+  simp_rw [← aemeasurable_indicator_const_iff₀ _ μ (1 : ℝ≥0∞)] at As_mble ⊢
   exact aemeasurable_of_tendsto_metrizable_ae L As_mble h_lim
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
