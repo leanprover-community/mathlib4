@@ -36,12 +36,12 @@ noncomputable section
 
 namespace MvPolynomial
 
-namespace NewtonIdentities
-
 open Finset Nat
 
 variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [NoZeroDivisors R]
   [CharZero R]
+
+namespace NewtonIdentities
 
 private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
@@ -219,6 +219,8 @@ private theorem esymm_mul_psum_to_weight (k : ℕ) :
   rw [← sum_congr rfl (fun a ha ↦ esymm_mul_psum_summand_to_weight σ R k a (mem_filter.mp ha).left),
     sum_filter_pairs_eq_sum_filter_antidiagonal_powersetLen_sum σ R k]
 
+end NewtonIdentities
+
 /-- **Newton's identities** give a recurrence relation for the kth elementary symmetric polynomial
 in terms of lower degree elementary symmetric polynomials and power sums.
 
@@ -227,12 +229,14 @@ The recurrence arises by splitting off the `i = k` term from the identity
 theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     (-1) ^ (k + 1) * ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
-  rw [esymm_to_weight σ R k, esymm_mul_psum_to_weight σ R k, eq_comm, ← sub_eq_zero, sub_eq_add_neg,
-    neg_mul_eq_neg_mul, neg_eq_neg_one_mul ((-1 : MvPolynomial σ R) ^ k)]
+  rw [NewtonIdentities.esymm_to_weight σ R k, NewtonIdentities.esymm_mul_psum_to_weight σ R k,
+    eq_comm, ← sub_eq_zero, sub_eq_add_neg, neg_mul_eq_neg_mul,
+    neg_eq_neg_one_mul ((-1 : MvPolynomial σ R) ^ k)]
   nth_rw 2 [← pow_one (-1 : MvPolynomial σ R)]
   rw [← pow_add, add_comm 1 k, ← left_distrib,
-    ← sum_disjUnion (disjoint_filter_pairs_lt_filter_pairs_eq σ k),
-    disjUnion_filter_pairs_eq_pairs σ k, weight_sum σ R k, neg_one_pow_mul_eq_zero_iff.mpr rfl]
+    ← sum_disjUnion (NewtonIdentities.disjoint_filter_pairs_lt_filter_pairs_eq σ k),
+    NewtonIdentities.disjUnion_filter_pairs_eq_pairs σ k, NewtonIdentities.weight_sum σ R k,
+    neg_one_pow_mul_eq_zero_iff.mpr rfl]
 
 /-- A version of Newton's identities which may be more useful in the case that we know the values of
 the elementary symmetric polynomials and would like to calculate the values of the power sums. -/
@@ -261,7 +265,5 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   rw [this, sum_singleton] at sub_both_sides
   simp only [_root_.pow_zero, esymm_zero, mul_one, one_mul, filter_filter] at sub_both_sides
   exact sub_both_sides.symm
-
-end NewtonIdentities
 
 end MvPolynomial
