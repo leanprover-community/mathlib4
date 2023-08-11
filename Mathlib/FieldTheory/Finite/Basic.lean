@@ -287,19 +287,10 @@ theorem sum_subgroup_units
   by_cases G_bot : G = ⊥
   · subst G_bot
     simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
-    Nat.cast_zero]
-    rw [eq_comm]
-    simp only [ite_eq_left_iff, zero_ne_one]
-    simp only [univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
-  · simp [G_bot]
-    apply sum_subgroup_units_zero_of_ne_bot
-    exact G_bot
+      Nat.cast_zero, univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
+  · simp only [G_bot, ite_false]
+    exact sum_subgroup_units_zero_of_ne_bot K G_bot
 
-
-
--- #find_home exists_pow_ne_one_of_cyclic
-
--- TODO tidy
 theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     [DecidableEq F] {G : Subgroup (Units F)} [Fintype G] {k : ℕ} (k_pos : 0 < k)
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, (x.val : F) ^ k = 0 := by
@@ -341,8 +332,6 @@ theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     simp_all only [ne_eq, SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
       Units.val_one]
   · exact h
-
-
 
 /-- The sum of `x ^ i` as `x` ranges over a finite field of cardinality `q`
 is equal to `0` if `i < q - 1`. -/
