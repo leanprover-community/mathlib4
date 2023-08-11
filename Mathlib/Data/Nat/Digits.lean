@@ -524,7 +524,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits' (L : List ℕ) (w₁ : ∀ (l
     (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
   obtain h | h | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · induction' L with hd tl ih
-    · simp_all [ofDigits]
+    · simp [ofDigits]
     · simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
           digits_ofDigits p h (hd :: tl) w₁ w₂]
       simp only [ofDigits]
