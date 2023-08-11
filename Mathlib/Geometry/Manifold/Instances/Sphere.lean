@@ -341,14 +341,8 @@ theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Se
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
   rw [stereographic_apply, coe_neg_sphere, inner_neg_right, sub_neg_eq_add]
-  sorry
-  -- rw [ orthogonalProjection_orthogonalComplement_singleton_eq_zero]
-  -- rw [← map_neg] at this
-  --rw [map_neg]
-  -- rw [map_neg]
-  -- simp only [stereographic_apply, coe_neg_sphere, inner_neg_right, sub_neg_eq_add, map_neg,
-  -- orthogonalPr
-  --simp [stereographic_apply, orthogonalProjection_orthogonalComplement_singleton_eq_zero]
+  rw [map_neg (f := orthogonalProjection (𝕜 := ℝ) (E := E) _ )]
+  simp [orthogonalProjection_orthogonalComplement_singleton_eq_zero]
 #align stereographic_apply_neg stereographic_apply_neg
 
 @[simp]
