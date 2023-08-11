@@ -229,7 +229,7 @@ instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
   { MulOpposite.inv α with inv_inv := fun _ => unop_injective $ inv_inv _ }
 
 @[to_additive]
-instance smul (R : Type _) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
+instance smul (R : Type*) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
 
 section
 
@@ -312,13 +312,13 @@ theorem unop_sub [Sub α] (x y : αᵐᵒᵖ) : unop (x - y) = unop x - unop y :
 #align mul_opposite.unop_sub MulOpposite.unop_sub
 
 @[to_additive (attr := simp)]
-theorem op_smul {R : Type _} [SMul R α] (c : R) (a : α) : op (c • a) = c • op a :=
+theorem op_smul {R : Type*} [SMul R α] (c : R) (a : α) : op (c • a) = c • op a :=
   rfl
 #align mul_opposite.op_smul MulOpposite.op_smul
 #align add_opposite.op_vadd AddOpposite.op_vadd
 
 @[to_additive (attr := simp)]
-theorem unop_smul {R : Type _} [SMul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
+theorem unop_smul {R : Type*} [SMul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
   rfl
 #align mul_opposite.unop_smul MulOpposite.unop_smul
 #align add_opposite.unop_vadd AddOpposite.unop_vadd

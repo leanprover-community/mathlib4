@@ -23,7 +23,7 @@ open Set LinearMap Submodule
 
 section CommRing
 
-variable {R : Type _} {M : Type _} {N : Type _} {ι : Type _} {κ : Type _}
+variable {R : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type*}
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 

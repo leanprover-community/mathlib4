@@ -19,7 +19,7 @@ open Nat Function
 
 namespace Equiv
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- An equivalence between `Bool × ℕ` and `ℕ`, by mapping `(true, x)` to `2 * x + 1` and
 `(false, x)` to `2 * x`. -/
