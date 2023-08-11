@@ -2411,36 +2411,26 @@ theorem set_walk_length_two_bij_commonNeighbors (u v : V) :
   constructor
   · intro p hp
     rw [Set.mem_setOf_eq] at hp
-    have a0 : G.Adj u (p.getVert 1) := by simpa using p.adj_getVert_succ (i := 0) (by simp [hp])
-    have a1 : G.Adj (p.getVert 1) v := by
-      have := p.adj_getVert_succ (i := 1) (by simp [hp])
-      norm_num at this
-      have pl := p.getVert_length
-      rw [hp] at pl
-      simpa only [pl] using this
-    dsimp
-    rw [mem_commonNeighbors]
-    exact ⟨a0, a1.symm⟩
+    constructor
+    · simpa using p.adj_getVert_succ (i := 0) (by simp [hp])
+    · simpa only [adj_comm, one_add_one_eq_two, hp ▸ p.getVert_length] using
+        p.adj_getVert_succ (i := 1) (by simp [hp])
   constructor
   · intro p hp q hq e
     dsimp at hp hq e
-    cases' p with _ _ _ _ _ p
-    · contradiction
-    · cases' q with _ _ _ _ _ q
-      · contradiction
-      · unfold Walk.getVert at e
-        simp at e
-        subst e
-        simp_all
-        cases' p with _ _ _ _ _ p
-        · contradiction
-        · cases' q with _ _ _ _ _ q
-          · contradiction
-          · simp at hp hq
-            have e1 := (p.eq_of_length_eq_zero hp).symm
-            have e2 := (q.eq_of_length_eq_zero hq).symm
-            subst e1 e2
-            simp_all
+    cases' p with _ _ _ _ _ p; · contradiction
+    cases' q with _ _ _ _ _ q; · contradiction
+    unfold Walk.getVert at e
+    simp at e
+    subst e
+    simp_all
+    cases' p with _ _ _ _ _ p; · contradiction
+    cases' q with _ _ _ _ _ q; · contradiction
+    simp at hp hq
+    have e1 := (p.eq_of_length_eq_zero hp).symm
+    have e2 := (q.eq_of_length_eq_zero hq).symm
+    subst e1 e2
+    simp_all
   · intro w hw
     rw [mem_commonNeighbors] at hw
     simp only [Set.mem_image, Set.mem_setOf_eq]
