@@ -155,6 +155,9 @@ theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.single_eq_C LaurentPolynomial.single_eq_C
 
+@[simp] lemma C_apply {t : R} {n : ℤ} : C t n = if n = 0 then t else 0 := by
+  rw [← single_eq_C, Finsupp.single_apply]; aesop
+
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
@@ -621,6 +624,11 @@ def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.invert
 
 @[simp] lemma invert_T {n : ℤ} : invert (T n : R[T;T⁻¹]) = T (-n) := by
   ext m; simp [invert, neg_eq_iff_eq_neg]
+
+@[simp] lemma invert_apply {f : R[T;T⁻¹]} {n : ℤ} : invert f n = f (-n) :=
+  AddMonoidAlgebra.invert_apply
+
+@[simp] lemma invert_C {t : R} : invert (C t) = C t := by ext; simp
 
 lemma involutive_invert : Involutive (invert (R := R)) := AddMonoidAlgebra.involutive_invert
 
