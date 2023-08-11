@@ -382,7 +382,7 @@ lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
   LinearMap.ker_eq_bot_of_injective <| comap_injective _ hf hfs
 
 /-- `LocallyConstant.congrLeft` as a `MulEquiv`. -/
-@[to_additive "`LocallyConstant.congrLeft` as an `AddEquiv`."]
+@[to_additive (attr := simps!) "`LocallyConstant.congrLeft` as an `AddEquiv`."]
 noncomputable
 def congrLeftMul [Mul Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃* LocallyConstant Y Z where
