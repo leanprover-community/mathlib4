@@ -35,7 +35,7 @@ Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
 
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [NormalSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [NormalSpace Y]
 
 open Metric Set Filter
 

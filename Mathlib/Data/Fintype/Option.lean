@@ -19,25 +19,25 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Finset Function
 
-instance {α : Type _} [Fintype α] : Fintype (Option α) :=
+instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
 
-theorem univ_option (α : Type _) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
+theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
 #align univ_option univ_option
 
 @[simp]
-theorem Fintype.card_option {α : Type _} [Fintype α] :
+theorem Fintype.card_option {α : Type*} [Fintype α] :
     Fintype.card (Option α) = Fintype.card α + 1 :=
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 #align fintype.card_option Fintype.card_option
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
-def fintypeOfOption {α : Type _} [Fintype (Option α)] : Fintype α :=
+def fintypeOfOption {α : Type*} [Fintype (Option α)] : Fintype α :=
   ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 #align fintype_of_option fintypeOfOption
