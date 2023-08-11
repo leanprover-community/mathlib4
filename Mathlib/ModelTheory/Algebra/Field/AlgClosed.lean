@@ -113,7 +113,7 @@ instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-def CompatibleFieldOfModelACF (K : Type _) (p : ℕ) [Language.field.Structure K]
+def CompatibleFieldOfModelACF (p : ℕ) (K : Type _) [Language.field.Structure K]
     [h : (Theory.ACF p).Model K] : CompatibleField K := by
   haveI : Theory.field.Model K :=
     Theory.Model.mono h (Set.subset_union_of_subset_left
@@ -175,14 +175,14 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
   · exact ACF_isSatisfiable_of_prime_or_zero hp
   · rintro ⟨M⟩
-    letI := CompatibleFieldOfModelACF M p
+    letI := CompatibleFieldOfModelACF p M
     letI := isAlgClosed_of_model_ACF p M
     infer_instance
   · rintro ⟨M⟩ ⟨N⟩ hM hN
-    letI := CompatibleFieldOfModelACF M p
+    letI := CompatibleFieldOfModelACF p M
     haveI := isAlgClosed_of_model_ACF p M
     haveI := charP_of_model_ACF p M
-    letI := CompatibleFieldOfModelACF N p
+    letI := CompatibleFieldOfModelACF p N
     haveI := isAlgClosed_of_model_ACF p N
     haveI := charP_of_model_ACF p N
     constructor
@@ -213,7 +213,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
         Sum.elim_comp_inl, Term.realize_func, Fin.forall_fin_zero_pi, not_forall,
         false_iff, not_exists, not_not, imp_false]
       intro p X _
-      letI := CompatibleFieldOfModelACF X p
+      letI := CompatibleFieldOfModelACF p X
       simp
     · refine ⟨⟨((Nat.factors n).pmap (fun (p : ℕ) (hp : p.Prime) => ⟨p, hp⟩)
         (fun p => Nat.prime_of_mem_factors)).toFinset, ?_⟩⟩
@@ -227,7 +227,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
       simp only [Theory.models_sentence_iff, Nat.isUnit_iff, Sentence.Realize, eqZero, zero_def,
         Formula.realize_equal, Term.realize_constants, constantMap] at hpT
       rcases ACF_isSatisfiable_of_prime_or_zero (Or.inl p.2) with ⟨M⟩
-      letI := CompatibleFieldOfModelACF M p
+      letI := CompatibleFieldOfModelACF p M
       haveI := charP_of_model_ACF p M
       have := hpT M
       simp only [realize_termOfFreeCommRing, map_natCast, CompatibleField.funMap_zero] at this

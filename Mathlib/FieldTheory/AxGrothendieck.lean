@@ -83,7 +83,7 @@ def genericPolyMap {ι : Type _} (monoms : ι → Finset (ι →₀ ℕ)) :
 noncomputable def mvPolynomialSupportLEEquiv (ι : Type u)
     [DecidableEq ι] (R : Type _) [CommRing R] [DecidableEq R]
     (monoms : ι → Finset (ι →₀ ℕ)) :
-    ({ p : ι → MvPolynomial ι R // ∀ i, (p i).support ⊆ monoms i }) ≃
+    { p : ι → MvPolynomial ι R // ∀ i, (p i).support ⊆ monoms i } ≃
       ((Σ i, monoms i) → R) :=
   { toFun := fun p i => (p.1 i.1).coeff i.2,
     invFun := fun p => ⟨fun i =>
