@@ -41,38 +41,7 @@ only have prerequisites
 
 open MeasureTheory Set Filter Topology ENNReal NNReal BigOperators
 
-section IndicatorConstMeasurable
-
--- I didn't find the following lemma, the closest variants were around `indicator_const_preimage`.
---#check indicator_const_preimage
-
-/-- The measurability of a set `A` is equivalent to the measurability of the indicator function
-which takes a constant value `b ≠ 0` on a set `A` and `0` elsewhere. -/
-lemma measurable_indicator_const_iff [MeasurableSpace α] (A : Set α) [Zero β] [MeasurableSpace β]
-  [MeasurableSingletonClass β] (b : β) [NeZero b] :
-    Measurable (A.indicator (fun _ ↦ b)) ↔ MeasurableSet A := by
-  constructor <;> intro h
-  · convert h (MeasurableSet.singleton (0 : β)).compl
-    ext a
-    simp [NeZero.ne b]
-  · exact measurable_const.indicator h
-
--- #find_home measurable_indicator_const_iff
--- Gives: `Mathlib.MeasureTheory.Integral.Indicator`, i.e., this file itself...
--- But why? Could be in `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`!
-
-/-- A characterization of the a.e.-measurability of the indicator function which takes a constant
-value `b` on a set `A` and `0` elsewhere. -/
-lemma aemeasurable_indicator_const_iff₀ [MeasurableSpace α] (A : Set α) [DecidableEq β]
-  [Zero β] [MeasurableSpace β] [MeasurableSingletonClass β] (μ : Measure α) (b : β) [NeZero b] :
-    AEMeasurable (A.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet A μ := by
-  constructor <;> intro h
-  · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
-    rw [indicator_const_preimage_eq_union A {0}ᶜ b]
-    simp [NeZero.ne b]
-  · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
-
-end IndicatorConstMeasurable
+#check aemeasurable_indicator_iff₀
 
 section TendstoMeasureOfTendstoIndicator
 /-!
