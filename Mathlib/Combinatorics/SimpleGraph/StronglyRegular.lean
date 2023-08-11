@@ -220,12 +220,12 @@ theorem IsSRGWith.matrix_eq [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
   simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
     adjMatrix_apply, compl_adj]
   rw [Fintype.card_congr (G.subtypeWalkLengthEqTwoEquivCommonNeighbors v w)]
-  obtain rfl | hij := eq_or_ne v w
+  obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]
-  · simp only [Matrix.one_apply_ne' hij.symm, ne_eq, hij]
+  · simp only [Matrix.one_apply_ne' hn.symm, ne_eq, hn]
     by_cases ha : G.Adj v w <;> conv_rhs => simp [ha]
     · rw [h.of_adj v w ha]
-    · rw [h.of_not_adj v w hij ha]
+    · rw [h.of_not_adj v w hn ha]
 
 end SimpleGraph
