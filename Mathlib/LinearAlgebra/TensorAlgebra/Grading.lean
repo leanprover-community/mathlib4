@@ -18,7 +18,7 @@ The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor alg
 
 namespace TensorAlgebra
 
-variable {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open scoped DirectSum
 

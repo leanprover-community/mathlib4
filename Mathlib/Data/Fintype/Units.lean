@@ -15,7 +15,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance UnitsInt.fintype : Fintype ℤˣ :=
   ⟨{1, -1}, fun x ↦ by cases Int.units_eq_one_or x <;> simp [*]⟩
