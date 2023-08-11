@@ -17,8 +17,9 @@ import Mathlib.LinearAlgebra.Quotient
 
 * `TensorProduct.lTensor_exact` says that one can tensor a short exact sequence on the left
 
-* For `N : Submodule R M`, `LinearMap.exact_subtype_mkQ N` says that the inclusion of the submodule and the quotient map form an exact pair,
-and `lTensor_mkQ` compute `ker (lTensor Q (N.mkQ))` and similarly for `rTensor_mkQ`
+* For `N : Submodule R M`, `LinearMap.exact_subtype_mkQ N` says that
+  the inclusion of the submodule and the quotient map form an exact pair,
+  and `lTensor_mkQ` compute `ker (lTensor Q (N.mkQ))` and similarly for `rTensor_mkQ`
 
 * `TensorProduct.map_ker` computes the kernel of `TensorProduct.map g g'`
 in the presence of two short exact sequences.
