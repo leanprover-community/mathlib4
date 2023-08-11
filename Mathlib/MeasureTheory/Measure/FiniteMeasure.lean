@@ -762,12 +762,64 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
   exact Tendsto.sub tends_pos tends_neg
 #align measure_theory.finite_measure.tendsto_iff_forall_integral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_integral_tendsto
 
-end FiniteMeasureConvergenceByBoundedContinuousFunctions
+end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 
--- section
-end FiniteMeasure
+section map
 
--- namespace
-end MeasureTheory
+variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
--- namespace
+/-- The push-forward of a finite measure by a function between measurable spaces. -/
+noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
+  ⟨(ν : Measure Ω).map f, by
+    refine ⟨?_⟩
+    by_cases f_mble : AEMeasurable f ν
+    · by_cases f_mble' : Measurable f
+      · simp [Measure.map_apply f_mble' MeasurableSet.univ, IsFiniteMeasure.measure_univ_lt_top]
+      · sorry -- Corner case: f not measurable but a.e.-measurable...
+    · simp [Measure.map, f_mble]⟩
+
+--#check Subtype.map
+-- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
+lemma map_apply' (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (FiniteMeasure.map ν f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) := by
+  exact Measure.map_apply (μ := ν) f_mble A_mble
+
+-- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
+--    ...and `Subtype.map` in place of `FiniteMeasure.map`?
+lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (FiniteMeasure.map ν f) A = ν (f ⁻¹' A) := by
+  have key := FiniteMeasure.map_apply' ν f_mble A_mble
+  exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr key
+
+variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+variable [TopologicalSpace Ω'] [BorelSpace Ω']
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+(weak) convergence of `FiniteMeasure`s on `X` implies (weak) convergence of the push-forwards
+of these measures by `f`. -/
+lemma tendsto_map_of_tendsto_of_continuous {L : Filter ι}
+    (νs : ι → FiniteMeasure Ω) (ν : FiniteMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
+    {f : Ω → Ω'} (f_cont : Continuous f) :
+    Tendsto (fun i ↦ FiniteMeasure.map (νs i) f) L (𝓝 (FiniteMeasure.map ν f)) := by
+  rw [FiniteMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
+  intro g
+  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  · simp [FiniteMeasure.map]
+    refine lintegral_map ?_ f_cont.measurable
+    exact (ENNReal.continuous_coe.comp g.continuous).measurable
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+the push-forward of finite measures `f* : FiniteMeasure X → FiniteMeasure Y` is continuous
+(in the topologies of weak convergence of measures). -/
+lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
+    Continuous (fun ν ↦ FiniteMeasure.map ν f) := by
+  rw [continuous_iff_continuousAt]
+  exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
+
+end map -- section
+
+end FiniteMeasure -- namespace
+
+end MeasureTheory -- namespace

@@ -488,10 +488,65 @@ theorem tendsto_normalize_iff_tendsto {γ : Type*} {F : Filter γ} {μs : γ →
     refine' ⟨tendsto_normalize_of_tendsto μs_lim nonzero, μs_lim.mass⟩
 #align measure_theory.finite_measure.tendsto_normalize_iff_tendsto MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto
 
-end FiniteMeasure
+end FiniteMeasure --namespace
 
---namespace
-end NormalizeFiniteMeasure
+end NormalizeFiniteMeasure -- section
 
--- section
-end MeasureTheory
+section map
+
+variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
+
+namespace ProbabilityMeasure
+
+/-- The push-forward of a probability measure by a measurable function. -/
+noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f) :
+    ProbabilityMeasure Ω' :=
+  ⟨(ν : Measure Ω).map f,
+   ⟨by simp only [Measure.map_apply f_mble MeasurableSet.univ, preimage_univ, measure_univ]⟩⟩
+
+--#check Subtype.map
+-- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
+lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (ProbabilityMeasure.map ν f_mble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) := by
+  exact Measure.map_apply (μ := ν) f_mble A_mble
+
+-- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
+--    ...and `Subtype.map` in place of `FiniteMeasure.map`?
+lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (ProbabilityMeasure.map ν f_mble) A = ν (f ⁻¹' A) := by
+  have key := ProbabilityMeasure.map_apply' ν f_mble A_mble
+  exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr key
+
+variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+variable [TopologicalSpace Ω'] [BorelSpace Ω']
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+convergence (in distribution) of `ProbabilityMeasure`s on `X` implies convergence (in
+distribution) of the push-forwards of these measures by `f`. -/
+lemma tendsto_map_of_tendsto_of_continuous {L : Filter ι}
+    (νs : ι → ProbabilityMeasure Ω) (ν : ProbabilityMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
+    {f : Ω → Ω'} (f_cont : Continuous f) :
+    Tendsto (fun i ↦ ProbabilityMeasure.map (νs i) f_cont.measurable) L
+      (𝓝 (ProbabilityMeasure.map ν f_cont.measurable)) := by
+  rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
+  intro g
+  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  · simp [ProbabilityMeasure.map]
+    refine lintegral_map ?_ f_cont.measurable
+    exact (ENNReal.continuous_coe.comp g.continuous).measurable
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+the push-forward of probability measures `f* : ProbabilityMeasure X → ProbabilityMeasure Y`
+is continuous (in the topologies of convergence in distribution). -/
+lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
+    Continuous (fun ν ↦ ProbabilityMeasure.map ν f_cont.measurable) := by
+  rw [continuous_iff_continuousAt]
+  exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
+
+end ProbabilityMeasure -- namespace
+
+end map -- section
+
+end MeasureTheory -- namespace
