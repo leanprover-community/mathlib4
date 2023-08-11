@@ -17,8 +17,8 @@ import Mathlib.Algebra.Ring.Opposite
   opposite algebra.
 * `AlgEquiv.op`/`AlgEquiv.unop`: simultaneously convert the source and target of an isomorphism to
   the opposite algebra.
-* `AlgEquiv.to_opposite`: in a commutative algebra the opposite algebra is isomorphic.
-
+* `AlgEquiv.toOpposite`: in a commutative algebra, the opposite algebra is isomorphic to the
+  original algebra.
 -/
 
 
