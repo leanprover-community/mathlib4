@@ -238,7 +238,7 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
         congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) $ two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
       | .inr (.inr (.inr ⟨i, j⟩)) => rfl }
 
-lemma card_conjClasses_dihedralGroup_odd (hn : Odd n) :
+lemma nat_card_conjClasses_odd (hn : Odd n) :
     Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
   have hn' : NeZero n := ⟨hn.pos.ne'⟩
   have h := card_comm_eq_card_conjClasses_mul_card (DihedralGroup n)
@@ -246,5 +246,9 @@ lemma card_conjClasses_dihedralGroup_odd (hn : Odd n) :
       Nat.card_prod, Nat.card_zmod, Nat.card_eq_fintype_card] at h
   rw [←Nat.div_eq_of_eq_mul_right Fintype.card_pos h, card, ←Nat.mul_div_mul_right _ 2 hn.pos]
   ring_nf
+
+lemma fintype_card_conjClasses_odd [Fintype (ConjClasses (DihedralGroup n))] (hn : Odd n) :
+    Fintype.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
+  rw [←Nat.card_eq_fintype_card, nat_card_conjClasses_odd hn]
 
 end DihedralGroup
