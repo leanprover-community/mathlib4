@@ -19,7 +19,7 @@ We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidH
 `AddMonoidHom.smul`, respectively.
 -/
 
-variable {R S A B : Type _}
+variable {R S A B : Type*}
 
 namespace AddMonoidHom
 

@@ -69,8 +69,8 @@ open Function Set Submodule
 
 open BigOperators
 
-variable {ι : Type _} {ι' : Type _} {R : Type _} {R₂ : Type _} {K : Type _}
-variable {M : Type _} {M' M'' : Type _} {V : Type u} {V' : Type _}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
+variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 
 section Module
 
@@ -188,12 +188,12 @@ theorem repr_range : LinearMap.range (b.repr : M →ₗ[R] ι →₀ R) = Finsup
   rw [LinearEquiv.range, Finsupp.supported_univ]
 #align basis.repr_range Basis.repr_range
 
-theorem mem_span_repr_support {ι : Type _} (b : Basis ι R M) (m : M) :
+theorem mem_span_repr_support {ι : Type*} (b : Basis ι R M) (m : M) :
     m ∈ span R (b '' (b.repr m).support) :=
   (Finsupp.mem_span_image_iff_total _).2 ⟨b.repr m, by simp [Finsupp.mem_supported_support]⟩
 #align basis.mem_span_repr_support Basis.mem_span_repr_support
 
-theorem repr_support_subset_of_mem_span {ι : Type _} (b : Basis ι R M) (s : Set ι) {m : M}
+theorem repr_support_subset_of_mem_span {ι : Type*} (b : Basis ι R M) (s : Set ι) {m : M}
     (hm : m ∈ span R (b '' s)) : ↑(b.repr m).support ⊆ s := by
   rcases(Finsupp.mem_span_image_iff_total _).1 hm with ⟨l, hl, hlm⟩
   rwa [← hlm, repr_total, ← Finsupp.mem_supported R l]
@@ -265,9 +265,9 @@ end Coord
 
 section Ext
 
-variable {R₁ : Type _} [Semiring R₁] {σ : R →+* R₁} {σ' : R₁ →+* R}
+variable {R₁ : Type*} [Semiring R₁] {σ : R →+* R₁} {σ' : R₁ →+* R}
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-variable {M₁ : Type _} [AddCommMonoid M₁] [Module R₁ M₁]
+variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 
 /-- Two linear maps are equal if they are equal on basis vectors. -/
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
@@ -357,7 +357,7 @@ end Map
 
 section MapCoeffs
 
-variable {R' : Type _} [Semiring R'] [Module R' M] (f : R ≃+* R')
+variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
   (h : ∀ (c) (x : M), f c • x = c • x)
 
 attribute [local instance] SMul.comp.isScalarTower
@@ -512,7 +512,7 @@ section Fintype
 
 variable [Fintype ι] [DecidableEq M]
 
-/-- `b.reindex_finset_range` is a basis indexed by `finset.univ.image b`,
+/-- `b.reindexFinsetRange` is a basis indexed by `Finset.univ.image b`,
 the finite set of basis vectors themselves. -/
 def reindexFinsetRange : Basis (Finset.univ.image b) R M :=
   b.reindexRange.reindex ((Equiv.refl M).subtypeEquiv (by simp))
@@ -587,7 +587,7 @@ theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
 
 section Constr
 
-variable (S : Type _) [Semiring S] [Module S M']
+variable (S : Type*) [Semiring S] [Module S M']
 
 variable [SMulCommClass R S M']
 
@@ -683,7 +683,7 @@ theorem equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm :=
 #align basis.equiv_symm Basis.equiv_symm
 
 @[simp]
-theorem equiv_trans {ι'' : Type _} (b'' : Basis ι'' R M'') (e : ι ≃ ι') (e' : ι' ≃ ι'') :
+theorem equiv_trans {ι'' : Type*} (b'' : Basis ι'' R M'') (e : ι ≃ ι') (e' : ι' ≃ ι'') :
     (b.equiv b' e).trans (b'.equiv b'' e') = b.equiv b'' (e.trans e') :=
   b.ext' fun i => by simp
 #align basis.equiv_trans Basis.equiv_trans
@@ -804,7 +804,7 @@ end NoZeroSMulDivisors
 section Singleton
 
 /-- `Basis.singleton ι R` is the basis sending the unique element of `ι` to `1 : R`. -/
-protected def singleton (ι R : Type _) [Unique ι] [Semiring R] : Basis ι R R :=
+protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
   ofRepr
     { toFun := fun x => Finsupp.single default x
       invFun := fun f => f default
@@ -815,17 +815,17 @@ protected def singleton (ι R : Type _) [Unique ι] [Semiring R] : Basis ι R R 
 #align basis.singleton Basis.singleton
 
 @[simp]
-theorem singleton_apply (ι R : Type _) [Unique ι] [Semiring R] (i) : Basis.singleton ι R i = 1 :=
+theorem singleton_apply (ι R : Type*) [Unique ι] [Semiring R] (i) : Basis.singleton ι R i = 1 :=
   apply_eq_iff.mpr (by simp [Basis.singleton])
 #align basis.singleton_apply Basis.singleton_apply
 
 @[simp]
-theorem singleton_repr (ι R : Type _) [Unique ι] [Semiring R] (x i) :
+theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
 #align basis.singleton_repr Basis.singleton_repr
 
-theorem basis_singleton_iff {R M : Type _} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] (ι : Type _) [Unique ι] :
+theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
+    [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ (x : _) (_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
@@ -981,7 +981,7 @@ theorem Basis.equivFun_ofEquivFun (e : M ≃ₗ[R] ι → R) : (Basis.ofEquivFun
   simp_rw [Basis.equivFun_apply, Basis.ofEquivFun_repr_apply]
 #align basis.equiv_fun_of_equiv_fun Basis.equivFun_ofEquivFun
 
-variable (S : Type _) [Semiring S] [Module S M']
+variable (S : Type*) [Semiring S] [Module S M']
 
 variable [SMulCommClass R S M']
 
@@ -1085,9 +1085,9 @@ namespace Basis
 /-- Any basis is a maximal linear independent set.
 -/
 theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
-  -- If `range w` is strictly bigger than `range b`,
+  -- If `w` is strictly bigger than `range b`,
   apply le_antisymm h
-  -- then choose some `x ∈ range w \ range b`,
+  -- then choose some `x ∈ w \ range b`,
   intro x p
   by_contra q
   -- and write it in terms of the basis.
@@ -1115,10 +1115,7 @@ variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 /-- A linear independent family of vectors spanning the whole module is a basis. -/
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
-    {
-      hli.repr.comp
-        (LinearMap.id.codRestrict _ fun _ =>
-          hsp Submodule.mem_top) with
+    { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
       invFun := Finsupp.total _ _ _ v
       left_inv := fun x => hli.total_repr ⟨x, _⟩
       right_inv := fun _ => hli.repr_eq rfl }
@@ -1198,7 +1195,7 @@ protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
 
 end Span
 
-theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+theorem groupSMul_span_eq_top {G : Type*} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → G} :
     Submodule.span R (Set.range (w • v)) = ⊤ := by
   rw [eq_top_iff]
@@ -1209,28 +1206,28 @@ theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [Dis
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
   rwa [smul_one_smul, inv_smul_smul] at this
-#align basis.group_smul_span_eq_top Basis.groupSmul_span_eq_top
+#align basis.group_smul_span_eq_top Basis.groupSMul_span_eq_top
 
 /-- Given a basis `v` and a map `w` such that for all `i`, `w i` are elements of a group,
-`group_smul` provides the basis corresponding to `w • v`. -/
-def groupSmul {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+`groupSMul` provides the basis corresponding to `w • v`. -/
+def groupSMul {G : Type*} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] [SMulCommClass G R M] (v : Basis ι R M) (w : ι → G) : Basis ι R M :=
-  Basis.mk (LinearIndependent.group_smul v.linearIndependent w) (groupSmul_span_eq_top v.span_eq).ge
-#align basis.group_smul Basis.groupSmul
+  Basis.mk (LinearIndependent.group_smul v.linearIndependent w) (groupSMul_span_eq_top v.span_eq).ge
+#align basis.group_smul Basis.groupSMul
 
-theorem groupSmul_apply {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+theorem groupSMul_apply {G : Type*} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] [SMulCommClass G R M] {v : Basis ι R M} {w : ι → G} (i : ι) :
-    v.groupSmul w i = (w • (v : ι → M)) i :=
+    v.groupSMul w i = (w • (v : ι → M)) i :=
   mk_apply (LinearIndependent.group_smul v.linearIndependent w)
-    (groupSmul_span_eq_top v.span_eq).ge i
-#align basis.group_smul_apply Basis.groupSmul_apply
+    (groupSMul_span_eq_top v.span_eq).ge i
+#align basis.group_smul_apply Basis.groupSMul_apply
 
 theorem units_smul_span_eq_top {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → Rˣ} :
     Submodule.span R (Set.range (w • v)) = ⊤ :=
-  groupSmul_span_eq_top hv
+  groupSMul_span_eq_top hv
 #align basis.units_smul_span_eq_top Basis.units_smul_span_eq_top
 
-/-- Given a basis `v` and a map `w` such that for all `i`, `w i` is a unit, `smul_of_is_unit`
+/-- Given a basis `v` and a map `w` such that for all `i`, `w i` is a unit, `unitsSMul`
 provides the basis corresponding to `w • v`. -/
 def unitsSMul (v : Basis ι R M) (w : ι → Rˣ) : Basis ι R M :=
   Basis.mk (LinearIndependent.units_smul v.linearIndependent w)
@@ -1262,7 +1259,7 @@ theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι
   congr_arg (fun f : M →ₗ[R₂] R₂ => f v) (e.coord_unitsSMul w i)
 #align basis.repr_units_smul Basis.repr_unitsSMul
 
-/-- A version of `smul_of_units` that uses `IsUnit`. -/
+/-- A version of `unitsSMul` that uses `IsUnit`. -/
 def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
   unitsSMul v fun i => (hw i).unit
 #align basis.is_unit_smul Basis.isUnitSMul
@@ -1306,40 +1303,40 @@ theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
 and `y` and `N` together span the whole of `O`, then there is a basis for `O`
 whose basis vectors are given by `Fin.cons y b`. -/
-noncomputable def mkFinConsOfLe {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
+noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
     (b : Basis (Fin n) R N) (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) : Basis (Fin (n + 1)) R O :=
   mkFinCons ⟨y, yO⟩ (b.map (Submodule.comapSubtypeEquivOfLe hNO).symm)
     (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
     fun z => hsp z z.2
-#align basis.mk_fin_cons_of_le Basis.mkFinConsOfLe
+#align basis.mk_fin_cons_of_le Basis.mkFinConsOfLE
 
 @[simp]
-theorem coe_mkFinConsOfLe {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
+theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
     (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) :
-    (mkFinConsOfLe y yO b hNO hli hsp : Fin (n + 1) → O) =
+    (mkFinConsOfLE y yO b hNO hli hsp : Fin (n + 1) → O) =
       Fin.cons ⟨y, yO⟩ (Submodule.ofLe hNO ∘ b) :=
   coe_mkFinCons _ _ _ _
-#align basis.coe_mk_fin_cons_of_le Basis.coe_mkFinConsOfLe
+#align basis.coe_mk_fin_cons_of_le Basis.coe_mkFinConsOfLE
 
 /-- The basis of `R × R` given by the two vectors `(1, 0)` and `(0, 1)`. -/
-protected def finTwoProd (R : Type _) [Semiring R] : Basis (Fin 2) R (R × R) :=
+protected def finTwoProd (R : Type*) [Semiring R] : Basis (Fin 2) R (R × R) :=
   Basis.ofEquivFun (LinearEquiv.finTwoArrow R R).symm
 #align basis.fin_two_prod Basis.finTwoProd
 
 @[simp]
-theorem finTwoProd_zero (R : Type _) [Semiring R] : Basis.finTwoProd R 0 = (1, 0) := by
+theorem finTwoProd_zero (R : Type*) [Semiring R] : Basis.finTwoProd R 0 = (1, 0) := by
   simp [Basis.finTwoProd, LinearEquiv.finTwoArrow]
 #align basis.fin_two_prod_zero Basis.finTwoProd_zero
 
 @[simp]
-theorem finTwoProd_one (R : Type _) [Semiring R] : Basis.finTwoProd R 1 = (0, 1) := by
+theorem finTwoProd_one (R : Type*) [Semiring R] : Basis.finTwoProd R 1 = (0, 1) := by
   simp [Basis.finTwoProd, LinearEquiv.finTwoArrow]
 #align basis.fin_two_prod_one Basis.finTwoProd_one
 
 @[simp]
-theorem coe_finTwoProd_repr {R : Type _} [Semiring R] (x : R × R) :
+theorem coe_finTwoProd_repr {R : Type*} [Semiring R] (x : R × R) :
     ⇑((Basis.finTwoProd R).repr x) = ![x.fst, x.snd] :=
   rfl
 #align basis.coe_fin_two_prod_repr Basis.coe_finTwoProd_repr
@@ -1357,7 +1354,7 @@ variable [AddCommGroup M] [Module R M] {b : ι → M}
 
 /-- If `N` is a submodule with finite rank, do induction on adjoining a linear independent
 element to a submodule. -/
-def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort _)
+def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*)
     (ih : ∀ N : Submodule R M,
       (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
     (n : ℕ) (N : Submodule R M)
@@ -1391,7 +1388,7 @@ end Induction
 
 section RestrictScalars
 
-variable {S : Type _} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
+variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
 
 variable [Algebra R S] [Module S M] [Module R M]
 
