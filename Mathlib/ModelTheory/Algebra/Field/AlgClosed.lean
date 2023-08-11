@@ -99,16 +99,16 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
     Fin.snoc_comp_castSucc, Term.realize, CompatibleField.funMap_zero]
 
 def Theory.ACF (p : ℕ) : Theory Language.field :=
-  Theory.hasChar p ∪ Theory.field ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
+  Theory.hasChar p ∪ Theory.field ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
 instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2
     ⟨Theory.model_union_iff.2 ⟨model_hasChar_of_charP, inferInstance⟩, ?_⟩
-  simp only [Theory.model_iff, Set.mem_iUnion, Set.mem_singleton_iff,
+  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ n hn0 rfl
-  rw [realize_genericMonicPolyHasRoot]
+  simp only [realize_genericMonicPolyHasRoot]
   rintro ⟨p, _, rfl⟩
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
@@ -125,9 +125,9 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
     IsAlgClosed M := by
   refine IsAlgClosed.of_exists_root _ ?_
   intro p hpm hpi
-  have h : M ⊨ (⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}) :=
+  have h : M ⊨ (genericMonicPolyHasRoot '' {n | 0 < n}) :=
     Theory.Model.mono h (by simp [Theory.ACF])
-  simp only [Theory.model_iff, Set.mem_iUnion, Set.mem_singleton_iff,
+  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp] at h
   have := h _ p.natDegree (natDegree_pos_iff_degree_pos.2
     (degree_pos_of_irreducible hpi)) rfl
