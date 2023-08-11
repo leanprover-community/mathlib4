@@ -77,6 +77,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
+set_option autoImplicit true
+
 
 open Function Set Order
 open Classical hiding by_cases not_not

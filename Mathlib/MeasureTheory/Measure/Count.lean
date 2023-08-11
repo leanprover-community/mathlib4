@@ -12,6 +12,9 @@ In this file we define the counting measure `MeasurTheory.Measure.count`
 as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
+
+set_option autoImplicit true
+
 open Set
 open scoped ENNReal BigOperators Classical
 

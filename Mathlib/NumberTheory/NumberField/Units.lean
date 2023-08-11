@@ -23,6 +23,8 @@ field `K`.
 number field, units
  -/
 
+set_option autoImplicit true
+
 
 open scoped NumberField
 

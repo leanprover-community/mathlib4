@@ -111,6 +111,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `tang
 real and complex manifolds).
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -1402,4 +1404,3 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
-

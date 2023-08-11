@@ -25,6 +25,8 @@ Results include
     The leading_coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
+set_option autoImplicit true
+
 -- Porting note: `Mathlib.Data.Nat.Cast.WithTop` should be imported for `Nat.cast_withBot`.
 
 set_option linter.uppercaseLean3 false

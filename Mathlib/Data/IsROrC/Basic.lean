@@ -39,6 +39,8 @@ their counterparts in `complex.lean` (which causes linter errors).
 A few lemmas requiring heavier imports are in `data.is_R_or_C.lemmas`.
 -/
 
+set_option autoImplicit true
+
 
 open BigOperators
 

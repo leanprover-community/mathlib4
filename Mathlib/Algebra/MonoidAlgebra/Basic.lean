@@ -46,6 +46,8 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
