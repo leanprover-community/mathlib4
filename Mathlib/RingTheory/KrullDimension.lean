@@ -90,9 +90,23 @@ instance (F : Type _) [Field F] : Unique (PrimeSpectrum F) where
     refine ⟨λ h ↦ ?_, λ h ↦ h.symm ▸ Submodule.zero_mem _⟩
     rwa [p.asIdeal.eq_bot_of_prime, Submodule.mem_bot] at h
 
+/--
+https://stacks.math.columbia.edu/tag/00KG
+-/
+lemma eq_iSup_height_maximal_ideals (R : Type _) [CommRing R] : ringKrullDim R =
+  ⨆ (p : PrimeSpectrum R) (_ : p.asIdeal.IsMaximal), height (PrimeSpectrum R) p := by
+refine' krullDim.eq_iSup_height.trans $ le_antisymm ?_ ?_
+· exact iSup_le $ λ p ↦ by
+    rcases (p.asIdeal.exists_le_maximal p.IsPrime.1) with ⟨q, ⟨h1, h2⟩⟩
+    refine' le_trans ?_ (le_sSup ⟨⟨q, Ideal.IsMaximal.isPrime h1⟩, iSup_pos h1⟩)
+    exact krullDim.height_mono h2
+· rw [show (⨆ (a : PrimeSpectrum R), height (PrimeSpectrum R) a) = ⨆ (a : PrimeSpectrum R)
+    (_ : true), height (PrimeSpectrum R) a by simp only [iSup_pos]]
+  exact iSup_le_iSup_of_subset $ λ _ _ ↦ rfl
+
 /-
 Here we aim to show that for any prime ideal `I` of a commutative ring `R`, the
-height of `I` equals the krull dimension of `Localization.AtPrime I.asIdeal`.
+height of `I` equals the Krull dimension of `Localization.AtPrime I.asIdeal`.
 -/
 section aboutHeightAndLocalization
 

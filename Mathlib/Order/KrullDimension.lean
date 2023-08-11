@@ -131,6 +131,9 @@ lemma NoTopOrder_of_strictMono (f : α → β) (hf : StrictMono f) [NoTopOrder (
 lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   krullDimOfRel.le_of_map f hf
 
+lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
+  le_of_strictMono (λ x ↦ ⟨x, le_trans x.2 h⟩) $ λ _ _ h ↦ h
+
 lemma le_of_strictComono_and_surj
   (f : α → β) (hf : StrictComono f) (hf' : Function.Surjective f) :
     krullDim β ≤ krullDim α :=
