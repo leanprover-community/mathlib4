@@ -20,7 +20,7 @@ This is here to keep `Algebra.GroupWithZero.Units.Basic` out of the import requi
 namespace WithZero
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
-def unitsWithZeroEquiv {α : Type _} [Group α] : (WithZero α)ˣ ≃* α where
+def unitsWithZeroEquiv {α : Type*} [Group α] : (WithZero α)ˣ ≃* α where
   toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]

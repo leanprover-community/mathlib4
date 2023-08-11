@@ -53,11 +53,11 @@ scoped[Topology] notation "I^" N => N → I
 namespace Cube
 
 /-- The points in a cube with at least one projection equal to 0 or 1. -/
-def boundary (N : Type _) : Set (I^N) :=
+def boundary (N : Type*) : Set (I^N) :=
   {y | ∃ i, y i = 0 ∨ y i = 1}
 #align cube.boundary Cube.boundary
 
-variable {N : Type _} [DecidableEq N]
+variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
@@ -82,7 +82,7 @@ theorem insertAt_boundary (i : N) {t₀ : I} {t}
 
 end Cube
 
-variable (N X : Type _) [TopologicalSpace X] (x : X)
+variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`. -/
 @[reducible]
@@ -392,7 +392,7 @@ end GenLoop
 
 /-- The `n`th homotopy group at `x` defined as the quotient of `Ω^n x` by the
   `GenLoop.Homotopic` relation. -/
-def HomotopyGroup (N X : Type _) [TopologicalSpace X] (x : X) : Type _ :=
+def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 #align homotopy_group HomotopyGroup
 
@@ -415,7 +415,7 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
 
 /-- Homotopy group of finite index. -/
 @[reducible]
-def HomotopyGroup.Pi (n) (X : Type _) [TopologicalSpace X] (x : X) :=
+def HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 #align homotopy_group.pi HomotopyGroup.Pi
 
