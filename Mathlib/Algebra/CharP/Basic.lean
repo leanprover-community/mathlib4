@@ -749,7 +749,8 @@ end NeZero
 
 namespace CharZero
 
-theorem charZero_iff_forall_prime_ne_zero {R  : Type*} [Ring R] [IsDomain R] :
+theorem charZero_iff_forall_prime_ne_zero {R  : Type*}
+    [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
     CharZero R ↔ ∀ p : ℕ, p.Prime → (p : R) ≠ 0 := by
   refine ⟨fun h p hp => by simp [hp.ne_zero], fun h => ?_⟩
   let p := ringChar R
