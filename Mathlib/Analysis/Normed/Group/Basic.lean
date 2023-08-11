@@ -494,7 +494,7 @@ open Lean Meta Qq Function
 `norm_nonneg'`. -/
 @[positivity Norm.norm _]
 def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ * ‖"
+  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
   let p ← mkAppM ``norm_nonneg' #[a]
   pure (.nonnegative p)
 
