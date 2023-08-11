@@ -211,7 +211,7 @@ def LocalDecl.compare (l₁ l₂ : LocalDecl) (cfg : LocalDeclComparisonConfig :
 /-- Compare two `LocalDecl`s according to the configs. The settings in `ExprComparisonConfig` will
 be used when comparing expressions. -/
 def LocalContext.compare (lctx₁ lctx₂ : LocalContext)
-    (cfg : LocalContextComparisonConfig) (ecfg : ExprComparisonConfig) : MetaM Bool := do
+    (cfg : LocalContextComparisonConfig := {}) (ecfg : ExprComparisonConfig := {}) : MetaM Bool := do
   -- Would be just slightly better if we could normalize this function given cfg in advance somehow,
   -- and avoid filtering at all if all true. Likewise elsewhere.
   let f (d : LocalDecl) :=
