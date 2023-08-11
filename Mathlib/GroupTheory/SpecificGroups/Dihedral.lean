@@ -126,6 +126,11 @@ theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
   rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
 #align dihedral_group.card DihedralGroup.card
 
+theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
+  cases n
+  . rw [Nat.card_eq_zero_of_infinite]
+  . rw [Nat.card_eq_fintype_card, card]
+
 @[simp]
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
   induction' k with k IH
@@ -204,7 +209,8 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact (orderOf_sr 0).symm
 #align dihedral_group.exponent DihedralGroup.exponent
 
-/-- If n is odd, then the Dihedral group of order 2n has n*(n+3) pairs of commuting elements. -/
+/-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
+$n + n + n + n*n$) of commuting elements. -/
 @[simps]
 def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
@@ -238,17 +244,17 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
         congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) $ two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
       | .inr (.inr (.inr ⟨i, j⟩)) => rfl }
 
-lemma nat_card_conjClasses_odd (hn : Odd n) :
-    Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
+/-- If n is odd, then the Dihedral group of order 2n has n*(n+3) pairs of commuting elements. -/
+lemma card_commute_odd (hn : Odd n) :
+    Nat.card { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } = n * (n + 3) := by
   have hn' : NeZero n := ⟨hn.pos.ne'⟩
-  have h := card_comm_eq_card_conjClasses_mul_card (DihedralGroup n)
-  rw [mul_comm, Nat.card_congr (OddCommuteEquiv hn), Nat.card_sum, Nat.card_sum, Nat.card_sum,
-      Nat.card_prod, Nat.card_zmod, Nat.card_eq_fintype_card] at h
-  rw [←Nat.div_eq_of_eq_mul_right Fintype.card_pos h, card, ←Nat.mul_div_mul_right _ 2 hn.pos]
-  ring_nf
+  simp_rw [Nat.card_congr (OddCommuteEquiv hn), Nat.card_sum, Nat.card_prod, Nat.card_zmod]
+  ring
 
-lemma fintype_card_conjClasses_odd [Fintype (ConjClasses (DihedralGroup n))] (hn : Odd n) :
-    Fintype.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
-  rw [←Nat.card_eq_fintype_card, nat_card_conjClasses_odd hn]
+lemma card_conjClasses_odd (hn : Odd n) :
+    Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
+  rw [←Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
+    card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
+
 
 end DihedralGroup
