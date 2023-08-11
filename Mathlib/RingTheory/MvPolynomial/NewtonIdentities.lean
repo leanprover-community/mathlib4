@@ -238,27 +238,28 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
 the elementary symmetric polynomials and would like to calculate the values of the power sums. -/
 theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
     (-1) ^ (k + 1) * k * esymm σ R k -
-    ∑ a in ((antidiagonal k).filter (fun a ↦ a.fst < k)).filter (fun a ↦ a.fst ≥ 1),
+    ∑ a in (antidiagonal k).filter (fun a ↦ a.fst ∈ Set.Ioo 0 k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
+  simp only [Set.Ioo, Set.mem_setOf_eq, and_comm]
   have hesymm := mul_esymm_eq_sum σ R k
   rw [← (sum_filter_add_sum_filter_not ((antidiagonal k).filter (fun a ↦ a.fst < k))
-    (fun a ↦ a.fst ≥ 1) (fun a ↦ (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd))] at hesymm
+    (fun a ↦ 0 < a.fst) (fun a ↦ (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd))] at hesymm
   have sub_both_sides := congrArg (· - (-1 : MvPolynomial σ R) ^ (k + 1) *
-    ∑ a in ((antidiagonal k).filter (fun a ↦ a.fst < k)).filter (fun a ↦ a.fst ≥ 1),
+    ∑ a in ((antidiagonal k).filter (fun a ↦ a.fst < k)).filter (fun a ↦ 0 < a.fst),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd) hesymm
   simp only [left_distrib, add_sub_cancel'] at sub_both_sides
   have sub_both_sides := congrArg ((-1 : MvPolynomial σ R) ^ (k + 1) * ·) sub_both_sides
   simp only [mul_sub_left_distrib, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k + 1, rfl⟩, one_mul,
-    not_le, lt_one_iff, filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ a.fst = 0)]
+    not_le, lt_one_iff, filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]
     at sub_both_sides
-  have : filter (fun a ↦ a.fst < k ∧ a.fst = 0) (antidiagonal k) = {(0, k)} := by
+  have : filter (fun a ↦ a.fst < k ∧ ¬0 < a.fst) (antidiagonal k) = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
     refine' ⟨_, fun ha ↦ by aesop⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
-    rw [← ha, ha0, zero_add, ← ha0]
+    rw [← ha, Nat.eq_zero_of_nonpos a.fst ha0, zero_add, ← Nat.eq_zero_of_nonpos a.fst ha0]
   rw [this, sum_singleton] at sub_both_sides
-  simp only [_root_.pow_zero, esymm_zero, mul_one, one_mul] at sub_both_sides
+  simp only [_root_.pow_zero, esymm_zero, mul_one, one_mul, filter_filter] at sub_both_sides
   exact sub_both_sides.symm
 
 end NewtonIdentities
