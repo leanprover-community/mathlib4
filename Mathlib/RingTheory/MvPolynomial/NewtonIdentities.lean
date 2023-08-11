@@ -20,7 +20,7 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 
 ## Main declarations
 
-* `MvPolynomial.NewtonIdentities.esymm_recurrence`: a recurrence relation for the kth elementary
+* `MvPolynomial.mul_esymm_eq_sum`: a recurrence relation for the kth elementary
   symmetric polynomial in terms of lower degree elementary symmetric polynomials and power sums.
 
 ## References
