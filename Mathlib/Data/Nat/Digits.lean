@@ -445,7 +445,7 @@ theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p 
     exact Nat.mul_le_mul h hi
 
 theorem sum_le_ofDigits (L : List ℕ) (h: 1 ≤ p) : L.sum ≤ ofDigits p L :=
-  (Eq.symm <| ofDigits_one L) ▸ ofDigits_monotone L h
+  (ofDigits_one L).symm ▸ ofDigits_monotone L h
 
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
   induction' n with n
