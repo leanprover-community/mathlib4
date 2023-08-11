@@ -6,10 +6,6 @@ Authors: Antoine Chambetr-Loir
 
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.Quotient
-import Mathlib.RingTheory.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-! # Right exactness properties of tensor product
 
@@ -155,13 +151,21 @@ lemma LinearMap.exact_subtype_mkQ (N : Submodule R N) :
     Exact (Submodule.subtype N) (Submodule.mkQ N) := by
   rw [LinearMap.exact_iff, Submodule.ker_mkQ, Submodule.range_subtype N]
 
+lemma LinearMap.exact_map_mkQ_range (f : M →ₗ[R] N):
+    Exact f (Submodule.mkQ (range f)) := by
+  rw [LinearMap.exact_iff, Submodule.ker_mkQ]
+
+lemma LinearMap.exact_subtype_ker_map (g : N →ₗ[R] P) :
+    Exact (Submodule.subtype (ker g)) g := by
+  rw [LinearMap.exact_iff, Submodule.range_subtype]
+
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
 variable (Q : Type _) [AddCommGroup Q] [Module R Q]
 
 variable (hfg : Exact f g) (hg : Function.Surjective g)
 
-private
+-- private
 def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) := by
   rw [exact_iff] at hfg
@@ -192,13 +196,15 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
   · intro r p q
     simp only [TensorProduct.tmul_smul, Submodule.Quotient.mk_smul]
 
-private noncomputable
+-- private
+noncomputable
 def rTensor.inverse :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) :=
   rTensor.inverse_ofRightInverse Q hfg
     (Function.rightInverse_surjInv hg)
 
-private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
+-- private
+lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
     (rTensor.inverse Q hfg hg) ((rTensor Q g) y) =
       Submodule.Quotient.mk (p := (LinearMap.range (rTensor Q f))) y := by
   simp only [← LinearMap.comp_apply, ← Submodule.mkQ_apply]
@@ -244,7 +250,7 @@ lemma rTensor_mkQ (N : Submodule R M) :
   rw [← LinearMap.exact_iff]
   exact rTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
-private
+-- private
 def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) := by
   rw [exact_iff] at hfg
@@ -275,13 +281,15 @@ def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
     rw [← hfg, mem_ker, map_sub, map_smul]
     simp only [hgh _, sub_self]
 
-private noncomputable
+-- private
+noncomputable
 def lTensor.inverse :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) :=
   lTensor.inverse_ofRightInverse Q hfg
     (Function.rightInverse_surjInv hg)
 
-private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
+-- private
+lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
     (lTensor.inverse Q hfg hg) ((lTensor Q g) y) =
       Submodule.Quotient.mk (p := (LinearMap.range (lTensor Q f))) y := by
   simp only [← LinearMap.comp_apply, ← Submodule.mkQ_apply]
