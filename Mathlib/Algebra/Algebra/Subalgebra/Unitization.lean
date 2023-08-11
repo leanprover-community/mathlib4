@@ -131,14 +131,15 @@ def NonUnitalSubsemiring.unitization {R : Type*} [Semiring R] (S : NonUnitalSubs
   AlgEquiv.refl.arrowCongr (Subsemiring.closureEquivAdjoinNat (S : Set R)).symm <|
     NonUnitalSubalgebra.unitization (hSRA := AddSubmonoidClass.nsmulMemClass) S
 
-@[simp]
+-- set_option maxHeartbeats 0 in
+-- @[simp]
 theorem NonUnitalSubsemiring.unitization_apply_coe {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) (x : Unitization ℕ S) :
     (S.unitization x : R) = algebraMap ℕ (Subsemiring.closure (S : Set R)) x.fst + x.snd := by
-  dsimp [unitization, algebraMap]
-  -- erw [SubringClass.coe_intCast]
-  -- erw [algebraMap_int_eq, eq_intCast, SubringClass.coe_intCast]
-  sorry
+  dsimp [unitization, algebraMap, AlgEquiv.arrowCongr]
+  dsimp [NonUnitalSubalgebra.unitization, Subsemiring.closureEquivAdjoinNat]
+  simp
+  congr 1
 
 theorem NonUnitalSubsemiring.unitization_surjective {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) : Function.Surjective S.unitization := by
