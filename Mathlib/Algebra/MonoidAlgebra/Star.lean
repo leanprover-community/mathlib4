@@ -8,11 +8,11 @@ import Mathlib.Algebra.Star.BigOperators
 
 /-!  # The star structure on group algebras.
 
-Given a group `G`, the inverse mapping `g ↦ g⁻¹` gives rise to an involutive star on the group
-algebra `k[G]`.
+Given a group `G`, the inverse mapping `g ↦ g⁻¹` together with a (possibly-trivial) star on the
+scalars gives rise to an involutive star on the group algebra `k[G]`.
 
-We define this star here and prove that it is part of a `StarRing`. In fact more is true: this data
-is part of a natural Hopf algebra structure, but we do not include this result here.
+We define this star here and prove that it satisfies the axioms of a `StarRing`. In fact more is
+true: this data is part of a natural Hopf algebra structure, but we do not include this result here.
 
 ## Main statements:
 
@@ -30,9 +30,19 @@ code duplication.
 
 namespace MonoidAlgebra
 
-variable {k G : Type _} [Semiring k] [StarRing k] [DecidableEq G] [Group G]
+section
 
-instance instStarRing : StarRing (MonoidAlgebra k G) where
+variable {k G : Type*} [Semiring k] [StarRing k] [DecidableEq G] [Group G]
+
+/-- A `StarRing` structure on the group algebra.
+
+Note that this combines the group inversion `g ↦ g⁻¹` and the star on the scalars (see
+`MonoidAlgebra.star_apply`). This is necessary for the `star_mul` axiom to hold.
+
+We do note make this an instance because in the case that the scalars and / or the group are
+commutative, there are up to three natural (non-trivial) `StarRing` structures according to whether
+one includes the group inversion and the star on the scalars. -/
+def instStarRing : StarRing (MonoidAlgebra k G) where
   star f := ⟨f.support.map (Equiv.inv G), star ∘ f ∘ Inv.inv, fun x ↦ by
     simp only [Finset.mem_map_equiv, Finsupp.mem_support_iff, Function.comp_apply, star_ne_zero,
       Equiv.inv_symm, Equiv.inv_apply]⟩
@@ -49,6 +59,8 @@ instance instStarRing : StarRing (MonoidAlgebra k G) where
     rw [Finsupp.add_apply, Finsupp.add_apply]
     simp
 
+attribute [local instance] instStarRing
+
 @[simp] lemma star_apply {f : MonoidAlgebra k G} {x : G} : star f x = star (f x⁻¹) := rfl
 
 @[simp] lemma star_smul {a : k} {f : MonoidAlgebra k G} :
@@ -56,13 +68,51 @@ instance instStarRing : StarRing (MonoidAlgebra k G) where
   rw [Finsupp.smul_apply, star_apply, Finsupp.smul_apply, smul_eq_mul, star_mul, star_apply,
     MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op]
 
+end
+
+section Commutative
+
+variable {k G : Type*} [CommSemiring k] [DecidableEq G] [CommGroup G]
+
+/-- When both `k` and `G` are commutative, we do not need a star on `k` to obtain a `StarRing`
+structure. See `MonoidAlgebra.invert` where this is bundled as an algebra equivalence. -/
+def instStarRingOfCommComm {k : Type*} [CommSemiring k] : StarRing (MonoidAlgebra k G) :=
+  letI : StarRing k := starRingOfComm; MonoidAlgebra.instStarRing
+
+attribute [local instance] instStarRingOfCommComm
+
+/-- The natural inversion carried by the group algebra of a commutative group over commutative
+scalars. -/
+def invert : MonoidAlgebra k G ≃ₐ[k] MonoidAlgebra k G where
+  toFun := star
+  invFun := star
+  left_inv := star_star
+  right_inv := star_star
+  map_mul' := star_mul'
+  map_add' := star_add
+  commutes' := by
+    letI : StarRing k := starRingOfComm
+    have : TrivialStar k := ⟨congrFun rfl⟩
+    simp [Algebra.algebraMap_eq_smul_one]
+
+@[simp] lemma invert_apply {f : MonoidAlgebra k G} {x : G} : invert f x = f x⁻¹ := rfl
+
+lemma involutive_invert : Function.Involutive (invert (k := k) (G := G)) := star_star
+
+end Commutative
+
 end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
+section
+
 variable {k G : Type _} [Semiring k] [StarRing k] [DecidableEq G] [AddGroup G]
 
-instance instStarRing : StarRing (AddMonoidAlgebra k G) where
+/-- A `StarRing` structure on the additive group algebra.
+
+See `MonoidAlgebra.instStarRing` for further remarks. -/
+def instStarRing : StarRing (AddMonoidAlgebra k G) where
   star f := ⟨f.support.map (Equiv.neg G), star ∘ f ∘ Neg.neg, fun x ↦ by
     simp only [Finset.mem_map_equiv, Finsupp.mem_support_iff, Function.comp_apply, star_ne_zero,
       Equiv.neg_symm, Equiv.neg_apply]⟩
@@ -79,11 +129,46 @@ instance instStarRing : StarRing (AddMonoidAlgebra k G) where
     rw [Finsupp.add_apply, Finsupp.add_apply]
     simp
 
+attribute [local instance] instStarRing
+
 @[simp] lemma star_apply {f : AddMonoidAlgebra k G} {x : G} : star f x = star (f (-x)) := rfl
 
 @[simp] lemma star_smul {a : k} {f : AddMonoidAlgebra k G} :
     star (a • f) = (MulOpposite.op (star a)) • star f := Finsupp.ext fun x ↦ by
   rw [Finsupp.smul_apply, star_apply, Finsupp.smul_apply, smul_eq_mul, star_mul, star_apply,
     MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op]
+
+end
+
+section Commutative
+
+variable {k G : Type*} [CommSemiring k] [DecidableEq G] [AddCommGroup G]
+
+/-- When both `k` and `G` are commutative, we do not need a star on `k` to obtain a `StarRing`
+structure. See `AddMonoidAlgebra.invert` where this is bundled as an algebra equivalence. -/
+def instStarRingOfCommComm {k : Type*} [CommSemiring k] : StarRing (AddMonoidAlgebra k G) :=
+  letI : StarRing k := starRingOfComm; AddMonoidAlgebra.instStarRing
+
+attribute [local instance] instStarRingOfCommComm
+
+/-- The natural inversion carried by the group algebra of an additive commutative group over
+commutative scalars. -/
+def invert : AddMonoidAlgebra k G ≃ₐ[k] AddMonoidAlgebra k G where
+  toFun := star
+  invFun := star
+  left_inv := star_star
+  right_inv := star_star
+  map_mul' := star_mul'
+  map_add' := star_add
+  commutes' := by
+    letI : StarRing k := starRingOfComm
+    have : TrivialStar k := ⟨congrFun rfl⟩
+    simp [Algebra.algebraMap_eq_smul_one]
+
+@[simp] lemma invert_apply {f : AddMonoidAlgebra k G} {x : G} : invert f x = f (-x) := rfl
+
+lemma involutive_invert : Function.Involutive (invert (k := k) (G := G)) := star_star
+
+end Commutative
 
 end AddMonoidAlgebra

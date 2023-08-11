@@ -72,9 +72,7 @@ Lots is missing!
 -/
 
 
-open Polynomial BigOperators
-
-open Polynomial AddMonoidAlgebra Finsupp
+open Polynomial BigOperators Function AddMonoidAlgebra Finsupp
 
 noncomputable section
 
@@ -614,19 +612,18 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
 
 end CommSemiring
 
-section StarRing
+section Inversion
 
-variable [Semiring R] [StarRing R]
+variable {R : Type _} [CommSemiring R]
 
-instance instStarRing : StarRing R[T;T⁻¹] := AddMonoidAlgebra.instStarRing
+/-- The map which substiutes `T ↦ T⁻¹` into a Laurent polynomial. -/
+def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.invert
 
-/-- The substitution `T ↦ T⁻¹` can be obtained from the star structure. -/
-@[simp] lemma star_T {n : ℤ} : star (T n : R[T;T⁻¹]) = T (-n) := by
-  ext; simp [AddMonoidAlgebra.star_apply, T_apply, neg_eq_iff_eq_neg, apply_ite star]
+@[simp] lemma invert_T {n : ℤ} : invert (T n : R[T;T⁻¹]) = T (-n) := by
+  ext m; simp [invert, neg_eq_iff_eq_neg]
 
-instance instStarRingOfComm {R : Type _} [CommSemiring R] : StarRing R[T;T⁻¹] :=
-  letI : StarRing R := starRingOfComm; AddMonoidAlgebra.instStarRing
+lemma involutive_invert : Involutive (invert (R := R)) := AddMonoidAlgebra.involutive_invert
 
-end StarRing
+end Inversion
 
 end LaurentPolynomial
