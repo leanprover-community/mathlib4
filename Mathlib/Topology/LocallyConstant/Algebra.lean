@@ -414,16 +414,14 @@ def congrLeftRing [Semiring Z] (e : X ≃ₜ Y) :
   map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
 
 /-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
+@[simps!]
 noncomputable
-def congrLeftₐ [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
+def congrLeftₐ (R: Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
-  toFun := (congrLeft e).toFun
-  invFun := (congrLeft e).invFun
-  left_inv := (congrLeft e).left_inv
-  right_inv := (congrLeft e).right_inv
-  map_mul' := (comapMonoidHom _ e.continuous_invFun).map_mul'
-  map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
-  commutes' := (comapₐ _ e.continuous_invFun).commutes'
+  toEquiv := congrLeft e
+  map_mul' := map_mul (comapₐ R _ e.continuous_invFun)
+  map_add' := map_add (comapₐ R _ e.continuous_invFun)
+  commutes' := (comapₐ R _ e.continuous_invFun).commutes'
 
 end Comap
 
