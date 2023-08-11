@@ -68,7 +68,7 @@ lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f := by
   exact hfg y
 
 lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f := by
-  rw [SetLike.ext_iff] ; rfl
+  rw [SetLike.ext_iff]; rfl
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 := by
   ext x
@@ -330,7 +330,7 @@ variable  (hfg' : Exact f' g') (hg' : Function.Surjective g')
 theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
   rw [← LinearMap.lTensor_comp_rTensor]
   rw [LinearMap.coe_comp]
-  exact Function.Surjective.comp (lTensor.Surjective _ hg') (rTensor.Surjective _ hg)
+  exact Function.Surjective.comp (lTensor.surjective _ hg') (rTensor.surjective _ hg)
 
 theorem TensorProduct.map_ker :
     LinearMap.ker (TensorProduct.map g g') =
@@ -348,7 +348,7 @@ theorem TensorProduct.map_ker :
       LinearMap.rTensor_comp_lTensor, Submodule.map_top]
     rw [← LinearMap.lTensor_comp_rTensor, LinearMap.range_eq_map,
       Submodule.map_comp, Submodule.map_top]
-  rw [LinearMap.range_eq_top.mpr (rTensor.Surjective M' hg), Submodule.map_top]
+  rw [LinearMap.range_eq_top.mpr (rTensor.surjective M' hg), Submodule.map_top]
 
 end Modules
 
