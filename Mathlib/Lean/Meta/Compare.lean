@@ -36,7 +36,7 @@ every aspect of the objects and only the expressions appearing in the object, re
 
 * Different `ExprComparisonConfig`s for each location expressions are compared, ideally with
 default propagation from the top level when writing configs, one way or another
-* Configs to tweak list comparisons: canLose, canGain, orderless
+* Configs to tweak list comparisons: `canLose`, `canGain`, `orderless`
 * Custom overrides for comparison and preprocessing functions via configs
 -/
 
