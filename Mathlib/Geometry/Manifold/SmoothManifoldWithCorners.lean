@@ -66,10 +66,10 @@ The right invocation does not focus on one specific construction, but on all con
 the right properties, like
 
   `variables {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {I : ModelWithCorners ℝ E E} [I.boundaryless]
+  {I : ModelWithCorners ℝ E E} [I.Boundaryless]
   {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
 
-Here, `I.boundaryless` is a typeclass property ensuring that there is no boundary (this is for
+Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundary (this is for
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
 as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
@@ -105,8 +105,8 @@ get lighter notations later on, but it did not turn out right, as on `E × F` th
 model with corners, the trivial (identity) one, and the product one, and they are not defeq and one
 needs to indicate to Lean which one we want to use.
 This means that when talking on objects on manifolds one will most often need to specify the model
-with corners one is using. For instance, the tangent bundle will be `tangent_bundle I M` and the
-derivative will be `mfderiv I I' f`, instead of the more natural notations `tangent_bundle 𝕜 M` and
+with corners one is using. For instance, the tangent bundle will be `TangentBundle I M` and the
+derivative will be `mfderiv I I' f`, instead of the more natural notations `TangentBundle 𝕜 M` and
 `mfderiv 𝕜 f` (the field has to be explicit anyway, as some manifolds could be considered both as
 real and complex manifolds).
 -/
@@ -120,7 +120,6 @@ open Set Filter Function
 
 open scoped Manifold Filter Topology
 
--- mathport name: with_top.nat.top
 scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/
@@ -152,10 +151,7 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
   continuous_invFun := continuous_id
 #align model_with_corners_self modelWithCornersSelf
 
--- mathport name: model_with_corners_self
 scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
-
--- mathport name: model_with_corners_self.self
 scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
 
 section
@@ -688,7 +684,7 @@ end SmoothManifoldWithCorners
 
 namespace SmoothManifoldWithCorners
 
-/- We restate in the namespace `smooth_manifolds_with_corners` some lemmas that hold for general
+/- We restate in the namespace `SmoothManifoldWithCorners` some lemmas that hold for general
 charted space with a structure groupoid, avoiding the need to specify the groupoid
 `contDiffGroupoid ∞ I` explicitly. -/
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -881,8 +877,8 @@ theorem continuousOn_extend_symm : ContinuousOn (f.extend I).symm (f.extend I).t
 theorem extend_symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {g : M → X}
     {s : Set M} {x : M} :
     ContinuousWithinAt (g ∘ (f.extend I).symm) ((f.extend I).symm ⁻¹' s ∩ range I) (f.extend I x) ↔
-      ContinuousWithinAt (g ∘ f.symm) (f.symm ⁻¹' s) (f x) :=
-  by rw [← I.symm_continuousWithinAt_comp_right_iff]; rfl
+      ContinuousWithinAt (g ∘ f.symm) (f.symm ⁻¹' s) (f x) := by
+  rw [← I.symm_continuousWithinAt_comp_right_iff]; rfl
 #align local_homeomorph.extend_symm_continuous_within_at_comp_right_iff LocalHomeomorph.extend_symm_continuousWithinAt_comp_right_iff
 
 theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
@@ -1402,4 +1398,3 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
-
