@@ -97,9 +97,8 @@ theorem splitMul_injective_of_clm_mul_injective
   intro x hx
   induction x using Unitization.ind
   rw [map_add] at hx
-  simp only [Prod.mk_add_mk, add_zero, fst_inl, splitMul_apply,
-    snd_inl, snd_inr, Prod.mk_eq_zero, zero_add, fst_inr,
-    map_zero, splitMul_apply, add_zero, Prod.mk_eq_zero] at hx
+  simp only [splitMul_apply, fst_inl, snd_inl, map_zero, add_zero, fst_inr, snd_inr,
+    zero_add, Prod.mk_add_mk, Prod.mk_eq_zero] at hx
   obtain ⟨rfl, hx⟩ := hx
   simp only [map_zero, zero_add, inl_zero] at hx ⊢
   rw [← map_zero (mul 𝕜 A)] at hx
