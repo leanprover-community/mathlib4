@@ -27,7 +27,7 @@ namespace HomologicalComplex
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-variable {ι : Type _} {c : ComplexShape ι} {ι' : Type _} {c' : ComplexShape ι'}
+variable {ι : Type*} {c : ComplexShape ι} {ι' : Type*} {c' : ComplexShape ι'}
 
 /-- Flip a complex of complexes over the diagonal,
 exchanging the horizontal and vertical directions.

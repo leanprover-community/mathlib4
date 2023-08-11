@@ -39,9 +39,9 @@ namespace Nat
 -- without having to then add all the other underscores
 
 -- /-- The non-dependent recursor on naturals. -/
--- def elim {C : Sort _} : C → (ℕ → C → C) → ℕ → C :=
+-- def elim {C : Sort*} : C → (ℕ → C → C) → ℕ → C :=
 --   @Nat.rec fun _ => C
--- example {C : Sort _} (base : C) (succ : ℕ → C → C) (a : ℕ) :
+-- example {C : Sort*} (base : C) (succ : ℕ → C → C) (a : ℕ) :
 --   a.elim base succ = a.rec base succ := rfl
 
 #align nat.elim Nat.rec
@@ -54,9 +54,9 @@ namespace Nat
 -- at inferring motive types (I think this is the reason)
 
 -- /-- Cases on whether the input is 0 or a successor. -/
--- def cases {C : Sort _} (a : C) (f : ℕ → C) : ℕ → C :=
+-- def cases {C : Sort*} (a : C) (f : ℕ → C) : ℕ → C :=
 --   Nat.elim a fun n _ => f n
--- example {C : Sort _} (a : C) (f : ℕ → C) (n : ℕ) :
+-- example {C : Sort*} (a : C) (f : ℕ → C) (n : ℕ) :
 --   n.cases a f = n.casesOn a f := rfl
 
 #align nat.cases Nat.casesOn
@@ -153,7 +153,7 @@ end Nat
 
 /-- A `Primcodable` type is an `Encodable` type for which
   the encode/decode functions are primitive recursive. -/
-class Primcodable (α : Type _) extends Encodable α where
+class Primcodable (α : Type*) extends Encodable α where
   -- porting note: was `prim [] `.
   -- This means that `prim` does not take the type explicitly in Lean 4
   prim : Nat.Primrec fun n => Encodable.encode (decode n)
@@ -184,7 +184,7 @@ instance unit : Primcodable PUnit :=
   ⟨(casesOn1 1 zero).of_eq fun n => by cases n <;> simp⟩
 #align primcodable.unit Primcodable.unit
 
-instance option {α : Type _} [h : Primcodable α] : Primcodable (Option α) :=
+instance option {α : Type*} [h : Primcodable α] : Primcodable (Option α) :=
   ⟨(casesOn1 1 ((casesOn1 0 (.comp .succ .succ)).comp (@Primcodable.prim α _))).of_eq fun n => by
     cases n with
       | zero => rfl
@@ -210,7 +210,7 @@ def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -333,7 +333,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type _} {σ : Type _} [Primcodable α] [Primcodable σ]
+variable {α : Type*} {σ : Type*} [Primcodable α] [Primcodable σ]
 
 open Nat.Primrec
 
@@ -407,7 +407,7 @@ def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop
 
 namespace Primrec₂
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -467,7 +467,7 @@ end Primrec₂
 
 section Comp
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -517,7 +517,7 @@ theorem PrimrecRel.of_eq {α β} [Primcodable α] [Primcodable β] {r s : α →
 
 namespace Primrec₂
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -548,7 +548,7 @@ end Primrec₂
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -865,7 +865,7 @@ end Primrec
 
 section
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -931,7 +931,7 @@ end
 
 namespace Primcodable
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 variable [Primcodable α] [Primcodable β]
 
@@ -986,7 +986,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -1158,7 +1158,7 @@ end Primrec
 
 namespace Primcodable
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 variable [Primcodable α] [Primcodable β]
 
@@ -1216,7 +1216,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
