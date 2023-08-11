@@ -129,15 +129,14 @@ def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
     (cfg : FailIfNoProgress.Config := {}) : TacticM (List MVarId) := do
   let decl ← goal.getDecl
   let l ← run goal tacs
-  try -- failing this `try` means we return `l`, and occurs iff progress has been made
-    if let .quick := cfg.mode then
-      if ← goal.isAssigned then failure -- progress
-    else
-      let [newGoal] := l | failure -- progress
-      guard <|← goal.compare newGoal cfg.toMVarIdComparisonConfig
-        cfg.toExprComparisonConfig decl
-  catch _ =>
-    return l
+  -- If progress was made, we return `l`
+  if let .quick := cfg.mode then
+    if ← goal.isAssigned then return l
+  else
+    let [newGoal] := l | return l
+    unless (← goal.compare newGoal cfg.toMVarIdComparisonConfig cfg.toExprComparisonConfig decl) do 
+      return l
+  -- We reach here only if no progress was made
   let resultMsg ← match cfg.mode with
   | .quick => pure m!"no goals were assigned"
   | .normal => do pure m!"obtained\n{← getGoals}"
