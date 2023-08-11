@@ -14,7 +14,7 @@ namespace Language
 namespace field
 
 @[simp]
-def freeCommRingRingStructure (α : Type _) :
+def freeCommRingRingStructure (α : Type u) :
     Language.ring.Structure (FreeCommRing α) :=
   { funMap := fun {n} f =>
       match n, f with
@@ -25,11 +25,13 @@ def freeCommRingRingStructure (α : Type _) :
       | _, .one => fun _ => 1,
     RelMap := fun f => by cases f }
 
+variable {α : Type u}
+
 section
 
 attribute [local instance] freeCommRingRingStructure
 
-theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
+private theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
     ∃ t : Language.ring.Term α,
       (t.realize FreeCommRing.of : FreeCommRing α) = p :=
   FreeCommRing.induction_on p
@@ -45,7 +47,7 @@ end
 noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.field.Term α :=
   field.ofRing.onTerm <| Classical.choose (exists_term_realize_eq_freeCommRing p)
 
-variable {K : Type _} [CompatibleField K]
+variable {K : Type v} [CompatibleField K]
 
 @[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → K) :
