@@ -219,7 +219,8 @@ theorem IsSRGWith.matrix_eq [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
   ext v w
   simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
     adjMatrix_apply, compl_adj]
-  rw [@Fintype.card_congr _ _ (_) _ (G.subtypeWalkLengthEqTwoEquivCommonNeighbors v w)]
+  letI : Fintype {p : G.Walk v w // p.length = 2} := G.fintypeSetWalkLength v w 2
+  rw [Fintype.card_congr (G.subtypeWalkLengthEqTwoEquivCommonNeighbors v w)]
   obtain rfl | hij := eq_or_ne v w
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]
