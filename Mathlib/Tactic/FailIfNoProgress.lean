@@ -157,8 +157,7 @@ The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any
 
 For more information, see the documentation for `FailIfNoProgress.Config`.
 -/
-def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
-    TacticM α := do
+def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) : TacticM α := do
   let goals₁ ← getGoals
   let decls₁ ← goals₁.mapM (·.getDecl)
   let result ← tacs
