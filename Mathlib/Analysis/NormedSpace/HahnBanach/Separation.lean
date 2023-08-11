@@ -39,7 +39,7 @@ open Set
 
 open Pointwise
 
-variable {𝕜 E : Type _}
+variable {𝕜 E : Type*}
 
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
