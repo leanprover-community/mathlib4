@@ -149,7 +149,7 @@ theorem norm_eq_sup (x : Unitization 𝕜 A) :
 variable (𝕜 A)
 
 /-- The identity map between `Unitization 𝕜 A` and `𝕜 × A` as an `AddEquiv`. -/
-protected def addEquiv : Unitization 𝕜 A ≃+ 𝕜 × A :=
+def addEquiv : Unitization 𝕜 A ≃+ 𝕜 × A :=
   AddEquiv.refl _
 
 variable {𝕜 A}
@@ -157,9 +157,9 @@ variable {𝕜 A}
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
-  refine' AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => _
+  refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
   rw [norm_eq_sup, Prod.norm_def]
-  refine' max_le _ _
+  refine' max_le ?_ ?_
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A
@@ -173,10 +173,10 @@ theorem lipschitzWith_addEquiv :
       _ ≤ _ := add_le_add le_sup_right le_sup_left
 
 theorem antilipschitzWith_addEquiv :
-    AntilipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
-  refine' AddMonoidHomClass.antilipschitz_of_bound (Unitization.addEquiv 𝕜 A) fun x => _
+    AntilipschitzWith 2 (addEquiv 𝕜 A) := by
+  refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
   rw [norm_eq_sup, Prod.norm_def, NNReal.coe_two]
-  refine' max_le _ _
+  refine max_le ?_ ?_
   · rw [mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A
@@ -191,34 +191,32 @@ open Bornology Filter
 open scoped Uniformity
 
 theorem uniformity_eq_aux :
-    @uniformity (Unitization 𝕜 A) instUniformSpaceProd = 𝓤 (Unitization 𝕜 A) := by
-  have key : UniformInducing (Unitization.addEquiv 𝕜 A) :=
+    @uniformity _ (instUniformSpaceProd.comap <| addEquiv 𝕜 A) = 𝓤 (Unitization 𝕜 A) := by
+  have key : UniformInducing (addEquiv 𝕜 A) :=
     antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
-  exact comap_id.symm
+  rfl
 
 theorem cobounded_eq_aux :
-    @cobounded (Unitization 𝕜 A) Prod.instBornology = cobounded (Unitization 𝕜 A) :=
-  calc
-    _ = comap (Unitization.addEquiv 𝕜 A) (cobounded _) := comap_id.symm
-    _ = cobounded (Unitization 𝕜 A) :=
-      le_antisymm lipschitzWith_addEquiv.comap_cobounded_le
-        antilipschitzWith_addEquiv.tendsto_cobounded.le_comap
+    @cobounded _ (Bornology.induced <| addEquiv 𝕜 A) = cobounded (Unitization 𝕜 A) :=
+  le_antisymm lipschitzWith_addEquiv.comap_cobounded_le
+    antilipschitzWith_addEquiv.tendsto_cobounded.le_comap
 
 end Aux
 
 /-- The uniformity on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
-  instUniformSpaceProd
+  instUniformSpaceProd.comap (addEquiv 𝕜 A)
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=
-  Prod.instBornology
+  Bornology.induced <| addEquiv 𝕜 A
 
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also.  -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
-  CompleteSpace.prod
+  have : UniformEmbedding (addEquiv 𝕜 A) := ⟨⟨rfl⟩, (addEquiv 𝕜 A).injective⟩
+  (completeSpace_congr this).mpr CompleteSpace.prod
 
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
