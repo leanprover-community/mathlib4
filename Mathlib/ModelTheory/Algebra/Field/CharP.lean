@@ -44,7 +44,6 @@ theorem model_hasChar_of_charP {K : Type _} [CompatibleField K] {p : ℕ} [CharP
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
 
-
 theorem charP_of_model_hasChar {K : Type _} [CompatibleField K]
     [h : (Theory.hasChar p).Model K] : CharP K p := by
   rw [Theory.hasChar] at h
