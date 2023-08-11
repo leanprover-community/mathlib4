@@ -10,8 +10,8 @@ import Mathlib.LinearAlgebra.Determinant
 /-!
 # Gershgorin's circle theorem
 
-This file gives the proof of Gershgorin's circle theorem `Matrix.toLinearEquiv` on the eigenvalue
-of matrices and some applications
+This file gives the proof of Gershgorin's circle theorem `eigenvalue_mem_ball` on the eigenvalues
+of matrices and some applications.
 
 ## Reference
 
@@ -22,6 +22,9 @@ open BigOperators
 
 variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
 
+/-- Gershgorin_circle_theorem: for any eigenvalue `μ` of a square matrix `A`, there exists an
+index `k` such that `μ` lies in the closed ball of center the diagonal term `A k k` and of
+radius the sum of the norms `∑ j ≠ k, ‖A k j‖. -/
 theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin' A) μ) :
       ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j in Finset.univ.erase k, ‖A k j‖) := by
   cases isEmpty_or_nonempty n
@@ -54,6 +57,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       _ ≤ ∑ j in Finset.univ.erase i, ‖A i j‖ :=
                 (Finset.sum_le_sum fun j _ => mul_le_of_le_one_right (norm_nonneg _) (h_le j))
 
+/-- If `A` is a row strictly dominant diagonal matrix, then it's determinant is nonzero. -/
 theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j in Finset.univ.erase k, ‖A k j‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   contrapose! h
@@ -64,6 +68,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j in Finset.univ.erase k,
   rw [Module.End.HasEigenvalue,  Module.End.eigenspace_zero, ne_comm]
   exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
 
+/-- If `A` is a column strictly dominant diagonal matrix, then it's determinant is nonzero. -/
 theorem det_ne_zero_of_sum_col_lt_diag (h : ∀ k, ∑ i in Finset.univ.erase k, ‖A i k‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]
