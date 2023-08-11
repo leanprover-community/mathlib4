@@ -616,7 +616,7 @@ section Inversion
 
 variable {R : Type _} [CommSemiring R]
 
-/-- The map which substiutes `T ↦ T⁻¹` into a Laurent polynomial. -/
+/-- The map which substitutes `T ↦ T⁻¹` into a Laurent polynomial. -/
 def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.invert
 
 @[simp] lemma invert_T {n : ℤ} : invert (T n : R[T;T⁻¹]) = T (-n) := by

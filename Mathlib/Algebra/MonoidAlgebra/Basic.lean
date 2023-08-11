@@ -960,6 +960,15 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H
 #align monoid_algebra.map_domain_alg_hom MonoidAlgebra.mapDomainAlgHom
 #align monoid_algebra.map_domain_alg_hom_apply MonoidAlgebra.mapDomainAlgHom_apply
 
+@[simps!]
+def mapDomainAlgEquiv (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H : Type*}
+    [Monoid H] (e : G ≃* H) :
+    MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A H :=
+  { mapDomainAlgHom k A e with
+    invFun := mapDomainAlgHom k A e.symm
+    left_inv := fun f ↦ by simp [← Finsupp.mapDomain_comp]
+    right_inv := fun f ↦ by simp [← Finsupp.mapDomain_comp] }
+
 end lift
 
 section
@@ -2056,6 +2065,15 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [A
   { mapDomainRingHom A f with commutes' := mapDomain_algebraMap f }
 #align add_monoid_algebra.map_domain_alg_hom AddMonoidAlgebra.mapDomainAlgHom
 #align add_monoid_algebra.map_domain_alg_hom_apply AddMonoidAlgebra.mapDomainAlgHom_apply
+
+@[simps!]
+def mapDomainAlgEquiv (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [AddMonoid G]
+    {H : Type*} [AddMonoid H] (e : G ≃+ H) :
+    AddMonoidAlgebra A G ≃ₐ[k] AddMonoidAlgebra A H :=
+  { mapDomainAlgHom k A e with
+    invFun := mapDomainAlgHom k A e.symm
+    left_inv := fun f ↦ by simp [← Finsupp.mapDomain_comp]
+    right_inv := fun f ↦ by simp [← Finsupp.mapDomain_comp] }
 
 end AddMonoidAlgebra
 
