@@ -199,13 +199,13 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
     Theory.models_iff_finset_models]
   push_neg
   intro T0 hT0
-  have h1 : ∀ φ ∈ Theory.ACF 0,
-      { p : Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ φ) → p = q } := by
-    intro φ hφ
+  have h1 : ∀ ψ ∈ Theory.ACF 0,
+      { p : Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ ψ) → p = q } := by
+    intro ψ hψ
     rw [Theory.ACF, Theory.hasChar, Set.union_assoc, Set.mem_union, if_pos rfl,
-      Set.mem_image] at hφ
+      Set.mem_image] at hψ
     apply Classical.choice
-    rcases hφ with ⟨p, hp, rfl⟩ | h
+    rcases hψ with ⟨p, hp, rfl⟩ | h
     · refine ⟨⟨⟨p, hp⟩, ?_⟩⟩
       intro q hq
       rw [Theory.models_sentence_iff, not_forall] at hq
@@ -222,25 +222,19 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
       exact (hq (Theory.models_sentence_of_mem
         (by rw [Theory.ACF, Set.union_assoc];
             exact Set.mem_union_right _ h))).elim
-  have h : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ },
-      ∀ φ ∈ T0, Theory.ACF p ⊨ᵇ φ := by
-    let s : Finset Nat.Primes := T0.attach.image (fun φ => h1 φ.1 (hT0 φ.2))
-    have hs : ∀ (p : Nat.Primes) φ, φ ∈ T0 → ¬ (Theory.ACF p) ⊨ᵇ φ → p ∈ s := by
-      intro p φ hφ hpφ
-      refine Finset.mem_image.2 ?_
-      refine ⟨⟨φ, hφ⟩, Finset.mem_attach _ _, ?_⟩
-      exact (h1 φ (hT0 hφ)).2 p hpφ
-    have : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }, p ∉ s :=
-      hφ.exists_not_mem_finset s
-    rcases this with ⟨p, hp₁, hp₂⟩
-    refine ⟨p, hp₁, ?_⟩
-    intro φ hφ
-    exact not_not.1 (mt (hs p φ hφ) hp₂)
-  rcases h with ⟨p, hp1, hp2⟩
+  let s : Finset Nat.Primes := T0.attach.image (fun φ => h1 φ.1 (hT0 φ.2))
+  have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → ¬ (Theory.ACF p) ⊨ᵇ ψ → p ∈ s := by
+    intro p ψ hψ hpψ
+    refine Finset.mem_image.2 ?_
+    refine ⟨⟨ψ, hψ⟩, Finset.mem_attach _ _, ?_⟩
+    exact (h1 ψ (hT0 hψ)).2 p hpψ
+  rcases hφ.exists_not_mem_finset s with ⟨p, hpφ, hps⟩
+  have hpT0 : ∀ ψ ∈ T0, Theory.ACF p ⊨ᵇ ψ :=
+    fun ψ hψ => not_not.1 (mt (hs p ψ hψ) hps)
   intro h
-  have : Theory.ACF p ⊨ᵇ Formula.not φ := Theory.models_of_models_theory hp2 h
+  have : Theory.ACF p ⊨ᵇ Formula.not φ := Theory.models_of_models_theory hpT0 h
   rw [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff] at this
-  exact this hp1
+  exact this hpφ
 
 /-- The Lefschetz principle. A first order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
