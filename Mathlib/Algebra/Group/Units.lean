@@ -119,12 +119,14 @@ the way coercions work in Lean 4, so there is no need for these custom `simp` pr
 
 /-- See Note [custom simps projection] -/
 @[to_additive "See Note [custom simps projection]"]
-def Simps.coe_inv (u : αˣ) : α := ↑(u⁻¹)
-#align units.simps.coe_inv Units.Simps.coe_inv
-#align add_units.simps.coe_neg AddUnits.Simps.coe_neg
+def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
+#align units.simps.coe_inv Units.Simps.val_inv
+#align add_units.simps.coe_neg AddUnits.Simps.val_neg
 
-initialize_simps_projections Units (val → coe, as_prefix coe, inv → coe_inv, as_prefix coe_inv)
-initialize_simps_projections AddUnits (val → coe, as_prefix coe, neg → coe_neg, as_prefix coe_neg)
+initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)
+
+initialize_simps_projections AddUnits
+  (as_prefix val, val_neg → null, neg → val_neg, as_prefix val_neg)
 
 -- Porting note: removed `simp` tag because of the tautology
 @[to_additive]
@@ -170,6 +172,10 @@ def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) 
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
 #align units.copy Units.copy
 #align add_units.copy AddUnits.copy
+#align units.coe_copy Units.val_copy
+#align add_units.coe_copy AddUnits.val_copy
+#align units.coe_inv_copy Units.val_inv_copy
+#align add_units.coe_neg_copy AddUnits.val_neg_copy
 
 @[to_additive]
 theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
