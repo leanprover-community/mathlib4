@@ -656,9 +656,6 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
 #align lagrange.eval_interpolate_not_at_node' Lagrange.eval_interpolate_not_at_node'
 
-def vanishingPolynomial (G : Subgroup (Units F)) [Fintype G] : Polynomial F :=
-  Polynomial.monomial (Fintype.card G) 1 - Polynomial.C 1
-
 /--
 The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1
 -/
