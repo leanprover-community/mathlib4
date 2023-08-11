@@ -337,7 +337,7 @@ def comapMulHom [Mul Z] (f : X → Y) (hf : Continuous f) :
     simp only [hf, coe_comap, coe_mul, Function.comp_apply, Pi.mul_apply]
 
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
-@[to_additive "`LocallyConstant.comap` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
 noncomputable
 def comapMonoidHom [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →* LocallyConstant X Z where
