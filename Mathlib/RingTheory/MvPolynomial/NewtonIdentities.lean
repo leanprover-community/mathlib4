@@ -236,7 +236,7 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
 
 /-- A version of Newton's identities which may be more useful in the case that we know the values of
 the elementary symmetric polynomials and would like to calculate the values of the power sums. -/
-theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : k > 0) : psum σ R k =
+theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
     (-1) ^ (k + 1) * k * esymm σ R k -
     ∑ a in ((antidiagonal k).filter (fun a ↦ a.fst < k)).filter (fun a ↦ a.fst ≥ 1),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
