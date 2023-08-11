@@ -562,7 +562,7 @@ section Ring
 
 variable [Ring R] [Nontrivial R]
 
-theorem charP_iff_ne_zero_of_prime {p : ℕ} (hp : p.Prime) : CharP R p ↔ (p : R) = 0 :=
+theorem charP_iff_eq_zero_of_prime {p : ℕ} (hp : p.Prime) : CharP R p ↔ (p : R) = 0 :=
   ⟨fun h => cast_eq_zero R p, by
     rw [charP_iff]
     intro hp0 n
