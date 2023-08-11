@@ -82,7 +82,7 @@ theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x
 theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
-  refine' (iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
+  refine' (Real.iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
   refine' ⟨f x, fun y => _⟩
   rintro ⟨y, hy_mem, rfl⟩
   exact f.mono (le_of_lt hy_mem)
