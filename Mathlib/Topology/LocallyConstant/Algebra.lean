@@ -358,14 +358,13 @@ def comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
     simp only [hf, coe_comap, coe_smul, Function.comp_apply, Pi.smul_apply, RingHom.id_apply]
 
 /-- `LocallyConstant.comap` as a `RingHom`. -/
+@[simps!]
 noncomputable
 def comapRingHom [Semiring Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →+* LocallyConstant X Z where
-  toFun := comap f
-  map_one' := (comapMonoidHom f hf).map_one'
-  map_mul' := (comapMonoidHom f hf).map_mul'
-  map_zero' := (comapAddMonoidHom f hf).map_zero'
-  map_add' := (comapAddMonoidHom f hf).map_add'
+  toMonoidHom := comapMonoidHom f hf
+  map_zero' := map_zero (comapAddMonoidHom f hf)
+  map_add' := map_add (comapAddMonoidHom f hf)
 
 /-- `LocallyConstant.comap` as an `AlgHom` -/
 noncomputable
