@@ -66,7 +66,7 @@ nat and int actions.
 
 open Function
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -172,7 +172,7 @@ open Pointwise
 
 section Inv
 
-variable {ι : Sort _} [Inv α] {s t : Set α} {a : α}
+variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
@@ -285,7 +285,7 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 #align set.neg_insert Set.neg_insert
 
 @[to_additive]
-theorem inv_range {ι : Sort _} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
+theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
   rw [← image_inv]
   exact (range_comp _ _).symm
 #align set.inv_range Set.inv_range
@@ -310,7 +310,7 @@ open Pointwise
 
 section Mul
 
-variable {ι : Sort _} {κ : ι → Sort _} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 locale `Pointwise`. -/
@@ -576,7 +576,7 @@ end Mul
 
 section Div
 
-variable {ι : Sort _} {κ : ι → Sort _} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
@@ -996,7 +996,7 @@ theorem univ_mul_univ : (univ : Set α) * univ = univ :=
 
 --TODO: `to_additive` trips up on the `1 : ℕ` used in the pattern-matching.
 @[simp]
-theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
+theorem nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => one_nsmul _
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]

@@ -351,7 +351,7 @@ theorem interior_inter {s t : Set α} : interior (s ∩ t) = interior s ∩ inte
 #align interior_inter interior_inter
 
 @[simp]
-theorem Finset.interior_iInter {ι : Type _} (s : Finset ι) (f : ι → Set α) :
+theorem Finset.interior_iInter {ι : Type*} (s : Finset ι) (f : ι → Set α) :
     interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) := by
   classical
     refine' s.induction_on (by simp) _
@@ -359,9 +359,9 @@ theorem Finset.interior_iInter {ι : Type _} (s : Finset ι) (f : ι → Set α)
     simp [h₂]
 #align finset.interior_Inter Finset.interior_iInter
 
--- todo: generalize to `ι : Sort _`
+-- todo: generalize to `ι : Sort*`
 @[simp]
-theorem interior_iInter {ι : Type _} [Finite ι] (f : ι → Set α) :
+theorem interior_iInter {ι : Type*} [Finite ι] (f : ι → Set α) :
     interior (⋂ i, f i) = ⋂ i, interior (f i) := by
   cases nonempty_fintype ι
   convert Finset.univ.interior_iInter f <;> simp
@@ -387,7 +387,7 @@ theorem interior_iInter_subset (s : ι → Set α) : interior (⋂ i, s i) ⊆ �
   subset_iInter fun _ => interior_mono <| iInter_subset _ _
 #align interior_Inter_subset interior_iInter_subset
 
-theorem interior_Inter₂_subset (p : ι → Sort _) (s : ∀ i, p i → Set α) :
+theorem interior_Inter₂_subset (p : ι → Sort*) (s : ∀ i, p i → Set α) :
     interior (⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), interior (s i j) :=
   (interior_iInter_subset _).trans <| iInter_mono fun _ => interior_iInter_subset _
 #align interior_Inter₂_subset interior_Inter₂_subset
@@ -461,7 +461,7 @@ theorem closure_mono {s t : Set α} (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_minimal (Subset.trans h subset_closure) isClosed_closure
 #align closure_mono closure_mono
 
-theorem monotone_closure (α : Type _) [TopologicalSpace α] : Monotone (@closure α _) := fun _ _ =>
+theorem monotone_closure (α : Type*) [TopologicalSpace α] : Monotone (@closure α _) := fun _ _ =>
   closure_mono
 #align monotone_closure monotone_closure
 
@@ -524,7 +524,7 @@ theorem closure_union {s t : Set α} : closure (s ∪ t) = closure s ∪ closure
 #align closure_union closure_union
 
 @[simp]
-theorem Finset.closure_biUnion {ι : Type _} (s : Finset ι) (f : ι → Set α) :
+theorem Finset.closure_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set α) :
     closure (⋃ i ∈ s, f i) = ⋃ i ∈ s, closure (f i) := by
   classical
     refine' s.induction_on (by simp) _
@@ -533,7 +533,7 @@ theorem Finset.closure_biUnion {ι : Type _} (s : Finset ι) (f : ι → Set α)
 #align finset.closure_bUnion Finset.closure_biUnion
 
 @[simp]
-theorem closure_iUnion {ι : Type _} [Finite ι] (f : ι → Set α) :
+theorem closure_iUnion {ι : Type*} [Finite ι] (f : ι → Set α) :
     closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   cases nonempty_fintype ι
   convert Finset.univ.closure_biUnion f <;> simp
@@ -1038,12 +1038,12 @@ theorem tendsto_const_nhds {a : α} {f : Filter β} : Tendsto (fun _ : β => a) 
   tendsto_nhds.mpr fun _ _ ha => univ_mem' fun _ => ha
 #align tendsto_const_nhds tendsto_const_nhds
 
-theorem tendsto_atTop_of_eventually_const {ι : Type _} [SemilatticeSup ι] [Nonempty ι] {x : α}
+theorem tendsto_atTop_of_eventually_const {ι : Type*} [SemilatticeSup ι] [Nonempty ι] {x : α}
     {u : ι → α} {i₀ : ι} (h : ∀ i ≥ i₀, u i = x) : Tendsto u atTop (𝓝 x) :=
   Tendsto.congr' (EventuallyEq.symm (eventually_atTop.mpr ⟨i₀, h⟩)) tendsto_const_nhds
 #align tendsto_at_top_of_eventually_const tendsto_atTop_of_eventually_const
 
-theorem tendsto_atBot_of_eventually_const {ι : Type _} [SemilatticeInf ι] [Nonempty ι] {x : α}
+theorem tendsto_atBot_of_eventually_const {ι : Type*} [SemilatticeInf ι] [Nonempty ι] {x : α}
     {u : ι → α} {i₀ : ι} (h : ∀ i ≤ i₀, u i = x) : Tendsto u atBot (𝓝 x) :=
   Tendsto.congr' (EventuallyEq.symm (eventually_atBot.mpr ⟨i₀, h⟩)) tendsto_const_nhds
 #align tendsto_at_bot_of_eventually_const tendsto_atBot_of_eventually_const
@@ -1051,12 +1051,12 @@ theorem tendsto_atBot_of_eventually_const {ι : Type _} [SemilatticeInf ι] [Non
 theorem pure_le_nhds : pure ≤ (𝓝 : α → Filter α) := fun _ _ hs => mem_pure.2 <| mem_of_mem_nhds hs
 #align pure_le_nhds pure_le_nhds
 
-theorem tendsto_pure_nhds {α : Type _} [TopologicalSpace β] (f : α → β) (a : α) :
+theorem tendsto_pure_nhds {α : Type*} [TopologicalSpace β] (f : α → β) (a : α) :
     Tendsto f (pure a) (𝓝 (f a)) :=
   (tendsto_pure_pure f a).mono_right (pure_le_nhds _)
 #align tendsto_pure_nhds tendsto_pure_nhds
 
-theorem OrderTop.tendsto_atTop_nhds {α : Type _} [PartialOrder α] [OrderTop α] [TopologicalSpace β]
+theorem OrderTop.tendsto_atTop_nhds {α : Type*} [PartialOrder α] [OrderTop α] [TopologicalSpace β]
     (f : α → β) : Tendsto f atTop (𝓝 (f ⊤)) :=
   (tendsto_atTop_pure f).mono_right (pure_le_nhds _)
 #align order_top.tendsto_at_top_nhds OrderTop.tendsto_atTop_nhds
@@ -1148,17 +1148,17 @@ theorem Ultrafilter.clusterPt_iff {x : α} {f : Ultrafilter α} : ClusterPt x f 
 
 /-- A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point
 of `map u F`. -/
-def MapClusterPt {ι : Type _} (x : α) (F : Filter ι) (u : ι → α) : Prop :=
+def MapClusterPt {ι : Type*} (x : α) (F : Filter ι) (u : ι → α) : Prop :=
   ClusterPt x (map u F)
 #align map_cluster_pt MapClusterPt
 
-theorem mapClusterPt_iff {ι : Type _} (x : α) (F : Filter ι) (u : ι → α) :
+theorem mapClusterPt_iff {ι : Type*} (x : α) (F : Filter ι) (u : ι → α) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
   rfl
 #align map_cluster_pt_iff mapClusterPt_iff
 
-theorem mapClusterPt_of_comp {ι δ : Type _} {F : Filter ι} {φ : δ → ι} {p : Filter δ} {x : α}
+theorem mapClusterPt_of_comp {ι δ : Type*} {F : Filter ι} {φ : δ → ι} {p : Filter δ} {x : α}
     {u : ι → α} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
     MapClusterPt x F u := by
   have :=
@@ -1262,7 +1262,7 @@ theorem isOpen_singleton_iff_nhds_eq_pure (a : α) : IsOpen ({a} : Set α) ↔ �
     simp [isOpen_iff_nhds, h]
 #align is_open_singleton_iff_nhds_eq_pure isOpen_singleton_iff_nhds_eq_pure
 
-theorem isOpen_singleton_iff_punctured_nhds {α : Type _} [TopologicalSpace α] (a : α) :
+theorem isOpen_singleton_iff_punctured_nhds {α : Type*} [TopologicalSpace α] (a : α) :
     IsOpen ({a} : Set α) ↔ 𝓝[≠] a = ⊥ := by
   rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl, ← le_pure_iff,
     nhds_neBot.le_pure_iff]
@@ -1568,7 +1568,7 @@ open Topology
 
 section Continuous
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -1812,7 +1812,7 @@ theorem Set.MapsTo.closure_left {s : Set α} {t : Set β} {f : α → β} (h : M
 
 section DenseRange
 
-variable {κ ι : Type _} (f : κ → β) (g : β → γ)
+variable {κ ι : Type*} (f : κ → β) (g : β → γ)
 
 /-- `f : ι → β` has dense range if its range (image) is a dense subset of β. -/
 def DenseRange := Dense (range f)
@@ -1921,7 +1921,7 @@ However, lemmas with this conclusion are not nice to use in practice because
 1. They confuse the elaborator. The following two examples fail, because of limitations in the
   elaboration process.
   ```
-  variables {M : Type _} [Add M] [TopologicalSpace M] [ContinuousAdd M]
+  variables {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
   example : Continuous (λ x : M, x + x) :=
   continuous_add.comp _
 
@@ -1992,7 +1992,7 @@ In this case, you want to add conditions to when a function involving `fract` is
 get something like this: (assumption `hf` could be weakened, but the important thing is the shape
 of the conclusion)
 ```
-lemma ContinuousOn.comp_fract {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
+lemma ContinuousOn.comp_fract {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
   Continuous (fun x ↦ f x (fract (g x)))
 ```
