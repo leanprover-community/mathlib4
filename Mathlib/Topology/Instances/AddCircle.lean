@@ -56,7 +56,7 @@ open AddCommGroup Set Function AddSubgroup TopologicalSpace
 
 open Topology
 
-variable {𝕜 B : Type _}
+variable {𝕜 B : Type*}
 
 section Continuity
 

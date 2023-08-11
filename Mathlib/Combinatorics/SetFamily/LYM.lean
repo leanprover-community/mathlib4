@@ -49,7 +49,7 @@ open Finset Nat
 
 open BigOperators FinsetFamily
 
-variable {𝕜 α : Type _} [LinearOrderedField 𝕜]
+variable {𝕜 α : Type*} [LinearOrderedField 𝕜]
 
 namespace Finset
 

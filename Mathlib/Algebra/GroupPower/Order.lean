@@ -22,7 +22,7 @@ depend on this file.
 
 open Function
 
-variable {β A G M R : Type _}
+variable {β A G M R : Type*}
 
 section Monoid
 
