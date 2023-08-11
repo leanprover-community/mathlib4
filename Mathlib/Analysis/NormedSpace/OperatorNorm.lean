@@ -1115,6 +1115,24 @@ theorem op_norm_mul_le : ‖mul 𝕜 𝕜'‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 #align continuous_linear_map.op_norm_mul_le ContinuousLinearMap.op_norm_mul_le
 
+/-- Multiplication on the left in a non-unital normed algebra `𝕜'` as a non-unital algebra
+homomorphism into the algebra of *continuous* linear maps. This is the left regular representation
+of `A` acting on itself.
+
+This has more algebraic structure than `ContinuousLinearMap.mul`, but there is no longer continuity
+bundled in the first coordinate.  An alternative viewpoint is that this upgrades
+`NonUnitalAlgHom.lmul` from a homomorphism into linear maps to a homomorphism into *continuous*
+linear maps. -/
+def _root_.NonUnitalAlgHom.Lmul : 𝕜' →ₙₐ[𝕜] 𝕜' →L[𝕜] 𝕜' :=
+  { mul 𝕜 𝕜' with
+    map_mul' := fun _ _ ↦ ext fun _ ↦ mul_assoc _ _ _
+    map_zero' := ext fun _ ↦ zero_mul _ }
+
+variable {𝕜 𝕜'} in
+@[simp]
+theorem _root_.NonUnitalAlgHom.coe_Lmul : ⇑(NonUnitalAlgHom.Lmul 𝕜 𝕜') = mul 𝕜 𝕜' :=
+  rfl
+
 /-- Simultaneous left- and right-multiplication in a non-unital normed algebra, considered as a
 continuous trilinear map. This is akin to its non-continuous version `LinearMap.mulLeftRight`,
 but there is a minor difference: `LinearMap.mulLeftRight` is uncurried. -/

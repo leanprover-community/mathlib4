@@ -32,18 +32,26 @@ is then also a C⋆-norm.
 
 ## Main definitions
 
-- `NonUnitalAlgHom.Lmul : A →ₙₐ[𝕜] A →L[𝕜] A`: `ContinuousLinearMap.mul` upgraded to a non-unital
-  algebra homomorphism. This is the left regular representation of `A`.
 - `Unitization.splitMul : Unitization 𝕜 A →ₐ[𝕜] (𝕜 × (A →L[𝕜] A))`: The first coordinate of this
   map is just `Unitization.fst` and the second is the `Unitization.lift` of the left regular
   representation of `A` (i.e., `NonUnitalAlgHom.Lmul`). We use this map to pull back the
   `NormedRing` and `NormedAlgebra` structures.
 
+## Main statements
+
+- `Unitization.instNormedRing`, `Unitization.instNormedAlgebra`, `Unitization.instNormOneClass`,
+  `Unitization.instCompleteSpace`: when `A` is a non-unital Banach `𝕜`-algebra with a regular norm,
+  then `Unitization 𝕜 A` is a unital Banach `𝕜`-algebra with `‖1‖ = 1`.
+- `Unitization.norm_inr`, `Unitization.isometry_inr`: the natural inclusion `A → Unitization 𝕜 A`
+  is an isometry, or in mathematical parlance, the norm on `A` extends to a norm on
+  `Unitization 𝕜 A`.
+
 ## Implementation details
 
 We ensure that the uniform structure, and hence also the topological structure, is definitionally
-equal to `instUniformSpaceProd` (viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful
-inheritance. The same is true of the bornology.
+equal to the pullback of `instUniformSpaceProd` allong `Unitization.addEquiv` (this is essentially
+viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. The same is true of the
+bornology.
 
 -/
 
@@ -51,23 +59,6 @@ variable (𝕜 A : Type _) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
 open ContinuousLinearMap
-
-/-- Multiplication on the left in a non-unital algebra `A` as a non-unital algebra homomorphism
-into the algebra of *continuous* linear maps. This has more algebraic structure than
-`ContinuousLinearMap.mul`, but there is no longer continuity bundled in the first coordinate. -/
-noncomputable def NonUnitalAlgHom.Lmul : A →ₙₐ[𝕜] A →L[𝕜] A :=
-  { mul 𝕜 A with
-    toFun := fun a => mul 𝕜 A a
-    map_mul' := fun a b => by ext x; simp [mul_assoc a b x]
-    map_zero' := by ext x; simp only [map_zero] }
-
-variable {𝕜 A}
-
-@[simp]
-theorem NonUnitalAlgHom.coe_Lmul : ⇑(NonUnitalAlgHom.Lmul 𝕜 A) = mul 𝕜 A :=
-  rfl
-
-variable (𝕜 A)
 
 namespace Unitization
 
@@ -237,11 +228,6 @@ algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
     rw [norm_def, map_smul, norm_smul, ← norm_def]
-
--- this should go in `Algebra.Algebra.Unitization`
-instance instNontrivial {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
-    Nontrivial (Unitization 𝕜 A) :=
-  nontrivial_prod_left
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,

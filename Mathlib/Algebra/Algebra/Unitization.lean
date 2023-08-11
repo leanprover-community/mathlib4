@@ -137,6 +137,14 @@ theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R
   Function.LeftInverse.injective <| snd_inr _
 #align unitization.coe_injective Unitization.inr_injective
 
+instance instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_left
+
+instance instNontrivialRight {𝕜 A} [Nonempty 𝕜] [Nontrivial A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_right
+
 end Basic
 
 /-! ### Structures inherited from `Prod`
