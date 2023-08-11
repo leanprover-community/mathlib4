@@ -261,41 +261,6 @@ theorem NonUnitalSubring.unitization_range (S : NonUnitalSubring R) :
 
 end Subring
 
-section Subalgebra
-
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
-/-! ## Subalgebras -/
-
-
-/-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
-def Subalgebra.toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A :=
-  { S with
-    carrier := S.carrier
-    smul_mem' := fun r _x hx => S.smul_mem hx r }
-
-theorem Subalgebra.one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) :
-    (1 : A) ∈ S.toNonUnitalSubalgebra :=
-  S.one_mem
-
-/-- Turn a non-unital subalgebra containing `1` into a subalgebra. -/
-def NonUnitalSubalgebra.toSubalgebra (S : NonUnitalSubalgebra R A) (h1 : (1 : A) ∈ S) :
-    Subalgebra R A :=
-  { S with
-    carrier := S.carrier
-    one_mem' := h1
-    algebraMap_mem' := fun r =>
-      (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
-
-theorem Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
-    S.toNonUnitalSubalgebra.toSubalgebra S.one_mem = S := by cases S; rfl
-
-theorem NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
-    (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
-  cases S; rfl
-
-end Subalgebra
-
 section StarSubalgebra
 
 variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
