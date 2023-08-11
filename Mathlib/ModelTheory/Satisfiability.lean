@@ -355,7 +355,7 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
 
 theorem models_of_models_theory (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
     {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := by
-  simp only [models_sentence_iff] at *
+  simp only [models_sentence_iff] at h
   intro M
   have hM : M ⊨ T' := T'.model_iff.2 (fun ψ hψ => h ψ hψ M)
   let M' : ModelType T' := ⟨M⟩

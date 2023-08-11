@@ -92,10 +92,7 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
   letI := Classical.decEq K
   rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
-  simp only [Sentence.Realize, genericMonicPolyHasRoot, BoundedFormula.realize_alls,
-    BoundedFormula.realize_ex, BoundedFormula.realize_bdEqual, Term.realize_relabel,
-    Sum.elim_comp_inr, realize_termOfFreeCommRing, lift_genericMonicPoly, Fin.snoc_last,
-    Fin.snoc_comp_castSucc, Term.realize, CompatibleField.funMap_zero]
+  simp [Sentence.Realize, genericMonicPolyHasRoot, Term.realize, lift_genericMonicPoly]
 
 def Theory.ACF (p : ℕ) : Theory Language.field :=
   Theory.hasChar p ∪ Theory.field ∪ genericMonicPolyHasRoot '' {n | 0 < n}
@@ -198,7 +195,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
     Theory.models_iff_finset_models]
   push_neg
   intro T0 hT0
-  have h1 : ∀ ψ ∈ Theory.ACF 0,
+  have f : ∀ ψ ∈ Theory.ACF 0,
       { p : Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ ψ) → p = q } := by
     intro ψ hψ
     rw [Theory.ACF, Theory.hasChar, Set.union_assoc, Set.mem_union, if_pos rfl,
@@ -221,12 +218,12 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
       exact (hq (Theory.models_sentence_of_mem
         (by rw [Theory.ACF, Set.union_assoc];
             exact Set.mem_union_right _ h))).elim
-  let s : Finset Nat.Primes := T0.attach.image (fun φ => h1 φ.1 (hT0 φ.2))
+  let s : Finset Nat.Primes := T0.attach.image (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → ¬ (Theory.ACF p) ⊨ᵇ ψ → p ∈ s := by
     intro p ψ hψ hpψ
     refine Finset.mem_image.2 ?_
     refine ⟨⟨ψ, hψ⟩, Finset.mem_attach _ _, ?_⟩
-    exact (h1 ψ (hT0 hψ)).2 p hpψ
+    exact (f ψ (hT0 hψ)).2 p hpψ
   rcases hφ.exists_not_mem_finset s with ⟨p, hpφ, hps⟩
   have hpT0 : ∀ ψ ∈ T0, Theory.ACF p ⊨ᵇ ψ :=
     fun ψ hψ => not_not.1 (mt (hs p ψ hψ) hps)
