@@ -82,10 +82,11 @@ theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
 
 theorem subset_of_mem_nhdsSet (h : t ∈ 𝓝ˢ s) : s ⊆ t := principal_le_nhdsSet h
 
-theorem Filter.Eventually.on_set {p : α → Prop} (h : ∀ᶠ x in 𝓝ˢ s, p x) : ∀ x ∈ s, p x :=
+theorem Filter.Eventually.self_of_nhdsSet {p : α → Prop} (h : ∀ᶠ x in 𝓝ˢ s, p x) : ∀ x ∈ s, p x :=
   principal_le_nhdsSet h
 
-nonrec theorem Filter.EventuallyEq.on_set {f g : α → β} (h : f =ᶠ[𝓝ˢ s] g) : EqOn f g s := h.on_set
+nonrec theorem Filter.EventuallyEq.self_of_nhdsSet {f g : α → β} (h : f =ᶠ[𝓝ˢ s] g) : EqOn f g s :=
+  h.self_of_nhdsSet
 
 @[simp]
 theorem nhdsSet_eq_principal_iff : 𝓝ˢ s = 𝓟 s ↔ IsOpen s := by
