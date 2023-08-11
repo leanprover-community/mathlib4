@@ -49,7 +49,7 @@ section Exact
 
 variable {M N P : Type _} (f : M → N) (g : N → P)
 
-def Exact [Zero P] := ∀ y, g y = 0 ↔ y ∈ Set.range f
+def Exact [Zero P] : Prop := ∀ y, g y = 0 ↔ y ∈ Set.range f
 
 lemma Exact.comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 := by
   ext x
