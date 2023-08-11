@@ -122,7 +122,8 @@ theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfI
 #align function_field.ring_of_integers.algebra_map_injective FunctionField.ringOfIntegers.algebraMap_injective
 
 theorem not_isField : ¬IsField (ringOfIntegers Fq F) := by
-  rw [← (IsIntegralClosure.isIntegral_algebra Fq[X] F).isField_iff_isField (algebraMap_injective Fq F)]
+  rw [← (IsIntegralClosure.isIntegral_algebra Fq[X] F).isField_iff_isField
+    (algebraMap_injective Fq F)]
   exact Polynomial.not_isField Fq
   --     (algebraMap_injective Fq F)
   -- simpa [← (IsIntegralClosure.isIntegral_algebra Fq[X] F).isField_iff_isField
