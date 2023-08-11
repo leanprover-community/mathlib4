@@ -35,14 +35,12 @@ of mathlib consists of:
 - Some [extra Lean documentation](https://leanprover-community.github.io/learn.html) not specific to mathlib (see "Miscellaneous topics")
 - Documentation for people who would like to [contribute to mathlib](https://leanprover-community.github.io/contribute/index.html)
 
-Much of the discussion surrounding mathlib occurs in a
-[Zulip chat room](https://leanprover.zulipchat.com/). Since this
-chatroom is only visible to registered users, we provide an
-[openly accessible archive](https://leanprover-community.github.io/archive/)
-of the public discussions. This is useful for quick reference; for a
-better browsing interface, and to participate in the discussions, we strongly
-suggest joining the chat. Questions from users at all levels of expertise are
-welcomed.
+Much of the discussion surrounding mathlib occurs in a [Zulip chat
+room](https://leanprover.zulipchat.com/), and you are welcome to join, or read
+along without signing up.  Questions from users at all levels of expertise are
+welcome!  We also provide an [archive of the public
+discussions](https://leanprover-community.github.io/archive/), which is useful
+for quick reference.
 
 ## Transitioning from Lean 3
 
@@ -122,6 +120,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
 * Bryan Gin-ge Chen (@bryangingechen): documentation, infrastructure
 * Johan Commelin (@jcommelin): algebra, number theory, category theory, algebraic geometry
+* Anatole Dedecker (@ADedecker): topology, functional analysis, calculus
 * Rémy Degenne (@RemyDegenne): probability, measure theory, analysis
 * Floris van Doorn (@fpvandoorn): measure theory, model theory, tactics
 * Frédéric Dupuis (@dupuisf): linear algebra, functional analysis
@@ -138,6 +137,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Kyle Miller (@kmill): combinatorics, documentation
 * Scott Morrison (@semorrison): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
+* Joël Riou (@joelriou): category theory, homology, algebraic geometry
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 

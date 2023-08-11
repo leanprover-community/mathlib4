@@ -68,7 +68,7 @@ open TopologicalSpace MeasureTheory Filter
 
 open NNReal ENNReal BigOperators Topology MeasureTheory
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {α E F G : Type _} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
@@ -262,7 +262,7 @@ theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (snorm f p μ) :=
 #align measure_theory.Lp.norm_def MeasureTheory.Lp.norm_def
 
 theorem nnnorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (snorm f p μ) :=
-  Subtype.eta _ _
+  rfl
 #align measure_theory.Lp.nnnorm_def MeasureTheory.Lp.nnnorm_def
 
 @[simp, norm_cast]
@@ -294,6 +294,9 @@ theorem edist_def (f g : Lp E p μ) : edist f g = snorm (⇑f - ⇑g) p μ :=
 protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) := by
   rw [edist_def, dist_def, ← snorm_congr_ae (coeFn_sub _ _),
     ENNReal.ofReal_toReal (snorm_ne_top (f - g))]
+
+protected theorem dist_edist (f g : Lp E p μ) : dist f g = (edist f g).toReal :=
+  MeasureTheory.Lp.dist_def ..
 
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :

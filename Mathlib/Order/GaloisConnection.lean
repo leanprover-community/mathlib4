@@ -339,6 +339,13 @@ protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [
   forall_congr' fun i => gc i (a i) (b i)
 #align galois_connection.dfun GaloisConnection.dfun
 
+protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} {u : β → α}
+    (gc : GaloisConnection l u) :
+    GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := by
+  intro a b
+  dsimp
+  rw [le_compl_iff_le_compl, gc, compl_le_iff_compl_le]
+
 end Constructions
 
 theorem l_comm_of_u_comm {X : Type _} [Preorder X] {Y : Type _} [Preorder Y] {Z : Type _}
@@ -518,6 +525,10 @@ theorem leftInverse_l_u [Preorder α] [PartialOrder β] (gi : GaloisInsertion l 
     LeftInverse l u :=
   gi.l_u_eq
 #align galois_insertion.left_inverse_l_u GaloisInsertion.leftInverse_l_u
+
+theorem l_top [Preorder α] [PartialOrder β] [OrderTop α] [OrderTop β]
+    (gi : GaloisInsertion l u) : l ⊤ = ⊤ :=
+  top_unique <| (gi.le_l_u _).trans <| gi.gc.monotone_l le_top
 
 theorem l_surjective [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u) : Surjective l :=
   gi.leftInverse_l_u.surjective
@@ -773,6 +784,10 @@ theorem u_l_leftInverse [PartialOrder α] [Preorder β] (gi : GaloisCoinsertion 
     LeftInverse u l :=
   gi.u_l_eq
 #align galois_coinsertion.u_l_left_inverse GaloisCoinsertion.u_l_leftInverse
+
+theorem u_bot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] (gi : GaloisCoinsertion l u) :
+    u ⊥ = ⊥ :=
+  gi.dual.l_top
 
 theorem u_surjective [PartialOrder α] [Preorder β] (gi : GaloisCoinsertion l u) : Surjective u :=
   gi.dual.l_surjective

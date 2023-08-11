@@ -329,6 +329,17 @@ theorem sumCongr_refl : Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.r
   cases i <;> rfl
 #align equiv.sum_congr_refl Equiv.sumCongr_refl
 
+/-- A subtype of a sum is equivalent to a sum of subtypes. -/
+def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
+  toFun c := match h : c.1 with
+    | Sum.inl a => Sum.inl ⟨a, h ▸ c.2⟩
+    | Sum.inr b => Sum.inr ⟨b, h ▸ c.2⟩
+  invFun c := match c with
+    | Sum.inl a => ⟨Sum.inl a, a.2⟩
+    | Sum.inr b => ⟨Sum.inr b, b.2⟩
+  left_inv := by rintro ⟨a | b, h⟩ <;> rfl
+  right_inv := by rintro (a | b) <;> rfl
+
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
@@ -1947,6 +1958,10 @@ def uniqueUniqueEquiv : Unique (Unique α) ≃ Unique α :=
   equivOfSubsingletonOfSubsingleton (fun h => h.default) fun h =>
     { default := h, uniq := fun _ => Subsingleton.elim _ _ }
 #align unique_unique_equiv uniqueUniqueEquiv
+
+/-- If `Unique β`, then `Unique α` is equivalent to `α ≃ β`. -/
+def uniqueEquivEquivUnique (α : Sort u) (β : Sort v) [Unique β] : Unique α ≃ (α ≃ β) :=
+  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.equivOfUnique _ _) Equiv.unique
 
 namespace Function
 

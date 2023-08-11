@@ -101,8 +101,8 @@ def GradedMonoid (A : ι → Type _) :=
 
 namespace GradedMonoid
 
-instance {A : ι → Type _} [Inhabited ι] [Inhabited (A default)] : Inhabited (GradedMonoid A) where
-  default := Sigma.instInhabitedSigma.default
+instance {A : ι → Type _} [Inhabited ι] [Inhabited (A default)] : Inhabited (GradedMonoid A) :=
+  inferInstanceAs <| Inhabited (Sigma _)
 
 /-- Construct an element of a graded monoid. -/
 def mk {A : ι → Type _} : ∀ i, A i → GradedMonoid A :=

@@ -38,6 +38,7 @@ variable {α β γ δ ε ζ : Type _}
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
+#align list.replicate List.replicate
 #align list.split_at List.splitAt
 #align list.split_on_p List.splitOnP
 #align list.split_on List.splitOn
@@ -586,6 +587,5 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
-
 
 end List

@@ -96,7 +96,7 @@ variable {H K L}
 @[to_additive relindex_mul_index]
 theorem relindex_mul_index (h : H ≤ K) : H.relindex K * K.index = H.index :=
   ((mul_comm _ _).trans (Cardinal.toNat_mul _ _).symm).trans
-    (congr_arg Cardinal.toNat (Equiv.cardinal_eq (quotientEquivProdOfLe h))).symm
+    (congr_arg Cardinal.toNat (Equiv.cardinal_eq (quotientEquivProdOfLE h))).symm
 #align subgroup.relindex_mul_index Subgroup.relindex_mul_index
 #align add_subgroup.relindex_mul_index AddSubgroup.relindex_mul_index
 
@@ -381,7 +381,7 @@ theorem relindex_eq_zero_of_le_left (hHK : H ≤ K) (hKL : K.relindex L = 0) : H
 
 @[to_additive]
 theorem relindex_eq_zero_of_le_right (hKL : K ≤ L) (hHK : H.relindex K = 0) : H.relindex L = 0 :=
-  Finite.card_eq_zero_of_embedding (quotientSubgroupOfEmbeddingOfLe H hKL) hHK
+  Finite.card_eq_zero_of_embedding (quotientSubgroupOfEmbeddingOfLE H hKL) hHK
 #align subgroup.relindex_eq_zero_of_le_right Subgroup.relindex_eq_zero_of_le_right
 #align add_subgroup.relindex_eq_zero_of_le_right AddSubgroup.relindex_eq_zero_of_le_right
 
@@ -401,7 +401,7 @@ theorem relindex_le_of_le_left (hHK : H ≤ K) (hHL : H.relindex L ≠ 0) :
 @[to_additive]
 theorem relindex_le_of_le_right (hKL : K ≤ L) (hHL : H.relindex L ≠ 0) :
     H.relindex K ≤ H.relindex L :=
-  Finite.card_le_of_embedding' (quotientSubgroupOfEmbeddingOfLe H hKL) fun h => (hHL h).elim
+  Finite.card_le_of_embedding' (quotientSubgroupOfEmbeddingOfLE H hKL) fun h => (hHL h).elim
 #align subgroup.relindex_le_of_le_right Subgroup.relindex_le_of_le_right
 #align add_subgroup.relindex_le_of_le_right AddSubgroup.relindex_le_of_le_right
 

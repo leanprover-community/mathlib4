@@ -1066,6 +1066,10 @@ instance nhds_neBot {a : α} : NeBot (𝓝 a) :=
   neBot_of_le (pure_le_nhds a)
 #align nhds_ne_bot nhds_neBot
 
+theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in l, f x = a) :
+    Tendsto f l (𝓝 a) :=
+  tendsto_const_nhds.congr' (.symm h)
+
 /-!
 ### Cluster points
 
@@ -1355,6 +1359,26 @@ theorem mem_closure_iff_nhds_basis {a : α} {p : ι → Prop} {s : ι → Set α
   (mem_closure_iff_nhds_basis' h).trans <| by
     simp only [Set.Nonempty, mem_inter_iff, exists_prop, and_comm]
 #align mem_closure_iff_nhds_basis mem_closure_iff_nhds_basis
+
+theorem clusterPt_iff_forall_mem_closure {F : Filter α} {a : α} :
+    ClusterPt a F ↔ ∀ s ∈ F, a ∈ closure s := by
+  simp_rw [ClusterPt, inf_neBot_iff, mem_closure_iff_nhds]
+  rw [forall₂_swap]
+
+theorem clusterPt_iff_lift'_closure {F : Filter α} {a : α} :
+    ClusterPt a F ↔ pure a ≤ (F.lift' closure) := by
+  simp_rw [clusterPt_iff_forall_mem_closure,
+    (hasBasis_pure _).le_basis_iff F.basis_sets.lift'_closure, id, singleton_subset_iff, true_and,
+    exists_const]
+
+theorem clusterPt_iff_lift'_closure' {F : Filter α} {a : α} :
+    ClusterPt a F ↔ (F.lift' closure ⊓ pure a).NeBot := by
+  rw [clusterPt_iff_lift'_closure, ← Ultrafilter.coe_pure, inf_comm, Ultrafilter.inf_neBot_iff]
+
+@[simp]
+theorem clusterPt_lift'_closure_iff {F : Filter α} {a : α} :
+    ClusterPt a (F.lift' closure) ↔ ClusterPt a F := by
+  simp [clusterPt_iff_lift'_closure, lift'_lift'_assoc (monotone_closure α) (monotone_closure α)]
 
 /-- `x` belongs to the closure of `s` if and only if some ultrafilter
   supported on `s` converges to `x`. -/
@@ -1752,6 +1776,7 @@ protected theorem Set.MapsTo.closure {s : Set α} {t : Set β} {f : α → β} (
   exact fun x hx => hx.map hc.continuousAt (tendsto_principal_principal.2 h)
 #align set.maps_to.closure Set.MapsTo.closure
 
+/-- See also `IsClosedMap.closure_image_eq_of_continuous`. -/
 theorem image_closure_subset_closure_image {f : α → β} {s : Set α} (h : Continuous f) :
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset

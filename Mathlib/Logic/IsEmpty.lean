@@ -25,10 +25,10 @@ class IsEmpty (α : Sort _) : Prop where
   protected false : α → False
 #align is_empty IsEmpty
 
-instance : IsEmpty Empty :=
+instance instIsEmptyEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance : IsEmpty PEmpty :=
+instance instIsEmptyPEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=
@@ -59,7 +59,7 @@ instance Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
 instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
 
-instance {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
+instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
   ⟨fun x ↦ Sum.rec IsEmpty.false IsEmpty.false x⟩
 
 /-- subtypes of an empty type are empty -/

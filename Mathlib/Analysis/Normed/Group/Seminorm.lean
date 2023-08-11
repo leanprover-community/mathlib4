@@ -244,7 +244,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 variable (p q) (f : F →* E)
 
 @[to_additive]
-instance : Zero (GroupSeminorm E) :=
+instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
   ⟨{  toFun := 0
       map_one' := Pi.zero_apply _
       mul_le' := fun _ _ => (zero_add _).ge

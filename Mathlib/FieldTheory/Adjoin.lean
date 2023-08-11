@@ -1209,7 +1209,7 @@ theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K
       (Field.toIsField K)
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
 
-set_option synthInstance.maxHeartbeats 30000
+set_option synthInstance.maxHeartbeats 30000 in
 instance finiteDimensional_sup [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val

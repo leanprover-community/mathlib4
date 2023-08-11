@@ -26,7 +26,7 @@ This file records basic facts about uniformly locally doubling measures.
 -/
 
 -- Porting note: for 2 ^ n in exists_eventually_forall_measure_closedBall_le_mul
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -42,7 +42,7 @@ volumes grow exponentially in hyperbolic space. To be really explicit, consider 
 of curvature -1, the area of a disc of radius `ε` is `A(ε) = 2π(cosh(ε) - 1)` so
 `A(2ε)/A(ε) ~ exp(ε)`. -/
 class IsUnifLocDoublingMeasure {α : Type _} [MetricSpace α] [MeasurableSpace α]
-  (μ : Measure α) where
+  (μ : Measure α) : Prop where
   exists_measure_closedBall_le_mul'' :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε)
 #align is_unif_loc_doubling_measure IsUnifLocDoublingMeasure
