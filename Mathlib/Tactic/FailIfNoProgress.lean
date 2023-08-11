@@ -177,7 +177,6 @@ def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
     let pluralization := if goals₁.length = 1 then "" else "s"
     throwError "no progress made on goal{pluralization}; {resultMsg}"
 
-
 /-! ## Tactic syntax implementation -/
 
 /-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the list of
