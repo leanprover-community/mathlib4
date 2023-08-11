@@ -30,7 +30,7 @@ open Function OrderDual
 
 open BigOperators FinsetInterval
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finset
 

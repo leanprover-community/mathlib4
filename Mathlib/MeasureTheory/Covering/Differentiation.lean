@@ -77,14 +77,14 @@ make no sense. However, the measure is not globally zero if the space is big eno
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open scoped Filter ENNReal MeasureTheory NNReal Topology
 
-variable {α : Type _} [MetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α} (v : VitaliFamily μ)
-  {E : Type _} [NormedAddCommGroup E]
+variable {α : Type*} [MetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α} (v : VitaliFamily μ)
+  {E : Type*} [NormedAddCommGroup E]
 
 namespace VitaliFamily
 

@@ -27,7 +27,7 @@ Do we need a `Finset` version?
 
 open Function Set
 
-variable {α : Type _} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
+variable {α : Type*} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
 
 /-- Turns a set into an antichain by keeping only the "maximal" elements. -/
 def maximals : Set α :=
