@@ -104,6 +104,17 @@ theorem posSemidef_conjTranspose_mul_self (A : Matrix m n 𝕜) : Matrix.PosSemi
 theorem posSemidef_self_mul_conjTranspose (A : Matrix m n 𝕜) : Matrix.PosSemidef (A ⬝ Aᴴ) :=
   by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
+/-- The eigenvalues of a positive definite matrix are positive -/
+lemma PosDef.eigenvalues_pos [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
+    (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
+  rw [hA.1.eigenvalues_eq, hA.1.transpose_eigenvectorMatrix_apply]
+  exact hA.2 _ <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
+
+/-- The eigenvalues of a positive semi-definite matrix are non-negative -/
+lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
+    (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
+  (hA.2 _).trans_eq (hA.1.eigenvalues_eq _).symm
+
 namespace PosDef
 
 variable {M : Matrix n n ℝ} (hM : M.PosDef)
