@@ -317,7 +317,7 @@ def evalMonoidHom [MulOneClass Z] (x : X) : LocallyConstant X Z →* Z where
 def evalₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (x : X) :
     LocallyConstant X Z →ₐ[R] Z where
   toRingHom := evalRingHom x
-  commutes' r := by rfl
+  commutes' _ := rfl
 
 end Eval
 
