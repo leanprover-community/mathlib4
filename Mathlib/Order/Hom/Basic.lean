@@ -74,10 +74,10 @@ monotone map, bundled morphism
 
 open OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- Bundled monotone (aka, increasing) function -/
-structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
+structure OrderHom (α β : Type*) [Preorder α] [Preorder β] where
   /-- The underlying function of an `OrderHom`. -/
   toFun : α → β
   /-- The underlying function of an `OrderHom` is monotone. -/
@@ -87,11 +87,9 @@ structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
 /-- Notation for an `OrderHom`. -/
 infixr:25 " →o " => OrderHom
 
-attribute [coe] OrderHom.toFun
-
 /-- An order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
-abbrev OrderEmbedding (α β : Type _) [LE α] [LE β] :=
+abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 #align order_embedding OrderEmbedding
 
@@ -100,7 +98,7 @@ infixl:25 " ↪o " => OrderEmbedding
 
 /-- An order isomorphism is an equivalence such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelIso (≤) (≤)`. -/
-abbrev OrderIso (α β : Type _) [LE α] [LE β] :=
+abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 #align order_iso OrderIso
 
@@ -110,14 +108,14 @@ infixl:25 " ≃o " => OrderIso
 section
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-abbrev OrderHomClass (F : Type _) (α β : outParam (Type _)) [LE α] [LE β] :=
+abbrev OrderHomClass (F : Type*) (α β : outParam (Type*)) [LE α] [LE β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 #align order_hom_class OrderHomClass
 
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
 You should extend this class when you extend `OrderIso`. -/
-class OrderIsoClass (F : Type _) (α β : outParam (Type _)) [LE α] [LE β] extends
+class OrderIsoClass (F : Type*) (α β : outParam (Type*)) [LE α] [LE β] extends
   EquivLike F α β where
   /-- An order isomorphism respects `≤`. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
@@ -217,13 +215,18 @@ namespace OrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
+instance : OrderHomClass (α →o β) α β where
+  coe := toFun
+  coe_injective' f g h := by cases f; cases g; congr
+  map_rel f _ _ h := f.monotone' h
+
 /-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly.
-Remark(Floris): I think this instance is a really bad idea because now applications of
-`FunLike.coe` are not being simplified by `simp`, unlike all other hom-classes.
-Todo: fix after port.-/
+directly. -/
 instance : CoeFun (α →o β) fun _ => α → β :=
-  ⟨OrderHom.toFun⟩
+  ⟨FunLike.coe⟩
+
+@[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
+#align order_hom.coe_fun_mk OrderHom.coe_mk
 
 protected theorem monotone (f : α →o β) : Monotone f :=
   f.monotone'
@@ -233,29 +236,16 @@ protected theorem mono (f : α →o β) : Monotone f :=
   f.monotone
 #align order_hom.mono OrderHom.mono
 
-instance : OrderHomClass (α →o β) α β where
-  coe := toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
-  map_rel f _ _ h := f.monotone' h
-
 /-- See Note [custom simps projection]. We give this manually so that we use `toFun` as the
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Todo: all other FunLike classes use `apply` instead of `coe`
+/- Porting note: TODO: all other FunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
--- Porting note: dropped `to_fun_eq_coe` as it is a tautology now.
-#noalign order_hom.to_fun_eq_coe
-
--- Porting note: no longer good as a simp lemma, as after `whnfR` the LHS is just `f` anyway.
-theorem coe_fun_mk {f : α → β} (hf : Monotone f) : (mk f hf : α → β) = f :=
-  rfl
-#align order_hom.coe_fun_mk OrderHom.coe_fun_mk
+@[simp] theorem toFun_eq_coe (f : α →o β) : f.toFun = f := rfl
+#align order_hom.to_fun_eq_coe OrderHom.toFun_eq_coe
 
 -- See library note [partially-applied ext lemmas]
 @[ext]
@@ -263,12 +253,16 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   FunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
 
-#noalign order_hom.coe_eq
+@[simp] theorem coe_eq (f : α →o β) : OrderHomClass.toOrderHom f = f := rfl
+
+@[simp] theorem _root_.OrderHomClass.coe_coe {F} [OrderHomClass F α β] (f : F) :
+    ⇑(f : α →o β) = f :=
+  rfl
 
 /-- One can lift an unbundled monotone function to a bundled one. -/
-instance : CanLift (α → β) (α →o β) (↑) Monotone where
+protected instance canLift : CanLift (α → β) (α →o β) (↑) Monotone where
   prf f h := ⟨⟨f, h⟩, rfl⟩
-#align order_hom.monotone.can_lift OrderHom.instCanLiftForAllOrderHomToFunMonotone
+#align order_hom.monotone.can_lift OrderHom.canLift
 
 /-- Copy of an `OrderHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -299,7 +293,7 @@ instance : Inhabited (α →o α) :=
 instance : Preorder (α →o β) :=
   @Preorder.lift (α →o β) (α → β) _ toFun
 
-instance {β : Type _} [PartialOrder β] : PartialOrder (α →o β) :=
+instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
   @PartialOrder.lift (α →o β) (α → β) _ toFun ext
 
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=
@@ -323,17 +317,11 @@ theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ 
 
 /-- Curry/uncurry as an order isomorphism between `α × β →o γ` and `α →o β →o γ`. -/
 def curry : (α × β →o γ) ≃o (α →o β →o γ) where
-  toFun f :=
-    ⟨fun x => ⟨Function.curry f x, fun y₁ y₂ h => f.mono ⟨le_rfl, h⟩⟩, fun x₁ x₂ h y =>
-      f.mono ⟨h, le_rfl⟩⟩
-  invFun f :=
-    ⟨Function.uncurry fun x => f x, fun x y h => (f.mono h.1 x.2).trans <| (f y.1).mono h.2⟩
-  left_inv f := by
-    ext ⟨x, y⟩
-    rfl
-  right_inv f := by
-    ext x y
-    rfl
+  toFun f := ⟨fun x ↦ ⟨Function.curry f x, fun _ _ h ↦ f.mono ⟨le_rfl, h⟩⟩, fun _ _ h _ =>
+    f.mono ⟨h, le_rfl⟩⟩
+  invFun f := ⟨Function.uncurry fun x ↦ f x, fun x y h ↦ (f.mono h.1 x.2).trans ((f y.1).mono h.2)⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := by simp [le_def]
 #align order_hom.curry OrderHom.curry
 
@@ -380,7 +368,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
 
 /-- Constant function bundled as an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
-def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] : β →o α →o β where
+def const (α : Type*) [Preorder α] {β : Type*} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
   monotone' _ _ h _ := h
 #align order_hom.const OrderHom.const
@@ -392,7 +380,7 @@ theorem const_comp (f : α →o β) (c : γ) : (const β c).comp f = const α c 
 #align order_hom.const_comp OrderHom.const_comp
 
 @[simp]
-theorem comp_const (γ : Type _) [Preorder γ] (f : α →o β) (c : α) :
+theorem comp_const (γ : Type*) [Preorder γ] (f : α →o β) (c : α) :
     f.comp (const γ c) = const γ (f c) :=
   rfl
 #align order_hom.comp_const OrderHom.comp_const
@@ -473,8 +461,8 @@ of monotone maps to `β` and `γ`. -/
 def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   toFun f := (fst.comp f, snd.comp f)
   invFun f := f.1.prod f.2
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := forall_and.symm
 #align order_hom.prod_iso OrderHom.prodIso
 #align order_hom.prod_iso_apply OrderHom.prodIso_apply
@@ -487,7 +475,7 @@ def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
 #align order_hom.prod_map OrderHom.prodMap
 #align order_hom.prod_map_coe OrderHom.prodMap_coe
 
-variable {ι : Type _} {π : ι → Type _} [∀ i, Preorder (π i)]
+variable {ι : Type*} {π : ι → Type*} [∀ i, Preorder (π i)]
 
 /-- Evaluation of an unbundled function at a point (`Function.eval`) as an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
@@ -527,12 +515,8 @@ maps `Π i, α →o π i`. -/
 def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
-  left_inv f := by
-    ext x i
-    rfl
-  right_inv f := by
-    ext x i
-    rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
 #align order_hom.pi_iso_apply OrderHom.piIso_apply
@@ -544,6 +528,13 @@ def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩
 #align order_hom.subtype.val OrderHom.Subtype.val
 #align order_hom.subtype.val_coe OrderHom.Subtype.val_coe
+
+/-- `Subtype.impEmbedding` as an order embedding. -/
+@[simps!]
+def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
+    {x // p x} ↪o {x // q x} :=
+  { Subtype.impEmbedding _ _ h with
+    map_rel_iff' := by aesop }
 
 /-- There is a unique monotone map from a subsingleton to itself. -/
 instance unique [Subsingleton α] : Unique (α →o α) where
@@ -561,8 +552,8 @@ protected def dual : (α →o β) ≃ (αᵒᵈ →o βᵒᵈ) where
   toFun f := ⟨(OrderDual.toDual : β → βᵒᵈ) ∘ (f : α → β) ∘
     (OrderDual.ofDual : αᵒᵈ → α), f.mono.dual⟩
   invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, f.mono.dual⟩
-  left_inv _ := ext _ _ rfl
-  right_inv _ := ext _ _ rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align order_hom.dual OrderHom.dual
 #align order_hom.dual_apply_coe OrderHom.dual_apply_coe
 #align order_hom.dual_symm_apply_coe OrderHom.dual_symm_apply_coe
@@ -593,7 +584,7 @@ theorem symm_dual_comp (g : βᵒᵈ →o γᵒᵈ) (f : αᵒᵈ →o βᵒᵈ)
 #align order_hom.symm_dual_comp OrderHom.symm_dual_comp
 
 /-- `OrderHom.dual` as an order isomorphism. -/
-def dualIso (α β : Type _) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
+def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 #align order_hom.dual_iso OrderHom.dualIso
@@ -743,7 +734,7 @@ def subtype (p : α → Prop) : Subtype p ↪o α :=
 
 /-- Convert an `OrderEmbedding` to an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
-def toOrderHom {X Y : Type _} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
+def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
   toFun := f
   monotone' := f.monotone
 #align order_embedding.to_order_hom OrderEmbedding.toOrderHom
@@ -835,7 +826,7 @@ theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
 #align order_iso.apply_eq_iff_eq OrderIso.apply_eq_iff_eq
 
 /-- Identity order isomorphism. -/
-def refl (α : Type _) [LE α] : α ≃o α :=
+def refl (α : Type*) [LE α] : α ≃o α :=
   RelIso.refl (· ≤ ·)
 #align order_iso.refl OrderIso.refl
 
@@ -869,7 +860,7 @@ theorem symm_apply_apply (e : α ≃o β) (x : α) : e.symm (e x) = x :=
 #align order_iso.symm_apply_apply OrderIso.symm_apply_apply
 
 @[simp]
-theorem symm_refl (α : Type _) [LE α] : (refl α).symm = refl α :=
+theorem symm_refl (α : Type*) [LE α] : (refl α).symm = refl α :=
   rfl
 #align order_iso.symm_refl OrderIso.symm_refl
 
@@ -1085,7 +1076,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
     that `g` is the inverse of `f`-/
-def ofHomInv {F G : Type _} [OrderHomClass F α β] [OrderHomClass G β α] (f : F) (g : G)
+def ofHomInv {F G : Type*} [OrderHomClass F α β] [OrderHomClass G β α] (f : F) (g : G)
     (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
     (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) :
     α ≃o β where
@@ -1103,7 +1094,7 @@ def ofHomInv {F G : Type _} [OrderHomClass F α β] [OrderHomClass G β α] (f :
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]
-def funUnique (α β : Type _) [Unique α] [Preorder β] : (α → β) ≃o β where
+def funUnique (α β : Type*) [Unique α] [Preorder β] : (α → β) ≃o β where
   toEquiv := Equiv.funUnique α β
   map_rel_iff' := by simp [Pi.le_def, Unique.forall_iff]
 #align order_iso.fun_unique OrderIso.funUnique
@@ -1111,7 +1102,7 @@ def funUnique (α β : Type _) [Unique α] [Preorder β] : (α → β) ≃o β w
 #align order_iso.fun_unique_to_equiv OrderIso.funUnique_toEquiv
 
 @[simp]
-theorem funUnique_symm_apply {α β : Type _} [Unique α] [Preorder β] :
+theorem funUnique_symm_apply {α β : Type*} [Unique α] [Preorder β] :
     ((funUnique α β).symm : β → α → β) = Function.const α :=
   rfl
 #align order_iso.fun_unique_symm_apply OrderIso.funUnique_symm_apply

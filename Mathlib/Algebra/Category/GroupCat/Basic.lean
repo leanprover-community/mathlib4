@@ -40,7 +40,7 @@ namespace GroupCat
 
 @[to_additive]
 instance : BundledHom.ParentProjection
-  (fun {α : Type _} (h : Group α) => h.toDivInvMonoid.toMonoid) := ⟨⟩
+  (fun {α : Type*} (h : Group α) => h.toDivInvMonoid.toMonoid) := ⟨⟩
 
 deriving instance LargeCategory for GroupCat
 attribute [to_additive] instGroupCatLargeCategory
@@ -51,7 +51,7 @@ instance concreteCategory : ConcreteCategory GroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort GroupCat (Type _) where
+instance : CoeSort GroupCat (Type*) where
   coe X := X.α
 
 @[to_additive]
@@ -73,6 +73,9 @@ lemma coe_id {X : GroupCat} : (𝟙 X : X → X) = id := rfl
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[to_additive]
+lemma comp_def {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
 -- porting note: added
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
@@ -150,7 +153,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom_apply AddGroupCat.ofHom_apply
 
 @[to_additive]
-instance ofUnique (G : Type _) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
+instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
 set_option linter.uppercaseLean3 false in
 #align Group.of_unique GroupCat.ofUnique
 set_option linter.uppercaseLean3 false in
@@ -193,7 +196,7 @@ instance concreteCategory : ConcreteCategory CommGroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommGroupCat (Type _) where
+instance : CoeSort CommGroupCat (Type*) where
   coe X := X.α
 
 @[to_additive]
@@ -219,6 +222,9 @@ lemma coe_id {X : CommGroupCat} : (𝟙 X : X → X) = id := rfl
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[to_additive]
+lemma comp_def {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -258,7 +264,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.coe_of AddCommGroupCat.coe_of
 
 @[to_additive]
-instance ofUnique (G : Type _) [CommGroup G] [i : Unique G] : Unique (CommGroupCat.of G) :=
+instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGroupCat.of G) :=
   i
 set_option linter.uppercaseLean3 false in
 #align CommGroup.of_unique CommGroupCat.ofUnique

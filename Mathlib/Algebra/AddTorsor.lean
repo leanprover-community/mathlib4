@@ -45,7 +45,7 @@ acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
 `-ᵥ` operation. In the case of a vector space, it is an affine
 space. -/
-class AddTorsor (G : outParam (Type _)) (P : Type _) [outParam <| AddGroup G] extends AddAction G P,
+class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] extends AddAction G P,
   VSub G P where
   [Nonempty : Nonempty P]
   /-- Torsor subtraction and addition with the same element cancels out. -/
@@ -61,7 +61,7 @@ attribute [instance 100] AddTorsor.Nonempty -- porting note: removers `nolint in
 
 /-- An `AddGroup G` is a torsor for itself. -/
 --@[nolint instance_priority] Porting note: linter does not exist
-instance addGroupIsAddTorsor (G : Type _) [AddGroup G] : AddTorsor G G
+instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
     where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
@@ -71,13 +71,13 @@ instance addGroupIsAddTorsor (G : Type _) [AddGroup G] : AddTorsor G G
 /-- Simplify subtraction for a torsor for an `AddGroup G` over
 itself. -/
 @[simp]
-theorem vsub_eq_sub {G : Type _} [AddGroup G] (g1 g2 : G) : g1 -ᵥ g2 = g1 - g2 :=
+theorem vsub_eq_sub {G : Type*} [AddGroup G] (g1 g2 : G) : g1 -ᵥ g2 = g1 - g2 :=
   rfl
 #align vsub_eq_sub vsub_eq_sub
 
 section General
 
-variable {G : Type _} {P : Type _} [AddGroup G] [T : AddTorsor G P]
+variable {G : Type*} {P : Type*} [AddGroup G] [T : AddTorsor G P]
 
 /-- Adding the result of subtracting from another point produces that
 point. -/
@@ -244,7 +244,7 @@ end General
 
 section comm
 
-variable {G : Type _} {P : Type _} [AddCommGroup G] [AddTorsor G P]
+variable {G : Type*} {P : Type*} [AddCommGroup G] [AddTorsor G P]
 
 -- Porting note: Removed:
 -- include G
@@ -278,9 +278,9 @@ end comm
 
 namespace Prod
 
-variable {G : Type _} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
+variable {G : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
-instance : AddTorsor (G × G') (P × P') where
+instance instAddTorsor : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
@@ -340,7 +340,7 @@ variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → T
 open AddAction AddTorsor
 
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
-instance [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
+instance instAddTorsor [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
   zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
   add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)
@@ -353,7 +353,7 @@ end Pi
 
 namespace Equiv
 
-variable {G : Type _} {P : Type _} [AddGroup G] [AddTorsor G P]
+variable {G : Type*} {P : Type*} [AddGroup G] [AddTorsor G P]
 
 -- Porting note: Removed:
 -- include G
@@ -488,7 +488,7 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
 -- omit G
 
 -- Porting note: need this to calm down CI
-theorem injective_pointReflection_left_of_injective_bit0 {G P : Type _} [AddCommGroup G]
+theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (bit0 : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
   fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) => by
@@ -499,7 +499,7 @@ theorem injective_pointReflection_left_of_injective_bit0 {G P : Type _} [AddComm
 
 end Equiv
 
-theorem AddTorsor.subsingleton_iff (G P : Type _) [AddGroup G] [AddTorsor G P] :
+theorem AddTorsor.subsingleton_iff (G P : Type*) [AddGroup G] [AddTorsor G P] :
     Subsingleton G ↔ Subsingleton P := by
   inhabit P
   exact (Equiv.vaddConst default).subsingleton_congr

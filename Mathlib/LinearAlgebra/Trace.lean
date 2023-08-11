@@ -47,7 +47,7 @@ variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R 
 
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
 
-variable {κ : Type _} [DecidableEq κ] [Fintype κ]
+variable {κ : Type*} [DecidableEq κ] [Fintype κ]
 
 variable (b : Basis ι R M) (c : Basis κ R M)
 
@@ -125,11 +125,11 @@ end
 
 section
 
-variable {R : Type _} [CommRing R] {M : Type _} [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
-variable (N : Type _) [AddCommGroup N] [Module R N]
+variable (N : Type*) [AddCommGroup N] [Module R N]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
  `End(M) ≃ M* ⊗ M`-/
@@ -157,7 +157,7 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 
 variable (R M)
 
-variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N] [Nontrivial R]
+variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
@@ -172,8 +172,6 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
   rw [← comp_apply, trace_eq_contract]
 #align linear_map.trace_eq_contract_apply LinearMap.trace_eq_contract_apply
 
-open Classical
-
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
 theorem trace_eq_contract' :
@@ -184,6 +182,7 @@ theorem trace_eq_contract' :
 /-- The trace of the identity endomorphism is the dimension of the free module -/
 @[simp]
 theorem trace_one : trace R M 1 = (finrank R M : R) := by
+  cases subsingleton_or_nontrivial R; simp
   have b := Module.Free.chooseBasis R M
   rw [trace_eq_matrix_trace R b, toMatrix_one, finrank_eq_card_chooseBasisIndex]
   simp

@@ -62,7 +62,7 @@ open Function
 
 universe u v w
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {π : ι → Type _} {r : α → α → Prop}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {π : ι → Type*} {r : α → α → Prop}
 
 section Preorder
 
@@ -240,6 +240,18 @@ theorem not_gt (h : x = y) : ¬y < x :=
 #align eq.not_gt Eq.not_gt
 
 end Eq
+
+
+section
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+
+-- Making this a @[simp] lemma causes confluences problems downstream.
+lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
+
+end
 
 namespace LE.le
 
@@ -592,7 +604,7 @@ theorem associative_of_commutative_of_le {f : α → α → α} (comm : Commutat
 end PartialOrder
 
 @[ext]
-theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
+theorem Preorder.toLE_injective {α : Type*} : Function.Injective (@Preorder.toLE α) :=
   fun A B h ↦ match A, B with
   | { lt := A_lt, lt_iff_le_not_le := A_iff, .. },
     { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
@@ -606,7 +618,7 @@ theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.to
 #align preorder.to_has_le_injective Preorder.toLE_injective
 
 @[ext]
-theorem PartialOrder.toPreorder_injective {α : Type _} :
+theorem PartialOrder.toPreorder_injective {α : Type*} :
     Function.Injective (@PartialOrder.toPreorder α) := fun A B h ↦ by
   cases A
   cases B
@@ -615,7 +627,7 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
 #align partial_order.to_preorder_injective PartialOrder.toPreorder_injective
 
 @[ext]
-theorem LinearOrder.toPartialOrder_injective {α : Type _} :
+theorem LinearOrder.toPartialOrder_injective {α : Type*} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun A B h ↦ match A, B with
   | { le := A_le, lt := A_lt,
@@ -683,7 +695,7 @@ instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Pro
 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
 notation for `OrderDual α`. -/
-def OrderDual (α : Type _) : Type _ :=
+def OrderDual (α : Type*) : Type _ :=
   α
 #align order_dual OrderDual
 
@@ -692,28 +704,28 @@ notation:max α "ᵒᵈ" => OrderDual α
 
 namespace OrderDual
 
-instance (α : Type _) [h : Nonempty α] : Nonempty αᵒᵈ :=
+instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
   h
 
-instance (α : Type _) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
+instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
-instance (α : Type _) [LE α] : LE αᵒᵈ :=
+instance (α : Type*) [LE α] : LE αᵒᵈ :=
   ⟨fun x y : α ↦ y ≤ x⟩
 
-instance (α : Type _) [LT α] : LT αᵒᵈ :=
+instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
-instance preorder (α : Type _) [Preorder α] : Preorder αᵒᵈ where
+instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
   lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
 
-instance partialOrder (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
+instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
-instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
+instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   le_total     := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
@@ -722,22 +734,23 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
-#align order_dual.linear_order OrderDual.linearOrder
+#align order_dual.linear_order OrderDual.instLinearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
-
-theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
+theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
 #align order_dual.preorder.dual_dual OrderDual.Preorder.dual_dual
 
-theorem partialOrder.dual_dual (α : Type _) [H : PartialOrder α] : OrderDual.partialOrder αᵒᵈ = H :=
+theorem instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
+    OrderDual.instPartialOrder αᵒᵈ = H :=
   PartialOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.partial_order.dual_dual OrderDual.partialOrder.dual_dual
+#align order_dual.partial_order.dual_dual OrderDual.instPartialOrder.dual_dual
 
-theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : OrderDual.linearOrder αᵒᵈ = H :=
+theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
+    OrderDual.instLinearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.linear_order.dual_dual OrderDual.linearOrder.dual_dual
+#align order_dual.linear_order.dual_dual OrderDual.instLinearOrder.dual_dual
 
 end OrderDual
 
@@ -746,7 +759,7 @@ end OrderDual
 
 /-- Set / lattice complement -/
 @[notation_class]
-class HasCompl (α : Type _) where
+class HasCompl (α : Type*) where
   /-- Set / lattice complement -/
   compl : α → α
 #align has_compl HasCompl
@@ -1254,7 +1267,8 @@ end Preorder
 /-- The pointwise partial order on a product.
     (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
     available via the type synonym `α ×ₗ β = α × β`.) -/
-instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] : PartialOrder (α × β) where
+instance instPartialOrder (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] :
+    PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 
@@ -1292,7 +1306,7 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : D
     · obtain ⟨c, ha, hb⟩ := exists_between h₂
       exact ⟨(_, c), Or.inr ⟨h₁, ha⟩, Or.inr ⟨le_rfl, hb⟩⟩⟩
 
-instance {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] :
+instance {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] :
     DenselyOrdered (∀ i, α i) :=
   ⟨fun a b ↦ by
     classical

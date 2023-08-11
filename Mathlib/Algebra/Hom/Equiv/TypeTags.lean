@@ -2,7 +2,6 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-Ported by: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
@@ -14,7 +13,7 @@ import Mathlib.Algebra.Group.TypeTags
 -/
 
 
-variable {G H : Type _}
+variable {G H : Type*}
 
 /-- Reinterpret `G ≃+ H` as `Multiplicative G ≃* Multiplicative H`. -/
 def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :

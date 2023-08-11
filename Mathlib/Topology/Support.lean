@@ -31,7 +31,7 @@ Furthermore, we say that `f` has compact support if the topological support of `
 
 open Function Set Filter Topology
 
-variable {X α α' β γ δ M E R : Type _}
+variable {X α α' β γ δ M E R : Type*}
 
 section One
 
@@ -84,12 +84,12 @@ theorem range_eq_image_mulTSupport_or (f : X → α) :
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
 #align range_eq_image_tsupport_or range_eq_image_tsupport_or
 
-theorem tsupport_mul_subset_left {α : Type _} [MulZeroClass α] {f g : X → α} :
+theorem tsupport_mul_subset_left {α : Type*} [MulZeroClass α] {f g : X → α} :
     (tsupport fun x => f x * g x) ⊆ tsupport f :=
   closure_mono (support_mul_subset_left _ _)
 #align tsupport_mul_subset_left tsupport_mul_subset_left
 
-theorem tsupport_mul_subset_right {α : Type _} [MulZeroClass α] {f g : X → α} :
+theorem tsupport_mul_subset_right {α : Type*} [MulZeroClass α] {f g : X → α} :
     (tsupport fun x => f x * g x) ⊆ tsupport g :=
   closure_mono (support_mul_subset_right _ _)
 #align tsupport_mul_subset_right tsupport_mul_subset_right
@@ -155,6 +155,11 @@ theorem HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro
 #align has_compact_support.intro HasCompactSupport.intro
+
+@[to_additive]
+theorem HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
+    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+  isCompact_closure_of_subset_compact hK h
 
 @[to_additive]
 theorem HasCompactMulSupport.isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
@@ -296,7 +301,7 @@ end MulZeroClass
 
 namespace LocallyFinite
 
-variable {ι : Type _} {U : ι → Set X} [TopologicalSpace X] [One R]
+variable {ι : Type*} {U : ι → Set X} [TopologicalSpace X] [One R]
 
 -- porting note: todo: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family

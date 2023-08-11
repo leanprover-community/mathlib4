@@ -58,7 +58,7 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
 /-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
 `f : G →* Equiv.Perm α`. -/
 @[simps!]
-def _root_.MonoidHom.toHomPerm {G : Type _} [Group G] (f : G →* Function.End α) : G →* Perm α :=
+def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α) : G →* Perm α :=
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 #align monoid_hom.to_hom_perm MonoidHom.toHomPerm
 #align monoid_hom.to_hom_perm_apply_symm_apply MonoidHom.toHomPerm_apply_symm_apply
@@ -96,11 +96,14 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 #align equiv.perm.coe_one Equiv.Perm.coe_one
+
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
 #align equiv.perm.coe_mul Equiv.Perm.coe_mul
+
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 #align equiv.perm.coe_pow Equiv.Perm.coe_pow
+
 @[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := (coe_pow _ _).symm
 #align equiv.perm.iterate_eq_pow Equiv.Perm.iterate_eq_pow
 
@@ -112,13 +115,14 @@ theorem inv_eq_iff_eq {f : Perm α} {x y : α} : f⁻¹ x = y ↔ x = f y :=
   f.symm_apply_eq
 #align equiv.perm.inv_eq_iff_eq Equiv.Perm.inv_eq_iff_eq
 
-theorem zpow_apply_comm {α : Type _} (σ : Perm α) (m n : ℤ) {x : α} :
+theorem zpow_apply_comm {α : Type*} (σ : Perm α) (m n : ℤ) {x : α} :
     (σ ^ m) ((σ ^ n) x) = (σ ^ n) ((σ ^ m) x) := by
   rw [← Equiv.Perm.mul_apply, ← Equiv.Perm.mul_apply, zpow_mul_comm]
 #align equiv.perm.zpow_apply_comm Equiv.Perm.zpow_apply_comm
 
 @[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
 #align equiv.perm.image_inv Equiv.Perm.image_inv
+
 @[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
   (f.image_eq_preimage _).symm
 #align equiv.perm.preimage_inv Equiv.Perm.preimage_inv
@@ -130,7 +134,7 @@ simp. -/
 
 
 @[simp]
-theorem trans_one {α : Sort _} {β : Type _} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
+theorem trans_one {α : Sort*} {β : Type*} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
   Equiv.trans_refl e
 #align equiv.perm.trans_one Equiv.Perm.trans_one
 
@@ -150,7 +154,7 @@ theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
 #align equiv.perm.refl_inv Equiv.Perm.refl_inv
 
 @[simp]
-theorem one_trans {α : Type _} {β : Sort _} (e : α ≃ β) : (1 : Perm α).trans e = e :=
+theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
   Equiv.refl_trans e
 #align equiv.perm.one_trans Equiv.Perm.one_trans
 
@@ -183,19 +187,19 @@ theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
 
 
 @[simp]
-theorem sumCongr_mul {α β : Type _} (e : Perm α) (f : Perm β) (g : Perm α) (h : Perm β) :
+theorem sumCongr_mul {α β : Type*} (e : Perm α) (f : Perm β) (g : Perm α) (h : Perm β) :
     sumCongr e f * sumCongr g h = sumCongr (e * g) (f * h) :=
   sumCongr_trans g h e f
 #align equiv.perm.sum_congr_mul Equiv.Perm.sumCongr_mul
 
 @[simp]
-theorem sumCongr_inv {α β : Type _} (e : Perm α) (f : Perm β) :
+theorem sumCongr_inv {α β : Type*} (e : Perm α) (f : Perm β) :
     (sumCongr e f)⁻¹ = sumCongr e⁻¹ f⁻¹ :=
   sumCongr_symm e f
 #align equiv.perm.sum_congr_inv Equiv.Perm.sumCongr_inv
 
 @[simp]
-theorem sumCongr_one {α β : Type _} : sumCongr (1 : Perm α) (1 : Perm β) = 1 :=
+theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 :=
   sumCongr_refl
 #align equiv.perm.sum_congr_one Equiv.Perm.sumCongr_one
 
@@ -204,14 +208,14 @@ theorem sumCongr_one {α β : Type _} : sumCongr (1 : Perm α) (1 : Perm β) = 1
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between `α` and `β`. -/
 @[simps]
-def sumCongrHom (α β : Type _) : Perm α × Perm β →* Perm (Sum α β) where
+def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (Sum α β) where
   toFun a := sumCongr a.1 a.2
   map_one' := sumCongr_one
   map_mul' _ _ := (sumCongr_mul _ _ _ _).symm
 #align equiv.perm.sum_congr_hom Equiv.Perm.sumCongrHom
 #align equiv.perm.sum_congr_hom_apply Equiv.Perm.sumCongrHom_apply
 
-theorem sumCongrHom_injective {α β : Type _} : Function.Injective (sumCongrHom α β) := by
+theorem sumCongrHom_injective {α β : Type*} : Function.Injective (sumCongrHom α β) := by
   rintro ⟨⟩ ⟨⟩ h
   rw [Prod.mk.inj_iff]
   constructor <;> ext i
@@ -220,13 +224,13 @@ theorem sumCongrHom_injective {α β : Type _} : Function.Injective (sumCongrHom
 #align equiv.perm.sum_congr_hom_injective Equiv.Perm.sumCongrHom_injective
 
 @[simp]
-theorem sumCongr_swap_one {α β : Type _} [DecidableEq α] [DecidableEq β] (i j : α) :
+theorem sumCongr_swap_one {α β : Type*} [DecidableEq α] [DecidableEq β] (i j : α) :
     sumCongr (Equiv.swap i j) (1 : Perm β) = Equiv.swap (Sum.inl i) (Sum.inl j) :=
   sumCongr_swap_refl i j
 #align equiv.perm.sum_congr_swap_one Equiv.Perm.sumCongr_swap_one
 
 @[simp]
-theorem sumCongr_one_swap {α β : Type _} [DecidableEq α] [DecidableEq β] (i j : β) :
+theorem sumCongr_one_swap {α β : Type*} [DecidableEq α] [DecidableEq β] (i j : β) :
     sumCongr (1 : Perm α) (Equiv.swap i j) = Equiv.swap (Sum.inr i) (Sum.inr j) :=
   sumCongr_refl_swap i j
 #align equiv.perm.sum_congr_one_swap Equiv.Perm.sumCongr_one_swap
@@ -235,19 +239,19 @@ theorem sumCongr_one_swap {α β : Type _} [DecidableEq α] [DecidableEq β] (i 
 
 
 @[simp]
-theorem sigmaCongrRight_mul {α : Type _} {β : α → Type _} (F : ∀ a, Perm (β a))
+theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a))
     (G : ∀ a, Perm (β a)) : sigmaCongrRight F * sigmaCongrRight G = sigmaCongrRight (F * G) :=
   sigmaCongrRight_trans G F
 #align equiv.perm.sigma_congr_right_mul Equiv.Perm.sigmaCongrRight_mul
 
 @[simp]
-theorem sigmaCongrRight_inv {α : Type _} {β : α → Type _} (F : ∀ a, Perm (β a)) :
+theorem sigmaCongrRight_inv {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a => (F a)⁻¹ :=
   sigmaCongrRight_symm F
 #align equiv.perm.sigma_congr_right_inv Equiv.Perm.sigmaCongrRight_inv
 
 @[simp]
-theorem sigmaCongrRight_one {α : Type _} {β : α → Type _} :
+theorem sigmaCongrRight_one {α : Type*} {β : α → Type*} :
     sigmaCongrRight (1 : ∀ a, Equiv.Perm <| β a) = 1 :=
   sigmaCongrRight_refl
 #align equiv.perm.sigma_congr_right_one Equiv.Perm.sigmaCongrRight_one
@@ -257,14 +261,14 @@ theorem sigmaCongrRight_one {α : Type _} {β : α → Type _} :
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between fibers. -/
 @[simps]
-def sigmaCongrRightHom {α : Type _} (β : α → Type _) : (∀ a, Perm (β a)) →* Perm (Σa, β a) where
+def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σa, β a) where
   toFun := sigmaCongrRight
   map_one' := sigmaCongrRight_one
   map_mul' _ _ := (sigmaCongrRight_mul _ _).symm
 #align equiv.perm.sigma_congr_right_hom Equiv.Perm.sigmaCongrRightHom
 #align equiv.perm.sigma_congr_right_hom_apply Equiv.Perm.sigmaCongrRightHom_apply
 
-theorem sigmaCongrRightHom_injective {α : Type _} {β : α → Type _} :
+theorem sigmaCongrRightHom_injective {α : Type*} {β : α → Type*} :
     Function.Injective (sigmaCongrRightHom β) := by
   intro x y h
   ext a b
@@ -647,14 +651,14 @@ lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 #align equiv.mul_right_one Equiv.mulRight_one
 
-@[to_additive existing (attr := simp)] lemma mulLeft_mul :
-  Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
-ext $ mul_assoc _ _
+@[to_additive existing (attr := simp)]
+lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
+  ext $ mul_assoc _ _
 #align equiv.mul_left_mul Equiv.mulLeft_mul
 
-@[to_additive existing (attr := simp)] lemma mulRight_mul :
-  Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
-ext $ fun _ ↦ (mul_assoc _ _ _).symm
+@[to_additive existing (attr := simp)]
+lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+  ext $ fun _ ↦ (mul_assoc _ _ _).symm
 #align equiv.mul_right_mul Equiv.mulRight_mul
 
 @[to_additive existing (attr := simp) inv_addLeft]
@@ -692,7 +696,7 @@ end Equiv
 open Equiv Function
 
 namespace Set
-variable {α : Type _} {f : Perm α} {s : Set α}
+variable {α : Type*} {f : Perm α} {s : Set α}
 
 lemma BijOn.perm_inv (hf : BijOn f s s) : BijOn ↑(f⁻¹) s s := hf.symm f.invOn
 #align set.bij_on.perm_inv Set.BijOn.perm_inv

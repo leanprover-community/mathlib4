@@ -152,8 +152,6 @@ instance linearOrder : LinearOrder ℕ where
 
 #align nat.le_of_add_le_add_right Nat.le_of_add_le_add_rightₓ
 
-protected theorem add_le_add_iff_right {k n m : ℕ} : n + k ≤ m + k ↔ n ≤ m :=
-  ⟨Nat.le_of_add_le_add_right, fun h => Nat.add_le_add_right h _⟩
 #align nat.add_le_add_iff_right Nat.add_le_add_iff_right
 
 #align nat.lt_of_add_lt_add_left Nat.lt_of_add_lt_add_left
@@ -411,8 +409,6 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.le_of_le_of_sub_le_sub_right Nat.le_of_le_of_sub_le_sub_right
 
-protected theorem sub_le_sub_iff_right {n m k : ℕ} (h : k ≤ m) : n - k ≤ m - k ↔ n ≤ m :=
-  ⟨Nat.le_of_le_of_sub_le_sub_right h, fun h => Nat.sub_le_sub_right h k⟩
 #align nat.sub_le_sub_iff_right Nat.sub_le_sub_iff_right
 
 #align nat.sub_self_add Nat.sub_self_add

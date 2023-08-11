@@ -153,8 +153,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
       exists_imp]
     rintro x (hx | ⟨x', hx', rfl⟩) rat hs
     · exact False.elim <| (hs x) <| And.intro hx rat
-    · use x'
-      exact And.intro hx' (And.intro rat hs)
+    · use x', hx', rat, hs
   · apply biUnion_subset_biUnion_of_subset_left
     apply subset_union_left
 #align hall_marriage_theorem.hall_cond_of_compl HallMarriageTheorem.hall_cond_of_compl
@@ -254,7 +253,7 @@ if every union of `k` of the sets has at least `k` elements.
 See `Finset.all_card_le_biUnion_card_iff_exists_injective` for a version
 where the `Finite ι` constraint is removed.
 -/
-theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type _} [Finite ι]
+theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Finite ι]
     [DecidableEq α] (t : ι → Finset α) :
     (∀ s : Finset ι, s.card ≤ (s.biUnion t).card) ↔
       ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by

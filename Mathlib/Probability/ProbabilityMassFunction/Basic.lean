@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
 import Mathlib.Topology.Instances.ENNReal
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Dirac
 
 #align_import probability.probability_mass_function.basic from "leanprover-community/mathlib"@"4ac69b290818724c159de091daa3acd31da0ee6d"
 
@@ -34,7 +34,7 @@ probability mass function, discrete probability measure
 
 noncomputable section
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Classical BigOperators NNReal ENNReal MeasureTheory
 

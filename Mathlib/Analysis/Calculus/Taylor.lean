@@ -3,6 +3,7 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Data.Polynomial.Module
@@ -46,7 +47,7 @@ open scoped BigOperators Interval Topology Nat
 
 open Set
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
