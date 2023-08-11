@@ -11,15 +11,15 @@ namespace FirstOrder
 
 namespace Language
 
-inductive RingFunctions : ℕ → Type
-  | add : RingFunctions 2
-  | mul : RingFunctions 2
-  | neg : RingFunctions 1
-  | zero : RingFunctions 0
-  | one : RingFunctions 0
+inductive RingFunc : ℕ → Type
+  | add : RingFunc 2
+  | mul : RingFunc 2
+  | neg : RingFunc 1
+  | zero : RingFunc 0
+  | one : RingFunc 0
 
-protected def ring : Language :=
-  { Functions := RingFunctions
+def ring : Language :=
+  { Functions := RingFunc
     Relations := fun _ => Empty }
 
 end Language

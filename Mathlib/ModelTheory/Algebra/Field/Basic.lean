@@ -15,24 +15,24 @@ namespace FirstOrder
 
 open FirstOrder
 
-inductive FieldFunctions : ℕ → Type
-  | add : FieldFunctions 2
-  | mul : FieldFunctions 2
-  | neg : FieldFunctions 1
-  | inv : FieldFunctions 1
-  | zero : FieldFunctions 0
-  | one : FieldFunctions 0
+inductive FieldFunc : ℕ → Type
+  | add : FieldFunc 2
+  | mul : FieldFunc 2
+  | neg : FieldFunc 1
+  | inv : FieldFunc 1
+  | zero : FieldFunc 0
+  | one : FieldFunc 0
   deriving DecidableEq
 
-protected def Language.field : Language :=
-  { Functions := FieldFunctions
+def Language.field : Language :=
+  { Functions := FieldFunc
     Relations := fun _ => Empty }
 
 namespace Language
 
 namespace field
 
-open FieldFunctions
+open FieldFunc
 
 instance (n : ℕ) : DecidableEq (Language.field.Functions n) := by
   dsimp [Language.field]; infer_instance
@@ -40,51 +40,51 @@ instance (n : ℕ) : DecidableEq (Language.field.Functions n) := by
 instance (n : ℕ) : DecidableEq (Language.field.Relations n) := by
   dsimp [Language.field]; infer_instance
 
-abbrev zeroFunction : Language.field.Functions 0 := zero
+abbrev zeroFunc : Language.field.Functions 0 := zero
 
-abbrev oneFunction : Language.field.Functions 0 := one
+abbrev oneFunc : Language.field.Functions 0 := one
 
-abbrev addFunction : Language.field.Functions 2 := add
+abbrev addFunc : Language.field.Functions 2 := add
 
-abbrev mulFunction : Language.field.Functions 2 := mul
+abbrev mulFunc : Language.field.Functions 2 := mul
 
-abbrev negFunction : Language.field.Functions 1 := neg
+abbrev negFunc : Language.field.Functions 1 := neg
 
-abbrev invFunction : Language.field.Functions 1 := inv
+abbrev invFunc : Language.field.Functions 1 := inv
 
 instance (α : Type _) : Zero (Language.field.Term α) :=
-{ zero := Constants.term zeroFunction }
+{ zero := Constants.term zeroFunc }
 
-theorem zero_def (α : Type _) : (0 : Language.field.Term α) = Constants.term zeroFunction := rfl
+theorem zero_def (α : Type _) : (0 : Language.field.Term α) = Constants.term zeroFunc := rfl
 
 instance (α : Type _) : One (Language.field.Term α) :=
-{ one := Constants.term oneFunction }
+{ one := Constants.term oneFunc }
 
-theorem one_def (α : Type _) : (1 : Language.field.Term α) = Constants.term oneFunction := rfl
+theorem one_def (α : Type _) : (1 : Language.field.Term α) = Constants.term oneFunc := rfl
 
 instance (α : Type _) : Add (Language.field.Term α) :=
-{ add := addFunction.apply₂ }
+{ add := addFunc.apply₂ }
 
 theorem add_def (α : Type _) (t₁ t₂ : Language.field.Term α) :
-    t₁ + t₂ = addFunction.apply₂ t₁ t₂ := rfl
+    t₁ + t₂ = addFunc.apply₂ t₁ t₂ := rfl
 
 instance (α : Type _) : Mul (Language.field.Term α) :=
-{ mul := mulFunction.apply₂ }
+{ mul := mulFunc.apply₂ }
 
 theorem mul_def (α : Type _) (t₁ t₂ : Language.field.Term α) :
-    t₁ * t₂ = mulFunction.apply₂ t₁ t₂ := rfl
+    t₁ * t₂ = mulFunc.apply₂ t₁ t₂ := rfl
 
 instance (α : Type _) : Neg (Language.field.Term α) :=
-{ neg := negFunction.apply₁ }
+{ neg := negFunc.apply₁ }
 
 theorem neg_def (α : Type _) (t : Language.field.Term α) :
-    -t = negFunction.apply₁ t := rfl
+    -t = negFunc.apply₁ t := rfl
 
 instance (α : Type _) : Inv (Language.field.Term α) :=
-{ inv := invFunction.apply₁ }
+{ inv := invFunc.apply₁ }
 
 theorem inv_def (α : Type _) (t : Language.field.Term α) :
-    t⁻¹ = invFunction.apply₁ t := rfl
+    t⁻¹ = invFunc.apply₁ t := rfl
 
 instance : Fintype Language.field.Symbols :=
   ⟨⟨Multiset.ofList
@@ -165,13 +165,13 @@ def FieldAxiom.toProp (M : Type _) [Add M] [Mul M] [Neg M] [Inv M] [Zero M] [One
 theorem FieldAxiom.realize_toSentence_iff_toProp {K : Type _}
     [Add K] [Mul K] [Neg K] [Inv K] [Zero K] [One K] [Language.field.Structure K]
     (ax : FieldAxiom)
-    (funMap_add : ∀ x : Fin 2 → K, funMap addFunction x = x 0 + x 1 := by assumption)
-    (funMap_mul : ∀ x : Fin 2 → K, funMap mulFunction x = x 0 * x 1 := by assumption)
-    (funMap_neg : ∀ x : Fin 1 → K, funMap negFunction x = -x 0 := by assumption)
-    (funMap_inv : ∀ x : Fin 1 → K, funMap invFunction x = (x 0)⁻¹ := by assumption)
-    (funMap_zero : ∀ x : Fin 0 → K, funMap (zeroFunction : Language.field.Constants) x = 0
+    (funMap_add : ∀ x : Fin 2 → K, funMap addFunc x = x 0 + x 1 := by assumption)
+    (funMap_mul : ∀ x : Fin 2 → K, funMap mulFunc x = x 0 * x 1 := by assumption)
+    (funMap_neg : ∀ x : Fin 1 → K, funMap negFunc x = -x 0 := by assumption)
+    (funMap_inv : ∀ x : Fin 1 → K, funMap invFunc x = (x 0)⁻¹ := by assumption)
+    (funMap_zero : ∀ x : Fin 0 → K, funMap (zeroFunc : Language.field.Constants) x = 0
       := by assumption)
-    (funMap_one : ∀ x : Fin 0 → K, funMap (oneFunction : Language.field.Constants) x = 1
+    (funMap_one : ∀ x : Fin 0 → K, funMap (oneFunc : Language.field.Constants) x = 1
       := by assumption) :
     (K ⊨ (ax.toSentence : Sentence Language.field)) ↔ ax.toProp K := by
   cases ax <;>
@@ -184,12 +184,12 @@ def Theory.field : Language.field.Theory :=
 
 class CompatibleField (K : Type _) extends Field K,
     Language.field.Structure K where
-  ( funMap_add : ∀ x, funMap addFunction x = x 0 + x 1 )
-  ( funMap_mul : ∀ x, funMap mulFunction x = x 0 * x 1 )
-  ( funMap_neg : ∀ x, funMap negFunction x = -x 0 )
-  ( funMap_inv : ∀ x, funMap invFunction x = (x 0)⁻¹ )
-  ( funMap_zero : ∀ x, funMap (zeroFunction : Language.field.Constants) x = 0 )
-  ( funMap_one : ∀ x, funMap (oneFunction : Language.field.Constants) x = 1 )
+  ( funMap_add : ∀ x, funMap addFunc x = x 0 + x 1 )
+  ( funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1 )
+  ( funMap_neg : ∀ x, funMap negFunc x = -x 0 )
+  ( funMap_inv : ∀ x, funMap invFunc x = (x 0)⁻¹ )
+  ( funMap_zero : ∀ x, funMap (zeroFunc : Language.field.Constants) x = 0 )
+  ( funMap_one : ∀ x, funMap (oneFunc : Language.field.Constants) x = 1 )
 
 open FieldAxiom
 
@@ -202,28 +202,28 @@ attribute [simp] CompatibleField.funMap_one
 
 def compatibleFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     [Theory.field.Model K] : CompatibleField K :=
-  letI : Add K := ⟨fun x y => funMap addFunction ![x, y]⟩
-  letI : Mul K := ⟨fun x y => funMap mulFunction ![x, y]⟩
-  letI : Neg K := ⟨fun x => funMap negFunction ![x]⟩
-  letI : Inv K := ⟨fun x => funMap invFunction ![x]⟩
-  letI : Zero K := ⟨funMap zeroFunction ![]⟩
-  letI : One K := ⟨funMap oneFunction ![]⟩
-  have funMap_add : ∀ x : Fin 2 → K, funMap addFunction x = x 0 + x 1 := by
+  letI : Add K := ⟨fun x y => funMap addFunc ![x, y]⟩
+  letI : Mul K := ⟨fun x y => funMap mulFunc ![x, y]⟩
+  letI : Neg K := ⟨fun x => funMap negFunc ![x]⟩
+  letI : Inv K := ⟨fun x => funMap invFunc ![x]⟩
+  letI : Zero K := ⟨funMap zeroFunc ![]⟩
+  letI : One K := ⟨funMap oneFunc ![]⟩
+  have funMap_add : ∀ x : Fin 2 → K, funMap addFunc x = x 0 + x 1 := by
     simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
-  have funMap_mul : ∀ x : Fin 2 → K, funMap mulFunction x = x 0 * x 1 := by
+  have funMap_mul : ∀ x : Fin 2 → K, funMap mulFunc x = x 0 * x 1 := by
     simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
-  have funMap_neg : ∀ x : Fin 1 → K, funMap negFunction x = -x 0 := by
+  have funMap_neg : ∀ x : Fin 1 → K, funMap negFunc x = -x 0 := by
     simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
-  have funMap_inv : ∀ x : Fin 1 → K, funMap invFunction x = (x 0)⁻¹ := by
+  have funMap_inv : ∀ x : Fin 1 → K, funMap invFunc x = (x 0)⁻¹ := by
     simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
-  have funMap_zero : ∀ x : Fin 0 → K, funMap (zeroFunction : Language.field.Constants) x = 0 := by
+  have funMap_zero : ∀ x : Fin 0 → K, funMap (zeroFunc : Language.field.Constants) x = 0 := by
     simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
-  have funMap_one : ∀ x : Fin 0 → K, funMap (oneFunction : Language.field.Constants) x = 1 := by
+  have funMap_one : ∀ x : Fin 0 → K, funMap (oneFunc : Language.field.Constants) x = 1 := by
     simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
     intros; rfl
   letI : Field K :=
@@ -255,7 +255,7 @@ def compatibleFieldOfFieldStructure (K : Type _) [Language.field.Structure K]
     funMap_zero := funMap_zero
     funMap_one := funMap_one }
 
-open FieldFunctions
+open FieldFunc
 
 @[simps, reducible]
 def structureFieldOfField {K : Type _} [Field K] : Language.field.Structure K :=
@@ -312,10 +312,10 @@ def languageEquivEquivRingEquiv {K L : Type _} [CompatibleField K] [CompatibleFi
     { f with
       map_add' := by
         intro x y
-        simpa using f.map_fun addFunction ![x, y]
+        simpa using f.map_fun addFunc ![x, y]
       map_mul' := by
         intro x y
-        simpa using f.map_fun mulFunction ![x, y] }
+        simpa using f.map_fun mulFunc ![x, y] }
     left_inv := fun f => by ext; rfl
     right_inv := fun f => by ext; rfl }
 
