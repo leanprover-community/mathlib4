@@ -25,7 +25,7 @@ open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable (C : Type _) [Category C] [HasZeroMorphisms C] {ι : Type _} (c : ComplexShape ι)
+variable (C : Type*) [Category C] [HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι)
 
 /-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/

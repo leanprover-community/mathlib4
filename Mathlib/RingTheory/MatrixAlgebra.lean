@@ -127,10 +127,11 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M 
 #align matrix_equiv_tensor.right_inv MatrixEquivTensor.right_inv
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M) = M := by
-  induction' M using TensorProduct.induction_on with a m x y hx hy
-  · simp
-  · simp
-  · rw [map_add]
+  induction M using TensorProduct.induction_on with
+  | zero => simp
+  | tmul a m => simp
+  | add x y hx hy =>
+    rw [map_add]
     conv_rhs => rw [← hx, ← hy, ← invFun_add]
 #align matrix_equiv_tensor.left_inv MatrixEquivTensor.left_inv
 
