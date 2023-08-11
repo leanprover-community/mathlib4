@@ -161,11 +161,17 @@ protected def rightCancelMonoid [RightCancelMonoid M₂] (f : M₁ → M₂) (hf
 admits an injective map that preserves `0` and `+` to an additive left cancel monoid."]
 protected def cancelMonoid [CancelMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CancelMonoid M₁ :=
-  { hf.leftCancelMonoid f one mul npow, hf.rightCancelMonoid f one mul npow with }
+    CancelMonoid M₁ := {
+      toLeftCancelMonoid := hf.leftCancelMonoid f one mul npow
+      mul_right_cancel := (hf.rightCancelMonoid f one mul npow).mul_right_cancel
+    }
+    -- toLeftCancelMonoid : (typelass inference used)
+    -- (∀ (a b c : M), a * b = c * b → a = c) → CancelMonoid M
+-- mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
+--  { hf.leftCancelMonoid f one mul npow, hf.rightCancelMonoid f one mul npow with }
 #align function.injective.add_cancel_monoid Function.Injective.addCancelMonoid
 #align function.injective.cancel_monoid Function.Injective.cancelMonoid
-
+-- (∀ (a b c : M), a * b = c * b → a = c) → CancelMonoid M
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits an injective map that
 preserves `1` and `*` to a commutative monoid.  See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
