@@ -786,16 +786,15 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 @[to_additive isHaarMeasure_map_radd
 "The image of a Haar measure under map of scalar addition is again a Haar measure"]
 theorem isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G] [SMul α G]
-    [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G] (a : α)
-    (ha : Continuous (a • · : G → G)) (ha_surj : Surjective (a • · : G → G))
-    (ha_prop : Tendsto (a • ·) (cocompact G) (cocompact G)):
+    [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G] [ContinuousConstSMul α G] (a : α)
+    (ha_surj : Surjective (a • · : G → G)) (ha_prop : Tendsto (a • ·) (cocompact G) (cocompact G)):
     IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul a
   lt_top_of_isCompact K hK := by
     rw [map_apply (measurable_const_smul _) hK.measurableSet]
-    exact IsCompact.measure_lt_top ((⟨⟨(a • ·), ha⟩, ha_prop⟩ :
+    exact IsCompact.measure_lt_top ((⟨⟨(a • ·), continuous_const_smul a⟩, ha_prop⟩ :
       CocompactMap G G).isCompact_preimage hK)
-  toIsOpenPosMeasure := ha.isOpenPosMeasure_map ha_surj
+  toIsOpenPosMeasure := (continuous_const_smul a).isOpenPosMeasure_map ha_surj
 
 /-- The image of a Haar measure under right multiplication is again
 a Haar measure. -/
@@ -803,8 +802,7 @@ a Haar measure. -/
   "The image of a Haar measure under right addition is again a Haar measure."]
 theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
     IsHaarMeasure (Measure.map (· * g) μ) := by
-      apply isHaarMeasure_map_smul μ (MulOpposite.op g)
-        (continuous_const_smul _) (MulAction.surjective _)
+      apply isHaarMeasure_map_smul μ (MulOpposite.op g) (MulAction.surjective _)
       rw [tendsto_iff_comap]
       apply le_of_eq
       simp only [MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op,
