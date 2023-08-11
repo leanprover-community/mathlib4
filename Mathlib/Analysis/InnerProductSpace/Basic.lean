@@ -1817,6 +1817,7 @@ namespace ContinuousLinearMap
 
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
+-- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
 set_option maxHeartbeats 500000 in
 set_option synthInstance.maxHeartbeats 100000 in
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
