@@ -14,11 +14,11 @@
     "name": "Cli",
     "inputRev?": "nightly"}},
   {"git":
-   {"url": "https://github.com/semorrison/quote4",
+   {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
-    "rev": "b3247bea1ac270586c773f89fde821a044eac724",
+    "rev": "81cc13c524a68d0072561dbac276cd61b65872a6",
     "name": "Qq",
-    "inputRev?": "instance_names"}},
+    "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
