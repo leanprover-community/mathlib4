@@ -566,70 +566,68 @@ lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ c + f i) F = c + Filter.limsup f F :=
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x)
-    (fun _ _ h ↦ add_le_add_left h c)
-    (continuous_add_left c).continuousAt bdd_above bdd_below).symm
+    (fun _ _ h ↦ add_le_add_left h c) (continuous_add_left c).continuousAt bdd_above bdd_below).symm
 
 /-- `limsup (xᵢ + c) = (limsup xᵢ) + c`. -/
 lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.limsup (fun i ↦ f i + c) F = Filter.limsup f F + c := by
-  convert (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c) ?_
-            (continuous_add_right c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ add_le_add_right h c
+    Filter.limsup (fun i ↦ f i + c) F = Filter.limsup f F + c :=
+  (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)
+    (fun _ _ h ↦ add_le_add_right h c)
+    (continuous_add_right c).continuousAt bdd_above bdd_below).symm
 
 /-- `liminf (c + xᵢ) = c + limsup xᵢ`. -/
 lemma liminf_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y]  (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.liminf (fun i ↦ c + f i) F = c + Filter.liminf f F := by
-  convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x) ?_
-            (continuous_add_left c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ add_le_add_left h c
+    Filter.liminf (fun i ↦ c + f i) F = c + Filter.liminf f F :=
+  (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x)
+    (fun _ _ h ↦ add_le_add_left h c) (continuous_add_left c).continuousAt bdd_above bdd_below).symm
 
 /-- `liminf (xᵢ + c) = (liminf xᵢ) + c`. -/
 lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c := by
-  convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c) ?_
-            (continuous_add_right c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ add_le_add_right h c
+    Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c :=
+  (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)
+    (fun _ _ h ↦ add_le_add_right h c)
+    (continuous_add_right c).continuousAt bdd_above bdd_below).symm
 
 /-- `limsup (c - xᵢ) = c - liminf xᵢ`. -/
 lemma limsup_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
     [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
-  convert (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x) ?_
-            (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ tsub_le_tsub_left h c
+    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
+  (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x)
+    (fun _ _ h ↦ tsub_le_tsub_left h c)
+    (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
 
 /-- `limsup (xᵢ - c) = (limsup xᵢ) - c`. -/
 lemma limsup_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
     [OrderedSub R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
-  convert (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c) ?_
-            (continuous_sub_right c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ tsub_le_tsub_right h c
+    Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=
+  (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c)
+    (fun _ _ h ↦ tsub_le_tsub_right h c)
+    (continuous_sub_right c).continuousAt bdd_above bdd_below).symm
 
 /-- `liminf (c - xᵢ) = c - limsup xᵢ`. -/
 lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
     [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F := by
-  convert (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x) ?_
-            (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ tsub_le_tsub_left h c
+    Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
+  (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x)
+    (fun _ _ h ↦ tsub_le_tsub_left h c)
+    (continuous_sub_left c).continuousAt bdd_above bdd_below).symm
 
 /-- `liminf (xᵢ - c) = (liminf xᵢ) - c`. -/
 lemma liminf_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
     [OrderedSub R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.liminf (fun i ↦ f i - c) F = Filter.liminf f F - c := by
-  convert (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c) ?_
-            (continuous_sub_right c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ tsub_le_tsub_right h c
+    Filter.liminf (fun i ↦ f i - c) F = Filter.liminf f F - c :=
+  (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c)
+    (fun _ _ h ↦ tsub_le_tsub_right h c)
+    (continuous_sub_right c).continuousAt bdd_above bdd_below).symm
 
 end LiminfLimsupAddSub -- section
