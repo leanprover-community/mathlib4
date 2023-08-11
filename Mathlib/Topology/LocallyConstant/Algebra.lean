@@ -294,7 +294,7 @@ end Algebra
 section Eval
 
 /-- Evaluation as a `MonoidHom` -/
-@[to_additive "Evaluation as an `AddMonoidHom`"]
+@[to_additive (attr := simps) "Evaluation as an `AddMonoidHom`"]
 def evalMonoidHom [MulOneClass Z] (x : X) : LocallyConstant X Z →* Z where
   toFun f := f x
   map_mul' _ _ := by simp only [LocallyConstant.coe_mul, Pi.mul_apply]
