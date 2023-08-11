@@ -113,7 +113,7 @@ instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-def CompatibleFieldOfModelACF (p : ℕ) (K : Type _) [Language.field.Structure K]
+def compatibleFieldOfModelACF (p : ℕ) (K : Type _) [Language.field.Structure K]
     [h : (Theory.ACF p).Model K] : CompatibleField K := by
   haveI : Theory.field.Model K :=
     Theory.Model.mono h (Set.subset_union_of_subset_left
@@ -175,14 +175,14 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
   · exact ACF_isSatisfiable_of_prime_or_zero hp
   · rintro ⟨M⟩
-    letI := CompatibleFieldOfModelACF p M
+    letI := compatibleFieldOfModelACF p M
     letI := isAlgClosed_of_model_ACF p M
     infer_instance
   · rintro ⟨M⟩ ⟨N⟩ hM hN
-    letI := CompatibleFieldOfModelACF p M
+    letI := compatibleFieldOfModelACF p M
     haveI := isAlgClosed_of_model_ACF p M
     haveI := charP_of_model_ACF p M
-    letI := CompatibleFieldOfModelACF p N
+    letI := compatibleFieldOfModelACF p N
     haveI := isAlgClosed_of_model_ACF p N
     haveI := charP_of_model_ACF p N
     constructor
@@ -200,49 +200,34 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
   push_neg
   intro T0 hT0
   have h1 : ∀ φ ∈ Theory.ACF 0,
-      { s : Finset Nat.Primes // ∀ p : Nat.Primes, (¬ (Theory.ACF p) ⊨ᵇ φ) → p ∈ s } := by
+      { p : Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ φ) → p = q } := by
     intro φ hφ
-    rw [Theory.ACF, Theory.hasChar, Set.union_assoc, Set.mem_union,
-      Set.mem_union, Set.mem_singleton_iff, Set.mem_iUnion] at hφ
-    simp only [Set.mem_iUnion] at hφ
+    rw [Theory.ACF, Theory.hasChar, Set.union_assoc, Set.mem_union, if_pos rfl,
+      Set.mem_image] at hφ
     apply Classical.choice
-    rcases hφ with (rfl | ⟨n, hn, rfl⟩) | h
-    · refine ⟨⟨∅, ?_⟩⟩
-      simp only [Finset.not_mem_empty, Theory.ModelsBoundedFormula, eqZero, Term.equal,
-        Nat.cast_zero, Term.relabel, BoundedFormula.realize_bdEqual, Term.realize_relabel,
-        Sum.elim_comp_inl, Term.realize_func, Fin.forall_fin_zero_pi, not_forall,
-        false_iff, not_exists, not_not, imp_false]
-      intro p X _
-      letI := CompatibleFieldOfModelACF p X
-      simp
-    · refine ⟨⟨((Nat.factors n).pmap (fun (p : ℕ) (hp : p.Prime) => ⟨p, hp⟩)
-        (fun p => Nat.prime_of_mem_factors)).toFinset, ?_⟩⟩
-      intro p hpT
-      simp only [List.mem_toFinset, List.mem_pmap]
-      simp only [isUnit_zero_iff, zero_dvd_iff] at hn
-      suffices : (p : ℕ) ∣ n
-      · rw [← Nat.mem_factors_iff_dvd hn p.2] at this
-        exact  ⟨_, this, rfl⟩
-      simp only [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff, not_not] at hpT
-      simp only [Theory.models_sentence_iff, Nat.isUnit_iff, Sentence.Realize, eqZero, zero_def,
-        Formula.realize_equal, Term.realize_constants, constantMap] at hpT
-      rcases ACF_isSatisfiable_of_prime_or_zero (Or.inl p.2) with ⟨M⟩
-      letI := CompatibleFieldOfModelACF p M
-      haveI := charP_of_model_ACF p M
-      have := hpT M
-      simp only [realize_termOfFreeCommRing, map_natCast, CompatibleField.funMap_zero] at this
-      rwa [CharP.cast_eq_zero_iff M p n] at this
-    · refine ⟨⟨∅, ?_⟩⟩
-      simp only [Finset.not_mem_empty, false_iff, not_not, imp_false]
-      intro p
-      simp only [Theory.ACF, Set.union_assoc]
-      exact Theory.models_sentence_of_mem (Set.mem_union_right _ h)
+    rcases hφ with ⟨p, hp, rfl⟩ | h
+    · refine ⟨⟨⟨p, hp⟩, ?_⟩⟩
+      intro q hq
+      rw [Theory.models_sentence_iff, not_forall] at hq
+      rcases hq with ⟨K, hK⟩
+      letI := compatibleFieldOfModelACF q K
+      haveI := charP_of_model_ACF q K
+      simp only [Sentence.Realize, eqZero, Formula.realize_not, Formula.realize_equal,
+        realize_termOfFreeCommRing, map_natCast, Term.realize, CompatibleField.funMap_zero, ne_eq,
+        not_not, ← CharP.charP_iff_prime_eq_zero hp] at hK
+      apply Subtype.eq
+      exact CharP.eq K inferInstance inferInstance
+    · refine ⟨⟨⟨2, by decide⟩, ?_⟩⟩
+      intro q hq
+      exact (hq (Theory.models_sentence_of_mem
+        (by rw [Theory.ACF, Set.union_assoc];
+            exact Set.mem_union_right _ h))).elim
   have h : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ },
       ∀ φ ∈ T0, Theory.ACF p ⊨ᵇ φ := by
-    let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => h1 φ (hT0 φ.2))
+    let s : Finset Nat.Primes := T0.attach.image (fun φ => h1 φ.1 (hT0 φ.2))
     have hs : ∀ (p : Nat.Primes) φ, φ ∈ T0 → ¬ (Theory.ACF p) ⊨ᵇ φ → p ∈ s := by
       intro p φ hφ hpφ
-      refine Finset.mem_biUnion.2 ?_
+      refine Finset.mem_image.2 ?_
       refine ⟨⟨φ, hφ⟩, Finset.mem_attach _ _, ?_⟩
       exact (h1 φ (hT0 hφ)).2 p hpφ
     have : ∃ p ∈ { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }, p ∉ s :=
