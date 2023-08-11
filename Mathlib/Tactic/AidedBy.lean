@@ -273,6 +273,13 @@ macro "by#"  : term =>
   `(by
   aided_by from_by aesop? do)
 
+macro "..." : tactic => `(tactic|aided_by aesop? do)
+
+macro "..." tacs:tacticSeq : tactic =>
+  `(tactic|aided_by aesop? do
+  $tacs)
+
+
 /--
 Implementation of `aided_by` tactic.
 -/
