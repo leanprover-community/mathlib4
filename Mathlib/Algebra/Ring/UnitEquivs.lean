@@ -43,19 +43,14 @@ variable (D)
 /-- For a monoid, the units of the center inject into the center of the units. This is not an
 equivalence in general; one case when it is is for groups with zero, which is covered in
 `centerUnitsEquivUnitsCenter`. -/
-@[simps]
-def unitsCenterToCenterUnits [Monoid D] : (Submonoid.center D)ˣ →* Submonoid.center (Dˣ) where
-  toFun u := ⟨Units.map (Submonoid.center D).subtype u, fun r ↦
-      by ext; simpa only [Units.coe_map, Units.val_mul] using u.1.2 _⟩
-  map_one' := by rfl
-  map_mul' _ _ := by ext; rfl
+def unitsCenterToCenterUnits [Monoid D] : (Submonoid.center D)ˣ →* Submonoid.center (Dˣ) :=
+(Units.map (Submonoid.center D).subtype).codRestrict _ <| fun u r ↦ Units.ext <| u.1.prop r
 
 theorem unitsCenterToCenterUnits_injective [Monoid D] :
   Function.Injective (unitsCenterToCenterUnits D) := by
   intros a b h
   ext
-  simp only [Subgroup.center_toSubmonoid, unitsCenterToCenterUnits, MonoidHom.coe_mk,
-             OneHom.coe_mk, Subtype.mk.injEq] at h
+  simp only [unitsCenterToCenterUnits, MonoidHom.codRestrict_apply, Subtype.mk.injEq] at h
   exact Units.ext_iff.mp h
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
