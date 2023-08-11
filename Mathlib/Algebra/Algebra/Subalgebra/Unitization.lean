@@ -316,7 +316,7 @@ theorem Unitization.starLift_range_le
 
 theorem Unitization.starLift_range (f : A →⋆ₙₐ[R] C) :
     (starLift f).range = StarSubalgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) :=
-  eq_of_forall_ge_iff fun c ↦ by 
+  eq_of_forall_ge_iff fun c ↦ by
     rw [Unitization.starLift_range_le, StarSubalgebra.adjoin_le_iff]
     rfl
 
