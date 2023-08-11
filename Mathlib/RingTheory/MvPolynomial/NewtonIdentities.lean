@@ -220,7 +220,10 @@ private theorem esymm_mul_psum_to_weight (k : ℕ) :
     sum_filter_pairs_eq_sum_filter_antidiagonal_powersetLen_sum σ R k]
 
 /-- **Newton's identities** give a recurrence relation for the kth elementary symmetric polynomial
-in terms of lower degree elementary symmetric polynomials and power sums. -/
+in terms of lower degree elementary symmetric polynomials and power sums.
+
+The recurrence arises by splitting off the `i = k` term from the identity
+  `∑ ᵢ₊ⱼ₌ₖ (-1)ⁱeᵢpⱼ = 0`. -/
 theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     (-1) ^ (k + 1) * ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
