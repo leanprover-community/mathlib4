@@ -22,6 +22,50 @@ def ring : Language :=
   { Functions := RingFunc
     Relations := fun _ => Empty }
 
+namespace ring
+
+open RingFunc
+
+abbrev zeroFunc : Language.ring.Functions 0 := zero
+
+abbrev oneFunc : Language.ring.Functions 0 := one
+
+abbrev addFunc : Language.ring.Functions 2 := add
+
+abbrev mulFunc : Language.ring.Functions 2 := mul
+
+abbrev negFunc : Language.ring.Functions 1 := neg
+
+instance (α : Type _) : Zero (Language.ring.Term α) :=
+{ zero := Constants.term zeroFunc }
+
+theorem zero_def (α : Type _) : (0 : Language.ring.Term α) = Constants.term zeroFunc := rfl
+
+instance (α : Type _) : One (Language.ring.Term α) :=
+{ one := Constants.term oneFunc }
+
+theorem one_def (α : Type _) : (1 : Language.ring.Term α) = Constants.term oneFunc := rfl
+
+instance (α : Type _) : Add (Language.ring.Term α) :=
+{ add := addFunc.apply₂ }
+
+theorem add_def (α : Type _) (t₁ t₂ : Language.ring.Term α) :
+    t₁ + t₂ = addFunc.apply₂ t₁ t₂ := rfl
+
+instance (α : Type _) : Mul (Language.ring.Term α) :=
+{ mul := mulFunc.apply₂ }
+
+theorem mul_def (α : Type _) (t₁ t₂ : Language.ring.Term α) :
+    t₁ * t₂ = mulFunc.apply₂ t₁ t₂ := rfl
+
+instance (α : Type _) : Neg (Language.ring.Term α) :=
+{ neg := negFunc.apply₁ }
+
+theorem neg_def (α : Type _) (t : Language.ring.Term α) :
+    -t = negFunc.apply₁ t := rfl
+
+end ring
+
 end Language
 
 end FirstOrder
