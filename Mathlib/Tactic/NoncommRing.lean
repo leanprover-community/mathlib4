@@ -20,7 +20,7 @@ to close the goal, and if that doesn't succeed, defaults to `abel_nf`.
 namespace Mathlib.Tactic.NoncommRing
 
 section nat_lit_mul
-variable {R : Type _} [NonAssocSemiring R] (r : R) (n : ℕ)
+variable {R : Type*} [NonAssocSemiring R] (r : R) (n : ℕ)
 
 lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : no_index (OfNat.ofNat n) * r = n • r := by
   simp only [nsmul_eq_mul, Nat.cast_eq_ofNat]
@@ -33,7 +33,7 @@ end nat_lit_mul
 
 An example:
 ```lean
-example {R : Type _} [Ring R] (a b c : R) : a * (b + c + c - b) = 2*a*c :=
+example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2*a*c :=
 by noncomm_ring
 ```
 -/

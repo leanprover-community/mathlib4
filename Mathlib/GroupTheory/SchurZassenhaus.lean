@@ -32,7 +32,7 @@ section SchurZassenhausAbelian
 
 open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
 
-variable {G : Type _} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
+variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
   (α β : leftTransversals (H : Set G))
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/

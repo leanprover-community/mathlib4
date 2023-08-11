@@ -405,7 +405,7 @@ instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·)
 #align is_strict_total_order_of_linear_order isStrictTotalOrder_of_linearOrder
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
-def ltByCases (x y : α) {P : Sort _} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
+def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 #align lt_by_cases ltByCases

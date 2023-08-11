@@ -59,7 +59,7 @@ def setParentBump {n} (m : UFModel n) (x y : Fin n)
 
 end UFModel
 
-structure UFNode (α : Type _) where
+structure UFNode (α : Type*) where
   parent : Nat
   value : α
   rank : Nat

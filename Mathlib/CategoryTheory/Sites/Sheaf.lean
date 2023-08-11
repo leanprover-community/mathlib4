@@ -292,7 +292,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom CategoryTheory.Sheaf.Hom
 
 @[simps id_val comp_val]
-instance : Category (Sheaf J A) where
+instance instCategorySheaf : Category (Sheaf J A) where
   Hom := Hom
   id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.val ≫ g.val⟩

@@ -41,7 +41,7 @@ For the finite version, we avoid the "obvious" definition
 -/
 
 
-variable {α β ι ι' : Type _}
+variable {α β ι ι' : Type*}
 
 /-! ### On lattices with a bottom element, via `Finset.sup` -/
 
@@ -225,7 +225,7 @@ theorem SupIndep.biUnion [DecidableEq ι] {s : Finset ι'} {g : ι' → Finset �
 #align finset.sup_indep.bUnion Finset.SupIndep.biUnion
 
 /-- Bind operation for `SupIndep`. -/
-theorem SupIndep.sigma {β : ι → Type _} {s : Finset ι} {g : ∀ i, Finset (β i)} {f : Sigma β → α}
+theorem SupIndep.sigma {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)} {f : Sigma β → α}
     (hs : s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
     (hg : ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩) : (s.sigma g).SupIndep f := by
   rintro t ht ⟨i, b⟩ hi hit
@@ -337,11 +337,11 @@ theorem SetIndependent.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : 
   Example: an indexed family of submodules of a module is independent in this sense if
   and only the natural map from the direct sum of the submodules to the module is injective. -/
 -- Porting note: needed to use `_H`
-def Independent {ι : Sort _} {α : Type _} [CompleteLattice α] (t : ι → α) : Prop :=
+def Independent {ι : Sort*} {α : Type*} [CompleteLattice α] (t : ι → α) : Prop :=
   ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j)
 #align complete_lattice.independent CompleteLattice.Independent
 
-theorem setIndependent_iff {α : Type _} [CompleteLattice α] (s : Set α) :
+theorem setIndependent_iff {α : Type*} [CompleteLattice α] (s : Set α) :
     SetIndependent s ↔ Independent ((↑) : s → α) := by
   simp_rw [Independent, SetIndependent, SetCoe.forall, sSup_eq_iSup]
   refine' forall₂_congr fun a ha => _
@@ -386,14 +386,14 @@ theorem Independent.mono {s t : ι → α} (hs : Independent s) (hst : t ≤ s) 
 
 /-- Composing an independent indexed family with an injective function on the index results in
 another indepedendent indexed family. -/
-theorem Independent.comp {ι ι' : Sort _} {t : ι → α} {f : ι' → ι} (ht : Independent t)
+theorem Independent.comp {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : Independent t)
     (hf : Injective f) : Independent (t ∘ f) := fun i =>
   (ht (f i)).mono_right <| by
     refine' (iSup_mono fun i => _).trans (iSup_comp_le _ f)
     exact iSup_const_mono hf.ne
 #align complete_lattice.independent.comp CompleteLattice.Independent.comp
 
-theorem Independent.comp' {ι ι' : Sort _} {t : ι → α} {f : ι' → ι} (ht : Independent <| t ∘ f)
+theorem Independent.comp' {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : Independent <| t ∘ f)
     (hf : Surjective f) : Independent t := by
   intro i
   obtain ⟨i', rfl⟩ := hf i
@@ -434,13 +434,13 @@ theorem independent_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k 
 
 /-- Composing an independent indexed family with an order isomorphism on the elements results in
 another independent indexed family. -/
-theorem Independent.map_orderIso {ι : Sort _} {α β : Type _} [CompleteLattice α]
+theorem Independent.map_orderIso {ι : Sort*} {α β : Type*} [CompleteLattice α]
     [CompleteLattice β] (f : α ≃o β) {a : ι → α} (ha : Independent a) : Independent (f ∘ a) :=
   fun i => ((ha i).map_orderIso f).mono_right (f.monotone.le_map_iSup₂ _)
 #align complete_lattice.independent.map_order_iso CompleteLattice.Independent.map_orderIso
 
 @[simp]
-theorem independent_map_orderIso_iff {ι : Sort _} {α β : Type _} [CompleteLattice α]
+theorem independent_map_orderIso_iff {ι : Sort*} {α β : Type*} [CompleteLattice α]
     [CompleteLattice β] (f : α ≃o β) {a : ι → α} : Independent (f ∘ a) ↔ Independent a :=
   ⟨fun h =>
     have hf : f.symm ∘ f ∘ a = a := congr_arg (· ∘ a) f.left_inv.comp_eq_id
@@ -450,7 +450,7 @@ theorem independent_map_orderIso_iff {ι : Sort _} {α β : Type _} [CompleteLat
 
 /-- If the elements of a set are independent, then any element is disjoint from the `iSup` of some
 subset of the rest. -/
-theorem Independent.disjoint_biSup {ι : Type _} {α : Type _} [CompleteLattice α] {t : ι → α}
+theorem Independent.disjoint_biSup {ι : Type*} {α : Type*} [CompleteLattice α] {t : ι → α}
     (ht : Independent t) {x : ι} {y : Set ι} (hx : x ∉ y) : Disjoint (t x) (⨆ i ∈ y, t i) :=
   Disjoint.mono_right (biSup_mono fun _ hi => (ne_of_mem_of_not_mem hi hx : _)) (ht x)
 #align complete_lattice.independent.disjoint_bsupr CompleteLattice.Independent.disjoint_biSup

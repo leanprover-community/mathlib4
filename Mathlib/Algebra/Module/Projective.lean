@@ -71,7 +71,7 @@ open Finsupp
 /-- An R-module is projective if it is a direct summand of a free module, or equivalently
   if maps from the module lift along surjections. There are several other equivalent
   definitions. -/
-class Module.Projective (R : Type _) [Semiring R] (P : Type _) [AddCommMonoid P] [Module R P] :
+class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s
 #align module.projective Module.Projective
@@ -80,8 +80,8 @@ namespace Module
 
 section Semiring
 
-variable {R : Type _} [Semiring R] {P : Type _} [AddCommMonoid P] [Module R P] {M : Type _}
-  [AddCommMonoid M] [Module R M] {N : Type _} [AddCommMonoid N] [Module R N]
+variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M : Type*}
+  [AddCommMonoid M] [Module R M] {N : Type*} [AddCommMonoid N] [Module R N]
 
 theorem projective_def :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s :=
@@ -125,7 +125,7 @@ theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} 
   projective_def'.2 <| huniv (Finsupp.total P P R (id : P → P))
     (total_surjective _ Function.surjective_id)
 
-variable {Q : Type _} [AddCommMonoid Q] [Module R Q]
+variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
 instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
   refine .of_lifting_property'' fun f hf ↦ ?_
@@ -134,7 +134,7 @@ instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
   refine ⟨coprod g₁ g₂, ?_⟩
   rw [LinearMap.comp_coprod, hg₁, hg₂, LinearMap.coprod_inl_inr]
 
-variable {ι : Type _} (A : ι → Type _) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
+variable {ι : Type*} (A : ι → Type*) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
 
 instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
   .of_lifting_property'' fun f hf ↦ by
@@ -149,10 +149,10 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R] {P : Type _} [AddCommGroup P] [Module R P]
+variable {R : Type*} [Ring R] {P : Type*} [AddCommGroup P] [Module R P]
 
 /-- Free modules are projective. -/
-theorem Projective.of_basis {ι : Type _} (b : Basis ι R P) : Projective R P := by
+theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)

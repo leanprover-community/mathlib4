@@ -34,7 +34,7 @@ open scoped BigOperators Pointwise
 
 noncomputable section
 
-variable {ι ι' E F : Type _} [Fintype ι] [Fintype ι']
+variable {ι ι' E F : Type*} [Fintype ι] [Fintype ι']
 
 section AddCommGroup
 

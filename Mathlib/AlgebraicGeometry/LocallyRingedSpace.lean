@@ -59,7 +59,7 @@ def toTopCat : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Top AlgebraicGeometry.LocallyRingedSpace.toTopCat
 
-instance : CoeSort LocallyRingedSpace (Type _) :=
+instance : CoeSort LocallyRingedSpace (Type*) :=
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
 
 instance (x : X) : LocalRing (X.stalk x) :=

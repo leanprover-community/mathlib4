@@ -28,7 +28,7 @@ universe v u
 
 namespace CategoryTheory
 
-variable (S : Type _) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
+variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
 
 variable [HasZeroMorphisms C] [HasShift C S]
 
@@ -212,7 +212,7 @@ namespace CategoryTheory
 
 namespace DifferentialObject
 
-variable (S : Type _) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
+variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
 
 variable [HasZeroObject C] [HasZeroMorphisms C] [HasShift C S]
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
@@ -231,7 +231,7 @@ end DifferentialObject
 
 namespace DifferentialObject
 
-variable (S : Type _) [AddMonoidWithOne S]
+variable (S : Type*) [AddMonoidWithOne S]
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasZeroMorphisms C]
 variable [HasShift C S]
 
@@ -249,7 +249,7 @@ end DifferentialObject
 
 namespace DifferentialObject
 
-variable {S : Type _} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
+variable {S : Type*} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
 
 variable [HasZeroMorphisms C] [HasShift C S]
 

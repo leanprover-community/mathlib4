@@ -35,28 +35,28 @@ open OrderDual
 
 universe u v
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- Order without bottom elements. -/
-class NoBotOrder (α : Type _) [LE α] : Prop where
+class NoBotOrder (α : Type*) [LE α] : Prop where
   /-- For each term `a`, there is some `b` which is either incomparable or strictly smaller. -/
   exists_not_ge (a : α) : ∃ b, ¬a ≤ b
 #align no_bot_order NoBotOrder
 
 /-- Order without top elements. -/
-class NoTopOrder (α : Type _) [LE α] : Prop where
+class NoTopOrder (α : Type*) [LE α] : Prop where
   /-- For each term `a`, there is some `b` which is either incomparable or strictly larger. -/
   exists_not_le (a : α) : ∃ b, ¬b ≤ a
 #align no_top_order NoTopOrder
 
 /-- Order without minimal elements. Sometimes called coinitial or dense. -/
-class NoMinOrder (α : Type _) [LT α] : Prop where
+class NoMinOrder (α : Type*) [LT α] : Prop where
   /-- For each term `a`, there is some strictly smaller `b`. -/
   exists_lt (a : α) : ∃ b, b < a
 #align no_min_order NoMinOrder
 
 /-- Order without maximal elements. Sometimes called cofinal. -/
-class NoMaxOrder (α : Type _) [LT α] : Prop where
+class NoMaxOrder (α : Type*) [LT α] : Prop where
   /-- For each term `a`, there is some strictly greater `b`. -/
   exists_gt (a : α) : ∃ b, a < b
 #align no_max_order NoMaxOrder
@@ -123,14 +123,14 @@ instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMin
     exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
 #align no_min_order_of_right noMinOrder_of_right
 
-instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMaxOrder (π i)] :
+instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMaxOrder (π i)] :
     NoMaxOrder (∀ i, π i) :=
   ⟨fun a => by
     classical
     obtain ⟨b, hb⟩ := exists_gt (a <| Classical.arbitrary _)
     exact ⟨_, lt_update_self_iff.2 hb⟩⟩
 
-instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMinOrder (π i)] :
+instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMinOrder (π i)] :
     NoMinOrder (∀ i, π i) :=
   ⟨fun a => by
      classical
@@ -138,16 +138,16 @@ instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i
       exact ⟨_, update_lt_self_iff.2 hb⟩⟩
 
 -- Porting note: mathlib3 proof uses `convert`
-theorem NoBotOrder.to_noMinOrder (α : Type _) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
+theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
   { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
 #align no_bot_order.to_no_min_order NoBotOrder.to_noMinOrder
 
 -- Porting note: mathlib3 proof uses `convert`
-theorem NoTopOrder.to_noMaxOrder (α : Type _) [LinearOrder α] [NoTopOrder α] : NoMaxOrder α :=
+theorem NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] : NoMaxOrder α :=
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
 #align no_top_order.to_no_max_order NoTopOrder.to_noMaxOrder
 
-theorem noBotOrder_iff_noMinOrder (α : Type _) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
+theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
   ⟨fun h =>
     haveI := h
     NoBotOrder.to_noMinOrder α,
@@ -156,7 +156,7 @@ theorem noBotOrder_iff_noMinOrder (α : Type _) [LinearOrder α] : NoBotOrder α
     inferInstance⟩
 #align no_bot_order_iff_no_min_order noBotOrder_iff_noMinOrder
 
-theorem noTopOrder_iff_noMaxOrder (α : Type _) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
+theorem noTopOrder_iff_noMaxOrder (α : Type*) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
   ⟨fun h =>
     haveI := h
     NoTopOrder.to_noMaxOrder α,

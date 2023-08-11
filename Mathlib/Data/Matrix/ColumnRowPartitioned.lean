@@ -24,8 +24,8 @@ column matrices, row matrices, column row block matrices
 
 namespace Matrix
 
-variable {R : Type _}
-variable {m m₁ m₂ n n₁ n₂ : Type _}
+variable {R : Type*}
+variable {m m₁ m₂ n n₁ n₂ : Type*}
 variable [Fintype m] [Fintype m₁] [Fintype m₂]
 variable [Fintype n] [Fintype n₁] [Fintype n₂]
 variable [DecidableEq m] [DecidableEq m₁] [DecidableEq m₂]

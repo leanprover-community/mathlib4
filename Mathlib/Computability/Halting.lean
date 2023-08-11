@@ -61,7 +61,7 @@ end Nat.Partrec
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -161,7 +161,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type _} {σ : Type _}
+variable {α : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable σ]
 
@@ -332,8 +332,6 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
     (hg : @Partrec' (n + 1) g) : @Partrec' n fun v => (f v).map fun a => g (a ::ᵥ v) := by
   simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
 #align nat.partrec'.map Nat.Partrec'.map
-
-attribute [-instance] Part.instZeroPart
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions.-/
