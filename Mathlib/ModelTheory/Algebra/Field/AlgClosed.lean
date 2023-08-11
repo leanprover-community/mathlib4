@@ -6,7 +6,6 @@ Authors: Chris Hughes
 
 import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Algebra.Field.FreeCommRing
-import Mathlib.RingTheory.FreeCommRing
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.ModelTheory.Satisfiability
@@ -125,7 +124,7 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
     IsAlgClosed M := by
   refine IsAlgClosed.of_exists_root _ ?_
   intro p hpm hpi
-  have h : M ⊨ (genericMonicPolyHasRoot '' {n | 0 < n}) :=
+  have h : M ⊨ genericMonicPolyHasRoot '' {n | 0 < n} :=
     Theory.Model.mono h (by simp [Theory.ACF])
   simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp] at h
