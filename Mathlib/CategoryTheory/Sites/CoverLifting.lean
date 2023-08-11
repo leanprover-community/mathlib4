@@ -62,7 +62,7 @@ namespace CategoryTheory
 
 section CoverLifting
 
-variable {C : Type _} [Category C] {D : Type _} [Category D] {E : Type _} [Category E]
+variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 

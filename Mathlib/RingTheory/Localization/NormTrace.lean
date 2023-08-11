@@ -35,9 +35,9 @@ field norm, algebra norm, localization
 
 open scoped nonZeroDivisors
 
-variable (R : Type _) {S : Type _} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-variable {Rₘ Sₘ : Type _} [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
+variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
 
 variable (M : Submonoid R)
 
@@ -47,7 +47,7 @@ variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsSca
 
 open Algebra
 
-theorem Algebra.map_leftMulMatrix_localization {ι : Type _} [Fintype ι] [DecidableEq ι]
+theorem Algebra.map_leftMulMatrix_localization {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Basis ι R S) (a : S) :
     (algebraMap R Rₘ).mapMatrix (leftMulMatrix b a) =
     leftMulMatrix (b.localizationLocalization Rₘ M Sₘ) (algebraMap S Sₘ a) := by
@@ -85,13 +85,13 @@ theorem Algebra.trace_localization [Module.Free R S] [Module.Finite R S] (a : S)
 
 section LocalizationLocalization
 
-variable (Aₘ : Type _) [CommRing Aₘ] [Algebra S Aₘ] [Algebra Rₘ Aₘ] [Algebra R Aₘ]
+variable (Aₘ : Type*) [CommRing Aₘ] [Algebra S Aₘ] [Algebra Rₘ Aₘ] [Algebra R Aₘ]
 
 variable [IsScalarTower R Rₘ Aₘ] [IsScalarTower R S Aₘ]
 
 variable [IsLocalization (Algebra.algebraMapSubmonoid S M) Aₘ]
 
-variable {ι : Type _} [Fintype ι] [DecidableEq ι]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
     Algebra.traceMatrix Rₘ (b.localizationLocalization Rₘ M Aₘ) =

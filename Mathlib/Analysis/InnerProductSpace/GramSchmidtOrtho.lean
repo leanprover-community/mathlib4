@@ -41,9 +41,9 @@ open scoped BigOperators
 
 open Finset Submodule FiniteDimensional
 
-variable (𝕜 : Type _) {E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-variable {ι : Type _} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -76,7 +76,7 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
 #align gram_schmidt_def'' gramSchmidt_def''
 
 @[simp]
-theorem gramSchmidt_zero {ι : Type _} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     [IsWellOrder ι (· < ·)] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
 #align gram_schmidt_zero gramSchmidt_zero
