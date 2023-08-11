@@ -28,7 +28,7 @@ metavariable, which it will use in lieu of inferring the decl with `(·.getDecl)
 ## Presets
 
 By default, the configs defined here test "user-observable" properties. For instance, actual
-`MVarId`s and `FVarId`s are ignored by default, as are implementation detail ldecls in the local
+`MVarId`s and `FVarId`s are ignored by default, as are implementation details in the local
 context. We also provide `.anyChanges` and `.onlyExprs` constructors for all configs, which compare
 every aspect of the objects and only the expressions appearing in the object, respectively.
 
