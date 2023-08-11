@@ -62,7 +62,7 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
   card := rfl
   regular := bot_degree
   of_adj := fun v w h => h.elim
-  of_not_adj := fun v w _ => by
+  of_not_adj := fun v w _h => by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
     simp [mem_commonNeighbors]
@@ -174,8 +174,8 @@ theorem IsSRGWith.compl (h : G.IsSRGWith n k ℓ μ) :
     Gᶜ.IsSRGWith n (n - k - 1) (n - (2 * k - μ) - 2) (n - (2 * k - ℓ)) where
   card := h.card
   regular := h.compl_is_regular
-  of_adj := fun _ _ ha => h.card_commonNeighbors_eq_of_adj_compl ha
-  of_not_adj := fun _ _ hn hna => h.card_commonNeighbors_eq_of_not_adj_compl hn hna
+  of_adj := fun _v _w ha => h.card_commonNeighbors_eq_of_adj_compl ha
+  of_not_adj := fun _v _w hn hna => h.card_commonNeighbors_eq_of_not_adj_compl hn hna
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.compl SimpleGraph.IsSRGWith.compl
 
