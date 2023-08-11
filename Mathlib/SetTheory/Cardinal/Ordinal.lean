@@ -1482,10 +1482,7 @@ An initial ordinal is a limit ordinal.
 -/
 lemma isLimit_initial (i : Ordinal): (ω_ i).IsLimit := ord_isLimit (aleph0_le_aleph i)
 
-lemma omega_lt_omega1 : ω < ω₁ := by
-  have := (ord_lt_ord.mpr (aleph0_lt_aleph_one))
-  rw [ord_aleph0] at this
-  exact this
+lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
 
 end Ordinal
 
@@ -1505,18 +1502,10 @@ open scoped Cardinal
 Bounding the cardinal of an ordinal-indexed union of sets.
 -/
 lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {κ : Cardinal} {i : Ordinal}
-  (hi : i ≤ κ.ord) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
-  (hA : ∀ j < i, #(A j) ≤ κ) :
-  #(⋃ j < i, A j) ≤ κ := by
-  have : (⋃ j < i, A j) = ⋃ j : i.out.α, A (@typein _ (· < ·) (by infer_instance) j)
-  · ext x; constructor
-    · rintro ⟨_, ⟨j, rfl⟩, _, ⟨hji, rfl⟩, hx⟩
-      refine mem_iUnion.2 ⟨enum (· < ·) j ?_, ?_⟩
-      · rwa [Ordinal.type_lt]
-      simpa using hx
-    · rintro ⟨_, ⟨j, rfl⟩, hx⟩
-      exact mem_iUnion₂.2 ⟨_, typein_lt_self j, hx⟩
-  rw [this]
+    (hi : i ≤ κ.ord) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
+    (hA : ∀ j < i, #(A j) ≤ κ) :
+    #(⋃ j < i, A j) ≤ κ := by
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← i.enumIsoOut.symm.surjective.range_comp]
   apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hκ)
   rw [mk_ordinal_out]
   exact mul_le_mul' (card_le_of_le_ord hi) <| ciSup_le' <| (hA _ <| typein_lt_self ·)

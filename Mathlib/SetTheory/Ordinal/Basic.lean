@@ -1388,8 +1388,8 @@ is no greater than `κ`.
 
 The converse, however, is false (for instance, `i = ω+1` and `κ = ℵ₀`).
 -/
-lemma card_le_of_le_ord {κ : Cardinal} {i : Ordinal} (hi : i ≤ κ.ord) :
-  i.card ≤ κ := by
+lemma card_le_of_le_ord {c : Cardinal} {o : Ordinal} (hi : o ≤ c.ord) :
+    i.card ≤ κ := by
   rw [← card_ord κ]; exact Ordinal.card_le_card hi
 
 @[mono]
