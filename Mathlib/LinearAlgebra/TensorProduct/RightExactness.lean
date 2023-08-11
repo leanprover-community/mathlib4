@@ -6,6 +6,10 @@ Authors: Antoine Chambetr-Loir
 
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.Quotient
+import Mathlib.RingTheory.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-! # Right exactness properties of tensor product
 
@@ -23,22 +27,21 @@ and `lTensor_mkQ` compute `ker (lTensor Q (N.mkQ))` and similarly for `rTensor_m
 * `TensorProduct.map_ker` computes the kernel of `TensorProduct.map g g'`
 in the presence of two short exact sequences.
 
-The proofs are those of Bourbaki, Algèbre, chap. 2, §3, n°6
+The proofs are those of [bourbaki1989] (chap. 2, §3, n°6)
+
 
 ## TODO
 
-Add
-
-* Special case for short exact sequences of the form `M → N → N/M → 0`
 
 * Analogue for morphisms of algebras
 
 * Treat the noncommutative case
 
 * Treat the case of modules over semirings
-(For a possible definition of an exact sequence of semigroups (that encompasses the case of noncommutative add_monoids!), see
-Pierre-Antoine Grillet, *The tensor product of commutative semigroups*,
-Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 )
+(For a possible definition of an exact sequence of commutative semigroups, see
+  [Grillet-1969b], Pierre-Antoine Grillet,
+  *The tensor product of commutative semigroups*,
+  Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
 -/
 
@@ -81,7 +84,7 @@ lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 := by
 
 end Exact
 
-section TensorProduct
+section Modules
 
 open TensorProduct LinearMap
 
@@ -193,7 +196,7 @@ private noncomputable
 def rTensor.inverse :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) :=
   rTensor.inverse_ofRightInverse Q hfg
-    (Function.Surjective.hasRightInverse hg).choose_spec
+    (Function.rightInverse_surjInv hg)
 
 private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
     (rTensor.inverse Q hfg hg) ((rTensor Q g) y) =
@@ -210,7 +213,7 @@ private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
   rw [← TensorProduct.sub_tmul]
   apply le_comap_range_rTensor f
   rw [← hfg, mem_ker, map_sub, sub_eq_zero]
-  rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
+  rw [Function.surjInv_eq hg]
 
 -- Which proof is better?
 
@@ -276,7 +279,7 @@ private noncomputable
 def lTensor.inverse :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) :=
   lTensor.inverse_ofRightInverse Q hfg
-    (Function.Surjective.hasRightInverse hg).choose_spec
+    (Function.rightInverse_surjInv hg)
 
 private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
     (lTensor.inverse Q hfg hg) ((lTensor Q g) y) =
@@ -293,7 +296,7 @@ private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
   rw [← TensorProduct.tmul_sub]
   apply le_comap_range_lTensor f n
   rw [← hfg, mem_ker, map_sub, sub_eq_zero]
-  rw [Exists.choose_spec (Function.Surjective.hasRightInverse hg) _]
+  rw [Function.surjInv_eq hg]
 
 /-- Tensoring an exact pair on the left gives an exact pair -/
 theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
@@ -340,7 +343,7 @@ theorem TensorProduct.map_ker :
       Submodule.map_comp, Submodule.map_top]
   rw [LinearMap.range_eq_top.mpr (rTensor.Surjective M' hg), Submodule.map_top]
 
-end TensorProduct
+end Modules
 
 
 --  -·⬝.∙.⬝·-·⬝.∙.⬝·-
