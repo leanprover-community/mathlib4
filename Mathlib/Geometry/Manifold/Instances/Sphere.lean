@@ -144,6 +144,7 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
   ring
 #align stereo_inv_fun_aux_mem stereoInvFunAux_mem
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
   have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
@@ -339,7 +340,15 @@ theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Se
 @[simp]
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
-  simp [stereographic_apply, orthogonalProjection_orthogonalComplement_singleton_eq_zero]
+  rw [stereographic_apply, coe_neg_sphere, inner_neg_right, sub_neg_eq_add]
+  sorry
+  -- rw [ orthogonalProjection_orthogonalComplement_singleton_eq_zero]
+  -- rw [← map_neg] at this
+  --rw [map_neg]
+  -- rw [map_neg]
+  -- simp only [stereographic_apply, coe_neg_sphere, inner_neg_right, sub_neg_eq_add, map_neg,
+  -- orthogonalPr
+  --simp [stereographic_apply, orthogonalProjection_orthogonalComplement_singleton_eq_zero]
 #align stereographic_apply_neg stereographic_apply_neg
 
 @[simp]

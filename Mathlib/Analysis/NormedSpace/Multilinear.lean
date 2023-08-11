@@ -999,12 +999,14 @@ def _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL (g : G ≃L[𝕜]
     invFun := compContinuousMultilinearMapL 𝕜 E G' G g.symm.toContinuousLinearMap
     left_inv := by
       intro f
+      dsimp [compContinuousMultilinearMapL]
       ext1 m
-      simp [compContinuousMultilinearMapL]
+      simp
     right_inv := by
       intro f
+      dsimp [compContinuousMultilinearMapL]
       ext1 m
-      simp [compContinuousMultilinearMapL]
+      simp
     continuous_toFun := (compContinuousMultilinearMapL 𝕜 E G G' g.toContinuousLinearMap).continuous
     continuous_invFun :=
       (compContinuousMultilinearMapL 𝕜 E G' G g.symm.toContinuousLinearMap).continuous }

@@ -134,8 +134,11 @@ def NonUnitalSubsemiring.unitization {R : Type*} [Semiring R] (S : NonUnitalSubs
 @[simp]
 theorem NonUnitalSubsemiring.unitization_apply_coe {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) (x : Unitization ℕ S) :
-    (S.unitization x : R) = algebraMap ℕ (Subsemiring.closure (S : Set R)) x.fst + x.snd :=
-  rfl
+    (S.unitization x : R) = algebraMap ℕ (Subsemiring.closure (S : Set R)) x.fst + x.snd := by
+  dsimp [unitization, algebraMap]
+  -- erw [SubringClass.coe_intCast]
+  -- erw [algebraMap_int_eq, eq_intCast, SubringClass.coe_intCast]
+  sorry
 
 theorem NonUnitalSubsemiring.unitization_surjective {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) : Function.Surjective S.unitization := by
@@ -282,7 +285,7 @@ theorem NonUnitalStarSubalgebra.unitization_apply_coe (S : NonUnitalStarSubalgeb
 
 theorem NonUnitalStarSubalgebra.unitization_surjective (S : NonUnitalStarSubalgebra R A) :
     Function.Surjective S.unitization :=
-  have : StarSubalgebra.adjoin R S ≤ 
+  have : StarSubalgebra.adjoin R S ≤
       ((StarSubalgebra.adjoin R (S : Set A)).subtype.comp S.unitization).range :=
     StarSubalgebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : S), by simp⟩
   fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩
