@@ -517,12 +517,12 @@ lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
-open BigOperators
+open BigOperators Finset
 
 theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits' (L : List ℕ) (w₁ : ∀ (l : ℕ), l ∈ L → l < p)
     (w₂ : ∀ (h : L ≠ []), L.getLast h ≠ 0) : (p - 1) * ∑ i in Finset.range L.length,
     (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
-  obtain h | h | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
+  obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · induction' L with hd tl ih
     · simp [ofDigits]
     · simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
@@ -556,7 +556,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits' (L : List ℕ) (w₁ : ∀ (l
     · simp
     · simp [ofDigits]
 
-theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits (n : ℕ):
+theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
      (p - 1) * ∑ i in Finset.range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | h | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · by_cases hn : n ≠ 0
