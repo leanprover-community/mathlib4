@@ -62,11 +62,9 @@ protected theorem t1Space [T1Space R] : T1Space V := by
   exact ⟨f ⁻¹' {f y}ᶜ, isOpen_compl_singleton.preimage f.continuous, hf, by simp⟩
 
 protected theorem t2Space [T2Space R] : T2Space V := by
-  apply t2Space_iff_nhds.2 (fun {x} {y} hxy ↦ ?_)
+  apply (t2Space_iff _).2 (fun {x} {y} hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
-  rcases t2_separation_nhds hf with ⟨u, v, hu, hv, huv⟩
-  exact ⟨f ⁻¹' u, f.continuous.continuousAt hu, f ⁻¹' v, f.continuous.continuousAt hv,
-    huv.preimage f⟩
+  exact separated_by_continuous f.continuous hf
 
 end Ring
 
