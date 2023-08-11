@@ -64,7 +64,7 @@ open Classical BigOperators NNReal Topology ENNReal MeasureTheory
 namespace MeasureTheory
 
 /-- An outer measure is a countably subadditive monotone function that sends `∅` to `0`. -/
-structure OuterMeasure (α : Type _) where
+structure OuterMeasure (α : Type*) where
   measureOf : Set α → ℝ≥0∞
   empty : measureOf ∅ = 0
   mono : ∀ {s₁ s₂}, s₁ ⊆ s₂ → measureOf s₁ ≤ measureOf s₂
@@ -79,7 +79,7 @@ namespace OuterMeasure
 
 section Basic
 
-variable {α β R R' : Type _} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
+variable {α β R R' : Type*} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
 
 instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) where
   coe m := m.measureOf
@@ -647,7 +647,7 @@ section OfFunction
 
 --porting note: "set_option eqn_compiler.zeta true" removed
 
-variable {α : Type _} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
+variable {α : Type*} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
 /-- Given any function `m` assigning measures to sets satisying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
@@ -824,7 +824,7 @@ end OfFunction
 
 section BoundedBy
 
-variable {α : Type _} (m : Set α → ℝ≥0∞)
+variable {α : Type*} (m : Set α → ℝ≥0∞)
 
 /-- Given any function `m` assigning measures to sets, there is a unique maximal outer measure `μ`
   satisfying `μ s ≤ m s` for all `s : Set α`. This is the same as `OuterMeasure.ofFunction`,
@@ -1057,7 +1057,7 @@ protected theorem iUnion_eq_of_caratheodory {s : ℕ → Set α}
 
 end CaratheodoryMeasurable
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ : m ∅ = 0}
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) :
@@ -1302,7 +1302,7 @@ open OuterMeasure
 
 section Extend
 
-variable {α : Type _} {P : α → Prop}
+variable {α : Type*} {P : α → Prop}
 
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
@@ -1335,14 +1335,14 @@ theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
 #align measure_theory.le_extend MeasureTheory.le_extend
 
 -- TODO: why this is a bad `congr` lemma?
-theorem extend_congr {β : Type _} {Pb : β → Prop} {mb : ∀ s : β, Pb s → ℝ≥0∞} {sa : α} {sb : β}
+theorem extend_congr {β : Type*} {Pb : β → Prop} {mb : ∀ s : β, Pb s → ℝ≥0∞} {sa : α} {sb : β}
     (hP : P sa ↔ Pb sb) (hm : ∀ (ha : P sa) (hb : Pb sb), m sa ha = mb sb hb) :
     extend m sa = extend mb sb :=
   iInf_congr_Prop hP fun _h => hm _ _
 #align measure_theory.extend_congr MeasureTheory.extend_congr
 
 @[simp]
-theorem extend_top {α : Type _} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
+theorem extend_top {α : Type*} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
   funext fun _ => iInf_eq_top.mpr fun _ => rfl
 #align measure_theory.extend_top MeasureTheory.extend_top
 
@@ -1350,7 +1350,7 @@ end Extend
 
 section ExtendSet
 
-variable {α : Type _} {P : Set α → Prop}
+variable {α : Type*} {P : Set α → Prop}
 
 variable {m : ∀ s : Set α, P s → ℝ≥0∞}
 
@@ -1541,7 +1541,7 @@ end ExtendSet
 
 section MeasurableSpace
 
-variable {α : Type _} [MeasurableSpace α]
+variable {α : Type*} [MeasurableSpace α]
 
 variable {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
 
@@ -1587,7 +1587,7 @@ end MeasurableSpace
 
 namespace OuterMeasure
 
-variable {α : Type _} [MeasurableSpace α] (m : OuterMeasure α)
+variable {α : Type*} [MeasurableSpace α] (m : OuterMeasure α)
 
 /-- Given an outer measure `m` we can forget its value on non-measurable sets, and then consider
   `m.trim`, the unique maximal outer measure less than that function. -/
@@ -1745,7 +1745,7 @@ theorem trim_add (m₁ m₂ : OuterMeasure α) : (m₁ + m₂).trim = m₁.trim 
 #align measure_theory.outer_measure.trim_add MeasureTheory.OuterMeasure.trim_add
 
 /-- `trim` respects scalar multiplication. -/
-theorem trim_smul {R : Type _} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
+theorem trim_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
     (m : OuterMeasure α) : (c • m).trim = c • m.trim :=
   ext <| trim_op (smul_apply c m)
 #align measure_theory.outer_measure.trim_smul MeasureTheory.OuterMeasure.trim_smul
@@ -1761,7 +1761,6 @@ theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
   trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
     simp_rw [← @iSup_plift_down _ ι]
     ext1 s
-    haveI : Countable (Option <| PLift ι) := by exact instCountableOption
     obtain ⟨t, _, _, hμt⟩ :=
       exists_measurable_superset_forall_eq_trim
         (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s

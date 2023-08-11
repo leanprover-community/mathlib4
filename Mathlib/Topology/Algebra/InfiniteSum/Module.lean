@@ -11,7 +11,7 @@ import Mathlib.Topology.Algebra.Module.Basic
 /-! # Infinite sums in topological vector spaces -/
 
 
-variable {ι R R₂ M M₂ : Type _}
+variable {ι R R₂ M M₂ : Type*}
 
 section SmulConst
 

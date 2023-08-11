@@ -38,7 +38,7 @@ open Set Filter TopologicalSpace
 
 open Filter Topology
 
-variable {ι : Sort _} {α β X Y : Type _}
+variable {ι : Sort*} {α β X Y : Type*}
 
 namespace Filter
 
