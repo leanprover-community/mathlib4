@@ -42,7 +42,7 @@ open Set Function Filter Topology
 
 section omegaLimit
 
-variable {τ : Type _} {α : Type _} {β : Type _} {ι : Type _}
+variable {τ : Type*} {α : Type*} {β : Type*} {ι : Type*}
 
 /-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is
     ⋂ u ∈ f, cl (ϕ u s). -/
@@ -90,7 +90,7 @@ theorem isClosed_omegaLimit : IsClosed (ω f ϕ s) :=
   isClosed_iInter fun _u ↦ isClosed_iInter fun _hu ↦ isClosed_closure
 #align is_closed_omega_limit isClosed_omegaLimit
 
-theorem mapsTo_omegaLimit' {α' β' : Type _} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
+theorem mapsTo_omegaLimit' {α' β' : Type*} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
     {ϕ' : τ → α' → β'} {ga : α → α'} {s' : Set α'} (hs : MapsTo ga s s') {gb : β → β'}
     (hg : ∀ᶠ t in f, EqOn (gb ∘ ϕ t) (ϕ' t ∘ ga) s) (hgc : Continuous gb) :
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') := by
@@ -102,18 +102,18 @@ theorem mapsTo_omegaLimit' {α' β' : Type _} [TopologicalSpace β'] {f : Filter
     _ ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
 #align maps_to_omega_limit' mapsTo_omegaLimit'
 
-theorem mapsTo_omegaLimit {α' β' : Type _} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
+theorem mapsTo_omegaLimit {α' β' : Type*} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
     {ϕ' : τ → α' → β'} {ga : α → α'} {s' : Set α'} (hs : MapsTo ga s s') {gb : β → β'}
     (hg : ∀ t x, gb (ϕ t x) = ϕ' t (ga x)) (hgc : Continuous gb) :
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') :=
   mapsTo_omegaLimit' _ hs (eventually_of_forall fun t x _hx ↦ hg t x) hgc
 #align maps_to_omega_limit mapsTo_omegaLimit
 
-theorem omegaLimit_image_eq {α' : Type _} (ϕ : τ → α' → β) (f : Filter τ) (g : α → α') :
+theorem omegaLimit_image_eq {α' : Type*} (ϕ : τ → α' → β) (f : Filter τ) (g : α → α') :
     ω f ϕ (g '' s) = ω f (fun t x ↦ ϕ t (g x)) s := by simp only [omegaLimit, image2_image_right]
 #align omega_limit_image_eq omegaLimit_image_eq
 
-theorem omegaLimit_preimage_subset {α' : Type _} (ϕ : τ → α' → β) (s : Set α') (f : Filter τ)
+theorem omegaLimit_preimage_subset {α' : Type*} (ϕ : τ → α' → β) (s : Set α') (f : Filter τ)
     (g : α → α') : ω f (fun t x ↦ ϕ t (g x)) (g ⁻¹' s) ⊆ ω f ϕ s :=
   mapsTo_omegaLimit _ (mapsTo_preimage _ _) (fun _t _x ↦ rfl) continuous_id
 #align omega_limit_preimage_subset omegaLimit_preimage_subset
@@ -335,7 +335,7 @@ end omegaLimit
 
 namespace Flow
 
-variable {τ : Type _} [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] {α : Type _}
+variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit
@@ -362,7 +362,7 @@ end Flow
 
 namespace Flow
 
-variable {τ : Type _} [TopologicalSpace τ] [AddCommGroup τ] [TopologicalAddGroup τ] {α : Type _}
+variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] [TopologicalAddGroup τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit
