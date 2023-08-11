@@ -441,7 +441,7 @@ theorem rightInverse_symm (e : A₁ ≃ₐ[R] A₂) : Function.RightInverse e.sy
 
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'`, then the type of maps
 `A₁ →ₐ[R] A₂` is equivalent to the type of maps `A₁' →ₐ[R] A₂'`. -/
-@[simps]
+@[simps apply]
 def arrowCongr (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A₂') : (A₁ →ₐ[R] A₂) ≃ (A₁' →ₐ[R] A₂') where
   toFun f := (e₂.toAlgHom.comp f).comp e₁.symm.toAlgHom
   invFun f := (e₂.symm.toAlgHom.comp f).comp e₁.toAlgHom
