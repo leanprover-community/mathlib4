@@ -2,7 +2,6 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-Ported by: Anatole Dedecker
 -/
 import Mathlib.Data.Set.Lattice
 
@@ -15,7 +14,7 @@ The function `Accumulate` takes a set `s` and returns `⋃ y ≤ x, s y`.
 -/
 
 
-variable {α β γ : Type _} {s : α → Set β} {t : α → Set γ}
+variable {α β γ : Type*} {s : α → Set β} {t : α → Set γ}
 
 namespace Set
 

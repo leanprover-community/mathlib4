@@ -29,7 +29,7 @@ namespace Measure
 
 section Basic
 
-variable {X Y : Type _} [TopologicalSpace X] {m : MeasurableSpace X} [TopologicalSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] {m : MeasurableSpace X} [TopologicalSpace Y]
   [T2Space Y] (μ ν : Measure X)
 
 /-- A measure is said to be `IsOpenPosMeasure` if it is positive on nonempty open sets. -/
@@ -46,6 +46,9 @@ theorem _root_.IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U 
 theorem _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   (hU.measure_ne_zero μ hne).bot_lt
 #align is_open.measure_pos IsOpen.measure_pos
+
+instance (priority := 100) [Nonempty X] : NeZero μ :=
+  ⟨measure_univ_pos.mp <| isOpen_univ.measure_pos μ univ_nonempty⟩
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
@@ -149,7 +152,7 @@ theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg :
 variable {μ}
 
 theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
-    {Z : Type _} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
+    {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
     {f : X → Z} (hf : Continuous f) (hf_surj : Function.Surjective f) :
     (Measure.map f μ).IsOpenPosMeasure := by
   refine' ⟨fun U hUo hUne => _⟩
@@ -161,7 +164,7 @@ end Basic
 
 section LinearOrder
 
-variable {X Y : Type _} [TopologicalSpace X] [LinearOrder X] [OrderTopology X]
+variable {X Y : Type*} [TopologicalSpace X] [LinearOrder X] [OrderTopology X]
   {m : MeasurableSpace X} [TopologicalSpace Y] [T2Space Y] (μ : Measure X) [IsOpenPosMeasure μ]
 
 theorem measure_Ioi_pos [NoMaxOrder X] (a : X) : 0 < μ (Ioi a) :=
@@ -213,22 +216,30 @@ open MeasureTheory MeasureTheory.Measure
 
 namespace Metric
 
-variable {X : Type _} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
+variable {X : Type*} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ (nonempty_ball.2 hr)
 #align metric.measure_ball_pos Metric.measure_ball_pos
 
+/-- See also `Metric.measure_closedBall_pos_iff`. -/
 theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBall x r) :=
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align metric.measure_closed_ball_pos Metric.measure_closedBall_pos
+
+@[simp] lemma measure_closedBall_pos_iff {X : Type*} [MetricSpace X] {m : MeasurableSpace X}
+    (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
+    0 < μ (closedBall x r) ↔ 0 < r := by
+  refine' ⟨fun h ↦ _, measure_closedBall_pos μ x⟩
+  contrapose! h
+  rw [(subsingleton_closedBall x h).measure_zero μ]
 
 end Metric
 
 namespace EMetric
 
-variable {X : Type _} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
+variable {X : Type*} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=

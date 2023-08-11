@@ -19,7 +19,7 @@ namespace Finset
 
 open Multiset Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### sort -/
 
@@ -253,7 +253,9 @@ theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
 
 end SortLinearOrder
 
-unsafe instance [Repr α] : Repr (Finset α) :=
-  ⟨fun s _ => repr s.1⟩
+unsafe instance [Repr α] : Repr (Finset α) where
+  reprPrec s _ :=
+    -- multiset uses `0` not `∅` for empty sets
+    if s.card = 0 then "∅" else repr s.1
 
 end Finset

@@ -132,6 +132,12 @@ section
 
 variable [HasZeroMorphisms C]
 
+@[simp] lemma op_zero (X Y : C) : (0 : X ⟶ Y).op = 0 := rfl
+#align category_theory.op_zero CategoryTheory.Limits.op_zero
+
+@[simp] lemma unop_zero (X Y : Cᵒᵖ) : (0 : X ⟶ Y).unop = 0 := rfl
+#align category_theory.unop_zero CategoryTheory.Limits.unop_zero
+
 theorem zero_of_comp_mono {X Y Z : C} {f : X ⟶ Y} (g : Y ⟶ Z) [Mono g] (h : f ≫ g = 0) : f = 0 := by
   rw [← zero_comp, cancel_mono] at h
   exact h
@@ -331,7 +337,7 @@ end HasZeroMorphisms
 
 open ZeroObject
 
-instance {B : Type _} [Category B] : HasZeroObject (B ⥤ C) :=
+instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
   (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
 
 end HasZeroObject

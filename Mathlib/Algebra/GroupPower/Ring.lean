@@ -2,7 +2,6 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-Ported by: Joël Riou
 -/
 
 import Mathlib.Algebra.GroupPower.Basic
@@ -23,7 +22,7 @@ Further lemmas about ordered semirings and rings can be found in `Algebra.GroupP
 
 -/
 
-variable {R S M : Type _}
+variable {R S M : Type*}
 
 section MonoidWithZero
 

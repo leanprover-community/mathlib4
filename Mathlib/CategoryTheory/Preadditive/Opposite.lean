@@ -18,7 +18,7 @@ open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C] [Preadditive C]
+variable (C : Type*) [Category C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
   homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
@@ -31,11 +31,6 @@ instance moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) whe
   add_smul _ _ _ := Preadditive.add_comp _ _ _ _ _ _
   zero_smul _ := Limits.zero_comp
 #align category_theory.module_End_left CategoryTheory.moduleEndLeft
-
-@[simp]
-theorem unop_zero (X Y : Cᵒᵖ) : (0 : X ⟶ Y).unop = 0 :=
-  rfl
-#align category_theory.unop_zero CategoryTheory.unop_zero
 
 @[simp]
 theorem unop_add {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f + g).unop = f.unop + g.unop :=
@@ -51,11 +46,6 @@ theorem unop_zsmul {X Y : Cᵒᵖ} (k : ℤ) (f : X ⟶ Y) : (k • f).unop = k 
 theorem unop_neg {X Y : Cᵒᵖ} (f : X ⟶ Y) : (-f).unop = -f.unop :=
   rfl
 #align category_theory.unop_neg CategoryTheory.unop_neg
-
-@[simp]
-theorem op_zero (X Y : C) : (0 : X ⟶ Y).op = 0 :=
-  rfl
-#align category_theory.op_zero CategoryTheory.op_zero
 
 @[simp]
 theorem op_add {X Y : C} (f g : X ⟶ Y) : (f + g).op = f.op + g.op :=
@@ -81,7 +71,7 @@ def unopHom (X Y : Cᵒᵖ) : (X ⟶ Y) →+ (Opposite.unop Y ⟶ Opposite.unop 
 #align category_theory.unop_hom CategoryTheory.unopHom
 
 @[simp]
-theorem unop_sum (X Y : Cᵒᵖ) {ι : Type _} (s : Finset ι) (f : ι → (X ⟶ Y)) :
+theorem unop_sum (X Y : Cᵒᵖ) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).unop = s.sum fun i => (f i).unop :=
   (unopHom X Y).map_sum _ _
 #align category_theory.unop_sum CategoryTheory.unop_sum
@@ -93,12 +83,12 @@ def opHom (X Y : C) : (X ⟶ Y) →+ (Opposite.op Y ⟶ Opposite.op X) :=
 #align category_theory.op_hom CategoryTheory.opHom
 
 @[simp]
-theorem op_sum (X Y : C) {ι : Type _} (s : Finset ι) (f : ι → (X ⟶ Y)) :
+theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).op = s.sum fun i => (f i).op :=
   (opHom X Y).map_sum _ _
 #align category_theory.op_sum CategoryTheory.op_sum
 
-variable {D : Type _} [Category D] [Preadditive D]
+variable {D : Type*} [Category D] [Preadditive D]
 
 instance Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where
 #align category_theory.functor.op_additive CategoryTheory.Functor.op_additive

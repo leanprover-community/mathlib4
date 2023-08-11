@@ -36,12 +36,12 @@ open Pointwise
 
 open NNReal
 
-variable {V : Type _}
+variable {V : Type*}
 
 /-- Let `V` be a real topological vector space. A subset of `V` is a convex body if and only if
 it is convex, compact, and nonempty.
 -/
-structure ConvexBody (V : Type _) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
+structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
   carrier : Set V
   convex' : Convex ℝ carrier
   isCompact' : IsCompact carrier

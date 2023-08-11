@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
+import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
@@ -10,7 +11,7 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Coset
 
-#align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
+#align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # Properties of group actions involving quotient groups
@@ -48,7 +49,7 @@ class QuotientAction : Prop where
 #align mul_action.quotient_action MulAction.QuotientAction
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
-class _root_.AddAction.QuotientAction {α : Type _} (β : Type _) [AddGroup α] [AddMonoid β]
+class _root_.AddAction.QuotientAction {α : Type*} (β : Type _) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
     This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
@@ -352,7 +353,7 @@ end MulAction
 
 namespace Subgroup
 
-variable {G : Type _} [Group G] (H : Subgroup G)
+variable {G : Type*} [Group G] (H : Subgroup G)
 
 theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
   apply le_antisymm
@@ -401,3 +402,25 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
 #align subgroup.quotient_center_embedding_apply Subgroup.quotientCenterEmbedding_apply
 
 end Subgroup
+
+section conjClasses
+
+open Fintype
+
+theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
+    Nat.card { p : G × G // _root_.Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
+  classical
+  rcases fintypeOrInfinite G; swap
+  · rw [mul_comm, Nat.card_eq_zero_of_infinite, Nat.card_eq_zero_of_infinite, zero_mul]
+  simp only [Nat.card_eq_fintype_card]
+  -- Porting note: Changed `calc` proof into a `rw` proof.
+  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype _root_.Commute), card_sigma,
+    sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // _root_.Commute a b })
+      (fun g ↦ card (MulAction.fixedBy (ConjAct G) G g))
+      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
+    MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
+  congr 1; apply card_congr'; congr; ext;
+  exact (Setoid.comm' _).trans isConj_iff.symm
+#align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
+
+end conjClasses

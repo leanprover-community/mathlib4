@@ -2,7 +2,6 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
-Ported by: Matej Penciak
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Hom.Equiv.Basic
@@ -15,7 +14,7 @@ import Mathlib.Algebra.Ring.Defs
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section DistribSemigroup
 

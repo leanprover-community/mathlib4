@@ -41,7 +41,7 @@ open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
 
 namespace MeasureTheory
 
-variable {Ω β ι : Type _} {m : MeasurableSpace Ω}
+variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hitting u s n m` is the first time
 `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s` after time `n` and

@@ -2,7 +2,6 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-Ported by: Joël Riou
 -/
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Nontrivial
@@ -27,11 +26,11 @@ bipointed types. Two-pointed types form a full subcategory of those.
 
 open Function
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- Two-pointing of a type. This is a Type-valued termed `Nontrivial`. -/
 @[ext]
-structure TwoPointing (α : Type _) extends α × α where
+structure TwoPointing (α : Type*) extends α × α where
   /-- `fst` and `snd` are distinct terms -/
   fst_ne_snd : fst ≠ snd
   deriving DecidableEq

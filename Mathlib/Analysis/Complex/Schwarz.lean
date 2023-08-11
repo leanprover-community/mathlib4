@@ -58,7 +58,7 @@ namespace Complex
 
 section Space
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
   {c z z₀ : ℂ}
 
 /-- An auxiliary lemma for `Complex.norm_dslope_le_div_of_mapsTo_ball`. -/
@@ -189,7 +189,7 @@ theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R)
   exact (nonempty_ball.1 ⟨z, hz⟩).ne'
 #align complex.dist_le_dist_of_maps_to_ball_self Complex.dist_le_dist_of_mapsTo_ball_self
 
-/-- The **Schwarz Lemma**: if `f : ℂ → ℂ` sends an open disk with center `0` to itself, the for any
+/-- The **Schwarz Lemma**: if `f : ℂ → ℂ` sends an open disk with center `0` to itself, then for any
 point `z` of this disk we have `abs (f z) ≤ abs z`. -/
 theorem abs_le_abs_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (ball 0 R)) (h₀ : f 0 = 0) (hz : abs z < R) :

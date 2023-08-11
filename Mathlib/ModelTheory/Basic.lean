@@ -56,9 +56,9 @@ namespace FirstOrder
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
 structure Language where
-  /-- For every arity, a `Type _` of functions of that arity -/
+  /-- For every arity, a `Type*` of functions of that arity -/
   Functions : ℕ → Type u
-  /-- For every arity, a `Type _` of relations of that arity -/
+  /-- For every arity, a `Type*` of relations of that arity -/
   Relations : ℕ → Type v
 #align first_order.language FirstOrder.Language
 
@@ -181,12 +181,12 @@ instance [L.IsRelational] {n : ℕ} : IsEmpty (L.Functions n) :=
 instance [L.IsAlgebraic] {n : ℕ} : IsEmpty (L.Relations n) :=
   IsAlgebraic.empty_relations n
 
-instance isRelational_of_empty_functions {symb : ℕ → Type _} :
+instance isRelational_of_empty_functions {symb : ℕ → Type*} :
     IsRelational ⟨fun _ => Empty, symb⟩ :=
   ⟨fun _ => instIsEmptyEmpty⟩
 #align first_order.language.is_relational_of_empty_functions FirstOrder.Language.isRelational_of_empty_functions
 
-instance isAlgebraic_of_empty_relations {symb : ℕ → Type _} : IsAlgebraic ⟨symb, fun _ => Empty⟩ :=
+instance isAlgebraic_of_empty_relations {symb : ℕ → Type*} : IsAlgebraic ⟨symb, fun _ => Empty⟩ :=
   ⟨fun _ => instIsEmptyEmpty⟩
 #align first_order.language.is_algebraic_of_empty_relations FirstOrder.Language.isAlgebraic_of_empty_relations
 
@@ -300,7 +300,7 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 open Structure
 
 /-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
-def Inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
+def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 #align first_order.language.inhabited.trivial_structure FirstOrder.Language.Inhabited.trivialStructure
 
@@ -360,7 +360,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 
 -- Porting note: was [L.Structure P] and [L.Structure Q]
 -- The former reported an error.
-variable {L M N} {P : Type _} [Structure L P] {Q : Type _} [Structure L Q]
+variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
 --Porting note: new definition
 /-- Interpretation of a constant symbol -/
@@ -453,16 +453,16 @@ end Structure
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
-class HomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
+class HomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
+  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 #align first_order.language.hom_class FirstOrder.Language.HomClass
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
-class StrongHomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
+class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
+  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
@@ -475,7 +475,7 @@ instance (priority := 100) StrongHomClass.homClass [L.Structure M]
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
 
 /-- Not an instance to avoid a loop. -/
-def HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
+theorem HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
     [FunLike F M fun _ => N] [HomClass L F M N] : StrongHomClass L F M N where
   map_fun := HomClass.map_fun
   map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
@@ -899,7 +899,7 @@ def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F 
 
 section SumStructure
 
-variable (L₁ L₂ : Language) (S : Type _) [L₁.Structure S] [L₂.Structure S]
+variable (L₁ L₂ : Language) (S : Type*) [L₁.Structure S] [L₂.Structure S]
 
 instance sumStructure : (L₁.sum L₂).Structure S where
   funMap := Sum.elim funMap funMap
@@ -1014,7 +1014,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
 open FirstOrder
 
-variable {L : Language} {M : Type _} {N : Type _} [L.Structure M]
+variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
 @[simps!]

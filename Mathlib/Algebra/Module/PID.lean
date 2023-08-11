@@ -25,7 +25,7 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 * `R` is a PID and `M` is a (finitely generated for main statements) `R`-module, with additional
   torsion hypotheses in the intermediate lemmas.
-* `N` is a `R`-module lying over a higher type universe than `R`. This assumption is needed on the
+* `N` is an `R`-module lying over a higher type universe than `R`. This assumption is needed on the
   final statement for technical reasons.
 * `p` is an irreducible element of `R` or a tuple of these.
 
@@ -199,7 +199,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
       · exact fun a => (fun i => (Option.rec (pOrder hN (s j)) k i : ℕ)) (finSuccEquiv d a)
       · refine (((@lequivProdOfRightSplitExact _ _ _ _ _ _ _ _ _ _ _ _
           ((f.trans ULift.moduleEquiv.{u, u, v}.symm).toLinearMap.comp <| mkQ _)
-          ((DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton.{u, u} (p ^ k i)
+          ((DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
               (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)).comp
             ULift.moduleEquiv.toLinearMap) (R ∙ s j).injective_subtype ?_ ?_).symm.trans
           (((quotTorsionOfEquivSpanSingleton R N (s j)).symm.trans
