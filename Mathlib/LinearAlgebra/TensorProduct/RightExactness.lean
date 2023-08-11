@@ -109,7 +109,7 @@ lemma le_comap_range_rTensor (q : Q) :
 
 variable (Q) {g}
 
-theorem rTensor.Surjective (hg : Function.Surjective g) :
+theorem rTensor.surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
@@ -124,7 +124,7 @@ theorem rTensor.Surjective (hg : Function.Surjective g) :
       use x + y
       rw [map_add]
 
-theorem lTensor.Surjective (hg : Function.Surjective g) :
+theorem lTensor.surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
