@@ -205,34 +205,38 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
 #align dihedral_group.exponent DihedralGroup.exponent
 
 /-- If n is odd, then the Dihedral group of order 2n has n*(n+3) pairs of commuting elements. -/
+@[simps]
 def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
   let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn.not_two_dvd_nat)
   have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun a => ZMod.add_self_eq_zero_iff_eq_zero hn
-  { toFun := fun p => match p.1.1, p.1.2 with
-      | sr i, r _ => Sum.inl i
-      | r _, sr j => Sum.inr (Sum.inl j)
-      | sr i, sr j => Sum.inr (Sum.inr (Sum.inl (i + j)))
-      | r i, r j => Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩))
-    invFun := fun p => match p with
-      | Sum.inl i => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
-      | Sum.inr (Sum.inl j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
-      | Sum.inr (Sum.inr (Sum.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
-      | Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
-    left_inv := by
-      rintro ⟨⟨i | i, j | j⟩, h⟩
-      · rfl
-      · simpa [sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)] using h.eq
-      · simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)] using h.eq
-      · replace h := r.inj h
+  { toFun := fun
+      | ⟨⟨sr i, r _⟩, _⟩ => Sum.inl i
+      | ⟨⟨r _, sr j⟩, _⟩ => Sum.inr (Sum.inl j)
+      | ⟨⟨sr i, sr j⟩, _⟩ => Sum.inr (Sum.inr (Sum.inl (i + j)))
+      | ⟨⟨r i, r j⟩, _⟩ => Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩))
+    invFun := fun
+      | .inl i => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
+      | .inr (.inl j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
+      | .inr (.inr (.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
+      | .inr (.inr (.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
+    left_inv := fun
+      | ⟨⟨r i, r j⟩, h⟩ => rfl
+      | ⟨⟨r i, sr j⟩, h⟩ => by
+        simpa [sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)] using h.eq
+      | ⟨⟨sr i, r j⟩, h⟩ => by
+        simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)] using h.eq
+      | ⟨⟨sr i, sr j⟩, h⟩ => by
+        replace h := r.inj h
         rw [←neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h
         rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, ←two_mul]
         apply u.inv_mul_cancel_left
-    right_inv := by
-      rintro (a | b | c | d)
-      any_goals rfl
-      rw [Sum.inr.injEq, Sum.inr.injEq, Sum.inl.injEq, ←two_mul]
-      apply u.mul_inv_cancel_left }
+    right_inv := fun
+      | .inl i => rfl
+      | .inr (.inl j) => rfl
+      | .inr (.inr (.inl k)) =>
+        congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) $ two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
+      | .inr (.inr (.inr ⟨i, j⟩)) => rfl }
 
 lemma card_conjClasses_dihedralGroup_odd (hn : Odd n) :
     Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
