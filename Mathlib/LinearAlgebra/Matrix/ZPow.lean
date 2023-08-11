@@ -29,7 +29,7 @@ open Matrix
 
 namespace Matrix
 
-variable {n' : Type _} [DecidableEq n'] [Fintype n'] {R : Type _} [CommRing R]
+variable {n' : Type*} [DecidableEq n'] [Fintype n'] {R : Type*} [CommRing R]
 
 local notation "M" => Matrix n' n' R
 

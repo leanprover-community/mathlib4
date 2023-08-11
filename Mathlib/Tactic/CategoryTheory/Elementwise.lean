@@ -16,7 +16,7 @@ import Std.Tactic.Lint
 The `elementwise` attribute generates lemmas for concrete categories from lemmas
 that equate morphisms in a category.
 
-A sort of inverse to this for the `Type _` category is the `@[higher_order]` attribute.
+A sort of inverse to this for the `Type*` category is the `@[higher_order]` attribute.
 
 For more details, see the documentation attached to the `syntax` declaration.
 
@@ -154,14 +154,14 @@ Example application of `elementwise`:
 
 ```lean
 @[elementwise]
-lemma some_lemma {C : Type _} [Category C]
+lemma some_lemma {C : Type*} [Category C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...) : f ≫ g = h := ...
 ```
 
 produces
 
 ```lean
-lemma some_lemma_apply {C : Type _} [Category C]
+lemma some_lemma_apply {C : Type*} [Category C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
     [ConcreteCategory C] (x : X) : g (f x) = h x := ...
 ```
