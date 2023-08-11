@@ -63,7 +63,7 @@ def EqKind.isBEq : EqKind → Bool
 structure ExprComparisonConfig where
   /-- Which kind of equality check to use on `Expr`s: either `.beq` for `BEq` or `.defEq` for
   `isDefEq`. -/
-  eqKind       : EqKind := .defEq
+  eqKind : EqKind := .defEq
   /-- The transparency to use for equality checks. -/
   transparency : TransparencyMode := .reducible
 deriving Repr, Inhabited
