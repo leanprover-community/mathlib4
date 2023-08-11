@@ -68,9 +68,7 @@ lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f := by
   exact hfg y
 
 lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f := by
-  constructor
-  · intro h; apply Exact.linearMap_ker_eq; exact h
-  · intro h y; rw [← mem_ker, h]; rfl
+  rw [SetLike.ext_iff] ; rfl
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 := by
   ext x
