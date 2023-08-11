@@ -17,12 +17,12 @@ namespace Language
 
 open field FreeCommRing BigOperators Polynomial
 
-variable {K : Type _} [CompatibleField K]
+variable {K : Type*} [CompatibleField K]
 
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
     of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-def monicPolyEquivFin {R : Type _} [CommRing R] [DecidableEq R]
+def monicPolyEquivFin {R : Type*} [CommRing R] [DecidableEq R]
     [Nontrivial R] (n : ℕ) :
     { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → R) :=
   { toFun := fun p i => p.1.coeff i
@@ -74,7 +74,7 @@ def monicPolyEquivFin {R : Type _} [CommRing R] [DecidableEq R]
         exact coeff_eq_zero_of_natDegree_lt (p.2.2.symm ▸ h)
     right_inv := fun _ => by simp }
 
-theorem lift_genericMonicPoly {R : Type _} [CommRing R] [DecidableEq R] [Nontrivial R]
+theorem lift_genericMonicPoly {R : Type*} [CommRing R] [DecidableEq R] [Nontrivial R]
     {n : ℕ} (v : Fin (n+1) → R) :
     FreeCommRing.lift v (genericMonicPoly n) =
     ((monicPolyEquivFin n).symm (v ∘ Fin.castSucc)).1.eval (v (Fin.last _)) := by
@@ -100,7 +100,7 @@ theorem realize_genericMonicPolyHasRoot (n : ℕ) :
 def Theory.ACF (p : ℕ) : Theory Language.field :=
   Theory.hasChar p ∪ Theory.field ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
-instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
+instance {K : Type*} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2
     ⟨Theory.model_union_iff.2 ⟨model_hasChar_of_charP, inferInstance⟩, ?_⟩
@@ -112,14 +112,14 @@ instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-def compatibleFieldOfModelACF (p : ℕ) (K : Type _) [Language.field.Structure K]
+def compatibleFieldOfModelACF (p : ℕ) (K : Type*) [Language.field.Structure K]
     [h : (Theory.ACF p).Model K] : CompatibleField K := by
   haveI : Theory.field.Model K :=
     Theory.Model.mono h (Set.subset_union_of_subset_left
       (Set.subset_union_right _ _) _)
   exact compatibleFieldOfFieldStructure K
 
-theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
+theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type*)
     [CompatibleField M] [h : (Theory.ACF p).Model M] :
     IsAlgClosed M := by
   refine IsAlgClosed.of_exists_root _ ?_
@@ -133,7 +133,7 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
   rw [realize_genericMonicPolyHasRoot] at this
   exact this ⟨_, hpm, rfl⟩
 
-theorem charP_of_model_ACF (p : ℕ) (M : Type _)
+theorem charP_of_model_ACF (p : ℕ) (M : Type*)
     [CompatibleField M] [h : (Theory.ACF p).Model M] :
     CharP M p := by
   have : (Theory.hasChar p).Model M :=

@@ -21,7 +21,7 @@ end field
 
 open field
 
-@[simp] theorem realize_eqZero {K : Type _} [CompatibleField K] (n : ℕ)
+@[simp] theorem realize_eqZero {K : Type*} [CompatibleField K] (n : ℕ)
     (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
     simp [eqZero, Term.realize]
 
@@ -31,7 +31,7 @@ def Theory.hasChar (p : ℕ) : Language.field.Theory :=
   else if p.Prime then {eqZero p}
   else {⊥}
 
-theorem model_hasChar_of_charP {K : Type _} [CompatibleField K] {p : ℕ} [CharP K p] :
+theorem model_hasChar_of_charP {K : Type*} [CompatibleField K] {p : ℕ} [CharP K p] :
     (Theory.hasChar p).Model K := by
   rw [Theory.hasChar]
   cases CharP.char_is_prime_or_zero K p with
@@ -44,7 +44,7 @@ theorem model_hasChar_of_charP {K : Type _} [CompatibleField K] {p : ℕ} [CharP
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
 
-theorem charP_of_model_hasChar {K : Type _} [CompatibleField K]
+theorem charP_of_model_hasChar {K : Type*} [CompatibleField K]
     [h : (Theory.hasChar p).Model K] : CharP K p := by
   rw [Theory.hasChar] at h
   split_ifs at h with hp0 hp
