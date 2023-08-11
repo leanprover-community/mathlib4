@@ -25,13 +25,13 @@ open MeasureTheory Filter Metric Function Set TopologicalSpace
 
 open scoped Topology Manifold
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 section Manifold
 
-variable {H : Type _} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type _} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+variable {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
   [MeasurableSpace M] [BorelSpace M] [SigmaCompactSpace M] [T2Space M]
   {f f' : M → F} {μ : Measure M}
 
@@ -61,7 +61,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
   have : ∀ n, ∃ (g : M → ℝ), support g = v n ∧ Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1
           ∧ ∀ x ∈ s, g x = 1 := by
     intro n
-    rcases exists_smooth_support_eq_eq_one_iff I isOpen_thickening hs.isClosed
+    rcases exists_msmooth_support_eq_eq_one_iff I isOpen_thickening hs.isClosed
       (self_subset_thickening (u_pos n).1 s) with ⟨g, g_smooth, g_range, g_supp, hg⟩
     exact ⟨g, g_supp, g_smooth, g_range, fun x hx ↦ (hg x).1 hx⟩
   choose g g_supp g_diff g_range hg using this
