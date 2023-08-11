@@ -560,7 +560,20 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
+variable [Ring R] [Nontrivial R]
+
+theorem charP_iff_ne_zero_of_prime {p : ℕ} (hp : p.Prime) : CharP R p ↔ (p : R) = 0 :=
+  ⟨fun h => cast_eq_zero R p, by
+    rw [charP_iff]
+    intro hp0 n
+    refine ⟨?_, fun ⟨_, hpn⟩ => by simp_all⟩
+    rw [hp.dvd_iff_not_coprime, Nat.coprime_iff_gcd_eq_one,
+      ← Nat.cast_inj (R := ℤ), Nat.gcd_eq_gcd_ab]
+    intro hn0 hgcd
+    apply_fun ((↑) : ℤ → R) at hgcd
+    simp [hp0, hn0] at hgcd⟩
+
+variable [NoZeroDivisors R] [Finite R]
 -- porting note: removed redundant binder annotation update `(R)`
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
