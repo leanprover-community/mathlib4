@@ -11,9 +11,14 @@ import Mathlib.LinearAlgebra.Quotient
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`, `Exact f g` says that `range f = ker g``
 
+
 * `TensorProduct.rTensor_exact` says that one can tensor a short exact sequence on the right
 
+
 * `TensorProduct.lTensor_exact` says that one can tensor a short exact sequence on the left
+
+* For `N : Submodule R M`, `LinearMap.exact_subtype_mkQ N` says that the inclusion of the submodule and the quotient map form an exact pair,
+and `lTensor_mkQ` compute `ker (lTensor Q (N.mkQ))` and similarly for `rTensor_mkQ`
 
 * `TensorProduct.map_ker` computes the kernel of `TensorProduct.map g g'`
 in the presence of two short exact sequences.
@@ -58,13 +63,11 @@ variable {M N P : Type _}
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
-lemma Exact.linearMap_ker_eq (hfg : Exact f g) :
-  ker g = range f := by
+lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f := by
   ext y
   exact hfg y
 
-lemma LinearMap.exact_iff :
-  Exact f g ↔ LinearMap.ker g = LinearMap.range f := by
+lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f := by
   constructor
   · intro h; apply Exact.linearMap_ker_eq; exact h
   · intro h y; rw [← mem_ker, h]; rfl
@@ -74,6 +77,7 @@ lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 := by
   simp only [coe_comp, Function.comp_apply, zero_apply]
   rw [h]
   exact Set.mem_range_self x
+
 
 end Exact
 
@@ -108,7 +112,7 @@ lemma le_comap_range_rTensor (q : Q) :
 variable (Q) {g}
 
 theorem rTensor.Surjective (hg : Function.Surjective g) :
-  Function.Surjective (rTensor Q g) := by
+    Function.Surjective (rTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
   | zero => use 0; rw [map_zero]
@@ -123,7 +127,7 @@ theorem rTensor.Surjective (hg : Function.Surjective g) :
       rw [map_add]
 
 theorem lTensor.Surjective (hg : Function.Surjective g) :
-  Function.Surjective (lTensor Q g) := by
+    Function.Surjective (lTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
   | zero => use 0; rw [map_zero]
@@ -144,15 +148,19 @@ variable {M N P P' : Type _}
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
   [Module R M] [Module R N] [Module R P]
 
+lemma LinearMap.exact_subtype_mkQ (N : Submodule R N) :
+    Exact (Submodule.subtype N) (Submodule.mkQ N) := by
+  rw [LinearMap.exact_iff, Submodule.ker_mkQ, Submodule.range_subtype N]
+
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
 variable (Q : Type _) [AddCommGroup Q] [Module R Q]
 
 variable (hfg : Exact f g) (hg : Function.Surjective g)
 
-private noncomputable
+private
 def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
-  P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) := by
+    P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) := by
   rw [exact_iff] at hfg
   apply TensorProduct.lift
   apply LinearMap.mk₂ R (fun p q ↦ Submodule.Quotient.mk (h p ⊗ₜ[R] q))
@@ -183,13 +191,13 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
 
 private noncomputable
 def rTensor.inverse :
-  P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) :=
+    P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ (LinearMap.range (rTensor Q f)) :=
   rTensor.inverse_ofRightInverse Q hfg
     (Function.Surjective.hasRightInverse hg).choose_spec
 
 private lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
-  (rTensor.inverse Q hfg hg) ((rTensor Q g) y) =
-    Submodule.Quotient.mk (p := (LinearMap.range (rTensor Q f))) y := by
+    (rTensor.inverse Q hfg hg) ((rTensor Q g) y) =
+      Submodule.Quotient.mk (p := (LinearMap.range (rTensor Q f))) y := by
   simp only [← LinearMap.comp_apply, ← Submodule.mkQ_apply]
   rw [exact_iff] at hfg
   apply LinearMap.congr_fun
@@ -228,9 +236,14 @@ theorem rTensor_exact' : Exact (rTensor Q f) (rTensor Q g) := by
   · rintro ⟨x, rfl⟩
     rw [← rTensor_comp_apply, Exact.linearMap_comp_eq_zero hfg, rTensor_zero, zero_apply]
 
-private noncomputable
+lemma rTensor_mkQ (N : Submodule R M) :
+    ker (rTensor Q (N.mkQ)) = range (rTensor Q N.subtype) := by
+  rw [← LinearMap.exact_iff]
+  exact rTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
+
+private
 def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
-  Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) := by
+    Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) := by
   rw [exact_iff] at hfg
   apply TensorProduct.lift
   apply LinearMap.mk₂ R (fun q p ↦ Submodule.Quotient.mk (q ⊗ₜ[R] (h p)))
@@ -261,13 +274,13 @@ def lTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
 
 private noncomputable
 def lTensor.inverse :
-  Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) :=
+    Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ (LinearMap.range (lTensor Q f)) :=
   lTensor.inverse_ofRightInverse Q hfg
     (Function.Surjective.hasRightInverse hg).choose_spec
 
 private lemma lTensor.inverse_apply (y : Q ⊗[R] N) :
-  (lTensor.inverse Q hfg hg) ((lTensor Q g) y) =
-    Submodule.Quotient.mk (p := (LinearMap.range (lTensor Q f))) y := by
+    (lTensor.inverse Q hfg hg) ((lTensor Q g) y) =
+      Submodule.Quotient.mk (p := (LinearMap.range (lTensor Q f))) y := by
   simp only [← LinearMap.comp_apply, ← Submodule.mkQ_apply]
   rw [exact_iff] at hfg
   apply LinearMap.congr_fun
@@ -293,6 +306,10 @@ theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
     rw [mem_ker, ← lTensor_comp_apply, Exact.linearMap_comp_eq_zero hfg]
     simp only [lTensor_zero, zero_apply]
 
+lemma lTensor_mkQ (N : Submodule R M) :
+    ker (lTensor Q (N.mkQ)) = range (lTensor Q N.subtype) := by
+  rw [← LinearMap.exact_iff]
+  exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
 variable {M' N' P' : Type _} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
   [Module R M'] [Module R N'] [Module R P']
@@ -306,8 +323,8 @@ theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g 
   exact Function.Surjective.comp (lTensor.Surjective _ hg') (rTensor.Surjective _ hg)
 
 theorem TensorProduct.map_ker :
-  LinearMap.ker (TensorProduct.map g g') =
-    LinearMap.range (lTensor N f') ⊔ LinearMap.range (rTensor N' f) := by
+    LinearMap.ker (TensorProduct.map g g') =
+      LinearMap.range (lTensor N f') ⊔ LinearMap.range (rTensor N' f) := by
   ext y
   rw [← LinearMap.lTensor_comp_rTensor]
   rw [mem_ker, comp_apply, ← mem_ker]
