@@ -291,12 +291,58 @@ theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = alg
 
 end Algebra
 
+section Eval
+
+/-- Evaluation as a `MonoidHom` -/
+@[to_additive "Evaluation as an `AddMonoidHom`"]
+def evalMonoidHom [MulOneClass Z] (x : X) : LocallyConstant X Z →* Z where
+  toFun f := f x
+  map_mul' _ _ := by simp only [LocallyConstant.coe_mul, Pi.mul_apply]
+  map_one' := rfl
+
+/-- Evaluation as a linear map -/
+def evalₗ {R : Type*} [Semiring R] [AddCommMonoid Z]
+  [Module R Z] (x : X) : LocallyConstant X Z →ₗ[R] Z where
+  toFun f := f x
+  map_add' := (evalAddMonoidHom x).map_add'
+  map_smul' _ _ := by simp only [coe_smul, Pi.smul_apply, RingHom.id_apply]
+
+/-- Evaluation as a `RingHom` -/
+def evalRingHom [Semiring Z] (x : X) : LocallyConstant X Z →+* Z where
+  toFun f := f x
+  map_one' := (evalMonoidHom x).map_one'
+  map_mul' := (evalMonoidHom x).map_mul'
+  map_zero' := (evalAddMonoidHom x).map_zero'
+  map_add' := (evalAddMonoidHom x).map_add'
+
+/-- Evaluation as an `AlgHom` -/
+def evalₐ {R : Type*} [CommSemiring R] [Semiring Z] [Algebra R Z] (x : X) :
+    LocallyConstant X Z →ₐ[R] Z where
+  toFun f := f x
+  map_one' := (evalMonoidHom x).map_one'
+  map_mul' := (evalMonoidHom x).map_mul'
+  map_zero' := (evalAddMonoidHom x).map_zero'
+  map_add' := (evalAddMonoidHom x).map_add'
+  commutes' r := by simp only [coe_algebraMap, Pi.algebraMap_apply]
+
+end Eval
+
 section Comap
 
 variable [TopologicalSpace Y]
 
-/-- `LocallyConstant.comap` is a `MonoidHom`. -/
-@[to_additive "`LocallyConstant.comap` is an `AddMonoidHom`."]
+/-- `LocallyConstant.comap` as a `MulHom`. -/
+@[to_additive "`LocallyConstant.comap` as an `AddHom`."]
+noncomputable
+def comapMulHom [Mul Z] (f : X → Y) (hf : Continuous f) :
+    LocallyConstant Y Z →ₙ* LocallyConstant X Z where
+  toFun := comap f
+  map_mul' r s := by
+    ext x
+    simp only [hf, coe_comap, coe_mul, Function.comp_apply, Pi.mul_apply]
+
+/-- `LocallyConstant.comap` as a `MonoidHom`. -/
+@[to_additive "`LocallyConstant.comap` as an `AddMonoidHom`."]
 noncomputable
 def comapMonoidHom [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →* LocallyConstant X Z where
@@ -304,11 +350,9 @@ def comapMonoidHom [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
   map_one' := by
     ext x
     simp only [hf, coe_comap, coe_one, Function.comp_apply, Pi.one_apply]
-  map_mul' r s := by
-    ext x
-    simp only [hf, coe_comap, coe_mul, Function.comp_apply, Pi.mul_apply]
+  map_mul' := (comapMulHom f hf).map_mul'
 
-/-- `LocallyConstant.comap` is a linear map. -/
+/-- `LocallyConstant.comap` as a linear map. -/
 noncomputable
 def comapₗ {R : Type*} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
     (hf : Continuous f) : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z where
@@ -318,21 +362,78 @@ def comapₗ {R : Type*} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → 
     ext x
     simp only [hf, coe_comap, coe_smul, Function.comp_apply, Pi.smul_apply, RingHom.id_apply]
 
+/-- `LocallyConstant.comap` as a `RingHom`. -/
+noncomputable
+def comapRingHom [Semiring Z] (f : X → Y) (hf : Continuous f) :
+    LocallyConstant Y Z →+* LocallyConstant X Z where
+  toFun := comap f
+  map_one' := (comapMonoidHom f hf).map_one'
+  map_mul' := (comapMonoidHom f hf).map_mul'
+  map_zero' := (comapAddMonoidHom f hf).map_zero'
+  map_add' := (comapAddMonoidHom f hf).map_add'
+
+/-- `LocallyConstant.comap` as an `AlgHom` -/
+noncomputable
+def comapₐ {R : Type*} [CommSemiring R] [Semiring Z] [Algebra R Z]
+    (f : X → Y) (hf : Continuous f) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
+  toFun := comap f
+  map_one' := (comapMonoidHom f hf).map_one'
+  map_mul' := (comapMonoidHom f hf).map_mul'
+  map_zero' := (comapAddMonoidHom f hf).map_zero'
+  map_add' := (comapAddMonoidHom f hf).map_add'
+  commutes' r := by
+    ext x
+    simp only [hf, coe_comap, coe_algebraMap, Function.comp_apply, Pi.algebraMap_apply]
+
 lemma ker_comapₗ {R : Type*} [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
     (hf : Continuous f) (hfs : Function.Surjective f) :
     LinearMap.ker (comapₗ f hf : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective <| comap_injective _ hf hfs
 
-/-- `LocallyConstant.congrLeft` is a linear equivalence. -/
+/-- `LocallyConstant.congrLeft` as a `MulEquiv`. -/
+@[to_additive "`LocallyConstant.congrLeft` as an `AddEquiv`."]
+noncomputable
+def congrLeftMul [Mul Z] (e : X ≃ₜ Y) :
+    LocallyConstant X Z ≃* LocallyConstant Y Z where
+  toFun := (congrLeft e).toFun
+  invFun := (congrLeft e).invFun
+  left_inv := (congrLeft e).left_inv
+  right_inv := (congrLeft e).right_inv
+  map_mul' := (comapMulHom _ e.continuous_invFun).map_mul'
+
+/-- `LocallyConstant.congrLeft` as a linear equivalence. -/
 noncomputable
 def congrLeftₗ {R : Type*} [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
   toFun := (congrLeft e).toFun
-  map_smul' := (comapₗ _ e.continuous_invFun).map_smul'
-  map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
   invFun := (congrLeft e).invFun
   left_inv := (congrLeft e).left_inv
   right_inv := (congrLeft e).right_inv
+  map_smul' := (comapₗ _ e.continuous_invFun).map_smul'
+  map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
+
+/-- `LocallyConstant.congrLeft` as a `RingEquiv`. -/
+noncomputable
+def congrLeftRing [Semiring Z] (e : X ≃ₜ Y) :
+    LocallyConstant X Z ≃+* LocallyConstant Y Z where
+  toFun := (congrLeft e).toFun
+  invFun := (congrLeft e).invFun
+  left_inv := (congrLeft e).left_inv
+  right_inv := (congrLeft e).right_inv
+  map_mul' := (comapMonoidHom _ e.continuous_invFun).map_mul'
+  map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
+
+/-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
+noncomputable
+def congrLeftₐ {R : Type*} [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
+    LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
+  toFun := (congrLeft e).toFun
+  invFun := (congrLeft e).invFun
+  left_inv := (congrLeft e).left_inv
+  right_inv := (congrLeft e).right_inv
+  map_mul' := (comapMonoidHom _ e.continuous_invFun).map_mul'
+  map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
+  commutes' := (comapₐ _ e.continuous_invFun).commutes'
 
 end Comap
 
