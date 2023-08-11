@@ -564,10 +564,10 @@ variable {R : Type _} [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] 
 lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.limsup (fun i ↦ c + f i) F = c + Filter.limsup f F := by
-  convert (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x) ?_
-            (continuous_add_left c).continuousAt bdd_above bdd_below).symm
-  exact fun _ _ h ↦ add_le_add_left h c
+    Filter.limsup (fun i ↦ c + f i) F = c + Filter.limsup f F :=
+  (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x)
+    (fun _ _ h ↦ add_le_add_left h c)
+    (continuous_add_left c).continuousAt bdd_above bdd_below).symm
 
 /-- `limsup (xᵢ + c) = (limsup xᵢ) + c`. -/
 lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
