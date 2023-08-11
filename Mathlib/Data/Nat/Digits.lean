@@ -528,7 +528,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
     · simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
           digits_ofDigits p h (hd :: tl) w₁ w₂]
       simp only [ofDigits]
-      rw [Finset.sum_range_succ, Nat.cast_id]
+      rw [sum_range_succ, Nat.cast_id]
       simp only [List.drop, List.drop_length]
       have w₁' := fun l hl ↦ w₁ l <| List.mem_cons_of_mem hd hl
       have w₂' :  ∀ (h : tl ≠ []), List.getLast tl h ≠ 0 :=
@@ -538,29 +538,27 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
           succ_eq_one_add] at ih
       by_cases h' : tl = []
       · simp [h', ofDigits]
-      · have := @Finset.sum_singleton _ _ tl.length (fun x => ofDigits p <| tl.drop x) _
+      · have := @sum_singleton _ _ tl.length (fun x => ofDigits p <| tl.drop x) _
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length :=  List.length_pos.mpr h'
-        rw [← Finset.sum_range_add_sum_Ico _ <| h₁,
-            ← add_zero (∑ x in Finset.Ico _ _, ofDigits p (tl.drop x)), ← this,
-            Finset.sum_Ico_consecutive _  h₁ <| le_succ tl.length,
-            ← Finset.sum_Ico_add _ 0 tl.length 1, Ico_zero_eq_range, mul_add, mul_add, ih,
-            Finset.range_one, Finset.sum_singleton, List.drop, ofDigits, mul_zero, add_zero,
-            ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
+        rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
+            ← this, sum_Ico_consecutive _  h₁ <| le_succ tl.length, ← sum_Ico_add _ 0 tl.length 1,
+            Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
+            mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
         nth_rw 2 [← one_mul <| ofDigits p tl]
         rw [← add_mul, one_eq_succ_zero, Nat.sub_add_cancel <| zero_lt_of_lt h,
-            Nat.add_sub_add_left]
-  · simp [← h, ofDigits_one]
+           Nat.add_sub_add_left]
+  · simp [ofDigits_one]
   · simp [lt_one_iff.mp h]
     cases L
     · simp
     · simp [ofDigits]
 
 theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
-     (p - 1) * ∑ i in Finset.range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
+     (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | h | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · by_cases hn : n ≠ 0
-    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits' (p.digits n)
+    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n)
         (fun l a ↦ digits_lt_base h a) <| fun _ ↦ getLast_digit_ne_zero p hn
       · refine' (digits_len p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
