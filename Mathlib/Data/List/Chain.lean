@@ -441,21 +441,32 @@ theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
 
 end List
 
-variable {α : Type _} (r : α → α → Prop)
 
-theorem WellFounded.list_chain' (hwf : WellFounded r) :
-    @WellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) := by
-  refine ⟨fun ⟨l, hl⟩ ↦ ?_⟩
-  cases' l with a l
+/-! In this section, we consider the type of `r`-decreasing chains (`List.Chain' (flip r)`)
+  equipped with lexicographic order `List.Lex r`. -/
+
+variable {α : Type*} {r : α → α → Prop}
+
+/-- If an `r`-decreasing chain `l` is empty or its head is accessible by `r`, then
+  `l` is accessible by the lexicographic order `List.Lex r`. -/
+theorem Acc.list_chain' {l : {l : List α // l.Chain' (flip r)}} (acc : ∀ a ∈ l.val.head?, Acc r a) :
+    Acc (fun l m ↦ List.Lex r l.val m.val) l := by
+  obtain ⟨_ | ⟨a, l⟩, hl⟩ := l
   · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
-  induction hwf.apply a generalizing l with
+  specialize acc a _
+  · rw [List.head?_cons, Option.mem_some_iff]
+  /- For an `r`-decreasing chain of the form `a :: l`, apply induction on `a` -/
+  induction acc generalizing l with
   | intro a _ ih =>
+    /- Bundle `l` with a proof that it is `r`-decreasing to form `l'` -/
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : {l // l.Chain' (flip r)} := ⟨l, hl'⟩
     have : Acc (fun l m ↦ List.Lex r l.val m.val) l'
     · cases' l with b l
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      /- `l'` is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1
+    /- make `l'` a free variable and induct on `l'` -/
     revert hl
     rw [(by rfl : l = l'.1)]
     clear_value l'
@@ -467,6 +478,11 @@ theorem WellFounded.list_chain' (hwf : WellFounded r) :
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
       · apply ih b hr
+
+/-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
+theorem WellFounded.list_chain' (hwf : WellFounded r) :
+    @WellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) :=
+  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
 
 instance [hwf : IsWellFounded α r] :
     IsWellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) :=
