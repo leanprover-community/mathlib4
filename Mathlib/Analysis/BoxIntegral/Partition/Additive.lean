@@ -35,14 +35,14 @@ open Classical BigOperators Function Set
 
 namespace BoxIntegral
 
-variable {ι M : Type _} {n : ℕ}
+variable {ι M : Type*} {n : ℕ}
 
 /-- A function on `Box ι` is called box additive if for every box `J` and a partition `π` of `J`
 we have `f J = ∑ Ji in π.boxes, f Ji`. A function is called box additive on subboxes of `I : Box ι`
 if the same property holds for `J ≤ I`. We formalize these two notions in the same definition
 using `I : WithBot (Box ι)`: the value `I = ⊤` corresponds to functions box additive on the whole
 space. -/
-structure BoxAdditiveMap (ι M : Type _) [AddCommMonoid M] (I : WithTop (Box ι)) where
+structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι)) where
   toFun : Box ι → M
   sum_partition_boxes' : ∀ J : Box ι, ↑J ≤ I → ∀ π : Prepartition J, π.IsPartition →
     ∑ Ji in π.boxes, toFun Ji = toFun J
@@ -55,7 +55,7 @@ namespace BoxAdditiveMap
 
 open Box Prepartition Finset
 
-variable {N : Type _} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
+variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
 instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) (fun _ ↦ M) where
@@ -171,7 +171,7 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
 
 section ToSMul
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- If `f` is a box-additive map, then so is the map sending `I` to the scalar multiplication
 by `f I` as a continuous linear map from `E` to itself. -/

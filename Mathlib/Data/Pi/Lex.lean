@@ -32,11 +32,11 @@ Related files are:
 -/
 
 
-variable {ι : Type _} {β : ι → Type _} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
+variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
 
 namespace Pi
 
-instance {α : Type _} : ∀ [Inhabited α], Inhabited (Lex α) :=
+instance {α : Type*} : ∀ [Inhabited α], Inhabited (Lex α) :=
   @fun x => x
 
 /-- The lexicographic relation on `Π i : ι, β i`, where `ι` is ordered by `r`,
