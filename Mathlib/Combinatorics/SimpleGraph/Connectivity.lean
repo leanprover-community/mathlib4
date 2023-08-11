@@ -2406,30 +2406,14 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
 
 variable (G) [DecidableEq V]
 
-theorem set_walk_length_two_bij_commonNeighbors (u v : V) :
-    Set.BijOn (fun p => p.getVert 1) {p : G.Walk u v | p.length = 2} (G.commonNeighbors u v) :=
-  ⟨fun p hp => by
-    rw [Set.mem_setOf_eq] at hp
-    constructor
-    · simpa using p.adj_getVert_succ (i := 0) (by simp [hp])
-    · simpa only [adj_comm, one_add_one_eq_two, hp ▸ p.getVert_length] using
-        p.adj_getVert_succ (i := 1) (by simp [hp]),
-  fun p hp q hq e => by
-    cases' p with _ _ _ _ _ p; · contradiction
-    cases' q with _ _ _ _ _ q; · contradiction
-    unfold Walk.getVert at e; simp at e; subst e; simp_all
-    cases' p with _ _ _ _ _ p; · contradiction
-    cases' q with _ _ _ _ _ q; · contradiction
-    simp at hp hq
-    have e1 := (p.eq_of_length_eq_zero hp).symm
-    have e2 := (q.eq_of_length_eq_zero hq).symm
-    subst e1 e2
-    simp_all,
-  fun w hw => by
-    rw [mem_commonNeighbors] at hw
-    simp only [Set.mem_image, Set.mem_setOf_eq]
-    use hw.1.toWalk.concat hw.2.symm
-    exact ⟨rfl, rfl⟩⟩
+@[simps]
+def subtypeWalkLengthEqTwoEquivCommonNeighbors (u v : V) :
+    {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
+  toFun p := ⟨p.val.getVert 1, match p with
+    | ⟨.cons _ (.cons _ .nil), hp⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
+  invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
+  left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
+  right_inv | ⟨w, ⟨a, b⟩⟩ => Subtype.ext rfl
 
 section LocallyFinite
 
