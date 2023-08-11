@@ -960,6 +960,8 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H
 #align monoid_algebra.map_domain_alg_hom MonoidAlgebra.mapDomainAlgHom
 #align monoid_algebra.map_domain_alg_hom_apply MonoidAlgebra.mapDomainAlgHom_apply
 
+/-- If `e : G ≃ H` is a multiplicative equivalence between two monoids, then
+`Finsupp.mapDomain e` is an algebra equivalence between their monoid algebras. -/
 @[simps!]
 def mapDomainAlgEquiv (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H : Type*}
     [Monoid H] (e : G ≃* H) :
@@ -2066,6 +2068,8 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [A
 #align add_monoid_algebra.map_domain_alg_hom AddMonoidAlgebra.mapDomainAlgHom
 #align add_monoid_algebra.map_domain_alg_hom_apply AddMonoidAlgebra.mapDomainAlgHom_apply
 
+/-- If `e : G ≃ H` is an additive equivalence between two additive monoids, then
+`Finsupp.mapDomain e` is an algebra equivalence between their add monoid algebras. -/
 @[simps!]
 def mapDomainAlgEquiv (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [AddMonoid G]
     {H : Type*} [AddMonoid H] (e : G ≃+ H) :
