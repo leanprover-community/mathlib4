@@ -42,6 +42,8 @@ only have prerequisites
 open MeasureTheory Set Filter Topology ENNReal NNReal BigOperators
 
 #check aemeasurable_indicator_iff₀
+#check aemeasurable_indicator_const_iff₀
+#check measurable_indicator_const_iff
 
 section TendstoMeasureOfTendstoIndicator
 /-!
@@ -51,28 +53,6 @@ This section contains results showing that the pointwise convergence of indicato
 sets implies the convergence of measures: limᵢ Aᵢ.indicator = A.indicator implies
 limᵢ μ(Aᵢ) = μ(A).
 -/
-
-variable {α : Type _} [MeasurableSpace α] {A : Set α}
-variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
-
-/-- If the indicator functions of measurable sets `Aᵢ` converge to the indicator function of
-a set `A` along a nontrivial countably generated filter, then `A` is also measurable. -/
-lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableSet (As i))
-    (h_lim : Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)))
-      L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞))))) :
-    MeasurableSet A := by
-  simp_rw [← measurable_indicator_const_iff _ (1 : ℝ≥0∞)] at As_mble ⊢
-  exact measurable_of_tendsto_ennreal' L As_mble h_lim
-
-/-- If the indicator functions of a.e.-measurable sets `Aᵢ` converge a.e. to the indicator function
-of a set `A` along a nontrivial countably generated filter, then `A` is also a.e.-measurable. -/
-lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] (μ : Measure α)
-    (As_mble : ∀ i, NullMeasurableSet (As i) μ)
-    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)) x)
-      L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞)) x))) :
-    NullMeasurableSet A μ := by
-  simp_rw [← aemeasurable_indicator_const_iff₀ _ μ (1 : ℝ≥0∞)] at As_mble ⊢
-  exact aemeasurable_of_tendsto_metrizable_ae L As_mble h_lim
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
