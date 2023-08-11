@@ -2407,35 +2407,29 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
 variable (G) [DecidableEq V]
 
 theorem set_walk_length_two_bij_commonNeighbors (u v : V) :
-    Set.BijOn (fun p => p.getVert 1) {p : G.Walk u v | p.length = 2} (G.commonNeighbors u v) := by
-  constructor
-  · intro p hp
+    Set.BijOn (fun p => p.getVert 1) {p : G.Walk u v | p.length = 2} (G.commonNeighbors u v) :=
+  ⟨fun p hp => by
     rw [Set.mem_setOf_eq] at hp
     constructor
     · simpa using p.adj_getVert_succ (i := 0) (by simp [hp])
     · simpa only [adj_comm, one_add_one_eq_two, hp ▸ p.getVert_length] using
-        p.adj_getVert_succ (i := 1) (by simp [hp])
-  constructor
-  · intro p hp q hq e
-    dsimp at hp hq e
+        p.adj_getVert_succ (i := 1) (by simp [hp]),
+  fun p hp q hq e => by
     cases' p with _ _ _ _ _ p; · contradiction
     cases' q with _ _ _ _ _ q; · contradiction
-    unfold Walk.getVert at e
-    simp at e
-    subst e
-    simp_all
+    unfold Walk.getVert at e; simp at e; subst e; simp_all
     cases' p with _ _ _ _ _ p; · contradiction
     cases' q with _ _ _ _ _ q; · contradiction
     simp at hp hq
     have e1 := (p.eq_of_length_eq_zero hp).symm
     have e2 := (q.eq_of_length_eq_zero hq).symm
     subst e1 e2
-    simp_all
-  · intro w hw
+    simp_all,
+  fun w hw => by
     rw [mem_commonNeighbors] at hw
     simp only [Set.mem_image, Set.mem_setOf_eq]
     use hw.1.toWalk.concat hw.2.symm
-    exact ⟨rfl, rfl⟩
+    exact ⟨rfl, rfl⟩⟩
 
 section LocallyFinite
 
