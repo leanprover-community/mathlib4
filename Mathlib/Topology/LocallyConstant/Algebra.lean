@@ -314,14 +314,11 @@ def evalMonoidHom [MulOneClass Z] (x : X) : LocallyConstant X Z →* Z where
   map_add' := map_add (evalAddMonoidHom x)
 
 /-- Evaluation as an `AlgHom` -/
-def evalₐ [CommSemiring R] [Semiring Z] [Algebra R Z] (x : X) :
+@[simps!]
+def evalₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (x : X) :
     LocallyConstant X Z →ₐ[R] Z where
-  toFun f := f x
-  map_one' := (evalMonoidHom x).map_one'
-  map_mul' := (evalMonoidHom x).map_mul'
-  map_zero' := (evalAddMonoidHom x).map_zero'
-  map_add' := (evalAddMonoidHom x).map_add'
-  commutes' r := by simp only [coe_algebraMap, Pi.algebraMap_apply]
+  toRingHom := evalRingHom x
+  commutes' r := by simp
 
 end Eval
 
