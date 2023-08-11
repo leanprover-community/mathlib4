@@ -519,26 +519,25 @@ lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
 
 open BigOperators Finset
 
-theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits (L : List ℕ) (w₁ : ∀ (l : ℕ), l ∈ L → l < p)
-    (w₂ : ∀ (h : L ≠ []), L.getLast h ≠ 0) : (p - 1) * ∑ i in range L.length,
-    (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
+theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
+    (L : List ℕ) {h_nonempty} (h_ne_zero : L.getLast h_nonempty ≠ 0) (h_lt : ∀ l ∈ L, l < p) :
+    (p - 1) * ∑ i in range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · induction' L with hd tl ih
     · simp [ofDigits]
     · simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
-          digits_ofDigits p h (hd :: tl) w₁ w₂]
+          digits_ofDigits p h (hd :: tl) h_lt (fun _ => h_ne_zero)]
       simp only [ofDigits]
       rw [sum_range_succ, Nat.cast_id]
       simp only [List.drop, List.drop_length]
-      have w₁' := fun l hl ↦ w₁ l <| List.mem_cons_of_mem hd hl
-      have w₂' :  ∀ (h : tl ≠ []), List.getLast tl h ≠ 0 :=
-        fun h ↦ (List.getLast_cons h) ▸  w₂ _
-      have ih := ih w₁' w₂'
-      simp only [self_div_pow_eq_ofDigits_drop _ _ h, digits_ofDigits p h tl w₁' w₂',
-          succ_eq_one_add] at ih
       by_cases h' : tl = []
       · simp [h', ofDigits]
-      · have := @sum_singleton _ _ tl.length (fun x => ofDigits p <| tl.drop x) _
+      · have w₁' := fun l hl ↦ h_lt l <| List.mem_cons_of_mem hd hl
+        have w₂' := fun (h : tl ≠ []) ↦ (List.getLast_cons h) ▸ h_ne_zero
+        have ih := ih (w₂' h') w₁'
+        simp only [self_div_pow_eq_ofDigits_drop _ _ h, digits_ofDigits p h tl w₁' w₂',
+          succ_eq_one_add] at ih
+        have := @sum_singleton _ _ tl.length (fun x => ofDigits p <| tl.drop x) _
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length :=  List.length_pos.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
@@ -558,8 +557,8 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
      (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | h | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · by_cases hn : n ≠ 0
-    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n)
-        (fun l a ↦ digits_lt_base h a) <| fun _ ↦ getLast_digit_ne_zero p hn
+    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
+          (fun l a ↦ digits_lt_base h a)
       · refine' (digits_len p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
     · simp [not_not.mp hn]
