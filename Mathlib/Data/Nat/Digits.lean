@@ -530,8 +530,8 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
       simp only [ofDigits]
       rw [sum_range_succ, Nat.cast_id]
       simp only [List.drop, List.drop_length]
-      by_cases h' : tl = []
-      · simp [h', ofDigits]
+      obtain rfl | h' := em <| tl = []
+      · simp [ofDigits]
       · have w₁' := fun l hl ↦ h_lt l <| List.mem_cons_of_mem hd hl
         have w₂' := fun (h : tl ≠ []) ↦ (List.getLast_cons h) ▸ h_ne_zero
         have ih := ih (w₂' h') w₁'
