@@ -242,8 +242,7 @@ instance [HasFiniteLimits C] :
   preservesFiniteLimits _ _ _ := ⟨ @fun _ => inferInstance ⟩
 
 noncomputable
-instance [HasCoproducts C] [HasFilteredColimitsOfSize.{v} C] [HasFiniteLimits C]
-    [HasZeroMorphisms C] [HasFiniteBiproducts C] [AB5 C] : AB4 C where
+instance [HasCoproducts C] [HasFilteredColimits C] [HasFiniteLimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits _ :=
     ⟨fun _ => ⟨@fun _ => preservesLimitOfNatIso _ (coproductFunctorIso _ _).symm⟩⟩
 
