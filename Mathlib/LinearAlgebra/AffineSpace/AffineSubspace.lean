@@ -53,7 +53,7 @@ open Set
 
 section
 
-variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 variable [AffineSpace V P]
 
@@ -152,7 +152,7 @@ end
 
 /-- An `AffineSubspace k P` is a subset of an `AffineSpace V P` that, if not empty, has an affine
 space structure induced by a corresponding subspace of the `Module k V`. -/
-structure AffineSubspace (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCommGroup V]
+structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V]
   [Module k V] [AffineSpace V P] where
   carrier : Set P
   smul_vsub_vadd_mem :
@@ -162,7 +162,7 @@ structure AffineSubspace (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCom
 
 namespace Submodule
 
-variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 /-- Reinterpret `p : Submodule k V` as an `AffineSubspace k V`. -/
 def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
@@ -174,7 +174,7 @@ end Submodule
 
 namespace AffineSubspace
 
-variable (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 instance : SetLike (AffineSubspace k P) P where
@@ -520,7 +520,7 @@ end AffineSubspace
 
 namespace Submodule
 
-variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 @[simp]
 theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
@@ -533,7 +533,7 @@ theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.dire
 
 end Submodule
 
-theorem AffineMap.lineMap_mem {k V P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
   rw [AffineMap.lineMap_apply]
@@ -542,7 +542,7 @@ theorem AffineMap.lineMap_mem {k V P : Type _} [Ring k] [AddCommGroup V] [Module
 
 section affineSpan
 
-variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The affine span of a set of points is the smallest affine subspace containing those points.
@@ -587,7 +587,7 @@ end affineSpan
 
 namespace AffineSubspace
 
-variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [S : AffineSpace V P]
 
 instance : CompleteLattice (AffineSubspace k P) :=
@@ -741,7 +741,7 @@ theorem span_union (s t : Set P) : affineSpan k (s ∪ t) = affineSpan k s ⊔ a
 #align affine_subspace.span_union AffineSubspace.span_union
 
 /-- The span of a union of an indexed family of sets is the sup of their spans. -/
-theorem span_iUnion {ι : Type _} (s : ι → Set P) :
+theorem span_iUnion {ι : Type*} (s : ι → Set P) :
     affineSpan k (⋃ i, s i) = ⨆ i, affineSpan k (s i) :=
   (AffineSubspace.gi k V P).gc.l_iSup
 #align affine_subspace.span_Union AffineSubspace.span_iUnion
@@ -822,7 +822,7 @@ theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial {s : Set P} [Nontr
   · rw [affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P hs]
 #align affine_subspace.affine_span_eq_top_iff_vector_span_eq_top_of_nontrivial AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial
 
-theorem card_pos_of_affineSpan_eq_top {ι : Type _} [Fintype ι] {p : ι → P}
+theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
     (h : affineSpan k (range p) = ⊤) : 0 < Fintype.card ι := by
   obtain ⟨-, ⟨i, -⟩⟩ := nonempty_of_affineSpan_eq_top k V P h
   exact Fintype.card_pos_iff.mpr ⟨i⟩
@@ -1027,10 +1027,10 @@ end AffineSubspace
 
 section AffineSpace'
 
-variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 open AffineSubspace Set
 
@@ -1419,7 +1419,7 @@ end AffineSpace'
 
 namespace AffineSubspace
 
-variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
@@ -1491,7 +1491,7 @@ end AffineSubspace
 
 section MapComap
 
-variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type _} [Ring k]
+variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type*} [Ring k]
 
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
 
@@ -1681,7 +1681,7 @@ theorem map_sup (s t : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) : (s ⊔
   (gc_map_comap f).l_sup
 #align affine_subspace.map_sup AffineSubspace.map_sup
 
-theorem map_iSup {ι : Sort _} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
+theorem map_iSup {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align affine_subspace.map_supr AffineSubspace.map_iSup
@@ -1691,7 +1691,7 @@ theorem comap_inf (s t : AffineSubspace k P₂) (f : P₁ →ᵃ[k] P₂) :
   (gc_map_comap f).u_inf
 #align affine_subspace.comap_inf AffineSubspace.comap_inf
 
-theorem comap_supr {ι : Sort _} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
+theorem comap_supr {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align affine_subspace.comap_supr AffineSubspace.comap_supr
@@ -1721,7 +1721,7 @@ namespace AffineSubspace
 
 open AffineEquiv
 
-variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 variable [AffineSpace V P]
 

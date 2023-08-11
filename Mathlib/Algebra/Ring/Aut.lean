@@ -31,7 +31,7 @@ RingAut
 
 /-- The group of ring automorphisms. -/
 @[reducible]
-def RingAut (R : Type _) [Mul R] [Add R] :=
+def RingAut (R : Type*) [Mul R] [Add R] :=
   RingEquiv R R
 #align ring_aut RingAut
 
@@ -39,7 +39,7 @@ namespace RingAut
 
 section mul_add
 
-variable (R : Type _) [Mul R] [Add R]
+variable (R : Type*) [Mul R] [Add R]
 
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
@@ -102,7 +102,7 @@ end mul_add
 
 section Semiring
 
-variable {G R : Type _} [Group G] [Semiring R]
+variable {G R : Type*} [Group G] [Semiring R]
 
 /-- The tautological action by the group of automorphism of a ring `R` on `R`.-/
 instance applyMulSemiringAction :
