@@ -23,76 +23,80 @@ variable {K : Type _} [CompatibleField K]
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
     of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-theorem lift_genericPoly {R : Type _} [CommRing R]
-    {p : Polynomial R} (hpm : p.Monic) (x : R) :
-    FreeCommRing.lift
-      (Fin.snoc (fun i => p.coeff i) x)
-      (genericMonicPoly p.natDegree) = p.eval x := by
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, Fin.snoc_last,
-    map_sum, map_mul, Fin.snoc_castSucc, eval_eq_sum_range, Finset.sum_range_succ, coeff_natDegree]
-  rw [Monic.def.1 hpm, add_comm, one_mul, Finset.sum_range]
+def monicPolyEquivFin {R : Type _} [CommRing R] [DecidableEq R]
+    [Nontrivial R] (n : ℕ) :
+    { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → R) :=
+  { toFun := fun p i => p.1.coeff i
+    invFun := fun v =>
+      let p := Polynomial.ofFinsupp
+        { toFun := fun i =>
+            if h : i < n then v ⟨i, h⟩
+            else if i = n then 1 else 0
+          support := (Finset.range (n+1)).filter
+            (fun i => ∀ h : i < n, v ⟨i, h⟩ ≠ 0 ),
+          mem_support_toFun := by
+            intro i
+            simp
+            split_ifs with hi₁ hi₂
+            · simp only [Nat.lt_succ_of_lt hi₁, true_and]
+              exact ⟨fun h => h hi₁, fun h _ => h⟩
+            · subst i
+              simp only [lt_add_iff_pos_right, true_and, one_ne_zero,
+                not_false_eq_true, iff_true]
+              exact fun h => (lt_irrefl _ h).elim
+            · simp only [not_true, iff_false, not_and, not_forall, not_not,
+                Nat.lt_succ_iff]
+              intro h
+              exact (hi₂ (le_antisymm h (not_lt.1 hi₁))).elim }
+      have hpn : p.natDegree = n := by
+        refine le_antisymm ?_ ?_
+        · refine natDegree_le_iff_coeff_eq_zero.2 ?_
+          intro i hi
+          simp [not_lt_of_gt hi, ne_of_gt hi]
+        · refine le_natDegree_of_ne_zero ?_
+          simp
+      have hpm : p.Monic := by
+        simp [Monic.def, leadingCoeff, hpn]
+      ⟨p, hpm, hpn⟩
+    left_inv := by
+      intro p
+      ext i
+      simp only [ne_eq, Finset.mem_range, dite_eq_ite, coeff_ofFinsupp,
+        Finsupp.coe_mk, ite_eq_left_iff, not_lt]
+      intro hni
+      cases lt_or_eq_of_le hni with
+      | inr =>
+        subst n
+        have := p.2.1
+        simp [Monic.def, leadingCoeff, p.2.2] at this
+        simp [this]
+      | inl h =>
+        rw [eq_comm, if_neg (ne_of_gt h)]
+        exact coeff_eq_zero_of_natDegree_lt (p.2.2.symm ▸ h)
+    right_inv := fun _ => by simp }
+
+theorem lift_genericMonicPoly {R : Type _} [CommRing R] [DecidableEq R] [Nontrivial R]
+    {n : ℕ} (v : Fin (n+1) → R) :
+    FreeCommRing.lift v (genericMonicPoly n) =
+    ((monicPolyEquivFin n).symm (v ∘ Fin.castSucc)).1.eval (v (Fin.last _)) := by
+  let p := (monicPolyEquivFin n).symm (v ∘ Fin.castSucc)
+  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul,
+    eval_eq_sum_range, p.2.2]
+  simp [monicPolyEquivFin, Finset.sum_range_succ, add_comm,
+    Finset.sum_range, Fin.castSucc, Fin.castAdd, Fin.castLE]
 
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.field.Sentence :=
   (∃' ((termOfFreeCommRing (genericMonicPoly n)).relabel Sum.inr =' 0)).alls
 
 theorem realize_genericMonicPolyHasRoot (n : ℕ) :
-    K ⊨ genericMonicPolyHasRoot n ↔ ∀ p : K[X],
-      p.natDegree = n → p.Monic → ∃ x, p.eval x = 0 := by
+    K ⊨ genericMonicPolyHasRoot n ↔
+      ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
+  letI := Classical.decEq K
+  rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
   simp only [Sentence.Realize, genericMonicPolyHasRoot, BoundedFormula.realize_alls,
     BoundedFormula.realize_ex, BoundedFormula.realize_bdEqual, Term.realize_relabel,
-    Sum.elim_comp_inr, realize_termOfFreeCommRing, Term.realize, CompatibleField.funMap_zero]
-  constructor
-  · rintro h p rfl hpm
-    rcases h (fun i => p.coeff i) with ⟨x, hx⟩
-    use x
-    rwa [← lift_genericPoly hpm]
-  · rintro h xs
-    let p : K[X] := X ^ n + ∑ i : Fin n, C (xs i) * X ^ (i : ℕ)
-    have hpc : p.coeff = fun i => if h : i < n then xs ⟨i, h⟩
-        else if i = n then 1 else 0 := by
-      ext i
-      simp only [coeff_add, coeff_X_pow, finset_sum_coeff, coeff_C_mul,
-        mul_ite, mul_one, mul_zero]
-      by_cases hin : i = n
-      · subst i
-        simp only [ite_true, lt_self_iff_false, dite_false, add_right_eq_self]
-        exact Finset.sum_eq_zero (fun i _ => by rw [if_neg (ne_of_gt i.2)])
-      · by_cases hin₂ : i < n
-        · simp only [hin, ite_false, zero_add, hin₂, dite_true]
-          rw [Finset.sum_eq_single ⟨i, hin₂⟩]
-          · simp
-          · simp only [Finset.mem_univ, ne_eq, ite_eq_right_iff, forall_true_left]
-            rintro _ _ rfl
-            simp_all
-          · simp
-        · simp only [hin, ite_false, zero_add, hin₂, dite_false]
-          refine Finset.sum_eq_zero (fun i _ => ?_)
-          simp [ne_of_gt (lt_of_lt_of_le i.2 (le_of_not_lt hin₂))]
-    have hpn : p.natDegree = n := by
-      refine le_antisymm ?_ ?_
-      · refine natDegree_le_iff_coeff_eq_zero.2 ?_
-        rw [hpc]
-        intro i hi
-        simp [not_lt_of_gt hi, ne_of_gt hi]
-      · refine le_natDegree_of_ne_zero ?_
-        simp only [coeff_add, coeff_X_pow_self, finset_sum_coeff, coeff_C_mul, ne_eq]
-        rw [Finset.sum_eq_zero, add_zero]
-        · simp
-        · rintro ⟨i, hi⟩ _
-          simp [coeff_X_pow, ne_of_gt hi]
-    have hpm : p.Monic := by
-      simp only [Monic.def, leadingCoeff, hpn, coeff_add, coeff_X_pow_self, finset_sum_coeff,
-        coeff_C_mul, add_right_eq_self]
-      exact Finset.sum_eq_zero (fun i _ =>
-        by rw [coeff_X_pow, if_neg (ne_of_gt i.2), mul_zero])
-    rcases h p hpn hpm with ⟨x, hx⟩
-    use x
-    rw [← lift_genericPoly hpm] at hx
-    convert hx
-    rw [hpn]
-    congr
-    rw [hpc]
-    simp
+    Sum.elim_comp_inr, realize_termOfFreeCommRing, lift_genericMonicPoly, Fin.snoc_last,
+    Fin.snoc_comp_castSucc, Term.realize, CompatibleField.funMap_zero]
 
 def Theory.ACF (p : ℕ) : Theory Language.field :=
   Theory.hasChar p ∪ Theory.field ∪ ⋃ (n : ℕ) (_ : 0 < n), {genericMonicPolyHasRoot n}
@@ -105,7 +109,7 @@ instance {K : Type _} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
     exists_prop, forall_exists_index, and_imp]
   rintro _ n hn0 rfl
   rw [realize_genericMonicPolyHasRoot]
-  rintro p rfl _
+  rintro ⟨p, _, rfl⟩
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
@@ -128,7 +132,7 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type _)
   have := h _ p.natDegree (natDegree_pos_iff_degree_pos.2
     (degree_pos_of_irreducible hpi)) rfl
   rw [realize_genericMonicPolyHasRoot] at this
-  exact this _ rfl hpm
+  exact this ⟨_, hpm, rfl⟩
 
 theorem charP_of_model_ACF (p : ℕ) (M : Type _)
     [CompatibleField M] [h : (Theory.ACF p).Model M] :
