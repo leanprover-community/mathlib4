@@ -205,7 +205,7 @@ end FirstOrder
 
 open Function FirstOrder Language
 
-theorem ax_grothendieck {ι K : Type _} [Field K] [Finite ι]
+theorem ax_grothendieck {ι K : Type _} [Finite ι] [Field K]
     [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
     Injective (fun v i => MvPolynomial.eval v (ps i)) →
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
