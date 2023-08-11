@@ -22,7 +22,7 @@ For a topological space `α`,
 
 open Order OrderDual Set
 
-variable {ι α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
@@ -30,7 +30,7 @@ namespace TopologicalSpace
 
 
 /-- The type of closed subsets of a topological space. -/
-structure Closeds (α : Type _) [TopologicalSpace α] where
+structure Closeds (α : Type*) [TopologicalSpace α] where
   carrier : Set α
   closed' : IsClosed carrier
 #align topological_space.closeds TopologicalSpace.Closeds
@@ -273,7 +273,7 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
 
 
 /-- The type of clopen sets of a topological space. -/
-structure Clopens (α : Type _) [TopologicalSpace α] where
+structure Clopens (α : Type*) [TopologicalSpace α] where
   carrier : Set α
   clopen' : IsClopen carrier
 #align topological_space.clopens TopologicalSpace.Clopens

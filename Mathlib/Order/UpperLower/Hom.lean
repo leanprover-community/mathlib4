@@ -16,7 +16,7 @@ In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.I
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open OrderDual
 

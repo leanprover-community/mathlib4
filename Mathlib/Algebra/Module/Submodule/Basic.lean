@@ -178,18 +178,18 @@ end Submodule
 
 namespace SMulMemClass
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
+variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
   [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`.  -/
 instance (priority := 75) toModule : Module R S' :=
-  Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
+  Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SMulMemClass.toModule
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
 this to manually derive `Module` on specific types. -/
-def toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
+def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
     Module R' s :=
@@ -284,7 +284,7 @@ instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTow
   p.toSubMulAction.isScalarTower
 #align submodule.is_scalar_tower Submodule.isScalarTower
 
-instance isScalarTower' {S' : Type _} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
+instance isScalarTower' {S' : Type*} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
     [IsScalarTower S' R M] [IsScalarTower S S' M] [IsScalarTower S R M] : IsScalarTower S S' p :=
   p.toSubMulAction.isScalarTower'
 #align submodule.is_scalar_tower' Submodule.isScalarTower'
@@ -402,7 +402,7 @@ These instances work particularly well in conjunction with `add_group.to_add_act
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd

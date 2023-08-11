@@ -53,7 +53,7 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open MeasureTheory Filter Finset Asymptotics
 
@@ -68,7 +68,7 @@ namespace ProbabilityTheory
 
 section Truncation
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Truncating a real-valued function to the interval `(-A, A]`. -/
 def truncation (f : α → ℝ) (A : ℝ) :=
@@ -211,7 +211,7 @@ theorem tendsto_integral_truncation {f : α → ℝ} (hf : Integrable f μ) :
     exact (truncation_eq_self hA).symm
 #align probability_theory.tendsto_integral_truncation ProbabilityTheory.tendsto_integral_truncation
 
-theorem IdentDistrib.truncation {β : Type _} [MeasurableSpace β] {ν : Measure β} {f : α → ℝ}
+theorem IdentDistrib.truncation {β : Type*} [MeasurableSpace β] {ν : Measure β} {f : α → ℝ}
     {g : β → ℝ} (h : IdentDistrib f g μ ν) {A : ℝ} :
     IdentDistrib (truncation f A) (truncation g A) μ ν :=
   h.comp (measurable_id.indicator measurableSet_Ioc)
@@ -221,7 +221,7 @@ end Truncation
 
 section StrongLawAe
 
-variable {Ω : Type _} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
+variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
 
 section MomentEstimates
 
@@ -531,7 +531,7 @@ theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
   apply Asymptotics.isLittleO_iff.2 fun ε εpos => ?_
   obtain ⟨i, hi⟩ : ∃ i, v i < ε := ((tendsto_order.1 v_lim).2 ε εpos).exists
   filter_upwards [hω i] with n hn
-  simp only [Real.norm_eq_abs, LatticeOrderedCommGroup.abs_abs, Nat.abs_cast]
+  simp only [Real.norm_eq_abs, LatticeOrderedGroup.abs_abs, Nat.abs_cast]
   exact hn.le.trans (mul_le_mul_of_nonneg_right hi.le (Nat.cast_nonneg _))
 #align probability_theory.strong_law_aux2 ProbabilityTheory.strong_law_aux2
 
@@ -665,7 +665,7 @@ end StrongLawAe
 
 section StrongLawLp
 
-variable {Ω : Type _} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
+variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
 
 /-- **Strong law of large numbers**, Lᵖ version: if `X n` is a sequence of independent
 identically distributed real-valued random variables in Lᵖ, then `∑ i in range n, X i / n`

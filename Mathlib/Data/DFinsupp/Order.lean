@@ -23,7 +23,7 @@ open BigOperators
 
 open Finset
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 
@@ -126,12 +126,12 @@ end Zero
 /-! ### Algebraic order structures -/
 
 
-instance (α : ι → Type _) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
+instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : AddCommMonoid (DFinsupp α)),
     (inferInstance : PartialOrder (DFinsupp α)) with
     add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type _) [∀ i, OrderedCancelAddCommMonoid (α i)] :
+instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
     OrderedCancelAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
     le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
