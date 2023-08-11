@@ -302,7 +302,7 @@ def evalMonoidHom [MulOneClass Z] (x : X) : LocallyConstant X Z →* Z where
 
 /-- Evaluation as a linear map -/
 def evalₗ [Semiring R] [AddCommMonoid Z]
-  [Module R Z] (x : X) : LocallyConstant X Z →ₗ[R] Z where
+    [Module R Z] (x : X) : LocallyConstant X Z →ₗ[R] Z where
   toFun f := f x
   map_add' := (evalAddMonoidHom x).map_add'
   map_smul' _ _ := by simp only [coe_smul, Pi.smul_apply, RingHom.id_apply]
