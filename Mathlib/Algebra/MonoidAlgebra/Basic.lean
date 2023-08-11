@@ -111,7 +111,7 @@ instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid
   { singleOneRingHom.comp (algebraMap k A) with
     -- Porting note (#11041): `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
-      refine Finsupp.ext fun _ => ?_
+      ext
       -- Porting note: Newly required.
       rw [Finsupp.coe_smul]
       simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
