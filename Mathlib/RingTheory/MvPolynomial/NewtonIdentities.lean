@@ -227,10 +227,8 @@ The recurrence arises by splitting off the `i = k` term from the identity
 theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     (-1) ^ (k + 1) * ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
-  rw [esymm_to_weight σ R k, esymm_mul_psum_to_weight σ R k]
-  apply symm
-  apply sub_eq_zero.mp
-  rw [sub_eq_add_neg, neg_mul_eq_neg_mul, neg_eq_neg_one_mul ((-1 : MvPolynomial σ R) ^ k)]
+    rw [esymm_to_weight σ R k, esymm_mul_psum_to_weight σ R k, eq_comm, ← sub_eq_zero, sub_eq_add_neg,
+    neg_mul_eq_neg_mul, neg_eq_neg_one_mul ((-1 : MvPolynomial σ R) ^ k)]
   nth_rw 2 [← pow_one (-1 : MvPolynomial σ R)]
   rw [← pow_add, add_comm 1 k, ← left_distrib,
     ← sum_disjUnion (disjoint_filter_pairs_lt_filter_pairs_eq σ k),
