@@ -60,7 +60,7 @@ example {P Q : Prop} (p : P) (h : P → Q) : Q := by
 ```
 
 You can add a tactic to the list that `hint` tries by using
-`add_hint_tactic my_tactic`, specifying a string which works as an tactic.
+`add_hint_tactic my_tactic`, where `my_tactic` is arbitrary `tactic` syntax.
 -/
 elab "hint" : tactic => do
   let hints ← tryHint
