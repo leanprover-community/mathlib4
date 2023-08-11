@@ -501,7 +501,7 @@ def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
 /-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
 @[positivity Norm.norm _]
 def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ * ‖"
+  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
   let p ← mkAppM ``norm_nonneg #[a]
   pure (.nonnegative p)
 
