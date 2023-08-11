@@ -39,7 +39,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] {X X' : SimplicialObject C}
+variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
 
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.

@@ -79,7 +79,7 @@ Their proofs are weakenings of the stronger lemmas `natDegree <same> = 0`.
 These are the lemmas called by `compute_degree` on (almost) all the leaves of its recursion.
 -/
 
-variable {R : Type _}
+variable {R : Type*}
 
 section semiring
 variable [Semiring R]
