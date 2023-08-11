@@ -142,7 +142,7 @@ section Commutative
 
 variable {k G : Type*} [CommSemiring k] [DecidableEq G] [AddCommGroup G]
 
-/-- This is the natural involution on the group algebra `k[G]` induced by `g ↦ g⁻¹`. It exists
+/-- This is the natural involution on the group algebra `k[G]` induced by `g ↦ -g`. It exists
 when the scalars `k` and the group `G` are both commutative. -/
 noncomputable def invert : AddMonoidAlgebra k G ≃ₐ[k] AddMonoidAlgebra k G :=
   mapDomainAlgEquiv k k $ AddEquiv.neg G
