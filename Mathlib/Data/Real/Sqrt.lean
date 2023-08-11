@@ -464,6 +464,11 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
+/-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
+`ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
+want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
+In addition, providing this instance here makes it available earlier in the import 
+hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
 instance : StarOrderedRing ℝ :=
   StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
