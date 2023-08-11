@@ -11,9 +11,7 @@ import Mathlib.LinearAlgebra.Quotient
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`, `Exact f g` says that `range f = ker g``
 
-
 * `TensorProduct.rTensor_exact` says that one can tensor a short exact sequence on the right
-
 
 * `TensorProduct.lTensor_exact` says that one can tensor a short exact sequence on the left
 
@@ -22,20 +20,19 @@ import Mathlib.LinearAlgebra.Quotient
   and `lTensor_mkQ` compute `ker (lTensor Q (N.mkQ))` and similarly for `rTensor_mkQ`
 
 * `TensorProduct.map_ker` computes the kernel of `TensorProduct.map g g'`
-in the presence of two short exact sequences.
+  in the presence of two short exact sequences.
 
 The proofs are those of [bourbaki1989] (chap. 2, §3, n°6)
 
 
 ## TODO
 
-
 * Analogue for morphisms of algebras
 
 * Treat the noncommutative case
 
 * Treat the case of modules over semirings
-(For a possible definition of an exact sequence of commutative semigroups, see
+  (For a possible definition of an exact sequence of commutative semigroups, see
   [Grillet-1969b], Pierre-Antoine Grillet,
   *The tensor product of commutative semigroups*,
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
@@ -44,38 +41,30 @@ The proofs are those of [bourbaki1989] (chap. 2, §3, n°6)
 
 section Exact
 
-variable {M N P : Type _} (f : M → N) (g : N → P)
+variable {M N P : Type*} (f : M → N) (g : N → P)
 
 def Exact [Zero P] : Prop := ∀ y, g y = 0 ↔ y ∈ Set.range f
 
-lemma Exact.comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 := by
-  ext x
-  simp only [Function.comp_apply, Pi.zero_apply]
-  rw [h]
-  exact Set.mem_range_self x
+lemma Exact.comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
+  funext fun _ => (h _).mpr <| Set.mem_range_self _
 
 open LinearMap
 
-variable {R : Type _} [CommSemiring R]
-variable {M N P : Type _}
+variable {R : Type*} [CommSemiring R]
+variable {M N P : Type*}
   [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
   [Module R M] [Module R N] [Module R P]
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
-lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f := by
-  ext y
-  exact hfg y
+lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f :=
+  SetLike.ext hfg
 
-lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f := by
-  rw [SetLike.ext_iff]; rfl
+lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f :=
+  Iff.symm <| SetLike.ext_iff
 
-lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 := by
-  ext x
-  simp only [coe_comp, Function.comp_apply, zero_apply]
-  rw [h]
-  exact Set.mem_range_self x
-
+lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
+  FunLike.coe_injective h.comp_eq_zero
 
 end Exact
 
@@ -85,14 +74,14 @@ open TensorProduct LinearMap
 
 section Semiring
 
-variable {R : Type _} [CommSemiring R]
-variable {M N P P' : Type _}
+variable {R : Type*} [CommSemiring R]
+variable {M N P P' : Type*}
   [AddCommMonoid M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid P']
   [Module R M] [Module R N] [Module R P] [Module R P']
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
-variable {Q : Type _} [AddCommMonoid Q] [Module R Q]
+variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
 variable (g)
 
@@ -141,8 +130,8 @@ theorem lTensor.surjective (hg : Function.Surjective g) :
 
 end Semiring
 
-variable {R : Type _} [CommRing R]
-variable {M N P P' : Type _}
+variable {R : Type*} [CommRing R]
+variable {M N P P' : Type*}
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
   [Module R M] [Module R N] [Module R P]
 
@@ -160,7 +149,7 @@ lemma LinearMap.exact_subtype_ker_map (g : N →ₗ[R] P) :
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
-variable (Q : Type _) [AddCommGroup Q] [Module R Q]
+variable (Q : Type*) [AddCommGroup Q] [Module R Q]
 
 variable (hfg : Exact f g) (hg : Function.Surjective g)
 
@@ -321,7 +310,7 @@ lemma lTensor_mkQ (N : Submodule R M) :
   rw [← LinearMap.exact_iff]
   exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
-variable {M' N' P' : Type _} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
+variable {M' N' P' : Type*} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
   [Module R M'] [Module R N'] [Module R P']
 variable {f' : M' →ₗ[R] N'} {g' : N' →ₗ[R] P'}
 
