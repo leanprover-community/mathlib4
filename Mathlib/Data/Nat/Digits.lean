@@ -557,11 +557,11 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
      (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
+    · simp
     · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
           (fun l a ↦ digits_lt_base h a)
       · refine' (digits_len p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
-    · simp [not_not.mp hn]
   · simp
   · simp [lt_one_iff.mp h]
     cases n
