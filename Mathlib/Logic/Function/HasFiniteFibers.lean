@@ -18,6 +18,8 @@ API cleaner.
 
 open Function Set Filter List
 
+variables {α α' β β' γ : Type*}
+
 namespace Function
 
 /-- `Function.HasFiniteFibers f` means that the preimage by `f` of any finite set is finite. We
