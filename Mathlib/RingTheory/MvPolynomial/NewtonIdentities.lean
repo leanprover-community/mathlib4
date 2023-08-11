@@ -16,7 +16,12 @@ import Mathlib.RingTheory.Polynomial.Basic
 /-!
 # Newton's Identities
 
-This file defines `MvPolynomial` power sums as a means of implementing Newton's identities.
+This file defines `MvPolynomial` power sums as a means of implementing Newton's identities. The
+combinatorial proof, due to Zeilberger, defines for `k : ℕ` a subset `pairs` of
+`(range k).powerset × range k` and a map `pairMap` such that `pairMap` is an involution on `pairs`,
+and a bijection `weight` from `pairs` to the terms of the summation in Newton's identities which
+satisfies `weight ∘ pairMap = -weight`. The result therefore follows neatly from an identity
+implemented in mathlib as `Finset.sum_involution`.
 
 ## Main declarations
 
