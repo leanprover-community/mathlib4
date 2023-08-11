@@ -21,7 +21,7 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 -/
 
 
-variable {γ : α → Type _}
+variable {γ : α → Type*}
 
 instance (priority := 20) Zero.nonempty [Zero α] : Nonempty α :=
   ⟨0⟩
@@ -29,7 +29,7 @@ instance (priority := 20) Zero.nonempty [Zero α] : Nonempty α :=
 instance (priority := 20) One.nonempty [One α] : Nonempty α :=
   ⟨1⟩
 
-theorem exists_true_iff_nonempty {α : Sort _} : (∃ _ : α, True) ↔ Nonempty α :=
+theorem exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨a, trivial⟩
 #align exists_true_iff_nonempty exists_true_iff_nonempty
 
@@ -38,7 +38,7 @@ theorem nonempty_Prop {p : Prop} : Nonempty p ↔ p :=
   Iff.intro (fun ⟨h⟩ ↦ h) fun h ↦ ⟨h⟩
 #align nonempty_Prop nonempty_Prop
 
-theorem not_nonempty_iff_imp_false {α : Sort _} : ¬Nonempty α ↔ α → False :=
+theorem not_nonempty_iff_imp_false {α : Sort*} : ¬Nonempty α ↔ α → False :=
   ⟨fun h a ↦ h ⟨a⟩, fun h ⟨a⟩ ↦ h a⟩
 #align not_nonempty_iff_imp_false not_nonempty_iff_imp_false
 
@@ -48,7 +48,7 @@ theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ 
 #align nonempty_sigma nonempty_sigma
 
 @[simp]
-theorem nonempty_psigma {α} {β : α → Sort _} : Nonempty (PSigma β) ↔ ∃ a : α, Nonempty (β a) :=
+theorem nonempty_psigma {α} {β : α → Sort*} : Nonempty (PSigma β) ↔ ∃ a : α, Nonempty (β a) :=
   Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
 #align nonempty_psigma nonempty_psigma
 
@@ -139,7 +139,7 @@ theorem Nonempty.map {α β} (f : α → β) : Nonempty α → Nonempty β
   | ⟨h⟩ => ⟨f h⟩
 #align nonempty.map Nonempty.map
 
-protected theorem Nonempty.map2 {α β γ : Sort _} (f : α → β → γ) :
+protected theorem Nonempty.map2 {α β γ : Sort*} (f : α → β → γ) :
     Nonempty α → Nonempty β → Nonempty γ
   | ⟨x⟩, ⟨y⟩ => ⟨f x y⟩
 #align nonempty.map2 Nonempty.map2
@@ -148,7 +148,7 @@ protected theorem Nonempty.congr {α β} (f : α → β) (g : β → α) : Nonem
   ⟨Nonempty.map f, Nonempty.map g⟩
 #align nonempty.congr Nonempty.congr
 
-theorem Nonempty.elim_to_inhabited {α : Sort _} [h : Nonempty α] {p : Prop} (f : Inhabited α → p) :
+theorem Nonempty.elim_to_inhabited {α : Sort*} [h : Nonempty α] {p : Prop} (f : Inhabited α → p) :
     p :=
   h.elim <| f ∘ Inhabited.mk
 #align nonempty.elim_to_inhabited Nonempty.elim_to_inhabited
@@ -156,15 +156,15 @@ theorem Nonempty.elim_to_inhabited {α : Sort _} [h : Nonempty α] {p : Prop} (f
 protected instance Prod.Nonempty {α β} [h : Nonempty α] [h2 : Nonempty β] : Nonempty (α × β) :=
   h.elim fun g ↦ h2.elim fun g2 ↦ ⟨⟨g, g2⟩⟩
 
-protected instance Pi.Nonempty {ι : Sort _} {α : ι → Sort _} [∀ i, Nonempty (α i)] :
+protected instance Pi.Nonempty {ι : Sort*} {α : ι → Sort*} [∀ i, Nonempty (α i)] :
     Nonempty (∀ i, α i) :=
   ⟨fun _ ↦ Classical.arbitrary _⟩
 
-theorem Classical.nonempty_pi {ι} {α : ι → Sort _} : Nonempty (∀ i, α i) ↔ ∀ i, Nonempty (α i) :=
+theorem Classical.nonempty_pi {ι} {α : ι → Sort*} : Nonempty (∀ i, α i) ↔ ∀ i, Nonempty (α i) :=
   ⟨fun ⟨f⟩ a ↦ ⟨f a⟩, @Pi.Nonempty _ _⟩
 #align classical.nonempty_pi Classical.nonempty_pi
 
-theorem subsingleton_of_not_nonempty {α : Sort _} (h : ¬Nonempty α) : Subsingleton α :=
+theorem subsingleton_of_not_nonempty {α : Sort*} (h : ¬Nonempty α) : Subsingleton α :=
   ⟨fun x ↦ False.elim <| not_nonempty_iff_imp_false.mp h x⟩
 #align subsingleton_of_not_nonempty subsingleton_of_not_nonempty
 
