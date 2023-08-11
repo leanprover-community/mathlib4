@@ -359,7 +359,7 @@ end Profinite
 
 end Projections
 
-namespace LocallyConstant -- TODO: PR
+namespace LocallyConstant -- This section is PR #6520
 
 variable {X Z : Type*} [TopologicalSpace X]
 
@@ -393,19 +393,6 @@ def evalₐ {R : Type*} [CommSemiring R] [Semiring Z] [Algebra R Z] (x : X) :
   map_zero' := (evalAddMonoidHom x).map_zero'
   map_add' := (evalAddMonoidHom x).map_add'
   commutes' r := by simp only [coe_algebraMap, Pi.algebraMap_apply]
-
-def mulₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] [Mul Z] [LeftDistribClass Z]
-    [SMulCommClass R Z Z] (f : LocallyConstant X Z) :
-    LocallyConstant X Z →ₗ[R] LocallyConstant X Z where
-  toFun := fun g ↦ f * g
-  map_add' a b := by
-    ext x
-    simp only [coe_mul, coe_add, Pi.mul_apply, Pi.add_apply]
-    exact mul_add _ _ _
-  map_smul' r a := by
-    ext x
-    simp only [coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply, RingHom.id_apply]
-    exact mul_smul_comm _ _ _
 
 variable {Y : Type*} [TopologicalSpace Y]
 
@@ -901,13 +888,13 @@ lemma GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj
         rw [Finsupp.mem_supported, Finsupp.total_apply] at hc
         rw [← hc.2]
         have hmap :=
-          fun g ↦ map_finsupp_sum (LocallyConstant.mulₗ ℤ (e (C.proj (· ∈ J)) a)) c g
-        dsimp [LocallyConstant.mulₗ] at hmap
+          fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
+        dsimp at hmap
         rw [hmap]
         apply Submodule.finsupp_sum_mem
         intro m hm
-        have hsm := (LocallyConstant.mulₗ ℤ (e (C.proj (· ∈ J)) a)).map_smul
-        dsimp [LocallyConstant.mulₗ] at hsm
+        have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
+        dsimp at hsm
         rw [hsm]
         apply Submodule.smul_mem
         apply Submodule.subset_span
@@ -971,16 +958,16 @@ lemma GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj
         rw [Finsupp.mem_supported, Finsupp.total_apply] at hc
         rw [← hc.2]
         have hmap :=
-          fun g ↦ map_finsupp_sum (LocallyConstant.mulₗ ℤ (e (C.proj (· ∈ J)) a)) c g
-        dsimp [LocallyConstant.mulₗ] at hmap
+          fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
+        dsimp at hmap
         ring_nf
         rw [hmap]
         apply Submodule.add_mem
         · apply Submodule.neg_mem
           apply Submodule.finsupp_sum_mem
           intro m hm
-          have hsm := (LocallyConstant.mulₗ ℤ (e (C.proj (· ∈ J)) a)).map_smul
-          dsimp [LocallyConstant.mulₗ] at hsm
+          have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
+          dsimp at hsm
           rw [hsm]
           apply Submodule.smul_mem
           apply Submodule.subset_span
