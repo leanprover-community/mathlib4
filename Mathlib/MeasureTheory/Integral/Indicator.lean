@@ -41,10 +41,6 @@ only have prerequisites
 
 open MeasureTheory Set Filter Topology ENNReal NNReal BigOperators
 
-#check aemeasurable_indicator_iff₀
-#check aemeasurable_indicator_const_iff₀
-#check measurable_indicator_const_iff
-
 section TendstoMeasureOfTendstoIndicator
 /-!
 ### Limits of measures of sets from limits of indicators
@@ -53,6 +49,9 @@ This section contains results showing that the pointwise convergence of indicato
 sets implies the convergence of measures: limᵢ Aᵢ.indicator = A.indicator implies
 limᵢ μ(Aᵢ) = μ(A).
 -/
+
+variable {α : Type _} [MeasurableSpace α] {A : Set α}
+variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
@@ -72,7 +71,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator (μ : Measure α) (A_mble : Measur
     exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
   · rwa [← lintegral_indicator_one B_mble] at B_finmeas
 
---#find_home tendsto_measure_of_tendsto_indicator'
+--#find_home tendsto_measure_of_ae_tendsto_indicator
 -- Gives: `Mathlib.MeasureTheory.Integral.Lebesgue`.
 
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
