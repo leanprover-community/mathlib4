@@ -47,11 +47,8 @@ def unitsCenterToCenterUnits [Monoid D] : (Submonoid.center D)ˣ →* Submonoid.
 (Units.map (Submonoid.center D).subtype).codRestrict _ <| fun u r ↦ Units.ext <| u.1.prop r
 
 theorem unitsCenterToCenterUnits_injective [Monoid D] :
-  Function.Injective (unitsCenterToCenterUnits D) := by
-  intros a b h
-  ext
-  simp only [unitsCenterToCenterUnits, MonoidHom.codRestrict_apply, Subtype.mk.injEq] at h
-  exact Units.ext_iff.mp h
+    Function.Injective (unitsCenterToCenterUnits D) :=
+  fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
 def centerUnitsEquivUnitsCenter [GroupWithZero D] : Subgroup.center (Dˣ) ≃* (Submonoid.center D)ˣ
