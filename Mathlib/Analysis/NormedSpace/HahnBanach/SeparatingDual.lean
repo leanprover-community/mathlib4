@@ -22,19 +22,19 @@ equivalences acts transitively on the set of nonzero vectors.
 
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
-class SeparatingDual (R : Type _) (V : Type _) [Ring R] [AddCommGroup V] [TopologicalSpace V]
+class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
     [TopologicalSpace R] [Module R V] : Prop :=
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
 
-instance {E : Type _} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] [T1Space E] : SeparatingDual ℝ E :=
   ⟨fun x hx ↦ by
     rcases geometric_hahn_banach_point_point hx.symm with ⟨f, hf⟩
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩ ⟩
 
-instance {E 𝕜 : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
+instance {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
     rcases exists_dual_vector 𝕜 x hx with ⟨f, -, hf⟩
     refine ⟨f, ?_⟩
@@ -44,7 +44,7 @@ namespace SeparatingDual
 
 section Ring
 
-variable {R V : Type _} [Ring R] [AddCommGroup V] [TopologicalSpace V]
+variable {R V : Type*} [Ring R] [AddCommGroup V] [TopologicalSpace V]
   [TopologicalSpace R] [Module R V] [SeparatingDual R V]
 
 lemma exists_ne_zero {x : V} (hx : x ≠ 0) :
@@ -56,16 +56,23 @@ theorem exists_separating_of_ne {x y : V} (h : x ≠ y) :
   rcases exists_ne_zero (R := R) (sub_ne_zero_of_ne h) with ⟨f, hf⟩
   exact ⟨f, by simpa [sub_ne_zero] using hf⟩
 
-protected theorem T1Space [T1Space R] : T1Space V := by
+protected theorem t1Space [T1Space R] : T1Space V := by
   apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact ⟨f ⁻¹' {f y}ᶜ, isOpen_compl_singleton.preimage f.continuous, hf, by simp⟩
+
+protected theorem t2Space [T2Space R] : T2Space V := by
+  apply t2Space_iff_nhds.2 (fun {x} {y} hxy ↦ ?_)
+  rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
+  rcases t2_separation_nhds hf with ⟨u, v, hu, hv, huv⟩
+  exact ⟨f ⁻¹' u, f.continuous.continuousAt hu, f ⁻¹' v, f.continuous.continuousAt hv,
+    huv.preimage f⟩
 
 end Ring
 
 section Field
 
-variable [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
+variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
   [TopologicalRing R] [TopologicalAddGroup V] [Module R V] [SeparatingDual R V]
 
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
