@@ -37,7 +37,7 @@ namespace CompHaus
 
 attribute [local instance] ConcreteCategory.funLike
 
-instance projective_ultrafilter (X : Type _) : Projective (of <| Ultrafilter X)
+instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
     where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg

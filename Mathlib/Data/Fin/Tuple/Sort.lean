@@ -31,7 +31,7 @@ namespace Tuple
 
 variable {n : ℕ}
 
-variable {α : Type _} [LinearOrder α]
+variable {α : Type*} [LinearOrder α]
 
 /-- `graph f` produces the finset of pairs `(f i, i)`
 equipped with the lexicographic order.
@@ -113,7 +113,7 @@ namespace Tuple
 
 open List
 
-variable {n : ℕ} {α : Type _}
+variable {n : ℕ} {α : Type*}
 
 /-- If two permutations of a tuple `f` are both monotone, then they are equal. -/
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}

@@ -33,7 +33,7 @@ section MoveThis
 namespace MeasureTheory
 
 -- todo after the port: move these lemmas to measure_theory/measure/measure_space?
-variable {α : Type _} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 theorem tendsto_measure_Ico_atTop [SemilatticeSup α] [NoMaxOrder α]
     [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
