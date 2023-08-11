@@ -54,7 +54,7 @@ By default, we only compare "observable" properties; internal bookkeeping like `
 `FVarId`s are not checked by default. The following are the fields of this config and its
 subconfigs, together with their default values and interpretations.
 
-* `mode := .normal` – If `mode := .normal`, the rest of the config is used to determined equality
+* `mode := .normal` – If `mode := .normal`, the rest of the config is used to determine equality
 as described. If `mode := .quick`, the rest of the config is ignored, and `fail_if_no_progress`
 only checks if any of the original goals have been assigned. If not, no progress is considered to
 have been made.
