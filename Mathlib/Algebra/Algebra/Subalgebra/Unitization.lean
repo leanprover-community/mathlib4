@@ -263,7 +263,7 @@ end Subring
 
 section StarSubalgebra
 
-variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
+section Semiring
 
 variable {R A C : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
 variable [Algebra R A] [StarModule R A]
