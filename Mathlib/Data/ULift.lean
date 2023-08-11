@@ -134,7 +134,7 @@ theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
   congrArg up h
 #align ulift.ext ULift.ext
 
-theorem ext_iff {α : Type _} (x y : ULift α) : x = y ↔ x.down = y.down :=
+theorem ext_iff {α : Type*} (x y : ULift α) : x = y ↔ x.down = y.down :=
   ⟨congrArg _, ULift.ext _ _⟩
 #align ulift.ext_iff ULift.ext_iff
 

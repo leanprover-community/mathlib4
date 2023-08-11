@@ -64,7 +64,7 @@ instance instConcreteCategory : ConcreteCategory MagmaCat := BundledHom.concrete
 attribute [to_additive] instMagmaCatLargeCategory instConcreteCategory
 
 @[to_additive]
-instance : CoeSort MagmaCat (Type _) where
+instance : CoeSort MagmaCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
@@ -149,7 +149,7 @@ instance instConcreteCategory : ConcreteCategory SemigroupCat :=
 attribute [to_additive] instSemigroupCatLargeCategory SemigroupCat.instConcreteCategory
 
 @[to_additive]
-instance : CoeSort SemigroupCat (Type _) where
+instance : CoeSort SemigroupCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same

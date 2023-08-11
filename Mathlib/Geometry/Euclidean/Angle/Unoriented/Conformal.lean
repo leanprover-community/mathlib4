@@ -18,7 +18,7 @@ This file proves that conformal maps preserve angles.
 
 namespace InnerProductGeometry
 
-variable {E F : Type _}
+variable {E F : Type*}
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 
