@@ -345,7 +345,7 @@ def comapMonoidHom [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
   map_one' := by
     ext x
     simp only [hf, coe_comap, coe_one, Function.comp_apply, Pi.one_apply]
-  map_mul' := (comapMulHom f hf).map_mul'
+  map_mul' := map_mul (comapMulHom f hf)
 
 /-- `LocallyConstant.comap` as a linear map. -/
 noncomputable
