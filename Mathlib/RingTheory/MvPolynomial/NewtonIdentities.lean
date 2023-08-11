@@ -103,7 +103,7 @@ private theorem weight_add_weight_pairMap (t : Finset σ × σ) (h : t ∈ pairs
       mul_assoc (∏ a in erase t.fst t.snd, X a), card_erase_of_mem h1]
     nth_rewrite 1 [← pow_one (X t.snd)]
     simp only [← pow_add, add_comm]
-    have h3 : card t.fst ≥ 1 := lt_iff_add_one_le.mp (card_pos.mpr ⟨t.snd, h1⟩)
+    have h3 : 1 ≤ card t.fst := lt_iff_add_one_le.mp (card_pos.mpr ⟨t.snd, h1⟩)
     rw [← tsub_tsub_assoc h.left h3, ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)),
       h2 (card t.fst - 1), Nat.sub_add_cancel h3]
     simp
