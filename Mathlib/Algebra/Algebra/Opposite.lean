@@ -13,9 +13,9 @@ import Mathlib.Algebra.Ring.Opposite
 ## Main definitions
 
 * `MulOpposite.instAlgebra`: the algebra on `Aᵐᵒᵖ`
-* `AlgHom.op`/`AlgHom.unop`: simulatenously convert the domain and codomain of a morphism to the
+* `AlgHom.op`/`AlgHom.unop`: simultaneously convert the domain and codomain of a morphism to the
   opposite algebra.
-* `AlgEquiv.op`/`AlgEquiv.unop`: simulatenously convert the source and target of an isomorphism to
+* `AlgEquiv.op`/`AlgEquiv.unop`: simultaneously convert the source and target of an isomorphism to
   the opposite algebra.
 * `AlgEquiv.to_opposite`: in a commutative algebra the opposite algebra is isomorphic.
 
@@ -91,7 +91,7 @@ theorem toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f
     (f.toOpposite hf : A →+* Bᵐᵒᵖ) = (f : A →+* B).toOpposite hf :=
   rfl
 
-/-- An algebra hom `A →ₐ[R] B` can equivalently be viewed as an algebra hom `αᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`.
+/-- An algebra hom `A →ₐ[R] B` can equivalently be viewed as an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
 protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
@@ -113,7 +113,7 @@ end AlgHom
 
 namespace AlgEquiv
 
-/-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `αᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
+/-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
 def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
