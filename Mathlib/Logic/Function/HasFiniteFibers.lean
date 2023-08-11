@@ -18,7 +18,7 @@ API cleaner.
 
 open Function Set Filter List
 
-variables {α α' β β' γ : Type*}
+variable {α α' β β' γ : Type*}
 
 namespace Function
 
