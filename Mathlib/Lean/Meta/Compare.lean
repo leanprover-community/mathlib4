@@ -199,7 +199,7 @@ private def compareListM (eq : α → α → MetaM Bool) (l₁ l₂ : List α) :
 /-- Compare two `LocalDecl`s according to the configs. The settings in `ExprComparisonConfig` will
 be used when comparing expressions. -/
 def LocalDecl.compare (l₁ l₂ : LocalDecl) (cfg : LocalDeclComparisonConfig := {})
-    (ecfg : ExprComparisonConfig) : MetaM Bool :=
+    (ecfg : ExprComparisonConfig := {}) : MetaM Bool :=
   (pure <| (! cfg.checkFVarId   || l₁.fvarId   == l₂.fvarId)
     && (! cfg.checkIndex    || l₁.index    == l₂.index)
     && (! cfg.checkUserName || l₁.userName == l₂.userName)
