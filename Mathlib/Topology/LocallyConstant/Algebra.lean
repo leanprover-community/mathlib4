@@ -393,15 +393,14 @@ def congrLeftMul [Mul Z] (e : X ≃ₜ Y) :
   map_mul' := (comapMulHom _ e.continuous_invFun).map_mul'
 
 /-- `LocallyConstant.congrLeft` as a linear equivalence. -/
+@[simps!]
 noncomputable
-def congrLeftₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
+def congrLeftₗ (R: Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
-  toFun := (congrLeft e).toFun
+  toLinearMap := comapₗ R _ e.continuous_invFun
   invFun := (congrLeft e).invFun
   left_inv := (congrLeft e).left_inv
   right_inv := (congrLeft e).right_inv
-  map_smul' := (comapₗ _ e.continuous_invFun).map_smul'
-  map_add' := (comapAddMonoidHom _ e.continuous_invFun).map_add'
 
 /-- `LocallyConstant.congrLeft` as a `RingEquiv`. -/
 noncomputable
