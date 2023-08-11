@@ -327,7 +327,7 @@ section Comap
 variable [TopologicalSpace Y]
 
 /-- `LocallyConstant.comap` as a `MulHom`. -/
-@[to_additive "`LocallyConstant.comap` as an `AddHom`."]
+@[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddHom`."]
 noncomputable
 def comapMulHom [Mul Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →ₙ* LocallyConstant X Z where
