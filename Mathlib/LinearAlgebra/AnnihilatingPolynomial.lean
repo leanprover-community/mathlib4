@@ -40,7 +40,7 @@ namespace Polynomial
 
 section Semiring
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 variable (R)
 
@@ -66,7 +66,7 @@ end Semiring
 
 section Field
 
-variable {𝕜 A : Type _} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+variable {𝕜 A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 variable (𝕜)
 

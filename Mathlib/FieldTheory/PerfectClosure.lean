@@ -164,7 +164,7 @@ variable {K p}
 
 /-- Lift a function `ℕ × K → L` to a function on `PerfectClosure K p`. -/
 -- Porting note: removed `@[elab_as_elim]` for "unexpected eliminator resulting type L"
-def liftOn {L : Type _} (x : PerfectClosure K p) (f : ℕ × K → L)
+def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
     (hf : ∀ x y, R K p x y → f x = f y) : L :=
   Quot.liftOn x f hf
 #align perfect_closure.lift_on PerfectClosure.liftOn
@@ -579,7 +579,7 @@ end Field
 end PerfectClosure
 
 /-- A reduced ring with prime characteristic and surjective frobenius map is perfect. -/
-noncomputable def PerfectRing.ofSurjective (k : Type _) [CommRing k] [IsReduced k] (p : ℕ)
+noncomputable def PerfectRing.ofSurjective (k : Type*) [CommRing k] [IsReduced k] (p : ℕ)
     [Fact p.Prime] [CharP k p] (h : Function.Surjective <| frobenius k p) : PerfectRing k p
     where
   pthRoot' := Function.surjInv h

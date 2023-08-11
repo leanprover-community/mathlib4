@@ -61,7 +61,7 @@ open NNReal Classical Topology
 
 namespace BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-!
 ### Rectangular box: definition and partial order
@@ -70,7 +70,7 @@ variable {ι : Type _}
 
 /-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
-structure Box (ι : Type _) where
+structure Box (ι : Type*) where
   (lower upper : ι → ℝ)
   lower_lt_upper : ∀ i, lower i < upper i
 #align box_integral.box BoxIntegral.Box

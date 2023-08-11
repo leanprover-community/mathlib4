@@ -26,10 +26,10 @@ This file defines covering maps.
 
 open Bundle
 
-variable {E X : Type _} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (s : Set X)
+variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (s : Set X)
 
 /-- A point `x : X` is evenly covered by `f : E → X` if `x` has an evenly covered neighborhood. -/
-def IsEvenlyCovered (x : X) (I : Type _) [TopologicalSpace I] :=
+def IsEvenlyCovered (x : X) (I : Type*) [TopologicalSpace I] :=
   DiscreteTopology I ∧ ∃ t : Trivialization I f, x ∈ t.baseSet
 #align is_evenly_covered IsEvenlyCovered
 
@@ -38,18 +38,18 @@ namespace IsEvenlyCovered
 variable {f}
 
 /-- If `x` is evenly covered by `f`, then we can construct a trivialization of `f` at `x`. -/
-noncomputable def toTrivialization {x : X} {I : Type _} [TopologicalSpace I]
+noncomputable def toTrivialization {x : X} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f x I) : Trivialization (f ⁻¹' {x}) f :=
   (Classical.choose h.2).transFiberHomeomorph
     ((Classical.choose h.2).preimageSingletonHomeomorph (Classical.choose_spec h.2)).symm
 #align is_evenly_covered.to_trivialization IsEvenlyCovered.toTrivialization
 
-theorem mem_toTrivialization_baseSet {x : X} {I : Type _} [TopologicalSpace I]
+theorem mem_toTrivialization_baseSet {x : X} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f x I) : x ∈ h.toTrivialization.baseSet :=
   Classical.choose_spec h.2
 #align is_evenly_covered.mem_to_trivialization_base_set IsEvenlyCovered.mem_toTrivialization_baseSet
 
-theorem toTrivialization_apply {x : E} {I : Type _} [TopologicalSpace I]
+theorem toTrivialization_apply {x : E} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f (f x) I) : (h.toTrivialization x).2 = ⟨x, rfl⟩ :=
   let e := Classical.choose h.2
   let h := Classical.choose_spec h.2
@@ -60,13 +60,13 @@ theorem toTrivialization_apply {x : E} {I : Type _} [TopologicalSpace I]
         he.symm).symm
 #align is_evenly_covered.to_trivialization_apply IsEvenlyCovered.toTrivialization_apply
 
-protected theorem continuousAt {x : E} {I : Type _} [TopologicalSpace I]
+protected theorem continuousAt {x : E} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f (f x) I) : ContinuousAt f x :=
   let e := h.toTrivialization
   e.continuousAt_proj (e.mem_source.mpr (mem_toTrivialization_baseSet h))
 #align is_evenly_covered.continuous_at IsEvenlyCovered.continuousAt
 
-theorem to_isEvenlyCovered_preimage {x : X} {I : Type _} [TopologicalSpace I]
+theorem to_isEvenlyCovered_preimage {x : X} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f x I) : IsEvenlyCovered f x (f ⁻¹' {x}) :=
   let ⟨_, h2⟩ := h
   ⟨((Classical.choose h2).preimageSingletonHomeomorph
@@ -84,7 +84,7 @@ def IsCoveringMapOn :=
 
 namespace IsCoveringMapOn
 
-theorem mk (F : X → Type _) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
+theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
     (e : ∀ x ∈ s, Trivialization (F x) f) (h : ∀ (x : X) (hx : x ∈ s), x ∈ (e x hx).baseSet) :
     IsCoveringMapOn f s := fun x hx =>
   IsEvenlyCovered.to_isEvenlyCovered_preimage ⟨hF x, e x hx, h x hx⟩
@@ -150,7 +150,7 @@ variable (f)
 
 namespace IsCoveringMap
 
-theorem mk (F : X → Type _) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
+theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
     (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x ∈ (e x).baseSet) : IsCoveringMap f :=
   isCoveringMap_iff_isCoveringMapOn_univ.mpr
     (IsCoveringMapOn.mk f Set.univ F (fun x _ => e x) fun x _ => h x)
@@ -179,13 +179,13 @@ end IsCoveringMap
 
 variable {f}
 
-protected theorem IsFiberBundle.isCoveringMap {F : Type _} [TopologicalSpace F] [DiscreteTopology F]
+protected theorem IsFiberBundle.isCoveringMap {F : Type*} [TopologicalSpace F] [DiscreteTopology F]
     (hf : ∀ x : X, ∃ e : Trivialization F f, x ∈ e.baseSet) : IsCoveringMap f :=
   IsCoveringMap.mk f (fun _ => F) (fun x => Classical.choose (hf x)) fun x =>
     Classical.choose_spec (hf x)
 #align is_fiber_bundle.is_covering_map IsFiberBundle.isCoveringMap
 
-protected theorem FiberBundle.isCoveringMap {F : Type _} {E : X → Type _} [TopologicalSpace F]
+protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [TopologicalSpace F]
     [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
     [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩

@@ -32,7 +32,7 @@ We provide various results concerning the minimal primes above an ideal
 
 section
 
-variable {R S : Type _} [CommRing R] [CommRing S] (I J : Ideal R)
+variable {R S : Type*} [CommRing R] [CommRing S] (I J : Ideal R)
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected def Ideal.minimalPrimes : Set (Ideal R) :=
@@ -41,7 +41,7 @@ protected def Ideal.minimalPrimes : Set (Ideal R) :=
 
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
-def minimalPrimes (R : Type _) [CommRing R] : Set (Ideal R) :=
+def minimalPrimes (R : Type*) [CommRing R] : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 #align minimal_primes minimalPrimes
 

@@ -24,7 +24,7 @@ In this file we define
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 
 open Set Filter Function
 
@@ -38,7 +38,7 @@ instance : IsAtomic (Filter α) :=
       fun _ hx => sInf_le hx⟩
 
 /-- An ultrafilter is a minimal (maximal in the set order) proper filter. -/
-structure Ultrafilter (α : Type _) extends Filter α where
+structure Ultrafilter (α : Type*) extends Filter α where
   /-- An ultrafilter is nontrivial. -/
   protected neBot' : NeBot toFilter
   /-- If `g` is a nontrivial filter that is less than or equal to an ultrafilter, then it is greater

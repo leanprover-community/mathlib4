@@ -56,7 +56,7 @@ open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
   `α` to `β`. It is defined as `α → Part β`. -/
-def PFun (α β : Type _) :=
+def PFun (α β : Type*) :=
   α → Part β
 #align pfun PFun
 
@@ -65,7 +65,7 @@ infixr:25 " →. " => PFun
 
 namespace PFun
 
-variable {α β γ δ ε ι : Type _}
+variable {α β γ δ ε ι : Type*}
 
 instance inhabited : Inhabited (α →. β) :=
   ⟨fun _ => Part.none⟩
@@ -325,7 +325,7 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 
 /-- A recursion principle for `PFun.fix`. -/
 @[elab_as_elim]
-def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
   have h₂ := (Part.mem_assert_iff.1 h).snd
   -- Porting note: revert/intro trick required to address `generalize_proofs` bug
@@ -337,7 +337,7 @@ def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
 
-theorem fixInduction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
@@ -351,7 +351,7 @@ theorem fixInduction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} {
 `a` given that `f a` inherits `P` from `a` and `P` holds for preimages of `b`.
 -/
 @[elab_as_elim]
-def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α}
+def fixInduction' {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α}
     (h : b ∈ f.fix a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
   refine' fixInduction h fun a' h ih => _
@@ -362,7 +362,7 @@ def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α}
   · exact hind _ _ (fix_fwd h e) e (ih _ e)
 #align pfun.fix_induction' PFun.fixInduction'
 
-theorem fixInduction'_stop {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (fa : Sum.inl b ∈ f a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) :
     @fixInduction' _ _ C _ _ _ h hbase hind = hbase a fa := by
@@ -376,7 +376,7 @@ theorem fixInduction'_stop {C : α → Sort _} {f : α →. Sum β α} {b : β} 
   simp
 #align pfun.fix_induction'_stop PFun.fixInduction'_stop
 
-theorem fixInduction'_fwd {C : α → Sort _} {f : α →. Sum β α} {b : β} {a a' : α} (h : b ∈ f.fix a)
+theorem fixInduction'_fwd {C : α → Sort*} {f : α →. Sum β α} {b : β} {a a' : α} (h : b ∈ f.fix a)
     (h' : b ∈ f.fix a') (fa : Sum.inr a' ∈ f a)
     (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) :
@@ -557,12 +557,12 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
 #align pfun.mem_to_subtype_iff PFun.mem_toSubtype_iff
 
 /-- The identity as a partial function -/
-protected def id (α : Type _) : α →. α :=
+protected def id (α : Type*) : α →. α :=
   Part.some
 #align pfun.id PFun.id
 
 @[simp]
-theorem coe_id (α : Type _) : ((id : α → α) : α →. α) = PFun.id α :=
+theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
   rfl
 #align pfun.coe_id PFun.coe_id
 

@@ -38,14 +38,14 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 and new-style structures. We can revisit this in Lean 4. (After and not during the port!) -/
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
-structure RingCon (R : Type _) [Add R] [Mul R] extends Setoid R where
+structure RingCon (R : Type*) [Add R] [Mul R] extends Setoid R where
   /-- Ring congruence relations are closed under addition -/
   add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
   /-- Ring congruence relations are closed under multiplication -/
   mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
 #align ring_con RingCon
 
-variable {α R : Type _}
+variable {α R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
