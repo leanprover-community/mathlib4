@@ -33,7 +33,7 @@ open Function Set Submodule
 open BigOperators
 
 set_option autoImplicit false
-variable {ι : Type _} {ι' : Type _} {K : Type _} {V : Type _} {V' : Type _}
+variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
 section DivisionRing
 

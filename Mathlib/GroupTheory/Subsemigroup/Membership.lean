@@ -29,7 +29,7 @@ stub and only provides rudimentary support.
 subsemigroup
 -/
 
-variable {ι : Sort _} {M A B : Type _}
+variable {ι : Sort*} {M A B : Type*}
 
 section NonAssoc
 

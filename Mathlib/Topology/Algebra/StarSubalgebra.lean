@@ -33,7 +33,7 @@ namespace StarSubalgebra
 
 section TopologicalStarAlgebra
 
-variable {R A B : Type _} [CommSemiring R] [StarRing R]
+variable {R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [TopologicalSpace A] [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -93,7 +93,7 @@ theorem isClosed_topologicalClosure (s : StarSubalgebra R A) :
   isClosed_closure
 #align star_subalgebra.is_closed_topological_closure StarSubalgebra.isClosed_topologicalClosure
 
-instance {A : Type _} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A]
+instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A]
     [TopologicalSemiring A] [ContinuousStar A] [Algebra R A] [StarModule R A]
     {S : StarSubalgebra R A} : CompleteSpace S.topologicalClosure :=
   isClosed_closure.completeSpace_coe
@@ -169,7 +169,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
   simpa only using FunLike.congr_fun h x
 #align star_alg_hom.ext_topological_closure StarAlgHom.ext_topologicalClosure
 
-theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type _}
+theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     {S : StarSubalgebra R A} [StarAlgHomClass F R S.topologicalClosure B] {φ ψ : F}
     (hφ : Continuous φ) (hψ : Continuous ψ) (h : ∀ x : S,
         φ (inclusion (le_topologicalClosure S) x) = ψ ((inclusion (le_topologicalClosure S)) x)) :
@@ -190,7 +190,7 @@ section Elemental
 
 open StarSubalgebra
 
-variable (R : Type _) {A B : Type _} [CommSemiring R] [StarRing R]
+variable (R : Type*) {A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [TopologicalSpace A] [Semiring A] [StarRing A] [TopologicalSemiring A]
 
@@ -227,7 +227,7 @@ protected theorem isClosed (x : A) : IsClosed (elementalStarAlgebra R x : Set A)
   isClosed_closure
 #align elemental_star_algebra.is_closed elementalStarAlgebra.isClosed
 
-instance {A : Type _} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A]
+instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A]
     [TopologicalSemiring A] [ContinuousStar A] [Algebra R A] [StarModule R A] (x : A) :
     CompleteSpace (elementalStarAlgebra R x) :=
   isClosed_closure.completeSpace_coe
@@ -250,7 +250,7 @@ theorem closedEmbedding_coe (x : A) : ClosedEmbedding ((↑) : elementalStarAlge
             exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩ }
 #align elemental_star_algebra.closed_embedding_coe elementalStarAlgebra.closedEmbedding_coe
 
-theorem starAlgHomClass_ext [T2Space B] {F : Type _} {a : A}
+theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
     [StarAlgHomClass F R (elementalStarAlgebra R a) B] {φ ψ : F} (hφ : Continuous φ)
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_

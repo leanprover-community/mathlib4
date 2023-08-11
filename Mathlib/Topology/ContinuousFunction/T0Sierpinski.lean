@@ -25,7 +25,7 @@ noncomputable section
 
 namespace TopologicalSpace
 
-theorem eq_induced_by_maps_to_sierpinski (X : Type _) [t : TopologicalSpace X] :
+theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
   · rw [le_iInf_iff]
@@ -37,7 +37,7 @@ theorem eq_induced_by_maps_to_sierpinski (X : Type _) [t : TopologicalSpace X] :
     exact ⟨⟨u, h⟩, {True}, isOpen_singleton_true, by simp [Set.preimage]⟩
 #align topological_space.eq_induced_by_maps_to_sierpinski TopologicalSpace.eq_induced_by_maps_to_sierpinski
 
-variable (X : Type _) [TopologicalSpace X]
+variable (X : Type*) [TopologicalSpace X]
 
 /-- The continuous map from `X` to the product of copies of the Sierpinski space, (one copy for each
 open subset `u` of `X`). The `u` coordinate of `productOfMemOpens x` is given by `x ∈ u`.

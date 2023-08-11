@@ -67,12 +67,12 @@ theorem adjoin_eq (S : Subalgebra R A) : adjoin R ↑S = S :=
   adjoin_eq_of_le _ (Set.Subset.refl _) subset_adjoin
 #align algebra.adjoin_eq Algebra.adjoin_eq
 
-theorem adjoin_iUnion {α : Type _} (s : α → Set A) :
+theorem adjoin_iUnion {α : Type*} (s : α → Set A) :
     adjoin R (Set.iUnion s) = ⨆ i : α, adjoin R (s i) :=
   (@Algebra.gc R A _ _ _).l_iSup
 #align algebra.adjoin_Union Algebra.adjoin_iUnion
 
-theorem adjoin_attach_biUnion [DecidableEq A] {α : Type _} {s : Finset α} (f : s → Finset A) :
+theorem adjoin_attach_biUnion [DecidableEq A] {α : Type*} {s : Finset α} (f : s → Finset A) :
     adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_iUnion]
 #align algebra.adjoin_attach_bUnion Algebra.adjoin_attach_biUnion
 
@@ -439,13 +439,13 @@ theorem Algebra.adjoin_int {R : Type _} [Ring R] (s : Set R) :
 
 /-- The `ℕ`-algebra equivalence between `Subsemiring.closure s` and `Algebra.adjoin ℕ s` given
 by the identity map. -/
-def Subsemiring.closureEquivAdjoinNat {R : Type _} [Semiring R] (s : Set R) :
+def Subsemiring.closureEquivAdjoinNat {R : Type*} [Semiring R] (s : Set R) :
     Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s :=
   Subalgebra.equivOfEq (subalgebraOfSubsemiring <| Subsemiring.closure s) _ (adjoin_nat s).symm
 
 /-- The `ℤ`-algebra equivalence between `Subring.closure s` and `Algebra.adjoin ℤ s` given by
 the identity map. -/
-def Subring.closureEquivAdjoinInt {R : Type _} [Ring R] (s : Set R) :
+def Subring.closureEquivAdjoinInt {R : Type*} [Ring R] (s : Set R) :
     Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s :=
   Subalgebra.equivOfEq (subalgebraOfSubring <| Subring.closure s) _ (adjoin_int s).symm
 

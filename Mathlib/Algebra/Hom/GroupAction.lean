@@ -38,21 +38,21 @@ The above types have corresponding classes:
 
 assert_not_exists Submonoid
 
-variable (M' : Type _)
-variable (X : Type _) [SMul M' X]
-variable (Y : Type _) [SMul M' Y]
-variable (Z : Type _) [SMul M' Z]
-variable (M : Type _) [Monoid M]
-variable (A : Type _) [AddMonoid A] [DistribMulAction M A]
-variable (A' : Type _) [AddGroup A'] [DistribMulAction M A']
-variable (B : Type _) [AddMonoid B] [DistribMulAction M B]
-variable (B' : Type _) [AddGroup B'] [DistribMulAction M B']
-variable (C : Type _) [AddMonoid C] [DistribMulAction M C]
-variable (R : Type _) [Semiring R] [MulSemiringAction M R]
-variable (R' : Type _) [Ring R'] [MulSemiringAction M R']
-variable (S : Type _) [Semiring S] [MulSemiringAction M S]
-variable (S' : Type _) [Ring S'] [MulSemiringAction M S']
-variable (T : Type _) [Semiring T] [MulSemiringAction M T]
+variable (M' : Type*)
+variable (X : Type*) [SMul M' X]
+variable (Y : Type*) [SMul M' Y]
+variable (Z : Type*) [SMul M' Z]
+variable (M : Type*) [Monoid M]
+variable (A : Type*) [AddMonoid A] [DistribMulAction M A]
+variable (A' : Type*) [AddGroup A'] [DistribMulAction M A']
+variable (B : Type*) [AddMonoid B] [DistribMulAction M B]
+variable (B' : Type*) [AddGroup B'] [DistribMulAction M B']
+variable (C : Type*) [AddMonoid C] [DistribMulAction M C]
+variable (R : Type*) [Semiring R] [MulSemiringAction M R]
+variable (R' : Type*) [Ring R'] [MulSemiringAction M R']
+variable (S : Type*) [Semiring S] [MulSemiringAction M S]
+variable (S' : Type*) [Ring S'] [MulSemiringAction M S']
+variable (T : Type*) [Semiring T] [MulSemiringAction M T]
 
 /-- Equivariant functions. -/
 -- Porting note: This linter does not exist yet
@@ -73,7 +73,7 @@ notation:25 (name := «MulActionHomLocal≺») X " →[" M:25 "] " Y:0 => MulAct
 scalar multiplication by `M`.
 
 You should extend this class when you extend `MulActionHom`. -/
-class SMulHomClass (F : Type _) (M X Y : outParam <| Type _) [SMul M X] [SMul M Y] extends
+class SMulHomClass (F : Type*) (M X Y : outParam <| Type*) [SMul M X] [SMul M Y] extends
   FunLike F X fun _ => Y where
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
@@ -89,11 +89,12 @@ attribute [simp] map_smul
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
-instance : SMulHomClass (X →[M'] Y) M' X Y
-    where
+instance : SMulHomClass (X →[M'] Y) M' X Y where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
+
+initialize_simps_projections MulActionHom (toFun → apply)
 
 namespace MulActionHom
 
@@ -173,15 +174,14 @@ variable {A B}
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
 def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : B →[M] A
-    where
+    (h₂ : Function.RightInverse g f) : B →[M] A where
   toFun := g
   map_smul' m x :=
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
-#align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
+#align mul_action_hom.inverse_to_fun MulActionHom.inverse_apply
 #align mul_action_hom.inverse MulActionHom.inverse
 
 end MulActionHom
@@ -189,7 +189,7 @@ end MulActionHom
 /-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
 homomorphism. -/
 @[simps]
-def SMulCommClass.toMulActionHom {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
+def SMulCommClass.toMulActionHom {M} (N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α]
     (c : M) : α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
@@ -216,7 +216,7 @@ notation:25 (name := «DistribMulActionHomLocal≺»)
 the additive monoid structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `DistribMulActionHom`. -/
-class DistribMulActionHomClass (F : Type _) (M A B : outParam <| Type _) [Monoid M] [AddMonoid A]
+class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*) [Monoid M] [AddMonoid A]
   [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SMulHomClass F M A B,
   AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
@@ -242,8 +242,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
-instance : DistribMulActionHomClass (A →+[M] B) M A B
-    where
+instance : DistribMulActionHomClass (A →+[M] B) M A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
@@ -251,6 +250,8 @@ instance : DistribMulActionHomClass (A →+[M] B) M A B
   map_smul m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
+
+initialize_simps_projections DistribMulActionHom (toFun → apply)
 
 variable {M A B}
 /- porting note: inserted following def & instance for consistent coercion behaviour,
@@ -416,7 +417,7 @@ end DistribMulActionHom
 /-- If `DistribMulAction` of `M` and `N` on `A` commute, then for each `c : M`, `(c • ·)` is an
 `N`-action additive homomorphism. -/
 @[simps]
-def SMulCommClass.toDistribMulActionHom {M} (N A : Type _) [Monoid N] [AddMonoid A]
+def SMulCommClass.toDistribMulActionHom {M} (N A : Type*) [Monoid N] [AddMonoid A]
     [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →+[N] A :=
   { SMulCommClass.toMulActionHom N A c, DistribSMul.toAddMonoidHom _ c with
     toFun := (c • ·) }
@@ -445,7 +446,7 @@ notation:25 (name := «MulSemiringActionHomLocal≺»)
 the ring structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `MulSemiringActionHom`. -/
-class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoid M] [Semiring R]
+class MulSemiringActionHomClass (F : Type*) (M R S : outParam <| Type*) [Monoid M] [Semiring R]
   [Semiring S] [DistribMulAction M R] [DistribMulAction M S] extends
   DistribMulActionHomClass F M R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
@@ -473,8 +474,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-instance : MulSemiringActionHomClass (R →+*[M] S) M R S
-    where
+instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
@@ -484,6 +484,8 @@ instance : MulSemiringActionHomClass (R →+*[M] S) M R S
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
+
+initialize_simps_projections MulSemiringActionHom (toFun → apply)
 
 variable {M R S}
 

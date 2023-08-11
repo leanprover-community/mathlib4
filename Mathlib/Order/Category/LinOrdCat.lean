@@ -35,17 +35,17 @@ deriving instance LargeCategory for LinOrdCat
 instance : ConcreteCategory LinOrdCat :=
   BundledHom.concreteCategory _
 
-instance : CoeSort LinOrdCat (Type _) :=
+instance : CoeSort LinOrdCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `LinOrdCat` from the underlying type and typeclass. -/
-def of (α : Type _) [LinearOrder α] : LinOrdCat :=
+def of (α : Type*) [LinearOrder α] : LinOrdCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align LinOrd.of LinOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [LinearOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align LinOrd.coe_of LinOrdCat.coe_of

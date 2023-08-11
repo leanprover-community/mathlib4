@@ -47,7 +47,7 @@ this map to be injective it suffices that the range omits `1`. In this setting w
 
 section Subalgebra
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-! ## Subalgebras -/
 
@@ -80,7 +80,7 @@ end Subalgebra
 
 section LiftRange
 
-variable {R A C : Type _} [CommSemiring R] [NonUnitalSemiring A]
+variable {R A C : Type*} [CommSemiring R] [NonUnitalSemiring A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [Semiring C] [Algebra R C]
 
 theorem Unitization.lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
@@ -100,7 +100,7 @@ end LiftRange
 
 section Generic
 
-variable {R S A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] [SetLike S A]
+variable {R S A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [SetLike S A]
   [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
 /-- The natural `R`-algebra homomorphism from the unitization of a non-unital subalgebra into
@@ -122,7 +122,7 @@ theorem NonUnitalSubalgebra.unitization_range :
 
 /-- This is a generic version which allows us to prove both
 `NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
-theorem AlgHomClass.unitization_injective' {F R S A : Type _} [CommRing R] [Ring A]
+theorem AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
     (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
     (hf : ∀ x : s, f x = x) : Function.Injective f := by
@@ -137,7 +137,7 @@ theorem AlgHomClass.unitization_injective' {F R S A : Type _} [CommRing R] [Ring
 
 /-- This is a generic version which allows us to prove both
 `NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
-theorem AlgHomClass.unitization_injective {F R S A : Type _} [Field R] [Ring A]
+theorem AlgHomClass.unitization_injective {F R S A : Type*} [Field R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
     (s : S) (h1 : 1 ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
     (hf : ∀ x : s, f x = x) : Function.Injective f := by
@@ -145,7 +145,7 @@ theorem AlgHomClass.unitization_injective {F R S A : Type _} [Field R] [Ring A]
   rw [Algebra.algebraMap_eq_smul_one] at hr'
   exact h1 <| inv_smul_smul₀ hr (1 : A) ▸ SMulMemClass.smul_mem r⁻¹ hr'
 
-variable {R S A : Type _} [Field R] [Ring A] [Algebra R A]
+variable {R S A : Type*} [Field R] [Ring A] [Algebra R A]
   [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
 theorem NonUnitalSubalgebra.unitization_injective (h1 : (1 : A) ∉ s) :
@@ -174,7 +174,7 @@ end Generic
 
 section Subsemiring
 
-variable {R : Type _} [NonAssocSemiring R]
+variable {R : Type*} [NonAssocSemiring R]
 
 /-! ## Subsemirings -/
 
@@ -201,17 +201,17 @@ theorem NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnital
 
 /-- The natural `ℕ`-algebra homomorphism from the unitization of a non-unital subsemiring to
 its `Subsemiring.closure`. -/
-def NonUnitalSubsemiring.unitization {R : Type _} [Semiring R] (S : NonUnitalSubsemiring R) :
+def NonUnitalSubsemiring.unitization {R : Type*} [Semiring R] (S : NonUnitalSubsemiring R) :
     Unitization ℕ S →ₐ[ℕ] R :=
   NonUnitalSubalgebra.unitization (hSRA := AddSubmonoidClass.nsmulMemClass) S
 
 @[simp]
-theorem NonUnitalSubsemiring.unitization_apply {R : Type _} [Semiring R]
+theorem NonUnitalSubsemiring.unitization_apply {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) (x : Unitization ℕ S) :
     S.unitization x = x.fst + x.snd :=
   rfl
 
-theorem NonUnitalSubsemiring.unitization_range {R : Type _} [Semiring R]
+theorem NonUnitalSubsemiring.unitization_range {R : Type*} [Semiring R]
     (S : NonUnitalSubsemiring R) :
     S.unitization.range = subalgebraOfSubsemiring (Subsemiring.closure S) := by
   have := AddSubmonoidClass.nsmulMemClass (S := NonUnitalSubsemiring R)
@@ -221,7 +221,7 @@ end Subsemiring
 
 section Subring
 
-variable {R : Type _} [Ring R]
+variable {R : Type*} [Ring R]
 
 /-! ## Subrings -/
 
@@ -261,11 +261,46 @@ theorem NonUnitalSubring.unitization_range (S : NonUnitalSubring R) :
 
 end Subring
 
+section Subalgebra
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-! ## Subalgebras -/
+
+
+/-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
+def Subalgebra.toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A :=
+  { S with
+    carrier := S.carrier
+    smul_mem' := fun r _x hx => S.smul_mem hx r }
+
+theorem Subalgebra.one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) :
+    (1 : A) ∈ S.toNonUnitalSubalgebra :=
+  S.one_mem
+
+/-- Turn a non-unital subalgebra containing `1` into a subalgebra. -/
+def NonUnitalSubalgebra.toSubalgebra (S : NonUnitalSubalgebra R A) (h1 : (1 : A) ∈ S) :
+    Subalgebra R A :=
+  { S with
+    carrier := S.carrier
+    one_mem' := h1
+    algebraMap_mem' := fun r =>
+      (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
+
+theorem Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
+    S.toNonUnitalSubalgebra.toSubalgebra S.one_mem = S := by cases S; rfl
+
+theorem NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
+    (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
+  cases S; rfl
+
+end Subalgebra
+
 section StarSubalgebra
 
-section Semiring
+variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
 
-variable {R A C : Type _} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
+variable {R A C : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
 variable [Algebra R A] [StarModule R A]
 
 /-! ## star_subalgebras -/
@@ -300,7 +335,7 @@ theorem NonUnitalStarSubalgebra.toStarSubalgebra_toNonUnitalStarSubalgebra
 
 section StarLiftRange
 
-variable {R A C : Type _} [CommSemiring R] [NonUnitalSemiring A] [StarRing R] [StarRing A]
+variable {R A C : Type*} [CommSemiring R] [NonUnitalSemiring A] [StarRing R] [StarRing A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
@@ -345,7 +380,7 @@ end Semiring
 
 section Field
 
-variable {R A : Type _} [Field R] [StarRing R] [Ring A] [StarRing A] [Algebra R A] [StarModule R A]
+variable {R A : Type*} [Field R] [StarRing R] [Ring A] [StarRing A] [Algebra R A] [StarModule R A]
 variable (S : NonUnitalStarSubalgebra R A)
 
 theorem NonUnitalStarSubalgebra.unitization_injective (h1 : (1 : A) ∉ S) :

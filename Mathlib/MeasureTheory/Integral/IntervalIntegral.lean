@@ -56,7 +56,7 @@ open MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 
-variable {ι 𝕜 E F A : Type _} [NormedAddCommGroup E]
+variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
 
 /-!
 ### Integrability on an interval
@@ -283,7 +283,7 @@ theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
 #align interval_integrable.mul_const IntervalIntegrable.mul_const
 
 @[simp]
-theorem div_const {𝕜 : Type _} {f : ℝ → 𝕜} [NormedField 𝕜] (h : IntervalIntegrable f μ a b)
+theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedField 𝕜] (h : IntervalIntegrable f μ a b)
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 #align interval_integrable.div_const IntervalIntegrable.div_const
@@ -599,32 +599,32 @@ theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable
 #align interval_integral.integral_sub intervalIntegral.integral_sub
 
 @[simp]
-nonrec theorem integral_smul {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+nonrec theorem integral_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (r : 𝕜) (f : ℝ → E) :
     ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
   simp only [intervalIntegral, integral_smul, smul_sub]
 #align interval_integral.integral_smul intervalIntegral.integral_smul
 
 @[simp]
-nonrec theorem integral_smul_const {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
+nonrec theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
     ∫ x in a..b, f x • c ∂μ = (∫ x in a..b, f x ∂μ) • c := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
 #align interval_integral.integral_smul_const intervalIntegral.integral_smul_const
 
 @[simp]
-theorem integral_const_mul {𝕜 : Type _} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_const_mul {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, r * f x ∂μ = r * ∫ x in a..b, f x ∂μ :=
   integral_smul r f
 #align interval_integral.integral_const_mul intervalIntegral.integral_const_mul
 
 @[simp]
-theorem integral_mul_const {𝕜 : Type _} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_mul_const {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, f x * r ∂μ = (∫ x in a..b, f x ∂μ) * r := by
   simpa only [mul_comm r] using integral_const_mul r f
 #align interval_integral.integral_mul_const intervalIntegral.integral_mul_const
 
 @[simp]
-theorem integral_div {𝕜 : Type _} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_div {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, f x / r ∂μ = (∫ x in a..b, f x ∂μ) / r := by
   simpa only [div_eq_mul_inv] using integral_mul_const r⁻¹ f
 #align interval_integral.integral_div intervalIntegral.integral_div
@@ -648,7 +648,7 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 end Basic
 
 -- porting note: TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
-nonrec theorem _root_.IsROrC.interval_integral_ofReal {𝕜 : Type _} [IsROrC 𝕜] {a b : ℝ}
+nonrec theorem _root_.IsROrC.interval_integral_ofReal {𝕜 : Type*} [IsROrC 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, IsROrC.ofReal_sub]
 
@@ -1065,7 +1065,7 @@ theorem tsum_intervalIntegral_eq_of_summable_norm [Countable ι] {f : ι → C(�
   (hasSum_intervalIntegral_of_summable_norm hf_sum).tsum_eq
 #align interval_integral.tsum_interval_integral_eq_of_summable_norm intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm
 
-variable {X : Type _} [TopologicalSpace X] [FirstCountableTopology X]
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
 /-- Continuity of interval integral with respect to a parameter, at a point within a set.
   Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
