@@ -367,17 +367,14 @@ def comapRingHom [Semiring Z] (f : X → Y) (hf : Continuous f) :
   map_add' := map_add (comapAddMonoidHom f hf)
 
 /-- `LocallyConstant.comap` as an `AlgHom` -/
+@[simps!]
 noncomputable
-def comapₐ [CommSemiring R] [Semiring Z] [Algebra R Z]
+def comapₐ (R: Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
     (f : X → Y) (hf : Continuous f) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
-  toFun := comap f
-  map_one' := (comapMonoidHom f hf).map_one'
-  map_mul' := (comapMonoidHom f hf).map_mul'
-  map_zero' := (comapAddMonoidHom f hf).map_zero'
-  map_add' := (comapAddMonoidHom f hf).map_add'
+  toRingHom := comapRingHom f hf
   commutes' r := by
     ext x
-    simp only [hf, coe_comap, coe_algebraMap, Function.comp_apply, Pi.algebraMap_apply]
+    simp [hf]
 
 lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
     (hf : Continuous f) (hfs : Function.Surjective f) :
