@@ -203,7 +203,7 @@ def kroneckerMapBilinear [CommSemiring R] [AddCommMonoid α] [AddCommMonoid β] 
     kroneckerMap_smul_right _ _ fun a => (f a).map_smul r
 #align matrix.kronecker_map_bilinear Matrix.kroneckerMapBilinear
 
-/-- `Matrix.kroneckerMapBilinear` commutes with `*` if `f` commutes with `*`.
+/-- `Matrix.kroneckerMapBilinear` commutes with `*` if `f` does.
 
 This is primarily used with `R = ℕ` to prove `Matrix.mul_kronecker_mul`. -/
 theorem kroneckerMapBilinear_mul_mul [CommSemiring R] [Fintype m] [Fintype m']

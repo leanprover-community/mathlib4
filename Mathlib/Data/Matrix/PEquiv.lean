@@ -31,7 +31,7 @@ inverse of this map, sending anything not in the image to zero.
 
 ## notations
 
-This file uses the notation ` * ` for `Matrix.mul` and `ᵀ` for `Matrix.transpose`.
+This file uses `ᵀ` for `Matrix.transpose`.
 -/
 
 
