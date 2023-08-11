@@ -108,17 +108,14 @@ theorem lift_genericPolyMap {R : Type _} [CommRing R]
       MvPolynomial.eval (f ∘ Sum.inr)
         (((mvPolynomialSupportLEEquiv ι R mons).symm
           (f ∘ Sum.inl)).1 i) := by
-  conv_rhs => rw [MvPolynomial.eval_eq]
   simp only [genericPolyMap, Finsupp.prod_pow, map_sum, map_mul, lift_of, support,
-    mvPolynomialSupportLEEquiv, coeff, map_prod,
+    mvPolynomialSupportLEEquiv, coeff, map_prod, Finset.sum_filter, MvPolynomial.eval_eq,
     ne_eq, Function.comp, Equiv.coe_fn_symm_mk, Finsupp.coe_mk]
-  rw [Finset.sum_filter]
   conv_rhs => rw [← Finset.sum_attach]
   refine Finset.sum_congr rfl ?_
   intros m _
-  simp [map_pow, lift_of, Subtype.coe_eta, Finset.coe_mem,
-    exists_prop, true_and, dite_eq_ite, ite_true, ite_not,
-    Finsupp.prod, map_prod]
+  simp only [Finsupp.prod, map_prod, map_pow, lift_of, Subtype.coe_eta, Finset.coe_mem,
+    exists_prop, true_and, dite_eq_ite, ite_true, ite_not]
   split_ifs with h0 <;> simp_all
 
 noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
