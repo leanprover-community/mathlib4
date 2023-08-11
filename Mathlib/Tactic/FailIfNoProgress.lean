@@ -34,7 +34,7 @@ namespace Mathlib.Tactic.FailIfNoProgress
 open Lean Meta Mathlib.Meta Elab Tactic Parser.Tactic
 
 /-- The overall mode for a `FailIfNoProgress` config. If `mode := .normal`, the rest of the config
-is used to determined equality as described. If `mode := .quick`, the rest of the config is
+is used to determine equality as described. If `mode := .quick`, the rest of the config is
 ignored, and `fail_if_no_progress` only checks if any of the original goals have been assigned. If
 not, no progress is considered to have been made. -/
 inductive Mode where
