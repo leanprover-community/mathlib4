@@ -16,8 +16,8 @@ true: this data is part of a natural Hopf algebra structure, but we do not inclu
 
 ## Main statements:
 
- * `MonoidAlgebra.instStarRing`
- * `AddMonoidAlgebra.instStarRing`
+ * `MonoidAlgebra.invert`
+ * `AddMonoidAlgebra.invert`
 
 ## Implementation details:
 
