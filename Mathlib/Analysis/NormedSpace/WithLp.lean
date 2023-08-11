@@ -19,7 +19,7 @@ set_option linter.uppercaseLean3 false
 
 universe uK uK' uV
 
-/-- A type synony for the given `V`, associated with the L`p` norm. Note that by default this just
+/-- A type synonym for the given `V`, associated with the L`p` norm. Note that by default this just
 forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
 instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
@@ -44,7 +44,7 @@ instance instIsScalarTower [SMul K K'] [Module K V] [Module K' V] [IsScalarTower
     IsScalarTower K K' (WithLp p V) :=
   ‹IsScalarTower K K' V›
 
-instance instSmulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
+instance instSMulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
     SMulCommClass K K' (WithLp p V) :=
   ‹SMulCommClass K K' V›
 
