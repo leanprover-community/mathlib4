@@ -510,7 +510,7 @@ theorem equivCongr_symm (e : A₁ ≃ₐ[R] A₂) (e' : A₁' ≃ₐ[R] A₂') :
 
 @[simp]
 theorem equivCongr_trans (e₁₂ : A₁ ≃ₐ[R] A₂) (e₁₂' : A₁' ≃ₐ[R] A₂')
-    (e₂₃ : A₂ ≃ₐ[R] A₃) (e₂₃' : A₂' ≃ₐ[R] A₃'):
+    (e₂₃ : A₂ ≃ₐ[R] A₃) (e₂₃' : A₂' ≃ₐ[R] A₃') :
     (equivCongr e₁₂ e₁₂').trans (equivCongr e₂₃ e₂₃') =
       equivCongr (e₁₂.trans e₂₃) (e₁₂'.trans e₂₃') :=
   rfl
