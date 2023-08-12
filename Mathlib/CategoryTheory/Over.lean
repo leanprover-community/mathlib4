@@ -204,6 +204,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     repeat (ext; simp)
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
+/-- The identity over `X` is terminal. -/
+def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
+  CostructuredArrow.mkIdTerminal
+
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.over.forget_faithful CategoryTheory.Over.forget_faithful
 
@@ -301,6 +305,32 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
 end
 
 end Over
+
+namespace CostructuredArrow
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
+    `CostructuredArrow F X ⥤ Over X`. -/
+@[simps!]
+def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
+  CostructuredArrow.pre F (𝟭 T) X
+
+instance (F : D ⥤ T) (X : T) [Faithful F] : Faithful (toOver F X) :=
+  show Faithful (CostructuredArrow.pre _ _ _) from inferInstance
+
+instance (F : D ⥤ T) (X : T) [Full F] : Full (toOver F X) :=
+  show Full (CostructuredArrow.pre _ _ _) from inferInstance
+
+instance (F : D ⥤ T) (X : T) [EssSurj F] : EssSurj (toOver F X) :=
+  show EssSurj (CostructuredArrow.pre _ _ _) from inferInstance
+
+/-- An equivalence `F` induces an equivalence `CostructuredArrow F X ≌ Over X`. -/
+noncomputable def isEquivalenceToOver (F : D ⥤ T) (X : T) [IsEquivalence F] :
+    IsEquivalence (toOver F X) :=
+  CostructuredArrow.isEquivalencePre _ _ _
+
+end CostructuredArrow
 
 /-- The under category has as objects arrows with domain `X` and as morphisms commutative
     triangles. -/
@@ -456,6 +486,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     repeat (ext; simp)
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
+/-- The identity under `X` is initial. -/
+def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
+  StructuredArrow.mkIdInitial
+
 instance forget_faithful : Faithful (forget X) where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful
 
@@ -508,5 +542,31 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
 end
 
 end Under
+
+namespace StructuredArrow
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Reinterpreting an `F`-structured arrow `X ⟶ F.obj d` as an arrow under `X` induces a functor
+    `StructuredArrow X F ⥤ Under X`. -/
+@[simps!]
+def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
+  StructuredArrow.pre X F (𝟭 T)
+
+instance (X : T) (F : D ⥤ T) [Faithful F] : Faithful (toUnder X F) :=
+  show Faithful (StructuredArrow.pre _ _ _) from inferInstance
+
+instance (X : T) (F : D ⥤ T) [Full F] : Full (toUnder X F) :=
+  show Full (StructuredArrow.pre _ _ _) from inferInstance
+
+instance (X : T) (F : D ⥤ T) [EssSurj F] : EssSurj (toUnder X F) :=
+  show EssSurj (StructuredArrow.pre _ _ _) from inferInstance
+
+/-- An equivalence `F` induces an equivalence `StructuredArrow X F ≌ Under X`. -/
+noncomputable def isEquivalenceToUnder (X : T) (F : D ⥤ T) [IsEquivalence F] :
+    IsEquivalence (toUnder X F) :=
+  StructuredArrow.isEquivalencePre _ _ _
+
+end StructuredArrow
 
 end CategoryTheory

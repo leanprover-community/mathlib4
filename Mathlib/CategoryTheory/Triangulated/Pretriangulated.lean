@@ -220,23 +220,25 @@ theorem comp_dist_triangle_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang
   simpa using comp_dist_triangle_mor_zero₁₂ T.rotate.rotate H₂
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₃₁
 
+/-- Any morphism `Y ⟶ Z` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₁ {Y Z : C} (g : Y ⟶ Z) :
-  ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
+    ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
   obtain ⟨X', f', g', mem⟩ := distinguished_cocone_triangle g
   exact ⟨_, _, _, inv_rot_of_dist_triangle _ mem⟩
 
+/-- Any morphism `Z ⟶ X⟦1⟧` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
     ∃ (Y : C) (f : X ⟶ Y) (g : Y ⟶ Z), Triangle.mk f g h ∈ distTriang C := by
   obtain ⟨Y', f', g', mem⟩ := distinguished_cocone_triangle h
   let T' := (Triangle.mk h f' g').invRotate.invRotate
-  let T'' := Triangle.mk (((shiftEquiv C (1 : ℤ)).unitIso.app X).hom ≫ T'.mor₁) T'.mor₂
-    (T'.mor₃ ≫ ((shiftEquiv C (1 : ℤ)).counitIso.app (X⟦(1 : ℤ)⟧)).hom)
-  refine' ⟨T''.obj₂, T''.mor₁, T''.mor₂, isomorphic_distinguished _
-    (inv_rot_of_dist_triangle _ (inv_rot_of_dist_triangle _ mem)) _ _⟩
+  refine' ⟨T'.obj₂, ((shiftEquiv C (1 : ℤ)).unitIso.app X).hom ≫ T'.mor₁, T'.mor₂,
+    isomorphic_distinguished _ (inv_rot_of_dist_triangle _ (inv_rot_of_dist_triangle _ mem)) _ _⟩
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat)
-    (by dsimp ; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
+    (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
+/-- A commutative square involving the morphisms `mor₂` of two distinguished triangles
+can be extended as morphism of triangles -/
 lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
     (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C) (b : T₁.obj₂ ⟶ T₂.obj₂)
     (c : T₁.obj₃ ⟶ T₂.obj₃) (comm : T₁.mor₂ ≫ c = b ≫ T₂.mor₂) :
@@ -245,12 +247,14 @@ lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
   obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := complete_distinguished_triangle_morphism _ _
     (rot_of_dist_triangle _ hT₁) (rot_of_dist_triangle _ hT₂) b c comm
   refine' ⟨(shiftFunctor C (1 : ℤ)).preimage a, ⟨_, _⟩⟩
-  . apply (shiftFunctor C (1 : ℤ)).map_injective
+  · apply (shiftFunctor C (1 : ℤ)).map_injective
     dsimp at ha₂
     rw [neg_comp, comp_neg, neg_inj] at ha₂
     simpa only [Functor.map_comp, Functor.image_preimage] using ha₂
-  . simpa only [Functor.image_preimage] using ha₁
+  · simpa only [Functor.image_preimage] using ha₁
 
+/-- A commutative square involving the morphisms `mor₃` of two distinguished triangles
+can be extended as morphism of triangles -/
 lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
     (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C) (a : T₁.obj₁ ⟶ T₂.obj₁)
     (c : T₁.obj₃ ⟶ T₂.obj₃) (comm : T₁.mor₃ ≫ a⟦(1 : ℤ)⟧' = c ≫ T₂.mor₃) :
@@ -258,26 +262,29 @@ lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
   obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := complete_distinguished_triangle_morphism _ _
     (inv_rot_of_dist_triangle _ hT₁) (inv_rot_of_dist_triangle _ hT₂) (c⟦(-1 : ℤ)⟧') a (by
     dsimp
-    simp only [neg_comp, assoc, comp_neg, neg_inj, ← Functor.map_comp_assoc, ← comm,
+    simp only [neg_comp, comp_neg, ← Functor.map_comp_assoc, ← comm,
       Functor.map_comp, shift_shift_neg', Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id])
   refine' ⟨a, ⟨ha₁, _⟩⟩
   dsimp only [Triangle.invRotate, Triangle.mk] at ha₂
   rw [← cancel_mono ((shiftEquiv C (1 : ℤ)).counitIso.inv.app T₂.obj₃), assoc, assoc, ← ha₂]
-  simp only [shiftEquiv'_inverse, shiftEquiv'_functor, Functor.comp_obj, Functor.id_obj,
-    shiftEquiv'_counitIso, shift_neg_shift', assoc, Iso.inv_hom_id_app_assoc]
+  simp only [shiftEquiv'_counitIso, shift_neg_shift', assoc, Iso.inv_hom_id_app_assoc]
 
-lemma contractible_distinguished₁ (X : C) : Triangle.mk (0 : 0 ⟶ X) (𝟙 X) 0 ∈ distTriang C := by
-  refine' isomorphic_distinguished _ (inv_rot_of_dist_triangle _ (contractible_distinguished X)) _ _
+/-- Obvious triangles `0 ⟶ X ⟶ X ⟶ 0⟦1⟧` are distinguished -/
+lemma contractible_distinguished₁ (X : C) :
+    Triangle.mk (0 : 0 ⟶ X) (𝟙 X) 0 ∈ distTriang C := by
+  refine' isomorphic_distinguished _
+    (inv_rot_of_dist_triangle _ (contractible_distinguished X)) _ _
   exact Triangle.isoMk _ _ (Functor.mapZeroObject _).symm (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
+/-- Obvious triangles `X ⟶ 0 ⟶ X⟦1⟧ ⟶ X⟦1⟧` are distinguished -/
 lemma contractible_distinguished₂ (X : C) :
     Triangle.mk (0 : X ⟶ 0) 0 (𝟙 (X⟦1⟧)) ∈ distTriang C := by
-  refine' isomorphic_distinguished _ (inv_rot_of_dist_triangle _
-    (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ _
-  refine' Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
+  refine' isomorphic_distinguished _
+    (inv_rot_of_dist_triangle _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ _
+  exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat)
-    (by dsimp ; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
+    (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 lemma yoneda_exact₂ (T : Triangle C) (hT : T ∈ distTriang C) {X : C}
     (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) : ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
@@ -297,8 +304,7 @@ lemma coyoneda_exact₂ (T : Triangle C) (hT : T ∈ distTriang C) {X : C} (f : 
 
 lemma coyoneda_exact₁ (T : Triangle C) (hT : T ∈ distTriang C) {X : C}
     (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) : ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
-  coyoneda_exact₂ _ (rot_of_dist_triangle _
-  (rot_of_dist_triangle _ hT)) f (by aesop_cat)
+  coyoneda_exact₂ _ (rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)) f (by aesop_cat)
 
 lemma coyoneda_exact₃ (T : Triangle C) (hT : T ∈ distTriang C) {X : C} (f : X ⟶ T.obj₃)
     (hf : f ≫ T.mor₃ = 0) : ∃ (g : X ⟶ T.obj₂), f = g ≫ T.mor₂ :=

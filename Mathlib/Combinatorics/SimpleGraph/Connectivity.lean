@@ -438,7 +438,7 @@ theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil :
 
 section ConcatRec
 
-variable {motive : ∀ u v : V, G.Walk u v → Sort _} (Hnil : ∀ {u : V}, motive u u nil)
+variable {motive : ∀ u v : V, G.Walk u v → Sort*} (Hnil : ∀ {u : V}, motive u u nil)
   (Hconcat : ∀ {u v w : V} (p : G.Walk u v) (h : G.Adj v w), motive u v p → motive u w (p.concat h))
 
 /-- Auxiliary definition for `SimpleGraph.Walk.concatRec` -/
@@ -857,7 +857,7 @@ lemma not_nil_iff {p : G.Walk v w} :
   cases p <;> simp [*]
 
 @[elab_as_elim]
-def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort _}
+def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
     (p : G.Walk u w) : (hp : ¬ p.Nil) → motive p hp :=
   match p with
@@ -2099,13 +2099,13 @@ theorem connectedComponentMk_eq_of_adj {v w : V} (a : G.Adj v w) :
 
 /-- The `ConnectedComponent` specialization of `Quot.lift`. Provides the stronger
 assumption that the vertices are connected by a path. -/
-protected def lift {β : Sort _} (f : V → β)
+protected def lift {β : Sort*} (f : V → β)
     (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
   Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
 #align simple_graph.connected_component.lift SimpleGraph.ConnectedComponent.lift
 
 @[simp]
-protected theorem lift_mk {β : Sort _} {f : V → β}
+protected theorem lift_mk {β : Sort*} {f : V → β}
     {h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w} {v : V} :
     ConnectedComponent.lift f h (G.connectedComponentMk v) = f v :=
   rfl

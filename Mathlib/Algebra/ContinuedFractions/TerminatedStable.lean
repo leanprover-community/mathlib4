@@ -18,7 +18,7 @@ We show that the continuants and convergents of a gcf stabilise once the gcf ter
 
 namespace GeneralizedContinuedFraction
 
-variable {K : Type _} {g : GeneralizedContinuedFraction K} {n m : ℕ}
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {n m : ℕ}
 
 /-- If a gcf terminated at position `n`, it also terminated at `m ≥ n`.-/
 theorem terminated_stable (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :

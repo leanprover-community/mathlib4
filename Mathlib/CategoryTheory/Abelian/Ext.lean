@@ -33,9 +33,7 @@ noncomputable section
 
 open CategoryTheory
 
-section
-
-variable (R : Type _) [Ring R] (C : Type _) [Category C] [Abelian C] [Linear R C]
+variable (R : Type*) [Ring R] (C : Type*) [Category C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
 
 /-- `Ext R C n` is defined by deriving in the first argument of `(X, Y) ↦ Module.of R (unop X ⟶ Y)`
@@ -91,7 +89,7 @@ variable {C : Type _} [Category C] [Abelian C] [EnoughProjectives C]
 def cochainComplexExt (Y : C) : CochainComplex (ModuleCat R) ℕ :=
   ((((linearYoneda R C).obj Y).rightOp.mapHomologicalComplex _).obj P.complex).unop
 
-def ExtIsoObj (Y : C) (n : ℕ) :
+noncomputable def ExtIsoObj (Y : C) (n : ℕ) :
     ((Ext R C n).obj (Opposite.op X)).obj Y ≅ (P.cochainComplexExt R Y).homology n :=
   (P.isoLeftDerivedObj ((linearYoneda R C).obj Y).rightOp n).unop.symm ≪≫
     HomologicalComplex.homologyUnopIso _ _
