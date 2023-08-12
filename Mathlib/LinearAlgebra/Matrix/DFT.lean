@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 -- import Mathlib.LinearAlgebra.Vandermonde
--- import Mathlib.LinearAlgebra.Matrix.Circulant
+import Mathlib.LinearAlgebra.Matrix.Circulant
 
 /-!
 # Discrete Fourier Transform (DFT) Matrix and DFT of a (finite) sequence
@@ -58,7 +58,7 @@ noncomputable def dft (v : (Fin n) → ℂ) : (Fin n) → ℂ :=
 fun k : Fin n =>  ∑ p : (Fin n),  (Complex.exp (2 * π * I * k * p / n)) * (v p)
 
 noncomputable def idft  (V : (Fin n) → ℂ) : (Fin n) → ℂ :=
-fun p : Fin n =>  ∑ k : (Fin n),  (Complex.exp (-2 * π * I * k * p / n)) * (V p) / n
+fun p : Fin n =>  ∑ k : (Fin n),  ((Complex.exp (-2 * π * I * p * k / n))/ n) * (V k)
 
 noncomputable def Wₙ  : Matrix (Fin n) (Fin n) ℂ :=
 Matrix.of (fun (k p : Fin n) => Complex.exp (2 * π * I * k * p / n))
@@ -137,13 +137,73 @@ theorem dftMatrix_inv  [Invertible (Wₙ n)] :
   letI := (invWₙ n)
   convert (rfl : ⅟(Wₙ n) = _)
 
--- theorem idft_dft  (v : Fin n → ℂ) : idft n (dft n v) = v := by
+lemma iWₙ_apply (k p : Fin n) : (Wₙ n)⁻¹ k p = exp (-2 * π * I * k * p / n)/n := by
+  letI := invWₙ n
+  rw [← Matrix.invOf_eq_nonsing_inv (Wₙ n), dftMatrix_inv, of_apply]
+
+theorem dft_eq_Wₙ_mul (v : Fin n → ℂ) : dft n v = mulVec (Wₙ n) v := by
+  funext r
+  simp only [dft, mulVec, dotProduct, Wₙ_apply]
+
+theorem idft_eq_iWₙ_mul (V : Fin n → ℂ ) : idft n V = mulVec (Wₙ n)⁻¹ V := by
+  funext r
+  simp only [idft, mulVec, dotProduct, iWₙ_apply]
+
+theorem idft_dft  (v : Fin n → ℂ) : idft n (dft n v) = v := by
+  letI := invWₙ n
+  rw [dft_eq_Wₙ_mul, idft_eq_iWₙ_mul, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
+
+theorem dft_idft  (V : Fin n → ℂ) : dft  n (idft n V) = V := by
+  letI := invWₙ n
+  rw [dft_eq_Wₙ_mul, idft_eq_iWₙ_mul, mulVec_mulVec, mul_inv_of_invertible, one_mulVec]
+
+theorem Wₙ_conjTranspose_eq_iWₙ :  (Wₙ n)⁻¹ = ((1:ℂ)/n) • (Wₙ n)ᴴ := by
+  funext x y
+  simp only [iWₙ_apply, smul_apply, conjTranspose_apply, Wₙ_apply, smul_eq_mul]
+  rw [star_def, ← Complex.exp_conj, ← div_mul_comm, mul_one, div_left_inj', ← star_def]
+  simp only [star_div', star_natCast, star_mul', conj_I, star_def, conj_ofReal, map_ofNat, neg_mul,
+    mul_neg]
+  ring_nf
+  exact (Nat.cast_ne_zero.2 (NeZero.ne _))
+
+lemma Wₙ_transpose_eq_Wₙ : (Wₙ n)ᵀ = Wₙ n := by
+  funext a b
+  simp only [transpose_apply, Wₙ_apply]
+  ring_nf
+
+def shiftk (N : ℕ) (k : Fin N) : (Fin N → Fin N) := fun n : (Fin N) => (n - k)
+
+def shiftk_equiv {N: ℕ} [hN : NeZero N] (k : Fin N) : (Fin N) ≃ (Fin N) where
+  toFun := shiftk N k
+  invFun := shiftk N (-k)
+  left_inv := by intro x;  simp only [shiftk, sub_neg_eq_add, sub_add_cancel]
+  right_inv := by intro x; simp only [shiftk, sub_neg_eq_add, add_sub_cancel]
+
+theorem circulant_dft  (t : Fin n → ℂ) :
+    circulant t = (Wₙ n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (Wₙ n) := by
+  letI := invWₙ n
+  apply_fun ((Wₙ n) ⬝ ·)
+  dsimp
+  rw [Matrix.mul_assoc, Matrix.mul_inv_cancel_left_of_invertible]
+  funext a b
+  simp only [diagonal_mul, mul_apply, circulant_apply, Wₙ_apply, diagonal_apply, dft]
+  -- by_cases h : a = b
+  simp_rw [ite_mul, zero_mul, sum_ite_eq, mem_univ, ite_true,
+    ← mul_inv_eq_iff_eq_mul₀ (Complex.exp_ne_zero _), ← Complex.exp_neg]
+  rw [mul_comm]
+  simp_rw [mul_sum, ← mul_assoc, ← Complex.exp_add, neg_add_eq_sub, ← sub_div, mul_assoc (2*π*I),
+    ← mul_sub]
+  let f := fun x : (Fin n) => (Complex.exp ( 2*π * I * (a * (x))/n)) * (t (x))
+  have h1 : ∀ (x : Fin n), (shiftk_equiv (-b)) x = x - b := by sorry
+  have h2 : ∀ (x : Fin n), ((x:ℂ) - (b:ℂ)) = (shiftk_equiv (-b)) x := by sorry
+  simp_rw [← h1, h2]
+  rw [Equiv.sum_comp (shiftk_equiv (-b)) f]
+  sorry
+  -- apply Matrix.mul_right_injective_of_invertible (Wₙ n)
+
+  -- rw [Equiv.sum_comp (Equiv.refl _) f]
 
 
--- theorem dft_idft  (V : Fin n → ℂ) : dft  n (idft n V) = V := by sorry
-
--- theorem circulant_dft  (t : Fin n → ℂ) :
---     circulant t = (Wₙ n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (Wₙ n) := by sorry
 
 -- theorem dft_eq_vandermonde :
 --     (Wₙ n) = vandermonde (fun (k: Fin n) => exp (-2 * π * I * k / n)) :=  sorry
