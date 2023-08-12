@@ -355,7 +355,7 @@ section Smul
 variable [NonUnitalNonAssocSemiring α]
 
 -- @[simp] -- Porting note: simp can prove this
-theorem smul_mat_empty {m' : Type _} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
+theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 #align matrix.smul_mat_empty Matrix.smul_mat_empty
 
@@ -473,11 +473,11 @@ theorem vec3_add [Add α] (a₀ a₁ a₂ b₀ b₁ b₂ : α) :
   rw [cons_add_cons, cons_add_cons, cons_add_cons, empty_add_empty]
 #align matrix.vec3_add Matrix.vec3_add
 
-theorem smul_vec2 {R : Type _} [SMul R α] (x : R) (a₀ a₁ : α) :
+theorem smul_vec2 {R : Type*} [SMul R α] (x : R) (a₀ a₁ : α) :
     x • ![a₀, a₁] = ![x • a₀, x • a₁] := by rw [smul_cons, smul_cons, smul_empty]
 #align matrix.smul_vec2 Matrix.smul_vec2
 
-theorem smul_vec3 {R : Type _} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
+theorem smul_vec3 {R : Type*} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
     x • ![a₀, a₁, a₂] = ![x • a₀, x • a₁, x • a₂] := by
   rw [smul_cons, smul_cons, smul_cons, smul_empty]
 #align matrix.smul_vec3 Matrix.smul_vec3
