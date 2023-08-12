@@ -62,14 +62,9 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     refine IsLittleO.mul_isBigO ?exp ?cos
     case exp =>
       rw [isLittleO_const_iff one_ne_zero]
-      have h₀ : log b = log (- -b) := by simp
-      rw [h₀, log_neg_eq_log]
-      have hb' : 0 < -b := by linarith
-      have h₁ : log (-b) < 0 := by rw [log_neg_iff hb']; linarith
-      refine tendsto_exp_atBot.comp ?_
-      rw [tendsto_const_mul_atBot_of_neg h₁]
-      show atTop ≤ atTop
-      rfl
+      refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
+      rw [←log_neg_eq_log, log_neg_iff (by linarith)]
+      linarith
     case cos =>
       rw [isBigO_iff]
       exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
