@@ -499,7 +499,7 @@ variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
 namespace ProbabilityMeasure
 
 /-- The push-forward of a probability measure by a measurable function. -/
-noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f) :
+noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν) :
     ProbabilityMeasure Ω' :=
   ⟨(ν : Measure Ω).map f,
    ⟨by simp only [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ,
@@ -509,21 +509,21 @@ noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : 
 -- Q: Can I tell Lean not to use `Subtype.map` in place of `ProbabilityMeasure.map`?
 lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ProbabilityMeasure.map ν f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+    (ProbabilityMeasure.map ν f_aemble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
   Measure.map_apply_of_aemeasurable f_aemble A_mble
 
 -- Q: Can I tell Lean not to use `Subtype.map` in place of `ProbabilityMeasure.map`?
 lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
     (f_aemble : AEMeasurable f ν) {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ProbabilityMeasure.map ν f) A = ν (f ⁻¹' A) := by
+    (ProbabilityMeasure.map ν f_aemble) A = ν (f ⁻¹' A) := by
   have key := ProbabilityMeasure.map_apply' ν f_aemble A_mble
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr key
 
 -- Q: Can I tell Lean not to use `Subtype.map` in place of `ProbabilityMeasure.map`?
-@[simp] lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+@[simp] lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (FiniteMeasure.map ν f) A = ν (f ⁻¹' A) :=
-  map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
+    (ProbabilityMeasure.map ν f_aemble) A = ν (f ⁻¹' A) :=
+  map_apply_of_aemeasurable ν f_aemble A_mble
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 variable [TopologicalSpace Ω'] [BorelSpace Ω']
@@ -534,8 +534,8 @@ distribution) of the push-forwards of these measures by `f`. -/
 lemma tendsto_map_of_tendsto_of_continuous {L : Filter ι}
     (νs : ι → ProbabilityMeasure Ω) (ν : ProbabilityMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
     {f : Ω → Ω'} (f_cont : Continuous f) :
-    Tendsto (fun i ↦ ProbabilityMeasure.map (νs i) f_cont.measurable) L
-      (𝓝 (ProbabilityMeasure.map ν f_cont.measurable)) := by
+    Tendsto (fun i ↦ ProbabilityMeasure.map (νs i) f_cont.measurable.aemeasurable) L
+      (𝓝 (ProbabilityMeasure.map ν f_cont.measurable.aemeasurable)) := by
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
   convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
@@ -547,7 +547,7 @@ lemma tendsto_map_of_tendsto_of_continuous {L : Filter ι}
 the push-forward of probability measures `f* : ProbabilityMeasure X → ProbabilityMeasure Y`
 is continuous (in the topologies of convergence in distribution). -/
 lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
-    Continuous (fun ν ↦ ProbabilityMeasure.map ν f_cont.measurable) := by
+    Continuous (fun ν ↦ ProbabilityMeasure.map ν f_cont.measurable.aemeasurable) := by
   rw [continuous_iff_continuousAt]
   exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
 
