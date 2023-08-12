@@ -126,6 +126,14 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
   simp [filter_map, this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
 #align finset.nat.filter_snd_eq_antidiagonal Finset.Nat.filter_snd_eq_antidiagonal
 
+@[simp] lemma antidiagonal_filter_le_fst {n : ℕ} :
+    (antidiagonal n).filter (fun a ↦ n ≤ a.fst) = {(n, 0)} := by
+  ext; aesop
+
+@[simp] lemma antidiagonal_filter_le_snd {n : ℕ} :
+    (antidiagonal n).filter (fun a ↦ n ≤ a.snd) = {(0, n)} := by
+  ext; aesop
+
 section EquivProd
 
 /-- The disjoint union of antidiagonals `Σ (n : ℕ), antidiagonal n` is equivalent to the product

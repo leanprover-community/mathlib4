@@ -134,6 +134,7 @@ theorem Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   simp_rw [← two_mul, pow_mul, neg_sq]
 #align even.neg_pow Even.neg_pow
 
+@[simp]
 theorem Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one_pow]
 #align even.neg_one_pow Even.neg_one_pow
 
@@ -351,6 +352,14 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
   ⟨m, rfl⟩
 #align odd_two_mul_add_one odd_two_mul_add_one
 
+@[simp] lemma odd_add_self_one : Odd (m + m + 1) := ⟨m, by rw [two_mul]⟩
+
+@[simp] lemma odd_add_self_one' : Odd (m + (m + 1)) := by simp [← add_assoc]
+
+@[simp] lemma odd_add_one_self : Odd (m + 1 + m) := by simp [add_comm _ m]
+
+@[simp] lemma odd_add_one_self' : Odd (m + (1 + m)) := by simp [add_comm]
+
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp [two_mul]⟩
@@ -386,6 +395,7 @@ theorem Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
 #align odd.neg_pow Odd.neg_pow
 
+@[simp]
 theorem Odd.neg_one_pow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_pow, one_pow]
 #align odd.neg_one_pow Odd.neg_one_pow
 
