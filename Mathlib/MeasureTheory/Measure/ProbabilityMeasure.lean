@@ -499,25 +499,31 @@ variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
 namespace ProbabilityMeasure
 
 /-- The push-forward of a probability measure by a measurable function. -/
-noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f) :
+noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f) :
     ProbabilityMeasure Ω' :=
   ⟨(ν : Measure Ω).map f,
-   ⟨by simp only [Measure.map_apply f_mble MeasurableSet.univ, preimage_univ, measure_univ]⟩⟩
+   ⟨by simp only [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ,
+                  preimage_univ, measure_univ]⟩⟩
 
 --#check Subtype.map
--- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
-lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+-- Q: Can I tell Lean not to use `Subtype.map` in place of `ProbabilityMeasure.map`?
+lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ProbabilityMeasure.map ν f_mble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) := by
-  exact Measure.map_apply (μ := ν) f_mble A_mble
+    (ProbabilityMeasure.map ν f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+  Measure.map_apply_of_aemeasurable f_aemble A_mble
 
--- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
---    ...and `Subtype.map` in place of `FiniteMeasure.map`?
-lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
-    {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ProbabilityMeasure.map ν f_mble) A = ν (f ⁻¹' A) := by
-  have key := ProbabilityMeasure.map_apply' ν f_mble A_mble
+-- Q: Can I tell Lean not to use `Subtype.map` in place of `ProbabilityMeasure.map`?
+lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
+    (f_aemble : AEMeasurable f ν) {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (ProbabilityMeasure.map ν f) A = ν (f ⁻¹' A) := by
+  have key := ProbabilityMeasure.map_apply' ν f_aemble A_mble
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr key
+
+-- Q: Can I tell Lean not to use `Subtype.map` in place of `ProbabilityMeasure.map`?
+@[simp] lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (FiniteMeasure.map ν f) A = ν (f ⁻¹' A) :=
+  map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 variable [TopologicalSpace Ω'] [BorelSpace Ω']
