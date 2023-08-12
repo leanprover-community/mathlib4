@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.BigOperators.Basic
 
 #align_import algebra.regular.pow from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -64,3 +65,34 @@ theorem IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegul
 #align is_regular.pow_iff IsRegular.pow_iff
 
 end Monoid
+
+section CommMonoid
+
+open BigOperators
+
+variable {ι R : Type*} [CommMonoid R] [Nontrivial R] {s : Finset ι} {f : ι → R}
+
+lemma IsLeftRegular.prod (h : ∀ i ∈ s, IsLeftRegular (f i)) :
+    IsLeftRegular (∏ i in s, f i) := by
+  classical
+  induction' s using Finset.induction_on with j t hj ht
+  · exact isRegular_one.left
+  · rw [Finset.prod_insert hj]
+    have hbr : IsLeftRegular (f j) := h _ (t.mem_insert_self j)
+    exact hbr.mul (ht fun a ha ↦ h a (Finset.mem_insert_of_mem ha))
+
+lemma IsRightRegular.prod (h : ∀ i ∈ s, IsRightRegular (f i)) :
+    IsRightRegular (∏ i in s, f i) := by
+  classical
+  induction' s using Finset.induction_on with j t hj ht
+  · exact isRegular_one.right
+  · rw [Finset.prod_insert hj]
+    have hbr : IsRightRegular (f j) := h _ (t.mem_insert_self j)
+    exact hbr.mul (ht fun a ha ↦ h a (Finset.mem_insert_of_mem ha))
+
+lemma IsRegular.prod (h : ∀ i ∈ s, IsRegular (f i)) :
+    IsRegular (∏ i in s, f i) :=
+  ⟨IsLeftRegular.prod fun a ha ↦ (h a ha).left,
+   IsRightRegular.prod fun a ha ↦ (h a ha).right⟩
+
+end CommMonoid
