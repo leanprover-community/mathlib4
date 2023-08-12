@@ -128,7 +128,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
-theorem exists_locallyConstant_finite_aux {α : Type _} [Finite α] (hC : IsLimit C)
+theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
       (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _) := by
   cases nonempty_fintype α
@@ -173,7 +173,7 @@ theorem exists_locallyConstant_finite_aux {α : Type _} [Finite α] (hC : IsLimi
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_finite_aux Profinite.exists_locallyConstant_finite_aux
 
-theorem exists_locallyConstant_finite_nonempty {α : Type _} [Finite α] [Nonempty α]
+theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
   inhabit α
@@ -205,7 +205,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
-theorem exists_locallyConstant {α : Type _} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
+theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
   let S := f.discreteQuotient
   let ff : S → α := f.lift

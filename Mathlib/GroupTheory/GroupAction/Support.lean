@@ -18,7 +18,7 @@ This is crucial in Fourier-Motzkin constructions.
 
 open Pointwise
 
-variable {G H α β : Type _}
+variable {G H α β : Type*}
 
 namespace MulAction
 

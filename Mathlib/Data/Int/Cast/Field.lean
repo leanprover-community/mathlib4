@@ -24,7 +24,7 @@ namespace Int
 
 open Nat
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Auxiliary lemma for norm_cast to move the cast `-↑n` upwards to `↑-↑n`.
 

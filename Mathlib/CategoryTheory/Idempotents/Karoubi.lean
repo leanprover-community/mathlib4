@@ -30,7 +30,7 @@ open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits Bi
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 namespace Idempotents
 
@@ -201,7 +201,7 @@ def inclusionHom [Preadditive C] (P Q : Karoubi C) : AddMonoidHom (P ⟶ Q) (P.X
 #align category_theory.idempotents.karoubi.inclusion_hom CategoryTheory.Idempotents.Karoubi.inclusionHom
 
 @[simp]
-theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type _} (s : Finset α) (f : α → (P ⟶ Q)) :
+theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (f : α → (P ⟶ Q)) :
     (∑ x in s, f x).f = ∑ x in s, (f x).f :=
   map_sum (inclusionHom P Q) f s
 #align category_theory.idempotents.karoubi.sum_hom CategoryTheory.Idempotents.Karoubi.sum_hom

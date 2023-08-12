@@ -75,7 +75,7 @@ notation "β_" => braiding
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
 -/
-def braidedCategoryOfFaithful {C D : Type _} [Category C] [Category D] [MonoidalCategory C]
+def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] (F : MonoidalFunctor C D) [Faithful F.toFunctor] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
     (w : ∀ X Y, F.μ _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ F.μ _ _) : BraidedCategory C where
@@ -111,7 +111,7 @@ def braidedCategoryOfFaithful {C D : Type _} [Category C] [Category D] [Monoidal
 #align category_theory.braided_category_of_faithful CategoryTheory.braidedCategoryOfFaithful
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
-noncomputable def braidedCategoryOfFullyFaithful {C D : Type _} [Category C] [Category D]
+noncomputable def braidedCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
     [MonoidalCategory C] [MonoidalCategory D] (F : MonoidalFunctor C D) [Full F.toFunctor]
     [Faithful F.toFunctor] [BraidedCategory D] : BraidedCategory C :=
   braidedCategoryOfFaithful F
@@ -308,7 +308,7 @@ attribute [simp] BraidedFunctor.braided
 /--
 A braided category with a faithful braided functor to a symmetric category is itself symmetric.
 -/
-def symmetricCategoryOfFaithful {C D : Type _} [Category C] [Category D] [MonoidalCategory C]
+def symmetricCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : BraidedFunctor C D)
     [Faithful F.toFunctor] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)

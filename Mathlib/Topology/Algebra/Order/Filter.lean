@@ -20,7 +20,7 @@ open Topology
 
 namespace Filter
 
-variable {α X : Type _} [TopologicalSpace X] [PartialOrder X] [OrderTopology X]
+variable {α X : Type*} [TopologicalSpace X] [PartialOrder X] [OrderTopology X]
 
 protected theorem tendsto_nhds_atTop [NoMaxOrder X] : Tendsto 𝓝 (atTop : Filter X) (𝓝 atTop) :=
   Filter.tendsto_nhds_atTop_iff.2 fun x => (eventually_gt_atTop x).mono fun _ => le_mem_nhds

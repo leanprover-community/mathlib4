@@ -16,7 +16,7 @@ subgroup, subgroups
 -/
 
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 namespace Subgroup
 

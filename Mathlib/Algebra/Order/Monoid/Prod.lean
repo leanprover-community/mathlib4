@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 namespace Prod
 
-variable {α β M N : Type _}
+variable {α β M N : Type*}
 
 @[to_additive]
 instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) :=
