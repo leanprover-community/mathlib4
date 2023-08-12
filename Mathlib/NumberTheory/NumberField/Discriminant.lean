@@ -24,11 +24,10 @@ open NumberField Matrix
 variable (K : Type*) [Field K] [NumberField K]
 
 /-- The discriminant of a number field. -/
-noncomputable def discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
+noncomputable abbrev discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
 
-theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) := by
-  rw [discr]
-  exact (Algebra.discr_localizationLocalization ℤ _ K (RingOfIntegers.basis K)).symm
+theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=
+  (Algebra.discr_localizationLocalization ℤ _ K (RingOfIntegers.basis K)).symm
 
 theorem discr_ne_zero : discr K ≠ 0 := by
   rw [← (Int.cast_injective (α := ℚ)).ne_iff, coe_discr]
@@ -37,7 +36,7 @@ theorem discr_ne_zero : discr K ≠ 0 := by
 theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
     Algebra.discr ℤ b = discr K := by
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
-  rw [Algebra.discr_eq_discr (𝓞 K) b b₀, discr, Basis.coe_reindex, Algebra.discr_reindex]
+  rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
 
 end NumberField
 
