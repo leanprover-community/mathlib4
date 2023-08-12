@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
 
@@ -283,7 +284,7 @@ namespace Submodule
 
 protected noncomputable
 def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
-    (g.map <| (ProdLp.linearEquiv 2 𝕜 F E).symm.comp (skew_swap 𝕜 E F)).orthogonal.map
+    (g.map <| (ProdLp.linearEquiv 2 𝕜 F E).symm.comp (skewSwap 𝕜 E F).symm).orthogonal.map
       (ProdLp.linearEquiv 2 𝕜 F E)
 
 @[simp]
@@ -291,7 +292,7 @@ theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E):
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner (𝕜 := 𝕜) b x.fst - inner a x.snd = 0 := by
   simp only [Submodule.adjoint, Submodule.mem_map, Submodule.mem_orthogonal, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, ProdLp.linearEquiv_symm_apply, Function.comp_apply, skew_swap_apply,
+    LinearEquiv.coe_coe, ProdLp.linearEquiv_symm_apply, Function.comp_apply, skewSwap_symm_apply,
     Prod.exists, ProdLp.inner_apply, forall_exists_index, and_imp, ProdLp.linearEquiv_apply]
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
