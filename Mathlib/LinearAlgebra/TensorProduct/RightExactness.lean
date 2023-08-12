@@ -303,20 +303,17 @@ theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g 
 theorem TensorProduct.map_ker :
     LinearMap.ker (TensorProduct.map g g') =
       LinearMap.range (lTensor N f') ⊔ LinearMap.range (rTensor N' f) := by
-  ext y
   rw [← LinearMap.lTensor_comp_rTensor]
-  rw [mem_ker, comp_apply, ← mem_ker]
+  rw [LinearMap.ker_comp]
   rw [← Exact.linearMap_ker_eq (rTensor_exact N' hfg hg)]
   rw [← Submodule.comap_map_eq]
-  rw [Submodule.mem_comap]
-  generalize rTensor N' g y = z
-  rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
-  conv_rhs =>
-    rw [LinearMap.range_eq_map, ← Submodule.map_comp,
-      LinearMap.rTensor_comp_lTensor, Submodule.map_top]
-    rw [← LinearMap.lTensor_comp_rTensor, LinearMap.range_eq_map,
-      Submodule.map_comp, Submodule.map_top]
+  apply congr_arg₂ _ rfl
+  rw [LinearMap.range_eq_map, ← Submodule.map_comp, LinearMap.rTensor_comp_lTensor,
+    Submodule.map_top]
+  rw [← LinearMap.lTensor_comp_rTensor, LinearMap.range_eq_map, Submodule.map_comp,
+    Submodule.map_top]
   rw [LinearMap.range_eq_top.mpr (rTensor.surjective M' hg), Submodule.map_top]
+  rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
 
 end Modules
 
