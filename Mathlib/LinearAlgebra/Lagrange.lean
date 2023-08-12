@@ -529,10 +529,8 @@ theorem degree_nodal : (nodal s v).degree = s.card := by
   simp_rw [nodal, degree_prod, degree_X_sub_C, sum_const, Nat.smul_one_eq_coe]
 #align lagrange.degree_nodal Lagrange.degree_nodal
 
-theorem nodal_monic : (nodal s v).Monic := by
-  apply Polynomial.monic_prod_of_monic
-  intros i _
-  exact monic_X_sub_C (v i)
+theorem nodal_monic : (nodal s v).Monic :=
+  monic_prod_of_monic s (fun i ↦ X - C (v i)) fun i _ ↦ monic_X_sub_C (v i)
 
 theorem eval_nodal {x : F} : (nodal s v).eval x = ∏ i in s, (x - v i) := by
   simp_rw [nodal, eval_prod, eval_sub, eval_X, eval_C]
@@ -663,14 +661,13 @@ theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup (Units F)) [Fintype G
   nodal G.carrier.toFinset (fun (x : Fˣ) => (x : F)) = X ^ (Fintype.card G) - C 1 := by
   apply eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq
     (v := (fun (x : Fˣ) => (x : F))) (G.carrier.toFinset)
-  · apply Set.injOn_of_injective
-    exact Units.ext
+  · apply Set.injOn_of_injective Units.ext
   · simp only [degree_nodal, Set.toFinset_card, le_refl]
   · rw [degree_sub_eq_left_of_degree_lt]
-    · simp only [degree_nodal, Set.toFinset_card, degree_pow, degree_X, nsmul_eq_mul, mul_one,
-      Nat.cast_inj]
+    · rw [degree_nodal, Set.toFinset_card, degree_pow, degree_X, nsmul_eq_mul, mul_one,
+        Nat.cast_inj]
       exact rfl
-    · simp only [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
+    · rw [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
       exact Fintype.card_pos
   · rw [map_one, nodal_monic, leadingCoeff_sub_of_degree_lt]
     · rw [monic_X_pow]
@@ -679,12 +676,8 @@ theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup (Units F)) [Fintype G
   · intros i hi
     rw [eval_nodal_at_node hi]
     simp at hi
-    -- TODO I'm sure there's a better way
-    have exists_g : ∃ g : G, g.val = i := by
-      exact CanLift.prf i hi
-    rcases exists_g with ⟨g, g_eq⟩
-    rw [<-g_eq]
-    rw [map_one, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val,
+    rcases (CanLift.prf i hi : ∃ g : G, g.val = i) with ⟨g, g_eq⟩
+    rw [← g_eq, map_one, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val,
       ← Subgroup.coe_pow G, pow_card_eq_one, Subgroup.coe_one, Units.val_one, sub_self]
 
 end Nodal
