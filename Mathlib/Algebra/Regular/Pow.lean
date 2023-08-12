@@ -70,25 +70,15 @@ section CommMonoid
 
 open BigOperators
 
-variable {ι R : Type*} [CommMonoid R] [Nontrivial R] {s : Finset ι} {f : ι → R}
+variable {ι R : Type*} [CommMonoid R] {s : Finset ι} {f : ι → R}
 
 lemma IsLeftRegular.prod (h : ∀ i ∈ s, IsLeftRegular (f i)) :
-    IsLeftRegular (∏ i in s, f i) := by
-  classical
-  induction' s using Finset.induction_on with j t hj ht
-  · exact isRegular_one.left
-  · rw [Finset.prod_insert hj]
-    have hbr : IsLeftRegular (f j) := h _ (t.mem_insert_self j)
-    exact hbr.mul (ht fun a ha ↦ h a (Finset.mem_insert_of_mem ha))
+    IsLeftRegular (∏ i in s, f i) :=
+  s.prod_induction _ _ (@IsLeftRegular.mul R _) isRegular_one.left h
 
 lemma IsRightRegular.prod (h : ∀ i ∈ s, IsRightRegular (f i)) :
-    IsRightRegular (∏ i in s, f i) := by
-  classical
-  induction' s using Finset.induction_on with j t hj ht
-  · exact isRegular_one.right
-  · rw [Finset.prod_insert hj]
-    have hbr : IsRightRegular (f j) := h _ (t.mem_insert_self j)
-    exact hbr.mul (ht fun a ha ↦ h a (Finset.mem_insert_of_mem ha))
+    IsRightRegular (∏ i in s, f i) :=
+  s.prod_induction _ _ (@IsRightRegular.mul R _) isRegular_one.right h
 
 lemma IsRegular.prod (h : ∀ i ∈ s, IsRegular (f i)) :
     IsRegular (∏ i in s, f i) :=
