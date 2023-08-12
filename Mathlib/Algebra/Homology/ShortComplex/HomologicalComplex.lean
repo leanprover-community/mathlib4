@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Tactic.Linarith
 /-!
 # The short complexes attached to homological complexes
@@ -768,6 +769,29 @@ end CochainComplex
 
 end
 
+namespace HomologicalComplex
+
+variable {C : Type _} [Category C] [Preadditive C] {ι : Type _} {c : ComplexShape ι}
+  (K : HomologicalComplex C c)
+
+def sc'OpIso (i j k : ι) : K.op.sc' i j k ≅ (K.sc' k j i).op :=
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by aesop_cat) (by aesop_cat)
+
+noncomputable def scOpIso (i : ι) : K.op.sc i ≅ (K.sc i).op := K.sc'OpIso  _ _ _
+
+noncomputable def homologyOpIso (i : ι) [K.HasHomology i]
+  [K.HasHomology i] [K.op.HasHomology i] :
+  K.op.homology i ≅ Opposite.op (K.homology i) :=
+  (K.sc i).homologyOpIso
+
+noncomputable def homologyUnopIso (K : HomologicalComplex Cᵒᵖ c) (i : ι)
+    [K.HasHomology i] [K.unop.HasHomology i] :
+    Opposite.unop (K.homology i) ≅ K.unop.homology i := by
+  have : K.unop.op.HasHomology i := (inferInstance : K.HasHomology i)
+  exact (K.unop.homologyOpIso i).unop.symm
+
+end HomologicalComplex
 
 namespace HomotopyCategory
 

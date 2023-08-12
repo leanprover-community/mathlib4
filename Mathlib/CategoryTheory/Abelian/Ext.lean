@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Functor.LeftDerived
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Projective
+import Mathlib.Algebra.Homology.Opposite
 
 #align_import category_theory.abelian.ext from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -31,6 +32,8 @@ right deriving in the second argument, and show these agree.
 noncomputable section
 
 open CategoryTheory
+
+section
 
 variable (R : Type _) [Ring R] (C : Type _) [Category C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
@@ -75,3 +78,26 @@ def extSuccOfProjective (X Y : C) [Projective X] (n : ℕ) :
         aesop }
 set_option linter.uppercaseLean3 false in
 #align Ext_succ_of_projective extSuccOfProjective
+
+end
+
+namespace CategoryTheory
+
+namespace ProjectiveResolution
+
+variable {C : Type _} [Category C] [Abelian C] [EnoughProjectives C]
+  {X : C} (P : ProjectiveResolution X) (R : Type _) [Ring R]  [Linear R C]
+
+def cochainComplexExt (Y : C) : CochainComplex (ModuleCat R) ℕ :=
+  ((((linearYoneda R C).obj Y).rightOp.mapHomologicalComplex _).obj P.complex).unop
+
+def ExtIsoObj (Y : C) (n : ℕ) :
+    ((Ext R C n).obj (Opposite.op X)).obj Y ≅ (P.cochainComplexExt R Y).homology n :=
+  (P.isoLeftDerivedObj ((linearYoneda R C).obj Y).rightOp n).unop.symm ≪≫
+    HomologicalComplex.homologyUnopIso _ _
+
+-- TODO functoriality of ExtIsoObj
+
+end ProjectiveResolution
+
+end CategoryTheory

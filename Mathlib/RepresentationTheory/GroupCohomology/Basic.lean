@@ -222,15 +222,10 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 #align group_cohomology groupCohomology
 
--- TODO
--- better develop some more API for Ext and projective resolutions before doing this
---
 --set_option maxHeartbeats 3200000 in
---/-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
---`Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
---def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
---    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
---  homology'ObjIsoOfHomotopyEquiv (HomotopyEquiv.ofIso (inhomogeneousCochainsIso _)) _ ≪≫
---    HomologicalComplex.homology'Unop _ _ ≪≫ (extIso k G A n).symm
---set_option linter.uppercaseLean3 false in
---#align group_cohomology_iso_Ext groupCohomologyIsoExt
+/-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
+`Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
+def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
+    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
+  (HomologicalComplex.homologyFunctor _ _ n).mapIso (inhomogeneousCochainsIso A) ≪≫
+    (extIso k G A n).symm

@@ -695,16 +695,12 @@ instance : EnoughProjectives (Rep k G) :=
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
     ModuleCat.moduleCat_enoughProjectives.{u}
 
---set_option maxHeartbeats 1600000 in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `GroupCohomology.resolution k G`. -/
 def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (GroupCohomology.resolution k G)).homology
-          n).unop :=
-  ((GroupCohomology.projectiveResolution k G).isoLeftDerivedObj
-    ((linearYoneda k (Rep k G)).obj V).rightOp n).unop.symm
+      ((GroupCohomology.projectiveResolution k G).cochainComplexExt k V).homology n :=
+  (GroupCohomology.projectiveResolution k G).ExtIsoObj k V n
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso GroupCohomology.extIso
