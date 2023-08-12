@@ -129,12 +129,12 @@ theorem IsSquare_sq (a : α) : IsSquare (a ^ 2) :=
 
 variable [HasDistribNeg α]
 
+@[simp]
 theorem Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
   simp_rw [← two_mul, pow_mul, neg_sq]
 #align even.neg_pow Even.neg_pow
 
-@[simp]
 theorem Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one_pow]
 #align even.neg_one_pow Even.neg_one_pow
 
