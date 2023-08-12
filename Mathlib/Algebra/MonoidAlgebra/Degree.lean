@@ -26,37 +26,37 @@ open Classical BigOperators
 
 /-!
 
-# Max-degree and min-degree of an `AddMonoidAlgebra`
+# sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
 For an element `f : AddMonoidAlgebra R A`, this file defines
-* `AddMonoidAlgebra.maxDegree`: the max-degree taking values in `WithBot A`,
-* `AddMonoidAlgebra.minDegree`: the min-degree taking values in `WithTop A`.
+* `AddMonoidAlgebra.supDegree`: the sup-degree taking values in `WithBot A`,
+* `AddMonoidAlgebra.infDegree`: the inf-degree taking values in `WithTop A`.
 
 If the grading type `A` is a linearly ordered additive monoid, then these two notions of degree
 coincide with the standard one:
-* the max-degree is the maximum of the exponents of the monomials that appear with non-zero
+* the sup-degree is the maximum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊥`, if `f = 0`;
-* the min-degree is the minimum of the exponents of the monomials that appear with non-zero
+* the inf-degree is the minimum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊤`, if `f = 0`.
 
 The main results are
-* `AddMonoidAlgebra.maxDegree_mul_le`:
-  the max-degree of a product is at most the sum of the max-degrees,
-* `AddMonoidAlgebra.le_minDegree_mul`:
-  the min-degree of a product is at least the sum of the min-degrees,
-* `AddMonoidAlgebra.maxDegree_add_le`:
-  the max-degree of a sum is at most the sup of the max-degrees,
-* `AddMonoidAlgebra.le_minDegree_add`:
-  the min-degree of a sum is at least the inf of the min-degrees.
+* `AddMonoidAlgebra.supDegree_mul_le`:
+  the sup-degree of a product is at most the sum of the sup-degrees,
+* `AddMonoidAlgebra.le_infDegree_mul`:
+  the inf-degree of a product is at least the sum of the inf-degrees,
+* `AddMonoidAlgebra.supDegree_add_le`:
+  the sup-degree of a sum is at most the sup of the sup-degrees,
+* `AddMonoidAlgebra.le_infDegree_add`:
+  the inf-degree of a sum is at least the inf of the inf-degrees.
 
 ## Implementation notes
 
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 Next, the general lemmas get specialized twice:
-* once for `maxDegree` (essentially a simple application) and
-* once for `minDegree` (a simple application, via `OrderDual`).
+* once for `supDegree` (essentially a simple application) and
+* once for `infDegree` (a simple application, via `OrderDual`).
 
 These final lemmas are the ones that likely get used the most.  The generic lemmas about
 `Finset.support.sup` may not be used directly much outside of this file.
@@ -222,116 +222,65 @@ variable [Semiring R]
 
 section SupDegree
 
-variable [SemilatticeSup A]
+variable [AddZeroClass A] [SemilatticeSup B] [AddZeroClass B] [OrderBot B]
+  (D : A → B)
 
-/-- Let `R` be a semiring, let `A` be a `SemilatticeSup`, and let `f : R[A]` be an
-an element of `AddMonoidAlgebra R A`.  The sup-degree of `f` takes values in `WithBot A`
-and it is the supremum of the support of `f` or `⊥`, depending on whether `f` is non-zero or not.
-If `A` has a linear order, then this notion coincides with the usual one, using the maximum of
-the exponents. -/
+/-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `B` be an `OrderBot`,
+and let `D : A → B` be a "degree" function.
+For an element `f : R[A]`, the `AddMonoidAlgebra R A`, the element `supDegree f : B` is the
+supremum of all the elements in the support of `f`, or `⊥` if `f` is zero.
+Often, the Type `B` is `WithBot A`,
+If, further, `A` has a linear order, then this notion coincides with the usual one,
+using the maximum of the exponents. -/
 @[reducible]
-def supDegree (f : AddMonoidAlgebra R A) : WithBot A :=
-  f.support.sup (↑)
-#align add_monoid_algebra.sup_degree AddMonoidAlgebra.supDegree
+def supDegree (f : AddMonoidAlgebra R A) : B :=
+  f.support.sup D
+#noalign AddMonoidAlgebra.supDegree
 
 theorem supDegree_add_le (f g : AddMonoidAlgebra R A) :
-    (f + g).supDegree ≤ f.supDegree ⊔ g.supDegree :=
-  --  Porting note: the coercion now needs the explicit type ascription
-  sup_support_add_le ((↑) : A → WithBot A) f g
-#align add_monoid_algebra.sup_degree_add_le AddMonoidAlgebra.supDegree_add_le
+    (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
+  sup_support_add_le D f g
+#noalign AddMonoidAlgebra.supDegree_add_le
 
-variable [AddMonoid A] [CovariantClass A A (· + ·) (· ≤ ·)]
-  [CovariantClass A A (Function.swap (· + ·)) (· ≤ ·)]
-
-variable (f g : AddMonoidAlgebra R A)
-
-theorem supDegree_mul_le : (f * g).supDegree ≤ f.supDegree + g.supDegree :=
-  sup_support_mul_le (fun {_ _} => (WithBot.coe_add _ _).le) f g
-#align add_monoid_algebra.sup_degree_mul_le AddMonoidAlgebra.supDegree_mul_le
+variable [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
+  (D : A →+ B) in
+theorem supDegree_mul_le (f g : AddMonoidAlgebra R A) :
+    (f * g).supDegree D ≤ f.supDegree D + g.supDegree D :=
+  sup_support_mul_le (fun {_ _} => (AddMonoidHom.map_add D _ _).le) f g
+#noalign AddMonoidAlgebra.supDegree_mul_le
 
 end SupDegree
 
 section InfDegree
 
-variable [SemilatticeInf A]
+variable [AddZeroClass A] [SemilatticeInf T] [AddZeroClass T] [OrderTop T]
 
-/-- Let `R` be a semiring, let `A` be a `SemilatticeInf`, and let `f : R[A]` be an
-an element of `AddMonoidAlgebra R A`.  The inf-degree of `f` takes values in `WithTop A`
-and it is the infimum of the support of `f` or `⊤`, depending on whether `f` is non-zero or not.
-If `A` has a linear order, then this notion coincides with the usual one, using the minimum of
-the exponents. -/
+/-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `T` be an `OrderTop`,
+and let `D : A → T` be a "degree" function.
+For an element `f : R[A]`, the `AddMonoidAlgebra R A`, the element `infDegree f : T` is the
+infimum of all the elements in the support of `f`, or `⊤` if `f` is zero.
+Often, the Type `T` is `WithTop A`,
+If, further, `A` has a linear order, then this notion coincides with the usual one,
+using the minimum of the exponents. -/
 @[reducible]
-def infDegree (f : AddMonoidAlgebra R A) : WithTop A :=
-  f.support.inf (↑)
-#align add_monoid_algebra.inf_degree AddMonoidAlgebra.infDegree
-
-theorem le_infDegree_add (f g : AddMonoidAlgebra R A) :
-    f.infDegree ⊓ g.infDegree ≤ (f + g).infDegree :=
-  --  Porting note: the coercion now needs the explicit type ascription
-  sup_support_add_le ((↑) : Aᵒᵈ → WithBot Aᵒᵈ) f g
-#align add_monoid_algebra.le_inf_degree_add AddMonoidAlgebra.le_infDegree_add
-
-variable [AddMonoid A] [CovariantClass A A (· + ·) (· ≤ ·)]
-  [CovariantClass A A (Function.swap (· + ·)) (· ≤ ·)] (f g : AddMonoidAlgebra R A)
-
-theorem le_infDegree_mul : f.infDegree + g.infDegree ≤ (f * g).infDegree :=
-  sup_support_mul_le (fun {_ _ : Aᵒᵈ} => (WithBot.coe_add _ _).le) _ _
-#align add_monoid_algebra.le_inf_degree_mul AddMonoidAlgebra.le_infDegree_mul
-
-end InfDegree
-
-section MaxDegree
-
-variable [AddZeroClass A] [LinearOrderedAddCommMonoid B] [OrderBot B] (D : A →+ B)
-
-/-- Let `R` be a semiring, let `A` be a `SemilatticeSup`, and let `f : R[A]` be an
-an element of `AddMonoidAlgebra R A`.  The max-degree of `f` takes values in `WithBot A`
-and it is the supremum of the support of `f` or `⊥`, depending on whether `f` is non-zero or not.
-If `A` has a linear order, then this notion coincides with the usual one, using the maximum of
-the exponents. -/
-@[reducible]
-def maxDegree (f : AddMonoidAlgebra R A) : B :=
-  f.support.sup D
-#align add_monoid_algebra.max_degree AddMonoidAlgebra.maxDegree
-
-theorem maxDegree_add_le (f g : AddMonoidAlgebra R A) :
-    (f + g).maxDegree D ≤ max (f.maxDegree D) (g.maxDegree D) :=
-  sup_support_add_le D f g
-#align add_monoid_algebra.max_degree_add_le AddMonoidAlgebra.maxDegree_add_le
-
-theorem maxDegree_mul_le (f g : AddMonoidAlgebra R A) :
-    (f * g).maxDegree D ≤ f.maxDegree D + g.maxDegree D :=
-  sup_support_mul_le (fun {_ _} => (AddMonoidHom.map_add D _ _).le) f g
-#align add_monoid_algebra.max_degree_mul_le AddMonoidAlgebra.maxDegree_mul_le
-
-end MaxDegree
-
-section MinDegree
-
-variable [AddZeroClass A] [LinearOrderedAddCommMonoid T] [OrderTop T] (D : A →+ T)
-
-/-- Let `R` be a semiring, let `A` be a `SemilatticeInf`, and let `f : R[A]` be an
-an element of `AddMonoidAlgebra R A`.  The min-degree of `f` takes values in `WithTop A`
-and it is the infimum of the support of `f` or `⊤`, depending on whether `f` is non-zero or not.
-If `A` has a linear order, then this notion coincides with the usual one, using the minimum of
-the exponents. -/
-@[reducible]
-def minDegree (f : AddMonoidAlgebra R A) : T :=
+def infDegree (D : A → T) (f : AddMonoidAlgebra R A) : T :=
   f.support.inf D
-#align add_monoid_algebra.min_degree AddMonoidAlgebra.minDegree
+#noalign AddMonoidAlgebra.infDegree
 
-theorem le_minDegree_add (f g : AddMonoidAlgebra R A) :
-    min (f.minDegree D) (g.minDegree D) ≤ (f + g).minDegree D :=
+theorem le_infDegree_add (D : A → T) (f g : AddMonoidAlgebra R A) :
+    (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
-#align add_monoid_algebra.le_min_degree_add AddMonoidAlgebra.le_minDegree_add
+#noalign AddMonoidAlgebra.le_infDegree_add
 
-theorem le_minDegree_mul (f g : AddMonoidAlgebra R A) :
-    f.minDegree D + g.minDegree D ≤ (f * g).minDegree D :=
+variable [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
+  (D : A →+ T) in
+theorem le_infDegree_mul (f g : AddMonoidAlgebra R A) :
+    f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   --  Porting note: added `a b` in `AddMonoidHom.map_add D a b`, was `AddMonoidHom.map_add D _ _`
   le_inf_support_mul (fun {a b : A} => (AddMonoidHom.map_add D a b).ge) _ _
-#align add_monoid_algebra.le_min_degree_mul AddMonoidAlgebra.le_minDegree_mul
+#noalign AddMonoidAlgebra.le_infDegree_mul
 
-end MinDegree
+end InfDegree
 
 end Degrees
 
