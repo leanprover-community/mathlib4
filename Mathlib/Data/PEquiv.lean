@@ -90,7 +90,7 @@ theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
 
 /-- The identity map as a partial equivalence. -/
 @[refl]
-protected def refl (α : Type _) : α ≃. α where
+protected def refl (α : Type*) : α ≃. α where
   toFun := some
   invFun := some
   inv _ _ := eq_comm
@@ -465,7 +465,7 @@ end PEquiv
 
 namespace Equiv
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- Turns an `Equiv` into a `PEquiv` of the whole type. -/
 def toPEquiv (f : α ≃ β) : α ≃. β where
