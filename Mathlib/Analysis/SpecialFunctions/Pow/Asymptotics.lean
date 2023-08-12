@@ -95,10 +95,8 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 0) := by
   show Tendsto (fun z => b^z) atBot (𝓝 0)
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine tendsto_exp_atBot.comp ?_
-  have h₁ : 0 < log b := by rw [log_pos_iff (by positivity)]; aesop
-  rw [tendsto_const_mul_atBot_iff_pos (by show atBot ≤ atBot; simp)]
-  exact h₁
+  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
+  exact (log_pos_iff (by positivity)).mpr <| by aesop
 
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
