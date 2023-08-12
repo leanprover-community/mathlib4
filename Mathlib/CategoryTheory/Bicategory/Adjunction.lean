@@ -28,7 +28,7 @@ our proofs look like `rw [...]; simp [bicategoricalComp]; coherence`. The `simp`
 necessary, but it speeds up the proof and allow us to avoid increasing the `maxHeartbeats`.
 The speedup is probably due to reducing the length of the expression e.g. by absorbing
 identity maps or applying the pentagon relation. Such a hack may not be necessary if the
-coherence tactic are improved. One possible way would be to perform a such simplification in the
+coherence tactic is improved. One possible way would be to perform such a simplification in the
 preprocessing of the coherence tactic.
 
 ## Todo
