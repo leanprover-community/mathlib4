@@ -17,11 +17,6 @@ universe u
 
 /--
 The type of symbols is the disjoint union of terminals `T` and nonterminals `N`.
-We do not require `T` and `N` to be finite in this definition.
-As a result, we do not need to copy the typeclass instances `[Fintype T]` and `[Fintype N]`
-alongside our type parameters (which would appear in almost every lemma).
-Instead, later we work in terms of a list of rewrite rules, which is finite by definition and from
-which we could infer that only a finite set of terminals and a finite set of nonterminals can occur.
 -/
 inductive Symbol (T : Type u) (N : Type u)
   | terminal    (t : T) : Symbol T N
