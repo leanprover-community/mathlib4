@@ -108,9 +108,9 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
 
-@[simp]
 theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
-    f (trace A) = trace (f.mapMatrix A) := map_sum f (fun i => diag A i) Finset.univ
+    f (trace A)  = trace (f.mapMatrix A) :=
+  map_sum f (fun i => diag A i) Finset.univ
 
 end AddCommMonoid
 

@@ -45,13 +45,13 @@ theorem discr : discr ℚ = 1 := by
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
   calc NumberField.discr ℚ
     _ = Algebra.discr ℤ b := by convert (discr_eq_discr ℚ b).symm
-    _ = Matrix.det (Algebra.traceMatrix ℤ b) := rfl
-    _ = Algebra.trace ℤ (𝓞 ℚ) 1 := ?_
-    _ = 1                 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
-  rw [Matrix.det_unique, Algebra.traceMatrix_apply, Basis.map_apply, Basis.singleton_apply,
-    AddEquiv.toIntLinearEquiv_symm, AddEquiv.coe_toIntLinearEquiv, RingEquiv.toAddEquiv_eq_coe,
-    show (AddEquiv.symm ringOfIntegersEquiv) (1 : ℤ) = (1 : 𝓞 ℚ) by
-      rw [AddEquiv.symm_apply_eq, RingEquiv.coe_toAddEquiv, map_one],
-    Algebra.traceForm_apply, mul_one]
+    _ = Algebra.trace ℤ (𝓞 ℚ) (b default * b default) := by
+      rw [Algebra.discr_def, Matrix.det_unique, Algebra.traceMatrix_apply, Algebra.traceForm_apply]
+    _ = Algebra.trace ℤ (𝓞 ℚ) 1 := by
+      rw [Basis.map_apply, RingEquiv.toAddEquiv_eq_coe, AddEquiv.toIntLinearEquiv_symm,
+        AddEquiv.coe_toIntLinearEquiv, Basis.singleton_apply,
+        show (AddEquiv.symm ↑ringOfIntegersEquiv) (1 : ℤ) = ringOfIntegersEquiv.symm 1 by rfl,
+        map_one, mul_one]
+    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
 
 end Rat
