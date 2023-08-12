@@ -11,18 +11,18 @@ import Mathlib.ModelTheory.Algebra.Field.AlgClosed
 #align_import field_theory.ax_grothendieck from "leanprover-community/mathlib"@"4e529b03dd62b7b7d13806c3fb974d9d4848910e"
 
 /-!
-# Ax-Grothendieck for algebraic extensions of `ZMod p`
+# Ax-Grothendieck
 
-This file proves that if `R` is an algebraic extension of a finite field,
-then any injective polynomial map `R^n → R^n` is also surjective.
+This file proves that if `K` is an algebraically closed field,
+then any injective polynomial map `K^n → K^n` is also surjective.
 
-This proof is required for the true Ax-Grothendieck theorem, which proves the same result
-for any algebraically closed field of characteristic zero.
+## Main results
 
-## TODO
+* `ax_grothendieck`: any injective polynomial map `K^n → K^n` is also surjective
+whenever `K` is an algebraically closed field.
+* `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
+whenever `R` is an algebraic extension of a finite field.
 
-The proof of the theorem for characteristic zero is not in mathlib, but it is at
-https://github.com/Jlh18/ModelTheoryInLean8
 -/
 
 
