@@ -17,13 +17,15 @@ in the suggestion.
 This is helpful after tactics like `dsimp`, which can then be deleted.
 -/
 
-/--  `change? term?` unifies the optional `term?` with the current goal, defaulting to the
-goal, if `term?` is not present.
-It then prints in the infoView the unified term.
-This is useful to replace the main goal after a `dsimp`.
+/-- `change? term` unifies `term` with the current goal, then suggests explicit `change` syntax
+that uses the resulting unified term.
+
+If `term` is not present, `change?` suggests the current goal itself. This is useful after tactics 
+which transform the goal while maintaining definitional equality, such as `dsimp`; those preceding 
+tactic calls can then be deleted.
 ```lean
 example : (fun x : Nat => x) 0 = 1 := by
-  change? 0 = _  -- `change 0 = 1`
+  change? 0 = _  -- `Try this: change 0 = 1`
 ```
 -/
 syntax (name := change?) "change?" (ppSpace colGt term)? : tactic
