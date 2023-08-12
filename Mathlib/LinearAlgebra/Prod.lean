@@ -757,6 +757,37 @@ theorem snd_comp_prodComm :
 
 end prodComm
 
+section SkewSwap
+
+variable (R M M₂)
+variable [Semiring R]
+variable [AddCommGroup M] [AddCommGroup M₂]
+variable [Module R M] [Module R M₂]
+
+/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
+@[simps apply]
+protected def skewSwap : (M × M₂) ≃ₗ[R] (M₂ × M) where
+  toFun x := (-x.2, x.1)
+  invFun x := (x.2, -x.1)
+  map_add' _ _ := by
+    simp [add_comm]
+  map_smul' _ _ := by
+    simp
+  left_inv _ := by
+    simp
+  right_inv _ := by
+    simp
+
+variable {R M M₂}
+
+@[simp]
+theorem skewSwap_apply (x : M × M₂) : LinearEquiv.skewSwap R M M₂ x = (-x.2, x.1) := rfl
+
+@[simp]
+theorem skewSwap_symm_apply (x : M₂ × M) : (LinearEquiv.skewSwap R M M₂).symm x = (x.2, -x.1) := rfl
+
+end SkewSwap
+
 section
 
 variable (R M M₂ M₃ M₄)
@@ -853,70 +884,6 @@ theorem skewProd_symm_apply (f : M →ₗ[R] M₄) (x) :
 #align linear_equiv.skew_prod_symm_apply LinearEquiv.skewProd_symm_apply
 
 end
-
-section Swap
-
-variable (R M M₂)
-variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
-variable [Module R M] [Module R M₂]
-
-/-- `Prod.swap` as a linear equivalence. -/
-protected def swap : (M × M₂) ≃ₗ[R] (M₂ × M) where
-  toFun x := (x.2, x.1)
-  invFun x := (x.2, x.1)
-  map_add' _ _ := by
-    simp
-  map_smul' _ _ := by
-    simp
-  left_inv _ := by
-    simp
-  right_inv _ := by
-    simp
-
-theorem coe_swap : (LinearEquiv.swap R M M₂ : M × M₂ → M₂ × M) = Prod.swap := rfl
-
-theorem coe_swap_symm : ((LinearEquiv.swap R M M₂).symm : M₂ × M → M × M₂) = Prod.swap := rfl
-
-variable {R M M₂}
-
-@[simp]
-theorem swap_apply (x : M × M₂) : LinearEquiv.swap R M M₂ x = (x.2, x.1) := rfl
-
-@[simp]
-theorem swap_symm_apply (x : M₂ × M) : (LinearEquiv.swap R M M₂).symm x = (x.2, x.1) := rfl
-
-end Swap
-
-section SkewSwap
-
-variable (R M M₂)
-variable [Semiring R]
-variable [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R M₂]
-
-/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
-protected def skewSwap : (M × M₂) ≃ₗ[R] (M₂ × M) where
-  toFun x := (-x.2, x.1)
-  invFun x := (x.2, -x.1)
-  map_add' _ _ := by
-    simp [add_comm]
-  map_smul' _ _ := by
-    simp
-  left_inv _ := by
-    simp
-  right_inv _ := by
-    simp
-
-variable {R M M₂}
-
-@[simp]
-theorem skewSwap_apply (x : M × M₂) : LinearEquiv.skewSwap R M M₂ x = (-x.2, x.1) := rfl
-
-@[simp]
-theorem skewSwap_symm_apply (x : M₂ × M) : (LinearEquiv.skewSwap R M M₂).symm x = (x.2, -x.1) := rfl
-
-end SkewSwap
 
 end LinearEquiv
 
