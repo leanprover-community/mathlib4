@@ -7,11 +7,14 @@ Authors: Damiano Testa
 import Mathlib.Tactic.Basic
 /-!
 
-# Tactic `change? _`
+# Tactic `change? term`
 
-This tactic is used to replace the goal with a definitionally equal one.
-The `_` is a general term and is intended to be used to guide which unfolding you want
-Lean to perform.
+This tactic is used to suggest a replacement of the goal by a definitionally equal term.
+`term` is intended to contain holes which get unified with the main goal and filled in explicitly 
+in the suggestion.
+
+`term` can also be omitted, in which case `change?` simply suggests `change` with the main goal. 
+This is helpful after tactics like `dsimp`, which can then be deleted.
 -/
 
 /--  `change? term?` unifies the optional `term?` with the current goal, defaulting to the
