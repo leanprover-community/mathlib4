@@ -21,7 +21,7 @@ open Finset
 
 open BigOperators
 
-variable {R : Type _}
+variable {R : Type*}
 
 namespace Commute
 
@@ -319,7 +319,7 @@ theorem CharP.neg_one_pow_char_pow [CommRing R] (p n : ℕ) [CharP R p] [Fact p.
   rw [← add_pow_char_pow, add_left_neg, zero_pow (pow_pos (Fact.out (p := Nat.Prime p)).pos _)]
 #align char_p.neg_one_pow_char_pow CharP.neg_one_pow_char_pow
 
-theorem RingHom.charP_iff_charP {K L : Type _} [DivisionRing K] [Semiring L] [Nontrivial L]
+theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
     (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
   simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, f.map_zero]
 #align ring_hom.char_p_iff_char_p RingHom.charP_iff_charP
@@ -415,7 +415,7 @@ theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R 
   (frobenius R p).map_multiset_sum _
 #align multiset_sum_pow_char multiset_sum_pow_char
 
-theorem sum_pow_char {ι : Type _} (s : Finset ι) (f : ι → R) :
+theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
     (∑ i in s, f i) ^ p = ∑ i in s, f i ^ p :=
   (frobenius R p).map_sum _ _
 #align sum_pow_char sum_pow_char
@@ -448,7 +448,7 @@ theorem frobenius_inj [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP
 
 /-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
 then every `a : R` is a square. -/
-theorem isSquare_of_charTwo' {R : Type _} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
+theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
     (a : R) : IsSquare a := by
   cases nonempty_fintype R
   exact
@@ -462,7 +462,7 @@ section
 
 variable [NonAssocRing R]
 
-theorem charP_to_charZero (R : Type _) [AddGroupWithOne R] [CharP R 0] : CharZero R :=
+theorem charP_to_charZero (R : Type*) [AddGroupWithOne R] [CharP R 0] : CharZero R :=
   charZero_of_inj_zero fun n h0 => eq_zero_of_zero_dvd ((cast_eq_zero_iff R 0 n).mp h0)
 #align char_p.char_p_to_char_zero CharP.charP_to_charZero
 
@@ -569,7 +569,7 @@ theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
 
 end Ring
 
-section CharOne
+section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
@@ -605,14 +605,19 @@ theorem ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p
   Or.resolve_left ((Nat.dvd_prime hprime).1 (ringChar.dvd hp0)) ringChar_ne_one
 #align char_p.ring_char_of_prime_eq_zero CharP.ringChar_of_prime_eq_zero
 
-end CharOne
+theorem charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
+    CharP R p ↔ (p : R) = 0 :=
+  ⟨fun _ => cast_eq_zero R p,
+   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+
+end NonAssocSemiring
 
 end CharP
 
 section
 
 /-- We have `2 ≠ 0` in a nontrivial ring whose characteristic is not `2`. -/
-protected theorem Ring.two_ne_zero {R : Type _} [NonAssocSemiring R] [Nontrivial R]
+protected theorem Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 := by
   rw [Ne.def, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
   exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
@@ -621,13 +626,13 @@ protected theorem Ring.two_ne_zero {R : Type _} [NonAssocSemiring R] [Nontrivial
 -- We have `CharP.neg_one_ne_one`, which assumes `[Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)]`.
 -- This is a version using `ringChar` instead.
 /-- Characteristic `≠ 2` and nontrivial implies that `-1 ≠ 1`. -/
-theorem Ring.neg_one_ne_one_of_char_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
+theorem Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h =>
   Ring.two_ne_zero hR (one_add_one_eq_two (α := R) ▸ neg_eq_iff_add_eq_zero.mp h)
 #align ring.neg_one_ne_one_of_char_ne_two Ring.neg_one_ne_one_of_char_ne_two
 
 /-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/
-theorem Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
+theorem Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 :=
   ⟨fun h =>
     (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
@@ -702,7 +707,7 @@ section
 
 /-- If two integers from `{0, 1, -1}` result in equal elements in a ring `R`
 that is nontrivial and of characteristic not `2`, then they are equal. -/
-theorem Int.cast_injOn_of_ringChar_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
+theorem Int.cast_injOn_of_ringChar_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : ({0, 1, -1} : Set ℤ).InjOn ((↑) : ℤ → R) := by
   intro a ha b hb h
   apply eq_of_sub_eq_zero

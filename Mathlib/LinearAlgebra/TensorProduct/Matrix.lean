@@ -20,7 +20,7 @@ equivalent to taking the Kronecker product of their matrix representations.
 -/
 
 
-variable {R : Type _} {M N P M' N' : Type _} {ι κ τ ι' κ' : Type _}
+variable {R : Type*} {M N P M' N' : Type*} {ι κ τ ι' κ' : Type*}
 
 variable [DecidableEq ι] [DecidableEq κ] [DecidableEq τ]
 

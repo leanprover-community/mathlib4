@@ -332,12 +332,12 @@ theorem vanishingIdeal_union (t t' : Set (PrimeSpectrum R)) :
   (gc R).u_inf
 #align prime_spectrum.vanishing_ideal_union PrimeSpectrum.vanishingIdeal_union
 
-theorem zeroLocus_iSup {ι : Sort _} (I : ι → Ideal R) :
+theorem zeroLocus_iSup {ι : Sort*} (I : ι → Ideal R) :
     zeroLocus ((⨆ i, I i : Ideal R) : Set R) = ⋂ i, zeroLocus (I i) :=
   (gc R).l_iSup
 #align prime_spectrum.zero_locus_supr PrimeSpectrum.zeroLocus_iSup
 
-theorem zeroLocus_iUnion {ι : Sort _} (s : ι → Set R) :
+theorem zeroLocus_iUnion {ι : Sort*} (s : ι → Set R) :
     zeroLocus (⋃ i, s i) = ⋂ i, zeroLocus (s i) :=
   (gc_set R).l_iSup
 #align prime_spectrum.zero_locus_Union PrimeSpectrum.zeroLocus_iUnion
@@ -346,7 +346,7 @@ theorem zeroLocus_bUnion (s : Set (Set R)) :
     zeroLocus (⋃ s' ∈ s, s' : Set R) = ⋂ s' ∈ s, zeroLocus s' := by simp only [zeroLocus_iUnion]
 #align prime_spectrum.zero_locus_bUnion PrimeSpectrum.zeroLocus_bUnion
 
-theorem vanishingIdeal_iUnion {ι : Sort _} (t : ι → Set (PrimeSpectrum R)) :
+theorem vanishingIdeal_iUnion {ι : Sort*} (t : ι → Set (PrimeSpectrum R)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
   (gc R).u_iInf
 #align prime_spectrum.vanishing_ideal_Union PrimeSpectrum.vanishingIdeal_iUnion
@@ -496,7 +496,7 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
 #align prime_spectrum.vanishing_ideal_strict_anti_mono_iff PrimeSpectrum.vanishingIdeal_strict_anti_mono_iff
 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
-def closedsEmbedding (R : Type _) [CommRing R] :
+def closedsEmbedding (R : Type*) [CommRing R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
   OrderEmbedding.ofMapLEIff (fun s => vanishingIdeal <| OrderDual.ofDual s) fun s _ =>
     (vanishingIdeal_anti_mono_iff s.2).symm
@@ -569,7 +569,7 @@ instance quasiSober : QuasiSober (PrimeSpectrum R) :=
 
 section Comap
 
-variable {S' : Type _} [CommRing S']
+variable {S' : Type*} [CommRing S']
 
 theorem preimage_comap_zeroLocus_aux (f : R →+* S) (s : Set R) :
     (fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩ : PrimeSpectrum S → PrimeSpectrum R) ⁻¹'
@@ -946,7 +946,7 @@ instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
 
-instance {R : Type _} [Field R] : Unique (PrimeSpectrum R) where
+instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
   uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 

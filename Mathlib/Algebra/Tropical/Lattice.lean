@@ -27,7 +27,7 @@ constructions quicker to implement.
 -/
 
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open Tropical
 
