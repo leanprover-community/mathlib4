@@ -26,7 +26,7 @@ using ordinals.
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
   uncountable cardinal, and so on. The related function `Ordinal.initial`
   (notation: `ω_`) gives the first ordinal of a given infinite cardinality.
-  Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
+  Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
@@ -1455,8 +1455,8 @@ namespace Ordinal
 open Cardinal
 
 /--
-`initial i` (notation: `ω_ i`) gives the first ordinal of cardinality
-`aleph i`. Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
+`initial o` (notation: `ω_ o`) gives the first ordinal of cardinality
+`aleph o`. Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
 You can also write `ω_ 1` as `ω₁`.
 -/
 def initial (x : Ordinal.{u}) : Ordinal.{u} := (aleph x).ord
@@ -1467,7 +1467,7 @@ scoped notation "ω_" => Ordinal.initial
 scoped notation "ω₁" => Ordinal.initial 1
 
 @[simp]
-theorem card_initial (i : Ordinal): card (initial i) = aleph i := card_ord _
+theorem card_initial (o : Ordinal): card (initial o) = aleph o := card_ord _
 
 /--
 The first (infinite) initial ordinal is `ω`.
@@ -1480,7 +1480,7 @@ lemma initial0 : ω_ 0 = ω := by
 /--
 An initial ordinal is a limit ordinal.
 -/
-lemma isLimit_initial (i : Ordinal): (ω_ i).IsLimit := ord_isLimit (aleph0_le_aleph i)
+lemma isLimit_initial (o : Ordinal): (ω_ o).IsLimit := ord_isLimit (aleph0_le_aleph o)
 
 lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
 
@@ -1501,14 +1501,14 @@ open scoped Cardinal
 /--
 Bounding the cardinal of an ordinal-indexed union of sets.
 -/
-lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {κ : Cardinal} {i : Ordinal}
-    (hi : i ≤ κ.ord) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
-    (hA : ∀ j < i, #(A j) ≤ κ) :
-    #(⋃ j < i, A j) ≤ κ := by
-  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← i.enumIsoOut.symm.surjective.range_comp]
+lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {o : Ordinal} {κ : Cardinal}
+    (ho : o ≤ κ.ord) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
+    (hA : ∀ j < o, #(A j) ≤ κ) :
+    #(⋃ j < o, A j) ≤ κ := by
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoOut.symm.surjective.range_comp]
   apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hκ)
   rw [mk_ordinal_out]
-  exact mul_le_mul' (card_le_of_le_ord hi) <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+  exact mul_le_mul' (card_le_of_le_ord ho) <| ciSup_le' <| (hA _ <| typein_lt_self ·)
 
 end Cardinal
 
