@@ -8,8 +8,13 @@ import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant
-This file defines the discrimiant of a number field.
+This file defines the discriminant of a number field.
 
+## Main definitions
+ - `discr` the discriminant of a number field.
+
+## Tags
+number field, discriminant
 -/
 
 namespace NumberField
