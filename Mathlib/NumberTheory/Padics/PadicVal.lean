@@ -621,8 +621,8 @@ theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hn
 Taking (`p - 1`) times the `p`-adic valuation of the binomial `n` over `k` equals the sum of the
 digits of `k` plus the sum of the digits of `n - k` minus the sum of digits of `n`, all base `p`.
 -/
-theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n p : ℕ} [hp : Fact p.Prime] (h : k ≤ n) :
-    (p - 1) * padicValNat p (choose n k) =
+theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n p : ℕ} [hp : Fact p.Prime]
+    (h : k ≤ n) : (p - 1) * padicValNat p (choose n k) =
     (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
   simp only [Nat.choose_eq_factorial_div_factorial h]
   rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
