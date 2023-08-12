@@ -69,7 +69,6 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
       rw [isBigO_iff]
       exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
   case inr.inl =>  -- b = 0
-    simp only [log_zero, zero_mul, exp_zero, one_mul, ite_true]
     refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
     rw [tendsto_pure]
     filter_upwards [eventually_ne_atTop 0] with _ hx
