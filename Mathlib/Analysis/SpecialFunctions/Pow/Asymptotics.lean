@@ -75,11 +75,8 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     simp [hx]
   case inr.inr =>   -- b > 0
     simp_rw [Real.rpow_def_of_pos hb]
-    have h₁ : log b < 0 := by rw [log_neg_iff hb]; exact hb₁
-    refine tendsto_exp_atBot.comp ?_
-    rw [tendsto_const_mul_atBot_of_neg h₁]
-    show atTop ≤ atTop
-    rfl
+    refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
+    exact (log_neg_iff hb).mpr hb₁
 
 lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
