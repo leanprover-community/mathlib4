@@ -179,30 +179,26 @@ def shiftk_equiv {N: ℕ} [hN : NeZero N] (k : Fin N) : (Fin N) ≃ (Fin N) wher
   left_inv := by intro x;  simp only [shiftk, sub_neg_eq_add, sub_add_cancel]
   right_inv := by intro x; simp only [shiftk, sub_neg_eq_add, add_sub_cancel]
 
-theorem circulant_dft  (t : Fin n → ℂ) :
-    circulant t = (Wₙ n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (Wₙ n) := by
-  letI := invWₙ n
-  apply_fun ((Wₙ n) ⬝ ·)
-  dsimp
-  rw [Matrix.mul_assoc, Matrix.mul_inv_cancel_left_of_invertible]
-  funext a b
-  simp only [diagonal_mul, mul_apply, circulant_apply, Wₙ_apply, diagonal_apply, dft]
-  -- by_cases h : a = b
-  simp_rw [ite_mul, zero_mul, sum_ite_eq, mem_univ, ite_true,
-    ← mul_inv_eq_iff_eq_mul₀ (Complex.exp_ne_zero _), ← Complex.exp_neg]
-  rw [mul_comm]
-  simp_rw [mul_sum, ← mul_assoc, ← Complex.exp_add, neg_add_eq_sub, ← sub_div, mul_assoc (2*π*I),
-    ← mul_sub]
-  let f := fun x : (Fin n) => (Complex.exp ( 2*π * I * (a * (x))/n)) * (t (x))
-  have h1 : ∀ (x : Fin n), (shiftk_equiv (-b)) x = x - b := by sorry
-  have h2 : ∀ (x : Fin n), ((x:ℂ) - (b:ℂ)) = (shiftk_equiv (-b)) x := by sorry
-  simp_rw [← h1, h2]
-  rw [Equiv.sum_comp (shiftk_equiv (-b)) f]
-  sorry
-  -- apply Matrix.mul_right_injective_of_invertible (Wₙ n)
-
-  -- rw [Equiv.sum_comp (Equiv.refl _) f]
-
+-- theorem circulant_dft  (t : Fin n → ℂ) :
+--     circulant t = (Wₙ n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (Wₙ n) := by
+--   letI := invWₙ n
+--   apply_fun ((Wₙ n) ⬝ ·)
+--   dsimp
+--   rw [Matrix.mul_assoc, Matrix.mul_inv_cancel_left_of_invertible]
+--   funext a b
+--   simp only [diagonal_mul, mul_apply, circulant_apply, Wₙ_apply, diagonal_apply, dft]
+--   -- by_cases h : a = b
+--   simp_rw [ite_mul, zero_mul, sum_ite_eq, mem_univ, ite_true,
+--     ← mul_inv_eq_iff_eq_mul₀ (Complex.exp_ne_zero _), ← Complex.exp_neg]
+--   rw [mul_comm]
+--   simp_rw [mul_sum, ← mul_assoc, ← Complex.exp_add, neg_add_eq_sub, ← sub_div, mul_assoc (2*π*I),
+--     ← mul_sub]
+--   let f := fun x : (Fin n) => (Complex.exp ( 2*π * I * (a * (x))/n)) * (t (x))
+--   have h1 : ∀ (x : Fin n), (shiftk_equiv (-b)) x = x - b := by sorry
+--   have h2 : ∀ (x : Fin n), ((x:ℂ) - (b:ℂ)) = (shiftk_equiv (-b)) x := by sorry
+--   simp_rw [← h1, h2]
+--   rw [Equiv.sum_comp (shiftk_equiv (-b)) f]
+--   apply Matrix.mul_right_injective_of_invertible (Wₙ n)
 
 
 -- theorem dft_eq_vandermonde :
