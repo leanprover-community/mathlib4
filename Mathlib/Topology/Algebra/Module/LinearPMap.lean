@@ -45,7 +45,7 @@ Unbounded operators, closed operators
 
 open Topology
 
-variable {R E F : Type _}
+variable {R E F : Type*}
 
 variable [CommRing R] [AddCommGroup E] [AddCommGroup F]
 
