@@ -626,8 +626,7 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n p : ℕ} [hp : Fac
     (p - 1) * padicValNat p (choose n k) =
     (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
   simp only [Nat.choose_eq_factorial_div_factorial h]
-  rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h,
-      Nat.mul_sub_left_distrib,
+  rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
       padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
   simp only [sub_one_mul_padicValNat_factorial_eq_sub_sum_digits]
   rw [← Nat.sub_add_comm <| digit_sum_le p k,
