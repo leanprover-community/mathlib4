@@ -57,11 +57,8 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
   show Tendsto (fun z => b^z) atTop (𝓝 0)
   rcases lt_trichotomy b 0 with hb|rfl|hb
   case inl =>   -- b < 0
-    simp_rw [Real.rpow_def_of_nonpos hb.le]
-    simp only [hb.ne, ite_false]
-    rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero]
-    have H : (1:ℝ) = 1 * 1 := by simp
-    rw [H]
+    simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
+    rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
     refine IsLittleO.mul_isBigO ?exp ?cos
     case exp =>
       rw [isLittleO_const_iff one_ne_zero]
