@@ -418,6 +418,10 @@ end Aux
 /-! ### Instances on `L^p` products -/
 
 
+instance instTopologicalSpace [TopologicalSpace α] [TopologicalSpace β] :
+    TopologicalSpace (ProdLp p α β) :=
+  instTopologicalSpaceProd
+
 instance instUniformSpace [UniformSpace α] [UniformSpace β] : UniformSpace (ProdLp p α β) :=
   instUniformSpaceProd
 
@@ -430,11 +434,12 @@ theorem uniformContinuous_equiv_symm [UniformSpace α] [UniformSpace β] :
   uniformContinuous_id
 
 @[continuity]
-theorem continuous_equiv [UniformSpace α] [UniformSpace β] : Continuous (ProdLp.equiv p α β) :=
+theorem continuous_equiv [TopologicalSpace α] [TopologicalSpace β] : Continuous
+    (ProdLp.equiv p α β : ProdLp p α β → α × β) :=
   continuous_id
 
 @[continuity]
-theorem continuous_equiv_symm [UniformSpace α] [UniformSpace β] :
+theorem continuous_equiv_symm [TopologicalSpace α] [TopologicalSpace β] :
     Continuous (ProdLp.equiv p α β).symm :=
   continuous_id
 

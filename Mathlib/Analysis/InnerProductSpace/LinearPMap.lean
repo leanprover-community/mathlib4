@@ -276,3 +276,84 @@ theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.doma
 end LinearPMap
 
 end Star
+
+/-! ### The graph of the adjoint -/
+
+namespace Submodule
+
+protected noncomputable
+def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
+    (g.map <| (ProdLp.linearEquiv 2 𝕜 F E).symm.comp (skew_swap 𝕜 E F)).orthogonal.map
+      (ProdLp.linearEquiv 2 𝕜 F E)
+
+@[simp]
+theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E):
+    x ∈ g.adjoint ↔
+    ∀ a b, (a, b) ∈ g → inner (𝕜 := 𝕜) b x.fst - inner a x.snd = 0 := by
+  simp only [Submodule.adjoint, Submodule.mem_map, Submodule.mem_orthogonal, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, ProdLp.linearEquiv_symm_apply, Function.comp_apply, skew_swap_apply,
+    Prod.exists, ProdLp.inner_apply, forall_exists_index, and_imp, ProdLp.linearEquiv_apply]
+  constructor
+  · rintro ⟨y, h1, h2⟩ a b hab
+    rw [← h2, ProdLp.equiv_fst, ProdLp.equiv_snd]
+    specialize h1 (b, -a) a b hab rfl
+    simp only [inner_neg_left, ← sub_eq_add_neg] at h1
+    exact h1
+  · intro h
+    refine ⟨x, ?_, rfl⟩
+    intro u a b hab hu
+    simp [← hu, ← sub_eq_add_neg, h a b hab]
+
+theorem _root_.LinearPMap.adjoint_graph_eq_graph_adjoint (hT : Dense (T.domain : Set E)) :
+    T†.graph = T.graph.adjoint := by
+  ext x
+  simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left, mem_adjoint_graph_iff,
+    forall_exists_index, forall_apply_eq_imp_iff']
+  constructor
+  · rintro ⟨hx, h⟩ a ha
+    rw [← h, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩, sub_self]
+  · intro h
+    simp_rw [sub_eq_zero] at h
+    have hx : x.fst ∈ T†.domain
+    · apply mem_adjoint_domain_of_exists
+      use x.snd
+      rintro ⟨a, ha⟩
+      rw [← inner_conj_symm, ← h a ha, inner_conj_symm]
+    use hx
+    apply hT.eq_of_inner_right
+    rintro ⟨a, ha⟩
+    rw [← h a ha, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩]
+
+@[simp]
+theorem _root_.LinearPMap.graph_adjoint_toLinearPMap_eq_adjoint (hT : Dense (T.domain : Set E)) :
+    T.graph.adjoint.toLinearPMap = T† := by
+  apply eq_of_eq_graph
+  rw [adjoint_graph_eq_graph_adjoint hT]
+  apply Submodule.toLinearPMap_graph_eq
+  intro x hx hx'
+  simp only [mem_adjoint_graph_iff, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
+    forall_exists_index, forall_apply_eq_imp_iff', hx', inner_zero_right, zero_sub,
+    neg_eq_zero] at hx
+  apply hT.eq_zero_of_inner_right
+  rintro ⟨a, ha⟩
+  exact hx a ha
+
+end Submodule
+
+/-! ### Closedness -/
+
+namespace LinearPMap
+
+theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
+    T†.IsClosed := by
+  rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
+  simp only [Submodule.map_coe, ProdLp.linearEquiv_apply]
+  rw [Equiv.image_eq_preimage]
+  exact (Submodule.isClosed_orthogonal _).preimage (ProdLp.continuous_equiv_symm _ _ _)
+
+/-- Every self-adjoint `LinearPMap` is closed. -/
+theorem _root_.IsSelfAdjoint.isClosed {A : E →ₗ.[𝕜] E} (hA : IsSelfAdjoint A) : A.IsClosed := by
+  rw [← isSelfAdjoint_def.mp hA]
+  exact adjoint_isClosed hA.dense_domain
+
+end LinearPMap
