@@ -51,7 +51,7 @@ colex, colexicographic, binary
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 open BigOperators
@@ -81,11 +81,11 @@ theorem Colex.eq_iff (A B : Finset α) : A.toColex = B.toColex ↔ A = B :=
 /-- `A` is less than `B` in the colex ordering if the largest thing that's not in both sets is in B.
 In other words, `max (A ∆ B) ∈ B` (if the maximum exists).
 -/
-instance [LT α] : LT (Finset.Colex α) :=
+instance Colex.instLT [LT α] : LT (Finset.Colex α) :=
   ⟨fun A B : Finset α => ∃ k : α, (∀ {x}, k < x → (x ∈ A ↔ x ∈ B)) ∧ k ∉ A ∧ k ∈ B⟩
 
 /-- We can define (≤) in the obvious way. -/
-instance [LT α] : LE (Finset.Colex α) :=
+instance Colex.instLE [LT α] : LE (Finset.Colex α) :=
   ⟨fun A B => A < B ∨ A = B⟩
 
 theorem Colex.lt_def [LT α] (A B : Finset α) :
@@ -111,7 +111,7 @@ theorem Nat.sum_two_pow_lt {k : ℕ} {A : Finset ℕ} (h₁ : ∀ {x}, x ∈ A �
 namespace Colex
 
 /-- Strictly monotone functions preserve the colex ordering. -/
-theorem hom_lt_iff {β : Type _} [LinearOrder α] [DecidableEq β] [Preorder β] {f : α → β}
+theorem hom_lt_iff {β : Type*} [LinearOrder α] [DecidableEq β] [Preorder β] {f : α → β}
     (h₁ : StrictMono f) (A B : Finset α) :
     (A.image f).toColex < (B.image f).toColex ↔ A.toColex < B.toColex := by
   simp only [Colex.lt_def, not_exists, mem_image, exists_prop, not_and]
@@ -209,8 +209,8 @@ instance decidableLt [LinearOrder α] : ∀ {A B : Finset.Colex α}, Decidable (
 #align colex.decidable_lt Colex.decidableLt
 
 instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
-  { instLTColex,
-    instLEColex with
+  { instLT,
+    instLE with
     le_refl := fun A => Or.inr rfl
     le_trans := le_trans
     le_antisymm := fun A B AB BA =>
@@ -239,7 +239,7 @@ example [LinearOrder α] : IsStrictTotalOrder (Finset.Colex α) (· < ·) :=
   inferInstance
 
 /-- Strictly monotone functions preserve the colex ordering. -/
-theorem hom_le_iff {β : Type _} [LinearOrder α] [LinearOrder β] {f : α → β} (h₁ : StrictMono f)
+theorem hom_le_iff {β : Type*} [LinearOrder α] [LinearOrder β] {f : α → β} (h₁ : StrictMono f)
     (A B : Finset α) : (A.image f).toColex ≤ (B.image f).toColex ↔ A.toColex ≤ B.toColex := by
   rw [le_iff_le_iff_lt_iff_lt, hom_lt_iff h₁]
 #align colex.hom_le_iff Colex.hom_le_iff
@@ -249,9 +249,8 @@ theorem hom_le_iff {β : Type _} [LinearOrder α] [LinearOrder β] {f : α → �
 @[simp]
 theorem hom_fin_le_iff {n : ℕ} (A B : Finset (Fin n)) :
     (A.image fun i : Fin n => (i : ℕ)).toColex ≤ (B.image fun i : Fin n => (i : ℕ)).toColex ↔
-      A.toColex ≤ B.toColex := by
-  refine' Colex.hom_le_iff _ _ _
-  exact (fun x y k => k)
+      A.toColex ≤ B.toColex :=
+  Colex.hom_le_iff Fin.val_strictMono _ _
 #align colex.hom_fin_le_iff Colex.hom_fin_le_iff
 
 /-- If `A` is before `B` in colex, and everything in `B` is small, then everything in `A` is small.
@@ -280,7 +279,7 @@ theorem lt_singleton_iff_mem_lt [LinearOrder α] {r : α} {s : Finset α} :
     · exact ne_of_irrefl h₁ ((t.1 h₁).1 hx).symm
     · exact t.2 hx
   · exact fun h =>
-      ⟨@fun z hz => ⟨@fun i => (asymm hz (h _ i)).elim, @fun i => (hz.ne' i).elim⟩,
+      ⟨fun {z} hz => ⟨fun i => (asymm hz (h _ i)).elim, fun i => (hz.ne' i).elim⟩,
           by simpa using h r⟩
 #align colex.lt_singleton_iff_mem_lt Colex.lt_singleton_iff_mem_lt
 
@@ -372,13 +371,11 @@ def toColexRelHom [LinearOrder α] :
   map_rel' {_ _} := colex_le_of_subset
 #align colex.to_colex_rel_hom Colex.toColexRelHom
 
-instance [LinearOrder α] : OrderBot (Finset.Colex α)
-    where
+instance [LinearOrder α] : OrderBot (Finset.Colex α) where
   bot := (∅ : Finset α).toColex
   bot_le _ := empty_toColex_le
 
-instance [LinearOrder α] [Fintype α] : OrderTop (Finset.Colex α)
-    where
+instance [LinearOrder α] [Fintype α] : OrderTop (Finset.Colex α) where
   top := Finset.univ.toColex
   le_top _ := colex_le_of_subset (subset_univ _)
 
@@ -387,8 +384,8 @@ instance [LinearOrder α] : Lattice (Finset.Colex α) :=
     inferInstanceAs (SemilatticeInf (Finset.Colex α)) with }
 
 instance [LinearOrder α] [Fintype α] : BoundedOrder (Finset.Colex α) :=
-  { (by infer_instance : OrderTop (Finset.Colex α)),
-    (by infer_instance : OrderBot (Finset.Colex α)) with }
+  { inferInstanceAs (OrderTop (Finset.Colex α)),
+    inferInstanceAs (OrderBot (Finset.Colex α)) with }
 
 /-- For subsets of ℕ, we can show that colex is equivalent to binary. -/
 theorem sum_two_pow_lt_iff_lt (A B : Finset ℕ) :

@@ -35,7 +35,7 @@ tower law
 
 universe u v w u₁ v₁ w₁
 
-open Classical BigOperators FiniteDimensional Cardinal
+open BigOperators Cardinal Submodule
 
 variable (F : Type u) (K : Type v) (A : Type w)
 
@@ -75,7 +75,7 @@ theorem rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddComm
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem FiniteDimensional.finrank_mul_finrank' [Nontrivial K] [Module.Finite F K]
+theorem FiniteDimensional.finrank_mul_finrank' [Module.Finite F K]
     [Module.Finite K A] : finrank F K * finrank K A = finrank F A := by
   letI := nontrivial_of_invariantBasisNumber F
   let b := Module.Free.chooseBasis F K
@@ -106,7 +106,7 @@ theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensiona
 
 Note this cannot be an instance as Lean cannot infer `L`.
 -/
-theorem left (K L : Type _) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
+theorem left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
     [Algebra K L] [IsScalarTower F K L] [FiniteDimensional F L] : FiniteDimensional F K :=
   FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K L).toLinearMap (RingHom.injective _)
 #align finite_dimensional.left FiniteDimensional.left

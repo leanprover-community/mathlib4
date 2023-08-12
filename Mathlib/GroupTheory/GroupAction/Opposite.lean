@@ -19,7 +19,7 @@ provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
 -/
 
 
-variable (α : Type _)
+variable (α : Type*)
 
 /-! ### Actions _on_ the opposite type
 
@@ -30,16 +30,16 @@ Actions on the opposite type just act on the underlying type.
 namespace MulOpposite
 
 @[to_additive]
-instance mulAction (R : Type _) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
+instance mulAction (R : Type*) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
   { one_smul := fun x => unop_injective <| one_smul R (unop x)
     mul_smul := fun r₁ r₂ x => unop_injective <| mul_smul r₁ r₂ (unop x) }
 
-instance distribMulAction (R : Type _) [Monoid R] [AddMonoid α] [DistribMulAction R α] :
+instance distribMulAction (R : Type*) [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R αᵐᵒᵖ :=
   { smul_add := fun r x₁ x₂ => unop_injective <| smul_add r (unop x₁) (unop x₂)
     smul_zero := fun r => unop_injective <| smul_zero r }
 
-instance mulDistribMulAction (R : Type _) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
+instance mulDistribMulAction (R : Type*) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
     MulDistribMulAction R αᵐᵒᵖ :=
   { smul_mul := fun r x₁ x₂ => unop_injective <| smul_mul' r (unop x₂) (unop x₁)
     smul_one := fun r => unop_injective <| smul_one r }
@@ -54,16 +54,16 @@ instance smulCommClass {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SM
   ⟨fun _ _ _ => unop_injective <| smul_comm _ _ _⟩
 
 @[to_additive]
-instance isCentralScalar (R : Type _) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
+instance isCentralScalar (R : Type*) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
     IsCentralScalar R αᵐᵒᵖ :=
   ⟨fun _ _ => unop_injective <| op_smul_eq_smul _ _⟩
 
-theorem op_smul_eq_op_smul_op {R : Type _} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
+theorem op_smul_eq_op_smul_op {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
     (r : R) (a : α) : op (r • a) = op r • op a :=
   (op_smul_eq_smul r (op a)).symm
 #align mul_opposite.op_smul_eq_op_smul_op MulOpposite.op_smul_eq_op_smul_op
 
-theorem unop_smul_eq_unop_smul_unop {R : Type _} [SMul R α] [SMul Rᵐᵒᵖ α]
+theorem unop_smul_eq_unop_smul_unop {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α]
     [IsCentralScalar R α] (r : Rᵐᵒᵖ) (a : αᵐᵒᵖ) : unop (r • a) = unop r • unop a :=
   (unop_smul_eq_smul r (unop a)).symm
 #align mul_opposite.unop_smul_eq_unop_smul_unop MulOpposite.unop_smul_eq_unop_smul_unop
@@ -105,7 +105,7 @@ theorem MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a �
 
 /-- The right regular action of a group on itself is transitive. -/
 @[to_additive "The right regular action of an additive group on itself is transitive."]
-instance MulAction.OppositeRegular.isPretransitive {G : Type _} [Group G] :
+instance MulAction.OppositeRegular.isPretransitive {G : Type*} [Group G] :
     MulAction.IsPretransitive Gᵐᵒᵖ G :=
   ⟨fun x y => ⟨op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 #align mul_action.opposite_regular.is_pretransitive MulAction.OppositeRegular.isPretransitive

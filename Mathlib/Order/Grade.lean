@@ -58,11 +58,11 @@ Instead, we define graded orders by their grade function, without talking about 
 
 open Finset Nat OrderDual
 
-variable {𝕆 ℙ α β : Type _}
+variable {𝕆 ℙ α β : Type*}
 
 /-- An `𝕆`-graded order is an order `α` equipped with a strictly monotone function
 `grade 𝕆 : α → 𝕆` which preserves order covering (`Covby`). -/
-class GradeOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] where
+class GradeOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] where
   /-- The grading function. -/
   grade : α → 𝕆
   /-- `grade` is strictly monotonic. -/
@@ -72,20 +72,20 @@ class GradeOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] where
 #align grade_order GradeOrder
 
 /-- An `𝕆`-graded order where minimal elements have minimal grades. -/
-class GradeMinOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
+class GradeMinOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Minimal elements have minimal grades. -/
-  is_min_grade ⦃a : α⦄ : IsMin a → IsMin (grade a)
+  isMin_grade ⦃a : α⦄ : IsMin a → IsMin (grade a)
 #align grade_min_order GradeMinOrder
 
 /-- An `𝕆`-graded order where maximal elements have maximal grades. -/
-class GradeMaxOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
+class GradeMaxOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Maximal elements have maximal grades. -/
-  is_max_grade ⦃a : α⦄ : IsMax a → IsMax (grade a)
+  isMax_grade ⦃a : α⦄ : IsMax a → IsMax (grade a)
 #align grade_max_order GradeMaxOrder
 
 /-- An `𝕆`-graded order where minimal elements have minimal grades and maximal elements have maximal
 grades. -/
-class GradeBoundedOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeMinOrder 𝕆 α,
+class GradeBoundedOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeMinOrder 𝕆 α,
   GradeMaxOrder 𝕆 α
 #align grade_bounded_order GradeBoundedOrder
 
@@ -127,7 +127,7 @@ section GradeMinOrder
 variable (𝕆) [Preorder 𝕆] [GradeMinOrder 𝕆 α] {a : α}
 
 protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
-  GradeMinOrder.is_min_grade h
+  GradeMinOrder.isMin_grade h
 #align is_min.grade IsMin.grade
 
 variable {𝕆}
@@ -144,7 +144,7 @@ section GradeMaxOrder
 variable (𝕆) [Preorder 𝕆] [GradeMaxOrder 𝕆 α] {a : α}
 
 protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
-  GradeMaxOrder.is_max_grade h
+  GradeMaxOrder.isMax_grade h
 #align is_max.grade IsMax.grade
 
 variable {𝕆}
@@ -221,11 +221,10 @@ end PartialOrder
 
 variable [Preorder 𝕆] [Preorder ℙ] [Preorder α] [Preorder β]
 
-instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α
-    where
+instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α where
   grade := id
-  is_min_grade _ := id
-  is_max_grade _ := id
+  isMin_grade _ := id
+  isMax_grade _ := id
   grade_strictMono := strictMono_id
   covby_grade _ _ := id
 #align preorder.to_grade_bounded_order Preorder.toGradeBoundedOrder
@@ -237,17 +236,16 @@ theorem grade_self (a : α) : grade α a = a :=
 
 /-! #### Dual -/
 
-instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ
-    where
+instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ where
   grade := toDual ∘ grade 𝕆 ∘ ofDual
   grade_strictMono := grade_strictMono.dual
   covby_grade _ _ h := (h.ofDual.grade _).toDual
 
 instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with is_min_grade := fun _ => IsMax.grade (α := α) 𝕆 }
+  { OrderDual.gradeOrder with isMin_grade := fun _ => IsMax.grade (α := α) 𝕆 }
 
 instance OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with is_max_grade := fun _ => IsMin.grade (α := α) 𝕆 }
+  { OrderDual.gradeOrder with isMax_grade := fun _ => IsMin.grade (α := α) 𝕆 }
 
 instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeMinOrder, OrderDual.gradeMaxOrder with }
@@ -280,7 +278,7 @@ def GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono
 @[reducible]
 def GradeMinOrder.liftLeft [GradeMinOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a)) : GradeMinOrder ℙ α :=
-  { GradeOrder.liftLeft f hf hcovby with is_min_grade := fun _ ha => hmin _ <| ha.grade _ }
+  { GradeOrder.liftLeft f hf hcovby with isMin_grade := fun _ ha => hmin _ <| ha.grade _ }
 #align grade_min_order.lift_left GradeMinOrder.liftLeft
 
 -- See note [reducible non-instances]
@@ -288,7 +286,7 @@ def GradeMinOrder.liftLeft [GradeMinOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : Stri
 @[reducible]
 def GradeMaxOrder.liftLeft [GradeMaxOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder ℙ α :=
-  { GradeOrder.liftLeft f hf hcovby with is_max_grade := fun _ ha => hmax _ <| ha.grade _ }
+  { GradeOrder.liftLeft f hf hcovby with isMax_grade := fun _ ha => hmax _ <| ha.grade _ }
 #align grade_max_order.lift_left GradeMaxOrder.liftLeft
 
 -- See note [reducible non-instances]
@@ -316,7 +314,7 @@ def GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMono f
 @[reducible]
 def GradeMinOrder.liftRight [GradeMinOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a)) : GradeMinOrder 𝕆 α :=
-  { GradeOrder.liftRight f hf hcovby with is_min_grade := fun _ ha => (hmin _ ha).grade _ }
+  { GradeOrder.liftRight f hf hcovby with isMin_grade := fun _ ha => (hmin _ ha).grade _ }
 #align grade_min_order.lift_right GradeMinOrder.liftRight
 
 -- See note [reducible non-instances]
@@ -324,7 +322,7 @@ def GradeMinOrder.liftRight [GradeMinOrder 𝕆 β] (f : α → β) (hf : Strict
 @[reducible]
 def GradeMaxOrder.liftRight [GradeMaxOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder 𝕆 α :=
-  { GradeOrder.liftRight f hf hcovby with is_max_grade := fun _ ha => (hmax _ ha).grade _ }
+  { GradeOrder.liftRight f hf hcovby with isMax_grade := fun _ ha => (hmax _ ha).grade _ }
 #align grade_max_order.lift_right GradeMaxOrder.liftRight
 
 -- See note [reducible non-instances]
