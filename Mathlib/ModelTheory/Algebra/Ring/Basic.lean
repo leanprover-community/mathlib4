@@ -18,8 +18,6 @@ etc. on terms in the language.
 
 namespace FirstOrder
 
-namespace Language
-
 inductive RingFunc : ℕ → Type
   | add : RingFunc 2
   | mul : RingFunc 2
@@ -27,13 +25,13 @@ inductive RingFunc : ℕ → Type
   | zero : RingFunc 0
   | one : RingFunc 0
 
-def ring : Language :=
+def Language.ring : Language :=
   { Functions := RingFunc
     Relations := fun _ => Empty }
 
 namespace ring
 
-open RingFunc
+open RingFunc Language
 
 abbrev zeroFunc : Language.ring.Functions 0 := zero
 
@@ -74,7 +72,5 @@ theorem neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
 end ring
-
-end Language
 
 end FirstOrder
