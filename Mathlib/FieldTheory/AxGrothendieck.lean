@@ -204,7 +204,10 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
 end FirstOrder
 
 open Function FirstOrder Language field
+/-- The **Ax-Grothendieck** theorem
 
+Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
+algberaically closed field. -/
 theorem ax_grothendieck {ι K : Type*} [Finite ι] [Field K]
     [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
     Injective (fun v i => MvPolynomial.eval v (ps i)) →
