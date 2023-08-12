@@ -28,11 +28,9 @@ def Language.field : Language :=
   { Functions := FieldFunc
     Relations := fun _ => Empty }
 
-namespace Language
-
 namespace field
 
-open FieldFunc
+open FieldFunc Language
 
 instance (n : ℕ) : DecidableEq (Language.field.Functions n) := by
   dsimp [Language.field]; infer_instance
@@ -116,10 +114,6 @@ def ofRing : Language.ring →ᴸ Language.field :=
       | _, .one => .one
     onRelation := fun _ => id }
 
-end field
-
-end Language
-
 open Language field Structure BoundedFormula
 
 inductive FieldAxiom : Type
@@ -133,7 +127,6 @@ inductive FieldAxiom : Type
   | invZero : FieldAxiom
   | leftDistrib : FieldAxiom
   | existsPairNe : FieldAxiom
-  deriving DecidableEq
 
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.field.Sentence
@@ -257,8 +250,8 @@ def compatibleFieldOfFieldStructure (K : Type*) [Language.field.Structure K]
 
 open FieldFunc
 
-@[simps, reducible]
-def structureFieldOfField {K : Type*} [Field K] : Language.field.Structure K :=
+@[reducible]
+def compatibleFieldOfField (K : Type*) [Field K] : CompatibleField K :=
   { funMap := fun {n} f =>
       match n, f with
       | _, add => fun x => x 0 + x 1
@@ -267,10 +260,7 @@ def structureFieldOfField {K : Type*} [Field K] : Language.field.Structure K :=
       | _, inv => fun x => (x 0)⁻¹
       | _, zero => fun _ => 0
       | _, one => fun _ => 1,
-    RelMap := Empty.elim }
-
-def compatibleFieldOfField (K : Type*) [Field K] : CompatibleField K :=
-  { structureFieldOfField with
+    RelMap := Empty.elim
     funMap_add := by intros; rfl
     funMap_mul := by intros; rfl
     funMap_neg := by intros; rfl
@@ -318,5 +308,7 @@ def languageEquivEquivRingEquiv {K L : Type*} [CompatibleField K] [CompatibleFie
         simpa using f.map_fun mulFunc ![x, y] }
     left_inv := fun f => by ext; rfl
     right_inv := fun f => by ext; rfl }
+
+end field
 
 end FirstOrder
