@@ -13,7 +13,7 @@ open TopologicalSpace SeminormFamily Set Function Seminorm
 open scoped BoundedContinuousFunction Topology NNReal
 
 -- Think `𝕜 = ℝ` or `𝕜 = ℂ`
-variable (𝕜 E F : Type _) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   {n : ℕ∞} {K : Compacts E}
 
@@ -30,7 +30,7 @@ scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
 
 open Distributions
 
-class ContDiffMapSupportedInClass (B : Type _) (E F : outParam <| Type _)
+class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     extends FunLike B E (fun _ ↦ F) where
@@ -39,14 +39,14 @@ class ContDiffMapSupportedInClass (B : Type _) (E F : outParam <| Type _)
 
 open ContDiffMapSupportedInClass
 
-instance (B : Type _) (E F : outParam <| Type _)
+instance (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
-instance (B : Type _) (E F : outParam <| Type _)
+instance (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
@@ -306,7 +306,7 @@ noncomputable def to_bcfL : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
         (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
       rw [Seminorm.comp_apply, coe_normSeminorm, norm_to_bcfₗ, one_smul, Finset.sup_singleton] }
 
-protected theorem continuous_iff {X : Type _} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+protected theorem continuous_iff {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous
       (to_bcfₗ 𝕜 ∘ ContDiffMapSupportedIn.iteratedFDeriv i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
