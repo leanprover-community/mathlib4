@@ -22,7 +22,7 @@ namespace Polynomial
 
 open scoped BigOperators
 
-variable {R A : Type _} [CommSemiring R]
+variable {R A : Type*} [CommSemiring R]
 
 /-- `Polynomial.derivative` as a derivation. -/
 @[simps]

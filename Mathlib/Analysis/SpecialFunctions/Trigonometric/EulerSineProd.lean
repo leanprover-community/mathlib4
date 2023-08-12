@@ -21,7 +21,7 @@ generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped Real Topology BigOperators
 

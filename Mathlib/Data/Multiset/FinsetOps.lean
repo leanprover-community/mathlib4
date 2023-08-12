@@ -19,7 +19,7 @@ namespace Multiset
 
 open List
 
-variable {α : Type _} [DecidableEq α] {s : Multiset α}
+variable {α : Type*} [DecidableEq α] {s : Multiset α}
 
 /-! ### finset insert -/
 
@@ -158,7 +158,7 @@ theorem cons_ndunion (s t : Multiset α) (a : α) : ndunion (a ::ₘ s) t = ndin
 
 @[simp]
 theorem mem_ndunion {s t : Multiset α} {a : α} : a ∈ ndunion s t ↔ a ∈ s ∨ a ∈ t :=
-  Quot.induction_on₂ s t fun _ _ => List.mem_union
+  Quot.induction_on₂ s t fun _ _ => List.mem_union_iff
 #align multiset.mem_ndunion Multiset.mem_ndunion
 
 theorem le_ndunion_right (s t : Multiset α) : t ≤ ndunion s t :=

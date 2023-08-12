@@ -923,7 +923,7 @@ def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computatio
     (c₁, c₂ ())
 #align computation.orelse Computation.orElse
 
-instance : Alternative Computation :=
+instance instAlternativeComputation : Alternative Computation :=
   { Computation.monad with
     orElse := @orElse
     failure := @empty }

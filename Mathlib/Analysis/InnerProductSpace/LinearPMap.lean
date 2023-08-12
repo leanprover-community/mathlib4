@@ -55,7 +55,7 @@ open IsROrC
 
 open scoped ComplexConjugate Classical
 
-variable {𝕜 E F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 

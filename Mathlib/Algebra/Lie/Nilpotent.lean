@@ -442,7 +442,7 @@ section Morphisms
 
 open LieModule Function
 
-variable {L₂ M₂ : Type _} [LieRing L₂] [LieAlgebra R L₂]
+variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
 
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
 
@@ -665,9 +665,9 @@ namespace LieIdeal
 
 open LieModule
 
-variable {R L : Type _} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
 
-variable (M : Type _) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 variable (k : ℕ)
 

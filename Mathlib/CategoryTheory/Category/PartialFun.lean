@@ -33,22 +33,22 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The category of types equipped with partial functions. -/
 def PartialFun : Type _ :=
-  Type _
+  Type*
 set_option linter.uppercaseLean3 false
 #align PartialFun PartialFun
 
 namespace PartialFun
 
-instance : CoeSort PartialFun (Type _) :=
+instance : CoeSort PartialFun (Type*) :=
   ⟨id⟩
 
 -- porting note: removed `@[nolint has_nonempty_instance]`
 /-- Turns a type into a `PartialFun`. -/
-def of : Type _ → PartialFun :=
+def of : Type* → PartialFun :=
   id
 #align PartialFun.of PartialFun.of
 
@@ -56,7 +56,7 @@ def of : Type _ → PartialFun :=
 #noalign PartialFun.coe_of
 
 instance : Inhabited PartialFun :=
-  ⟨Type _⟩
+  ⟨Type*⟩
 
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom := PFun

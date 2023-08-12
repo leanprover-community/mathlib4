@@ -41,17 +41,17 @@ deriving instance LargeCategory for PreordCat
 instance : ConcreteCategory PreordCat :=
   BundledHom.concreteCategory _
 
-instance : CoeSort PreordCat (Type _) :=
+instance : CoeSort PreordCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled PreordCat from the underlying type and typeclass. -/
-def of (α : Type _) [Preorder α] : PreordCat :=
+def of (α : Type*) [Preorder α] : PreordCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align Preord.of PreordCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [Preorder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Preorder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Preord.coe_of PreordCat.coe_of
