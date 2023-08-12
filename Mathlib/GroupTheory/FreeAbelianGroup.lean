@@ -27,7 +27,7 @@ file, but the category-theoretic adjunction statement is in
 
 ## Main definitions
 
-Here we use the following variables: `(α β : Type _) (A : Type _) [AddCommGroup A]`
+Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup A]`
 
 * `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
 group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
@@ -457,7 +457,7 @@ instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
 
 section Monoid
 
-variable {R : Type _} [Monoid α] [Ring R]
+variable {R : Type*} [Monoid α] [Ring R]
 
 instance ring : Ring (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalRing _,
@@ -583,7 +583,7 @@ instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
 #align free_abelian_group.pempty_unique FreeAbelianGroup.pemptyUnique
 
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def punitEquiv (T : Type _) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
+def punitEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
   toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
   invFun n := n • of Inhabited.default
   left_inv z := FreeAbelianGroup.induction_on z
@@ -599,7 +599,7 @@ def punitEquiv (T : Type _) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
 #align free_abelian_group.punit_equiv FreeAbelianGroup.punitEquiv
 
 /-- Isomorphic types have isomorphic free abelian groups. -/
-def equivOfEquiv {α β : Type _} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
+def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
   toFun := map f
   invFun := map f.symm
   left_inv := by

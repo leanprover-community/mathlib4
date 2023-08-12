@@ -26,7 +26,7 @@ finset, option
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Function
 

@@ -18,7 +18,7 @@ Next, the general lemmas get specialized for some yet-to-be-defined `degree`s.
 -/
 
 
-variable {R A T B ι : Type _}
+variable {R A T B ι : Type*}
 
 namespace AddMonoidAlgebra
 

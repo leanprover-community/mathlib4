@@ -21,7 +21,7 @@ In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace List
 
