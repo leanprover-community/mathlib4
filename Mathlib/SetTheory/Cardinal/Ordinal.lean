@@ -1502,13 +1502,13 @@ open scoped Cardinal
 Bounding the cardinal of an ordinal-indexed union of sets.
 -/
 lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {o : Ordinal} {κ : Cardinal}
-    (ho : o ≤ κ.ord) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
+    (ho : o.card ≤ κ) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ κ) :
     #(⋃ j < o, A j) ≤ κ := by
   simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoOut.symm.surjective.range_comp]
   apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hκ)
   rw [mk_ordinal_out]
-  exact mul_le_mul' (card_le_of_le_ord ho) <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+  exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
 
 end Cardinal
 
