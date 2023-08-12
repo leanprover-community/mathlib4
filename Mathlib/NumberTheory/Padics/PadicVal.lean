@@ -589,7 +589,7 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
-    padicValNat p n ! = ∑ i in Finset.Ico 1 b, n / p ^ i :=
+    padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
 
@@ -597,12 +597,10 @@ theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b
 
 Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
 of `n`. -/
-theorem padicValNat_factorial' [hp : Fact p.Prime] (n : ℕ):
-    (p - 1) * padicValNat p n ! = n - (p.digits n).sum := by
-  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n),
-      ← Finset.sum_Ico_add _ 0 _ 1, Ico_zero_eq_range,
-      ← @sub_one_mul_sum_log_div_pow_eq_sub_sum_digits p n]
-  simp only [one_add]
+theorem sub_one_mul_padicValNat_factorial_eq_sub_sum_digits [hp : Fact p.Prime] (n : ℕ):
+    (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
+  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n), ← Finset.sum_Ico_add' _ 0 _ 1,
+    Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
 /-- **Kummer's Theorem**
 
