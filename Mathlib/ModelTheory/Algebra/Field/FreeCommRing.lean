@@ -10,9 +10,9 @@ import Mathlib.RingTheory.FreeCommRing
 
 namespace FirstOrder
 
-namespace Language
-
 namespace field
+
+open Language
 
 @[simp]
 def freeCommRingRingStructure (α : Type u) :
@@ -53,7 +53,7 @@ variable {K : Type v} [CompatibleField K]
 @[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → K) :
     (termOfFreeCommRing p).realize v = FreeCommRing.lift v p := by
-  letI := Language.field.freeCommRingRingStructure α
+  letI := field.freeCommRingRingStructure α
   rw [termOfFreeCommRing, ofRing]
   conv_rhs => rw [← Classical.choose_spec (field.exists_term_realize_eq_freeCommRing p)]
   induction Classical.choose (field.exists_term_realize_eq_freeCommRing p) with
@@ -63,7 +63,5 @@ theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → K) :
     simp [Term.realize, ih, ofRing, LHom.onTerm]
 
 end field
-
-end Language
 
 end FirstOrder
