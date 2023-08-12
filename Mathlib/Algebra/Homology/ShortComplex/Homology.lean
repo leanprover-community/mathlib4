@@ -600,6 +600,15 @@ lemma leftRightHomologyComparison_fac [S.HasHomology] :
 
 variable {S}
 
+lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans
+    (h : S.HomologyData) [S.HasHomology] :
+    h.right.homologyIso = h.left.homologyIso ≪≫ h.iso := by
+  suffices h.iso = h.left.homologyIso.symm ≪≫ h.right.homologyIso by
+    rw [this, Iso.self_symm_id_assoc]
+  ext
+  dsimp
+  rw [← leftRightHomologyComparison'_fac, leftRightHomologyComparison'_eq]
+
 lemma hasHomology_of_isIso_leftRightHomologyComparison'
     (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
     [IsIso (leftRightHomologyComparison' h₁ h₂)] :

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 #align_import category_theory.abelian.projective from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -32,10 +33,18 @@ open CategoryTheory.Projective
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- When `C` is abelian, `Projective.d f` and `f` are exact. -/
-theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f :=
-  (Abelian.exact_iff _ _).2 <|
-    ⟨by simp, zero_of_epi_comp (π _) <| by rw [← Category.assoc, cokernel.condition]⟩
-#align category_theory.exact_d_f CategoryTheory.exact_d_f
+theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) :
+    (ShortComplex.mk (d f) f (by simp)).Exact := by
+  let α : ShortComplex.mk (d f) f (by simp) ⟶ ShortComplex.mk (kernel.ι f) f (by simp) :=
+    { τ₁ := Projective.π _
+      τ₂ := 𝟙 _
+      τ₃ := 𝟙 _  }
+  have : Epi α.τ₁ := by dsimp; infer_instance
+  have : IsIso α.τ₂ := by dsimp; infer_instance
+  have : Mono α.τ₃ := by dsimp; infer_instance
+  rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
+  apply ShortComplex.exact_of_f_is_kernel
+  apply kernelIsKernel
 
 /-- The preadditive Co-Yoneda functor on `P` preserves colimits if `P` is projective. -/
 def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Projective P] :
@@ -76,7 +85,7 @@ variable [EnoughProjectives C]
 def ofComplex (Z : C) : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
     (Projective.d (Projective.π Z)) fun ⟨_, _, f⟩ =>
-    ⟨Projective.syzygies f, Projective.d f, (exact_d_f f).w⟩
+    ⟨Projective.syzygies f, Projective.d f, by simp⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.of_complex CategoryTheory.ProjectiveResolution.ofComplex
 
@@ -112,26 +121,18 @@ describing the inductive steps. The problems apparent here clearly indicate that
 theorem ofComplex_sq_10_comm (Z : C) :
     0 ≫ HomologicalComplex.d ((ChainComplex.single₀ C).obj Z) 1 0 =
     HomologicalComplex.d (ofComplex Z) 1 0 ≫ Projective.π Z := by
-  simp only [ofComplex_X, ChainComplex.single₀_obj_X_0, ChainComplex.single₀_obj_X_succ,
-    ComplexShape.down_Rel, not_true, ChainComplex.single₀_obj_X_d, comp_zero, ofComplex_d,
-    eqToHom_refl, Category.id_comp, dite_eq_ite, ite_true]
-  exact (exact_d_f (Projective.π Z)).w.symm
+  simp only [ofComplex_d, eqToHom_refl, Category.id_comp,
+    zero_comp]
+  erw [Category.assoc, kernel.condition, comp_zero]
 
--- Porting note: the `exact` in `of` was very, very slow. To assist,
--- the whole proof was broken out into a separate result
-theorem exact_ofComplex (Z : C) (n : ℕ) :
-    Exact (HomologicalComplex.d (ofComplex Z) (n + 2) (n + 1))
-    (HomologicalComplex.d (ofComplex Z) (n + 1) n) :=
-  match n with
--- Porting note: used to be simp; apply exact_d_f on both branches
-    | 0 => by simp; apply exact_d_f
-    | m+1 => by
-      simp only [ofComplex_X, ComplexShape.down_Rel, ofComplex_d, eqToHom_refl,
-        Category.id_comp, dite_eq_ite, not_true, ite_true]
-      -- Porting note: this is probably required now due to
-      -- https://github.com/leanprover/lean4/pull/2146
-      erw [if_pos (c := m + 1 + 1 + 1 = m + 2 + 1) rfl]
-      apply exact_d_f
+lemma ofComplex_exactAt_succ (Z : C) (n : ℕ) : (ofComplex Z).ExactAt (n+1) := by
+  rw [HomologicalComplex.exactAt_iff' _ (n+1+1) (n+1) n (by simp) (by simp)]
+  obtain (_|n) := n
+  all_goals
+    dsimp [ofComplex, ChainComplex.mk', HomologicalComplex.sc',
+      HomologicalComplex.shortComplexFunctor', ChainComplex.mk, ChainComplex.of]
+    simp
+    apply exact_d_f
 
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
@@ -143,9 +144,21 @@ irreducible_def of (Z : C) : ProjectiveResolution Z :=
            -- Porting note: broken ext
             apply HasZeroObject.to_zero_ext ⟩)
     projective := by rintro (_ | _ | _ | n) <;> apply Projective.projective_over
-    exact₀ := by simpa using exact_d_f (Projective.π Z)
-    exact := exact_ofComplex Z
-    epi := Projective.π_epi Z }
+    hπ := ⟨fun n => by
+      cases n
+      · rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros']
+        . exact ⟨Projective.π_epi Z, by simpa using exact_d_f (Projective.π Z)⟩
+        all_goals rfl
+        --rw [CochainComplex.quasiIsoAt₀_iff,
+        --  ShortComplex.quasiIso_iff_of_zeros]
+        --· exact ⟨Injective.ι_mono Z, by simpa using exact_f_d (Injective.ι Z)⟩
+        --all_goals rfl
+      · rw [quasiIsoAt_iff_exactAt']
+        apply ofComplex_exactAt_succ
+        apply ChainComplex.single₀_exactAt⟩ }
+    --exact₀ := by simpa using exact_d_f (Projective.π Z)
+    --exact := exact_ofComplex Z
+    --epi := Projective.π_epi Z }
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.of CategoryTheory.ProjectiveResolution.of
 
@@ -156,25 +169,3 @@ instance (priority := 100) : HasProjectiveResolutions C where out Z := by infer_
 end ProjectiveResolution
 
 end CategoryTheory
-
-namespace HomologicalComplex.Hom
-
-variable {C : Type u} [Category.{v} C] [Abelian C]
-
-/-- If `X` is a chain complex of projective objects and we have a quasi-isomorphism `f : X ⟶ Y[0]`,
-then `X` is a projective resolution of `Y.` -/
-def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
-    -- porting note: autoporter incorrectly went for `X.pt` at the end there
-    (f : X ⟶ (ChainComplex.single₀ C).obj Y) [QuasiIso' f] (H : ∀ n, Projective (X.X n)) :
-    ProjectiveResolution Y where
-  complex := X
-  π := f
-  projective := H
-  -- porting note: Lean 3 used dot notation `f.to_single₀_exact_d_f_at_zero` etc
-  exact₀ := HomologicalComplex.Hom.to_single₀_exact_d_f_at_zero f
-  exact := HomologicalComplex.Hom.to_single₀_exact_at_succ f
-  epi := HomologicalComplex.Hom.to_single₀_epi_at_zero f
-set_option linter.uppercaseLean3 false in
-#align homological_complex.hom.to_single₀_ProjectiveResolution HomologicalComplex.Hom.toSingle₀ProjectiveResolution
-
-end HomologicalComplex.Hom

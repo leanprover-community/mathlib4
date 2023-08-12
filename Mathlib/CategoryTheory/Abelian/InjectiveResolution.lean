@@ -56,7 +56,7 @@ lemma Exact.comp_descToInjective
     (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
     S.g ≫ hS.descToInjective f hf = f := by
   have := hS.mono_fromOpcycles
-  dsimp [descToInjective ]
+  dsimp [descToInjective]
   simp only [← p_fromOpcycles, Category.assoc, Injective.comp_factorThru, p_descOpcycles]
 
 end ShortComplex

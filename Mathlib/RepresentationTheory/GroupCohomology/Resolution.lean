@@ -665,15 +665,16 @@ theorem εToSingle₀_comp_eq :
 #align group_cohomology.resolution.ε_to_single₀_comp_eq GroupCohomology.Resolution.εToSingle₀_comp_eq
 
 theorem quasiIsoOfForget₂εToSingle₀ :
-    QuasiIso' (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
-  have h : QuasiIso' (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso' _
+    QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
+  have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso _
   rw [← εToSingle₀_comp_eq k G] at h
   haveI := h
-  exact quasiIso'_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
+  exact quasiIso_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
 #align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ GroupCohomology.Resolution.quasiIsoOfForget₂εToSingle₀
 
-instance : QuasiIso' (εToSingle₀ k G) :=
-  (forget₂ _ (ModuleCat.{u} k)).quasiIso_of_map_quasiIso _ (quasiIsoOfForget₂εToSingle₀ k G)
+instance : QuasiIso (εToSingle₀ k G) :=
+  (forget₂ _ (ModuleCat.{u} k)).quasiIso_of_map_quasiIso_of_preservesHomology _
+    (quasiIsoOfForget₂εToSingle₀ k G)
 
 end Exactness
 
@@ -684,8 +685,9 @@ open GroupCohomology.Resolution HomologicalComplex.Hom
 variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
-def GroupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) :=
-  toSingle₀ProjectiveResolution (εToSingle₀ k G) (x_projective k G)
+def GroupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
+  π := εToSingle₀ k G
+  projective := x_projective k G
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.ProjectiveResolution GroupCohomology.projectiveResolution
 
@@ -693,15 +695,16 @@ instance : EnoughProjectives (Rep k G) :=
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
     ModuleCat.moduleCat_enoughProjectives.{u}
 
-set_option maxHeartbeats 1600000 in
+--set_option maxHeartbeats 1600000 in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `GroupCohomology.resolution k G`. -/
 def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (GroupCohomology.resolution k G)).homology'
-          n).unop := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
-     (GroupCohomology.projectiveResolution k G)).unop.symm
+              (GroupCohomology.resolution k G)).homology
+          n).unop :=
+  ((GroupCohomology.projectiveResolution k G).isoLeftDerivedObj
+    ((linearYoneda k (Rep k G)).obj V).rightOp n).unop.symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso GroupCohomology.extIso

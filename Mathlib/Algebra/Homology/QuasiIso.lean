@@ -210,14 +210,14 @@ end HomologicalComplex.Hom
 variable {A : Type _} [Category A] [Abelian A] {B : Type _} [Category B] [Abelian B] (F : A ⥤ B)
   [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F] [Faithful F]
 
-theorem CategoryTheory.Functor.quasiIso_of_map_quasiIso {C D : HomologicalComplex A c} (f : C ⟶ D)
+theorem CategoryTheory.Functor.quasiIso'_of_map_quasiIso' {C D : HomologicalComplex A c} (f : C ⟶ D)
     (hf : QuasiIso' ((F.mapHomologicalComplex _).map f)) : QuasiIso' f :=
   ⟨fun i =>
     haveI : IsIso (F.map ((homology'Functor A c i).map f)) := by
       rw [← Functor.comp_map, ← NatIso.naturality_2 (F.homology'FunctorIso i) f, Functor.comp_map]
       infer_instance
     isIso_of_reflects_iso _ F⟩
-#align category_theory.functor.quasi_iso_of_map_quasi_iso CategoryTheory.Functor.quasiIso_of_map_quasiIso
+#align category_theory.functor.quasi_iso_of_map_quasi_iso CategoryTheory.Functor.quasiIso'_of_map_quasiIso'
 
 end
 
@@ -227,7 +227,7 @@ variable {ι : Type _}
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
+variable {c : ComplexShape ι} {C D E F : HomologicalComplex V c}
 
 class QuasiIsoAt (f : C ⟶ D) (i : ι) [C.HasHomology i] [D.HasHomology i] : Prop where
   quasiIso : ShortComplex.QuasiIso ((HomologicalComplex.shortComplexFunctor V c i).map f)
@@ -316,5 +316,253 @@ lemma ChainComplex.quasiIsoAt₀_iff {K L : ChainComplex V ℕ} (f : K ⟶ L)
     QuasiIsoAt f 0 ↔
       ShortComplex.QuasiIso ((HomologicalComplex.shortComplexFunctor' V _ 1 0 0).map f) :=
   quasiIsoAt_iff' _ _ _ _ (by simp) (by simp)
+
+lemma quasiIsoAt_comp' (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι) [C.HasHomology n]
+    [D.HasHomology n] [E.HasHomology n]
+    (hφ : QuasiIsoAt φ n) (hφ' : QuasiIsoAt φ' n) :
+    QuasiIsoAt (φ ≫ φ') n := by
+  rw [quasiIsoAt_iff] at hφ hφ' ⊢
+  rw [Functor.map_comp]
+  exact ShortComplex.quasiIso_comp' _ _ hφ hφ'
+
+instance quasiIsoAt_comp (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    [QuasiIsoAt φ n] [QuasiIsoAt φ' n] :
+    QuasiIsoAt (φ ≫ φ') n :=
+  quasiIsoAt_comp' φ φ' n inferInstance inferInstance
+
+lemma quasiIso_comp' (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    (_ : QuasiIso φ) (_ : QuasiIso φ') :
+    QuasiIso (φ ≫ φ') where
+  quasiIso n := quasiIsoAt_comp φ φ' n
+
+instance quasiIso_comp (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    [QuasiIso φ] [QuasiIso φ'] :
+    QuasiIso (φ ≫ φ') :=
+  quasiIso_comp' φ φ' inferInstance inferInstance
+
+lemma quasiIsoAt_of_comp_left' (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    (hφ : QuasiIsoAt φ n) (hφφ' : QuasiIsoAt (φ ≫ φ') n) :
+    QuasiIsoAt φ' n := by
+  rw [quasiIsoAt_iff] at hφ hφφ' ⊢
+  rw [Functor.map_comp] at hφφ'
+  exact ShortComplex.quasiIso_of_comp_left' _ _ hφ hφφ'
+
+lemma quasiIsoAt_of_comp_left (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    [QuasiIsoAt φ n] [QuasiIsoAt (φ ≫ φ') n] :
+    QuasiIsoAt φ' n :=
+  quasiIsoAt_of_comp_left' φ φ' n inferInstance inferInstance
+
+lemma quasiIso_of_comp_left' (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    (_ : QuasiIso φ) (_ : QuasiIso (φ ≫ φ')) :
+    QuasiIso φ' where
+  quasiIso n := quasiIsoAt_of_comp_left φ φ' n
+
+lemma quasiIso_of_comp_left (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    [QuasiIso φ] [QuasiIso (φ ≫ φ')] :
+    QuasiIso φ' :=
+  quasiIso_of_comp_left' φ φ' inferInstance inferInstance
+
+@[simp]
+lemma quasiIsoAt_iff_comp_left' (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    (hφ : QuasiIsoAt φ n) :
+    QuasiIsoAt (φ ≫ φ') n ↔ QuasiIsoAt φ' n := by
+  constructor
+  . exact quasiIsoAt_of_comp_left' φ φ' n hφ
+  . intro hφ
+    infer_instance
+
+@[simp]
+lemma quasiIsoAt_iff_comp_left (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    [QuasiIsoAt φ n] :
+    QuasiIsoAt (φ ≫ φ') n ↔ QuasiIsoAt φ' n :=
+  quasiIsoAt_iff_comp_left' φ φ' n inferInstance
+
+@[simp]
+lemma quasiIso_iff_comp_left' (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    (hφ : QuasiIso φ) :
+    QuasiIso (φ ≫ φ') ↔ QuasiIso φ' := by
+  constructor
+  . exact quasiIso_of_comp_left' φ φ' hφ
+  . intro hφ
+    infer_instance
+
+@[simp]
+lemma quasiIso_iff_comp_left (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    [QuasiIso φ] :
+    QuasiIso (φ ≫ φ') ↔ QuasiIso φ' :=
+  quasiIso_iff_comp_left' φ φ' inferInstance
+
+-----
+
+lemma quasiIsoAt_of_comp_right' (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    (hφ' : QuasiIsoAt φ' n) (hφφ' : QuasiIsoAt (φ ≫ φ') n) :
+    QuasiIsoAt φ n := by
+  rw [quasiIsoAt_iff] at hφ' hφφ' ⊢
+  rw [Functor.map_comp] at hφφ'
+  exact ShortComplex.quasiIso_of_comp_right' _ _ hφ' hφφ'
+
+lemma quasiIsoAt_of_comp_right (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    [QuasiIsoAt φ' n] [QuasiIsoAt (φ ≫ φ') n] :
+    QuasiIsoAt φ n :=
+  quasiIsoAt_of_comp_right' φ φ' n inferInstance inferInstance
+
+lemma quasiIso_of_comp_right' (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    (_ : QuasiIso φ') (_ : QuasiIso (φ ≫ φ')) :
+    QuasiIso φ where
+  quasiIso n := quasiIsoAt_of_comp_right φ φ' n
+
+lemma quasiIso_of_comp_right (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    [QuasiIso φ'] [QuasiIso (φ ≫ φ')] :
+    QuasiIso φ :=
+  quasiIso_of_comp_right' φ φ' inferInstance inferInstance
+
+@[simp]
+lemma quasiIsoAt_iff_comp_right' (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    (hφ' : QuasiIsoAt φ' n) :
+    QuasiIsoAt (φ ≫ φ') n ↔ QuasiIsoAt φ n := by
+  constructor
+  . exact quasiIsoAt_of_comp_right' φ φ' n hφ'
+  . intro hφ
+    infer_instance
+
+@[simp]
+lemma quasiIsoAt_iff_comp_right (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n]
+    [QuasiIsoAt φ' n] :
+    QuasiIsoAt (φ ≫ φ') n ↔ QuasiIsoAt φ n :=
+  quasiIsoAt_iff_comp_right' φ φ' n inferInstance
+
+@[simp]
+lemma quasiIso_iff_comp_right' (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    (hφ' : QuasiIso φ') :
+    QuasiIso (φ ≫ φ') ↔ QuasiIso φ := by
+  constructor
+  . exact quasiIso_of_comp_right' φ φ' hφ'
+  . intro hφ
+    infer_instance
+
+@[simp]
+lemma quasiIso_iff_comp_right (φ : C ⟶ D) (φ' : D ⟶ E)
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n]
+    [QuasiIso φ'] :
+    QuasiIso (φ ≫ φ') ↔ QuasiIso φ :=
+  quasiIso_iff_comp_right' φ φ' inferInstance
+
+lemma quasiIsoAt_of_arrow_mk_iso'
+    (φ : C ⟶ D) (φ' : E ⟶ F) (e : Arrow.mk φ ≅ Arrow.mk φ') (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n] [F.HasHomology n]
+    (hφ : QuasiIsoAt φ n) : QuasiIsoAt φ' n := by
+  let α : E ⟶ C := e.inv.left
+  let β : D ⟶ F := e.hom.right
+  suffices φ' = α ≫ φ ≫ β by
+    rw [this]
+    infer_instance
+  simp only [Arrow.w_mk_right_assoc, Arrow.mk_left, Arrow.mk_right, Arrow.mk_hom,
+    ← Arrow.comp_right, e.inv_hom_id, Arrow.id_right, Category.comp_id]
+
+lemma quasiIsoAt_of_arrow_mk_iso
+    (φ : C ⟶ D) (φ' : E ⟶ F) (e : Arrow.mk φ ≅ Arrow.mk φ') (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n] [F.HasHomology n]
+    [QuasiIsoAt φ n] : QuasiIsoAt φ' n :=
+  quasiIsoAt_of_arrow_mk_iso' φ φ' e n inferInstance
+
+lemma quasiIsoAt_iff_of_arrow_mk_iso
+    (φ : C ⟶ D) (φ' : E ⟶ F) (e : Arrow.mk φ ≅ Arrow.mk φ') (n : ι)
+    [C.HasHomology n] [D.HasHomology n] [E.HasHomology n] [F.HasHomology n] :
+    QuasiIsoAt φ n ↔ QuasiIsoAt φ' n :=
+  ⟨quasiIsoAt_of_arrow_mk_iso' φ φ' e n, quasiIsoAt_of_arrow_mk_iso' φ' φ e.symm n⟩
+
+lemma quasiIso_of_arrow_mk_iso'
+    (φ : C ⟶ D) (φ' : E ⟶ F) (e : Arrow.mk φ ≅ Arrow.mk φ')
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n] [∀ n, F.HasHomology n]
+    (_ : QuasiIso φ) : QuasiIso φ' where
+  quasiIso n := quasiIsoAt_of_arrow_mk_iso φ φ' e n
+
+lemma quasiIso_of_arrow_mk_iso
+    (φ : C ⟶ D) (φ' : E ⟶ F) (e : Arrow.mk φ ≅ Arrow.mk φ')
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n] [∀ n, F.HasHomology n]
+    [QuasiIso φ] : QuasiIso φ' :=
+  quasiIso_of_arrow_mk_iso' φ φ' e inferInstance
+
+lemma quasiIso_iff_of_arrow_mk_iso
+    (φ : C ⟶ D) (φ' : E ⟶ F) (e : Arrow.mk φ ≅ Arrow.mk φ')
+    [∀ n, C.HasHomology n] [∀ n, D.HasHomology n] [∀ n, E.HasHomology n] [∀ n, F.HasHomology n] :
+    QuasiIso φ ↔ QuasiIso φ' :=
+  ⟨quasiIso_of_arrow_mk_iso' φ φ' e, quasiIso_of_arrow_mk_iso' φ' φ e.symm⟩
+
+end
+
+section
+
+variable {C D : Type _} [Category C] [Preadditive C]
+  [Category D] [Preadditive D] (F : C ⥤ D) [F.Additive]
+  {ι : Type _} {c : ComplexShape ι} {K L : HomologicalComplex C c} (f : K ⟶ L)
+
+instance CategoryTheory.Functor.map_quasiIsoAt_of_preservesHomology
+    [F.PreservesHomology] (n : ι)
+    [K.HasHomology n] [L.HasHomology n]
+    [((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [((F.mapHomologicalComplex c).obj L).HasHomology n]
+    [hf : QuasiIsoAt f n] : QuasiIsoAt ((F.mapHomologicalComplex c).map f) n := by
+  rw [quasiIsoAt_iff] at hf ⊢
+  exact ShortComplex.quasiIso_map_of_preservesRightHomology ((HomologicalComplex.shortComplexFunctor C c n).map f) F
+
+instance CategoryTheory.Functor.map_quasiIso_of_preservesHomology
+    [F.PreservesHomology] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj L).HasHomology n]
+    [QuasiIso f] : QuasiIso ((F.mapHomologicalComplex c).map f) where
+
+lemma CategoryTheory.Functor.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology
+    [F.PreservesHomology] [ReflectsIsomorphisms F] (n : ι)
+    [K.HasHomology n] [L.HasHomology n]
+    [((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [((F.mapHomologicalComplex c).obj L).HasHomology n]
+    (hf : QuasiIsoAt ((F.mapHomologicalComplex c).map f) n) :
+    QuasiIsoAt f n := by
+  rw [quasiIsoAt_iff] at hf ⊢
+  exact (ShortComplex.quasiIso_map_iff_of_preservesRightHomology
+    ((HomologicalComplex.shortComplexFunctor C c n).map f) F).1  hf
+
+lemma CategoryTheory.Functor.quasiIso_of_map_quasiIso_of_preservesHomology
+    [F.PreservesHomology] [ReflectsIsomorphisms F] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj L).HasHomology n]
+    (_ : QuasiIso ((F.mapHomologicalComplex c).map f)) :
+    QuasiIso f where
+  quasiIso n := F.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology f n inferInstance
+
+end
+
+section
+
+variable {A : Type _} [Category A] [Preadditive A] {ι : Type _} {c : ComplexShape ι}
+  {K L : HomologicalComplex A c} (e : HomotopyEquiv K L) [DecidableRel c.Rel]
+
+instance HomotopyEquiv.toQuasiIsoAt (n : ι) [K.HasHomology n] [L.HasHomology n] :
+    QuasiIsoAt e.hom n := by
+  rw [quasiIsoAt_iff, ShortComplex.quasiIso_iff]
+  exact IsIso.of_iso (e.toHomologyIso n)
+
+def HomotopyEquiv.toQuasiIso [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
+    QuasiIso e.hom :=
+  ⟨fun _ => inferInstance⟩
 
 end

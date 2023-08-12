@@ -562,7 +562,7 @@ section
 
 variable [HasZeroObject C]
 
-instance (X : C) (j : ℕ) :
+instance single₀_obj_hasHomology (X : C) (j : ℕ) :
     ((single₀ C).obj X).HasHomology j :=
   ShortComplex.hasHomology_of_zeros _ _ _
 
@@ -572,6 +572,50 @@ lemma single₀_exactAt (X : C) (j : ℕ) :
     (((single₀ C).obj X).sc j.succ) rfl rfl).exact_iff]
   dsimp
   exact Limits.isZero_zero C
+
+@[simps!]
+noncomputable def homologyDataSingle₀Obj (X : C) : (((single₀ C).obj X).sc 0).HomologyData :=
+  ShortComplex.HomologyData.ofZeros _ rfl rfl
+
+noncomputable def single₀Homology₀Iso (X : C) : ((single₀ C).obj X).homology 0 ≅ X :=
+  (homologyDataSingle₀Obj X).left.homologyIso
+
+lemma single₀HomologyIso_eq' (X : C) :
+    single₀Homology₀Iso X = (homologyDataSingle₀Obj X).right.homologyIso := by
+  ext
+  simp [single₀Homology₀Iso,
+    (homologyDataSingle₀Obj X).right_homologyIso_eq_left_homologyIso_trans]
+
+noncomputable def single₀Cycles₀Iso (X : C) : ((single₀ C).obj X).cycles 0 ≅ X :=
+  (homologyDataSingle₀Obj X).left.cyclesIso
+
+noncomputable def single₀Opcycles₀Iso (X : C) : ((single₀ C).obj X).opcycles 0 ≅ X :=
+  (homologyDataSingle₀Obj X).right.opcyclesIso
+
+@[reassoc (attr := simp)]
+lemma single₀Cycles₀Iso_inv_comp_iCycles (X : C) :
+  (single₀Cycles₀Iso X).inv ≫ ((single₀ C).obj X).iCycles 0 = 𝟙 _ :=
+  (homologyDataSingle₀Obj X).left.cyclesIso_inv_comp_iCycles
+
+@[reassoc (attr := simp)]
+lemma single₀_homologyπ_comp_single₀Homology₀Iso_hom (X : C) :
+    ((single₀ C).obj X).homologyπ 0 ≫ (single₀Homology₀Iso X).hom =
+      (single₀Cycles₀Iso X).hom :=
+    ((homologyDataSingle₀Obj X).left.homologyπ_comp_homologyIso_hom).trans (comp_id _)
+
+@[reassoc (attr := simp)]
+lemma pOpcycles_comp_single₀OpcyclesIso_hom (X : C) :
+    ((ChainComplex.single₀ C).obj X).pOpcycles 0 ≫ (single₀Opcycles₀Iso X).hom = 𝟙 _ :=
+  (homologyDataSingle₀Obj X).right.pOpcycles_comp_opcyclesIso_hom
+
+@[reassoc (attr := simp)]
+lemma single₀Homology₀Iso_inv_comp_single₀_homologyι (X : C) :
+  (single₀Homology₀Iso X).inv ≫ ((single₀ C).obj X).homologyι 0 =
+    (single₀Opcycles₀Iso X).inv := by
+  rw [single₀HomologyIso_eq']
+  refine' ((homologyDataSingle₀Obj X).right.homologyIso_inv_comp_homologyι).trans _
+  simp
+  rfl
 
 end
 
@@ -595,6 +639,37 @@ lemma isoHomologyι₀_hom_inv_id (K : ChainComplex C ℕ) [K.HasHomology 0] :
 @[reassoc (attr := simp)]
 lemma isoHomologyι₀_inv_hom_id (K : ChainComplex C ℕ) [K.HasHomology 0] :
     K.isoHomologyι₀.inv ≫ K.homologyι 0 = 𝟙 _ := K.isoHomologyι₀.inv_hom_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι₀_inv_naturality {K L : ChainComplex C ℕ} (φ : K ⟶ L)
+    [K.HasHomology 0] [L.HasHomology 0] :
+    K.isoHomologyι₀.inv ≫ HomologicalComplex.homologyMap φ 0 =
+      HomologicalComplex.opcyclesMap φ 0 ≫ L.isoHomologyι₀.inv := by
+  simp only [assoc, ← cancel_mono (L.homologyι 0), ← cancel_epi (K.homologyι 0),
+    HomologicalComplex.homologyι_naturality, isoHomologyι₀_inv_hom_id_assoc,
+    isoHomologyι₀_inv_hom_id, comp_id]
+
+section Abelian
+
+variable {A : Type _} [Category A] [Abelian A]
+
+lemma isIso_descOpcycles_iff (K : ChainComplex A ℕ) {X : A} (φ : K.X 0 ⟶ X)
+    [K.HasHomology 0] (hφ : K.d 1 0 ≫ φ = 0) :
+    IsIso (K.descOpcycles φ 1 (by simp) hφ) ↔
+      Epi φ ∧ (ShortComplex.mk _ _ hφ).Exact := by
+  suffices ∀ (i : ℕ) (hx : (ComplexShape.down ℕ).prev 0 = i)
+    (hφ : K.d i 0 ≫ φ = 0), IsIso (K.descOpcycles φ i hx hφ) ↔
+      Epi φ ∧ (ShortComplex.mk _ _ hφ).Exact from this 1 (by simp) hφ
+  rintro _ rfl hφ
+  let α : K.sc 0 ⟶ ShortComplex.mk (0 : X ⟶ X) (0 : X ⟶ X) (by simp) :=
+      { τ₁ := 0
+        τ₂ := φ
+        τ₃ := 0 }
+  exact (ShortComplex.quasiIso_iff_isIso_descOpcycles α (by simp) rfl rfl).symm.trans
+    (ShortComplex.quasiIso_iff_of_zeros' α (by simp) rfl rfl)
+
+end Abelian
+
 
 end ChainComplex
 

@@ -140,14 +140,6 @@ lemma InjectiveResolution.isoRightDerivedObj_inv_naturality
     InjectiveResolution.isoRightDerivedObj_hom_naturality f I J φ comm F n,
     Iso.inv_hom_id_assoc, Iso.inv_hom_id, Category.comp_id]
 
-/-- The 0-th derived functor of `F` on an injective object `X` is just `F.obj X`. -/
-def Functor.rightDerivedObjInjectiveZero (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
-    (F.rightDerived 0).obj X ≅ F.obj X :=
-  (InjectiveResolution.self X).isoRightDerivedObj F 0 ≪≫
-    (HomologicalComplex.homologyFunctor _ _ _).mapIso ((CochainComplex.single₀MapHomologicalComplex F).app X) ≪≫
-    CochainComplex.single₀Homology₀Iso (F.obj X)
-#align category_theory.functor.right_derived_obj_injective_zero CategoryTheory.Functor.rightDerivedObjInjectiveZero
-
 open ZeroObject
 
 lemma Functor.isZero_rightDerived_obj_injective_succ
@@ -264,7 +256,7 @@ def InjectiveResolution.toRightDerivedZero' {X : C}
       F.map_zero])
 
 @[reassoc (attr := simp)]
-lemma InjectiveResolution.toRightDerivedZero'_comp_isoHomology₀_inv {X : C}
+lemma InjectiveResolution.toRightDerivedZero'_comp_isoHomology₀_inv_comp_iCycles {X : C}
     (P : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     P.toRightDerivedZero' F ≫ (CochainComplex.isoHomologyπ₀ _).inv ≫
       HomologicalComplex.iCycles _ _ = F.map (P.ι.f 0) := by
@@ -281,10 +273,24 @@ def InjectiveResolution.toRightDerivedZero'_naturality {X Y : C} (f : X ⟶ Y)
         (F.mapHomologicalComplex _ ⋙ HomologicalComplex.homologyFunctor _ _ 0).map φ := by
   simp only [← cancel_mono (CochainComplex.isoHomologyπ₀ _).inv,
     ← cancel_mono (HomologicalComplex.iCycles _ _), Category.assoc,
-    toRightDerivedZero'_comp_isoHomology₀_inv, Functor.comp_map,
+    toRightDerivedZero'_comp_isoHomology₀_inv_comp_iCycles, Functor.comp_map,
     HomologicalComplex.homologyFunctor_map, CochainComplex.isoHomologyπ₀_inv_naturality,
     HomologicalComplex.cyclesMap_i, Functor.mapHomologicalComplex_map_f,
-    toRightDerivedZero'_comp_isoHomology₀_inv_assoc, ← F.map_comp, comm]
+    toRightDerivedZero'_comp_isoHomology₀_inv_comp_iCycles_assoc, ← F.map_comp, comm]
+
+instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
+    IsIso ((InjectiveResolution.self X).toRightDerivedZero' F) := by
+  dsimp [InjectiveResolution.toRightDerivedZero',
+    InjectiveResolution.self]
+  refine @IsIso.comp_isIso  _ _ _ _ _ _ _ ?_ inferInstance
+  rw [CochainComplex.isIso_liftCycles_iff]
+  constructor
+  . infer_instance
+  . rw [ShortComplex.exact_iff_epi]
+    . dsimp
+      simp only [Functor.map_id]
+      infer_instance
+    . simp
 
 def Functor.toRightDerivedZero (F : C ⥤ D) [F.Additive] :
     F ⟶ F.rightDerived 0 where
@@ -296,6 +302,33 @@ def Functor.toRightDerivedZero (F : C ⥤ D) [F.Additive] :
       (injectiveResolution.desc f) (by simp) F, Category.assoc,
       NatTrans.naturality]
     rfl
+
+lemma InjectiveResolution.toRightDerivedZero_eq
+    {X : C} (I : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
+    F.toRightDerivedZero.app X =
+      I.toRightDerivedZero' F ≫ (I.isoRightDerivedObj F 0).inv := by
+  dsimp [Functor.toRightDerivedZero, isoRightDerivedObj]
+  have h₁ : (I.isoRightDerivedToHomotopyCategoryObj F).hom =
+    (F.mapHomologicalComplex _ ⋙ HomotopyCategory.quotient _ _).map (desc (𝟙 X) _ _) :=
+    Category.comp_id _
+  have h₂ := InjectiveResolution.toRightDerivedZero'_naturality
+    (𝟙 X) (injectiveResolution' X) I (desc (𝟙 X) _ _) (by
+      rw [← HomologicalComplex.comp_f, desc_commutes, Functor.map_id,
+        Category.id_comp, Category.id_comp]) F
+  rw [F.map_id, Category.id_comp] at h₂
+  rw [← cancel_mono ((HomotopyCategory.homologyFunctor _ _ 0).map (I.isoRightDerivedToHomotopyCategoryObj F).hom),
+    Category.assoc, Category.assoc, Category.assoc, ← Functor.map_comp, Iso.inv_hom_id,
+    Functor.map_id, Category.comp_id, h₂, h₁, Category.assoc]
+  erw [← NatTrans.naturality]
+  rfl
+
+-- this replaced the previous `Functor.rightDerivedObjInjectiveZero` which
+-- is generalized as `Functor.rightDerivedZeroIsoSelf` for all `X` when
+-- `F` preserves finite limits
+instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
+    IsIso (F.toRightDerivedZero.app X) := by
+  rw [(InjectiveResolution.self X).toRightDerivedZero_eq F]
+  infer_instance
 
 section
 

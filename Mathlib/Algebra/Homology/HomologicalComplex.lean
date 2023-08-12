@@ -284,6 +284,8 @@ theorem comp_f {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (g 
   rfl
 #align homological_complex.comp_f HomologicalComplex.comp_f
 
+attribute [reassoc] comp_f
+
 @[simp]
 theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι) :
     HomologicalComplex.Hom.f (eqToHom h) n =

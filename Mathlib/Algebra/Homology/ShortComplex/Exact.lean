@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Balanced
 
 namespace CategoryTheory
@@ -660,6 +661,12 @@ noncomputable def gIsCokernel [Epi S.g] : IsColimit (CokernelCofork.ofπ S.g S.z
   exact IsColimit.ofIsoColimit S.opcyclesIsCokernel
     ((Cofork.ext (asIso S.fromOpcycles) (by simp)))
 
+lemma map_of_epi_of_preservesCokernel (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Epi S.g)
+    (_ : PreservesColimit (parallelPair S.f 0) F) :
+    (S.map F).Exact :=
+  exact_of_g_is_cokernel _ (CokernelCofork.mapIsColimit _ hS.gIsCokernel F)
+
 noncomputable def lift {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     A ⟶ S.X₁ := hS.fIsKernel.lift (KernelFork.ofι k hk)
 
@@ -736,6 +743,23 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     refine' ⟨⟨h₂.lift S₂.iCycles (by simp), _, _⟩⟩
     · rw [← cancel_mono φ.τ₂, assoc, h₂.lift_f, liftCycles_i, id_comp]
     · rw [← cancel_mono S₂.iCycles, assoc, liftCycles_i, h₂.lift_f, id_comp]
+
+lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) [S₁.HasHomology] [S₂.HasHomology] :
+    QuasiIso φ ↔
+      Epi φ.τ₂ ∧ (ShortComplex.mk S₁.f φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])).Exact := by
+  rw [← quasiIso_opMap_iff, quasiIso_iff_of_zeros]
+  rotate_left
+  · dsimp
+    rw [hg₂, op_zero]
+  · dsimp
+    rw [hf₂, op_zero]
+  · dsimp
+    rw [hg₁, op_zero]
+  rw [exact_iff_unop]
+  have : Mono φ.τ₂.op ↔ Epi φ.τ₂ :=
+    ⟨fun _ => unop_epi_of_mono φ.τ₂.op, fun _ => op_mono_of_epi _⟩
+  tauto
 
 end Abelian
 

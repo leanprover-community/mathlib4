@@ -27,8 +27,9 @@ projectives, we provide the natural isomorphism `F.leftDerived 0 ≅ F`.
 
 -/
 
+-- this is already in `CategoryTheory.Functor.LeftDerived`
 
-noncomputable section
+/-noncomputable section
 
 universe w v u
 
@@ -185,4 +186,4 @@ def leftDerivedZeroIsoSelf [EnoughProjectives C] [PreservesFiniteColimits F] :
     fun {_ _} _ => leftDerived_zero_to_self_natural _ _ _ _
 #align category_theory.abelian.functor.left_derived_zero_iso_self CategoryTheory.Abelian.Functor.leftDerivedZeroIsoSelf
 
-end CategoryTheory.Abelian.Functor
+end CategoryTheory.Abelian.Functor-/
