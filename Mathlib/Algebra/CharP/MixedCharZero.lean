@@ -349,7 +349,6 @@ theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → 
   | intro p p_charP =>
     by_cases p = 0
     · rw [h] at p_charP
-      haveI h0 : CharZero R := CharP.charP_to_charZero R
       exact split_equalCharZero_mixedCharZero R h_equal h_mixed
     · exact h_pos p h p_charP
 #align split_by_characteristic split_by_characteristic
