@@ -589,7 +589,7 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
-    padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
+    padicValNat p n ! = ∑ i in Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
 
@@ -599,20 +599,10 @@ Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum o
 of `n`. -/
 theorem padicValNat_factorial' [hp : Fact p.Prime] (n : ℕ):
     (p - 1) * padicValNat p n ! = n - (p.digits n).sum := by
-  apply n.strongInductionOn
-  intro n hn
-  rcases n.eq_zero_or_pos with rfl | hnp; simp
-  suffices padicValNat p n ! = n / p + padicValNat p (n / p) ! by
-    rw [this, mul_add, hn (n / p) (Nat.div_lt_self hnp hp.out.one_lt)]
-    suffices (p.digits n).sum = n % p + (digits p (n / p)).sum by
-      nth_rw 4 [← div_add_mod' n p]
-      rw [this, sub_add_eq, Nat.add_sub_cancel, Nat.mul_sub_right_distrib p 1 _, one_mul,
-        ← Nat.add_sub_assoc (digit_sum_le p (n / p)) _,
-        Nat.sub_add_cancel <| le_mul_of_pos_left hp.out.pos, mul_comm]
-    rw [digits_def' hp.out.one_lt hnp]
-    exact List.foldl_assoc_comm_cons
-  rw [add_comm, ← padicValNat_factorial_mul (n / p)]
-  exact (padicValNat_mul_div_factorial n).symm
+  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n),
+      ← Finset.sum_Ico_add _ 0 _ 1, Ico_zero_eq_range,
+      ← @sub_one_mul_sum_log_div_pow_eq_sub_sum_digits p n]
+  simp only [one_add]
 
 /-- **Kummer's Theorem**
 
