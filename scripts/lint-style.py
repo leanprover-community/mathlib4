@@ -17,9 +17,9 @@ any provided paths.
 
 Paths emitted in the output will match the paths provided on the
 command line for any files containing errors -- in particular, linting
-a relative path (like ``src/foo/bar.lean``) will produce errors
+a relative path (like ``Mathlib/Foo/Bar.lean``) will produce errors
 that contain the relative path, whilst linting absolute paths (like
-``/root/mathlib/src/foo/bar.lean``) will produce errors with the
+``/root/mathlib4/Mathlib/Foo/Bar.lean``) will produce errors with the
 absolute path.
 
 This script can also be used to regenerate the list of allowed / ignored style
@@ -40,12 +40,9 @@ ERR_COP = 0 # copyright header
 ERR_IMP = 1 # import statements
 ERR_MOD = 2 # module docstring
 ERR_LIN = 3 # line length
-ERR_SAV = 4 # ᾰ
-ERR_RNT = 5 # reserved notation
 ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
-ERR_UNF = 10 # unfreeze_local_instances
 ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
@@ -56,7 +53,6 @@ exceptions = []
 
 SCRIPTS_DIR = Path(__file__).parent.resolve()
 ROOT_DIR = SCRIPTS_DIR.parent
-RESERVED_NOTATION = ROOT_DIR / 'src/tactic/reserved_notation.lean'
 
 
 with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
@@ -71,10 +67,6 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_MOD, path)]
         if errno == "ERR_LIN":
             exceptions += [(ERR_LIN, path)]
-        if errno == "ERR_SAV":
-            exceptions += [(ERR_SAV, path)]
-        if errno == "ERR_RNT":
-            exceptions += [(ERR_RNT, path)]
         if errno == "ERR_OPT":
             exceptions += [(ERR_OPT, path)]
         if errno == "ERR_AUT":
@@ -122,22 +114,6 @@ def skip_string(enumerate_lines):
             if in_string:
                 continue
         yield line_nr, line
-
-def small_alpha_vrachy_check(lines, path):
-    errors = []
-    for line_nr, line in skip_string(skip_comments(enumerate(lines, 1))):
-        if 'ᾰ' in line:
-            errors += [(ERR_SAV, line_nr, path)]
-    return errors
-
-def reserved_notation_check(lines, path):
-    if path.resolve() == RESERVED_NOTATION:
-        return []
-    errors = []
-    for line_nr, line in skip_string(skip_comments(enumerate(lines, 1))):
-        if line.strip().startswith('reserve') or line.strip().startswith('precedence'):
-            errors += [(ERR_RNT, line_nr, path)]
-    return errors
 
 def set_option_check(lines, path):
     errors = []
@@ -291,10 +267,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_LIN:
             output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_SAV:
-            output_message(path, line_nr, "ERR_SAV", "File contains the character ᾰ")
-        if errno == ERR_RNT:
-            output_message(path, line_nr, "ERR_RNT", "Reserved notation outside tactic.reserved_notation")
         if errno == ERR_OPT:
             output_message(path, line_nr, "ERR_OPT", "Forbidden set_option command")
         if errno == ERR_AUT:
@@ -310,7 +282,7 @@ def format_errors(errors):
         if errno == ERR_WIN:
             output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
         if errno == ERR_TWS:
-            output_message(path, line_nr, "ERR_TWS", "Trailing whitespece detected on line")
+            output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
 
 def lint(path):
     with path.open(encoding="utf-8", newline="") as f:
@@ -328,10 +300,6 @@ def lint(path):
             format_errors(errs)
             return # checks below this line are not executed on files that only import other files.
         errs = regular_check(lines, path)
-        format_errors(errs)
-        errs = small_alpha_vrachy_check(lines, path)
-        format_errors(errs)
-        errs = reserved_notation_check(lines, path)
         format_errors(errs)
         errs = set_option_check(lines, path)
         format_errors(errs)
