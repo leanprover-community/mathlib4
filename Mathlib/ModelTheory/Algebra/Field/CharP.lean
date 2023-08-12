@@ -4,33 +4,35 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.ModelTheory.Algebra.Field.FreeCommRing
+import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Nat.Prime
 
 namespace FirstOrder
 
-namespace field
+namespace Field
 
-open Language
+open Language Ring
 
-noncomputable def eqZero (n : ℕ) : Language.field.Sentence :=
+noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
   Term.equal (termOfFreeCommRing n) 0
 
-@[simp] theorem realize_eqZero {K : Type*} [CompatibleField K] (n : ℕ)
-    (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
+@[simp] theorem realize_eqZero {R : Type*} [CommRing R] [CompatibleRing R] (n : ℕ)
+    (v : Empty → R) : (Formula.Realize (eqZero n) v) ↔ ((n : R) = 0) := by
     simp [eqZero, Term.realize]
 
 --TODO: Think about the name and namespace of this
-def Theory.hasChar (p : ℕ) : Language.field.Theory :=
+def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
+  Theory.field ∪
   if p = 0
   then (fun q => ∼(eqZero q)) '' {q : ℕ | q.Prime}
   else if p.Prime then {eqZero p}
   else {⊥}
 
-theorem model_hasChar_of_charP {K : Type*} [CompatibleField K] {p : ℕ} [CharP K p] :
-    (Theory.hasChar p).Model K := by
-  rw [Theory.hasChar]
+theorem model_hasChar_of_charP {K : Type*} [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] :
+    (Theory.fieldOfChar p).Model K := by
+  refine Language.Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
   cases CharP.char_is_prime_or_zero K p with
   | inl hp =>
     simp [hp.ne_zero, hp, Sentence.Realize]
@@ -41,20 +43,31 @@ theorem model_hasChar_of_charP {K : Type*} [CompatibleField K] {p : ℕ} [CharP 
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
 
-theorem charP_of_model_hasChar {K : Type*} [CompatibleField K]
-    [h : (Theory.hasChar p).Model K] : CharP K p := by
-  rw [Theory.hasChar] at h
-  split_ifs at h with hp0 hp
+instance charP_iff_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] :
+    (Theory.fieldOfChar p).Model K ↔ CharP K p := by
+  simp only [Theory.fieldOfChar, Theory.model_union_iff,
+    (show (Theory.field.Model K) by infer_instance), true_and]
+  split_ifs with hp0 hp
   · subst hp0
     simp only [Theory.model_iff, Set.mem_image, Set.mem_setOf_eq, Sentence.Realize,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Formula.realize_not,
-      realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero] at h
-    refine CharP.ofCharZero K
+      realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
+    exact ⟨fun _ => CharP.ofCharZero _, fun _ => CharP.charP_to_charZero K⟩
   · simp only [Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize, forall_eq,
-      realize_eqZero, ← CharP.charP_iff_prime_eq_zero hp] at h
-    exact h
-  · simp [Sentence.Realize] at h
+      realize_eqZero, ← CharP.charP_iff_prime_eq_zero hp]
+  · simp only [Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize,
+      forall_eq, Formula.realize_bot, false_iff]
+    intro H
+    cases (CharP.char_is_prime_or_zero K p) <;> simp_all
 
-end field
+instance model_fieldOfChar_of_charP {K : Type*} [Field K] [CompatibleRing K]
+    [CharP K p] : (Theory.fieldOfChar p).Model K :=
+  charP_iff_model_fieldOfChar.2 inferInstance
+
+instance charP_of_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K]
+    [h : (Theory.fieldOfChar p).Model K] : CharP K p :=
+  charP_iff_model_fieldOfChar.1 h
+
+end Field
 
 end FirstOrder

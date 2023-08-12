@@ -72,7 +72,7 @@ end
 
 namespace FirstOrder
 
-open MvPolynomial FreeCommRing Language field
+open MvPolynomial FreeCommRing Language Field Ring
 
 def genericPolyMap {ι : Type u} (monoms : ι → Finset (ι →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ ι) :=
@@ -118,30 +118,30 @@ theorem lift_genericPolyMap {R : Type*} [CommRing R]
   split_ifs with h0 <;> simp_all
 
 noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
-    (mons : ι → Finset (ι →₀ ℕ)) : Language.field.Sentence :=
-  let l1 : List (Language.field.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
+    (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
+  let l1 : List (Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
     (Finset.univ : Finset ι).toList.map (fun i =>
       (termOfFreeCommRing (genericPolyMap mons i)).relabel
         (Sum.inl ∘ Sum.map id (fun i => (0, i)))
     =' (termOfFreeCommRing (genericPolyMap mons i)).relabel
         (Sum.inl ∘ Sum.map id (fun i => (1, i))))
-  let f1 : Language.field.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+  let f1 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     l1.foldr (. ⊓ .) ⊤
-  let l2 : List (Language.field.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
+  let l2 : List (Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
     (Finset.univ : Finset ι).toList.map  (fun i =>
       .var (Sum.inl (Sum.inr (0, i))) =' .var (Sum.inl (Sum.inr (1, i))))
-  let f2 : Language.field.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+  let f2 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     l2.foldr (. ⊓ .) ⊤
-  let inj : Language.field.Formula (Σ i : ι, mons i) :=
+  let inj : Language.ring.Formula (Σ i : ι, mons i) :=
     Formula.allsᵢ (γ := Fin 2 × ι) id (f1 ⟹ f2)
-  let l3 : List (Language.field.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
+  let l3 : List (Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
     (Finset.univ : Finset ι).toList.map  (fun i =>
       (termOfFreeCommRing (genericPolyMap mons i)).relabel
         (Sum.inl ∘ Sum.map id (fun i => (0, i))) ='
       .var (Sum.inl (Sum.inr (1, i))))
-  let f3 : Language.field.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+  let f3 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     l3.foldr (. ⊓ .) ⊤
-  let surj : Language.field.Formula (Σ i : ι, mons i) :=
+  let surj : Language.ring.Formula (Σ i : ι, mons i) :=
     Formula.allsᵢ.{0, 0, u, u, u} (γ := ι) id
       (Formula.exsᵢ.{0, 0, u, u, u} (γ := ι)
         (fun (i : (Σ i : ι, mons i) ⊕ (Fin 2 × ι)) =>
@@ -151,7 +151,7 @@ noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
   Formula.allsᵢ (γ := Σ i : ι, mons i) Sum.inr (inj ⟹ surj)
 
 theorem realize_genericPolyMapSurjectiveOfInjective
-    {K : Type v} [CompatibleField K] {ι : Type u} [Fintype ι]
+    {K : Type v} [Field K] [CompatibleRing K] {ι : Type u} [Fintype ι]
     (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjectiveOfInjective mons) ↔
       ∀ p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) },
@@ -177,7 +177,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime
     Theory.ACF p ⊨ᵇ genericPolyMapSurjectiveOfInjective mons := by
   letI := Classical.decEq ι
   haveI : Fact p.Prime := ⟨hp⟩
-  letI := compatibleFieldOfField (AlgebraicClosure (ZMod p))
+  letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
   haveI : CharP (AlgebraicClosure (ZMod p)) p :=
     charP_of_injective_algebraMap
       (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
@@ -202,7 +202,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
 
 end FirstOrder
 
-open Function FirstOrder Language field
+open Function FirstOrder Language Field
 /-- The **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
@@ -214,7 +214,7 @@ theorem ax_grothendieck {ι K : Type*} [Finite ι] [Field K]
   letI := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   haveI : CharP K p := ⟨ringChar.spec K⟩
-  letI := field.compatibleFieldOfField K
+  letI := Ring.compatibleRingOfRing K
   have := ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
     (CharP.char_is_prime_or_zero K p) (fun i => (ps i).support)
   rw [← (ACF_isComplete_of_prime_or_zero

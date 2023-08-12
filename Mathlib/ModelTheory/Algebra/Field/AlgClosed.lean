@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.ModelTheory.Algebra.Field.CharP
-import Mathlib.ModelTheory.Algebra.Field.FreeCommRing
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.ModelTheory.Satisfiability
@@ -13,11 +12,11 @@ import Mathlib.Data.Nat.PrimeFin
 
 namespace FirstOrder
 
-namespace field
+namespace Field
 
-open field FreeCommRing BigOperators Polynomial Language
+open Ring FreeCommRing BigOperators Polynomial Language
 
-variable {K : Type*} [CompatibleField K]
+variable {K : Type*}
 
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
     of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
@@ -74,23 +73,26 @@ theorem lift_genericMonicPoly {R : Type*} [CommRing R] [DecidableEq R] [Nontrivi
   simp [monicPolyEquivFin, Finset.sum_range_succ, add_comm, Finsupp.ofSupportFinite,
     Finset.sum_range, Fin.castSucc, Fin.castAdd, Fin.castLE]
 
-noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.field.Sentence :=
+noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
   (∃' ((termOfFreeCommRing (genericMonicPoly n)).relabel Sum.inr =' 0)).alls
 
-theorem realize_genericMonicPolyHasRoot (n : ℕ) :
+theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
   letI := Classical.decEq K
   rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, Term.realize, lift_genericMonicPoly]
 
-def Theory.ACF (p : ℕ) : Theory Language.field :=
-  Theory.hasChar p ∪ Theory.field ∪ genericMonicPolyHasRoot '' {n | 0 < n}
+def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory Language.ring :=
+  Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
-instance {K : Type*} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
+instance (K : Type*) [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
+    (Theory.fieldOfChar p).Model K :=
+  Theory.Model.mono h (Set.subset_union_left _ _)
+
+instance {K : Type*} [Field K] [CompatibleRing K] [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
-  refine Theory.model_union_iff.2
-    ⟨Theory.model_union_iff.2 ⟨model_hasChar_of_charP, inferInstance⟩, ?_⟩
+  refine Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
   simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ n hn0 rfl
@@ -99,19 +101,23 @@ instance {K : Type*} [CompatibleField K] [CharP K p] [IsAlgClosed K] :
   exact IsAlgClosed.exists_root p (ne_of_gt
     (natDegree_pos_iff_degree_pos.1 hn0))
 
-def compatibleFieldOfModelACF (p : ℕ) (K : Type*) [Language.field.Structure K]
-    [h : (Theory.ACF p).Model K] : CompatibleField K := by
-  haveI : Theory.field.Model K :=
-    Theory.Model.mono h (Set.subset_union_of_subset_left
-      (Set.subset_union_right _ _) _)
-  exact compatibleFieldOfFieldStructure K
+theorem modelField_of_modelACF (p : ℕ) (K : Type*) [Language.ring.Structure K]
+    [h : (Theory.ACF p).Model K] : Theory.field.Model K :=
+  Theory.Model.mono h (Set.subset_union_of_subset_left (Set.subset_union_left _ _) _)
 
-theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type*)
-    [CompatibleField M] [h : (Theory.ACF p).Model M] :
-    IsAlgClosed M := by
+@[reducible]
+noncomputable def fieldOfModelACF (p : ℕ) (K : Type*)
+    [Language.ring.Structure K]
+    [h : (Theory.ACF p).Model K] : Field K := by
+  haveI := modelField_of_modelACF p K
+  exact fieldOfModelField K
+
+theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
+    [Field K] [CompatibleRing K] [h : (Theory.ACF p).Model K] :
+    IsAlgClosed K := by
   refine IsAlgClosed.of_exists_root _ ?_
   intro p hpm hpi
-  have h : M ⊨ genericMonicPolyHasRoot '' {n | 0 < n} :=
+  have h : K ⊨ genericMonicPolyHasRoot '' {n | 0 < n} :=
     Theory.Model.mono h (by simp [Theory.ACF])
   simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp] at h
@@ -120,17 +126,9 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (M : Type*)
   rw [realize_genericMonicPolyHasRoot] at this
   exact this ⟨_, hpm, rfl⟩
 
-theorem charP_of_model_ACF (p : ℕ) (M : Type*)
-    [CompatibleField M] [h : (Theory.ACF p).Model M] :
-    CharP M p := by
-  have : (Theory.hasChar p).Model M :=
-    Theory.Model.mono h
-      (Set.subset_union_of_subset_left (Set.subset_union_left _ _) _)
-  exact charP_of_model_hasChar
-
 set_option synthInstance.maxHeartbeats 100000 in
 theorem ACF0_isSatisfiable : (Theory.ACF 0).IsSatisfiable := by
-  letI := compatibleFieldOfField (AlgebraicClosure ℚ)
+  letI := compatibleRingOfRing (AlgebraicClosure ℚ)
   haveI : CharP (AlgebraicClosure ℚ) 0 :=
     charP_of_injective_algebraMap
       (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
@@ -139,7 +137,7 @@ theorem ACF0_isSatisfiable : (Theory.ACF 0).IsSatisfiable := by
 theorem ACF0_isSatisfiable_of_prime {p : ℕ} (hp : p.Prime) :
     (Theory.ACF p).IsSatisfiable := by
   haveI : Fact p.Prime := ⟨hp⟩
-  letI := compatibleFieldOfField (AlgebraicClosure (ZMod p))
+  letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
   haveI : CharP (AlgebraicClosure (ZMod p)) p :=
     charP_of_injective_algebraMap
       (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
@@ -157,20 +155,24 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
   apply Categorical.isComplete.{0, 0, 0} (Order.succ ℵ₀) _ _
     (Order.le_succ ℵ₀)
-  · simp only [card_field, lift_id']
+  · simp only [card_ring, lift_id']
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
   · exact ACF_isSatisfiable_of_prime_or_zero hp
   · rintro ⟨M⟩
-    letI := compatibleFieldOfModelACF p M
+    letI := fieldOfModelACF p M
+    haveI := modelField_of_modelACF p M
+    letI := compatibleRingOfModelField M
     letI := isAlgClosed_of_model_ACF p M
     infer_instance
   · rintro ⟨M⟩ ⟨N⟩ hM hN
-    letI := compatibleFieldOfModelACF p M
-    haveI := isAlgClosed_of_model_ACF p M
-    haveI := charP_of_model_ACF p M
-    letI := compatibleFieldOfModelACF p N
-    haveI := isAlgClosed_of_model_ACF p N
-    haveI := charP_of_model_ACF p N
+    letI := fieldOfModelACF p M
+    haveI := modelField_of_modelACF p M
+    letI := compatibleRingOfModelField M
+    letI := isAlgClosed_of_model_ACF p M
+    letI := fieldOfModelACF p N
+    haveI := modelField_of_modelACF p N
+    letI := compatibleRingOfModelField N
+    letI := isAlgClosed_of_model_ACF p N
     constructor
     refine languageEquivEquivRingEquiv ?_
     apply Classical.choice
@@ -178,7 +180,7 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
     · rw [hM]; exact Order.lt_succ _
     · rw [hM, hN]
 
-theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence)
+theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.ring.Sentence)
     (hφ : Set.Infinite { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }) :
     Theory.ACF 0 ⊨ᵇ φ := by
   rw [← @not_not (_ ⊨ᵇ _), ← (ACF_isComplete_of_prime_or_zero (Or.inr rfl)).models_not_iff,
@@ -188,26 +190,28 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
   have f : ∀ ψ ∈ Theory.ACF 0,
       { p : Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ ψ) → p = q } := by
     intro ψ hψ
-    rw [Theory.ACF, Theory.hasChar, Set.union_assoc, Set.mem_union, if_pos rfl,
+    rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm, Set.mem_union, if_pos rfl,
       Set.mem_image] at hψ
     apply Classical.choice
-    rcases hψ with ⟨p, hp, rfl⟩ | h
+    rcases hψ with h | ⟨p, hp, rfl⟩
+    · refine ⟨⟨⟨2, by decide⟩, ?_⟩⟩
+      intro q hq
+      exact (hq (Theory.models_sentence_of_mem
+        (by rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm];
+            exact Set.mem_union_left _ h))).elim
     · refine ⟨⟨⟨p, hp⟩, ?_⟩⟩
       intro q hq
       rw [Theory.models_sentence_iff, not_forall] at hq
       rcases hq with ⟨K, hK⟩
-      letI := compatibleFieldOfModelACF q K
-      haveI := charP_of_model_ACF q K
+      letI := fieldOfModelACF q K
+      haveI := modelField_of_modelACF q K
+      letI := compatibleRingOfModelField K
+      letI := isAlgClosed_of_model_ACF q K
       simp only [Sentence.Realize, eqZero, Formula.realize_not, Formula.realize_equal,
-        realize_termOfFreeCommRing, map_natCast, Term.realize, CompatibleField.funMap_zero, ne_eq,
+        realize_termOfFreeCommRing, map_natCast, Term.realize, ne_eq, CompatibleRing.funMap_zero,
         not_not, ← CharP.charP_iff_prime_eq_zero hp] at hK
       apply Subtype.eq
       exact CharP.eq K inferInstance inferInstance
-    · refine ⟨⟨⟨2, by decide⟩, ?_⟩⟩
-      intro q hq
-      exact (hq (Theory.models_sentence_of_mem
-        (by rw [Theory.ACF, Set.union_assoc];
-            exact Set.mem_union_right _ h))).elim
   let s : Finset Nat.Primes := T0.attach.image (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → ¬ (Theory.ACF p) ⊨ᵇ ψ → p ∈ s := by
     intro p ψ hψ hpψ
@@ -225,7 +229,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.field.Sentence
 /-- The Lefschetz principle. A first order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
-theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.field.Sentence} :
+theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
   refine ⟨?_, ACF0_realize_of_infinite_ACF_prime_realize φ⟩
   rw [← not_imp_not, ← (ACF_isComplete_of_prime_or_zero (Or.inr rfl)).models_not_iff,
@@ -237,6 +241,6 @@ theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.field.Sentenc
   ext p
   simp [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff]
 
-end field
+end Field
 
 end FirstOrder

@@ -6,6 +6,7 @@ Authors: Chris Hughes
 
 import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Semantics
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # First Order Language of Rings
@@ -18,20 +19,29 @@ etc. on terms in the language.
 
 namespace FirstOrder
 
-inductive RingFunc : ℕ → Type
-  | add : RingFunc 2
-  | mul : RingFunc 2
-  | neg : RingFunc 1
-  | zero : RingFunc 0
-  | one : RingFunc 0
+open FirstOrder
+
+inductive ringFunc : ℕ → Type
+  | add : ringFunc 2
+  | mul : ringFunc 2
+  | neg : ringFunc 1
+  | zero : ringFunc 0
+  | one : ringFunc 0
+  deriving DecidableEq
 
 def Language.ring : Language :=
-  { Functions := RingFunc
+  { Functions := ringFunc
     Relations := fun _ => Empty }
 
-namespace ring
+namespace Ring
 
-open RingFunc Language
+open ringFunc Language
+
+instance (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
+  dsimp [Language.ring]; infer_instance
+
+instance (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
+  dsimp [Language.ring]; infer_instance
 
 abbrev zeroFunc : Language.ring.Functions 0 := zero
 
@@ -71,6 +81,112 @@ instance (α : Type*) : Neg (Language.ring.Term α) :=
 theorem neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
-end ring
+instance : Fintype Language.ring.Symbols :=
+  ⟨⟨Multiset.ofList
+      [Sum.inl ⟨2, .add⟩,
+       Sum.inl ⟨2, .mul⟩,
+       Sum.inl ⟨1, .neg⟩,
+       Sum.inl ⟨0, .zero⟩,
+       Sum.inl ⟨0, .one⟩], by
+    dsimp [Language.Symbols]; decide⟩, by
+    intro x
+    dsimp [Language.Symbols]
+    rcases x with ⟨_, f⟩ | ⟨_, f⟩
+    · cases f <;> decide
+    · cases f ⟩
+
+@[simp]
+theorem card_ring : card Language.ring = 5 := by
+  have : Fintype.card Language.ring.Symbols = 5 := rfl
+  simp [Language.card, this]
+
+open Language ring Structure
+
+class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
+    extends Language.ring.Structure R where
+  ( funMap_add : ∀ x, funMap addFunc x = x 0 + x 1 )
+  ( funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1 )
+  ( funMap_neg : ∀ x, funMap negFunc x = -x 0 )
+  ( funMap_zero : ∀ x, funMap (zeroFunc : Language.ring.Constants) x = 0 )
+  ( funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1 )
+
+attribute [simp] CompatibleRing.funMap_add CompatibleRing.funMap_mul CompatibleRing.funMap_neg
+  CompatibleRing.funMap_zero CompatibleRing.funMap_one
+
+@[reducible]
+def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
+    CompatibleRing R :=
+  { funMap := fun {n} f =>
+      match n, f with
+      | _, .add => fun x => x 0 + x 1
+      | _, .mul => fun x => x 0 * x 1
+      | _, .neg => fun x => -x 0
+      | _, .zero => fun _ => 0
+      | _, .one => fun _ => 1
+    RelMap := Empty.elim,
+    funMap_add := fun _ => rfl,
+    funMap_mul := fun _ => rfl,
+    funMap_neg := fun _ => rfl,
+    funMap_zero := fun _ => rfl,
+    funMap_one := fun _ => rfl }
+
+def languageEquivEquivRingEquiv {R S : Type*}
+    [NonAssocRing R] [NonAssocRing S]
+    [CompatibleRing R] [CompatibleRing S] :
+    (R ≃+* S) ≃ (Language.ring.Equiv R S) :=
+  { toFun := fun f =>
+    { f with
+      map_fun' := fun {n} f => by
+        cases f <;> simp
+      map_rel' := fun {n} f => by cases f },
+    invFun := fun f =>
+    { f with
+      map_add' := by
+        intro x y
+        simpa using f.map_fun addFunc ![x, y]
+      map_mul' := by
+        intro x y
+        simpa using f.map_fun mulFunc ![x, y] }
+    left_inv := fun f => by ext; rfl
+    right_inv := fun f => by ext; rfl }
+
+variable (R : Type*) [Language.ring.Structure R]
+
+@[reducible] def addOfRingStructure : Add R :=
+  { add := fun x y => funMap addFunc ![x, y] }
+
+@[reducible] def mulOfRingStructure : Mul R :=
+  { mul := fun x y => funMap mulFunc ![x, y] }
+
+@[reducible] def negOfRingStructure : Neg R :=
+  { neg := fun x => funMap negFunc ![x] }
+
+@[reducible] def zeroOfRingStructure : Zero R :=
+  { zero := funMap zeroFunc ![] }
+
+@[reducible] def oneOfRingStructure : One R :=
+  { one := funMap oneFunc ![] }
+
+attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStructure
+  zeroOfRingStructure oneOfRingStructure
+
+@[reducible] def compatibleRingOfRingStructure : CompatibleRing R :=
+  { funMap_add := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      intros; rfl
+    funMap_mul := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      intros; rfl
+    funMap_neg := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      intros; rfl
+    funMap_zero := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      intros; rfl
+    funMap_one := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      intros; rfl  }
+
+end Ring
 
 end FirstOrder
