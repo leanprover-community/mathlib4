@@ -179,6 +179,38 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
       rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
 #align finite_field.forall_pow_eq_one_iff FiniteField.forall_pow_eq_one_iff
 
+theorem cast_subgroup_of_units_card_ne_zero {F : Type u} [Field F]
+  (G : Subgroup (Units (F))) (h : Fintype G) : (Fintype.card G : F) ≠ 0 := by
+  let n := Fintype.card G
+  have npos : 0 < n := Fintype.card_pos
+  intro nzero
+  have ⟨p, char_p⟩ := CharP.exists F
+  have hd : p ∣ n := (CharP.cast_eq_zero_iff F p n).mp nzero
+  cases CharP.char_is_prime_or_zero F p with
+  | inr pzero =>
+    apply ne_zero_of_lt npos
+    apply Nat.eq_zero_of_zero_dvd
+    exact pzero ▸ hd
+  | inl pprime =>
+    have fact_pprime := Fact.mk pprime
+    -- G has an element x of order p by Cauchy's theorem
+    have ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
+    -- F has an element u (= ↑↑x) of order p
+    let u := ((x : Fˣ) : F)
+    have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
+    -- u ^ p = 1 implies (u - 1) ^ p = 0
+    have h₁ : (u - 1) ^ p = 0 := by
+      rewrite [sub_pow_char (R := F) (p := p) u 1, one_pow, ← hu, pow_orderOf_eq_one]
+      exact sub_self 1
+    -- ... and hence u = 1 ...
+    have h₂ : u = 1 := by
+      rewrite [← sub_left_inj, sub_self 1]
+      apply pow_eq_zero (n := p)
+      exact h₁
+    -- ... meaning x didn't have order p after all, contradiction
+    apply ne_of_lt (Nat.Prime.one_lt pprime)
+    rw [← hu, h₂, orderOf_one]
+
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
 is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
 theorem sum_pow_units [DecidableEq K] (i : ℕ) :
