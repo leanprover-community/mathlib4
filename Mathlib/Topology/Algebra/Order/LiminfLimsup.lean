@@ -558,7 +558,7 @@ end Indicator
 
 section LiminfLimsupAddSub
 
-variable {R : Type _} [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+variable {R : Type*} [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 /-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/
 lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
