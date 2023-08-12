@@ -10,21 +10,18 @@ import Mathlib.Data.Nat.Prime
 
 namespace FirstOrder
 
-namespace Language
-
 namespace field
+
+open Language
 
 noncomputable def eqZero (n : ℕ) : Language.field.Sentence :=
   Term.equal (termOfFreeCommRing n) 0
-
-end field
-
-open field
 
 @[simp] theorem realize_eqZero {K : Type*} [CompatibleField K] (n : ℕ)
     (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
     simp [eqZero, Term.realize]
 
+--TODO: Think about the name and namespace of this
 def Theory.hasChar (p : ℕ) : Language.field.Theory :=
   if p = 0
   then (fun q => ∼(eqZero q)) '' {q : ℕ | q.Prime}
@@ -58,6 +55,6 @@ theorem charP_of_model_hasChar {K : Type*} [CompatibleField K]
     exact h
   · simp [Sentence.Realize] at h
 
-end Language
+end field
 
 end FirstOrder
