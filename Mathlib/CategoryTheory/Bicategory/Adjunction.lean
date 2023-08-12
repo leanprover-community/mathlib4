@@ -14,7 +14,7 @@ identities. The 2-morphism `η` is called the unit and `ε` is called the counit
 
 ## Main definitions
 
-* `Bicategiry.Adjunction`: adjunctions between two 1-morphisms.
+* `Bicategory.Adjunction`: adjunctions between two 1-morphisms.
 * `Bicategory.Equivalence`: adjoint equivalences between two objects.
 * `Bicategory.mkOfAdjointifyCounit`: construct an adjoint equivalence from 2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `ε` to a counit.
