@@ -26,14 +26,15 @@ example : (fun x : Nat => x) 0 = 1 := by
 syntax (name := change?) "change?" (ppSpace colGt term)? : tactic
 
 open Lean Meta Elab.Tactic Std.Tactic.TryThis in
-@[inherit_doc change?, tactic change?] def elabChange? : Tactic := fun stx => do
-  let sop := stx[1].getOptional?
-  let expr := ← match sop with
+elab_rules : tactic
+| `(tactic|change?%$tk $[$sop:term]?) => withMainContext do
+  let stx ← getRef
+  let expr ← match sop with
     | none => getMainTarget
-    | some ex => do
-      let ex := ← elabTerm ex none
-      let defeq? := ← isDefEq ex (← getMainTarget)
-      if ! defeq? then throwError "The given term is not DefEq to the goal"
+    | some sop => do
+      let ex ← elabTerm sop none
+      let defeq? ← isDefEq ex (← getMainTarget)
+      if ! defeq? then throwErrorAt sop "The given term is not DefEq to the goal"
       instantiateMVars ex
-  let dstx := ← delabToRefinableSyntax expr
-  addSuggestion stx (← `(tactic| change $dstx))
+  let dstx ← delabToRefinableSyntax expr
+  addSuggestion tk (← `(tactic| change $dstx)) (origSpan? := stx)
