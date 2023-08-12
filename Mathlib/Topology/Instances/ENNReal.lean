@@ -1594,30 +1594,24 @@ namespace ENNReal
 lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
-    (fun _ _ h ↦ tsub_le_tsub_right h c)
-    (continuous_sub_right c).continuousAt (by isBoundedDefault) (by isBoundedDefault)).symm
+    (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
 lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.liminf (fun i ↦ f i - c) F = Filter.liminf f F - c :=
   (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
-    (fun _ _ h ↦ tsub_le_tsub_right h c)
-    (continuous_sub_right c).continuousAt (by isBoundedDefault) (by isBoundedDefault)).symm
+    (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
 lemma limsup_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
     {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
-    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
-  apply (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
-    (fun _ _ h ↦ tsub_le_tsub_left h c) ?_ (by isBoundedDefault) (by isBoundedDefault)).symm
-  convert (@ENNReal.continuous_nnreal_sub c.toNNReal).continuousAt
-  exact (coe_toNNReal c_ne_top).symm
+    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
+  (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
+    (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
 lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
     {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
-    Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F := by
-  apply (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
-    (fun _ _ h ↦ tsub_le_tsub_left h c) ?_ (by isBoundedDefault) (by isBoundedDefault)).symm
-  convert (@ENNReal.continuous_nnreal_sub c.toNNReal).continuousAt
-  exact (coe_toNNReal c_ne_top).symm
+    Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
+  (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
+    (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
 end ENNReal -- namespace
 
