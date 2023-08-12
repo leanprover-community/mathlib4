@@ -48,12 +48,12 @@ section Pow
 
 variable [Pow M ℕ]
 
-@[simp]
+@[to_additive (attr := simp) ite_nsmul]
 theorem pow_ite (P : Prop) [Decidable P] (a : M) (b c : ℕ) :
     (a ^ if P then b else c) = if P then a ^ b else a ^ c := by split_ifs <;> rfl
 #align pow_ite pow_ite
 
-@[simp]
+@[to_additive (attr := simp) nsmul_ite]
 theorem ite_pow (P : Prop) [Decidable P] (a b : M) (c : ℕ) :
     (if P then a else b) ^ c = if P then a ^ c else b ^ c := by split_ifs <;> rfl
 #align ite_pow ite_pow
@@ -106,9 +106,11 @@ theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 alias pow_two ← sq
 #align sq sq
 
+@[to_additive three'_nsmul]
 theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ', pow_two]
 #align pow_three' pow_three'
 
+@[to_additive three_nsmul]
 theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ, pow_two]
 #align pow_three pow_three
 
@@ -148,6 +150,7 @@ theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
 #align pow_mul_comm' pow_mul_comm'
 #align nsmul_add_comm' nsmul_add_comm'
 
+@[to_additive boole_nsmul]
 theorem pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
 #align pow_boole pow_boole
