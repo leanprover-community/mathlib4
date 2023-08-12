@@ -87,7 +87,7 @@ theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
 
 -- Porting note: `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
 -- but `dsimp` can't.
-@[simp, nolint simpNF]
+-- @[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 #align lie_submodule.mem_carrier LieSubmodule.mem_carrier
