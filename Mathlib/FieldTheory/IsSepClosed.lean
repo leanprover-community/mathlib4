@@ -34,9 +34,9 @@ separable closure, separably closed
 - If `K` is a separably closed field (or algebraically closed field) containing `k`, then all
   elements of `K` which are separable over `k` form a separable closure of `k`.
 
-- Using above result, construct separable closure as a subfield of algebraic closure.
+- Using the above result, construct a separable closure as a subfield of an algebraic closure.
 
-- If `k` is a perefect field, then its separable closure coincide with its algebraic closure.
+- If `k` is a perfect field, then its separable closure coincides with its algebraic closure.
 
 - An algebraic extension of a separably closed field is purely inseparable.
 
