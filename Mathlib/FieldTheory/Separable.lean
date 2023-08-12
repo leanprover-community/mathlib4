@@ -315,8 +315,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
     f.Separable ∨ ¬f.Separable ∧ ∃ g : F[X], Irreducible g ∧ expand F p g = f :=
   if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
-    · haveI := CharP.charP_to_charZero F
-      have := natDegree_eq_zero_of_derivative_eq_zero H
+    · have := natDegree_eq_zero_of_derivative_eq_zero H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
     haveI := isLocalRingHom_expand F hp
