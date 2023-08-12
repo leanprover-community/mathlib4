@@ -149,10 +149,32 @@ variable (Q : Type*) [AddCommGroup Q] [Module R Q]
 
 variable (hfg : Exact f g) (hg : Function.Surjective g)
 
+def rTensor.toFun :
+  N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) →ₗ[R] P ⊗[R] Q := by
+  apply Submodule.liftQ _ (rTensor Q g)
+  rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp, ← rTensor_comp,
+    hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
+
 -- private
 def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) := by
   rw [exact_iff] at hfg
+  refine
+    TensorProduct.lift
+      { toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
+        map_add' := fun p p' => LinearMap.ext <| fun q => (Submodule.Quotient.eq _).mpr ?_
+        map_smul' := fun r p => LinearMap.ext <| fun q => (Submodule.Quotient.eq _).mpr ?_ }
+  · change h (p + p') ⊗ₜ[R] q - (h p ⊗ₜ[R] q + h p' ⊗ₜ[R] q) ∈ range (rTensor Q f)
+    rw [← TensorProduct.add_tmul, ← TensorProduct.sub_tmul]
+    apply le_comap_range_rTensor f
+    rw [← hfg, mem_ker, map_sub, map_add]
+    simp only [hgh _, sub_self]
+  · change h (r • p) ⊗ₜ[R] q - r • h p ⊗ₜ[R] q ∈ range (rTensor Q f)
+    rw [TensorProduct.smul_tmul', ← TensorProduct.sub_tmul]
+    apply le_comap_range_rTensor f
+    rw [← hfg, mem_ker, map_sub, map_smul]
+    simp only [hgh _, sub_self]
+  /-
   apply TensorProduct.lift
   apply LinearMap.mk₂ R (fun p q ↦ Submodule.Quotient.mk (h p ⊗ₜ[R] q))
   · intro p p' q
@@ -170,7 +192,7 @@ def rTensor.inverse_ofRightInverse {h : P → N} (hgh : Function.RightInverse h 
   · intro p q q'
     rw [TensorProduct.tmul_add, ← Submodule.Quotient.mk_add]
   · intro r p q
-    simp only [TensorProduct.tmul_smul, Submodule.Quotient.mk_smul]
+    simp only [TensorProduct.tmul_smul, Submodule.Quotient.mk_smul] -/
 
 -- private
 noncomputable
@@ -190,11 +212,33 @@ lemma rTensor.inverse_apply (y : N ⊗[R] Q) :
   simp only [coe_comp, Function.comp_apply, rTensor_tmul, Submodule.mkQ_apply]
   simp only [rTensor.inverse, rTensor.inverse_ofRightInverse]
   simp only [TensorProduct.lift.tmul, coe_mk, AddHom.coe_mk, mk₂_apply]
+  simp only [coe_comp, Function.comp_apply, mk_apply, Submodule.mkQ_apply]
   rw [Submodule.Quotient.eq]
   rw [← TensorProduct.sub_tmul]
   apply le_comap_range_rTensor f
   rw [← hfg, mem_ker, map_sub, sub_eq_zero]
   rw [Function.surjInv_eq hg]
+
+lemma rTensor.inverse_comp_rTensor :
+    (rTensor.inverse Q hfg hg).comp (rTensor Q g) =
+      Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
+  ext y
+  simp only [coe_comp, Function.comp_apply, inverse_apply, Submodule.mkQ_apply]
+
+noncomputable def rTensor.equiv :
+    ((N ⊗[R] Q) ⧸ (LinearMap.range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) := {
+  rTensor.toFun Q hfg with
+  invFun    := rTensor.inverse Q hfg hg
+  left_inv  := fun y ↦ by
+    simp only [rTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
+    obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
+    simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, rTensor.inverse_apply]
+  right_inv := fun z ↦ by
+    simp only [AddHom.toFun_eq_coe, coe_toAddHom]
+    obtain ⟨y, rfl⟩ := rTensor.surjective Q hg z
+    rw [rTensor.inverse_apply]
+    simp only [rTensor.toFun, Submodule.liftQ_apply] }
+
 
 -- Which proof is better?
 
@@ -219,6 +263,16 @@ theorem rTensor_exact' : Exact (rTensor Q f) (rTensor Q g) := by
     rw [← Submodule.Quotient.mk_eq_zero, ← rTensor.inverse_apply Q hfg hg, hy, map_zero]
   · rintro ⟨x, rfl⟩
     rw [← rTensor_comp_apply, Exact.linearMap_comp_eq_zero hfg, rTensor_zero, zero_apply]
+
+/-- Tensoring an exact pair on the right gives an exact pair -/
+theorem rTensor_exact'' : Exact (rTensor Q f) (rTensor Q g) := by
+  rw [LinearMap.exact_iff]
+  rw [← Submodule.ker_mkQ (p := range (rTensor Q f))]
+  rw [← rTensor.inverse_comp_rTensor Q hfg hg, LinearMap.ker_comp, ← Submodule.comap_bot]
+  apply congr_arg₂ _ rfl
+  apply symm
+  rw [LinearMap.ker_eq_bot]
+  exact (rTensor.equiv Q hfg hg).symm.injective
 
 lemma rTensor_mkQ (N : Submodule R M) :
     ker (rTensor Q (N.mkQ)) = range (rTensor Q N.subtype) := by
