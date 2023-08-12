@@ -17,7 +17,7 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 `MulOpposite`, and `Units`.
 -/
 
-set_option autoImplicit true
+variable {ι α R S : Type*}
 
 open Filter Topology
 
