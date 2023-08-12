@@ -37,8 +37,9 @@ elab_rules : tactic
   let expr ← match sop with
     | none => getMainTarget
     | some sop => do
-      let ex ← elabTerm sop none
-      let defeq? ← isDefEq ex (← getMainTarget)
+      let tgt ← getMainTarget
+      let ex ← withRef sop <| elabTermEnsuringType sop (← inferType tgt)
+      let defeq? ← isDefEq ex tgt
       if ! defeq? then throwErrorAt sop "The given term is not DefEq to the goal"
       instantiateMVars ex
   let dstx ← delabToRefinableSyntax expr
