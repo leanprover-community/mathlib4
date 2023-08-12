@@ -89,22 +89,21 @@ noncomputable def mvPolynomialSupportLEEquiv (ι : Type u)
     invFun := fun p => ⟨fun i =>
       { toFun := fun m => if hm : m ∈ monoms i then p ⟨i, ⟨m, hm⟩⟩ else 0
         support := (monoms i).filter (fun m => ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0),
-        mem_support_toFun := by  simp (config := {contextual := true}) },
+        mem_support_toFun := by simp (config := {contextual := true}) },
       fun i => Finset.filter_subset _ _⟩,
     left_inv := fun p => by
       ext i m
       simp only [coeff, ne_eq, exists_prop, dite_eq_ite, Finsupp.coe_mk, ite_eq_left_iff]
       intro hm
       have : m ∉ (p.1 i).support := fun h => hm (p.2 i h)
-      rw [MvPolynomial.mem_support_iff] at this
-      simpa [coeff, eq_comm] using this
+      simpa [coeff, eq_comm, MvPolynomial.mem_support_iff] using this
     right_inv := fun p => by ext; simp [coeff] }
 
 @[simp]
 theorem lift_genericPolyMap {R : Type*} [CommRing R]
     [DecidableEq ι] [DecidableEq R] (mons : ι → Finset (ι →₀ ℕ))
     (f :  (i : ι) × { x // x ∈ mons i } ⊕ ι → R) (i : ι) :
-    FreeCommRing.lift (R := R) f (genericPolyMap mons i) =
+    FreeCommRing.lift f (genericPolyMap mons i) =
       MvPolynomial.eval (f ∘ Sum.inr)
         (((mvPolynomialSupportLEEquiv ι R mons).symm
           (f ∘ Sum.inl)).1 i) := by
