@@ -144,12 +144,14 @@ theorem map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) :
 #align polynomial.map_ne_zero Polynomial.map_ne_zero
 
 @[simp]
-theorem degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) : degree (p.map f) = degree p :=
+theorem degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) :
+    degree (p.map f) = degree p :=
   p.degree_map_eq_of_injective f.injective
 #align polynomial.degree_map Polynomial.degree_map
 
 @[simp]
-theorem natDegree_map [Semiring S] [Nontrivial S] (f : R →+* S) : natDegree (p.map f) = natDegree p :=
+theorem natDegree_map [Semiring S] [Nontrivial S] (f : R →+* S) :
+    natDegree (p.map f) = natDegree p :=
   natDegree_eq_of_degree_eq (degree_map _ f)
 #align polynomial.nat_degree_map Polynomial.natDegree_map
 
@@ -159,7 +161,8 @@ theorem leadingCoeff_map [Semiring S] [Nontrivial S] (f : R →+* S) :
   simp only [← coeff_natDegree, coeff_map f, natDegree_map]
 #align polynomial.leading_coeff_map Polynomial.leadingCoeff_map
 
-theorem monic_map_iff [Semiring S] [Nontrivial S] {f : R →+* S} {p : R[X]} : (p.map f).Monic ↔ p.Monic := by
+theorem monic_map_iff [Semiring S] [Nontrivial S] {f : R →+* S} {p : R[X]} :
+    (p.map f).Monic ↔ p.Monic := by
   rw [Monic, leadingCoeff_map, ← f.map_one, Function.Injective.eq_iff f.injective, Monic]
 #align polynomial.monic_map_iff Polynomial.monic_map_iff
 
