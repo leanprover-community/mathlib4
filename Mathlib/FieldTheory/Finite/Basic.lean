@@ -166,32 +166,6 @@ theorem cast_card_eq_zero : (q : K) = 0 := by
   simp
 #align finite_field.cast_card_eq_zero FiniteField.cast_card_eq_zero
 
-theorem cast_subgroup_of_units_card_ne_zero [DecidableEq K]
-    (G : Subgroup (Units (K))) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
-  -- Let p be the character of the field
-  have ⟨p, char_p⟩ := CharP.exists K
-  have ⟨n, hp, hnp⟩ := FiniteField.card K p
-  -- Proof by contradiction
-  by_contra H
-  -- ... if the cardinality of the subgroup casts to zero, it is a multiple of p
-  have p_dvd_card_G : p ∣ Fintype.card G := by
-    rw [←(charP_iff K p).mp char_p]
-    exact H
-  -- The cardinality of the subgroup divides the units cardinality
-  have hl := Subgroup.card_subgroup_dvd_card G
-  -- ... and p therefore divides the units cardinality.
-  have p_dvd_card_K_units : p ∣ Fintype.card Kˣ := dvd_trans p_dvd_card_G hl
-  -- On the other hand, p divides the cardinality of the whole field, which is one greater.
-  have p_dvd_card_K_units_add_one : p ∣ Fintype.card Kˣ + 1 := by
-    rw [<-@Fintype.card_eq_card_units_add_one K _ _ _, hnp]
-    apply dvd_pow_self
-    simp only [ne_eq, PNat.ne_zero, not_false_eq_true]
-  -- This contradicts the fact that p is prime.
-  rw [Nat.dvd_add_right p_dvd_card_K_units] at p_dvd_card_K_units_add_one
-  simp only [Nat.dvd_one] at p_dvd_card_K_units_add_one
-  rw [p_dvd_card_K_units_add_one] at hp
-  simp at hp
-
 theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
   classical
     obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)

@@ -86,9 +86,8 @@ theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #�
   · simpa only [← Cardinal.infinite_iff, h, true_or_iff, iff_true_iff] using Infinite.nonempty_field
 #align field.nonempty_iff Field.nonempty_iff
 
-theorem cast_subgroup_of_units_card_ne_zero' {F : Type u} [Field F]
-  (G : Subgroup (Units (F))) (h : Fintype G)
-: (Fintype.card G : F) ≠ 0 := by
+theorem cast_subgroup_of_units_card_ne_zero {F : Type u} [Field F]
+  (G : Subgroup (Units (F))) (h : Fintype G) : (Fintype.card G : F) ≠ 0 := by
   let n := Fintype.card G
   have npos : 0 < n := Fintype.card_pos
   intro nzero
@@ -108,9 +107,7 @@ theorem cast_subgroup_of_units_card_ne_zero' {F : Type u} [Field F]
     have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
     -- u ^ p = 1 implies (u - 1) ^ p = 0
     have h₁ : (u - 1) ^ p = 0 := by
-      rewrite [sub_pow_char (R := F) (p := p) u 1]
-      rewrite [one_pow]
-      rewrite [← hu, pow_orderOf_eq_one]
+      rewrite [sub_pow_char (R := F) (p := p) u 1, one_pow, ← hu, pow_orderOf_eq_one]
       exact sub_self 1
     -- ... and hence u = 1 ...
     have h₂ : u = 1 := by
