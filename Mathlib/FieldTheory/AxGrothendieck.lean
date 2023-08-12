@@ -74,7 +74,7 @@ namespace FirstOrder
 
 open MvPolynomial FreeCommRing Language field
 
-def genericPolyMap {ι : Type _} (monoms : ι → Finset (ι →₀ ℕ)) :
+def genericPolyMap {ι : Type u} (monoms : ι → Finset (ι →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ ι) :=
   fun i => (monoms i).attach.sum
     (fun m => FreeCommRing.of (Sum.inl ⟨i, m⟩) *
@@ -101,7 +101,7 @@ noncomputable def mvPolynomialSupportLEEquiv (ι : Type u)
     right_inv := fun p => by ext; simp [coeff] }
 
 @[simp]
-theorem lift_genericPolyMap {R : Type _} [CommRing R]
+theorem lift_genericPolyMap {R : Type*} [CommRing R]
     [DecidableEq ι] [DecidableEq R] (mons : ι → Finset (ι →₀ ℕ))
     (f :  (i : ι) × { x // x ∈ mons i } ⊕ ι → R) (i : ι) :
     FreeCommRing.lift (R := R) f (genericPolyMap mons i) =
@@ -205,7 +205,7 @@ end FirstOrder
 
 open Function FirstOrder Language field
 
-theorem ax_grothendieck {ι K : Type _} [Finite ι] [Field K]
+theorem ax_grothendieck {ι K : Type*} [Finite ι] [Field K]
     [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
     Injective (fun v i => MvPolynomial.eval v (ps i)) →
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
