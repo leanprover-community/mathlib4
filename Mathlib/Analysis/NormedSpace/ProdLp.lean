@@ -30,8 +30,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`. We deviate from
-`PiLp` in that we use for `p = 0` the junk value `d(x, y) = 0`.
+This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`.
 
 -/
 
@@ -506,7 +505,7 @@ theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 norm. -/
 instance instSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (ProdLp p α β) :=
-  { Prod.instAddCommGroupSum with
+  { Prod.instAddCommGroup with
     dist_eq := fun x y => by
       rcases p.dichotomy with (rfl | h)
       · simp only [dist_eq_sup, norm_eq_sup, dist_eq_norm]
@@ -592,7 +591,7 @@ variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
 
 -- Porting note: added
 instance instModule : Module 𝕜 (ProdLp p α β) :=
-  { Prod.module with }
+  { Prod.instModule with }
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
 instance instNormedSpace :
@@ -600,7 +599,7 @@ instance instNormedSpace :
   { instModule p 𝕜 α β with
     norm_smul_le := fun c f => by
       rcases p.dichotomy with (rfl | hp)
-      · letI : Module 𝕜 (ProdLp ∞ α β) := Prod.module
+      · letI : Module 𝕜 (ProdLp ∞ α β) := Prod.instModule
         suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
         simp only [nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
         rfl
