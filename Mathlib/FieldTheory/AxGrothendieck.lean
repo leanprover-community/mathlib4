@@ -72,7 +72,7 @@ end
 
 namespace FirstOrder
 
-open MvPolynomial FreeCommRing Language Language.field
+open MvPolynomial FreeCommRing Language field
 
 def genericPolyMap {ι : Type _} (monoms : ι → Finset (ι →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ ι) :=
@@ -182,7 +182,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime
   haveI : CharP (AlgebraicClosure (ZMod p)) p :=
     charP_of_injective_algebraMap
       (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
-  rw [← (Language.ACF_isComplete_of_prime_or_zero (Or.inl hp)).realize_sentence_iff _
+  rw [← (ACF_isComplete_of_prime_or_zero (Or.inl hp)).realize_sentence_iff _
     (AlgebraicClosure (ZMod p)),
     realize_genericPolyMapSurjectiveOfInjective]
   rintro ⟨f, _⟩
@@ -203,7 +203,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
 
 end FirstOrder
 
-open Function FirstOrder Language
+open Function FirstOrder Language field
 
 theorem ax_grothendieck {ι K : Type _} [Finite ι] [Field K]
     [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
@@ -212,10 +212,10 @@ theorem ax_grothendieck {ι K : Type _} [Finite ι] [Field K]
   letI := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   haveI : CharP K p := ⟨ringChar.spec K⟩
-  letI := compatibleFieldOfField K
+  letI := field.compatibleFieldOfField K
   have := ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
     (CharP.char_is_prime_or_zero K p) (fun i => (ps i).support)
-  rw [← (Language.ACF_isComplete_of_prime_or_zero
+  rw [← (ACF_isComplete_of_prime_or_zero
     (CharP.char_is_prime_or_zero K p)).realize_sentence_iff _ K,
     realize_genericPolyMapSurjectiveOfInjective] at this
   exact this ⟨ps, fun i => Finset.Subset.refl _⟩

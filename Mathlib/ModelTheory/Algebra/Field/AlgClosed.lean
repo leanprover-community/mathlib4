@@ -13,9 +13,9 @@ import Mathlib.Data.Nat.PrimeFin
 
 namespace FirstOrder
 
-namespace Language
+namespace field
 
-open field FreeCommRing BigOperators Polynomial
+open field FreeCommRing BigOperators Polynomial Language
 
 variable {K : Type*} [CompatibleField K]
 
@@ -247,6 +247,6 @@ theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.field.Sentenc
   ext p
   simp [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff]
 
-end Language
+end field
 
 end FirstOrder
