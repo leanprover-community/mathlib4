@@ -24,7 +24,7 @@ open Convex Set Metric
 
 section TopologicalVectorSpace
 
-variable {E : Type _} [AddCommGroup E] [Module ℝ E]
+variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 lemma segment_inter_eq_endpoint_of_linearIndependent
     {x y : E} (h : LinearIndependent ℝ ![x, y]) {s t : ℝ} (hs : s ≠ t) (c : E) :
@@ -139,7 +139,7 @@ end TopologicalVectorSpace
 
 section NormedSpace
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     IsPathConnected (sphere x r) := by

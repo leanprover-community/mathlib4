@@ -24,7 +24,7 @@ open scoped Cardinal Topology
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of zero has
 the same cardinality as the whole space. -/
 lemma cardinal_eq_of_mem_nhds_zero
-    {E : Type _} (𝕜 : Type _) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} (hs : s ∈ 𝓝 (0 : E)) : #s = #E := by
   /- As `s` is a neighborhood of `0`, the space is covered by the rescaled sets `c^n • s`,
   where `c` is any element of `𝕜` with norm `> 1`. All these sets are in bijection and have
@@ -61,7 +61,7 @@ lemma cardinal_eq_of_mem_nhds_zero
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of a point has
 the same cardinality as the whole space. -/
 theorem cardinal_eq_of_mem_nhds
-    {E : Type _} (𝕜 : Type _) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} {x : E} (hs : s ∈ 𝓝 x) : #s = #E := by
   let g := Homeomorph.addLeft x
@@ -74,7 +74,7 @@ theorem cardinal_eq_of_mem_nhds
 /-- In a topological vector space over a nontrivially normed field, any nonempty open set has
 the same cardinality as the whole space. -/
 theorem cardinal_eq_of_is_open
-    {E : Type _} (𝕜 : Type _) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E] {s : Set E}
     (hs : IsOpen s) (h's : s.Nonempty) : #s = #E := by
   rcases h's with ⟨x, hx⟩
