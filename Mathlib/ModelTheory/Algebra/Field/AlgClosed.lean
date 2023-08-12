@@ -22,46 +22,36 @@ variable {K : Type*} [CompatibleField K]
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
     of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-def monicPolyEquivFin {R : Type*} [CommRing R] [DecidableEq R]
+noncomputable def monicPolyEquivFin {R : Type*} [CommRing R]
     [Nontrivial R] (n : ℕ) :
     { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → R) :=
   { toFun := fun p i => p.1.coeff i
     invFun := fun v =>
-      let p := Polynomial.ofFinsupp
-        { toFun := fun i =>
+      let p := Polynomial.ofFinsupp <|
+        Finsupp.ofSupportFinite
+          (fun i =>
             if h : i < n then v ⟨i, h⟩
-            else if i = n then 1 else 0
-          support := (Finset.range (n+1)).filter
-            (fun i => ∀ h : i < n, v ⟨i, h⟩ ≠ 0 ),
-          mem_support_toFun := by
-            intro i
-            simp
-            split_ifs with hi₁ hi₂
-            · simp only [Nat.lt_succ_of_lt hi₁, true_and]
-              exact ⟨fun h => h hi₁, fun h _ => h⟩
-            · subst i
-              simp only [lt_add_iff_pos_right, true_and, one_ne_zero,
-                not_false_eq_true, iff_true]
-              exact fun h => (lt_irrefl _ h).elim
-            · simp only [not_true, iff_false, not_and, not_forall, not_not,
-                Nat.lt_succ_iff]
-              intro h
-              exact (hi₂ (le_antisymm h (not_lt.1 hi₁))).elim }
+            else if i = n then 1 else 0)
+          (Set.Finite.subset (Set.finite_le_nat n) <| by
+              intro i
+              simp
+              split_ifs <;> simp_all [le_iff_lt_or_eq])
       have hpn : p.natDegree = n := by
         refine le_antisymm ?_ ?_
         · refine natDegree_le_iff_coeff_eq_zero.2 ?_
           intro i hi
-          simp [not_lt_of_gt hi, ne_of_gt hi]
+          simp [not_lt_of_gt hi, ne_of_gt hi, Finsupp.ofSupportFinite]
         · refine le_natDegree_of_ne_zero ?_
-          simp
+          simp [Finsupp.ofSupportFinite]
       have hpm : p.Monic := by
-        simp [Monic.def, leadingCoeff, hpn]
+        rw [Monic.def, leadingCoeff, hpn]
+        simp [Finsupp.ofSupportFinite]
       ⟨p, hpm, hpn⟩
     left_inv := by
       intro p
       ext i
       simp only [ne_eq, Finset.mem_range, dite_eq_ite, coeff_ofFinsupp,
-        Finsupp.coe_mk, ite_eq_left_iff, not_lt]
+        Finsupp.coe_mk, ite_eq_left_iff, not_lt, Finsupp.ofSupportFinite]
       intro hni
       cases lt_or_eq_of_le hni with
       | inr =>
@@ -72,7 +62,7 @@ def monicPolyEquivFin {R : Type*} [CommRing R] [DecidableEq R]
       | inl h =>
         rw [eq_comm, if_neg (ne_of_gt h)]
         exact coeff_eq_zero_of_natDegree_lt (p.2.2.symm ▸ h)
-    right_inv := fun _ => by simp }
+    right_inv := fun _ => by simp [Finsupp.ofSupportFinite] }
 
 theorem lift_genericMonicPoly {R : Type*} [CommRing R] [DecidableEq R] [Nontrivial R]
     {n : ℕ} (v : Fin (n+1) → R) :
@@ -81,7 +71,7 @@ theorem lift_genericMonicPoly {R : Type*} [CommRing R] [DecidableEq R] [Nontrivi
   let p := (monicPolyEquivFin n).symm (v ∘ Fin.castSucc)
   simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul,
     eval_eq_sum_range, p.2.2]
-  simp [monicPolyEquivFin, Finset.sum_range_succ, add_comm,
+  simp [monicPolyEquivFin, Finset.sum_range_succ, add_comm, Finsupp.ofSupportFinite,
     Finset.sum_range, Fin.castSucc, Fin.castAdd, Fin.castLE]
 
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.field.Sentence :=
