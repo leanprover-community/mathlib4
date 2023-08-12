@@ -585,14 +585,13 @@ end LipschitzOnWith
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
 `{a} × t`, `a ∈ s`, and is Lipschitz continuous on each “horizontal fiber” `s × {b}`, `b ∈ t`
 with the same Lipschitz constant `K`. Then it is continuous on `s × t`. Moreover, it suffices
-to require continuity on vertical fibers for `a` from a subset `s' ⊆ s` that is dense in `s`.
+to require continuity on vertical fibers for `a` from a dense subset of `s`.
 
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
 instead of continuity of `f` on subsets of the product space. -/
 theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [PseudoEMetricSpace α]
-    [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s s' : Set α} {t : Set β}
-    (hs' : s' ⊆ s) (hss' : s ⊆ closure s') (K : ℝ≥0)
-    (ha : ∀ a ∈ s', ContinuousOn (fun y => f (a, y)) t)
+    [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β}
+    (hsc : s ⊆ closure {a ∈ s | ContinuousOn (fun y => f (a, y)) t}) (K : ℝ≥0)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) := by
   rintro ⟨x, y⟩ ⟨hx : x ∈ s, hy : y ∈ t⟩
   refine' EMetric.nhds_basis_closed_eball.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => _
@@ -600,21 +599,21 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ (δ : ℝ≥0∞) * ↑(3 * K) < ε / 2 :=
     ENNReal.exists_nnreal_pos_mul_lt ENNReal.coe_ne_top ε0.ne'
   rw [← ENNReal.coe_pos] at δpos
-  rcases EMetric.mem_closure_iff.1 (hss' hx) δ δpos with ⟨x', hx', hxx'⟩
+  rcases EMetric.mem_closure_iff.1 (hsc hx) δ δpos with ⟨x', ⟨hx's, hx'c⟩, hxx'⟩
   have A : s ∩ EMetric.ball x δ ∈ 𝓝[s] x :=
     inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds _ δpos)
   have B : t ∩ { b | edist (f (x', b)) (f (x', y)) ≤ ε / 2 } ∈ 𝓝[t] y :=
-    inter_mem self_mem_nhdsWithin (ha x' hx' y hy (EMetric.closedBall_mem_nhds (f (x', y)) ε0))
+    inter_mem self_mem_nhdsWithin (hx'c y hy (EMetric.closedBall_mem_nhds (f (x', y)) ε0))
   filter_upwards [nhdsWithin_prod A B] with ⟨a, b⟩ ⟨⟨has, hax⟩, ⟨hbt, hby⟩⟩
   calc
     edist (f (a, b)) (f (x, y)) ≤ edist (f (a, b)) (f (x', b)) + edist (f (x', b)) (f (x', y)) +
         edist (f (x', y)) (f (x, y)) := edist_triangle4 _ _ _ _
     _ ≤ K * (δ + δ) + ε / 2 + K * δ := by
       gcongr
-      · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') ?_
+      · refine (hb b hbt).edist_le_mul_of_le has hx's ?_
         refine (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
       · exact hby
-      · exact (hb y hy).edist_le_mul_of_le (hs' hx') hx ((edist_comm _ _).trans_le hxx'.le)
+      · exact (hb y hy).edist_le_mul_of_le hx's hx ((edist_comm _ _).trans_le hxx'.le)
     _ = δ * ↑(3 * K) + ε / 2 := by push_cast; ring
     _ ≤ ε / 2 + ε / 2 := by gcongr
     _ = ε := ENNReal.add_halves _
@@ -630,7 +629,7 @@ theorem continuousOn_prod_of_continuousOn_lipschitzOnWith [PseudoEMetricSpace α
     (ha : ∀ a ∈ s, ContinuousOn (fun y => f (a, y)) t)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
   continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith
-    f Subset.rfl subset_closure K ha hb
+    f (by simp only [and_iff_left_of_imp (ha _), setOf_mem_eq, subset_closure]) K hb
 #align continuous_on_prod_of_continuous_on_lipschitz_on continuousOn_prod_of_continuousOn_lipschitzOnWith
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”
@@ -641,12 +640,12 @@ continuous.
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
 instead of continuity of `f` on subsets of the product space. -/
 theorem continuous_prod_of_dense_continuous_lipschitzWith [PseudoEMetricSpace α]
-    [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {s : Set α}
-    (hs : Dense s) (ha : ∀ a ∈ s, Continuous fun y => f (a, y))
+    [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0)
+    (hd : Dense {a | Continuous fun y => f (a, y)})
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f := by
   simp only [continuous_iff_continuousOn_univ, ← univ_prod_univ, ← lipschitz_on_univ] at *
-  exact continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith f (subset_univ _)
-    hs.closure_eq.ge K ha fun b _ => hb b
+  exact continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith f
+    (by simp [hd.closure_eq]) K fun b _ => hb b
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”
 `{a} × univ`, `a : α`, and is Lipschitz continuous on each “horizontal section”
@@ -657,7 +656,7 @@ instead of continuity of `f` on subsets of the product space. -/
 theorem continuous_prod_of_continuous_lipschitzWith [PseudoEMetricSpace α] [TopologicalSpace β]
     [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, Continuous fun y => f (a, y))
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f :=
-  continuous_prod_of_dense_continuous_lipschitzWith f K dense_univ (fun _ _ ↦ ha _) hb
+  continuous_prod_of_dense_continuous_lipschitzWith f K (fun _ ↦ subset_closure <| ha _) hb
 #align continuous_prod_of_continuous_lipschitz continuous_prod_of_continuous_lipschitzWith
 
 open Metric
