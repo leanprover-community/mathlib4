@@ -130,7 +130,7 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separabl
     IsSepClosed k := by
   refine ⟨fun p hsep ↦ Or.inr ?_⟩
   intro q hq hdvd
-  simp only [map_id] at hdvd 
+  simp only [map_id] at hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
   have hsep' : Separable (q * C (leadingCoeff q)⁻¹) :=
