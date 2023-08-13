@@ -778,20 +778,19 @@ noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure �
     · simp [Measure.map, f_aemble]⟩
 
 --#check Subtype.map
--- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
+-- Q: Can I tell Lean not to use `Subtype.map` but instead `FiniteMeasure.map`
+-- when `ν.map` is written?
 lemma map_apply' (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
     (FiniteMeasure.map ν f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
   Measure.map_apply_of_aemeasurable f_aemble A_mble
 
--- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
 lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
     (FiniteMeasure.map ν f) A = ν (f ⁻¹' A) := by
   have key := FiniteMeasure.map_apply' ν f_aemble A_mble
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr key
 
--- Q: Can I tell Lean not to use `Subtype.map` in place of `FiniteMeasure.map`?
 @[simp] lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
     (FiniteMeasure.map ν f) A = ν (f ⁻¹' A) :=
@@ -807,6 +806,7 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
   ext s s_mble
   simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_smul]
 
+-- Q: Naming?
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
@@ -839,6 +839,7 @@ lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
   rw [continuous_iff_continuousAt]
   exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
 
+-- Q: Naming?
 /-- The push-forward of a finite measure by a continuous function between Borel spaces as
 a continuous linear map. -/
 noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
