@@ -22,7 +22,7 @@ topology does not coincide with the lower topology.
 
 ## Main statements
 
-- `UpperSetTopology.IsOpen_sInter` - the intersection of any set of open sets is open
+- `UpperSetTopology.isOpen_sInter` - the intersection of any set of open sets is open
 - `UpperSetTopology.isOpen_iInter` - the intersection of any indexed collection of open sets is open
 - `UpperSetTopology.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
 - `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
@@ -272,27 +272,27 @@ instance instLowerSetTopologyDual [Preorder α] [TopologicalSpace α] [UpperSetT
 def withUpperSetTopologyHomeomorph : WithUpperSetTopology α ≃ₜ α :=
   WithUpperSetTopology.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
+lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
   rfl
 
 -- Alexandrov property, set formulation
-theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
-  simp_rw [IsOpen_iff_IsUpperSet] at *
+theorem isOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
+  simp_rw [isOpen_iff_isUpperSet] at *
   apply isUpperSet_sInter
   intros s hs
   exact hf _ hs
 
 -- Alexandrov property, index formulation
-theorem IsOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
-  simp_rw [IsOpen_iff_IsUpperSet] at *
+theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
+  simp_rw [isOpen_iff_isUpperSet] at *
   apply isUpperSet_iInter
   intros i
   exact hf i
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s ↔ (IsLowerSet s) := by
-  rw [← isOpen_compl_iff, IsOpen_iff_IsUpperSet,
+  rw [← isOpen_compl_iff, isOpen_iff_isUpperSet,
     isLowerSet_compl.symm, compl_compl]
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
@@ -327,7 +327,7 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [UpperSetTopology 
     Monotone f ↔ Continuous f := by
   constructor
   · intro hf
-    simp_rw [continuous_def, IsOpen_iff_IsUpperSet]
+    simp_rw [continuous_def, isOpen_iff_isUpperSet]
     exact fun _ hs ↦ IsUpperSet.preimage hs hf
   · intro hf a b hab
     rw [← mem_Iic, ← closure_singleton] at hab ⊢
@@ -341,13 +341,13 @@ lemma Monotone_to_UpperTopology_Continuous [TopologicalSpace α]
     Continuous f := by
   rw [continuous_def]
   intro s hs
-  rw [IsOpen_iff_IsUpperSet]
+  rw [isOpen_iff_isUpperSet]
   apply IsUpperSet.preimage _ hf
   apply UpperTopology.isUpperSet_of_isOpen hs
 
 lemma UpperSetLEUpper {t₁ : TopologicalSpace α} [@UpperSetTopology α t₁ _]
     {t₂ : TopologicalSpace α} [@UpperTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
-  rw [@IsOpen_iff_IsUpperSet α _ t₁]
+  rw [@isOpen_iff_isUpperSet α _ t₁]
   exact UpperTopology.isUpperSet_of_isOpen hs
 
 end maps
@@ -377,20 +377,20 @@ instance instUpperSetTopologyDual [Preorder α] [TopologicalSpace α] [LowerSetT
 def withLowerSetTopologyHomeomorph : WithLowerSetTopology α ≃ₜ α :=
   WithLowerSetTopology.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-lemma IsOpen_iff_IsLowerSet : IsOpen s ↔ IsLowerSet s := by
+lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by
   rw [topology_eq α]
   rfl
 
 -- Alexandrov property, set formulation
-theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) :=
-  UpperSetTopology.IsOpen_sInter (α := αᵒᵈ) (fun s a ↦ hf s a)
+theorem isOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) :=
+  UpperSetTopology.isOpen_sInter (α := αᵒᵈ) (fun s a ↦ hf s a)
 
 -- Alexandrov property, index formulation
-theorem IsOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-  UpperSetTopology.IsOpen_iInter (α := αᵒᵈ) hf
+theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
+  UpperSetTopology.isOpen_iInter (α := αᵒᵈ) hf
 
 lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
-  rw [← isOpen_compl_iff, IsOpen_iff_IsLowerSet, isUpperSet_compl.symm, compl_compl]
+  rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]
 
 lemma isClosed_isUpper {s : Set α} : IsClosed s → IsUpperSet s := fun h =>
   (isClosed_iff_isUpper.mp h)
@@ -431,7 +431,7 @@ lemma Monotone_to_LowerTopology_Continuous [TopologicalSpace α]
 
 lemma LowerSetLELower {t₁ : TopologicalSpace α} [@LowerSetTopology α t₁ _]
     {t₂ : TopologicalSpace α} [@LowerTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
-  rw [@IsOpen_iff_IsLowerSet α _ t₁]
+  rw [@isOpen_iff_isLowerSet α _ t₁]
   exact LowerTopology.isLowerSet_of_isOpen hs
 
 end maps
