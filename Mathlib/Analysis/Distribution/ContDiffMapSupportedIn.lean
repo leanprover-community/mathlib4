@@ -177,7 +177,7 @@ noncomputable def to_bcfₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F  where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-protected noncomputable def iteratedFDeriv (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+noncomputable def iteratedFDeriv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) :=
   if hi : i ≤ n then .of_support_subset
     (f.contDiff.iteratedFDeriv_right <| (tsub_add_cancel_of_le hi).le)
@@ -185,41 +185,51 @@ protected noncomputable def iteratedFDeriv (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
   else 0
 
 @[simp]
-lemma iteratedFDeriv_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-    f.iteratedFDeriv i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
-  rw [ContDiffMapSupportedIn.iteratedFDeriv]
+lemma iteratedFDeriv'_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+    f.iteratedFDeriv' i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
+  rw [ContDiffMapSupportedIn.iteratedFDeriv']
   split_ifs <;> rfl
 
 @[simp]
-lemma coe_iteratedFDeriv_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDeriv i = iteratedFDeriv ℝ i f := by
+lemma coe_iteratedFDeriv'_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+    f.iteratedFDeriv' i = iteratedFDeriv ℝ i f := by
   ext : 1
-  rw [iteratedFDeriv_apply]
+  rw [iteratedFDeriv'_apply]
   exact dif_pos hin
 
 @[simp]
-lemma coe_iteratedFDeriv_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDeriv i = 0 := by
+lemma coe_iteratedFDeriv'_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
+    f.iteratedFDeriv' i = 0 := by
   ext : 1
-  rw [iteratedFDeriv_apply]
+  rw [iteratedFDeriv'_apply]
   exact dif_neg (not_le_of_gt hin)
 
+lemma iteratedFDeriv'_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
+    (f + g).iteratedFDeriv' i = f.iteratedFDeriv' i + g.iteratedFDeriv' i := by
+  ext : 1
+  simp only [iteratedFDeriv'_apply, add_apply]
+  split_ifs with hin
+  · exact iteratedFDeriv_add_apply (f.contDiff.of_le hin) (g.contDiff.of_le hin)
+  · rw [add_zero]
+
+lemma iteratedFDeriv'_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)} :
+    (c • f).iteratedFDeriv' i = c • f.iteratedFDeriv' i := by
+  ext : 1
+  simp only [iteratedFDeriv'_apply, RingHom.id_apply, smul_apply]
+  split_ifs with hin
+  · exact iteratedFDeriv_const_smul_apply (f.contDiff.of_le hin)
+  · rw [smul_zero]
+
 @[simps]
-noncomputable def iteratedFDerivₗ (i : ℕ) :
+noncomputable def iteratedFDerivₗ' (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
-  toFun f := f.iteratedFDeriv i
-  map_add' f g := by
-    ext : 1
-    simp only [iteratedFDeriv_apply, add_apply]
-    split_ifs with hin
-    · exact iteratedFDeriv_add_apply (f.contDiff.of_le hin) (g.contDiff.of_le hin)
-    · rw [add_zero]
-  map_smul' c f := by
-    ext : 1
-    simp only [iteratedFDeriv_apply, RingHom.id_apply, smul_apply]
-    split_ifs with hin
-    · exact iteratedFDeriv_const_smul_apply (f.contDiff.of_le hin)
-    · rw [smul_zero]
+  toFun f := f.iteratedFDeriv' i
+  map_add' _ _ := iteratedFDeriv'_add i
+  map_smul' _ _ := iteratedFDeriv'_smul 𝕜 i
+
+lemma iteratedFDeriv'_zero (i : ℕ)  :
+    (0 : 𝓓^{n}_{K}(E, F)).iteratedFDeriv' i = 0 :=
+  map_zero (iteratedFDerivₗ' ℝ i)
 
 /-- The composition of `ContDiffMapSupportedIn.to_bcfₗ` and
 `ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
@@ -227,7 +237,7 @@ of maps is used a lot for defining and using the topology on `ContDiffMapSupport
 takes a long time to infer the type of `to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
 noncomputable def iteratedFDeriv_to_bcfₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
-  to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i
+  to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ' 𝕜 i
 
 section Topology
 
@@ -284,14 +294,14 @@ variable {E F n K}
 @[simp]
 protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
-      ‖(f.iteratedFDeriv i : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+      ‖(f.iteratedFDeriv' i : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
 
 protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
   ext f
   rw [ContDiffMapSupportedIn.seminorm_apply,
-      coe_iteratedFDeriv_of_gt hin]
+      coe_iteratedFDeriv'_of_gt hin]
   exact norm_zero
 
 theorem norm_to_bcfₗ (f : 𝓓^{n}_{K}(E, F)) :
@@ -308,7 +318,7 @@ noncomputable def to_bcfL : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
 
 protected theorem continuous_iff {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous
-      (to_bcfₗ 𝕜 ∘ ContDiffMapSupportedIn.iteratedFDeriv i ∘ φ) := by
+      (to_bcfₗ 𝕜 ∘ ContDiffMapSupportedIn.iteratedFDeriv' i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
   constructor <;> intro H i
   · exact fun _ ↦ H i
@@ -317,7 +327,7 @@ protected theorem continuous_iff {X : Type*} [TopologicalSpace X] (φ : X → �
     · convert continuous_zero
       ext
       rw [Pi.zero_apply]
-      simp [iteratedFDeriv_to_bcfₗ, coe_iteratedFDeriv_of_gt (lt_of_not_ge hin)]
+      simp [iteratedFDeriv_to_bcfₗ, coe_iteratedFDeriv'_of_gt (lt_of_not_ge hin)]
 
 end Topology
 
@@ -372,19 +382,18 @@ noncomputable def fderivₗ' {n : ℕ∞} : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓
     · rw [← ne_eq, ← ENat.one_le_iff_ne_zero] at hn
       exact fderiv_const_smul (f.contDiff.differentiable hn).differentiableAt c
 
+theorem _root_.ENat.eq_zero_or_add_one (i : ℕ∞) : i = 0 ∨ ∃ k, i = k + 1 := by
+  refine or_iff_not_imp_left.mpr fun h ↦ ⟨i - 1, ?_⟩
+  simp only [ENat.one_le_iff_ne_zero, ne_eq, h, tsub_add_cancel_of_le]
+
 theorem seminorm_fderiv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E (E →L[ℝ] F) (n - 1) K i f.fderiv' =
       ContDiffMapSupportedIn.seminorm 𝕜 E F n K (i+1) f := by
   simp_rw [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm]
   refine iSup_congr fun x ↦ ?_
-  rcases lt_or_ge (i : ℕ∞) n with (hin|hin)
-  · have hin' : i + 1 ≤ n := sorry
-    have hin'' : i ≤ n - 1 := sorry
-    have hn : n ≠ 0 := sorry
-    simp [hin', hin'', hn, ← norm_iteratedFDeriv_fderiv]
-  · have hin' : i + 1 > n := sorry
-    have hin'' : i > n - 1 := sorry
-    simp [hin', hin'']
+  rcases n.eq_zero_or_add_one with rfl|⟨k, hkn⟩
+  · simp [iteratedFDeriv'_zero]
+  sorry
 
 @[simps! apply]
 noncomputable def fderivL' : 𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
@@ -398,6 +407,23 @@ noncomputable def fderivL' : 𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-1}_{K}(E, E �
 
 section infinite
 
+protected noncomputable def iteratedFDeriv (i : ℕ) (f : 𝓓_{K}(E, F)) : 𝓓_{K}(E, E [×i]→L[ℝ] F) :=
+  (f.iteratedFDeriv' i).copy (iteratedFDeriv ℝ i f) (coe_iteratedFDeriv'_of_le le_top f)
+
+lemma iteratedFDeriv_eq_iteratedFDeriv' (i : ℕ) (f : 𝓓_{K}(E, F)) :
+    f.iteratedFDeriv i = f.iteratedFDeriv' i :=
+  (f.iteratedFDeriv' i).copy_eq _ _
+
+@[simp]
+lemma iteratedFDeriv_apply (i : ℕ) (f : 𝓓_{K}(E, F)) (x : E) :
+    f.iteratedFDeriv i x = iteratedFDeriv ℝ i f x := by
+  rfl
+
+@[simps! apply]
+noncomputable def iteratedFDerivₗ (i : ℕ) : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F) :=
+  (iteratedFDerivₗ' 𝕜 i).copy (ContDiffMapSupportedIn.iteratedFDeriv i) <| funext <|
+    iteratedFDeriv_eq_iteratedFDeriv' i
+
 protected noncomputable def fderiv (f : 𝓓_{K}(E, F)) : 𝓓_{K}(E, E →L[ℝ] F) :=
   f.fderiv'.copy (fderiv ℝ f) (coe_fderiv'_of_ne (by decide) f)
 
@@ -407,7 +433,6 @@ lemma fderiv_eq_fderiv' (f : 𝓓_{K}(E, F)) : f.fderiv = f.fderiv' :=
 @[simp]
 lemma fderiv_apply (f : 𝓓_{K}(E, F)) (x : E) :
     f.fderiv x = fderiv ℝ f x := by
-  simp
   rfl
 
 @[simps! apply]
