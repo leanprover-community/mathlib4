@@ -29,7 +29,7 @@ variable [Abelian 𝒜]
 
 open ZeroObject
 
-theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortExact f' g')
+theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact' f g) (h' : ShortExact' f' g')
     (i₁ : A ⟶ A') (i₂ : B ⟶ B') (i₃ : C ⟶ C')
     (comm₁ : i₁ ≫ f' = f ≫ i₂ := by aesop_cat)
     (comm₂ : i₂ ≫ g' = g ≫ i₃ := by aesop_cat) [IsIso i₁] [IsIso i₃] : IsIso i₂ := by
@@ -49,7 +49,7 @@ a *morphism* `i : B ⟶ A ⊞ C` such that `f ≫ i` is the canonical map `bipro
 together with proofs that `f` is mono and `g` is epi.
 
 The morphism `i` is then automatically an isomorphism. -/
-def Splitting.mk' (h : ShortExact f g) (i : B ⟶ A ⊞ C) (h1 : f ≫ i = biprod.inl)
+def Splitting.mk' (h : ShortExact' f g) (i : B ⟶ A ⊞ C) (h1 : f ≫ i = biprod.inl)
     (h2 : i ≫ biprod.snd = g) : Splitting f g :=
   have : IsIso i := isIso_of_shortExact_of_isIso_of_isIso h ⟨exact_inl_snd A C⟩ (𝟙 _) i (𝟙 _)
   { iso := asIso i
@@ -63,7 +63,7 @@ a *morphism* `i : A ⊞ C ⟶ B` such that `p ≫ i = f` where `p` is the canoni
 together with proofs that `f` is mono and `g` is epi.
 
 The morphism `i` is then automatically an isomorphism. -/
-def Splitting.mk'' (h : ShortExact f g) (i : A ⊞ C ⟶ B) (h1 : biprod.inl ≫ i = f)
+def Splitting.mk'' (h : ShortExact' f g) (i : A ⊞ C ⟶ B) (h1 : biprod.inl ≫ i = f)
     (h2 : i ≫ g = biprod.snd) : Splitting f g :=
   have : IsIso i := isIso_of_shortExact_of_isIso_of_isIso ⟨exact_inl_snd A C⟩ h (𝟙 _) i (𝟙 _)
   { iso := (asIso i).symm

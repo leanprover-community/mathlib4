@@ -40,11 +40,11 @@ variable [HasZeroMorphisms 𝒜] [HasKernels 𝒜] [HasImages 𝒜]
 
 /-- If `f : A ⟶ B` and `g : B ⟶ C` then `short_exact f g` is the proposition saying
   the resulting diagram `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is an exact sequence. -/
-structure ShortExact : Prop where
+structure ShortExact' : Prop where
   [mono : Mono f]
   [epi : Epi g]
-  exact : Exact f g
-#align category_theory.short_exact CategoryTheory.ShortExact
+  exact : Exact' f g
+#align category_theory.short_exact CategoryTheory.ShortExact'
 
 /-- An exact sequence `A -f⟶ B -g⟶ C` is *left split*
 if there exists a morphism `φ : B ⟶ A` such that `f ≫ φ = 𝟙 A` and `g` is epi.
@@ -53,10 +53,10 @@ Such a sequence is automatically short exact (i.e., `f` is mono). -/
 structure LeftSplit : Prop where
   left_split : ∃ φ : B ⟶ A, f ≫ φ = 𝟙 A
   [epi : Epi g]
-  exact : Exact f g
+  exact : Exact' f g
 #align category_theory.left_split CategoryTheory.LeftSplit
 
-theorem LeftSplit.shortExact {f : A ⟶ B} {g : B ⟶ C} (h : LeftSplit f g) : ShortExact f g where
+theorem LeftSplit.shortExact {f : A ⟶ B} {g : B ⟶ C} (h : LeftSplit f g) : ShortExact' f g where
   mono := let ⟨_φ, hφ⟩ := h.left_split; mono_of_mono_fac hφ
   __ := h
 #align category_theory.left_split.short_exact CategoryTheory.LeftSplit.shortExact
@@ -68,10 +68,10 @@ Such a sequence is automatically short exact (i.e., `g` is epi). -/
 structure RightSplit : Prop where
   right_split : ∃ χ : C ⟶ B, χ ≫ g = 𝟙 C
   [mono : Mono f]
-  exact : Exact f g
+  exact : Exact' f g
 #align category_theory.right_split CategoryTheory.RightSplit
 
-theorem RightSplit.shortExact {f : A ⟶ B} {g : B ⟶ C} (h : RightSplit f g) : ShortExact f g where
+theorem RightSplit.shortExact {f : A ⟶ B} {g : B ⟶ C} (h : RightSplit f g) : ShortExact' f g where
   epi := let ⟨_χ, hχ⟩ := h.right_split; epi_of_epi_fac hχ
   __ := h
 #align category_theory.right_split.short_exact CategoryTheory.RightSplit.shortExact
@@ -99,7 +99,7 @@ structure Split : Prop where
 variable [HasKernels 𝒜] [HasImages 𝒜]
 
 theorem exact_of_split {A B C : 𝒜} {f : A ⟶ B} {g : B ⟶ C} {χ : C ⟶ B} {φ : B ⟶ A} (hfg : f ≫ g = 0)
-    (H : φ ≫ f + g ≫ χ = 𝟙 B) : Exact f g where
+    (H : φ ≫ f + g ≫ χ = 𝟙 B) : Exact' f g where
   w := hfg
   epi := by
     set ψ : (kernelSubobject g : 𝒜) ⟶ imageSubobject f :=
@@ -119,7 +119,7 @@ section
 
 variable {f g}
 
-theorem Split.exact (h : Split f g) : Exact f g := by
+theorem Split.exact (h : Split f g) : Exact' f g := by
   obtain ⟨φ, χ, -, -, h1, -, h2⟩ := h
   exact exact_of_split h1 h2
 #align category_theory.split.exact CategoryTheory.Split.exact
@@ -136,7 +136,7 @@ theorem Split.rightSplit (h : Split f g) : RightSplit f g where
   exact := h.exact
 #align category_theory.split.right_split CategoryTheory.Split.rightSplit
 
-theorem Split.shortExact (h : Split f g) : ShortExact f g :=
+theorem Split.shortExact (h : Split f g) : ShortExact' f g :=
   h.leftSplit.shortExact
 #align category_theory.split.short_exact CategoryTheory.Split.shortExact
 
@@ -154,13 +154,13 @@ theorem Split.map {𝒜 ℬ : Type*} [Category 𝒜] [Preadditive 𝒜] [Categor
 
 /-- The sequence `A ⟶ A ⊞ B ⟶ B` is exact. -/
 theorem exact_inl_snd [HasBinaryBiproducts 𝒜] (A B : 𝒜) :
-    Exact (biprod.inl : A ⟶ A ⊞ B) biprod.snd :=
+    Exact' (biprod.inl : A ⟶ A ⊞ B) biprod.snd :=
   exact_of_split biprod.inl_snd biprod.total
 #align category_theory.exact_inl_snd CategoryTheory.exact_inl_snd
 
 /-- The sequence `B ⟶ A ⊞ B ⟶ A` is exact. -/
 theorem exact_inr_fst [HasBinaryBiproducts 𝒜] (A B : 𝒜) :
-    Exact (biprod.inr : B ⟶ A ⊞ B) biprod.fst :=
+    Exact' (biprod.inr : B ⟶ A ⊞ B) biprod.fst :=
   exact_of_split biprod.inr_fst ((add_comm _ _).trans biprod.total)
 #align category_theory.exact_inr_fst CategoryTheory.exact_inr_fst
 
@@ -307,7 +307,7 @@ theorem comp_eq_zero : f ≫ g = 0 :=
 
 variable [HasKernels 𝒜] [HasImages 𝒜] [HasZeroObject 𝒜] [HasCokernels 𝒜]
 
-protected theorem exact : Exact f g := by
+protected theorem exact : Exact' f g := by
   rw [exact_iff_exact_of_iso f g (biprod.inl : A ⟶ A ⊞ C) (biprod.snd : A ⊞ C ⟶ C) _ _ _]
   · exact exact_inl_snd _ _
   · refine Arrow.isoMk (Iso.refl _) h.iso ?_
@@ -319,7 +319,7 @@ protected theorem exact : Exact f g := by
   · rfl
 #align category_theory.splitting.exact CategoryTheory.Splitting.exact
 
-protected theorem shortExact : ShortExact f g where
+protected theorem shortExact : ShortExact' f g where
   mono := h.mono
   epi := h.epi
   exact := h.exact

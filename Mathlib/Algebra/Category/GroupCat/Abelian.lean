@@ -48,7 +48,7 @@ instance : Abelian AddCommGroupCat.{u} where
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
 
-theorem exact_iff : Exact f g ↔ f.range = g.ker := by
+theorem exact_iff : Exact' f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
     ⟨fun h => ((AddMonoidHom.range_le_ker_iff _ _).mpr h.left).antisymm
@@ -61,7 +61,7 @@ instance {J : Type u} [SmallCategory J] [IsFiltered J] :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
   refine Functor.preservesFiniteLimitsOfMapExact _
     fun F G H η γ h => (exact_iff _ _).mpr (le_antisymm ?_ ?_)
-  all_goals replace h : ∀ j : J, Exact (η.app j) (γ.app j) :=
+  all_goals replace h : ∀ j : J, Exact' (η.app j) (γ.app j) :=
     fun j => Functor.map_exact ((evaluation _ _).obj j) η γ h
   · rw [AddMonoidHom.range_le_ker_iff, ← comp_def]
     exact colimit.hom_ext fun j => by simp [reassoc_of% (h j).w]

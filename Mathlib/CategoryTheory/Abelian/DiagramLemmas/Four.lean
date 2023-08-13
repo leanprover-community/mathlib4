@@ -78,7 +78,7 @@ variable (comm₁ : α ≫ f' = f ≫ β) (comm₂ : β ≫ g' = g ≫ γ) (comm
 
 section
 
-variable (hfg : Exact f g) (hgh : Exact g h) (hf'g' : Exact f' g')
+variable (hfg : Exact' f g) (hgh : Exact' g h) (hf'g' : Exact' f' g')
 
 /-- The four lemma, mono version. For names of objects and morphisms, refer to the following
     diagram:
@@ -125,7 +125,7 @@ end
 
 section
 
-variable (hgh : Exact g h) (hf'g' : Exact f' g') (hg'h' : Exact g' h')
+variable (hgh : Exact' g h) (hf'g' : Exact' f' g') (hg'h' : Exact' g' h')
 
 /-- The four lemma, epi version. For names of objects and morphisms, refer to the following
     diagram:
@@ -188,9 +188,9 @@ section Five
 
 variable {E E' : V} {i : D ⟶ E} {i' : D' ⟶ E'} {ε : E ⟶ E'} (comm₄ : δ ≫ i' = i ≫ ε)
 
-variable (hfg : Exact f g) (hgh : Exact g h) (hhi : Exact h i)
+variable (hfg : Exact' f g) (hgh : Exact' g h) (hhi : Exact' h i)
 
-variable (hf'g' : Exact f' g') (hg'h' : Exact g' h') (hh'i' : Exact h' i')
+variable (hf'g' : Exact' f' g') (hg'h' : Exact' g' h') (hh'i' : Exact' h' i')
 
 variable [Epi α] [IsIso β] [IsIso δ] [Mono ε]
 

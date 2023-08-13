@@ -277,6 +277,10 @@ theorem enoughInjectives_of_enoughProjectives_op [EnoughProjectives Cᵒᵖ] : E
 
 open Injective
 
+/-
+
+redundant with Exact.descToInjective in CategoryTheory.Abelian.InjectiveResolution
+
 section
 
 variable [HasZeroMorphisms C] [HasImages Cᵒᵖ] [HasEqualizers Cᵒᵖ]
@@ -303,7 +307,7 @@ theorem Exact.comp_desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) 
   convert congr_arg Quiver.Hom.unop (Exact.lift_comp h.op g.op f.op hgf (congrArg Quiver.Hom.op w))
 #align category_theory.injective.exact.comp_desc CategoryTheory.Injective.Exact.comp_desc
 
-end
+end-/
 
 end Injective
 

@@ -355,7 +355,7 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
 section
 
 /-- Two morphisms in an exact sequence are exact on pseudoelements. -/
-theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact f g) :
+theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact' f g) :
     (∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b :=
   ⟨fun a => by
     rw [← comp_apply, h.w]
@@ -396,7 +396,7 @@ section
 
 /-- If two morphisms are exact on pseudoelements, they are exact. -/
 theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
-    ((∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b) → Exact f g :=
+    ((∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b) → Exact' f g :=
   fun ⟨h₁, h₂⟩ => (Abelian.exact_iff _ _).2
     ⟨zero_morphism_ext _ fun a => by rw [comp_apply, h₁ a], by
       -- If we apply `g` to the pseudoelement induced by its kernel, we get 0 (of course!).
