@@ -785,7 +785,7 @@ noncomputable def directProductOfNormal [Fintype G]
   set ps := (Fintype.card G).factorization.support
   -- “The” Sylow subgroup for p
   let P : ∀ p, Sylow p G := default
-  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → _root_.Commute x y := by
+  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_factorization hp₁)
     haveI hp₂' := Fact.mk (Nat.prime_of_mem_factorization hp₂)
