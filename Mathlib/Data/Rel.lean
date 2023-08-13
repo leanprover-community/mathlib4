@@ -200,7 +200,7 @@ theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
   intro x h
   simp[mem_image, Bot.bot] at h
 
-theorem image_top [Nonempty β] {s : Set α} (h : Set.Nonempty s) :
+theorem image_top {s : Set α} (h : Set.Nonempty s) :
     (⊤ : Rel α β).image s = Set.univ :=
     Set.eq_univ_of_forall λ x ↦ ⟨h.some, by simp[h.some_mem, Top.top]⟩
 
@@ -247,7 +247,7 @@ theorem preimage_inv (s : Set α) : r.inv.preimage s = r.image s := by rw [preim
 theorem preimage_bot (s : Set β) : (⊥ : Rel α β).preimage s = ∅ :=
   by rw[preimage, inv_bot, image_bot]
 
-theorem preimage_top [Nonempty α] {s : Set β} (h : Set.Nonempty s) :
+theorem preimage_top {s : Set β} (h : Set.Nonempty s) :
     (⊤ : Rel α β).preimage s = Set.univ := by rwa[← inv_top, preimage, inv_inv, image_top]
 
 theorem image_eq_dom_of_codomain_subset {s : Set β} (h : r.codom ⊆ s) : r.preimage s = r.dom := by
