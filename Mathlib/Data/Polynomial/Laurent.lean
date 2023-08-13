@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Reverse
+import Mathlib.Data.Polynomial.Inductions
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.MonoidAlgebra.Star
 
@@ -112,7 +114,10 @@ def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] := by
   exact mapDomainAlgHom R R Int.ofNatHom
 #align polynomial.to_laurent_alg Polynomial.toLaurentAlg
 
-@[simp]
+@[simp] lemma Polynomial.coe_toLaurentAlg [CommSemiring R] :
+    (toLaurentAlg : R[X] → R[T;T⁻¹]) = toLaurent :=
+  rfl
+
 theorem Polynomial.toLaurentAlg_apply [CommSemiring R] (f : R[X]) : toLaurentAlg f = toLaurent f :=
   rfl
 #align polynomial.to_laurent_alg_apply Polynomial.toLaurentAlg_apply
@@ -224,6 +229,10 @@ theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r
   simp only [Int.ofNat_zero, T_zero, mul_one]
 set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_C Polynomial.toLaurent_C
+
+@[simp]
+theorem _root_.Polynomial.toLaurent_comp_C : toLaurent (R := R) ∘ Polynomial.C = C := by
+  ext; simp
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_X : (toLaurent Polynomial.X : R[T;T⁻¹]) = T 1 := by
@@ -628,9 +637,19 @@ def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.invert
 @[simp] lemma invert_apply {f : R[T;T⁻¹]} {n : ℤ} : invert f n = f (-n) :=
   AddMonoidAlgebra.invert_apply
 
+@[simp] lemma invert_comp_C : invert ∘ (@C R _) = C := by ext; simp
+
 @[simp] lemma invert_C {t : R} : invert (C t) = C t := by ext; simp
 
 lemma involutive_invert : Involutive (invert (R := R)) := AddMonoidAlgebra.involutive_invert
+
+lemma toLaurent_reverse {p : R[X]} :
+    toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by
+  nontriviality R
+  induction' p using Polynomial.recOnHorner with p t _ _ ih p hp ih
+  · simp
+  · simp [add_mul, ← ih]
+  · simpa [natDegree_mul_X hp]
 
 end Inversion
 

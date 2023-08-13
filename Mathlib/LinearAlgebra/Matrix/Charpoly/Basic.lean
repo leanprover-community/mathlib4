@@ -92,6 +92,10 @@ def Matrix.charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 #align matrix.charpoly Matrix.charpoly
 
+lemma Matrix.charpoly_def (M : Matrix n n R) :
+    M.charpoly = (scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M).det :=
+  rfl
+
 theorem Matrix.charpoly_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
   unfold Matrix.charpoly
