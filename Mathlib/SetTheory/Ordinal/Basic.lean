@@ -1386,8 +1386,7 @@ theorem card_le_iff {o : Ordinal} {c : Cardinal} : o.card ≤ c ↔ o < (succ c)
 
 /--
 A variation on `Cardinal.lt_ord` using `≤`: If `o` is no greater than the
-initial ordinal of cardinality `c`, then the cardinal of any of its realizations
-is no greater than `c`.
+initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
 
 The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
 -/
