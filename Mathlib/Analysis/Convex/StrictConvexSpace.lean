@@ -67,12 +67,12 @@ require balls of positive radius with center at the origin to be strictly convex
 then prove that any closed ball is strictly convex in `strictConvex_closedBall` below.
 
 See also `StrictConvexSpace.of_strictConvex_closed_unit_ball`. -/
-class StrictConvexSpace (𝕜 E : Type _) [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
+class StrictConvexSpace (𝕜 E : Type*) [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] : Prop where
   strictConvex_closedBall : ∀ r : ℝ, 0 < r → StrictConvex 𝕜 (closedBall (0 : E) r)
 #align strict_convex_space StrictConvexSpace
 
-variable (𝕜 : Type _) {E : Type _} [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
+variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
 /-- A closed ball in a strictly convex space is strictly convex. -/
@@ -243,9 +243,9 @@ theorem norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x +
     not_sameRay_iff_norm_add_lt, h]
 #align norm_midpoint_lt_iff norm_midpoint_lt_iff
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-variable {PF : Type u} {PE : Type _} [MetricSpace PF] [MetricSpace PE]
+variable {PF : Type u} {PE : Type*} [MetricSpace PF] [MetricSpace PE]
 
 variable [NormedAddTorsor F PF] [NormedAddTorsor E PE]
 
@@ -256,7 +256,7 @@ theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = 
       dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel'_right, one_mul]
   rcases eq_or_ne x z with (rfl | hne)
   · obtain rfl : y = x := by simpa
-    simp; rfl
+    simp
   · rw [← dist_ne_zero] at hne
     rcases this with ⟨a, b, _, hb, _, H⟩
     rw [smul_zero, zero_add] at H

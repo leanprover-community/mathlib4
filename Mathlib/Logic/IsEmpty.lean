@@ -18,17 +18,17 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 -/
 
 
-variable {α β γ : Sort _}
+variable {α β γ : Sort*}
 
 /-- `IsEmpty α` expresses that `α` is empty. -/
-class IsEmpty (α : Sort _) : Prop where
+class IsEmpty (α : Sort*) : Prop where
   protected false : α → False
 #align is_empty IsEmpty
 
-instance : IsEmpty Empty :=
+instance instIsEmptyEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance : IsEmpty PEmpty :=
+instance instIsEmptyPEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=
@@ -41,7 +41,7 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x ↦ IsEmpty.false (f x)⟩
 #align function.is_empty Function.isEmpty
 
-instance {p : α → Sort _} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
+instance {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
 instance PProd.isEmpty_left [IsEmpty α] : IsEmpty (PProd α β) :=
@@ -59,7 +59,7 @@ instance Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
 instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
 
-instance {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
+instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
   ⟨fun x ↦ Sum.rec IsEmpty.false IsEmpty.false x⟩
 
 /-- subtypes of an empty type are empty -/
@@ -75,14 +75,14 @@ theorem Subtype.isEmpty_of_false {p : α → Prop} (hp : ∀ a, ¬p a) : IsEmpty
 instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
   Subtype.isEmpty_of_false fun _ ↦ id
 
-instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type _} : IsEmpty (Sigma E) :=
+instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type*} : IsEmpty (Sigma E) :=
   Function.isEmpty Sigma.fst
 
 example [h : Nonempty α] [IsEmpty β] : IsEmpty (α → β) := by infer_instance
 
 /-- Eliminate out of a type that `IsEmpty` (without using projection notation). -/
 @[elab_as_elim]
-def isEmptyElim [IsEmpty α] {p : α → Sort _} (a : α) : p a :=
+def isEmptyElim [IsEmpty α] {p : α → Sort*} (a : α) : p a :=
   (IsEmpty.false a).elim
 #align is_empty_elim isEmptyElim
 
@@ -96,13 +96,13 @@ open Function
 
 /-- Eliminate out of a type that `IsEmpty` (using projection notation). -/
 @[elab_as_elim]
-protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort _} (a : α) : p a :=
+protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort*} (a : α) : p a :=
   isEmptyElim a
 #align is_empty.elim IsEmpty.elim
 
 /-- Non-dependent version of `IsEmpty.elim`. Helpful if the elaborator cannot elaborate `h.elim a`
   correctly. -/
-protected def elim' {β : Sort _} (h : IsEmpty α) (a : α) : β :=
+protected def elim' {β : Sort*} (h : IsEmpty α) (a : α) : β :=
   (h.false a).elim
 #align is_empty.elim' IsEmpty.elim'
 
@@ -144,17 +144,17 @@ theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
 #align is_empty_Prop isEmpty_Prop
 
 @[simp]
-theorem isEmpty_pi {π : α → Sort _} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by
+theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by
   simp only [← not_nonempty_iff, Classical.nonempty_pi, not_forall]
 #align is_empty_pi isEmpty_pi
 
 @[simp]
-theorem isEmpty_sigma {α} {E : α → Type _} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by
+theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by
   simp only [← not_nonempty_iff, nonempty_sigma, not_exists]
 #align is_empty_sigma isEmpty_sigma
 
 @[simp]
-theorem isEmpty_psigma {α} {E : α → Sort _} : IsEmpty (PSigma E) ↔ ∀ a, IsEmpty (E a) := by
+theorem isEmpty_psigma {α} {E : α → Sort*} : IsEmpty (PSigma E) ↔ ∀ a, IsEmpty (E a) := by
   simp only [← not_nonempty_iff, nonempty_psigma, not_exists]
 #align is_empty_psigma isEmpty_psigma
 
@@ -164,7 +164,7 @@ theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x
 #align is_empty_subtype isEmpty_subtype
 
 @[simp]
-theorem isEmpty_prod {α β : Type _} : IsEmpty (α × β) ↔ IsEmpty α ∨ IsEmpty β := by
+theorem isEmpty_prod {α β : Type*} : IsEmpty (α × β) ↔ IsEmpty α ∨ IsEmpty β := by
   simp only [← not_nonempty_iff, nonempty_prod, not_and_or]
 #align is_empty_prod isEmpty_prod
 

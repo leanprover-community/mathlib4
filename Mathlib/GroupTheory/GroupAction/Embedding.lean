@@ -20,7 +20,7 @@ Note that unlike the `Pi` instance, this requires `G` to be a group.
 
 universe u v w
 
-variable {G G' α β : Type _}
+variable {G G' α β : Type*}
 
 namespace Function.Embedding
 

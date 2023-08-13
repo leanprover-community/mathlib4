@@ -27,38 +27,39 @@ constructions quicker to implement.
 -/
 
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open Tropical
 
-instance [Sup R] : Sup (Tropical R) where
+instance instSupTropical [Sup R] : Sup (Tropical R) where
   sup x y := trop (untrop x ⊔ untrop y)
 
-instance [Inf R] : Inf (Tropical R) where
+instance instInfTropical [Inf R] : Inf (Tropical R) where
   inf x y := trop (untrop x ⊓ untrop y)
 
-instance [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
+instance instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
   { instInfTropical,
     Tropical.instPartialOrderTropical with
     le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
     inf_le_left := fun _ _ ↦ inf_le_left
     inf_le_right := fun _ _ ↦ inf_le_right }
 
-instance [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
+instance instSemilatticeSupTropical [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
   { instSupTropical,
     Tropical.instPartialOrderTropical with
     sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
     le_sup_left := fun _ _ ↦ le_sup_left
     le_sup_right := fun _ _ ↦ le_sup_right }
 
-instance [Lattice R] : Lattice (Tropical R) :=
+instance instLatticeTropical [Lattice R] : Lattice (Tropical R) :=
   { instSemilatticeInfTropical, instSemilatticeSupTropical with }
 
 instance [SupSet R] : SupSet (Tropical R) where sSup s := trop (sSup (untrop '' s))
 
 instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' s))
 
-instance [ConditionallyCompleteLattice R] : ConditionallyCompleteLattice (Tropical R) :=
+instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
+    ConditionallyCompleteLattice (Tropical R) :=
   { @instInfTropical R _, @instSupTropical R _,
     instLatticeTropical with
     le_csSup  := fun _s _x hs hx ↦

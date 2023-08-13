@@ -25,7 +25,7 @@ namespace LinearMap
 
 section NonUnitalNonAssoc
 
-variable (R A : Type _) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
@@ -108,7 +108,7 @@ end NonUnitalNonAssoc
 
 section NonUnital
 
-variable (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A]
+variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A]
   [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital algebra is a bilinear map.
@@ -153,7 +153,7 @@ end NonUnital
 
 section Semiring
 
-variable (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
@@ -230,7 +230,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
 
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulLeft R x) := by

@@ -41,7 +41,7 @@ open BigOperators
 
 namespace LinearMap
 
-variable (R : Type _) {ι : Type _} [Semiring R] (φ : ι → Type _) [∀ i, AddCommMonoid (φ i)]
+variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]
   [∀ i, Module R (φ i)] [DecidableEq ι]
 
 /-- The standard basis of the product of `φ`. -/
@@ -168,11 +168,11 @@ open LinearMap
 
 open Set
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Module
 
-variable {η : Type _} {ιs : η → Type _} {Ms : η → Type _}
+variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
 theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
@@ -299,7 +299,7 @@ end Pi
 
 namespace Matrix
 
-variable (R : Type _) (m n : Type _) [Fintype m] [Fintype n] [Semiring R]
+variable (R : Type*) (m n : Type*) [Fintype m] [Fintype n] [Semiring R]
 
 /-- The standard basis of `Matrix m n R`. -/
 noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=
