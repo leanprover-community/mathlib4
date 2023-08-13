@@ -295,6 +295,8 @@ theorem exists_mem_ne_zero_of_rank_pos {s : Submodule R M} (h : 0 < Module.rank 
   exists_mem_ne_zero_of_ne_bot fun eq => by rw [eq, rank_bot] at h; exact lt_irrefl _ h
 #align exists_mem_ne_zero_of_rank_pos exists_mem_ne_zero_of_rank_pos
 
+open Span in
+
 /-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
 the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [IsNoetherian R M] {v : ι → M}
@@ -303,7 +305,7 @@ theorem LinearIndependent.finite_of_isNoetherian [IsNoetherian R M] {v : ι → 
   refine' CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
     fun i contra => _
   apply hv.ne_zero i
-  have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
+  have : v i ∈ R • v i := Submodule.mem_span_singleton_self (v i)
   rwa [contra, Submodule.mem_bot] at this
 #align linear_independent.finite_of_is_noetherian LinearIndependent.finite_of_isNoetherian
 
@@ -1175,6 +1177,8 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Mod
 
 variable [AddCommGroup V'] [Module K V']
 
+open Span
+
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
 
 See also `FiniteDimensional.finBasis`.
@@ -1225,12 +1229,12 @@ theorem rank_le_one_iff : Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r :
       intro v
       simp [h' v]
     · use v₀
-      have h' : (K ∙ v₀) = ⊤ := by simpa [hd.eq_singleton_of_mem hv₀] using b.span_eq
+      have h' : (K • v₀) = ⊤ := by simpa [hd.eq_singleton_of_mem hv₀] using b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
   · rintro ⟨v₀, hv₀⟩
-    have h : (K ∙ v₀) = ⊤ := by
+    have h : (K • v₀) = ⊤ := by
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
@@ -1242,7 +1246,7 @@ theorem rank_le_one_iff : Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r :
 single vector in the submodule such that the submodule is contained in
 its span. -/
 theorem rank_submodule_le_one_iff (s : Submodule K V) :
-    Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
+    Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K • v₀ := by
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
   constructor
   · rintro ⟨⟨v₀, hv₀⟩, h⟩
@@ -1265,7 +1269,7 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) :
 single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
 theorem rank_submodule_le_one_iff' (s : Submodule K V) :
-    Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
+    Module.rank K s ≤ 1 ↔ ∃ (v₀ : V), s ≤ K • v₀ := by
   rw [rank_submodule_le_one_iff]
   constructor
   · rintro ⟨v₀, _, h⟩

@@ -68,9 +68,11 @@ theorem midpoint_mem_perpBisector (p₁ p₂ : P) :
 theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
   ⟨_, midpoint_mem_perpBisector _ _⟩
 
+open Span in
+
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :
-    (perpBisector p₁ p₂).direction = (ℝ ∙ (p₂ -ᵥ p₁))ᗮ := by
+    (perpBisector p₁ p₂).direction = (ℝ • (p₂ -ᵥ p₁))ᗮ := by
   erw [perpBisector, comap_symm, map_direction, Submodule.map_id,
     Submodule.toAffineSubspace_direction]
   ext x

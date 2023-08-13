@@ -559,8 +559,10 @@ theorem Independent.linearIndependent [NoZeroSMulDivisors R N] (p : ι → Submo
   simpa
 #align complete_lattice.independent.linear_independent CompleteLattice.Independent.linearIndependent
 
+open Span in
+
 theorem independent_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {v : ι → N}
-    (h_ne_zero : ∀ i, v i ≠ 0) : (Independent fun i => R ∙ v i) ↔ LinearIndependent R v :=
+    (h_ne_zero : ∀ i, v i ≠ 0) : (Independent fun i => R • v i) ↔ LinearIndependent R v :=
   let _ := Classical.decEq ι
   ⟨fun hv => hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero,
     fun hv => hv.independent_span_singleton⟩

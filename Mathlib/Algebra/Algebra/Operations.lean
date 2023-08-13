@@ -34,7 +34,7 @@ Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
 It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A`.
 
-Additionally, in the `pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
+Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 ## Tags
@@ -73,6 +73,8 @@ variable {R : Type u} [CommSemiring R]
 
 section Ring
 
+open Span
+
 variable {A : Type v} [Semiring A] [Algebra R A]
 
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
@@ -106,7 +108,7 @@ theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
   SetLike.ext fun _ => mem_one.trans SubMulAction.mem_one'.symm
 #align submodule.to_sub_mul_action_one Submodule.toSubMulAction_one
 
-theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 := by
+theorem one_eq_span : 1 = R • (1 : A) := by
   apply Submodule.ext
   intro a
   simp only [mem_one, mem_span_singleton, Algebra.smul_def, mul_one]

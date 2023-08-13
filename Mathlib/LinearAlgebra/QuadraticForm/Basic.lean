@@ -1092,6 +1092,8 @@ variable {V : Type u} {K : Type v} [Field K] [AddCommGroup V] [Module K V]
 
 variable [FiniteDimensional K V]
 
+open Span in
+
 /-- Given a symmetric bilinear form `B` on some vector space `V` over a field `K`
 in which `2` is invertible, there exists an orthogonal basis with respect to `B`. -/
 theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (hB₂ : B.IsSymm) :
@@ -1108,7 +1110,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_not_isOrtho_self x hx)] at hd
-  let B' := B.restrict (B.orthogonal <| K ∙ x)
+  let B' := B.restrict (B.orthogonal <| K • x)
   obtain ⟨v', hv₁⟩ := ih (B.restrictSymm hB₂ _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=

@@ -84,11 +84,11 @@ theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
 theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
 #align projectivization.mk_rep Projectivization.mk_rep
 
-open FiniteDimensional
+open FiniteDimensional Span
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=
-  (Quotient.liftOn' v fun v => K ∙ (v : V)) <| by
+  (Quotient.liftOn' v fun v => K • (v : V)) <| by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨x, rfl : x • b = a⟩
     exact Submodule.span_singleton_group_smul_eq _ x _
 #align projectivization.submodule Projectivization.submodule
@@ -127,11 +127,11 @@ theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h))
 #align projectivization.ind Projectivization.ind
 
 @[simp]
-theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
+theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K • v :=
   rfl
 #align projectivization.submodule_mk Projectivization.submodule_mk
 
-theorem submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
+theorem submodule_eq (v : ℙ K V) : v.submodule = K • v.rep := by
   conv_lhs => rw [← v.mk_rep]
 #align projectivization.submodule_eq Projectivization.submodule_eq
 
@@ -142,7 +142,7 @@ theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
 
 instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
   rw [← v.mk_rep]
-  change FiniteDimensional K (K ∙ v.rep)
+  change FiniteDimensional K (K • v.rep)
   infer_instance
 
 theorem submodule_injective :

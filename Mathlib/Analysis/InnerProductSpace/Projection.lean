@@ -44,7 +44,7 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
-open IsROrC Real Filter
+open IsROrC Real Filter Span
 
 open LinearMap (ker range)
 
@@ -623,8 +623,8 @@ theorem orthogonalProjection_norm_le : ‖orthogonalProjection K‖ ≤ 1 :=
 variable (𝕜)
 
 theorem smul_orthogonalProjection_singleton {v : E} (w : E) :
-    ((‖v‖ ^ 2 : ℝ) : 𝕜) • (orthogonalProjection (𝕜 ∙ v) w : E) = ⟪v, w⟫ • v := by
-  suffices ((orthogonalProjection (𝕜 ∙ v) (((‖v‖ : 𝕜) ^ 2) • w)) : E) = ⟪v, w⟫ • v by
+    ((‖v‖ ^ 2 : ℝ) : 𝕜) • (orthogonalProjection (𝕜 • v) w : E) = ⟪v, w⟫ • v := by
+  suffices ((orthogonalProjection (𝕜 • v) (((‖v‖ : 𝕜) ^ 2) • w)) : E) = ⟪v, w⟫ • v by
     simpa using this
   apply eq_orthogonalProjection_of_mem_of_inner_eq_zero
   · rw [Submodule.mem_span_singleton]
@@ -635,13 +635,13 @@ theorem smul_orthogonalProjection_singleton {v : E} (w : E) :
 
 /-- Formula for orthogonal projection onto a single vector. -/
 theorem orthogonalProjection_singleton {v : E} (w : E) :
-    (orthogonalProjection (𝕜 ∙ v) w : E) = (⟪v, w⟫ / ((‖v‖ ^ 2 : ℝ) : 𝕜)) • v := by
+    (orthogonalProjection (𝕜 • v) w : E) = (⟪v, w⟫ / ((‖v‖ ^ 2 : ℝ) : 𝕜)) • v := by
   by_cases hv : v = 0
   · rw [hv, eq_orthogonalProjection_of_eq_submodule (Submodule.span_zero_singleton 𝕜)]
     · simp
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
-    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 ∙ v) w) : E) =
+    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 • v) w) : E) =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v :=
     by simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -ofReal_pow]
   convert key using 1 <;> field_simp [hv']
@@ -649,7 +649,7 @@ theorem orthogonalProjection_singleton {v : E} (w : E) :
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
 theorem orthogonalProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
-    (orthogonalProjection (𝕜 ∙ v) w : E) = ⟪v, w⟫ • v := by
+    (orthogonalProjection (𝕜 • v) w : E) = ⟪v, w⟫ • v := by
   rw [← smul_orthogonalProjection_singleton 𝕜 w]
   simp [hv]
 #align orthogonal_projection_unit_singleton orthogonalProjection_unit_singleton
@@ -745,7 +745,7 @@ theorem reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _)
 variable {K}
 
 theorem reflection_singleton_apply (u v : E) :
-    reflection (𝕜 ∙ u) v = 2 • (⟪u, v⟫ / ((‖u‖ : 𝕜) ^ 2)) • u - v := by
+    reflection (𝕜 • u) v = 2 • (⟪u, v⟫ / ((‖u‖ : 𝕜) ^ 2)) • u - v := by
   rw [reflection_apply, orthogonalProjection_singleton, ofReal_pow]
 
 /-- A point is its own reflection if and only if it is in the subspace. -/
@@ -1025,20 +1025,20 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg [HasOrthogonalPr
   reflection_mem_subspace_orthogonalComplement_eq_neg (K.le_orthogonal_orthogonal hv)
 #align reflection_mem_subspace_orthogonal_precomplement_eq_neg reflection_mem_subspace_orthogonal_precomplement_eq_neg
 
-/-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
+/-- The orthogonal projection onto `(𝕜 • v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
-    orthogonalProjection (𝕜 ∙ v)ᗮ v = 0 :=
+    orthogonalProjection (𝕜 • v)ᗮ v = 0 :=
   orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
     (Submodule.mem_span_singleton_self v)
 #align orthogonal_projection_orthogonal_complement_singleton_eq_zero orthogonalProjection_orthogonalComplement_singleton_eq_zero
 
-/-- The reflection in `(𝕜 ∙ v)ᗮ` of `v` is `-v`. -/
-theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
+/-- The reflection in `(𝕜 • v)ᗮ` of `v` is `-v`. -/
+theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 • v)ᗮ v = -v :=
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
 #align reflection_orthogonal_complement_singleton_eq_neg reflection_orthogonalComplement_singleton_eq_neg
 
-theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
-  set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ v - w)ᗮ
+theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ • (v - w))ᗮ v = w := by
+  set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ • (v - w))ᗮ
   suffices R v + R v = w + w by
     apply smul_right_injective F (by norm_num : (2 : ℝ) ≠ 0)
     simpa [two_smul] using this
@@ -1161,7 +1161,7 @@ theorem Submodule.finrank_add_finrank_orthogonal' [FiniteDimensional 𝕜 E] {K 
 /-- In a finite-dimensional inner product space, the dimension of the orthogonal complement of the
 span of a nonzero vector is one less than the dimension of the space. -/
 theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E = n + 1)] {v : E}
-    (hv : v ≠ 0) : finrank 𝕜 (𝕜 ∙ v)ᗮ = n := by
+    (hv : v ≠ 0) : finrank 𝕜 (𝕜 • v)ᗮ = n := by
   haveI : FiniteDimensional 𝕜 E := fact_finiteDimensional_of_finrank_eq_succ n
   exact Submodule.finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
@@ -1172,7 +1172,7 @@ specifically at most as many reflections as the dimension of the complement of t
 of `φ`. -/
 theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ F] {n : ℕ}
     (φ : F ≃ₗᵢ[ℝ] F) (hn : finrank ℝ (ker (ContinuousLinearMap.id ℝ F - φ))ᗮ ≤ n) :
-    ∃ l : List F, l.length ≤ n ∧ φ = (l.map fun v => reflection (ℝ ∙ v)ᗮ).prod := by
+    ∃ l : List F, l.length ≤ n ∧ φ = (l.map fun (v : F) => reflection (ℝ • v)ᗮ).prod := by
   -- We prove this by strong induction on `n`, the dimension of the orthogonal complement of the
   -- fixed subspace of the endomorphism `φ`
   induction' n with n IH generalizing φ
@@ -1204,7 +1204,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
       exact hv ((Submodule.mem_left_iff_eq_zero_of_disjoint W.orthogonal_disjoint).mp h)
     -- Let `ρ` be the reflection in `v - φ v`; this is designed to swap `v` and `φ v`
     let x : F := v - φ v
-    let ρ := reflection (ℝ ∙ x)ᗮ
+    let ρ := reflection (ℝ • x)ᗮ
     -- Notation: Let `V` be the fixed subspace of `φ.trans ρ`
     let V := ker (ContinuousLinearMap.id ℝ F - φ.trans ρ)
     have hV : ∀ w, ρ (φ w) = w → w ∈ V := by
@@ -1250,14 +1250,14 @@ orthogonal group is a product of at most as many reflections as the dimension of
 
 Special case of the **Cartan–Dieudonné theorem**. -/
 theorem LinearIsometryEquiv.reflections_generate_dim [FiniteDimensional ℝ F] (φ : F ≃ₗᵢ[ℝ] F) :
-    ∃ l : List F, l.length ≤ finrank ℝ F ∧ φ = (l.map fun v => reflection (ℝ ∙ v)ᗮ).prod :=
+    ∃ l : List F, l.length ≤ finrank ℝ F ∧ φ = (l.map fun (v : F) => reflection (ℝ • v)ᗮ).prod :=
   let ⟨l, hl₁, hl₂⟩ := φ.reflections_generate_dim_aux le_rfl
   ⟨l, hl₁.trans (Submodule.finrank_le _), hl₂⟩
 #align linear_isometry_equiv.reflections_generate_dim LinearIsometryEquiv.reflections_generate_dim
 
 /-- The orthogonal group of `F` is generated by reflections. -/
 theorem LinearIsometryEquiv.reflections_generate [FiniteDimensional ℝ F] :
-    Subgroup.closure (Set.range fun v : F => reflection (ℝ ∙ v)ᗮ) = ⊤ := by
+    Subgroup.closure (Set.range fun v : F => reflection (ℝ • v)ᗮ) = ⊤ := by
   rw [Subgroup.eq_top_iff']
   intro φ
   rcases φ.reflections_generate_dim with ⟨l, _, rfl⟩

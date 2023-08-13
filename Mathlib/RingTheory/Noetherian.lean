@@ -305,6 +305,8 @@ theorem isNoetherian_iff_wellFounded :
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
 #align is_noetherian_iff_well_founded isNoetherian_iff_wellFounded
 
+open Span in
+
 theorem isNoetherian_iff_fg_wellFounded :
     IsNoetherian R M ↔
       WellFounded
@@ -327,7 +329,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     rw [eq_of_le_of_not_lt (le_sup_right : N₀ ≤ _) (h₂
       ⟨_, Submodule.FG.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁⟩ <|
       sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e)]
-    exact (le_sup_left : (R ∙ x) ≤ _) (Submodule.mem_span_singleton_self _)
+    exact (le_sup_left : (R • x) ≤ _) (Submodule.mem_span_singleton_self _)
 #align is_noetherian_iff_fg_well_founded isNoetherian_iff_fg_wellFounded
 
 variable (R M)

@@ -62,6 +62,8 @@ theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := 
 
 variable {K}
 
+open Span
+
 /-- A vector in `K` is orthogonal to one in `Kᗮ`. -/
 theorem inner_right_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪u, v⟫ = 0 :=
   (K.mem_orthogonal v).1 hv u hu
@@ -72,8 +74,8 @@ theorem inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) 
   rw [inner_eq_zero_symm]; exact inner_right_of_mem_orthogonal hu hv
 #align submodule.inner_left_of_mem_orthogonal Submodule.inner_left_of_mem_orthogonal
 
-/-- A vector is in `(𝕜 ∙ u)ᗮ` iff it is orthogonal to `u`. -/
-theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
+/-- A vector is in `(𝕜 • u)ᗮ` iff it is orthogonal to `u`. -/
+theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 • u)ᗮ ↔ ⟪u, v⟫ = 0 := by
   refine' ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), _⟩
   intro hv w hw
   rw [mem_span_singleton] at hw
@@ -81,8 +83,8 @@ theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)�
   simp [inner_smul_left, hv]
 #align submodule.mem_orthogonal_singleton_iff_inner_right Submodule.mem_orthogonal_singleton_iff_inner_right
 
-/-- A vector in `(𝕜 ∙ u)ᗮ` is orthogonal to `u`. -/
-theorem mem_orthogonal_singleton_iff_inner_left {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪v, u⟫ = 0 := by
+/-- A vector in `(𝕜 • u)ᗮ` is orthogonal to `u`. -/
+theorem mem_orthogonal_singleton_iff_inner_left {u v : E} : v ∈ (𝕜 • u)ᗮ ↔ ⟪v, u⟫ = 0 := by
   rw [mem_orthogonal_singleton_iff_inner_right, inner_eq_zero_symm]
 #align submodule.mem_orthogonal_singleton_iff_inner_left Submodule.mem_orthogonal_singleton_iff_inner_left
 

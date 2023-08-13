@@ -15,10 +15,10 @@ import Mathlib.Topology.Algebra.Order.Floor
 # Integrals of periodic functions
 
 In this file we prove that the half-open interval `Ioc t (t + T)` in `ℝ` is a fundamental domain of
-the action of the subgroup `ℤ ∙ T` on `ℝ`.
+the action of the subgroup `ℤ • T` on `ℝ`.
 
 A consequence is `AddCircle.measurePreserving_mk`: the covering map from `ℝ` to the "additive
-circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving, with respect to the restriction of Lebesgue measure to
+circle" `ℝ ⧸ (ℤ • T)` is measure-preserving, with respect to the restriction of Lebesgue measure to
 `Ioc t (t + T)` (upstairs) and with respect to Haar measure (downstairs).
 
 Another consequence (`Function.Periodic.intervalIntegral_add_eq` and related declarations) is that
@@ -68,7 +68,7 @@ namespace AddCircle
 
 variable (T : ℝ) [hT : Fact (0 < T)]
 
-/-- Equip the "additive circle" `ℝ ⧸ (ℤ ∙ T)` with, as a standard measure, the Haar measure of total
+/-- Equip the "additive circle" `ℝ ⧸ (ℤ • T)` with, as a standard measure, the Haar measure of total
 mass `T` -/
 noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
   { AddCircle.measurableSpace with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
@@ -88,7 +88,7 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
   measure_univ_lt_top := by simp
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
-/-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
+/-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ • T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
 on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
 interval (t, t + T]. -/

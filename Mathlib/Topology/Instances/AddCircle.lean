@@ -17,14 +17,14 @@ import Mathlib.Topology.PathConnected
 /-!
 # The additive circle
 
-We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`.
+We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ (ℤ • p)` for some period `p : 𝕜`.
 
 See also `Circle` and `Real.angle`.  For the normed group structure on `AddCircle`, see
 `AddCircle.NormedAddCommGroup` in a later file.
 
 ## Main definitions and results:
 
- * `AddCircle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
+ * `AddCircle`: the additive circle `𝕜 ⧸ (ℤ • p)` for some period `p : 𝕜`
  * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
  * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
  * `AddCircle.equivIco`: the natural equivalence `AddCircle p ≃ Ico a (a + p)`
@@ -119,7 +119,7 @@ theorem continuousAt_toIocMod : ContinuousAt (toIocMod hp a) x :=
 
 end Continuity
 
-/-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
+/-- The "additive circle": `𝕜 ⧸ (ℤ • p)`. See also `Circle` and `Real.angle`. -/
 @[nolint unusedArguments]
 def AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
@@ -509,7 +509,7 @@ variable (p : ℝ)
 instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
   (inferInstance : PathConnectedSpace (Quotient _))
 
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
+/-- The "additive circle" `ℝ ⧸ (ℤ • p)` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
   rw [← isCompact_univ_iff, ← coe_image_Icc_eq p 0]
   exact isCompact_Icc.image (AddCircle.continuous_mk' p)
@@ -521,15 +521,15 @@ instance : ProperlyDiscontinuousVAdd (AddSubgroup.opposite (zmultiples p)) ℝ :
   (zmultiples p).properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
     (AddSubgroup.tendsto_zmultiples_subtype_cofinite p)
 
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is Hausdorff. -/
+/-- The "additive circle" `ℝ ⧸ (ℤ • p)` is Hausdorff. -/
 instance : T2Space (AddCircle p) :=
   t2Space_of_properlyDiscontinuousVAdd_of_t2Space
 
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is normal. -/
+/-- The "additive circle" `ℝ ⧸ (ℤ • p)` is normal. -/
 instance [Fact (0 < p)] : NormalSpace (AddCircle p) :=
   normalOfCompactT2
 
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is second-countable. -/
+/-- The "additive circle" `ℝ ⧸ (ℤ • p)` is second-countable. -/
 instance : SecondCountableTopology (AddCircle p) :=
   QuotientAddGroup.secondCountableTopology
 

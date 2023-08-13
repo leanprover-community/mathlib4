@@ -253,16 +253,18 @@ end Seminormed
 section Normed
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+open Span
+
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
     continuous linear equivalence from `E₁` to the span of `x`.-/
-noncomputable def toSpanNonzeroSingleton (x : E) (h : x ≠ 0) : 𝕜 ≃L[𝕜] 𝕜 ∙ x :=
+noncomputable def toSpanNonzeroSingleton (x : E) (h : x ≠ 0) : 𝕜 ≃L[𝕜] 𝕜 • x :=
   ofHomothety (LinearEquiv.toSpanNonzeroSingleton 𝕜 E x h) ‖x‖ (norm_pos_iff.mpr h)
     (toSpanNonzeroSingleton_homothety 𝕜 x h)
 #align continuous_linear_equiv.to_span_nonzero_singleton ContinuousLinearEquiv.toSpanNonzeroSingleton
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural continuous
     linear map from the span of `x` to `𝕜`.-/
-noncomputable def coord (x : E) (h : x ≠ 0) : (𝕜 ∙ x) →L[𝕜] 𝕜 :=
+noncomputable def coord (x : E) (h : x ≠ 0) : (𝕜 • x) →L[𝕜] 𝕜 :=
   (toSpanNonzeroSingleton 𝕜 x h).symm
 #align continuous_linear_equiv.coord ContinuousLinearEquiv.coord
 
@@ -279,14 +281,14 @@ theorem coord_toSpanNonzeroSingleton {x : E} (h : x ≠ 0) (c : 𝕜) :
 #align continuous_linear_equiv.coord_to_span_nonzero_singleton ContinuousLinearEquiv.coord_toSpanNonzeroSingleton
 
 @[simp]
-theorem toSpanNonzeroSingleton_coord {x : E} (h : x ≠ 0) (y : 𝕜 ∙ x) :
+theorem toSpanNonzeroSingleton_coord {x : E} (h : x ≠ 0) (y : 𝕜 • x) :
     toSpanNonzeroSingleton 𝕜 x h (coord 𝕜 x h y) = y :=
   (toSpanNonzeroSingleton 𝕜 x h).apply_symm_apply y
 #align continuous_linear_equiv.to_span_nonzero_singleton_coord ContinuousLinearEquiv.toSpanNonzeroSingleton_coord
 
 @[simp]
 theorem coord_self (x : E) (h : x ≠ 0) :
-    (coord 𝕜 x h) (⟨x, Submodule.mem_span_singleton_self x⟩ : 𝕜 ∙ x) = 1 :=
+    (coord 𝕜 x h) (⟨x, Submodule.mem_span_singleton_self x⟩ : 𝕜 • x) = 1 :=
   LinearEquiv.coord_self 𝕜 E x h
 #align continuous_linear_equiv.coord_self ContinuousLinearEquiv.coord_self
 

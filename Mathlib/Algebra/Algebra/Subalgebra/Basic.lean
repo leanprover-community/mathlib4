@@ -900,7 +900,9 @@ theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (alge
   le_bot_iff.mp fun x hx => Subalgebra.range_le _ ((ofId R A).coe_range ▸ hx)
 #align algebra.mem_bot Algebra.mem_bot
 
-theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = R ∙ 1 := by
+open Span in
+
+theorem toSubmodule_bot : Subalgebra.toSubmodule ⊥ = R • (1 : A) := by
   ext x
   simp [mem_bot, Submodule.mem_span_singleton, Algebra.smul_def]
 #align algebra.to_submodule_bot Algebra.toSubmodule_bot

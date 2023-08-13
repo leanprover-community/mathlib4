@@ -203,6 +203,8 @@ theorem inner_rightAngleRotationAux₁_right (x y : E) :
   simp [o.areaForm_swap y x]
 #align orientation.inner_right_angle_rotation_aux₁_right Orientation.inner_rightAngleRotationAux₁_right
 
+open Span in
+
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
 def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
@@ -216,7 +218,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         refine' le_of_mul_le_mul_right _ h
         rw [← real_inner_self_eq_norm_mul_norm, o.inner_rightAngleRotationAux₁_left]
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
-      · let K : Submodule ℝ E := ℝ ∙ x
+      · let K : Submodule ℝ E := ℝ • x
         have : Nontrivial Kᗮ := by
           apply @FiniteDimensional.nontrivial_of_finrank_pos ℝ
           have : finrank ℝ K ≤ Finset.card {x} := by

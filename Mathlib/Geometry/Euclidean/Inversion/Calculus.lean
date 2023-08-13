@@ -30,7 +30,7 @@ open scoped Topology RealInnerProductSpace
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-open EuclideanGeometry
+open EuclideanGeometry Span
 
 section DotNotation
 
@@ -87,7 +87,7 @@ variable {a b c d x y z : F} {r R : ℝ}
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
-      ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
+      ((R / dist x c) ^ 2 • (reflection (ℝ • (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
   have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x)
   · simp_rw [inversion, dist_eq_norm, div_pow, div_eq_mul_inv]
@@ -96,7 +96,7 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
       (R ^ 2)
     exact (B.smul A).add_const c
   refine this.congr_fderiv (LinearMap.ext_on_codisjoint
-    (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
+    (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ • x)).codisjoint
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹
     · rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']

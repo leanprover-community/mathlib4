@@ -73,7 +73,7 @@ open AddSubgroup AddMonoidHom AddEquiv Function
 
 variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
 
-/-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((+ᵥ) a) b`. -/
+/-- The quotient `(ℤ • a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((+ᵥ) a) b`. -/
 noncomputable def zmultiplesQuotientStabilizerEquiv :
     zmultiples a ⧸ stabilizer (zmultiples a) b ≃+ ZMod (minimalPeriod ((· +ᵥ ·) a) b) :=
   (ofBijective

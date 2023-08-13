@@ -78,9 +78,11 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
   · rw [Sphere.secondInter, hp, MulZeroClass.mul_zero, zero_div, zero_smul, zero_vadd]
 #align euclidean_geometry.sphere.second_inter_eq_self_iff EuclideanGeometry.Sphere.secondInter_eq_self_iff
 
+open Span in
+
 /-- A point on a line through a point on a sphere equals that point or `secondInter`. -/
 theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Sphere P} {p : P}
-    (hp : p ∈ s) {v : V} {p' : P} (hp' : p' ∈ AffineSubspace.mk' p (ℝ ∙ v)) :
+    (hp : p ∈ s) {v : V} {p' : P} (hp' : p' ∈ AffineSubspace.mk' p (ℝ • v)) :
     p' = p ∨ p' = s.secondInter p v ↔ p' ∈ s := by
   refine' ⟨fun h => _, fun h => _⟩
   · rcases h with (h | h)

@@ -33,7 +33,7 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 
 noncomputable section
 
-open FiniteDimensional Complex
+open FiniteDimensional Complex Span
 
 open scoped Real RealInnerProductSpace ComplexConjugate
 
@@ -380,7 +380,7 @@ theorem two_zsmul_oangle_smul_smul_self (x : V) {r₁ r₂ : ℝ} :
 
 /-- If the spans of two vectors are equal, twice angles with those vectors on the left are
 equal. -/
-theorem two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : (ℝ ∙ x) = ℝ ∙ y) :
+theorem two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : (ℝ • x) = ℝ • y) :
     (2 : ℤ) • o.oangle x z = (2 : ℤ) • o.oangle y z := by
   rw [Submodule.span_singleton_eq_span_singleton] at h
   rcases h with ⟨r, rfl⟩
@@ -389,7 +389,7 @@ theorem two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : (ℝ ∙ x) = �
 
 /-- If the spans of two vectors are equal, twice angles with those vectors on the right are
 equal. -/
-theorem two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : (ℝ ∙ y) = ℝ ∙ z) :
+theorem two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : (ℝ • y) = ℝ • z) :
     (2 : ℤ) • o.oangle x y = (2 : ℤ) • o.oangle x z := by
   rw [Submodule.span_singleton_eq_span_singleton] at h
   rcases h with ⟨r, rfl⟩
@@ -398,8 +398,8 @@ theorem two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : (ℝ ∙ y) = �
 
 /-- If the spans of two pairs of vectors are equal, twice angles between those vectors are
 equal. -/
-theorem two_zsmul_oangle_of_span_eq_of_span_eq {w x y z : V} (hwx : (ℝ ∙ w) = ℝ ∙ x)
-    (hyz : (ℝ ∙ y) = ℝ ∙ z) : (2 : ℤ) • o.oangle w y = (2 : ℤ) • o.oangle x z := by
+theorem two_zsmul_oangle_of_span_eq_of_span_eq {w x y z : V} (hwx : (ℝ • w) = ℝ • x)
+    (hyz : (ℝ • y) = ℝ • z) : (2 : ℤ) • o.oangle w y = (2 : ℤ) • o.oangle x z := by
   rw [o.two_zsmul_oangle_left_of_span_eq y hwx, o.two_zsmul_oangle_right_of_span_eq x hyz]
 #align orientation.two_zsmul_oangle_of_span_eq_of_span_eq Orientation.two_zsmul_oangle_of_span_eq_of_span_eq
 
@@ -877,7 +877,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
     refine' ⟨![m 0 + m 1 * r, m 1], _⟩
-    change (m 0 + m 1 * r) • x + m 1 • y = 0 ∧ (m 0 + m 1 * r ≠ 0 ∨ m 1 ≠ 0)
+    dsimp
     rw [smul_add, smul_smul, ← add_assoc, ← add_smul] at h
     refine' ⟨h, not_and_or.1 fun h0 => _⟩
     obtain ⟨h0, h1⟩ := h0
@@ -885,9 +885,9 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     rw [MulZeroClass.zero_mul, add_zero] at h0
     simp [h0] at hm
   · rcases h with ⟨m, h, hm⟩
-    change m 0 • x + m 1 • y = 0 at h
+    dsimp at h
     refine' ⟨![m 0 - m 1 * r, m 1], _⟩
-    change (m 0 - m 1 * r) • x + m 1 • (r • x + y) = 0 ∧ (m 0 - m 1 * r ≠ 0 ∨ m 1 ≠ 0)
+    dsimp
     rw [sub_smul, smul_add, smul_smul, ← add_assoc, sub_add_cancel]
     refine' ⟨h, not_and_or.1 fun h0 => _⟩
     obtain ⟨h0, h1⟩ := h0

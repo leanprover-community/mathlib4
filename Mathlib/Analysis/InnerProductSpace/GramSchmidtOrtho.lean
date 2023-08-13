@@ -39,7 +39,7 @@ and outputs a set of orthogonal vectors which have the same span.
 
 open scoped BigOperators
 
-open Finset Submodule FiniteDimensional
+open Finset Submodule FiniteDimensional Span
 
 variable (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -52,19 +52,19 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
 noncomputable def gramSchmidt [IsWellOrder ι (· < ·)] (f : ι → E) (n : ι) : E :=
-  f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
+  f n - ∑ i : Iio n, orthogonalProjection (𝕜 • gramSchmidt f i) (f n)
 termination_by _ n => n
 decreasing_by exact mem_Iio.1 i.2
 #align gram_schmidt gramSchmidt
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`.-/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
-    gramSchmidt 𝕜 f n = f n - ∑ i in Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
+    gramSchmidt 𝕜 f n = f n - ∑ i in Iio n, orthogonalProjection (𝕜 • gramSchmidt 𝕜 f i) (f n) := by
   rw [← sum_attach, attach_eq_univ, gramSchmidt]
 #align gram_schmidt_def gramSchmidt_def
 
 theorem gramSchmidt_def' (f : ι → E) (n : ι) :
-    f n = gramSchmidt 𝕜 f n + ∑ i in Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
+    f n = gramSchmidt 𝕜 f n + ∑ i in Iio n, orthogonalProjection (𝕜 • gramSchmidt 𝕜 f i) (f n) := by
   rw [gramSchmidt_def, sub_add_cancel]
 #align gram_schmidt_def' gramSchmidt_def'
 
@@ -187,7 +187,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
     apply Finset.sum_eq_zero
     intro j hj
     rw [coe_eq_zero]
-    suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
+    suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 • f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
       rw [mem_orthogonal_singleton_iff_inner_left]
       rw [← mem_orthogonal_singleton_iff_inner_right]
@@ -362,7 +362,7 @@ theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
 theorem inner_gramSchmidtOrthonormalBasis_eq_zero {f : ι → E} {i : ι}
     (hi : gramSchmidtNormed 𝕜 f i = 0) (j : ι) : ⟪gramSchmidtOrthonormalBasis h f i, f j⟫ = 0 := by
   rw [← mem_orthogonal_singleton_iff_inner_right]
-  suffices span 𝕜 (gramSchmidtNormed 𝕜 f '' Set.Iic j) ⟂ 𝕜 ∙ gramSchmidtOrthonormalBasis h f i by
+  suffices span 𝕜 (gramSchmidtNormed 𝕜 f '' Set.Iic j) ⟂ 𝕜 • gramSchmidtOrthonormalBasis h f i by
     apply this
     rw [span_gramSchmidtNormed]
     exact mem_span_gramSchmidt 𝕜 f le_rfl

@@ -33,12 +33,13 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 
 -/
 
+open Span
 
 variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the annihilator of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
-  I.IsPrime ∧ ∃ x : M, I = (R ∙ x).annihilator
+  I.IsPrime ∧ ∃ x : M, I = (R • x).annihilator
 #align is_associated_prime IsAssociatedPrime
 
 variable (R)
@@ -82,25 +83,25 @@ theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedP
 variable (R)
 
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
-    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (R ∙ x).annihilator ≤ P := by
-  have : (R ∙ x).annihilator ≠ ⊤ := by
+    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (R • x).annihilator ≤ P := by
+  have : (R • x).annihilator ≠ ⊤ := by
     rwa [Ne.def, Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul]
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
-      { P | (R ∙ x).annihilator ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (R ∙ y).annihilator }
-      ⟨(R ∙ x).annihilator, rfl.le, this, x, rfl⟩
+      { P | (R • x).annihilator ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (R • y).annihilator }
+      ⟨(R • x).annihilator, rfl.le, this, x, rfl⟩
   refine' ⟨_, ⟨⟨h₁, _⟩, y, rfl⟩, l⟩
   intro a b hab
   rw [or_iff_not_imp_left]
   intro ha
   rw [Submodule.mem_annihilator_span_singleton] at ha hab
-  have H₁ : (R ∙ y).annihilator ≤ (R ∙ a • y).annihilator := by
+  have H₁ : (R • y).annihilator ≤ (R • a • y).annihilator := by
     intro c hc
     rw [Submodule.mem_annihilator_span_singleton] at hc ⊢
     rw [smul_comm, hc, smul_zero]
   have H₂ : (Submodule.span R {a • y}).annihilator ≠ ⊤ := by
     rwa [Ne.def, Submodule.annihilator_eq_top_iff, Submodule.span_singleton_eq_bot]
-  rwa [H₁.eq_of_not_lt (h₃ (R ∙ a • y).annihilator ⟨l.trans H₁, H₂, _, rfl⟩),
+  rwa [H₁.eq_of_not_lt (h₃ (R • a • y).annihilator ⟨l.trans H₁, H₂, _, rfl⟩),
     Submodule.mem_annihilator_span_singleton, smul_comm, smul_smul]
 #align exists_le_is_associated_prime_of_is_noetherian_ring exists_le_isAssociatedPrime_of_isNoetherianRing
 

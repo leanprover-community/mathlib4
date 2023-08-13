@@ -112,7 +112,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule
 
-open Classical
+open Classical Span
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
   rw [norm_smul (x := coord 𝕜 x h), IsROrC.norm_coe_norm, coord_norm,
@@ -122,14 +122,14 @@ theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
     element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
-  let p : Submodule 𝕜 E := 𝕜 ∙ x
+  let p : Submodule 𝕜 E := 𝕜 • x
   let f := (‖x‖ : 𝕜) • coord 𝕜 x h
   obtain ⟨g, hg⟩ := exists_extension_norm_eq p f
   refine' ⟨g, _, _⟩
   · rw [hg.2, coord_norm']
   · calc
-      g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [coe_mk]
-      _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [← hg.1]
+      g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 • x) := by rw [coe_mk]
+      _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 • x) := by rw [← hg.1]
       _ = ‖x‖ := by simp
 #align exists_dual_vector exists_dual_vector
 
