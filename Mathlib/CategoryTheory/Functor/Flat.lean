@@ -2,11 +2,6 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.functor.flat
-! leanprover-community/mathlib commit 39478763114722f0ec7613cb2f3f7701f9b86c8d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+
+#align_import category_theory.functor.flat from "leanprover-community/mathlib"@"39478763114722f0ec7613cb2f3f7701f9b86c8d"
 /-!
 # Representably flat functors
 
@@ -119,7 +116,6 @@ instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
     use StructuredArrow.mk (𝟙 _)
     use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
     use StructuredArrow.homMk Z.hom (by erw [Functor.id_map, Category.id_comp])
-    trivial
   · intro Y Z f g
     use StructuredArrow.mk (𝟙 _)
     use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
@@ -152,7 +148,6 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     use StructuredArrow.mk (W.hom ≫ G.map W'.hom)
     use StructuredArrow.homMk Y''.right (by simp [← G.map_comp])
     use StructuredArrow.homMk Z''.right (by simp [← G.map_comp])
-    trivial
   · intro Y Z f g
     let W :=
       @IsCofiltered.eq (StructuredArrow X G) _ _ (StructuredArrow.mk Y.hom)
@@ -290,7 +285,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
       -- is increased, so we replace it by the output of `tidy?`
-      intro j ; rfl
+      intro j; rfl
     _ = hc.lift (c.extend g₂.right) := by
       congr
     _ = g₂.right := by
@@ -298,7 +293,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
       -- is increased, so we replace it by the output of `tidy?`
-      intro _ ; rfl
+      intro _; rfl
 
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
@@ -427,7 +422,7 @@ theorem flat_iff_lan_flat (F : C ⥤ D) :
     haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-      intros ; skip; apply preservesLimitOfLanPreservesLimit
+      intros; skip; apply preservesLimitOfLanPreservesLimit
     apply flat_of_preservesFiniteLimits⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.flat_iff_Lan_flat CategoryTheory.flat_iff_lan_flat
@@ -440,7 +435,7 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
   toFun _ := inferInstance
   invFun _ := by
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-    intros ; apply preservesLimitOfLanPreservesLimit
+    intros; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
     -- porting note: `cases x` and an `unfold` not necessary in lean 4.
     -- Remark : in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`

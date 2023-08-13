@@ -2,16 +2,13 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.ring.boolean_ring
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
+
+#align_import algebra.ring.boolean_ring from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Boolean rings
@@ -44,7 +41,7 @@ boolean ring, boolean algebra
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
@@ -129,7 +126,7 @@ instance : BooleanRing PUnit :=
 section RingToAlgebra
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolAlg (α : Type _) :=
+def AsBoolAlg (α : Type*) :=
   α
 #align as_boolalg AsBoolAlg
 
@@ -300,7 +297,7 @@ theorem ofBoolAlg_inf (a b : AsBoolAlg α) : ofBoolAlg (a ⊓ b) = ofBoolAlg a *
 #align of_boolalg_inf ofBoolAlg_inf
 
 @[simp]
-theorem ofBoolAlg_compl (a : AsBoolAlg α) : ofBoolAlg (aᶜ) = 1 + ofBoolAlg a :=
+theorem ofBoolAlg_compl (a : AsBoolAlg α) : ofBoolAlg aᶜ = 1 + ofBoolAlg a :=
   rfl
 #align of_boolalg_compl ofBoolAlg_compl
 
@@ -309,7 +306,7 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
   rfl
 #align of_boolalg_sdiff ofBoolAlg_sdiff
 
-private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
+private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc
     (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
       by ring
@@ -318,7 +315,7 @@ private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a *
 @[simp]
 theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
   rw [symmDiff_eq_sup_sdiff_inf]
-  exact of_boolalg_symm_diff_aux _ _
+  exact of_boolalg_symmDiff_aux _ _
 #align of_boolalg_symm_diff ofBoolAlg_symmDiff
 
 @[simp]
@@ -385,7 +382,7 @@ end RingToAlgebra
 section AlgebraToRing
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolRing (α : Type _) :=
+def AsBoolRing (α : Type*) :=
   α
 #align as_boolring AsBoolRing
 
@@ -556,7 +553,7 @@ protected def BoundedLatticeHom.asBoolRing (f : BoundedLatticeHom α β) :
   toFun := toBoolRing ∘ f ∘ ofBoolRing
   map_zero' := f.map_bot'
   map_one' := f.map_top'
-  map_add' := map_symm_diff' f
+  map_add' := map_symmDiff' f
   map_mul' := f.map_inf'
 #align bounded_lattice_hom.as_boolring BoundedLatticeHom.asBoolRing
 
@@ -579,7 +576,7 @@ end AlgebraToRing
 /-- Order isomorphism between `α` considered as a Boolean ring considered as a Boolean algebra and
 `α`. -/
 @[simps!]
-def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
+def OrderIso.asBoolAlgAsBoolRing (α : Type*) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
   ⟨ofBoolAlg.trans ofBoolRing,
    ofBoolRing_le_ofBoolRing_iff.trans ofBoolAlg_mul_ofBoolAlg_eq_left_iff⟩
 #align order_iso.as_boolalg_as_boolring OrderIso.asBoolAlgAsBoolRing
@@ -587,7 +584,7 @@ def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (
 /-- Ring isomorphism between `α` considered as a Boolean algebra considered as a Boolean ring and
 `α`. -/
 @[simps!]
-def RingEquiv.asBoolRingAsBoolAlg (α : Type _) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
+def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
   { ofBoolRing.trans ofBoolAlg with
     map_mul' := fun _a _b => rfl
     map_add' := ofBoolAlg_symmDiff }

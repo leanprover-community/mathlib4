@@ -2,17 +2,14 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.FinBoolAlg
-! leanprover-community/mathlib commit 937b1c59c58710ef8ed91f8727ef402d49d621a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Category.BoolAlgCat
 import Mathlib.Order.Category.FinBddDistLatCat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.ApplyFun
+
+#align_import order.category.FinBoolAlg from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
 /-!
 # The category of finite boolean algebras
@@ -45,7 +42,7 @@ structure FinBoolAlgCat where
 
 namespace FinBoolAlgCat
 
-instance : CoeSort FinBoolAlgCat (Type _) :=
+instance : CoeSort FinBoolAlgCat (Type*) :=
   ⟨fun X => X.toBoolAlgCat⟩
 
 instance (X : FinBoolAlgCat) : BooleanAlgebra X :=
@@ -61,12 +58,12 @@ attribute [instance] FinBoolAlgCat.isFintype
 #noalign FinBoolAlg.coe_to_BoolAlg
 
 /-- Construct a bundled `FinBoolAlgCat` from `BooleanAlgebra` + `Fintype`. -/
-def of (α : Type _) [BooleanAlgebra α] [Fintype α] : FinBoolAlgCat :=
+def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlgCat :=
   ⟨{α := α}⟩
 #align FinBoolAlg.of FinBoolAlgCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
   rfl
 #align FinBoolAlg.coe_of FinBoolAlgCat.coe_of
 

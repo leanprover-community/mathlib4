@@ -47,6 +47,10 @@ ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_UNF = 10 # unfreeze_local_instances
 ERR_IBY = 11 # isolated by
+ERR_DOT = 12 # isolated or low focusing dot
+ERR_SEM = 13 # the substring " ;"
+ERR_WIN = 14 # Windows line endings "\r\n"
+ERR_TWS = 15 # Trailing whitespace
 
 exceptions = []
 
@@ -145,6 +149,16 @@ def set_option_check(lines, path):
                 errors += [(ERR_OPT, line_nr, path)]
     return errors
 
+def line_endings_check(lines, path):
+    errors = []
+    for line_nr, line in enumerate(lines, 1):
+        if "\r\n" in line:
+            errors += [(ERR_WIN, line_nr, path)]
+        line = line.rstrip("\r\n")
+        if line.endswith(" "):
+            errors += [(ERR_TWS, line_nr, path)]
+    return errors
+
 def long_lines_check(lines, path):
     errors = []
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
@@ -162,6 +176,8 @@ def import_only_check(lines, path):
     for line_nr, line in skip_comments(enumerate(lines, 1)):
         imports = line.split()
         if imports[0] == "--":
+            continue
+        if imports[0] == "#align_import":
             continue
         if imports[0] != "import":
             import_only_file = False
@@ -210,13 +226,13 @@ def regular_check(lines, path):
         if copy_done and line == "\n":
             continue
         words = line.split()
-        if words[0] != "import" and words[0] != "/-!":
+        if words[0] != "import" and words[0] != "/-!" and words[0] != "#align_import":
             errors += [(ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
             break
         # final case: words[0] == "import"
-        if len(words) > 2:
+        if words[0] == "import" and len(words) > 2:
             if words[2] != "--":
                 errors += [(ERR_IMP, line_nr, path)]
     return errors
@@ -231,7 +247,7 @@ def banned_import_check(lines, path):
             errors += [(ERR_TAC, line_nr, path)]
     return errors
 
-def isolated_by_check(lines, path):
+def isolated_by_dot_semicolon_check(lines, path):
     errors = []
     for line_nr, line in enumerate(lines, 1):
         if line.strip() == "by":
@@ -241,6 +257,10 @@ def isolated_by_check(lines, path):
             prev_line = lines[line_nr - 2].rstrip()
             if not prev_line.endswith(",") and not re.search(", fun [^,]* =>$", prev_line):
                 errors += [(ERR_IBY, line_nr, path)]
+        if line.lstrip().startswith(". ") or line.strip() in (".", "·"):
+            errors += [(ERR_DOT, line_nr, path)]
+        if " ;" in line:
+            errors += [(ERR_SEM, line_nr, path)]
     return errors
 
 def output_message(path, line_nr, code, msg):
@@ -283,13 +303,25 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
+        if errno == ERR_DOT:
+            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
+        if errno == ERR_SEM:
+            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
+        if errno == ERR_WIN:
+            output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
+        if errno == ERR_TWS:
+            output_message(path, line_nr, "ERR_TWS", "Trailing whitespece detected on line")
 
 def lint(path):
-    with path.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8", newline="") as f:
         lines = f.readlines()
+        errs = line_endings_check(lines, path)
+        format_errors(errs)
+        lines = [line.rstrip() + "\n" for line in lines]
+
         errs = long_lines_check(lines, path)
         format_errors(errs)
-        errs = isolated_by_check(lines, path)
+        errs = isolated_by_dot_semicolon_check(lines, path)
         format_errors(errs)
         (b, errs) = import_only_check(lines, path)
         if b:

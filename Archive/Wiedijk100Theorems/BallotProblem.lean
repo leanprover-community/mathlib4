@@ -2,13 +2,10 @@
 Copyright (c) 2022 Bhavik Mehta, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kexing Ying
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.ballot_problem
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.CondCount
+
+#align_import wiedijk_100_theorems.ballot_problem from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Ballot problem
@@ -261,9 +258,9 @@ theorem headI_mem_of_nonempty {α : Type _} [Inhabited α] : ∀ {l : List α} (
 #align ballot.head_mem_of_nonempty Ballot.headI_mem_of_nonempty
 
 theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
-    condCount (countedSequence p q) ({l | l.headI = 1}ᶜ) = q / (p + q) := by
+    condCount (countedSequence p q) {l | l.headI = 1}ᶜ = q / (p + q) := by
   have := condCount_compl
-    ({l : List ℤ | l.headI = 1}ᶜ) (countedSequence_finite p q) (countedSequence_nonempty p q)
+    {l : List ℤ | l.headI = 1}ᶜ (countedSequence_finite p q) (countedSequence_nonempty p q)
   rw [compl_compl, first_vote_pos _ _ h] at this
   rw [(_ : (q / (p + q) : ENNReal) = 1 - p / (p + q)), ← this, ENNReal.add_sub_cancel_right]
   · simp only [Ne.def, ENNReal.div_eq_top, Nat.cast_eq_zero, add_eq_zero_iff, ENNReal.nat_ne_top,

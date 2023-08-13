@@ -2,15 +2,12 @@
 Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.hermite.basic
-! leanprover-community/mathlib commit 938d3db9c278f8a52c0f964a405806f0f2b09b74
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
+#align_import ring_theory.polynomial.hermite.basic from "leanprover-community/mathlib"@"938d3db9c278f8a52c0f964a405806f0f2b09b74"
 
 /-!
 # Hermite polynomials
@@ -59,7 +56,7 @@ theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (h
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - derivative p)^[n]) 1 := by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]

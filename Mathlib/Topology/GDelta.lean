@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.G_delta
-! leanprover-community/mathlib commit b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.Separation
 import Mathlib.Order.Filter.CountableInter
+
+#align_import topology.G_delta from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
 /-!
 # `Gδ` sets
@@ -40,7 +37,7 @@ noncomputable section
 
 open Topology TopologicalSpace Filter Encodable Set
 
-variable {α β γ ι : Type _}
+variable {α β γ ι : Type*}
 
 set_option linter.uppercaseLean3 false
 
@@ -73,13 +70,13 @@ theorem isGδ_biInter_of_open {I : Set ι} (hI : I.Countable) {f : ι → Set α
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
 #align is_Gδ_bInter_of_open isGδ_biInter_of_open
 
--- porting note: TODO: generalize to `Sort _` + `Countable _`
+-- porting note: TODO: generalize to `Sort*` + `Countable _`
 theorem isGδ_iInter_of_open [Encodable ι] {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
 #align is_Gδ_Inter_of_open isGδ_iInter_of_open
 
--- porting note: TODO: generalize to `Sort _` + `Countable _`
+-- porting note: TODO: generalize to `Sort*` + `Countable _`
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
 theorem isGδ_iInter [Encodable ι] {s : ι → Set α} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
@@ -141,16 +138,16 @@ theorem isGδ_compl_singleton (a : α) : IsGδ ({a}ᶜ : Set α) :=
   isOpen_compl_singleton.isGδ
 #align is_Gδ_compl_singleton isGδ_compl_singleton
 
-theorem Set.Countable.isGδ_compl {s : Set α} (hs : s.Countable) : IsGδ (sᶜ) := by
+theorem Set.Countable.isGδ_compl {s : Set α} (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
   exact isGδ_biInter hs fun x _ => isGδ_compl_singleton x
 #align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
 
-theorem Set.Finite.isGδ_compl {s : Set α} (hs : s.Finite) : IsGδ (sᶜ) :=
+theorem Set.Finite.isGδ_compl {s : Set α} (hs : s.Finite) : IsGδ sᶜ :=
   hs.countable.isGδ_compl
 #align set.finite.is_Gδ_compl Set.Finite.isGδ_compl
 
-theorem Set.Subsingleton.isGδ_compl {s : Set α} (hs : s.Subsingleton) : IsGδ (sᶜ) :=
+theorem Set.Subsingleton.isGδ_compl {s : Set α} (hs : s.Subsingleton) : IsGδ sᶜ :=
   hs.finite.isGδ_compl
 #align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
 
@@ -197,7 +194,7 @@ section residual
 variable [TopologicalSpace α]
 
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
-def residual (α : Type _) [TopologicalSpace α] : Filter α :=
+def residual (α : Type*) [TopologicalSpace α] : Filter α :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
 #align residual residual
 

@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.basic
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.NhdsSet
+
+#align_import topology.uniform_space.basic from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Uniform spaces
@@ -126,10 +123,10 @@ universe ua ub uc ud
 -/
 
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort _}
+variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
 
 /-- The identity relation, or the graph of the identity function -/
-def idRel {α : Type _} :=
+def idRel {α : Type*} :=
   { p : α × α | p.1 = p.2 }
 #align id_rel idRel
 
@@ -149,7 +146,7 @@ def compRel (r₁ r₂ : Set (α × α)) :=
 #align comp_rel compRel
 
 @[inherit_doc]
-scoped[Uniformity] infixl:55 " ○ " => compRel
+scoped[Uniformity] infixl:62 " ○ " => compRel
 open Uniformity
 
 @[simp]
@@ -199,7 +196,7 @@ theorem subset_comp_self {s : Set (α × α)} (h : idRel ⊆ s) : s ⊆ s ○ s 
 #align subset_comp_self subset_comp_self
 
 theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ) :
-    t ⊆ ((· ○ ·) s^[n]) t := by
+    t ⊆ (s ○ ·)^[n] t := by
   induction' n with n ihn generalizing t
   exacts [Subset.rfl, (right_subset_compRel h).trans ihn]
 #align subset_iterate_comp_rel subset_iterate_compRel
@@ -377,12 +374,12 @@ theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace
 /-- Replace topology in a `UniformSpace` instance with a propositionally (but possibly not
 definitionally) equal one. -/
 @[reducible]
-def UniformSpace.replaceTopology {α : Type _} [i : TopologicalSpace α] (u : UniformSpace α)
+def UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : UniformSpace α :=
   UniformSpace.ofCoreEq u.toCore i <| h.trans u.toCore_toTopologicalSpace.symm
 #align uniform_space.replace_topology UniformSpace.replaceTopology
 
-theorem UniformSpace.replaceTopology_eq {α : Type _} [i : TopologicalSpace α] (u : UniformSpace α)
+theorem UniformSpace.replaceTopology_eq {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : u.replaceTopology h = u :=
   u.ofCoreEq_toCore _ _
 #align uniform_space.replace_topology_eq UniformSpace.replaceTopology_eq
@@ -463,8 +460,8 @@ theorem comp_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃
 /-- If `s ∈ 𝓤 α`, then for any natural `n`, for a subset `t` of a sufficiently small set in `𝓤 α`,
 we have `t ○ t ○ ... ○ t ⊆ s` (`n` compositions). -/
 theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 α) (n : ℕ) :
-    ∀ᶠ t in (𝓤 α).smallSets, ((· ○ ·) t^[n]) t ⊆ s := by
-  suffices : ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ ((· ○ ·) t^[n]) t ⊆ s
+    ∀ᶠ t in (𝓤 α).smallSets, (t ○ ·)^[n] t ⊆ s := by
+  suffices : ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ (t ○ ·)^[n] t ⊆ s
   exact (eventually_and.1 this).2
   induction' n with n ihn generalizing s; · simpa
   rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
@@ -922,7 +919,7 @@ theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
 #align nhds_le_uniformity nhds_le_uniformity
 
 /-- Entourages are neighborhoods of the diagonal. -/
-theorem iSup_nhds_le_uniformity : (⨆ x : α, 𝓝 (x, x)) ≤ 𝓤 α :=
+theorem iSup_nhds_le_uniformity : ⨆ x : α, 𝓝 (x, x) ≤ 𝓤 α :=
   iSup_le nhds_le_uniformity
 #align supr_nhds_le_uniformity iSup_nhds_le_uniformity
 
@@ -1019,7 +1016,7 @@ theorem isOpen_iff_open_ball_subset {s : Set α} :
 
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
-    (⋃ x ∈ s, ball x U) = univ := by
+    ⋃ x ∈ s, ball x U = univ := by
   refine' iUnion₂_eq_univ_iff.2 fun y => _
   rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
@@ -1173,7 +1170,7 @@ instance : InfSet (UniformSpace α) :=
 
 protected theorem UniformSpace.sInf_le {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : t ∈ tt) : sInf tt ≤ t :=
-  show (⨅ u ∈ tt, 𝓤[u]) ≤ 𝓤[t] from iInf₂_le t h
+  show ⨅ u ∈ tt, 𝓤[u] ≤ 𝓤[t] from iInf₂_le t h
 
 protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
@@ -1228,7 +1225,7 @@ instance : CompleteLattice (UniformSpace α) :=
     le_sInf := fun _ _ hs => UniformSpace.le_sInf hs
     sInf_le := fun _ _ ha => UniformSpace.sInf_le ha }
 
-theorem iInf_uniformity {ι : Sort _} {u : ι → UniformSpace α} : 𝓤[iInf u] = ⨅ i, 𝓤[u i] :=
+theorem iInf_uniformity {ι : Sort*} {u : ι → UniformSpace α} : 𝓤[iInf u] = ⨅ i, 𝓤[u i] :=
   iInf_range
 #align infi_uniformity iInf_uniformity
 
@@ -1269,7 +1266,7 @@ theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
 #align uniformity_comap uniformity_comap
 
 @[simp]
-theorem uniformSpace_comap_id {α : Type _} : UniformSpace.comap (id : α → α) = id := by
+theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2
   rw [uniformity_comap, Prod.map_id, comap_id]
 #align uniform_space_comap_id uniformSpace_comap_id
@@ -1349,7 +1346,7 @@ theorem toTopologicalSpace_top : @UniformSpace.toTopologicalSpace α ⊤ = ⊤ :
       this.symm ▸ @isOpen_univ _ ⊤
 #align to_topological_space_top toTopologicalSpace_top
 
-theorem toTopologicalSpace_iInf {ι : Sort _} {u : ι → UniformSpace α} :
+theorem toTopologicalSpace_iInf {ι : Sort*} {u : ι → UniformSpace α} :
     (iInf u).toTopologicalSpace = ⨅ i, (u i).toTopologicalSpace :=
   eq_of_nhds_eq_nhds fun a => by simp only [@nhds_eq_comap_uniformity _ (iInf u), nhds_iInf,
     iInf_uniformity, @nhds_eq_comap_uniformity _ (u _), comap_iInf]
@@ -1400,12 +1397,10 @@ theorem uniformContinuous_sInf_dom {f : α → β} {u₁ : Set (UniformSpace α)
   exact tendsto_iInf' ⟨u, h₁⟩ hf
 #align uniform_continuous_Inf_dom uniformContinuous_sInf_dom
 
--- porting note: todo: replace with an `iff`
-theorem uniformContinuous_sInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : Set (UniformSpace β)}
-    (h : ∀ u ∈ u₂, UniformContinuous[u₁, u] f) : UniformContinuous[u₁, sInf u₂] f := by
+theorem uniformContinuous_sInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : Set (UniformSpace β)} :
+    UniformContinuous[u₁, sInf u₂] f ↔ ∀ u ∈ u₂, UniformContinuous[u₁, u] f := by
   delta UniformContinuous
-  rw [sInf_eq_iInf', iInf_uniformity]
-  exact tendsto_iInf.mpr fun ⟨u, hu⟩ => h u hu
+  rw [sInf_eq_iInf', iInf_uniformity, tendsto_iInf, SetCoe.forall]
 #align uniform_continuous_Inf_rng uniformContinuous_sInf_rng
 
 theorem uniformContinuous_iInf_dom {f : α → β} {u₁ : ι → UniformSpace α} {u₂ : UniformSpace β}
@@ -1415,10 +1410,10 @@ theorem uniformContinuous_iInf_dom {f : α → β} {u₁ : ι → UniformSpace �
   exact tendsto_iInf' i hf
 #align uniform_continuous_infi_dom uniformContinuous_iInf_dom
 
-theorem uniformContinuous_iInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : ι → UniformSpace β}
-    (h : ∀ i, UniformContinuous[u₁, u₂ i] f) : UniformContinuous[u₁, iInf u₂] f := by
+theorem uniformContinuous_iInf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ : ι → UniformSpace β} :
+    UniformContinuous[u₁, iInf u₂] f ↔ ∀ i, UniformContinuous[u₁, u₂ i] f := by
   delta UniformContinuous
-  rwa [iInf_uniformity, tendsto_iInf]
+  rw [iInf_uniformity, tendsto_iInf]
 #align uniform_continuous_infi_rng uniformContinuous_iInf_rng
 
 end UniformContinuousInfi
@@ -1468,7 +1463,7 @@ theorem uniformity_multiplicative : 𝓤 (Multiplicative α) = (𝓤 α).map (Pr
 
 end
 
-instance {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
+instance instUniformSpaceSubtype {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
   UniformSpace.comap Subtype.val t
 
 theorem uniformity_subtype {p : α → Prop} [UniformSpace α] :
@@ -1556,7 +1551,7 @@ section Prod
 
 /- a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
-instance [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
+instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
 
 -- check the above produces no diamond
@@ -1694,7 +1689,7 @@ section
 
 open UniformSpace Function
 
-variable {δ' : Type _} [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
+variable {δ' : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
   [UniformSpace δ']
 local notation f " ∘₂ " g => Function.bicompr f g
 

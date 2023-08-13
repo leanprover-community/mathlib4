@@ -2,15 +2,12 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.quasi_separated
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Separation
 import Mathlib.Topology.NoetherianSpace
+
+#align_import topology.quasi_separated from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Quasi-separated spaces
@@ -35,7 +32,7 @@ of compact open subsets are still compact.
 
 open TopologicalSpace
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
 /-- A subset `s` of a topological space is quasi-separated if the intersections of any pairs of
 compact open subsets of `s` are still compact.
@@ -49,19 +46,19 @@ def IsQuasiSeparated (s : Set α) : Prop :=
 subsets are still compact. -/
 -- Porting note: mk_iff currently generates `QuasiSeparatedSpace_iff`. Undesirable capitalization?
 @[mk_iff]
-class QuasiSeparatedSpace (α : Type _) [TopologicalSpace α] : Prop where
+class QuasiSeparatedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- The intersection of two open compact subsets of a quasi-separated space is compact.-/
   inter_isCompact :
     ∀ U V : Set α, IsOpen U → IsCompact U → IsOpen V → IsCompact V → IsCompact (U ∩ V)
 #align quasi_separated_space QuasiSeparatedSpace
 
-theorem isQuasiSeparated_univ_iff {α : Type _} [TopologicalSpace α] :
+theorem isQuasiSeparated_univ_iff {α : Type*} [TopologicalSpace α] :
     IsQuasiSeparated (Set.univ : Set α) ↔ QuasiSeparatedSpace α := by
   rw [QuasiSeparatedSpace_iff]
   simp [IsQuasiSeparated]
 #align is_quasi_separated_univ_iff isQuasiSeparated_univ_iff
 
-theorem isQuasiSeparated_univ {α : Type _} [TopologicalSpace α] [QuasiSeparatedSpace α] :
+theorem isQuasiSeparated_univ {α : Type*} [TopologicalSpace α] [QuasiSeparatedSpace α] :
     IsQuasiSeparated (Set.univ : Set α) :=
   isQuasiSeparated_univ_iff.mpr inferInstance
 #align is_quasi_separated_univ isQuasiSeparated_univ

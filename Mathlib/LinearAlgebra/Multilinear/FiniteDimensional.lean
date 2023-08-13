@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module linear_algebra.multilinear.finite_dimensional
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+#align_import linear_algebra.multilinear.finite_dimensional from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-! # Multilinear maps over finite dimensional spaces
 
@@ -26,7 +23,7 @@ there.
 
 namespace MultilinearMap
 
-variable {ι R M₂ : Type _} {M₁ : ι → Type _}
+variable {ι R M₂ : Type*} {M₁ : ι → Type*}
 
 variable [Finite ι]
 
@@ -35,7 +32,7 @@ variable [CommRing R] [AddCommGroup M₂] [Module R M₂]
 variable [Module.Finite R M₂] [Module.Free R M₂]
 
 -- Porting note: split out from `free_and_finite` because of inscrutable typeclass errors
-private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type _) [∀ i, AddCommGroup (N i)]
+private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddCommGroup (N i)]
     [∀ i, Module R (N i)] [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)] :
     Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂) := by
   induction' n with n ih

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.nondegenerate
-! leanprover-community/mathlib commit 2a32c70c78096758af93e997b978a5d461007b4f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+
+#align_import linear_algebra.matrix.nondegenerate from "leanprover-community/mathlib"@"2a32c70c78096758af93e997b978a5d461007b4f"
 
 /-!
 # Matrices associated with non-degenerate bilinear forms
@@ -25,7 +22,7 @@ import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 namespace Matrix
 
-variable {m R A : Type _} [Fintype m] [CommRing R]
+variable {m R A : Type*} [Fintype m] [CommRing R]
 
 /-- A matrix `M` is nondegenerate if for all `v ≠ 0`, there is a `w ≠ 0` with `w ⬝ M ⬝ v ≠ 0`. -/
 def Nondegenerate (M : Matrix m m R) :=

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module data.sum.basic
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
+
+#align_import data.sum.basic from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
 /-!
 # Disjoint union of types
@@ -32,7 +29,7 @@ This file proves basic results about the sum type `α ⊕ β`.
 
 ## Notes
 
-The definition of `Sum` takes values in `Type _`. This effectively forbids `Prop`- valued sum types.
+The definition of `Sum` takes values in `Type*`. This effectively forbids `Prop`- valued sum types.
 To this effect, we have `PSum`, which takes value in `Sort*` and carries a more complicated
 universe signature in consequence. The `Prop` version is `or`.
 -/
@@ -40,7 +37,7 @@ universe signature in consequence. The `Prop` version is `or`.
 
 universe u v w x
 
-variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type _}
+variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
 namespace Sum
 
@@ -494,7 +491,7 @@ theorem lex_inr_inl : ¬Lex r s (inr b) (inl a) :=
   fun.
 #align sum.lex_inr_inl Sum.lex_inr_inl
 
-instance [DecidableRel r] [DecidableRel s] : DecidableRel (Lex r s)
+instance instDecidableRelSumLex [DecidableRel r] [DecidableRel s] : DecidableRel (Lex r s)
   | inl _, inl _ => decidable_of_iff' _ lex_inl_inl
   | inl _, inr _ => Decidable.isTrue (Lex.sep _ _)
   | inr _, inl _ => Decidable.isFalse lex_inr_inl

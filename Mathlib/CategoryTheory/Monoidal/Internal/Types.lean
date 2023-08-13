@@ -2,18 +2,15 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.internal.types
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 
+#align_import category_theory.monoidal.internal.types from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
+
 /-!
-# `Mon_ (Type u) ≌ Mon.{u}`
+# `Mon_ (Type u) ≌ MonCat.{u}`
 
 The category of internal monoid objects in `Type`
 is equivalent to the category of "native" bundled monoids.
@@ -93,7 +90,7 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_equivalence_Mon monTypeEquivalenceMon
 
-/-- The equivalence `Mon_ (Type u) ≌ Mon.{u}`
+/-- The equivalence `Mon_ (Type u) ≌ MonCat.{u}`
 is naturally compatible with the forgetful functors to `Type u`.
 -/
 noncomputable def monTypeEquivalenceMonForget :
@@ -166,8 +163,8 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_equivalence_CommMon commMonTypeEquivalenceCommMon
 
-/-- The equivalences `Mon_ (Type u) ≌ Mon.{u}` and `CommMon_ (Type u) ≌ CommMon.{u}`
-are naturally compatible with the forgetful functors to `Mon` and `Mon_ (Type u)`.
+/-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `CommMon_ (Type u) ≌ CommMonCat.{u}`
+are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.
 -/
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅

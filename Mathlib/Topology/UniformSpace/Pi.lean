@@ -2,14 +2,11 @@
 Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.pi
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Separation
+
+#align_import topology.uniform_space.pi from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Indexed product of uniform spaces
@@ -26,7 +23,7 @@ open Filter UniformSpace
 
 universe u
 
-variable {ι : Type _} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
+variable {ι : Type*} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
 
 
 instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
@@ -35,13 +32,14 @@ instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
     Eq.symm toTopologicalSpace_iInf
 #align Pi.uniform_space Pi.uniformSpace
 
-theorem Pi.uniformity : 𝓤 (∀ i, α i) = ⨅ i : ι, (Filter.comap fun a => (a.1 i, a.2 i)) <| 𝓤 (α i) :=
+theorem Pi.uniformity :
+    𝓤 (∀ i, α i) = ⨅ i : ι, (Filter.comap fun a => (a.1 i, a.2 i)) (𝓤 (α i)) :=
   iInf_uniformity
 #align Pi.uniformity Pi.uniformity
 
 variable {α}
 
-theorem uniformContinuous_pi {β : Type _} [UniformSpace β] {f : β → ∀ i, α i} :
+theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
   -- porting note: required `Function.comp` to close
   simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp]

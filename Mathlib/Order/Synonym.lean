@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.synonym
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Nontrivial
 import Mathlib.Order.Basic
+
+#align_import order.synonym from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Type synonyms
@@ -39,7 +36,7 @@ This file is similar to `Algebra.Group.TypeTags`.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-! ### Order dual -/
 
@@ -127,7 +124,7 @@ theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < 
 
 /-- Recursor for `αᵒᵈ`. -/
 @[elab_as_elim]
-protected def rec {C : αᵒᵈ → Sort _} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
+protected def rec {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
   h₂
 #align order_dual.rec OrderDual.rec
 
@@ -157,7 +154,7 @@ end OrderDual
 
 
 /-- A type synonym to equip a type with its lexicographic order. -/
-def Lex (α : Type _) :=
+def Lex (α : Type*) :=
   α
 #align lex Lex
 
@@ -206,5 +203,5 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
 #align of_lex_inj ofLex_inj
 
 /-- A recursor for `Lex`. Use as `induction x using Lex.rec`. -/
-protected def Lex.rec {β : Lex α → Sort _} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
+protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
 #align lex.rec Lex.rec

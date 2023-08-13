@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.Semilat
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Hom.Lattice
+
+#align_import order.category.Semilat from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The categories of semilattices
@@ -44,18 +41,18 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
-instance : CoeSort SemilatSupCat (Type _) :=
+instance : CoeSort SemilatSupCat (Type*) :=
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
 
 /-- Construct a bundled `SemilatSupCat` from a `SemilatticeSup`. -/
-def of (α : Type _) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
+def of (α : Type*) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
   ⟨α⟩
 #align SemilatSup.of SemilatSupCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
   rfl
 #align SemilatSup.coe_of SemilatSupCat.coe_of
 
@@ -99,18 +96,18 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
-instance : CoeSort SemilatInfCat (Type _) :=
+instance : CoeSort SemilatInfCat (Type*) :=
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop
 
 /-- Construct a bundled `SemilatInfCat` from a `SemilatticeInf`. -/
-def of (α : Type _) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
+def of (α : Type*) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
   ⟨α⟩
 #align SemilatInf.of SemilatInfCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
   rfl
 #align SemilatInf.coe_of SemilatInfCat.coe_of
 
@@ -163,7 +160,7 @@ def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align SemilatSup.iso.mk SemilatSupCat.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : SemilatSupCat ⥤ SemilatInfCat where
   obj X := SemilatInfCat.of Xᵒᵈ

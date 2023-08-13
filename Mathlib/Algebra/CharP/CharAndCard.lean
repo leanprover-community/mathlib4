@@ -2,14 +2,11 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module algebra.char_p.char_and_card
-! leanprover-community/mathlib commit 2fae5fd7f90711febdadf19c44dc60fae8834d1b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Type
+
+#align_import algebra.char_p.char_and_card from "leanprover-community/mathlib"@"2fae5fd7f90711febdadf19c44dc60fae8834d1b"
 
 /-!
 # Characteristic and cardinality
@@ -23,7 +20,7 @@ characteristic, cardinality, ring
 
 /-- A prime `p` is a unit in a commutative ring `R` of nonzero characteristic iff it does not divide
 the characteristic. -/
-theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type _) [CommRing R] (p : ℕ) [Fact p.Prime]
+theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime]
     (hR : ringChar R ≠ 0) : IsUnit (p : R) ↔ ¬p ∣ ringChar R := by
   have hch := CharP.cast_eq_zero R (ringChar R)
   have hp : p.Prime := Fact.out
@@ -51,14 +48,14 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type _) [CommRing R] (p
 
 /-- A prime `p` is a unit in a finite commutative ring `R`
 iff it does not divide the characteristic. -/
-theorem isUnit_iff_not_dvd_char (R : Type _) [CommRing R] (p : ℕ) [Fact p.Prime] [Finite R] :
+theorem isUnit_iff_not_dvd_char (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [Finite R] :
     IsUnit (p : R) ↔ ¬p ∣ ringChar R :=
   isUnit_iff_not_dvd_char_of_ringChar_ne_zero R p <| CharP.char_ne_zero_of_finite R (ringChar R)
 #align is_unit_iff_not_dvd_char isUnit_iff_not_dvd_char
 
 /-- The prime divisors of the characteristic of a finite commutative ring are exactly
 the prime divisors of its cardinality. -/
-theorem prime_dvd_char_iff_dvd_card {R : Type _} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime] :
+theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime] :
     p ∣ ringChar R ↔ p ∣ Fintype.card R := by
   refine'
     ⟨fun h =>
@@ -79,7 +76,7 @@ theorem prime_dvd_char_iff_dvd_card {R : Type _} [CommRing R] [Fintype R] (p : �
 
 /-- A prime that does not divide the cardinality of a finite commutative ring `R`
 is a unit in `R`. -/
-theorem not_isUnit_prime_of_dvd_card {R : Type _} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime]
+theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime]
     (hp : p ∣ Fintype.card R) : ¬IsUnit (p : R) :=
   mt (isUnit_iff_not_dvd_char R p).mp
     (Classical.not_not.mpr ((prime_dvd_char_iff_dvd_card p).mpr hp))

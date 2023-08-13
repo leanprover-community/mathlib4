@@ -55,15 +55,15 @@ situations according to whether the goal compares constant-left-multiplications,
 constant-right-multiplications, or fully varying multiplications:
 ```
 theorem mul_le_mul_of_nonneg_left [Mul α] [Zero α] [Preorder α] [PosMulMono α]
-    {a b c : α}  (h : b ≤ c) (a0 : 0 ≤ a) :
+    {a b c : α} (h : b ≤ c) (a0 : 0 ≤ a) :
     a * b ≤ a * c
 
 theorem mul_le_mul_of_nonneg_right [Mul α] [Zero α] [Preorder α] [MulPosMono α]
-    {a b c : α}  (h : b ≤ c) (a0 : 0 ≤ a) :
+    {a b c : α} (h : b ≤ c) (a0 : 0 ≤ a) :
     b * a ≤ c * a
 
 theorem mul_le_mul [MulZeroClass α] [Preorder α] [PosMulMono α] [MulPosMono α]
-    {a b c d : α}  (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) :
+    {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) :
     a * c ≤ b * d
 ```
 The advantage of this approach is that the lemmas with fewer "varying" input pairs typically require
@@ -253,9 +253,9 @@ partial def _root_.Lean.MVarId.gcongr
       throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
     unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
       throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
-    -- and also build a array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in the
-    -- template (these will be used in recursive calls later), and an array of booleans according to
-    -- which of these contain `?_`
+    -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
+    -- the template (these will be used in recursive calls later), and an array of booleans
+    -- according to which of these contain `?_`
     tplArgs.mapM fun tpl => do
       let mctx ← getMCtx
       let hasMVar := tpl.findMVar? fun mvarId =>

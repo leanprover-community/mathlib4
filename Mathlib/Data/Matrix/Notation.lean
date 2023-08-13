@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.notation
-! leanprover-community/mathlib commit a99f85220eaf38f14f94e04699943e185a5e1d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.matrix.notation from "leanprover-community/mathlib"@"a99f85220eaf38f14f94e04699943e185a5e1d1a"
 
 /-!
 # Matrix and vector notation
@@ -224,7 +221,7 @@ end Transpose
 
 section Mul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_mul [Fintype n'] (A : Matrix (Fin 0) n' α) (B : Matrix n' o' α) : A ⬝ B = of ![] :=
@@ -260,7 +257,7 @@ end Mul
 
 section VecMul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_vecMul (v : Fin 0 → α) (B : Matrix (Fin 0) o' α) : vecMul v B = 0 :=
@@ -295,7 +292,7 @@ end VecMul
 
 section MulVec
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_mulVec [Fintype n'] (A : Matrix (Fin 0) n' α) (v : n' → α) : mulVec A v = ![] :=
@@ -325,7 +322,7 @@ end MulVec
 
 section VecMulVec
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
 theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![] :=
@@ -355,10 +352,10 @@ end VecMulVec
 
 section Smul
 
-variable [Semiring α]
+variable [NonUnitalNonAssocSemiring α]
 
 -- @[simp] -- Porting note: simp can prove this
-theorem smul_mat_empty {m' : Type _} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
+theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 #align matrix.smul_mat_empty Matrix.smul_mat_empty
 
@@ -476,11 +473,11 @@ theorem vec3_add [Add α] (a₀ a₁ a₂ b₀ b₁ b₂ : α) :
   rw [cons_add_cons, cons_add_cons, cons_add_cons, empty_add_empty]
 #align matrix.vec3_add Matrix.vec3_add
 
-theorem smul_vec2 {R : Type _} [SMul R α] (x : R) (a₀ a₁ : α) :
+theorem smul_vec2 {R : Type*} [SMul R α] (x : R) (a₀ a₁ : α) :
     x • ![a₀, a₁] = ![x • a₀, x • a₁] := by rw [smul_cons, smul_cons, smul_empty]
 #align matrix.smul_vec2 Matrix.smul_vec2
 
-theorem smul_vec3 {R : Type _} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
+theorem smul_vec3 {R : Type*} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
     x • ![a₀, a₁, a₂] = ![x • a₀, x • a₁, x • a₂] := by
   rw [smul_cons, smul_cons, smul_cons, smul_empty]
 #align matrix.smul_vec3 Matrix.smul_vec3

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.partition
-! leanprover-community/mathlib commit 2303b3e299f1c75b07bceaaac130ce23044d1386
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+
+#align_import combinatorics.simple_graph.partition from "leanprover-community/mathlib"@"2303b3e299f1c75b07bceaaac130ce23044d1386"
 
 /-!
 # Graph partitions
