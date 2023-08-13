@@ -1128,6 +1128,7 @@ noncomputable def rightHomologyFunctorOpNatIso :
     (rightHomologyFunctor C).op ≅ opFunctor C ⋙ leftHomologyFunctor Cᵒᵖ :=
   NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm)
     (by simp [rightHomologyMap_op])
+
 /-- The opposite of the left homology functor is the right homology functor. -/
 @[simps!]
 noncomputable def leftHomologyFunctorOpNatIso :
