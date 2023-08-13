@@ -388,10 +388,10 @@ theorem exists_linear_independent_cons_of_lt_finrank {n : ℕ} {v : Fin n → V}
 
 /-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
 vector linearly independent of the first one. -/
-theorem exists_linear_independent_pair_of_of_one_lt_finrank
+theorem exists_linear_independent_pair_of_one_lt_finrank
     (h : 1 < finrank K V) {x : V} (hx : x ≠ 0) :
     ∃ y, LinearIndependent K ![x, y] :=
-  exists_linear_independent_pair_of_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
+  exists_linear_independent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
 
 end DivisionRing
 

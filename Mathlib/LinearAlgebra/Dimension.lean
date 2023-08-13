@@ -1133,7 +1133,7 @@ theorem exists_linear_independent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
 
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
 independent of the first one. -/
-theorem exists_linear_independent_pair_of_of_one_lt_rank
+theorem exists_linear_independent_pair_of_one_lt_rank
     (h : 1 < Module.rank K V) {x : V} (hx : x ≠ 0) :
     ∃ y, LinearIndependent K ![x, y] := by
   obtain ⟨y, hy⟩ := exists_linear_independent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
