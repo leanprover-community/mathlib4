@@ -50,7 +50,7 @@ and bundle it into `WittVector.frobenius`.
 
 namespace WittVector
 
-variable {p : ℕ} {R S : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -196,11 +196,11 @@ theorem map_frobeniusPoly (n : ℕ) :
   ring
 #align witt_vector.map_frobenius_poly WittVector.map_frobeniusPoly
 
-theorem frobeniusPoly_zMod (n : ℕ) :
+theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_pow, RingHom.map_mul, map_X, map_C]
   simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, MulZeroClass.zero_mul, C_0]
-#align witt_vector.frobenius_poly_zmod WittVector.frobeniusPoly_zMod
+#align witt_vector.frobenius_poly_zmod WittVector.frobeniusPoly_zmod
 
 @[simp]
 theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
@@ -305,7 +305,7 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
     _ = x.coeff n ^ p := ?_
   · conv_rhs => rw [aeval_eq_eval₂Hom, eval₂Hom_map_hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
-  · rw [frobeniusPoly_zMod]
+  · rw [frobeniusPoly_zmod]
   · rw [map_pow, aeval_X]
 #align witt_vector.coeff_frobenius_char_p WittVector.coeff_frobenius_charP
 

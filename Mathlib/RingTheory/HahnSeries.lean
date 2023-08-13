@@ -61,12 +61,12 @@ noncomputable section
 /-- If `Γ` is linearly ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
-structure HahnSeries (Γ : Type _) (R : Type _) [PartialOrder Γ] [Zero R] where
+structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
   coeff : Γ → R
   isPwo_support' : (Function.support coeff).IsPwo
 #align hahn_series HahnSeries
 
-variable {Γ : Type _} {R : Type _}
+variable {Γ : Type*} {R : Type*}
 
 namespace HahnSeries
 
@@ -260,7 +260,7 @@ end Order
 
 section Domain
 
-variable {Γ' : Type _} [PartialOrder Γ']
+variable {Γ' : Type*} [PartialOrder Γ']
 
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
 def embDomain (f : Γ ↪o Γ') : HahnSeries Γ R → HahnSeries Γ' R := fun x =>
@@ -410,7 +410,7 @@ def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
 
 section Domain
 
-variable {Γ' : Type _} [PartialOrder Γ']
+variable {Γ' : Type*} [PartialOrder Γ']
 
 theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
     embDomain f (x + y) = embDomain f x + embDomain f y := by
@@ -488,7 +488,7 @@ end Addition
 
 section DistribMulAction
 
-variable [PartialOrder Γ] {V : Type _} [Monoid R] [AddMonoid V] [DistribMulAction R V]
+variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
 instance : SMul R (HahnSeries Γ V) :=
   ⟨fun r x =>
@@ -515,7 +515,7 @@ instance : DistribMulAction R (HahnSeries Γ V) where
     ext
     simp [mul_smul]
 
-variable {S : Type _} [Monoid S] [DistribMulAction S V]
+variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
 instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
   ⟨fun r s a => by
@@ -531,7 +531,7 @@ end DistribMulAction
 
 section Module
 
-variable [PartialOrder Γ] [Semiring R] {V : Type _} [AddCommMonoid V] [Module R V]
+variable [PartialOrder Γ] [Semiring R] {V : Type*} [AddCommMonoid V] [Module R V]
 
 instance : Module R (HahnSeries Γ V) :=
   { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
@@ -559,7 +559,7 @@ def coeff.linearMap (g : Γ) : HahnSeries Γ R →ₗ[R] R :=
 
 section Domain
 
-variable {Γ' : Type _} [PartialOrder Γ']
+variable {Γ' : Type*} [PartialOrder Γ']
 
 theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
     embDomain f (r • x) = r • embDomain f x := by
@@ -1003,7 +1003,7 @@ end Semiring
 
 section Domain
 
-variable {Γ' : Type _} [OrderedCancelAddCommMonoid Γ']
+variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ']
 
 theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
     (hf : ∀ x y, f (x + y) = f x + f y) (x y : HahnSeries Γ R) :
@@ -1066,7 +1066,7 @@ end Domain
 
 section Algebra
 
-variable [CommSemiring R] {A : Type _} [Semiring A] [Algebra R A]
+variable [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
 instance : Algebra R (HahnSeries Γ A) where
   toRingHom := C.comp (algebraMap R A)
@@ -1101,7 +1101,7 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
 
 section Domain
 
-variable {Γ' : Type _} [OrderedCancelAddCommMonoid Γ']
+variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ']
 
 /-- Extending the domain of Hahn series is an algebra homomorphism. -/
 @[simps!]
@@ -1234,7 +1234,7 @@ even though we assume `Fintype σ` as this is more natural for alignment with `M
 After importing `Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
  -/
 @[simps]
-def toMvPowerSeries {σ : Type _} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
+def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
   toFun f := f.coeff
   invFun f := ⟨(f : (σ →₀ ℕ) → R), Finsupp.isPwo _⟩
   left_inv f := by
@@ -1260,7 +1260,7 @@ def toMvPowerSeries {σ : Type _} [Fintype σ] : HahnSeries (σ →₀ ℕ) R �
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 #align hahn_series.to_mv_power_series HahnSeries.toMvPowerSeries
 
-variable {σ : Type _} [Fintype σ]
+variable {σ : Type*} [Fintype σ]
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
@@ -1276,7 +1276,7 @@ end Semiring
 
 section Algebra
 
-variable (R) [CommSemiring R] {A : Type _} [Semiring A] [Algebra R A]
+variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
 /-- The `R`-algebra `HahnSeries ℕ A` is isomorphic to `PowerSeries A`. -/
 @[simps!]
@@ -1303,13 +1303,13 @@ def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=
     (AlgEquiv.toAlgHom (toPowerSeriesAlg R).symm)
 #align hahn_series.of_power_series_alg HahnSeries.ofPowerSeriesAlg
 
-instance powerSeriesAlgebra {S : Type _} [CommSemiring S] [Algebra S (PowerSeries R)] :
+instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
     Algebra S (HahnSeries Γ R) :=
   RingHom.toAlgebra <| (ofPowerSeries Γ R).comp (algebraMap S (PowerSeries R))
 #align hahn_series.power_series_algebra HahnSeries.powerSeriesAlgebra
 
 variable {R}
-variable {S : Type _} [CommSemiring S] [Algebra S (PowerSeries R)]
+variable {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)]
 
 theorem algebraMap_apply' (x : S) :
     algebraMap S (HahnSeries Γ R) x = ofPowerSeries Γ R (algebraMap S (PowerSeries R) x) :=
@@ -1398,7 +1398,7 @@ variable (Γ) (R) [PartialOrder Γ] [AddCommMonoid R]
 /-- An infinite family of Hahn series which has a formal coefficient-wise sum.
   The requirements for this are that the union of the supports of the series is well-founded,
   and that only finitely many series are nonzero at any given coefficient. -/
-structure SummableFamily (α : Type _) where
+structure SummableFamily (α : Type*) where
   toFun : α → HahnSeries Γ R
   isPwo_iUnion_support' : Set.IsPwo (⋃ a : α, (toFun a).support)
   finite_co_support' : ∀ g : Γ, { a | (toFun a).coeff g ≠ 0 }.Finite
@@ -1410,10 +1410,11 @@ namespace SummableFamily
 
 section AddCommMonoid
 
-variable [PartialOrder Γ] [AddCommMonoid R] {α : Type _}
+variable [PartialOrder Γ] [AddCommMonoid R] {α : Type*}
 
-instance : CoeFun (SummableFamily Γ R α) fun _ => α → HahnSeries Γ R :=
-  ⟨toFun⟩
+instance : FunLike (SummableFamily Γ R α) α fun _ => HahnSeries Γ R where
+  coe := toFun
+  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 theorem isPwo_iUnion_support (s : SummableFamily Γ R α) : Set.IsPwo (⋃ a : α, (s a).support) :=
   s.isPwo_iUnion_support'
@@ -1424,13 +1425,13 @@ theorem finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
   s.finite_co_support' g
 #align hahn_series.summable_family.finite_co_support HahnSeries.SummableFamily.finite_co_support
 
-theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → HahnSeries Γ R) (⇑)
-  | ⟨f1, hU1, hf1⟩, ⟨f2, _, _⟩, h => by congr
+theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → HahnSeries Γ R) (⇑) :=
+  FunLike.coe_injective
 #align hahn_series.summable_family.coe_injective HahnSeries.SummableFamily.coe_injective
 
 @[ext]
 theorem ext {s t : SummableFamily Γ R α} (h : ∀ a : α, s a = t a) : s = t :=
-  coe_injective <| funext h
+  FunLike.ext s t h
 #align hahn_series.summable_family.ext HahnSeries.SummableFamily.ext
 
 instance : Add (SummableFamily Γ R α) :=
@@ -1526,7 +1527,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [PartialOrder Γ] [AddCommGroup R] {α : Type _} {s t : SummableFamily Γ R α} {a : α}
+variable [PartialOrder Γ] [AddCommGroup R] {α : Type*} {s t : SummableFamily Γ R α} {a : α}
 
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
@@ -1564,7 +1565,7 @@ end AddCommGroup
 
 section Semiring
 
-variable [OrderedCancelAddCommMonoid Γ] [Semiring R] {α : Type _}
+variable [OrderedCancelAddCommMonoid Γ] [Semiring R] {α : Type*}
 
 instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α)
     where smul x s :=
@@ -1643,7 +1644,7 @@ def lsum : SummableFamily Γ R α →ₗ[HahnSeries Γ R] HahnSeries Γ R where
 #align hahn_series.summable_family.lsum HahnSeries.SummableFamily.lsum
 
 @[simp]
-theorem hsum_sub {R : Type _} [Ring R] {s t : SummableFamily Γ R α} :
+theorem hsum_sub {R : Type*} [Ring R] {s t : SummableFamily Γ R α} :
     (s - t).hsum = s.hsum - t.hsum := by
   rw [← lsum_apply, LinearMap.map_sub, lsum_apply, lsum_apply]
 #align hahn_series.summable_family.hsum_sub HahnSeries.SummableFamily.hsum_sub
@@ -1652,7 +1653,7 @@ end Semiring
 
 section OfFinsupp
 
-variable [PartialOrder Γ] [AddCommMonoid R] {α : Type _}
+variable [PartialOrder Γ] [AddCommMonoid R] {α : Type*}
 
 /-- A family with only finitely many nonzero elements is summable. -/
 def ofFinsupp (f : α →₀ HahnSeries Γ R) : SummableFamily Γ R α where
@@ -1693,7 +1694,7 @@ end OfFinsupp
 
 section EmbDomain
 
-variable [PartialOrder Γ] [AddCommMonoid R] {α β : Type _}
+variable [PartialOrder Γ] [AddCommMonoid R] {α β : Type*}
 
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where

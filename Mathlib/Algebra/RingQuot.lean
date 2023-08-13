@@ -155,7 +155,8 @@ namespace RingQuot
 
 variable (r : R → R → Prop)
 
-private irreducible_def natCast (n : ℕ) : RingQuot r :=
+-- can't be irreducible, causes diamonds in ℕ-algebras
+private def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
 private irreducible_def zero : RingQuot r :=
@@ -196,8 +197,12 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
             exact this)
         a⟩
 
-private irreducible_def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
+-- note: this cannot be irreducible, as otherwise diamonds don't commute.
+private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
+
+instance : NatCast (RingQuot r) :=
+  ⟨natCast r⟩
 
 instance : Zero (RingQuot r) :=
   ⟨zero r⟩
@@ -265,15 +270,17 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
   show smul r _ _ = _
-  rw [smul_def]
+  rw [smul]
   rfl
 #align ring_quot.smul_quot RingQuot.smul_quot
 
-instance [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R] [IsScalarTower S T R] :
+instance instIsScalarTowerRingQuot [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
+    [IsScalarTower S T R] :
     IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
+instance instSMulCommClassRingQuot [CommSemiring T] [Algebra S R] [Algebra T R]
+    [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
@@ -327,8 +334,8 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
 
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast := natCast r
-  natCast_zero := by simp [Nat.cast, natCast_def, ← zero_quot]
-  natCast_succ := by simp [Nat.cast, natCast_def, ← one_quot, add_quot]
+  natCast_zero := by simp [Nat.cast, natCast, ← zero_quot]
+  natCast_succ := by simp [Nat.cast, natCast, ← one_quot, add_quot]
   left_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, add_quot, left_distrib]
@@ -345,6 +352,10 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
                add_comm, add_quot]
   __ := instAddCommMonoid r
   __ := instMonoidWithZero r
+
+-- can't be irreducible, causes diamonds in ℤ-algebras
+private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
+  ⟨Quot.mk _ z⟩
 
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
@@ -365,7 +376,13 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp [smul_quot, add_quot, add_mul, add_comm]
     zsmul_neg' := by
       rintro n ⟨⟨⟩⟩
-      simp [smul_quot, neg_quot, add_mul] }
+      simp [smul_quot, neg_quot, add_mul]
+    intCast := intCast r
+    intCast_ofNat := fun n => congrArg RingQuot.mk <| by
+      exact congrArg (Quot.mk _) (Int.cast_ofNat _)
+    intCast_negSucc := fun n => congrArg RingQuot.mk <| by
+      simp_rw [neg_def]
+      exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
   CommSemiring (RingQuot r) :=
@@ -377,10 +394,10 @@ instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) 
 instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
-instance (r : R → R → Prop) : Inhabited (RingQuot r) :=
+instance instInhabitedRingQuot (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
-instance [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
+instance instAlgebraRingQuot [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
   toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
   map_one' := by simp [← one_quot]

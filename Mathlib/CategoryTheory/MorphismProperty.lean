@@ -35,7 +35,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] {D : Type _} [Category D]
+variable (C : Type u) [Category.{v} C] {D : Type*} [Category D]
 
 /-- A `MorphismProperty C` is a class of morphisms between objects in `C`. -/
 def MorphismProperty :=
@@ -100,6 +100,22 @@ theorem RespectsIso.op {P : MorphismProperty C} (h : RespectsIso P) : RespectsIs
 theorem RespectsIso.unop {P : MorphismProperty Cᵒᵖ} (h : RespectsIso P) : RespectsIso P.unop :=
   ⟨fun e f hf => h.2 e.op f.op hf, fun e f hf => h.1 e.op f.op hf⟩
 #align category_theory.morphism_property.respects_iso.unop CategoryTheory.MorphismProperty.RespectsIso.unop
+
+/-- The closure by isomorphisms of a `MorphismProperty` -/
+def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
+  fun _ _ f => ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)
+
+lemma subset_isoClosure (P : MorphismProperty C) : P ⊆ P.isoClosure :=
+  fun _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
+
+lemma isoClosure_respectsIso (P : MorphismProperty C) :
+    RespectsIso P.isoClosure :=
+  ⟨fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ =>
+    ⟨_, _, f', hf', ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ e.symm)
+      (asIso iso.hom.right) (by simp)⟩⟩,
+  fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ =>
+    ⟨_, _, f', hf', ⟨Arrow.isoMk (asIso iso.hom.left)
+      (asIso iso.hom.right ≪≫ e) (by simp)⟩⟩⟩
 
 /-- A morphism property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
@@ -296,7 +312,7 @@ def IsInvertedBy (P : MorphismProperty C) (F : C ⥤ D) : Prop :=
 
 namespace IsInvertedBy
 
-theorem of_comp {C₁ C₂ C₃ : Type _} [Category C₁] [Category C₂] [Category C₃]
+theorem of_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (hF : W.IsInvertedBy F) (G : C₂ ⥤ C₃) :
     W.IsInvertedBy (F ⋙ G) := fun X Y f hf => by
   haveI := hF f hf
@@ -476,7 +492,7 @@ variable {C}
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
-def FunctorsInverting (W : MorphismProperty C) (D : Type _) [Category D] :=
+def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
 #align category_theory.morphism_property.functors_inverting CategoryTheory.MorphismProperty.FunctorsInverting
 
@@ -488,7 +504,7 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   subst h
   rfl
 
-instance (W : MorphismProperty C) (D : Type _) [Category D] : Category (FunctorsInverting W D) :=
+instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
   FullSubcategory.category _
 
 -- Porting note: add another `@[ext]` lemma
@@ -500,7 +516,7 @@ lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsIn
   NatTrans.ext _ _ h
 
 /-- A constructor for `W.FunctorsInverting D` -/
-def FunctorsInverting.mk {W : MorphismProperty C} {D : Type _} [Category D] (F : C ⥤ D)
+def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category D] (F : C ⥤ D)
     (hF : W.IsInvertedBy F) : W.FunctorsInverting D :=
   ⟨F, hF⟩
 #align category_theory.morphism_property.functors_inverting.mk CategoryTheory.MorphismProperty.FunctorsInverting.mk
