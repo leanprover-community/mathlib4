@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Order.CompleteLattice
+import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.GaloisConnection
 
 #align_import data.rel from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
@@ -113,6 +114,24 @@ theorem comp_left_id (r : Rel α β) : @Eq α • r = r := by
   ext x
   simp
 #align rel.comp_left_id Rel.comp_left_id
+
+@[simp]
+theorem comp_right_bot (r : Rel α β) : r • (⊥ : Rel β γ) = ⊥ := by
+  ext x y
+  simp[comp, Bot.bot]
+
+@[simp]
+theorem comp_left_bot (r : Rel α β) : (⊥ : Rel γ α) • r = ⊥ := by
+  ext x y
+  simp[comp, Bot.bot]
+
+theorem comp_right_top (r : Rel α β) : r • (⊤ : Rel β γ) = λ x _ ↦ x ∈ r.dom := by
+  ext x z
+  simp[comp, Top.top, dom]
+
+theorem comp_left_top (r : Rel α β) : (⊤ : Rel γ α) • r = λ _ y ↦ y ∈ r.codom := by
+  ext x z
+  simp[comp, Top.top, codom]
 
 theorem inv_id : inv (@Eq α) = @Eq α := by
   ext x y
@@ -244,6 +263,32 @@ theorem image_eq_dom_of_codomain_subset {s : Set β} (h : r.codom ⊆ s) : r.pre
 theorem preimage_eq_codom_of_domain_subset {s : Set α} (h : r.dom ⊆ s) : r.image s = r.codom :=
   by apply r.inv.image_eq_dom_of_codomain_subset (by rwa[← codom_inv] at h)
 
+theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := by
+  apply Set.eq_of_subset_of_subset
+  · apply r.image_mono (by simp)
+  · intro x h
+    rw[mem_image] at *
+    rcases h with ⟨y, hy, ryx⟩
+    use y
+    suffices h : y ∈ r.dom by simp_all only [Set.mem_inter_iff, and_self]
+    rw [dom, Set.mem_setOf_eq]
+    use x
+
+theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.preimage s := by
+  rw[←dom_inv, preimage, preimage, image_inter_dom_eq]
+
+theorem inter_dom_subset_preimage_image (s : Set α) : s ∩ r.dom ⊆ r.preimage (r.image s) := by
+  intro x hx
+  simp only [Set.mem_inter_iff, dom] at hx
+  rcases hx with ⟨hx, ⟨y, rxy⟩⟩
+  use y
+  simp only [image, Set.mem_setOf_eq]
+  exact ⟨⟨x, hx, rxy⟩, rxy⟩
+
+theorem image_preimage_subset_inter_codom (s : Set β) : s ∩ r.codom ⊆ r.image (r.preimage s) := by
+  rw[← dom_inv, ← preimage_inv]
+  apply inter_dom_subset_preimage_image
+
 /-- Core of a set `s : Set β` w.r.t `r : Rel α β` is the set of `x : α` that are related *only*
 to elements of `s`. Other generalization of `Function.preimage`. -/
 def core (s : Set β) := { x | ∀ y, r x y → y ∈ s }
@@ -302,7 +347,41 @@ namespace Function
 def graph (f : α → β) : Rel α β := fun x y => f x = y
 #align function.graph Function.graph
 
+theorem graph_id : graph id = @Eq α := by simp[graph]
+
+theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
+  ext x y
+  simp[graph, Rel.comp]
+
 end Function
+
+theorem Equiv.graph_inv (f : α ≃ β) : f.invFun.graph = Rel.inv (f.toFun.graph) := by
+  ext x y
+  simp[Function.graph, Rel.inv, Equiv.apply_eq_iff_eq_symm_apply (f := f.symm), flip]
+  exact eq_comm
+
+theorem Relation.is_graph_iff (r : Rel α β): (∃! f, Function.graph f = r) ↔ ∀ x, ∃! y, r x y := by
+  unfold Function.graph
+  constructor
+  · rintro ⟨f, hf⟩ x
+    use f x
+    rw[←hf.left]
+    simp only [forall_eq', and_self]
+  · intro h
+    rcases Classical.axiomOfChoice (λ x ↦ (h x).exists) with ⟨f,hf⟩
+    use f
+    constructor
+    · ext x _
+      constructor
+      · intro hx1
+        have hx2 := hf x
+        rwa[hx1] at hx2
+      · exact (h x).unique (hf x)
+    · intro _ hg
+      conv at hf =>
+        ext
+        rw[← hg]
+      exact funext hf
 
 namespace Set
 
