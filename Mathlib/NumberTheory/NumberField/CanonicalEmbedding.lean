@@ -28,10 +28,11 @@ the vector `(φ x)` indexed by `φ : K →+* ℂ`.
 image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
 radius is finite.
 
-* `NumberField.mixedEmbedding`: the ring homomorphism `K →+* ℝ^r₁ × ℂ^r₂` that sends `x ∈ K` to
-`(φ_₁(x),...,φ_r₁(x)) × (ψ_₁(x),..., ψ_r₂(x)) ` where `(r₁, r₂)` is the signature of `K`,
-`φ_₁,...,φ_r₁` are its real embeddings and `ψ_₁,..., ψ_r₂` are its complex embeddings (up to
-complex conjugation).
+* `mixedEmbedding`: the ring homomorphism from `K →+* ({ w // IsReal w } → ℝ) ×
+({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w` where `φ_w` is the embedding
+associated to the infinite place `w`. In particular, if `w` is real then `φ_w : K →+* ℝ` and, if
+`w` is complex, `φ_w` is an arbitrary choice between the two complex emebeddings defining the place
+`w`.
 
 * `exists_ne_zero_mem_ringOfIntegers_lt`: let `f : InfinitePlace K → ℝ≥0`, if the product
 `∏ w, f w` is large enough, proves that there exists a nonzero algebraic integer `a` such
