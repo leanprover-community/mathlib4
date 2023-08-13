@@ -38,7 +38,6 @@ import re
 import shutil
 
 ERR_COP = 0 # copyright header
-ERR_IMP = 1 # import statements
 ERR_MOD = 2 # module docstring
 ERR_LIN = 3 # line length
 ERR_OPT = 6 # set_option
@@ -62,8 +61,6 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         path = ROOT_DIR / filename
         if errno == "ERR_COP":
             exceptions += [(ERR_COP, path)]
-        if errno == "ERR_IMP":
-            exceptions += [(ERR_IMP, path)]
         if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path)]
         if errno == "ERR_LIN":
@@ -156,7 +153,6 @@ def long_lines_check(lines, path):
 
 def import_only_check(lines, path):
     import_only_file = True
-    errors = []
     for line_nr, line in skip_comments(enumerate(lines, 1)):
         imports = line.split()
         if imports[0] == "--":
@@ -166,12 +162,7 @@ def import_only_check(lines, path):
         if imports[0] != "import":
             import_only_file = False
             break
-        if len(imports) > 2:
-            if imports[2] == "--":
-                continue
-            else:
-                errors += [(ERR_IMP, line_nr, path)]
-    return (import_only_file, errors, lines)
+    return import_only_file
 
 def regular_check(lines, path):
     errors = []
@@ -215,10 +206,6 @@ def regular_check(lines, path):
             break
         if words[0] == "/-!":
             break
-        # final case: words[0] == "import"
-        if words[0] == "import" and len(words) > 2:
-            if words[2] != "--":
-                errors += [(ERR_IMP, line_nr, path)]
     return errors
 
 def banned_import_check(lines, path):
@@ -272,8 +259,6 @@ def format_errors(errors):
         new_exceptions = True
         if errno == ERR_COP:
             output_message(path, line_nr, "ERR_COP", "Malformed or missing copyright header")
-        if errno == ERR_IMP:
-            output_message(path, line_nr, "ERR_IMP", "More than one file imported per line")
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_LIN:
@@ -306,13 +291,11 @@ def lint(path, fix=False):
         format_errors(errs)
         errs,newlines = isolated_by_dot_semicolon_check(newlines, path)
         format_errors(errs)
-        (b, errs, newlines) = import_only_check(newlines, path)
-        if b:
-            format_errors(errs)
+        errs,newlines = set_option_check(newlines, path)
+        format_errors(errs)
+        if import_only_check(newlines, path):
             return # checks below this line are not executed on files that only import other files.
         errs,newlines = regular_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = set_option_check(newlines, path)
         format_errors(errs)
         errs,newlines = banned_import_check(newlines, path)
         format_errors(errs)
