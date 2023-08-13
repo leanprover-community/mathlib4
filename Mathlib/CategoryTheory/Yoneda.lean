@@ -415,6 +415,28 @@ theorem yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda
   simp
 #align category_theory.yoneda_equiv_naturality CategoryTheory.yonedaEquiv_naturality
 
+lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
+    (g : X ⟶ Y) : F.map g (yonedaEquiv f) = yonedaEquiv (yoneda.map g.unop ≫ f) :=
+  yonedaEquiv_naturality _ _
+
+lemma yonedaEquiv_comp {X : C} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda.obj X ⟶ F) (β : F ⟶ G)  :
+    yonedaEquiv (α ≫ β) = β.app _ (yonedaEquiv α) :=
+  rfl
+
+lemma yonedaEquiv_comp' {X : Cᵒᵖ} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda.obj (unop X) ⟶ F) (β : F ⟶ G)  :
+    yonedaEquiv (α ≫ β) = β.app X (yonedaEquiv α) :=
+  rfl
+
+@[simp]
+lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : yonedaEquiv (yoneda.map f) = f := by
+  rw [yonedaEquiv_apply]
+  simp
+
+lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ Type v₁} (t : F.obj X) :
+    yonedaEquiv.symm (F.map f t) = yoneda.map f.unop ≫ yonedaEquiv.symm t := by
+  obtain ⟨u, rfl⟩ := yonedaEquiv.surjective t
+  rw [yonedaEquiv_naturality', Equiv.symm_apply_apply, Equiv.symm_apply_apply]
+
 /-- When `C` is a small category, we can restate the isomorphism from `yoneda_sections`
 without having to change universes.
 -/
