@@ -28,7 +28,7 @@ open Nat
 
 namespace List
 
-variable {α : Type u} {β γ δ ε : Type _}
+variable {α : Type u} {β γ δ ε : Type*}
 
 @[simp]
 theorem zipWith_cons_cons (f : α → β → γ) (a : α) (b : β) (l₁ : List α) (l₂ : List β) :
@@ -69,6 +69,8 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
   | a :: l₁, b :: l₂ => by
     simp only [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]
 #align list.zip_swap List.zip_swap
+
+#align list.length_zip_with List.length_zipWith
 
 @[simp]
 theorem length_zip :
@@ -158,7 +160,7 @@ theorem zip_map' (f : α → β) (g : α → γ) :
   | a :: l => by simp only [map, zip_cons_cons, zip_map']
 #align list.zip_map' List.zip_map'
 
-theorem map_zipWith {δ : Type _} (f : α → β) (g : γ → δ → α) (l : List γ) (l' : List δ) :
+theorem map_zipWith {δ : Type*} (f : α → β) (g : γ → δ → α) (l : List γ) (l' : List δ) :
     map f (zipWith g l l') = zipWith (fun x y => f (g x y)) l l' := by
   induction' l with hd tl hl generalizing l'
   · simp
@@ -452,7 +454,7 @@ theorem map_uncurry_zip_eq_zipWith (f : α → β → γ) (l : List α) (l' : Li
 #align list.map_uncurry_zip_eq_zip_with List.map_uncurry_zip_eq_zipWith
 
 @[simp]
-theorem sum_zipWith_distrib_left {γ : Type _} [Semiring γ] (f : α → β → γ) (n : γ) (l : List α)
+theorem sum_zipWith_distrib_left {γ : Type*} [Semiring γ] (f : α → β → γ) (n : γ) (l : List α)
     (l' : List β) : (l.zipWith (fun x y => n * f x y) l').sum = n * (l.zipWith f l').sum := by
   induction' l with hd tl hl generalizing f n l'
   · simp

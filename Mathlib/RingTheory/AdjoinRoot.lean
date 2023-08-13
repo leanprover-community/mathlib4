@@ -22,8 +22,8 @@ This file defines the commutative ring `AdjoinRoot f`, the ring R[X]/(f) obtaine
 commutative ring `R` and a polynomial `f : R[X]`. If furthermore `R` is a field and `f` is
 irreducible, the field structure on `AdjoinRoot f` is constructed.
 
-We suggest stating results on `is_adjoin_root` instead of `AdjoinRoot` to achieve higher
-generality, since `is_adjoin_root` works for all different constructions of `R[α]`
+We suggest stating results on `IsAdjoinRoot` instead of `AdjoinRoot` to achieve higher
+generality, since `IsAdjoinRoot` works for all different constructions of `R[α]`
 including `AdjoinRoot f = R[X]/(f)` itself.
 
 ## Main definitions and results
@@ -105,11 +105,11 @@ def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 #align adjoin_root.of AdjoinRoot.of
 
-instance [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
-  Submodule.Quotient.hasSmul' _
+instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+  Submodule.Quotient.instSMul' _
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
-  Submodule.Quotient.distribSmul' _
+  Submodule.Quotient.distribSMul' _
 
 @[simp]
 theorem smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
@@ -121,12 +121,12 @@ theorem smul_of [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R) :
     a • of f x = of f (a • x) := by rw [of, RingHom.comp_apply, RingHom.comp_apply, smul_mk, smul_C]
 #align adjoin_root.smul_of AdjoinRoot.smul_of
 
-instance (R₁ R₂ : Type _) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (R₁ R₂ : Type*) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [IsScalarTower R₁ R₂ R] (f : R[X]) :
     IsScalarTower R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.isScalarTower _ _
 
-instance (R₁ R₂ : Type _) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (R₁ R₂ : Type*) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [SMulCommClass R₁ R₂ R] (f : R[X]) :
     SMulCommClass R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.smulCommClass _ _
@@ -352,7 +352,7 @@ theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 #align adjoin_root.root_is_inv AdjoinRoot.root_isInv
 
-theorem algHom_subsingleton {S : Type _} [CommRing S] [Algebra R S] {r : R} :
+theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
@@ -613,7 +613,7 @@ open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is a GCD domain and `x` is integral, this is an isomorphism,
-see `adjoin_root.minpoly.equiv_adjoin`. -/
+see `minpoly.equivAdjoin`. -/
 @[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftHom _ ⟨x, self_mem_adjoin_singleton R x⟩
@@ -662,9 +662,7 @@ guaranteed to be identical to `g`. -/
 @[simps (config := { fullyApplied := false })]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
-  {
-    AdjoinRoot.liftHom g pb.gen
-      h₂ with
+  { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
     -- porting note: another term-mode proof converted to tactic-mode.
@@ -693,7 +691,7 @@ end Equiv'
 
 section Field
 
-variable (K) (L F : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+variable (K) (L F : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
 
 variable (pb : PowerBasis F K)
 

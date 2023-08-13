@@ -3,14 +3,10 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
-import Mathlib.Tactic.TryThis
 import Mathlib.Util.Pickle
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Cache
-import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Data.ListM.Heartbeats
-import Mathlib.Control.Basic
+import Mathlib.Data.MLList.Heartbeats
 
 /-!
 # Library search
@@ -23,8 +19,8 @@ solving the current goal
 (subgoals are solved using `solveByElim`).
 
 ```
-example : x < x + 1 := library_search%
-example : Nat := by library_search
+example : x < x + 1 := exact?%
+example : Nat := by exact?
 ```
 -/
 
@@ -149,12 +145,12 @@ Returns a lazy list of the results of applying a library lemma,
 then calling `solveByElim` on the resulting goals.
 -/
 def librarySearchCore (goal : MVarId)
-    (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
-  .squash do
+    (required : List Expr) (solveByElimDepth := 6) : MLList MetaM (MetavarContext × List MVarId) :=
+  .squash fun _ => do
     let ty ← goal.getType
     let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
-    return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
+    return (MLList.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
 /--
@@ -162,8 +158,8 @@ Run `librarySearchCore` on both the goal and `symm` applied to the goal.
 -/
 def librarySearchSymm (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) :
-    ListM MetaM (MetavarContext × List MVarId) :=
-  .append (librarySearchCore goal required solveByElimDepth) <| .squash do
+    MLList MetaM (MetavarContext × List MVarId) :=
+  .append (librarySearchCore goal required solveByElimDepth) <| fun _ => .squash fun _ => do
     if let some symm ← try? goal.symm then
       return librarySearchCore symm required solveByElimDepth
     else
@@ -249,6 +245,8 @@ syntax (name := exact?') "exact?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
 syntax (name := exact?!) "exact?!" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
+syntax (name := exact!?) "exact!?" (config)? (simpArgs)?
+  (" using " (colGt term),+)? : tactic
 
 syntax (name := apply?') "apply?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
@@ -302,41 +300,3 @@ elab tk:"exact?%" : term <= expectedType => do
     else
       addTermSuggestion tk (← instantiateMVars goal).headBeta
       instantiateMVars goal
-
-/-- `observe hp : p` asserts the proposition `p`, and tries to prove it using `library_search`.
-If no proof is found, the tactic fails.
-In other words, this tactic is equivalent to `have hp : p := by library_search`.
-
-If `hp` is omitted, then the placeholder `this` is used.
-
-The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
-This may be particularly useful to speed up proofs. -/
-syntax (name := observe) "observe" "?"? (ppSpace ident)? " : " term
-  (" using " (colGt term),+)? : tactic
-
-open Elab.Tactic Elab Tactic in
-elab_rules : tactic |
-  `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
-  let name : Name := match n? with
-    | none   => `this
-    | some n => n.getId
-  withMainContext do
-    let (type, _) ← elabTermWithHoles t none (← getMainTag) true
-    let .mvar goal ← mkFreshExprMVar type | failure
-    if let some _ ← librarySearch goal [] then
-      reportOutOfHeartbeats `library_search tk
-      throwError "observe did not find a solution"
-    else
-      let v := (← instantiateMVars (mkMVar goal)).headBeta
-      if trace.isSome then
-        -- TODO: we should be allowed to pass an identifier to `addHaveSuggestion`.
-        addHaveSuggestion tk type v
-      let (_, newGoal) ← (← getMainGoal).note name v
-      replaceMainGoal [newGoal]
-
-@[inherit_doc observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
-  `(tactic| observe ? $[$h]? : $t)
-
-@[inherit_doc observe]
-macro "observe?" h:(ppSpace ident)? " : " t:term " using " terms:(colGt term),+ : tactic =>
-  `(tactic| observe ? $[$h]? : $t using $[$terms],*)

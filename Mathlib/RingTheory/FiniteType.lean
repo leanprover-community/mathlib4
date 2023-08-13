@@ -29,7 +29,7 @@ open BigOperators Polynomial
 
 section ModuleAndAlgebra
 
-variable (R) (A : Type u) (B M N : Type _)
+variable (R) (A : Type u) (B M N : Type*)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
@@ -50,7 +50,7 @@ variable {R M N}
 section Algebra
 
 -- see Note [lower instance priority]
-instance (priority := 100) finiteType {R : Type _} (A : Type _) [CommSemiring R] [Semiring A]
+instance (priority := 100) finiteType {R : Type*} (A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [hRA : Finite R A] : Algebra.FiniteType R A :=
   ⟨Subalgebra.fg_of_submodule_fg hRA.1⟩
 #align module.finite.finite_type Module.Finite.finiteType
@@ -83,7 +83,7 @@ protected theorem polynomial : FiniteType R R[X] :=
 
 open Classical
 
-protected theorem mvPolynomial (ι : Type _) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
+protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι
   exact
     ⟨⟨Finset.univ.image MvPolynomial.X, by
@@ -143,7 +143,6 @@ theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
     use { x : A // x ∈ s }, inferInstance, f
-    exact hsur
   · rintro ⟨ι, ⟨hfintype, ⟨f, hsur⟩⟩⟩
     letI : Fintype ι := hfintype
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R ι) f hsur
@@ -166,7 +165,7 @@ instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B
   ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
 #align algebra.finite_type.prod Algebra.FiniteType.prod
 
-theorem isNoetherianRing (R S : Type _) [CommRing R] [CommRing S] [Algebra R S]
+theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [h : Algebra.FiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
   obtain ⟨s, hs⟩ := h.1
   apply
@@ -177,7 +176,7 @@ theorem isNoetherianRing (R S : Type _) [CommRing R] [CommRing S] [Algebra R S]
   rfl
 #align algebra.finite_type.is_noetherian_ring Algebra.FiniteType.isNoetherianRing
 
-theorem _root_.Subalgebra.fg_iff_finiteType {R A : Type _} [CommSemiring R]
+theorem _root_.Subalgebra.fg_iff_finiteType {R A : Type*} [CommSemiring R]
     [Semiring A] [Algebra R A] (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
   S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
 #align subalgebra.fg_iff_finite_type Subalgebra.fg_iff_finiteType
@@ -190,7 +189,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `FiniteType` if `B` is finitely generated as `A`-algebra. -/
 def FiniteType (f : A →+* B) : Prop :=
@@ -267,7 +266,7 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type _} [CommRing R]
+variable {R A B C : Type*} [CommRing R]
 
 variable [CommRing A] [CommRing B] [CommRing C]
 
@@ -322,7 +321,7 @@ end AlgHom
 
 section MonoidAlgebra
 
-variable {R : Type _} {M : Type _}
+variable {R : Type*} {M : Type*}
 
 namespace AddMonoidAlgebra
 
@@ -476,7 +475,7 @@ theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R (AddMonoi
 
 /-- An additive group `G` is finitely generated if and only if `AddMonoidAlgebra R G` is of
 finite type. -/
-theorem finiteType_iff_group_fg {G : Type _} [AddCommGroup G] [CommRing R] [Nontrivial R] :
+theorem finiteType_iff_group_fg {G : Type*} [AddCommGroup G] [CommRing R] [Nontrivial R] :
     FiniteType R (AddMonoidAlgebra R G) ↔ AddGroup.FG G := by
   simpa [AddGroup.fg_iff_addMonoid_fg] using finiteType_iff_fg
 #align add_monoid_algebra.finite_type_iff_group_fg AddMonoidAlgebra.finiteType_iff_group_fg
@@ -616,7 +615,7 @@ theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R (MonoidAl
 #align monoid_algebra.fg_of_finite_type MonoidAlgebra.fg_of_finiteType
 
 /-- A group `G` is finitely generated if and only if `AddMonoidAlgebra R G` is of finite type. -/
-theorem finiteType_iff_group_fg {G : Type _} [CommGroup G] [CommRing R] [Nontrivial R] :
+theorem finiteType_iff_group_fg {G : Type*} [CommGroup G] [CommRing R] [Nontrivial R] :
     FiniteType R (MonoidAlgebra R G) ↔ Group.FG G := by
   simpa [Group.fg_iff_monoid_fg] using finiteType_iff_fg
 #align monoid_algebra.finite_type_iff_group_fg MonoidAlgebra.finiteType_iff_group_fg
@@ -627,7 +626,7 @@ end MonoidAlgebra
 
 section Vasconcelos
 
-variable {R : Type _} [CommRing R] {M : Type _} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
 
 noncomputable section
 

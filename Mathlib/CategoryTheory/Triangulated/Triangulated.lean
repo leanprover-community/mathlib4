@@ -24,7 +24,7 @@ open Limits Category Preadditive Pretriangulated
 
 open ZeroObject
 
-variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [Pretriangulated C]
 
 namespace Triangulated
@@ -119,7 +119,7 @@ open Triangulated
 
 /-- A triangulated category is a pretriangulated category which satisfies
 the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
-class IsTriangulated where
+class IsTriangulated : Prop where
   /-- the octahedron axiom (TR 4) -/
   octahedron_axiom :
     ∀ {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}

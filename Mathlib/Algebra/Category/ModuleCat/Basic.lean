@@ -379,6 +379,3 @@ theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
 end
 
 end ModuleCat
-
-instance (M : Type u) [AddCommGroup M] [Module R M] : CoeOut (Submodule R M) (ModuleCat R) :=
-  ⟨fun N => ModuleCat.of R N⟩

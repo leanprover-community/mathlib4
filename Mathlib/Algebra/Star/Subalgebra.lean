@@ -36,7 +36,7 @@ namespace StarSubalgebra
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
-variable {F R A B C : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
 
@@ -325,7 +325,7 @@ namespace Subalgebra
 
 open Pointwise
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -382,13 +382,16 @@ variable {R}
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
 @[simps!]
-def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
-  { S ⊔ star S with
-    star_mem' := fun {a} ha => by
-      simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
-      rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
-      simpa using ha }
+def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
+  toSubalgebra := S ⊔ star S
+  star_mem' := fun {a} ha => by
+    simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
+    rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
+    simpa using ha
 #align subalgebra.star_closure Subalgebra.starClosure
+
+theorem starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
+  rfl
 
 theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
     S₁.starClosure ≤ S₂ :=
@@ -409,7 +412,7 @@ end Subalgebra
 
 namespace StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -679,16 +682,16 @@ theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
 #align star_subalgebra.Inf_to_subalgebra StarSubalgebra.sInf_toSubalgebra
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 #align star_subalgebra.coe_infi StarSubalgebra.coe_iInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} {x : A} :
+theorem mem_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align star_subalgebra.mem_infi StarSubalgebra.mem_iInf
 
 @[simp]
-theorem iInf_toSubalgebra {ι : Sort _} (S : ι → StarSubalgebra R A) :
+theorem iInf_toSubalgebra {ι : Sort*} (S : ι → StarSubalgebra R A) :
     (⨅ i, S i).toSubalgebra = ⨅ i, (S i).toSubalgebra :=
   SetLike.coe_injective <| by simp
 #align star_subalgebra.infi_to_subalgebra StarSubalgebra.iInf_toSubalgebra
@@ -718,7 +721,7 @@ namespace StarAlgHom
 
 open StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -805,7 +808,7 @@ end StarAlgHom
 
 section RestrictScalars
 
-variable (R : Type _) {S A B : Type _} [CommSemiring R]
+variable (R : Type*) {S A B : Type*} [CommSemiring R]
   [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
   [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
 

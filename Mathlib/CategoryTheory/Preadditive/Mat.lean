@@ -260,7 +260,7 @@ end Mat_
 
 namespace Functor
 
-variable {C} {D : Type _} [Category.{v₁} D] [Preadditive D]
+variable {C} {D : Type*} [Category.{v₁} D] [Preadditive D]
 
 attribute [local simp] Mat_.id_apply eqToHom_map
 
@@ -287,7 +287,7 @@ set_option linter.uppercaseLean3 false in
 /-- Composite functors induce composite functors on matrix categories.
 -/
 @[simps!]
-def mapMatComp {E : Type _} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
+def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
     ext
@@ -429,6 +429,8 @@ theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality' CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality'
 
+attribute [local simp] biproduct.lift_desc
+
 /-- Any additive functor `C ⥤ D` to a category `D` with finite biproducts extends to
 a functor `Mat_ C ⥤ D`. -/
 @[simps]
@@ -455,7 +457,6 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
     (fun X =>
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
-    (by aesop_cat)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.embedding_lift_iso CategoryTheory.Mat_.embeddingLiftIso
 

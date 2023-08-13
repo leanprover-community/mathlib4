@@ -27,14 +27,14 @@ open Set LinearMap
 
 open Classical Pointwise
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 /-! ### The dual cone -/
 
 
 section Dual
 
-variable {H : Type _} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
 
 open RealInnerProductSpace
 
@@ -100,7 +100,7 @@ theorem innerDualCone_insert (x : H) (s : Set H) :
   rw [insert_eq, innerDualCone_union]
 #align inner_dual_cone_insert innerDualCone_insert
 
-theorem innerDualCone_iUnion {ι : Sort _} (f : ι → Set H) :
+theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
   refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) _
   intro x hx y hy

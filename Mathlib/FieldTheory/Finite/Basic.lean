@@ -43,7 +43,7 @@ diamonds, as `Fintype` carries data.
 -/
 
 
-variable {K : Type _} {R : Type _}
+variable {K : Type*} {R : Type*}
 
 -- mathport name: exprq
 local notation "q" => Fintype.card K
@@ -225,7 +225,7 @@ open Polynomial
 
 section
 
-variable (K' : Type _) [Field K'] {p n : ℕ}
+variable (K' : Type*) [Field K'] {p n : ℕ}
 
 theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
   have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
@@ -345,7 +345,7 @@ theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
 
 namespace CharP
 
-theorem sq_add_sq (R : Type _) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
+theorem sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
@@ -381,7 +381,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.coprime x n) : x ^ φ n ≡ 1
 
 section
 
-variable {V : Type _} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
 
 -- should this go in a namespace?
 -- finite_dimensional would be natural,
@@ -465,7 +465,7 @@ section
 
 namespace FiniteField
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 section Finite
 

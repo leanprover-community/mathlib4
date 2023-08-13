@@ -30,13 +30,13 @@ namespace Quiver
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
     NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
 -- Porting note: no hasNonemptyInstance linter yet
-def Symmetrify (V : Type _) := V
+def Symmetrify (V : Type*) := V
 #align quiver.symmetrify Quiver.Symmetrify
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
   ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
 
-variable (U V W : Type _) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
+variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
 
 /-- A quiver `HasReverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
     `p.reverse` from `b` to `a`.-/
@@ -83,7 +83,7 @@ section MapReverse
 variable [HasReverse U] [HasReverse V] [HasReverse W]
 
 /-- A prefunctor preserving reversal of arrows -/
-class _root_.Prefunctor.MapReverse (φ : U ⥤q V) where
+class _root_.Prefunctor.MapReverse (φ : U ⥤q V) : Prop where
   /-- The image of a reverse is the reverse of the image. -/
   map_reverse' : ∀ {u v : U} (e : u ⟶ v), φ.map (reverse e) = reverse (φ.map e)
 #align prefunctor.map_reverse Prefunctor.MapReverse
@@ -174,7 +174,7 @@ def of : Prefunctor V (Symmetrify V) where
   map := Sum.inl
 #align quiver.symmetrify.of Quiver.Symmetrify.of
 
-variable {V' : Type _} [Quiver.{v' + 1} V']
+variable {V' : Type*} [Quiver.{v' + 1} V']
 
 /-- Given a quiver `V'` with reversible arrows, a prefunctor to `V'` can be lifted to one from
     `Symmetrify V` to `V'` -/
@@ -220,11 +220,24 @@ theorem lift_unique [HasReverse V'] (φ : V ⥤q V') (Φ : Symmetrify V ⥤q V')
     · exact hΦinv (Sum.inl _)
 #align quiver.symmetrify.lift_unique Quiver.Symmetrify.lift_unique
 
+/-- A prefunctor canonically defines a prefunctor of the symmetrifications. -/
+@[simps]
+def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V
+    where
+  obj := φ.obj
+  map := Sum.map φ.map φ.map
+#align prefunctor.symmetrify Prefunctor.symmetrify
+
+instance _root_.Prefunctor.symmetrify_mapReverse (φ : U ⥤q V) :
+    Prefunctor.MapReverse φ.symmetrify :=
+  ⟨fun e => by cases e <;> rfl⟩
+#align prefunctor.symmetrify_map_reverse Prefunctor.symmetrify_mapReverse
+
 end Symmetrify
 
 namespace Push
 
-variable {V' : Type _} (σ : V → V')
+variable {V' : Type*} (σ : V → V')
 
 instance [HasReverse V] : HasReverse (Quiver.Push σ) where
   reverse' := fun
