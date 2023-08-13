@@ -3,14 +3,13 @@ Copyright (c) 2020 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
--- import Mathlib.Algebra.BigOperators.Fin
+
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
--- import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.LinearAlgebra.Matrix.Circulant
 
 /-!
@@ -20,7 +19,7 @@ This file defines the `dft` opertaion on a sequence (also a vecotr) and the DFT 
 
 ## Main definitions
 
- - `dft v`: given a sequence (v : (Fin n) → ℂ) we can transform it into a sequence (V : (Fin n) → ℂ)
+ - `dft v`: given a sequence (v : (Fin n) → ℂ) we can transform it into a sequence (V : (Fin n) →ℂ)
  such that
  $$ V [p] = ∑_{k = 0}^{N - 1} e^{-j*2πkp/n} v [k] $$
  - `idft V` : given a sequence (V : (Fin n) → ℂ) we can transform it into a sequence
@@ -179,26 +178,68 @@ def shiftk_equiv {N: ℕ} [hN : NeZero N] (k : Fin N) : (Fin N) ≃ (Fin N) wher
   left_inv := by intro x;  simp only [shiftk, sub_neg_eq_add, sub_add_cancel]
   right_inv := by intro x; simp only [shiftk, sub_neg_eq_add, add_sub_cancel]
 
--- theorem circulant_dft  (t : Fin n → ℂ) :
---     circulant t = (Wₙ n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (Wₙ n) := by
---   letI := invWₙ n
---   apply_fun ((Wₙ n) ⬝ ·)
---   dsimp
---   rw [Matrix.mul_assoc, Matrix.mul_inv_cancel_left_of_invertible]
---   funext a b
---   simp only [diagonal_mul, mul_apply, circulant_apply, Wₙ_apply, diagonal_apply, dft]
---   -- by_cases h : a = b
---   simp_rw [ite_mul, zero_mul, sum_ite_eq, mem_univ, ite_true,
---     ← mul_inv_eq_iff_eq_mul₀ (Complex.exp_ne_zero _), ← Complex.exp_neg]
---   rw [mul_comm]
---   simp_rw [mul_sum, ← mul_assoc, ← Complex.exp_add, neg_add_eq_sub, ← sub_div, mul_assoc (2*π*I),
---     ← mul_sub]
---   let f := fun x : (Fin n) => (Complex.exp ( 2*π * I * (a * (x))/n)) * (t (x))
---   have h1 : ∀ (x : Fin n), (shiftk_equiv (-b)) x = x - b := by sorry
---   have h2 : ∀ (x : Fin n), ((x:ℂ) - (b:ℂ)) = (shiftk_equiv (-b)) x := by sorry
---   simp_rw [← h1, h2]
---   rw [Equiv.sum_comp (shiftk_equiv (-b)) f]
---   apply Matrix.mul_right_injective_of_invertible (Wₙ n)
+lemma cexp_shiftk_invariant (x a b : Fin n) :
+    exp (2 * ↑π * I * (↑↑a * ((x:ℂ) - (b:ℂ))) / ↑n) =
+    Complex.exp ((2*π*I)*(a*(shiftk_equiv (b) x))/n) := by
+  rw [Complex.exp_eq_exp_iff_exists_int]
+  unfold shiftk_equiv shiftk
+  simp only [sub_neg_eq_add, Equiv.coe_fn_mk]
+  by_cases h : b ≤ x
+  · use 0
+    simp only [Int.cast_zero, zero_mul, add_zero]
+    congr
+    norm_cast
+    rw [Int.subNatNat_of_le h]
+    simp only [Fin.val_fin_le, Nat.cast_inj]
+    apply ((@Fin.coe_sub_iff_le n x b).2 h).symm
+  · push_neg at h
+    use (-a)
+    rw [mul_comm ((-a:ℤ):ℂ) (2*π*I), mul_div_assoc, mul_div_assoc, mul_div_assoc, ← mul_add,
+      mul_right_inj', Int.cast_neg, Int.cast_ofNat, ← mul_div_assoc, div_eq_iff, add_mul,
+      div_mul_cancel_of_invertible, neg_mul, ← sub_eq_add_neg, ← mul_sub, mul_eq_mul_left_iff]
+    left
+    rw [Fin.coe_sub, Nat.mod_eq, if_neg]
+    norm_cast
+    rw [← Nat.add_sub_assoc, Int.subNatNat_sub, add_comm n _, Int.subNatNat_add_add]
+
+    -- Clear plethora of side goals
+    apply (le_of_lt (Nat.lt_add_left _ _ _ (Fin.is_lt _)))
+    apply (le_of_lt (Fin.is_lt _))
+    push_neg
+    intro _
+    rw [← Nat.add_sub_assoc]
+    apply Nat.sub_lt_left_of_lt_add
+    apply (le_of_lt (Nat.lt_add_left _ _ _ (Fin.is_lt _)))
+
+    apply Nat.add_lt_add_right h _
+    apply (le_of_lt (Fin.is_lt _))
+    apply (Nat.cast_ne_zero.2 (NeZero.ne _))
+    apply (mul_ne_zero (mul_ne_zero two_ne_zero _) I_ne_zero)
+    exact_mod_cast pi_ne_zero
+
+theorem circulant_dft  (t : Fin n → ℂ) :
+    circulant t = (Wₙ n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (Wₙ n) := by
+  letI := invWₙ n
+  apply_fun ((Wₙ n) ⬝ ·)
+  dsimp
+  rw [Matrix.mul_assoc, Matrix.mul_inv_cancel_left_of_invertible]
+  funext a b
+  simp only [diagonal_mul, mul_apply, circulant_apply, Wₙ_apply, diagonal_apply, dft]
+  -- by_cases h : a = b
+  simp_rw [ite_mul, zero_mul, sum_ite_eq, mem_univ, ite_true,
+    ← mul_inv_eq_iff_eq_mul₀ (Complex.exp_ne_zero _), ← Complex.exp_neg]
+  rw [mul_comm]
+  simp_rw [mul_sum, ← mul_assoc, ← Complex.exp_add, neg_add_eq_sub, ← sub_div, mul_assoc (2*π*I),
+    ← mul_sub]
+  let f := fun x : (Fin n) => (Complex.exp ( (2* π * I) * (a * (x))/n)) * (t (x))
+  have h1 : ∀ (x : Fin n), (shiftk_equiv (b)) x = x - b := by
+    intro x; unfold shiftk_equiv shiftk; simp only [sub_neg_eq_add, Equiv.coe_fn_mk]
+  have h2 : ∀ (x : Fin n), Complex.exp (2 * ↑π * I * (↑↑a * ((x:ℂ) - (b:ℂ))) / ↑n) =
+    Complex.exp ((2*π*I)*(a*(shiftk_equiv (b) x))/n) := by
+    intro x; apply cexp_shiftk_invariant n x a b
+  simp_rw [← h1, h2]
+  rw [Equiv.sum_comp (shiftk_equiv (b)) f]
+  apply Matrix.mul_right_injective_of_invertible (Wₙ n)
 
 
 -- theorem dft_eq_vandermonde :
