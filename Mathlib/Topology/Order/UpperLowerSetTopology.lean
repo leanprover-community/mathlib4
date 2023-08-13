@@ -26,8 +26,7 @@ topology does not coincide with the lower topology.
 - `UpperSetTopology.IsOpen_iInter` - the intersection of any indexed collection of open sets is open
 - `UpperSetTopology.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
 - `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
-- `UpperSetTopology.monotone_iff_continuous` - the continuous functions are characterised as the monotone
-  functions
+- `UpperSetTopology.monotone_iff_continuous` - the continuous functions are the monotone functions
 - `UpperSetTopology.Monotone_to_UpperTopology_Continuous` - a `Monotone` map from a `Preorder`
   with the `UpperSetTopology` to `Preorder` with the `UpperTopology` is `Continuous`
 
