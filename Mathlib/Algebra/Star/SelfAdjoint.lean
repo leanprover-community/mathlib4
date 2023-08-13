@@ -82,12 +82,12 @@ theorem star_iff [InvolutiveStar R] {x : R} : IsSelfAdjoint (star x) ↔ IsSelfA
 #align is_self_adjoint.star_iff IsSelfAdjoint.star_iff
 
 @[simp]
-theorem star_mul_self [Semigroup R] [StarSemigroup R] (x : R) : IsSelfAdjoint (star x * x) := by
+theorem star_mul_self [Mul R] [StarSemigroup R] (x : R) : IsSelfAdjoint (star x * x) := by
   simp only [IsSelfAdjoint, star_mul, star_star]
 #align is_self_adjoint.star_mul_self IsSelfAdjoint.star_mul_self
 
 @[simp]
-theorem mul_star_self [Semigroup R] [StarSemigroup R] (x : R) : IsSelfAdjoint (x * star x) := by
+theorem mul_star_self [Mul R] [StarSemigroup R] (x : R) : IsSelfAdjoint (x * star x) := by
   simpa only [star_star] using star_mul_self (star x)
 #align is_self_adjoint.mul_star_self IsSelfAdjoint.mul_star_self
 
