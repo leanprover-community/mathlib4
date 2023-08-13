@@ -150,42 +150,10 @@ lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 
 namespace DihedralGroup
 
-def myEquiv {n : ℕ} (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
-    ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
-  let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr (Nat.two_dvd_ne_zero.mpr (Nat.odd_iff.mp hn)))
-  have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun a => ZMod.add_self_eq_zero_iff_eq_zero hn
-  ⟨fun p => match p.1.1, p.1.2 with
-  | sr i, r _ => Sum.inl i
-  | r _, sr j => Sum.inr (Sum.inl j)
-  | sr i, sr j => Sum.inr (Sum.inr (Sum.inl (i + j)))
-  | r i, r j => Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩)),
-  fun p => match p with
-  | Sum.inl i => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
-  | Sum.inr (Sum.inl j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
-  | Sum.inr (Sum.inr (Sum.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
-  | Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩, by
-  rintro ⟨⟨i | i, j | j⟩, h⟩
-  . rfl
-  . simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm] using h.eq
-  . simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm] using h.eq
-  . replace h := r.inj h
-    rw [←neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h
-    rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, ←two_mul, and_self]
-    apply u.inv_mul_cancel_left, by
-  rintro (a | b | c | d)
-  any_goals rfl
-  rw [Sum.inr.injEq, Sum.inr.injEq, Sum.inl.injEq, ←two_mul]
-  apply u.mul_inv_cancel_left⟩
-
-lemma card_conjClasses_dihedralGroup_odd {n : ℕ} (hn : Odd n) :
-    Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
-  have hn' : NeZero n := ⟨hn.pos.ne'⟩
-  have h := card_comm_eq_card_conjClasses_mul_card (DihedralGroup n)
-  rw [mul_comm, Nat.card_congr (myEquiv hn), Nat.card_sum, Nat.card_sum, Nat.card_sum,
-      Nat.card_prod, Nat.card_zmod, Nat.card_eq_fintype_card] at h
-  rw [←Nat.div_eq_of_eq_mul_right (Fintype.card_pos) h, DihedralGroup.card,
-      ←Nat.mul_div_mul_right (n + 3) 2 (Nat.pos_of_ne_zero hn'.1)]
-  congr; ring
+lemma commProb_odd (n : ℕ) (hn : Odd n) : commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
+  rw [commProb_def', DihedralGroup.card_conjClasses_odd hn, nat_card]
+  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]; rfl]
+  rw [div_div, ← mul_assoc]; ring
 
 end DihedralGroup
 
@@ -217,15 +185,7 @@ lemma commProb_ReciprocalGroup (l : List ℕ) :
     rfl
 
 -- todo: golf
-lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : Odd n) :
-    commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
-  have hn' := hn.pos.ne'
-  have : NeZero n := ⟨hn'⟩
-  rw [commProb_def', DihedralGroup.card_conjClasses_dihedralGroup_odd hn,
-      Nat.card_eq_fintype_card, DihedralGroup.card]
-  rw [Nat.odd_iff] at hn
-  have : 2 ∣ n + 3 := by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, hn]; rfl
-  qify [this]; field_simp [hn']; left; ring
+
 
 /- https://randompermutations.com/2015/02/06/commuting-probability-of-compact-groups/ -/
 theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
