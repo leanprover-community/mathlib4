@@ -11,6 +11,6 @@ example (n : ℕ) (z : ℤ) : n = n := by
   induction n with
   | zero => rfl
   | succ n ih =>
-     mod_cases h : z % 2
-     · sorry
-     · sorry
+    mod_cases h : z % 2
+    · sorry
+    · sorry
