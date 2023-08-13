@@ -970,13 +970,13 @@ instance starAddMonoid [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [Con
     StarAddMonoid C(α, β) where
   star_add _ _ := ext fun _ => star_add _ _
 
-instance starSemigroup [Semigroup β] [ContinuousMul β] [StarSemigroup β] [ContinuousStar β] :
-    StarSemigroup C(α, β) where
+instance starMul [Mul β] [ContinuousMul β] [StarMul β] [ContinuousStar β] :
+    StarMul C(α, β) where
   star_mul _ _ := ext fun _ => star_mul _ _
 
-instance [NonUnitalSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
+instance [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
     StarRing C(α, β) :=
-  { ContinuousMap.starAddMonoid, ContinuousMap.starSemigroup with }
+  { ContinuousMap.starAddMonoid, ContinuousMap.starMul with }
 
 instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
     [ContinuousConstSMul R β] : StarModule R C(α, β) where
