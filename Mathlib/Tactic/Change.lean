@@ -40,7 +40,8 @@ elab_rules : tactic
       let tgt ← getMainTarget
       let ex ← withRef sop <| elabTermEnsuringType sop (← inferType tgt)
       let defeq? ← isDefEq ex tgt
-      if ! defeq? then throwErrorAt sop "The given term is not DefEq to the goal"
+      if ! defeq? then throwErrorAt sop "The term{indentD ex}\nis not defeq to the goal:{
+        indentD tgt}"
       instantiateMVars ex
   let dstx ← delabToRefinableSyntax expr
   addSuggestion tk (← `(tactic| change $dstx)) (origSpan? := stx)
