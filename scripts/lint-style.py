@@ -35,6 +35,7 @@ to perform this update.
 from pathlib import Path
 import sys
 import re
+import shutil
 
 ERR_COP = 0 # copyright header
 ERR_IMP = 1 # import statements
@@ -117,26 +118,33 @@ def skip_string(enumerate_lines):
 
 def set_option_check(lines, path):
     errors = []
+    newlines = []
     for line_nr, line in skip_string(skip_comments(enumerate(lines, 1))):
         if line.strip().startswith('set_option'):
             next_two_chars = line.strip().split(' ')[1][:2]
             # forbidden options: pp, profiler, trace
             if next_two_chars == 'pp' or next_two_chars == 'pr' or next_two_chars == 'tr':
                 errors += [(ERR_OPT, line_nr, path)]
-    return errors
+                continue
+        newlines.append(line)
+    return errors, newlines
 
 def line_endings_check(lines, path):
     errors = []
+    newlines = []
     for line_nr, line in enumerate(lines, 1):
         if "\r\n" in line:
             errors += [(ERR_WIN, line_nr, path)]
         line = line.rstrip("\r\n")
         if line.endswith(" "):
             errors += [(ERR_TWS, line_nr, path)]
-    return errors
+            line = line.rstrip(" ")
+        newlines.append(line)
+    return errors, newlines
 
 def long_lines_check(lines, path):
     errors = []
+    # TODO: find a good way to break long lines
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
     for line_nr, line in enumerate(lines, 1):
         # "!" excludes the porting marker comment
@@ -144,7 +152,7 @@ def long_lines_check(lines, path):
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
-    return errors
+    return errors, lines
 
 def import_only_check(lines, path):
     import_only_file = True
@@ -163,7 +171,7 @@ def import_only_check(lines, path):
                 continue
             else:
                 errors += [(ERR_IMP, line_nr, path)]
-    return (import_only_file, errors)
+    return (import_only_file, errors, lines)
 
 def regular_check(lines, path):
     errors = []
@@ -221,23 +229,26 @@ def banned_import_check(lines, path):
             break
         if imports[1] in ["Mathlib.Tactic"]:
             errors += [(ERR_TAC, line_nr, path)]
-    return errors
+    return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
     errors = []
+    newlines = []
     for line_nr, line in enumerate(lines, 1):
         if line.strip() == "by":
             # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
             # should not be used in the second or later arguments of a tuple/anonymous constructor
             # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
             prev_line = lines[line_nr - 2].rstrip()
-            if not prev_line.endswith(",") and not re.search(", fun [^,]* =>$", prev_line):
+            if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
                 errors += [(ERR_IBY, line_nr, path)]
-        if line.lstrip().startswith(". ") or line.strip() in (".", "·"):
+        if line.lstrip().startswith(". "):
+            errors += [(ERR_DOT, line_nr, path)]
+        if line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
             errors += [(ERR_SEM, line_nr, path)]
-    return errors
+    return errors, newlines
 
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
@@ -284,30 +295,39 @@ def format_errors(errors):
         if errno == ERR_TWS:
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
 
-def lint(path):
+def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
         lines = f.readlines()
-        errs = line_endings_check(lines, path)
+        errs, newlines = line_endings_check(lines, path)
         format_errors(errs)
-        lines = [line.rstrip() + "\n" for line in lines]
+        # lines = [line.rstrip() + "\n" for line in lines]
 
-        errs = long_lines_check(lines, path)
+        errs,newlines = long_lines_check(newlines, path)
         format_errors(errs)
-        errs = isolated_by_dot_semicolon_check(lines, path)
+        errs,newlines = isolated_by_dot_semicolon_check(newlines, path)
         format_errors(errs)
-        (b, errs) = import_only_check(lines, path)
+        (b, errs, newlines) = import_only_check(newlines, path)
         if b:
             format_errors(errs)
             return # checks below this line are not executed on files that only import other files.
-        errs = regular_check(lines, path)
+        errs,newlines = regular_check(newlines, path)
         format_errors(errs)
-        errs = set_option_check(lines, path)
+        errs,newlines = set_option_check(newlines, path)
         format_errors(errs)
-        errs = banned_import_check(lines, path)
+        errs,newlines = banned_import_check(newlines, path)
         format_errors(errs)
+    if not fix or lines == newlines:
+        return
+    with path.with_name(path.name + '.bak').open(mode='r',encoding='utf8',newline='\n') as fp:
+        fp.write_text(f)
+        f = list(fp)
+    shutil.move(path.with_name(path.name + '.bak'), path)
+
+fix = "--fix" in sys.argv
+sys.argv.remove("--fix")
 
 for filename in sys.argv[1:]:
-    lint(Path(filename))
+    lint(Path(filename), fix=fix)
 
 if new_exceptions:
     exit(1)
