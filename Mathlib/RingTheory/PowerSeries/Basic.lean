@@ -74,7 +74,7 @@ open Classical BigOperators Polynomial
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring.-/
-def MvPowerSeries (σ : Type _) (R : Type _) :=
+def MvPowerSeries (σ : Type*) (R : Type*) :=
   (σ →₀ ℕ) → R
 #align mv_power_series MvPowerSeries
 
@@ -82,7 +82,7 @@ namespace MvPowerSeries
 
 open Finsupp
 
-variable {σ R : Type _}
+variable {σ R : Type*}
 
 instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
   ⟨fun _ => default⟩
@@ -208,9 +208,10 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
 instance : Mul (MvPowerSeries σ R) :=
   ⟨fun φ ψ n => ∑ p in Finsupp.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
-theorem coeff_mul :
-    coeff R n (φ * ψ) = ∑ p in Finsupp.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ :=
-  rfl
+theorem coeff_mul [DecidableEq σ] :
+    coeff R n (φ * ψ) = ∑ p in Finsupp.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+  refine Finset.sum_congr ?_ fun _ _ => rfl
+  rw [Subsingleton.elim (fun a b => propDecidable (a = b)) ‹DecidableEq σ›]
 #align mv_power_series.coeff_mul MvPowerSeries.coeff_mul
 
 protected theorem zero_mul : (0 : MvPowerSeries σ R) * φ = 0 :=
@@ -556,7 +557,7 @@ end Semiring
 
 section Map
 
-variable {S T : Type _} [Semiring R] [Semiring S] [Semiring T]
+variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 
 variable (f : R →+* S) (g : S →+* T)
 
@@ -626,7 +627,7 @@ end Map
 
 section Algebra
 
-variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 instance : Algebra R (MvPowerSeries σ A) :=
   {
@@ -904,7 +905,7 @@ end CommRing
 
 section LocalRing
 
-variable {S : Type _} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
@@ -924,7 +925,7 @@ end LocalRing
 
 section Field
 
-variable {k : Type _} [Field k]
+variable {k : Type*} [Field k]
 
 /-- The inverse `1/f` of a multivariable power series `f` over a field -/
 protected def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
@@ -1051,7 +1052,7 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {σ : Type _} {R : Type _} [CommSemiring R] (φ ψ : MvPolynomial σ R)
+variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series.-/
@@ -1177,7 +1178,7 @@ theorem coeToMvPowerSeries.ringHom_apply : coeToMvPowerSeries.ringHom φ = φ :=
 
 section Algebra
 
-variable (A : Type _) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- The coercion from multivariable polynomials to multivariable power series
 as an algebra homomorphism.
@@ -1199,7 +1200,7 @@ end MvPolynomial
 
 namespace MvPowerSeries
 
-variable {σ R A : Type _} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : MvPowerSeries σ R)
+variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : MvPowerSeries σ R)
 
 instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
   RingHom.toAlgebra (MvPolynomial.coeToMvPowerSeries.algHom A).toRingHom
@@ -1224,7 +1225,7 @@ theorem algebraMap_apply'' :
 end MvPowerSeries
 
 /-- Formal power series over the coefficient ring `R`.-/
-def PowerSeries (R : Type _) :=
+def PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
 #align power_series PowerSeries
 
@@ -1232,7 +1233,7 @@ namespace PowerSeries
 
 open Finsupp (single)
 
-variable {R : Type _}
+variable {R : Type*}
 
 section
 
@@ -1472,22 +1473,10 @@ theorem coeff_zero_one : coeff R 0 (1 : PowerSeries R) = 1 :=
 
 theorem coeff_mul (n : ℕ) (φ ψ : PowerSeries R) :
     coeff R n (φ * ψ) = ∑ p in Finset.Nat.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
-  symm
-  apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
-  · rintro ⟨i, j⟩ hij
-    rw [Finset.Nat.mem_antidiagonal] at hij
-    rw [Finsupp.mem_antidiagonal, ← Finsupp.single_add, hij]
-  · rintro ⟨i, j⟩ _hij
-    rfl
-  · rintro ⟨i, j⟩ ⟨k, l⟩ _hij _hkl
-    simpa only [Prod.mk.inj_iff, Finsupp.unique_single_eq_iff] using id
-  · rintro ⟨f, g⟩ hfg
-    refine' ⟨(f (), g ()), _, _⟩
-    · rw [Finsupp.mem_antidiagonal] at hfg
-      rw [Finset.Nat.mem_antidiagonal, ← Finsupp.add_apply, hfg, Finsupp.single_eq_same]
-    · rw [Prod.mk.inj_iff]
-      dsimp
-      exact ⟨Finsupp.unique_single f, Finsupp.unique_single g⟩
+  -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
+  refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
+  rw [Finsupp.antidiagonal_single, Finset.sum_map]
+  rfl
 #align power_series.coeff_mul PowerSeries.coeff_mul
 
 @[simp]
@@ -1503,7 +1492,7 @@ set_option linter.uppercaseLean3 false in
 #align power_series.coeff_C_mul PowerSeries.coeff_C_mul
 
 @[simp]
-theorem coeff_smul {S : Type _} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSeries S) (a : R) :
+theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSeries S) (a : R) :
     coeff S n (a • φ) = a • coeff S n φ :=
   rfl
 #align power_series.coeff_smul PowerSeries.coeff_smul
@@ -1663,7 +1652,7 @@ set_option linter.uppercaseLean3 false in
 
 section Map
 
-variable {S : Type _} {T : Type _} [Semiring S] [Semiring T]
+variable {S : Type*} {T : Type*} [Semiring S] [Semiring T]
 
 variable (f : R →+* S) (g : S →+* T)
 
@@ -1947,7 +1936,7 @@ end Ring
 
 section CommRing
 
-variable {A : Type _} [CommRing A]
+variable {A : Type*} [CommRing A]
 
 @[simp]
 theorem rescale_X (a : A) : rescale a X = C A a * X := by
@@ -2066,7 +2055,7 @@ end IsDomain
 
 section LocalRing
 
-variable {S : Type _} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
 instance map.isLocalRingHom : IsLocalRingHom (map f) :=
   MvPowerSeries.map.isLocalRingHom f
@@ -2082,7 +2071,7 @@ end LocalRing
 
 section Algebra
 
-variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem C_eq_algebraMap {r : R} : C R r = (algebraMap R (PowerSeries R)) r :=
   rfl
@@ -2100,7 +2089,7 @@ end Algebra
 
 section Field
 
-variable {k : Type _} [Field k]
+variable {k : Type*} [Field k]
 
 /-- The inverse 1/f of a power series f defined over a field -/
 protected def inv : PowerSeries k → PowerSeries k :=
@@ -2207,7 +2196,7 @@ end PowerSeries
 
 namespace PowerSeries
 
-variable {R : Type _}
+variable {R : Type*}
 
 attribute [local instance 1] Classical.propDecidable
 
@@ -2418,12 +2407,12 @@ theorem coeff_mul_of_lt_order {φ ψ : PowerSeries R} {n : ℕ} (h : ↑n < ψ.o
   linarith
 #align power_series.coeff_mul_of_lt_order PowerSeries.coeff_mul_of_lt_order
 
-theorem coeff_mul_one_sub_of_lt_order {R : Type _} [CommRing R] {φ ψ : PowerSeries R} (n : ℕ)
+theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : PowerSeries R} (n : ℕ)
     (h : ↑n < ψ.order) : coeff R n (φ * (1 - ψ)) = coeff R n φ := by
   simp [coeff_mul_of_lt_order h, mul_sub]
 #align power_series.coeff_mul_one_sub_of_lt_order PowerSeries.coeff_mul_one_sub_of_lt_order
 
-theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type _} [CommRing R] (k : ℕ) (s : Finset ι)
+theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
     (φ : PowerSeries R) (f : ι → PowerSeries R) :
     (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i in s, (1 - f i)) = coeff R k φ := by
   induction' s using Finset.induction_on with a s ha ih t
@@ -2448,7 +2437,7 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
 set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
 
-theorem order_eq_multiplicity_X {R : Type _} [Semiring R] (φ : PowerSeries R) :
+theorem order_eq_multiplicity_X {R : Type*} [Semiring R] (φ : PowerSeries R) :
     order φ = multiplicity X φ := by
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
@@ -2520,7 +2509,7 @@ namespace Polynomial
 
 open Finsupp
 
-variable {σ : Type _} {R : Type _} [CommSemiring R] (φ ψ : R[X])
+variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series.-/
@@ -2648,7 +2637,7 @@ theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSerie
   coeToPowerSeries.ringHom.map_pow _ _
 #align polynomial.coe_pow Polynomial.coe_pow
 
-variable (A : Type _) [Semiring A] [Algebra R A]
+variable (A : Type*) [Semiring A] [Algebra R A]
 
 /-- The coercion from polynomials to power series
 as an algebra homomorphism.
@@ -2668,7 +2657,7 @@ end Polynomial
 
 namespace PowerSeries
 
-variable {R A : Type _} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : PowerSeries R)
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : PowerSeries R)
 
 instance algebraPolynomial : Algebra R[X] (PowerSeries A) :=
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
@@ -2679,7 +2668,7 @@ instance algebraPowerSeries : Algebra (PowerSeries R) (PowerSeries A) :=
 #align power_series.algebra_power_series PowerSeries.algebraPowerSeries
 
 -- see Note [lower instance priority]
-instance (priority := 100) algebraPolynomial' {A : Type _} [CommSemiring A] [Algebra R A[X]] :
+instance (priority := 100) algebraPolynomial' {A : Type*} [CommSemiring A] [Algebra R A[X]] :
     Algebra R (PowerSeries A) :=
   RingHom.toAlgebra <| Polynomial.coeToPowerSeries.ringHom.comp (algebraMap R A[X])
 #align power_series.algebra_polynomial' PowerSeries.algebraPolynomial'

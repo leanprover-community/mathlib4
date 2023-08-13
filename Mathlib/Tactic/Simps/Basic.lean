@@ -187,7 +187,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -204,7 +204,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps fst fst_fst snd] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -507,7 +507,7 @@ partial def getCompositeOfProjectionsAux
   Note that this function is similar to elaborating dot notation, but it can do a little more.
   Example: if we do
   ```
-  structure gradedFun (A : ℕ → Type _) where
+  structure gradedFun (A : ℕ → Type*) where
     toFun := ∀ i j, A i →+ A j →+ A (i + j)
   initialize_simps_projections (toFun_toFun_toFun → myMul)
   ```
