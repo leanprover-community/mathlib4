@@ -204,7 +204,7 @@ instance : Star (E →L[𝕜] E) :=
 instance : InvolutiveStar (E →L[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarSemigroup (E →L[𝕜] E) :=
+instance : StarMul (E →L[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →L[𝕜] E) :=
@@ -455,7 +455,7 @@ instance : Star (E →ₗ[𝕜] E) :=
 instance : InvolutiveStar (E →ₗ[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarSemigroup (E →ₗ[𝕜] E) :=
+instance : StarMul (E →ₗ[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →ₗ[𝕜] E) :=
