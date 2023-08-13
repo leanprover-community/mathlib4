@@ -51,7 +51,7 @@ theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n
 #align finsupp.to_multiset_apply Finsupp.toMultiset_apply
 
 @[simp]
-theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {a} := by
+theorem toMultiset_single [DecidableEq α] (a : α) (n : ℕ) : toMultiset (single a n) = n • {a} := by
   rw [toMultiset_apply, sum_single_index]; apply zero_nsmul
 #align finsupp.to_multiset_single Finsupp.toMultiset_single
 
@@ -60,7 +60,7 @@ theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
   map_sum Finsupp.toMultiset _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 
-theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
+theorem toMultiset_sum_single [DecidableEq α] (s : Finset α) (n : ℕ) :
     Finsupp.toMultiset (∑ i in s, single i n) = n • s.val := by
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
 #align finsupp.to_multiset_sum_single Finsupp.toMultiset_sum_single
@@ -69,8 +69,9 @@ theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.s
   simp [toMultiset_apply, map_finsupp_sum, Function.id_def]
 #align finsupp.card_to_multiset Finsupp.card_toMultiset
 
-theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
+theorem toMultiset_map [DecidableEq β] (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
+  classical
   refine' f.induction _ _
   · rw [toMultiset_zero, Multiset.map_zero, mapDomain_zero, toMultiset_zero]
   · intro a n f _ _ ih
@@ -83,6 +84,7 @@ theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
 @[simp]
 theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
     f.toMultiset.prod = f.prod fun a n => a ^ n := by
+  classical
   refine' f.induction _ _
   · rw [toMultiset_zero, Multiset.prod_zero, Finsupp.prod_zero_index]
   · intro a n f _ _ ih
@@ -189,6 +191,7 @@ theorem Finsupp.toMultiset_eq_iff [DecidableEq α] {f : α →₀ ℕ} {s : Mult
 /-! ### As an order isomorphism -/
 
 namespace Finsupp
+
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
 def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
   toEquiv := Multiset.toFinsupp.symm.toEquiv
