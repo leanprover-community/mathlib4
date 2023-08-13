@@ -2090,7 +2090,7 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [A
 
 variable (k A)
 
-variable [CommSemiring k] [AddMonoid H] [AddMonoid G] [Semiring A] [Algebra k A]
+variable [CommSemiring k] [AddMonoid G] [AddMonoid H] [Semiring A] [Algebra k A]
 
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids, then
