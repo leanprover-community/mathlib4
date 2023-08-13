@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Data.Polynomial.Degree.Lemmas
-import Mathlib.Data.Polynomial.EraseLead
 
 /-!
 
