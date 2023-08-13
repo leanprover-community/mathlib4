@@ -120,8 +120,9 @@ theorem NonUnitalSubalgebra.unitization_range :
     Subtype.range_coe_subtype, SetLike.mem_coe]
   rfl
 
-/-- This is a generic version which allows us to prove both
-`NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
+/-- A sufficient condition for injectivity of `NonUnitalSubalgebra.unitization` when the scalars
+are a commutative ring. When the scalars are a field, one should use the more natural
+`NonUnitalStarSubalgebra.unitization_injective` whose hypothesis is easier to verify. -/
 theorem AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
     (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
