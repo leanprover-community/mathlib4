@@ -63,9 +63,9 @@ open ContinuousLinearMap
 namespace Unitization
 
 /-- Given `(k, a) : Unitization 𝕜 A`, the second coordinate of `Unitization.splitMul (k, a)` is
-the natural representation of `Unitization 𝕜 A` on given by multiplication on the left `A →L[𝕜] A`;
-note that this is not just `NonUnitalAlgHom.Lmul` for a few reasons: (a) that would either be `A`
-acting on `A`, or (b) `Unitization 𝕜 A` acting on `Unitization 𝕜 A`, and (c) that's a
+the natural representation of `Unitization 𝕜 A` on `A` given by multiplication on the left in
+`A →L[𝕜] A`; note that this is not just `NonUnitalAlgHom.Lmul` for a few reasons: (a) that would
+either be `A` acting on `A`, or (b) `Unitization 𝕜 A` acting on `Unitization 𝕜 A`, and (c) that's a
 `NonUnitalAlgHom` but here we need an `AlgHom`. In addition, the first coordinate of
 `Unitization.splitMul (k, a)` should just be `k`. See `Unitization.splitMul_apply` also. -/
 noncomputable def splitMul : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
@@ -178,10 +178,10 @@ theorem antilipschitzWith_addEquiv :
       _ ≤ _ := (add_le_add (le_max_left _ _) (le_max_right _ _)).trans_eq (two_mul _).symm
 
 open Bornology Filter
-open scoped Uniformity
+open scoped Uniformity Topology
 
 theorem uniformity_eq_aux :
-    @uniformity _ (instUniformSpaceProd.comap <| addEquiv 𝕜 A) = 𝓤 (Unitization 𝕜 A) := by
+    𝓤[instUniformSpaceProd.comap <| addEquiv 𝕜 A] = 𝓤 (Unitization 𝕜 A) := by
   have key : UniformInducing (addEquiv 𝕜 A) :=
     antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
