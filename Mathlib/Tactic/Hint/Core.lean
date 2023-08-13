@@ -51,10 +51,10 @@ def tryHint : TacticM (List (Syntax.Tactic × Nat)) := do
 ```lean
 example {P Q : Prop} (p : P) (h : P → Q) : Q := by
   hint
-  /- the following tactics make progress:
-       solve_by_elim
-       finish
-       tauto
+  /-
+  the following tactics solve the goal:
+    tauto
+    solve_by_elim
   -/
   solve_by_elim
 ```
@@ -66,15 +66,16 @@ elab "hint" : tactic => do
   let hints ← tryHint
   if hints.isEmpty then throwError "no hints available"
   else
-    let (ts, tp) := hints.partitionMap fun (t, n) => if n = 0 then Sum.inl t else Sum.inr t
-    let ms := if ts.isEmpty then [] else
-      [nest 2
-        (joinSep (m!"the following tactics solve the goal:" :: ts.map toMessageData)
-          (ofFormat Format.line))]
-    let mp := if tp.isEmpty then [] else
-      [nest 2
-        (joinSep (m!"the following tactics make progress:" :: tp.map toMessageData)
-          (ofFormat Format.line))]
-    logInfo (joinSep (ms ++ mp) (ofFormat Format.line))
+    let nl := hints.map Prod.snd |>.dedup
+    let tl := nl.map fun n => (n, hints.filterMap (fun p => if p.2 == n then some p.1 else none))
+    let ml := tl.map fun (n, ts) =>
+      nest 2
+        (joinSep
+          ((if n = 0 then
+              m!"the following tactics solve the goal:"
+            else
+              m!"the following tactics make {n} goal(s):") :: ts.map toMessageData)
+          (ofFormat Format.line))
+    logInfo (joinSep ml (ofFormat Format.line))
 
 end Mathlib.Tactic.Hint
