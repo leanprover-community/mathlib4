@@ -18,28 +18,26 @@ open scoped TensorProduct
 variable (R S A B : Type*)
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-variable [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A] [SMulCommClass R S A]
+variable [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A]
 variable [IsScalarTower R S A]
 
 namespace Algebra.TensorProduct
 
 open MulOpposite
 
-set_option maxHeartbeats 400000 in
-/-- `MulOpposite` commutes with `TensorProduct`. -/
+/-- `MulOpposite` distributes over `TensorProduct`. Note this is an `S`-algebra morphism, where
+`A/S/R` is a tower of algebras. -/
 def opAlgEquiv : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ :=
-  letI aux : Algebra S (Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ) := TensorProduct.leftAlgebra
-  letI aux : Algebra S (Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ)ᵐᵒᵖ := MulOpposite.instAlgebra
-  let e₁ : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₗ[S] (A ⊗[R] B)ᵐᵒᵖ :=
-    TensorProduct.AlgebraTensorModule.congr (opLinearEquiv S).symm (opLinearEquiv R).symm ≪≫ₗ opLinearEquiv S
-  let e₂ : A ⊗[R] B ≃ₗ[S] (Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ)ᵐᵒᵖ :=
+  letI e₁ : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₗ[S] (A ⊗[R] B)ᵐᵒᵖ :=
+    TensorProduct.AlgebraTensorModule.congr
+      (opLinearEquiv S).symm (opLinearEquiv R).symm ≪≫ₗ opLinearEquiv S
+  letI e₂ : A ⊗[R] B ≃ₗ[S] (Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ)ᵐᵒᵖ :=
     TensorProduct.AlgebraTensorModule.congr (opLinearEquiv S) (opLinearEquiv R) ≪≫ₗ opLinearEquiv S
   AlgEquiv.ofAlgHom
-    (algHomOfLinearMapTensorProduct e₁.toLinearMap (fun a₁ a₂ b₁ b₂ => unop_injective rfl)
-      (fun r => unop_injective rfl))
-    (AlgHom.opComm <|
-      algHomOfLinearMapTensorProduct e₂.toLinearMap (fun a₁ a₂ b₁ b₂ => unop_injective rfl)
-        (fun r => unop_injective rfl))
+    (algHomOfLinearMapTensorProduct e₁.toLinearMap
+      (fun a₁ a₂ b₁ b₂ => unop_injective rfl) (fun r => unop_injective rfl))
+    (AlgHom.opComm <| algHomOfLinearMapTensorProduct e₂.toLinearMap
+      (fun a₁ a₂ b₁ b₂ => unop_injective rfl) (fun r => unop_injective rfl))
     (AlgHom.op.symm.injective <| by ext <;> rfl) (by ext <;> rfl)
 
 theorem opAlgEquiv_apply (x : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ) :
