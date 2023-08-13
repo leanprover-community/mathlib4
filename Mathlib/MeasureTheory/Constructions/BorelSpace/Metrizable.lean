@@ -188,9 +188,6 @@ lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableS
   simp_rw [← measurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
   exact measurable_of_tendsto_ennreal' L As_mble h_lim
 
---#find_home measurableSet_of_tendsto_indicator
--- Gives: `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
-
 /-- If the indicator functions of a.e.-measurable sets `Aᵢ` converge a.e. to the indicator function
 of a set `A` along a nontrivial countably generated filter, then `A` is also a.e.-measurable. -/
 lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] (μ : Measure α)
@@ -201,7 +198,18 @@ lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] (μ : Measure α)
   simp_rw [← aemeasurable_indicator_const_iff₀ (1 : ℝ≥0∞)] at As_mble ⊢
   exact aemeasurable_of_tendsto_metrizable_ae L As_mble h_lim
 
--- #find_home nullMeasurableSet_of_tendsto_indicator
--- Gives: `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
+-- Q: Will this work?
+/-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
+and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
+tend to the measure of `A`. -/
+lemma tendsto_measure_of_tendsto_indicator [NeBot L] (μ : Measure α)
+    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
+    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
+    (h_lim : Tendsto (fun i ↦ (As i).indicator (fun _ ↦ (1 : ℝ≥0∞)))
+      L (𝓝 (A.indicator (fun _ ↦ (1 : ℝ≥0∞))))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  apply tendsto_measure_of_ae_tendsto_indicator L μ ?_ As_mble B_mble B_finmeas As_le_B
+  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
+  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
 
 end TendstoIndicator

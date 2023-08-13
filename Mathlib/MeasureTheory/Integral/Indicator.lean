@@ -52,7 +52,7 @@ limᵢ μ(Aᵢ) = μ(A).
 
 variable {α : Type _} [MeasurableSpace α] {A : Set α}
 variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
-
+/-
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
 the measures of `Aᵢ` tend to the measure of `A`. -/
@@ -85,6 +85,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGen
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
   tendsto_measure_of_ae_tendsto_indicator L μ A_mble As_mble MeasurableSet.univ
     (measure_ne_top μ univ) (eventually_of_forall (fun i ↦ subset_univ (As i))) h_lim
+ -/
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
 and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
