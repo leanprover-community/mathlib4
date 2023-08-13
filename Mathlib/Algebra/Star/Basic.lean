@@ -324,13 +324,13 @@ def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒ�
 #align star_ring_equiv_apply starRingEquiv_apply
 
 @[simp, norm_cast]
-theorem star_natCast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
+theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
 --Porting note: new theorem
 @[simp]
-theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
+theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
   star_natCast _
 
