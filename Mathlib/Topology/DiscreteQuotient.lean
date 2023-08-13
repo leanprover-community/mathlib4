@@ -65,11 +65,11 @@ of finite discrete spaces.
 
 open Set Function
 
-variable {α X Y Z : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
 @[ext] -- porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
-structure DiscreteQuotient (X : Type _) [TopologicalSpace X] extends Setoid X where
+structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is a clopen set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid.Rel x))
 #align discrete_quotient DiscreteQuotient

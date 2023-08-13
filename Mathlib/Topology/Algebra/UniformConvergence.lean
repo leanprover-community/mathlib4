@@ -57,7 +57,7 @@ open Topology Pointwise UniformConvergence
 
 section AlgebraicInstances
 
-variable {α β ι R : Type _} {𝔖 : Set <| Set α}
+variable {α β ι R : Type*} {𝔖 : Set <| Set α}
 
 @[to_additive]
 instance [Monoid β] : Monoid (α →ᵤ β) :=
@@ -127,7 +127,7 @@ end AlgebraicInstances
 
 section Group
 
-variable {α G ι : Type _} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [UniformGroup G]
+variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [UniformGroup G]
 
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
 @[to_additive "If `G` is a uniform additive group,
@@ -202,7 +202,7 @@ end Group
 
 section Module
 
-variable (𝕜 α E H : Type _) {hom : Type _} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
+variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α} [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
 

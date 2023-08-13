@@ -52,9 +52,9 @@ open Classical BigOperators NNReal ENNReal MeasureTheory
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-variable {α : Type _} [MeasurableSpace α] {μ : Measure α}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
 namespace ENNReal
 

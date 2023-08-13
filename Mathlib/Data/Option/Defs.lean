@@ -51,7 +51,7 @@ protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
   (← x).getDM y
 #align option.mget_or_else Option.getDM'
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 -- Porting note: Would need to add the attribute directly in `Init.Prelude`.
 -- attribute [inline] Option.isSome Option.isNone
@@ -69,12 +69,12 @@ theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a :=
 
 -- porting note: this lemma was introduced because it is necessary
 -- in `CategoryTheory.Category.PartialFun`
-lemma elim'_eq_elim {α β : Type _} (b : β) (f : α → β) (a : Option α) :
+lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by
   cases a <;> rfl
 
 
-theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
+theorem mem_some_iff {α : Type*} {a b : α} : a ∈ some b ↔ b = a := by simp
 #align option.mem_some_iff Option.mem_some_iff
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
