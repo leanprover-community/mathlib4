@@ -25,7 +25,7 @@ This file defines finset constructions on the product type `α × β`. Beware no
 
 open Multiset
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Finset
 

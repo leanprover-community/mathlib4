@@ -35,7 +35,7 @@ directly transfer to minima over multisets or finsets.
 
 open BigOperators
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open Tropical Finset
 

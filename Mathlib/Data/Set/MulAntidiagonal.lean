@@ -12,7 +12,7 @@ import Mathlib.Order.WellFoundedSet
 
 namespace Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Mul
 

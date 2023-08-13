@@ -19,16 +19,16 @@ This file defines the `comap` function on `MvPolynomial`.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 
 -/
 
 
 namespace MvPolynomial
 
-variable {σ : Type _} {τ : Type _} {υ : Type _} {R : Type _} [CommSemiring R]
+variable {σ : Type*} {τ : Type*} {υ : Type*} {R : Type*} [CommSemiring R]
 
 /-- Given an algebra hom `f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R`
 and a variable evaluation `v : τ → R`,

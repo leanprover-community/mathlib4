@@ -66,7 +66,7 @@ namespace Ideal
 
 section TorsionOf
 
-variable (R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`.-/
 @[simps!]
@@ -107,7 +107,7 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDiv
 
 /-- See also `CompleteLattice.Independent.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
-theorem CompleteLattice.Independent.linear_independent' {ι R M : Type _} {v : ι → M} [Ring R]
+theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
     [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
   refine' linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => _
@@ -127,7 +127,7 @@ end TorsionOf
 
 section
 
-variable (R M : Type _) [Ring R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
 /-- The span of `x` in `M` is isomorphic to `R` quotiented by the torsion ideal of `x`.-/
 noncomputable def quotTorsionOfEquivSpanSingleton (x : M) : (R ⧸ torsionOf R M x) ≃ₗ[R] R ∙ x :=
@@ -152,7 +152,7 @@ open nonZeroDivisors
 
 section Defs
 
-variable (R M : Type _) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 namespace Submodule
 
@@ -218,7 +218,7 @@ def IsTorsionBySet (s : Set R) :=
 
 /-- An `S`-torsion module is a module where every element is `a`-torsion for some `a` in `S`. -/
 @[reducible]
-def IsTorsion' (S : Type _) [SMul S M] :=
+def IsTorsion' (S : Type*) [SMul S M] :=
   ∀ ⦃x : M⦄, ∃ a : S, a • x = 0
 #align module.is_torsion' Module.IsTorsion'
 
@@ -233,7 +233,7 @@ end Module
 
 end Defs
 
-variable {R M : Type _}
+variable {R M : Type*}
 
 section
 
@@ -385,7 +385,7 @@ section Coprime
 
 open BigOperators
 
-variable {ι : Type _} {p : ι → Ideal R} {S : Finset ι}
+variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
 
 variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
@@ -476,7 +476,7 @@ namespace Submodule
 
 open BigOperators
 
-variable {ι : Type _} [DecidableEq ι] {S : Finset ι}
+variable {ι : Type*} [DecidableEq ι] {S : Finset ι}
 
 /-- If the `p i` are pairwise coprime, a `⨅ i, p i`-torsion module is the internal direct sum of
 its `p i`-torsion submodules.-/
@@ -535,7 +535,7 @@ def IsTorsionBySet.module : Module (R ⧸ I) M :=
 #align module.is_torsion_by_set.module Module.IsTorsionBySet.module
 
 instance IsTorsionBySet.isScalarTower
-    {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
+    {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
@@ -562,7 +562,7 @@ theorem torsionBySet.mk_smul (I : Ideal R) (b : R) (x : torsionBySet R M I) :
   rfl
 #align submodule.torsion_by_set.mk_smul Submodule.torsionBySet.mk_smul
 
-instance (I : Ideal R) {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M]
+instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
@@ -586,7 +586,7 @@ theorem torsionBy.mk_smul (a b : R) (x : torsionBy R M a) :
   rfl
 #align submodule.torsion_by.mk_smul Submodule.torsionBy.mk_smul
 
-instance (a : R) {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
+instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     IsScalarTower S (R ⧸ R ∙ a) (torsionBy R M a) :=
   inferInstance
 
@@ -602,7 +602,7 @@ open Module
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable (S : Type _) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M]
+variable (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M]
 
 @[simp]
 theorem mem_torsion'_iff (x : M) : x ∈ torsion' R M S ↔ ∃ a : S, a • x = 0 :=
