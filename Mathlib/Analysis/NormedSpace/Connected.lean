@@ -54,7 +54,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   have : Nontrivial E := (rank_pos_iff_nontrivial (R := ℝ)).1 (zero_lt_one.trans h)
   -- the set `sᶜ` is dense, therefore nonempty. Pick `a ∈ sᶜ`. We have to show that any
   -- `b ∈ sᶜ` can be joined to `a`.
-  obtain ⟨a, ha⟩ : sᶜ.Nonempty := hs.dense_compl.nonempty
+  obtain ⟨a, ha⟩ : sᶜ.Nonempty := (hs.dense_compl ℝ).nonempty
   refine ⟨a, ha, ?_⟩
   intro b hb
   rcases eq_or_ne a b with rfl|hab
@@ -101,7 +101,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     convert hy.units_smul ![-1, 1]
     simp [← List.ofFn_inj]
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
-      ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := (A.union B).dense_compl.nonempty
+      ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := ((A.union B).dense_compl ℝ).nonempty
   let z := c + t • y
   simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_nonempty_iff_eq_empty]
     at ht
