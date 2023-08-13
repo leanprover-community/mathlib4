@@ -44,7 +44,7 @@ namespace Rat
 
 open NumberField
 
-theorem discr : discr ℚ = 1 := by
+theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
   calc NumberField.discr ℚ
