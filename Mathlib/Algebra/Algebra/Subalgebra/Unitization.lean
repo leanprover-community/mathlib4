@@ -163,8 +163,8 @@ noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
   AlgEquiv.ofBijective algHom <| by
     refine ⟨?_, fun x ↦ ?_⟩
     · have := AlgHomClass.unitization_injective s h1
-        ((Subalgebra.val _).comp <| algHom) fun _ ↦ by simp
-      simp only [AlgHom.coe_comp, Subalgebra.coe_val] at this
+        ((Subalgebra.val _).comp algHom) fun _ ↦ by simp
+      rw [AlgHom.coe_comp] at this
       exact this.of_comp
     · obtain (⟨a, ha⟩ : (x : A) ∈ (NonUnitalSubalgebra.unitization s).range) :=
         (NonUnitalSubalgebra.unitization_range s).ge x.property
@@ -268,7 +268,7 @@ section Semiring
 variable {R A C : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
 variable [Algebra R A] [StarModule R A]
 
-/-! ## star_subalgebras -/
+/-! ## Star subalgebras -/
 
 /-- Turn a `StarSubalgebra` into a `NonUnitalStarSubalgebra` by forgetting that it contains `1`. -/
 def StarSubalgebra.toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
