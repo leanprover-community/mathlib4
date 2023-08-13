@@ -761,7 +761,9 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ :=
     le_csSup := fun s a hs ha => (Real.isLUB_sSup s ⟨a, ha⟩ hs).1 ha
     csSup_le := fun s a hs ha => (Real.isLUB_sSup s hs ⟨a, ha⟩).2 ha
     csInf_le := fun s a hs ha => (Real.is_glb_sInf s ⟨a, ha⟩ hs).1 ha
-    le_csInf := fun s a hs ha => (Real.is_glb_sInf s hs ⟨a, ha⟩).2 ha }
+    le_csInf := fun s a hs ha => (Real.is_glb_sInf s hs ⟨a, ha⟩).2 ha
+    csSup_of_not_bddAbove := fun s hs ↦ by simp [hs, sSup_def]
+    csInf_of_not_bddBelow := fun s hs ↦ by simp [hs, sInf_def, sSup_def] }
 
 theorem lt_sInf_add_pos {s : Set ℝ} (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) :
     ∃ a ∈ s, a < sInf s + ε :=
