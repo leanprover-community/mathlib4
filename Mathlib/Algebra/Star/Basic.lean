@@ -124,7 +124,7 @@ attribute [simp] star_trivial
 /-- A `*`-semigroup is a semigroup `R` with an involutive operation `star`
 such that `star (r * s) = star s * star r`.
 -/
-class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
+class StarSemigroup (R : Type u) [Mul R] extends InvolutiveStar R where
   /-- `star` skew-distributes over multiplication. -/
   star_mul : ∀ r s : R, star (r * s) = star s * star r
 #align star_semigroup StarSemigroup
@@ -174,7 +174,7 @@ theorem star_mul' [CommSemigroup R] [StarSemigroup R] (x y : R) : star (x * y) =
 
 /-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
-def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
+def starMulEquiv [Mul R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
   { (InvolutiveStar.star_involutive.toPerm star).trans opEquiv with
     toFun := fun x => MulOpposite.op (star x)
     map_mul' := fun x y => by simp only [star_mul, op_mul] }
@@ -305,19 +305,19 @@ theorem star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n �
 /-- A `*`-ring `R` is a (semi)ring with an involutive `star` operation which is additive
 which makes `R` with its multiplicative structure into a `*`-semigroup
 (i.e. `star (r * s) = star s * star r`).  -/
-class StarRing (R : Type u) [NonUnitalSemiring R] extends StarSemigroup R where
+class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarSemigroup R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_ring StarRing
 
-instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalSemiring R] [StarRing R] :
+instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R] [StarRing R] :
     StarAddMonoid R where
   star_add := StarRing.star_add
 #align star_ring.to_star_add_monoid StarRing.toStarAddMonoid
 
 /-- `star` as a `RingEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
-def starRingEquiv [NonUnitalSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
+def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
   { starAddEquiv.trans (MulOpposite.opAddEquiv : R ≃+ Rᵐᵒᵖ), starMulEquiv with
     toFun := fun x => MulOpposite.op (star x) }
 #align star_ring_equiv starRingEquiv
