@@ -1128,10 +1128,7 @@ noncomputable def rightHomologyFunctorOpNatIso :
     (rightHomologyFunctor C).op ≅ opFunctor C ⋙ leftHomologyFunctor Cᵒᵖ :=
   NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm)
     (by simp [rightHomologyMap_op])
-<<<<<<< HEAD
-=======
 
->>>>>>> origin
 /-- The opposite of the left homology functor is the right homology functor. -/
 @[simps!]
 noncomputable def leftHomologyFunctorOpNatIso :
@@ -1235,7 +1232,7 @@ end HasRightHomology
 /-- The right homology of a short complex `S` identifies to the kernel of the canonical
 morphism `cokernel S.f ⟶ S.X₃`. -/
 noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S.f]
-    [HasKernel (cokernel.desc S.f S.g S.zero)] :
+    [HasKernel (cokerneGl.desc S.f S.g S.zero)] :
     S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
   (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
 
