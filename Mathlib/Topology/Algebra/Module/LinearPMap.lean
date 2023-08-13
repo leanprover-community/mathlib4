@@ -185,7 +185,7 @@ theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
 
 /-! ### Topological properties of the inverse -/
 
-section inverse
+section Inverse
 
 variable {f : E →ₗ.[R] F} (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
 
@@ -226,6 +226,13 @@ theorem inverse_isClosable_iff : f.inverse.IsClosable ↔ LinearMap.ker f.closur
     use f.closure.inverse
     exact (closure_inverse_graph hf hf' h).symm
 
-end inverse
+/-- If `f` is invertible and closable, then taking the closure and the inverse commute. -/
+theorem inverse_closure (hcf : LinearMap.ker f.closure.toFun = ⊥) :
+    f.inverse.closure = f.closure.inverse := by
+  apply eq_of_eq_graph
+  rw [closure_inverse_graph hf hf' hcf,
+    IsClosable.graph_closure_eq_closure_graph ((inverse_isClosable_iff hf hf').mpr hcf)]
+
+end Inverse
 
 end LinearPMap
