@@ -1,8 +1,60 @@
 import Mathlib.Util.InfoTree
+import Std.Tactic.GuardMsgs
+-- import Std.Tactic.GuardExpr
+
+-- import Std.CodeAction.Attr
 
 open Lean Elab Meta
 
--- #eval do (← moduleInfoTrees `Mathlib.Data.Subtype).mapM fun t => InfoTree.format t
+/-- info: 0 -/
+#guard_msgs in
+#eval show MetaM _ from do
+  let (_, msgs, _) ← compileModule `Mathlib.Init.ZeroOne
+  for m in msgs do
+    IO.println (← m.data.format)
+  return msgs.length
+
+#exit
+
+#eval do (← moduleInfoTrees `Mathlib.Data.Subtype).mapM fun t => InfoTree.format t
+
+-- /-- info: true -/
+-- #guard_msgs in
+#eval do
+  let r ← moduleInfoTrees `Mathlib.Data.Subtype
+  return r.length != 0
+
+#eval do
+  let r ← moduleDeclInfoTrees `Mathlib.Data.Subtype
+  let names : List Name := r.map fun p : Name × InfoTree => p.fst
+  return names.length != 0
+
+#eval do
+  let r ← moduleDeclInfoTrees `Mathlib.Data.Subtype
+  let names : List Name := r.map fun p : Name × InfoTree => p.fst
+  return names
+
+-- /-- info: true -/
+-- #guard_msgs in
+#eval do
+  let (_, _, trees) ← compileModule' `Mathlib.Data.Subtype
+  return trees.length != 0
+
+-- /-- info: true -/
+-- #guard_msgs in
+#eval do
+  let (_, _, trees) ← compileModule `Mathlib.Data.Subtype
+  return trees.length != 0
+
+-- /-- info: true -/
+-- #guard_msgs in
+#eval do
+  let (_, _, trees) ← compileModule `Mathlib.LinearAlgebra.Lagrange
+  return trees.length != 0
+
+-- #guard_msgs in
+#eval reflInDecl_format `Mathlib.Data.Subtype `Subtype.restrict_apply
+-- [restrict p f x = f ↑x]
 
 -- #eval moduleDeclInfoTrees' `Mathlib.Data.Subtype
 
@@ -123,8 +175,7 @@ open Lean Elab Meta
 -- -/
 
 
-#eval reflInDecl_format `Mathlib.Data.Subtype `Subtype.restrict_apply
--- [restrict p f x = f ↑x]
+
 
 -- #eval exactInDecl_format `Mathlib.Data.Subtype `Subtype.surjective_restrict
 -- -- [((fun f => restrict p f) (fun x => if h : p x then f { val := x, property := h } else Nonempty.some (_ : Nonempty (β x)))
@@ -208,14 +259,14 @@ open Lean Elab Meta
 --       IO.println tactic
 --       IO.println "----"
 
-#eval show MetaM _ from do
-  for (decl, tactics) in ← tacticsInModule_format `Mathlib.LinearAlgebra.Lagrange do
-    IO.println "===="
-    IO.println decl
-    for (goal, tactic) in tactics do
-      IO.println goal
-      IO.println "----"
-      IO.println tactic
-      IO.println "----"
+-- #eval show MetaM _ from do
+--   for (decl, tactics) in ← tacticsInModule_format `Mathlib.LinearAlgebra.Lagrange do
+--     IO.println "===="
+--     IO.println decl
+--     for (goal, tactic) in tactics do
+--       IO.println goal
+--       IO.println "----"
+--       IO.println tactic
+--       IO.println "----"
 
-#eval show MetaM _ from do return (← compilationCache.get).toList.map (fun x => x.2.2.2.length)
+-- #eval show MetaM _ from do return (← compilationCache.get).toList.map (fun x => x.2.2.2.length)
