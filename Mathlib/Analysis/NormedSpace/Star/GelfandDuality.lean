@@ -149,7 +149,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     roots shows that the norm is preserved. -/
   have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
     unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
-  rw [map_mul, (IsSelfAdjoint.star_mul_self _).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
+  rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
   simp only [ENNReal.coe_eq_coe, CstarRing.nnnorm_star_mul_self, ← sq] at this
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
