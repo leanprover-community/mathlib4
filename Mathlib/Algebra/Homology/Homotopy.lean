@@ -782,7 +782,7 @@ def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : Comple
 
 end HomotopyEquiv
 
-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
+/-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
 /-- Homotopic maps induce the same map on homology.
 -/
@@ -815,7 +815,7 @@ def homology'ObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
   inv_hom_id := by
     rw [← Functor.map_comp, homology_map_eq_of_homotopy f.homotopyInvHomId,
       CategoryTheory.Functor.map_id]
-#align homology_obj_iso_of_homotopy_equiv homology'ObjIsoOfHomotopyEquiv
+#align homology_obj_iso_of_homotopy_equiv homology'ObjIsoOfHomotopyEquiv-/
 
 variable (V c)
 

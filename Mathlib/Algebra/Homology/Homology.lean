@@ -22,6 +22,7 @@ As a consequence we construct `homologyFunctor i : HomologicalComplex V c ⥤ V`
 computing the `i`-th homology.
 -/
 
+/- redundant with the new homology API
 
 universe v u
 
@@ -325,3 +326,4 @@ def gradedhomology'Functor [HasCokernels V] : HomologicalComplex V c ⥤ GradedO
 #align graded_homology_functor gradedhomology'Functor
 
 end
+-/

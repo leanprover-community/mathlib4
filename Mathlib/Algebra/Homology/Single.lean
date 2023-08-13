@@ -195,7 +195,7 @@ theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).
   rfl
 #align chain_complex.single₀_map_f_succ ChainComplex.single₀_map_f_succ
 
-section
+/-section
 
 variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
@@ -223,7 +223,7 @@ noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
     fun f => (Functor.zero_obj _).eq_of_tgt _ _
 #align chain_complex.homology_functor_succ_single₀ ChainComplex.homology'FunctorSuccSingle₀
 
-end
+end-/
 
 variable {V}
 
@@ -392,7 +392,7 @@ theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).
   rfl
 #align cochain_complex.single₀_map_f_succ CochainComplex.single₀_map_f_succ
 
-section
+/-section
 
 variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
@@ -420,7 +420,7 @@ noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
     fun f => (Functor.zero_obj _).eq_of_tgt _ _
 #align cochain_complex.homology_functor_succ_single₀ CochainComplex.homology'FunctorSuccSingle₀
 
-end
+end-/
 
 variable {V}
 

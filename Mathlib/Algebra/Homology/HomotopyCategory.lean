@@ -173,6 +173,8 @@ lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
 variable (V c)
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
 
+/- redundant with the new homology API
+
 /-- The `i`-th homology, as a functor from the homotopy category. -/
 def homology'Functor (i : ι) : HomotopyCategory V c ⥤ V :=
   CategoryTheory.Quotient.lift _ (_root_.homology'Functor V c i) fun _ _ _ _ ⟨h⟩ =>
@@ -202,6 +204,8 @@ theorem homology'Functor_map_factors (i : ι) {C D : HomologicalComplex V c} (f 
       ((homology'Functor V c i).map ((quotient V c).map f) : _) :=
   (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homology'Functor V c i) _ f).symm
 #align homotopy_category.homology_functor_map_factors HomotopyCategory.homology'Functor_map_factors
+
+-/
 
 end HomotopyCategory
 

@@ -289,12 +289,28 @@ variable (C c)
 
 section
 
-attribute [local simp] homologyMap_comp
+attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
 @[simps]
 noncomputable def homologyFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
   obj K := K.homology i
   map f := homologyMap f i
+
+@[simps]
+noncomputable def gradedHomologyFunctor [CategoryWithHomology C] :
+    HomologicalComplex C c ⥤ GradedObject ι C where
+  obj K i := K.homology i
+  map f i := homologyMap f i
+
+@[simps]
+noncomputable def cyclesFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
+  obj K := K.cycles i
+  map f := cyclesMap f i
+
+@[simps]
+noncomputable def opcyclesFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
+  obj K := K.opcycles i
+  map f := opcyclesMap f i
 
 end
 
@@ -618,6 +634,36 @@ lemma single₀Homology₀Iso_inv_comp_single₀_homologyι (X : C) :
   simp
   rfl
 
+@[reassoc (attr := simp)]
+lemma single₀Cycles₀Iso_hom_naturality {A B : C} (f : A ⟶ B) :
+    HomologicalComplex.cyclesMap ((single₀ C).map f) 0 ≫ (single₀Cycles₀Iso B).hom =
+      (single₀Cycles₀Iso A).hom ≫ f := by
+  simp only [← cancel_mono (single₀Cycles₀Iso B).inv, assoc, Iso.hom_inv_id,
+    comp_id, ← cancel_mono (HomologicalComplex.iCycles _ _),
+    HomologicalComplex.cyclesMap_i, single₀_map_f_0,
+    single₀Cycles₀Iso_inv_comp_iCycles, comp_id,
+    ← cancel_epi (single₀Cycles₀Iso A).inv, Iso.inv_hom_id_assoc,
+    single₀Cycles₀Iso_inv_comp_iCycles_assoc]
+
+@[reassoc (attr := simp)]
+lemma single₀Homology₀Iso_hom_naturality {A B : C} (f : A ⟶ B) :
+    HomologicalComplex.homologyMap ((single₀ C).map f) 0 ≫ (single₀Homology₀Iso B).hom =
+      (single₀Homology₀Iso A).hom ≫ f := by
+  simp only [← cancel_epi (HomologicalComplex.homologyπ _ _),
+    HomologicalComplex.homologyπ_naturality_assoc,
+    single₀_homologyπ_comp_single₀Homology₀Iso_hom, single₀Cycles₀Iso_hom_naturality,
+    single₀_homologyπ_comp_single₀Homology₀Iso_hom_assoc]
+
+variable (C)
+
+noncomputable def single₀CompCyclesFunctor₀Iso [CategoryWithHomology C] :
+    single₀ C ⋙ HomologicalComplex.cyclesFunctor _ _ 0 ≅ 𝟭 C :=
+  NatIso.ofComponents single₀Cycles₀Iso (by aesop_cat)
+
+noncomputable def single₀CompHomologyFunctor₀Iso [CategoryWithHomology C] :
+    single₀ C ⋙ HomologicalComplex.homologyFunctor _ _ 0 ≅ 𝟭 C :=
+  NatIso.ofComponents single₀Homology₀Iso (by aesop_cat)
+
 end
 
 @[simp]
@@ -710,6 +756,36 @@ lemma single₀_homologyπ_comp_single₀Homology₀Iso_hom (X : C) :
     ((single₀ C).obj X).homologyπ 0 ≫ (single₀Homology₀Iso X).hom =
       (single₀Cycles₀Iso X).hom :=
     ((homologyDataSingle₀Obj X).left.homologyπ_comp_homologyIso_hom).trans (comp_id _)
+
+@[reassoc (attr := simp)]
+lemma single₀Cycles₀Iso_hom_naturality {A B : C} (f : A ⟶ B) :
+    HomologicalComplex.cyclesMap ((single₀ C).map f) 0 ≫ (single₀Cycles₀Iso B).hom =
+      (single₀Cycles₀Iso A).hom ≫ f := by
+  simp only [← cancel_mono (single₀Cycles₀Iso B).inv, assoc, Iso.hom_inv_id,
+    comp_id, ← cancel_mono (HomologicalComplex.iCycles _ _),
+    HomologicalComplex.cyclesMap_i, single₀_map_f_0,
+    single₀Cycles₀Iso_inv_comp_iCycles, comp_id,
+    ← cancel_epi (single₀Cycles₀Iso A).inv, Iso.inv_hom_id_assoc,
+    single₀Cycles₀Iso_inv_comp_iCycles_assoc]
+
+@[reassoc (attr := simp)]
+lemma single₀Homology₀Iso_hom_naturality {A B : C} (f : A ⟶ B) :
+    HomologicalComplex.homologyMap ((single₀ C).map f) 0 ≫ (single₀Homology₀Iso B).hom =
+      (single₀Homology₀Iso A).hom ≫ f := by
+  simp only [← cancel_epi (HomologicalComplex.homologyπ _ _),
+    HomologicalComplex.homologyπ_naturality_assoc,
+    single₀_homologyπ_comp_single₀Homology₀Iso_hom, single₀Cycles₀Iso_hom_naturality,
+    single₀_homologyπ_comp_single₀Homology₀Iso_hom_assoc]
+
+variable (C)
+
+noncomputable def single₀CompCyclesFunctor₀Iso [CategoryWithHomology C] :
+    single₀ C ⋙ HomologicalComplex.cyclesFunctor _ _ 0 ≅ 𝟭 C :=
+  NatIso.ofComponents single₀Cycles₀Iso (by aesop_cat)
+
+noncomputable def single₀CompHomologyFunctor₀Iso [CategoryWithHomology C] :
+    single₀ C ⋙ HomologicalComplex.homologyFunctor _ _ 0 ≅ 𝟭 C :=
+  NatIso.ofComponents single₀Homology₀Iso (by aesop_cat)
 
 end
 

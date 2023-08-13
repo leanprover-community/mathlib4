@@ -26,6 +26,8 @@ open CategoryTheory.Limits
 
 universe v u
 
+/- redundant with the new homology API
+
 section
 
 variable {ι : Type _}
@@ -219,7 +221,7 @@ theorem CategoryTheory.Functor.quasiIso'_of_map_quasiIso' {C D : HomologicalComp
     isIso_of_reflects_iso _ F⟩
 #align category_theory.functor.quasi_iso_of_map_quasi_iso CategoryTheory.Functor.quasiIso'_of_map_quasiIso'
 
-end
+end-/
 
 section
 

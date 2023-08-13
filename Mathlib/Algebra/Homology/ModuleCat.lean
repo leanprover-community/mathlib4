@@ -17,6 +17,8 @@ We provide some additional API to work with homological complexes in
 `ModuleCat R`.
 -/
 
+/- these does not seem to be used anywhere so far...
+in case of need, these should be developed in `ShortComplex.ModuleCat`
 
 universe v u
 
@@ -119,4 +121,4 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
   dsimp
   abel-/
 
-end ModuleCat
+end ModuleCat-/
