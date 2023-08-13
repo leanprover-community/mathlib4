@@ -1459,7 +1459,7 @@ open Cardinal
 `aleph o`. Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
 You can also write `ω_ 1` as `ω₁`.
 -/
-def initial (x : Ordinal.{u}) : Ordinal.{u} := (aleph x).ord
+def initial (o : Ordinal.{u}) : Ordinal.{u} := (aleph o).ord
 
 @[inherit_doc]
 scoped notation "ω_" => Ordinal.initial
@@ -1501,12 +1501,12 @@ open scoped Cardinal
 /--
 Bounding the cardinal of an ordinal-indexed union of sets.
 -/
-lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {o : Ordinal} {κ : Cardinal}
-    (ho : o.card ≤ κ) (hκ : ℵ₀ ≤ κ) (A : Ordinal → Set β)
-    (hA : ∀ j < o, #(A j) ≤ κ) :
-    #(⋃ j < o, A j) ≤ κ := by
+lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {o : Ordinal} {c : Cardinal}
+    (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
+    (hA : ∀ j < o, #(A j) ≤ c) :
+    #(⋃ j < o, A j) ≤ c := by
   simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoOut.symm.surjective.range_comp]
-  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hκ)
+  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hc)
   rw [mk_ordinal_out]
   exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
 
