@@ -68,7 +68,7 @@ open Function
 
 section Variants
 
-variable {M N : Type _} (μ : M → N → N) (r : N → N → Prop)
+variable {M N : Type*} (μ : M → N → N) (r : N → N → Prop)
 
 variable (M N)
 
@@ -243,7 +243,7 @@ end Contravariant
 
 section Monotone
 
-variable {α : Type _} {M N μ} [Preorder α] [Preorder N]
+variable {α : Type*} {M N μ} [Preorder α] [Preorder N]
 
 variable {f : N → α}
 

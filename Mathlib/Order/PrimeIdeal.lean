@@ -37,14 +37,14 @@ open Order.PFilter
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 namespace Ideal
 
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
 -- porting note: no attr @[nolint has_nonempty_instance]
-structure PrimePair (P : Type _) [Preorder P] where
+structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P
   isCompl_I_F : IsCompl (I : Set P) F

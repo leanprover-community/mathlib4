@@ -31,7 +31,7 @@ namespace MeasureTheory
 
 open Set Filter TopologicalSpace
 
-variable {α β ι : Type _} {m : MeasurableSpace α} [MetricSpace β] {μ : Measure α}
+variable {α β ι : Type*} {m : MeasurableSpace α} [MetricSpace β] {μ : Measure α}
 
 namespace Egorov
 
@@ -187,7 +187,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
 
 end Egorov
 
-variable [SemilatticeSup ι] [Nonempty ι] [Countable ι] {γ : Type _} [TopologicalSpace γ]
+variable [SemilatticeSup ι] [Nonempty ι] [Countable ι] {γ : Type*} [TopologicalSpace γ]
   {f : ι → α → β} {g : α → β} {s : Set α}
 
 /-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of strongly measurable functions that

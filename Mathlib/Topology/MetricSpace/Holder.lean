@@ -35,7 +35,7 @@ Hölder continuity, Lipschitz continuity
  -/
 
 
-variable {X Y Z : Type _}
+variable {X Y Z : Type*}
 
 open Filter Set
 
