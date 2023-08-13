@@ -37,7 +37,7 @@ Related to the TODO in the module docstring of `Mathlib.Order.PartialSups`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section GeneralizedBooleanAlgebra
 
@@ -83,7 +83,7 @@ theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed 
 -- Porting note: `disjointedRec` had a change in universe level.
 /-- An induction principle for `disjointed`. To define/prove something on `disjointed f n`, it's
 enough to define/prove it for `f n` and being able to extend through diffs. -/
-def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
+def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
     ∀ ⦃n⦄, p (f n) → p (disjointed f n)
   | 0 => id
   | n + 1 => fun h => by
@@ -97,7 +97,7 @@ def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p
 #align disjointed_rec disjointedRec
 
 @[simp]
-theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
+theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
     (h₀ : p (f 0)) : disjointedRec hdiff h₀ = h₀ :=
   rfl
 #align disjointed_rec_zero disjointedRec_zero

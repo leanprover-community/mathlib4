@@ -228,11 +228,11 @@ instance π_epi : Epi D.π := by
 
 end
 
-theorem types_π_surjective (D : GlueData (Type _)) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData (Type*)) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
-theorem types_ι_jointly_surjective (D : GlueData (Type _)) (x : D.glued) :
+theorem types_ι_jointly_surjective (D : GlueData (Type*)) (x : D.glued) :
     ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]

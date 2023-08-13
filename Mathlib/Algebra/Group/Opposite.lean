@@ -365,7 +365,7 @@ open MulOpposite
 @[to_additive (attr := simps! (config := { fullyApplied := false, simpRhs := true }))
       "Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
       is commutative, there is `AddEquiv.inv`."]
-def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
+def MulEquiv.inv' (G : Type*) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
   { (Equiv.inv G).trans opEquiv with map_mul' := fun x y => unop_injective <| mul_inv_rev x y }
 #align mul_equiv.inv' MulEquiv.inv'
 #align add_equiv.neg' AddEquiv.neg'
@@ -377,7 +377,7 @@ defines a semigroup homomorphism to `Nᵐᵒᵖ`. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
       "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
       commutes with `f y` for all `x, y` defines an additive semigroup homomorphism to `Sᵃᵒᵖ`."]
-def MulHom.toOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
+def MulHom.toOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
     (hf : ∀ x y, Commute (f x) (f y)) : M →ₙ* Nᵐᵒᵖ where
   toFun := op ∘ f
   map_mul' x y := by simp [(hf x y).eq]
@@ -391,7 +391,7 @@ defines a semigroup homomorphism from `Mᵐᵒᵖ`. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
       "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
       commutes with `f y` for all `x`, `y` defines an additive semigroup homomorphism from `Mᵃᵒᵖ`."]
-def MulHom.fromOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
+def MulHom.fromOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
     (hf : ∀ x y, Commute (f x) (f y)) : Mᵐᵒᵖ →ₙ* N where
   toFun := f ∘ MulOpposite.unop
   map_mul' _ _ := (f.map_mul _ _).trans (hf _ _).eq
@@ -405,7 +405,7 @@ a monoid homomorphism to `Nᵐᵒᵖ`. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
       "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
       with `f y` for all `x, y` defines an additive monoid homomorphism to `Sᵃᵒᵖ`."]
-def MonoidHom.toOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
+def MonoidHom.toOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
     (hf : ∀ x y, Commute (f x) (f y)) : M →* Nᵐᵒᵖ where
   toFun := op ∘ f
   map_one' := congrArg op f.map_one
@@ -420,7 +420,7 @@ a monoid homomorphism from `Mᵐᵒᵖ`. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
       "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
       with `f y` for all `x`, `y` defines an additive monoid homomorphism from `Mᵃᵒᵖ`."]
-def MonoidHom.fromOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
+def MonoidHom.fromOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
     (hf : ∀ x y, Commute (f x) (f y)) : Mᵐᵒᵖ →* N where
   toFun := f ∘ MulOpposite.unop
   map_one' := f.map_one

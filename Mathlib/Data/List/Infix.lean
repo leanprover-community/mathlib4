@@ -29,7 +29,7 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 
 open Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 

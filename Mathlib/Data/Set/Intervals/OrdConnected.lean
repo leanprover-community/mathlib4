@@ -29,7 +29,7 @@ namespace Set
 
 section Preorder
 
-variable {α β : Type _} [Preorder α] [Preorder β] {s t : Set α}
+variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
 
 /-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
@@ -54,7 +54,7 @@ theorem ordConnected_iff : OrdConnected s ↔ ∀ x ∈ s, ∀ y ∈ s, x ≤ y 
     ⟨fun hs _ hx _ hy _ => hs hx hy, fun H x hx y hy _ hz => H x hx y hy (le_trans hz.1 hz.2) hz⟩
 #align set.ord_connected_iff Set.ordConnected_iff
 
-theorem ordConnected_of_Ioo {α : Type _} [PartialOrder α] {s : Set α}
+theorem ordConnected_of_Ioo {α : Type*} [PartialOrder α] {s : Set α}
     (hs : ∀ x ∈ s, ∀ y ∈ s, x < y → Ioo x y ⊆ s) : OrdConnected s := by
   rw [ordConnected_iff]
   intro x hx y hy hxy
@@ -102,28 +102,28 @@ theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s
   ⟨fun _ hx _ hy => subset_sInter fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
 #align set.ord_connected_sInter Set.ordConnected_sInter
 
-theorem ordConnected_iInter {ι : Sort _} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
+theorem ordConnected_iInter {ι : Sort*} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
     OrdConnected (⋂ i, s i) :=
   ordConnected_sInter <| forall_range_iff.2 hs
 #align set.ord_connected_Inter Set.ordConnected_iInter
 
-instance ordConnected_iInter' {ι : Sort _} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
+instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
     OrdConnected (⋂ i, s i) :=
   ordConnected_iInter ‹_›
 #align set.ord_connected_Inter' Set.ordConnected_iInter'
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem ordConnected_biInter {ι : Sort _} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
+theorem ordConnected_biInter {ι : Sort*} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
     (hs : ∀ i hi, OrdConnected (s i hi)) : OrdConnected (⋂ (i) (hi), s i hi) :=
   ordConnected_iInter fun i => ordConnected_iInter <| hs i
 #align set.ord_connected_bInter Set.ordConnected_biInter
 
-theorem ordConnected_pi {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s : Set ι}
+theorem ordConnected_pi {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (h : ∀ i ∈ s, OrdConnected (t i)) : OrdConnected (s.pi t) :=
   ⟨fun _ hx _ hy _ hz i hi => (h i hi).out (hx i hi) (hy i hi) ⟨hz.1 i, hz.2 i⟩⟩
 #align set.ord_connected_pi Set.ordConnected_pi
 
-instance ordConnected_pi' {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s : Set ι}
+instance ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} [h : ∀ i, OrdConnected (t i)] : OrdConnected (s.pi t) :=
   ordConnected_pi fun i _ => h i
 #align set.ord_connected_pi' Set.ordConnected_pi'
@@ -169,7 +169,7 @@ theorem ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
 #align set.ord_connected_Ioo Set.ordConnected_Ioo
 
 @[instance]
-theorem ordConnected_singleton {α : Type _} [PartialOrder α] {a : α} :
+theorem ordConnected_singleton {α : Type*} [PartialOrder α] {a : α} :
     OrdConnected ({a} : Set α) := by
   rw [← Icc_self]
   exact ordConnected_Icc
@@ -186,19 +186,20 @@ theorem ordConnected_univ : OrdConnected (univ : Set α) :=
 #align set.ord_connected_univ Set.ordConnected_univ
 
 /-- In a dense order `α`, the subtype from an `OrdConnected` set is also densely ordered. -/
-instance [DenselyOrdered α] {s : Set α} [hs : OrdConnected s] : DenselyOrdered s :=
+instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected s] :
+    DenselyOrdered s :=
   ⟨fun a b (h : (a : α) < b) =>
     let ⟨x, H⟩ := exists_between h
     ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩
 
 @[instance]
-theorem ordConnected_preimage {F : Type _} [OrderHomClass F α β] (f : F) {s : Set β}
+theorem ordConnected_preimage {F : Type*} [OrderHomClass F α β] (f : F) {s : Set β}
     [hs : OrdConnected s] : OrdConnected (f ⁻¹' s) :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨OrderHomClass.mono _ hz.1, OrderHomClass.mono _ hz.2⟩⟩
 #align set.ord_connected_preimage Set.ordConnected_preimage
 
 @[instance]
-theorem ordConnected_image {E : Type _} [OrderIsoClass E α β] (e : E) {s : Set α}
+theorem ordConnected_image {E : Type*} [OrderIsoClass E α β] (e : E) {s : Set α}
     [hs : OrdConnected s] : OrdConnected (e '' s) := by
   erw [(e : α ≃o β).image_eq_preimage]
   apply ordConnected_preimage (e : α ≃o β).symm
@@ -206,7 +207,7 @@ theorem ordConnected_image {E : Type _} [OrderIsoClass E α β] (e : E) {s : Set
 
 -- porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
-theorem ordConnected_range {E : Type _} [OrderIsoClass E α β] (e : E) : OrdConnected (range e) := by
+theorem ordConnected_range {E : Type*} [OrderIsoClass E α β] (e : E) : OrdConnected (range e) := by
   simp_rw [← image_univ]
   exact ordConnected_image (e : α ≃o β)
 #align set.ord_connected_range Set.ordConnected_range
@@ -226,7 +227,7 @@ end Preorder
 
 section PartialOrder
 
-variable {α : Type _} [PartialOrder α] {s : Set α}
+variable {α : Type*} [PartialOrder α] {s : Set α}
 
 protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
   ⟨fun x hx y hy z hz => by
@@ -239,7 +240,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable {α : Type _} [LinearOrder α] {s : Set α} {x : α}
+variable {α : Type*} [LinearOrder α] {s : Set α} {x : α}
 
 @[instance]
 theorem ordConnected_uIcc {a b : α} : OrdConnected [[a, b]] :=

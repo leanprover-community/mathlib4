@@ -1036,7 +1036,7 @@ theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : Conti
   (continuousAt_sign_of_ne_zero (sin_ne_zero_iff.2 ⟨h0, hpi⟩)).comp continuous_sin.continuousAt
 #align real.angle.continuous_at_sign Real.Angle.continuousAt_sign
 
-theorem _root_.ContinuousOn.angle_sign_comp {α : Type _} [TopologicalSpace α] {f : α → Angle}
+theorem _root_.ContinuousOn.angle_sign_comp {α : Type*} [TopologicalSpace α] {f : α → Angle}
     {s : Set α} (hf : ContinuousOn f s) (hs : ∀ z ∈ s, f z ≠ 0 ∧ f z ≠ π) :
     ContinuousOn (sign ∘ f) s := by
   refine' (ContinuousAt.continuousOn fun θ hθ => _).comp hf (Set.mapsTo_image f s)
@@ -1046,7 +1046,7 @@ theorem _root_.ContinuousOn.angle_sign_comp {α : Type _} [TopologicalSpace α] 
 
 /-- Suppose a function to angles is continuous on a connected set and never takes the values `0`
 or `π` on that set. Then the values of the function on that set all have the same sign. -/
-theorem sign_eq_of_continuousOn {α : Type _} [TopologicalSpace α] {f : α → Angle} {s : Set α}
+theorem sign_eq_of_continuousOn {α : Type*} [TopologicalSpace α] {f : α → Angle} {s : Set α}
     {x y : α} (hc : IsConnected s) (hf : ContinuousOn f s) (hs : ∀ z ∈ s, f z ≠ 0 ∧ f z ≠ π)
     (hx : x ∈ s) (hy : y ∈ s) : (f y).sign = (f x).sign :=
   (hc.image _ (hf.angle_sign_comp hs)).isPreconnected.subsingleton (Set.mem_image_of_mem _ hy)

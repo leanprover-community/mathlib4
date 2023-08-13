@@ -7,8 +7,10 @@ Authors: Henrik Böving
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Order
+import Mathlib.Control.ULiftable
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Order.ULift
 
 #align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -92,6 +94,9 @@ def randBool [RandomGen g] : RandG g Bool :=
 instance : Random Bool where
   random := randBool
 
+instance {α : Type u} [Random α] : Random (ULift.{v} α) where
+  random {g} := ULiftable.up (random : RandG g α)
+
 instance : BoundedRandom Nat where
   randomR := λ lo hi h _ => do
     let z ← rand (Fin (hi - lo).succ)
@@ -114,6 +119,12 @@ instance {n : Nat} : BoundedRandom (Fin n) where
   randomR := λ lo hi h _ => do
     let ⟨r, h1, h2⟩ ← randBound Nat lo.val hi.val h
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
+
+instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
+  randomR {g} lo hi h := do
+    let ⟨v⟩
+      ← (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g _) : RandG g (ULift.{v} _))
+    pure ⟨ULift.up v.val, v.prop⟩
 
 end Random
 

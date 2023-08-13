@@ -31,7 +31,7 @@ open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.He
 /-! ### Factorization of ideals of Dedekind domains -/
 
 
-variable {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type _} [Field K]
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
