@@ -32,6 +32,20 @@ By default, the configs defined here test "user-observable" properties. For inst
 context. We also provide `.anyChanges` and `.onlyExprs` constructors for all configs, which compare
 every aspect of the objects and only the expressions appearing in the object, respectively.
 
+## Implementation notes
+
+We use the following pattern for specifying e.g. the `LocalContextComparisonConfig` in the `MetavarDeclComparisonConfig`:
+```
+structure MetavarDeclComparisonConfig where
+  ...
+  compareLocalContexts? : Option LocalContextComparisonConfig := some {}
+```
+If `compareLocalContexts?` is `none`, we don't compare local contexts at all.
+
+However, this pattern means that the config for comparing `Expr`s, which is needed both when comparing `LocalContext`s and `MetavarDecl`s, can't simply be extended by `LocalContextComparisonConfig`, as that's not always present in `MetavarDeclComparisonConfig`. It also can't simply be extended by *both* `LocalContextComparisonConfig` and `MetavarDeclComparisonConfig` (using this pattern), as then changing the setting in `MetavarDeclComparisonConfig` wouldn't propagate that setting down into `LocalContextComparisonConfig`.
+
+As such, we also pass `ExprComparisonConfig` as an argument to each `compare` function.
+
 ## Possible future features
 
 * Different `ExprComparisonConfig`s for each location expressions are compared, ideally with
