@@ -438,13 +438,13 @@ end maps
 
 end LowerSetTopology
 
-lemma UpperSetDual_iff_LowerSet [Preorder α] [TopologicalSpace α] :
+lemma upperSet_dual_iff_lowerSet [Preorder α] [TopologicalSpace α] :
     UpperSetTopology αᵒᵈ ↔ LowerSetTopology α := by
   constructor
   · apply UpperSetTopology.instLowerSetTopologyDual
   · apply LowerSetTopology.instUpperSetTopologyDual
 
-lemma LowerSetDual_iff_UpperSet [Preorder α] [TopologicalSpace α] :
+lemma lowerSet_dual_iff_upperSet [Preorder α] [TopologicalSpace α] :
     LowerSetTopology αᵒᵈ ↔ UpperSetTopology α := by
   constructor
   · apply LowerSetTopology.instUpperSetTopologyDual
