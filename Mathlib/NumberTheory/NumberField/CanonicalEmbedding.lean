@@ -13,11 +13,15 @@ import Mathlib.RingTheory.Discriminant
 
 The canonical embedding of a number field `K` of degree `n` is the ring homomorphism
 `K →+* ℂ^n` that sends `x ∈ K` to `(φ_₁(x),...,φ_n(x))` where the `φ_i`'s are the complex
-embeddings of `K`.
+embeddings of `K`. Note that we do not choose an ordering of the embeddings, but instead map `K`
+into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex embeddings.
 
 ## Main definitions and results
 
-* `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
+* `canonicalEmbedding`: the ring homorphism `K →+* ((K →+* ℂ) → ℂ)` defined by sending `x : K` to
+the vector `(φ x)` indexed by `φ : K →+* ℂ`.
+
+* `canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
 image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
 radius is finite.
 
