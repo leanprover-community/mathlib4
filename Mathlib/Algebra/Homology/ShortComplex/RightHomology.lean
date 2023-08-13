@@ -1232,7 +1232,7 @@ end HasRightHomology
 /-- The right homology of a short complex `S` identifies to the kernel of the canonical
 morphism `cokernel S.f ⟶ S.X₃`. -/
 noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S.f]
-    [HasKernel (cokerneGl.desc S.f S.g S.zero)] :
+    [HasKernel (cokernel.desc S.f S.g S.zero)] :
     S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
   (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
 
