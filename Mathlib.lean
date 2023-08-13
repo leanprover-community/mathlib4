@@ -475,6 +475,7 @@ import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
+import Mathlib.AlgebraicTopology.DoldKan.Equivalence
 import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
 import Mathlib.AlgebraicTopology.DoldKan.Faces
