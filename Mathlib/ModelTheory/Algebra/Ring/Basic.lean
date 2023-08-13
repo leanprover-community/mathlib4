@@ -21,6 +21,8 @@ namespace FirstOrder
 
 open FirstOrder
 
+/-- The type of Ring functions, to be used in the definition of the language of rings.
+It contains the operations (+,*,-,0,1) -/
 inductive ringFunc : ℕ → Type
   | add : ringFunc 2
   | mul : ringFunc 2
@@ -29,6 +31,7 @@ inductive ringFunc : ℕ → Type
   | one : ringFunc 0
   deriving DecidableEq
 
+/-- The language of rings contains the operations (+,*,-,0,1) -/
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
@@ -43,15 +46,25 @@ instance (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
 instance (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
   dsimp [Language.ring]; infer_instance
 
-abbrev zeroFunc : Language.ring.Functions 0 := zero
-
-abbrev oneFunc : Language.ring.Functions 0 := one
-
+/-- `RingFunc.add`, but with the defeq type `Language.ring.Functions 2` instead
+of `RingFunc 2` -/
 abbrev addFunc : Language.ring.Functions 2 := add
 
+/-- `RingFunc.mul`, but with the defeq type `Language.ring.Functions 2` instead
+of `RingFunc 2` -/
 abbrev mulFunc : Language.ring.Functions 2 := mul
 
+/-- `RingFunc.neg`, but with the defeq type `Language.ring.Functions 1` instead
+of `RingFunc 1` -/
 abbrev negFunc : Language.ring.Functions 1 := neg
+
+/-- `RingFunc.zero`, but with the defeq type `Language.ring.Functions 0` instead
+of `RingFunc 0` -/
+abbrev zeroFunc : Language.ring.Functions 0 := zero
+
+/-- `RingFunc.one`, but with the defeq type `Language.ring.Functions 0` instead
+of `RingFunc 0` -/
+abbrev oneFunc : Language.ring.Functions 0 := one
 
 instance (α : Type*) : Zero (Language.ring.Term α) :=
 { zero := Constants.term zeroFunc }
@@ -102,6 +115,8 @@ theorem card_ring : card Language.ring = 5 := by
 
 open Language ring Structure
 
+/-- A Type, `R` is a `CompatibleRing` if it is structure for the language of rings and this structure
+is the same as the structure already given on `R` by the classes `Add`, `Mul` etc. -/
 class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     extends Language.ring.Structure R where
   ( funMap_add : ∀ x, funMap addFunc x = x 0 + x 1 )
