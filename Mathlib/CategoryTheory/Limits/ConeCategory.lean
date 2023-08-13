@@ -67,6 +67,23 @@ lemma Cone.toStructuredArrow_comp_toUnder_comp_forget {F : J ⥤ C} (c : Cone F)
     c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _ ⋙ Under.forget _ = F :=
   rfl
 
+/-- Given a diagram of `StructuredArrow X F`s, we may obtain a cone with cone point `X`. -/
+@[simps!]
+def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X F) :
+    Cone (G ⋙ StructuredArrow.proj X F ⋙ F) where
+  π := { app := fun j => (G.obj j).hom }
+#align category_theory.structured_arrow_cone.diagram_to_cone CategoryTheory.Limits.Cone.fromStructuredArrow
+
+/-- Given a cone `c : cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
+arrows over `X` with `f` as the cone point.
+-/
+@[simps]
+def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} (f : X ⟶ F.obj c.pt) :
+    Cone ((F.mapCone c).toStructuredArrow ⋙ StructuredArrow.map f ⋙ StructuredArrow.pre _ K F) where
+  pt := StructuredArrow.mk f
+  π := { app := fun j => StructuredArrow.homMk (c.π.app j) rfl }
+#align category_theory.structured_arrow_cone.to_cone CategoryTheory.Limits.Cone.toStructuredArrowCone
+
 /-- Construct an object of the category `(Δ ↓ F)` from a cone on `F`. This is part of an
     equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
