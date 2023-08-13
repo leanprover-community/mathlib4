@@ -17,7 +17,7 @@ Properties of additive and multiplicative indicator functions involving `=ᶠ` a
 indicator, characteristic, filter
 -/
 
-variable {α β M E : Type _}
+variable {α β M E : Type*}
 
 open Set Filter
 

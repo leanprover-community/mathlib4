@@ -54,7 +54,7 @@ filter, germ
 
 namespace Filter
 
-variable {α β γ δ : Type _} {l : Filter α} {f g h : α → β}
+variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
 
 theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _ in l, a = b) ↔ a = b :=
   eventually_const
@@ -70,19 +70,19 @@ theorem EventuallyEq.comp_tendsto {f' : α → β} (H : f =ᶠ[l] f') {g : γ �
 #align filter.eventually_eq.comp_tendsto Filter.EventuallyEq.comp_tendsto
 
 /-- Setoid used to define the space of germs. -/
-def germSetoid (l : Filter α) (β : Type _) : Setoid (α → β) where
+def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
   r := EventuallyEq l
   iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
 #align filter.germ_setoid Filter.germSetoid
 
 /-- The space of germs of functions `α → β` at a filter `l`. -/
-def Germ (l : Filter α) (β : Type _) : Type _ :=
+def Germ (l : Filter α) (β : Type*) : Type _ :=
   Quotient (germSetoid l β)
 #align filter.germ Filter.Germ
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `Filter.germSetoid`. -/
-def productSetoid (l : Filter α) (ε : α → Type _) : Setoid ((a : _) → ε a) where
+def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
     ⟨fun _ => eventually_of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
@@ -92,13 +92,13 @@ def productSetoid (l : Filter α) (ε : α → Type _) : Setoid ((a : _) → ε 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
   `Filter.Germ`. -/
 -- Porting note: removed @[protected]
-def Product (l : Filter α) (ε : α → Type _) : Type _ :=
+def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 #align filter.product Filter.Product
 
 namespace Product
 
-variable {ε : α → Type _}
+variable {ε : α → Type*}
 
 instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
   ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
@@ -161,7 +161,7 @@ def map' {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.EventuallyEq 
 
 /-- Given a germ `f : Germ l β` and a function `F : (α → β) → γ` sending eventually equal functions
 to the same value, returns the value `F` takes on functions having germ `f` at `l`. -/
-def liftOn {γ : Sort _} (f : Germ l β) (F : (α → β) → γ) (hF : (l.EventuallyEq ⇒ (· = ·)) F F) :
+def liftOn {γ : Sort*} (f : Germ l β) (F : (α → β) → γ) (hF : (l.EventuallyEq ⇒ (· = ·)) F F) :
     γ :=
   Quotient.liftOn' f F hF
 #align filter.germ.lift_on Filter.Germ.liftOn
@@ -333,7 +333,7 @@ instance inhabited [Inhabited β] : Inhabited (Germ l β) :=
 
 section Monoid
 
-variable {M : Type _} {G : Type _}
+variable {M : Type*} {G : Type*}
 
 @[to_additive]
 instance mul [Mul M] : Mul (Germ l M) :=
@@ -538,7 +538,7 @@ end Monoid
 
 section Ring
 
-variable {R : Type _}
+variable {R : Type*}
 
 instance nontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
   let ⟨x, y, h⟩ := exists_pair_ne R
@@ -625,13 +625,13 @@ end Ring
 
 section Module
 
-variable {M N R : Type _}
+variable {M N R : Type*}
 
 @[to_additive]
-instance hasSmul' [SMul M β] : SMul (Germ l M) (Germ l β) :=
+instance instSMul' [SMul M β] : SMul (Germ l M) (Germ l β) :=
   ⟨map₂ (· • ·)⟩
-#align filter.germ.has_smul' Filter.Germ.hasSmul'
-#align filter.germ.has_vadd' Filter.Germ.hasVadd'
+#align filter.germ.has_smul' Filter.Germ.instSMul'
+#align filter.germ.has_vadd' Filter.Germ.instVAdd'
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c : Germ l M) • (f : Germ l β) :=
@@ -736,8 +736,7 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
   liftRel_const_iff
 #align filter.germ.const_le_iff Filter.Germ.const_le_iff
 
-instance preorder [Preorder β] : Preorder (Germ l β)
-    where
+instance preorder [Preorder β] : Preorder (Germ l β) where
   le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLE.refl l
   le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans

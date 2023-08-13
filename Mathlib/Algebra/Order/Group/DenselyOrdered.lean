@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section DenselyOrdered
 

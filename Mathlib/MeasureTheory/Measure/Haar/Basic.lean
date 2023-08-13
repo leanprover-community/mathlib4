@@ -75,7 +75,7 @@ namespace Measure
 
 section Group
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 /-! We put the internal functions in the construction of the Haar measure in a namespace,
   so that the chosen names don't clash with other declarations.
@@ -296,14 +296,14 @@ theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set 
 -/
 
 
-@[to_additive add_prehaar_le_add_index]
+@[to_additive add_prehaar_le_addIndex]
 theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G)
     (hU : (interior U).Nonempty) : prehaar (K₀ : Set G) U K ≤ index (K : Set G) K₀ := by
   unfold prehaar; rw [div_le_iff] <;> norm_cast
   · apply le_index_mul K₀ K hU
   · exact index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_le_index MeasureTheory.Measure.haar.prehaar_le_index
-#align measure_theory.measure.haar.add_prehaar_le_add_index MeasureTheory.Measure.haar.add_prehaar_le_add_index
+#align measure_theory.measure.haar.add_prehaar_le_add_index MeasureTheory.Measure.haar.add_prehaar_le_addIndex
 
 @[to_additive]
 theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).Nonempty) {K : Set G}
@@ -401,7 +401,7 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
   This is roughly equal to the Haar measure on compact sets,
   but it can differ slightly. We do know that
   `haarMeasure K₀ (interior K) ≤ chaar K₀ K ≤ haarMeasure K₀ K`. -/
-@[to_additive addCHaar "additive version of `measure_theory.measure.haar.chaar`"]
+@[to_additive addCHaar "additive version of `MeasureTheory.Measure.haar.chaar`"]
 noncomputable def chaar (K₀ : PositiveCompacts G) (K : Compacts G) : ℝ :=
   Classical.choose (nonempty_iInter_clPrehaar K₀) K
 #align measure_theory.measure.haar.chaar MeasureTheory.Measure.haar.chaar
@@ -537,7 +537,7 @@ variable [T2Space G]
 --               Please refer to leanprover/lean4#2077.
 
 /-- The function `chaar` interpreted in `ℝ≥0`, as a content -/
-@[to_additive "additive version of `measure_theory.measure.haar.haar_content`"]
+@[to_additive "additive version of `MeasureTheory.Measure.haar.haarContent`"]
 noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
   toFun K := ⟨chaar K₀ K, chaar_nonneg _ _⟩
   mono' K₁ K₂ h := by simp only [← NNReal.coe_le_coe, NNReal.toReal, chaar_mono, h]
@@ -761,17 +761,17 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
        disjoint because they are both of measure `μ K` (since `μ` is left regular) and also
        contained in `U`, yet we have that `μ U < 2 * μ K`. This show that `K / K` contains the
        neighborhood `V` of `1`, and therefore that it is itself such a neighborhood. -/
-  obtain ⟨L, hL, hLE, hLpos, hLtop⟩ : ∃ L : Set G, MeasurableSet L ∧ L ⊆ E ∧ 0 < μ L ∧ μ L < ∞
-  exact exists_subset_measure_lt_top hE hEpos
-  obtain ⟨K, hKL, hK, hKpos⟩ : ∃ (K : Set G), K ⊆ L ∧ IsCompact K ∧ 0 < μ K
-  exact MeasurableSet.exists_lt_isCompact_of_ne_top hL (ne_of_lt hLtop) hLpos
+  obtain ⟨L, hL, hLE, hLpos, hLtop⟩ : ∃ L : Set G, MeasurableSet L ∧ L ⊆ E ∧ 0 < μ L ∧ μ L < ∞ :=
+    exists_subset_measure_lt_top hE hEpos
+  obtain ⟨K, hKL, hK, hKpos⟩ : ∃ (K : Set G), K ⊆ L ∧ IsCompact K ∧ 0 < μ K :=
+    MeasurableSet.exists_lt_isCompact_of_ne_top hL (ne_of_lt hLtop) hLpos
   have hKtop : μ K ≠ ∞ := by
     apply ne_top_of_le_ne_top (ne_of_lt hLtop)
     apply measure_mono hKL
-  obtain ⟨U, hUK, hU, hμUK⟩ : ∃ (U : Set G), U ⊇ K ∧ IsOpen U ∧ μ U < μ K + μ K
-  exact Set.exists_isOpen_lt_add K hKtop hKpos.ne'
-  obtain ⟨V, hV1, hVKU⟩ : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U
-  exact compact_open_separated_mul_left hK hU hUK
+  obtain ⟨U, hUK, hU, hμUK⟩ : ∃ (U : Set G), U ⊇ K ∧ IsOpen U ∧ μ U < μ K + μ K :=
+    Set.exists_isOpen_lt_add K hKtop hKpos.ne'
+  obtain ⟨V, hV1, hVKU⟩ : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U :=
+    compact_open_separated_mul_left hK hU hUK
   have hv : ∀ v : G, v ∈ V → ¬Disjoint ({v} * K) K := by
     intro v hv hKv
     have hKvsub : {v} * K ∪ K ⊆ U := by
@@ -786,9 +786,9 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
       simp only [singleton_mul, image_mul_left, measure_preimage_mul]
     rw [hKtranslate, lt_self_iff_false] at hcontr
     assumption
-  suffices : V ⊆ E / E; exact Filter.mem_of_superset hV1 this
+  suffices V ⊆ E / E from Filter.mem_of_superset hV1 this
   intro v hvV
-  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ {v} * K ∧ x ∈ K; exact Set.not_disjoint_iff.1 (hv v hvV)
+  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ {v} * K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
   refine' ⟨x, v⁻¹ * x, hLE (hKL hxvK), _, _⟩
   · apply hKL.trans hLE
     simpa only [singleton_mul, image_mul_left, mem_preimage] using hxK
@@ -802,7 +802,7 @@ end Group
 
 section CommGroup
 
-variable {G : Type _} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G] [T2Space G]
+variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G] [T2Space G]
   [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G] (μ : Measure G) [IsHaarMeasure μ]
 
 /-- Any Haar measure is invariant under inversion in an abelian group. -/
@@ -821,7 +821,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant [LocallyCompactSpace G] 
     simp only [hc, smul_smul, pow_two, Measure.map_smul]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
-    · simpa only [inv_involutive, Involutive.comp_self, map_id]
+    simpa only [inv_involutive, Involutive.comp_self, map_id]
   have K : PositiveCompacts G := Classical.arbitrary _
   have : c ^ 2 * μ K = 1 ^ 2 * μ K := by
     conv_rhs => rw [μeq]
@@ -856,7 +856,7 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn
 #align measure_theory.measure.measure_preserving_zsmul MeasureTheory.Measure.measurePreserving_zsmul
 
 @[to_additive]
-theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) {X : Type _}
+theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x ^ n) μ' μ :=
   (measurePreserving_zpow μ hn).comp hf

@@ -95,7 +95,7 @@ instance lieRing (L' : LieSubalgebra R L) : LieRing L'
 
 section
 
-variable {R₁ : Type _} [Semiring R₁]
+variable {R₁ : Type*} [Semiring R₁]
 
 /-- A Lie subalgebra inherits module structures from `L`. -/
 instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) : Module R₁ L' :=

@@ -29,7 +29,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 /-- A noetherian object is an object
 which does not have infinite increasing sequences of subobjects.
