@@ -74,7 +74,7 @@ def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X 
   π := { app := fun j => (G.obj j).hom }
 #align category_theory.structured_arrow_cone.diagram_to_cone CategoryTheory.Limits.Cone.fromStructuredArrow
 
-/-- Given a cone `c : cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
+/-- Given a cone `c : Cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point.
 -/
 @[simps]
@@ -204,6 +204,21 @@ def Cocone.toCostructuredArrowCompToOverCompForget {F : J ⥤ C} (c : Cocone F) 
 lemma Cocone.toCostructuredArrow_comp_toOver_comp_forget {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ Over.forget _ = F :=
   rfl
+
+/-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
+@[simps!]
+def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :
+    Cocone (G ⋙ CostructuredArrow.proj F X ⋙ F) where
+  ι := { app := fun j => (G.obj j).hom }
+
+/-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
+    costructured arrows over `X` with `f` as the cone point. -/
+@[simps]
+def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) {X : D}
+    (f : F.obj c.pt ⟶ X) : Cocone ((F.mapCocone c).toCostructuredArrow ⋙
+      CostructuredArrow.map f ⋙ CostructuredArrow.pre _ _ _) where
+  pt := CostructuredArrow.mk f
+  ι := { app := fun j => CostructuredArrow.homMk (c.ι.app j) rfl }
 
 /-- Construct an object of the category `(F ↓ Δ)` from a cocone on `F`. This is part of an
     equivalence, see `Cocone.equivStructuredArrow`. -/
