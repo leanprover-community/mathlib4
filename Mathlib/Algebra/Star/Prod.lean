@@ -50,7 +50,8 @@ instance [Mul R] [Mul S] [StarMul R] [StarMul S] : StarMul (R × S)
 instance [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S] : StarAddMonoid (R × S)
     where star_add _ _ := Prod.ext (star_add _ _) (star_add _ _)
 
-instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [StarRing R] [StarRing S] : StarRing (R × S) :=
+instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [StarRing R] [StarRing S] :
+    StarRing (R × S) :=
   { inferInstanceAs (StarAddMonoid (R × S)),
     inferInstanceAs (StarMul (R × S)) with }
 
