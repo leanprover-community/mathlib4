@@ -210,21 +210,21 @@ variable [Preorder α] [Preorder β]
 
 open TopologicalSpace
 
-lemma upperSetTopology_coinduced' {t₁ : TopologicalSpace α} [UpperSetTopology α]
+lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [UpperSetTopology α]
     (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
   apply le_sup_of_le_left
   rwa [← continuous_iff_coinduced_le,
     ← @UpperSetTopology.monotone_iff_continuous α β _ _ t₁ _ (upperSetTopology' β) _ _ ]
 
-lemma Monotone_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology α]
+lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [UpperSetTopology α]
     {t₂ : TopologicalSpace β} [ScottTopology β] (hf : Monotone f) : coinduced f t₁ ≤ t₂ := by
   rw [ScottTopology.topology_eq β]
-  apply upperSetTopology_coinduced' hf
+  apply UpperSetTopology_Monotone_coinduced_LE' hf
 
-lemma Monotone_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
+lemma Monotone_From_UpperSetTopology_Continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
     {t₂ : TopologicalSpace β} [ScottTopology β] {f : α → β} (hf : Monotone f)  : Continuous f := by
   rw [continuous_iff_coinduced_le]
-  apply Monotone_coinduced hf
+  apply UpperSetTopology_Monotone_coinduced_LE hf
 
 end morphisms
 
