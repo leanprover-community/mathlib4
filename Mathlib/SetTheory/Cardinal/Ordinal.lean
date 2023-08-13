@@ -1219,6 +1219,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
 #align cardinal.extend_function_of_lt Cardinal.extend_function_of_lt
 
+
 --Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
 -- section Bit
 

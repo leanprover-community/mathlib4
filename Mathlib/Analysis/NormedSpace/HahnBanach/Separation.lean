@@ -192,7 +192,7 @@ theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClo
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
 #align geometric_hahn_banach_closed_point geometric_hahn_banach_closed_point
 
-/-- See also `NormedSpace.eq_iff_forall_dual_eq` and the class `SeparatingDual`. -/
+/-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     ∃ f : E →L[ℝ] ℝ, f x < f y := by
   obtain ⟨f, s, t, hs, st, ht⟩ :=
