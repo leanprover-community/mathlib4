@@ -31,7 +31,7 @@ structure BddDistLatCat where
 
 namespace BddDistLatCat
 
-instance : CoeSort BddDistLatCat (Type _) :=
+instance : CoeSort BddDistLatCat (Type*) :=
   ⟨fun X => X.toDistLatCat⟩
 
 instance (X : BddDistLatCat) : DistribLattice X :=
@@ -40,14 +40,14 @@ instance (X : BddDistLatCat) : DistribLattice X :=
 attribute [instance] BddDistLatCat.isBoundedOrder
 
 /-- Construct a bundled `BddDistLatCat` from a `BoundedOrder` `DistribLattice`. -/
-def of (α : Type _) [DistribLattice α] [BoundedOrder α] : BddDistLatCat :=
+def of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLatCat :=
   -- Porting note: was `⟨⟨α⟩⟩`
   -- see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{α := α}⟩
 #align BddDistLat.of BddDistLatCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddDistLat.coe_of BddDistLatCat.coe_of
 

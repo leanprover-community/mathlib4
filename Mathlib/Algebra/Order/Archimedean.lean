@@ -31,7 +31,7 @@ number `n` such that `x ≤ n • y`.
 
 open Int Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
 such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
