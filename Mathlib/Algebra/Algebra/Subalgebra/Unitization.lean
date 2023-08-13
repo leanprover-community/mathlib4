@@ -100,21 +100,22 @@ end LiftRange
 
 section Generic
 
+namespace NonUnitalSubalgebra
+
 variable {R S A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [SetLike S A]
   [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
 /-- The natural `R`-algebra homomorphism from the unitization of a non-unital subalgebra into
 the algebra containing it. -/
-def NonUnitalSubalgebra.unitization : Unitization R s →ₐ[R] A :=
+def unitization : Unitization R s →ₐ[R] A :=
   Unitization.lift (NonUnitalSubalgebraClass.subtype s)
 
 @[simp]
-theorem NonUnitalSubalgebra.unitization_apply (x : Unitization R s) :
-    NonUnitalSubalgebra.unitization s x = algebraMap R A x.fst + x.snd :=
+theorem unitization_apply (x : Unitization R s) :
+    unitization s x = algebraMap R A x.fst + x.snd :=
   rfl
 
-theorem NonUnitalSubalgebra.unitization_range :
-    (NonUnitalSubalgebra.unitization s).range = Algebra.adjoin R (s : Set A) := by
+theorem unitization_range : (unitization s).range = Algebra.adjoin R (s : Set A) := by
   rw [unitization, Unitization.lift_range]
   simp only [NonUnitalAlgHom.coe_range, NonUnitalSubalgebraClass.coeSubtype,
     Subtype.range_coe_subtype, SetLike.mem_coe]
@@ -123,7 +124,7 @@ theorem NonUnitalSubalgebra.unitization_range :
 /-- A sufficient condition for injectivity of `NonUnitalSubalgebra.unitization` when the scalars
 are a commutative ring. When the scalars are a field, one should use the more natural
 `NonUnitalStarSubalgebra.unitization_injective` whose hypothesis is easier to verify. -/
-theorem AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring A]
+theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
     (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
     (hf : ∀ x : s, f x = x) : Function.Injective f := by
@@ -138,7 +139,7 @@ theorem AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring 
 
 /-- This is a generic version which allows us to prove both
 `NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
-theorem AlgHomClass.unitization_injective {F R S A : Type*} [Field R] [Ring A]
+theorem _root_.AlgHomClass.unitization_injective {F R S A : Type*} [Field R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
     (s : S) (h1 : 1 ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
     (hf : ∀ x : s, f x = x) : Function.Injective f := by
@@ -149,27 +150,28 @@ theorem AlgHomClass.unitization_injective {F R S A : Type*} [Field R] [Ring A]
 variable {R S A : Type*} [Field R] [Ring A] [Algebra R A]
   [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
-theorem NonUnitalSubalgebra.unitization_injective (h1 : (1 : A) ∉ s) :
-    Function.Injective (NonUnitalSubalgebra.unitization s) :=
-  AlgHomClass.unitization_injective s h1 (NonUnitalSubalgebra.unitization s) fun _ ↦ by simp
+theorem unitization_injective (h1 : (1 : A) ∉ s) : Function.Injective (unitization s) :=
+  AlgHomClass.unitization_injective s h1 (unitization s) fun _ ↦ by simp
 
 /-- If a `NonUnitalSubalgebra` over a field does not contain `1`, then its unitization is
 isomorphic to its `Algebra.adjoin`. -/
 @[simps! apply_coe]
-noncomputable def NonUnitalSubalgebra.unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
+noncomputable def unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
     Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) :=
   let algHom : Unitization R s →ₐ[R] Algebra.adjoin R (s : Set A) :=
-    ((NonUnitalSubalgebra.unitization s).codRestrict _
-      fun x ↦ (NonUnitalSubalgebra.unitization_range s).le <| AlgHom.mem_range_self _ x)
+    ((unitization s).codRestrict _
+      fun x ↦ (unitization_range s).le <| AlgHom.mem_range_self _ x)
   AlgEquiv.ofBijective algHom <| by
     refine ⟨?_, fun x ↦ ?_⟩
     · have := AlgHomClass.unitization_injective s h1
         ((Subalgebra.val _).comp algHom) fun _ ↦ by simp
       rw [AlgHom.coe_comp] at this
       exact this.of_comp
-    · obtain (⟨a, ha⟩ : (x : A) ∈ (NonUnitalSubalgebra.unitization s).range) :=
-        (NonUnitalSubalgebra.unitization_range s).ge x.property
+    · obtain (⟨a, ha⟩ : (x : A) ∈ (unitization s).range) :=
+        (unitization_range s).ge x.property
       exact ⟨a, Subtype.ext ha⟩
+
+end NonUnitalSubalgebra
 
 end Generic
 
