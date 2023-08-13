@@ -386,8 +386,8 @@ theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (
   UpperSetTopology.IsOpen_sInter (α := αᵒᵈ) (fun s a ↦ hf s a)
 
 -- Alexandrov property, index formulation
-theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-  UpperSetTopology.isOpen_iInter (α := αᵒᵈ) hf
+theorem IsOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
+  UpperSetTopology.IsOpen_iInter (α := αᵒᵈ) hf
 
 lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
   rw [← isOpen_compl_iff, IsOpen_iff_IsLowerSet, isUpperSet_compl.symm, compl_compl]
