@@ -34,7 +34,7 @@ related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 differential equation
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Filter Function Set Metric TopologicalSpace intervalIntegral MeasureTheory
 open MeasureTheory.MeasureSpace (volume)
@@ -42,13 +42,13 @@ open scoped Filter Topology NNReal ENNReal Nat Interval
 
 noncomputable section
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- `Prop` structure holding the hypotheses of the Picard-Lindelöf theorem.
 
 The similarly named `PicardLindelof` structure is part of the internal API for convenience, so as
 not to constantly invoke choice, but is not intended for public use. -/
-structure IsPicardLindelof {E : Type _} [NormedAddCommGroup E] (v : ℝ → E → E) (tMin t₀ tMax : ℝ)
+structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E] (v : ℝ → E → E) (tMin t₀ tMax : ℝ)
     (x₀ : E) (L : ℝ≥0) (R C : ℝ) : Prop where
   ht₀ : t₀ ∈ Icc tMin tMax
   hR : 0 ≤ R
@@ -66,7 +66,7 @@ of using this structure.
 The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypotheses of the
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
-structure PicardLindelof (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   toFun : ℝ → E → E
   (tMin tMax : ℝ)
   t₀ : Icc tMin tMax
@@ -373,7 +373,7 @@ theorem exists_solution :
 
 end PicardLindelof
 
-theorem IsPicardLindelof.norm_le₀ {E : Type _} [NormedAddCommGroup E] {v : ℝ → E → E}
+theorem IsPicardLindelof.norm_le₀ {E : Type*} [NormedAddCommGroup E] {v : ℝ → E → E}
     {tMin t₀ tMax : ℝ} {x₀ : E} {C R : ℝ} {L : ℝ≥0}
     (hpl : IsPicardLindelof v tMin t₀ tMax x₀ L R C) : ‖v t₀ x₀‖ ≤ C :=
   hpl.norm_le t₀ hpl.ht₀ x₀ <| mem_closedBall_self hpl.hR

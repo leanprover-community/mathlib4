@@ -26,7 +26,7 @@ and `OrderTopology ℕ` become available.
 
 open Order Set TopologicalSpace Filter
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 instance (priority := 100) DiscreteTopology.firstCountableTopology [DiscreteTopology α] :
     FirstCountableTopology α where
