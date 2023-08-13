@@ -175,7 +175,8 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
     (F.map <|
       hc.lift <|
         (Cones.postcompose
-              ({ app := fun X => 𝟙 _ } : (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
+              ({ app := fun X => 𝟙 _ } :
+                (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 #align category_theory.preserves_finite_limits_of_flat.lift CategoryTheory.PreservesFiniteLimitsOfFlat.lift
 
