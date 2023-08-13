@@ -49,7 +49,7 @@ is then also a C⋆-norm.
 ## Implementation details
 
 We ensure that the uniform structure, and hence also the topological structure, is definitionally
-equal to the pullback of `instUniformSpaceProd` allong `Unitization.addEquiv` (this is essentially
+equal to the pullback of `instUniformSpaceProd` along `Unitization.addEquiv` (this is essentially
 viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. The same is true of the
 bornology.
 
@@ -62,7 +62,7 @@ open ContinuousLinearMap
 
 namespace Unitization
 
-/-- Given `(k, a) : Unitization 𝕜 A`, the second coordinate of `Unitization.splitMul (k, a)` iw
+/-- Given `(k, a) : Unitization 𝕜 A`, the second coordinate of `Unitization.splitMul (k, a)` is
 the natural representation of `Unitization 𝕜 A` on given by multiplication on the left `A →L[𝕜] A`;
 note that this is not just `NonUnitalAlgHom.Lmul` for a few reasons: (a) that would either be `A`
 acting on `A`, or (b) `Unitization 𝕜 A` acting on `Unitization 𝕜 A`, and (c) that's a
