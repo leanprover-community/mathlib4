@@ -27,7 +27,7 @@ topology does not coincide with the lower topology.
 - `UpperSetTopology.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
 - `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
 - `UpperSetTopology.monotone_iff_continuous` - the continuous functions are the monotone functions
-- `UpperSetTopology.Monotone_to_UpperTopology_Continuous` - a `Monotone` map from a `Preorder`
+- `UpperSetTopology.monotone_to_upperTopology_continuous` - a `Monotone` map from a `Preorder`
   with the `UpperSetTopology` to `Preorder` with the `UpperTopology` is `Continuous`
 
 ## Implementation notes
@@ -336,7 +336,7 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [UpperSetTopology 
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
 
-lemma Monotone_to_UpperTopology_Continuous [TopologicalSpace α]
+lemma monotone_to_upperTopology_continuous [TopologicalSpace α]
     [UpperSetTopology α] [TopologicalSpace β] [UpperTopology β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
   rw [continuous_def]
@@ -422,10 +422,10 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [LowerSetTopology 
   exact UpperSetTopology.monotone_iff_continuous (α := αᵒᵈ) (β := βᵒᵈ)
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
 
-lemma Monotone_to_LowerTopology_Continuous [TopologicalSpace α]
+lemma monotone_to_lowerTopology_continuous [TopologicalSpace α]
     [LowerSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
-  apply UpperSetTopology.Monotone_to_UpperTopology_Continuous (α := αᵒᵈ) (β := βᵒᵈ)
+  apply UpperSetTopology.monotone_to_upperTopology_continuous (α := αᵒᵈ) (β := βᵒᵈ)
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
   exact Monotone.dual hf
 
