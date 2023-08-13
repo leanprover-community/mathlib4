@@ -10,7 +10,9 @@ import Mathlib.Init.Propext
 #align_import init.meta.smt.congruence_closure from "leanprover-community/lean"@"9eae65f7144bcc692858b9dadf2e48181f4270b9"
 
 /-!
-## Congruence closures
+# Congruence closure
+
+See paper: Congruence Closure for Intensional Type Theory.
 -/
 
 universe u
