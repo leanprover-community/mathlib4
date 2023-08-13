@@ -30,7 +30,7 @@ a convex set.
 
 open LinearMap Set BigOperators Classical Convex Pointwise
 
-variable {𝕜 E F α β ι : Type _}
+variable {𝕜 E F α β ι : Type*}
 
 section OrderedSemiring
 

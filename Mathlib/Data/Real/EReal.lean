@@ -78,9 +78,9 @@ instance : DenselyOrdered EReal :=
 namespace EReal
 
 -- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
-instance decidableLt : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
+instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
   WithBot.decidableLT
-#align ereal.decidable_lt EReal.decidableLt
+#align ereal.decidable_lt EReal.decidableLT
 
 -- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
 instance : Top EReal := ⟨some ⊤⟩
@@ -141,7 +141,7 @@ directly will unfold `EReal` to `Option` which is undesirable.
 
 When working in term mode, note that pattern matching can be used directly. -/
 @[elab_as_elim]
-protected def rec {C : EReal → Sort _} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
+protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
   | (a : ℝ) => h_real a
@@ -169,7 +169,7 @@ theorem coe_mul (x y : ℝ) : (↑(x * y) : EReal) = x * y :=
   rfl
 #align ereal.coe_mul EReal.coe_mul
 
-/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+/-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. -/
 @[elab_as_elim]
 theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x)
@@ -197,7 +197,7 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
   | ⊤, ⊤ => top_top
 #align ereal.induction₂ EReal.induction₂
 
-/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+/-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
 @[elab_as_elim]
 theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (top_top : P ⊤ ⊤)
@@ -623,9 +623,9 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
   toFun x := EReal.toReal x
   invFun x := ⟨x, by simp⟩
   left_inv := fun ⟨x, hx⟩ => by
-      lift x to ℝ
-      · simpa [not_or, and_comm] using hx
-      · simp
+    lift x to ℝ
+    · simpa [not_or, and_comm] using hx
+    · simp
   right_inv x := by simp
 #align ereal.ne_top_bot_equiv_real EReal.neTopBotEquivReal
 
@@ -1112,7 +1112,7 @@ theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
-  simp only [sign, OrderHom.coe_fun_mk, EReal.coe_pos, EReal.coe_neg']
+  simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
 #align ereal.sign_coe EReal.sign_coe
 
 @[simp, norm_cast]
@@ -1203,6 +1203,7 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 end EReal
 
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
 /-
 namespace Tactic
 

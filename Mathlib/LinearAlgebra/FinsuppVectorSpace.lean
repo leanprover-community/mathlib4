@@ -18,8 +18,6 @@ This file contains results on the `R`-module structure on functions of finite su
 
 noncomputable section
 
-open Classical
-
 open Set LinearMap Submodule
 
 open Cardinal
@@ -30,11 +28,11 @@ namespace Finsupp
 
 section Ring
 
-variable {R : Type _} {M : Type _} {ι : Type _}
+variable {R : Type*} {M : Type*} {ι : Type*}
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
+theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
   apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
@@ -58,14 +56,15 @@ end Ring
 
 section Semiring
 
-variable {R : Type _} {M : Type _} {ι : Type _}
+variable {R : Type*} {M : Type*} {ι : Type*}
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap Submodule
 
+open scoped Classical in
 /-- The basis on `ι →₀ M` with basis vectors `λ ⟨i, x⟩, single i (b i x)`. -/
-protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
+protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
   Basis.ofRepr
     { toFun := fun g =>
         { toFun := fun ix => (b ix.1).repr (g ix.1) ix.2
@@ -100,16 +99,17 @@ protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (
 #align finsupp.basis Finsupp.basis
 
 @[simp]
-theorem basis_repr {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) (g : ι →₀ M) (ix) :
+theorem basis_repr {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) (g : ι →₀ M) (ix) :
     (Finsupp.basis b).repr g ix = (b ix.1).repr (g ix.1) ix.2 :=
   rfl
 #align finsupp.basis_repr Finsupp.basis_repr
 
 @[simp]
-theorem coe_basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) :
+theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
     ⇑(Finsupp.basis b) = fun ix : Σi, φ i => single ix.1 (b ix.1 ix.2) :=
   funext fun ⟨i, x⟩ =>
     Basis.apply_eq_iff.mpr <| by
+      classical
       ext ⟨j, y⟩
       by_cases h : i = j
       · cases h
@@ -141,7 +141,7 @@ end Finsupp
 
 namespace Basis
 
-variable {R M n : Type _}
+variable {R M n : Type*}
 
 variable [DecidableEq n] [Fintype n]
 
