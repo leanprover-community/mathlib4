@@ -33,6 +33,8 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 has as its objects `D`-morphisms of the form `S ⟶ T Y`, for some `Y : C`,
 and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
+-- We use explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
+-- structured arrows.
 -- @[nolint has_nonempty_instance]
 def StructuredArrow (S : D) (T : C ⥤ D) :=
   Comma (Functor.fromPUnit.{0} S) T
@@ -303,6 +305,8 @@ end StructuredArrow
 has as its objects `D`-morphisms of the form `S Y ⟶ T`, for some `Y : C`,
 and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
+-- We use explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
+-- costructured arrows.
 -- @[nolint has_nonempty_instance] -- Porting note: removed
 def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
