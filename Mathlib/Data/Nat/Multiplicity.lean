@@ -24,7 +24,8 @@ coefficients.
 
 * `Nat.Prime.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
   `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`. See `padicValNat_factorial` for this
-  result stated in the language of `p`-adic valuations.
+  result stated in the language of `p`-adic valuations and
+  `sub_one_mul_padicValNat_factorial_eq_sub_sum_digits` for a related result.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
 * `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
