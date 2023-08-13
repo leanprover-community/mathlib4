@@ -210,7 +210,7 @@ def toLowerSetOrderIso : OrderIso α (WithLowerSetTopology α) :=
 
 end WithLowerSetTopology
 
-def UpperLowerSet_toOrderDualHomeomorph [Preorder α] :
+def WithUpperSetTopology.toDualHomeomorph [Preorder α] :
     WithUpperSetTopology α ≃ₜ WithLowerSetTopology αᵒᵈ where
   toFun := OrderDual.toDual
   invFun := OrderDual.ofDual
