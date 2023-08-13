@@ -391,9 +391,15 @@ theorem seminorm_fderiv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
       ContDiffMapSupportedIn.seminorm 𝕜 E F n K (i+1) f := by
   simp_rw [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm]
   refine iSup_congr fun x ↦ ?_
-  rcases n.eq_zero_or_add_one with rfl|⟨k, hkn⟩
+  rcases eq_or_ne n 0 with rfl|hn
   · simp [iteratedFDeriv'_zero]
-  sorry
+  rcases lt_or_ge (i : ℕ∞) n with (hin|hin)
+  · have hin' : i + 1 ≤ n := sorry
+    have hin'' : i ≤ n - 1 := sorry
+    simp [hin', hin'', hn, ← norm_iteratedFDeriv_fderiv]
+  · have hin' : i + 1 > n := sorry
+    simp [hin']
+    sorry
 
 @[simps! apply]
 noncomputable def fderivL' : 𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
