@@ -58,14 +58,14 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
 #align infi_Ioi_eq_infi_rat_gt iInf_Ioi_eq_iInf_rat_gt
 
 -- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_of_tendsto {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+theorem rightLim_eq_of_tendsto {α β : Type*} [LinearOrder α] [TopologicalSpace β]
     [TopologicalSpace α] [OrderTopology α] [T2Space β] {f : α → β} {a : α} {y : β}
     (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) : Function.rightLim f a = y :=
   @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
 #align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
 
 -- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_sInf {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+theorem rightLim_eq_sInf {α β : Type*} [LinearOrder α] [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} (hf : Monotone f) {x : α}
     [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
     Function.rightLim f x = sInf (f '' Ioi x) :=
@@ -73,7 +73,7 @@ theorem rightLim_eq_sInf {α β : Type _} [LinearOrder α] [TopologicalSpace β]
 #align right_lim_eq_Inf rightLim_eq_sInf
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α] [Nonempty α]
+theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α] [Nonempty α]
     [(atTop : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
   haveI h_ne_bot : (atTop : Filter α).NeBot := atTop_neBot
@@ -100,14 +100,14 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α
     rw [Finset.mem_range_succ_iff]
 #align exists_seq_monotone_tendsto_at_top_at_top exists_seq_monotone_tendsto_atTop_atTop
 
-theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type _) [SemilatticeInf α] [Nonempty α]
+theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [SemilatticeInf α] [Nonempty α]
     [h2 : (atBot : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
   @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ h2
 #align exists_seq_antitone_tendsto_at_top_at_bot exists_seq_antitone_tendsto_atTop_atBot
 
 -- todo after the port: move to topology/algebra/order/monotone_convergence
-theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
+theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type*} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Antitone f)
     (hφ : Tendsto φ l atBot) : ⨆ i, f i = ⨆ i, f (φ i) :=
   le_antisymm
@@ -119,7 +119,7 @@ theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type _} [Preorder ι�
 namespace MeasureTheory
 
 -- todo after the port: move these lemmas to measure_theory/measure/measure_space?
-variable {α : Type _} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 theorem tendsto_measure_Ico_atTop [SemilatticeSup α] [NoMaxOrder α]
     [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :

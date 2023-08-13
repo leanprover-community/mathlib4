@@ -24,7 +24,7 @@ open Filter Finset Function
 
 open BigOperators Classical
 
-variable {ι κ R α : Type _}
+variable {ι κ R α : Type*}
 
 section NonUnitalNonAssocSemiring
 
