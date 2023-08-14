@@ -128,37 +128,6 @@ lemma normalClosure_def'' : normalClosure F K L = ⨆ f : L ≃ₐ[F] L, K.map f
 
 variable {K : IntermediateField F L}
 
-lemma normal_iff : List.TFAE [Normal F K,
-    normalClosure F K L = K,
-    normalClosure F K L ≤ K,
-    ∀ σ : K →ₐ[F] L, σ.fieldRange ≤ K,
-    ∀ σ : L →ₐ[F] L, K.map σ ≤ K,
-    ∀ σ : L ≃ₐ[F] L, K.map ↑σ ≤ K,
-    ∀ σ : K →ₐ[F] L, σ.fieldRange = K,
-    ∀ σ : L →ₐ[F] L, K.map σ = K,
-    ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K] := by
-  tfae_have 1 → 2
-  · apply normalClosure_of_normal
-  tfae_have 2 → 1
-  · exact fun h ↦ h ▸ normalClosure.normal F K L
-  tfae_have 3 ↔ 2
-  · exact (le_normalClosure K).le_iff_eq
-  tfae_have 3 ↔ 4
-  · rw [normalClosure_def, iSup_le_iff]
-  tfae_have 3 ↔ 5
-  · rw [normalClosure_def', iSup_le_iff]
-  tfae_have 3 ↔ 6
-  · rw [normalClosure_def'', iSup_le_iff]
-  tfae_have 1 → 7
-  · apply AlgHom.fieldRange_of_normal
-  tfae_have 7 → 8
-  · exact fun h σ ↦ (K.fieldRange_val ▸ AlgHom.map_fieldRange K.val σ).trans (h (σ.comp K.val))
-  tfae_have 8 → 9
-  · exact fun h σ ↦ h σ
-  tfae_have 9 → 6
-  · exact fun h σ ↦ (h σ).le
-  tfae_finish
-
 lemma normal_iff_normalClosure_eq : Normal F K ↔ normalClosure F K L = K :=
 ⟨@normalClosure_of_normal (K := K), fun h ↦ h ▸ normalClosure.normal F K L⟩
 
