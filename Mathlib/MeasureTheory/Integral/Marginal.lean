@@ -101,6 +101,13 @@ theorem prod_sum_univ [Fintype α] [Fintype γ] (f : α ⊕ γ → β) :
 theorem card_add_card_compl [Fintype α] (s : Finset α) : s.card + sᶜ.card = Fintype.card α := by
   rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
 
+@[simp]
+theorem cast_card_erase_of_mem [AddGroupWithOne R] {s : Finset α} (hs : a ∈ s) :
+    ((s.erase a).card : R) = s.card - 1 := by
+  rw [card_erase_of_mem hs, Nat.cast_sub, Nat.cast_one]
+  rw [Nat.add_one_le_iff, Finset.card_pos]
+  exact ⟨a, hs⟩
+
 end Finset
 
 end Finset
@@ -855,13 +862,10 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
   simp_rw [lintegral_const_mul' _ _ h1, prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
   refine' (ENNReal.mul_left_mono (lintegral_prod_norm_pow_le _ _ _)).trans_eq _
   · simp_rw [sum_insertNone, compl_insert, not_not, Option.elim, sum_const, nsmul_eq_mul]
-    rw [Finset.card_erase_of_mem h2i, mul_one_div, ← add_div, ← Nat.cast_add, ← Nat.add_sub_assoc,
-      card_add_card_compl, ← Nat.cast_one (R := ℝ), ← Nat.cast_sub, Nat.cast_one, div_self]
-    · rw [Nat.cast_ne_zero]
-      exact (Nat.sub_pos_of_lt Fintype.one_lt_card).ne'
-    · exact Fintype.one_lt_card.le
-    · rw [Nat.add_one_le_iff, Finset.card_pos]
-      exact ⟨i, h2i⟩
+    rw [Finset.cast_card_erase_of_mem h2i, mul_one_div, ← add_div, ← add_sub_assoc,
+      ← Nat.cast_add, card_add_card_compl, div_self]
+    · rw [sub_ne_zero, Nat.cast_ne_one]
+      exact Fintype.one_lt_card.ne'
   · sorry
   simp_rw [prod_insertNone]
   dsimp
