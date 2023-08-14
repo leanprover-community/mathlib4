@@ -44,7 +44,6 @@ jobs:
           ./scripts/lint-bib.sh
 
       - name: suggester / lint-bib
-        if: failure()
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: lint-bib
@@ -81,7 +80,6 @@ jobs:
           git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
       - name: suggester / import list
-        if: failure()
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: import list
