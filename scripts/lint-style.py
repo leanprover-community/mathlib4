@@ -144,7 +144,6 @@ def long_lines_check(lines, path):
     return errors
 
 def import_only_check(lines, path):
-    import_only_file = True
     for line_nr, line in skip_comments(enumerate(lines, 1)):
         imports = line.split()
         if imports[0] == "--":
@@ -152,9 +151,8 @@ def import_only_check(lines, path):
         if imports[0] == "#align_import":
             continue
         if imports[0] != "import":
-            import_only_file = False
-            break
-    return import_only_file
+            return False
+    return True
 
 def regular_check(lines, path):
     errors = []
