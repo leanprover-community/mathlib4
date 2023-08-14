@@ -1434,46 +1434,32 @@ lemma GoodProducts.union {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
   ext p
   refine ⟨fun hp ↦ ?_, fun hp ↦ ?_⟩
   · simp only [smaller, range, Set.mem_iUnion, Set.mem_image, Set.mem_range, Subtype.exists]
-    dsimp [range] at hp
-    simp only [Set.mem_iUnion, Set.mem_image, Set.mem_range, Subtype.exists]
     obtain ⟨⟨l,hl⟩,hp⟩ := hp
     rw [contained_eq_proj C o hsC, Products.limitOrdinal C ho] at hl
     obtain ⟨o',ho'⟩ := hl
-    use o'
-    use ho'.1
-    use GoodProducts.eval (C.proj (ord I · < o')) ⟨l,ho'.2⟩
-    refine ⟨⟨l, ho'.2, rfl⟩, ?_⟩
+    refine ⟨o', ho'.1, eval (C.proj (ord I · < o')) ⟨l, ho'.2⟩, ⟨l, ho'.2, rfl⟩, ?_⟩
     rw [← hp]
     exact Products.eval_πs C (Products.prop_of_isGood  C _ ho'.2)
-  · dsimp [range]
-    simp only [Set.mem_range, Subtype.exists]
+  · simp only [range, Set.mem_range, Subtype.exists]
     simp only [Set.mem_iUnion, Subtype.exists, exists_prop] at hp
     obtain ⟨o', ⟨h, ⟨f, ⟨⟨⟨l, hl⟩, hlf⟩, hf⟩⟩⟩⟩  := hp
-    rw [← hlf] at hf
-    rw [← hf]
+    rw [← hf, ← hlf]
     refine ⟨l, ?_, (Products.eval_πs C (Products.prop_of_isGood  C _ hl)).symm⟩
     rw [contained_eq_proj C o hsC]
     exact Products.isGood_mono C (le_of_lt h) hl
 
 def GoodProducts.range_equiv {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
-    range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
-  Equiv.Set.ofEq (union C ho hsC)
+    range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) := Equiv.Set.ofEq (union C ho hsC)
 
-lemma GoodProducts.range_equiv_factorization {o : Ordinal} (ho : o.IsLimit)
-    (hsC : contained C o) :
+lemma GoodProducts.range_equiv_factorization {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
     (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) ∘ (range_equiv C ho hsC).toFun =
-    (fun (p : range C) ↦ (p.1 : LocallyConstant C ℤ)) := by
-  rfl
+    (fun (p : range C) ↦ (p.1 : LocallyConstant C ℤ)) := rfl
 
 lemma GoodProducts.linearIndependent_iff_union_smaller {o : Ordinal} (ho : o.IsLimit)
     (hsC : contained C o) : LinearIndependent ℤ (GoodProducts.eval C) ↔
     LinearIndependent ℤ (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) := by
   rw [GoodProducts.linearIndependent_iff_range, ← range_equiv_factorization C ho hsC]
   exact linearIndependent_equiv (range_equiv C ho hsC)
-
-lemma DirectedS (o : Ordinal) : Directed (· ⊆ ·) (fun e ↦ GoodProducts.smaller C
-    e.val : {o' // o' < o} → Set (LocallyConstant C ℤ)) :=
-  directed_of_sup fun _ _ h ↦ GoodProducts.smaller_mono C h
 
 end Limit
 
@@ -1505,8 +1491,7 @@ lemma GoodProducts.union_succ :
         refine lt_of_le_of_ne (h' a ha) ?_
         rw [ne_eq, ord_term ho a]
         intro hta
-        rw [hta] at hh
-        exact hh ha
+        simp only [hta, ha, not_true] at hh
       rwa [Products.eval_πs_image C hh', ← Products.eval_πs C hh',
         Submodule.apply_mem_span_image_iff_mem_span (injective_πs _ _)]
   · refine Or.elim h (fun hh ↦ ?_) (fun hh ↦ ?_)
@@ -1520,8 +1505,7 @@ def GoodProducts.sum_to :
 
 lemma GoodProducts.injective_sum_to : Function.Injective (sum_to C ho) := by
   refine Function.Injective.sum_elim Subtype.val_injective Subtype.val_injective
-    (fun ⟨a,ha⟩ ⟨b,hb⟩ ↦ ?_)
-  intro (hab : a = b)
+    (fun ⟨a,ha⟩ ⟨b,hb⟩  ↦ (fun (hab : a = b) ↦ ?_))
   rw [← hab] at hb
   have ha' := Products.prop_of_isGood  C _ ha (term I ho) hb.2
   simp only [ord_term_aux, lt_self_iff_false] at ha'
@@ -1531,18 +1515,9 @@ def GoodProducts.sum_to_equiv := Equiv.ofInjective (sum_to C ho) (injective_sum_
 
 lemma GoodProducts.sum_to_range :
     Set.range (sum_to C ho) = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
-  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _
-  rw [h]
-  congr
-  <;> ext l
-  · refine ⟨fun hl ↦ ?_, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
-    obtain ⟨m,hm⟩ := hl
-    rw [← hm]
-    exact m.prop
-  · refine ⟨fun hl ↦ ?_, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
-    obtain ⟨m,hm⟩ := hl
-    rw [← hm]
-    exact m.prop
+  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
+  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
+  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
 
 noncomputable
 def GoodProducts.sum_equiv :
@@ -1553,9 +1528,7 @@ def GoodProducts.sum_equiv :
 lemma GoodProducts.sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
     (Sum.elim (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
-  ext ⟨_,_⟩
-  · rfl
-  · rfl
+  ext ⟨_,_⟩ <;> [rfl; rfl]
 
 def GoodProducts.u : GoodProducts (C.proj (ord I · < o)) ⊕ StartingWithMax C ho →
     LocallyConstant C ℤ :=
@@ -1653,8 +1626,7 @@ variable {o}
 
 lemma swapTrue_mem_C1 (f : (C1 C ho).proj (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
-  obtain ⟨f,hf⟩ := f
-  obtain ⟨g,hg⟩ := hf
+  obtain ⟨f, ⟨g, hg⟩⟩ := f
   suffices : SwapTrue o f = g
   · rw [this]
     exact hg.1
@@ -1698,8 +1670,7 @@ noncomputable
 def Linear_CC' : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ :=
 Linear_CC'₁ C hsC ho - Linear_CC'₀ C ho
 
-variable (o)
-
+variable (o) in
 def GoodProducts.v : GoodProducts (C.proj (ord I · < o)) →
     LocallyConstant (C.proj (ord I · < o)) ℤ :=
   eval (C.proj (ord I · < o))
@@ -1729,12 +1700,10 @@ lemma GoodProducts.injective_u : Function.Injective (u C ho) := by
     simp only [ord_term_aux, lt_self_iff_false] at ha'
 
 lemma GoodProducts.huv : u C ho ∘ Sum.inl = πs C o ∘ v C o := by
-  dsimp [u, v]
-  ext1 l
+  ext l
+  dsimp [u]
   rw [← Products.eval_πs C (Products.prop_of_isGood  _ _ l.prop)]
   rfl
-
-variable {o}
 
 noncomputable
 def GoodProducts.w : StartingWithMax C ho → LocallyConstant (C' C ho) ℤ :=
@@ -2351,9 +2320,8 @@ lemma GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
   have ho' : o < Ordinal.type (·<· : I → I → Prop) :=
     lt_of_lt_of_le (Order.lt_succ _) ho
   rw [linearIndependent_iff_sum C hsC ho']
-  refine ModuleCat.linearIndependent_leftExact ?_ ?_ (injective_u C o hsC ho')
-      (succ_mono C o) (succ_exact C hC hsC ho')
-      (huv C o ho')
+  refine ModuleCat.linearIndependent_leftExact ?_ ?_ (injective_u C hsC ho')
+      (succ_mono C o) (succ_exact C hC hsC ho') (huv C ho')
   · exact h (le_of_lt ho') (C.proj (ord I · < o)) (isClosed_proj C o hC) (contained_proj C o)
   · exact hhw C hC hsC ho' (span (C.proj (ord I · < o)) (isClosed_proj C o hC))
       (h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho') (contained_C' C ho'))
