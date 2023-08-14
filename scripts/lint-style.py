@@ -164,15 +164,13 @@ def long_lines_check(lines, path):
     # TODO: find a good way to break long lines
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
     for line_nr, line in lines:
-        # "!" excludes the porting marker comment
-        if "http" in line or "#align" in line or line[0] == '!':
+        if "http" in line or "#align" in line:
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
     return errors, lines
 
 def import_only_check(lines, path):
-    import_only_file = True
     for _, line, is_comment in is_in_comment(lines):
         if is_comment:
             continue
@@ -180,9 +178,8 @@ def import_only_check(lines, path):
         if imports[0] == "#align_import":
             continue
         if imports[0] != "import":
-            import_only_file = False
-            break
-    return import_only_file
+            return False
+    return True
 
 def regular_check(lines, path):
     errors = []
