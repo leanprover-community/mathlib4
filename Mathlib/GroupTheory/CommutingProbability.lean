@@ -147,10 +147,10 @@ lemma commProb_odd {n : ℕ} (hn : Odd n) :
   rw [div_div, ← mul_assoc]
   congr
 
-lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
+private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
 
-lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
+private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 | 0 | 1 | 2 | 3 => by decide
 | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
 
@@ -165,11 +165,13 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     have := div_four_lt h0 h1
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
 
-/-- A finite product of Dihedral groups. -/
-def Product (l : List ℕ) : Type :=
-  ∀ i : Fin l.length, DihedralGroup l[i]
+@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
 
-instance (l : List ℕ) : Group (Product l) := Pi.group
+@[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := rfl
+
+/-- A finite product of Dihedral groups. -/
+abbrev Product (l : List ℕ) : Type :=
+  ∀ i : Fin l.length, DihedralGroup l[i]
 
 lemma commProb_nil : commProb (Product []) = 1 := by
   simp [Product, commProb_pi]
