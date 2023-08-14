@@ -1457,7 +1457,10 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
 #align subgroup.mem_map_equiv Subgroup.mem_map_equiv
 #align add_subgroup.mem_map_equiv AddSubgroup.mem_map_equiv
 
-@[to_additive]
+-- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image
@@ -3713,5 +3716,36 @@ theorem eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center
 #align is_conj.eq_of_right_mem_center IsConj.eq_of_right_mem_center
 
 end IsConj
+
+namespace ConjClasses
+
+/-- The conjugacy classes that are not trivial. -/
+def noncenter (G : Type _) [Monoid G] : Set (ConjClasses G) :=
+  {x | x.carrier.Nontrivial}
+
+@[simp] lemma mem_noncenter [Monoid G] (g : ConjClasses G) :
+  g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
+
+theorem mk_bijOn (G : Type _) [Group G] :
+    Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
+  refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
+  · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
+    intro x hx y hy
+    simp only [mem_carrier_iff_mk_eq, mk_eq_mk_iff_isConj] at hx hy
+    rw [hx.eq_of_right_mem_center hg, hy.eq_of_right_mem_center hg]
+  · rw [mk_eq_mk_iff_isConj] at H
+    exact H.eq_of_left_mem_center hx
+  · rintro ⟨g⟩ hg
+    refine ⟨g, ?_, rfl⟩
+    simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
+    intro h
+    rw [← mul_inv_eq_iff_eq_mul]
+    refine hg ?_ mem_carrier_mk
+    rw [mem_carrier_iff_mk_eq]
+    apply mk_eq_mk_iff_isConj.mpr
+    rw [isConj_comm, isConj_iff]
+    exact ⟨h, rfl⟩
+
+end ConjClasses
 
 assert_not_exists Multiset

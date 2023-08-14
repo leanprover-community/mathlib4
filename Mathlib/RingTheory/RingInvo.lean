@@ -27,6 +27,8 @@ We provide a coercion to a function `R → Rᵐᵒᵖ`.
 Ring involution
 -/
 
+set_option autoImplicit true
+
 
 variable (R : Type*)
 

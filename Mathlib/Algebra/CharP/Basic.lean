@@ -569,7 +569,7 @@ theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
 
 end Ring
 
-section CharOne
+section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
@@ -605,7 +605,12 @@ theorem ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p
   Or.resolve_left ((Nat.dvd_prime hprime).1 (ringChar.dvd hp0)) ringChar_ne_one
 #align char_p.ring_char_of_prime_eq_zero CharP.ringChar_of_prime_eq_zero
 
-end CharOne
+theorem charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
+    CharP R p ↔ (p : R) = 0 :=
+  ⟨fun _ => cast_eq_zero R p,
+   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+
+end NonAssocSemiring
 
 end CharP
 
@@ -704,30 +709,11 @@ section
 that is nontrivial and of characteristic not `2`, then they are equal. -/
 theorem Int.cast_injOn_of_ringChar_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : ({0, 1, -1} : Set ℤ).InjOn ((↑) : ℤ → R) := by
-  intro a ha b hb h
-  apply eq_of_sub_eq_zero
-  by_contra hf
-  replace ha : a = 0 ∨ a = 1 ∨ a = -1 := ha
-  replace hb : b = 0 ∨ b = 1 ∨ b = -1 := hb
-  have hh : a - b = 1 ∨ b - a = 1 ∨ a - b = 2 ∨ b - a = 2 := by
-    rcases ha with (ha | ha | ha) <;> rcases hb with (hb | hb | hb)
-    pick_goal 5
-    pick_goal 9
-    -- move goals with `a = b` to the front
-    iterate 3 rw [ha, hb, sub_self] at hf; tauto
-    -- 6 goals remain
-    all_goals rw [ha, hb]; norm_num
-  have h' : ((a - b : ℤ) : R) = 0 := by exact_mod_cast sub_eq_zero_of_eq h
-  have h'' : ((b - a : ℤ) : R) = 0 := by exact_mod_cast sub_eq_zero_of_eq h.symm
-  rcases hh with (hh | hh | hh | hh)
-  · rw [hh, (by norm_cast : ((1 : ℤ) : R) = 1)] at h'
-    exact one_ne_zero h'
-  · rw [hh, (by norm_cast : ((1 : ℤ) : R) = 1)] at h''
-    exact one_ne_zero h''
-  · rw [hh, (by norm_cast : ((2 : ℤ) : R) = 2)] at h'
-    exact Ring.two_ne_zero hR h'
-  · rw [hh, (by norm_cast : ((2 : ℤ) : R) = 2)] at h''
-    exact Ring.two_ne_zero hR h''
+  rintro _ (rfl | rfl | rfl) _ (rfl | rfl | rfl) h <;>
+  simp only
+    [cast_neg, cast_one, cast_zero, neg_eq_zero, one_ne_zero, zero_ne_one, zero_eq_neg] at h ⊢
+  · exact (Ring.neg_one_ne_one_of_char_ne_two hR).symm h
+  · exact (Ring.neg_one_ne_one_of_char_ne_two hR) h
 #align int.cast_inj_on_of_ring_char_ne_two Int.cast_injOn_of_ringChar_ne_two
 
 end
