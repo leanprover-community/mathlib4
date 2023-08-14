@@ -86,7 +86,9 @@ abbrev LaurentPolynomial (R : Type*) [Semiring R] :=
   AddMonoidAlgebra R ℤ
 #align laurent_polynomial LaurentPolynomial
 
-local notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
+scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
+
+open LaurentPolynomial
 
 -- Porting note: `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
@@ -625,12 +627,13 @@ end CommSemiring
 
 section Inversion
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 /-- The map which substitutes `T ↦ T⁻¹` into a Laurent polynomial. -/
-def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidalgebra.domCongr k k <| AddEquiv.neg G
+def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R <| AddEquiv.neg _
 
-@[simp] lemma invert_T {n : ℤ} : invert (T n : R[T;T⁻¹]) = T (-n) := AddMonoidalgebra.domCongr_single _ _
+@[simp] lemma invert_T {n : ℤ} : invert (T n : R[T;T⁻¹]) = T (-n) :=
+  AddMonoidAlgebra.domCongr_single _ _ _ _ _
 
 @[simp] lemma invert_apply {f : R[T;T⁻¹]} {n : ℤ} : invert f n = f (-n) := rfl
 
@@ -638,7 +641,7 @@ def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidalgebra.domCongr k k 
 
 @[simp] lemma invert_C {t : R} : invert (C t) = C t := by ext; simp
 
-lemma involutive_invert : Involutive (invert (R := R)) := AddMonoidAlgebra.involutive_invert
+lemma involutive_invert : Involutive (invert (R := R)) := fun _ ↦ by ext; simp
 
 lemma toLaurent_reverse {p : R[X]} :
     toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by

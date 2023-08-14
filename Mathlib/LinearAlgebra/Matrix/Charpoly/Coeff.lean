@@ -263,7 +263,6 @@ end Ideal
 
 section reverse
 
-local notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 open Polynomial
 open LaurentPolynomial hiding C
 
