@@ -21,6 +21,8 @@ a circle homeomorphism.
 
 open Function
 
+open Function (Commute)
+
 namespace Monotone
 
 variable [Preorder α] {f : α → α} {x y : ℕ → α}
@@ -165,7 +167,7 @@ section Preorder
 
 variable [Preorder α] {f g : α → α}
 
-theorem iterate_le_of_map_le (h : Function.Commute f g) (hf : Monotone f) (hg : Monotone g) {x}
+theorem iterate_le_of_map_le (h : Commute f g) (hf : Monotone f) (hg : Monotone g) {x}
     (hx : f x ≤ g x) (n : ℕ) : f^[n] x ≤ g^[n] x := by
   apply hf.seq_le_seq n
   · rfl
@@ -173,16 +175,16 @@ theorem iterate_le_of_map_le (h : Function.Commute f g) (hf : Monotone f) (hg : 
   · intros; simp [h.iterate_right _ _, hg.iterate _ hx];
 #align function.commute.iterate_le_of_map_le Function.Commute.iterate_le_of_map_le
 
-theorem iterate_pos_lt_of_map_lt (h : Function.Commute f g) (hf : Monotone f) (hg : StrictMono g)
-    {x} (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x := by
+theorem iterate_pos_lt_of_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x}
+    (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x := by
   apply hf.seq_pos_lt_seq_of_le_of_lt hn
   · rfl
   · intros; rw [iterate_succ_apply']
   · intros; simp [h.iterate_right _ _, hg.iterate _ hx]
 #align function.commute.iterate_pos_lt_of_map_lt Function.Commute.iterate_pos_lt_of_map_lt
 
-theorem iterate_pos_lt_of_map_lt' (h : Function.Commute f g) (hf : StrictMono f) (hg : Monotone g)
-    {x} (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x :=
+theorem iterate_pos_lt_of_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x}
+    (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x :=
   @iterate_pos_lt_of_map_lt αᵒᵈ _ g f h.symm hg.dual hf.dual x hx n hn
 #align function.commute.iterate_pos_lt_of_map_lt' Function.Commute.iterate_pos_lt_of_map_lt'
 
@@ -190,31 +192,31 @@ end Preorder
 
 variable [LinearOrder α] {f g : α → α}
 
-theorem iterate_pos_lt_iff_map_lt (h : Function.Commute f g) (hf : Monotone f) (hg : StrictMono g)
-    {x n} (hn : 0 < n) : f^[n] x < g^[n] x ↔ f x < g x := by
+theorem iterate_pos_lt_iff_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
+    (hn : 0 < n) : f^[n] x < g^[n] x ↔ f x < g x := by
   rcases lt_trichotomy (f x) (g x) with (H | H | H)
   · simp only [*, iterate_pos_lt_of_map_lt]
   · simp only [*, h.iterate_eq_of_map_eq, lt_irrefl]
   · simp only [lt_asymm H, lt_asymm (h.symm.iterate_pos_lt_of_map_lt' hg hf H hn)]
 #align function.commute.iterate_pos_lt_iff_map_lt Function.Commute.iterate_pos_lt_iff_map_lt
 
-theorem iterate_pos_lt_iff_map_lt' (h : Function.Commute f g) (hf : StrictMono f) (hg : Monotone g)
-    {x n} (hn : 0 < n) : f^[n] x < g^[n] x ↔ f x < g x :=
+theorem iterate_pos_lt_iff_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x n}
+    (hn : 0 < n) : f^[n] x < g^[n] x ↔ f x < g x :=
   @iterate_pos_lt_iff_map_lt αᵒᵈ _ _ _ h.symm hg.dual hf.dual x n hn
 #align function.commute.iterate_pos_lt_iff_map_lt' Function.Commute.iterate_pos_lt_iff_map_lt'
 
-theorem iterate_pos_le_iff_map_le (h : Function.Commute f g) (hf : Monotone f) (hg : StrictMono g)
-    {x n} (hn : 0 < n) : f^[n] x ≤ g^[n] x ↔ f x ≤ g x := by
+theorem iterate_pos_le_iff_map_le (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
+    (hn : 0 < n) : f^[n] x ≤ g^[n] x ↔ f x ≤ g x := by
   simpa only [not_lt] using not_congr (h.symm.iterate_pos_lt_iff_map_lt' hg hf hn)
 #align function.commute.iterate_pos_le_iff_map_le Function.Commute.iterate_pos_le_iff_map_le
 
-theorem iterate_pos_le_iff_map_le' (h : Function.Commute f g) (hf : StrictMono f) (hg : Monotone g)
-    {x n} (hn : 0 < n) : f^[n] x ≤ g^[n] x ↔ f x ≤ g x := by
+theorem iterate_pos_le_iff_map_le' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x n}
+    (hn : 0 < n) : f^[n] x ≤ g^[n] x ↔ f x ≤ g x := by
   simpa only [not_lt] using not_congr (h.symm.iterate_pos_lt_iff_map_lt hg hf hn)
 #align function.commute.iterate_pos_le_iff_map_le' Function.Commute.iterate_pos_le_iff_map_le'
 
-theorem iterate_pos_eq_iff_map_eq (h : Function.Commute f g) (hf : Monotone f) (hg : StrictMono g)
-    {x n} (hn : 0 < n) : f^[n] x = g^[n] x ↔ f x = g x := by
+theorem iterate_pos_eq_iff_map_eq (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
+    (hn : 0 < n) : f^[n] x = g^[n] x ↔ f x = g x := by
   simp only [le_antisymm_iff, h.iterate_pos_le_iff_map_le hf hg hn,
     h.symm.iterate_pos_le_iff_map_le' hg hf hn]
 #align function.commute.iterate_pos_eq_iff_map_eq Function.Commute.iterate_pos_eq_iff_map_eq

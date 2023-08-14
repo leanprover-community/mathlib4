@@ -36,6 +36,8 @@ variable {α : Type u} {β : Type v}
 
 namespace Function
 
+open Function (Commute)
+
 variable (f : α → α)
 
 @[simp]
@@ -121,25 +123,25 @@ namespace Commute
 
 variable {g : α → α}
 
-theorem iterate_right (h : Function.Commute f g) (n : ℕ) : Function.Commute f g^[n] :=
+theorem iterate_right (h : Commute f g) (n : ℕ) : Commute f g^[n] :=
   Semiconj.iterate_right h n
 #align function.commute.iterate_right Function.Commute.iterate_right
 
-theorem iterate_left (h : Function.Commute f g) (n : ℕ) : Function.Commute f^[n] g :=
+theorem iterate_left (h : Commute f g) (n : ℕ) : Commute f^[n] g :=
   (h.symm.iterate_right n).symm
 #align function.commute.iterate_left Function.Commute.iterate_left
 
-theorem iterate_iterate (h : Function.Commute f g) (m n : ℕ) : Function.Commute f^[m] g^[n] :=
+theorem iterate_iterate (h : Commute f g) (m n : ℕ) : Commute f^[m] g^[n] :=
   (h.iterate_left m).iterate_right n
 #align function.commute.iterate_iterate Function.Commute.iterate_iterate
 
-theorem iterate_eq_of_map_eq (h : Function.Commute f g) (n : ℕ) {x} (hx : f x = g x) :
+theorem iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
     f^[n] x = g^[n] x :=
   Nat.recOn n rfl fun n ihn ↦ by
     simp only [iterate_succ_apply, hx, (h.iterate_left n).eq, ihn, ((refl g).iterate_right n).eq]
 #align function.commute.iterate_eq_of_map_eq Function.Commute.iterate_eq_of_map_eq
 
-theorem comp_iterate (h : Function.Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
+theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
   induction' n with n ihn
   · rfl
   funext x
@@ -148,15 +150,15 @@ theorem comp_iterate (h : Function.Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n
 
 variable (f)
 
-theorem iterate_self (n : ℕ) : Function.Commute f^[n] f :=
+theorem iterate_self (n : ℕ) : Commute f^[n] f :=
   (refl f).iterate_left n
 #align function.commute.iterate_self Function.Commute.iterate_self
 
-theorem self_iterate (n : ℕ) : Function.Commute f f^[n] :=
+theorem self_iterate (n : ℕ) : Commute f f^[n] :=
   (refl f).iterate_right n
 #align function.commute.self_iterate Function.Commute.self_iterate
 
-theorem iterate_iterate_self (m n : ℕ) : Function.Commute f^[m] f^[n] :=
+theorem iterate_iterate_self (m n : ℕ) : Commute f^[m] f^[n] :=
   (refl f).iterate_iterate m n
 #align function.commute.iterate_iterate_self Function.Commute.iterate_iterate_self
 
@@ -217,7 +219,7 @@ theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
   (iterate_mul _ _ _).symm.trans (Eq.trans (by rw [Nat.mul_comm]) (iterate_mul _ _ _))
 #align function.iterate_comm Function.iterate_comm
 
-theorem iterate_commute (m n : ℕ) : Function.Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
+theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
   fun f ↦ iterate_comm f m n
 #align function.iterate_commute Function.iterate_commute
 
