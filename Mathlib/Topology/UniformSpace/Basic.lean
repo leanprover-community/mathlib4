@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.NhdsSet
 
@@ -35,9 +36,9 @@ group structure on `ℝ` and its metric space structure.
 
 Each uniform structure on `X` induces a topology on `X` characterized by
 
-> `nhds_eq_comap_uniformity : ∀ {x : X}, 𝓝 x = comap (prod.mk x) (𝓤 X)`
+> `nhds_eq_comap_uniformity : ∀ {x : X}, 𝓝 x = comap (Prod.mk x) (𝓤 X)`
 
-where `prod.mk x : X → X × X := (fun y ↦ (x, y))` is the partial evaluation of the product
+where `Prod.mk x : X → X × X := (fun y ↦ (x, y))` is the partial evaluation of the product
 constructor.
 
 The dictionary with metric spaces includes:
@@ -324,7 +325,7 @@ def UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace 
 #align uniform_space.of_core UniformSpace.ofCore
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure
-that is equal to `u.to_topological_space`. -/
+that is equal to `u.toTopologicalSpace`. -/
 @[reducible]
 def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : TopologicalSpace α)
     (h : t = u.toTopologicalSpace) : UniformSpace α where
@@ -354,7 +355,6 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
   (@UniformSpace.toCore α _).uniformity
 #align uniformity uniformity
 
-set_option quotPrecheck false in
 /-- Notation for the uniformity filter with respect to a non-standard `UniformSpace` instance. -/
 scoped[Topology] notation "𝓤[" u "]" => @uniformity _ u
 
@@ -461,9 +461,9 @@ theorem comp_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃
 we have `t ○ t ○ ... ○ t ⊆ s` (`n` compositions). -/
 theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 α) (n : ℕ) :
     ∀ᶠ t in (𝓤 α).smallSets, (t ○ ·)^[n] t ⊆ s := by
-  suffices : ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ (t ○ ·)^[n] t ⊆ s
-  exact (eventually_and.1 this).2
-  induction' n with n ihn generalizing s; · simpa
+  suffices ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ (t ○ ·)^[n] t ⊆ s from (eventually_and.1 this).2
+  induction' n with n ihn generalizing s
+  · simpa
   rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
   refine' (ihn htU).mono fun U hU => _
   rw [Function.iterate_succ_apply']
@@ -555,9 +555,9 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
     ((𝓤 α).lift fun s => f (s ○ s)) ≤ (𝓤 α).lift f :=
   calc
     ((𝓤 α).lift fun s => f (s ○ s)) = ((𝓤 α).lift' fun s : Set (α × α) => s ○ s).lift f := by
-    { rw [lift_lift'_assoc]
+      rw [lift_lift'_assoc]
       exact monotone_id.compRel monotone_id
-      exact h }
+      exact h
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
@@ -579,8 +579,9 @@ theorem comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) 
   obtain ⟨w, w_in, w_sub⟩ : ∃ w ∈ 𝓤 α, w ○ w ⊆ s := comp_mem_uniformity_sets hs
   use symmetrizeRel w, symmetrize_mem_uniformity w_in, symmetric_symmetrizeRel w
   have : symmetrizeRel w ⊆ w := symmetrizeRel_subset_self w
-  -- porting note: todo: use `by mono`
-  exact (compRel_mono this this).trans w_sub
+  calc symmetrizeRel w ○ symmetrizeRel w
+    _ ⊆ w ○ w := by mono
+    _ ⊆ s     := w_sub
 #align comp_symm_mem_uniformity_sets comp_symm_mem_uniformity_sets
 
 theorem subset_comp_self_of_mem_uniformity {s : Set (α × α)} (h : s ∈ 𝓤 α) : s ⊆ s ○ s :=
@@ -593,11 +594,13 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
   have : t ⊆ t ○ t := subset_comp_self_of_mem_uniformity t_in
-  -- porting note: todo: use `by mono`
+  -- porting note: Needed the following `have`s to make `mono` work
+  have ht := Subset.refl t
+  have hw := Subset.refl w
   calc
-    t ○ t ○ t ⊆ w ○ t := compRel_mono t_sub Subset.rfl
-    _ ⊆ w ○ (t ○ t) := compRel_mono Subset.rfl this
-    _ ⊆ w ○ w := compRel_mono Subset.rfl t_sub
+    t ○ t ○ t ⊆ w ○ t := by mono
+    _ ⊆ w ○ (t ○ t) := by mono
+    _ ⊆ w ○ w := by mono
     _ ⊆ s := w_sub
 #align comp_comp_symm_mem_uniformity_sets comp_comp_symm_mem_uniformity_sets
 
@@ -703,7 +706,7 @@ theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by
   rw [uniformity_eq_symm, mem_nhds_uniformity_iff_right]
-  rfl
+  simp only [map_def, mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
 #align mem_nhds_uniformity_iff_left mem_nhds_uniformity_iff_left
 
 theorem nhds_eq_comap_uniformity {x : α} : 𝓝 x = (𝓤 α).comap (Prod.mk x) := by
@@ -713,8 +716,7 @@ theorem nhds_eq_comap_uniformity {x : α} : 𝓝 x = (𝓤 α).comap (Prod.mk x)
 
 /-- See also `isOpen_iff_open_ball_subset`. -/
 theorem isOpen_iff_ball_subset {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
-  simp_rw [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity]
-  rfl
+  simp_rw [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap, ball]
 #align is_open_iff_ball_subset isOpen_iff_ball_subset
 
 theorem nhds_basis_uniformity' {p : ι → Prop} {s : ι → Set (α × α)} (h : (𝓤 α).HasBasis p s)
@@ -736,7 +738,7 @@ theorem nhds_eq_comap_uniformity' {x : α} : 𝓝 x = (𝓤 α).comap fun y => (
 
 theorem UniformSpace.mem_nhds_iff {x : α} {s : Set α} : s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
   rw [nhds_eq_comap_uniformity, mem_comap]
-  exact Iff.rfl
+  simp_rw [ball]
 #align uniform_space.mem_nhds_iff UniformSpace.mem_nhds_iff
 
 theorem UniformSpace.ball_mem_nhds (x : α) ⦃V : Set (α × α)⦄ (V_in : V ∈ 𝓤 α) : ball x V ∈ 𝓝 x := by
@@ -864,13 +866,13 @@ theorem tendsto_left_nhds_uniformity {a : α} : Tendsto (fun a' => (a, a')) (�
 theorem lift_nhds_left {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : Set (α × α) => g (ball x s) := by
   rw [nhds_eq_comap_uniformity, comap_lift_eq2 hg]
-  rfl
+  simp_rw [ball, Function.comp]
 #align lift_nhds_left lift_nhds_left
 
 theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : Set (α × α) => g { y | (y, x) ∈ s } := by
   rw [nhds_eq_comap_uniformity', comap_lift_eq2 hg]
-  rfl
+  simp_rw [Function.comp, preimage]
 #align lift_nhds_right lift_nhds_right
 
 theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
@@ -901,8 +903,9 @@ theorem nhdset_of_mem_uniformity {d : Set (α × α)} (s : Set (α × α)) (hd :
         · exact fun _ _ h _ h' => ⟨h h'.1, h h'.2⟩
   choose t ht using this
   exact ⟨(⋃ p : α × α, ⋃ h : p ∈ s, t p h : Set (α × α)),
-    isOpen_iUnion fun p : α × α => isOpen_iUnion fun hp => (ht p hp).right.left, fun ⟨a, b⟩ hp =>
-    by simp; exact ⟨a, b, hp, (ht (a, b) hp).right.right⟩,
+    isOpen_iUnion fun p : α × α => isOpen_iUnion fun hp => (ht p hp).right.left,
+    fun ⟨a, b⟩ hp => by
+      simp only [mem_iUnion, Prod.exists]; exact ⟨a, b, hp, (ht (a, b) hp).right.right⟩,
     iUnion_subset fun p => iUnion_subset fun hp => (ht p hp).left⟩
 #align nhdset_of_mem_uniformity nhdset_of_mem_uniformity
 
@@ -1086,11 +1089,9 @@ def UniformContinuous [UniformSpace β] (f : α → β) :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α) (𝓤 β)
 #align uniform_continuous UniformContinuous
 
-set_option quotPrecheck false in
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
 scoped[Topology] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
@@ -1891,7 +1892,7 @@ theorem lebesgue_number_of_compact_open [UniformSpace α] {K U : Set α} (hK : I
 We reformulate the various continuity properties of functions taking values in a uniform space
 in terms of the uniformity in the target. Since the same lemmas (essentially with the same names)
 also exist for metric spaces and emetric spaces (reformulating things in terms of the distance or
-the edistance in the target), we put them in a namespace `uniform` here.
+the edistance in the target), we put them in a namespace `Uniform` here.
 
 In the metric and emetric space setting, there are also similar lemmas where one assumes that
 both the source and the target are metric spaces, reformulating things in terms of the distance
