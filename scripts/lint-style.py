@@ -137,7 +137,7 @@ def set_option_check(lines, path):
     newlines = []
     for line_nr, line, in_comment, in_string in is_in_string(is_in_comment(lines)):
         if line.strip().startswith('set_option') and not in_comment and not in_string:
-            option_prefix = line.strip().split(' ')[1].split('.')[0]
+            option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
             # forbidden options: pp, profiler, trace
             if option_prefix in {'pp', 'profiler', 'trace'}:
                 errors += [(ERR_OPT, line_nr, path)]
