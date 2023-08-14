@@ -153,6 +153,7 @@ lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 
 | 0 | 1 | 2 | 3 => by decide
 | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
 
+/-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
   if h0 : n = 0 then [0]
   else if h1 : n = 1 then []
@@ -163,6 +164,7 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     have := div_four_lt h0 h1
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
 
+/-- A finite product of Dihedral groups. -/
 def Product (l : List ℕ) : Type :=
   ∀ i : Fin l.length, DihedralGroup l[i]
 
