@@ -179,7 +179,6 @@ class ConditionallyCompleteLattice (α : Type*) extends Lattice α, SupSet α, I
   csInf_le : ∀ s a, BddBelow s → a ∈ s → sInf s ≤ a
   /-- `a ≤ sInf s` for all `a ∈ lowerBounds s`. -/
   le_csInf : ∀ s a, Set.Nonempty s → a ∈ lowerBounds s → a ≤ sInf s
-
 #align conditionally_complete_lattice ConditionallyCompleteLattice
 
 -- Porting note: mathlib3 used `renaming`
