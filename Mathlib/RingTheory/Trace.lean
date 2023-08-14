@@ -63,11 +63,11 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 
 universe u v w z
 
-variable {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 variable [Algebra R S] [Algebra R T]
 
-variable {K L : Type _} [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 variable {ι κ : Type w} [Fintype ι]
 
@@ -134,7 +134,7 @@ theorem trace_algebraMap (x : K) : trace K L (algebraMap K L x) = finrank K L �
   · simp [trace_eq_zero_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis_finset H]
 #align algebra.trace_algebra_map Algebra.trace_algebraMap
 
-theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type _} [Finite ι]
+theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Finite κ] (b : Basis ι R S) (c : Basis κ S T) (x : T) :
     trace R S (trace S T x) = trace R T x := by
   haveI := Classical.decEq ι
@@ -152,7 +152,7 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type _
   apply Finset.sum_apply
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
-theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type _} [Finite ι]
+theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Fintype κ] (b : Basis ι R S) (c : Basis κ S T) :
     (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by
   ext
@@ -227,7 +227,7 @@ section EqSumRoots
 
 open Algebra Polynomial
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 variable [Algebra K S] [Algebra K F]
 
@@ -312,7 +312,7 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
 
 end EqSumRoots
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 variable [Algebra R L] [Algebra L F] [Algebra R F] [IsScalarTower R L F]
 
@@ -339,7 +339,7 @@ variable [Algebra K F] [IsScalarTower K L F]
 
 open Algebra IntermediateField
 
-variable (F) (E : Type _) [Field E] [Algebra K E]
+variable (F) (E : Type*) [Field E] [Algebra K E]
 
 theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : (minpoly K pb.gen).Separable) :
@@ -437,7 +437,7 @@ theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm
   rfl
 #align algebra.trace_matrix_apply Algebra.traceMatrix_apply
 
-theorem traceMatrix_reindex {κ' : Type _} (b : Basis κ A B) (f : κ ≃ κ') :
+theorem traceMatrix_reindex {κ' : Type*} (b : Basis κ A B) (f : κ ≃ κ') :
     traceMatrix A (b.reindex f) = reindex f f (traceMatrix A b) := by ext (x y); simp
 #align algebra.trace_matrix_reindex Algebra.traceMatrix_reindex
 

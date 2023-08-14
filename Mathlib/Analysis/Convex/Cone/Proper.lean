@@ -37,9 +37,9 @@ open ContinuousLinearMap Filter Set
 
 namespace ConvexCone
 
-variable {𝕜 : Type _} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
-variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 
 /-- The closure of a convex cone inside a topological space as a convex cone. This
@@ -72,7 +72,7 @@ end ConvexCone
 /-- A proper cone is a convex cone `K` that is nonempty and closed. Proper cones have the nice
 property that the dual of the dual of a proper cone is itself. This makes them useful for defining
 cone programs and proving duality theorems. -/
-structure ProperCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
+structure ProperCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E]
     [TopologicalSpace E] [SMul 𝕜 E] extends ConvexCone 𝕜 E where
   nonempty' : (carrier : Set E).Nonempty
   is_closed' : IsClosed (carrier : Set E)
@@ -82,9 +82,9 @@ namespace ProperCone
 
 section SMul
 
-variable {𝕜 : Type _} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
-variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [SMul 𝕜 E]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [SMul 𝕜 E]
 
 instance : Coe (ProperCone 𝕜 E) (ConvexCone 𝕜 E) :=
   ⟨fun K => K.1⟩
@@ -126,7 +126,7 @@ end SMul
 
 section PositiveCone
 
-variable (𝕜 E) 
+variable (𝕜 E)
 variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
   [TopologicalSpace E] [OrderClosedTopology E]
 
@@ -149,9 +149,9 @@ end PositiveCone
 
 section Module
 
-variable {𝕜 : Type _} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
-variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
 instance : Zero (ProperCone 𝕜 E) :=
   ⟨{  toConvexCone := 0
@@ -178,11 +178,11 @@ end Module
 
 section InnerProductSpace
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-variable {G : Type _} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
+variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
   (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.nonempty' K.isClosed
@@ -268,9 +268,9 @@ end InnerProductSpace
 
 section CompleteSpace
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
 
-variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 
 /-- The dual of the dual of a proper cone is itself. -/
 @[simp]

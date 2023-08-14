@@ -39,7 +39,7 @@ setoid, equivalence, iseqv, relation, equivalence relation, partition, equivalen
 
 namespace Setoid
 
-variable {α : Type _}
+variable {α : Type*}
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2:
 -- warning: expanding binder collection (b «expr ∈ » c) -/
@@ -75,18 +75,18 @@ theorem mem_classes (r : Setoid α) (y) : { x | r.Rel x y } ∈ r.classes :=
   ⟨y, rfl⟩
 #align setoid.mem_classes Setoid.mem_classes
 
-theorem classes_ker_subset_fiber_set {β : Type _} (f : α → β) :
+theorem classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
     (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
   rintro s ⟨x, rfl⟩
   rw [Set.mem_range]
   exact ⟨f x, rfl⟩
 #align setoid.classes_ker_subset_fiber_set Setoid.classes_ker_subset_fiber_set
 
-theorem finite_classes_ker {α β : Type _} [Finite β] (f : α → β) : (Setoid.ker f).classes.Finite :=
+theorem finite_classes_ker {α β : Type*} [Finite β] (f : α → β) : (Setoid.ker f).classes.Finite :=
   (Set.finite_range _).subset <| classes_ker_subset_fiber_set f
 #align setoid.finite_classes_ker Setoid.finite_classes_ker
 
-theorem card_classes_ker_le {α β : Type _} [Fintype β] (f : α → β)
+theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
     [Fintype (Setoid.ker f).classes] : Fintype.card (Setoid.ker f).classes ≤ Fintype.card β := by
   classical exact
       le_trans (Set.card_le_of_subset (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
@@ -321,7 +321,7 @@ an index to an element of the corresponding set.
 
 This type is primarily useful for definitional control of `s` - if this is not needed, then
 `Setoid.ker index` by itself may be sufficient. -/
-structure IndexedPartition {ι α : Type _} (s : ι → Set α) where
+structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
   /-- two indexes are equal if they are equal in membership  -/
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
   /-- sends an index to an element of the corresponding set-/
@@ -335,7 +335,7 @@ structure IndexedPartition {ι α : Type _} (s : ι → Set α) where
 #align indexed_partition IndexedPartition
 
 /-- The non-constructive constructor for `IndexedPartition`. -/
-noncomputable def IndexedPartition.mk' {ι α : Type _} (s : ι → Set α)
+noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : ∀ i j, i ≠ j → Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
     where
@@ -350,7 +350,7 @@ namespace IndexedPartition
 
 open Set
 
-variable {ι α : Type _} {s : ι → Set α} (hs : IndexedPartition s)
+variable {ι α : Type*} {s : ι → Set α} (hs : IndexedPartition s)
 
 /-- On a unique index set there is the obvious trivial partition -/
 instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) :=

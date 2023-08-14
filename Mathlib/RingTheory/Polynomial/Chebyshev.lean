@@ -61,7 +61,7 @@ open Polynomial
 
 open Polynomial
 
-variable (R S : Type _) [CommRing R] [CommRing S]
+variable (R S : Type*) [CommRing R] [CommRing S]
 
 /-- `T n` is the `n`-th Chebyshev polynomial of the first kind -/
 noncomputable def T : ℕ → R[X]
