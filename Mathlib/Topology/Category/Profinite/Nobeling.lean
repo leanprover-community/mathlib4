@@ -227,7 +227,6 @@ section Profinite
 
 variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
   {J K L : Finset ι} [∀ (J : Finset ι) i, Decidable (i ∈ J)]
-  [∀ (J : Finset ι), Fintype (C.proj (· ∈ J))]
   {C} (hC : IsCompact C)
 
 open CategoryTheory Limits Opposite
@@ -247,65 +246,52 @@ lemma mem_projRestrict (h : J ⊆ K) (x : C.proj (· ∈ K)) :
     exact hK (h hh)
   · rfl
 
-lemma CCompact : CompactSpace C := by
-  rwa [← isCompact_iff_compactSpace]
-
-variable (C) in
 noncomputable
 def FinsetsToProfinite :
     (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
-  obj J := Profinite.of (C.proj (· ∈ (unop J)))
-  map := @fun J K h ↦ ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
-  map_id J := by
-    dsimp
-    simp_rw [projRestricts_eq_id C (· ∈ (unop J))]
-    rfl
-  map_comp := by
-    intros
-    dsimp
-    congr
-    dsimp
-    rw [projRestricts_eq_comp]
+  obj J := @Profinite.of (C.proj (· ∈ (unop J))) _
+    (by rw [← isCompact_iff_compactSpace]; exact hC.image (continuous_proj _)) _ _
+  map h := ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
+  map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
+  map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
 noncomputable
-def FinsetsCone : Cone (FinsetsToProfinite C) where
-  pt := @Profinite.of C _ (CCompact hC) _ _
-  π := {  app := fun J ↦ ⟨ProjRestrict C (· ∈ (J.unop)), continuous_projRestrict _ _⟩
-          naturality := by
-            intro J K h
-            simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
-            congr
-            dsimp [FinsetsToProfinite, ProjRestrict, ProjRestricts, Homeomorph.setCongr,
-              Equiv.setCongr, Equiv.subtypeEquivProp]
-            congr
-            ext x i
-            dsimp [Proj]
-            split_ifs with hh hhh
-            · rfl
-            · exfalso; exact hhh (leOfHom h.unop hh)
-            · rfl }
+def FinsetsCone : Cone (FinsetsToProfinite hC) where
+  pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
+  π := {
+    app := fun J ↦ ⟨ProjRestrict C (· ∈ (J.unop)), continuous_projRestrict _ _⟩
+    naturality := by
+      intro _ _ h
+      simp only [Functor.const_obj_obj, FinsetsToProfinite, ProjRestricts, Homeomorph.setCongr,
+        Homeomorph.homeomorph_mk_coe, ProjRestrict, Functor.const_obj_map, Category.id_comp]
+      congr
+      ext x i
+      dsimp [Proj]
+      split_ifs with h₁ h₂
+      · rfl
+      · simp only [(leOfHom h.unop h₁), not_true] at h₂
+      · rfl
+  }
 
-lemma C_eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (· ∈ J) a =
+lemma eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (· ∈ J) a =
     ProjRestrict C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)
   dsimp [ProjRestrict, Proj] at h
   rw [Subtype.ext_iff] at h
   have hh := congr_fun h i
-  dsimp at hh
-  split_ifs at hh with hhh
-  · exact hh
-  · exfalso; simp only [Finset.mem_singleton] at hhh
+  simp only [Finset.mem_singleton, Set.val_codRestrict_apply, Function.comp_apply, ite_true] at hh
+  exact hh
 
 open Profinite in
 instance isIso_finsetsCone_lift [DecidableEq ι] :
-    IsIso ((limitConeIsLimit (FinsetsToProfinite C)).lift (FinsetsCone hC)) :=
-  haveI : CompactSpace C := CCompact hC
+    IsIso ((limitConeIsLimit (FinsetsToProfinite hC)).lift (FinsetsCone hC)) :=
+  haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
   isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
-      · refine C_eq_of_forall_proj_eq a b (fun J ↦ ?_)
-        apply_fun fun f : (limitCone (FinsetsToProfinite C)).pt => f.val (op J) at h
+      · refine eq_of_forall_proj_eq a b (fun J ↦ ?_)
+        apply_fun fun f : (limitCone (FinsetsToProfinite hC)).pt => f.val (op J) at h
         exact h
       · suffices : ∃ (x : C), ∀ (J : Finset ι), ProjRestrict C (· ∈ J) x = a.val (op J)
         · obtain ⟨b, hb⟩ := this
@@ -314,11 +300,10 @@ instance isIso_finsetsCone_lift [DecidableEq ι] :
           apply funext
           rintro J
           exact hb (unop J)
-        have hc : ∀ (J : Finset ι) s, IsClosed ((ProjRestrict C (· ∈ J)) ⁻¹' s)
+        have hc : ∀ (J : Finset ι) s, IsClosed ((ProjRestrict C (· ∈ J)) ⁻¹' {s})
         · intro J s
           refine IsClosed.preimage (continuous_projRestrict C (· ∈ J)) ?_
-          haveI : DiscreteTopology (C.proj (· ∈ J)) := discrete_of_t1_of_finite
-          exact isClosed_discrete _
+          exact T1Space.t1 s
         have H₁ : ∀ (Q₁ Q₂ : Finset ι), Q₁ ≤ Q₂ →
             ProjRestrict C (· ∈ Q₁) ⁻¹' {a.val (op Q₁)} ⊇
             ProjRestrict C (· ∈ Q₂) ⁻¹' {a.val (op Q₂)}
@@ -332,13 +317,13 @@ instance isIso_finsetsCone_lift [DecidableEq ι] :
           IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
             (fun J : Finset ι => ProjRestrict C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_sup H₁)
             (fun J => (Set.singleton_nonempty _).preimage (surjective_projRestrict _ _))
-            (fun J => (hc J {a.val (op J)}).isCompact) fun J => hc J _
+            (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
 noncomputable
 def isoFinsetsConeLift [DecidableEq ι] :
-    @Profinite.of C _ (CCompact hC) _ _ ≅
-    (Profinite.limitCone (FinsetsToProfinite C)).pt :=
+    @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
+    (Profinite.limitCone (FinsetsToProfinite hC)).pt :=
   asIso <| (Profinite.limitConeIsLimit _).lift (FinsetsCone hC)
 
 noncomputable
@@ -350,7 +335,6 @@ def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (Finset
   Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitFinsetsConeIso hC).symm
 
 end Profinite
-
 end Projections
 
 namespace LocallyConstant -- This section is PR #6520
