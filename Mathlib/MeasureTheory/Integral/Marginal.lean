@@ -32,7 +32,7 @@ namespace Real
 
 theorem prod_rpow {ι} (s : Finset ι) {f : ι → ℝ} (hf : 0 ≤ f) (r : ℝ) :
     ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r :=
-  sorry
+  finset_prod_rpow s f (fun i _ ↦ hf i) r
 #align real.prod_rpow Real.prod_rpow
 
 end Real
@@ -53,11 +53,15 @@ end NNReal
 
 namespace ENNReal
 
-theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) (hx : x ≠ ∞) :
+theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
-  cases' x with x
-  · exact (hx rfl).elim
-  simp [coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg x hy hz]
+  induction x using recTopCoe
+  · rcases hy.eq_or_lt with rfl|hy
+    · rw [rpow_zero, one_mul, zero_add]
+    rcases hz.eq_or_lt with rfl|hz
+    · rw [rpow_zero, mul_one, add_zero]
+    simp [top_rpow_of_pos, hy, hz, add_pos hy hz]
+  simp [coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg _ hy hz]
 
 theorem prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0∞) (r : ℝ) :
     ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r :=
@@ -712,6 +716,8 @@ s ", " f " ∂" μ:70 => marginal μ s f
 
 notation "∫⋯∫_" s ", " f => marginal volume s f
 
+variable (μ)
+
 theorem _root_.Measurable.marginal (hf : Measurable f) : Measurable (∫⋯∫_s, f ∂μ) := by
   refine' Measurable.lintegral_prod_right _
   refine' hf.comp _
@@ -736,11 +742,9 @@ theorem marginal_eq {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞) (h : 
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by dsimp [marginal, update']; rcongr; exact h _ ‹_›
 #align measure_theory.marginal_eq MeasureTheory.marginal_eq
 
-variable (μ)
-
 theorem marginal_update (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞) {i : δ} (y : π i) (hi : i ∈ s) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∂μ) x := by
-  refine' marginal_eq f fun j hj => _
+  refine' marginal_eq μ f fun j hj => _
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
 #align measure_theory.marginal_update MeasureTheory.marginal_update
@@ -878,34 +882,41 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
   have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
   have hι : 1 < (#ι : ℝ) := Nat.one_lt_cast.mpr Fintype.one_lt_card
   have h2ι : 0 ≤ (#ι : ℝ) - 1 := by linarith
-  have h0 : (∫⋯∫_insert i s, f ∂μ) x ≠ ∞ := sorry
-  have h1 : (∫⋯∫_insert i s, f ∂μ) x ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ≠ ∞ := by
-    simp [Fintype.one_lt_card, Fintype.card_ne_zero, h0]
-  simp_rw [lintegral_const_mul' _ _ h1, prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
+  rw [lintegral_const_mul]
+  simp_rw [prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
   refine' (ENNReal.mul_left_mono (lintegral_prod_norm_pow_le _ _ _)).trans_eq _
   · simp_rw [sum_insertNone, compl_insert, not_not, Option.elim, sum_const, nsmul_eq_mul]
     rw [Finset.cast_card_erase_of_mem h2i, mul_one_div, ← add_div, ← add_sub_assoc,
       ← Nat.cast_add, card_add_card_compl, div_self]
     · rw [sub_ne_zero, Nat.cast_ne_one]
       exact Fintype.one_lt_card.ne'
-  · rintro (_|i) hi
-    · apply div_nonneg (by simp) h2ι
+  · rintro (_|i) -
+    · exact div_nonneg (by simp) h2ι
     · simp_rw [Option.elim, one_div_nonneg, h2ι]
   simp_rw [prod_insertNone]
   dsimp
   rw [marginal_insert_rev _ hf hi, ← mul_assoc]
   congr
-  · convert (ENNReal.rpow_add _ _ _ _).symm using 2
-    sorry
-    sorry
-    sorry
+  · rw [← ENNReal.rpow_add_of_nonneg, ← add_div, Finset.card_insert_of_not_mem hi, Nat.cast_add,
+      Nat.cast_one, add_comm]
+    · simp_rw [one_div_nonneg, h2ι]
+    · exact div_nonneg (by simp) h2ι
   simp_rw [prod_apply, Pi.pow_apply]
   refine' prod_congr rfl fun j hj => _
-  congr 1
-  rw [Insert.comm]
-  have h2 : i ∉ insert j s := by sorry
-  simp_rw [marginal_insert_rev _ sorry h2]
+  have h2 : i ∉ insert j s := by
+    have : i ≠ j
+    · simp [-ne_eq] at hj
+      exact hj.1.symm
+    simp [this, not_or, hi]
+  rw [Insert.comm, marginal_insert_rev _ hf h2]
+  · simp
+    refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
+    refine Finset.measurable_prod _ fun i _ ↦ ?_
+    exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
 #align marginal_rhs_aux_le marginal_singleton_rhsAux_le
+
+lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
+  sorry --refine (_ : Measurable _) |>.pow measurable_const |>.mul ?_
 
 theorem marginal_rhsAux_empty_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (s : Finset ι) : ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
