@@ -18,7 +18,7 @@ We introduce the basic algebraic notions of star monoids, star rings, and star m
 A star algebra is simply a star ring that is also a star module.
 
 These are implemented as "mixin" typeclasses, so to summon a star ring (for example)
-one needs to write `(R : Type*) [NonUnitalNonAssocSemiring R] [StarRing R]`.
+one needs to write `(R : Type*) [Ring R] [StarRing R]`.
 This avoids difficulties with diamond inheritance.
 
 For now we simply do not introduce notations,
