@@ -25,7 +25,7 @@ open Real
 
 open EuclideanGeometry RealInnerProductSpace Real
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 namespace InnerProductGeometry
 
@@ -77,7 +77,7 @@ This section develops some results on spheres in Euclidean affine spaces.
 
 open InnerProductGeometry
 
-variable {P : Type _} [MetricSpace P] [NormedAddTorsor V P]
+variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
 /-- If `P` is a point on the line `AB` and `Q` is equidistant from `A` and `B`, then
 `AP * BP = abs (BQ ^ 2 - PQ ^ 2)`. -/

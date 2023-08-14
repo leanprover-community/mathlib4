@@ -23,7 +23,7 @@ This file proves lemmas about the action of multilinear maps on basis vectors.
 
 open MultilinearMap
 
-variable {R : Type _} {ι : Type _} {n : ℕ} {M : Fin n → Type _} {M₂ : Type _} {M₃ : Type _}
+variable {R : Type*} {ι : Type*} {n : ℕ} {M : Fin n → Type*} {M₂ : Type*} {M₃ : Type*}
 
 variable [CommSemiring R] [AddCommMonoid M₂] [AddCommMonoid M₃] [∀ i, AddCommMonoid (M i)]
 
@@ -31,7 +31,7 @@ variable [∀ i, Module R (M i)] [Module R M₂] [Module R M₃]
 
 /-- Two multilinear maps indexed by `Fin n` are equal if they are equal when all arguments are
 basis vectors. -/
-theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n → Type _}
+theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n → Type*}
     (e : ∀ i, Basis (ι₁ i) R (M i))
     (h : ∀ v : ∀ i, ι₁ i, (f fun i => e i (v i)) = g fun i => e i (v i)) : f = g := by
   induction' n with m hm
@@ -55,7 +55,7 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
 are basis vectors. Unlike `Basis.ext_multilinear_fin`, this only uses a single basis; a
 dependently-typed version would still be true, but the proof would need a dependently-typed
 version of `dom_dom_congr`. -/
-theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R (fun _ : ι => M₂) M₃} {ι₁ : Type _}
+theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R (fun _ : ι => M₂) M₃} {ι₁ : Type*}
     (e : Basis ι₁ R M₂) (h : ∀ v : ι → ι₁, (f fun i => e (v i)) = g fun i => e (v i)) : f = g := by
   cases nonempty_fintype ι
   exact

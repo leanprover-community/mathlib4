@@ -44,7 +44,7 @@ normed group
 -/
 
 
-variable {𝓕 𝕜 α ι κ E F G : Type _}
+variable {𝓕 𝕜 α ι κ E F G : Type*}
 
 open Filter Function Metric
 
@@ -54,14 +54,14 @@ open BigOperators ENNReal Filter NNReal Uniformity Pointwise Topology
 class is designed to be extended in more interesting classes specifying the properties of the norm.
 -/
 @[notation_class]
-class Norm (E : Type _) where
+class Norm (E : Type*) where
   /-- the `ℝ`-valued norm function. -/
   norm : E → ℝ
 #align has_norm Norm
 
 /-- Auxiliary class, endowing a type `α` with a function `nnnorm : α → ℝ≥0` with notation `‖x‖₊`. -/
 @[notation_class]
-class NNNorm (E : Type _) where
+class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
   nnnorm : E → ℝ≥0
 #align has_nnnorm NNNorm
@@ -78,7 +78,7 @@ notation "‖" e "‖₊" => nnnorm e
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddGroup (E : Type _) extends Norm E, AddGroup E, PseudoMetricSpace E where
+class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -87,7 +87,7 @@ class SeminormedAddGroup (E : Type _) extends Norm E, AddGroup E, PseudoMetricSp
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a
 pseudometric space structure. -/
 @[to_additive]
-class SeminormedGroup (E : Type _) extends Norm E, Group E, PseudoMetricSpace E where
+class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -95,7 +95,7 @@ class SeminormedGroup (E : Type _) extends Norm E, Group E, PseudoMetricSpace E 
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddGroup (E : Type _) extends Norm E, AddGroup E, MetricSpace E where
+class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -104,7 +104,7 @@ class NormedAddGroup (E : Type _) extends Norm E, AddGroup E, MetricSpace E wher
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedGroup (E : Type _) extends Norm E, Group E, MetricSpace E where
+class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -112,7 +112,7 @@ class NormedGroup (E : Type _) extends Norm E, Group E, MetricSpace E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E,
+class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
   PseudoMetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
@@ -122,7 +122,7 @@ class SeminormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E,
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖`
 defines a pseudometric space structure. -/
 @[to_additive]
-class SeminormedCommGroup (E : Type _) extends Norm E, CommGroup E, PseudoMetricSpace E where
+class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -130,7 +130,7 @@ class SeminormedCommGroup (E : Type _) extends Norm E, CommGroup E, PseudoMetric
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E, MetricSpace E where
+class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -139,7 +139,7 @@ class NormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E, MetricSpac
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedCommGroup (E : Type _) extends Norm E, CommGroup E, MetricSpace E where
+class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -494,14 +494,14 @@ open Lean Meta Qq Function
 `norm_nonneg'`. -/
 @[positivity Norm.norm _]
 def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
   let p ← mkAppM ``norm_nonneg' #[a]
   pure (.nonnegative p)
 
 /-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
 @[positivity Norm.norm _]
 def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
   let p ← mkAppM ``norm_nonneg #[a]
   pure (.nonnegative p)
 
@@ -2460,7 +2460,7 @@ end Prod
 
 section Pi
 
-variable {π : ι → Type _} [Fintype ι]
+variable {π : ι → Type*} [Fintype ι]
 
 section SeminormedGroup
 

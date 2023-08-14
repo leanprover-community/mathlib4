@@ -15,7 +15,7 @@ This file deals with factorizations of prime powers.
 -/
 
 
-variable {R : Type _} [CommMonoidWithZero R] (n p : R) (k : ℕ)
+variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
 theorem IsPrimePow.minFac_pow_factorization_eq {n : ℕ} (hn : IsPrimePow n) :
     n.minFac ^ n.factorization n.minFac = n := by
