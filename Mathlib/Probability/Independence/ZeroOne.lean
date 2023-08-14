@@ -95,7 +95,7 @@ theorem condIndep_biSup_compl [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace
 
 section Abstract
 
-variable {α : Type _} {p : Set ι → Prop} {f : Filter ι} {ns : α → Set ι}
+variable {α : Type*} {p : Set ι → Prop} {f : Filter ι} {ns : α → Set ι}
 
 /-! We prove a version of Kolmogorov's 0-1 law for the σ-algebra `limsup s f` where `f` is a filter
 for which we can define the following two functions:

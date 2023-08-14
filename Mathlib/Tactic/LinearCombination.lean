@@ -30,6 +30,8 @@ Lastly, calls a normalization tactic on this target.
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term

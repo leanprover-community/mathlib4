@@ -209,7 +209,7 @@ theorem coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.bund
 end Theory
 
 /-- A structure that is elementarily equivalent to a model, bundled as a model. -/
-def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type _} [LN : L.Structure N]
+def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type*} [LN : L.Structure N]
     (h : M ≅[L] N) : T.ModelType where
   Carrier := N
   struc := LN

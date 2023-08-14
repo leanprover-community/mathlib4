@@ -225,7 +225,7 @@ theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.to
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.coe_to_GL Matrix.SpecialLinearGroup.coe_toGL
 
-variable {S : Type _} [CommRing S]
+variable {S : Type*} [CommRing S]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
@@ -309,7 +309,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 #align matrix.special_linear_group.fin_two_induction Matrix.SpecialLinearGroup.fin_two_induction
 
-theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type _} [Field R] (g : SL(2, R))
+theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
