@@ -132,6 +132,32 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
   simp [this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
 #align finset.nat.filter_snd_eq_antidiagonal Finset.Nat.filter_snd_eq_antidiagonal
 
+@[simp] lemma antidiagonal_filter_snd_le_of_le {n k : ℕ} (h : k ≤ n) :
+    (antidiagonal n).filter (fun a ↦ a.snd ≤ k) = (antidiagonal k).map
+      (Embedding.prodMap ⟨_, add_left_injective (n - k)⟩ (Embedding.refl ℕ)) := by
+  ext ⟨i, j⟩
+  suffices : i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i
+  · simpa
+  refine' ⟨fun hi ↦ ⟨k - j, tsub_add_cancel_of_le hi.2, _⟩, _⟩
+  · rw [add_comm, tsub_add_eq_add_tsub h, ← hi.1, add_assoc, Nat.add_sub_of_le hi.2,
+      add_tsub_cancel_right]
+  · rintro ⟨l, hl, rfl⟩
+    refine' ⟨_, hl ▸ Nat.le_add_left j l⟩
+    rw [add_assoc, add_comm, add_assoc, add_comm j l, hl]
+    exact Nat.sub_add_cancel h
+
+@[simp] lemma antidiagonal_filter_fst_le_of_le {n k : ℕ} (h : k ≤ n) :
+    (antidiagonal n).filter (fun a ↦ a.fst ≤ k) = (antidiagonal k).map
+      (Embedding.prodMap (Embedding.refl ℕ) ⟨_, add_left_injective (n - k)⟩) := by
+  have aux₁ : fun a ↦ a.fst ≤ k = (fun a ↦ a.snd ≤ k) ∘ (Equiv.prodComm ℕ ℕ).symm := rfl
+  have aux₂ : ∀ i j, (∃ a b, a + b = k ∧ b = i ∧ a + (n - k) = j) ↔
+                      ∃ a b, a + b = k ∧ a = i ∧ b + (n - k) = j :=
+    fun i j ↦ by rw [exists_comm]; exact exists₂_congr (fun a b ↦ by rw [add_comm])
+  rw [← map_prodComm_antidiagonal]
+  simp_rw [aux₁, ← map_filter, antidiagonal_filter_snd_le_of_le h, map_map]
+  ext ⟨i, j⟩
+  simpa using aux₂ i j
+
 @[simp] lemma antidiagonal_filter_le_fst_of_le {n k : ℕ} (h : k ≤ n) :
     (antidiagonal n).filter (fun a ↦ k ≤ a.fst) = (antidiagonal (n - k)).map
       (Embedding.prodMap ⟨_, add_left_injective k⟩ (Embedding.refl ℕ)) := by

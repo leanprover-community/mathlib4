@@ -354,7 +354,6 @@ theorem odd_one : Odd (1 : α) :=
 
 @[simp] lemma Even.one_add (h : Even m) : Odd (1 + m) := h.odd_add odd_one
 
-@[simp]
 theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
   ⟨m, rfl⟩
 #align odd_two_mul_add_one odd_two_mul_add_one
