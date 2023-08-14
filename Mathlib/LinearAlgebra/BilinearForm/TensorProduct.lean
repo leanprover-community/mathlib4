@@ -69,12 +69,14 @@ protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinFo
 
 attribute [ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
-lemma IsSymm.tmul {B₁ : BilinForm R M₁} {B₂ : BilinForm R M₂}
+lemma IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [isSymm_iff_flip R]
   apply toLin.injective
   ext x₁ x₂ y₁ y₂
-  exact (congr_arg₂ (HMul.hMul) (hB₁ x₁ y₁) (hB₂ x₂ y₂)).symm
+  exact (congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)).symm
+
+variable (A)
 
 /-- The base change of a bilinear form. -/
 protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
@@ -83,8 +85,12 @@ protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
 @[simp]
 theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
-    B₂.baseChange (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
+    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
   rfl
+
+/-- The base change of a symmetric bilinear form is symmetric. -/
+lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
+  IsSymm.tmul mul_comm hB₂
 
 end CommSemiring
 
