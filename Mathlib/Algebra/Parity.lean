@@ -330,6 +330,9 @@ theorem Even.add_odd : Even m → Odd n → Odd (m + n) := by
   exact ⟨m + n, by rw [mul_add, ← two_mul, add_assoc]⟩
 #align even.add_odd Even.add_odd
 
+theorem Even.odd_add : Even m → Odd n → Odd (n + m) :=
+  fun he ho ↦ by simp only [he.add_odd ho, add_comm n m]
+
 theorem Odd.add_even (hm : Odd m) (hn : Even n) : Odd (m + n) := by
   rw [add_comm]
   exact hn.add_odd hm
@@ -347,18 +350,22 @@ theorem odd_one : Odd (1 : α) :=
   ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
 #align odd_one odd_one
 
+@[simp] lemma Even.add_one (h : Even m) : Odd (m + 1) := h.add_odd odd_one
+
+@[simp] lemma Even.one_add (h : Even m) : Odd (1 + m) := h.odd_add odd_one
+
 @[simp]
 theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
   ⟨m, rfl⟩
 #align odd_two_mul_add_one odd_two_mul_add_one
 
-@[simp] lemma odd_add_self_one : Odd (m + m + 1) := ⟨m, by rw [two_mul]⟩
-
 @[simp] lemma odd_add_self_one' : Odd (m + (m + 1)) := by simp [← add_assoc]
 
 @[simp] lemma odd_add_one_self : Odd (m + 1 + m) := by simp [add_comm _ m]
 
-@[simp] lemma odd_add_one_self' : Odd (m + (1 + m)) := by simp [add_comm]
+@[simp] lemma odd_add_one_self' : Odd (m + (1 + m)) := by simp [add_comm 1 m]
+
+@[simp] lemma one_add_self_self : Odd (1 + m + m) := by simp [add_comm 1 m]
 
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
