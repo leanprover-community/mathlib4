@@ -1134,12 +1134,10 @@ theorem eq_C_coeff_zero_iff_natDegree_eq_zero : p = C (p.coeff 0) ↔ p.natDegre
 
 theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : p = 1 := by
   rw [Monic.def, leadingCoeff, hfd] at hf
-  rw [eq_C_of_natDegree_eq_zero hfd, hf]
+  rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
-theorem natDegree_pos_of_monic_ne_one (hf : p.Monic) (hfne : p ≠ 1) : p.natDegree ≠ 0 := by
-  by_contra' H
-  refine hfne (eq_C_one_of_monic_natDegree_zero hf ?_)
-  exact H
+theorem natDegree_pos_of_monic_ne_one (hf : p.Monic) (hfne : p ≠ 1) : p.natDegree ≠ 0 :=
+  fun H ↦ hfne (eq_one_of_monic_natDegree_zero hf H)
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
   zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg
