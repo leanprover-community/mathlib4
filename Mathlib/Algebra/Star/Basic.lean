@@ -18,14 +18,14 @@ We introduce the basic algebraic notions of star monoids, star rings, and star m
 A star algebra is simply a star ring that is also a star module.
 
 These are implemented as "mixin" typeclasses, so to summon a star ring (for example)
-one needs to write `(R : Type*) [Ring R] [StarRing R]`.
+one needs to write `(R : Type*) [NonUnitalNonAssocSemiring R] [StarRing R]`.
 This avoids difficulties with diamond inheritance.
 
 For now we simply do not introduce notations,
 as different users are expected to feel strongly about the relative merits of
 `r^*`, `r†`, `rᘁ`, and so on.
 
-Our star rings are actually star semirings, but of course we can prove
+Our star rings are actually star non-unital, non-associative, semirings, but of course we can prove
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
 
