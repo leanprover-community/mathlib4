@@ -43,6 +43,8 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 non-unital, algebra, morphism
 -/
 
+set_option autoImplicit true
+
 
 universe u v w w₁ w₂ w₃
 
