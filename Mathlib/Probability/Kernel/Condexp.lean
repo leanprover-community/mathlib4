@@ -74,6 +74,7 @@ noncomputable irreducible_def condexpKernel (μ : Measure Ω) [IsFiniteMeasure �
     (measurable_id'' (inf_le_left : m ⊓ mΩ ≤ m))
 #align probability_theory.condexp_kernel ProbabilityTheory.condexpKernel
 
+set_option autoImplicit true in
 lemma condexpKernel_apply_eq_condDistrib :
     condexpKernel μ m ω = @condDistrib Ω Ω Ω _ mΩ _ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
   simp_rw [condexpKernel, kernel.comap_apply]

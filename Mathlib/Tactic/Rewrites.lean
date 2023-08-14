@@ -26,6 +26,8 @@ We could try discharging side goals via `assumption` or `solve_by_elim`.
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Rewrites
 
 open Lean Meta Std.Tactic.TryThis

@@ -67,6 +67,8 @@ walks, trails, paths, circuits, cycles, bridge edges
 
 -/
 
+set_option autoImplicit true
+
 
 open Function
 
