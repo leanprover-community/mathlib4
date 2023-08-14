@@ -97,6 +97,10 @@ theorem prod_sum_univ [Fintype α] [Fintype γ] (f : α ⊕ γ → β) :
     ∏ x, f x = (∏ x, f (Sum.inl x)) * ∏ x, f (Sum.inr x) := by
   rw [← univ_disjSum_univ, prod_disj_sum]
 
+@[simp]
+theorem card_add_card_compl [Fintype α] (s : Finset α) : s.card + sᶜ.card = Fintype.card α := by
+  rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
+
 end Finset
 
 end Finset
@@ -654,13 +658,13 @@ theorem measurable_update_aux :
   · simp [h]
 #align measure_theory.measurable_update_aux MeasureTheory.measurable_update_aux
 
-/-- The integrand of `marginal _ _ f` is measurable if `f` is. -/
+/-- The integrand of `∫⋯∫_s, f ∂μ` is measurable if `f` is. -/
 theorem Measurable.update' (hf : Measurable f) {s : Finset δ} {x : ∀ i, π i} :
     Measurable (update' s f x) :=
   hf.comp measurable_update_aux
 #align measurable.update' MeasureTheory.Measurable.update'
 
-/-- The integrand of `marginal _ _ f` is measurable if `f` is. -/
+/-- The integrand of `∫⋯∫_s, f ∂μ` is measurable if `f` is. -/
 theorem StronglyMeasurable.update' (hf : StronglyMeasurable f) {s : Finset δ}
     {x : ∀ i, π i} : StronglyMeasurable (update' s f x) :=
   hf.comp_measurable measurable_update_aux
@@ -827,29 +831,37 @@ variable [Fintype ι] {π : ι → Type _} [∀ i, MeasurableSpace (π i)] (μ :
 local prefix:max "#" => Fintype.card
 
 /--
-
+  The function that is central in the inductive proof of the Sobolev inequality.
 -/
 def rhsAux (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) : (∀ i, π i) → ℝ≥0∞ :=
-  marginal μ s f ^ ((s.card : ℝ) / (#ι - 1 : ℝ)) *
-    ∏ i in sᶜ, marginal μ (insert i s) f ^ ((1 : ℝ) / (#ι - 1 : ℝ))
+  (∫⋯∫_s, f ∂μ) ^ ((s.card : ℝ) / (#ι - 1 : ℝ)) *
+    ∏ i in sᶜ, (∫⋯∫_insert i s, f ∂μ) ^ ((1 : ℝ) / (#ι - 1 : ℝ))
 #align rhs_aux rhsAux
 
-theorem marginal_rhsAux_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (i : ι) (hi : i ∉ s) :
-    ∫⋯∫_{i}, rhsAux μ f s ∂μ ≤ rhsAux μ f (insert i s) :=
-  by
+theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞)
+  (s : Finset ι) (i : ι)
+  (hi : i ∉ s) : ∫⋯∫_{i}, rhsAux μ f s ∂μ ≤ rhsAux μ f (insert i s) := by
   simp_rw [rhsAux, ← insert_compl_insert hi]
   rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
   rw [mul_left_comm, mul_prod_eq_prod_insertNone]
-  simp_rw [marginal_singleton _]
-  have := fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)
-  simp_rw [Pi.mul_apply, Pi.pow_apply, this]
-  clear this
+  simp_rw [marginal_singleton]
+  simp_rw [Pi.mul_apply, Pi.pow_apply, fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)]
   intro x
   dsimp only
-  have h1 : (∫⋯∫_insert i s, f ∂μ) x ^ ((1 : ℝ) / (↑(#ι) - 1 : ℝ)) ≠ ∞ := by sorry
-  simp_rw [lintegral_const_mul' _ _ h1, prod_apply, Option.elim'_comp₂, Pi.pow_apply]
+  have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
+  have h0 : (∫⋯∫_insert i s, f ∂μ) x ≠ ∞ := sorry
+  have h1 : (∫⋯∫_insert i s, f ∂μ) x ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ≠ ∞ := by
+    simp [Fintype.one_lt_card, Fintype.card_ne_zero, h0]
+  simp_rw [lintegral_const_mul' _ _ h1, prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
   refine' (ENNReal.mul_left_mono (lintegral_prod_norm_pow_le _ _ _)).trans_eq _
-  · sorry
+  · simp_rw [sum_insertNone, compl_insert, not_not, Option.elim, sum_const, nsmul_eq_mul]
+    rw [Finset.card_erase_of_mem h2i, mul_one_div, ← add_div, ← Nat.cast_add, ← Nat.add_sub_assoc,
+      card_add_card_compl, ← Nat.cast_one (R := ℝ), ← Nat.cast_sub, Nat.cast_one, div_self]
+    · rw [Nat.cast_ne_zero]
+      exact (Nat.sub_pos_of_lt Fintype.one_lt_card).ne'
+    · exact Fintype.one_lt_card.le
+    · rw [Nat.add_one_le_iff, Finset.card_pos]
+      exact ⟨i, h2i⟩
   · sorry
   simp_rw [prod_insertNone]
   dsimp
@@ -866,22 +878,20 @@ theorem marginal_rhsAux_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (i
   rw [Insert.comm]
   have h2 : i ∉ insert j s := by sorry
   simp_rw [marginal_insert_rev _ sorry h2]
-#align marginal_rhs_aux_le marginal_rhsAux_le
+#align marginal_rhs_aux_le marginal_singleton_rhsAux_le
 
 theorem marginal_rhsAux_empty_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) :
     ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
   induction' s using Finset.induction with i s hi ih
   · rw [marginal_empty]
-  · have hi' : Disjoint {i} s := sorry
+  · have hi' : Disjoint {i} s := Finset.disjoint_singleton_left.mpr hi
     conv_lhs => rw [Finset.insert_eq, marginal_union μ _ sorry hi']
     refine' (marginal_mono ih).trans _
-    exact marginal_rhsAux_le μ f s i hi
+    exact marginal_singleton_rhsAux_le μ f s i hi
 #align marginal_rhs_aux_empty_le marginal_rhsAux_empty_le
 
 theorem lintegral_prod_lintegral_pow_le :
-    ∫⁻ x, ∏ i,
-      (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^
-        ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
+    ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
       (∫⁻ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   cases isEmpty_or_nonempty (∀ i, π i)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
