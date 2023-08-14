@@ -138,6 +138,7 @@ import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Algebra.Expr
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.Field.ULift
@@ -402,6 +403,7 @@ import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.MinimalAxioms
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Pi
