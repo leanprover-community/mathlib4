@@ -184,7 +184,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`.  -/
 instance (priority := 75) toModule : Module R S' :=
-  Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
+  Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SMulMemClass.toModule
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
@@ -394,7 +394,7 @@ theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in
 section AddAction
 
 /-! ### Additive actions by `Submodule`s
-These instances transfer the action by an element `m : M` of a `R`-module `M` written as `m +ᵥ a`
+These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
 These instances work particularly well in conjunction with `add_group.to_add_action`, enabling

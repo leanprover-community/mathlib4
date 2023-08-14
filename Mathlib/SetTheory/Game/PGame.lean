@@ -97,7 +97,7 @@ An interested reader may like to formalise some of the material from
 
 open Function Relation
 
--- This is file, we'd like to be able to use multi-character auto-implicits.
+-- We'd like to be able to use multi-character auto-implicits in this file.
 set_option relaxedAutoImplicit true
 
 /-! ### Pre-game moves -/
@@ -735,7 +735,7 @@ def Equiv (x y : PGame) : Prop :=
 #align pgame.equiv PGame.Equiv
 
 -- Porting note: deleted the scoped notation due to notation overloading with the setoid
--- instance and this causes the the PGame.equiv docstring to not show up on hover.
+-- instance and this causes the PGame.equiv docstring to not show up on hover.
 
 instance : IsEquiv _ PGame.Equiv where
   refl _ := ⟨le_rfl, le_rfl⟩

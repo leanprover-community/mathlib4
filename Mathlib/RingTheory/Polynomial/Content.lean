@@ -118,7 +118,6 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
     constructor
     · intro h
       use a
-      simp [h]
     · rintro ⟨b, ⟨h1, h2⟩⟩
       rw [← Nat.succ_injective h2]
       apply h1

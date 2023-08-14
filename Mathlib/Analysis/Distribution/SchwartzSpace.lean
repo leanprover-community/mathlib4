@@ -19,7 +19,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 This file defines the Schwartz space. Usually, the Schwartz space is defined as the set of smooth
 functions $f : ℝ^n → ℂ$ such that there exists $C_{αβ} > 0$ with $$|x^α ∂^β f(x)| < C_{αβ}$$ for
 all $x ∈ ℝ^n$ and for all multiindices $α, β$.
-In mathlib, we use a slightly different approach and define define the Schwartz space as all
+In mathlib, we use a slightly different approach and define the Schwartz space as all
 smooth functions `f : E → F`, where `E` and `F` are real normed vector spaces such that for all
 natural numbers `k` and `n` we have uniform bounds `‖x‖^k * ‖iteratedFDeriv ℝ n f x‖ < C`.
 This approach completely avoids using partial derivatives as well as polynomials.
@@ -58,7 +58,7 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 Schwartz space, tempered distributions
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 

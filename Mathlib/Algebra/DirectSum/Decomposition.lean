@@ -184,7 +184,7 @@ end AddCommMonoid
 
 /-- The `-` in the statements below doesn't resolve without this line.
 
-This seems to a be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
+This seems to be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
 the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
 instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
 to be found by unification rather than synthesis, then everything works fine without this

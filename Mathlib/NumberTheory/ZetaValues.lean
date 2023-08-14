@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.BernoulliPolynomials
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.PSeries
 
@@ -27,7 +28,7 @@ zeta functions, in terms of Bernoulli polynomials.
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 

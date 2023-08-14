@@ -1575,44 +1575,7 @@ theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable
 
 end
 
-/-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
-thickenings converges to the measure of its closure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
-  have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
-    rw [closure_eq_iInter_cthickening]
-    exact
-      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
-        (fun i j _ ij => cthickening_mono ij _) hs
-  have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
-    apply Tendsto.congr' _ tendsto_const_nhds
-    filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
-    rw [cthickening_of_nonpos hr]
-  convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
-#align tendsto_measure_cthickening tendsto_measure_cthickening
-
-/-- If a closed set has a closed thickening with finite measure, then the measure of its `r`-closed
-thickenings converges to its measure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
-    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
-  convert tendsto_measure_cthickening hs
-  exact h's.closure_eq.symm
-#align tendsto_measure_cthickening_of_is_closed tendsto_measure_cthickening_of_isClosed
-
 end PseudoMetricSpace
-
-/-- Given a compact set in a proper space, the measure of its `r`-closed thickenings converges to
-its measure as `r` tends to `0`. -/
-theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpace α]
-    [OpensMeasurableSpace α] [ProperSpace α] {μ : Measure α} [IsFiniteMeasureOnCompacts μ]
-    {s : Set α} (hs : IsCompact s) :
-    Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
-  tendsto_measure_cthickening_of_isClosed ⟨1, zero_lt_one, hs.bounded.cthickening.measure_lt_top.ne⟩
-    hs.isClosed
-#align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
 
 section PseudoEMetricSpace
 
@@ -1648,6 +1611,52 @@ theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
   measurable_infEdist.comp hf
 #align measurable.inf_edist Measurable.infEdist
 
+open Metric EMetric
+
+/-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
+thickenings converges to the measure of its closure as `r` tends to `0`. -/
+theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) :
+    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
+  have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
+    rw [closure_eq_iInter_cthickening]
+    exact
+      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
+        (fun i j _ ij => cthickening_mono ij _) hs
+  have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
+    apply Tendsto.congr' _ tendsto_const_nhds
+    filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
+    rw [cthickening_of_nonpos hr]
+  convert B.sup A
+  exact (nhds_left_sup_nhds_right' 0).symm
+#align tendsto_measure_cthickening tendsto_measure_cthickening
+
+/-- If a closed set has a closed thickening with finite measure, then the measure of its closed
+`r`-thickenings converge to its measure as `r` tends to `0`. -/
+theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
+    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
+  convert tendsto_measure_cthickening hs
+  exact h's.closure_eq.symm
+#align tendsto_measure_cthickening_of_is_closed tendsto_measure_cthickening_of_isClosed
+
+/-- If a set has a thickening with finite measure, then the measures of its `r`-thickenings
+converge to the measure of its closure as `r > 0` tends to `0`. -/
+theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) :
+    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ (closure s))) := by
+  rw [closure_eq_iInter_thickening]
+  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.measurableSet)
+      (fun i j _ ij => thickening_mono ij _) hs
+
+/-- If a closed set has a thickening with finite measure, then the measure of its
+`r`-thickenings converge to its measure as `r > 0` tends to `0`. -/
+theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
+    (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) (h's : IsClosed s) :
+    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ s)) := by
+  convert tendsto_measure_thickening hs
+  exact h's.closure_eq.symm
+
 variable [SecondCountableTopology α]
 
 @[measurability]
@@ -1669,6 +1678,16 @@ theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurabl
 
 end PseudoEMetricSpace
 
+/-- Given a compact set in a proper space, the measure of its `r`-closed thickenings converges to
+its measure as `r` tends to `0`. -/
+theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpace α]
+    [OpensMeasurableSpace α] [ProperSpace α] {μ : Measure α} [IsFiniteMeasureOnCompacts μ]
+    {s : Set α} (hs : IsCompact s) :
+    Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
+  tendsto_measure_cthickening_of_isClosed ⟨1, zero_lt_one, hs.bounded.cthickening.measure_lt_top.ne⟩
+    hs.isClosed
+#align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
+
 namespace Real
 
 open MeasurableSpace MeasureTheory
@@ -1678,12 +1697,104 @@ theorem borel_eq_generateFrom_Ioo_rat :
   isTopologicalBasis_Ioo_rat.borel_eq_generateFrom
 #align real.borel_eq_generate_from_Ioo_rat Real.borel_eq_generateFrom_Ioo_rat
 
+theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)}) := by
+  let g : MeasurableSpace ℝ := .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)})
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Ioo_rat]
+    refine' generateFrom_le fun t => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨a, b, _, rfl⟩
+    rw [(Set.ext fun x => by
+          suffices x < ↑b → (↑a < x ↔ ∃ i : ℚ, a < i ∧ ↑i ≤ x) by simpa
+          refine' fun _ => ⟨fun h => _, fun ⟨i, hai, hix⟩ => (Rat.cast_lt.2 hai).trans_le hix⟩
+          rcases exists_rat_btwn h with ⟨c, ac, cx⟩
+          exact ⟨c, Rat.cast_lt.1 ac, cx.le⟩
+            : Ioo (a : ℝ) b = (⋃ c > a, (Iio (c : ℝ))ᶜ) ∩ Iio (b : ℝ))]
+    · have hg : ∀ q : ℚ, MeasurableSet[g] (Iio (q : ℝ)) := fun q =>
+        GenerateMeasurable.basic (Iio (q : ℝ)) (by simp)
+      refine' MeasurableSet.inter _ (hg _)
+      exact MeasurableSet.biUnion (to_countable _) fun c _ => (hg _).compl
+  · refine' MeasurableSpace.generateFrom_le fun _ => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨r, rfl⟩
+    exact @measurableSet_Iio _ _ (borel ℝ) _ _ _ _
+#align real.borel_eq_generate_from_Iio_rat Real.borel_eq_generateFrom_Iio_rat
+
+theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Iio_rat]
+    refine' generateFrom_le fun t => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨b, _, rfl⟩
+    have : Iio (b : ℝ) = ⋃ c < b, (Ioi (c : ℝ))ᶜ := by
+      ext x
+      simp only [mem_Iio, compl_Ioi, mem_iUnion, mem_Iic, exists_prop]
+      refine ⟨fun h ↦ ?_, fun ⟨i, hib, bxi⟩ ↦ bxi.trans_lt (Rat.cast_lt.2 hib)⟩
+      rcases exists_rat_btwn h with ⟨c, xc, cb⟩
+      exact ⟨c, Rat.cast_lt.1 cb, xc.le⟩
+    rw [this]
+    have hg : ∀ q : ℚ, MeasurableSet[.generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)})] (Ioi (q : ℝ)) :=
+      fun q => GenerateMeasurable.basic (Ioi (q : ℝ)) (by simp)
+    exact MeasurableSet.biUnion (to_countable _) fun c _ => (hg _).compl
+  · refine' MeasurableSpace.generateFrom_le fun _ => _
+    simp only [mem_iUnion, mem_singleton_iff]
+    rintro ⟨r, rfl⟩
+    exact measurableSet_Ioi
+
+theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Ioi_rat]
+    refine generateFrom_le fun t ht => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at ht
+    obtain ⟨y, rfl⟩ := ht
+    rw [← compl_Iic]
+    refine MeasurableSet.compl (GenerateMeasurable.basic _ ?_)
+    simp only [iUnion_singleton_eq_range, mem_range, exists_apply_eq_apply]
+  · refine MeasurableSpace.generateFrom_le fun s hs => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at hs
+    obtain ⟨y, rfl⟩ := hs
+    exact measurableSet_Iic
+
+theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ici (a : ℝ)}) := by
+  refine' le_antisymm _ _
+  · rw [borel_eq_generateFrom_Iio_rat]
+    refine generateFrom_le fun t ht => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at ht
+    obtain ⟨y, rfl⟩ := ht
+    rw [← compl_Ici]
+    refine MeasurableSet.compl (GenerateMeasurable.basic _ ?_)
+    simp only [iUnion_singleton_eq_range, mem_range, exists_apply_eq_apply]
+  · refine MeasurableSpace.generateFrom_le fun s hs => ?_
+    simp only [iUnion_singleton_eq_range, mem_range] at hs
+    obtain ⟨y, rfl⟩ := hs
+    exact measurableSet_Ici
+
 theorem isPiSystem_Ioo_rat :
     @IsPiSystem ℝ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
   convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
   ext x
   simp [eq_comm]
 #align real.is_pi_system_Ioo_rat Real.isPiSystem_Ioo_rat
+
+theorem isPiSystem_Iio_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Iio (a : ℝ)}) := by
+  convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+
+theorem isPiSystem_Ioi_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
+  convert isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+
+theorem isPiSystem_Iic_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Iic (a : ℝ)}) := by
+  convert isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+
+theorem isPiSystem_Ici_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Ici (a : ℝ)}) := by
+  convert isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
+  ext x
+  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 /-- The intervals `(-(n + 1), (n + 1))` form a finite spanning sets in the set of open intervals
 with rational endpoints for a locally finite measure `μ` on `ℝ`. -/
@@ -1709,30 +1820,6 @@ theorem measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
     rintro _ ⟨a, b, -, rfl⟩
     apply h
 #align real.measure_ext_Ioo_rat Real.measure_ext_Ioo_rat
-
-theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)}) := by
-  let g : MeasurableSpace ℝ := .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)})
-  refine' le_antisymm _ _
-  · rw [borel_eq_generateFrom_Ioo_rat]
-    refine' generateFrom_le fun t => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨a, b, _, rfl⟩
-    rw [(Set.ext fun x => by
-          suffices x < ↑b → (↑a < x ↔ ∃ i : ℚ, a < i ∧ ↑i ≤ x) by simpa
-          refine' fun _ => ⟨fun h => _, fun ⟨i, hai, hix⟩ => (Rat.cast_lt.2 hai).trans_le hix⟩
-          rcases exists_rat_btwn h with ⟨c, ac, cx⟩
-          exact ⟨c, Rat.cast_lt.1 ac, cx.le⟩
-            : Ioo (a : ℝ) b = (⋃ c > a, (Iio (c : ℝ))ᶜ) ∩ Iio (b : ℝ))]
-    · have hg : ∀ q : ℚ, MeasurableSet[g] (Iio (q : ℝ)) := fun q =>
-        GenerateMeasurable.basic (Iio (q : ℝ)) (by simp)
-      refine' @MeasurableSet.inter _ g _ _ _ (hg _)
-      refine' @MeasurableSet.biUnion _ _ g _ _ (to_countable _) fun c _ => _
-      exact @MeasurableSet.compl _ _ g (hg _)
-  · refine' MeasurableSpace.generateFrom_le fun _ => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨r, rfl⟩
-    exact @measurableSet_Iio _ _ (borel ℝ) _ _ _ _
-#align real.borel_eq_generate_from_Iio_rat Real.borel_eq_generateFrom_Iio_rat
 
 end Real
 

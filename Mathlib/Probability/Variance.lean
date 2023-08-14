@@ -43,7 +43,7 @@ open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 -- Porting note: this lemma replaces `ENNReal.toReal_bit0`, which does not exist in Lean 4
 private lemma coe_two : ENNReal.toReal 2 = (2 : ℝ) := rfl
@@ -84,7 +84,9 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne.def]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine' hX _
-  convert this.add (memℒp_const <| μ[X])
+  -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
+  -- and `convert` cannot disambiguate based on typeclass inference failure.
+  convert this.add (memℒp_const <| μ [X])
   ext ω
   rw [Pi.add_apply, sub_add_cancel]
 #align probability_theory.evariance_eq_top ProbabilityTheory.evariance_eq_top
@@ -132,7 +134,9 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
     ENNReal.toReal_ofReal]
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
-  · convert (hX.sub <| memℒp_const (μ[X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
+  · -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
+    -- and `convert` cannot disambiguate based on typeclass inference failure.
+    convert (hX.sub <| memℒp_const (μ [X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
       with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
