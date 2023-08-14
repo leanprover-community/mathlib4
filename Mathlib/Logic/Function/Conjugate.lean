@@ -110,13 +110,11 @@ theorem symm (h : Commute f g) : Commute g f :=
   fun x ↦ (h x).symm
 #align function.commute.symm Function.Commute.symm
 
-theorem comp_right (h : Commute f g) (h' : Commute f g') :
-    Commute f (g ∘ g') :=
+theorem comp_right (h : Commute f g) (h' : Commute f g') : Commute f (g ∘ g') :=
   Semiconj.comp_right h h'
 #align function.commute.comp_right Function.Commute.comp_right
 
-theorem comp_left (h : Commute f g) (h' : Commute f' g) :
-    Commute (f ∘ f') g :=
+theorem comp_left (h : Commute f g) (h' : Commute f' g) : Commute (f ∘ f') g :=
   (h.symm.comp_right h'.symm).symm
 #align function.commute.comp_left Function.Commute.comp_left
 
@@ -128,8 +126,7 @@ theorem id_left : Commute id f :=
   Semiconj.id_left
 #align function.commute.id_left Function.Commute.id_left
 
-theorem option_map {f g : α → α} :
-    Commute f g → Commute (Option.map f) (Option.map g) :=
+theorem option_map {f g : α → α} : Commute f g → Commute (Option.map f) (Option.map g) :=
   Semiconj.option_map
 #align function.commute.option_map Function.Commute.option_map
 
