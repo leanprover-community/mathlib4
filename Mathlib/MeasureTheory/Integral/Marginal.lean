@@ -145,12 +145,39 @@ variable {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpa
 
 variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
--- ⇑(fderiv ℝ (λ (x_1 : ℝ), update x i x_1) y)
+theorem contDiff_update (k : ℕ∞) (x : ∀ i, E i) (i : ι) : ContDiff 𝕜 k (Function.update x i) := by
+  rw [contDiff_pi]
+  intro j
+  dsimp [Function.update]
+  split_ifs with h
+  · subst h
+    exact contDiff_id
+  · exact contDiff_const
+
+theorem hasFDerivAt_sub_const {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E]  {x : E} (c : E) :
+    HasFDerivAt (· - c) (ContinuousLinearMap.id 𝕜 (E)) x :=
+  (hasFDerivAt_id x).sub_const c
+
+theorem hasFDerivAt_update {x : ∀ i, E i} {i : ι} (y : E i) :
+    HasFDerivAt (Function.update x i)
+      (ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i)))) y := by
+  set l := (ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i))))
+  have update_eq : Function.update x i = (fun _ ↦ x) + l ∘ (· - x i)
+  · ext t j
+    dsimp [Function.update]
+    split_ifs with hji
+    · subst hji
+      simp
+    · simp
+  rw [update_eq]
+  convert (hasFDerivAt_const _ _).add (l.hasFDerivAt.comp y (hasFDerivAt_sub_const (x i)))
+  rw [zero_add, ContinuousLinearMap.comp_id]
+
 theorem fderiv_update {x : ∀ i, E i} {i : ι} (y : E i) :
     fderiv 𝕜 (Function.update x i) y =
       ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i))) :=
-  sorry
-#align fderiv_update fderiv_update
+  (hasFDerivAt_update y).fderiv
 
 theorem ContinuousLinearMap.norm_le_norm_pi (f : ∀ i, F →L[𝕜] E i) (i : ι) :
     ‖f i‖ ≤ ‖ContinuousLinearMap.pi f‖ :=
@@ -168,7 +195,11 @@ variable (E)
 theorem ContinuousLinearMap.norm_pi_update_eq_one {i : ι} :
     ‖ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i)))‖ = 1 :=
   sorry
-#align continuous_linear_map.norm_pi_update_eq_one ContinuousLinearMap.norm_pi_update_eq_one
+
+-- this is the lemma that's actually used
+theorem ContinuousLinearMap.nnnorm_pi_update_eq_one {i : ι} :
+    ‖ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i)))‖₊ = 1 :=
+  Subtype.ext (ContinuousLinearMap.norm_pi_update_eq_one ..)
 
 end Calculus
 
@@ -1009,15 +1040,7 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
   rw [← prod_const]
   push_cast
   gcongr with i _
-  -- `update x i` is `ContDiff` -- make this a lemma
-  have h_update : ContDiff ℝ 1 (update x i)
-  · rw [contDiff_pi]
-    intro j
-    simp_rw [update_apply]
-    split_ifs
-    · exact contDiff_id
-    · exact contDiff_const
-  have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp h_update
+  have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp (contDiff_update 1 x i)
   have h4u : HasCompactSupport (u ∘ update x i)
   · apply h2u.comp_closedEmbedding
     -- `update x i` is a closed embedding -- make this a lemma
@@ -1031,20 +1054,19 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
   simp_rw [update_eq_self] at this
   rw [← this]
   refine' (nnnorm_integral_le_lintegral_nnnorm _).trans _
-  refine (lintegral_mono' (Measure.restrict_le_self) (le_refl _)).trans ?_
-  refine' lintegral_mono fun y => _
+  refine (lintegral_mono' (Measure.restrict_le_self) (le_refl _)).trans ?_ -- `gcongr`
+  refine' lintegral_mono fun y => _ -- `gcongr`
   rw [← Function.comp_def u (update x i), deriv]
-  rw [fderiv.comp y (hu.differentiable le_rfl).differentiableAt ((h_update.differentiable (le_refl _)) y)]
+  rw [fderiv.comp y (hu.differentiable le_rfl).differentiableAt (hasFDerivAt_update y).differentiableAt]
   rw [ContinuousLinearMap.comp_apply]
   norm_cast
-  show ‖_‖ ≤ ‖_‖
-  refine' (ContinuousLinearMap.le_op_norm _ _).trans _
-  conv_rhs => rw [← mul_one ‖_‖]
+  refine' (ContinuousLinearMap.le_op_nnnorm _ _).trans _
+  conv_rhs => rw [← mul_one ‖_‖₊]
   simp_rw [fderiv_update]
   gcongr
-  refine' (ContinuousLinearMap.le_op_norm _ _).trans_eq _
-  rw [norm_one, mul_one]
-  exact ContinuousLinearMap.norm_pi_update_eq_one fun _ => ℝ
+  refine' (ContinuousLinearMap.le_op_nnnorm _ _).trans_eq _
+  rw [nnnorm_one, mul_one]
+  exact ContinuousLinearMap.nnnorm_pi_update_eq_one fun _ => ℝ
 #align lintegral_pow_le lintegral_pow_le
 
 -- /-- The Sobolev inequality for the Lebesgue l=integral(?) -/
