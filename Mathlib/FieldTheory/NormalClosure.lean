@@ -159,4 +159,29 @@ lemma normal_iff : List.TFAE [Normal F K,
   · exact fun h σ ↦ (h σ).le
   tfae_finish
 
+lemma normal_iff_normalClosure_eq : Normal F K ↔ normalClosure F K L = K :=
+⟨@normalClosure_of_normal (K := K), fun h ↦ h ▸ normalClosure.normal F K L⟩
+
+lemma normal_iff_normalClosure_le : Normal F K ↔ normalClosure F K L ≤ K :=
+normal_iff_normalClosure_eq.trans (le_normalClosure K).le_iff_eq.symm
+
+lemma normal_iff_forall_fieldRange_le : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange ≤ K :=
+by rw [normal_iff_normalClosure_le, normalClosure_def, iSup_le_iff]
+
+lemma normal_iff_forall_map_le : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ ≤ K :=
+by rw [normal_iff_normalClosure_le, normalClosure_def', iSup_le_iff]
+
+lemma normal_iff_forall_map_le' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ ≤ K :=
+by rw [normal_iff_normalClosure_le, normalClosure_def'', iSup_le_iff]
+
+lemma normal_iff_forall_fieldRange_eq : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange = K :=
+⟨@AlgHom.fieldRange_of_normal (E := K), normal_iff_forall_fieldRange_le.2 ∘ fun h σ ↦ (h σ).le⟩
+
+lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ = K :=
+⟨fun h σ ↦ (K.fieldRange_val ▸ AlgHom.map_fieldRange K.val σ).trans
+  (normal_iff_forall_fieldRange_eq.1 h _), fun h ↦ normal_iff_forall_map_le.2 (fun σ ↦ (h σ).le)⟩
+
+lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K :=
+⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
+
 end IntermediateField
