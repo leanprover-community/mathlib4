@@ -3,7 +3,8 @@ import Mathlib.Util.InfoTree.Basic
 namespace Lean.Elab
 
 structure InfoTreeNode (α : Type) where
-  node : α
+  kind : String
+  node : Option α
   children : List Json
 deriving ToJson
 
@@ -21,17 +22,17 @@ def TacticInvocation.toJson (i : TacticInvocation) : IO Json := do
       goalsAfter := (← i.goalStateAfter).map Format.pretty } : TacticInfo.Json)
 
 structure CommandInfo.Json where
-  elaborator : Name
+  elaborator : Option Name
   stx : String
 deriving ToJson
 
 def CommandInfo.toJson (info : CommandInfo) (ctx : ContextInfo) : IO Lean.Json := do
   return Lean.toJson (
-    { elaborator := info.elaborator,
+    { elaborator := match info.elaborator with | .anonymous => none | n => some n,
       stx := (← ctx.ppSyntax {} info.stx).pretty } : CommandInfo.Json)
 
 structure TermInfo.Json where
-  elaborator : Name
+  elaborator : Option Name
   stx : String
   expectedType? : Option String
   expr : String
@@ -40,7 +41,7 @@ deriving ToJson
 
 def TermInfo.toJson (info : TermInfo) (ctx : ContextInfo) : IO Lean.Json := do
   return Lean.toJson (
-    { elaborator := info.elaborator,
+    { elaborator := match info.elaborator with | .anonymous => none | n => some n,
       stx := (← ctx.ppSyntax {} info.stx).pretty,
       expectedType? := ← info.expectedType?.mapM fun ty => do pure (← ctx.ppExpr ty).pretty
       expr := (← ctx.ppExpr info.expr).pretty
@@ -54,24 +55,31 @@ structure InfoTree.MissingJson where
   kind : String
 deriving ToJson
 
+def Info.kind : Info → String
+  | .ofTacticInfo         _ => "TacticInfo"
+  | .ofTermInfo           _ => "TermInfo"
+  | .ofCommandInfo        _ => "CommmandInfo"
+  | .ofMacroExpansionInfo _ => "MacroExpansionInfo"
+  | .ofOptionInfo         _ => "OptionInfo"
+  | .ofFieldInfo          _ => "FieldInfo"
+  | .ofCompletionInfo     _ => "CompletionInfo"
+  | .ofUserWidgetInfo     _ => "UserWidgetInfo"
+  | .ofCustomInfo         _ => "CustomInfo"
+  | .ofFVarAliasInfo      _ => "FVarAliasInfo"
+  | .ofFieldRedeclInfo    _ => "FieldRedeclInfo"
+
+
 partial def InfoTree.toJson (t : InfoTree) (ctx? : Option ContextInfo) : IO Json := do
   match t with
   | .context i t => t.toJson i
   | .node info children =>
     if let some ctx := ctx? then
-      let node : Json ← match info with
-      | .ofTacticInfo         info => TacticInvocation.toJson ⟨info, ctx, children⟩
-      | .ofTermInfo           info => info.toJson ctx
-      | .ofCommandInfo        info => info.toJson ctx
-      | .ofMacroExpansionInfo _    => return Lean.toJson (InfoTree.MissingJson.mk "MacroExpansionInfo")
-      | .ofOptionInfo         _    => return Lean.toJson (InfoTree.MissingJson.mk "OptionInfo")
-      | .ofFieldInfo          _    => return Lean.toJson (InfoTree.MissingJson.mk "FieldInfo")
-      | .ofCompletionInfo     _    => return Lean.toJson (InfoTree.MissingJson.mk "CompletionInfo")
-      | .ofUserWidgetInfo     _    => return Lean.toJson (InfoTree.MissingJson.mk "UserWidgetInfo")
-      | .ofCustomInfo         _    => return Lean.toJson (InfoTree.MissingJson.mk "CustomInfo")
-      | .ofFVarAliasInfo      _    => return Lean.toJson (InfoTree.MissingJson.mk "FVarAliasInfo")
-      | .ofFieldRedeclInfo    _    => return Lean.toJson (InfoTree.MissingJson.mk "FieldRedeclInfo")
-      return Lean.toJson (InfoTreeNode.mk node (← children.toList.mapM fun t' => t'.toJson ctx))
+      let node : Option Json ← match info with
+      | .ofTacticInfo  info => some <$> TacticInvocation.toJson ⟨info, ctx, children⟩
+      | .ofTermInfo    info => some <$> info.toJson ctx
+      | .ofCommandInfo info => some <$> info.toJson ctx
+      | _                   => pure none
+      return Lean.toJson (InfoTreeNode.mk info.kind node (← children.toList.mapM fun t' => t'.toJson ctx))
     else throw <| IO.userError "No `ContextInfo` available."
   | .hole mvarId =>
     if let some ctx := ctx? then
