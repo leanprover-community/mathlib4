@@ -395,13 +395,6 @@ theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.factors.toFinset, p = n := by
   erw [List.prod_toFinset _ hn.nodup_factors, List.map_id, Nat.prod_factors hn.ne_zero]
 
-theorem prod_factors_toFinset_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t : Finset ℕ}
-    (ht : t ⊆ n.factors.toFinset) :
-    ∏ a in (n.factors.toFinset \ t), a = n / ∏ a in t, a := by
-  refine symm $ Nat.div_eq_of_eq_mul_left (Finset.prod_pos
-    fun p hp => (prime_of_mem_factors (List.mem_toFinset.mp (ht hp))).pos) ?_
-  rw [Finset.prod_sdiff ht, prod_factors_toFinset_of_squarefree hn]
-
 end Nat
 
 -- Porting note: comment out NormNum tactic, to be moved to another file.
