@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Localization.Basic
-import Mathlib.Algebra.MonoidAlgebra.Star
 
 #align_import data.polynomial.laurent from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -72,7 +71,9 @@ Lots is missing!
 -/
 
 
-open Polynomial BigOperators Function AddMonoidAlgebra Finsupp
+open Polynomial BigOperators
+
+open Polynomial AddMonoidAlgebra Finsupp
 
 noncomputable section
 
@@ -155,9 +156,6 @@ theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.single_eq_C LaurentPolynomial.single_eq_C
 
-@[simp] lemma C_apply {t : R} {n : ℤ} : C t n = if n = 0 then t else 0 := by
-  rw [← single_eq_C, Finsupp.single_apply]; aesop
-
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
@@ -167,9 +165,6 @@ def T (n : ℤ) : R[T;T⁻¹] :=
   Finsupp.single n 1
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T LaurentPolynomial.T
-
-@[simp] lemma T_apply {m n : ℤ} : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
-  Finsupp.single_apply
 
 @[simp]
 theorem T_zero : (T 0 : R[T;T⁻¹]) = 1 :=
@@ -614,24 +609,5 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
 end CommSemiring
-
-section Inversion
-
-variable {R : Type _} [CommSemiring R]
-
-/-- The map which substitutes `T ↦ T⁻¹` into a Laurent polynomial. -/
-def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.invert
-
-@[simp] lemma invert_T {n : ℤ} : invert (T n : R[T;T⁻¹]) = T (-n) := by
-  ext m; simp [invert, neg_eq_iff_eq_neg]
-
-@[simp] lemma invert_apply {f : R[T;T⁻¹]} {n : ℤ} : invert f n = f (-n) :=
-  AddMonoidAlgebra.invert_apply
-
-@[simp] lemma invert_C {t : R} : invert (C t) = C t := by ext; simp
-
-lemma involutive_invert : Involutive (invert (R := R)) := AddMonoidAlgebra.involutive_invert
-
-end Inversion
 
 end LaurentPolynomial
