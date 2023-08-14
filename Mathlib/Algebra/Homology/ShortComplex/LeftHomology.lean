@@ -34,7 +34,7 @@ open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
+variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
   {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and
@@ -789,7 +789,7 @@ noncomputable def iCyclesNatTrans : cyclesFunctor C ⟶ ShortComplex.π₂ where
 noncomputable def toCyclesNatTrans :
     π₁ ⟶ cyclesFunctor C where
   app S := S.toCycles
-  naturality := fun _ _  φ => (toCycles_naturality φ).symm
+  naturality := fun _ _ φ => (toCycles_naturality φ).symm
 
 end
 
@@ -964,13 +964,13 @@ lemma liftCycles_leftHomologyπ_eq_zero_of_boundary (x : A ⟶ S.X₁) (hx : k =
   LeftHomologyData.liftK_π_eq_zero_of_boundary _ k x hx
 
 @[reassoc (attr := simp)]
-lemma toCycles_comp_leftHomology_π : S.toCycles ≫ S.leftHomologyπ = 0 :=
+lemma toCycles_comp_leftHomologyπ : S.toCycles ≫ S.leftHomologyπ = 0 :=
   S.liftCycles_leftHomologyπ_eq_zero_of_boundary S.f (𝟙 _) (by rw [id_comp])
 
 /-- Via `S.leftHomologyπ : S.cycles ⟶ S.leftHomology`, the object `S.leftHomology` identifies
 to the cokernel of `S.toCycles : S.X₁ ⟶ S.cycles`. -/
 noncomputable def leftHomologyIsCokernel :
-    IsColimit (CokernelCofork.ofπ S.leftHomologyπ S.toCycles_comp_leftHomology_π) :=
+    IsColimit (CokernelCofork.ofπ S.leftHomologyπ S.toCycles_comp_leftHomologyπ) :=
   S.leftHomologyData.hπ
 
 @[reassoc (attr := simp)]

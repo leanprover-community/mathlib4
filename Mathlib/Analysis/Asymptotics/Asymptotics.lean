@@ -2,16 +2,13 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.asymptotics.asymptotics
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.LocalHomeomorph
+
+#align_import analysis.asymptotics.asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Asymptotics
@@ -58,14 +55,15 @@ namespace Asymptotics
 
 set_option linter.uppercaseLean3 false
 
-variable {α : Type _} {β : Type _} {E : Type _} {F : Type _} {G : Type _} {E' : Type _}
-  {F' : Type _} {G' : Type _} {E'' : Type _} {F'' : Type _} {G'' : Type _} {R : Type _}
-  {R' : Type _} {𝕜 : Type _} {𝕜' : Type _}
+variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
+  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
   [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
+  [SeminormedAddGroup E''']
   [SeminormedRing R']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
@@ -120,6 +118,40 @@ theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c *
   simp only [IsBigO_def, IsBigOWith_def]
 #align asymptotics.is_O_iff Asymptotics.isBigO_iff
 
+/-- Definition of `IsBigO` in terms of filters, with a positive constant. -/
+theorem isBigO_iff' {g : α → E'''} :
+    f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [isBigO_iff] at h
+    obtain ⟨c, hc⟩ := h
+    refine' ⟨max c 1, zero_lt_one.trans_le (le_max_right _ _), _⟩
+    filter_upwards [hc] with x hx
+    apply hx.trans
+    gcongr
+    exact le_max_left _ _
+  case mpr =>
+    rw [isBigO_iff]
+    obtain ⟨c, ⟨_, hc⟩⟩ := h
+    exact ⟨c, hc⟩
+
+/-- Definition of `IsBigO` in terms of filters, with the constant in the lower bound. -/
+theorem isBigO_iff'' {g : α → E'''} :
+    f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, c * ‖f x‖ ≤ ‖g x‖ := by
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [isBigO_iff'] at h
+    obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
+    refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
+    filter_upwards [hc] with x hx
+    rwa [inv_mul_le_iff (by positivity)]
+  case mpr =>
+    rw [isBigO_iff']
+    obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
+    refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
+    filter_upwards [hc] with x hx
+    rwa [←inv_inv c, inv_mul_le_iff (by positivity)] at hx
+
 theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖) : f =O[l] g :=
   isBigO_iff.2 ⟨c, h⟩
 #align asymptotics.is_O.of_bound Asymptotics.IsBigO.of_bound
@@ -170,6 +202,9 @@ theorem IsLittleO.def (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ �
 theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
   isBigOWith_iff.2 <| isLittleO_iff.1 h hc
 #align asymptotics.is_o.def' Asymptotics.IsLittleO.def'
+
+theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
+  simpa using h.def zero_lt_one
 
 end Defs
 
@@ -665,8 +700,8 @@ theorem isBigOWith_insert [TopologicalSpace α] {x : α} {s : Set α} {C : ℝ} 
   simp_rw [IsBigOWith_def, nhdsWithin_insert, eventually_sup, eventually_pure, h, true_and_iff]
 #align asymptotics.is_O_with_insert Asymptotics.isBigOWith_insert
 
-theorem IsBigOWith.insert [TopologicalSpace α] {x : α} {s : Set α} {C : ℝ} {g : α → E} {g' : α → F}
-    (h1 : IsBigOWith C (𝓝[s] x) g g') (h2 : ‖g x‖ ≤ C * ‖g' x‖) :
+protected theorem IsBigOWith.insert [TopologicalSpace α] {x : α} {s : Set α} {C : ℝ} {g : α → E}
+    {g' : α → F} (h1 : IsBigOWith C (𝓝[s] x) g g') (h2 : ‖g x‖ ≤ C * ‖g' x‖) :
     IsBigOWith C (𝓝[insert x s] x) g g' :=
   (isBigOWith_insert h2).mpr h1
 #align asymptotics.is_O_with.insert Asymptotics.IsBigOWith.insert
@@ -680,8 +715,8 @@ theorem isLittleO_insert [TopologicalSpace α] {x : α} {s : Set α} {g : α →
   exact mul_nonneg hc.le (norm_nonneg _)
 #align asymptotics.is_o_insert Asymptotics.isLittleO_insert
 
-theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {g : α → E'} {g' : α → F'}
-    (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
+protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {g : α → E'}
+    {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
   (isLittleO_insert h2).mpr h1
 #align asymptotics.is_o.insert Asymptotics.IsLittleO.insert
 
@@ -1784,7 +1819,7 @@ end Smul
 
 section Sum
 
-variable {ι : Type _} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
+variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 
 theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     IsBigOWith (∑ i in s, C i) l (fun x => ∑ i in s, A i x) g := by
@@ -1984,7 +2019,7 @@ end ExistsMulEq
 /-! ### Miscellaneous lemmas -/
 
 
-theorem div_isBoundedUnder_of_isBigO {α : Type _} {l : Filter α} {f g : α → 𝕜} (h : f =O[l] g) :
+theorem div_isBoundedUnder_of_isBigO {α : Type*} {l : Filter α} {f g : α → 𝕜} (h : f =O[l] g) :
     IsBoundedUnder (· ≤ ·) l fun x => ‖f x / g x‖ := by
   obtain ⟨c, h₀, hc⟩ := h.exists_nonneg
   refine' ⟨c, eventually_map.2 (hc.bound.mono fun x hx => _)⟩
@@ -1992,7 +2027,7 @@ theorem div_isBoundedUnder_of_isBigO {α : Type _} {l : Filter α} {f g : α →
   exact div_le_of_nonneg_of_le_mul (norm_nonneg _) h₀ hx
 #align asymptotics.div_is_bounded_under_of_is_O Asymptotics.div_isBoundedUnder_of_isBigO
 
-theorem isBigO_iff_div_isBoundedUnder {α : Type _} {l : Filter α} {f g : α → 𝕜}
+theorem isBigO_iff_div_isBoundedUnder {α : Type*} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) :
     f =O[l] g ↔ IsBoundedUnder (· ≤ ·) l fun x => ‖f x / g x‖ := by
   refine' ⟨div_isBoundedUnder_of_isBigO, fun h => _⟩
@@ -2004,13 +2039,13 @@ theorem isBigO_iff_div_isBoundedUnder {α : Type _} {l : Filter α} {f g : α �
   · exact (div_le_iff (norm_pos_iff.2 hgx)).mp hx₂
 #align asymptotics.is_O_iff_div_is_bounded_under Asymptotics.isBigO_iff_div_isBoundedUnder
 
-theorem isBigO_of_div_tendsto_nhds {α : Type _} {l : Filter α} {f g : α → 𝕜}
+theorem isBigO_of_div_tendsto_nhds {α : Type*} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) (c : 𝕜) (H : Filter.Tendsto (f / g) l (𝓝 c)) :
     f =O[l] g :=
   (isBigO_iff_div_isBoundedUnder hgf).2 <| H.norm.isBoundedUnder_le
 #align asymptotics.is_O_of_div_tendsto_nhds Asymptotics.isBigO_of_div_tendsto_nhds
 
-theorem IsLittleO.tendsto_zero_of_tendsto {α E 𝕜 : Type _} [NormedAddCommGroup E] [NormedField 𝕜]
+theorem IsLittleO.tendsto_zero_of_tendsto {α E 𝕜 : Type*} [NormedAddCommGroup E] [NormedField 𝕜]
     {u : α → E} {v : α → 𝕜} {l : Filter α} {y : 𝕜} (huv : u =o[l] v) (hv : Tendsto v l (𝓝 y)) :
     Tendsto u l (𝓝 0) := by
   suffices h : u =o[l] fun _x => (1 : 𝕜)
@@ -2131,7 +2166,7 @@ theorem isBigO_one_nat_atTop_iff {f : ℕ → E''} :
     simp only [norm_one, mul_one]
 #align asymptotics.is_O_one_nat_at_top_iff Asymptotics.isBigO_one_nat_atTop_iff
 
-theorem isBigOWith_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, NormedAddCommGroup (E' i)]
+theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} {C : ℝ} (hC : 0 ≤ C) :
     IsBigOWith C l f g' ↔ ∀ i, IsBigOWith C l (fun x => f x i) g' := by
   have : ∀ x, 0 ≤ C * ‖g' x‖ := fun x => mul_nonneg hC (norm_nonneg _)
@@ -2139,18 +2174,37 @@ theorem isBigOWith_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, No
 #align asymptotics.is_O_with_pi Asymptotics.isBigOWith_pi
 
 @[simp]
-theorem isBigO_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, NormedAddCommGroup (E' i)]
+theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =O[l] g' ↔ ∀ i, (fun x => f x i) =O[l] g' := by
   simp only [isBigO_iff_eventually_isBigOWith, ← eventually_all]
   exact eventually_congr (eventually_atTop.2 ⟨0, fun c => isBigOWith_pi⟩)
 #align asymptotics.is_O_pi Asymptotics.isBigO_pi
 
 @[simp]
-theorem isLittleO_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, NormedAddCommGroup (E' i)]
+theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
   simp (config := { contextual := true }) only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 #align asymptotics.is_o_pi Asymptotics.isLittleO_pi
+
+theorem IsBigO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+    {f : R → E} {g : R → F} (h : f =O[atTop] g) :
+    (fun (n:ℕ) => f n) =O[atTop] (fun n => g n) :=
+  IsBigO.comp_tendsto h tendsto_nat_cast_atTop_atTop
+
+theorem IsLittleO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+    {f : R → E} {g : R → F} (h : f =o[atTop] g) :
+    (fun (n:ℕ) => f n) =o[atTop] (fun n => g n) :=
+  IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
+
+theorem isBigO_atTop_iff_eventually_exists {α : Type*} [SemilatticeSup α] [Nonempty α]
+    {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by
+  rw [isBigO_iff, exists_eventually_atTop]
+
+theorem isBigO_atTop_iff_eventually_exists_pos {α : Type*}
+    [SemilatticeSup α] [Nonempty α] {f : α → G} {g : α → G'} :
+    f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c > 0, ∀ n ≥ n₀, c * ‖f n‖ ≤ ‖g n‖ := by
+  simp_rw [isBigO_iff'', ← exists_prop, Subtype.exists', exists_eventually_atTop]
 
 end Asymptotics
 
@@ -2171,9 +2225,9 @@ set_option linter.uppercaseLean3 false in
 
 namespace LocalHomeomorph
 
-variable {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
-variable {E : Type _} [Norm E] {F : Type _} [Norm F]
+variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 /-- Transfer `IsBigOWith` over a `LocalHomeomorph`. -/
 theorem isBigOWith_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
@@ -2209,9 +2263,9 @@ end LocalHomeomorph
 
 namespace Homeomorph
 
-variable {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
-variable {E : Type _} [Norm E] {F : Type _} [Norm F]
+variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 open Asymptotics
 

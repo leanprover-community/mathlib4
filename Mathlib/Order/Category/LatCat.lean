@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.Lat
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Hom.Lattice
+
+#align_import order.category.Lat from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of lattices
@@ -38,19 +35,19 @@ set_option linter.uppercaseLean3 false
 
 namespace LatCat
 
-instance : CoeSort LatCat (Type _) :=
+instance : CoeSort LatCat (Type*) :=
   Bundled.coeSort
 
 instance (X : LatCat) : Lattice X :=
   X.str
 
 /-- Construct a bundled `LatCat` from a `Lattice`. -/
-def of (α : Type _) [Lattice α] : LatCat :=
+def of (α : Type*) [Lattice α] : LatCat :=
   Bundled.of α
 #align Lat.of LatCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [Lattice α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
   rfl
 #align Lat.coe_of LatCat.coe_of
 

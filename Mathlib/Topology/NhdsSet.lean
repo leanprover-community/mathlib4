@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.nhds_set
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Basic
+
+#align_import topology.nhds_set from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Neighborhoods of a set
@@ -32,7 +29,7 @@ Furthermore, we have the following results:
 
 open Set Filter Topology
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set α) : Filter α :=
@@ -139,6 +136,10 @@ theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ 
   rw [nhdsSet_union]
   exact union_mem_sup h₁ h₂
 #align union_mem_nhds_set union_mem_nhdsSet
+
+@[simp]
+theorem nhdsSet_insert (x : α) (s : Set α) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ 𝓝ˢ s := by
+  rw [insert_eq, nhdsSet_union, nhdsSet_singleton]
 
 /-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
 provided that `f` maps `s` to `t`.  -/

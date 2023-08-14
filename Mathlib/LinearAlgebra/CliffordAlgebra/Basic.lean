@@ -2,25 +2,22 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Utensil Song
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.basic
-! leanprover-community/mathlib commit d46774d43797f5d1f507a63a6e904f7a533ae74a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+
+#align_import linear_algebra.clifford_algebra.basic from "leanprover-community/mathlib"@"d46774d43797f5d1f507a63a6e904f7a533ae74a"
 
 /-!
 # Clifford Algebras
 
 We construct the Clifford algebra of a module `M` over a commutative ring `R`, equipped with
-a quadratic_form `Q`.
+a quadratic form `Q`.
 
 ## Notation
 
-The Clifford algebra of the `R`-module `M` equipped with a quadratic_form `Q` is
+The Clifford algebra of the `R`-module `M` equipped with a quadratic form `Q` is
 an `R`-algebra denoted `CliffordAlgebra Q`.
 
 Given a linear morphism `f : M → A` from a module `M` to another `R`-algebra `A`, such that
@@ -36,8 +33,6 @@ of the Clifford algebra.
 1. `ι_comp_lift` is the fact that the composition of `ι Q` with `lift Q f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift Q f cond` with respect to 1.
 
-Additionally, when `Q = 0` an `AlgEquiv` to the `exterior_algebra` is provided as `as_exterior`.
-
 ## Implementation details
 
 The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, as follows.
@@ -45,13 +40,13 @@ The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, 
    This is the smallest relation which identifies squares of elements of `M` with `Q m`.
 2. The Clifford algebra is the quotient of the tensor algebra by this relation.
 
-This file is almost identical to `linear_algebra/exterior_algebra.lean`.
+This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.lean`.
 -/
 
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 variable (Q : QuadraticForm R M)
 
@@ -84,8 +79,32 @@ instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited
 #align clifford_algebra.inhabited CliffordAlgebra.instInhabited
 instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 #align clifford_algebra.ring CliffordAlgebra.instRing
-instance instAlgebra: Algebra R (CliffordAlgebra Q) := RingQuot.instAlgebraRingQuotInstSemiring _
+
+instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
+    [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
+    [IsScalarTower R A M] :
+    Algebra R (CliffordAlgebra Q) :=
+  RingQuot.instAlgebraRingQuot _
+
+-- verify there are no diamonds
+example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+
+-- shortcut instance, as the other instance is slow
+instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
 #align clifford_algebra.algebra CliffordAlgebra.instAlgebra
+
+instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
+    [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
+    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    SMulCommClass R S (CliffordAlgebra Q) :=
+  RingQuot.instSMulCommClassRingQuot _
+
+instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
+    [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
+    [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
+    IsScalarTower R S (CliffordAlgebra Q) :=
+  RingQuot.instIsScalarTowerRingQuot _
 
 /-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/
@@ -100,7 +119,7 @@ theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
   rfl
 #align clifford_algebra.ι_sq_scalar CliffordAlgebra.ι_sq_scalar
 
-variable {Q} {A : Type _} [Semiring A] [Algebra R A]
+variable {Q} {A : Type*} [Semiring A] [Algebra R A]
 
 @[simp]
 theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :
@@ -169,7 +188,7 @@ theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
+theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
     f.toLinearMap.comp (ι Q) = g.toLinearMap.comp (ι Q) → f = g := by
   intro h
   apply (lift Q).symm.injective
@@ -181,7 +200,7 @@ theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and muliplication, then it holds for all of `CliffordAlgebra Q`.
 
-See also the stronger `clifford_algebra.left_induction` and `clifford_algebra.right_induction`.
+See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.right_induction`.
 -/
 @[elab_as_elim]
 theorem induction {C : CliffordAlgebra Q → Prop}
@@ -220,7 +239,6 @@ theorem ι_mul_ι_add_swap (a b : M) :
       rw [ι_sq_scalar, ι_sq_scalar, ι_sq_scalar]
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
     _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
-
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
 theorem ι_mul_comm (a b : M) :
@@ -243,7 +261,7 @@ theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebra
 
 section Map
 
-variable {M₁ M₂ M₃ : Type _}
+variable {M₁ M₂ M₃ : Type*}
 
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
 
@@ -297,7 +315,7 @@ variable {Q₁ Q₂ Q₃}
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
 @[simps! apply]
-def equivOfIsometry (e : Q₁.Isometry Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
+def equivOfIsometry (e : Q₁.IsometryEquiv Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
   AlgEquiv.ofAlgHom (map Q₁ Q₂ e e.map_app) (map Q₂ Q₁ e.symm e.symm.map_app)
     ((map_comp_map _ _ _ _ _ _ _).trans <| by
       convert map_id Q₂ using 2  -- porting note: replaced `_` with `Q₂`
@@ -310,13 +328,13 @@ def equivOfIsometry (e : Q₁.Isometry Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] Cl
 #align clifford_algebra.equiv_of_isometry CliffordAlgebra.equivOfIsometry
 
 @[simp]
-theorem equivOfIsometry_symm (e : Q₁.Isometry Q₂) :
+theorem equivOfIsometry_symm (e : Q₁.IsometryEquiv Q₂) :
     (equivOfIsometry e).symm = equivOfIsometry e.symm :=
   rfl
 #align clifford_algebra.equiv_of_isometry_symm CliffordAlgebra.equivOfIsometry_symm
 
 @[simp]
-theorem equivOfIsometry_trans (e₁₂ : Q₁.Isometry Q₂) (e₂₃ : Q₂.Isometry Q₃) :
+theorem equivOfIsometry_trans (e₁₂ : Q₁.IsometryEquiv Q₂) (e₂₃ : Q₂.IsometryEquiv Q₃) :
     (equivOfIsometry e₁₂).trans (equivOfIsometry e₂₃) = equivOfIsometry (e₁₂.trans e₂₃) := by
   ext x
   exact AlgHom.congr_fun (map_comp_map Q₁ Q₂ Q₃ _ _ _ _) x
@@ -324,7 +342,7 @@ theorem equivOfIsometry_trans (e₁₂ : Q₁.Isometry Q₂) (e₂₃ : Q₂.Iso
 
 @[simp]
 theorem equivOfIsometry_refl :
-    (equivOfIsometry <| QuadraticForm.Isometry.refl Q₁) = AlgEquiv.refl := by
+    (equivOfIsometry <| QuadraticForm.IsometryEquiv.refl Q₁) = AlgEquiv.refl := by
   ext x
   exact AlgHom.congr_fun (map_id Q₁) x
 #align clifford_algebra.equiv_of_isometry_refl CliffordAlgebra.equivOfIsometry_refl

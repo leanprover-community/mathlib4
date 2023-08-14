@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.internal.limits
-! leanprover-community/mathlib commit 12921e9eaa574d0087ae4856860e6dda8690a438
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.monoidal.internal.limits from "leanprover-community/mathlib"@"12921e9eaa574d0087ae4856860e6dda8690a438"
 
 /-!
 # Limits of monoid objects.

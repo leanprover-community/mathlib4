@@ -2,11 +2,6 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.normed_space.matrix_exponential
-! leanprover-community/mathlib commit 1e3201306d4d9eb1fd54c60d7c4510ad5126f6f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.Matrix
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Matrix.ZPow
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Topology.UniformSpace.Matrix
+
+#align_import analysis.normed_space.matrix_exponential from "leanprover-community/mathlib"@"1e3201306d4d9eb1fd54c60d7c4510ad5126f6f9"
 
 /-!
 # Lemmas about the matrix exponential
@@ -74,33 +71,33 @@ open scoped Matrix BigOperators
 section HacksForPiInstanceSearch
 
 /-- A special case of `Pi.instTopologicalRing` for when `R` is not dependently typed. -/
-instance Function.topologicalRing (I : Type _) (R : Type _) [NonUnitalRing R] [TopologicalSpace R]
+instance Function.topologicalRing (I : Type*) (R : Type*) [NonUnitalRing R] [TopologicalSpace R]
     [TopologicalRing R] : TopologicalRing (I → R) :=
   Pi.instTopologicalRing
 #align function.topological_ring Function.topologicalRing
 
 /-- A special case of `Function.algebra` for when A is a `Ring` not a `Semiring` -/
-instance Function.algebraRing (I : Type _) {R : Type _} (A : Type _) [CommSemiring R] [Ring A]
+instance Function.algebraRing (I : Type*) {R : Type*} (A : Type*) [CommSemiring R] [Ring A]
     [Algebra R A] : Algebra R (I → A) :=
   Pi.algebra _ _
 #align function.algebra_ring Function.algebraRing
 
 /-- A special case of `Pi.algebra` for when `f = λ i, Matrix (m i) (m i) A`. -/
-instance Pi.matrixAlgebra (I R A : Type _) (m : I → Type _) [CommSemiring R] [Semiring A]
+instance Pi.matrixAlgebra (I R A : Type*) (m : I → Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [∀ i, Fintype (m i)] [∀ i, DecidableEq (m i)] :
     Algebra R (∀ i, Matrix (m i) (m i) A) :=
   @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.instAlgebra
 #align pi.matrix_algebra Pi.matrixAlgebra
 
 /-- A special case of `Pi.instTopologicalRing` for when `f = λ i, Matrix (m i) (m i) A`. -/
-instance Pi.matrix_topologicalRing (I A : Type _) (m : I → Type _) [Ring A] [TopologicalSpace A]
+instance Pi.matrix_topologicalRing (I A : Type*) (m : I → Type*) [Ring A] [TopologicalSpace A]
     [TopologicalRing A] [∀ i, Fintype (m i)] : TopologicalRing (∀ i, Matrix (m i) (m i) A) :=
   @Pi.instTopologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.topologicalRing
 #align pi.matrix_topological_ring Pi.matrix_topologicalRing
 
 end HacksForPiInstanceSearch
 
-variable (𝕂 : Type _) {m n p : Type _} {n' : m → Type _} {𝔸 : Type _}
+variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
 
 namespace Matrix
 

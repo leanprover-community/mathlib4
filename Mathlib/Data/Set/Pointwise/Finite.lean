@@ -2,21 +2,18 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.pointwise.finite
-! leanprover-community/mathlib commit c941bb9426d62e266612b6d99e6c9fc93e7a1d07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
+
+#align_import data.set.pointwise.finite from "leanprover-community/mathlib"@"c941bb9426d62e266612b6d99e6c9fc93e7a1d07"
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
 
 open Pointwise
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -172,7 +169,7 @@ open Set
 
 namespace Group
 
-variable {G : Type _} [Group G] [Fintype G] (S : Set G)
+variable {G : Type*} [Group G] [Fintype G] (S : Set G)
 
 @[to_additive]
 theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :

@@ -2,15 +2,12 @@
 Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.ax_grothendieck
-! leanprover-community/mathlib commit 4e529b03dd62b7b7d13806c3fb974d9d4848910e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.Fintype.Card
+
+#align_import field_theory.ax_grothendieck from "leanprover-community/mathlib"@"4e529b03dd62b7b7d13806c3fb974d9d4848910e"
 
 /-!
 # Ax-Grothendieck for algebraic extensions of `ZMod p`
@@ -33,7 +30,7 @@ noncomputable section
 open MvPolynomial Finset Function
 
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
-theorem ax_grothendieck_of_locally_finite {ι K R : Type _} [Field K] [Finite K] [CommRing R]
+theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] [CommRing R]
     [Finite ι] [Algebra K R] (alg : Algebra.IsAlgebraic K R) (ps : ι → MvPolynomial ι R)
     (hinj : Injective fun v i => MvPolynomial.eval v (ps i)) :
     Surjective fun v i => MvPolynomial.eval v (ps i) := by

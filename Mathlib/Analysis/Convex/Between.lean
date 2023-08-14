@@ -2,17 +2,14 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module analysis.convex.between
-! leanprover-community/mathlib commit 571e13cacbed7bf042fd3058ce27157101433842
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.FieldSimp
+
+#align_import analysis.convex.between from "leanprover-community/mathlib"@"571e13cacbed7bf042fd3058ce27157101433842"
 
 /-!
 # Betweenness in affine spaces
@@ -28,7 +25,7 @@ This file defines notions of a point in an affine space being between two given 
 -/
 
 
-variable (R : Type _) {V V' P P' : Type _}
+variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap
 
@@ -342,8 +339,7 @@ theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
   refine' ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, _⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
     vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z x, ← @neg_one_smul R, ← add_smul, ← sub_eq_add_neg]
-  have : z -ᵥ x ≠ 0 := by simpa using hxz.symm
-  simp [smul_ne_zero, this, sub_eq_zero, ht.1.ne.symm, ht.2.ne]
+  simp [smul_ne_zero, sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
 #align sbtw_iff_mem_image_Ioo_and_ne sbtw_iff_mem_image_Ioo_and_ne
 
 variable (R)
@@ -525,8 +521,8 @@ theorem Sbtw.trans_wbtw_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : 
 #align sbtw.trans_wbtw_right_ne Sbtw.trans_wbtw_right_ne
 
 theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZeroSMulDivisors R V]
-    {ι : Type _} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
-    (hw : (∑ i in s, w i) = 1) (hw₁ : (∑ i in s, w₁ i) = 1) (hw₂ : (∑ i in s, w₂ i) = 1)
+    {ι : Type*} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
+    (hw : ∑ i in s, w i = 1) (hw₁ : ∑ i in s, w₁ i = 1) (hw₂ : ∑ i in s, w₂ i = 1)
     (h : s.affineCombination R p w ∈
       line[R, s.affineCombination R p w₁, s.affineCombination R p w₂])
     {i : ι} (his : i ∈ s) (hs : Sbtw R (w₁ i) (w i) (w₂ i)) :
@@ -617,7 +613,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
       refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) _
       have hle : line[R, t.points i₂, t.points i₃] ≤ affineSpan R (Set.range t.points) := by
         refine' affineSpan_mono R _
-        simp [Set.insert_subset]
+        simp [Set.insert_subset_iff]
       rw [AffineSubspace.le_def'] at hle
       exact hle _ h₁.wbtw.mem_affineSpan
     rw [AffineSubspace.le_def'] at hle

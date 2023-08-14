@@ -2,13 +2,10 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module algebra.cubic_discriminant
-! leanprover-community/mathlib commit 930133160e24036d5242039fe4972407cd4f1222
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Splits
+
+#align_import algebra.cubic_discriminant from "leanprover-community/mathlib"@"930133160e24036d5242039fe4972407cd4f1222"
 
 /-!
 # Cubics and discriminants
@@ -40,7 +37,7 @@ noncomputable section
 
 /-- The structure representing a cubic polynomial. -/
 @[ext]
-structure Cubic (R : Type _) where
+structure Cubic (R : Type*) where
   (a b c d : R)
 #align cubic Cubic
 
@@ -50,7 +47,7 @@ open Cubic Polynomial
 
 open Polynomial
 
-variable {R S F K : Type _}
+variable {R S F K : Type*}
 
 instance [Inhabited R] : Inhabited (Cubic R) :=
   ⟨⟨default, default, default, default⟩⟩
@@ -562,7 +559,7 @@ end Split
 section Discriminant
 
 /-- The discriminant of a cubic polynomial. -/
-def disc {R : Type _} [Ring R] (P : Cubic R) : R :=
+def disc {R : Type*} [Ring R] (P : Cubic R) : R :=
   P.b ^ 2 * P.c ^ 2 - 4 * P.a * P.c ^ 3 - 4 * P.b ^ 3 * P.d - 27 * P.a ^ 2 * P.d ^ 2 +
     18 * P.a * P.b * P.c * P.d
 #align cubic.disc Cubic.disc

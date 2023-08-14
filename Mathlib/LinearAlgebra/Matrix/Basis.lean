@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.basis
-! leanprover-community/mathlib commit 6c263e4bfc2e6714de30f22178b4d0ca4d149a76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.matrix.basis from "leanprover-community/mathlib"@"6c263e4bfc2e6714de30f22178b4d0ca4d149a76"
 
 /-!
 # Bases and matrices
@@ -45,11 +42,11 @@ open Matrix
 
 section BasisToMatrix
 
-variable {ι ι' κ κ' : Type _}
+variable {ι ι' κ κ' : Type*}
 
-variable {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {R₂ M₂ : Type _} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
+variable {R₂ M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
 
 open Function Matrix
 
@@ -117,11 +114,11 @@ theorem toMatrix_isUnitSMul [DecidableEq ι] (e : Basis ι R₂ M₂) {w : ι �
 #align basis.to_matrix_is_unit_smul Basis.toMatrix_isUnitSMul
 
 @[simp]
-theorem sum_toMatrix_smul_self [Fintype ι] : (∑ i : ι, e.toMatrix v i j • e i) = v j := by
+theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
 #align basis.sum_to_matrix_smul_self Basis.sum_toMatrix_smul_self
 
-theorem toMatrix_map_vecMul {S : Type _} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
+theorem toMatrix_map_vecMul {S : Type*} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
     (v : ι' → S) : ((b.toMatrix v).map <| algebraMap R S).vecMul b = v := by
   ext i
   simp_rw [vecMul, dotProduct, Matrix.map_apply, ← Algebra.commutes, ← Algebra.smul_def,
@@ -165,7 +162,7 @@ end Basis
 
 section MulLinearMapToMatrix
 
-variable {N : Type _} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 variable (b : Basis ι R M) (b' : Basis ι' R M) (c : Basis κ R N) (c' : Basis κ' R N)
 
@@ -243,7 +240,7 @@ end Fintype
 
 /-- A generalization of `Basis.toMatrix_self`, in the opposite direction. -/
 @[simp]
-theorem Basis.toMatrix_mul_toMatrix {ι'' : Type _} [Fintype ι'] (b'' : ι'' → M) :
+theorem Basis.toMatrix_mul_toMatrix {ι'' : Type*} [Fintype ι'] (b'' : ι'' → M) :
     b.toMatrix b' ⬝ b'.toMatrix b'' = b.toMatrix b'' := by
   haveI := Classical.decEq ι
   haveI := Classical.decEq ι'

@@ -2,13 +2,10 @@
 Copyright (c) 2023 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.intrinsic
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
+
+#align_import analysis.convex.intrinsic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Intrinsic frontier and interior
@@ -53,7 +50,7 @@ open AffineSubspace Set
 
 open scoped Pointwise
 
-variable {𝕜 V W Q P : Type _}
+variable {𝕜 V W Q P : Type*}
 
 section AddTorsor
 
@@ -333,7 +330,7 @@ theorem closure_diff_intrinsicFrontier (s : Set P) :
 
 end NormedAddTorsor
 
-private theorem aux {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
+private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, nonempty_image_iff]
 

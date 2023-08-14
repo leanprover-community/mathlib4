@@ -2,19 +2,16 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module analysis.convolution
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.BumpFunctionInner
+import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integration
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+
+#align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
 /-!
 # Convolution of functions
@@ -88,7 +85,7 @@ The following notations are localized in the locale `convolution`:
   This might require a generalization of `MeasureTheory.Memℒp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
-* The convolution is a `AEStronglyMeasurable` function
+* The convolution is an `AEStronglyMeasurable` function
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255I).
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere
@@ -471,7 +468,7 @@ theorem convolution_lsmul [Sub G] {f : G → 𝕜} {g : G → F} :
 #align convolution_lsmul convolution_lsmul
 
 /-- The definition of convolution where the bilinear operator is multiplication. -/
-theorem convolution_mul [Sub G] [NormedSpace ℝ 𝕜] [CompleteSpace 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
+theorem convolution_mul [Sub G] [NormedSpace ℝ 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
     (f ⋆[mul 𝕜 𝕜, μ] g) x = ∫ t, f t * g (x - t) ∂μ :=
   rfl
 #align convolution_mul convolution_mul
@@ -793,7 +790,7 @@ theorem convolution_lsmul_swap {f : G → 𝕜} {g : G → F} :
 #align convolution_lsmul_swap convolution_lsmul_swap
 
 /-- The symmetric definition of convolution where the bilinear operator is multiplication. -/
-theorem convolution_mul_swap [NormedSpace ℝ 𝕜] [CompleteSpace 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
+theorem convolution_mul_swap [NormedSpace ℝ 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
     (f ⋆[mul 𝕜 𝕜, μ] g) x = ∫ t, f (x - t) * g t ∂μ :=
   convolution_eq_swap _
 #align convolution_mul_swap convolution_mul_swap
@@ -802,7 +799,7 @@ theorem convolution_mul_swap [NormedSpace ℝ 𝕜] [CompleteSpace 𝕜] {f : G 
 theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀ᵐ x ∂μ, g (-x) = g x) :
     (f ⋆[L, μ] g) (-x) = (f ⋆[L, μ] g) x :=
   calc
-    (∫ t : G, (L (f t)) (g (-x - t)) ∂μ) = ∫ t : G, (L (f (-t))) (g (x + t)) ∂μ := by
+    ∫ t : G, (L (f t)) (g (-x - t)) ∂μ = ∫ t : G, (L (f (-t))) (g (x + t)) ∂μ := by
       apply integral_congr_ae
       filter_upwards [h1, (eventually_add_left_iff μ x).2 h2] with t ht h't
       simp_rw [ht, ← h't, neg_add']
@@ -843,7 +840,7 @@ variable [SeminormedAddCommGroup G]
 on `Metric.ball x₀ R`.
 
 We can simplify the RHS further if we assume `f` is integrable, but also if `L = (•)` or more
-generally if `L` has a `AntilipschitzWith`-condition. -/
+generally if `L` has an `AntilipschitzWith`-condition. -/
 theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 : G) R)
     (hg : ∀ x ∈ ball x₀ R, g x = g x₀) : (f ⋆[L, μ] g) x₀ = ∫ t, L (f t) (g x₀) ∂μ := by
   have h2 : ∀ t, L (f t) (g (x₀ - t)) = L (f t) (g x₀) := fun t ↦ by
@@ -913,7 +910,7 @@ on a ball with the same radius around `x₀`.
 This is a special case of `dist_convolution_le'` where `L` is `(•)`, `f` has integral 1 and `f` is
 nonnegative. -/
 theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε)
-    (hf : support f ⊆ ball (0 : G) R) (hnf : ∀ x, 0 ≤ f x) (hintf : (∫ x, f x ∂μ) = 1)
+    (hf : support f ⊆ ball (0 : G) R) (hnf : ∀ x, 0 ≤ f x) (hintf : ∫ x, f x ∂μ = 1)
     (hmg : AEStronglyMeasurable g μ) (hg : ∀ x ∈ ball x₀ R, dist (g x) z₀ ≤ ε) :
     dist ((f ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) z₀ ≤ ε := by
   have hif : Integrable f μ := integrable_of_integral_eq_one hintf
@@ -934,7 +931,7 @@ See also `ContDiffBump.convolution_tendsto_right`.
 -/
 theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x₀ : G} {z₀ : E'}
     {φ : ι → G → ℝ} {k : ι → G} (hnφ : ∀ᶠ i in l, ∀ x, 0 ≤ φ i x)
-    (hiφ : ∀ᶠ i in l, (∫ x, φ i x ∂μ) = 1)
+    (hiφ : ∀ᶠ i in l, ∫ x, φ i x ∂μ = 1)
     -- todo: we could weaken this to "the integral tends to 1"
     (hφ : Tendsto (fun n => support (φ n)) l (𝓝 0).smallSets)
     (hmg : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))
@@ -961,74 +958,6 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
 #align convolution_tendsto_right convolution_tendsto_right
 
 end NormedAddCommGroup
-
-namespace ContDiffBump
-
-variable {n : ℕ∞}
-
-variable [NormedSpace ℝ E']
-
-variable [NormedAddCommGroup G] [NormedSpace ℝ G] [HasContDiffBump G]
-
-variable [CompleteSpace E']
-
-variable {a : G} {φ : ContDiffBump (0 : G)}
-
-/-- If `φ` is a bump function, compute `(φ ⋆ g) x₀` if `g` is constant on `Metric.ball x₀ φ.R`. -/
-theorem convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
-    (φ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = integral μ φ • g x₀ := by
-  simp_rw [convolution_eq_right' _ φ.support_eq.subset hg, lsmul_apply, integral_smul_const]
-#align cont_diff_bump.convolution_eq_right ContDiffBump.convolution_eq_right
-
-variable [BorelSpace G]
-
-variable [IsLocallyFiniteMeasure μ] [IsOpenPosMeasure μ]
-
-variable [FiniteDimensional ℝ G]
-
-/-- If `φ` is a normed bump function, compute `φ ⋆ g` if `g` is constant on `Metric.ball x₀ φ.R`. -/
-theorem normed_convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
-    (φ.normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = g x₀ := by
-  rw [convolution_eq_right' _ φ.support_normed_eq.subset hg]
-  exact integral_normed_smul φ μ (g x₀)
-#align cont_diff_bump.normed_convolution_eq_right ContDiffBump.normed_convolution_eq_right
-
-variable [IsAddLeftInvariant μ]
-
-/-- If `φ` is a normed bump function, approximate `(φ ⋆ g) x₀` if `g` is near `g x₀` on a ball with
-radius `φ.R` around `x₀`. -/
-theorem dist_normed_convolution_le {x₀ : G} {ε : ℝ} (hmg : AEStronglyMeasurable g μ)
-    (hg : ∀ x ∈ ball x₀ φ.rOut, dist (g x) (g x₀) ≤ ε) :
-    dist ((φ.normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) (g x₀) ≤ ε :=
-  dist_convolution_le (by simp_rw [← dist_self (g x₀), hg x₀ (mem_ball_self φ.rOut_pos)])
-    φ.support_normed_eq.subset φ.nonneg_normed φ.integral_normed hmg hg
-#align cont_diff_bump.dist_normed_convolution_le ContDiffBump.dist_normed_convolution_le
-
-/-- `(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
-* `φ` is a sequence of normed bump functions such that `(φ i).R` tends to `0` as `i` tends to `l`;
-* `g i` is `mu`-a.e. strongly measurable as `i` tends to `l`;
-* `g i x` tends to `z₀` as `(i, x)` tends to `l ×ˢ 𝓝 x₀`;
-* `k i` tends to `x₀`. -/
-nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)} {g : ι → G → E'}
-    {k : ι → G} {x₀ : G} {z₀ : E'} {l : Filter ι} (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0))
-    (hig : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))
-    (hk : Tendsto k l (𝓝 x₀)) :
-    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g i : G → E') (k i)) l (𝓝 z₀) :=
-  convolution_tendsto_right (eventually_of_forall fun i => (φ i).nonneg_normed)
-    (eventually_of_forall fun i => (φ i).integral_normed) (tendsto_support_normed_smallSets hφ) hig
-    hcg hk
-#align cont_diff_bump.convolution_tendsto_right ContDiffBump.convolution_tendsto_right
-
-/-- Special case of `ContDiffBump.convolution_tendsto_right` where `g` is continuous,
-  and the limit is taken only in the first function. -/
-theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
-    (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) (hg : Continuous g) (x₀ : G) :
-    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) l (𝓝 (g x₀)) :=
-  convolution_tendsto_right hφ (eventually_of_forall fun _ => hg.aestronglyMeasurable)
-    ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
-#align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
-
-end ContDiffBump
 
 end Measurability
 
@@ -1076,7 +1005,7 @@ variable [SigmaFinite μ] [SigmaFinite ν] [IsAddRightInvariant μ]
 
 theorem integral_convolution [MeasurableAdd₂ G] [MeasurableNeg G] [NormedSpace ℝ E]
     [NormedSpace ℝ E'] [CompleteSpace E] [CompleteSpace E'] (hf : Integrable f ν)
-    (hg : Integrable g μ) : (∫ x, (f ⋆[L, ν] g) x ∂μ) = L (∫ x, f x ∂ν) (∫ x, g x ∂μ) := by
+    (hg : Integrable g μ) : ∫ x, (f ⋆[L, ν] g) x ∂μ = L (∫ x, f x ∂ν) (∫ x, g x ∂μ) := by
   refine' (integral_integral_swap (by apply hf.convolution_integrand L hg)).trans _
   simp_rw [integral_comp_comm _ (hg.comp_sub_right _), integral_sub_right_eq_self]
   exact (L.flip (∫ x, g x ∂μ)).integral_comp_comm hf
@@ -1528,9 +1457,8 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     ext1 a
     simp only [(· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
       ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
-      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply_toFun,
-      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply,
-      LinearEquiv.invFun_eq_symm, ContinuousLinearEquiv.arrowCongrₛₗ_symm_apply, eq_self_iff_true]
+      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
+      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply]
   simp_rw [this] at A
   exact A
 #align cont_diff_on_convolution_right_with_param contDiffOn_convolution_right_with_param
@@ -1666,7 +1594,7 @@ theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E']
     {μ ν : MeasureTheory.Measure ℝ}
     [SigmaFinite μ] [SigmaFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
-    (∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ) =
+    ∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ =
       L (∫ x : ℝ in Ioi 0, f x ∂ν) (∫ x : ℝ in Ioi 0, g x ∂μ) := by
   rw [← integrable_indicator_iff measurableSet_Ioi] at hf hg
   simp_rw [← integral_indicator measurableSet_Ioi]

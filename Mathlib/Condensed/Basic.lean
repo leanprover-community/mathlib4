@@ -37,14 +37,14 @@ open CategoryTheory Limits
 
 open CategoryTheory
 
-universe u
+universe u v w
 
 /--
 `Condensed.{u} C` is the category of condensed objects in a category `C`, which are
 defined as sheaves on `CompHaus.{u}` with respect to the coherent Grothendieck topology.
 -/
-def Condensed (C : Type _) [Category C] :=
+def Condensed (C : Type w) [Category.{v} C] :=
   Sheaf (coherentTopology CompHaus.{u}) C
 
-instance {C : Type _} [Category C] : Category (Condensed.{u} C) :=
+instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
   show Category (Sheaf _ _) from inferInstance

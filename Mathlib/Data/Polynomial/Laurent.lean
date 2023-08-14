@@ -2,14 +2,11 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.laurent
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import data.polynomial.laurent from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!  # Laurent polynomials
 
@@ -80,12 +77,12 @@ open Polynomial AddMonoidAlgebra Finsupp
 
 noncomputable section
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- The semiring of Laurent polynomials with coefficients in the semiring `R`.
 We denote it by `R[T;T⁻¹]`.
 The ring homomorphism `C : R →+* R[T;T⁻¹]` includes `R` as the constant polynomials. -/
-abbrev LaurentPolynomial (R : Type _) [Semiring R] :=
+abbrev LaurentPolynomial (R : Type*) [Semiring R] :=
   AddMonoidAlgebra R ℤ
 #align laurent_polynomial LaurentPolynomial
 
@@ -93,7 +90,7 @@ local notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 -- Porting note: `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
-theorem ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
+theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
   Finsupp.ext h
 
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
@@ -141,7 +138,7 @@ def C : R →+* R[T;T⁻¹] :=
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.C LaurentPolynomial.C
 
-theorem algebraMap_apply {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] (r : R) :
+theorem algebraMap_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (r : R) :
     algebraMap R (LaurentPolynomial A) r = C (algebraMap R A r) :=
   rfl
 #align laurent_polynomial.algebra_map_apply LaurentPolynomial.algebraMap_apply
@@ -150,7 +147,7 @@ theorem algebraMap_apply {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R
 (But note that `C` is defined when `R` is not necessarily commutative, in which case
 `algebraMap` is not available.)
 -/
-theorem C_eq_algebraMap {R : Type _} [CommSemiring R] (r : R) : C r = algebraMap R R[T;T⁻¹] r :=
+theorem C_eq_algebraMap {R : Type*} [CommSemiring R] (r : R) : C r = algebraMap R R[T;T⁻¹] r :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.C_eq_algebra_map LaurentPolynomial.C_eq_algebraMap
@@ -565,7 +562,7 @@ end Degrees
 instance : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
-instance (R : Type _) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
+instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
   smul_assoc x y z := by simp only [(· • ·), SMul.smul, SMul.comp.smul, map_mul, mul_assoc]
 
 end Semiring
@@ -574,7 +571,7 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-instance algebraPolynomial (R : Type _) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
+instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
   { Polynomial.toLaurent with
     commutes' := fun f l => by simp [mul_comm]
     smul_def' := fun f l => rfl }
@@ -608,7 +605,7 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
         exact ⟨1, rfl⟩
       · rintro ⟨⟨h, hX⟩, h⟩
         rcases Submonoid.mem_closure_singleton.mp hX with ⟨n, rfl⟩
-        exact mul_X_pow_injective n h }
+        exact (isRegular_X_pow n).left h }
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
 end CommSemiring

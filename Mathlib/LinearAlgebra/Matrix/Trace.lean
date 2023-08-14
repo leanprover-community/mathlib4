@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.trace
-! leanprover-community/mathlib commit 32b08ef840dd25ca2e47e035c5da03ce16d2dc3c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
+
+#align_import linear_algebra.matrix.trace from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
 /-!
 # Trace of a matrix
@@ -29,7 +26,7 @@ open BigOperators Matrix
 
 namespace Matrix
 
-variable {ι m n p : Type _} {α R S : Type _}
+variable {ι m n p : Type*} {α R S : Type*}
 
 variable [Fintype m] [Fintype n] [Fintype p]
 
@@ -110,6 +107,10 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
     trace (∑ i in s, f i) = ∑ i in s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
+
+theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
+    f (trace A)  = trace (f.mapMatrix A) :=
+  map_sum f (fun i => diag A i) Finset.univ
 
 end AddCommMonoid
 
