@@ -77,10 +77,6 @@ jobs:
       - name: check that all files are imported
         run: git diff --exit-code
 
-      - name: action-git-diff-suggestions
-        if: failure()
-        uses: getsentry/action-git-diff-suggestions@v1
-
   build:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: BuildJOB_NAME
