@@ -255,20 +255,20 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     rfl
 #align bundle.continuous_linear_map.vector_prebundle Bundle.ContinuousLinearMap.vectorPrebundle
 
-/-- Topology on the total space of the continuous `σ`-semilinear_maps between two "normable" vector
+/-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
 bundles over the same base. -/
 instance Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace :
     TopologicalSpace (TotalSpace (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).totalSpaceTopology
 #align bundle.continuous_linear_map.topological_space_total_space Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace
 
-/-- The continuous `σ`-semilinear_maps between two vector bundles form a fiber bundle. -/
+/-- The continuous `σ`-semilinear maps between two vector bundles form a fiber bundle. -/
 instance Bundle.ContinuousLinearMap.fiberBundle :
     FiberBundle (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toFiberBundle
 #align bundle.continuous_linear_map.fiber_bundle Bundle.ContinuousLinearMap.fiberBundle
 
-/-- The continuous `σ`-semilinear_maps between two vector bundles form a vector bundle. -/
+/-- The continuous `σ`-semilinear maps between two vector bundles form a vector bundle. -/
 instance Bundle.ContinuousLinearMap.vectorBundle :
     VectorBundle 𝕜₂ (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂) :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toVectorBundle

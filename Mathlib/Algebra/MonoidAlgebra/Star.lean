@@ -79,10 +79,7 @@ when the scalars `k` and the group `G` are both commutative. -/
 noncomputable def invert : MonoidAlgebra k G ≃ₐ[k] MonoidAlgebra k G :=
   mapDomainAlgEquiv k k $ MulEquiv.inv G
 
-@[simp] lemma invert_apply {f : MonoidAlgebra k G} {x : G} : invert f x = f x⁻¹ := by
-  conv_lhs => rw [← inv_inv x]
-  rw [invert, mapDomainAlgEquiv_apply, ← MulEquiv.inv_apply,
-    Finsupp.mapDomain_apply (MulEquiv.inv G).injective]
+@[simp] lemma invert_apply {f : MonoidAlgebra k G} {x : G} : invert f x = f x⁻¹ := rfl
 
 lemma involutive_invert : Function.Involutive (invert (k := k) (G := G)) :=
   fun f ↦ Finsupp.ext fun x ↦ by simp
@@ -145,12 +142,9 @@ variable {k G : Type*} [CommSemiring k] [DecidableEq G] [AddCommGroup G]
 /-- This is the natural involution on the group algebra `k[G]` induced by `g ↦ -g`. It exists
 when the scalars `k` and the group `G` are both commutative. -/
 noncomputable def invert : AddMonoidAlgebra k G ≃ₐ[k] AddMonoidAlgebra k G :=
-  mapDomainAlgEquiv k k $ AddEquiv.neg G
+  domCongr k k $ AddEquiv.neg G
 
-@[simp] lemma invert_apply {f : MonoidAlgebra k G} {x : G} : invert f x = f (-x) := by
-  conv_lhs => rw [← neg_neg x]
-  rw [invert, mapDomainAlgEquiv_apply, ← AddEquiv.neg_apply,
-    Finsupp.mapDomain_apply (AddEquiv.neg G).injective]
+@[simp] lemma invert_apply {f : MonoidAlgebra k G} {x : G} : invert f x = f (-x) := rfl
 
 lemma involutive_invert : Function.Involutive (invert (k := k) (G := G)) :=
   fun f ↦ Finsupp.ext fun x ↦ by simp
