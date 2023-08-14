@@ -43,7 +43,7 @@ See the implementation notes for remarks about non-associative and non-unital al
   * `algebraNat`
   * `algebraInt`
   * `algebraRat`
-  * `module.End.algebra`
+  * `Module.End.instAlgebra`
 
 ## Implementation notes
 
