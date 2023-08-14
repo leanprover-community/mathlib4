@@ -405,9 +405,8 @@ protected def unop {α β} [Add α] [Mul α] [Add β] [Mul β] : αᵐᵒᵖ ≃
 /-- A ring is isomorphic to the opposite of its opposite. -/
 @[simps!]
 def opOp (R : Type*) [Add R] [Mul R] : R ≃+* Rᵐᵒᵖᵐᵒᵖ where
-  __ := MulOpposite.opEquiv.trans MulOpposite.opEquiv
+  __ := MulEquiv.opOp R
   map_add' _ _ := rfl
-  map_mul' _ _ := rfl
 
 section NonUnitalCommSemiring
 
