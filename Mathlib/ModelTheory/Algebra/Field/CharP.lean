@@ -43,7 +43,7 @@ theorem model_hasChar_of_charP {K : Type*} [Field K] [CompatibleRing K] {p : ℕ
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
 
-instance charP_iff_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] :
+instance charP_iff_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] {p : ℕ}:
     (Theory.fieldOfChar p).Model K ↔ CharP K p := by
   simp only [Theory.fieldOfChar, Theory.model_union_iff,
     (show (Theory.field.Model K) by infer_instance), true_and]
@@ -60,11 +60,11 @@ instance charP_iff_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] :
     intro H
     cases (CharP.char_is_prime_or_zero K p) <;> simp_all
 
-instance model_fieldOfChar_of_charP {K : Type*} [Field K] [CompatibleRing K]
+instance model_fieldOfChar_of_charP {K : Type*} [Field K] [CompatibleRing K] {p : ℕ}
     [CharP K p] : (Theory.fieldOfChar p).Model K :=
   charP_iff_model_fieldOfChar.2 inferInstance
 
-instance charP_of_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K]
+instance charP_of_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] {p : ℕ}
     [h : (Theory.fieldOfChar p).Model K] : CharP K p :=
   charP_iff_model_fieldOfChar.1 h
 
