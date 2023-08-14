@@ -78,6 +78,9 @@ right action, so lemmas can be formulated in terms of `DomMulAct`.
 
 group action, function, domain
 -/
+
+set_option autoImplicit true
+
 open Function
 
 /-- If `M` multiplicatively acts on `α`, then `DomMulAct M` acts on `α → β` as well as some
