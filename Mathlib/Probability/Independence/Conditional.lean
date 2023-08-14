@@ -138,7 +138,7 @@ def iCondIndepFun {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
 are conditionally independent. For a function `f` with codomain having measurable space structure
 `m`, the generated measurable space structure is `m.comap f`.
 See `ProbabilityTheory.condIndepFun_iff`. -/
-def CondIndepFun [MeasurableSpace β] [MeasurableSpace γ]
+def CondIndepFun {β γ : Type _} [MeasurableSpace β] [MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   kernel.IndepFun f g (condexpKernel μ m') (μ.trim hm')
 
@@ -313,13 +313,13 @@ lemma iCondIndepFun_iff {β : ι → Type _}
   rw [iCondIndep_iff]
   exact fun i ↦ (hf i).comap_le
 
-lemma condIndepFun_iff_condIndep [mβ : MeasurableSpace β]
+lemma condIndepFun_iff_condIndep {β γ : Type _} [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepFun m' hm' f g μ
       ↔ CondIndep m' (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) hm' μ := by
   simp only [CondIndepFun, CondIndep, kernel.IndepFun]
 
-lemma condIndepFun_iff [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
+lemma condIndepFun_iff {β γ : Type _} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (hf : Measurable f) (hg : Measurable g)
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepFun m' hm' f g μ ↔ ∀ t1 t2, MeasurableSet[MeasurableSpace.comap f mβ] t1
@@ -416,7 +416,7 @@ end CondIndepSet
 section CondIndep
 
 @[symm]
-theorem CondIndep.symm
+theorem CondIndep.symm {m' m₁ m₂: MeasurableSpace Ω}
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
     (h : CondIndep m' m₁ m₂ hm' μ) :
@@ -435,14 +435,14 @@ theorem condIndep_bot_left (m₁ : MeasurableSpace Ω) {m' : MeasurableSpace Ω}
     CondIndep m' ⊥ m₁ hm' μ :=
   (kernel.indep_bot_right m₁).symm
 
-theorem condIndep_of_condIndep_of_le_left
+theorem condIndep_of_condIndep_of_le_left {m' m₁ m₂ m₃ : MeasurableSpace Ω}
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
     (h_indep : CondIndep m' m₁ m₂ hm' μ) (h31 : m₃ ≤ m₁) :
     CondIndep m' m₃ m₂ hm' μ :=
   kernel.indep_of_indep_of_le_left h_indep h31
 
-theorem condIndep_of_condIndep_of_le_right
+theorem condIndep_of_condIndep_of_le_right {m' m₁ m₂ m₃: MeasurableSpace Ω}
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
     (h_indep : CondIndep m' m₁ m₂ hm' μ) (h32 : m₃ ≤ m₂) :
@@ -513,15 +513,16 @@ section FromPiSystemsToMeasurableSpaces
 /-! ### Conditional independence of generating π-systems implies conditional independence of
   σ-algebras -/
 
-variable {m' : MeasurableSpace Ω}
+variable {m' m₁ m₂ : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
 
-theorem CondIndepSets.condIndep {p1 p2 : Set (Set Ω)} (h1 : m1 ≤ mΩ) (h2 : m2 ≤ mΩ)
+theorem CondIndepSets.condIndep
+    {p1 p2 : Set (Set Ω)} (h1 : m₁ ≤ mΩ) (h2 : m₂ ≤ mΩ)
     (hp1 : IsPiSystem p1) (hp2 : IsPiSystem p2)
-    (hpm1 : m1 = generateFrom p1) (hpm2 : m2 = generateFrom p2)
+    (hpm1 : m₁ = generateFrom p1) (hpm2 : m₂ = generateFrom p2)
     (hyp : CondIndepSets m' hm' p1 p2 μ) :
-    CondIndep m' m1 m2 hm' μ :=
+    CondIndep m' m₁ m₂ hm' μ :=
   kernel.IndepSets.indep h1 h2 hp1 hp2 hpm1 hpm2 hyp
 
 theorem CondIndepSets.condIndep'
@@ -604,7 +605,7 @@ We prove the following equivalences on `CondIndepSet`, for measurable sets `s, t
 * `CondIndepSet m' hm s t μ ↔ IndepSets m' hm {s} {t} μ`.
 -/
 
-variable {m' : MeasurableSpace Ω}
+variable {m' m₁ m₂ : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   {hm' : m' ≤ mΩ}
   {s t : Set Ω} (S T : Set (Set Ω))
@@ -645,7 +646,7 @@ section CondIndepFun
 
 -/
 
-variable {m' : MeasurableSpace Ω}
+variable {β β' : Type _} {m' : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
   {f : Ω → β} {g : Ω → β'}
@@ -695,7 +696,7 @@ nonrec theorem CondIndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β}
     CondIndepFun m' hm' g f μ :=
   hfg.symm
 
-theorem CondIndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
+theorem CondIndepFun.comp {γ γ' : Type _} {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : CondIndepFun m' hm' f g μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
     CondIndepFun m' hm' (φ ∘ f) (ψ ∘ g) μ :=
