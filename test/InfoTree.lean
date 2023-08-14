@@ -1,4 +1,4 @@
-import Mathlib.Util.InfoTree
+import Mathlib.Util.InfoTree.More
 import Std.Tactic.GuardMsgs
 -- import Std.Tactic.GuardExpr
 

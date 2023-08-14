@@ -6,9 +6,52 @@ Authors: Scott Morrison
 import Lean.Elab.Frontend
 import Std.Util.TermUnsafe
 
-open Lean Elab
+open Lean Elab Frontend
 
 namespace Lean.Elab.IO
+
+/--
+Results from processing a command.
+
+Contains the `Environment` before and after, the `src : String` and `stx : Syntax` of the command,
+and any `Message`s and `InfoTree`s produced while processing.
+-/
+structure ProcessedCommand where
+  src : String
+  stx : Syntax
+  before : Environment
+  after : Environment
+  msgs : List Message
+  trees : List InfoTree
+
+/--
+Process one command, returning a `ProcessedCommand` and
+`done : Bool`, indicating whether this was the last command.
+-/
+def ProcessedCommand.one : FrontendM (ProcessedCommand × Bool) := do
+  let s := (← get).commandState
+  let before := s.env
+  let done ← processCommand
+  let stx := (← get).commands.back
+  let s' := (← get).commandState
+  let after := s'.env
+  let msgs := s'.messages.msgs.toList.drop s.messages.msgs.size
+  let trees := s'.infoState.trees.toList.drop s.infoState.trees.size
+  return ({ src := "", stx, before, after, msgs, trees }, done)
+
+/-- Process all commands in the input. -/
+partial def ProcessedCommand.all : FrontendM (List ProcessedCommand) := do
+  let (cmd, done) ← ProcessedCommand.one
+  if done then
+    return [cmd]
+  else
+    return cmd :: (← all)
+
+def processCommands' (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
+    (commandState : Command.State) : IO (List ProcessedCommand) := do
+  let commandState := { commandState with infoState.enabled := true }
+  (ProcessedCommand.all.run { inputCtx := inputCtx }).run'
+    { commandState := commandState, parserState := parserState, cmdPos := parserState.pos }
 
 /--
 Wrapper for `IO.processCommands` that enables info states, and returns
