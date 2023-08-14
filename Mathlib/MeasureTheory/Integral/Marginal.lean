@@ -399,8 +399,8 @@ def MeasurableEquiv.pi_unique [Unique ι] [∀ i, MeasurableSpace (α i)] :
       right_inv := fun f => funext fun i => by
         cases Unique.eq_default i
         rfl
-      measurable_toFun := by simp
-      measurable_invFun := _
+      measurable_toFun := by sorry
+      measurable_invFun := sorry
 
 
 
