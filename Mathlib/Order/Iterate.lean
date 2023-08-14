@@ -23,6 +23,8 @@ set_option autoImplicit true
 
 open Function
 
+open Function (Commute)
+
 namespace Monotone
 
 variable [Preorder α] {f : α → α} {x y : ℕ → α}
