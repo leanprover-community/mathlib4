@@ -6,11 +6,12 @@ Authors: Floris van Doorn
 ! This file was ported from Lean 3 source module main
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.Deriv.Support
 
 /-!
 # Marginals of multivariate functions
@@ -202,6 +203,31 @@ theorem ContinuousLinearMap.nnnorm_pi_update_eq_one {i : ι} :
   Subtype.ext (ContinuousLinearMap.norm_pi_update_eq_one ..)
 
 end Calculus
+
+section RealCalculus
+
+open Set MeasureTheory
+
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [CompleteSpace E]
+
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
+integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+on `(-∞, a)` and continuity on `(-∞, a]`.-/
+theorem integral_Iio_of_hasDerivAt_of_tendsto (hcont : ContinuousOn f (Iic a))
+    (hderiv : ∀ x ∈ Iio a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
+    (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
+  refine' tendsto_nhds_unique (intervalIntegral_tendsto_integral_Iic a f'int tendsto_id) _
+  apply Tendsto.congr' _ (hf.const_sub _)
+  filter_upwards [Iic_mem_atBot a] with x hx
+  symm
+  apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hx
+    (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
+  rw [intervalIntegrable_iff_integrable_Ioc_of_le hx]
+  exact f'int.mono (fun y hy => hy.2) le_rfl
+
+end RealCalculus
 
 section Logic
 
@@ -669,7 +695,7 @@ end
 
 section Marginal
 
-open Finset TopologicalSpace
+open TopologicalSpace
 
 variable {δ : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
 
@@ -678,10 +704,21 @@ variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)]
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [MeasurableSpace E]
   [BorelSpace E]
 
--- improper version of FTC, maybe works just under condition of the integral existing??
--- similar lemmas in `IntegralEqImproper`
+theorem atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
+theorem atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
+
+theorem _root_.Filter.EventuallyEq.tendsto [TopologicalSpace β] {f : α → β} {l : Filter α} {a : β}
+    (hf : f =ᶠ[l] fun _ ↦ a) : Tendsto f l (𝓝 a) :=
+  tendsto_nhds_of_eventually_eq hf
+
+-- very special case of `integral_Iio_of_hasDerivAt_of_tendsto`.
 theorem _root_.HasCompactSupport.integral_deriv_eq {f : ℝ → E} (hf : ContDiff ℝ 1 f)
-    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Set.Iic b, deriv f x = f b := by sorry
+    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
+  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  rw [integral_Iio_of_hasDerivAt_of_tendsto hf.continuous.continuousOn this, sub_zero]
+  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
+  exact h2f.filter_mono atBot_le_cocompact |>.tendsto
 
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
@@ -947,14 +984,21 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
 #align marginal_rhs_aux_le marginal_singleton_rhsAux_le
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
-  sorry --refine (_ : Measurable _) |>.pow measurable_const |>.mul ?_
+  simp [_root_.rhsAux]
+  refine Measurable.mul ?_ ?_
+  · dsimp
+    exact (hf.marginal μ).pow measurable_const
+  simp_rw [prod_apply]
+  refine Finset.measurable_prod _ fun i _ ↦ ?_
+  dsimp
+  exact hf.marginal μ |>.pow measurable_const
 
 theorem marginal_rhsAux_empty_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (s : Finset ι) : ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
   induction' s using Finset.induction with i s hi ih
   · rw [marginal_empty]
   · have hi' : Disjoint {i} s := Finset.disjoint_singleton_left.mpr hi
-    conv_lhs => rw [Finset.insert_eq, marginal_union μ _ sorry hi']
+    conv_lhs => rw [Finset.insert_eq, marginal_union μ _ (hf.rhsAux μ) hi']
     refine' (marginal_mono ih).trans _
     exact marginal_singleton_rhsAux_le μ f hf s i hi
 #align marginal_rhs_aux_empty_le marginal_rhsAux_empty_le
