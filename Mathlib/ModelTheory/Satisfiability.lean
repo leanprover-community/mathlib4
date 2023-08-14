@@ -353,7 +353,8 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
   exact Model.isSatisfiable M
 #align first_order.language.Theory.models_bounded_formula.realize_sentence FirstOrder.Language.Theory.ModelsBoundedFormula.realize_sentence
 
-theorem models_of_models_theory (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
+theorem models_of_models_theory {T' : L.Theory}
+    (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
     {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := by
   simp only [models_sentence_iff] at h
   intro M
