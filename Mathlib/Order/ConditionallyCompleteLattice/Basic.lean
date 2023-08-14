@@ -201,6 +201,10 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
+  /-- If a set is not bounded above, its supremum is by convention `Sup univ`. -/
+  csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (univ : Set α)
+  /-- If a set is not bounded below, its infimum is by convention `Inf univ`. -/
+  csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (univ : Set α)
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
 instance (α : Type*) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
@@ -256,7 +260,10 @@ instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [Compl
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type*}
     [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α :=
-  { CompleteLattice.toConditionallyCompleteLattice, h with csSup_empty := sSup_empty }
+  { CompleteLattice.toConditionallyCompleteLattice, h with
+    csSup_empty := sSup_empty
+    csSup_of_not_bddAbove := fun s H ↦ (H (OrderTop.bddAbove s)).elim
+    csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
 #align complete_linear_order.to_conditionally_complete_linear_order_bot CompleteLinearOrder.toConditionallyCompleteLinearOrderBot
 
 section
@@ -285,7 +292,15 @@ noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
       have h's : (upperBounds s).Nonempty := ⟨a, has⟩
       simp only [h's, dif_pos]
       simpa using h.wf.not_lt_min _ h's has
-    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥) }
+    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥)
+    csSup_of_not_bddAbove := by
+      intro s H
+      have A : ¬(BddAbove (univ : Set α)) := by
+        contrapose! H; exact H.mono (subset_univ _)
+      have B : ¬((upperBounds s).Nonempty) := H
+      have C : ¬((upperBounds (univ : Set α)).Nonempty) := A
+      simp [sSup, B, C]
+    csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
 #align is_well_order.conditionally_complete_linear_order_bot IsWellOrder.conditionallyCompleteLinearOrderBot
 
 end
@@ -301,7 +316,9 @@ instance instConditionallyCompleteLatticeOrderDual (α : Type*) [ConditionallyCo
     csInf_le := @ConditionallyCompleteLattice.le_csSup α _ }
 
 instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder αᵒᵈ :=
-  { instConditionallyCompleteLatticeOrderDual α, OrderDual.instLinearOrder α with }
+  { instConditionallyCompleteLatticeOrderDual α, OrderDual.instLinearOrder α with
+    csSup_of_not_bddAbove := @ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow α _
+    csInf_of_not_bddBelow := @ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove α _ }
 
 end OrderDual
 
@@ -960,6 +977,52 @@ When `iInf f < a`, there is an element `i` such that `f i < a`.
 theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : ∃ i, f i < a :=
   @exists_lt_of_lt_ciSup αᵒᵈ _ _ _ _ _ h
 #align exists_lt_of_cinfi_lt exists_lt_of_ciInf_lt
+
+theorem csSup_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup univ :=
+  ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove s hs
+
+theorem csInf_of_not_bddBelow {s : Set α} (hs : ¬BddBelow s) : sInf s = sInf univ :=
+  ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow s hs
+
+/-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
+`s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
+theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
+    (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
+    sSup s = sSup t := by
+  rcases eq_empty_or_nonempty s with rfl|s_ne
+  · have : t = ∅ := eq_empty_of_forall_not_mem (fun y yt ↦ by simpa using ht y yt)
+    rw [this]
+  rcases eq_empty_or_nonempty t with rfl|t_ne
+  · have : s = ∅ := eq_empty_of_forall_not_mem (fun x xs ↦ by simpa using hs x xs)
+    rw [this]
+  by_cases B : BddAbove s ∨ BddAbove t
+  · have Bs : BddAbove s := by
+      rcases B with hB|⟨b, hb⟩
+      · exact hB
+      · refine ⟨b, fun x hx ↦ ?_⟩
+        rcases hs x hx with ⟨y, hy, hxy⟩
+        exact hxy.trans (hb hy)
+    have Bt : BddAbove t := by
+      rcases B with ⟨b, hb⟩|hB
+      · refine ⟨b, fun y hy ↦ ?_⟩
+        rcases ht y hy with ⟨x, hx, hyx⟩
+        exact hyx.trans (hb hx)
+      · exact hB
+    apply le_antisymm
+    · apply csSup_le s_ne (fun x hx ↦ ?_)
+      rcases hs x hx with ⟨y, yt, hxy⟩
+      exact hxy.trans (le_csSup Bt yt)
+    · apply csSup_le t_ne (fun y hy ↦ ?_)
+      rcases ht y hy with ⟨x, xs, hyx⟩
+      exact hyx.trans (le_csSup Bs xs)
+  · simp [csSup_of_not_bddAbove, (not_or.1 B).1, (not_or.1 B).2]
+
+/-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
+`s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
+theorem csInf_eq_csInf_of_forall_exists_le {s t : Set α}
+    (hs : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) (ht : ∀ y ∈ t, ∃ x ∈ s, x ≤ y) :
+    sInf s = sInf t :=
+  @csSup_eq_csSup_of_forall_exists_le αᵒᵈ _ s t hs ht
 
 open Function
 
