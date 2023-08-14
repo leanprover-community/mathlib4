@@ -139,17 +139,17 @@ theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ �
 -- Construction of group with commuting probability 1/n
 namespace DihedralGroup
 
-lemma commProb_odd (n : ℕ) (hn : Odd n) :
+lemma commProb_odd {n : ℕ} (hn : Odd n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   rw [commProb_def', DihedralGroup.card_conjClasses_odd hn, nat_card]
   qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]; rfl]
   rw [div_div, ← mul_assoc]
   congr
 
-lemma aux1 {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
+lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
 
-lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
+lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 | 0 | 1 | 2 | 3 => by decide
 | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
 
@@ -157,10 +157,10 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
   if h0 : n = 0 then [0]
   else if h1 : n = 1 then []
   else if 2 ∣ n then
-    have := aux1 h0
+    have := div_two_lt h0
     3 :: reciprocalFactors (n / 2)
   else
-    have := aux2 h0 h1
+    have := div_four_lt h0 h1
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
 
 def Product (l : List ℕ) : Type :=
@@ -169,48 +169,47 @@ def Product (l : List ℕ) : Type :=
 instance (l : List ℕ) : Group (Product l) := Pi.group
 
 lemma commProb_nil : commProb (Product []) = 1 := by
-  simp_rw [Product, commProb_pi]
+  simp [Product, commProb_pi]
 
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
-  simp_rw [Product, commProb_pi, List.length_cons, Fin.prod_univ_succ, List.map_cons, List.prod_cons]
-  rfl
+  simp [Product, commProb_pi, Fin.prod_univ_succ]
 
 lemma commProb_product (l : List ℕ) :
     commProb (Product l) = (l.map (fun k => commProb (DihedralGroup k))).prod := by
   induction' l with n l h
-  . rw [commProb_nil, List.map_nil, List.prod_nil]
-  . rw [commProb_cons, List.map_cons, List.prod_cons, h]
+  · rw [commProb_nil, List.map_nil, List.prod_nil]
+  · rw [commProb_cons, List.map_cons, List.prod_cons, h]
 
+/-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :
     commProb (Product (reciprocalFactors n)) = 1 / n := by
   rw [commProb_product]
   unfold reciprocalFactors
   rw [←commProb_product]
   by_cases h0 : n = 0
-  . rw [dif_pos h0, commProb_cons, commProb_nil, mul_one, h0, Nat.cast_zero, div_zero]
+  · rw [dif_pos h0, commProb_cons, commProb_nil, mul_one, h0, Nat.cast_zero, div_zero]
     apply commProb_eq_zero_of_infinite
-  . by_cases h1 : n = 1
-    . rw [dif_neg h0, dif_pos h1, commProb_nil, h1, Nat.cast_one, div_one]
-    . by_cases h2 : 2 ∣  n
-      . have := aux1 h0
+  · by_cases h1 : n = 1
+    · rw [dif_neg h0, dif_pos h1, commProb_nil, h1, Nat.cast_one, div_one]
+    · by_cases h2 : 2 ∣ n
+      · have := div_two_lt h0
         rw [dif_neg h0, dif_neg h1, if_pos h2, commProb_cons, commProb_reciprocal (n / 2),
-            commProb_odd 3 (by norm_num)]
+            commProb_odd (by norm_num)]
         field_simp [h0]
         norm_num
-      . have := aux2 h0 h1
+      · have := div_four_lt h0 h1
         have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.two_dvd_ne_zero.mp h2)
-        rw [dif_neg h0, dif_neg h1, if_neg h2, commProb_cons, commProb_reciprocal (n / 4 + 1),
-            commProb_odd (n % 4 * n)]
-        . rw [div_mul_div_comm, mul_one, div_eq_div_iff] <;> norm_cast
-          . have : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-            calc ((n % 4) * n + 3) * n = (n % 4 * (4 * (n / 4)) + n % 4 * 4) * n :=
-                by rw [←this, sq, ←add_assoc, ←mul_add, Nat.div_add_mod]
-              _ = 1 * (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
-          . have : n % 4 ≠ 0 := by rcases key with h | h <;> rw [h] <;> norm_num
-            positivity
-        . have : ¬ 2 ∣ n % 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-          rw [Nat.two_dvd_ne_zero, ← Nat.odd_iff] at h2 this
-          exact this.mul h2
+        have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> norm_num
+        rw [dif_neg h0, dif_neg h1, if_neg h2]
+        rw [Nat.two_dvd_ne_zero, ← Nat.odd_iff] at h2
+        rw [commProb_cons, commProb_reciprocal (n / 4 + 1), commProb_odd (hn.mul h2)]
+        rw [div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
+        · have : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
+          calc ((n % 4) * n + 3) * n = (n % 4 * (4 * (n / 4)) + n % 4 * 4) * n :=
+              by rw [←this, sq, ←add_assoc, ←mul_add, Nat.div_add_mod]
+            _ = (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
+        · have := hn.pos.ne'
+          positivity
 
 end DihedralGroup
