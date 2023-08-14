@@ -942,10 +942,38 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
 
 attribute [gcongr] ENNReal.rpow_le_rpow
 
+section
+
+-- move to MeasureTheory.Function.L1Space
+theorem _root_.MeasureTheory.Integrable.nnnorm_toL1 {α : Type _} {β : Type _}
+    {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β] (f : α → β)
+    (hf : Integrable f μ) :
+    (‖hf.toL1 f‖₊ : ℝ≥0∞) = ∫⁻ a, ‖f a‖₊ ∂μ := by
+  simpa [Integrable.toL1, snorm, snorm'] using ENNReal.coe_toNNReal hf.2.ne
+
+-- move to MeasureTheory.Integral.Bochner
+theorem _root_.MeasureTheory.L1.nnnorm_Integral_le_one {α : Type _} {E : Type _}
+    [NormedAddCommGroup E] {_ : MeasurableSpace α} {μ : Measure α} [NormedSpace ℝ E]
+    [CompleteSpace E] : ‖L1.integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ (1 : ℝ) :=
+  L1.norm_Integral_le_one
+
+-- move to MeasureTheory.Integral.Bochner
+theorem _root_.MeasureTheory.L1.nnnorm_integral_le {α : Type _} {E : Type _}
+    [NormedAddCommGroup E] {_ : MeasurableSpace α} {μ : Measure α} [NormedSpace ℝ E]
+    [CompleteSpace E] (f : α →₁[μ] E) : ‖L1.integral f‖₊ ≤ ‖f‖₊ :=
+  L1.norm_integral_le f
+
+end
+
+-- move to MeasureTheory.Integral.Bochner
 theorem nnnorm_integral_le_lintegral_nnnorm {α E : Type _} [MeasurableSpace α] {μ : Measure α}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] (f : α → E) :
-    ‖∫ x, f x ∂μ‖₊ ≤ ∫⁻ x, ‖f x‖₊ ∂ μ  :=
-  sorry
+    ‖∫ x, f x ∂μ‖₊ ≤ ∫⁻ x, ‖f x‖₊ ∂ μ := by
+  rw [integral_def, dif_pos ‹_›]
+  split_ifs with hf
+  · calc _ ≤ (‖(Integrable.toL1 f hf)‖₊ : ℝ≥0∞) := by norm_cast; apply L1.nnnorm_integral_le
+      _ = _ := hf.nnnorm_toL1
+  · simp
 
 /-- The Sobolev inequality -/
 theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
