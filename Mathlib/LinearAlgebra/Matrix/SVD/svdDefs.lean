@@ -67,59 +67,93 @@ open Matrix BigOperators
 
 namespace Matrix
 
+/-- The right eigenvectors of a matrix A corresponding to its non-zero eigenvaules -/
 noncomputable def svdV₁ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin N) (Fin (A.rank)) 𝕂 :=
-  ((reindex (Equiv.refl (Fin N)) (enz A))
+  ((reindex (Equiv.refl (Fin N)) (equiv_fin_width_eigs_conjTranspose_mul_self A))
     (isHermitian_transpose_mul_self A).eigenvectorMatrix).toColumns₁
 
+/-- The right eigenvectors of a matrix A corresponding to the zero eigenvaules of the matrix AᴴA -/
 noncomputable def svdV₂ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin N) (Fin (N - A.rank)) 𝕂 :=
-  ((reindex (Equiv.refl (Fin N)) (enz A))
+  ((reindex (Equiv.refl (Fin N)) (equiv_fin_width_eigs_conjTranspose_mul_self A))
     (isHermitian_transpose_mul_self A).eigenvectorMatrix).toColumns₂
 
+/-- The diagonal matrix containing the non-zero eigenvalues of matrix Aᴴ⬝A These are also the
+squares of the non-zero singular values of the matrix A. Note that these are the same elements as in
+`svdμ'` but permuted in some arbitrary order -/
 noncomputable def svdμ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin A.rank) (Fin A.rank) ℝ :=
-  (reindex (er A) (er A))
+  (reindex
+    (fin_rank_equiv_eigs_conjTranspose_mul_self A)
+    (fin_rank_equiv_eigs_conjTranspose_mul_self A))
   (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
       (isHermitian_transpose_mul_self A).eigenvalues i))
 
+/-- The diagonal matrix containing the non-zero eigenvalues of matrix A⬝Aᴴ These are also the
+squares of the non-zero singular values of the matrix A. Note that these are the same elements as in
+`svdμ` but permuted in some arbitrary order -/
 noncomputable def svdμ' (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin A.rank) (Fin A.rank) ℝ :=
-  (reindex (er' A) (er' A))
+  (reindex
+    (fin_rank_equiv_eigs_mul_conjTranspose A) (fin_rank_equiv_eigs_mul_conjTranspose A))
   (diagonal (fun (i : {a // (isHermitian_mul_conjTranspose_self A).eigenvalues a ≠ 0}) =>
       (isHermitian_mul_conjTranspose_self A).eigenvalues i))
 
+/-- The diagonal matrix containing the non-zero singular values of matrix A. These are also the
+square roots of the non-zero eigenvalues of the matrix Aᴴ⬝A. -/
 noncomputable def svdσ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin A.rank) (Fin A.rank) ℝ :=
-  (reindex (er A) (er A))
+  (reindex
+    (fin_rank_equiv_eigs_conjTranspose_mul_self A)
+    (fin_rank_equiv_eigs_conjTranspose_mul_self A))
   (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
       Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues i)))
 
+/-- The left eigenvectors of a matrix A corresponding to its non-zero eigenvaules, obtained as the
+image of the corresponding right eigenvectors. The transformation is given by the matrix itself and
+scaling by the singular values. -/
 noncomputable def svdU₁ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin M) (Fin A.rank) 𝕂 :=
   A ⬝ A.svdV₁ ⬝ (A.svdσ.map (algebraMap ℝ 𝕂))⁻¹
 
+/-- The left eigenvectors of a matrix A corresponding to its non-zero eigenvaules, obtained directly
+from the eigendecomposition of the AAᴴ matrix. These do NOT share the same ordering as `svdU₁`. -/
 noncomputable def svdU₁' (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin M) (Fin (A.rank)) 𝕂 :=
-  ((reindex (Equiv.refl (Fin M)) (emz A))
+  ((reindex (Equiv.refl (Fin M)) (equiv_fin_height_eigs_mul_conjTranspose A))
     (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix).toColumns₁
 
+/-- The left eigenvectors of a matrix A corresponding to its zero eigenvaules, obtained directly
+from the eigendecomposition of the AAᴴ matrix. The order of these eigenvectors is not relevatn as
+they are multiplied by zero anyway. Hence we do not have `svdU₂` -/
 noncomputable def svdU₂ (A : Matrix (Fin M) (Fin N) 𝕂) : Matrix (Fin M) (Fin (M - A.rank)) 𝕂 :=
-  ((reindex (Equiv.refl (Fin M)) (emz A))
+  ((reindex (Equiv.refl (Fin M)) (equiv_fin_height_eigs_mul_conjTranspose A))
     (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix).toColumns₂
 
+/-- Concatenation of the left eigenvectors U₁ and U₂ into one eigenvector matrix. This is a unitary
+matrix. -/
 noncomputable def svdU (A : Matrix (Fin M) (Fin N) 𝕂) :
     Matrix (Fin M) (Fin (A.rank) ⊕ Fin (M - A.rank)) 𝕂 := fromColumns A.svdU₁ A.svdU₂
 
+/-- Concatenation of the right eigenvectors V₁ and V₂ into one eigenvector matrix. This is a unitary
+matrix. -/
 noncomputable def svdV (A : Matrix (Fin M) (Fin N) 𝕂) :
     Matrix (Fin N) (Fin (A.rank) ⊕ Fin (N - A.rank)) 𝕂 := fromColumns A.svdV₁ A.svdV₂
 
--- First we should prove the 12 21 22 blocks are zero
+/-- Given a matrix A of size m × n: `svdS` is a matrix of the same dimensions but partitioned into
+four blocks such that S₁₁ contains the non-zero singular values, S₁₂, S₂₁ and S₂₂ are zeros. The S₁₁
+block is the diagonal matrix `svdσ` above. -/
 noncomputable def svdS (A : Matrix (Fin M) (Fin N) 𝕂) :
     Matrix ((Fin A.rank) ⊕ (Fin (N - A.rank))) ((Fin A.rank) ⊕ (Fin (N - A.rank))) ℝ :=
-  (reindex (enz A) (enz A))
+  (reindex
+    (equiv_fin_width_eigs_conjTranspose_mul_self A) (equiv_fin_width_eigs_conjTranspose_mul_self A))
     (diagonal (isHermitian_transpose_mul_self A).eigenvalues)
 
+/-- Given a matrix A of size m × n: `svdS'` is a matrix of the same dimensions but partitioned into
+four blocks such that S₁₁ contains the non-zero singular values, S₁₂, S₂₁ and S₂₂ are zeros. The S₁₁
+block is the diagonal matrix `svdσ` above but permuted by the same arbitrary order relating svdU₁
+and svdU₁' above . -/
 noncomputable def svdS' (A : Matrix (Fin M) (Fin N) 𝕂) :
     Matrix ((Fin A.rank) ⊕ (Fin (M - A.rank))) ((Fin A.rank) ⊕ (Fin (M - A.rank))) ℝ :=
-  (reindex (emz A) (emz A))
+  (reindex (equiv_fin_height_eigs_mul_conjTranspose A) (equiv_fin_height_eigs_mul_conjTranspose A))
     (diagonal (isHermitian_mul_conjTranspose_self A).eigenvalues)
 
 lemma U_columns' (A : Matrix (Fin M) (Fin N) 𝕂) :
-  ((reindex (Equiv.refl (Fin M)) (emz A))
+  ((reindex (Equiv.refl (Fin M)) (equiv_fin_height_eigs_mul_conjTranspose A))
     (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix) = fromColumns A.svdU₁' A.svdU₂ := by
   rw [svdU₂, svdU₁']
   simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, fromColumns_toColumns]
@@ -171,7 +205,7 @@ lemma S_zero_blocks (A : Matrix (Fin M) (Fin N) 𝕂) :
   simp_rw [← Matrix.ext_iff, of_apply, zero_apply, ge_iff_le, implies_true, true_and ]
   intro i j
   by_cases i = j
-  unfold enz Equiv.sumCongr
+  unfold equiv_fin_width_eigs_conjTranspose_mul_self Equiv.sumCongr
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     Equiv.sumCompl_apply_inr]
   simp_rw [h, diagonal_apply_eq]
@@ -187,7 +221,7 @@ lemma S'_zero_blocks (A : Matrix (Fin M) (Fin N) 𝕂) :
   simp_rw [← Matrix.ext_iff, of_apply, zero_apply, ge_iff_le, implies_true, true_and ]
   intro i j
   by_cases i = j
-  · unfold emz Equiv.sumCongr
+  · unfold equiv_fin_height_eigs_mul_conjTranspose Equiv.sumCongr
     simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
       Equiv.sumCompl_apply_inr]
     simp_rw [h, diagonal_apply_eq]
@@ -203,7 +237,8 @@ lemma S_σpos_block (A : Matrix (Fin M) (Fin N) 𝕂) :
   funext i j
   by_cases h: i=j
   · simp_rw [h]
-    unfold enz er Equiv.sumCongr Sum.map
+    unfold equiv_fin_width_eigs_conjTranspose_mul_self fin_rank_equiv_eigs_conjTranspose_mul_self
+      Equiv.sumCongr Sum.map
     simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
       Sum.elim_inl, Equiv.sumCompl_apply_inl, of_apply,
       diagonal_apply_eq, Function.comp_apply]
@@ -219,7 +254,8 @@ lemma S'_σpos_block (A : Matrix (Fin M) (Fin N) 𝕂) :
   funext i j
   by_cases h: i=j
   · simp_rw [h]
-    unfold emz er' Equiv.sumCongr Sum.map
+    unfold equiv_fin_height_eigs_mul_conjTranspose fin_rank_equiv_eigs_mul_conjTranspose
+      Equiv.sumCongr Sum.map
     simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
       Sum.elim_inl, Equiv.sumCompl_apply_inl, of_apply,
       diagonal_apply_eq, Function.comp_apply]
@@ -228,19 +264,26 @@ lemma S'_σpos_block (A : Matrix (Fin M) (Fin N) 𝕂) :
     assumption'
 
 lemma S_block (A : Matrix (Fin M) (Fin N) 𝕂) :
-    (reindex (enz A) (enz A)) ( diagonal ( (isHermitian_transpose_mul_self A).eigenvalues))=
-      fromBlocks A.svdμ 0 0 0 := by
+    (reindex
+      (equiv_fin_width_eigs_conjTranspose_mul_self A)
+      (equiv_fin_width_eigs_conjTranspose_mul_self A))
+        ( diagonal ( (isHermitian_transpose_mul_self A).eigenvalues)) =
+          fromBlocks A.svdμ 0 0 0 := by
   let hz := S_zero_blocks A
   rw [← svdS, ← fromBlocks_toBlocks (A.svdS), ← S_σpos_block, hz.1, hz.2.1, hz.2.2]
 
 lemma S'_block (A : Matrix (Fin M) (Fin N) 𝕂) :
-    (reindex (emz A) (emz A)) ( diagonal ( (isHermitian_mul_conjTranspose_self A).eigenvalues)) =
-      fromBlocks A.svdμ' 0 0 0 := by
+    (reindex
+      (equiv_fin_height_eigs_mul_conjTranspose A)
+      (equiv_fin_height_eigs_mul_conjTranspose A))
+        (diagonal ( (isHermitian_mul_conjTranspose_self A).eigenvalues)) =
+          fromBlocks A.svdμ' 0 0 0 := by
   let hz := S'_zero_blocks A
   rw [← svdS', ← fromBlocks_toBlocks (A.svdS'), ← S'_σpos_block, hz.1, hz.2.1, hz.2.2]
 
 lemma V_columns (A : Matrix (Fin M) (Fin N) 𝕂) :
-    (reindex (Equiv.refl (Fin N)) (enz A)) (isHermitian_transpose_mul_self A).eigenvectorMatrix =
+    (reindex (Equiv.refl (Fin N)) (equiv_fin_width_eigs_conjTranspose_mul_self A))
+      (isHermitian_transpose_mul_self A).eigenvectorMatrix =
       fromColumns A.svdV₁ A.svdV₂ := by
   rw [reindex_apply, fromColumns, svdV₁, svdV₂, toColumns₁, toColumns₂]
   funext i j
@@ -257,9 +300,9 @@ lemma reduced_spectral_theorem (A : Matrix (Fin M) (Fin N) 𝕂) :
     ← IsHermitian.conjTranspose_eigenvectorMatrix, Matrix.mul_assoc,
     ← submatrix_mul_equiv
       hAHA.eigenvectorMatrix (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues) ⬝
-      (hAHA.eigenvectorMatrixᴴ)) _ (enz A).symm _,
+      (hAHA.eigenvectorMatrixᴴ)) _ (equiv_fin_width_eigs_conjTranspose_mul_self A).symm _,
     ← submatrix_mul_equiv (diagonal (IsROrC.ofReal ∘ hAHA.eigenvalues)) (hAHA.eigenvectorMatrixᴴ)
-    _ (enz A).symm _,
+    _ (equiv_fin_width_eigs_conjTranspose_mul_self A).symm _,
     ← @IsROrC.algebraMap_eq_ofReal 𝕂]
   simp_rw [Function.comp]
   rw [← diagonal_map, submatrix_map, ← reindex_apply, ← Equiv.coe_refl, ← Equiv.refl_symm,
@@ -276,9 +319,11 @@ lemma reduced_spectral_theorem' (A : Matrix (Fin M) (Fin N) 𝕂) :
   rw [← submatrix_id_id (A⬝Aᴴ), IsHermitian.spectral_theorem' hAAH,
     ← IsHermitian.conjTranspose_eigenvectorMatrix, Matrix.mul_assoc,
     ← submatrix_mul_equiv hAAH.eigenvectorMatrix
-      (diagonal (IsROrC.ofReal ∘ hAAH.eigenvalues) ⬝ (hAAH.eigenvectorMatrixᴴ)) _ (emz A).symm _,
+      (diagonal (IsROrC.ofReal ∘ hAAH.eigenvalues) ⬝ (hAAH.eigenvectorMatrixᴴ)) _
+        (equiv_fin_height_eigs_mul_conjTranspose A).symm _,
     ← submatrix_mul_equiv (diagonal (IsROrC.ofReal ∘ hAAH.eigenvalues))
-      (hAAH.eigenvectorMatrixᴴ) _ (emz A).symm _, ← @IsROrC.algebraMap_eq_ofReal 𝕂]
+      (hAAH.eigenvectorMatrixᴴ) _ (equiv_fin_height_eigs_mul_conjTranspose A).symm _,
+      ← @IsROrC.algebraMap_eq_ofReal 𝕂]
   simp_rw [Function.comp]
   rw [← diagonal_map, submatrix_map,
     ← reindex_apply, ← Equiv.coe_refl, ← Equiv.refl_symm, ← reindex_apply,
@@ -297,7 +342,9 @@ lemma eig_vals_ne_zero_pos {m n: Type} [Fintype m] [Fintype n] [DecidableEq n]
     (z.prop.symm) -- 0 ≠ _
 
 lemma svdσ_inv (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdσ⁻¹ =
-    (reindex (er A) (er A))
+    (reindex
+      (fin_rank_equiv_eigs_conjTranspose_mul_self A)
+      (fin_rank_equiv_eigs_conjTranspose_mul_self A))
       (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
         1 / Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues i))) := by
   apply inv_eq_right_inv
@@ -414,7 +461,7 @@ lemma V_conjTranspose_mul_inj (A : Matrix (Fin M) (Fin N) 𝕂) {m : Type} :
   rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose, ← fromColumns_mul_fromRows_eq_one_comm,
     ← conjTranspose_fromColumns_eq_fromRows_conjTranspose] at V_inv'
   rwa [Matrix.mul_assoc, Matrix.mul_assoc, V_inv', Matrix.mul_one, Matrix.mul_one] at h
-  apply enz
+  apply equiv_fin_width_eigs_conjTranspose_mul_self
 
 /-- # Main SVD Theorem
 Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
