@@ -13,11 +13,12 @@ namespace Lean.Elab.IO
 /--
 Results from processing a command.
 
-Contains the `Environment` before and after, the `src : String` and `stx : Syntax` of the command,
+Contains the `Environment` before and after,
+the `src : Substring` and `stx : Syntax` of the command,
 and any `Message`s and `InfoTree`s produced while processing.
 -/
 structure ProcessedCommand where
-  src : String
+  src : Substring
   stx : Syntax
   before : Environment
   after : Environment
@@ -30,14 +31,16 @@ Process one command, returning a `ProcessedCommand` and
 -/
 def ProcessedCommand.one : FrontendM (ProcessedCommand × Bool) := do
   let s := (← get).commandState
+  let beforePos := (← get).cmdPos
   let before := s.env
   let done ← processCommand
   let stx := (← get).commands.back
+  let src := ⟨(← read).inputCtx.input, beforePos, (← get).cmdPos⟩
   let s' := (← get).commandState
   let after := s'.env
   let msgs := s'.messages.msgs.toList.drop s.messages.msgs.size
   let trees := s'.infoState.trees.toList.drop s.infoState.trees.size
-  return ({ src := "", stx, before, after, msgs, trees }, done)
+  return ({ src, stx, before, after, msgs, trees }, done)
 
 /-- Process all commands in the input. -/
 partial def ProcessedCommand.all : FrontendM (List ProcessedCommand) := do
@@ -47,6 +50,9 @@ partial def ProcessedCommand.all : FrontendM (List ProcessedCommand) := do
   else
     return cmd :: (← all)
 
+/--
+Variant of `processCommands` that returns information for each command in the input.
+-/
 def processCommands' (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
     (commandState : Command.State) : IO (List ProcessedCommand) := do
   let commandState := { commandState with infoState.enabled := true }
@@ -72,6 +78,8 @@ If there is no existing environment, we parse the input for headers (e.g. import
 and create a new environment.
 Otherwise, we add to the existing environment.
 Returns the resulting environment, along with a list of messages and info trees.
+
+Be aware of https://github.com/leanprover/lean4/issues/2408 when using the frontend.
 -/
 def processInput (input : String) (env? : Option Environment)
     (opts : Options) (fileName : Option String := none) :
@@ -87,3 +95,58 @@ def processInput (input : String) (env? : Option Environment)
   | some env => do
     pure ({ : Parser.ModuleParserState }, Command.mkState env {} opts)
   processCommandsWithInfoTrees inputCtx parserState commandState
+
+open System
+
+def findLean (mod : Name) : IO FilePath := do
+  return FilePath.mk ((← findOLean mod).toString.replace "build/lib/" "") |>.withExtension "lean"
+
+/-- Implementation of `moduleSource`, which is the cached version of this function. -/
+def moduleSource' (mod : Name) : IO String := do
+  IO.FS.readFile (← findLean mod)
+
+initialize sourceCache : IO.Ref <| HashMap Name String ←
+  IO.mkRef .empty
+
+/-- Read the source code of the named module. The results are cached. -/
+def moduleSource (mod : Name) : IO String := do
+  let m ← sourceCache.get
+  match m.find? mod with
+  | some r => return r
+  | none => do
+    let v ← moduleSource' mod
+    sourceCache.set (m.insert mod v)
+    return v
+
+-- Building a cache is a bit ridiculous when
+-- https://github.com/leanprover/lean4/issues/2408
+-- prevents compiling multiple modules at all.
+-- However, it does avoid error messages in the interpreter from attempting to recompile the same
+-- module twice.
+
+/-- Implementation of `compileModule`, which is the cached version of this function. -/
+def compileModule' (mod : Name) : IO (Environment × List Message × List InfoTree) := do
+  Lean.Elab.IO.processInput (← moduleSource mod) none {}
+
+initialize compilationCache : IO.Ref <| HashMap Name (Environment × List Message × List InfoTree) ←
+  IO.mkRef .empty
+
+/--
+Compile the source file for the named module, returning the
+resulting environment, any generated messages, and all info trees.
+
+The results are cached.
+-/
+def compileModule (mod : Name) : IO (Environment × List Message × List InfoTree) := do
+  let m ← compilationCache.get
+  match m.find? mod with
+  | some r => return r
+  | none => do
+    let v ← compileModule' mod
+    compilationCache.set (m.insert mod v)
+    return v
+
+/-- Compile the source file for the named module, returning all info trees. -/
+def moduleInfoTrees (mod : Name) : IO (List InfoTree) := do
+  let (_env, _msgs, trees) ← compileModule mod
+  return trees

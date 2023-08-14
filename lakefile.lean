@@ -71,6 +71,10 @@ lean_exe graph where
   root := `ImportGraph.Main
   supportInterpreter := true
 
+lean_exe export_infotree where
+  root := `Mathlib.Util.Infotree.Export
+  supportInterpreter := true
+
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]

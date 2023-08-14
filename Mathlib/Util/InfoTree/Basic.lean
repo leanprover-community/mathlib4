@@ -12,16 +12,111 @@ def stxRange (fileMap : FileMap) (stx : Syntax) : Position × Position :=
   let endPos := stx.getTailPos?.getD pos
   (fileMap.toPosition pos, fileMap.toPosition endPos)
 
+namespace Info
+
+/-- The type of a `Lean.Elab.Info`, as a string. -/
+def kind : Info → String
+  | .ofTacticInfo         _ => "TacticInfo"
+  | .ofTermInfo           _ => "TermInfo"
+  | .ofCommandInfo        _ => "CommmandInfo"
+  | .ofMacroExpansionInfo _ => "MacroExpansionInfo"
+  | .ofOptionInfo         _ => "OptionInfo"
+  | .ofFieldInfo          _ => "FieldInfo"
+  | .ofCompletionInfo     _ => "CompletionInfo"
+  | .ofUserWidgetInfo     _ => "UserWidgetInfo"
+  | .ofCustomInfo         _ => "CustomInfo"
+  | .ofFVarAliasInfo      _ => "FVarAliasInfo"
+  | .ofFieldRedeclInfo    _ => "FieldRedeclInfo"
+
+/-- The `Syntax` for a `Lean.Elab.Info`, if there is one. -/
+def stx? : Info → Option Syntax
+  | .ofTacticInfo         info => info.stx
+  | .ofTermInfo           info => info.stx
+  | .ofCommandInfo        info => info.stx
+  | .ofMacroExpansionInfo info => info.stx
+  | .ofOptionInfo         info => info.stx
+  | .ofFieldInfo          info => info.stx
+  | .ofCompletionInfo     info => info.stx
+  | .ofUserWidgetInfo     info => info.stx
+  | .ofCustomInfo         info => info.stx
+  | .ofFVarAliasInfo      _    => none
+  | .ofFieldRedeclInfo    info => info.stx
+
+/-- Is the `Syntax` for this `Lean.Elab.Info` original, or synthetic? -/
+def isOriginal (i : Info) : Bool :=
+  match i.stx? with
+  | none => true   -- Somewhat unclear what to do with `FVarAliasInfo`, so be conservative.
+  | some stx => match stx.getHeadInfo with
+    | .original .. => true
+    | _ => false
+
+end Info
+
 end Lean.Elab
 
 namespace Lean.Elab.ContextInfo
 
-def ppExpr (ctx : ContextInfo) (e : Expr) : IO Format :=
-  ctx.runMetaM {} (do Meta.ppExpr (← instantiateMVars e))
+/-- Pretty print an expression in the given `ContextInfo` with the given `LocalContext`. -/
+def ppExpr (ctx : ContextInfo) (lctx : LocalContext) (e : Expr) : IO Format :=
+  ctx.runMetaM lctx (do Meta.ppExpr (← instantiateMVars e))
 
 end Lean.Elab.ContextInfo
 
+namespace Lean.Elab.TacticInfo
+
+/-- Find the name for the outermost `Syntax` in this `TacticInfo`. -/
+def name? (t : TacticInfo) : Option Name :=
+  match t.stx with
+  | Syntax.node _ n _ => some n
+  | _ => none
+
+/-- Decide whether a tactic is "substantive",
+or is merely a tactic combinator (e.g. `by`, `;`, multiline tactics, parenthesized tactics). -/
+def isSubstantive (t : TacticInfo) : Bool :=
+  match t.name? with
+  | none => false
+  | some `null => false
+  | some ``cdot => false
+  | some ``cdotTk => false
+  | some ``Lean.Parser.Term.byTactic => false
+  | some ``Lean.Parser.Tactic.tacticSeq => false
+  | some ``Lean.Parser.Tactic.tacticSeq1Indented => false
+  | some ``Lean.Parser.Tactic.«tactic_<;>_» => false
+  | some ``Lean.Parser.Tactic.paren => false
+  | _ => true
+
+end Lean.Elab.TacticInfo
+
 namespace Lean.Elab.InfoTree
+
+/-- Discard all nodes besides `.context` nodes and `TacticInfo` nodes. -/
+partial def retainTacticInfo : InfoTree → List InfoTree
+  | .context ctx tree => tree.retainTacticInfo |>.map (InfoTree.context ctx)
+  | .node (.ofTacticInfo i) children => [.node (.ofTacticInfo i) (children.toList.map retainTacticInfo).join.toPArray']
+  | .node _ children => (children.toList.map retainTacticInfo).join
+  | .hole _ => []
+
+/-- Discard all nodes with synthetic syntax. -/
+partial def retainOriginal : InfoTree → List InfoTree
+  | .context ctx tree => tree.retainOriginal |>.map (InfoTree.context ctx)
+  | .node i children =>
+    if i.isOriginal then
+      [.node i (children.toList.map retainOriginal).join.toPArray']
+    else
+      (children.toList.map retainOriginal).join
+  | .hole _ => []
+
+/-- Discard all TacticInfo nodes that are tactic combinators or structuring tactics. -/
+-- There is considerable grey area here: what to do with `classical`?
+partial def retainSubstantive : InfoTree → List InfoTree
+  | .context ctx tree => tree.retainSubstantive |>.map (InfoTree.context ctx)
+  | .node (.ofTacticInfo i) children =>
+    if i.isSubstantive then
+      [.node (.ofTacticInfo i) (children.toList.map retainSubstantive).join.toPArray']
+    else
+      (children.toList.map retainSubstantive).join
+  | .node _ children => (children.toList.map retainSubstantive).join
+  | e@(.hole _) => [e]
 
 /-- Discard any enclosing `InfoTree.context` layers. -/
 def consumeContext : InfoTree → InfoTree
@@ -36,7 +131,7 @@ def ofExpr? (i : InfoTree) : Option Expr := match i with
 /-- Is this `InfoTree` a `TermInfo` for some `Name`? -/
 def ofName? (i : InfoTree) : Option Name := i.ofExpr?.bind Expr.constName?
 
-/-- Check if the info tree is the top level info tree for a declaration,
+/-- Check if the `InfoTree` is the top level `InfoTree` for a declaration,
 return it along with the declaration name if it is. -/
 def elabDecl? (t : InfoTree) : Option (Name × InfoTree) :=
   match t.consumeContext with
@@ -53,109 +148,23 @@ def elabDecl? (t : InfoTree) : Option (Name × InfoTree) :=
       none
   | _ => none
 
-end Lean.Elab.InfoTree
+/-- Analogue of `Lean.Elab.InfoTree.findInfo?`, but that returns a list of all results. -/
+partial def findAllInfo (t : InfoTree) (ctx : Option ContextInfo) (p : Info → Bool) :
+    List (Info × Option ContextInfo × PersistentArray InfoTree) :=
+  match t with
+  | context ctx t => t.findAllInfo ctx p
+  | node i ts  =>
+      (if p i then [(i, ctx, ts)] else []) ++ ts.toList.bind (fun t => t.findAllInfo ctx p)
+  | _ => []
 
-def Lean.Elab.TacticInfo.name? (t : TacticInfo) : Option Name :=
-  match t.stx with
-  | Syntax.node _ n _ => some n
+/-- Return all `TacticInfo` nodes in an `InfoTree` corresponding to tactics,
+each equipped with its relevant `ContextInfo`, and any children info trees. -/
+def findTacticNodes (t : InfoTree) : List (TacticInfo × ContextInfo × PersistentArray InfoTree) :=
+  let infos := t.findAllInfo none fun i => match i with
+    | .ofTacticInfo _ => true
+    | _ => false
+  infos.filterMap fun p => match p with
+  | (.ofTacticInfo i, some ctx, children) => (i, ctx, children)
   | _ => none
 
-structure Lean.Elab.TacticInvocation where
-  info : TacticInfo
-  ctx : ContextInfo
-  children : PersistentArray InfoTree
-
-namespace Lean.Elab.TacticInvocation
-
-def range (t : TacticInvocation) : Position × Position := stxRange t.ctx.fileMap t.info.stx
-
-def pp (t : TacticInvocation) : IO Format :=
-  t.ctx.runMetaM {} try
-    Lean.PrettyPrinter.ppTactic ⟨t.info.stx⟩
-  catch _ =>
-    pure "<failed to pretty print>"
-
-def name? (t : TacticInvocation) : Option Name :=
-  t.info.name?
-
-/-- Decide whether a tactic is "substantive", and actually transforms the goals
-or is merely a tactic combinator (e.g. `by`, `;`, multiline tactics, parenthesized tactics). -/
-def substantive (t : TacticInvocation) : Bool :=
-  match t.name? with
-  | none => false
-  | some `null => false
-  | some `Lean.Parser.Term.byTactic => false
-  | some `Lean.Parser.Tactic.tacticSeq => false
-  | some `Lean.Parser.Tactic.tacticSeq1Indented => false
-  | some `Lean.Parser.Tactic.«tactic_<;>_» => false
-  | some `Lean.Parser.Tactic.paren => false
-  | _ => true
-
-def original (t : TacticInvocation) : Bool :=
-  match t.info.stx.getHeadInfo with
-  | .original _ _ _ _  => true
-  | _ => false
-
-inductive Kind
-| refl
-| rw --(symm : Bool) (t : Term)
-| exact (stx : Syntax) (e : Expr)
-| apply (stx : Syntax) (e : Expr)
--- | refine
--- | convert
--- | have (n : Name) (ty : Expr) (v : Option Expr)
--- Feel free to add more as needed!
-| other
-
-instance : Inhabited Kind := ⟨.other⟩
-
-open Meta
-
-/-- Run a tactic on the goals stored in a `TacticInvocation`. -/
-def runMetaMGoalsBefore (t : TacticInvocation) (x : List MVarId → MetaM α) : IO α := do
-  t.ctx.runMetaM {} <| Meta.withMCtx t.info.mctxBefore <| x t.info.goalsBefore
-
-/-- Run a tactic on the after goals stored in a `TacticInvocation`. -/
-def runMetaMGoalsAfter (t : TacticInvocation) (x : List MVarId → MetaM α) : IO α := do
-  t.ctx.runMetaM {} <| Meta.withMCtx t.info.mctxAfter <| x t.info.goalsAfter
-
-/-- Run a tactic on the main goal stored in a `TacticInvocation`. -/
-def runMetaM (t : TacticInvocation) (x : MVarId → MetaM α) : IO α := do
-  match t.info.goalsBefore.head? with
-  | none => throw <| IO.userError s!"No goals at {← t.pp}"
-  | some g => t.runMetaMGoalsBefore fun _ => do g.withContext <| x g
-
-def mainGoal (t : TacticInvocation) : IO Expr :=
-  t.runMetaM (fun g => do instantiateMVars (← g.getType))
-
-def formatMainGoal (t : TacticInvocation) : IO Format :=
-  t.runMetaM (fun g => do ppExpr (← instantiateMVars (← g.getType)))
-
-def goalState (t : TacticInvocation) : IO (List Format) := do
-  t.runMetaMGoalsBefore (fun gs => gs.mapM fun g => do Meta.ppGoal g)
-
-def goalStateAfter (t : TacticInvocation) : IO (List Format) := do
-  t.runMetaMGoalsAfter (fun gs => gs.mapM fun g => do Meta.ppGoal g)
-
-def ppExpr (t : TacticInvocation) (e : Expr) : IO Format :=
-  t.runMetaM (fun _ => do Meta.ppExpr (← instantiateMVars e))
-
-def kind (t : TacticInvocation) : Kind :=
-  match t.name? with
-  | some ``Lean.Parser.Tactic.refl =>
-    .refl
-  | some ``Lean.Parser.Tactic.exact =>
-    .exact
-      t.info.stx.getArgs.toList.getLast! -- just the syntax for the term, don't include "exact"
-      (t.children[0]?.bind InfoTree.ofExpr? |>.get!) -- the elaborated expression
-  | some ``Lean.Parser.Tactic.apply =>
-    -- TODO treat this with some scepticism; what happens if there is a configuration option?
-    -- I haven't tested this at all.
-    .apply
-      t.info.stx.getArgs.toList.getLast! -- just the syntax for the term, don't include "exact"
-      (t.children[0]?.bind InfoTree.ofExpr? |>.get!) -- the elaborated expression
-  -- | some `Lean.Parser.Tactic.rwRule =>
-  --   return .rw sorry sorry
-  | _ =>  .other
-
-end Lean.Elab.TacticInvocation
+end Lean.Elab.InfoTree

@@ -1,31 +1,10 @@
 
 import Mathlib.Util.Frontend
-import Mathlib.Util.InfoTree.Basic
+import Mathlib.Util.InfoTree.TacticInvocation
 
 open Lean System
 
-
-
 namespace Lean.Elab.InfoTree
-
-/-- Analogue of `Lean.Elab.InfoTree.findInfo?`, but that returns a list of all results. -/
-partial def findAllInfo (t : InfoTree) (ctx : Option ContextInfo) (p : Info → Bool) :
-    List (Info × Option ContextInfo × PersistentArray InfoTree) :=
-  match t with
-  | context ctx t => t.findAllInfo ctx p
-  | node i ts  =>
-      (if p i then [(i, ctx, ts)] else []) ++ ts.toList.bind (fun t => t.findAllInfo ctx p)
-  | _ => []
-
-/-- Return all `TacticInfo` nodes in an `InfoTree` corresponding to tactics,
-each equipped with its relevant `ContextInfo`, and any children info trees. -/
-def findTacticNodes (t : InfoTree) : List (TacticInfo × ContextInfo × PersistentArray InfoTree) :=
-  let infos := t.findAllInfo none fun i => match i with
-    | .ofTacticInfo _ => true
-    | _ => false
-  infos.filterMap fun p => match p with
-  | (.ofTacticInfo i, some ctx, children) => (i, ctx, children)
-  | _ => none
 
 /--
 Finds all tactic invocations in an `InfoTree`,
@@ -33,55 +12,12 @@ ignoring structuring tactics (e.g. `by`, `;`, multiline tactics, parenthesized t
 -/
 def tactics (t : InfoTree) : List TacticInvocation :=
   t.findTacticNodes.map (fun ⟨i, ctx, children⟩ => ⟨i, ctx, children⟩)
-    |>.filter TacticInvocation.substantive
+    |>.filter fun i => i.info.isSubstantive
 
 end Lean.Elab.InfoTree
 
-open Lean Elab
+open Lean Elab IO
 
--- /-- Read the source code of the named module. -/
--- def moduleSource (mod : Name) : IO String := do
---   IO.FS.readFile (modToFilePath "." mod "lean")
-
-def findLean (mod : Name) : IO FilePath := do
-  return FilePath.mk ((← findOLean mod).toString.replace "build/lib/" "") |>.withExtension "lean"
-
-/-- Read the source code of the named module. -/
-def moduleSource (mod : Name) : IO String := do
-  IO.FS.readFile (← findLean mod)
-
--- Building a cache is a bit ridiculous when
--- https://github.com/leanprover/lean4/issues/2408
--- prevents compiling multiple modules at all.
--- However, it does avoid error messages in the interpreter from attempting to recompile the same
--- module twice.
-
-/-- Implementation of `compileModule`, which is the cached version of this function. -/
-def compileModule' (mod : Name) : IO (Environment × List Message × List InfoTree) := do
-  Lean.Elab.IO.processInput (← moduleSource mod) none {}
-
-initialize compilationCache : IO.Ref <| HashMap Name (Environment × List Message × List InfoTree) ←
-  IO.mkRef .empty
-
-/--
-Compile the source file for the named module, returning the
-resulting environment, any generated messages, and all info trees.
-
-The results are cached.
--/
-def compileModule (mod : Name) : IO (Environment × List Message × List InfoTree) := do
-  let m ← compilationCache.get
-  match m.find? mod with
-  | some r => return r
-  | none => do
-    let v ← compileModule' mod
-    compilationCache.set (m.insert mod v)
-    return v
-
-/-- Compile the source file for the named module, returning all info trees. -/
-def moduleInfoTrees (mod : Name) : IO (List InfoTree) := do
-  let (_env, _msgs, trees) ← compileModule mod
-  return trees
 
 /-- Compiles the source file for the named module,
 and returns a list containing the name and generated info tree for each declaration. -/
@@ -123,13 +59,13 @@ def tacticsInDecl (mod? : Option Name) (decl : Name) : MetaM (List TacticInvocat
 
 def tacticsInModule_format (mod : Name) : MetaM (List (Name × List (List Format × Format))) := do
   (← allTacticsInModule mod).mapM fun (n, tactics) => do return (n,
-    ← (tactics.filter fun t => t.substantive && t.original).mapM
+    ← (tactics.filter fun t => t.info.isSubstantive && (Info.ofTacticInfo t.info).isOriginal).mapM
          fun t => do return (← t.goalState, ← t.pp))
 
 def tacticsInDecl_format (mod? : Option Name) (decl : Name) : MetaM (List (List Format × Format)) := do
   -- Only report tactics with "original" syntax positions,
   -- as an approximation of the tactics that are there in the source code.
-  let tactics := (← tacticsInDecl mod? decl).filter TacticInvocation.original
+  let tactics := (← tacticsInDecl mod? decl).filter (fun t => (Info.ofTacticInfo t.info).isOriginal)
   tactics.mapM fun t => do return (← t.goalState, ← t.pp)
 
 open Meta
