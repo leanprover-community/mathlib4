@@ -74,13 +74,13 @@ namespace FirstOrder
 
 open MvPolynomial FreeCommRing Language Field Ring
 
-def genericPolyMap {ι : Type u} (monoms : ι → Finset (ι →₀ ℕ)) :
+def genericPolyMap {ι : Type*} (monoms : ι → Finset (ι →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ ι) :=
   fun i => (monoms i).attach.sum
     (fun m => FreeCommRing.of (Sum.inl ⟨i, m⟩) *
       Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inr j)^ n))
 
-noncomputable def mvPolynomialSupportLEEquiv (ι : Type u)
+noncomputable def mvPolynomialSupportLEEquiv (ι : Type*)
     [DecidableEq ι] (R : Type _) [CommRing R] [DecidableEq R]
     (monoms : ι → Finset (ι →₀ ℕ)) :
     { p : ι → MvPolynomial ι R // ∀ i, (p i).support ⊆ monoms i } ≃
@@ -100,7 +100,7 @@ noncomputable def mvPolynomialSupportLEEquiv (ι : Type u)
     right_inv := fun p => by ext; simp [coeff] }
 
 @[simp]
-theorem lift_genericPolyMap {R : Type*} [CommRing R]
+theorem lift_genericPolyMap {ι R : Type*} [CommRing R]
     [DecidableEq ι] [DecidableEq R] (mons : ι → Finset (ι →₀ ℕ))
     (f :  (i : ι) × { x // x ∈ mons i } ⊕ ι → R) (i : ι) :
     FreeCommRing.lift f (genericPolyMap mons i) =
@@ -117,7 +117,7 @@ theorem lift_genericPolyMap {R : Type*} [CommRing R]
     exists_prop, true_and, dite_eq_ite, ite_true, ite_not]
   split_ifs with h0 <;> simp_all
 
-noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
+noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type*} [Fintype ι]
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
   let l1 : List (Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
     (Finset.univ : Finset ι).toList.map (fun i =>
@@ -142,8 +142,8 @@ noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
   let f3 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     l3.foldr (. ⊓ .) ⊤
   let surj : Language.ring.Formula (Σ i : ι, mons i) :=
-    Formula.allsᵢ.{0, 0, u, u, u} (γ := ι) id
-      (Formula.exsᵢ.{0, 0, u, u, u} (γ := ι)
+    Formula.allsᵢ (γ := ι) id
+      (Formula.exsᵢ (γ := ι)
         (fun (i : (Σ i : ι, mons i) ⊕ (Fin 2 × ι)) =>
           show ((Σ i : ι, mons i) ⊕ ι) ⊕ ι
           from Sum.elim (Sum.inl ∘ Sum.inl)
@@ -151,7 +151,7 @@ noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type u} [Fintype ι]
   Formula.allsᵢ (γ := Σ i : ι, mons i) Sum.inr (inj ⟹ surj)
 
 theorem realize_genericPolyMapSurjectiveOfInjective
-    {K : Type v} [Field K] [CompatibleRing K] {ι : Type u} [Fintype ι]
+    {K : Type*} [Field K] [CompatibleRing K] {ι : Type*} [Fintype ι]
     (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjectiveOfInjective mons) ↔
       ∀ p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) },
@@ -172,7 +172,7 @@ theorem realize_genericPolyMapSurjectiveOfInjective
   rfl
 
 theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime
-    {ι : Type u} [Fintype ι]
+    {ι : Type*} [Fintype ι]
     {p : ℕ} (hp : p.Prime) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjectiveOfInjective mons := by
   letI := Classical.decEq ι
@@ -189,7 +189,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime
     (IsAlgClosure.algebraic (R := ZMod p) (K := AlgebraicClosure (ZMod p))) f
 
 theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
-    {ι : Type u} [Fintype ι]
+    {ι : Type*} [Fintype ι]
     {p : ℕ} (hp : p.Prime ∨ p = 0) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjectiveOfInjective mons := by
   rcases hp with hp | rfl

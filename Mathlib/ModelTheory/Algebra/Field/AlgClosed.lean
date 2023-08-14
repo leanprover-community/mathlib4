@@ -90,7 +90,7 @@ instance (K : Type*) [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).M
     (Theory.fieldOfChar p).Model K :=
   Theory.Model.mono h (Set.subset_union_left _ _)
 
-instance {K : Type*} [Field K] [CompatibleRing K] [CharP K p] [IsAlgClosed K] :
+instance {K : Type*} [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
   simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
