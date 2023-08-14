@@ -70,8 +70,8 @@ theorem mul_apply [Mul Y] (f g : LocallyConstant X Y) (x : X) : (f * g) x = f x 
 instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) :=
   Function.Injective.mulOneClass FunLike.coe FunLike.coe_injective' rfl fun _ _ => rfl
 
-/-- `FunLike.coe` is a `MonoidHom`. -/
-@[to_additive (attr := simps) "`FunLike.coe` is an `AddMonoidHom`."]
+/-- `FunLike.coe` as a `MonoidHom`. -/
+@[to_additive (attr := simps) "`FunLike.coe` as an `AddMonoidHom`."]
 def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
   toFun := FunLike.coe
   map_one' := rfl
@@ -291,33 +291,48 @@ theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = alg
 
 end Algebra
 
+section coeFn
+
+/-- `FunLike.coe` as a `RingHom`. -/
+@[simps!] def coeFnRingHom [Semiring Y] : LocallyConstant X Y →+* X → Y where
+  toMonoidHom := coeFnMonoidHom
+  __ := coeFnAddMonoidHom
+
+/-- `FunLike.coe` as a linear map. -/
+@[simps] def coeFnₗ (R : Type*) [Semiring R] [AddCommMonoid Y]
+    [Module R Y] : LocallyConstant X Y →ₗ[R] X → Y where
+  toAddHom := coeFnAddMonoidHom.toAddHom
+  map_smul' _ _ := rfl
+
+/-- `FunLike.coe` as an `AlgHom`. -/
+@[simps!] def coeFnAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
+    LocallyConstant X Y →ₐ[R] X → Y where
+  toRingHom := coeFnRingHom
+  commutes' _ := rfl
+
+end coeFn
+
 section Eval
 
 /-- Evaluation as a `MonoidHom` -/
-@[to_additive (attr := simps) "Evaluation as an `AddMonoidHom`"]
-def evalMonoidHom [MulOneClass Z] (x : X) : LocallyConstant X Z →* Z where
-  toFun f := f x
-  map_mul' _ _ := by simp only [LocallyConstant.coe_mul, Pi.mul_apply]
-  map_one' := rfl
+@[to_additive (attr := simps!) "Evaluation as an `AddMonoidHom`"]
+def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
+  (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
 
 /-- Evaluation as a linear map -/
-@[simps] def evalₗ (R : Type*) [Semiring R] [AddCommMonoid Z]
-    [Module R Z] (x : X) : LocallyConstant X Z →ₗ[R] Z where
-  toFun f := f x
-  map_add' := map_add (evalAddMonoidHom x)
-  map_smul' _ _ := by simp only [coe_smul, Pi.smul_apply, RingHom.id_apply]
+@[simps!] def evalₗ (R : Type*) [Semiring R] [AddCommMonoid Y]
+    [Module R Y] (x : X) : LocallyConstant X Y →ₗ[R] Y :=
+  (Pi.evalₗ _ _ _ x).comp (coeFnₗ R)
 
 /-- Evaluation as a `RingHom` -/
-@[simps!] def evalRingHom [Semiring Z] (x : X) : LocallyConstant X Z →+* Z where
-  toMonoidHom := evalMonoidHom x
-  __ := (evalAddMonoidHom x)
+@[simps!] def evalRingHom [Semiring Y] (x : X) : LocallyConstant X Y →+* Y :=
+  (Pi.evalRingHom _ x).comp coeFnRingHom
 
 /-- Evaluation as an `AlgHom` -/
 @[simps!]
-def evalₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (x : X) :
-    LocallyConstant X Z →ₐ[R] Z where
-  toRingHom := evalRingHom x
-  commutes' _ := rfl
+def evalₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] (x : X) :
+    LocallyConstant X Y →ₐ[R] Y :=
+  (Pi.evalAlgHom _ _ x).comp (coeFnAlgHom R)
 
 end Eval
 
