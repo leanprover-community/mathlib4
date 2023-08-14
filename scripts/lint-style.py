@@ -326,10 +326,9 @@ def lint(path, fix=False):
             errs,newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
-    if not fix or (not new_exceptions) or enum_lines == newlines:
-        return
-    path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
-    shutil.move(path.with_name(path.name + '.bak'), path)
+    if fix and new_exceptions and enum_lines != newlines:
+        path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
+        shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
 argv = (arg for arg in sys.argv[1:] if arg != "--fix")
