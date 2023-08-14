@@ -66,11 +66,10 @@ namespace Function
 
 end Function
 
--- by rw [prod_comp_equiv f g, g.finset_image_univ_eq_univ]
 namespace Finset
 
 theorem insert_compl_insert [Fintype ι] {s : Finset ι} {i : ι} (hi : i ∉ s) :
-    insert i (insert i sᶜ) = sᶜ := by
+    insert i (insert i s)ᶜ = sᶜ := by
   simp_rw [@eq_compl_comm _ _ s, compl_insert, compl_erase, compl_compl, erase_insert hi]
 #align finset.insert_compl_insert Finset.insert_compl_insert
 
