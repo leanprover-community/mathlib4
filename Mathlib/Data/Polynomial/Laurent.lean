@@ -7,7 +7,6 @@ import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.RingTheory.Localization.Basic
-import Mathlib.Algebra.MonoidAlgebra.Star
 
 #align_import data.polynomial.laurent from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
