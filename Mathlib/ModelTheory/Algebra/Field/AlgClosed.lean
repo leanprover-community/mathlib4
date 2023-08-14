@@ -188,18 +188,18 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.ring.Sentence)
   push_neg
   intro T0 hT0
   have f : ∀ ψ ∈ Theory.ACF 0,
-      { p : Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ ψ) → p = q } := by
+      { s : Finset Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ ψ) → q ∈ s } := by
     intro ψ hψ
     rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm, Set.mem_union, if_pos rfl,
       Set.mem_image] at hψ
     apply Classical.choice
     rcases hψ with h | ⟨p, hp, rfl⟩
-    · refine ⟨⟨⟨2, by decide⟩, ?_⟩⟩
+    · refine ⟨⟨∅, ?_⟩⟩
       intro q hq
       exact (hq (Theory.models_sentence_of_mem
         (by rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm];
             exact Set.mem_union_left _ h))).elim
-    · refine ⟨⟨⟨p, hp⟩, ?_⟩⟩
+    · refine ⟨⟨{⟨p, hp⟩}, ?_⟩⟩
       intro q hq
       rw [Theory.models_sentence_iff, not_forall] at hq
       rcases hq with ⟨K, hK⟩
@@ -210,12 +210,12 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.ring.Sentence)
       simp only [Sentence.Realize, eqZero, Formula.realize_not, Formula.realize_equal,
         realize_termOfFreeCommRing, map_natCast, Term.realize, ne_eq, CompatibleRing.funMap_zero,
         not_not, ← CharP.charP_iff_prime_eq_zero hp] at hK
-      apply Subtype.eq
-      exact CharP.eq K inferInstance inferInstance
-  let s : Finset Nat.Primes := T0.attach.image (fun φ => f φ.1 (hT0 φ.2))
+      rw [Finset.mem_singleton]
+      exact Subtype.eq <| CharP.eq K inferInstance inferInstance
+  let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → ¬ (Theory.ACF p) ⊨ᵇ ψ → p ∈ s := by
     intro p ψ hψ hpψ
-    refine Finset.mem_image.2 ?_
+    refine Finset.mem_biUnion.2 ?_
     refine ⟨⟨ψ, hψ⟩, Finset.mem_attach _ _, ?_⟩
     exact (f ψ (hT0 hψ)).2 p hpψ
   rcases hφ.exists_not_mem_finset s with ⟨p, hpφ, hps⟩
