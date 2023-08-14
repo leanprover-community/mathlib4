@@ -52,6 +52,8 @@ More fine grained instances for `TopologicalSpace.FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter Function Topology
 
