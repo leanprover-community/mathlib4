@@ -34,9 +34,9 @@ We also prove some basic facts about them.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ : Type _` (indexing the variables)
++ `σ τ : Type*` (indexing the variables)
 
-+ `R S : Type _` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
++ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `r : R` elements of the coefficient ring
 
@@ -55,7 +55,7 @@ noncomputable section
 
 namespace Multiset
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 /-- The `n`th elementary symmetric function evaluated at the elements of `s` -/
 def esymm (s : Multiset R) (n : ℕ) : R :=
@@ -72,9 +72,9 @@ end Multiset
 
 namespace MvPolynomial
 
-variable {σ : Type _} {R : Type _}
+variable {σ : Type*} {R : Type*}
 
-variable {τ : Type _} {S : Type _}
+variable {τ : Type*} {S : Type*}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
 permutations of its variables by the `rename` operation -/

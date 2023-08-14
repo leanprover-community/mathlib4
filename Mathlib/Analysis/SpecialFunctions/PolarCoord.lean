@@ -22,7 +22,7 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Real Set MeasureTheory
 
@@ -127,7 +127,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
   exact le_antisymm ((measure_mono A).trans (le_of_eq B)) bot_le
 #align polar_coord_source_ae_eq_univ polarCoord_source_ae_eq_univ
 
-theorem integral_comp_polarCoord_symm {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] (f : ℝ × ℝ → E) :
     (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p := by
   set B : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ := fun p =>

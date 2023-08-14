@@ -31,6 +31,7 @@ In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules,
  * `TensorProduct.AlgebraTensorModule.map`
  * `TensorProduct.AlgebraTensorModule.mapBilinear`
  * `TensorProduct.AlgebraTensorModule.congr`
+ * `TensorProduct.AlgebraTensorModule.rid`
  * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
  * `TensorProduct.AlgebraTensorModule.assoc`
  * `TensorProduct.AlgebraTensorModule.leftComm`
@@ -43,6 +44,8 @@ We could thus consider replacing the less general definitions with these ones. I
 probably should still implement the less general ones as abbreviations to the more general ones with
 fewer type arguments.
 -/
+
+set_option autoImplicit true
 
 namespace TensorProduct
 
@@ -256,6 +259,21 @@ def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P �
 @[simp] theorem congr_symm_tmul (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) (p : P) (q : Q) :
     (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
   rfl
+
+variable (R A M)
+
+/-- Heterobasic version of `TensorProduct.rid`. -/
+protected def rid : M ⊗[R] R ≃ₗ[A] M :=
+  LinearEquiv.ofLinear
+    (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
+    (mk R A M R |>.flip 1)
+    (LinearMap.ext <| one_smul _)
+    (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
+
+variable {R M}
+
+@[simp]
+theorem rid_tmul (r : R) (m : M) : AlgebraTensorModule.rid R A M (m ⊗ₜ r) = r • m := rfl
 
 end Semiring
 

@@ -89,7 +89,7 @@ attribute [coe] AddUnits.val
 section HasElem
 
 @[to_additive]
-theorem unique_one {α : Type _} [Unique α] [One α] : default = (1 : α) :=
+theorem unique_one {α : Type*} [Unique α] [One α] : default = (1 : α) :=
   Unique.default_eq 1
 #align unique_has_one unique_one
 #align unique_has_zero unique_zero
@@ -105,7 +105,6 @@ variable [Monoid α]
 @[to_additive "An additive unit can be interpreted as a term in the base `AddMonoid`."]
 instance : CoeHead αˣ α :=
   ⟨val⟩
-attribute [instance] AddUnits.instCoeHeadAddUnits
 
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
@@ -148,11 +147,10 @@ theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
 #align units.ext_iff Units.ext_iff
 #align add_units.ext_iff AddUnits.ext_iff
 
-/-- Units have decidable equality if the base `Monoid` has deciable equality. -/
+/-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
-attribute [instance] AddUnits.instDecidableEqAddUnits
 
 @[to_additive (attr := simp)]
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
@@ -183,7 +181,6 @@ instance : MulOneClass αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
-attribute [instance] AddUnits.instAddZeroClassAddUnits
 
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
@@ -192,30 +189,28 @@ instance : Group αˣ :=
     one := 1,
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
-attribute [instance] AddUnits.instAddGroupAddUnits
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]
-instance {α} [CommMonoid α] : CommGroup αˣ :=
-  { (inferInstance : Group αˣ) with
-    mul_comm := fun _ _ => ext <| mul_comm _ _ }
-attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
-#align units.comm_group Units.instCommGroupUnitsToMonoid
-#align add_units.add_comm_group AddUnits.instAddCommGroupAddUnitsToAddMonoid
+instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ :=
+  -- note: the original ported file had `{ (inferInstance : Group αˣ) with ... }`
+  -- and this was removed because it was causing slowdowns: see lean4#2387
+  { mul_comm := fun _ _ => ext <| mul_comm _ _ }
+#align units.comm_group Units.instCommGroupUnits
+#align add_units.add_comm_group AddUnits.instAddCommGroupAddUnits
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
 instance : Inhabited αˣ :=
   ⟨1⟩
-attribute [instance] AddUnits.instInhabitedAddUnits
+
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
 @[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
-attribute [instance] AddUnits.instReprAddUnits
 
 variable (a b c : αˣ) {u : αˣ}
 
@@ -400,7 +395,7 @@ theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁�
 #align add_units.neg_unique AddUnits.neg_unique
 
 @[to_additive (attr := simp)]
-theorem val_inv_eq_inv_val {M : Type _} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
+theorem val_inv_eq_inv_val {M : Type*} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
   Eq.symm <| inv_eq_of_mul_eq_one_right u.mul_inv
 #align units.coe_inv Units.val_inv_eq_inv_val
 
@@ -408,7 +403,7 @@ end Units
 
 /-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
 @[to_additive
-  "For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an add_unit out of `a`."]
+  "For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an addUnit out of `a`."]
 def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
   ⟨a, b, hab, (mul_comm b a).trans hab⟩
 #align units.mk_of_mul_eq_one Units.mkOfMulEqOne
@@ -577,7 +572,7 @@ end CommMonoid
 
 section IsUnit
 
-variable {M : Type _} {N : Type _}
+variable {M : Type*} {N : Type*}
 
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
@@ -646,11 +641,9 @@ theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
 #align is_add_unit_iff_exists_neg isAddUnit_iff_exists_neg
 
--- Porting note: `to_additive` complains if using `simp [isUnit_iff_exists_inv, mul_comm]` proof
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
-  rw [isUnit_iff_exists_inv]
-  simp [mul_comm]
+  simp [isUnit_iff_exists_inv, mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 
@@ -676,7 +669,7 @@ theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
 "Addition of a `u : AddUnits M` on the left doesn't affect `IsAddUnit`."]
-theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
+theorem Units.isUnit_units_mul {M : Type*} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
@@ -756,7 +749,6 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 @[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
-attribute [instance] IsAddUnit.instDecidableIsAddUnit
 
 @[to_additive]
 theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
@@ -822,7 +814,7 @@ end IsUnit
 -- section
 section NoncomputableDefs
 
-variable {M : Type _}
+variable {M : Type*}
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=

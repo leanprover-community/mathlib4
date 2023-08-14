@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Jireh Loreaux
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
+import Mathlib.Analysis.NormedSpace.WithLp
 
 #align_import analysis.normed_space.pi_Lp from "leanprover-community/mathlib"@"9d013ad8430ddddd350cff5c3db830278ded3c79"
 
@@ -63,7 +64,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
 
@@ -73,31 +74,28 @@ noncomputable section
 already endowed with the `L^∞` distance, we need the type synonym to avoid confusing typeclass
 resolution. Also, we let it depend on `p`, to get a whole family of type on which we can put
 different distances. -/
-@[nolint unusedArguments]
-def PiLp (_p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) : Type _ :=
-  ∀ i : ι, α i
+abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
+  WithLp p (∀ i : ι, α i)
 #align pi_Lp PiLp
 
-instance (p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
+instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
 @[ext] -- porting note: new lemma
-protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type _} {α : ι → Type _} {x y : PiLp p α}
+protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type*} {α : ι → Type*} {x y : PiLp p α}
     (h : ∀ i, x i = y i) : x = y := funext h
 
 namespace PiLp
 
-variable (p : ℝ≥0∞) (𝕜 𝕜' : Type _) {ι : Type _} (α : ι → Type _) (β : ι → Type _)
+variable (p : ℝ≥0∞) (𝕜 𝕜' : Type*) {ι : Type*} (α : ι → Type*) (β : ι → Type*)
 
 /-- Canonical bijection between `PiLp p α` and the original Pi type. We introduce it to be able
 to compare the `L^p` and `L^∞` distances through it. -/
-protected def equiv : PiLp p α ≃ ∀ i : ι, α i :=
-  Equiv.refl _
+abbrev equiv : PiLp p α ≃ ∀ i : ι, α i := WithLp.equiv _ _
 #align pi_Lp.equiv PiLp.equiv
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
 the use of the type synonym. -/
-
 
 @[simp]
 theorem equiv_apply (x : PiLp p α) (i : ι) : PiLp.equiv p α x i = x i :=
@@ -314,7 +312,7 @@ attribute [local instance] PiLp.pseudoEmetricAux
 
 /-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
-theorem iSup_edist_ne_top_aux {ι : Type _} [Finite ι] {α : ι → Type _}
+theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
     [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, edist (f i) (g i)) ≠ ⊤ := by
   cases nonempty_fintype ι
   obtain ⟨M, hM⟩ := Fintype.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
@@ -494,7 +492,7 @@ and having as uniformity the product uniformity. -/
 instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
-theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type _} [∀ i, PseudoMetricSpace (β i)]
+theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
     (hp : p ≠ ∞) (x y : PiLp p β) :
     nndist x y = (∑ i : ι, nndist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) :=
   -- Porting note: was `Subtype.ext`
@@ -503,7 +501,7 @@ theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type _} [�
     exact dist_eq_sum (p.toReal_pos_iff_ne_top.mpr hp) _ _
 #align pi_Lp.nndist_eq_sum PiLp.nndist_eq_sum
 
-theorem nndist_eq_iSup {β : ι → Type _} [∀ i, PseudoMetricSpace (β i)] (x y : PiLp ∞ β) :
+theorem nndist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x y : PiLp ∞ β) :
     nndist x y = ⨆ i, nndist (x i) (y i) :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
@@ -554,20 +552,20 @@ instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGr
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align pi_Lp.normed_add_comm_group PiLp.normedAddCommGroup
 
-theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type _} (hp : p ≠ ∞)
+theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp : p ≠ ∞)
     [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp p β) :
     ‖f‖₊ = (∑ i, ‖f i‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
   simp [NNReal.coe_sum, norm_eq_sum (p.toReal_pos_iff_ne_top.mpr hp)]
 #align pi_Lp.nnnorm_eq_sum PiLp.nnnorm_eq_sum
 
-theorem nnnorm_eq_ciSup {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
+theorem nnnorm_eq_ciSup {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
     ‖f‖₊ = ⨆ i, ‖f i‖₊ := by
   ext
   simp [NNReal.coe_iSup, norm_eq_ciSup]
 #align pi_Lp.nnnorm_eq_csupr PiLp.nnnorm_eq_ciSup
 
-theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type _}
+theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.nat_ne_top n)
@@ -575,14 +573,14 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type _}
     norm_eq_sum this]
 #align pi_Lp.norm_eq_of_nat PiLp.norm_eq_of_nat
 
-theorem norm_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+theorem norm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ = sqrt (∑ i : ι, ‖x i‖ ^ 2) := by
   rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
   rw [Real.sqrt_eq_rpow]
   norm_cast
 #align pi_Lp.norm_eq_of_L2 PiLp.norm_eq_of_L2
 
-theorem nnnorm_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+theorem nnnorm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖₊ = NNReal.sqrt (∑ i : ι, ‖x i‖₊ ^ 2) :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
@@ -590,20 +588,20 @@ theorem nnnorm_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β 
     exact norm_eq_of_L2 x
 #align pi_Lp.nnnorm_eq_of_L2 PiLp.nnnorm_eq_of_L2
 
-theorem norm_sq_eq_of_L2 (β : ι → Type _) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
     simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
   rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
 #align pi_Lp.norm_sq_eq_of_L2 PiLp.norm_sq_eq_of_L2
 
-theorem dist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
+theorem dist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
     dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt := by
   simp_rw [dist_eq_norm, norm_eq_of_L2, Pi.sub_apply]
   rfl -- Porting note: `Pi.sub_apply` doesn't work
 #align pi_Lp.dist_eq_of_L2 PiLp.dist_eq_of_L2
 
-theorem nndist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
+theorem nndist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
     nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
@@ -611,22 +609,16 @@ theorem nndist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β 
     exact dist_eq_of_L2 _ _
 #align pi_Lp.nndist_eq_of_L2 PiLp.nndist_eq_of_L2
 
-theorem edist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
+theorem edist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
     edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.edist_eq_sum]
 #align pi_Lp.edist_eq_of_L2 PiLp.edist_eq_of_L2
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 
--- Porting note: added
-instance module [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)] :
-    Module 𝕜 (PiLp p β) :=
-  { Pi.module ι β 𝕜 with }
-
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
 instance normedSpace [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)] :
     NormedSpace 𝕜 (PiLp p β) :=
-  { module p 𝕜 β with
-    norm_smul_le := fun c f => by
+  { norm_smul_le := fun c f => by
       rcases p.dichotomy with (rfl | hp)
       · letI : Module 𝕜 (PiLp ∞ β) := Pi.module ι β 𝕜
         suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
@@ -642,21 +634,6 @@ instance normedSpace [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 
           Real.rpow_one]
         exact Finset.sum_nonneg fun i _ => rpow_nonneg_of_nonneg (norm_nonneg _) _ }
 #align pi_Lp.normed_space PiLp.normedSpace
-
-instance isScalarTower [∀ i, SeminormedAddCommGroup (β i)] [SMul 𝕜 𝕜'] [∀ i, NormedSpace 𝕜 (β i)]
-    [∀ i, NormedSpace 𝕜' (β i)] [∀ i, IsScalarTower 𝕜 𝕜' (β i)] : IsScalarTower 𝕜 𝕜' (PiLp p β) :=
-  Pi.isScalarTower
-#align pi_Lp.is_scalar_tower PiLp.isScalarTower
-
-instance smulCommClass [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)]
-    [∀ i, NormedSpace 𝕜' (β i)] [∀ i, SMulCommClass 𝕜 𝕜' (β i)] : SMulCommClass 𝕜 𝕜' (PiLp p β) :=
-  Pi.smulCommClass
-#align pi_Lp.smul_comm_class PiLp.smulCommClass
-
-instance finiteDimensional [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)]
-    [∀ i, FiniteDimensional 𝕜 (β i)] : FiniteDimensional 𝕜 (PiLp p β) :=
-  FiniteDimensional.finiteDimensional_pi' _ _
-#align pi_Lp.finite_dimensional PiLp.finiteDimensional
 
 /- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas
 for Pi types will not trigger. -/
@@ -707,12 +684,12 @@ def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
         exact ciSup_le fun i => Finset.le_sup (f := fun k => ‖f k‖₊) (Finset.mem_univ i) }
 #align pi_Lp.equivₗᵢ PiLp.equivₗᵢ
 
-variable {ι' : Type _}
+variable {ι' : Type*}
 
 variable [Fintype ι']
 
 variable (p 𝕜)
-variable (E : Type _) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
 functions-/
@@ -746,7 +723,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
   LinearIsometryEquiv.ext fun z => by -- porting note: was `rfl`
     simp only [LinearIsometryEquiv.piLpCongrLeft, LinearIsometryEquiv.symm,
       LinearIsometryEquiv.coe_mk]
-    unfold PiLp
+    unfold PiLp WithLp
     ext
     simp only [LinearEquiv.piCongrLeft'_symm_apply, eq_rec_constant,
       LinearEquiv.piCongrLeft'_apply, Equiv.symm_symm_apply]
@@ -761,58 +738,6 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
   simp [LinearIsometryEquiv.piLpCongrLeft_apply, LinearEquiv.piCongrLeft', Equiv.piCongrLeft',
     Pi.single, Function.update, Equiv.symm_apply_eq]
 #align linear_isometry_equiv.pi_Lp_congr_left_single LinearIsometryEquiv.piLpCongrLeft_single
-
-@[simp]
-theorem equiv_zero : PiLp.equiv p β 0 = 0 :=
-  rfl
-#align pi_Lp.equiv_zero PiLp.equiv_zero
-
-@[simp]
-theorem equiv_symm_zero : (PiLp.equiv p β).symm 0 = 0 :=
-  rfl
-#align pi_Lp.equiv_symm_zero PiLp.equiv_symm_zero
-
-@[simp]
-theorem equiv_add : PiLp.equiv p β (x + y) = PiLp.equiv p β x + PiLp.equiv p β y :=
-  rfl
-#align pi_Lp.equiv_add PiLp.equiv_add
-
-@[simp]
-theorem equiv_symm_add :
-    (PiLp.equiv p β).symm (x' + y') = (PiLp.equiv p β).symm x' + (PiLp.equiv p β).symm y' :=
-  rfl
-#align pi_Lp.equiv_symm_add PiLp.equiv_symm_add
-
-@[simp]
-theorem equiv_sub : PiLp.equiv p β (x - y) = PiLp.equiv p β x - PiLp.equiv p β y :=
-  rfl
-#align pi_Lp.equiv_sub PiLp.equiv_sub
-
-@[simp]
-theorem equiv_symm_sub :
-    (PiLp.equiv p β).symm (x' - y') = (PiLp.equiv p β).symm x' - (PiLp.equiv p β).symm y' :=
-  rfl
-#align pi_Lp.equiv_symm_sub PiLp.equiv_symm_sub
-
-@[simp]
-theorem equiv_neg : PiLp.equiv p β (-x) = -PiLp.equiv p β x :=
-  rfl
-#align pi_Lp.equiv_neg PiLp.equiv_neg
-
-@[simp]
-theorem equiv_symm_neg : (PiLp.equiv p β).symm (-x') = -(PiLp.equiv p β).symm x' :=
-  rfl
-#align pi_Lp.equiv_symm_neg PiLp.equiv_symm_neg
-
-@[simp]
-theorem equiv_smul : PiLp.equiv p β (c • x) = c • PiLp.equiv p β x :=
-  rfl
-#align pi_Lp.equiv_smul PiLp.equiv_smul
-
-@[simp]
-theorem equiv_symm_smul : (PiLp.equiv p β).symm (c • x') = c • (PiLp.equiv p β).symm x' :=
-  rfl
-#align pi_Lp.equiv_symm_smul PiLp.equiv_symm_smul
 
 section Single
 
@@ -854,7 +779,7 @@ theorem norm_equiv_symm_single (i : ι) (b : β i) : ‖(PiLp.equiv p β).symm (
 theorem nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
     nndist ((PiLp.equiv p β).symm (Pi.single i b₁)) ((PiLp.equiv p β).symm (Pi.single i b₂)) =
       nndist b₁ b₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← equiv_symm_sub, ← Pi.single_sub,
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← WithLp.equiv_symm_sub, ← Pi.single_sub,
     nnnorm_equiv_symm_single]
 #align pi_Lp.nndist_equiv_symm_single_same PiLp.nndist_equiv_symm_single_same
 
@@ -938,11 +863,7 @@ theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [O
 variable (𝕜 p)
 
 /-- `PiLp.equiv` as a linear equivalence. -/
-@[simps (config := { fullyApplied := false })]
-protected def linearEquiv : PiLp p β ≃ₗ[𝕜] ∀ i, β i :=
-  { LinearEquiv.refl _ _ with
-    toFun := PiLp.equiv _ _
-    invFun := (PiLp.equiv _ _).symm }
+abbrev linearEquiv : PiLp p β ≃ₗ[𝕜] ∀ i, β i := WithLp.linearEquiv _ _ _
 #align pi_Lp.linear_equiv PiLp.linearEquiv
 
 /-- `PiLp.equiv` as a continuous linear equivalence. -/
@@ -965,7 +886,7 @@ def basisFun : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜) :=
 @[simp]
 theorem basisFun_apply [DecidableEq ι] (i) :
     basisFun p 𝕜 ι i = (PiLp.equiv p _).symm (Pi.single i 1) := by
-  simp_rw [basisFun, Basis.coe_ofEquivFun, PiLp.linearEquiv_symm_apply, Pi.single]
+  simp_rw [basisFun, Basis.coe_ofEquivFun, WithLp.linearEquiv_symm_apply, Pi.single]
 #align pi_Lp.basis_fun_apply PiLp.basisFun_apply
 
 @[simp]
@@ -997,7 +918,7 @@ nonrec theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun _ : ι
       Matrix.of fun i j => b.repr ((PiLp.equiv _ _).symm (Aᵀ j)) i := by
   have := basis_toMatrix_basisFun_mul (b.map (PiLp.linearEquiv _ 𝕜 _)) A
   simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
-    PiLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp, Basis.map_apply,
+    WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp, Basis.map_apply,
     LinearEquiv.symm_apply_apply] at this
   exact this
 #align pi_Lp.basis_to_matrix_basis_fun_mul PiLp.basis_toMatrix_basisFun_mul

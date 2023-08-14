@@ -45,11 +45,11 @@ section SolidNorm
 /-- Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is *solid* if, for `a`
 and `b` in `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`.
 -/
-class HasSolidNorm (α : Type _) [NormedAddCommGroup α] [Lattice α] : Prop where
+class HasSolidNorm (α : Type*) [NormedAddCommGroup α] [Lattice α] : Prop where
   solid : ∀ ⦃x y : α⦄, |x| ≤ |y| → ‖x‖ ≤ ‖y‖
 #align has_solid_norm HasSolidNorm
 
-variable {α : Type _} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
+variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
 
 theorem norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
   HasSolidNorm.solid h
@@ -73,7 +73,7 @@ respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say
 `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
 said to be a normed lattice ordered group.
 -/
-class NormedLatticeAddCommGroup (α : Type _) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
+class NormedLatticeAddCommGroup (α : Type*) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
   where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
@@ -84,14 +84,14 @@ instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
 -- see Note [lower instance priority]
 /-- A normed lattice ordered group is an ordered additive commutative group
 -/
-instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α : Type _}
+instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α : Type*}
     [h : NormedLatticeAddCommGroup α] : OrderedAddCommGroup α :=
   { h with }
 #align normed_lattice_add_comm_group_to_ordered_add_comm_group NormedLatticeAddCommGroup.toOrderedAddCommGroup
 
-variable {α : Type _} [NormedLatticeAddCommGroup α]
+variable {α : Type*} [NormedLatticeAddCommGroup α]
 
-open LatticeOrderedCommGroup HasSolidNorm
+open LatticeOrderedGroup LatticeOrderedCommGroup HasSolidNorm
 
 theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
@@ -167,7 +167,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousI
 #align normed_lattice_add_comm_group_has_continuous_inf NormedLatticeAddCommGroup.continuousInf
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedLatticeAddCommGroup.continuousSup {α : Type _}
+instance (priority := 100) NormedLatticeAddCommGroup.continuousSup {α : Type*}
     [NormedLatticeAddCommGroup α] : ContinuousSup α :=
   OrderDual.continuousSup αᵒᵈ
 #align normed_lattice_add_comm_group_has_continuous_sup NormedLatticeAddCommGroup.continuousSup

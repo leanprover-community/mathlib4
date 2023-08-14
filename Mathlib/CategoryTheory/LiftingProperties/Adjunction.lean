@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type _} [Category C] [Category D] {G : C ⥤ D} {F : D ⥤ C}
+variable {C D : Type*} [Category C] [Category D] {G : C ⥤ D} {F : D ⥤ C}
 
 namespace CommSq
 
