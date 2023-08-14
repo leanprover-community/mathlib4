@@ -484,6 +484,10 @@ theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=
   char_ne_zero_of_finite R (ringChar R)
 #align char_p.ring_char_ne_zero_of_finite CharP.ringChar_ne_zero_of_finite
 
+theorem ringChar_zero_iff_CharZero [NonAssocRing F] : ringChar F = 0 ↔ CharZero F := by
+  rw [ringChar.eq_iff]
+  exact ⟨fun _ ↦ charP_to_charZero F, fun _ ↦ ofCharZero F⟩
+
 end
 
 section CommRing
