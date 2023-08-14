@@ -56,8 +56,8 @@ ROOT_DIR = SCRIPTS_DIR.parent
 
 
 with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
-    for line in f:
-        filename, _, _, _, _, errno, *_ = line.split()
+    for exline in f:
+        filename, _, _, _, _, errno, *_ = exline.split()
         path = ROOT_DIR / filename
         if errno == "ERR_COP":
             exceptions += [(ERR_COP, path)]
@@ -74,24 +74,41 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
 
 new_exceptions = False
 
-def skip_comments(enumerate_lines):
+def is_in_comment(enumerate_lines):
+    """
+    Take a list of tuples of enumerated lines of the form
+    (line_number, line, ...)
+    and return a list of
+    (line_number, line, ..., True/False)
+    where lines have True attached when they are in comments.
+    """
     in_comment = False
-    for line_nr, line in enumerate_lines:
+    for line_nr, line, *rem in enumerate_lines:
         if line.startswith("--"):
+            yield line_nr, line, *rem, True
             continue
         if "/-" in line:
             in_comment = True
         if "-/" in line:
             in_comment = False
+            yield line_nr, line, *rem, True
             continue
         if line == "\n" or in_comment:
+            yield line_nr, line, *rem, True
             continue
-        yield line_nr, line
+        yield line_nr, line, *rem, False
 
-def skip_string(enumerate_lines):
+def is_in_string(enumerate_lines):
+    """
+    Take a list of tuples of enumerated lines of the form
+    (line_number, line, ...)
+    and return a list of
+    (line_number, line, ..., True/False)
+    where lines have True attached when they are in strings.
+    """
     in_string = False
     in_comment = False
-    for line_nr, line in enumerate_lines:
+    for line_nr, line, *rem in enumerate_lines:
         # ignore comment markers inside string literals
         if not in_string:
             if "/-" in line:
@@ -108,42 +125,45 @@ def skip_string(enumerate_lines):
             # a string literal probably begins and / or ends here,
             # so we skip this line
             if line.count("\"") > 0:
+                yield line_nr, line, *rem, True
                 continue
             if in_string:
+                yield line_nr, line, *rem, True
                 continue
-        yield line_nr, line
+        yield line_nr, line, *rem, False
 
 def set_option_check(lines, path):
     errors = []
     newlines = []
-    for line_nr, line in skip_string(skip_comments(enumerate(lines, 1))):
-        if line.strip().startswith('set_option'):
-            next_two_chars = line.strip().split(' ')[1][:2]
+    for line_nr, line, in_comment, in_string in is_in_string(is_in_comment(lines)):
+        if line.strip().startswith('set_option') and not in_comment and not in_string:
+            option_prefix = line.strip().split(' ')[1].split('.')[0]
             # forbidden options: pp, profiler, trace
-            if next_two_chars == 'pp' or next_two_chars == 'pr' or next_two_chars == 'tr':
+            if option_prefix in {'pp', 'profiler', 'trace'}:
                 errors += [(ERR_OPT, line_nr, path)]
+                # skip adding this line to newlines so that we suggest removal
                 continue
-        newlines.append(line)
+        newlines.append((line_nr,line))
     return errors, newlines
 
 def line_endings_check(lines, path):
     errors = []
     newlines = []
-    for line_nr, line in enumerate(lines, 1):
+    for line_nr, line in lines:
         if "\r\n" in line:
             errors += [(ERR_WIN, line_nr, path)]
-        line = line.rstrip("\r\n")
-        if line.endswith(" "):
+            line = line.replace("\r\n", "\n")
+        if line.endswith(" \n"):
             errors += [(ERR_TWS, line_nr, path)]
-            line = line.rstrip(" ")
-        newlines.append(line)
+            line = line.rstrip() + "\n"
+        newlines.append((line_nr, line))
     return errors, newlines
 
 def long_lines_check(lines, path):
     errors = []
     # TODO: find a good way to break long lines
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
-    for line_nr, line in enumerate(lines, 1):
+    for line_nr, line in lines:
         # "!" excludes the porting marker comment
         if "http" in line or "#align" in line or line[0] == '!':
             continue
@@ -153,10 +173,10 @@ def long_lines_check(lines, path):
 
 def import_only_check(lines, path):
     import_only_file = True
-    for line_nr, line in skip_comments(enumerate(lines, 1)):
-        imports = line.split()
-        if imports[0] == "--":
+    for _, line, is_comment in is_in_comment(lines):
+        if is_comment:
             continue
+        imports = line.split()
         if imports[0] == "#align_import":
             continue
         if imports[0] != "import":
@@ -168,9 +188,9 @@ def regular_check(lines, path):
     errors = []
     copy_started = False
     copy_done = False
-    copy_start_line_nr = 0
+    copy_start_line_nr = 1
     copy_lines = ""
-    for line_nr, line in enumerate(lines, 1):
+    for line_nr, line in lines:
         if not copy_started and line == "\n":
             errors += [(ERR_COP, copy_start_line_nr, path)]
             continue
@@ -206,11 +226,13 @@ def regular_check(lines, path):
             break
         if words[0] == "/-!":
             break
-    return errors
+    return errors, lines
 
 def banned_import_check(lines, path):
     errors = []
-    for line_nr, line in skip_comments(enumerate(lines, 1)):
+    for line_nr, line, is_comment in is_in_comment(lines):
+        if is_comment:
+            continue
         imports = line.split()
         if imports[0] != "import":
             break
@@ -221,20 +243,23 @@ def banned_import_check(lines, path):
 def isolated_by_dot_semicolon_check(lines, path):
     errors = []
     newlines = []
-    for line_nr, line in enumerate(lines, 1):
+    for line_nr, line in lines:
         if line.strip() == "by":
             # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
             # should not be used in the second or later arguments of a tuple/anonymous constructor
             # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
-            prev_line = lines[line_nr - 2].rstrip()
+            prev_line = lines[line_nr - 2][1].rstrip()
             if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
                 errors += [(ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
+            line = line.replace(". ", "· ", count=1)
         if line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
             errors += [(ERR_SEM, line_nr, path)]
+            line = line.replace(" ;", ";")
+        newlines.append((line_nr, line))
     return errors, newlines
 
 def output_message(path, line_nr, code, msg):
@@ -282,10 +307,12 @@ def format_errors(errors):
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
+        # We enumerate the lines so that we can report line numbers in the error messages correctly
+        # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
-        errs, newlines = line_endings_check(lines, path)
+        enum_lines = enumerate(lines, 1)
+        errs, newlines = line_endings_check(enum_lines, path)
         format_errors(errs)
-        # lines = [line.rstrip() + "\n" for line in lines]
 
         errs,newlines = long_lines_check(newlines, path)
         format_errors(errs)
@@ -293,21 +320,19 @@ def lint(path, fix=False):
         format_errors(errs)
         errs,newlines = set_option_check(newlines, path)
         format_errors(errs)
-        if import_only_check(newlines, path):
-            return # checks below this line are not executed on files that only import other files.
-        errs,newlines = regular_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = banned_import_check(newlines, path)
-        format_errors(errs)
-    if not fix or lines == newlines:
+        if not import_only_check(newlines, path):
+            errs,newlines = regular_check(newlines, path)
+            format_errors(errs)
+            errs,newlines = banned_import_check(newlines, path)
+            format_errors(errs)
+    # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
+    if not fix or (not new_exceptions) or enum_lines == newlines:
         return
-    with path.with_name(path.name + '.bak').open(mode='r',encoding='utf8',newline='\n') as fp:
-        fp.write_text(f)
-        f = list(fp)
+    path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
     shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
-sys.argv.remove("--fix")
+sys.argv[:] = (arg for arg in sys.argv if arg != "--fix")
 
 for filename in sys.argv[1:]:
     lint(Path(filename), fix=fix)
