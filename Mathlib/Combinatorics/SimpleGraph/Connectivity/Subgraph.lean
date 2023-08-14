@@ -15,6 +15,8 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 -/
 
+set_option autoImplicit true
+
 namespace SimpleGraph
 
 variable {V : Type u} {V' : Type v} {G : SimpleGraph V} {G' : SimpleGraph V'}

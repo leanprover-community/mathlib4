@@ -22,6 +22,8 @@ This file establishes the class equation for finite groups.
 
 -/
 
+set_option autoImplicit true
+
 open ConjAct MulAction ConjClasses
 
 open scoped BigOperators
