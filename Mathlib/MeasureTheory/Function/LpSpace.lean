@@ -552,6 +552,8 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 
 section Indicator
 
+set_option autoImplicit true
+
 variable {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ}
 
 theorem snormEssSup_indicator_le (s : Set α) (f : α → G) :

@@ -31,6 +31,8 @@ random testing
 * https://hackage.haskell.org/package/QuickCheck
 -/
 
+set_option autoImplicit true
+
 namespace SlimCheck
 
 open Random

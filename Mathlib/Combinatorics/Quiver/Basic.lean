@@ -23,6 +23,8 @@ There's some balance here: it's nice to allow `Prop` to ensure there are no mult
 but it is also results in error-prone universe signatures when constraints require a `Type`.
 -/
 
+set_option autoImplicit true
+
 
 open Opposite
 
