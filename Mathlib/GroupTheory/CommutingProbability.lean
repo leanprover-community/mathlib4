@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Qify
 
 #align_import group_theory.commuting_probability from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -201,16 +202,15 @@ theorem commProb_reciprocal (n : ℕ) :
         field_simp [h0]
         norm_num
       · have := div_four_lt h0 h1
+        rw [dif_neg h0, dif_neg h1, if_neg h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
         have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.two_dvd_ne_zero.mp h2)
         have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> norm_num
-        rw [dif_neg h0, dif_neg h1, if_neg h2]
-        rw [Nat.two_dvd_ne_zero, ← Nat.odd_iff] at h2
-        rw [commProb_cons, commProb_reciprocal (n / 4 + 1), commProb_odd (hn.mul h2)]
+        rw [commProb_odd (hn.mul (Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp h2)))]
         rw [div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
-        · have : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-          calc ((n % 4) * n + 3) * n = (n % 4 * (4 * (n / 4)) + n % 4 * 4) * n :=
-              by rw [←this, sq, ←add_assoc, ←mul_add, Nat.div_add_mod]
-            _ = (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
+        · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
+          have h1 := (Nat.div_add_mod n 4).symm
+          zify at h0 h1 ⊢
+          linear_combination (h0 + h1 * (n % 4)) * n
         · have := hn.pos.ne'
           positivity
 
