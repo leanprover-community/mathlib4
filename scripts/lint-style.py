@@ -253,7 +253,8 @@ def isolated_by_dot_semicolon_check(lines, path):
                 errors += [(ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", count=1)
+            i = line.find(".")
+            line = i*" " + "·" + line[i+1:] # ideally we would replace with count=1 but that's not ok python 3.8
         if line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
