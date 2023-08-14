@@ -151,8 +151,8 @@ private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
 
 private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
-| 0 | 1 | 2 | 3 => by decide
-| n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
+  | 0 | 1 | 2 | 3 => by decide
+  | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
@@ -169,6 +169,16 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
 
 @[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := rfl
 
+lemma reciprocalFactors_def :
+    reciprocalFactors n =
+      if h0 : n = 0 then [0]
+      else if h1 : n = 1 then []
+      else if 2 ∣ n then
+        3 :: reciprocalFactors (n / 2)
+      else
+        n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
+  conv_lhs => unfold reciprocalFactors
+
 /-- A finite product of Dihedral groups. -/
 abbrev Product (l : List ℕ) : Type :=
   ∀ i : Fin l.length, DihedralGroup l[i]
@@ -180,18 +190,10 @@ lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
   simp [Product, commProb_pi, Fin.prod_univ_succ]
 
-lemma commProb_product (l : List ℕ) :
-    commProb (Product l) = (l.map (fun k => commProb (DihedralGroup k))).prod := by
-  induction' l with n l h
-  · rw [commProb_nil, List.map_nil, List.prod_nil]
-  · rw [commProb_cons, List.map_cons, List.prod_cons, h]
-
 /-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :
     commProb (Product (reciprocalFactors n)) = 1 / n := by
-  rw [commProb_product]
-  unfold reciprocalFactors
-  rw [←commProb_product]
+  rw [reciprocalFactors_def]
   by_cases h0 : n = 0
   · rw [dif_pos h0, commProb_cons, commProb_nil, mul_one, h0, Nat.cast_zero, div_zero]
     apply commProb_eq_zero_of_infinite
