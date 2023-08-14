@@ -121,8 +121,8 @@ export TrivialStar (star_trivial)
 
 attribute [simp] star_trivial
 
-/-- A `StarMul` is a type `R` with a multiplication and an involutive operation `star` such that
-`star (r * s) = star s * star r`.
+/-- `StarMul R`, for a type `R` with a multiplication, provides `R` with an involutive operation
+`star` such that `star (r * s) = star s * star r`.
 -/
 class StarMul (R : Type u) [Mul R] extends InvolutiveStar R where
   /-- `star` skew-distributes over multiplication. -/
