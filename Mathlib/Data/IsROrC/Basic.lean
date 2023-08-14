@@ -39,6 +39,8 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/IsROrC/Lemmas.lean`.
 -/
 
+set_option autoImplicit true
+
 
 open BigOperators
 

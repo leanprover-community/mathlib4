@@ -60,6 +60,7 @@ theorem congr (hf : AEStronglyMeasurable' m f μ) (hfg : f =ᵐ[μ] g) : AEStron
   by obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas, hfg.symm.trans hff'⟩
 #align measure_theory.ae_strongly_measurable'.congr MeasureTheory.AEStronglyMeasurable'.congr
 
+set_option autoImplicit true in
 theorem mono (hf : AEStronglyMeasurable' m f μ) (hm : m ≤ m') : AEStronglyMeasurable' m' f μ := by
   obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas.mono hm, hff'⟩
 
