@@ -1,0 +1,378 @@
+/-
+Copyright (c) 2023 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Arthur Paulino, Damiano Testa
+-/
+import Mathlib.Algebra.Group.Basic
+
+/-!
+
+#  `move_add` a tactic for moving summands in expressions
+
+The tactic `move_add` rearranges summands in expressions.
+It does so by receiving as input a list of "summand atoms", inducing the desired permutation.
+See the doc-string for `move_oper` for details of how the permutation is determined by the input.
+For the technical description, look at `Mathlib.MoveAdd.weight` and `Mathlib.MoveAdd.reorderUsing`.
+
+`move_add` is the specialization of a more general `move_oper` tactic that takes a binary,
+associative, commutative operation and a list of "operand atoms" and rearranges the operation.
+
+## Extension notes
+
+To work with a general associative, commutative binary operation, `move_oper`
+needs to have inbuilt the lemmas asserting the analogues of
+`add_comm, add_assoc, add_left_comm` for the new operation.
+Currently, `move_oper` supports `HAdd.hAdd`, `HAdd.hAdd`, `and`, `or`, `max`, `min`.
+
+These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
+
+## Implementation notes
+
+The tactic takes the target, replaces the maximal subexpressions whose head symbol is the given
+operation and replaces them by their reordered versions.
+Once that is done, it tries to replace the initial goal with the permuted one by using `simp`.
+
+Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruction of the goal.
+I, DT, already have code for this improvement, but am leaving it for a later PR.
+-/
+
+open Lean Expr
+
+/-- `getExprArgs e` inspects the outermost constructor of `e` and returns the array of all the
+arguments to that constructor that are themselves `Expr`essions. -/
+def Lean.Expr.getExprArgs : Expr → Array Expr
+  | app fn arg        => #[fn, arg]
+  | lam _ bt bb _     => #[bt, bb]
+  | forallE _ bt bb _ => #[bt, bb]
+  | letE _ t v b _    => #[t, v, b]
+  | mdata _ e         => #[e]
+  | proj _ _ e        => #[e]
+  | _ => #[]
+
+/-- `size e` returns the number of subexpressions of `e`. -/
+partial
+def Lean.Expr.size (e : Expr) : ℕ := (e.getExprArgs.map size).foldl (· + ·) 1
+
+namespace Mathlib.MoveAdd
+
+section ExprProcessing
+
+section reorder
+variable [BEq α]
+
+/-!
+##  Reordering the variables
+
+This section produces the permutations of the variables for `move_add`.
+
+The user controls the final order by passing a list of terms to the tactic.
+Each term can be preceded by `←` or not.
+In the final ordering,
+* terms preceded by `←` appear first,
+* terms not preceded by `←` appear last,
+* all remaining terms remain in their current relative order.
+-/
+
+/-- `uniquify L` takes a list `L : List α` as input and it returns a list `L' : List (α × ℕ)`.
+The two lists `L` and `L'.map Prod.fst` coincide.
+The second component of each entry `(a, n)` in `L'` is the number of times that `a` appears in `L`
+before the current location.
+
+The resulting list of pairs has no duplicates.
+-/
+def uniquify : List α → List (α × ℕ)
+  | []    => []
+  | m::ms =>
+    let lms := uniquify ms
+    (m, 0) :: (lms.map fun (x, n) => if x == m then (x, n + 1) else (x, n))
+
+variable [Inhabited α]
+
+/--  `weight L` takes a list of pairs `(a, h?)` where
+* `a` is a term of some type `α` and
+* `h?` is a `Bool`ean
+
+and returns a function `α → ℤ`.
+Although `weight` does not require this, we use `weight` in the case where the list obtained
+from `L` by only keeping the first component (i.e. `L.map Prod.fst`) has no duplicates.
+The properties that we mention here assume that this is the case.
+
+Thus, `weight L` is a function `α → ℤ` with the following properties:
+* if `(a, true)  ∈ L`, then `weight L a` is strictly negative;
+* if `(a, false) ∈ L`, then `weight L a` is strictly positive;
+* if neither `(a, true)` nor `(a, false)` is in `L`, then `weight L a = 0`.
+
+Moreover, the function `weight L` is strictly monotone increasing on both
+`{a : α | (a, true) ∈ L}` and `{a : α | (a, false) ∈ L}`,
+in the sense that if `a' = (a, true)` and `b' = (b, true)` are in `L`,
+then `a'` appears before `b'` in `L` if and only if `weight L a < weight L b` and
+similarly for the pairs with second coordinate equal to `false`.
+-/
+def weight (L : List (α × Bool)) (a : α) : ℤ :=
+let l := L.length
+match L.find? (Prod.fst · == a) with
+  | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
+  | none => 0
+
+/--  `reorderUsing toReorder instructions` produces a reordering of `toReorder : List α`,
+following the requirements imposed by `instructions : List (α × Bool)`.
+
+These are the requirements:
+* elements of `toReorder` that appear with `true` in `instructions appear at the
+  *beginning* of the reordered list, in the order in which they appear in `instructions`;
+* similarly, elements of `toReorder` that appear with `false` in `instructions appear at the
+  *end* of the reordered list, in the order in which they appear in `instructions`;
+* finally, elements of `toReorder` that do not appear in `instructions` appear "in the middle"
+  with the order that they had in `toReorder`.
+
+For example,
+* `reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0]`,
+* `reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2]`,
+* `reorderUsing [0, 1, 2] [(1, true), (0, false)] = [1, 2, 0]`.
+-/
+def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List α :=
+let uInstructions :=
+  let (as, as?) := instructions.unzip
+  (uniquify as).zip as?
+let uToReorder := (uniquify toReorder).toArray
+let reorder := uToReorder.qsort fun x y =>
+  match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
+    | none, none => (uToReorder.getIdx? x).get! ≤ (uToReorder.getIdx? y).get!
+    | _, _ => weight uInstructions x ≤ weight uInstructions y
+(reorder.map Prod.fst).toList
+
+end reorder
+
+end ExprProcessing
+
+open Meta
+
+variable (op : Name) (R : Expr) in
+/--  If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
+returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
+partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
+if sum.isAppOf op then
+  let inR := ← sum.getAppArgs.filterM fun r => do isDefEq R (← inferType r <|> pure R)
+  let new := ← inR.mapM (getAddends ·)
+  return new.foldl Array.append  #[]
+else return #[sum]
+
+variable (op : Name) in
+/-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `sum`
+looking for instance of the operation `op`.
+
+Possibly returns duplicates!
+-/
+partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
+let summands := ← getAddends op (← inferType sum <|> return sum) sum
+let (first, rest) := if summands.size == 1 then (#[], sum.getExprArgs) else
+  (#[(summands, sum)], summands)
+let rest := ← rest.mapM getOps
+return rest.foldl Array.append  first
+
+/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
+term representing a repeated application of a binary operation and that the summands are the
+last two arguments passed to the operation.
+It returns the expression consisting of the operation with all its arguments already applied,
+except for the last two.
+This is similar to `Lean.Meta.mkAdd, Lean.Meta.mkMul`, except that the resulting operation is
+primed to work with operands of the same type as the ones already appearing in `sum`.
+
+This is useful to rearrange the operands.
+-/
+def prepareOp (sum : Expr) : Expr :=
+let opargs := sum.getAppArgs
+(opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
+
+/--  `sumList op exs` assumes that `op` is the `Name` of a binary operation.
+If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList` returns
+`op (op( ... op (op e₁ e₂) e₃) ... eₙ)`.
+-/
+partial
+def sumList1 (prepOp : Expr) : List Expr → Expr
+  | []    => default
+  | [a]    => a
+  | a::as => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
+
+/-- `rankSums op tgt instructions` takes as input
+* the name `op` of a binary operation,
+* an `Expr`ession `tgt`,
+* a list `instructions` of pair `(expression, boolean)`.
+
+It extracts the maximal subexpressions of `tgt` whose head symbol is `op`
+(i.e. the maximal subexpressions that consist only of applications of the binary operation `op`),
+it rearranges the operands of such subexpressions following the order implied by `instructions`
+(as in `reorderUsing`),
+it returns the list of pairs of expressions `(old_sum, new_sum)`, for which `old_sum ≠ new_sum`
+sorted by decreasing value of `Lean.Expr.size`.
+In particular, a subexpression of an `old_sum` can only appear *after* its over-expression.
+-/
+def rankSums (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
+    MetaM (List (Expr × Expr)) := do
+  let sums := ← getOps op (← instantiateMVars tgt)
+  let candidates := ← sums.mapM fun (addends, sum) => do
+    let reord := reorderUsing addends.toList instructions
+    let resummed := sumList1 (prepareOp sum) reord
+    if (resummed != sum) then return some (sum, resummed) else return none
+  let _ : LE (Expr × Expr) := { le := fun f g => g.1.size  ≤ f.1.size }
+  return (candidates.toList.reduceOption.toArray.qsort (· ≤ ·)).toList
+
+/-- `permuteExpr op tgt instructions` takes the same input as `rankSums` and returns the
+expression obtained from `tgt` by replacing all `old_sum`s by the corresponding `new_sum`.
+If there were no required changes, then `permuteExpr` reports this in its second factor. -/
+def permuteExpr (op : Name) (tgt : Expr) (instructions : List (Expr × Bool)) :
+    MetaM Expr := do
+  let permInstructions := ← rankSums op tgt instructions
+  if permInstructions == [] then throwError "The goal is already in the required form"
+  let mut permTgt := tgt
+  for (old, new) in permInstructions do
+    permTgt := permTgt.replace (if · == old then new else none)
+  return permTgt
+
+/--  `pairUp L R` takes to lists `L R : List Expr` as inputs.
+It scans the elements of `L`, looking for a corresponding `DefEq` `Expr`ession in `R`.
+If it finds one such element `d`, then it sets the element `d : R` aside, removing it from `R`, and
+it continues with the matching on the remainder of `L` and on `R.erase d`.
+
+At the end, it returns the sublist of `R` of the elements that were matched to some element of `R`,
+in the order in which they appeared in `L`,
+as well as the sublist of `L` of elements that were not matched, also in the order in which they
+appeared in `L`.
+
+Example:
+```lean
+#eval do
+  let L := [mkNatLit 0, (← mkFreshExprMVar (some (mkConst ``Nat))), mkNatLit 0] -- i.e. [0, _, 0]
+  let R := [mkNatLit 0, mkNatLit 0,                                 mkNatLit 1] -- i.e. [0, 1]
+  dbg_trace f!"{(← pairUp L R)}"
+/-  output:
+`([0, 0], [0])`
+the output LHS list `[0, 0]` consists of the first `0` and the `MVarId`.
+the output RHS list `[0]` corresponds to the last `0` in `L`.
+-/
+```
+-/
+def pairUp : List (Expr × Bool × Syntax) → List Expr →
+    MetaM ((List (Expr × Bool)) × List (Expr × Bool × Syntax))
+  | (m::ms), l => do
+    match ← l.findM? (isDefEq · m.1) with
+      | none => let (found, unfound) := ← pairUp ms l; return (found, m::unfound)
+      | some d => let (found, unfound) := ← pairUp ms (l.erase d); return ((d, m.2.1)::found, unfound)
+  | _, _ => return ([], [])
+
+open Elab.Tactic
+
+/-- `move_oper_simpCtx` is the `Simp.Context` for the reordering internal to `move_oper`.
+To support a new binary operation, extend the list in this definition, so that it contains
+enough lemmas to allow `simp` to close a generic permutation goal for the new binary operation.
+-/
+def move_oper_simpCtx : MetaM Simp.Context := do
+  -- the `simpOnlyBuiltins` are `eq_self` and `iff_self`
+  let simpNames := simpOnlyBuiltins ++ [
+    ``add_comm, ``add_assoc, ``add_left_comm,  -- for `HAdd.hAdd`
+    ``mul_comm, ``mul_assoc, ``mul_left_comm,  -- for `HMul.hMul`
+    ``and_comm, ``and_assoc, ``and_left_comm,  -- for `and`
+    ``or_comm,  ``or_assoc,  ``or_left_comm,   -- for `or`
+    ``max_comm, ``max_assoc, ``max_left_comm,  -- for `max`
+    ``min_comm, ``min_assoc, ``min_left_comm   -- for `min`
+    ]
+  let simpThms := ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
+  return { simpTheorems := #[simpThms] }
+
+/-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
+operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
+
+* It creates a version `permuted_mv` of `mv` with subexpressions representing `op`-sums reordered
+  following `instructions`.
+* It produces 2 temporary goals by applying `Eq.mpr` and unifying the resulting meta-variable with
+  `permuted_mv`: `[⊢ mv = permuted_mv, ⊢ permuted_mv]`.
+* It tries to solve the goal `mv = permuted_mv` by a simple-minded `simp` call, using the
+  `op`-analogues of `add_comm, add_assoc, add_left_comm`.
+-/
+def reorderAndSimp (mv : MVarId) (op : Name) (instr : List (Expr × Bool)) :
+    MetaM (List MVarId) := do
+  let permExpr := ← permuteExpr op (← mv.getType'') instr
+  -- generate the implication `permutedMv → mv = permutedMv → mv`
+  let eqmpr := ← mkAppM ``Eq.mpr #[← mkFreshExprMVar (← mkEq (← mv.getType) permExpr)]
+  let twoGoals := ← mv.apply eqmpr
+  guard (twoGoals.length == 2) <|>
+    throwError m!"There should only be 2 goals, instead of {twoGoals.length}"
+  -- `permGoal` is the single goal `mv_permuted`, possibly more operations will be permuted later on
+  let permGoal := ← twoGoals.filterM fun v => return !(← v.isAssigned)
+  match ← (simpGoal (permGoal[1]!) (← move_oper_simpCtx)) with
+    | (some x, _) => throwError m!"'move_oper' could not solve {indentD x.2}"
+    | (none, _) => return permGoal
+
+section parsing
+open Elab Parser Tactic
+
+/-- `parsing` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
+terms, each optionally preceded by the arrow `←`.
+It unifies the terms with the atoms for the operation `op` in the expression `tgt`, returning
+* the lists of pairs of a matched subexpression with `true` for an arrow `←` and `false` otherwise;
+* an array of error messages;
+* an array of debugging messages.
+
+E.g. convert `[a, ← b, _ * (1 : ℤ)]` to `pairs = ([(a, false), (z * 1, false)], , [(b, true)]`, if
+`b` does not match a subexpression of `tgt` and the first summand involving a multiplication by `1`
+is `z * 1`.
+-/
+def parsing (rws : TSyntax `Lean.Parser.Tactic.rwRuleSeq) (op : Name) (tgt : Expr) :
+    TermElabM (List (Expr × Bool) × (List MessageData × List Syntax) × Array MessageData) :=
+do match rws with
+  | `(rwRuleSeq| [$rs,*]) => do
+    let pairs := ← rs.getElems.mapM fun rstx => do
+      let r : Syntax := rstx
+      return (← Term.elabTerm r[1]! none, ! r[0]!.isNone, rstx)
+    let ops := ← getOps op tgt
+    let atoms := ((ops.map Prod.fst).foldl (· ++ ·) #[]).toList.filter ((!isBVar ·))
+    -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
+    let (instr, neverMatched) := ← pairUp pairs.toList atoms
+    let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
+      pairs.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+      m!"\nMaximum number of iterations: {ops.size}"]
+    -- if there are `neverMatched` terms, return the parsed terms and the syntax
+    let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
+    return (instr, errMsg.unzip, dbgMsg)
+  | _ => failure
+
+/--  The tactic `move_add` rearranges summands of expressions.
+Calling `move_add [a, ← b, ...]` matches `a, b,...` with summands in the main goal.
+It then moves `a` to the far right and `b` to the far left of each addition in which they appear.
+The side to which the summands are moved is determined by the presence or absence of the arrow `←`.
+
+The inputs `a, b,...` can be any terms, also with underscores.
+The tactic uses the first "new" summand that unifies with each one of the given inputs.
+
+There is a multiplicative variant, called `move_mul`.
+
+There is also a general tactic for a "binary associative commutative operation": `move_oper`.
+In this case the syntax requires providing first a term whose head symbol is the operation.
+E.g. `move_oper (0 + 0) [...]` is the same as `move_add`, while `move_oper (max 0 0) [...]`
+rearranges `max`s.
+-/
+elab (name := moveOperTac) "move_oper" "(" oper:term ")" rws:rwRuleSeq  dbg:"-debug"? : tactic => do
+  -- parse the operation
+  let op := (← Term.elabTerm oper none).getAppFn.constName
+  -- parse the list of terms
+  let (instr, (unmatched, stxs), dbgMsg) ← parsing rws op (← instantiateMVars (← getMainTarget))
+  -- prepare the various error messages
+  let finErr := if unmatched.length = 0 then .nil else
+    m!"\nErrors:\nThe terms in '{unmatched}' were not matched to any atom"
+  let _ := ← stxs.mapM (logErrorAt · "") -- underline all non-matching terms
+  let _ := ← match dbg, unmatched with
+    | none, []      => return ()                                  -- no `debug`-mode: successful
+    | none, _       => throwErrorAt stxs[0]! finErr               -- no `debug`-mode: unsuccessful
+    | some dbs,  _  =>  let finDbg : MessageData := dbgMsg.foldl  -- `debug`-mode
+                          (fun x y => (x.compose y).compose "\n\n---\n") ""
+                        logInfoAt dbs (finDbg.compose finErr)
+  -- move around the operands
+  replaceMainGoal (← reorderAndSimp (← getMainGoal) op instr)
+
+@[inherit_doc moveOperTac]
+elab "move_add" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper (0 + 0) $rws))
+
+@[inherit_doc moveOperTac]
+elab "move_mul" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper (1 * 1) $rws))
+
+end parsing
