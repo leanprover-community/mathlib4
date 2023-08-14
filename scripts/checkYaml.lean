@@ -43,7 +43,7 @@ def processDb (decls : ConstMap) : String × String → IO Bool
     return false
 
 unsafe def main : IO Unit := do
-  CoreM.withImportModules [`Mathlib] do
+  CoreM.withImportModules [`Mathlib] (searchPath := compileTimeSearchPath%) do
     let decls := (←getEnv).constants
     let results ← databases.mapM (fun p => processDb decls p)
     if results.any id then

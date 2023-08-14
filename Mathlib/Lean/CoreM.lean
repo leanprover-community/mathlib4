@@ -37,8 +37,10 @@ def reportOutOfHeartbeats (tac : Name) (stx : Syntax) (threshold : Nat := 90) : 
 
 /--
 Term elaborator that retrieves the current `SearchPath`.
+
+This can only be used in files that are compiled locally.
 -/
-elab "compileTimeSearchPath" : term =>
+elab "compileTimeSearchPath%" : term =>
   return toExpr (← searchPathRef.get)
 
 /--
@@ -48,7 +50,7 @@ def CoreM.withImportModules (modules : List Name) (run : CoreM α)
     (searchPath : Option SearchPath := none) (options : Options := {})
     (trustLevel : UInt32 := 1024) (fileName := "") :
     IO α := unsafe do
-  searchPathRef.set (searchPath.getD compileTimeSearchPath)
+  if let some sp := searchPath then searchPathRef.set sp
   Lean.withImportModules (modules.map (Import.mk · false)) options trustLevel fun env =>
     let ctx := {fileName, options, fileMap := default}
     let state := {env}

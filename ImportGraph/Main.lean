@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Imports
+import Mathlib.Tactic.ToExpr
 import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Name
@@ -30,12 +31,7 @@ def asDotGraph (graph : NameMap (Array Name)) (header := "import_graph") : Strin
 
 open Lean Core System
 
--- Next two declarations borrowed from `runLinter.lean`.
-
-instance : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
-
+-- Next declaration borrowed from `runLinter.lean`.
 elab "compileTimeSearchPath" : term =>
   return toExpr (← searchPathRef.get)
 
