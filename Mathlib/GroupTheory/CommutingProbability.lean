@@ -169,15 +169,21 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
 
 @[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := rfl
 
-lemma reciprocalFactors_def :
-    reciprocalFactors n =
-      if h0 : n = 0 then [0]
-      else if h1 : n = 1 then []
-      else if 2 ∣ n then
-        3 :: reciprocalFactors (n / 2)
-      else
-        n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
+@[simp] lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
+    reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
+  have h1 : n ≠ 1
+  · rintro rfl
+    norm_num at h2
   conv_lhs => unfold reciprocalFactors
+  rw [dif_neg h0, dif_neg h1, if_pos h2.two_dvd]
+
+@[simp] lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
+    reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
+  have h0 : n ≠ 0
+  · rintro rfl
+    norm_num at h2
+  conv_lhs => unfold reciprocalFactors
+  rw [dif_neg h0, dif_neg h1, if_neg h2.not_two_dvd_nat]
 
 /-- A finite product of Dihedral groups. -/
 abbrev Product (l : List ℕ) : Type :=
@@ -193,29 +199,28 @@ lemma commProb_cons (n : ℕ) (l : List ℕ) :
 /-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :
     commProb (Product (reciprocalFactors n)) = 1 / n := by
-  rw [reciprocalFactors_def]
   by_cases h0 : n = 0
-  · rw [dif_pos h0, commProb_cons, commProb_nil, mul_one, h0, Nat.cast_zero, div_zero]
+  · rw [h0, reciprocalFactors_zero, commProb_cons, commProb_nil, mul_one, Nat.cast_zero, div_zero]
     apply commProb_eq_zero_of_infinite
-  · by_cases h1 : n = 1
-    · rw [dif_neg h0, dif_pos h1, commProb_nil, h1, Nat.cast_one, div_one]
-    · by_cases h2 : 2 ∣ n
-      · have := div_two_lt h0
-        rw [dif_neg h0, dif_neg h1, if_pos h2, commProb_cons, commProb_reciprocal (n / 2),
-            commProb_odd (by norm_num)]
-        field_simp [h0]
-        norm_num
-      · have := div_four_lt h0 h1
-        rw [dif_neg h0, dif_neg h1, if_neg h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
-        have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.two_dvd_ne_zero.mp h2)
-        have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> norm_num
-        rw [commProb_odd (hn.mul (Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp h2)))]
-        rw [div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
-        · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-          have h1 := (Nat.div_add_mod n 4).symm
-          zify at h0 h1 ⊢
-          linear_combination (h0 + h1 * (n % 4)) * n
-        · have := hn.pos.ne'
-          positivity
+  by_cases h1 : n = 1
+  · rw [h1, reciprocalFactors_one, commProb_nil, Nat.cast_one, div_one]
+  rcases Nat.even_or_odd n with h2 | h2
+  · have := div_two_lt h0
+    rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
+        commProb_odd (by norm_num)]
+    field_simp [h0, h2.two_dvd]
+    norm_num
+  · have := div_four_lt h0 h1
+    rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
+    have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
+    have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> norm_num
+    rw [commProb_odd (hn.mul h2)]
+    rw [div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
+    · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
+      have h1 := (Nat.div_add_mod n 4).symm
+      zify at h0 h1 ⊢
+      linear_combination (h0 + h1 * (n % 4)) * n
+    · have := hn.pos.ne'
+      positivity
 
 end DihedralGroup
