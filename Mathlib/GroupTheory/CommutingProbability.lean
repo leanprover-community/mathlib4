@@ -150,10 +150,7 @@ lemma aux1 {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
 
 lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
-| 0 => by decide
-| 1 => by decide
-| 2 => by decide
-| 3 => by decide
+| 0 | 1 | 2 | 3 => by decide
 | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
 
 def reciprocalFactors (n : ℕ) : List ℕ :=
