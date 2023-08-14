@@ -13,7 +13,7 @@ namespace Ring
 
 open Language
 
-variable {α : Type u}
+variable {α : Type*}
 
 section
 
@@ -35,7 +35,7 @@ end
 noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term α :=
   Classical.choose (exists_term_realize_eq_freeCommRing p)
 
-variable {R : Type v} [CommRing R] [CompatibleRing R]
+variable {R : Type*} [CommRing R] [CompatibleRing R]
 
 @[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
