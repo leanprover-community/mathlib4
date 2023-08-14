@@ -67,6 +67,10 @@ theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
   ⟨ha, hb⟩
 #align set.mk_mem_prod Set.mk_mem_prod
 
+theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
+    (s ×ˢ t).Subsingleton := fun _x hx _y hy ↦
+  Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
+
 noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
     DecidablePred (· ∈ s ×ˢ t) := fun _ => And.decidable
 #align set.decidable_mem_prod Set.decidableMemProd
@@ -665,6 +669,10 @@ theorem empty_pi (s : ∀ i, Set (α i)) : pi ∅ s = univ := by
   ext
   simp [pi]
 #align set.empty_pi Set.empty_pi
+
+theorem subsingleton_univ_pi (ht : ∀ i, (t i).Subsingleton) :
+    (univ.pi t).Subsingleton := fun _f hf _g hg ↦ funext fun i ↦
+  (ht i) (hf _ <| mem_univ _) (hg _ <| mem_univ _)
 
 @[simp]
 theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=

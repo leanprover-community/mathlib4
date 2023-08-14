@@ -158,7 +158,7 @@ instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (Euclidea
 @[simp]
 theorem finrank_euclideanSpace :
     FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  simp [EuclideanSpace, PiLp]
+  simp [EuclideanSpace, PiLp, WithLp]
 #align finrank_euclidean_space finrank_euclideanSpace
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -358,7 +358,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, SMulHomClass.map_smul, LinearEquiv.coe_coe,
-          LinearEquiv.trans_apply, PiLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
+          LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
           LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
         rw [h]
 

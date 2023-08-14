@@ -23,6 +23,8 @@ import Mathlib.Tactic.Ring
 
 -/
 
+set_option autoImplicit true
+
 
 variable {R R₂ K M M₂ V S : Type*}
 

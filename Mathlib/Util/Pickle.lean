@@ -11,6 +11,8 @@ import Std.Util.TermUnsafe
 By abusing `saveModuleData` and `readModuleData` we can pickle and unpickle objects to disk.
 -/
 
+set_option autoImplicit true
+
 open Lean System
 
 /--
