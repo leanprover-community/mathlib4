@@ -329,8 +329,8 @@ variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
-instance (priority := 100) reflectsExactSequencesOfPreservesZeroMorphismsOfFaithful [Faithful F] :
-    ReflectsExactSequences F where
+instance (priority := 100) reflectsExactSequences'OfPreservesZeroMorphismsOfFaithful [Faithful F] :
+    ReflectsExactSequences' F where
   reflects {X Y Z} f g hfg := by
     rw [Abelian.exact_iff, ← F.map_comp, F.map_eq_zero_iff] at hfg
     refine' (Abelian.exact_iff _ _).2 ⟨hfg.1, F.zero_of_map_zero _ _⟩
@@ -341,7 +341,7 @@ instance (priority := 100) reflectsExactSequencesOfPreservesZeroMorphismsOfFaith
       cokernel.desc' (F.map f) (F.map (cokernel.π f))
         (by simp only [← F.map_comp, cokernel.condition, CategoryTheory.Functor.map_zero])
     rw [F.map_comp, ← hk, ← hl, Category.assoc, reassoc_of% hfg.2, zero_comp, comp_zero]
-#align category_theory.functor.reflects_exact_sequences_of_preserves_zero_morphisms_of_faithful CategoryTheory.Functor.reflectsExactSequencesOfPreservesZeroMorphismsOfFaithful
+#align category_theory.functor.reflects_exact_sequences_of_preserves_zero_morphisms_of_faithful CategoryTheory.Functor.reflectsExactSequences'OfPreservesZeroMorphismsOfFaithful
 
 end
 
