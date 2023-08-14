@@ -643,6 +643,8 @@ def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R 
 
 lemma involutive_invert : Involutive (invert (R := R)) := fun _ ↦ by ext; simp
 
+@[simp] lemma invert_symm : (invert (R := R)).symm = invert := rfl
+
 lemma toLaurent_reverse {p : R[X]} :
     toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by
   nontriviality R

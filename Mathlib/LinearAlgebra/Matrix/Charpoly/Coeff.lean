@@ -273,7 +273,7 @@ It has some advantages over the characteristic polynomial, including the fact th
 extended to infinite dimensions (for appropriate operators). -/
 lemma Matrix.reverse_charpoly (M : Matrix n n R) :
     M.charpoly.reverse = det (1 - (X : R[X]) • C.mapMatrix M) := by
-  cases subsingleton_or_nontrivial R; simp
+  nontriviality R
   let t : R[T;T⁻¹] := T 1
   let t_inv : R[T;T⁻¹] := T (-1)
   let p : R[T;T⁻¹] := det (scalar n t - LaurentPolynomial.C.mapMatrix M)
