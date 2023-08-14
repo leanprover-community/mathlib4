@@ -1086,6 +1086,19 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | _ => els
   | _, _, _ => els
 
+class CSLift (α : Type u) (β : outParam (Type u)) where
+  lift : α → β
+  inj : Function.Injective lift
+
+class CSLiftVal {α} {β : outParam (Type u)} [CSLift α β] (a : α) (b : outParam β) : Prop where
+  eq : b = CSLift.lift a
+
+instance (priority := low) {α β} [CSLift α β] (a : α) : CSLiftVal a (CSLift.lift a) := ⟨rfl⟩
+
+theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
+    [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
+  inst.2 <| by rwa [← h1.1, ← h2.1]
+
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
 theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
@@ -1104,17 +1117,37 @@ def proveEq (g : MVarId) : AtomM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
+  let sα ←
+    try Except.ok <$> synthInstanceQ q(CommSemiring $α)
+    catch e => pure (.error e)
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
-  let c ← mkCache sα
-  profileitM Exception "ring" (← getOptions) do
-    let ⟨a, va, pa⟩ ← eval sα c e₁
-    let ⟨b, vb, pb⟩ ← eval sα c e₂
-    unless va.eq vb do
-      let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
-      throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
-    let pb : Q($e₂ = $a) := pb
-    g.assign q(of_eq $pa $pb)
+  let eq ← match sα with
+  | .ok sα => ringCore sα e₁ e₂
+  | .error e =>
+    let β ← mkFreshExprMVarQ q(Type v)
+    let e₁' ← mkFreshExprMVarQ q($β)
+    let e₂' ← mkFreshExprMVarQ q($β)
+    let (sβ, (pf : Q($e₁' = $e₂' → $e₁ = $e₂))) ← try
+      let _l ← synthInstanceQ q(CSLift $α $β)
+      let sβ ← synthInstanceQ q(CommSemiring $β)
+      let _ ← synthInstanceQ q(CSLiftVal $e₁ $e₁')
+      let _ ← synthInstanceQ q(CSLiftVal $e₂ $e₂')
+      pure (sβ, q(of_lift (a := $e₁) (b := $e₂)))
+    catch _ => throw e
+    pure q($pf $(← ringCore sβ e₁' e₂'))
+  g.assign eq
+where
+  ringCore {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α))
+      (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
+    let c ← mkCache sα
+    profileitM Exception "ring" (← getOptions) do
+      let ⟨a, va, pa⟩ ← eval sα c e₁
+      let ⟨b, vb, pb⟩ ← eval sα c e₂
+      unless va.eq vb do
+        let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
+        throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
+      let pb : Q($e₂ = $a) := pb
+      return q(of_eq $pa $pb)
 
 /--
 Tactic for solving equations of *commutative* (semi)rings,
