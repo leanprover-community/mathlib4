@@ -98,7 +98,8 @@ theorem _root_.WithLp.equiv_pi_apply (x : PiLp p α) (i : ι) : WithLp.equiv p _
 #align pi_Lp.equiv_apply WithLp.equiv_pi_apply
 
 @[simp]
-theorem  _root_.WithLp.equiv_symm_pi_apply (x : ∀ i, α i) (i : ι) : (WithLp.equiv p _).symm x i = x i :=
+theorem  _root_.WithLp.equiv_symm_pi_apply (x : ∀ i, α i) (i : ι) :
+    (WithLp.equiv p _).symm x i = x i :=
   rfl
 #align pi_Lp.equiv_symm_apply WithLp.equiv_symm_pi_apply
 
@@ -438,7 +439,8 @@ instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   Pi.uniformSpace _
 #align pi_Lp.uniform_space PiLp.uniformSpace
 
-theorem uniformContinuous_equiv [∀ i, UniformSpace (β i)] : UniformContinuous (WithLp.equiv p (∀ i, β i)) :=
+theorem uniformContinuous_equiv [∀ i, UniformSpace (β i)] :
+    UniformContinuous (WithLp.equiv p (∀ i, β i)) :=
   uniformContinuous_id
 #align pi_Lp.uniform_continuous_equiv PiLp.uniformContinuous_equiv
 
@@ -453,7 +455,8 @@ theorem continuous_equiv [∀ i, UniformSpace (β i)] : Continuous (WithLp.equiv
 #align pi_Lp.continuous_equiv PiLp.continuous_equiv
 
 @[continuity]
-theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] : Continuous (WithLp.equiv p (∀ i, β i)).symm :=
+theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
+    Continuous (WithLp.equiv p (∀ i, β i)).symm :=
   continuous_id
 #align pi_Lp.continuous_equiv_symm PiLp.continuous_equiv_symm
 
@@ -504,7 +507,8 @@ theorem nndist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x 
     exact dist_eq_iSup _ _
 #align pi_Lp.nndist_eq_supr PiLp.nndist_eq_iSup
 
-theorem lipschitzWith_equiv [∀ i, PseudoEMetricSpace (β i)] : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) :=
+theorem lipschitzWith_equiv [∀ i, PseudoEMetricSpace (β i)] :
+    LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) :=
   lipschitzWith_equiv_aux p β
 #align pi_Lp.lipschitz_with_equiv PiLp.lipschitzWith_equiv
 
@@ -767,13 +771,16 @@ theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
 #align pi_Lp.nnnorm_equiv_symm_single PiLp.nnnorm_equiv_symm_single
 
 @[simp]
-theorem norm_equiv_symm_single (i : ι) (b : β i) : ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖ = ‖b‖ :=
+theorem norm_equiv_symm_single (i : ι) (b : β i) :
+    ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖ = ‖b‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_single p β i b
 #align pi_Lp.norm_equiv_symm_single PiLp.norm_equiv_symm_single
 
 @[simp]
 theorem nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
-    nndist ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁)) ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
+    nndist
+        ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
+        ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       nndist b₁ b₂ := by
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← WithLp.equiv_symm_sub, ← Pi.single_sub,
     nnnorm_equiv_symm_single]
@@ -781,14 +788,18 @@ theorem nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
 
 @[simp]
 theorem dist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
-    dist ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁)) ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
+    dist
+        ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
+        ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       dist b₁ b₂ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_same p β i b₁ b₂
 #align pi_Lp.dist_equiv_symm_single_same PiLp.dist_equiv_symm_single_same
 
 @[simp]
 theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
-    edist ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁)) ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
+    edist
+        ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
+        ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       edist b₁ b₂ := by
   -- Porting note: was `simpa using`
   simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
