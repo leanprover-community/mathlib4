@@ -609,8 +609,8 @@ theorem marginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫_∅, f ∂
   exact Subsingleton.measurable
 #align measure_theory.marginal_empty MeasureTheory.marginal_empty
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:638:2: warning: expanding binder collection (i «expr ∉ » s) -/
 /-- The marginal distribution is independent of the variables in `s`. -/
+-- todo: ∀ i ∉ s, ...
 theorem marginal_eq {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞) (h : ∀ (i) (_ : i ∉ s), x i = y i) :
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by dsimp [marginal, update']; rcongr; exact h _ ‹_›
 #align measure_theory.marginal_eq MeasureTheory.marginal_eq
@@ -722,6 +722,7 @@ theorem marginal_insert_rev (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable 
 
 open Filter
 
+@[gcongr]
 theorem marginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫_s, f ∂μ ≤ ∫⋯∫_s, g ∂μ :=
   fun _ => lintegral_mono fun _ => hfg _
 #align measure_theory.marginal_mono MeasureTheory.marginal_mono
@@ -753,9 +754,15 @@ open TopologicalSpace
 variable [Fintype ι] {π : ι → Type _} [∀ i, MeasurableSpace (π i)] (μ : ∀ i, Measure (π i))
   [∀ i, SigmaFinite (μ i)] (u : (ι → ℝ) → ℝ) {f : (∀ i, π i) → ℝ≥0∞}
 
+
+local prefix:max "#" => Fintype.card
+
+/--
+
+-/
 def rhsAux (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) : (∀ i, π i) → ℝ≥0∞ :=
-  marginal μ s f ^ ((s.card : ℝ) / (Fintype.card ι - 1 : ℝ)) *
-    ∏ i in sᶜ, marginal μ (insert i s) f ^ ((1 : ℝ) / (Fintype.card ι - 1 : ℝ))
+  marginal μ s f ^ ((s.card : ℝ) / (#ι - 1 : ℝ)) *
+    ∏ i in sᶜ, marginal μ (insert i s) f ^ ((1 : ℝ) / (#ι - 1 : ℝ))
 #align rhs_aux rhsAux
 
 theorem marginal_rhsAux_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (i : ι) (hi : i ∉ s) :
@@ -770,7 +777,7 @@ theorem marginal_rhsAux_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (i
   clear this
   intro x
   dsimp only
-  have h1 : (∫⋯∫_insert i s, f ∂μ) x ^ ((1 : ℝ) / (↑(Fintype.card ι) - 1 : ℝ)) ≠ ∞ := by sorry
+  have h1 : (∫⋯∫_insert i s, f ∂μ) x ^ ((1 : ℝ) / (↑(#ι) - 1 : ℝ)) ≠ ∞ := by sorry
   simp_rw [lintegral_const_mul' _ _ h1, prod_apply, Option.elim'_comp₂, Pi.pow_apply]
   refine' (ENNReal.mul_left_mono (lintegral_prod_norm_pow_le _ _ _)).trans_eq _
   · sorry
@@ -806,8 +813,8 @@ theorem marginal_rhsAux_empty_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset 
 theorem lintegral_prod_lintegral_pow_le (hf : Measurable f) :
     ∫⁻ x, ∏ i,
       (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^
-        ((1 : ℝ) / (Fintype.card ι - 1 : ℝ)) ∂Measure.pi μ ≤
-      (∫⁻ x, f x ∂Measure.pi μ) ^ ((Fintype.card ι : ℝ) / (Fintype.card ι - 1 : ℝ)) :=
+        ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
+      (∫⁻ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
   by
   cases isEmpty_or_nonempty (∀ i, π i)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
@@ -824,17 +831,16 @@ theorem lintegral_prod_lintegral_pow_le (hf : Measurable f) :
 
 theorem integral_prod_integral_pow_le {f : (∀ i, π i) → ℝ} (hf : Measurable f)
     (h2f : ∀ x, 0 ≤ f x) :
-    ∫ x,
-        ∏ i,
-          (∫ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (Fintype.card ι - 1)) ∂Measure.pi μ ≤
-      (∫ x, f x ∂Measure.pi μ) ^ ((Fintype.card ι : ℝ) / (Fintype.card ι - 1)) :=
+    ∫ x, ∏ i, (∫ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1))
+      ∂Measure.pi μ ≤
+      (∫ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1)) :=
   by sorry
 #align integral_prod_integral_pow_le integral_prod_integral_pow_le
 
 /-- The Sobolev inequality -/
 theorem integral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
-    ∫ x, ‖u x‖ ^ ((Fintype.card ι : ℝ) / (Fintype.card ι - 1)) ≤
-      (∫ x, ‖fderiv ℝ u x‖) ^ ((Fintype.card ι : ℝ) / (Fintype.card ι - 1)) :=
+    ∫ x, ‖u x‖ ^ ((#ι : ℝ) / (#ι - 1)) ≤
+      (∫ x, ‖fderiv ℝ u x‖) ^ ((#ι : ℝ) / (#ι - 1)) :=
   by
   refine' le_trans _ (integral_prod_integral_pow_le (fun _ => volume) sorry fun x => norm_nonneg _)
   refine' integral_mono sorry sorry fun x => _
@@ -870,8 +876,8 @@ theorem integral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
 
 /-- The Sobolev inequality for the Lebesgue integral(?) -/
 theorem lintegral_pow_le :
-    ∫⁻ x, ‖u x‖₊ ^ ((Fintype.card ι : ℝ) / (Fintype.card ι - 1 : ℝ)) ≤
-      (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((Fintype.card ι : ℝ) / (Fintype.card ι - 1 : ℝ)) :=
+    ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
+      (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
   by sorry
 #align lintegral_pow_le lintegral_pow_le
 
