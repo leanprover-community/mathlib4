@@ -84,7 +84,7 @@ theorem insert_compl_insert [Fintype ι] {s : Finset ι} {i : ι} (hi : i ∉ s)
   simp_rw [@eq_compl_comm _ _ s, compl_insert, compl_erase, compl_compl, erase_insert hi]
 #align finset.insert_compl_insert Finset.insert_compl_insert
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mul_prod_eq_prod_insertNone {α} {M} [CommMonoid M] (f : α → M) (x : M) (s : Finset α) :
     x * ∏ i in s, f i = ∏ i in insertNone s, i.elim x f :=
   (prod_insertNone (fun i => i.elim x f) _).symm
@@ -92,8 +92,8 @@ theorem mul_prod_eq_prod_insertNone {α} {M} [CommMonoid M] (f : α → M) (x : 
 #align finset.add_sum_eq_sum_insert_none Finset.add_sum_eq_sum_insertNone
 
 -- to Fintype/Sum
-@[to_additive (attr := simp)]
-theorem prod_sum_univ [Fintype α] [Fintype γ] (f : Sum α γ → β) :
+@[to_additive]
+theorem prod_sum_univ [Fintype α] [Fintype γ] (f : α ⊕ γ → β) :
     ∏ x, f x = (∏ x, f (Sum.inl x)) * ∏ x, f (Sum.inr x) := by
   rw [← univ_disjSum_univ, prod_disj_sum]
 
@@ -145,13 +145,11 @@ theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
   simp_rw [imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
 #align imp_and_neg_imp_iff imp_and_neg_imp_iff
 
-@[simp]
-theorem cast_sum_rec {α β : Type _} {P : Sum α β → Sort _} (f : ∀ i, P (inl i)) (g : ∀ j, P (inr j))
-    (x y : Sum α β) (h : x = y) :
+theorem cast_sum_rec {α β : Type _} {P : α ⊕ β → Sort _} (f : ∀ i, P (inl i)) (g : ∀ j, P (inr j))
+    (x y : α ⊕ β) (h : x = y) :
     cast (congr_arg P h) (@Sum.rec _ _ _ f g x) = @Sum.rec _ _ _ f g y := by cases h; rfl
 #align cast_sum_rec cast_sum_rec
 
-@[simp]
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
     h ▸ z = cast (congr_arg P h) z := by induction h; rfl
 
@@ -205,6 +203,7 @@ def piSum (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr
   right_inv g := by ext (i | i) <;> rfl
 #align equiv.Pi_sum Equiv.piSum
 
+/-- unused -/
 def piSum' (π : ι → Type _) (π' : ι' → Type _) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
   Equiv.piSum (Sum.elim π π')
@@ -316,7 +315,8 @@ def Equiv.finsetUnion {α} (s t : Finset α) : ((s ∪ t : Finset α) : Set α) 
   subtypeEquivRight <| by simp
 #align equiv.finset_union Equiv.finsetUnion
 
-def finsetUnionEquivSum {α} (s t : Finset α) (h : Disjoint s t) : (s ∪ t : Finset α) ≃ Sum s t :=
+/-- The disjoint union of finsets is a sum -/
+def finsetUnionEquivSum {α} (s t : Finset α) (h : Disjoint s t) : (s ∪ t : Finset α) ≃ s ⊕ t :=
   (Equiv.finsetUnion s t).trans <| Equiv.Set.union <| by
     rw [← Finset.coe_inter, ← Finset.coe_empty]
     exact h.le_bot
@@ -402,18 +402,18 @@ theorem measurable_uniqueElim [Unique ι] [∀ i, MeasurableSpace (α i)] :
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 #align measurable_unique_elim measurable_uniqueElim
 
-def MeasurableEquiv.pi_unique [Unique ι] [∀ i, MeasurableSpace (α i)] :
-    α (default : ι) ≃ᵐ ∀ i, α i where
-      toFun := uniqueElim
-      invFun := fun f => f default
-      left_inv := fun x => rfl
-      right_inv := fun f => funext fun i => by
+/-- The measurable equivalence `(∀ i, α i) ≃ᵐ α ⋆` when the domain of `α` only contains `⋆` -/
+@[simps (config := .asFn)]
+def MeasurableEquiv.piUnique (α : ι → Type _) [Unique ι] [∀ i, MeasurableSpace (α i)] :
+    (∀ i, α i) ≃ᵐ α (default : ι) where
+      toFun := fun f => f default
+      invFun := uniqueElim
+      left_inv := fun f => funext fun i => by
         cases Unique.eq_default i
         rfl
-      measurable_toFun := by sorry
-      measurable_invFun := sorry
-
-
+      right_inv := fun x => rfl
+      measurable_toFun := measurable_pi_apply _
+      measurable_invFun := measurable_uniqueElim
 
 theorem MeasurableSet.univ_pi_fintype {δ} {π : δ → Type _} [∀ i, MeasurableSpace (π i)] [Fintype δ]
     {t : ∀ i, Set (π i)} (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
@@ -451,6 +451,7 @@ theorem measurable_piCongrLeft (f : ι' ≃ ι) : Measurable (piCongrLeft α f) 
 #align measurable_Pi_congr_left measurable_piCongrLeft
 
 variable (α)
+/-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
 def MeasurableEquiv.piCongrLeft (f : ι' ≃ ι) : (∀ b, α (f b)) ≃ᵐ ∀ a, α a := by
   refine' { Equiv.piCongrLeft α f with .. }
   · exact measurable_piCongrLeft f
@@ -463,6 +464,7 @@ variable {α}
 theorem MeasurableEquiv.piCongrLeft_eq (f : ι' ≃ ι) :
   (MeasurableEquiv.piCongrLeft α f : _ → _) = f.piCongrLeft α := by rfl
 
+/-- The measurable equivalence between the pi type over a sum type and a product of pi-types. -/
 def MeasurableEquiv.piSum (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
   ((∀ i, α (.inl i)) × ∀ i', α (.inr i')) ≃ᵐ ∀ i, α i := by
   refine' { Equiv.piSum α with .. }
@@ -503,27 +505,22 @@ theorem lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (
   sorry
 #align measure_theory.lintegral_prod_norm_pow_le MeasureTheory.lintegral_prod_norm_pow_le
 
-namespace Measure
+section Measure
 
 variable {α : ι → Type _}
-
 variable [∀ i, MeasurableSpace (α i)]
-
 variable [Fintype ι] [Fintype ι']
-
 variable {m : ∀ i, OuterMeasure (α i)}
-
 variable [∀ i, MeasurableSpace (α i)] {μ : ∀ i, Measure (α i)}
-
 variable [∀ i, SigmaFinite (μ i)]
-
 variable (μ)
 
+namespace Measure
 /-- Some properties of `Measure.pi` -/
-theorem pi_unique_left [Unique ι] : Measure.pi μ = map uniqueElim (μ (default : ι)) := by
-  apply pi_eq
-  intro s hs
-  rw [map_apply measurable_uniqueElim (MeasurableSet.univ_pi_fintype hs), uniqueElim_preimage]
+theorem pi_unique_left [Unique ι] :
+    Measure.pi μ = map (MeasurableEquiv.piUnique α).symm (μ (default : ι)) := by
+  refine pi_eq (fun s hs => ?_)
+  rw [map_apply (MeasurableEquiv.measurable _) (MeasurableSet.univ_pi_fintype hs), MeasurableEquiv.piUnique_symm_apply, uniqueElim_preimage]
   symm
   convert Finset.prod_singleton (β := ℝ≥0∞)
   rw [Finset.ext_iff, Unique.forall_iff]
@@ -547,6 +544,35 @@ theorem pi_sum {π : ι ⊕ ι' → Type _} [∀ i, MeasurableSpace (π i)] (μ 
   simp_rw [MeasurableEquiv.map_apply, MeasurableEquiv.piSum_eq, piSum_preimage_univ_pi,
     Measure.prod_prod, Measure.pi_pi, prod_sum_univ]
 #align measure_theory.measure.pi_sum MeasureTheory.Measure.pi_sum
+
+theorem pi_unique {π : ι → Type _} [Unique ι] [∀ i, MeasurableSpace (π i)]
+    (μ : ∀ i, Measure (π i)) :
+    map (MeasurableEquiv.piUnique π) (Measure.pi μ) = μ default := by
+  set e := MeasurableEquiv.piUnique π
+  have : (piPremeasure fun i => (μ i).toOuterMeasure) = Measure.map e.symm (μ default) := by
+    ext1 s
+    rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply]
+    congr 1; exact e.toEquiv.image_eq_preimage s
+  simp_rw [Measure.pi, OuterMeasure.pi, this, boundedBy_eq_self, toOuterMeasure_toMeasure,
+    MeasurableEquiv.map_map_symm]
+
+end Measure
+
+open Measure
+-- the next lemmas are currently unused
+
+theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
+    MeasurePreserving (MeasurableEquiv.piCongrLeft α f)
+      (Measure.pi fun i' => μ (f i')) (Measure.pi μ) where
+  measurable := (MeasurableEquiv.piCongrLeft α f).measurable
+  map_eq := pi_map_left μ f
+
+theorem measurePreserving_piSum {π : ι ⊕ ι' → Type _} [∀ i, MeasurableSpace (π i)]
+    (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
+    MeasurePreserving (MeasurableEquiv.piSum π)
+      ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) (Measure.pi μ) where
+  measurable := (MeasurableEquiv.piSum π).measurable
+  map_eq := pi_sum μ
 
 end Measure
 
@@ -607,6 +633,11 @@ theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measur
 -- by rw [h2f.lintegral_deriv_eq hf, ← of_real_norm_eq_coe_nnnorm, real.norm_of_nonneg (h3f b)]
 variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π i} {i : δ}
 
+/-- `update' s f x` is the function `f` restricted to the subspace containing only
+  the coordinates in `s`, where the coordinates outside of `s` are chosen using the default value
+  `x`. This is the integrand of the `marginal` function below.
+  Another view: `fun x => update' s f x y` is the function `f` where the coordinates in `s`
+  are updated to `y`. -/
 def update' (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) : (∀ i : s, π i) → ℝ≥0∞ :=
   fun y => f fun i => if hi : i ∈ s then y ⟨i, hi⟩ else x i
 #align measure_theory.update' MeasureTheory.update'
@@ -696,13 +727,13 @@ theorem marginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (h
     -- this is ugly, but applying lemmas basically doesn't work because of dependent types
     · change
         piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
-            (piSum (fun i : Sum s t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
+            (piSum (fun i : s ⊕ t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
             ((finsetUnionEquivSum s t hst).symm <| Sum.inl ⟨i, his⟩) =
           x ⟨i, his⟩
       rw [piCongrLeft_sum_inl]
     · change
         piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
-            (piSum (fun i : Sum s t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
+            (piSum (fun i : s ⊕ t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
             ((finsetUnionEquivSum s t hst).symm <| Sum.inr ⟨i, hit⟩) =
           y ⟨i, hit⟩
       rw [piCongrLeft_sum_inr]
@@ -726,25 +757,23 @@ theorem marginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {
 
 variable {μ}
 
-theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (i : δ) :
+theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
     ∫⋯∫_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   letI : Unique ({i} : Finset δ) :=
     ⟨⟨⟨i, mem_singleton_self i⟩⟩, fun j => Subtype.ext <| mem_singleton.mp j.2⟩
   ext1 x
   simp_rw [marginal, update', Measure.pi_unique_left _]
-  rw [lintegral_map]
+  rw [lintegral_map_equiv]
   congr with y; congr with j
   by_cases hj : j = i
   · cases hj.symm; simp only [dif_pos, Finset.mem_singleton, update_same]
     exact @uniqueElim_default _ (fun i : (({i} : Finset δ) : Set δ) => π i) _ y
   · simp [hj]
-  · sorry
-  · exact measurable_uniqueElim
 #align measure_theory.marginal_singleton MeasureTheory.marginal_singleton
 
-theorem integral_update (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (i : δ) (x : ∀ i, π i) :
+theorem integral_update (f : (∀ i, π i) → ℝ≥0∞) (i : δ) (x : ∀ i, π i) :
     ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i = (∫⋯∫_{i}, f ∂μ) x := by
-  simp_rw [marginal_singleton f hf i]
+  simp_rw [marginal_singleton f i]
 #align measure_theory.integral_update MeasureTheory.integral_update
 
 -- lemma marginal_insert (f : (Π i, π i) → ℝ≥0∞) (hf : measurable f) {i : δ}
@@ -760,7 +789,6 @@ theorem marginal_insert_rev (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable 
     ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i = (∫⋯∫_insert i s, f ∂μ) x := by
   rw [Finset.insert_eq, marginal_union, marginal_singleton]
   dsimp only
-  sorry
   sorry
   sorry
 #align measure_theory.marginal_insert_rev MeasureTheory.marginal_insert_rev
@@ -815,7 +843,7 @@ theorem marginal_rhsAux_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (i
   simp_rw [rhsAux, ← insert_compl_insert hi]
   rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
   rw [mul_left_comm, mul_prod_eq_prod_insertNone]
-  simp_rw [marginal_singleton _ sorry]
+  simp_rw [marginal_singleton _]
   have := fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)
   simp_rw [Pi.mul_apply, Pi.pow_apply, this]
   clear this
@@ -865,7 +893,7 @@ theorem lintegral_prod_lintegral_pow_le (hf : Measurable f) :
   simp_rw [rhsAux, marginal_univ hf, Finset.compl_univ, Finset.prod_empty, marginal_empty,
     Finset.card_empty, Nat.cast_zero, zero_div, Finset.compl_empty, mul_one, Pi.mul_def,
     Pi.pow_apply, ENNReal.rpow_zero, one_mul, Finset.prod_fn, Pi.pow_apply, insert_emptyc_eq,
-    marginal_singleton f sorry] at this
+    marginal_singleton f] at this
   rw [marginal_univ] at this
   exact this
   sorry
