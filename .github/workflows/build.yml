@@ -60,6 +60,7 @@ jobs:
           ./scripts/lint-style.sh --fix
 
       - name: action-git-diff-suggestions
+        if: failure()
         uses: getsentry/action-git-diff-suggestions@v1
 
       - name: lint references.bib
@@ -97,11 +98,12 @@ jobs:
         run: |
           git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
-      - name: action-git-diff-suggestions
-        uses: getsentry/action-git-diff-suggestions@v1
-
       - name: check that all files are imported
         run: git diff --exit-code
+
+      - name: action-git-diff-suggestions
+        if: failure()
+        uses: getsentry/action-git-diff-suggestions@v1
 
   build:
     if: github.repository == 'leanprover-community/mathlib4'
