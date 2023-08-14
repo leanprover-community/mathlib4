@@ -231,13 +231,13 @@ def starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
   star := id
   star_involutive _ := rfl
   star_mul := mul_comm
-#align star_semigroup_of_comm starSemigroupOfComm
+#align star_semigroup_of_comm starMulOfComm
 
 section
 
-attribute [local instance] starSemigroupOfComm
+attribute [local instance] starMulOfComm
 
-/-- Note that since `starSemigroupOfComm` is reducible, `simp` can already prove this. -/
+/-- Note that since `starMulOfComm` is reducible, `simp` can already prove this. -/
 theorem star_id_of_comm {R : Type*} [CommSemiring R] {x : R} : star x = x :=
   rfl
 #align star_id_of_comm star_id_of_comm
@@ -459,7 +459,7 @@ See note [reducible non-instances].
 -/
 @[reducible]
 def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
-  { starSemigroupOfComm with
+  { starMulOfComm with
     star := id
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
