@@ -32,9 +32,11 @@ jobs:
         run: |
           ./scripts/lint-style.sh --fix
 
-      - name: action-git-diff-suggestions
+      - name: suggester / lint-style
         if: failure()
-        uses: getsentry/action-git-diff-suggestions@v1
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: lint-style
 
       - name: lint references.bib
         run: |
