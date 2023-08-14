@@ -82,4 +82,4 @@ jobs:
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: import list
+          tool_name: imports
