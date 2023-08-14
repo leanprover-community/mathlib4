@@ -9,6 +9,7 @@ import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.Calculus.ContDiff
 
 /-!
@@ -34,6 +35,15 @@ theorem prod_rpow {ι} (s : Finset ι) {f : ι → ℝ} (hf : 0 ≤ f) (r : ℝ)
 #align real.prod_rpow Real.prod_rpow
 
 end Real
+
+namespace ENNReal
+
+theorem prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0∞) (r : ℝ) :
+    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r :=
+  sorry
+
+end ENNReal
+
 
 variable {α β γ : Type _}
 
@@ -832,8 +842,7 @@ theorem marginal_rhsAux_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) (i
 #align marginal_rhs_aux_le marginal_rhsAux_le
 
 theorem marginal_rhsAux_empty_le (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) :
-    ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s :=
-  by
+    ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
   induction' s using Finset.induction with i s hi ih
   · rw [marginal_empty]
   · have hi' : Disjoint {i} s := sorry
@@ -846,8 +855,7 @@ theorem lintegral_prod_lintegral_pow_le (hf : Measurable f) :
     ∫⁻ x, ∏ i,
       (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^
         ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
-      (∫⁻ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
-  by
+      (∫⁻ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   cases isEmpty_or_nonempty (∀ i, π i)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
   inhabit ∀ i, π i
@@ -861,56 +869,79 @@ theorem lintegral_prod_lintegral_pow_le (hf : Measurable f) :
   sorry
 #align lintegral_prod_lintegral_pow_le lintegral_prod_lintegral_pow_le
 
-theorem integral_prod_integral_pow_le {f : (∀ i, π i) → ℝ} (hf : Measurable f)
-    (h2f : ∀ x, 0 ≤ f x) :
-    ∫ x, ∏ i, (∫ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1))
-      ∂Measure.pi μ ≤
-      (∫ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1)) :=
-  by sorry
-#align integral_prod_integral_pow_le integral_prod_integral_pow_le
+-- theorem integral_prod_integral_pow_le {f : (∀ i, π i) → ℝ} (hf : Measurable f)
+--     (h2f : ∀ x, 0 ≤ f x) :
+--     ∫ x,
+--         ∏ i,
+--           (∫ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1)) ∂Measure.pi μ ≤
+--       (∫ x, f x ∂Measure.pi μ) ^ ((#ι : ℝ) / (#ι - 1)) :=
+--   by sorry
+-- #align integral_prod_integral_pow_le integral_prod_integral_pow_le
+
+attribute [gcongr] ENNReal.rpow_le_rpow
+
+
+theorem nnnorm_integral_le_lintegral_nnnorm {α E : Type _} [MeasurableSpace α] {μ : Measure α}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] (f : α → E) :
+    ‖∫ x, f x ∂μ‖₊ ≤ ∫⁻ x, ‖f x‖₊ ∂ μ  :=
+  sorry
 
 /-- The Sobolev inequality -/
-theorem integral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
-    ∫ x, ‖u x‖ ^ ((#ι : ℝ) / (#ι - 1)) ≤
-      (∫ x, ‖fderiv ℝ u x‖) ^ ((#ι : ℝ) / (#ι - 1)) :=
-  by
-  refine' le_trans _ (integral_prod_integral_pow_le (fun _ => volume) sorry fun x => norm_nonneg _)
-  refine' integral_mono sorry sorry fun x => _
-  dsimp only
-  simp_rw [div_eq_mul_inv, one_mul, Real.rpow_mul sorry, Real.prod_rpow _ sorry]
-  refine' Real.rpow_le_rpow sorry _ sorry
+theorem lintegral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
+    ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
+      (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+  have hu' : Measurable (fun x ↦ (‖fderiv ℝ u x‖₊ : ℝ≥0∞))
+  · borelize ((ι → ℝ) →L[ℝ] ℝ)
+    have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv (le_refl _)).measurable
+    measurability
+  refine' le_trans _ (lintegral_prod_lintegral_pow_le (fun _ => volume) hu')
+  set n : ℕ := #ι
+  have hn : 0 ≤ (n : ℝ) / (n - 1 : ℝ)
+  · obtain hn | hn := Nat.eq_zero_or_pos n
+    · simp only [hn]
+      norm_num
+    have : 1 ≤ (n:ℝ) := by exact_mod_cast hn
+    have : 0 ≤ (n:ℝ) - 1 := by linarith
+    positivity
+  refine' lintegral_mono fun x => _ -- should be `gcongr`
+  -- dsimp only
+  rw [← ENNReal.coe_rpow_of_nonneg _ hn]
+  simp_rw [div_eq_mul_inv, one_mul, ENNReal.rpow_mul, ENNReal.prod_rpow]
+  gcongr
+  · sorry
+  rw [← card_univ]
   norm_cast
-  rw [← card_univ, ← prod_const]
-  refine' prod_le_prod (fun i hi => norm_nonneg _) fun i hi => _
+  rw [← prod_const]
+  push_cast
+  gcongr with i hi
   have h3u : ContDiff ℝ 1 fun t => u (update x i t) := by sorry
   have h4u : HasCompactSupport fun t => u (update x i t) := by sorry
   have := h4u.integral_deriv_eq h3u (x i)
   dsimp only at this
   simp_rw [update_eq_self] at this
   rw [← this]
-  refine' (norm_integral_le_integral_norm _).trans _
-  refine' (set_integral_mono_set sorry sorry _).trans _
-  exact Set.univ
-  refine' (Set.subset_univ _).eventuallyLE
-  rw [integral_univ]
-  refine' integral_mono sorry sorry fun y => _
+  refine' (nnnorm_integral_le_lintegral_nnnorm _).trans _
+  refine (lintegral_mono' (Measure.restrict_le_self) (le_refl _)).trans ?_
+  refine' lintegral_mono fun y => _
   rw [← Function.comp_def u (update x i), deriv]
   rw [fderiv.comp y (hu.differentiable le_rfl).differentiableAt (sorry : DifferentiableAt ℝ (update x i) y)]
   rw [ContinuousLinearMap.comp_apply]
+  norm_cast
+  show ‖_‖ ≤ ‖_‖
   refine' (ContinuousLinearMap.le_op_norm _ _).trans _
   conv_rhs => rw [← mul_one ‖_‖]
   simp_rw [fderiv_update]
-  refine' mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+  gcongr
   refine' (ContinuousLinearMap.le_op_norm _ _).trans_eq _
   rw [norm_one, mul_one]
   exact ContinuousLinearMap.norm_pi_update_eq_one fun _ => ℝ
-#align integral_pow_le integral_pow_le
-
-/-- The Sobolev inequality for the Lebesgue integral(?) -/
-theorem lintegral_pow_le :
-    ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
-      (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
-  by sorry
 #align lintegral_pow_le lintegral_pow_le
+
+-- /-- The Sobolev inequality for the Lebesgue l=integral(?) -/
+-- theorem lintegral_pow_le :
+--     ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
+--       (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
+--   by sorry
+-- #align lintegral_pow_le lintegral_pow_le
 
 end Sobolev
