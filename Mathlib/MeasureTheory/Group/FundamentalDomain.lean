@@ -52,7 +52,8 @@ their closures cover the whole space. -/
 structure IsAddFundamentalDomain (G : Type _) {α : Type _} [Zero G] [VAdd G α] [TopologicalSpace α]
     (s : Set α) : Prop where
   protected covers : (⋃ g : G, closure (g +ᵥ s)) = univ
-  protected disjoint : ∀ g₁ g₂ : G, g₁ ≠ g₂ → Disjoint (interior (g₁ +ᵥ s)) (interior (g₂ +ᵥ s))
+  protected disjoint : Pairwise <| (Disjoint on fun g : G ↦ interior (g +ᵥ s))
+  --∀ g₁ g₂ : G, g₁ ≠ g₂ → Disjoint (interior (g₁ +ᵥ s)) (interior (g₂ +ᵥ s))
 
 /-- A set `s` is a *fundamental domain* for an action of a group `G` on a topological
 space `α` if the interiors of the sets `g • s`, `g : G`, are pairwise disjoint, and their closures
@@ -61,7 +62,8 @@ cover the whole space. -/
 structure IsFundamentalDomain (G : Type _) {α : Type _} [One G] [SMul G α] [TopologicalSpace α]
     (s : Set α) : Prop where
   protected covers : (⋃ g : G, closure (g • s)) = univ
-  protected disjoint : ∀ g₁ g₂ : G, g₁ ≠ g₂ → Disjoint (interior (g₁ • s)) (interior (g₂ • s))
+  protected disjoint : Pairwise <| (Disjoint on fun g : G ↦ interior (g • s))
+     --∀ g₁ g₂ : G, g₁ ≠ g₂ → Disjoint (interior (g₁ • s)) (interior (g₂ • s))
 
 end FundamentalDomain
 
@@ -73,6 +75,70 @@ def DirichletSet (x : α) (g : G) : Set α := { y : α | dist x y ≤ dist (g �
 
 def DirichletPolyhedron (x : α) : Set α := ⋂ g : G, DirichletSet G x g
 
+theorem DirichletPolyhedron_eq_Inter (x : α) :
+    DirichletPolyhedron G x = ⋂ g : G, { y : α | dist x y ≤ dist (g • x) y } := rfl
+
+lemma isClosed_DirichletSet (x : α) (g : G) : IsClosed (DirichletSet G x g) := by
+  apply isClosed_le
+  · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
+  · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
+
+def DirichletSet₀ (x : α) (g : G) : Set α := { y : α | dist x y < dist (g • x) y }
+
+lemma DirichletSet₀Subset (x : α) (g : G) : DirichletSet₀ G x g ⊆ DirichletSet G x g := by
+  intro y
+  simp only [DirichletSet₀, DirichletSet, Set.mem_setOf]
+  exact fun h ↦ h.le
+
+lemma isOpen_DirichletSet₀ (x : α) (g : G) : IsOpen (DirichletSet₀ G x g) := by
+  apply isOpen_lt
+  · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
+  · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
+
+structure ExtendableSpace (α : Type _) [PseudoMetricSpace α] : Prop where
+  protected extendable : ∀ x y : α, ∃ᶠ z in 𝓝 y, dist x y < dist x z
+
+lemma interior_closedBall'' {α : Type _} [MetricSpace α] {hα : ExtendableSpace α} (x : α)
+    (r : ℝ) (hr : 0 < r) :
+    interior (Metric.closedBall x r) = Metric.ball x r := by
+  refine Subset.antisymm ?_ Metric.ball_subset_interior_closedBall
+  intro y hy
+  simp only [interior, mem_sUnion] at hy
+  obtain ⟨t, ht₁, ht₂⟩ := hy
+  simp only [mem_setOf] at ht₁
+  simp only [Metric.mem_ball]
+  by_contra hh
+  have dxyr : dist x y = r
+  · rw [dist_comm]
+    push_neg at hh
+    have : y ∈ Metric.closedBall x r := Set.mem_of_subset_of_mem ht₁.2 ht₂
+    rw [Metric.mem_closedBall] at this
+    exact le_antisymm this hh
+
+
+
+
+
+
+
+#exit
+
+
+lemma interior_DirichletSet (x : α) (g : G) :
+    interior (DirichletSet G x g) = DirichletSet₀ G x g := by
+  refine Subset.antisymm ?_
+    (interior_maximal (DirichletSet₀Subset G x g) (isOpen_DirichletSet₀ G x g))
+  intro y
+  simp only [mem_interior, mem_setOf, DirichletSet₀, DirichletSet]
+  intro h
+  obtain ⟨t, ht₁, ht₂, ht₃⟩ := h
+  sorry
+
+
+
+#exit
+
+
 variable [IsometricSMul G α]
 
 lemma bubDirichletSet_iff (x y : α) (g h : G) :
@@ -82,92 +148,140 @@ lemma bubDirichletSet_iff (x y : α) (g h : G) :
   · rw [hh]
   · rw [mul_smul, dist_smul]
 
-example (y : α) (P : α → Prop) (h : G) :
-h • {y | P y} = {y | P (h • y)} := by
-  ext y
-
-
-#exit
-
 lemma bubDirichletSet (x : α) (g h : G) :
     h • DirichletSet G x g = DirichletSet G (h • x) (h * g * h⁻¹) := by
   ext y
-  simp only [DirichletSet, mem_setOf_eq]
-  constructor
-  · sorry
-  · intro hh
-    simp only
---  rw [(by simp [mul_smul] : ((h * g * h⁻¹) • h • x) = ((h * g) • x)), ← bubDirichletSet_iff G x y g h]
+  simp only [DirichletSet]
+  rw [mem_smul_set_iff_inv_smul_mem, mem_setOf_eq, mem_setOf_eq, mul_smul, mul_smul,
+    (dist_smul h x (h⁻¹ • y)).symm, (dist_smul h (g • x) (h⁻¹ • y)).symm, smul_inv_smul h y,
+    inv_smul_smul h x]
+
+/- Belongs elsewhere `Mathlib.Data.Set.Pointwise.SMul` -/
+theorem Set.smulSet_iInter {α : Type _} {β : Type _} {ι : Sort _} [Group α]
+    [MulAction α β] (a : α) (s : ι → Set β) :
+    a • (⋂ (i : ι), s i) = ⋂ (i : ι), a • s i :=
+  Set.image_iInter (MulAction.toPerm a).bijective _
+
+/- move to `Mathlib.Algebra.Hom.Equiv.Units.Basic`? -/
+theorem Group.conj_bijective {α : Type _} [Group α] (g : α) :
+    Bijective (fun h ↦ g * h * g⁻¹) :=
+  (Group.mulRight_bijective g⁻¹).comp (Group.mulLeft_bijective g)
+
+lemma bubDirichletPolyhedron (x : α) (g : G) :
+    g • DirichletPolyhedron G x = DirichletPolyhedron G (g • x) := by
+  simp only [DirichletPolyhedron]
+  rw [Set.smulSet_iInter]
+  simp_rw [bubDirichletSet]
+  rw [Surjective.iInter_comp]
+  exact (Group.conj_bijective g).2
+
+lemma isClosed_bubDirichletSet (x : α) (g h : G) : IsClosed (h • DirichletSet G x g) := by
+  rw [bubDirichletSet]
+  exact isClosed_DirichletSet G (h • x) (h * g * h⁻¹)
+
+lemma closure_bubDirichletSet (x : α) (g h : G) :
+    closure (h • DirichletSet G x g) = h • DirichletSet G x g :=
+  closure_eq_iff_isClosed.mpr (isClosed_bubDirichletSet G x g h)
+
+lemma isClosed_DirichletPolyhedron (x : α) : IsClosed (DirichletPolyhedron G x) := by
+  rw [DirichletPolyhedron_eq_Inter]
+  exact isClosed_iInter fun g => isClosed_DirichletSet G x g
+
+lemma isClosed_bubDirichletPolyhedron (x : α) (g : G) :
+    IsClosed (g • DirichletPolyhedron G x) := by
+  rw [bubDirichletPolyhedron]
+  exact isClosed_DirichletPolyhedron G (g • x)
+
+lemma closure_bubDirichletPolyhedron (x : α) (g : G) :
+    closure (g • DirichletPolyhedron G x) = g • DirichletPolyhedron G x :=
+  closure_eq_iff_isClosed.mpr (isClosed_bubDirichletPolyhedron G x g)
+
+theorem IsCover_of_DirichletPolyhedron [ProperSpace α] [i₁ : ProperlyDiscontinuousSMul G α]
+    (x : α) : ⋃ (g : G), closure (g • DirichletPolyhedron G x) = univ := by
+  simp_rw [closure_bubDirichletPolyhedron, bubDirichletPolyhedron]
+  simp only [DirichletPolyhedron]
+  ext y
+  simp_rw [mem_univ, iff_true, DirichletSet, mem_iUnion, mem_iInter, mem_setOf]
+  let t := Metric.closedBall y (dist x y)
+  have comp_t : IsCompact t := isCompact_closedBall y (dist x y)
+  have fin_orbit := i₁.finite_disjoint_inter_image comp_t comp_t
+  set Γ := {γ : G | (γ • t) ∩ t ≠ ∅}
+  have one_in_Γ : 1 ∈ Γ := by simp [image_smul, Metric.smul_closedBall, ne_eq, mem_setOf_eq,
+    one_smul, inter_self, Metric.closedBall_eq_empty, not_lt, dist_nonneg]
+  have nonempty_Γ : Set.Nonempty Γ := ⟨1, one_in_Γ⟩
+  obtain ⟨g, -, hg⟩ :=
+    @Set.exists_min_image G ℝ _ Γ (fun γ ↦ dist (γ • x) y) fin_orbit nonempty_Γ
+  use g
+  intro γ
+  by_cases hγ : (γ * g) ∈ Γ
+  · convert hg (γ * g) hγ using 2
+    simp [mul_smul]
+  · have γgt_inter  : (γ * g) • t ∩ t = ∅ := by
+      simp only [not_not, mem_smul_set_iff_inv_smul_mem, mem_setOf_eq] at hγ
+      exact hγ
+    calc _ ≤ dist x y := by convert hg 1 one_in_Γ; simp
+          _ ≤ _ := ?_
+    by_contra hh
+    simp only [not_le] at hh
+    have : (γ * g) • x ∈ (γ * g) • t ∩ t
+    · simp only [Metric.smul_closedBall, mem_inter_iff, Metric.mem_closedBall, dist_smul, le_refl,
+        true_and]
+      convert hh.le using 2
+      simp [mul_smul]
+    rw [γgt_inter] at this
+    exact this
+
+theorem IsDisjoint_of_DirichletPolyhedron {x : α} (hx : ∀ g : G, g • x ≠ x) : ∀ (g₁ g₂ : G),
+    g₁ ≠ g₂ →
+    Disjoint (interior (g₁ • DirichletPolyhedron G x)) (interior (g₂ • DirichletPolyhedron G x))
+    := by
+  intro g₁ g₂ hg12
+  simp_rw [bubDirichletPolyhedron, DirichletPolyhedron, Set.disjoint_iff]
+  intro y ⟨hy₁, hy₂⟩
+  simp only [mem_empty_iff_false]
+  simp_rw [interior_iInter] at hy₁
+  sorry
 
 
-
-lemma isClosed_DirichletSet (x : α) (g : G) : IsClosed (DirichletSet G x g) := by
-  apply isClosed_le
-  · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
-  · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
-
-lemma closure_DirichletSet (x : α) (g : G) : closure (DirichletSet G x g) = DirichletSet G x g :=
-  closure_eq_iff_isClosed.mpr (isClosed_DirichletSet G x g)
-
-
-
-
-#exit
-
-
-
-
-theorem DirichletPolyhedron_eq_Inter (x : α) :
-  DirichletPolyhedron G x = ⋂ g : G, { y : α | dist x y ≤ dist (g • x) y } := by
-    ext y
-    simp only [DirichletPolyhedron, mem_setOf_eq, mem_iInter]
-
-
-theorem IsFundamentalDomain_of_DirichletPolyhedron [IsometricSMul G α]
-    [i₁ : ProperlyDiscontinuousSMul G α] (x : α) (hx : ∀ g : G, g • x ≠ x) :
+theorem IsFundamentalDomain_of_DirichletPolyhedron [ProperSpace α]
+    [ProperlyDiscontinuousSMul G α] {x : α} (hx : ∀ g : G, g • x ≠ x) :
     IsFundamentalDomain G (DirichletPolyhedron G x) where
-      covers := by
-        ext y
-        simp only [mem_iUnion, mem_univ, iff_true]
-        simp only [mem_Union, mem_closure_iff_nhds_within_ne_bot, mem_set_of_eq]
-        rw [← exists_ne]
-        exact hx
-      disjoint := _
+      covers := IsCover_of_DirichletPolyhedron G x
+      disjoint := IsDisjoint_of_DirichletPolyhedron G hx
+
 
 
 #exit
-    IsFundamentalDomain G (DirichletPolyhedron G x) μ where
-  nullMeasurableSet := by
-    apply MeasurableSet.nullMeasurableSet
-    dsimp [NullMeasurableSet]
-    rw [DirichletPolyhedron_eq_Inter]
-    apply MeasurableSet.iInter
-    intro g
-    apply @IsClosed.measurableSet α ({y | dist x y ≤ dist (g • x) y}) _ _ _
-    rw [← isOpen_compl_iff]
-    suffices h : IsOpen {y : α | dist (g • x) y < dist x y}
-    · convert h using 1
-      ext y
-      simp only [mem_compl_iff, mem_setOf_eq, not_le]
-    · apply isOpen_lt
-      · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
-      · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
-  ae_covers := by
-    filter_upwards
-    set s := DirichletPolyhedron G x
-    intro y
-    let t := Metric.closedBall y (dist x y)
-    have comp_t : IsCompact t := isCompact_closedBall y (dist x y)
-    have fin_orbit := i₁.finite_disjoint_inter_image comp_t comp_t
-    set Γ := {γ : G | (fun x ↦ γ • x) '' t ∩ t ≠ ∅}
-    have nonempty_Γ : Set.Nonempty Γ := by
-      use 1
-      simp only [image_smul, Metric.smul_closedBall, ne_eq, mem_setOf_eq, one_smul, inter_self,
-        Metric.closedBall_eq_empty, not_lt]
-      exact dist_nonneg
-    obtain ⟨g, -, hg⟩ :=
-      @Set.exists_min_image G ℝ _ Γ (fun γ ↦ dist x (γ • y)) fin_orbit nonempty_Γ
-    use g
+
+
+
+
+
+
+            -- apply le_of_lt
+            -- dsimp at this
+            -- simp_rw [Metric.closedBall, mem_smul_set_iff_inv_smul_mem] at this
+            -- by_contra hh
+            -- simp only [not_lt] at hh
+            -- have : x ∈ (γ * g) • {z | dist z y ≤ dist x y} ∩ {z | dist z y ≤ dist x y} := by
+            --   simp only [mem_inter_iff, mem_setOf_eq, le_refl, and_true]
+            --   simp only [mem_smul_set_iff_inv_smul_mem, mem_setOf_eq]
+            --   sorry
+
+
+          -- dsimp at this
+          -- convert this using 2
+          -- simp [mul_smul]
+
+        -- simp_rw [closure_bubDirichletSet]
+
+        -- simp only [mem_iUnion, mem_univ, iff_true]
+        -- simp only [mem_Union, mem_closure_iff_nhds_within_ne_bot, mem_set_of_eq]
+        -- rw [← exists_ne]
+        -- exact hx
+        sorry
+
+
     simp only [DirichletPolyhedron, mem_setOf_eq]
     intro γ
     have dist_eq : dist (γ • x) (g • y) = dist x ((γ⁻¹ * g) • y) := by
