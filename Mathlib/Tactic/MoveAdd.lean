@@ -257,7 +257,8 @@ def pairUp : List (Expr × Bool × Syntax) → List Expr →
   | (m::ms), l => do
     match ← l.findM? (isDefEq · m.1) with
       | none => let (found, unfound) := ← pairUp ms l; return (found, m::unfound)
-      | some d => let (found, unfound) := ← pairUp ms (l.erase d); return ((d, m.2.1)::found, unfound)
+      | some d => let (found, unfound) := ← pairUp ms (l.erase d)
+                  return ((d, m.2.1)::found, unfound)
   | _, _ => return ([], [])
 
 open Elab.Tactic
