@@ -20,7 +20,7 @@ open Filter TopologicalSpace Set Classical UniformSpace Function
 
 open Classical Uniformity Topology Filter
 
-variable {α : Type u} {β : Type v} [UniformSpace α]
+variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
 /-- A filter `f` is Cauchy if for every entourage `r`, there exists an
   `s ∈ f` such that `s × s ⊆ r`. This is a generalization of Cauchy
@@ -53,6 +53,10 @@ theorem cauchy_iff {f : Filter α} : Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α,
   cauchy_iff'.trans <| by
     simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, ball_mem_comm]
 #align cauchy_iff cauchy_iff
+
+lemma cauchy_of_neBot {l : Filter α} [hl : l.NeBot] :
+  Cauchy l ↔ l ×ˢ l ≤ 𝓤 α :=
+by simp only [Cauchy, hl, true_and]
 
 theorem Cauchy.ultrafilter_of {l : Filter α} (h : Cauchy l) :
     Cauchy (@Ultrafilter.of _ l h.1 : Filter α) := by
@@ -100,6 +104,26 @@ theorem Cauchy.prod [UniformSpace β] {f : Filter α} {g : Filter β} (hf : Cauc
     ⟨le_trans (prod_mono tendsto_fst tendsto_fst) hf.2,
       le_trans (prod_mono tendsto_snd tendsto_snd) hg.2⟩
 #align cauchy.prod Cauchy.prod
+
+lemma Cauchy.mono_uniformSpace {u v : UniformSpace β} {F : Filter β} (huv : u ≤ v)
+    (hF : Cauchy (uniformSpace := u) F) : Cauchy (uniformSpace := v) F :=
+  ⟨hF.1, hF.2.trans huv⟩
+
+lemma cauchy_iInf_uniformSpace {ι : Sort*} [Nonempty ι] {u : ι → UniformSpace β}
+    {l : Filter β} :
+    Cauchy (uniformSpace := ⨅ i, u i) l ↔ ∀ i, Cauchy (uniformSpace := u i) l := by
+  unfold Cauchy
+  simp only [iInf_uniformity, le_iInf_iff, forall_and, forall_const]
+
+lemma cauchy_iInf_uniformSpace' {ι : Sort*} {u : ι → UniformSpace β}
+    {l : Filter β} [l.NeBot] :
+    Cauchy (uniformSpace := ⨅ i, u i) l ↔ ∀ i, Cauchy (uniformSpace := u i) l := by
+  simp_rw [cauchy_of_neBot (uniformSpace := _), iInf_uniformity, le_iInf_iff]
+
+lemma Cauchy.comap_uniformSpace {α β : Type*} {u : UniformSpace β} {f : α → β} {l : Filter α} :
+    Cauchy (map f l) ↔ Cauchy (uniformSpace := comap f u) l := by
+  simp only [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap, uniformity_comap _]
+  rfl
 
 /-- The common part of the proofs of `le_nhds_of_cauchy_adhp` and
 `SequentiallyComplete.le_nhds_of_seq_tendsto_nhds`: if for any entourage `s`
@@ -158,6 +182,10 @@ theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Ca
     (_ : NeBot (Filter.comap m f)) : Cauchy (Filter.comap m f) :=
   hf.comap hm
 #align cauchy.comap' Cauchy.comap'
+
+structure UniformSpace.LEWithClosedBasis (u v : UniformSpace β) : Prop where
+  le : u ≤ v
+  hasBasis_closed : 𝓤[u].HasBasis (fun U ↦ U ∈ 𝓤[u] ∧ letI : UniformSpace β := v; IsClosed U) id
 
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
 defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
