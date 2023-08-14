@@ -100,7 +100,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel [Normed
     [CompleteSpace F] (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
   simp_rw [condexpKernel_apply_eq_condDistrib]
-  convert AEStronglyMeasurable.integral_condDistrib
+  exact AEStronglyMeasurable.integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf.comp_snd_map_prod_id inf_le_right)
 #align measure_theory.ae_strongly_measurable.integral_condexp_kernel MeasureTheory.AEStronglyMeasurable.integral_condexpKernel
