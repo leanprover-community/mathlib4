@@ -158,7 +158,7 @@ private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → 
 def reciprocalFactors (n : ℕ) : List ℕ :=
   if h0 : n = 0 then [0]
   else if h1 : n = 1 then []
-  else if 2 ∣ n then
+  else if Even n then
     have := div_two_lt h0
     3 :: reciprocalFactors (n / 2)
   else
@@ -169,21 +169,21 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
 
 @[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := rfl
 
-@[simp] lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
+@[nolint unusedHavesSuffices] lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
     reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
   have h1 : n ≠ 1
   · rintro rfl
     norm_num at h2
   conv_lhs => unfold reciprocalFactors
-  rw [dif_neg h0, dif_neg h1, if_pos h2.two_dvd]
+  rw [dif_neg h0, dif_neg h1, if_pos h2]
 
-@[simp] lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
+@[nolint unusedHavesSuffices] lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
     reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
   have h0 : n ≠ 0
   · rintro rfl
     norm_num at h2
   conv_lhs => unfold reciprocalFactors
-  rw [dif_neg h0, dif_neg h1, if_neg h2.not_two_dvd_nat]
+  rw [dif_neg h0, dif_neg h1, if_neg (Nat.odd_iff_not_even.mp h2)]
 
 /-- A finite product of Dihedral groups. -/
 abbrev Product (l : List ℕ) : Type :=
@@ -214,8 +214,7 @@ theorem commProb_reciprocal (n : ℕ) :
     rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
     have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
     have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> norm_num
-    rw [commProb_odd (hn.mul h2)]
-    rw [div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
+    rw [commProb_odd (hn.mul h2), div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
     · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
       have h1 := (Nat.div_add_mod n 4).symm
       zify at h0 h1 ⊢
