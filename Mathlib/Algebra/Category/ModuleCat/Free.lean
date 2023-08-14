@@ -33,7 +33,7 @@ linear algebra, module, free
 
 namespace ModuleCat
 
-variable {ι ι' R : Type _}[Ring R] {N P : ModuleCat R} {v : ι → N}
+variable {ι ι' R : Type*}[Ring R] {N P : ModuleCat R} {v : ι → N}
 
 open CategoryTheory
 

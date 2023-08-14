@@ -234,7 +234,7 @@ end CaseBashing
 
 section cast
 
-variable {α : Type _} [Zero α] [One α] [Neg α]
+variable {α : Type*} [Zero α] [One α] [Neg α]
 
 /-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance, but note it is
 only a `CoeTC` instance: see note [use has_coe_t]. -/
@@ -288,7 +288,7 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
 
 end SignType
 
-variable {α : Type _}
+variable {α : Type*}
 
 open SignType
 
@@ -462,7 +462,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.2
 -/
 attribute [local instance] LinearOrderedAddCommGroup.decidableLT
 
-theorem sign_sum {ι : Type _} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
+theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
   cases t
   · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
