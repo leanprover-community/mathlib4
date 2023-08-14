@@ -43,7 +43,7 @@ namespace MvPolynomial
 
 open Finset Nat
 
-variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [NoZeroDivisors R]
+variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R] [NoZeroDivisors R]
   [CharZero R]
 
 namespace NewtonIdentities
@@ -70,7 +70,7 @@ private lemma pairMap_of_snd_nmem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
-private theorem pairMap_mem_pairs (t : Finset σ × σ) (h : t ∈ pairs σ k) :
+private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     pairMap σ t ∈ pairs σ k := by
   rw [mem_pairs] at h ⊢
   rcases (em (t.snd ∈ t.fst)) with h1 | h1
@@ -96,7 +96,7 @@ private theorem pairMap_involutive : (pairMap σ).Involutive := by
   · simp_all
   · simp at h3
 
-private theorem weight_add_weight_pairMap (t : Finset σ × σ) (h : t ∈ pairs σ k) :
+private theorem weight_add_weight_pairMap {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     weight σ R k t + weight σ R k (pairMap σ t) = 0 := by
   rw [weight, weight]
   rw [mem_pairs] at h
@@ -119,7 +119,7 @@ private theorem weight_add_weight_pairMap (t : Finset σ × σ) (h : t ∈ pairs
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ card t.fst), h2]
     simp
 
-private theorem weight_eq_zero_of_pairMapEqSelf (t : Finset σ × σ) (h : t ∈ pairs σ k)
+private theorem weight_eq_zero_of_pairMapEqSelf {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k)
     (h2 : pairMap σ t = t) : weight σ R k t = 0 := by
   rw [← eq_neg_self_iff, ← add_eq_zero_iff_eq_neg]
   nth_rw 2 [← h2]
@@ -227,10 +227,7 @@ private theorem esymm_mul_psum_to_weight (k : ℕ) :
 end NewtonIdentities
 
 /-- **Newton's identities** give a recurrence relation for the kth elementary symmetric polynomial
-in terms of lower degree elementary symmetric polynomials and power sums.
-
-The recurrence arises by splitting off the `i = k` term from the identity
-  `∑ ᵢ₊ⱼ₌ₖ (-1)ⁱeᵢpⱼ = 0`. -/
+in terms of lower degree elementary symmetric polynomials and power sums. -/
 theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     (-1) ^ (k + 1) * ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
