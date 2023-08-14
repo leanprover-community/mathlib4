@@ -225,6 +225,10 @@ theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace 
   fun _t ht => ha _ <| hf <| hb _ ht
 #align measurable.mono Measurable.mono
 
+theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
+  measurable_id.mono le_rfl hm
+#align probability_theory.measurable_id'' measurable_id''
+
 -- porting note: todo: add TC `DiscreteMeasurable` + instances
 
 @[measurability]
