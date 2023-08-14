@@ -42,11 +42,11 @@ variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)
 instance : Module R (⨁ i, M i) :=
   DFinsupp.module
 
-instance {S : Type _} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
+instance {S : Type*} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
     SMulCommClass R S (⨁ i, M i) :=
   DFinsupp.smulCommClass
 
-instance {S : Type _} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsScalarTower R S (M i)] :
+instance {S : Type*} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsScalarTower R S (M i)] :
     IsScalarTower R S (⨁ i, M i) :=
   DFinsupp.isScalarTower
 
@@ -186,7 +186,7 @@ theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
 #align direct_sum.linear_equiv_fun_on_fintype_symm_coe DirectSum.linearEquivFunOnFintype_symm_coe
 
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
-protected def lid (M : Type v) (ι : Type _ := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
+protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
     (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 #align direct_sum.lid DirectSum.lid
@@ -229,7 +229,7 @@ theorem component.of (i j : ι) (b : M j) :
 
 section CongrLeft
 
-variable {κ : Type _}
+variable {κ : Type*}
 
 /-- Reindexing terms of a direct sum is linear. -/
 def lequivCongrLeft (h : ι ≃ κ) : (⨁ i, M i) ≃ₗ[R] ⨁ k, M (h.symm k) :=
@@ -246,13 +246,13 @@ end CongrLeft
 
 section Sigma
 
-variable {α : ι → Type _} {δ : ∀ i, α i → Type w}
+variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
 
 variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
-noncomputable def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert @DFinsupp.sigmaCurry_smul _ _ _ δ _ _ _ r }
+def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
+  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 #align direct_sum.sigma_lcurry DirectSum.sigmaLcurry
 
 @[simp]
@@ -275,7 +275,7 @@ theorem sigmaLuncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (�
 #align direct_sum.sigma_luncurry_apply DirectSum.sigmaLuncurry_apply
 
 /-- `curryEquiv` as a linear equiv. -/
-noncomputable def sigmaLcurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaLcurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ i : Σ_, _, δ i.1 i.2) ≃ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurryEquiv, sigmaLcurry R with }
 #align direct_sum.sigma_lcurry_equiv DirectSum.sigmaLcurryEquiv
@@ -305,7 +305,7 @@ variable {R : Type u} [Semiring R]
 
 variable {ι : Type v} [dec_ι : DecidableEq ι]
 
-variable {M : Type _} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
 
 variable (A : ι → Submodule R M)
 
@@ -336,7 +336,7 @@ theorem IsInternal.submodule_independent (h : IsInternal A) : CompleteLattice.In
 
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
-noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type _}
+noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M
     where repr :=
     ((LinearEquiv.ofBijective (DirectSum.coeLinearMap A) h).symm ≪≫ₗ
@@ -345,7 +345,7 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
 #align direct_sum.is_internal.collected_basis DirectSum.IsInternal.collectedBasis
 
 @[simp]
-theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
+theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i ↦ ↑(v a.1 a.2) := by
   funext a
   -- Porting note: was
@@ -368,7 +368,7 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
   simp only [Submodule.coeSubtype]
 #align direct_sum.is_internal.collected_basis_coe DirectSum.IsInternal.collectedBasis_coe
 
-theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type _}
+theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 #align direct_sum.is_internal.collected_basis_mem DirectSum.IsInternal.collectedBasis_mem
 
@@ -390,7 +390,7 @@ variable {R : Type u} [Ring R]
 
 variable {ι : Type v} [dec_ι : DecidableEq ι]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see
 `CompleteLattice.Independent.dfinsupp_lsum_injective` for details. -/
@@ -421,12 +421,12 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
 
-theorem IsInternal.addSubmonoid_independent {M : Type _} [AddCommMonoid M] {A : ι → AddSubmonoid M}
+theorem IsInternal.addSubmonoid_independent {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
     (h : IsInternal A) : CompleteLattice.Independent A :=
   CompleteLattice.independent_of_dfinsupp_sumAddHom_injective _ h.injective
 #align direct_sum.is_internal.add_submonoid_independent DirectSum.IsInternal.addSubmonoid_independent
 
-theorem IsInternal.addSubgroup_independent {M : Type _} [AddCommGroup M] {A : ι → AddSubgroup M}
+theorem IsInternal.addSubgroup_independent {M : Type*} [AddCommGroup M] {A : ι → AddSubgroup M}
     (h : IsInternal A) : CompleteLattice.Independent A :=
   CompleteLattice.independent_of_dfinsupp_sumAddHom_injective' _ h.injective
 #align direct_sum.is_internal.add_subgroup_independent DirectSum.IsInternal.addSubgroup_independent

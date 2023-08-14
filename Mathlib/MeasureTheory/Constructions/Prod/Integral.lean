@@ -43,7 +43,7 @@ open TopologicalSpace
 
 open Filter hiding prod_eq map
 
-variable {α α' β β' γ E : Type _}
+variable {α α' β β' γ E : Type*}
 
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
 
@@ -175,7 +175,7 @@ open MeasureTheory.Measure
 
 section
 
-nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type _} [TopologicalSpace γ]
+nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type*} [TopologicalSpace γ]
     [SigmaFinite μ] [SigmaFinite ν] {f : β × α → γ} (hf : AEStronglyMeasurable f (ν.prod μ)) :
     AEStronglyMeasurable (fun z : α × β => f z.swap) (μ.prod ν) := by
   rw [← prod_swap] at hf
@@ -201,7 +201,7 @@ theorem MeasureTheory.AEStronglyMeasurable.integral_prod_right' [SigmaFinite ν]
     filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ hx using integral_congr_ae hx⟩
 #align measure_theory.ae_strongly_measurable.integral_prod_right' MeasureTheory.AEStronglyMeasurable.integral_prod_right'
 
-theorem MeasureTheory.AEStronglyMeasurable.prod_mk_left {γ : Type _} [SigmaFinite ν]
+theorem MeasureTheory.AEStronglyMeasurable.prod_mk_left {γ : Type*} [SigmaFinite ν]
     [TopologicalSpace γ] {f : α × β → γ} (hf : AEStronglyMeasurable f (μ.prod ν)) :
     ∀ᵐ x ∂μ, AEStronglyMeasurable (fun y => f (x, y)) ν := by
   filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with x hx
@@ -307,7 +307,7 @@ theorem Integrable.integral_norm_prod_right [SigmaFinite μ] ⦃f : α × β →
   hf.swap.integral_norm_prod_left
 #align measure_theory.integrable.integral_norm_prod_right MeasureTheory.Integrable.integral_norm_prod_right
 
-theorem integrable_prod_mul {L : Type _} [IsROrC L] {f : α → L} {g : β → L} (hf : Integrable f μ)
+theorem integrable_prod_mul {L : Type*} [IsROrC L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) := by
   refine' (integrable_prod_iff _).2 ⟨_, _⟩
   · exact hf.1.fst.mul hg.1.snd
@@ -345,7 +345,7 @@ theorem integral_prod_swap (f : α × β → E) (hf : AEStronglyMeasurable f (μ
   rw [← integral_map measurable_swap.aemeasurable hf, prod_swap]
 #align measure_theory.integral_prod_swap MeasureTheory.integral_prod_swap
 
-variable {E' : Type _} [NormedAddCommGroup E'] [CompleteSpace E'] [NormedSpace ℝ E']
+variable {E' : Type*} [NormedAddCommGroup E'] [CompleteSpace E'] [NormedSpace ℝ E']
 
 /-! Some rules about the sum/difference of double integrals. They follow from `integral_add`, but
   we separate them out as separate lemmas, because they involve quite some steps. -/
@@ -506,7 +506,7 @@ theorem set_integral_prod (f : α × β → E) {s : Set α} {t : Set β}
   exact integral_prod f hf
 #align measure_theory.set_integral_prod MeasureTheory.set_integral_prod
 
-theorem integral_prod_mul {L : Type _} [IsROrC L] (f : α → L) (g : β → L) :
+theorem integral_prod_mul {L : Type*} [IsROrC L] (f : α → L) (g : β → L) :
     ∫ z, f z.1 * g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) * ∫ y, g y ∂ν := by
   by_cases h : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν)
   · rw [integral_prod _ h]
@@ -517,7 +517,7 @@ theorem integral_prod_mul {L : Type _} [IsROrC L] (f : α → L) (g : β → L) 
   cases' H with H H <;> simp [integral_undef h, integral_undef H]
 #align measure_theory.integral_prod_mul MeasureTheory.integral_prod_mul
 
-theorem set_integral_prod_mul {L : Type _} [IsROrC L] (f : α → L) (g : β → L) (s : Set α)
+theorem set_integral_prod_mul {L : Type*} [IsROrC L] (f : α → L) (g : β → L) (s : Set α)
     (t : Set β) :
     ∫ z in s ×ˢ t, f z.1 * g z.2 ∂μ.prod ν = (∫ x in s, f x ∂μ) * ∫ y in t, g y ∂ν := by
   -- Porting note: added

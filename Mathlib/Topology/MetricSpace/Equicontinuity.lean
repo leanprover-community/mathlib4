@@ -36,26 +36,26 @@ equicontinuity, continuity modulus
 
 open Filter Topology Uniformity
 
-variable {α β ι : Type _} [PseudoMetricSpace α]
+variable {α β ι : Type*} [PseudoMetricSpace α]
 
 namespace Metric
 
 /-- Characterization of equicontinuity for families of functions taking values in a (pseudo) metric
 space. -/
-theorem equicontinuousAt_iff_right {ι : Type _} [TopologicalSpace β] {F : ι → β → α} {x₀ : β} :
+theorem equicontinuousAt_iff_right {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {x₀ : β} :
     EquicontinuousAt F x₀ ↔ ∀ ε > 0, ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) < ε :=
   uniformity_basis_dist.equicontinuousAt_iff_right
 #align metric.equicontinuous_at_iff_right Metric.equicontinuousAt_iff_right
 
 /-- Characterization of equicontinuity for families of functions between (pseudo) metric spaces. -/
-theorem equicontinuousAt_iff {ι : Type _} [PseudoMetricSpace β] {F : ι → β → α} {x₀ : β} :
+theorem equicontinuousAt_iff {ι : Type*} [PseudoMetricSpace β] {F : ι → β → α} {x₀ : β} :
     EquicontinuousAt F x₀ ↔ ∀ ε > 0, ∃ δ > 0, ∀ x, dist x x₀ < δ → ∀ i, dist (F i x₀) (F i x) < ε :=
   nhds_basis_ball.equicontinuousAt_iff uniformity_basis_dist
 #align metric.equicontinuous_at_iff Metric.equicontinuousAt_iff
 
 /-- Reformulation of `equicontinuousAt_iff_pair` for families of functions taking values in a
 (pseudo) metric space. -/
-protected theorem equicontinuousAt_iff_pair {ι : Type _} [TopologicalSpace β] {F : ι → β → α}
+protected theorem equicontinuousAt_iff_pair {ι : Type*} [TopologicalSpace β] {F : ι → β → α}
     {x₀ : β} :
     EquicontinuousAt F x₀ ↔
       ∀ ε > 0, ∃ U ∈ 𝓝 x₀, ∀ x ∈ U, ∀ x' ∈ U, ∀ i, dist (F i x) (F i x') < ε := by
@@ -71,14 +71,14 @@ protected theorem equicontinuousAt_iff_pair {ι : Type _} [TopologicalSpace β] 
 
 /-- Characterization of uniform equicontinuity for families of functions taking values in a
 (pseudo) metric space. -/
-theorem uniformEquicontinuous_iff_right {ι : Type _} [UniformSpace β] {F : ι → β → α} :
+theorem uniformEquicontinuous_iff_right {ι : Type*} [UniformSpace β] {F : ι → β → α} :
     UniformEquicontinuous F ↔ ∀ ε > 0, ∀ᶠ xy : β × β in 𝓤 β, ∀ i, dist (F i xy.1) (F i xy.2) < ε :=
   uniformity_basis_dist.uniformEquicontinuous_iff_right
 #align metric.uniform_equicontinuous_iff_right Metric.uniformEquicontinuous_iff_right
 
 /-- Characterization of uniform equicontinuity for families of functions between
 (pseudo) metric spaces. -/
-theorem uniformEquicontinuous_iff {ι : Type _} [PseudoMetricSpace β] {F : ι → β → α} :
+theorem uniformEquicontinuous_iff {ι : Type*} [PseudoMetricSpace β] {F : ι → β → α} :
     UniformEquicontinuous F ↔
       ∀ ε > 0, ∃ δ > 0, ∀ x y, dist x y < δ → ∀ i, dist (F i x) (F i y) < ε :=
   uniformity_basis_dist.uniformEquicontinuous_iff uniformity_basis_dist
@@ -87,7 +87,7 @@ theorem uniformEquicontinuous_iff {ι : Type _} [PseudoMetricSpace β] {F : ι �
 /-- For a family of functions to a (pseudo) metric spaces, a convenient way to prove
 equicontinuity at a point is to show that all of the functions share a common *local* continuity
 modulus. -/
-theorem equicontinuousAt_of_continuity_modulus {ι : Type _} [TopologicalSpace β] {x₀ : β}
+theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β] {x₀ : β}
     (b : β → ℝ) (b_lim : Tendsto b (𝓝 x₀) (𝓝 0)) (F : ι → β → α)
     (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
   rw [Metric.equicontinuousAt_iff_right]
@@ -100,7 +100,7 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type _} [TopologicalSpace �
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
 uniform equicontinuity is to show that all of the functions share a common *global* continuity
 modulus. -/
-theorem uniformEquicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricSpace β] (b : ℝ → ℝ)
+theorem uniformEquicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSpace β] (b : ℝ → ℝ)
     (b_lim : Tendsto b (𝓝 0) (𝓝 0)) (F : ι → β → α)
     (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : UniformEquicontinuous F := by
   rw [Metric.uniformEquicontinuous_iff]
@@ -116,7 +116,7 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricS
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
 equicontinuity is to show that all of the functions share a common *global* continuity modulus. -/
-theorem equicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricSpace β] (b : ℝ → ℝ)
+theorem equicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSpace β] (b : ℝ → ℝ)
     (b_lim : Tendsto b (𝓝 0) (𝓝 0)) (F : ι → β → α)
     (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : Equicontinuous F :=
   (uniformEquicontinuous_of_continuity_modulus b b_lim F H).equicontinuous

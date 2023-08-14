@@ -45,7 +45,7 @@ Unbounded operators, closed operators
 
 open Topology
 
-variable {R E F : Type _}
+variable {R E F : Type*}
 
 variable [CommRing R] [AddCommGroup E] [AddCommGroup F]
 
@@ -84,11 +84,9 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
   have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
-  refine' ⟨g.graph.topologicalClosure.toLinearPMap _, _⟩
-  · intro x hx hx'
-    cases x
-    exact f'.graph_fst_eq_zero_snd (this hx) hx'
+  use g.graph.topologicalClosure.toLinearPMap
   rw [Submodule.toLinearPMap_graph_eq]
+  exact fun _ hx hx' => f'.graph_fst_eq_zero_snd (this hx) hx'
 #align linear_pmap.is_closable.le_is_closable LinearPMap.IsClosable.leIsClosable
 
 /-- The closure is unique. -/

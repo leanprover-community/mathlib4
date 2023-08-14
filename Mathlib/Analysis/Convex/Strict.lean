@@ -21,7 +21,7 @@ open Set
 
 open Convex Pointwise
 
-variable {𝕜 𝕝 E F β : Type _}
+variable {𝕜 𝕝 E F β : Type*}
 
 open Function Set
 
@@ -81,7 +81,7 @@ protected theorem StrictConvex.inter {t : Set E} (hs : StrictConvex 𝕜 s) (ht 
   exact ⟨hs hx.1 hy.1 hxy ha hb hab, ht hx.2 hy.2 hxy ha hb hab⟩
 #align strict_convex.inter StrictConvex.inter
 
-theorem Directed.strictConvex_iUnion {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
+theorem Directed.strictConvex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hs : ∀ ⦃i : ι⦄, StrictConvex 𝕜 (s i)) : StrictConvex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy hxy a b ha hb hab
   rw [mem_iUnion] at hx hy
