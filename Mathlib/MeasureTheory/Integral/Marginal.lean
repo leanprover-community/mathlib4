@@ -62,7 +62,7 @@ theorem prod_univ_comp_equiv [Fintype α] [Fintype γ] (f : γ → β) (g : α �
 
 namespace Function
 
-@[simp] theorem Function.comp_def (f : β → γ) (g : α → β) : f ∘ g = fun x => f (g x) := rfl
+@[simp] theorem comp_def (f : β → γ) (g : α → β) : f ∘ g = fun x => f (g x) := rfl
 
 end Function
 
@@ -79,6 +79,12 @@ theorem mul_prod_eq_prod_insertNone {α} {M} [CommMonoid M] (f : α → M) (x : 
   (prod_insertNone (fun i => i.elim x f) _).symm
 #align finset.mul_prod_eq_prod_insert_none Finset.mul_prod_eq_prod_insertNone
 #align finset.add_sum_eq_sum_insert_none Finset.add_sum_eq_sum_insertNone
+
+-- to Fintype/Sum
+@[to_additive (attr := simp)]
+theorem prod_sum_univ [Fintype α] [Fintype γ] (f : Sum α γ → β) :
+    ∏ x, f x = (∏ x, f (Sum.inl x)) * ∏ x, f (Sum.inr x) := by
+  rw [← univ_disjSum_univ, prod_disj_sum]
 
 end Finset
 
@@ -124,8 +130,8 @@ section Logic
 open Sum
 
 @[simp]
-theorem imp_and_neg_imp_iff (p q : Prop) [Decidable p] : (p → q) ∧ (¬p → q) ↔ q := by
-  simp_rw [imp_iff_or_not, Classical.not_not, ← or_and_left, not_and_self_iff, or_false_iff]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
+  simp_rw [imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
 #align imp_and_neg_imp_iff imp_and_neg_imp_iff
 
 @[simp]
@@ -163,17 +169,15 @@ lemma subtypeEquivRight_symm_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
 variable {α : ι → Type _}
 
 theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι) (t : ∀ i, Set (α i)) :
-    ((f.piCongrLeft α).symm ⁻¹' (f ⁻¹' s).pi fun i' => t <| f i') = s.pi t :=
-  by
+    ((f.piCongrLeft α).symm ⁻¹' (f ⁻¹' s).pi fun i' => t <| f i') = s.pi t := by
   ext; simp_rw [mem_preimage, Set.mem_pi, piCongrLeft_symm_apply]
   convert f.forall_congr_left; rfl
 #align equiv.Pi_congr_left_symm_preimage_pi Equiv.piCongrLeft_symm_preimage_pi
 
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
-    f.piCongrLeft α ⁻¹' pi univ t = pi univ fun i => t (f i) :=
-  by
+    f.piCongrLeft α ⁻¹' pi univ t = pi univ fun i => t (f i) := by
   apply Set.ext; rw [← (f.piCongrLeft α).symm.forall_congr_left]
-  intro x; simp only [mem_univ_pi, mem_preimage, apply_symm_apply, piCongrLeft_symm_apply]
+  intro x; simp_rw [mem_preimage, apply_symm_apply, piCongrLeft_symm_apply, mem_univ_pi]
   exact f.forall_congr_left.symm
 #align equiv.Pi_congr_left_preimage_univ_pi Equiv.piCongrLeft_preimage_univ_pi
 
@@ -182,7 +186,7 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
   functions on `ι` and on `ι'`. This is a dependent version of `equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps]
-def piSum (π : Sum ι ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr i')) ≃ ∀ i, π i
+def piSum (π : ι ⊕ ι' → Type _) : ((∀ i, π (inl i)) × ∀ i', π (inr i')) ≃ ∀ i, π i
     where
   toFun f := Sum.rec f.1 f.2
   invFun g := ⟨fun i => g (inl i), fun i' => g (inr i')⟩
@@ -195,6 +199,14 @@ def piSum' (π : ι → Type _) (π' : ι' → Type _) :
   Equiv.piSum (Sum.elim π π')
 #align equiv.Pi_sum' Equiv.piSum'
 
+theorem piSum_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
+    piSum π  ⁻¹' pi univ t = pi univ (fun i => t (.inl i)) ×ˢ pi univ fun i => t (.inr i) := by
+  ext
+  simp_rw [mem_preimage, mem_prod, mem_univ_pi, piSum_apply]
+  constructor
+  · intro h; constructor <;> intro i <;> apply h
+  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
+
 theorem Set.union_apply_left' {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
     {a : α} (ha : a ∈ s) : Equiv.Set.union H ⟨a, Set.mem_union_left _ ha⟩ = Sum.inl ⟨a, ha⟩ :=
   dif_pos ha
@@ -205,19 +217,19 @@ theorem Set.union_apply_right' {α} {s t : Set α} [DecidablePred fun x => x ∈
   dif_neg fun h => H ⟨h, ha⟩
 #align equiv.set.union_apply_right' Equiv.Set.union_apply_right'
 
-theorem sum_rec_congr (P : Sum ι ι' → Sort _) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
-    {x y : Sum ι ι'} (h : x = y) :
+theorem sum_rec_congr (P : ι ⊕ ι' → Sort _) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
+    {x y : ι ⊕ ι'} (h : x = y) :
     @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
 #align equiv.sum_rec_congr Equiv.sum_rec_congr
 
-theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : Sum ι ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inl i)) = f i := by
   simp_rw [piCongrLeft_apply, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)),
     cast_cast, cast_eq]
 #align equiv.Pi_congr_left_sum_inl Equiv.piCongrLeft_sum_inl
 
-theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : Sum ι ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (piSum (fun x => π (e x)) (f, g)) (e (inr j)) = g j := by
   simp_rw [piCongrLeft_apply, piSum_apply, sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)),
@@ -323,19 +335,19 @@ theorem finsetUnionEquivSum_symm_inr' {α} {s t : Finset α} (h : Disjoint s t) 
   rfl
 #align finset_union_equiv_sum_symm_inr' finsetUnionEquivSum_symm_inr'
 
-@[simp]
-theorem finsetUnionEquivSum_left {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
-    (hx : ↑x ∈ s) :
-    finsetUnionEquivSum s t h x = Sum.inl ⟨x, hx⟩ :=
-  sorry
-#align finset_union_equiv_sum_left finsetUnionEquivSum_left
+-- @[simp]
+-- theorem finsetUnionEquivSum_left {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
+--     (hx : ↑x ∈ s) :
+--     finsetUnionEquivSum s t h x = Sum.inl ⟨x, hx⟩ :=
+--   sorry
+-- #align finset_union_equiv_sum_left finsetUnionEquivSum_left
 
--- equiv.set.union_apply_left _ $ finset.mem_coe.mp hx
-@[simp]
-theorem finsetUnionEquivSum_right {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
-    (hx : ↑x ∈ t) : finsetUnionEquivSum s t h x = Sum.inr ⟨x, hx⟩ :=
-  sorry
-#align finset_union_equiv_sum_right finsetUnionEquivSum_right
+-- -- equiv.set.union_apply_left _ $ finset.mem_coe.mp hx
+-- @[simp]
+-- theorem finsetUnionEquivSum_right {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
+--     (hx : ↑x ∈ t) : finsetUnionEquivSum s t h x = Sum.inr ⟨x, hx⟩ :=
+--   sorry
+-- #align finset_union_equiv_sum_right finsetUnionEquivSum_right
 
 theorem iUnion_univ_pi {ι ι₂} {α : ι → Type _} (t : ∀ i, ι₂ → Set (α i)) :
     (⋃ x : ι → ι₂, pi univ fun i => t i (x i)) = pi univ fun i => ⋃ j : ι₂, t i j := by
@@ -379,6 +391,19 @@ theorem measurable_uniqueElim [Unique ι] [∀ i, MeasurableSpace (α i)] :
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 #align measurable_unique_elim measurable_uniqueElim
 
+def MeasurableEquiv.pi_unique [Unique ι] [∀ i, MeasurableSpace (α i)] :
+    α (default : ι) ≃ᵐ ∀ i, α i where
+      toFun := uniqueElim
+      invFun := fun f => f default
+      left_inv := fun x => rfl
+      right_inv := fun f => funext fun i => by
+        cases Unique.eq_default i
+        rfl
+      measurable_toFun := by simp
+      measurable_invFun := _
+
+
+
 theorem MeasurableSet.univ_pi_fintype {δ} {π : δ → Type _} [∀ i, MeasurableSpace (π i)] [Fintype δ]
     {t : ∀ i, Set (π i)} (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
   MeasurableSet.pi finite_univ.countable fun i _ => ht i
@@ -414,13 +439,30 @@ theorem measurable_piCongrLeft (f : ι' ≃ ι) : Measurable (piCongrLeft α f) 
   exact measurable_pi_apply (f.symm i)
 #align measurable_Pi_congr_left measurable_piCongrLeft
 
-theorem MeasurableEquiv.piCongrLeft (f : ι' ≃ ι) : (∀ b, α (f b)) ≃ᵐ ∀ a, α a := by
+variable (α)
+def MeasurableEquiv.piCongrLeft (f : ι' ≃ ι) : (∀ b, α (f b)) ≃ᵐ ∀ a, α a := by
   refine' { Equiv.piCongrLeft α f with .. }
-  exact measurable_piCongrLeft f
+  · exact measurable_piCongrLeft f
   simp only [invFun_as_coe, coe_fn_symm_mk]
   rw [measurable_pi_iff]
   exact fun i => measurable_pi_apply (f i)
 #align measurable_equiv.Pi_congr_left MeasurableEquiv.piCongrLeft
+variable {α}
+
+theorem MeasurableEquiv.piCongrLeft_eq (f : ι' ≃ ι) :
+  (MeasurableEquiv.piCongrLeft α f : _ → _) = f.piCongrLeft α := by rfl
+
+def MeasurableEquiv.piSum (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
+  ((∀ i, α (.inl i)) × ∀ i', α (.inr i')) ≃ᵐ ∀ i, α i := by
+  refine' { Equiv.piSum α with .. }
+  · rw [measurable_pi_iff]; rintro (i|i)
+    exact measurable_pi_iff.1 measurable_fst _
+    exact measurable_pi_iff.1 measurable_snd _
+  · refine Measurable.prod ?_ ?_ <;>
+      rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
+
+theorem MeasurableEquiv.piSum_eq (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
+  (MeasurableEquiv.piSum α : _ → _) = Equiv.piSum α := by rfl
 
 end MeasurableOnFamily
 
@@ -480,21 +522,19 @@ theorem pi_unique_left [Unique ι] : Measure.pi μ = map uniqueElim (μ (default
 open Sum
 
 theorem pi_map_left (f : ι' ≃ ι) :
-    map (f.piCongrLeft α) (Measure.pi fun i' => μ (f i')) = Measure.pi μ := by
-  refine' (pi_eq _).symm; intro s hs
-  rw [map_apply _ (MeasurableSet.univ_pi_fintype hs)]
-  · simp_rw [piCongrLeft_preimage_univ_pi, pi_pi _ _, prod_univ_comp_equiv (fun i => μ i (s i)) f]
-  · apply measurable_piCongrLeft
+    map (MeasurableEquiv.piCongrLeft α f) (Measure.pi fun i' => μ (f i')) = Measure.pi μ := by
+  refine' (pi_eq fun s _ => _).symm
+  rw [MeasurableEquiv.map_apply, MeasurableEquiv.piCongrLeft_eq,
+    piCongrLeft_preimage_univ_pi, pi_pi _ _, prod_univ_comp_equiv (fun i => μ i (s i)) f]
 #align measure_theory.measure.pi_map_left MeasureTheory.Measure.pi_map_left
 
-theorem pi_sum {π : Sum ι ι' → Type _} [∀ i, MeasurableSpace (π i)] (μ : ∀ i, Measure (π i))
+theorem pi_sum {π : ι ⊕ ι' → Type _} [∀ i, MeasurableSpace (π i)] (μ : ∀ i, Measure (π i))
     [∀ i, SigmaFinite (μ i)] :
-    map (Equiv.piSum π)
-        ((Measure.pi fun i => μ (Sum.inl i)).prod (Measure.pi fun i => μ (Sum.inr i))) =
-      Measure.pi μ := by
-  refine' (pi_eq fun s hs => _).symm
-  rw [map_apply]
-  all_goals sorry
+    map (MeasurableEquiv.piSum π)
+      ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) = Measure.pi μ := by
+  refine' (pi_eq fun s _ => _).symm
+  simp_rw [MeasurableEquiv.map_apply, MeasurableEquiv.piSum_eq, piSum_preimage_univ_pi,
+    Measure.prod_prod, Measure.pi_pi, prod_sum_univ]
 #align measure_theory.measure.pi_sum MeasureTheory.Measure.pi_sum
 
 end Measure
@@ -599,7 +639,13 @@ notation "∫⋯∫_" s ", " f => marginal volume s f
 
 theorem _root_.Measurable.marginal (hf : Measurable f) : Measurable (∫⋯∫_s, f ∂μ) := by
   refine' Measurable.lintegral_prod_right _
-  sorry
+  refine' hf.comp _
+  rw [measurable_pi_iff]; intro i
+  by_cases h : i ∈ s
+  · simp [h]
+    refine measurable_pi_iff.1 measurable_snd _
+  · simp [h]
+    refine measurable_pi_iff.1 measurable_fst _
 #align measurable.marginal Measurable.marginal
 
 theorem marginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫_∅, f ∂μ = f := by
@@ -628,60 +674,48 @@ theorem marginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (h
     ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ := by
   ext1 x
   simp_rw [marginal, update', ← Measure.pi_map_left _ (finsetUnionEquivSum s t hst).symm]
-  rw [lintegral_map, ← Measure.pi_sum, lintegral_map, lintegral_prod]
-  dsimp only [finsetUnionEquivSum_symm_inl, finsetUnionEquivSum_symm_inr, Subtype.coe_mk]
-  congr 1; ext1 x; congr 1; ext1 y; congr 1; ext1 i
-  by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
-    simp only [his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff, false_or_iff,
-      not_false_iff]
-  · exfalso; exact Finset.disjoint_left.mp hst his hit
-  -- this is ugly, but applying lemmas basically doesn't work because of dependent types
-  · change
-      piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
-          (piSum (fun i : Sum s t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
-          ((finsetUnionEquivSum s t hst).symm <| Sum.inl ⟨i, his⟩) =
-        x ⟨i, his⟩
-    rw [piCongrLeft_sum_inl]
-  · change
-      piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
-          (piSum (fun i : Sum s t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
-          ((finsetUnionEquivSum s t hst).symm <| Sum.inr ⟨i, hit⟩) =
-        y ⟨i, hit⟩
-    rw [piCongrLeft_sum_inr]
-  -- simp_rw [cast_sum_rec],
-  -- simp only [piCongrLeft_apply, piSum_apply, dif_neg, not_false_iff],
-  -- dsimp only [equiv.symm_symm],
-  -- dsimp only [e, set.union_symm_apply_left],
-  all_goals sorry
+  rw [lintegral_map_equiv, ← Measure.pi_sum, lintegral_map_equiv, lintegral_prod]
+  · dsimp only [finsetUnionEquivSum_symm_inl, finsetUnionEquivSum_symm_inr, Subtype.coe_mk]
+    congr 1; ext1 x; congr 1; ext1 y; congr 1; ext1 i
+    by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
+      simp only [his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff, false_or_iff,
+        not_false_iff]
+    · exfalso; exact Finset.disjoint_left.mp hst his hit
+    -- this is ugly, but applying lemmas basically doesn't work because of dependent types
+    · change
+        piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
+            (piSum (fun i : Sum s t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
+            ((finsetUnionEquivSum s t hst).symm <| Sum.inl ⟨i, his⟩) =
+          x ⟨i, his⟩
+      rw [piCongrLeft_sum_inl]
+    · change
+        piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
+            (piSum (fun i : Sum s t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
+            ((finsetUnionEquivSum s t hst).symm <| Sum.inr ⟨i, hit⟩) =
+          y ⟨i, hit⟩
+      rw [piCongrLeft_sum_inr]
+  · set e₁ := (finsetUnionEquivSum s t hst).symm
+    set e₂ := MeasurableEquiv.piCongrLeft (fun i : { x // x ∈ s ∪ t } => π i) e₁
+    set e₃ := MeasurableEquiv.piSum fun b ↦ π (e₁ b)
+    apply Measurable.aemeasurable
+    refine hf.comp ?_
+    rw [measurable_pi_iff]; intro i
+    by_cases h : i ∈ s ∨ i ∈ t
+    · simp [h, measurable_pi_apply]
+      refine measurable_pi_iff.1 ?_ _
+      refine' e₂.measurable.comp e₃.measurable
+    · simp [h]
 #align measure_theory.marginal_union MeasureTheory.marginal_union
 
 theorem marginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {s t : Finset δ}
-    (hst : Disjoint s t) : ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_t, ∫⋯∫_s, f ∂μ ∂μ :=
-  by
-  ext x
-  simp_rw [marginal, ← Measure.pi_map_left _ (finsetUnionEquivSum s t hst).symm]
-  rw [lintegral_map, ← Measure.pi_sum, lintegral_map, lintegral_prod]
-  dsimp only [finsetUnionEquivSum_symm_inl, finsetUnionEquivSum_symm_inr, Subtype.coe_mk]
-  congr 1
-  -- dsimp only [e, set.union_symm_apply_left],
-  all_goals sorry
+    (hst : Disjoint s t) : ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_t, ∫⋯∫_s, f ∂μ ∂μ := by
+  rw [Finset.union_comm, marginal_union μ f hf hst.symm]
 #align measure_theory.marginal_union' MeasureTheory.marginal_union'
 
---
--- { symmetry, congr' with x, congr' with y, congr' with i, symmetry,
--- by_cases his : i ∈ s; by_cases hit : i ∈ t,
---   { exact false.elim (this ⟨his, hit⟩) },
---   all_goals { simp only [his, hit, piCongrLeft_apply, dif_pos, or_false, false_or,
---     Measure.equiv.piSum_apply, dif_neg, not_false_iff, finset.mem_union] },
---   all_goals { dsimp only [e, trans_apply, finset_union_apply, set.union_apply_left,
---   set.union_apply_right, subtype.coe_mk], rw [← heq_iff_eq], refine (eq_mpr_heq _ _).trans _ },
---   exact congr_arg_heq _ (set.union_apply_left' this his),
---   exact congr_arg_heq _ (set.union_apply_right' this hit) },
 variable {μ}
 
 theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (i : δ) :
-    ∫⋯∫_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i :=
-  by
+    ∫⋯∫_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   letI : Unique ({i} : Finset δ) :=
     ⟨⟨⟨i, mem_singleton_self i⟩⟩, fun j => Subtype.ext <| mem_singleton.mp j.2⟩
   ext1 x
@@ -711,8 +745,7 @@ theorem integral_update (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (
 -- end
 theorem marginal_insert_rev (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ} (hi : i ∉ s)
     (x : ∀ i, π i) :
-    ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i = (∫⋯∫_insert i s, f ∂μ) x :=
-  by
+    ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i = (∫⋯∫_insert i s, f ∂μ) x := by
   rw [Finset.insert_eq, marginal_union, marginal_singleton]
   dsimp only
   sorry
@@ -728,8 +761,7 @@ theorem marginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫
 #align measure_theory.marginal_mono MeasureTheory.marginal_mono
 
 theorem marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) :
-    ∫⋯∫_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ :=
-  by
+    ∫⋯∫_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
   simp_rw [marginal, update', ← Measure.pi_map_left μ e]
