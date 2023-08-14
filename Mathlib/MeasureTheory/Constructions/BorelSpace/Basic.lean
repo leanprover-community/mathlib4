@@ -1698,100 +1698,68 @@ theorem borel_eq_generateFrom_Ioo_rat :
 #align real.borel_eq_generate_from_Ioo_rat Real.borel_eq_generateFrom_Ioo_rat
 
 theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)}) := by
-  let g : MeasurableSpace ℝ := .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)})
-  refine' le_antisymm _ _
-  · rw [borel_eq_generateFrom_Ioo_rat]
-    refine' generateFrom_le fun t => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨a, b, _, rfl⟩
-    rw [(Set.ext fun x => by
-          suffices x < ↑b → (↑a < x ↔ ∃ i : ℚ, a < i ∧ ↑i ≤ x) by simpa
-          refine' fun _ => ⟨fun h => _, fun ⟨i, hai, hix⟩ => (Rat.cast_lt.2 hai).trans_le hix⟩
-          rcases exists_rat_btwn h with ⟨c, ac, cx⟩
-          exact ⟨c, Rat.cast_lt.1 ac, cx.le⟩
-            : Ioo (a : ℝ) b = (⋃ c > a, (Iio (c : ℝ))ᶜ) ∩ Iio (b : ℝ))]
-    · have hg : ∀ q : ℚ, MeasurableSet[g] (Iio (q : ℝ)) := fun q =>
-        GenerateMeasurable.basic (Iio (q : ℝ)) (by simp)
-      refine' MeasurableSet.inter _ (hg _)
-      exact MeasurableSet.biUnion (to_countable _) fun c _ => (hg _).compl
-  · refine' MeasurableSpace.generateFrom_le fun _ => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨r, rfl⟩
-    exact @measurableSet_Iio _ _ (borel ℝ) _ _ _ _
-#align real.borel_eq_generate_from_Iio_rat Real.borel_eq_generateFrom_Iio_rat
+  rw [borel_eq_generateFrom_Iio]
+  refine le_antisymm
+    (generateFrom_le ?_)
+    (generateFrom_mono <| iUnion_subset fun q ↦ singleton_subset_iff.mpr <| mem_range_self _)
+  rintro _ ⟨a, rfl⟩
+  have : IsLUB (range ((↑) : ℚ → ℝ) ∩ Iio a) a := by
+    simp [isLUB_iff_le_iff, mem_upperBounds, ← le_iff_forall_rat_lt_imp_le]
+  rw [← this.biUnion_Iio_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
+  exact MeasurableSet.biUnion (to_countable _)
+    fun b _ => GenerateMeasurable.basic (Iio (b : ℝ)) (by simp)
 
 theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
-  refine' le_antisymm _ _
-  · rw [borel_eq_generateFrom_Iio_rat]
-    refine' generateFrom_le fun t => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨b, _, rfl⟩
-    have : Iio (b : ℝ) = ⋃ c < b, (Ioi (c : ℝ))ᶜ := by
-      ext x
-      simp only [mem_Iio, compl_Ioi, mem_iUnion, mem_Iic, exists_prop]
-      refine ⟨fun h ↦ ?_, fun ⟨i, hib, bxi⟩ ↦ bxi.trans_lt (Rat.cast_lt.2 hib)⟩
-      rcases exists_rat_btwn h with ⟨c, xc, cb⟩
-      exact ⟨c, Rat.cast_lt.1 cb, xc.le⟩
-    rw [this]
-    have hg : ∀ q : ℚ, MeasurableSet[.generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)})] (Ioi (q : ℝ)) :=
-      fun q => GenerateMeasurable.basic (Ioi (q : ℝ)) (by simp)
-    exact MeasurableSet.biUnion (to_countable _) fun c _ => (hg _).compl
-  · refine' MeasurableSpace.generateFrom_le fun _ => _
-    simp only [mem_iUnion, mem_singleton_iff]
-    rintro ⟨r, rfl⟩
-    exact measurableSet_Ioi
+  rw [borel_eq_generateFrom_Ioi]
+  refine le_antisymm
+    (generateFrom_le ?_)
+    (generateFrom_mono <| iUnion_subset fun q ↦ singleton_subset_iff.mpr <| mem_range_self _)
+  rintro _ ⟨a, rfl⟩
+  have : IsGLB (range ((↑) : ℚ → ℝ) ∩ Iio a) a := by
+    simp [isLUB_iff_le_iff, mem_upperBounds, ← le_iff_forall_rat_lt_imp_le]
+  rw [← this.biUnion_Ioi_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
+  exact MeasurableSet.biUnion (to_countable _)
+    fun b _ => GenerateMeasurable.basic (Ioi (b : ℝ)) (by simp)
 
 theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
-  refine' le_antisymm _ _
-  · rw [borel_eq_generateFrom_Ioi_rat]
-    refine generateFrom_le fun t ht => ?_
-    simp only [iUnion_singleton_eq_range, mem_range] at ht
-    obtain ⟨y, rfl⟩ := ht
-    rw [← compl_Iic]
-    refine MeasurableSet.compl (GenerateMeasurable.basic _ ?_)
-    simp only [iUnion_singleton_eq_range, mem_range, exists_apply_eq_apply]
-  · refine MeasurableSpace.generateFrom_le fun s hs => ?_
-    simp only [iUnion_singleton_eq_range, mem_range] at hs
-    obtain ⟨y, rfl⟩ := hs
-    exact measurableSet_Iic
+  rw [borel_eq_generateFrom_Ioi_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
+  refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
+  rintro _ ⟨q, rfl⟩ <;>
+  dsimp only <;>
+  [rw [← compl_Iic]; rw [← compl_Ioi]] <;>
+  exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
 
 theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ici (a : ℝ)}) := by
-  refine' le_antisymm _ _
-  · rw [borel_eq_generateFrom_Iio_rat]
-    refine generateFrom_le fun t ht => ?_
-    simp only [iUnion_singleton_eq_range, mem_range] at ht
-    obtain ⟨y, rfl⟩ := ht
-    rw [← compl_Ici]
-    refine MeasurableSet.compl (GenerateMeasurable.basic _ ?_)
-    simp only [iUnion_singleton_eq_range, mem_range, exists_apply_eq_apply]
-  · refine MeasurableSpace.generateFrom_le fun s hs => ?_
-    simp only [iUnion_singleton_eq_range, mem_range] at hs
-    obtain ⟨y, rfl⟩ := hs
-    exact measurableSet_Ici
+  rw [borel_eq_generateFrom_Iio_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
+  refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
+  rintro _ ⟨q, rfl⟩ <;>
+  dsimp only <;>
+  [rw [← compl_Ici]; rw [← compl_Iio]] <;>
+  exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
 
 theorem isPiSystem_Ioo_rat :
-    @IsPiSystem ℝ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
+    IsPiSystem (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
   convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
   ext x
   simp [eq_comm]
 #align real.is_pi_system_Ioo_rat Real.isPiSystem_Ioo_rat
 
-theorem isPiSystem_Iio_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Iio (a : ℝ)}) := by
+theorem isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
   convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
-theorem isPiSystem_Ioi_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
+theorem isPiSystem_Ioi_rat : IsPiSystem (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
   convert isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
-theorem isPiSystem_Iic_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Iic (a : ℝ)}) := by
+theorem isPiSystem_Iic_rat : IsPiSystem (⋃ a : ℚ, {Iic (a : ℝ)}) := by
   convert isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
-theorem isPiSystem_Ici_rat : @IsPiSystem ℝ (⋃ a : ℚ, {Ici (a : ℝ)}) := by
+theorem isPiSystem_Ici_rat : IsPiSystem (⋃ a : ℚ, {Ici (a : ℝ)}) := by
   convert isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
