@@ -332,9 +332,9 @@ def lint(path, fix=False):
     shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
-sys.argv[:] = (arg for arg in sys.argv if arg != "--fix")
+argv = (arg for arg in sys.argv[1:] if arg != "--fix")
 
-for filename in sys.argv[1:]:
+for filename in argv:
     lint(Path(filename), fix=fix)
 
 if new_exceptions:
