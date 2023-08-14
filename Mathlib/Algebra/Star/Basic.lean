@@ -302,8 +302,8 @@ theorem star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n �
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 #align star_zsmul star_zsmul
 
-/-- A `*`-ring `R` is a (semi)ring with an involutive `star` operation which is additive
-which makes `R` with its multiplicative structure into a `*`-semigroup
+/-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
+ which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
 (i.e. `star (r * s) = star s * star r`).  -/
 class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
