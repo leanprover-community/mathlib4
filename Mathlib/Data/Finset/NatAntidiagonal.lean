@@ -20,6 +20,7 @@ generally for sums going from `0` to `n`.
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`.
 -/
 
+open Function
 
 namespace Finset
 
@@ -51,7 +52,7 @@ theorem antidiagonal_succ (n : ℕ) :
     antidiagonal (n + 1) =
       cons (0, n + 1)
         ((antidiagonal n).map
-          (Function.Embedding.prodMap ⟨Nat.succ, Nat.succ_injective⟩ (Function.Embedding.refl _)))
+          (Embedding.prodMap ⟨Nat.succ, Nat.succ_injective⟩ (Embedding.refl _)))
         (by simp) := by
   apply eq_of_veq
   rw [cons_val, map_val]
@@ -62,7 +63,7 @@ theorem antidiagonal_succ' (n : ℕ) :
     antidiagonal (n + 1) =
       cons (n + 1, 0)
         ((antidiagonal n).map
-          (Function.Embedding.prodMap (Function.Embedding.refl _) ⟨Nat.succ, Nat.succ_injective⟩))
+          (Embedding.prodMap (Embedding.refl _) ⟨Nat.succ, Nat.succ_injective⟩))
         (by simp) := by
   apply eq_of_veq
   rw [cons_val, map_val]
@@ -74,7 +75,7 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
       cons (0, n + 2)
         (cons (n + 2, 0)
             ((antidiagonal n).map
-              (Function.Embedding.prodMap ⟨Nat.succ, Nat.succ_injective⟩
+              (Embedding.prodMap ⟨Nat.succ, Nat.succ_injective⟩
                 ⟨Nat.succ, Nat.succ_injective⟩)) <|
           by simp)
         (by simp) := by
@@ -82,10 +83,15 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
   rfl
 #align finset.nat.antidiagonal_succ_succ' Finset.Nat.antidiagonal_succ_succ'
 
-theorem map_swap_antidiagonal {n : ℕ} :
+/-- See also `Finset.map.map_prodComm_antidiagonal`. -/
+@[simp] theorem map_swap_antidiagonal {n : ℕ} :
     (antidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = antidiagonal n :=
   eq_of_veq <| by simp [antidiagonal, Multiset.Nat.map_swap_antidiagonal]
 #align finset.nat.map_swap_antidiagonal Finset.Nat.map_swap_antidiagonal
+
+@[simp] theorem map_prodComm_antidiagonal {n : ℕ} :
+    (antidiagonal n).map (Equiv.prodComm ℕ ℕ) = antidiagonal n :=
+  map_swap_antidiagonal
 
 /-- A point in the antidiagonal is determined by its first co-ordinate. -/
 theorem antidiagonal_congr {n : ℕ} {p q : ℕ × ℕ} (hp : p ∈ antidiagonal n)
@@ -122,17 +128,34 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
     filter (fun x : ℕ × ℕ ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
   have : (fun x : ℕ × ℕ ↦ (x.snd = m)) ∘ Prod.swap = fun x : ℕ × ℕ ↦ x.fst = m := by
     ext; simp
-  rw [← map_swap_antidiagonal]
-  simp [filter_map, this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
+  rw [← map_swap_antidiagonal, filter_map]
+  simp [this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
 #align finset.nat.filter_snd_eq_antidiagonal Finset.Nat.filter_snd_eq_antidiagonal
 
-@[simp] lemma antidiagonal_filter_le_fst {n : ℕ} :
-    (antidiagonal n).filter (fun a ↦ n ≤ a.fst) = {(n, 0)} := by
-  ext; aesop
+@[simp] lemma antidiagonal_filter_le_fst_of_le {n k : ℕ} (h : k ≤ n) :
+    (antidiagonal n).filter (fun a ↦ k ≤ a.fst) = (antidiagonal (n - k)).map
+      (Embedding.prodMap ⟨_, add_left_injective k⟩ (Embedding.refl ℕ)) := by
+  ext ⟨i, j⟩
+  suffices : i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i
+  · simpa
+  refine' ⟨fun hi ↦ ⟨i - k, _, tsub_add_cancel_of_le hi.2⟩, _⟩
+  · rw [← Nat.sub_add_comm hi.2, hi.1]
+  · rintro ⟨l, hl, rfl⟩
+    refine' ⟨_, Nat.le_add_left k l⟩
+    rw [add_right_comm, hl]
+    exact tsub_add_cancel_of_le h
 
-@[simp] lemma antidiagonal_filter_le_snd {n : ℕ} :
-    (antidiagonal n).filter (fun a ↦ n ≤ a.snd) = {(0, n)} := by
-  ext; aesop
+@[simp] lemma antidiagonal_filter_le_snd_of_le {n k : ℕ} (h : k ≤ n) :
+    (antidiagonal n).filter (fun a ↦ k ≤ a.snd) = (antidiagonal (n - k)).map
+      (Embedding.prodMap (Embedding.refl ℕ) ⟨_, add_left_injective k⟩) := by
+  have aux₁ : fun a ↦ k ≤ a.snd = (fun a ↦ k ≤ a.fst) ∘ (Equiv.prodComm ℕ ℕ).symm := rfl
+  have aux₂ : ∀ i j, (∃ a b, a + b = n - k ∧ b = i ∧ a + k = j) ↔
+                      ∃ a b, a + b = n - k ∧ a = i ∧ b + k = j :=
+    fun i j ↦ by rw [exists_comm]; exact exists₂_congr (fun a b ↦ by rw [add_comm])
+  rw [← map_prodComm_antidiagonal]
+  simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h, map_map]
+  ext ⟨i, j⟩
+  simpa using aux₂ i j
 
 section EquivProd
 
