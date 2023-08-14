@@ -67,6 +67,15 @@ protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinFo
   tensorDistrib (A := A) (B₁ ⊗ₜ[R] B₂)
 #align bilin_form.tmul BilinForm.tmul
 
+attribute [ext] TensorProduct.ext in
+/-- A tensor product of symmetric bilinear forms is symmetric. -/
+lemma IsSymm.tmul {B₁ : BilinForm R M₁} {B₂ : BilinForm R M₂}
+    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
+  rw [isSymm_iff_flip R]
+  apply toLin.injective
+  ext x₁ x₂ y₁ y₂
+  exact (congr_arg₂ (HMul.hMul) (hB₁ x₁ y₁) (hB₂ x₂ y₂)).symm
+
 /-- The base change of a bilinear form. -/
 protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
   BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.toBilin <| LinearMap.mul A A) B
