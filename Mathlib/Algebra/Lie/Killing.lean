@@ -30,7 +30,7 @@ We define the trace / Killing form in this file and prove some basic properties.
  * Prove Cartan's criterion for semisimplicity.
 -/
 
-variable (R L : Type _) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 namespace LieModule
 
@@ -66,8 +66,7 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     _ = traceForm R L M x ⁅y, z⁆ := ?_
   · simp only [LieHom.map_lie, Ring.lie_def, ← LinearMap.mul_eq_comp]
   · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
-  · -- TODO: write `LinearMap.trace_mul_cycle' to match `Matrix.trace_mul_cycle`
-    simp only [LinearMap.trace_mul_comm R (φ y) (φ x * φ z), mul_assoc]
+  · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← LinearMap.mul_eq_comp]
 
