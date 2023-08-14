@@ -613,8 +613,8 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace 
 
 -- improper version of FTC, maybe works just under condition of the integral existing??
 -- similar lemmas in `IntegralEqImproper`
-theorem _root_.MeasureTheory.integral_deriv_eq_of_eventually_zero {f : ℝ → E} (hf : ContDiff ℝ 1 f)
-    (h2f : f =ᶠ[Filter.atBot] 0) (b : ℝ) : ∫ x in Set.Iic b, deriv f x = f b := by sorry
+theorem _root_.HasCompactSupport.integral_deriv_eq {f : ℝ → E} (hf : ContDiff ℝ 1 f)
+    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Set.Iic b, deriv f x = f b := by sorry
 
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
@@ -910,7 +910,6 @@ theorem lintegral_prod_lintegral_pow_le (hf : Measurable f) :
 
 attribute [gcongr] ENNReal.rpow_le_rpow
 
-
 theorem nnnorm_integral_le_lintegral_nnnorm {α E : Type _} [MeasurableSpace α] {μ : Measure α}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] (f : α → E) :
     ‖∫ x, f x ∂μ‖₊ ≤ ∫⁻ x, ‖f x‖₊ ∂ μ  :=
@@ -938,13 +937,25 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
   norm_cast
   rw [← prod_const]
   push_cast
-  gcongr with i hi
-  have h3u : ContDiff ℝ 1 (u ∘ update x i) := sorry
-  have h4u : u ∘ (update x i) =ᶠ[Filter.atBot] 0
-  · have : u =ᶠ[Filter.cocompact _] 0 := sorry
-    sorry
-  have := MeasureTheory.integral_deriv_eq_of_eventually_zero h3u h4u (x i)
-  -- integral_deriv_eq_of_eventually_zero
+  gcongr with i _
+  -- `update x i` is `ContDiff` -- make this a lemma
+  have h_update : ContDiff ℝ 1 (update x i)
+  · rw [contDiff_pi]
+    intro j
+    simp_rw [update_apply]
+    split_ifs
+    · exact contDiff_id
+    · exact contDiff_const
+  have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp h_update
+  have h4u : HasCompactSupport (u ∘ update x i)
+  · apply h2u.comp_closedEmbedding
+    -- `update x i` is a closed embedding -- make this a lemma
+    have h5u : LeftInverse (fun v ↦ v i) (update x i) := fun t ↦ update_same i t x
+    apply h5u.closedEmbedding
+    · exact continuous_apply i
+    · have : Continuous (fun t : ℝ ↦ (x, t)) := continuous_const.prod_mk continuous_id
+      exact (continuous_update i).comp this
+  have := h4u.integral_deriv_eq h3u (x i)
   dsimp only [comp_def, comp_apply] at this
   simp_rw [update_eq_self] at this
   rw [← this]
@@ -952,7 +963,7 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
   refine (lintegral_mono' (Measure.restrict_le_self) (le_refl _)).trans ?_
   refine' lintegral_mono fun y => _
   rw [← Function.comp_def u (update x i), deriv]
-  rw [fderiv.comp y (hu.differentiable le_rfl).differentiableAt (sorry : DifferentiableAt ℝ (update x i) y)]
+  rw [fderiv.comp y (hu.differentiable le_rfl).differentiableAt ((h_update.differentiable (le_refl _)) y)]
   rw [ContinuousLinearMap.comp_apply]
   norm_cast
   show ‖_‖ ≤ ‖_‖
