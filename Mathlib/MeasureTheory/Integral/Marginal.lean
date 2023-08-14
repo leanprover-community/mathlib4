@@ -17,9 +17,10 @@ import Mathlib.Analysis.Calculus.ContDiff
 -/
 
 
-noncomputable section
-
 open scoped Classical BigOperators Topology ENNReal
+open Filter
+
+noncomputable section
 
 variable {ι ι' ι'' : Type _}
 
@@ -584,9 +585,10 @@ variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)]
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [MeasurableSpace E]
   [BorelSpace E]
 
-theorem _root_.HasCompactSupport.integral_deriv_eq {f : ℝ → E} (hf : ContDiff ℝ 1 f)
-    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Set.Iic b, deriv f x = f b := by sorry
-#align has_compact_support.integral_deriv_eq HasCompactSupport.integral_deriv_eq
+-- improper version of FTC, maybe works just under condition of the integral existing??
+-- similar lemmas in `IntegralEqImproper`
+theorem _root_.MeasureTheory.integral_deriv_eq_of_eventually_zero {f : ℝ → E} (hf : ContDiff ℝ 1 f)
+    (h2f : f =ᶠ[Filter.atBot] 0) (b : ℝ) : ∫ x in Set.Iic b, deriv f x = f b := by sorry
 
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
@@ -887,7 +889,7 @@ theorem nnnorm_integral_le_lintegral_nnnorm {α E : Type _} [MeasurableSpace α]
   sorry
 
 /-- The Sobolev inequality -/
-theorem lintegral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
+theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
     ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
       (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   have hu' : Measurable (fun x ↦ (‖fderiv ℝ u x‖₊ : ℝ≥0∞))
@@ -895,29 +897,27 @@ theorem lintegral_pow_le (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
     have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv (le_refl _)).measurable
     measurability
   refine' le_trans _ (lintegral_prod_lintegral_pow_le (fun _ => volume) hu')
-  set n : ℕ := #ι
-  have hn : 0 ≤ (n : ℝ) / (n - 1 : ℝ)
-  · obtain hn | hn := Nat.eq_zero_or_pos n
-    · simp only [hn]
-      norm_num
-    have : 1 ≤ (n:ℝ) := by exact_mod_cast hn
-    have : 0 ≤ (n:ℝ) - 1 := by linarith
-    positivity
+  have hι₀ : 1 < #ι := Fintype.one_lt_card
+  have hι₁ : (2:ℝ) ≤ #ι := by exact_mod_cast hι₀
+  have hι₂ : (1:ℝ) ≤ ↑#ι - 1 := by linarith
+  have hι₃ : 0 ≤ (#ι : ℝ) / (#ι - 1 : ℝ) := by positivity
   refine' lintegral_mono fun x => _ -- should be `gcongr`
-  -- dsimp only
-  rw [← ENNReal.coe_rpow_of_nonneg _ hn]
+  dsimp only
+  rw [← ENNReal.coe_rpow_of_nonneg _ hι₃]
   simp_rw [div_eq_mul_inv, one_mul, ENNReal.rpow_mul, ENNReal.prod_rpow]
   gcongr
-  · sorry
   rw [← card_univ]
   norm_cast
   rw [← prod_const]
   push_cast
   gcongr with i hi
-  have h3u : ContDiff ℝ 1 fun t => u (update x i t) := by sorry
-  have h4u : HasCompactSupport fun t => u (update x i t) := by sorry
-  have := h4u.integral_deriv_eq h3u (x i)
-  dsimp only at this
+  have h3u : ContDiff ℝ 1 (u ∘ update x i) := sorry
+  have h4u : u ∘ (update x i) =ᶠ[Filter.atBot] 0
+  · have : u =ᶠ[Filter.cocompact _] 0 := sorry
+    sorry
+  have := MeasureTheory.integral_deriv_eq_of_eventually_zero h3u h4u (x i)
+  -- integral_deriv_eq_of_eventually_zero
+  dsimp only [comp_def, comp_apply] at this
   simp_rw [update_eq_self] at this
   rw [← this]
   refine' (nnnorm_integral_le_lintegral_nnnorm _).trans _
