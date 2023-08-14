@@ -77,7 +77,7 @@ variable {k G : Type*} [CommSemiring k] [DecidableEq G] [CommGroup G]
 /-- This is the natural involution on the group algebra `k[G]` induced by `g ↦ g⁻¹`. It exists
 when the scalars `k` and the group `G` are both commutative. -/
 noncomputable def invert : MonoidAlgebra k G ≃ₐ[k] MonoidAlgebra k G :=
-  mapDomainAlgEquiv k k $ MulEquiv.inv G
+  domCongr k k $ MulEquiv.inv G
 
 @[simp] lemma invert_apply {f : MonoidAlgebra k G} {x : G} : invert f x = f x⁻¹ := rfl
 
