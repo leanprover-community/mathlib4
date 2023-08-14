@@ -361,7 +361,7 @@ theorem models_of_models_theory (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ
   let M' : ModelType T' := ⟨M⟩
   exact hφ M'
 
-/-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled
+/-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
 theory iff there is a finite subset `T0` of the theory such that `φ` is modeled by `T0` -/
 theorem models_iff_finset_models {φ : L.Sentence} :
     T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
