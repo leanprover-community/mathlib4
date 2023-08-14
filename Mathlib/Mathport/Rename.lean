@@ -167,3 +167,61 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
+
+/--
+`#noalign lean_3.def_name` will record that `lean_3.def_name` has been marked for non-porting.
+This information is used by the [mathport](https://github.com/leanprover-community/mathport)
+utility, which will remove the declaration from the corresponding mathport file, and later
+uses of the definition will be replaced by `sorry`.
+-/
+syntax (name := noalign) "#noalign " ident : command
+
+/-- Elaborate a `#noalign` command. -/
+@[command_elab noalign] def elabNoAlign : CommandElab
+  | `(#noalign $id3:ident) => do
+    withRef id3 <| ensureUnused id3.getId
+    liftCoreM $ addNameAlignment id3.getId .anonymous
+  | _ => throwUnsupportedSyntax
+
+/-- Show information about the alignment status of a lean 3 definition. -/
+syntax (name := lookup3) "#lookup3 " ident : command
+
+/-- Elaborate a `#lookup3` command. -/
+@[command_elab lookup3] def elabLookup3 : CommandElab
+  | `(#lookup3%$tk $id3:ident) => do
+    let n3 := id3.getId
+    let m := getRenameMap (← getEnv)
+    match m.find? n3 with
+    | none    => logInfoAt tk s!"name `{n3} not found"
+    | some (dubious, n4) => do
+      if n4.isAnonymous then
+        logInfoAt tk m!"{n3} has been no-aligned"
+      else
+        let mut msg := m!"{n4}"
+        if !dubious.isEmpty then
+          msg := msg ++ s!" (dubious: {dubious})"
+        logInfoAt tk <|
+          match m.toLean3.find? n4 with
+          | none | some (_, []) => msg
+          | some (n, l) => m!"{msg} (aliases {n :: l})"
+  | _ => throwUnsupportedSyntax
+
+open Lean Lean.Parser Lean.PrettyPrinter
+
+/-- Declare the corresponding mathlib3 module for the current mathlib4 module. -/
+syntax (name := alignImport) "#align_import " ident " from " str "@" str : command
+
+/-- Elaborate a `#align_import` command.
+
+TODO: do something with this information beyond ignore it. -/
+@[command_elab alignImport] def elabAlignImport : CommandElab
+  | `(#align_import $f3:ident from $_repo:str @ $sha:str ) => do
+    if !sha.getString.all ("abcdef0123456789".contains) then
+      throwErrorAt sha "not a valid hex sha, bad digits"
+    else if sha.getString.length ≠ 40 then
+      throwErrorAt sha "must be a full sha"
+    else
+      let _f3 : Name := f3.getId
+      let _f4 := (← getEnv).mainModule
+      pure ()
+  | _ => throwUnsupportedSyntax
