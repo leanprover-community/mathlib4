@@ -143,7 +143,7 @@ def set_option_check(lines, path):
                 errors += [(ERR_OPT, line_nr, path)]
                 # skip adding this line to newlines so that we suggest removal
                 continue
-        newlines.append((line_nr,line))
+        newlines.append((line_nr, line))
     return errors, newlines
 
 def line_endings_check(lines, path):
