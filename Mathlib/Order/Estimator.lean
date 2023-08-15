@@ -31,6 +31,8 @@ An appropriate well-foundedness condition would then ensure that repeated improv
 the exact value.
 -/
 
+set_option autoImplicit true
+
 /--
 Given `[EstimatorData a ε]`
 * a term `e : ε` can be interpreted via `bound a e : α` as a lower bound for `a`, and
