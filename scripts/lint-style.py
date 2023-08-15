@@ -74,7 +74,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
 
 new_exceptions = False
 
-def is_in_comment(enumerate_lines):
+def annotate_comments(enumerate_lines):
     """
     Take a list of tuples of enumerated lines of the form
     (line_number, line, ...)
@@ -98,7 +98,7 @@ def is_in_comment(enumerate_lines):
             continue
         yield line_nr, line, *rem, False
 
-def is_in_string(enumerate_lines):
+def annotate_strings(enumerate_lines):
     """
     Take a list of tuples of enumerated lines of the form
     (line_number, line, ...)
@@ -135,7 +135,7 @@ def is_in_string(enumerate_lines):
 def set_option_check(lines, path):
     errors = []
     newlines = []
-    for line_nr, line, in_comment, in_string in is_in_string(is_in_comment(lines)):
+    for line_nr, line, in_comment, in_string in annotate_strings(annotate_comments(lines)):
         if line.strip().startswith('set_option') and not in_comment and not in_string:
             option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
             # forbidden options: pp, profiler, trace
@@ -171,7 +171,7 @@ def long_lines_check(lines, path):
     return errors, lines
 
 def import_only_check(lines, path):
-    for _, line, is_comment in is_in_comment(lines):
+    for _, line, is_comment in annotate_comments(lines):
         if is_comment:
             continue
         imports = line.split()
@@ -227,7 +227,7 @@ def regular_check(lines, path):
 
 def banned_import_check(lines, path):
     errors = []
-    for line_nr, line, is_comment in is_in_comment(lines):
+    for line_nr, line, is_comment in annotate_comments(lines):
         if is_comment:
             continue
         imports = line.split()
