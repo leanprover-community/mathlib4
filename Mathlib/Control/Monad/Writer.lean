@@ -21,6 +21,8 @@ computation progresses.
 
 -/
 
+set_option autoImplicit true
+
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 

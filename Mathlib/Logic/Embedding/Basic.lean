@@ -13,6 +13,8 @@ import Mathlib.Logic.Equiv.Basic
 # Injective functions
 -/
 
+set_option autoImplicit true
+
 
 universe u v w x
 

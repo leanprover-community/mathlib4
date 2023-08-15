@@ -20,6 +20,8 @@ define this subspace.
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
 
+set_option autoImplicit true
+
 open Set
 open scoped BigOperators RealInnerProductSpace
 
