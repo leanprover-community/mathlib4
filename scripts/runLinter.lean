@@ -28,7 +28,7 @@ unsafe def main (args : List String) : IO Unit := do
   CoreM.withImportModules [module] (searchPath := compileTimeSearchPath%) do
     let decls ← getDeclsInPackage `Mathlib
     let linters ← getChecks (slow := true) (useOnly := false)
-    let results ← lintCore decls (linters.filter fun l => l.name ≠ "docBlame")
+    let results ← lintCore decls linters
     if update then
       writeJsonFile NoLints nolintsFile <|
         .qsort (lt := fun (a,b) (c,d) => a.lt c || (a == c && b.lt d)) <|

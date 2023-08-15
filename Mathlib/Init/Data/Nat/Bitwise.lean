@@ -19,6 +19,8 @@ import Mathlib.Tactic.PermuteGoals
 Possibly only of archaeological significance.
 -/
 
+set_option autoImplicit true
+
 universe u
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.

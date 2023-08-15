@@ -29,6 +29,8 @@ We also define the functors `pushforward` and `pullback` between the categories
 `TopCat.Presheaf.pushforwardPullbackAdjunction`.
 -/
 
+set_option autoImplicit true
+
 
 universe w v u
 
