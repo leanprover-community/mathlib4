@@ -10,7 +10,7 @@ import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Nat.Parity
 import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.RingTheory.MvPolynomial.Symmetric
+import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
