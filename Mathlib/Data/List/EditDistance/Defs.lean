@@ -43,8 +43,11 @@ namespace Levenshtein
 
 /-- A cost structure for Levenshtein edit distance. -/
 structure Cost (α β : Type _) (δ : Type _) where
+  /-- Cost to delete an element from a list. -/
   delete : α → δ
+  /-- Cost in insert an element into a list. -/
   insert : β → δ
+  /-- Cost to substitute one elemenet for another in a list. -/
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
