@@ -19,7 +19,7 @@ This is recorded in this file as an inner product space instance on `ProdLp 2`.
 
 noncomputable section
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 instance ProdLp.instInnerProductSpace (E F : Type _) [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] :
@@ -36,10 +36,10 @@ instance ProdLp.instInnerProductSpace (E F : Type _) [NormedAddCommGroup E] [Inn
     simp only [smul_fst, inner_smul_left, smul_snd]
     ring
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 @[simp]
 theorem ProdLp.inner_apply (x y : WithLp 2 (E × F)) :
-    @inner 𝕜 _ _ x y = inner x.fst y.fst + inner x.snd y.snd := rfl
+    inner (𝕜 := 𝕜) x y = inner x.fst y.fst + inner x.snd y.snd := rfl

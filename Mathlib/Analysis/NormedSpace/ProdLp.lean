@@ -43,7 +43,7 @@ noncomputable section
 
 namespace ProdLp
 
-variable (p : ℝ≥0∞) (𝕜 𝕜' : Type _) (α β : Type _)
+variable (p : ℝ≥0∞) (𝕜 𝕜' : Type*) (α β : Type*)
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
 the use of the type synonym. -/
