@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
-import Mathlib.Logic.Nonempty
 import Mathlib.Lean.Meta.DiscrTree
 
 /-!
@@ -41,6 +40,8 @@ while for constants defined in the same file
 This kind of cache can be used e.g.
 to populate discrimination trees.
 -/
+
+set_option autoImplicit true
 
 open Lean Meta
 

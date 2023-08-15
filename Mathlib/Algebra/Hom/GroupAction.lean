@@ -194,6 +194,8 @@ instance : MulActionHomClass (X →ₑ[φ] Y) φ X Y
   coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
 
+initialize_simps_projections MulActionHom (toFun → apply)
+
 namespace MulActionHom
 
 variable {φ X Y}
@@ -316,6 +318,12 @@ theorem id_comp (f : X →ₑ[φ] Y) :
 
 #align mul_action_hom.id_comp MulActionHom.id_comp
 
+
+
+@[simp]
+theorem comp'_id (f : X →ₑ[φ] Y) :
+  f.comp' (MulActionHom.id M) (CompTriple.comp_id)= f :=
+  ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
 theorem comp'_id (f : X →ₑ[φ] Y) :
