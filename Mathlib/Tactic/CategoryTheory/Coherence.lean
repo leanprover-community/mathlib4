@@ -26,6 +26,8 @@ which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 -/
 
+set_option autoImplicit true
+
 -- Porting note: restore when ported
 -- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 

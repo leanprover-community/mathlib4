@@ -41,6 +41,8 @@ definitional eta reduction for structures (Lean 3 does not).
 multiplicative opposite, additive opposite
 -/
 
+set_option autoImplicit true
+
 
 universe u v
 

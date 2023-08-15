@@ -23,6 +23,8 @@ where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In t
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
 
+set_option autoImplicit true
+
 -- In this file we would like to be able to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true
 
