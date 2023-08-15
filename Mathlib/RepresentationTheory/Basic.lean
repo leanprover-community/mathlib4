@@ -39,7 +39,7 @@ open LinearMap
 
 section
 
-variable (k G V : Type _) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- A representation of `G` on the `k`-module `V` is a homomorphism `G →* (V →ₗ[k] V)`.
 -/
@@ -53,7 +53,7 @@ namespace Representation
 
 section trivial
 
-variable (k : Type _) {G V : Type _} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
@@ -71,7 +71,7 @@ end trivial
 
 section MonoidAlgebra
 
-variable {k G V : Type _} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 variable (ρ : Representation k G V)
 
@@ -162,14 +162,14 @@ We remedy this below in `ofModule`
 (with the tradeoff that the representation is defined
 only on a type synonym of the original module.)
 -/
-noncomputable def ofModule' (M : Type _) [AddCommMonoid M] [Module k M]
+noncomputable def ofModule' (M : Type*) [AddCommMonoid M] [Module k M]
     [Module (MonoidAlgebra k G) M] [IsScalarTower k (MonoidAlgebra k G) M] : Representation k G M :=
-  (MonoidAlgebra.lift k G (M →ₗ[k] M)).symm (Algebra.lsmul k M)
+  (MonoidAlgebra.lift k G (M →ₗ[k] M)).symm (Algebra.lsmul k k M)
 #align representation.of_module' Representation.ofModule'
 
 section
 
-variable (M : Type _) [AddCommMonoid M] [Module (MonoidAlgebra k G) M]
+variable (M : Type*) [AddCommMonoid M] [Module (MonoidAlgebra k G) M]
 
 /-- Build a `Representation` from a `[Module (MonoidAlgebra k G) M]`.
 
@@ -242,7 +242,7 @@ end MonoidAlgebra
 
 section AddCommGroup
 
-variable {k G V : Type _} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
+variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
 
 variable (ρ : Representation k G V)
 
@@ -253,7 +253,7 @@ end AddCommGroup
 
 section MulAction
 
-variable (k : Type _) [CommSemiring k] (G : Type _) [Monoid G] (H : Type _) [MulAction G H]
+variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MulAction G H]
 
 /-- A `G`-action on `H` induces a representation `G →* End(k[H])` in the natural way. -/
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
@@ -282,12 +282,12 @@ end MulAction
 
 section Group
 
-variable {k G V : Type _} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
 
 variable (ρ : Representation k G V)
 
 @[simp]
-theorem ofMulAction_apply {H : Type _} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
+theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
     ofMulAction k G H g f h = f (g⁻¹ • h) := by
   conv_lhs => rw [← smul_inv_smul g h]
   let h' := g⁻¹ • h
@@ -345,7 +345,7 @@ end Group
 
 section TensorProduct
 
-variable {k G V W : Type _} [CommSemiring k] [Monoid G]
+variable {k G V W : Type*} [CommSemiring k] [Monoid G]
 
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
 
@@ -396,7 +396,7 @@ end TensorProduct
 
 section LinearHom
 
-variable {k G V W : Type _} [CommSemiring k] [Group G]
+variable {k G V W : Type*} [CommSemiring k] [Group G]
 
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
 

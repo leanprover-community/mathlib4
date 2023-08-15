@@ -13,6 +13,8 @@ is eventually equal to a constant along a filter `l`. We also prove some basic p
 functions.
 -/
 
+set_option autoImplicit true
+
 open Set
 
 namespace Filter
@@ -82,7 +84,7 @@ lemma comp_tendsto {lb : Filter β} {g : β → γ} (hg : EventuallyConst g lb)
     (hf : Tendsto f l lb) : EventuallyConst (g ∘ f) l :=
   let ⟨c, hc⟩ := hg; ⟨c, hf hc⟩
 
-lemma apply {ι : Type _} {p : ι → Type _} {g : α → ∀ x, p x}
+lemma apply {ι : Type*} {p : ι → Type*} {g : α → ∀ x, p x}
     (h : EventuallyConst g l) (i : ι) : EventuallyConst (g · i) l :=
   h.comp <| Function.eval i
 

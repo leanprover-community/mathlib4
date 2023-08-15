@@ -47,9 +47,9 @@ open Classical BigOperators
 
 universe x u v w
 
-variable {ι : Type _} {ι' : Type _} (R : Type _) {K : Type _}
+variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
 
-variable {A : Type _} {A' A'' : Type _} {V : Type u} {V' : Type _}
+variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
 
 variable (x : ι → A)
 
@@ -210,7 +210,7 @@ theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
 
 /-- A set of algebraically independent elements in an algebra `A` over a ring `K` is also
 algebraically independent over a subring `R` of `K`. -/
-theorem AlgebraicIndependent.restrictScalars {K : Type _} [CommRing K] [Algebra R K] [Algebra K A]
+theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R K] [Algebra K A]
     [IsScalarTower R K A] (hinj : Function.Injective (algebraMap R K))
     (ai : AlgebraicIndependent K x) : AlgebraicIndependent R x := by
   have : (aeval x : MvPolynomial ι K →ₐ[K] A).toRingHom.comp (MvPolynomial.map (algebraMap R K)) =
@@ -322,7 +322,7 @@ theorem AlgebraicIndependent.image {ι} {s : Set ι} {f : ι → A}
   convert AlgebraicIndependent.image_of_comp s f id hs
 #align algebraic_independent.image AlgebraicIndependent.image
 
-theorem algebraicIndependent_iUnion_of_directed {η : Type _} [Nonempty η] {s : η → Set A}
+theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : η → Set A}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
     AlgebraicIndependent R ((↑) : (⋃ i, s i) → A) := by
   refine' algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => _

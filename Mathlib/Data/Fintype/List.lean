@@ -27,7 +27,7 @@ which is a TODO.
 -/
 
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 open List
 
