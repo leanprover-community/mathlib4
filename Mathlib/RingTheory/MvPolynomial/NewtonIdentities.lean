@@ -19,14 +19,24 @@ import Mathlib.RingTheory.Polynomial.Basic
 This file defines `MvPolynomial` power sums as a means of implementing Newton's identities. The
 combinatorial proof, due to Zeilberger, defines for `k : ℕ` a subset `pairs` of
 `(range k).powerset × range k` and a map `pairMap` such that `pairMap` is an involution on `pairs`,
-and a bijection `weight` from `pairs` to the terms of the summation in Newton's identities which
-satisfies `weight ∘ pairMap = -weight`. The result therefore follows neatly from an identity
-implemented in mathlib as `Finset.sum_involution`.
+and a map `weight` which identifies elements of `pairs` with the terms of the summation in Newton's
+identities and which satisfies `weight ∘ pairMap = -weight`. The result therefore follows neatly
+from an identity implemented in mathlib as `Finset.sum_involution`. Namely, we use
+`Finset.sum_involution` to show that `∑ t in pairs σ k, weight σ R k t = 0`. We then identify
+`(-1) ^ k * k * esymm σ R k` with the terms of the weight sum for which `t.fst` has
+cardinality `k`, and `(-1) ^ i * esymm σ R i * psum σ R (k - i)` with the terms of the weight sum
+for which `t.fst` has cardinality `i` for `i < k` , and we thereby derive the main result
+`(-1) ^ k * k * esymm σ R k + ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0` (or
+rather, two equivalent forms which provide direct definitions for `esymm` and `psum` in lower-degree
+terms).
 
 ## Main declarations
 
-* `MvPolynomial.mul_esymm_eq_sum`: a recurrence relation for the kth elementary
-  symmetric polynomial in terms of lower degree elementary symmetric polynomials and power sums.
+* `MvPolynomial.mul_esymm_eq_sum`: a recurrence relation for the `k`th elementary
+  symmetric polynomial in terms of lower-degree elementary symmetric polynomials and power sums.
+
+* `MvPolynomial.psum_eq_mul_esymm_sub_sum`: a recurrence relation for the degree-`k` power sum
+  in terms of lower-degree elementary symmetric polynomials and power sums.
 
 ## References
 
