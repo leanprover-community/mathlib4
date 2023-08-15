@@ -6,15 +6,20 @@ import Mathlib.Data.Nat.Parity
 
 universe u
 variable {α : Type u}
+
+
 class CountablyCompleteLinearOrder (α : Type*) extends LinearOrder α where
   /-- The supremum of a countable set -/
-  supω : (s : Set α) → Set.Countable s → ∃ x, IsLUB s x
+  supω : (s : Set α) → Set.Nonempty s → Set.Countable s → ∃ x, IsLUB s x
 namespace Order
 variable [TopologicalSpace α] [Preorder α] [OrderTopology α]
 
 structure IsClub (s : Set α) : Prop :=
   unbounded : Set.Unbounded (· ≤ ·) s
   closed : IsClosed s
+
+structure IsStationary (s : Set α) : Prop :=
+  interClub {c : Set α} (h : IsClub c) : Set.Nonempty (s ∩ c)
 
 
 section
@@ -32,7 +37,6 @@ namespace Order
 section
 
 variable [CountablyCompleteLinearOrder α] [NoTopOrder α] [TopologicalSpace α] [OrderTopology α]
-
 
 def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) where
   closed := IsClosed.inter hs.closed ht.closed
@@ -109,15 +113,19 @@ def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ 
       dsimp at this
       rw[← GE.ge] at this
       exact lt_of_not_ge (α := α) this.right
-
+    have fst_ne : Set.Nonempty {(f n).fst | n} := by
+      use (f 0).fst
+      exact ⟨0, rfl⟩
+    have snd_ne : Set.Nonempty {(f n).snd | n} := by
+      use (f 0).snd
+      exact ⟨0, rfl⟩
     clear_value f
-    obtain ⟨sup, prf_sp⟩ := CountablyCompleteLinearOrder.supω {(f n).fst | n} (Set.countable_range _)
+    obtain ⟨sup, prf_sp⟩ := CountablyCompleteLinearOrder.supω {(f n).fst | n} fst_ne (Set.countable_range _)
 
     have sup_in_closure : sup ∈ closure {(f n).fst | n} := by
       apply prf_sp.mem_closure
-      · use (f 0).fst
-        exact ⟨0, rfl⟩
-    obtain ⟨sup', prf_sp'⟩ := CountablyCompleteLinearOrder.supω {(f n).snd | n} (Set.countable_range _)
+      assumption
+    obtain ⟨sup', prf_sp'⟩ := CountablyCompleteLinearOrder.supω {(f n).snd | n} snd_ne (Set.countable_range _)
 
     have sup_is_other_sup : sup = sup' := by
       apply le_antisymm
@@ -142,8 +150,7 @@ def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ 
       := by
       rw[sup_is_other_sup]
       apply prf_sp'.mem_closure
-      · use (f 0).snd
-        exact ⟨0, rfl⟩
+      assumption
 
     use sup
     simp
@@ -179,8 +186,53 @@ noncomputable def isClub_FilterBasis : FilterBasis α where
 
 
 def Filter.club : Filter α := isClub_FilterBasis.filter
-
 end
+end Order
+
+
+namespace Cardinal
+section
+variable {c : Cardinal.{u}} (cofinality : ℵ₀ < Ordinal.cof (Cardinal.ord c))
+noncomputable instance inst_uncountable_cofinal_countably_complete : CountablyCompleteLinearOrder (Set.Iio c.ord) := by
+  constructor
+  intro s s_ne s_cnt
+  obtain ⟨f, hf⟩ := Set.Countable.exists_eq_range s_cnt s_ne
+  let h := Ordinal.sup (Subtype.val ∘ f)
+  use ⟨h,?le⟩
+  swap
+  · simp only [Set.mem_Iio]
+    apply Ordinal.sup_lt_ord_lift
+    · simpa
+    · intro n
+      simp only [Function.comp_apply]
+      rcases fn_eq : f n with ⟨fn, ineq⟩
+      simp only [Set.mem_Iio] at ineq
+      simpa
+  · constructor
+    · rintro ⟨x, ineq⟩ x_in_s
+      simp only [Set.mem_Iio] at ineq
+      simp only [hf, Set.mem_range] at x_in_s
+      rcases x_in_s with ⟨n, prf⟩
+      have h2 := Ordinal.le_sup (Subtype.val ∘ f) n
+      simp only [Function.comp_apply, prf] at h2
+      simp[h2]
+    · rintro ⟨x, ineq⟩ x_in_s
+      simp only [upperBounds, Set.mem_setOf_eq] at x_in_s
+      simp only [ge_iff_le, Subtype.mk_le_mk, Ordinal.sup_le_iff, Function.comp_apply]
+      intro n
+      specialize x_in_s (a := f n) (by simp[hf])
+      congr
+end
+section
+variable {c : Cardinal.{u}} (uncnt : ℵ₀ < c) (reg : IsRegular c)
+noncomputable instance inst_uncountable_regular_countably_complete : CountablyCompleteLinearOrder (Set.Iio c.ord) :=
+  inst_uncountable_cofinal_countably_complete (lt_of_lt_of_le uncnt reg.right)
+end
+
+def IsStronglyMahlo (c : Cardinal) := Order.IsStationary {x ∈ Set.Iio c.ord | IsInaccessible x.card}
+
+end Cardinal
+
 
 
 theorem isUnbounded_univ_iff_limit {a : Ordinal} : (IsLimit a ∨ a = 0) ↔
