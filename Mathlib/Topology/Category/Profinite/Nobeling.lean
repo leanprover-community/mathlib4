@@ -341,7 +341,7 @@ def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : 
   (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z) [∀ j, Decidable (j ∈ C₁)]
   (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩  = f₂ ⟨x, hx.2⟩) : LocallyConstant C₀ Z where
   toFun i := if hi : i.val ∈ C₁ then f₁ ⟨i.val, hi⟩ else
-    f₂ ⟨i, (or_iff_not_imp_left.mp (h₀ i.prop)) hi⟩
+    f₂ ⟨i.val, (or_iff_not_imp_left.mp (h₀ i.prop)) hi⟩
   isLocallyConstant := by
     let dZ : TopologicalSpace Z := ⊥
     haveI : DiscreteTopology Z := discreteTopology_bot Z
@@ -362,18 +362,14 @@ def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : 
         exact isClosed_induced_iff.mpr ⟨C₁, ⟨h₁, rfl⟩⟩  ]
     · cases i <;> rw [continuousOn_iff_continuous_restrict]
       · simp only [cond_false, Set.coe_setOf, Set.mem_setOf_eq]
-        refine Continuous.congr hf₂' ?_
-        intro x
-        rw [Set.restrict_apply]
-        simp only [Set.mem_setOf_eq]
+        refine Continuous.congr hf₂' (fun x ↦ ?_)
+        simp only [Set.restrict_apply, Set.mem_setOf_eq]
         split_ifs with h
         · exact (hf x.val.val ⟨h, x.prop⟩).symm
         · rfl
       · simp only [cond_true, Set.coe_setOf, Set.mem_setOf_eq]
-        refine Continuous.congr hf₁' ?_
-        intro x
-        rw [Set.restrict_apply]
-        simp only [Set.mem_setOf_eq]
+        refine Continuous.congr hf₁' (fun x ↦ ?_)
+        simp only [Set.restrict_apply, Set.mem_setOf_eq]
         split_ifs with h
         · rfl
         · simp only [x.prop, not_true] at h
@@ -1763,7 +1759,6 @@ lemma C0_projOrd : ∀ x, x ∈ C0 C ho → Proj (ord I · < o) x = x := by
   · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq, ← Bool.default_bool] at hx
     rw [eq_comm, ord_term ho] at hi
     rw [← hx.2, hi]
-
 
 lemma C1_projOrd : ∀ x, x ∈ C1 C ho → SwapTrue o (Proj (ord I · < o) x) = x := by
   intro x hx
