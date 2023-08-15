@@ -86,13 +86,19 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-class ClosedIicTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+/-- If `α` is a topological space and a preorder, `ClosedIicTopology α` means that `Iic a` is
+closed for all `a : α`. -/
+class ClosedIicTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
+  /-- For any `a`, the set `{b | b ≤ a}` is closed. -/
   isClosed_le' (a : α) : IsClosed { b : α | b ≤ a }
 
 export ClosedIicTopology (isClosed_le')
 #align is_closed_le' ClosedIicTopology.isClosed_le'
 
-class ClosedIciTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+/-- If `α` is a topological space and a preorder, `ClosedIciTopology α` means that `Ici a` is
+closed for all `a : α`. -/
+class ClosedIciTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
+  /-- For any `a`, the set `{b | a ≤ b}` is closed. -/
   isClosed_ge' (a : α) : IsClosed { b : α | a ≤ b }
 
 export ClosedIciTopology (isClosed_ge')
