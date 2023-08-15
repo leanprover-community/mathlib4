@@ -633,6 +633,48 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
       · simp only [cond_true, restrict_dite, Subtype.coe_eta]
         exact hf
 
+/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset. -/
+def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+  (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z) [∀ j, Decidable (j ∈ C₁)]
+  (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩  = f₂ ⟨x, hx.2⟩) : LocallyConstant C₀ Z where
+  toFun i := if hi : i.val ∈ C₁ then f₁ ⟨i.val, hi⟩ else
+    f₂ ⟨i, (or_iff_not_imp_left.mp (h₀ i.prop)) hi⟩
+  isLocallyConstant := by
+    let dZ : TopologicalSpace Z := ⊥
+    haveI : DiscreteTopology Z := discreteTopology_bot Z
+    obtain ⟨f₁, hf₁⟩ := f₁
+    obtain ⟨f₂, hf₂⟩ := f₂
+    rw [IsLocallyConstant.iff_continuous] at hf₁ hf₂ ⊢
+    dsimp only [coe_mk]
+    have h₀' : {i : C₀ | i.val ∈ C₁} ∪ {i : C₀ | i.val ∈ C₂} = Set.univ :=
+      Set.eq_univ_of_subset (s := {i : C₀ | i.val ∈ C₀})
+      (fun i hi ↦ h₀ hi) (Set.eq_univ_of_forall (fun x ↦ x.prop))
+    have hf₁' : Continuous (fun (i : {i : C₀ | i.val ∈ C₁}) ↦ f₁ ⟨i.val.val, i.prop⟩) :=
+      hf₁.comp (Continuous.subtype_mk (continuous_subtype_val.comp continuous_subtype_val) _)
+    have hf₂' : Continuous (fun (i : {i : C₀ | i.val ∈ C₂}) ↦ f₂ ⟨i.val.val, i.prop⟩) :=
+      hf₂.comp (Continuous.subtype_mk (continuous_subtype_val.comp continuous_subtype_val) _)
+    rw [Set.union_eq_iUnion] at h₀'
+    refine' (locallyFinite_of_finite _).continuous h₀' (fun i ↦ _) (fun i ↦ _)
+    · cases i <;> [exact isClosed_induced_iff.mpr ⟨C₂, ⟨h₂, rfl⟩⟩;
+        exact isClosed_induced_iff.mpr ⟨C₁, ⟨h₁, rfl⟩⟩  ]
+    · cases i <;> rw [continuousOn_iff_continuous_restrict]
+      · simp only [cond_false, Set.coe_setOf, Set.mem_setOf_eq]
+        refine Continuous.congr hf₂' ?_
+        intro x
+        rw [Set.restrict_apply]
+        simp only [Set.mem_setOf_eq]
+        split_ifs with h
+        · exact (hf x.val.val ⟨h, x.prop⟩).symm
+        · rfl
+      · simp only [cond_true, Set.coe_setOf, Set.mem_setOf_eq]
+        refine Continuous.congr hf₁' ?_
+        intro x
+        rw [Set.restrict_apply]
+        simp only [Set.mem_setOf_eq]
+        split_ifs with h
+        · rfl
+        · simp only [x.prop, not_true] at h
+
 end Piecewise
 
 end LocallyConstant
