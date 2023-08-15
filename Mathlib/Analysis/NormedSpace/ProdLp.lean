@@ -281,8 +281,8 @@ theorem sup_edist_ne_top_aux {α β : Type _}
   refine ne_of_lt ?_
   simp [edist, PseudoMetricSpace.edist_dist]
 
-/-- Endowing the space `WithLp p (α × β)` with the `L^p` pseudometric structure. This definition is not
-satisfactory, as it does not register the fact that the topology, the uniform structure, and the
+/-- Endowing the space `WithLp p (α × β)` with the `L^p` pseudometric structure. This definition is
+not satisfactory, as it does not register the fact that the topology, the uniform structure, and the
 bornology coincide with the product ones. Therefore, we do not register it as an instance. Using
 this as a temporary pseudoemetric space instance, we will show that the uniform structure is equal
 (but not defeq) to the product one, and then register an instance in which we replace the uniform
@@ -360,16 +360,14 @@ theorem antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace 
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
       (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) ≤
-          (edist (WithLp.equiv p (α × β) x) (WithLp.equiv p (α × β) y) ^ p.toReal +
-          edist (WithLp.equiv p (α × β) x) (WithLp.equiv p (α × β) y) ^ p.toReal) ^ (1 / p.toReal) := by
+          (edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal +
+          edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
         refine ENNReal.rpow_le_rpow (add_le_add ?_ ?_) nonneg
         · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
           simp [edist]
         · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
           simp [edist]
-      _ =
-          ((2 : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
-            edist (WithLp.equiv p (α × β) x) (WithLp.equiv p (α × β) y) := by
+      _ = (2 : ℝ≥0) ^ (1 / p.toReal) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg,
           ← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg,
           coe_ofNat]
